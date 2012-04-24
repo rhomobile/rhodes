@@ -428,7 +428,7 @@ namespace "config" do
     $builddir = File.join($androidpath, "build")
     $shareddir = File.join($androidpath, "..", "shared")
     $srcdir = File.join($bindir, "RhoBundle")
-    $targetdir = File.join($bindir, "target")
+    $targetdir = File.join($bindir, "target/android")
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir = File.join($bindir, "tmp")
     $resourcedir = File.join($tmpdir, "resource")
@@ -1546,7 +1546,7 @@ namespace "build" do
         #puts '$$$$$$$$$$$$$$$$$$'
         #puts 'targetdir = '+$targetdir.to_s
         #puts 'bindir = '+$bindir.to_s
-        android_targetdir = File.join($targetdir, 'android')
+        android_targetdir = $targetdir #File.join($targetdir, 'android')
         mkdir_p android_targetdir if not File.exists? android_targetdir
         zip_file_path = File.join(android_targetdir, 'upgrade_bundle.zip')
         Jake.build_file_map(File.join($srcdir, "apps"), "rhofilelist.txt")
@@ -2194,9 +2194,12 @@ namespace "clean" do
     end
     task :files => "config:android" do
       rm_rf $targetdir
-      rm_rf $bindir
+      #rm_rf $bindir
+      rm_rf File.join( $bindir, "libs" )
+      Dir.glob( File.join( $bindir, "*.*" ) ) { |f| rm f, :force => true }
       rm_rf $srcdir
       rm_rf $libs
+      rm_rf $tmpdir
     end
   task :libsqlite => "config:android" do
     cc_clean "sqlite"
@@ -2211,7 +2214,7 @@ namespace "clean" do
     rm_rf $bindir + "/libs/" + $confdir + "/" + $ndkabi + "/" + $ndkgccver + "/librhodes.so"
   end
 #  desc "clean android"
-  task :all => [:assets,:librhodes,:libs,:files]
+  task :all => [:assets,:librhodes,:libs,:files] 
   end
 end
 
