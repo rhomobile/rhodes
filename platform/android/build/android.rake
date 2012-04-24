@@ -812,9 +812,25 @@ namespace "config" do
             if RUBY_PLATFORM =~ /(win|w)32$/
               $ext_android_build_scripts[extpath] = 'build.bat' if File.exists? build_script
             else
-              $ext_android_build_scripts[extpath] = File.join('.', 'build' + $bat_ext) if File.exists? build_script
+                $ext_android_build_scripts[extpath] = File.join('.', 'build' + $bat_ext) if File.exists? build_script
+              
+                # modify executable attribute
+                if File.exists? build_script
+                  if !File.executable? build_script
+                       puts 'change executable attribute for build script in extension : '+build_script
+                       begin
+                           File.chmod 0700, build_script
+                           puts 'executable attribute was writed for : '+build_script
+                       rescue Exception => e
+                           puts 'ERROR: can not change attribute for build script in extension ! Try to run build command with sudo: prefix.' 
+                       end    
+                  else
+                       puts 'build script in extension already executable : '+build_script
+                  end
+                else
+                  puts 'build script in extension not found => pure ruby extension'
+                end
             end
-
             puts "#{extpath} is configured"
             # to prevent to build 2 extensions with same name
             break

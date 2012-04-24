@@ -641,10 +641,30 @@ namespace "build" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
-          next unless File.executable? File.join(extpath, 'build')
-
-          puts Jake.run('./build', [], extpath)
-          exit 1 unless $? == 0
+          build_script = File.join(extpath, 'build')
+          
+          # modify executable attribute
+          if File.exists? build_script
+              if !File.executable? build_script
+                   puts 'change executable attribute for build script in extension : '+build_script
+                   begin
+                       File.chmod 0700, build_script
+                       puts 'executable attribute was writed for : '+build_script
+                   rescue Exception => e
+                       puts 'ERROR: can not change attribute for build script in extension ! Try to run build command with sudo: prefix.' 
+                   end    
+              else
+                   puts 'build script in extension already executable : '+build_script
+              end
+              if File.executable? build_script
+                   puts Jake.run('./build', [], extpath)
+                   exit 1 unless $? == 0
+              else
+                   puts 'ERROR: build script in extension is not executable !' 
+              end
+            else
+              puts 'build script in extension not found => pure ruby extension'
+          end
         end
       end
     end
