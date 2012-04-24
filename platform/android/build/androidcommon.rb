@@ -258,7 +258,7 @@ end
 
 def cc_compile(filename, objdir, additional = nil)
   filename.chomp!
-  objname = ('"'+(File.join objdir, File.basename(filename) + ".o")+'"')
+  objname = File.join objdir, File.basename(filename) + ".o"
 
   return true if FileUtils.uptodate? objname, [filename] + cc_deps(filename, objdir, additional)
 
@@ -274,7 +274,7 @@ def cc_compile(filename, objdir, additional = nil)
   args << "-c"
   args << filename
   args << "-o"
-  args << objname
+  args << '"' + objname + '"'
   cmdline = ccbin + ' ' + args.join(' ')
   cc_run(ccbin, args)
 end
