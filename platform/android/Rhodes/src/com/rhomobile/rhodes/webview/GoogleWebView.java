@@ -140,4 +140,9 @@ public class GoogleWebView implements IRhoWebView {
     public void setTextZoom(int scale) {
         //mWebView.getSettings().setTextZoom(scale);
     }
+
+    @Override
+    public String getEngineId() {
+        return "WEBKIT/GOOGLE/" + Build.VERSION.RELEASE;
+    }
 }

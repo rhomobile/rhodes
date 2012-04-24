@@ -16,4 +16,5 @@ public interface IRhoWebView {
     void stopLoad();
     void setZoom(int scale);
     void setTextZoom(int scale);
+    String getEngineId();
 }
