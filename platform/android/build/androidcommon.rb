@@ -272,7 +272,7 @@ def cc_compile(filename, objdir, additional = nil)
   args << "-Wno-unused"
   args += additional if additional.is_a? Array and not additional.empty?
   args << "-c"
-  args << filename
+  args << '"' + filename+ '"'
   args << "-o"
   args << '"' + objname + '"'
   cmdline = ccbin + ' ' + args.join(' ')
