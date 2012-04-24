@@ -208,8 +208,8 @@ void CSyncThread::stopAll() {
         
 	CSyncThread::getSyncEngine().stopSyncByUser();
 
-	//don't wait if calling from net request
-	if ( CSyncThread::getSyncEngine().getNotify().isInsideRequest() )
+	//don't wait if calling from notify callback
+	if ( CSyncThread::getSyncEngine().getNotify().isInsideCallback() )
 	{
 		LOG(INFO)+"STOP sync called inside notify.";
 		return;

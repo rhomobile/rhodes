@@ -107,6 +107,7 @@ private:
     Vector<String> m_arNotifyBody;
     String m_strStatusHide;
     boolean m_bFakeServerResponse;
+    boolean m_isInsideCallback;
 
    	NetRequest     m_NetRequest;
 
@@ -114,7 +115,7 @@ private:
     CSyncEngine& getSync(){ return m_syncEngine; }
 public:
     CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false), 
-        m_bEnableReportingGlobal(false), m_bFakeServerResponse(false){}
+        m_bEnableReportingGlobal(false), m_bFakeServerResponse(false), m_isInsideCallback(false) {}
 
     //Object notifications
     void fireObjectsNotification();
@@ -159,7 +160,7 @@ public:
     void reportSyncStatus(String status, int error, String strDetails);
     void showStatusPopup(const String& status);
     
-    bool isInsideRequest() const;
+    bool isInsideCallback() const { return m_isInsideCallback; }
 private:
     CSyncNotification* getSyncNotifyBySrc(CSyncSource* src);
 
