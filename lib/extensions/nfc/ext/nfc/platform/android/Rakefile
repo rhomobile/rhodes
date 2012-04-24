@@ -21,7 +21,7 @@ def build_extension(name, arch, src_files)
     args << "-I."
     args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
     args << "-I\"#{$rootdir}/platform/shared\""
-    args << "-I\"#{$rootdir}/platform/shared\common""
+    args << "-I\"#{$rootdir}/platform/shared/common\""
 
     args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
     args << "-D__NEW__" if use_own_stlport
@@ -31,7 +31,7 @@ def build_extension(name, arch, src_files)
     args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
     args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
 
-    cc_compile f, ('"'+$tempdir+'"'), args or exit 1
+    cc_compile f, $tempdir, args or exit 1
 
   end
 
