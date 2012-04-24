@@ -497,7 +497,7 @@ class Jake
     old_content = File.exists?(file_name) ? File.read(file_name) : ""
 
     if old_content != content  
-        puts "Modify #{file_name}"      
+        puts "!!!MODIFY #{file_name}"      
         File.open(file_name, "w"){|file| file.write(content)}
     end
     
