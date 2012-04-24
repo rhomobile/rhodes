@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -158,14 +159,15 @@ public class RhodesApplication extends Application{
                     config.load(configIs, configXmlFile.getParent());
                 } else {
                     Log.i(TAG, "Loading Config.xml from resources");
-                    Log.i(TAG, configXmlFile.getAbsolutePath() + " does not exist");
                     configIs = getResources().openRawResource(RhoExtManager.getResourceId("raw", "config"));
                     config.load(configIs, rootPath);
                 }
                 if (Capabilities.SHARED_RUNTIME_ENABLED) {
                     String startPage = config.getSetting("startpage");
+                    Log.i(TAG,"Start page: " + startPage);
                     if (startPage != null) {
-                        sharedPath = new File(startPage).getParent();
+                        URI startUri = new URI(startPage);
+                        sharedPath = new File(startUri.getPath()).getParent();
                         rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, sharedPath);
                     }
                 }
@@ -176,7 +178,7 @@ public class RhodesApplication extends Application{
             }
             
         } catch (Throwable e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             //Log.e(TAG, e.getMessage());
             Log.e(TAG, "Erorr loading RhoElements configuraiton");
         } finally {

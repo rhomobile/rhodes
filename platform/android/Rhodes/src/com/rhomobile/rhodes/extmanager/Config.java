@@ -1,34 +1,20 @@
 package com.rhomobile.rhodes.extmanager;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import android.os.Environment;
 import android.util.Xml;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.file.RhoFileApi;
-import com.rhomobile.rhodes.util.ContextFactory;
 
 
 // TODO - make access to map thread-safe
@@ -223,19 +209,18 @@ public class Config
 				}
 			}
 			
-			//String setting = atts.getValue("value");
 			if (setting != null) {
-					if (qName.equalsIgnoreCase(METATAG)) {
-						if (defaultMetaTag == null) {
-							defaultMetaTag = new ArrayList<String>();
-						}
-						defaultMetaTag.add(setting);
-					} else {
-					    String value = setting.replace("%INSTALLDIR%", mInstallDir);
-					    String name = qName.toLowerCase();//localName.toLowerCase(); 
-					    settings.put(name, value);
-					    Logger.T(TAG, "Set RhoElements config value: " + name + "=>" + value);
+				if (qName.equalsIgnoreCase(METATAG)) {
+					if (defaultMetaTag == null) {
+						defaultMetaTag = new ArrayList<String>();
 					}
+					defaultMetaTag.add(setting);
+				} else {
+				    String value = setting.replace("%INSTALLDIR%", mInstallDir);
+				    String name = qName.toLowerCase();//localName.toLowerCase(); 
+				    settings.put(name, value);
+				    Logger.T(TAG, "Set RhoElements config value: " + name + "=>" + value);
+				}
 			} else {
                 String name = qName.toLowerCase();//localName.toLowerCase(); 
                 settings.put(name, null);

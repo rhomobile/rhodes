@@ -176,7 +176,7 @@ RHO_GLOBAL void android_setup(JNIEnv *env)
 
     // Init logconf
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
-    rho_logconf_Init_with_separate_user_path(rho_native_rhopath(), rho_native_rhopath(), "", rho_shared_path().c_str());
+    rho_logconf_Init(rho_shared_path().c_str(), rho_native_rhopath(), "");
 #else
     rho_logconf_Init(rho_native_rhopath(), rho_native_rhopath(), "");
 #endif
