@@ -947,7 +947,7 @@ static Rhodes *instance = NULL;
         //exit(EXIT_SUCCESS);
         //[self exit_with_errormessage:@"Motorola Licence" message:@"Your licence key is invalid !"];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Motorola License" 
-                                                            message:@"Your license key is invalid !"
+                                                            message:@"Please provide RhoElements license key."
                                                            delegate:nil 
                                                   cancelButtonTitle:@"OK" 
                                                   otherButtonTitles: nil];

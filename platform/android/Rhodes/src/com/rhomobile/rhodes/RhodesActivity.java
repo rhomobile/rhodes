@@ -528,7 +528,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 				}
 			});
             AlertDialog securityAlert = b.create();
-            securityAlert.setMessage("Your Motorola license key is invalid !");
+            securityAlert.setMessage("Please provide RhoElements license key.");
             securityAlert.setButton("OK", new DialogInterface.OnClickListener(){
 				public void onClick(DialogInterface arg0, int arg1) {
 					//RhodesService.exit();
