@@ -379,8 +379,14 @@ end
 def java_compile(outpath, classpath, srclists)
     javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
 
+    #puts '@@@@@@@@@@@@@@   BEGIN'
     if srclists.count == 1
       fullsrclist = srclists.first
+      #  File.open(fullsrclist, "r") do |f|
+      #    while line = f.gets
+      #      puts line
+      #    end
+      #  end
     else
       fullsrclist = Tempfile.new 'RhodesSRC_build'
       srclists.each do |srclist|
@@ -388,6 +394,7 @@ def java_compile(outpath, classpath, srclists)
         File.open(srclist, "r") do |f|
           while line = f.gets
             line.chomp!
+            #puts line
             fullsrclist.write "#{line}\n"
           end
         end
@@ -395,6 +402,7 @@ def java_compile(outpath, classpath, srclists)
       fullsrclist.close
       fullsrclist = fullsrclist.path
     end
+    #puts '@@@@@@@@@@@@@@   END'
 
     args = []
     args << "-g"
