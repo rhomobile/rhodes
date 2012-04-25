@@ -1635,7 +1635,7 @@ namespace "package" do
     args = ["uf", resourcepkg]
     # Strip them all to decrease size
     Dir.glob($tmpdir + "/lib/armeabi/lib*.so").each do |lib|
-      cc_run($stripbin, [lib])
+      cc_run($stripbin, ['"'+lib+'"'])
       args << "lib/armeabi/#{File.basename(lib)}"
     end
     puts Jake.run($jarbin, args, $tmpdir)
