@@ -609,7 +609,7 @@ class Jake
         puts "EXC: #{e}"
     end    
   
-    system("START rake run:webrickrhologserver[#{app_path}]")
+    system("START rake run:webrickrhologserver[\"#{app_path}\"]")
   end
     
 end
