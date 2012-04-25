@@ -1545,14 +1545,20 @@ namespace "build" do
         File.open(list, "r") do |f|
           while line = f.gets
             line.chomp!
-            srclist.write "#{File.join(extpath, line)}\n"
+            #srclist.write "#{File.join(extpath, line)}\n"
+            srclist.write "#{line}\n"
           end
         end
         srclist.close
         
         mkdir_p File.join($tmpdir, ext)
         
+        #puts '$$$$$$$$$$$$$$$$$$     START'
+        currentdir = Dir.pwd()      
+        Dir.chdir extpath 
         java_compile(File.join($tmpdir, ext), classpath, [srclist.path])
+        Dir.chdir currentdir 
+        #puts '$$$$$$$$$$$$$$$$$$     FINISH'
 
         extjar = File.join $bindir, ext + '.jar'
         args = ["cf", extjar, '.']
