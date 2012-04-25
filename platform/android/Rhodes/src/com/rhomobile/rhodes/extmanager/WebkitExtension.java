@@ -1,6 +1,7 @@
 package com.rhomobile.rhodes.extmanager;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.inputmethod.InputMethodManager;
 
 import com.rhomobile.rhodes.Logger;
@@ -27,7 +28,7 @@ public class WebkitExtension extends AbstractRhoExtension implements IRhoExtensi
     }
     
     @Override
-    public void onInputMethod(IRhoExtManager extManager, boolean enabled, IRhoExtData ext) {
+    public void onInputMethod(IRhoExtManager extManager, boolean enabled, String type, Rect rect, IRhoExtData ext) {
         InputMethodManager imm = (InputMethodManager) ContextFactory.getUiContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (enabled) {
             imm.showSoftInput(ext.getWebView(), 0);
