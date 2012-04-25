@@ -270,8 +270,8 @@ void rho_free_callbackdata(void* pData)
 
 - (void) loginWithUser: (NSString*) user pwd:(NSString*) pwd callback:(SEL) callback target:(id)target
 {
-	rho_sync_login_c( [user cStringUsingEncoding:[NSString defaultCStringEncoding]],
-					[pwd cStringUsingEncoding:[NSString defaultCStringEncoding]], 
+	rho_sync_login_c( [user cStringUsingEncoding:NSUTF8StringEncoding],
+					[pwd cStringUsingEncoding:NSUTF8StringEncoding], 
 					 callback_impl, [[CCallbackData alloc] init: callback target: target thread:[NSThread currentThread]] 
 				   );
 }
