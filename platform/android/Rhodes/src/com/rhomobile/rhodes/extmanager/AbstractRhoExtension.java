@@ -1,5 +1,7 @@
 package com.rhomobile.rhodes.extmanager;
 
+import android.graphics.Rect;
+
 public abstract class AbstractRhoExtension implements IRhoExtension {
 
     @Override
@@ -60,7 +62,7 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     }
 
     @Override
-    public void onInputMethod(IRhoExtManager extManager, boolean enabled, IRhoExtData ext) {
+    public void onInputMethod(IRhoExtManager extManager, boolean enabled, String type, Rect rect, IRhoExtData ext) {
     }
 
     @Override
@@ -76,11 +78,14 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
 
     @Override
     public void startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoExtData ext) {
-        
     }
 
     @Override
     public void stopLocationUpdates(IRhoExtManager extManager, IRhoExtData ext) {
-        
     }
+
+    @Override
+    public void onAuthRequired(IRhoExtManager extManager, String type, String url, String realm, IRhoExtData ext) {
+    }
+
 }

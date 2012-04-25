@@ -1,14 +1,13 @@
 package com.rhomobile.rhodes.extmanager;
 
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Map;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -192,13 +191,13 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     /**
-     * @param config - config parameters map 
-     * @return is extension allowed to navigate to its start page
+     * @param name - parameter name
+     * @param value - parameter value
+     * @return is parameter accepted by rhodes platform
      */
     @Override
     public boolean onNewConfigValue(String name, String value) {
-        // TODO Auto-generated method stub
-        return Capabilities.SHARED_RUNTIME_ENABLED;
+        return false;
     }
     //-----------------------------------------------------------------------------------------------------------------
     // Rhodes implementation related methods are below
@@ -283,10 +282,10 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         }
     }
 
-    public void onInputMethod(View view, boolean enabled) {
+    public void onInputMethod(View view, boolean enabled, String type, Rect area) {
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onInputMethod(this, enabled, makeDefExtData(view));
+                ext.onInputMethod(this, enabled, type, area, makeDefExtData(view));
             }
         }
     }
@@ -351,6 +350,14 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
                 ext.onStatus(this, title, makeDefExtData(view));
+            }
+        }
+    }
+    
+    public void onAuthRequired(View view, String type, String url, String realm) {
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                ext.onAuthRequired(this, type, url, realm, makeDefExtData(view));
             }
         }
     }

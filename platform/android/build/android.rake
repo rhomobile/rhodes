@@ -817,10 +817,10 @@ namespace "config" do
                 # modify executable attribute
                 if File.exists? build_script
                   if !File.executable? build_script
-                       puts 'change executable attribute for build script in extension : '+build_script
+                       #puts 'change executable attribute for build script in extension : '+build_script
                        begin
-                           File.chmod 0700, build_script
-                           puts 'executable attribute was writed for : '+build_script
+                           #File.chmod 0700, build_script
+                           #puts 'executable attribute was writed for : '+build_script
                        rescue Exception => e
                            puts 'ERROR: can not change attribute for build script in extension ! Try to run build command with sudo: prefix.' 
                        end    
@@ -922,7 +922,17 @@ namespace "build" do
         ext = File.basename(File.dirname(extpath))
         puts "Executing extension build script: #{ext}"
         ENV['TEMP_FILES_DIR'] = File.join(ENV["TARGET_TEMP_DIR"], ext)
-        Jake.run(script, [], extpath)
+
+        if RUBY_PLATFORM =~ /(win|w)32$/
+             Jake.run(script, [], extpath)
+        else
+             #puts '$$$$$$$$$$$$$$$$$$     START'
+             currentdir = Dir.pwd()      
+             Dir.chdir extpath 
+             sh %{$SHELL ./build}
+             Dir.chdir currentdir 
+             #puts '$$$$$$$$$$$$$$$$$$     FINISH'
+        end
         raise "Cannot build #{extpath}" unless $?.success?
         puts "Extension build script finished"
       end
@@ -1535,14 +1545,20 @@ namespace "build" do
         File.open(list, "r") do |f|
           while line = f.gets
             line.chomp!
-            srclist.write "#{File.join(extpath, line)}\n"
+            #srclist.write "#{File.join(extpath, line)}\n"
+            srclist.write "#{line}\n"
           end
         end
         srclist.close
         
         mkdir_p File.join($tmpdir, ext)
         
+        #puts '$$$$$$$$$$$$$$$$$$     START'
+        currentdir = Dir.pwd()      
+        Dir.chdir extpath 
         java_compile(File.join($tmpdir, ext), classpath, [srclist.path])
+        Dir.chdir currentdir 
+        #puts '$$$$$$$$$$$$$$$$$$     FINISH'
 
         extjar = File.join $bindir, ext + '.jar'
         args = ["cf", extjar, '.']
@@ -1635,7 +1651,7 @@ namespace "package" do
     args = ["uf", resourcepkg]
     # Strip them all to decrease size
     Dir.glob($tmpdir + "/lib/armeabi/lib*.so").each do |lib|
-      cc_run($stripbin, [lib])
+      cc_run($stripbin, ['"'+lib+'"'])
       args << "lib/armeabi/#{File.basename(lib)}"
     end
     puts Jake.run($jarbin, args, $tmpdir)

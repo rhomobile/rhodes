@@ -646,22 +646,28 @@ namespace "build" do
           # modify executable attribute
           if File.exists? build_script
               if !File.executable? build_script
-                   puts 'change executable attribute for build script in extension : '+build_script
+                   #puts 'change executable attribute for build script in extension : '+build_script
                    begin
-                       File.chmod 0700, build_script
-                       puts 'executable attribute was writed for : '+build_script
+                       #File.chmod 0700, build_script
+                       #puts 'executable attribute was writed for : '+build_script
                    rescue Exception => e
                        puts 'ERROR: can not change attribute for build script in extension ! Try to run build command with sudo: prefix.' 
                    end    
               else
                    puts 'build script in extension already executable : '+build_script
               end
-              if File.executable? build_script
-                   puts Jake.run('./build', [], extpath)
-                   exit 1 unless $? == 0
-              else
-                   puts 'ERROR: build script in extension is not executable !' 
-              end
+              #puts '$$$$$$$$$$$$$$$$$$     START'
+              currentdir = Dir.pwd()      
+              Dir.chdir extpath 
+              sh %{$SHELL ./build}
+              Dir.chdir currentdir 
+              #puts '$$$$$$$$$$$$$$$$$$     FINISH'
+              #if File.executable? build_script
+                   #puts Jake.run('./build', [], extpath)
+                   #exit 1 unless $? == 0
+              #else
+              #     puts 'ERROR: build script in extension is not executable !' 
+              #end
             else
               puts 'build script in extension not found => pure ruby extension'
           end
