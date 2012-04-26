@@ -146,6 +146,7 @@ void rho_connectclient_stop_bulkupdate(const char* szModel);
 void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY* oNotify, const char* szAction );
 void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOTIFY* oNotify, const char* szAction );
 void rho_connectclient_on_sync_delete_error(const char* szModel, RHO_CONNECT_NOTIFY* oNotify, const char* szAction );
+void rho_connectclient_push_changes(const char* szModel );
 
 #ifdef __cplusplus
 };

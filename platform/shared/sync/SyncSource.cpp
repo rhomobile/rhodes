@@ -329,6 +329,14 @@ void CSyncSource::doSyncClientChanges()
             bSend = true;
         }
     }
+
+    if (!bSend)
+    {
+        //check for push_changes
+        IDBResult res = getDB().executeSQL("SELECT attrib_type FROM changed_values where source_id=? and update_type =?", getID(), "push_changes" );
+        bSend = !res.isEnd();
+    }
+
     strBody += "}";
 
     getDB().Unlock();
@@ -379,6 +387,8 @@ void CSyncSource::doSyncClientChanges()
             }
         }
 
+        if (m_nErrCode == RhoAppAdapter.ERR_NONE)
+            getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=?", getID(), "push_changes" );
     }
 
     m_arMultipartItems.removeAllElements();

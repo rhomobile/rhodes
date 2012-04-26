@@ -73,6 +73,7 @@
 
 - (BOOL) is_changed;
 
--(void)setSyncType : (int)type;
+- (void) setSyncType : (int)type;
+- (void) pushChanges;
 
 @end

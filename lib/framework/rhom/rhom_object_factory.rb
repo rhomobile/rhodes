@@ -1246,6 +1246,14 @@ module Rhom
                         raise    
                     end                        
                 end
+
+                def push_changes()
+                    return  unless is_sync_source()
+                    nSrcID = get_source_id()
+                    db = ::Rho::RHO.get_src_db(get_source_name)                            
+                
+                    db.insert_into_table('changed_values', {'update_type'=>'push_changes', 'source_id' => nSrcID } )
+                end
                 
                 def on_sync_create_error( objects, action )
                     raise ArgumentError, 'on_sync_create_error action should be :delete or :recreate' unless action == :delete || action == :recreate
