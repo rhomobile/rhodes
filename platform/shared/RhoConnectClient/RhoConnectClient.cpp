@@ -708,6 +708,29 @@ void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOT
     db.endTransaction();
 }
 
+void rho_connectclient_push_changes(const char* szModel )
+{
+    IDBResult  res = rhom_executeSQL("SELECT source_id, partition, schema, sync_type from sources WHERE name=?", szModel);
+    if ( res.isEnd())
+    {
+        //TODO: report error - unknown source
+        return;
+    }
+
+    int nSrcID = res.getIntByIdx(0);
+    String db_partition = res.getStringByIdx(1);
+    bool isSyncSrc = res.getStringByIdx(3).compare("none") != 0;
+    db::CDBAdapter& db = db::CDBAdapter::getDB(db_partition.c_str());
+
+    if (!isSyncSrc)
+        return;
+
+    Hashtable<String,String> fields;
+    fields.put("update_type", "push_changes");
+    fields.put("source_id", convertToStringA(nSrcID));
+    db_insert_into_table(db, "changed_values", fields);
+}
+
 void _insert_or_update_attr(db::CDBAdapter& db, bool isSchemaSrc, const String& tableName, int nSrcID, const String& obj, const String& attrib, const String& new_val)
 {
     if ( isSchemaSrc )
