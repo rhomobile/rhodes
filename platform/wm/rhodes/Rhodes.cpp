@@ -42,8 +42,6 @@
 #include "common/app_build_capabilities.h"
 #include "common/app_build_configs.h"
 
-#include <algorithm>
-
 using namespace rho;
 using namespace rho::common;
 using namespace std;
@@ -295,7 +293,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				}
 				m_strRootPath = path;
 				free(path);
-				std::replace( m_strRootPath.begin(), m_strRootPath.end(), '\\', '/');
+				String_replace(m_strRootPath, '\\', '/');
 			}
 		} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
         {
@@ -305,7 +303,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			if (path) {
 				m_strRhodesPath = path;
 				free(path);
-				std::replace( m_strRhodesPath.begin(), m_strRhodesPath.end(), '\\', '/');
+				String_replace(m_strRhodesPath, '\\', '/');
 			}
 		} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
         {
@@ -345,7 +343,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				m_strRootPath = path;
                 if (m_strRootPath.substr(0,7).compare("file://")==0)
                     m_strRootPath.erase(0,7);
-                ::std::replace(m_strRootPath.begin(), m_strRootPath.end(), '\\', '/');
+                String_replace(m_strRootPath, '\\', '/');
                 if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
                     m_strRootPath.append("/");
                 m_strRootPath.append("rho/");
