@@ -289,4 +289,10 @@ int enum_func(const char* szKey, const char* szValue, void* pThis)
 	rho_connectclient_stop_bulkupdate([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 }
 
+- (void) pushChanges
+{
+    rho_connectclient_push_changes([name cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+}
+
+
 @end
