@@ -23,6 +23,15 @@
 @synthesize  error_message;
 @synthesize  callback_params;
 @synthesize  notify_data;
+@synthesize  create_errors;
+
+
+int enum_create_errors_func(const char* szKey, const char* szValue, void* pThis)
+{
+	NSMutableDictionary* data = (NSMutableDictionary*)pThis;
+	[data setValue : [NSString stringWithUTF8String:szValue] forKey : [NSString stringWithUTF8String:szKey]];							 
+	return 1;
+}
 
 - (id) init: (RHO_CONNECT_NOTIFY*) data
 {
@@ -50,6 +59,11 @@
 		error_message = [[NSString alloc] initWithUTF8String: data->error_message];
 	if ( data->callback_params )	
 		callback_params = [[NSString alloc] initWithUTF8String: data->callback_params];
+    if ( data->create_errors )
+    {
+        create_errors = [[NSMutableDictionary alloc] init];
+        rho_connectclient_hash_enumerate(data->create_errors, &enum_create_errors_func, create_errors);
+    }
 	
 	return self;
 }

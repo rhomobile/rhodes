@@ -1136,6 +1136,24 @@ void parseServerErrors( const char* szPrefix, const String& name, const String& 
 
     }
 }
+    
+void parseServerCreateErrors( const char* szPrefix, const String& name, const String& value, unsigned long& errors_obj )
+{
+    int nPrefixLen = strlen(szPrefix)+1;
+    if (!errors_obj)
+        errors_obj = rho_connectclient_hash_create();
+    
+    String strObject = name.substr(nPrefixLen, name.find(']', nPrefixLen)-nPrefixLen );
+    
+    static const char* messageTag = "[message]";
+        
+    int nMsg = name.find(messageTag);
+    if ( nMsg >= 0 )
+    {
+        rho_connectclient_hash_put(errors_obj, strObject.c_str(), value.c_str());
+    }
+}
+
 
 void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
 {
@@ -1182,11 +1200,7 @@ void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
             pNotify->error_message = strdup(value.c_str());
         else if ( String_startsWith(name, "server_errors[create-error]") )
         {
-            if (!pNotify->create_errors)
-                pNotify->create_errors = rho_connectclient_hash_create();
-
-            String strObject = name.substr(28, name.find(']', 28)-28 );
-            rho_connectclient_hash_put(pNotify->create_errors, strObject.c_str(), value.c_str());
+            parseServerCreateErrors("server_errors[create-error]", name, value, pNotify->create_errors);
         }
         else if ( String_startsWith(name, "server_errors[update-error]") || String_startsWith(name, "server_errors[update-rollback]") || String_startsWith(name, "server_errors[delete-error]") )
         {
