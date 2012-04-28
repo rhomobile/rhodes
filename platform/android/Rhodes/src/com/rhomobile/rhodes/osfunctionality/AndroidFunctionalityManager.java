@@ -26,45 +26,44 @@
 
 package com.rhomobile.rhodes.osfunctionality;
 
+import com.rhomobile.rhodes.Logger;
+
 import android.os.Build;
 
 
 public class AndroidFunctionalityManager {
+    
+    private static final String TAG = AndroidFunctionalityManager.class.getSimpleName();
 
-private static AndroidFunctionality ourFunctionality = null;
+    private static AndroidFunctionality ourFunctionality = null;
 	
 	public static AndroidFunctionality getAndroidFunctionality() {
 		if (ourFunctionality == null) {
-			int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
-			if (sdkVersion >= 10) {
+			int sdkVersion = Build.VERSION.SDK_INT;
+			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD_MR1) { // 2.3.3 and above - 10
 				ourFunctionality = new AndroidFunctionality10();
 			}
-			else if (sdkVersion >= 9) {
+			else if (sdkVersion == Build.VERSION_CODES.GINGERBREAD) { // 2.3, 2.3.1, 2.3.2 - 9
 				ourFunctionality = new AndroidFunctionality09();
 			}
-			else if (sdkVersion >= 8) {
+			else if (sdkVersion == Build.VERSION_CODES.FROYO) { // 2.2 - 8
 				ourFunctionality = new AndroidFunctionality08();
 			}
-			else if (sdkVersion >= 7) {
+			else if (sdkVersion == Build.VERSION_CODES.ECLAIR_MR1) { // 2.1 - 7
 				ourFunctionality = new AndroidFunctionality07();
 			}
-			else if (sdkVersion >= 6) {
+			else if (sdkVersion == Build.VERSION_CODES.ECLAIR_0_1) { // 2.0.1 - 6
 				ourFunctionality = new AndroidFunctionality06();
 			}
-			else if (sdkVersion >= 5) {
+			else if (sdkVersion == Build.VERSION_CODES.ECLAIR) { //2.0 - 5
 				ourFunctionality = new AndroidFunctionality05();
 			}
-			else if (sdkVersion >= 4) {
+			else if (sdkVersion == Build.VERSION_CODES.DONUT) { // 1.6 - 4
 				ourFunctionality = new AndroidFunctionality04();
 			}
-			else if (sdkVersion >= 3) {
-				ourFunctionality = new AndroidFunctionality03();
-			}
-			else if (sdkVersion >= 2) {
-				ourFunctionality = new AndroidFunctionality02();
-			}
 			else {
-				ourFunctionality = new AndroidFunctionality01();
+			    Logger.E(TAG, "Unsupported Android version: " + sdkVersion);
+			    throw new RuntimeException("Unsupported Android version: " + sdkVersion);
 			}
 		}
 		return ourFunctionality;

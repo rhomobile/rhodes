@@ -27,14 +27,13 @@
 package com.rhomobile.rhodes.osfunctionality;
 
 import android.content.Context;
+import android.webkit.WebView;
 
 
 public interface AndroidFunctionality {
-
-	public String AccessOwnerInfo_getEmail(Context context);
-	
-	public String AccessOwnerInfo_getUsername(Context context);
-	
-	public int getDeviceRotation();
-	
+    final String TAG = AndroidFunctionality.class.getSimpleName();
+    String AccessOwnerInfo_getEmail(Context context);
+    String AccessOwnerInfo_getUsername(Context context);
+    int getDeviceRotation();
+    void applyWebSettings(WebView view);
 }
