@@ -89,10 +89,11 @@ extern "C" {
     bool rho_wmimpl_get_fullscreen(){ return 0; }
     const char* rho_wmimpl_get_logpath(){ return ""; }
     int rho_wmimpl_is_loglevel_enabled(int nLogLevel){ return true; }
+	const int* rho_wmimpl_get_loglevel(){ return NULL; }
 #endif
 
 	const unsigned int* rho_wmimpl_get_logmaxsize();
-	//const int* rho_wmimpl_get_loglevel();
+	const int* rho_wmimpl_get_loglevel();
 	const unsigned int* rho_wmimpl_get_logmemperiod();
 };
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
@@ -431,8 +432,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		LOGCONF().setLogURL(rho_wmimpl_get_logurl());
 	if (rho_wmimpl_get_logmaxsize())
 		LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
-    //if (rho_wmimpl_get_loglevel())
-	//	LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
+    if (rho_wmimpl_get_loglevel())
+		LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
     if (rho_wmimpl_get_fullscreen())
         RHOCONF().setBool("full_screen", true, false);
 	if (rho_wmimpl_get_logmemperiod())
