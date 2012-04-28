@@ -2031,6 +2031,7 @@ namespace "run" do
       #puts 'Sleep for 5 sec. waiting for "adb start-server"'
       #sleep 5
 
+      rm_f $applog_path if !$applog_path.nil?
       AndroidTools.logcat_process()
 
       running = AndroidTools.is_emulator_running
@@ -2090,6 +2091,7 @@ namespace "run" do
               Jake.run($adb, ['start-server'], nil, true)
               adbRestarts += 1
 
+              rm_f $applog_path if !$applog_path.nil?
               AndroidTools.logcat_process()
             else
               puts "Still waiting..."
