@@ -975,6 +975,8 @@ namespace "build" do
       objdir = $objdir["ruby"]
       libname = $libname["ruby"]
       args = []
+      args << "-Wno-uninitialized"
+      args << "-Wno-missing-field-initializers"
       args << "-I\"#{srcdir}/include\""
       args << "-I\"#{srcdir}/android\""
       args << "-I\"#{srcdir}/generated\""

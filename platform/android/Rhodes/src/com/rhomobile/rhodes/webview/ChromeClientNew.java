@@ -26,17 +26,27 @@
 
 package com.rhomobile.rhodes.webview;
 
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
+import android.view.View;
 import android.webkit.WebStorage;
+import android.webkit.WebChromeClient.CustomViewCallback;
+import android.widget.FrameLayout;
+import android.widget.VideoView;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 
 
-public class ChromeClientNew extends ChromeClientOld {
-
+public class ChromeClientNew extends ChromeClientOld  implements OnCompletionListener, OnErrorListener {
 	private static final String TAG = "ChromeClientNew";
 	
-	public ChromeClientNew(RhodesActivity rhodesActivity) {
+    private VideoView mVideoPluginView;
+    private CustomViewCallback mVideoPluginCallback;
+    private View mPluginLayout;
+
+    public ChromeClientNew(RhodesActivity rhodesActivity) {
 		super(rhodesActivity);
 	}
 
@@ -50,6 +60,44 @@ public class ChromeClientNew extends ChromeClientOld {
             quotaUpdater.updateQuota(estimatedSize * 2);
     }
 	
+    @Override
+    public void onShowCustomView(View view, CustomViewCallback callback) {
+        super.onShowCustomView(view, callback);
+        if (view instanceof FrameLayout){
+            FrameLayout frame = (FrameLayout) view;
+            if (frame.getFocusedChild() instanceof VideoView) {
+                mPluginLayout = view;
+                mVideoPluginView = (VideoView) frame.getFocusedChild();
+                mVideoPluginCallback = callback;
+                //frame.removeView(video);
+                //a.setContentView(video);
+                mVideoPluginView.setOnCompletionListener(this);
+                mVideoPluginView.setOnErrorListener(this);
+                
+                mPluginLayout.setVisibility(View.VISIBLE);
+                
+                mVideoPluginView.start();
+            }
+        }
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer arg0) {
+        mVideoPluginView.stopPlayback();
+        mVideoPluginView = null;
+        
+        mPluginLayout.setVisibility(View.INVISIBLE);
+        mPluginLayout = null;
+        
+        mVideoPluginCallback.onCustomViewHidden();
+        mVideoPluginCallback = null;
+    }
+
+    @Override
+    public boolean onError(MediaPlayer player, int what, int extra) {
+        Logger.E("ChromeClient", "Media player error: " + ((what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) ? "media server died" : "unknown"));
+        return false;
+    }
 }
 
 

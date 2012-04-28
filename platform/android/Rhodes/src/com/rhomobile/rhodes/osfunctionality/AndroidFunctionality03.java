@@ -26,8 +26,21 @@
 
 package com.rhomobile.rhodes.osfunctionality;
 
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+
+import com.rhomobile.rhodes.RhoConf;
+
 //Android 1.5
 class AndroidFunctionality03 extends AndroidFunctionality02 implements AndroidFunctionality {
 
-	
+    public void applyWebSettings(WebView view) {
+        super.applyWebSettings(view);
+        WebSettings settings = view.getSettings();
+        if (RhoConf.getBool("enable_screen_zoom")) {
+            settings.setBuiltInZoomControls(true);
+        } else {
+            settings.setBuiltInZoomControls(false);
+        }
+    }
 }

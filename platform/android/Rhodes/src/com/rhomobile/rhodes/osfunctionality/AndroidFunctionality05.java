@@ -29,47 +29,60 @@ package com.rhomobile.rhodes.osfunctionality;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 
 //Android 2.0
 class AndroidFunctionality05 extends AndroidFunctionality04 implements AndroidFunctionality {
 
-	 private Account AccessOwnerInfo_getAccount(AccountManager accountManager) {
-		    Account[] accounts = accountManager.getAccountsByType("com.google");
-	    Account account;
-	    if (accounts.length > 0) {
-	      account = accounts[0];
-	    } else {
-	      account = null;
-	    }
-	    return account;
-	  }
-	
-	  public String AccessOwnerInfo_getEmail(Context context) {
-	    AccountManager accountManager = AccountManager.get(context);
-	    Account account = AccessOwnerInfo_getAccount(accountManager);
-	
-	    if (account == null) {
-	      return null;
-	    } else {
-	      return account.name;
-	    }
-	  }
-	
-	  public String AccessOwnerInfo_getUsername(Context context) {
-	    // String email;
-		AccountManager manager = AccountManager.get(context);
-		Account account = AccessOwnerInfo_getAccount(manager);
-		if (account == null) {
-		  return "";
-		} else {
-		  String email = account.name;
-		  String[] parts = email.split("@");
-		  if (parts.length > 0 && parts[0] != null)
-		    return parts[0];
-		  else
-		    return "";
-	    }
-	  }	
-	
+    private Account AccessOwnerInfo_getAccount(AccountManager accountManager) {
+        Account[] accounts = accountManager.getAccountsByType("com.google");
+        Account account;
+        if (accounts.length > 0) {
+            account = accounts[0];
+        } else {
+            account = null;
+        }
+        return account;
+    }
+
+    public String AccessOwnerInfo_getEmail(Context context) {
+        AccountManager accountManager = AccountManager.get(context);
+        Account account = AccessOwnerInfo_getAccount(accountManager);
+
+        if (account == null) {
+            return null;
+        } else {
+            return account.name;
+        }
+    }
+
+    public String AccessOwnerInfo_getUsername(Context context) {
+        // String email;
+        AccountManager manager = AccountManager.get(context);
+        Account account = AccessOwnerInfo_getAccount(manager);
+        if (account == null) {
+            return "";
+        } else {
+            String email = account.name;
+            String[] parts = email.split("@");
+            if (parts.length > 0 && parts[0] != null)
+                return parts[0];
+            else
+                return "";
+        }
+    }
+
+    @Override
+    public void applyWebSettings(WebView view) {
+        super.applyWebSettings(view);
+        WebSettings settings = view.getSettings();
+        settings.setDatabaseEnabled(true);
+
+        Context context = view.getContext();
+        String databasePath = context.getDir("database", Context.MODE_PRIVATE).getPath();
+        settings.setDatabasePath(databasePath);
+    }
+
 }

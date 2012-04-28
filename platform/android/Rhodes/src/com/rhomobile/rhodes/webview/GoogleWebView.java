@@ -3,6 +3,7 @@ package com.rhomobile.rhodes.webview;
 import java.lang.reflect.Constructor;
 
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 
 import android.app.Activity;
 import android.os.Build;
@@ -14,7 +15,7 @@ public class GoogleWebView implements IRhoWebView {
 
     private static WebChromeClient mChromeClient;
     private static WebViewClient mWebViewClient;
-    private static RhoWebSettings mWebSettings;
+    //private static RhoWebSettings mWebSettings;
     private static Boolean mInitialized = false;
 
     private android.webkit.WebView mWebView; 
@@ -26,7 +27,7 @@ public class GoogleWebView implements IRhoWebView {
             }
         }
         mWebView = new android.webkit.WebView(activity);
-        mWebSettings.setWebSettings(mWebView);
+        applyWebSettings();
         mWebView.setWebChromeClient(mChromeClient);
         mWebView.setWebViewClient(mWebViewClient);
         mWebView.clearCache(true);
@@ -34,15 +35,15 @@ public class GoogleWebView implements IRhoWebView {
 
     private static void initWebStuff(Activity activity) {
         String ccName;
-        String wsName;
-        int sdkVersion = Integer.parseInt(Build.VERSION.SDK);
+        //String wsName;
+        int sdkVersion = Build.VERSION.SDK_INT;//Integer.parseInt(Build.VERSION.SDK);
         if (sdkVersion < Build.VERSION_CODES.ECLAIR_MR1) {
             ccName = "ChromeClientOld";
-            wsName = "RhoWebSettingsOld";
+            //wsName = "RhoWebSettingsOld";
         }
         else {
             ccName = "ChromeClientNew";
-            wsName = "RhoWebSettingsNew";
+            //wsName = "RhoWebSettingsNew";
         }
         
         try {
@@ -54,11 +55,11 @@ public class GoogleWebView implements IRhoWebView {
             Constructor<? extends WebChromeClient> ctor = ccClass.getConstructor(RhodesActivity.class);
             mChromeClient = ctor.newInstance(activity);
             
-            pkgname = RhoWebSettings.class.getPackage().getName();
-            fullName = pkgname + "." + wsName;
-            Class<? extends RhoWebSettings> wsClass =
-                Class.forName(fullName).asSubclass(RhoWebSettings.class);
-            mWebSettings = wsClass.newInstance();
+            //pkgname = RhoWebSettings.class.getPackage().getName();
+            //fullName = pkgname + "." + wsName;
+            //Class<? extends RhoWebSettings> wsClass =
+            //    Class.forName(fullName).asSubclass(RhoWebSettings.class);
+            //mWebSettings = wsClass.newInstance();
             
             mWebViewClient = new RhoWebViewClient();
             
@@ -70,7 +71,13 @@ public class GoogleWebView implements IRhoWebView {
     }
     
     public void applyWebSettings() {
-        mWebSettings.setWebSettings(mWebView);
+        //mWebSettings.setWebSettings(mWebView);
+        mWebView.setVerticalScrollBarEnabled(true);
+        mWebView.setHorizontalScrollBarEnabled(true);
+        mWebView.setVerticalScrollbarOverlay(true);
+        mWebView.setHorizontalScrollbarOverlay(true);
+        mWebView.setFocusableInTouchMode(true);
+        AndroidFunctionalityManager.getAndroidFunctionality().applyWebSettings(mWebView);
     }
 
     @Override
