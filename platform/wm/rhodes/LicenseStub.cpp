@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "common/app_build_capabilities.h"
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER && APP_BUILD_CAPABILITY_NON_MOTOROLA_DEVICE
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) && defined(APP_BUILD_CAPABILITY_NON_MOTOROLA_DEVICE)
 class CConfig
 {
 };
