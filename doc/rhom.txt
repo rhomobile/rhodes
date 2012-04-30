@@ -567,6 +567,10 @@ Or multiple declarations:
 
 **NOTE: After a new product is created, the `:product_id` for the `Customer` records will be updated to the new value.**
 
+If you planning to use bulk sync feature for your associated models, then you should take into consideration 
+corresponding support on RhoConnect server side. 
+See [RhoConnect Bulk Sync associations](/rhoconnect/bulk-sync#bulk-sync-associations).
+
 ## Freezed models
 If you want to limit model attributes by specific list - you can 'freeze' model:
 
