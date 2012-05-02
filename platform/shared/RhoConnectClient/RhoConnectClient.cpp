@@ -657,7 +657,7 @@ void rho_connectclient_itemdestroy( const char* szModel, unsigned long hash )
 
 void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY* pNotify, const char* szAction )
 {
-    unsigned long hash_create_errors = pNotify->create_errors;
+    unsigned long hash_create_errors = pNotify->create_errors_messages;
     if (!hash_create_errors)
         return;
 
@@ -1137,7 +1137,7 @@ void parseServerErrors( const char* szPrefix, const String& name, const String& 
     }
 }
     
-void parseServerCreateErrors( const char* szPrefix, const String& name, const String& value, unsigned long& errors_obj )
+void parseServerErrorMessage( const char* szPrefix, const String& name, const String& value, unsigned long& errors_obj )
 {
     int nPrefixLen = strlen(szPrefix)+1;
     if (!errors_obj)
@@ -1200,16 +1200,24 @@ void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify)
             pNotify->error_message = strdup(value.c_str());
         else if ( String_startsWith(name, "server_errors[create-error]") )
         {
-            parseServerCreateErrors("server_errors[create-error]", name, value, pNotify->create_errors);
+            parseServerErrorMessage("server_errors[create-error]", name, value, pNotify->create_errors_messages);
         }
         else if ( String_startsWith(name, "server_errors[update-error]") || String_startsWith(name, "server_errors[update-rollback]") || String_startsWith(name, "server_errors[delete-error]") )
         {
             if ( String_startsWith(name, "server_errors[update-error]") )
+            {
                 parseServerErrors( "server_errors[update-error]", name, value, pNotify->update_errors_obj, pNotify->update_errors_attrs );
+                parseServerErrorMessage("server_errors[update-error]", name, value, pNotify->update_errors_messages);
+            }
             else if ( String_startsWith(name, "server_errors[update-rollback]") )
+            {
                 parseServerErrors( "server_errors[update-rollback]", name, value, pNotify->update_rollback_obj, pNotify->update_rollback_attrs );
+            }
             else if ( String_startsWith(name, "server_errors[delete-error]") )
+            {
                 parseServerErrors( "server_errors[delete-error]", name, value, pNotify->delete_errors_obj, pNotify->delete_errors_attrs );
+                parseServerErrorMessage("server_errors[delete-error]", name, value, pNotify->delete_errors_messages);
+            }
 
         }else if ( name.compare("rho_callback") == 0)
             break;
@@ -1247,14 +1255,17 @@ void rho_connectclient_free_syncnotify(RHO_CONNECT_NOTIFY* pNotify)
     if ( pNotify->callback_params != null )
         free(pNotify->callback_params);
 
-    if ( pNotify->create_errors != null )
-        rho_connectclient_hash_delete(pNotify->create_errors);
+    if ( pNotify->create_errors_messages != null )
+        rho_connectclient_hash_delete(pNotify->create_errors_messages);
 
     if ( pNotify->update_errors_obj != null )
         rho_connectclient_strarray_delete(pNotify->update_errors_obj);
 
     if ( pNotify->update_errors_attrs != null )
         rho_connectclient_strhasharray_delete(pNotify->update_errors_attrs);
+    
+    if ( pNotify->update_errors_messages != null )
+        rho_connectclient_hash_delete(pNotify->update_errors_messages);
 
     if ( pNotify->update_rollback_obj != null )
         rho_connectclient_strarray_delete(pNotify->update_rollback_obj);
@@ -1267,6 +1278,9 @@ void rho_connectclient_free_syncnotify(RHO_CONNECT_NOTIFY* pNotify)
 
     if ( pNotify->delete_errors_attrs != null )
         rho_connectclient_strhasharray_delete(pNotify->delete_errors_attrs);
+    
+    if ( pNotify->delete_errors_messages != null )
+        rho_connectclient_hash_delete(pNotify->delete_errors_messages);
 
     memset( pNotify, 0, sizeof(RHO_CONNECT_NOTIFY) );
 }

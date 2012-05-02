@@ -64,16 +64,19 @@ typedef struct _RHO_CONNECT_NOTIFY
     int error_code;
     char* error_message;
     char* callback_params;
-    unsigned long create_errors;
+    
+    unsigned long create_errors_messages;
 
     unsigned long update_errors_obj;
     unsigned long update_errors_attrs;
+    unsigned long update_errors_messages;
 
     unsigned long update_rollback_obj;
     unsigned long update_rollback_attrs;
 
     unsigned long delete_errors_obj;
     unsigned long delete_errors_attrs;
+    unsigned long delete_errors_messages;
 
 }RHO_CONNECT_NOTIFY;
 
