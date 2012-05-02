@@ -218,6 +218,10 @@ int shouldProcessCreateError()
     if ( ![res hasCreateErrors] )
         return 0;
     
+    NSString* msg = [res.create_errors objectForKey:[item objectForKey:@"object"]];
+    if ( (msg == NULL ) || ( [msg compare:@"error create"]!=0 ) )
+        return 0;   
+       
     [sclient onCreateError: res action: @"delete"];
     
     NSArray* params = [NSArray arrayWithObjects: [item objectForKey:@"object"], nil];
@@ -261,6 +265,10 @@ int shouldProcessUpdateError()
     if ( ![res hasUpdateErrors] )
         return 0;
     
+    NSString* msg = [res.update_errors objectForKey:[item objectForKey:@"object"]];
+    if ( (msg == NULL ) || ( [msg compare:@"error update"]!=0 ) )
+        return 0;
+    
     [sclient onUpdateError: res action: @"rollback"];
     
     NSMutableArray* items2 = [product find_bysql:@"SELECT * FROM changed_values WHERE update_type='update'" args: nil];	
@@ -282,6 +290,18 @@ int shouldProcessDeleteError()
     if ( ![res hasDeleteErrors] )
         return 0;
     
+    if ( (res.delete_errors==NULL) || ([res.delete_errors count] != 1) )
+        return 0;
+    
+    for ( NSString* key in res.delete_errors )
+    {
+        NSString* msg = [res.delete_errors objectForKey:key];
+        if ( (msg==NULL) || ([msg compare:@"Error delete record"]!=0) )
+        {
+            return 0;
+        }
+    }    
+       
     [sclient onDeleteError: res action: @"retry"];
     
     NSMutableArray* items2 = [product find_bysql:@"SELECT * FROM changed_values WHERE update_type='delete'" args: nil];	
