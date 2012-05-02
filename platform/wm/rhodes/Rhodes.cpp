@@ -805,7 +805,7 @@ extern "C" int rho_wm_impl_CheckSymbolDevice()
 #ifdef OS_WINDOWS_DESKTOP
     return true;
 #else 
-#ifdef	APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#ifndef	APP_BUILD_CAPABILITY_NON_MOTOROLA_DEVICE
     int res = -1;
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
 	if(hLicenseInstance)
