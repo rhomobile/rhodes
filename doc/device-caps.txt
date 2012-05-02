@@ -395,6 +395,8 @@ For these selectors an additional params hash may be used. The next keys and val
 * :offset - offset from begin of contacts' list
 These two parameters are used to paginate contacts list. If used with :count exact number of returned contacts can be determined (for example for last page).
 
+:max_results - used with :count. maximum number of contacts to be returned.
+
 The next parameters are available at Android only.
 
  * :select - list of contact properties have to be selected from phonebook (Use it to enchance query performance)
