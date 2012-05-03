@@ -26,13 +26,14 @@
 
 package com.rhomobile.rhodes.osfunctionality;
 
+import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesService;
 
 import android.content.Context;
 import android.view.Display;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
 
 //Android 2.2
 class AndroidFunctionality08 extends AndroidFunctionality07 implements
@@ -46,9 +47,15 @@ class AndroidFunctionality08 extends AndroidFunctionality07 implements
     }
 
     @Override
-    public void applyWebSettings(WebView view) {
-        super.applyWebSettings(view);
-        WebSettings settings = view.getSettings();
-        settings.setPluginState(WebSettings.PluginState.ON_DEMAND);
+    protected void setWebPlugins(WebSettings settings) {
+        if(RhoConf.getBool("enable_web_plugins")) {
+            settings.setPluginState(WebSettings.PluginState.ON);
+            Logger.I(TAG, "Set web plugins state 'ON'");
+        }
+        else {
+            settings.setPluginState(WebSettings.PluginState.OFF);
+            Logger.I(TAG, "Set web plugins state 'OFF'");
+        }
     }
+
 }

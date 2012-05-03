@@ -123,6 +123,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         mHandler = new Handler();
 
+        Logger.T(TAG, "Creating splash screen");
         mSplashScreen = new SplashScreen(this, createWebView(), this);
         setMainView(mSplashScreen);
 
@@ -135,7 +136,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public IRhoWebView createWebView() {
         IRhoWebView view = null;
         if (Capabilities.WEBKIT_BROWSER_ENABLED) {
-            Logger.D(TAG, "Creating Motorola WebKIT view");
+            Logger.T(TAG, "Creating Motorola WebKIT view");
             try {
                 Class<? extends IRhoWebView> viewClass = Class.forName("com.rhomobile.rhodes.webview.EkiohWebView").asSubclass(IRhoWebView.class);
                 if (Capabilities.MOTOROLA_BROWSER_ENABLED) {
@@ -150,7 +151,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 RhodesApplication.stop();
             }
         } else {
-            Logger.D(TAG, "Creating Google web view");
+            Logger.T(TAG, "Creating Google web view");
             final GoogleWebView googleWebView = new GoogleWebView(this);
             view = googleWebView;
             RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {

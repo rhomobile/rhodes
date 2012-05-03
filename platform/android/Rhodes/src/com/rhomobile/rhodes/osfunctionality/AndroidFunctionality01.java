@@ -49,7 +49,6 @@ class AndroidFunctionality01 implements AndroidFunctionality {
 		return -1;
 	}
 
-    @SuppressWarnings("deprecation")
     @Override
     public void applyWebSettings(WebView view) {
         WebSettings settings = view.getSettings();
@@ -67,7 +66,19 @@ class AndroidFunctionality01 implements AndroidFunctionality {
         }
         settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         settings.setSupportMultipleWindows(false);
-        settings.setPluginsEnabled(true);
+        setWebPlugins(settings);
+    }
+    
+    @SuppressWarnings("deprecation")
+    protected void setWebPlugins(WebSettings settings) {
+        if(RhoConf.getBool("enable_web_plugins")) {
+            settings.setPluginsEnabled(true);
+            Logger.I(TAG, "Set web plugins enabled");
+        }
+        else {
+            settings.setPluginsEnabled(false);
+            Logger.I(TAG, "Set web plugins disabled");
+        }
     }
 	
 }
