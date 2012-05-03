@@ -76,7 +76,7 @@ public class SplashScreen implements MainView {
         mView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 		AssetManager am = context.getResources().getAssets();
 		mWebView = loadContent(am, webView);
-		mView.addView(mWebView.getView());
+		mView.addView(mWebView.getContainerView());
 	}
 
     public synchronized String getUrlToNavigate() { return mUrlToNavigate; }
@@ -193,7 +193,7 @@ public class SplashScreen implements MainView {
     public IRhoWebView detachWebView() {
         IRhoWebView v = null;
         if (mWebView != null) {
-            mView.removeView(mWebView.getView());
+            mView.removeView(mWebView.getContainerView());
             v = mWebView;
             mWebView = null;
         }

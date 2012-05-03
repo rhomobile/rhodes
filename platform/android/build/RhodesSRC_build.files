@@ -62,6 +62,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/OneTouchHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/TouchHandler.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/ExtrasHolder.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/mapview/MapBitmapManager.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/nativeview/IRhoCustomView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/nativeview/RhoNativeViewManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/Contact.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/phonebook/ContactAccessor.java
@@ -91,11 +92,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/util/PerformOnUiThread.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/util/PhoneId.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/util/Utils.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/util/ContextFactory.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientNew.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/webview/ChromeClientOld.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettings.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettingsNew.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebSettingsOld.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebChromeClient.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebViewClient.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/IRhoWebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/GoogleWebView.java

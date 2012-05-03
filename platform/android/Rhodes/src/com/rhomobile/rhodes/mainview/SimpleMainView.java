@@ -36,6 +36,7 @@ import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.nativeview.IRhoCustomView;
 import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
@@ -52,7 +53,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -71,19 +71,12 @@ public class SimpleMainView implements MainView {
 		}
 	};
 	
-	private void addWebViewToMainView(View webView, int index, LinearLayout.LayoutParams params) {
-		Context ctx = RhodesActivity.getContext();
-		AbsoluteLayout containerView = new AbsoluteLayout(ctx);
-		
-		containerView.addView(webView, new AbsoluteLayout.LayoutParams(FILL_PARENT, FILL_PARENT, 0, 0));
-		
-		view.addView(containerView, index, params);
+	private void addWebViewToMainView(IRhoWebView webView, int index, LinearLayout.LayoutParams params) {
+		view.addView(webView.getContainerView(), index, params);
 	}
 	
 	private void removeWebViewFromMainView() {
-		ViewGroup pv = (ViewGroup)webView.getView().getParent();
-		pv.removeView(webView.getView());
-		view.removeView(pv);
+		view.removeView(webView.getContainerView());
 	}
 	
 	public class MyView extends LinearLayout {
@@ -156,8 +149,7 @@ public class SimpleMainView implements MainView {
 	
 	private LinearLayout view;
 	private IRhoWebView webView;
-	private RhoNativeViewManager.RhoNativeView mRhoNativeView = null;
-	private View mCustomView = null;
+	private IRhoCustomView mRhoCustomView = null;
 	private LinearLayout navBar = null;
 	private LinearLayout toolBar = null;
 	
@@ -173,45 +165,40 @@ public class SimpleMainView implements MainView {
 		return webView;
 	}
 
-    public void setCustomView(View custView) {
+    public void setCustomView(IRhoCustomView customView) {
         restoreWebView();
-        removeWebViewFromMainView();
+        if (customView != null) {
+            removeWebViewFromMainView();
 
-        mCustomView = custView;
+            mRhoCustomView = customView;
 
-        if (navBar != null) {
-            view.removeView(navBar);
-        }
-        if (toolBar != null) {
-            view.removeView(toolBar);
-        }
-        int index = 0;
-        if (navBar != null) {
-            view.addView(navBar, index);
+            if (navBar != null) {
+                view.removeView(navBar);
+            }
+            if (toolBar != null) {
+                view.removeView(toolBar);
+            }
+            int index = 0;
+            if (navBar != null) {
+                view.addView(navBar, index);
+                index++;
+            }
+            view.addView(customView.getContainerView(), index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
             index++;
-        }
-        view.addView(mCustomView, index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
-        index++;
-        if (toolBar != null) {
-            view.addView(toolBar, index);
-        }
-    }
-
-    public void setNativeView(RhoNativeViewManager.RhoNativeView nview) {
-        if (nview.getView() != null) {
-            setCustomView(nview.getView());
-            mRhoNativeView = nview;
+            if (toolBar != null) {
+                view.addView(toolBar, index);
+            }
         } else {
-            mRhoNativeView = null;
-            mCustomView = null;
+            mRhoCustomView = null;
         }
     }
 
-	public void restoreWebView() {
-		if (mCustomView != null) {
-			view.removeView(mCustomView);
-			mCustomView = null;
-			
+    public void restoreWebView() {
+        if (mRhoCustomView != null) {
+            view.removeView(mRhoCustomView.getContainerView());
+            mRhoCustomView.destroyView();
+            mRhoCustomView = null;
+
 			if (navBar != null) {
 				view.removeView(navBar);
 			}
@@ -225,18 +212,18 @@ public class SimpleMainView implements MainView {
 				index++;
 			}
 
-			addWebViewToMainView(webView.getView(), index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+			addWebViewToMainView(webView, index, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 			index++;
 			if (toolBar != null) {
 				view.addView(toolBar, index);
 			}
 		}
-        
-        if (mRhoNativeView != null) {
-            mRhoNativeView.destroyView();
-            mRhoNativeView = null;
+
+        if (mRhoCustomView != null) {
+            mRhoCustomView.destroyView();
+            mRhoCustomView = null;
         }
-	}
+    }
 
     private String processForNativeView(String _url) {
         Logger.T(TAG, "processForNativiewView: " + _url);
@@ -258,20 +245,18 @@ public class SimpleMainView implements MainView {
     			return cleared_url;
     		}
     		// check protocol for nativeView
-    		RhoNativeViewManager.RhoNativeView nvf = RhoNativeViewManager.getNativeViewByType(protocol);
+    		IRhoCustomView nvf = RhoNativeViewManager.getNativeViewByType(protocol);
     		if (nvf != null) {
-    			// we should switch to NativeView
-    			//restoreWebView();
-    			if (mRhoNativeView != null) {
-    				if ( !protocol.equals(mRhoNativeView.getViewType()) ) {
-        				setNativeView(nvf);
+    			if (mRhoCustomView != null) {
+    				if ( !protocol.equals(mRhoCustomView.getViewType()) ) {
+        				setCustomView(nvf);
     				}
     			}
     			else {
-    				setNativeView(nvf);
+    				setCustomView(nvf);
     			}
-    			if (mRhoNativeView != null) {
-	    			mRhoNativeView.navigate(navto);
+    			if (mRhoCustomView != null) {
+	    			mRhoCustomView.navigate(navto);
 	   				return "";
     			}
     		}
@@ -304,7 +289,6 @@ public class SimpleMainView implements MainView {
 		restoreWebView();
 		IRhoWebView v = null;
 		if (webView != null) {
-			//view.removeView(webView.getView());
 			removeWebViewFromMainView();
 			v = webView;
 			webView = null;
@@ -529,7 +513,7 @@ public class SimpleMainView implements MainView {
 		if (webView == null) {
 		    webView = activity.createWebView();
 		}
-		addWebViewToMainView(webView.getView(), 0, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+		addWebViewToMainView(webView, 0, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
 		
 		LinearLayout bottom = new LinearLayout(activity);
 		bottom.setOrientation(LinearLayout.HORIZONTAL);
@@ -556,6 +540,7 @@ public class SimpleMainView implements MainView {
 	
 	public void setWebBackgroundColor(int color) {
 		view.setBackgroundColor(color);
+		webView.getContainerView().setBackgroundColor(color);
 		webView.getView().setBackgroundColor(color);
 	}
 
@@ -600,8 +585,8 @@ public class SimpleMainView implements MainView {
     }
 
 	public void reload(int index) {
-		if (mCustomView != null) {
-			mCustomView.invalidate();
+		if (mRhoCustomView != null) {
+			mRhoCustomView.getView().invalidate();
 		}
 		else {
 			webView.reload();
@@ -609,8 +594,11 @@ public class SimpleMainView implements MainView {
 	}
 
 	public void stopNavigate(int index) {
-	    if (mCustomView == null) {
+	    if (mRhoCustomView == null) {
 	        webView.stopLoad();
+	    }
+	    else {
+	        mRhoCustomView.stop();
 	    }
 	}
 
