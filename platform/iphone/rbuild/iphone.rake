@@ -1152,21 +1152,55 @@ namespace "run" do
   desc "Builds everything, launches iphone simulator"
   task :iphone => :buildsim do
     
-    rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
-    commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget
+    mkdir_p $tmpdir
+    log_name  =   File.join($tmpdir, 'logout')
+    File.delete(log_name) if File.exist?(log_name)
 
+    rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
+    commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+
+    puts 'kill iPhone Simulator'
+    `killall -9  "iPhone Simulator"`
+    `killall -9 iphonesim`
+
+
+    $ios_run_completed = false
+    
+    
+    #thr = Thread.new do
+    #end 
+    #Thread.new {
     thr = Thread.new do
        puts 'start thread with execution of application' 
        if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
            puts  'use old execution way - just open iPhone Simulator'
            system("open \"#{$sim}/iPhone Simulator.app\"")
+           $ios_run_completed = true
+           sleep(1000)
        else
            puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
            system(commandis)
+           $ios_run_completed = true
+           sleep(1000)
        end
+    #}
     end
     
-    thr.join
+    if ($emulatortarget != 'iphone') && ($emulatortarget != 'ipad')
+       thr.join
+    else
+       puts 'start waiting for run application in Simulator'
+       while (!File.exist?(log_name)) && (!$ios_run_completed)
+          puts ' ... still waiting'
+          sleep(1)
+       end
+       puts 'stop waiting - application started'
+       #sleep(1000)
+       thr.kill
+       #thr.join
+       puts 'application is started in Simulator' 
+       exit
+    end
   
     puts "end build iphone app"  
     exit
