@@ -610,15 +610,16 @@ public class TabbedMainView implements MainView {
 			
 			SimpleMainView view = null;
 			if (use_current_view_for_tab) {
-				RhodesService r = RhodesService.getInstance();
-				MainView mainView = r.getMainView();
+                MainView mainView = RhodesActivity.safeGetInstance().getMainView();
                 action = mainView.currentLocation(-1);
                 IRhoWebView webView = mainView.detachWebView();
                 view = new SimpleMainView(webView);
 			}
 			if (view == null) {
 				view = new SimpleMainView();
+				view.getWebView(-1).setWebClient(RhodesActivity.safeGetInstance());
 			}
+			
 			// Set view factory
 			
 			if (web_bkg_color_Obj != null) {

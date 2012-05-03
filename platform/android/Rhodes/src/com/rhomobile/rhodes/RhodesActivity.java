@@ -53,8 +53,10 @@ import android.os.IBinder;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AbsoluteLayout;
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
 	
@@ -131,7 +133,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     }
 
     public IRhoWebView createWebView() {
-        IRhoWebView view = null;//new GoogleWebView(context);
+        IRhoWebView view = null;
         if (Capabilities.WEBKIT_BROWSER_ENABLED) {
             Logger.D(TAG, "Creating Motorola WebKIT view");
             try {
@@ -159,11 +161,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 }
             });
         }
+        AbsoluteLayout containerView = new AbsoluteLayout(this);
+        containerView.addView(view.getView(), new AbsoluteLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0, 0));
+        view.setContainerView(containerView);
+
         return view;
     }
 
     public MainView switchToSimpleMainView(MainView currentView) {
-        MainView view = new SimpleMainView(currentView.detachWebView()); 
+        IRhoWebView rhoWebView = currentView.detachWebView();
+        SimpleMainView view = new SimpleMainView(rhoWebView);
+        rhoWebView.setWebClient(this);
         setMainView(view);
         return view;
     }
@@ -366,7 +374,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         handleStartParams(getIntent());
 
-		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
+		//ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 	}
 
     private void handleStartParams(Intent intent)
