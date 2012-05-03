@@ -53,6 +53,7 @@ using namespace rho;
 using namespace rho::common;
 extern "C" HWND getMainWnd();
 extern "C" char* wce_wctomb(const wchar_t* w);
+extern "C" int rho_wm_impl_CheckSymbolDevice();
 
 extern "C"
 {
@@ -589,6 +590,11 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         *resValue = rho_ruby_create_boolean( g_rho_has_network != 0 );
         return 1;
     }
+
+#if defined( OS_WINCE )
+		if (strcasecmp("is_motorola_device",szPropName) == 0)
+        return rho_ruby_create_boolean(rho_wm_impl_CheckSymbolDevice());
+#endif
 
     return 0;
 }
