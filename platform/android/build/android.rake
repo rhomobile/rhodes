@@ -2151,8 +2151,9 @@ namespace "run" do
     task :device => "device:android:install" do
       puts "Starting application..."
       AndroidTools.run_application("-d")
-      
+      puts "Application was started"
       AndroidTools.logcat_process("-d")
+      puts "Starting log process ..."
     end
   end
 
