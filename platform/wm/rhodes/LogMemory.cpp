@@ -56,12 +56,12 @@ rho::String CLogMemory::collect()
 	sMemStat.dwAvailVirtual /= DIV;
 
 	oss <<
-		"Memory stats: Load=" << sMemStat.dwMemoryLoad <<
+		"Stats: Load=" << sMemStat.dwMemoryLoad <<
 		"%  TotalPhy=" << sMemStat.dwTotalPhys <<
 		"KB  FreePhy=" << sMemStat.dwAvailPhys <<
 		"KB  TotalVM=" << sMemStat.dwTotalVirtual <<
 		"KB  FreeVM=" << sMemStat.dwAvailVirtual <<
-		"KB\r\n";
+		"KB";
 
 	return rho::String(oss.str());
 }

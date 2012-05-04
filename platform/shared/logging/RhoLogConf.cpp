@@ -71,7 +71,12 @@ void LogSettings::MemoryInfoCollectorThread::run()
             if ( m_pCollector!=0 )
             {
                 String str = m_pCollector->collect();
-                m_logSettings.sinkLogMessage( str );
+
+                LogCategory oLogCat("MEMORY");
+                rho::LogMessage oLogMsg(__FILE__, __LINE__, L_INFO, LOGCONF(), oLogCat, true );
+                oLogMsg + str;
+
+                //m_logSettings.sinkLogMessage( str );
             }            
         }        
     }
