@@ -98,7 +98,7 @@ extern "C" {
 };
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-#ifndef APP_BUILD_CAPABILITY_MOTOROLA
+#if !defined( APP_BUILD_CAPABILITY_MOTOROLA ) && !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 extern "C" bool rho_wmimpl_get_resize_on_sip()
 {
     return true;
