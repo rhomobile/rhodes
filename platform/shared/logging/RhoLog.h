@@ -91,7 +91,8 @@ private:
     LogSettings& m_oLogConf;
 public:
 
-    LogMessage(const char* file, int line, LogSeverity severity, LogSettings& oSettings, const LogCategory& category, boolean bForceEnable = false);
+    LogMessage(const char* file, int line, LogSeverity severity, LogSettings& oSettings, const LogCategory& category);
+    LogMessage(const char* file, int line, LogSeverity severity, LogSettings& oSettings, const LogCategory& category, boolean bForceEnable);
 
     ~LogMessage(){ flushLog(); }
 
