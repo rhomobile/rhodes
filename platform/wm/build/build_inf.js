@@ -217,7 +217,7 @@ function fill_registry_keys() {
 	}
 }
 
-function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,rhogempath,usereruntime,include_motocaps) {
+function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,rhogempath,usereruntime,include_motocaps,is_custom_config) {
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
     p("Provider=\""+vendor+"\"");
@@ -274,14 +274,18 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("\"PBEngine_WK.dll\"=2");
             p("\"npwtg_jsobjects.dll\"=3");
             p("\"npwtg_legacy.dll\"=3");
-            p("\"Config.xml\"=4");
+            if (!is_custom_config) {
+                p("\"Config.xml\"=4");
+            }
             p("\"Plugin.xml\"=4");
             p("\"RegEx.xml\"=4");
         }else
         {
             if(include_motocaps)
             {
-                p("\"Config.xml\"=2");
+                if (!is_custom_config) {
+                    p("\"Config.xml\"=2");
+                }
                 p("\"Plugin.xml\"=2");
                 p("\"RegEx.xml\"=2");
             }
@@ -328,7 +332,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
             p("");
             p("[CopyConfig]");
-            p("\"Config.xml\",\"Config.xml\",,0");
+            if (!is_custom_config) {
+                p("\"Config.xml\",\"Config.xml\",,0");
+            }
             p("\"Plugin.xml\",\"Plugin.xml\",,0");
             p("\"RegEx.xml\",\"RegEx.xml\",,0");
             p("");
@@ -340,7 +346,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             {
                 p("");
                 p("[CopyConfig]");
-                p("\"Config.xml\",\"Config.xml\",,0");
+                if (!is_custom_config) {
+                    p("\"Config.xml\",\"Config.xml\",,0");
+                }
                 p("\"Plugin.xml\",\"Plugin.xml\",,0");
                 p("\"RegEx.xml\",\"RegEx.xml\",,0");
             }
@@ -365,7 +373,6 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
 
 function main() {
 	
-	
     // args(0) = .inf filename
     // args(1) = platform ('wm6' or 'ce5')
     // args(2) = app_name
@@ -381,12 +388,13 @@ function main() {
     var args = WScript.Arguments;
     fso = new ActiveXObject("Scripting.FileSystemObject");
     output_file = fso.CreateTextFile(args(0));
-    srcdir = args(4)
-    is_icon = fso.FileExists(srcdir+"/icon/icon.ico");
-    show_shortcut = (args(5) == "0");
-    include_webkit = (args(6) == "1");
-    usereruntime = (args(8) == "1");
-    include_motocaps = (args(9) == "1");
+    var srcdir = args(4)
+    var is_icon = fso.FileExists(srcdir+"/icon/icon.ico");
+    var show_shortcut = (args(5) == "0");
+    var include_webkit = (args(6) == "1");
+    var usereruntime = (args(8) == "1");
+    var include_motocaps = (args(9) == "1");
+    var is_custom_config = fso.FileExists(srcdir+"/apps/Config.xml");
 
     var sources = new Object();
     sources['db'] = ["db","..\\..\\..\\platform\\shared\\db\\res\\db"];
@@ -413,7 +421,7 @@ function main() {
     if (!usereruntime) {
         exts = expand_extensions(args(1));
     }
-    pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,is_icon,include_webkit,args(7),usereruntime,include_motocaps);
+    pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,is_icon,include_webkit,args(7),usereruntime,include_motocaps,is_custom_config);
 
     output_file.Close();
 }
