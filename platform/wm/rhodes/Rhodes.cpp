@@ -27,9 +27,9 @@
 #include "stdafx.h"
 #include "MainWindow.h"
 #include "IEBrowserEngine.h"
-#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
+//#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
 #include "LogMemory.h"
-#endif
+//#endif
 
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
@@ -442,9 +442,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
+//#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
 	LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
-#endif // RHODES_EMULATOR
+//#endif // RHODES_EMULATOR
 
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
@@ -803,7 +803,7 @@ extern "C" void rho_wm_impl_CheckLicense()
 extern "C" int rho_wm_impl_CheckSymbolDevice()
 {
 #ifdef OS_WINDOWS_DESKTOP
-    return true;
+    return false;
 #else 
     int res = -1;
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
