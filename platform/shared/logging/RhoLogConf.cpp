@@ -65,6 +65,7 @@ void LogSettings::MemoryInfoCollectorThread::run()
         
         wait(toWait / 1000);
 
+        if (!isStopping())
         {
             common::CMutexLock lock(m_accessLock);
             if ( m_pCollector!=0 )
@@ -121,7 +122,7 @@ LogSettings::~LogSettings(){
     
     if ( m_pMemoryCollectorThread != 0 )
     {
-        m_pMemoryCollectorThread->stop(0);
+        m_pMemoryCollectorThread->stop(1);
         delete m_pMemoryCollectorThread;
     }
     delete m_pFileSink;
