@@ -38,15 +38,18 @@ const char*const LogSeverityNames[L_NUM_SEVERITIES] = {
 
 namespace rho {
 
-LogMessage::LogMessage(const char* file, int line, LogSeverity severity, LogSettings& oSettings, const LogCategory& category ) : 
-    m_severity(severity), m_category(category), m_oLogConf(oSettings){
+LogMessage::LogMessage(const char* file, int line, LogSeverity severity, LogSettings& oSettings, const LogCategory& category, boolean bForceEnable /*= false*/ ) : 
+    m_severity(severity), m_category(category), m_oLogConf(oSettings), m_bForceEnable(bForceEnable){
     if ( getLogConf().isLogPrefix() && isEnabled() )
         addPrefix( file, line );
 }
 
 bool LogMessage::isEnabled()const{
 	if(m_category.getName() == "NO_LOGGING" || common::CThreadQueue::getLogThreadId() == common::CSystem::getThreadID()) return false;
-	
+
+    if ( m_bForceEnable )
+        return true;
+
 	if ( m_severity >= getLogConf().getMinSeverity() ){
         if ( m_category.isEmpty() || m_severity >= L_ERROR )
             return true;
