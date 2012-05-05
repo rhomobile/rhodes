@@ -915,6 +915,7 @@ namespace "build" do
       ENV["RHO_INC"] = $appincdir
       ENV["RHO_ANDROID_TMP_DIR"] = $tmpdir
       ENV["NEON_ROOT"] = $neon_root unless $neon_root.nil?
+      ENV["CONFIG_XML"] = $config_xml unless $config_xml.nil?
 
       mkdir_p $extensionsdir unless File.directory? $extensionsdir
 
