@@ -155,7 +155,7 @@ void hideSIPButton()
 
 void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 {
-    LOG(INFO) + "RhoSetFullScreen";
+    LOG(INFO) + "RhoSetFullScreen: " + (bFull ? 1 : 0);
 
     HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
     if ( hTaskBar )
@@ -168,15 +168,24 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 
 	if(g_hWndCommandBar)
 		::ShowWindow(g_hWndCommandBar, !bFull ? SW_SHOW : SW_HIDE);
-#else
+#endif
+
     if (!bDestroy)
     {
+#if !defined( OS_PLATFORM_MOTCE )
         SetFullScreen(bFull);
+#endif
 
         if ( bFull )
             hideSIPButton();
-    }
+
+#if defined( OS_PLATFORM_MOTCE )
+        CRect rcMainWindow;
+        calculateMainWindowRect(rcMainWindow);
+        MoveWindow(&rcMainWindow);
 #endif
+    }
+
 }
 #endif //OS_WINCE
 
@@ -258,8 +267,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     m_bFullScreen = RHOCONF().getBool("full_screen");
     RhoSetFullScreen(m_bFullScreen);
 
-    calculateMainWindowRect(rcMainWindow);
-    MoveWindow(&rcMainWindow);
+    //calculateMainWindowRect(rcMainWindow);
+    //MoveWindow(&rcMainWindow);
 
 #endif //OS_WINCE
 
