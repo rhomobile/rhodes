@@ -150,7 +150,7 @@ public class RhodesApplication extends Application{
         InputStream configIs = null;
         Config config = new Config();
         try {
-            if (Capabilities.MOTOROLA_ENABLED) {
+            if (Capabilities.MOTOROLA_ENABLED || Capabilities.WEBKIT_BROWSER_ENABLED || Capabilities.MOTOROLA_BROWSER_ENABLED) {
                 String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + appInfo.packageName;
                 File configXmlFile = new File(externalSharedPath, "Config.xml");
                 if (configXmlFile.exists()) {
@@ -171,12 +171,7 @@ public class RhodesApplication extends Application{
                         rootPath = RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, sharedPath);
                     }
                 }
-            } else if(Capabilities.WEBKIT_BROWSER_ENABLED || Capabilities.MOTOROLA_BROWSER_ENABLED) {
-                Log.i(TAG, "Loading Config.xml from assets");
-                configIs = getAssets().open("config.xml");
-                config.load(configIs, rootPath);
             }
-            
         } catch (Throwable e) {
             //e.printStackTrace();
             //Log.e(TAG, e.getMessage());
