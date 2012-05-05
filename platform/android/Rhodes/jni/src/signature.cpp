@@ -82,14 +82,10 @@ RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
 RHO_GLOBAL void rho_signature_visible(bool visible, rho_param* p)
 {
     // check for RhoElements :
-#ifndef APP_BUILD_CAPABILITY_MOTOROLA
-#ifndef APP_BUILD_CAPABILITY_MOTOROLA_BROWSER
     if (!rho_is_rho_elements_extension_can_be_used()) {
         RAWLOG_ERROR("Rho::SignatureCapture.visible() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
         return;
     }
-#endif    
-#endif    
 
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
@@ -105,14 +101,10 @@ RHO_GLOBAL void rho_signature_visible(bool visible, rho_param* p)
 RHO_GLOBAL void rho_signature_capture(const char* callback_url) 
 {
     // check for RhoElements :
-#ifndef APP_BUILD_CAPABILITY_MOTOROLA
-#ifndef APP_BUILD_CAPABILITY_MOTOROLA_BROWSER
     if (!rho_is_rho_elements_extension_can_be_used()) {
         RAWLOG_ERROR("Rho::SignatureCapture.capture() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
         return;
     }
-#endif    
-#endif    
     
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
@@ -129,14 +121,10 @@ RHO_GLOBAL void rho_signature_capture(const char* callback_url)
 RHO_GLOBAL void rho_signature_clear() 
 {
     // check for RhoElements :
-#ifndef APP_BUILD_CAPABILITY_MOTOROLA
-#ifndef APP_BUILD_CAPABILITY_MOTOROLA_BROWSER
     if (!rho_is_rho_elements_extension_can_be_used()) {
         RAWLOG_ERROR("Rho::SignatureCapture.clear() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
         return;
     }
-#endif    
-#endif    
     
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
