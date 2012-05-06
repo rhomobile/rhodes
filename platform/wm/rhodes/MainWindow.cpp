@@ -805,8 +805,15 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 					pSipInfo.rcSipRect.top += deltaY;
 					pSipInfo.rcSipRect.bottom += deltaY;
 					doSIPmove = true;
-					pSipInfo.rcVisibleDesktop.bottom = pSipInfo.rcSipRect.top;
 				}
+#if defined (OS_PLATFORM_MOTCE)
+				if ((pSipInfo.rcSipRect.left != 0) || (pSipInfo.rcSipRect.right != width)) {
+					pSipInfo.rcSipRect.left = 0;
+					pSipInfo.rcSipRect.right = width;
+					doSIPmove = true;
+				}
+#endif
+				pSipInfo.rcVisibleDesktop.bottom = pSipInfo.rcSipRect.top;
 			}
 			CRect cRect;
 			this->GetClientRect(&cRect);
@@ -825,7 +832,11 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 						SWP_SHOWWINDOW);
 				}
 			}
+#if defined (OS_PLATFORM_MOTCE)
+			if (m_toolbar.m_hWnd)
+#else
 			if (m_bFullScreen && m_toolbar.m_hWnd)
+#endif
 				m_toolbar.MoveWindow(0, (isHiding ? bottom : pSipInfo.rcSipRect.top) - m_toolbar.getHeight(), width, m_toolbar.getHeight());
 
             if ( m_bFullScreen && isHiding )
