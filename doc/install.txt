@@ -2,19 +2,21 @@
 
 ## Mac OS
 
-If you're running Mac OS, download the latest [RhoStudio for Macintosh](http://rhomobile.com/rhostudio-mac). This contains the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
+If you're running Mac OS, download the latest [Motorola RhoMobile Suite Installer for Macintosh](http://rhomobile.com/rhostudio-mac). This contains [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
-Click on the RhoStudioInstaller for Mac download file to open it. You will get a window similar to this:
+Mac OS has [Ruby](http://www.ruby-lang.org/en/) installed. It is recommended that you install [Ruby Version Manager](https://rvm.io//) and install Ruby version 1.9.3.
+
+Click on the RhoMobileSuiteInstaller for Mac download file to open it. You will get a window similar to this:
 
 <img src="http://rhodocs.s3.amazonaws.com/rhodes-devel/rhostudio-mac-install.png" alt="RhoStudioInstaller Mac" />
 
-Run the install gems script appropriate for you. You can run "Install gems." If you have Ruby Version Manager, you can run "Install gems on rvm." A terminal window will open; wait for the gems install process to complete.
+Run the install gems script appropriate for you. If you have Ruby Version Manager, you can run "Install gems on rvm." A terminal window will open; wait for the gems install process to complete.
 
-Then drag RhoStudio to the Applications folder. 
+Then drag Motorola RhoStudio to the Applications folder. 
 
 ## Windows
 
-If you're running Windows, download the latest [RhoStudio for Windows](http://rhomobile.com/rhostudio-windows). This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
+If you're running Windows, download and run the latest [Motorola RhoMobile Suite Installer for Windows](http://rhomobile.com/rhostudio-windows) and run it. This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
 If you are running Windows 64-bit, you need to use 32-bit Java when you run RhoStudio. You can include the 32-bit Java in the PATH, or you can run RhoStudio with a link to 32-bit Java:
 
@@ -46,9 +48,7 @@ To install Rhodes on Linux, and to install Rhodes on Windows or Mac OS using the
 
 1. [Ruby v1.9.3](http://www.ruby-lang.org/en/downloads/) (On Windows, [RubyInstaller](http://rubyinstaller.org) is a convenient way to install Ruby.)
 
-2. Install the Rhodes Gem.
-
-Run this command to install.
+2. Install the Rhodes Gem. Run this command to install.
 
 	:::term
   	$ [sudo] gem install rhodes
