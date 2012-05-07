@@ -1,5 +1,5 @@
 # -*- encoding: utf-8 -*-
-require "lib/rhodes.rb"
+#require "lib/rhodes.rb"
 
 Gem::Specification.new do |s|
   s.name = %q{rhodes}
