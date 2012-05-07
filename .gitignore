@@ -36,10 +36,8 @@ platform/wm/build/cleanup.js
 platform/wm/build/regs.txt
 platform/iphone/*/rholog.txt
 platform/win32/**/*.pch
-platform/win32/RhoSimulator
 platform/wm/**/*.pch
 platform/wp7/bin/*
-platform/wp7/IronRuby/bin/*
 platform/wp7/WPApplication/rho/*
 platform/wp7/WPApplication/obj/*
 platform/wp7/WPApplication/Bin/*
@@ -215,7 +213,6 @@ Manifest.java
 platform/shared/qt/rhodes/GeneratedFiles/*
 platform/shared/qt/*/Makefile*
 platform/shared/qt/Makefile*
-platform/osx/bin/*
 platform/shared/qtrhodes/generatedfiles/*
 platform/wm/rhodes/emulator/generatedfiles/*
 platform/shared/RhoSimulator-build*
