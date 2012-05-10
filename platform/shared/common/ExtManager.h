@@ -98,6 +98,7 @@ struct IRhoExtManager
     virtual StringW getConfigPath() = 0;
 
     virtual void setBrowserGesturing(bool bEnableGesturing) = 0;
+    virtual void passSipPositionToEngine() = 0;
 };
 
 class CExtManager : public IRhoExtManager
@@ -155,6 +156,7 @@ public:
     virtual StringW getPageTitle(UINT iTab);
     virtual StringW getConfigPath();
     virtual void setBrowserGesturing(bool bEnableGesturing);
+    virtual void passSipPositionToEngine();
 };
 
 } //namespace common

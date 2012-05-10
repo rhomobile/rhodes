@@ -163,6 +163,13 @@ void CExtManager::setBrowserGesturing(bool bEnableGesturing)
 
 }
 
+void CExtManager::passSipPositionToEngine()
+{
+#ifndef RHODES_EMULATOR
+    getAppWindow().getWebKitEngine()->NotifyEngineOfSipPosition();
+#endif
+}
+
 void CExtManager::executeJavascript(const wchar_t* szJSFunction)
 {
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)_wcsdup(szJSFunction) );

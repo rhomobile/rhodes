@@ -42,4 +42,5 @@ public:
     virtual BOOL GetTitleOnTab(LPTSTR szURL, UINT iMaxLen, UINT iTab);
     virtual void OnDocumentComplete(LPCTSTR url);
     virtual void setBrowserGesturing(bool bEnableGesturing);
+    virtual void NotifyEngineOfSipPosition();
 };
