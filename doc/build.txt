@@ -773,6 +773,7 @@ You can also clean emulator and start emulator again:
 Press Menu button on emulator. Go to Downloads, run Rhodes
 
 ## Build for Symbian
+** NOTE: Symbian support is discontinued. **
 
 Note that Symbian versions of your Rhodes app must be built in a Windows environment.
 
@@ -858,7 +859,7 @@ Make sure you have installed the following software.
 * Windows Mobile 6 Professional SDK(s) 
 * Microsoft Active Sync 4.5 for Windows XP; Windows Mobile Device Center for Windows Vista or higher
 * Microsoft Device Emulator 3.0 for Windows Vista or higher
-* Visual Studio 2005 Service Pack 1 installed or Visual Studio 2008. 
+* Visual Studio 2008. 
 * Software for unzipping a zip file, such as [7-zip](http://www.7-zip.org/)
 
 NOTE: It is a good idea to install Windows Mobile 6 Professional last, since it needs to be installed after Visual Studio, and since the Windows Mobile 6 Professional install process will tell you if you forgot to install any of the other prerequisites.
@@ -898,14 +899,14 @@ Also check that the vcbuild path is shown in the rhobuild.yml file. The rhobuild
 
 	env:
 	  paths:
-	    vcbuild: C:/Program Files/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe
+	    vcbuild: C:/Program Files/Microsoft Visual Studio 9/VC/vcpackages/vcbuild.exe
 	    cabwiz: C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz
 
 On 64-bit installations:
 
 	env:
 	  paths:
-	    vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 8/VC/vcpackages/vcbuild.exe
+	    vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9/VC/vcpackages/vcbuild.exe
 	    cabwiz: C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz
 
 ### Setup target SDK and emulator
@@ -1039,16 +1040,16 @@ To read the log file from the emulator or your device:
 ### Prerequisites
 
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
-* Visual Studio 2005 Service Pack 1 installed, Visual Studio 2008 or Visual Studio 2010 (Express editions are also supported)
+* Visual Studio 2008
 * WTL : http://wtl.sourceforge.net/ :
 	* unzip to folder: <VS path>\VC\WTL
 	* open in Visual studio menu `Tools\Options\Projects and solutions\VC++ directories`. Select platform - `Win32`; Show directories for - `Include files`; Add - `$(VCInstallDir)wtl\include`
 
 ### Build application from the command line
 
-Make sure that path to vcbuild.exe (something like `C:\Program Files\Microsoft Visual Studio 8\VC\vcpackages`) is in your PATH env variable. The list of paths which should be in PATH env variable:
+Make sure that path to vcbuild.exe (something like `C:\Program Files\Microsoft Visual Studio 9\VC\vcpackages`) is in your PATH env variable. The list of paths which should be in PATH env variable:
 
-<i>C:\Program Files\Microsoft Visual Studio 8\Common7\IDE;C:\Program Files\Microsoft Visual Studio 8\VC\BIN;C:\Program Files\Microsoft Visual Studio 8\Common7\Tools;C:\Program Files\Microsoft Visual Studio 8\Common7\Tools\bin;C:\Program Files\Microsoft Visual Studio 8\VC\PlatformSDK\bin;C:\Program Files\Microsoft Visual Studio 8\SDK\v2.0\bin</i>
+<i>C:\Program Files\Microsoft Visual Studio 9\Common7\IDE;C:\Program Files\Microsoft Visual Studio 9\VC\BIN;C:\Program Files\Microsoft Visual Studio 9\Common7\Tools;C:\Program Files\Microsoft Visual Studio 9\Common7\Tools\bin;C:\Program Files\Microsoft Visual Studio 9\VC\PlatformSDK\bin;C:\Program Files\Microsoft Visual Studio 9\SDK\v2.0\bin</i>
 
 If you use Visual Studio 2010 : add path to `msbuild` to `rhobuild.yml` in rhodes folder:
 
