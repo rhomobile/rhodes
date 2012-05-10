@@ -1255,7 +1255,7 @@ module SyncEngine
     end
 
     def self.push_changes( src_name )
-        raise ArgumentError, 'on_sync_create_error src_name should be string' unless src_name.is_a?(String)
+        raise ArgumentError, 'push_changes src_name should be string' unless src_name.is_a?(String)
         
         Object.const_get(src_name).push_changes()
     end
