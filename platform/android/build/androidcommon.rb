@@ -240,7 +240,8 @@ def cc_run(command, args, chdir = nil)
   FileUtils.cd chdir unless chdir.nil?
   argv = [command]
   argv += args
-  cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
+  #cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
+  cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '' + x + '' : x }.join(' ')
   puts cmdstr
   $stdout.flush
   argv = cmdstr if RUBY_VERSION =~ /^1\.[89]/
@@ -271,9 +272,9 @@ def cc_compile(filename, objdir, additional = nil)
   args << "-Wno-unused"
   args += additional if additional.is_a? Array and not additional.empty?
   args << "-c"
-  args << filename
+  args << '"' + filename+ '"'
   args << "-o"
-  args << objname
+  args << '"' + objname + '"'
   cmdline = ccbin + ' ' + args.join(' ')
   cc_run(ccbin, args)
 end
@@ -346,7 +347,7 @@ def cc_link(outname, objects, additional = nil, deps = nil)
   args << "--sysroot"
   args << $ndksysroot
   args << "-o"
-  args << outname
+  args << ('"'+outname+'"')
   args += objects
   args += additional if additional.is_a? Array and not additional.empty?
   unless USE_OWN_STLPORT
@@ -378,8 +379,14 @@ end
 def java_compile(outpath, classpath, srclists)
     javac = $config["env"]["paths"]["java"] + "/javac" + $exe_ext
 
+    #puts '@@@@@@@@@@@@@@   BEGIN'
     if srclists.count == 1
       fullsrclist = srclists.first
+      #  File.open(fullsrclist, "r") do |f|
+      #    while line = f.gets
+      #      puts line
+      #    end
+      #  end
     else
       fullsrclist = Tempfile.new 'RhodesSRC_build'
       srclists.each do |srclist|
@@ -387,6 +394,7 @@ def java_compile(outpath, classpath, srclists)
         File.open(srclist, "r") do |f|
           while line = f.gets
             line.chomp!
+            #puts line
             fullsrclist.write "#{line}\n"
           end
         end
@@ -394,6 +402,7 @@ def java_compile(outpath, classpath, srclists)
       fullsrclist.close
       fullsrclist = fullsrclist.path
     end
+    #puts '@@@@@@@@@@@@@@   END'
 
     args = []
     args << "-g"

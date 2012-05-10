@@ -41,9 +41,70 @@ namespace rho{
 common::CMutex LogSettings::m_FlushLock;
 common::CMutex LogSettings::m_CatLock;
 
+
+LogSettings::MemoryInfoCollectorThread::MemoryInfoCollectorThread( LogSettings& logSettings ) :
+    m_pCollector(0), m_logSettings(logSettings), m_collectMemoryIntervalMilliseconds(0)
+{
+    
+}
+
+void LogSettings::MemoryInfoCollectorThread::run()
+{
+    while( !isStopping() )    
+    {
+        unsigned int toWait = 0;
+        {
+            common::CMutexLock lock(m_accessLock);
+            toWait = m_collectMemoryIntervalMilliseconds;
+        }
+        
+        if ( 0 == toWait )
+        {
+            continue;   
+        }
+        
+        wait(toWait / 1000);
+
+        if (!isStopping())
+        {
+            common::CMutexLock lock(m_accessLock);
+            if ( m_pCollector!=0 )
+            {
+                String str = m_pCollector->collect();
+
+                LogCategory oLogCat("MEMORY");
+                rho::LogMessage oLogMsg(__FILE__, __LINE__, L_INFO, LOGCONF(), oLogCat, true );
+                oLogMsg + str;
+
+                //m_logSettings.sinkLogMessage( str );
+            }            
+        }        
+    }
+}
+
+void LogSettings::MemoryInfoCollectorThread::setCollectMemoryInfoInterval( unsigned int interval )
+{
+    common::CMutexLock lock(m_accessLock);
+    m_collectMemoryIntervalMilliseconds = interval;
+}
+
+void LogSettings::MemoryInfoCollectorThread::setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector )
+{
+    common::CMutexLock lock(m_accessLock); 
+    m_pCollector = memInfoCollector;   
+}
+
+boolean LogSettings::MemoryInfoCollectorThread::willCollect() const
+{
+    common::CMutexLock lock(m_accessLock); 
+    return (m_collectMemoryIntervalMilliseconds>0) && (m_pCollector!=0);
+}
+
+
 LogSettings g_LogSettings;
 
-LogSettings::LogSettings(){ 
+LogSettings::LogSettings()
+{ 
     m_nMinSeverity = 0; 
     m_bLogToOutput = true; 
     m_bLogToFile = false;
@@ -59,9 +120,16 @@ LogSettings::LogSettings(){
     m_pLogViewSink = NULL;
 	m_pSocketSink = NULL;
 	m_pMemoryInfoCollector = NULL;
+    m_pMemoryCollectorThread = NULL;
 }
 
 LogSettings::~LogSettings(){
+    
+    if ( m_pMemoryCollectorThread != 0 )
+    {
+        m_pMemoryCollectorThread->stop(1);
+        delete m_pMemoryCollectorThread;
+    }
     delete m_pFileSink;
     delete m_pOutputSink;
 	if(m_pSocketSink)
@@ -162,12 +230,10 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
 		setLogToSocket( oRhoConf.getBool("LogToSocket") );
 	if ( oRhoConf.isExist( "log_exclude_filter") )
         setExcludeFilter( oRhoConf.getString("log_exclude_filter") );
-	if ( oRhoConf.isExist( "log_collect_memory_info_interval" ) )
+	if ( oRhoConf.isExist( "LogMemPeriod" ) )
 	{
-		unsigned long seconds = oRhoConf.getInt("log_collect_memory_info_interval");
-		common::CTimeInterval interval;
-		interval.addMillis(seconds*1000);		
-		setCollectMemoryInfoInterval(interval);
+		int milliseconds = oRhoConf.getInt("LogMemPeriod");
+		setCollectMemoryInfoInterval(milliseconds);
 	}
 }
 
@@ -194,11 +260,20 @@ void LogSettings::clearLog(){
 }
 
 void LogSettings::sinkLogMessage( String& strMsg ){
+    /*
+	String logMemory ("");
+    processMemoryInfo( logMemory );
+	if (logMemory.length() > 0)
+		internalSinkLogMessage(logMemory);
+    */
+
+	internalSinkLogMessage(strMsg);
+}
+
+void LogSettings::internalSinkLogMessage( String& strMsg ){
     common::CMutexLock oLock(m_FlushLock);
 
-    processMemoryInfo( strMsg );
-
-    if ( isLogToFile() )
+	if ( isLogToFile() )
         m_pFileSink->writeLogMessage(strMsg);
 
     if (m_pLogViewSink)
@@ -262,17 +337,40 @@ void LogSettings::setExcludeFilter( const String& strExcludeFilter )
     	m_arExcludeAttribs.removeAllElements();
 }
 
-void LogSettings::processMemoryInfo( String& strMsg )
+void LogSettings::setCollectMemoryInfoInterval( unsigned int interval )
+{ 
+    if ( 0 == m_pMemoryCollectorThread )
+    {
+        m_pMemoryCollectorThread = new MemoryInfoCollectorThread(*this);
+    }
+    
+    m_pMemoryCollectorThread->setCollectMemoryInfoInterval(interval);
+    if ( m_pMemoryCollectorThread->willCollect() )
+    {        
+        m_pMemoryCollectorThread->start(common::IRhoRunnable::epLow);        
+    } 
+    else 
+    {
+        m_pMemoryCollectorThread->stop(0);        
+    }
+}
+
+void LogSettings::setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector ) 
 {
-	if ( (!m_collectMemoryInfoInterval.isEmpty()) && ( m_pMemoryInfoCollector != 0 ) )
-	{
-	    common::CTimeInterval now = common::CTimeInterval::getCurrentTime();
-		if ( m_lastTimeMemoryInfoCollected.isEmpty() || ( (now-m_lastTimeMemoryInfoCollected).toULong() > m_collectMemoryInfoInterval.toULong() ) )
-		{
-		    m_lastTimeMemoryInfoCollected = now;
-		    strMsg += "\n" + m_pMemoryInfoCollector->collect();
-		}
-	}
+    if ( 0 == m_pMemoryCollectorThread )
+    {
+        m_pMemoryCollectorThread = new MemoryInfoCollectorThread(*this);
+    }
+    
+    m_pMemoryCollectorThread->setMemoryInfoCollector(memInfoCollector);
+    if ( m_pMemoryCollectorThread->willCollect() )
+    {
+        m_pMemoryCollectorThread->start(common::IRhoRunnable::epLow);        
+    } 
+    else 
+    {
+        m_pMemoryCollectorThread->stop(0);        
+    }
 }
 
 }

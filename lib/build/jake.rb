@@ -172,9 +172,9 @@ class Jake
     reset_spec_server(platform) if appname =~ /phone_spec/
 
     rhobuildyml = File.join(basedir,'rhobuild.yml')
-    rhobuild = YAML::load_file(rhobuildyml)
-    rhobuild['env']['app'] = app_expanded_path(appname)
-    File.open(rhobuildyml,'w') {|f| f.write rhobuild.to_yaml}
+    #rhobuild = YAML::load_file(rhobuildyml)
+    #rhobuild['env']['app'] = app_expanded_path(appname)
+    #File.open(rhobuildyml,'w') {|f| f.write rhobuild.to_yaml}
     $app_path = File.expand_path(File.join(basedir,'spec',appname))
     $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
     $config = Jake.config(File.open(rhobuildyml,'r'))
@@ -497,7 +497,7 @@ class Jake
     old_content = File.exists?(file_name) ? File.read(file_name) : ""
 
     if old_content != content  
-        puts "Modify #{file_name}"      
+        puts "!!!MODIFY #{file_name}"      
         File.open(file_name, "w"){|file| file.write(content)}
     end
     
@@ -609,7 +609,7 @@ class Jake
         puts "EXC: #{e}"
     end    
   
-    system("START rake run:webrickrhologserver[#{app_path}]")
+    system("START rake run:webrickrhologserver[\"#{app_path}\"]")
   end
     
 end

@@ -259,9 +259,9 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_updateStatTabl
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitPath
-  (JNIEnv *env, jclass, jstring root_path, jstring sqlite_journals_path, jstring apk_path)
+  (JNIEnv *env, jclass, jstring root_path, jstring sqlite_journals_path, jstring apk_path, jstring shared_path)
 {
-    android_set_path(rho_cast<std::string>(env, root_path), rho_cast<std::string>(env, sqlite_journals_path));
+    android_set_path(rho_cast<std::string>(env, root_path), rho_cast<std::string>(env, sqlite_journals_path), rho_cast<std::string>(env, shared_path));
     g_apk_path = (apk_path != NULL) ? rho_cast<std::string>(env, apk_path) : std::string();
 }
 

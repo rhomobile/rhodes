@@ -59,19 +59,24 @@ typedef struct _RHO_CONNECT_NOTIFY
     char* source_name;
     char* status;
     char* sync_type;
+    char* bulk_status;
+    char* partition;
     int error_code;
     char* error_message;
     char* callback_params;
-    unsigned long create_errors;
+    
+    unsigned long create_errors_messages;
 
     unsigned long update_errors_obj;
     unsigned long update_errors_attrs;
+    unsigned long update_errors_messages;
 
     unsigned long update_rollback_obj;
     unsigned long update_rollback_attrs;
 
     unsigned long delete_errors_obj;
     unsigned long delete_errors_attrs;
+    unsigned long delete_errors_messages;
 
 }RHO_CONNECT_NOTIFY;
 
@@ -144,6 +149,7 @@ void rho_connectclient_stop_bulkupdate(const char* szModel);
 void rho_connectclient_on_sync_create_error(const char* szModel, RHO_CONNECT_NOTIFY* oNotify, const char* szAction );
 void rho_connectclient_on_sync_update_error(const char* szModel, RHO_CONNECT_NOTIFY* oNotify, const char* szAction );
 void rho_connectclient_on_sync_delete_error(const char* szModel, RHO_CONNECT_NOTIFY* oNotify, const char* szAction );
+void rho_connectclient_push_changes(const char* szModel );
 
 #ifdef __cplusplus
 };

@@ -85,13 +85,14 @@ private:
     LogSeverity m_severity;
     LogCategory m_category;
     String m_strMessage;
-
+    boolean m_bForceEnable;
     LogFormat m_lastFmt;
 
     LogSettings& m_oLogConf;
 public:
 
     LogMessage(const char* file, int line, LogSeverity severity, LogSettings& oSettings, const LogCategory& category);
+    LogMessage(const char* file, int line, LogSeverity severity, LogSettings& oSettings, const LogCategory& category, boolean bForceEnable);
 
     ~LogMessage(){ flushLog(); }
 

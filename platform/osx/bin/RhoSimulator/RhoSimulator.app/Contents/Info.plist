@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="0.9">
+<dict>
+	<key>CFBundleIconFile</key>
+	<string>rho.icns</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleGetInfoString</key>
+	<string>RhoSimulator 3.3.3.beta.5.6, Copyright 2010-2012 Rhomobile, Inc.</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleExecutable</key>
+	<string>RhoSimulator</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.rhomobile.RhoSimulator</string>
+</dict>
+</plist>

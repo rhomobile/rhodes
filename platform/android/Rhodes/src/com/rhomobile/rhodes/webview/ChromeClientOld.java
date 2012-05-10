@@ -26,6 +26,7 @@
 
 package com.rhomobile.rhodes.webview;
 
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 
 import android.app.Activity;

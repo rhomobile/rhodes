@@ -30,6 +30,7 @@
 
 @interface RhomModel : NSObject {
 	NSString* name;
+    NSString* partition;
 	int       sync_type; 
     int       model_type;
     int       source_id; //generated when insert to database
@@ -39,6 +40,7 @@
 }
 
 @property(retain) NSString* name;
+@property(retain) NSString* partition;
 @property(assign) int       sync_type;
 @property(assign) int       source_id;
 @property(assign) int       model_type;
@@ -70,5 +72,8 @@
 - (void) stopBulkUpdate;
 
 - (BOOL) is_changed;
+
+- (void) setSyncType : (int)type;
+- (void) pushChanges;
 
 @end

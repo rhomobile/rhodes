@@ -26,7 +26,12 @@
 
 package com.rhomobile.rhodes.osfunctionality;
 
+import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoConf;
+
 import android.content.Context;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 // Android 1.0
 class AndroidFunctionality01 implements AndroidFunctionality {
@@ -43,5 +48,37 @@ class AndroidFunctionality01 implements AndroidFunctionality {
 	public int getDeviceRotation() {
 		return -1;
 	}
+
+    @Override
+    public void applyWebSettings(WebView view) {
+        WebSettings settings = view.getSettings();
+
+        settings.setSavePassword(false);
+        settings.setSaveFormData(false);
+        settings.setJavaScriptEnabled(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(false);
+        if (RhoConf.getBool("enable_screen_zoom")) {
+            settings.setSupportZoom(true);
+            Logger.I(TAG, "Enable WebView zoom");
+        } else {
+            settings.setSupportZoom(false);
+            Logger.I(TAG, "Disable WebView zoom");
+        }
+        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        settings.setSupportMultipleWindows(false);
+        setWebPlugins(settings);
+    }
+    
+    @SuppressWarnings("deprecation")
+    protected void setWebPlugins(WebSettings settings) {
+        if(RhoConf.getBool("enable_web_plugins")) {
+            settings.setPluginsEnabled(true);
+            Logger.I(TAG, "Set web plugins enabled");
+        }
+        else {
+            settings.setPluginsEnabled(false);
+            Logger.I(TAG, "Set web plugins disabled");
+        }
+    }
 	
 }

@@ -33,7 +33,7 @@ import java.io.OutputStream;
 /**
  * Interface of simple file. Simple file can be automaticaslly opened by database given file path and access mode.
  */
-public interface SimpleFile extends IFile { 
+public interface SimpleFile {// extends IFile { 
     /**
      * Open the file
      * @param path path to the file
@@ -73,4 +73,30 @@ public interface SimpleFile extends IFile {
     public abstract void renameOverwrite(String oldName, String newName);
     
     public abstract void copyJarFileToMemory(String strFileName, InputStream jarStream)throws IOException;
+    
+    void write(long pos, byte[] buf)throws IOException;
+
+    /**
+     * Read data from the file
+     * @param pos offset in the file
+     * @param buf array to receive readen data (size is always equal to database page size)
+     * @return number of bytes actually readen
+     */
+    int read(long pos, byte[] buf)throws IOException;
+
+    /**
+     * Flush all fiels changes to the disk
+     */
+    void sync()throws IOException;
+
+    /**
+     * Close file
+     */
+    void close()throws IOException;
+
+    /**
+     * Length of the file
+     */
+    //long length();
+    
 }

@@ -94,6 +94,8 @@ Call the RhoLog error or info methods from a method in your Rhodes app:
 		RhoLog.error("Some Category", "Some message")
 	end
 
+Additionally all common ruby output routines (like puts, print) are redirected to rhodes log with INFO level.
+
 In rholog.txt the lines appear as follows:
 
 	<Timestamp> <category> | <message>
@@ -128,6 +130,6 @@ See [Login/Logout Manager]() as an example.
 
 ## Debugging
 
-You can use the [RhoStudio debugger](rhostudio.tutorial#using-the-debugger) to debug your Rhodes app. 
+You can use the [RhoStudio debugger](/rhostudio.tutorial#using-the-debugger) to debug your Rhodes app. 
 
 

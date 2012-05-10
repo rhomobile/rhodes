@@ -192,7 +192,8 @@ TEST(SyncClient, shouldBulkSync)
 
 TEST(SyncClient, ResetAndLogout) 
 {
-    rho_sync_set_syncserver("http://rhodes-store-server.heroku.com/application");
+    //rho_sync_set_syncserver("http://rhodes-store-server.heroku.com/application");
+    rho_sync_set_syncserver("http://rhoconnect-spec-win32.heroku.com/application");
     rho_conf_remove_property("bulksync_state");
     rho_connectclient_database_full_reset_and_logout();
 
@@ -234,6 +235,34 @@ TEST(SyncClient, shouldSyncProductByName)
     EXPECT_NE( rho_connectclient_strhasharray_size(items), 0 );
 
     rho_connectclient_free_syncnotify(&oNotify);
+    rho_sync_free_string(szRes);
+
+}
+
+TEST(SyncClient, shouldPushChanges) 
+{
+    EXPECT_EQ(rho_sync_logged_in(), 1);
+
+    rho_connectclient_push_changes(g_szProduct);
+
+    char* szRes = (char*)rho_sync_doSyncSourceByName(g_szProduct);
+    RHO_CONNECT_NOTIFY oNotify = {0};
+    rho_connectclient_parsenotify(szRes, &oNotify);
+
+    EXPECT_EQ(String(oNotify.status), "ok");
+    EXPECT_EQ(oNotify.error_code, RHO_ERR_NONE);
+
+    rho_connectclient_free_syncnotify(&oNotify);
+    rho_sync_free_string(szRes);
+
+    szRes = (char*)rho_sync_doSyncSourceByName(g_szProduct);
+    RHO_CONNECT_NOTIFY oNotify2 = {0};
+    rho_connectclient_parsenotify(szRes, &oNotify2);
+
+    EXPECT_EQ(String(oNotify2.status), "ok");
+    EXPECT_EQ(oNotify2.error_code, RHO_ERR_NONE);
+
+    rho_connectclient_free_syncnotify(&oNotify2);
     rho_sync_free_string(szRes);
 
 }

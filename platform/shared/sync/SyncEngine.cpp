@@ -252,7 +252,10 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
 
         const char* szData = null;
         if ( strTestResp.length() > 0 )
+        {
             szData = strTestResp.c_str();
+            getNotify().setFakeServerResponse(true);
+        }
         else
             szData = resp.getCharData();
 
@@ -311,15 +314,6 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             pSrc->processServerResponse_ver3(oSrcArr);
 
             nSearchCount += pSrc->getCurPageCount();
-
-            if ( pSrc->getServerError().length() > 0 )
-            {
-                if ( m_strServerError.length() > 0 )
-                    m_strServerError +=  "&";
-
-                m_strServerError += pSrc->getServerError();
-                m_nErrCode = pSrc->getErrorCode();
-            }
         }
 
         if ( nSearchCount == 0 )
@@ -333,6 +327,9 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
 
             break;
         }
+
+        if ( strTestResp.length() > 0 )
+            break;
     }  
 
     getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_strServerError);
@@ -637,7 +634,7 @@ void CSyncEngine::doBulkSync()//throws Exception
     if (isContinueSync())
     {
         RHOCONF().setInt("bulksync_state", 1, true);
-        getNotify().fireBulkSyncNotification(true, "", "", RhoAppAdapter.ERR_NONE);
+        getNotify().fireBulkSyncNotification(true, "complete", "", RhoAppAdapter.ERR_NONE);
     }
 }
 
@@ -687,7 +684,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     if ( strCmd.compare("nop") == 0)
     {
 	    LOG(INFO) + "Bulk sync return no data.";
-      	getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_NONE);
+      	getNotify().fireBulkSyncNotification(true, "ok", strPartition, RhoAppAdapter.ERR_NONE);
 
 	    return;
     }
@@ -734,7 +731,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     processServerSources(String("{\"partition\":\"") + strPartition + "\"}");
 
 	LOG(INFO) + "Bulk sync: end change db";
-   	getNotify().fireBulkSyncNotification(false, "", strPartition, RhoAppAdapter.ERR_NONE);
+   	getNotify().fireBulkSyncNotification(false, "ok", strPartition, RhoAppAdapter.ERR_NONE);
 }
 
 String CSyncEngine::makeBulkDataFileName(String strDataUrl, String strDbPath, String strExt)

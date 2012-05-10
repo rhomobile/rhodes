@@ -134,7 +134,7 @@ VALUE rho_sys_get_property(char* szPropName)
         return rho_ruby_create_boolean(passed);
     }
 
-	if (strcasecmp("is_moto_device",szPropName) == 0)
+	if (strcasecmp("is_motorola_device",szPropName) == 0)
 #ifdef APP_BUILD_CAPABILITY_MOTOROLA
         return rho_ruby_create_boolean(1);
 #else

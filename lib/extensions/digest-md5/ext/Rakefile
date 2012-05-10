@@ -6,28 +6,29 @@ def build_extension(name, arch)
 
   Dir.glob("*.c").each do |f|
     objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
-    objects << objname
+    objects << ('"'+objname+'"')
 
     args = []
     args << "-I."
-    args << "-I#{$rhoroot}/lib/extensions/digest/ext"
-    args << "-I#{$rhoroot}/platform/shared/ruby/include"
-    args << "-I#{$rhoroot}/platform/shared"
+    args << "-I\"#{$rhoroot}/lib/extensions/digest/ext\""
+    args << "-I\"#{$rhoroot}/platform/shared/ruby/include\""
+    args << "-I\"#{$rhoroot}/platform/shared\""
+    args << "-I\"#{$rhoroot}/platform/shared/common\""
 
     if ENV['RHO_PLATFORM'] == 'android'
-      args << "-I#{$rhoroot}/platform/shared/ruby/android"
-      args << "-I#{$rhoroot}/platform/shared/ruby/generated"
+      args << "-I\"#{$rhoroot}/platform/shared/ruby/android\""
+      args << "-I\"#{$rhoroot}/platform/shared/ruby/generated\""
       cc_compile f, $tempdir, args or exit 1
 
     elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
-      args << "-I#{$rhoroot}/platform/shared/ruby/iphone"
+      args << "-I\"#{$rhoroot}/platform/shared/ruby/iphone\""
       args << "-D_XOPEN_SOURCE"
       args << "-D_DARWIN_C_SOURCE"
-      args << "-isysroot #{$sdkroot}"
+      args << "-isysroot \"#{$sdkroot}\""
       args << "-fno-common"
       args << "-arch #{arch}"
       args << "-O2"
-      args << "-o #{objname}"
+      args << "-o \"#{objname}\""
       args << "-c"
       args << f
       cmdline = $gccbin + ' ' + args.join(' ')
@@ -35,13 +36,14 @@ def build_extension(name, arch)
       puts `#{cmdline}`
       exit unless $? == 0
 
+
     end
   end
 
   mkdir_p $targetdir unless File.exist? $targetdir
 
   if ENV['RHO_PLATFORM'] == 'android'
-    cc_ar File.join( $targetdir, 'lib' + name + '.a' ), Dir.glob($tempdir + "/**/*.o") or exit 1
+    cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
 
   elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
     args = []

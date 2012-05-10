@@ -9,6 +9,14 @@ cp File.dirname(__FILE__) +"/../rhobuild.yml.example", File.dirname(__FILE__) +"
 #Only because iphone sim doesn work if you run it with sudo
 chmod_R 0777, File.dirname(__FILE__) + "/.."
 
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/get-rhodes-info"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/migrate-rhodes-app"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/rhodes"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/rhodes-setup"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/rhogen"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/set-rhodes-sdk"
+File.chmod 0755, File.dirname(__FILE__) + "/../bin/upgrade-rhodes-app"
+
 #This is the hack, we make all the things to make it look like an extension has compiled
 
     File.open('Makefile', 'w') { |f| f.write "all:\n\ninstall:\n\n" }

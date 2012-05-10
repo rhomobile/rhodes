@@ -1,15 +1,15 @@
 Installing RhoStudio as an Eclipse Plugin
 ==============
 
-RhoStudio, which facilitates development of native smartphone applications, can be installed into Eclipse for developers not using RhoStudio for Macintosh or RhoStudio for Windows.
+RhoStudio, which facilitates development of native smartphone applications, can be installed into Eclipse as a plug-in.
 
 Prerequisites
 ----------------
 You need to have installed:
 
 * Java Runtime Environment, minimum of Java 5 JRE or JDK.
-* [Rhodes gem](install#rhodes-gem-for-linux-and-non-rhostudio).
-* For RhoConnect, you also need the [RhoConnect gem](/rhoconnect/install#rhoconnect-gem-for-linux-and-non-rhostudio).
+* [Rhodes gem](/install#installing-rhodes-from-the-command-line).
+* For RhoConnect, you also need the [RhoConnect gem](/rhoconnect/install#installing-rhoconnect-from-the-command-line).
 
 Checking the Eclipse Installation
 ----------------

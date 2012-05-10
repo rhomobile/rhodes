@@ -104,8 +104,10 @@ private:
     common::CAutoPtr<CSyncNotification> m_pSearchNotification;
     CSyncNotification m_emptyNotify;
     common::CMutex m_mxSyncNotifications;
-    String m_strNotifyBody;
+    Vector<String> m_arNotifyBody;
     String m_strStatusHide;
+    boolean m_bFakeServerResponse;
+    boolean m_isInsideCallback;
 
    	NetRequest     m_NetRequest;
 
@@ -113,7 +115,7 @@ private:
     CSyncEngine& getSync(){ return m_syncEngine; }
 public:
     CSyncNotify( CSyncEngine& syncEngine ) : m_syncEngine(syncEngine), m_bEnableReporting(false), 
-        m_bEnableReportingGlobal(false){}
+        m_bEnableReportingGlobal(false), m_bFakeServerResponse(false), m_isInsideCallback(false) {}
 
     //Object notifications
     void fireObjectsNotification();
@@ -135,6 +137,7 @@ public:
 
     void onSyncSourceEnd( int nSrc, VectorPtr<CSyncSource*>& sources );
     void fireSyncNotification( CSyncSource* psrc, boolean bFinish, int nErrCode, String strMessage);
+    void fireSyncNotification2( CSyncSource* src, boolean bFinish, int nErrCode, String strServerError);
 
     void fireBulkSyncNotification( boolean bFinish, String status, String partition, int nErrCode );
 
@@ -148,14 +151,16 @@ public:
     void enableReporting(boolean bEnable){m_bEnableReporting = bEnable;}
     void enableStatusPopup(boolean bEnable){m_bEnableReportingGlobal = bEnable;}
 
-    const String& getNotifyBody(){ return m_strNotifyBody; }
-    void cleanNotifyBody(){ m_strNotifyBody = ""; }
+    const String& getNotifyBody();
+    void cleanNotifyBody(){ m_arNotifyBody.removeAllElements(); setFakeServerResponse(false); }
+    boolean isFakeServerResponse(){ return m_bFakeServerResponse; }
+    void setFakeServerResponse(boolean bFakeServerResponse){ m_bFakeServerResponse = bFakeServerResponse; }
 
     void fireAllSyncNotifications( boolean bFinish, int nErrCode, String strError, String strServerError );
     void reportSyncStatus(String status, int error, String strDetails);
     void showStatusPopup(const String& status);
     
-    bool isInsideRequest() const;
+    bool isInsideCallback() const { return m_isInsideCallback; }
 private:
     CSyncNotification* getSyncNotifyBySrc(CSyncSource* src);
 

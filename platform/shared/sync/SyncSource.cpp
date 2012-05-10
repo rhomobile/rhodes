@@ -329,6 +329,14 @@ void CSyncSource::doSyncClientChanges()
             bSend = true;
         }
     }
+
+    if (!bSend)
+    {
+        //check for push_changes
+        IDBResult res = getDB().executeSQL("SELECT attrib_type FROM changed_values where source_id=? and update_type =?", getID(), "push_changes" );
+        bSend = !res.isEnd();
+    }
+
     strBody += "}";
 
     getDB().Unlock();
@@ -379,6 +387,8 @@ void CSyncSource::doSyncClientChanges()
             }
         }
 
+        if (m_nErrCode == RhoAppAdapter.ERR_NONE)
+            getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=?", getID(), "push_changes" );
     }
 
     m_arMultipartItems.removeAllElements();
@@ -554,7 +564,10 @@ void CSyncSource::syncServerChanges()
         const char* szData = null;
         String strTestResp = getSync().getSourceOptions().getProperty(getID(), "rho_server_response");
         if ( strTestResp.length() > 0 )
+        {
             szData = strTestResp.c_str();
+            getNotify().setFakeServerResponse(true);
+        }
         else
             szData = resp.getCharData();
 
@@ -570,6 +583,9 @@ void CSyncSource::syncServerChanges()
 
         if ( getToken() == 0 )
             break;
+
+        if ( strTestResp.length() > 0 )
+            break;
     }
 
     if ( getSync().isSchemaChanged() )
@@ -577,19 +593,16 @@ void CSyncSource::syncServerChanges()
 }
 
 //{"create-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error create"},"0_broken_object_id-error":{"message":"error create"}}}
-boolean CSyncSource::processServerErrors(CJSONEntry& oCmds)
+void CSyncSource::processServerErrors(CJSONEntry& oCmds)
 {
+    String strServerError;
     const char* arErrTypes[] = {"source-error", "search-error", "create-error", "update-error", "delete-error", "update-rollback", null};
-    boolean bRes = false;
     for( int i = 0; ; i++ )
     {
         if ( arErrTypes[i] == null )
             break;
         if ( !oCmds.hasName(arErrTypes[i]) )
             continue;
-
-        bRes = true;
-        m_nErrCode = RhoAppAdapter.ERR_CUSTOMSYNCSERVER;
 
         CJSONEntry errSrc = oCmds.getEntry(arErrTypes[i]);
         CJSONStructIterator errIter(errSrc);
@@ -601,10 +614,10 @@ boolean CSyncSource::processServerErrors(CJSONEntry& oCmds)
             {
                 if ( errIter.getCurValue().hasName("message") )
                 {
-                    if ( m_strServerError.length() > 0 )
-                        m_strServerError += "&";
+                    if ( strServerError.length() > 0 )
+                        strServerError += "&";
 
-                    m_strServerError += "server_errors[" + URI::urlEncode(strKey) + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
+                    strServerError += "server_errors[" + URI::urlEncode(strKey) + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
                 }
             }else
             {
@@ -614,9 +627,9 @@ boolean CSyncSource::processServerErrors(CJSONEntry& oCmds)
                 if ( String_endsWith(strObject, "-error") )
                 {
                     strObject = strObject.substr(0, strKey.length()-6);
-                    if ( m_strServerError.length() > 0 )
-                        m_strServerError += "&";
-                    m_strServerError += "server_errors[" + String(arErrTypes[i]) + "][" + URI::urlEncode(strObject) + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
+                    if ( strServerError.length() > 0 )
+                        strServerError += "&";
+                    strServerError += "server_errors[" + String(arErrTypes[i]) + "][" + URI::urlEncode(strObject) + "][message]=" + URI::urlEncode(errIter.getCurValue().getString("message"));
                 }else
                 {
                     CJSONStructIterator attrIter(errIter.getCurValue());
@@ -625,17 +638,18 @@ boolean CSyncSource::processServerErrors(CJSONEntry& oCmds)
                         String strAttrName = attrIter.getCurKey();
                         String strAttrValue = attrIter.getCurString();
 
-                        if ( m_strServerError.length() > 0 )
-                            m_strServerError += "&";
+                        if ( strServerError.length() > 0 )
+                            strServerError += "&";
 
-                        m_strServerError += "server_errors[" + String(arErrTypes[i]) + "][" + URI::urlEncode(strObject) + "][attributes][" + URI::urlEncode(strAttrName) + "]=" + URI::urlEncode(strAttrValue);
+                        strServerError += "server_errors[" + String(arErrTypes[i]) + "][" + URI::urlEncode(strObject) + "][attributes][" + URI::urlEncode(strAttrName) + "]=" + URI::urlEncode(strAttrValue);
                     }
                 }
             }
         }
     }
 
-    return bRes;
+    if ( strServerError.length() > 0 )
+        getNotify().fireSyncNotification2(this, true, RhoAppAdapter.ERR_CUSTOMSYNCSERVER, strServerError);
 }
 
 void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
@@ -732,8 +746,10 @@ void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
         if ( oCmds.hasName("schema-changed") )
         {
             getSync().setSchemaChanged(true);
-        }else if ( !processServerErrors(oCmds) )
+        }else
         {
+            processServerErrors(oCmds);
+
             getDB().startTransaction();
 
             if (getSync().getSourceOptions().getBoolProperty(getID(), "pass_through"))

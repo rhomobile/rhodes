@@ -812,7 +812,7 @@ public class RhodesService extends Service {
 			}
 			else if (name.equalsIgnoreCase("webview_framework")) {
 				//return "WEBKIT/" + Build.VERSION.RELEASE;
-			    return "WEBKIT/" + RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getView().getClass().getSimpleName();
+			    return RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId();
 			}
 		}
 		catch (Exception e) {

@@ -27,26 +27,29 @@
 package com.rhomobile.rhodes.nativeview;
 
 import android.view.View;
-import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.webview.IRhoWebView;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
+
+import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.util.ContextFactory;
 
 public class RhoNativeViewManager {
 
-	public interface RhoNativeView {
-		View getView();
-		void navigate(String url);
-		void destroyView();
-		String getViewType();
-	}
-	
-	private static class RhoNativeViewImpl implements RhoNativeView {
-		
-		RhoNativeViewImpl(String viewType, long factory_h, long view_h) {
-			mViewType = viewType;
-			mFactoryHandle = factory_h;
-			mViewHandle = view_h;
-		}
-		
+	private static class RhoNativeViewImpl implements IRhoCustomView {
+        private String mViewType;
+        private long mFactoryHandle;
+        private long mViewHandle;
+        private FrameLayout mContainerView;
+
+        RhoNativeViewImpl(String viewType, long factory_h, long view_h) {
+            mViewType = viewType;
+            mFactoryHandle = factory_h;
+            mViewHandle = view_h;
+            mContainerView = new FrameLayout(ContextFactory.getUiContext());
+            mContainerView.addView(getView(), new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        }
+
 		public View getView() {
 			return getViewByHandle(mViewHandle);
 		}
@@ -60,16 +63,22 @@ public class RhoNativeViewManager {
 		public String getViewType() {
 			return mViewType;
 		}
-		private String mViewType;
-		private long mFactoryHandle;
-		private long mViewHandle;
+
+        @Override
+        public ViewGroup getContainerView() {
+            return mContainerView;
+        }
+
+        @Override
+        public void stop() {
+        }
 	}
 	
-	public static android.webkit.WebView getWebViewObject(int tab_index) {
-		return (android.webkit.WebView)RhodesService.getInstance().getMainView().getWebView(tab_index).getView();
+	public static Object getWebViewObject(int tab_index) {
+		return RhodesActivity.safeGetInstance().getMainView().getWebView(tab_index).getView();
 	}
 
-	public static RhoNativeView getNativeViewByteType(String typename) {
+	public static IRhoCustomView getNativeViewByType(String typename) {
 		long factory_h = getFactoryHandleByViewType(typename);
 		if (factory_h == 0) {
 			return null;

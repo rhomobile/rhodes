@@ -272,42 +272,48 @@ namespace "config" do
     #Process rhoelements settings
     if $current_platform == "wm" || $current_platform == "android"
         if $app_config["app_type"] == 'rhoelements'
-            $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
-            $app_config["extensions"] += ["rhoelementsext"]
-            $app_config["extensions"] += ["motoapi"] #extension with plug-ins
-            $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
-
-            if !$app_config["capabilities"].index('native_browser')
-                $app_config["extensions"] += ['webkit-browser'] unless $app_config["extensions"].index("webkit-browser")
-            end
-            
-            #check for RE2 plugins
-            plugins = ""
-            $app_config["extensions"].each do |ext|
-                if ( ext.start_with?('moto-') )
-                    plugins += ',' if plugins.length() > 0
-                    plugins += ext[5, ext.length()-5]
+        
+            if !$app_config["capabilities"].index('non_motorola_device')        
+                $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
+                $app_config["extensions"] += ["rhoelementsext"]
+                $app_config["extensions"] += ["motoapi"] #extension with plug-ins
+                
+                #check for RE2 plugins
+                plugins = ""
+                $app_config["extensions"].each do |ext|
+                    if ( ext.start_with?('moto-') )
+                        plugins += ',' if plugins.length() > 0
+                        plugins += ext[5, ext.length()-5]
+                    end
                 end
+                
+                if plugins.length() == 0
+                    plugins = "ALL"    
+                end
+                
+                application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
+                
             end
             
-            if plugins.length() == 0
-                plugins = "ALL"    
+            if !$app_config["capabilities"].index('native_browser')
+                $app_config["capabilities"] += ["motorola_browser"] unless $app_config["capabilities"].index('motorola_browser')
             end
-            
-            application_build_configs['moto-plugins'] = plugins if plugins.length() > 0
-            
         end
 
         application_build_configs['shared-runtime'] = '1' if $app_config["capabilities"].index('shared_runtime')
 
         if $app_config["capabilities"].index("motorola_browser")
             $app_config['extensions'] += ['webkit-browser'] unless $app_config['extensions'].index('webkit-browser')
-            $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
         end
         
         if $app_config["extensions"].index("webkit-browser")
             $app_config["capabilities"] += ["webkit_browser"]
             $app_config["extensions"].delete("webkit-browser") unless $current_platform == 'android'
+        end
+        
+        if  $app_config["capabilities"].index("webkit_browser") || $app_config["capabilities"].index("motorola")
+            #contains wm code for webkit browser support
+            $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
         end
     end
 
@@ -327,7 +333,6 @@ namespace "config" do
       end
     end	
     $application_build_configs = application_build_configs
-
     #check for rhoelements gem
     $rhoelements_features = ""
     if $app_config['extensions'].index('barcode')
@@ -401,6 +406,7 @@ namespace "config" do
     puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
     puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
 
+    
     if $current_platform == "bb"  
       make_application_build_config_java_file
     else  
@@ -586,19 +592,19 @@ def init_extensions(startdir, dest)
   puts "exts " + exts
   
   if $config["platform"] != "bb"
-    exists = []
+    #exists = []
       
-    if ( File.exists?(exts) )
-      File.new(exts, "r").read.split("\n").each do |line|
-        next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
-        exists << $1
-      end
-    end
+    #if ( File.exists?(exts) )
+    #  File.new(exts, "r").read.split("\n").each do |line|
+    #    next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
+    #    exists << $1
+    #  end
+    #end
   
     #if (exists.sort! != extentries.sort! ) || (!File.exists?(exts))
-      File.open(exts, "w") do |f|
-        puts "MODIFY : #{exts}"
-          
+      #File.open(exts, "w") do |f|
+      #  puts "MODIFY : #{exts}"
+        f = StringIO.new("", "w+")          
         f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
         #f.puts "// Generated #{Time.now.to_s}"
         if $config["platform"] == "wm" || $config["platform"] == "win32"
@@ -621,7 +627,8 @@ def init_extensions(startdir, dest)
           f.puts "    #{entry}();"
         end
         f.puts "}"
-      end
+      #end
+        Jake.modify_file_if_content_changed( exts, f )
     #end
 
     extlibs.each { |lib| add_linker_library(lib) }
@@ -710,6 +717,20 @@ def common_bundle_start(startdir, dest)
   end
   cp app + '/rhoconfig.txt', File.join($srcdir,'apps'), :preserve => true
 
+  if $app_config["app_type"] == 'rhoelements'
+    $config_xml = nil
+    if $app_config[$config["platform"]] && $app_config[$config["platform"]]["rhoelements"] && $app_config[$config["platform"]]["rhoelements"]["config"] && (File.exists? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
+      $config_xml = File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"])
+    elsif $app_config["rhoelements"] && $app_config["rhoelements"]["config"] && (File.exists? File.join(app, $app_config["rhoelements"]["config"]))
+      $config_xml = File.join(app, $app_config["rhoelements"]["config"])
+    end
+    if $current_platform == "wm"
+      if !($config_xml.nil?)
+        cp $config_xml, File.join($srcdir,'apps/Config.xml'), :preserve => true
+      end
+    end
+  end
+
   app_version = "\r\napp_version='#{$app_config["version"]}'"  
   File.open(File.join($srcdir,'apps/rhoconfig.txt'), "a"){ |f| f.write(app_version) }
   File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
@@ -766,13 +787,13 @@ def process_exclude_folders
   exclude_platform = "wm" if exclude_platform == 'win32'
 
   if $app_config["excludedirs"]
-      excl << $app_config["excludedirs"]['all'] if $app_config["excludedirs"]['all']
-      excl << $app_config["excludedirs"][exclude_platform] if $app_config["excludedirs"][exclude_platform]
+      excl += $app_config["excludedirs"]['all'] if $app_config["excludedirs"]['all']
+      excl += $app_config["excludedirs"][exclude_platform] if $app_config["excludedirs"][exclude_platform]
   end
       
   if  $config["excludedirs"]    
-      excl << $config["excludedirs"]['all'] if $config["excludedirs"]['all']
-      excl << $config["excludedirs"][exclude_platform] if $config["excludedirs"][exclude_platform]
+      excl += $config["excludedirs"]['all'] if $config["excludedirs"]['all']
+      excl += $config["excludedirs"][exclude_platform] if $config["excludedirs"][exclude_platform]
   end  
   
   if excl.size() > 0
@@ -781,6 +802,13 @@ def process_exclude_folders
       excl.each do |mask|
         Dir.glob(mask).each {|f| puts "f: #{f}"; rm_rf f}
       end
+      
+      chdir File.join($srcdir, 'apps')
+  
+      excl.each do |mask|
+        Dir.glob(mask).each {|f| puts "f: #{f}"; rm_rf f}
+      end
+      
   end
 
 end
@@ -800,7 +828,6 @@ namespace "build" do
       common_bundle_start(startdir,dest)
 
       process_exclude_folders()
-      
       cp_r File.join(startdir, "platform/shared/db/res/db"), File.join($srcdir, 'apps')
       
       chdir startdir
@@ -823,7 +850,7 @@ namespace "build" do
       cp   compileERB, $srcdir
       puts "Running bb.rb"
 
-      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/bb.rb"`
+      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/bb.rb"`
       unless $? == 0
         puts "Error interpreting erb code"
         exit 1
@@ -866,7 +893,23 @@ namespace "build" do
     end
 
     # its task for compiling ruby code in rhostudio
-    task :rhostudio => ["config:wm", "build:bundle:noxruby"] do
+    # TODO: temporary fix I hope. This code is copied from line 207 of this file
+    task :rhostudio => ["config:wm"] do
+
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        $all_files_mask = "*.*"
+        $rubypath = "res/build-tools/RhoRuby.exe"
+      else
+        $all_files_mask = "*"
+        if RUBY_PLATFORM =~ /darwin/
+          $rubypath = "res/build-tools/RubyMac"
+        else
+          $rubypath = "res/build-tools/rubylinux"
+        end
+      end
+
+      Rake::Task["build:bundle:noxruby"].invoke
+
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
     
@@ -887,7 +930,7 @@ namespace "build" do
       cp   compileERB, $srcdir
       puts "Running default.rb"
 
-      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/default.rb"`
+      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/default.rb"`
       unless $? == 0
         puts "Error interpreting erb code"
         exit 1
@@ -897,7 +940,7 @@ namespace "build" do
 
       cp   compileRB, $srcdir
       puts "Running compileRB"
-      puts `#{$rubypath} -I#{rhodeslib} "#{$srcdir}/compileRB.rb"`
+      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/compileRB.rb"`
       unless $? == 0
         puts "Error interpreting ruby code"
         exit 1
