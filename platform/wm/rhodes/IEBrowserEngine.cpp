@@ -248,3 +248,7 @@ void CIEBrowserEngine::OnDocumentComplete(LPCTSTR url)
 void CIEBrowserEngine::setBrowserGesturing(bool bEnableGesturing)
 {
 }
+
+void CIEBrowserEngine::NotifyEngineOfSipPosition()
+{
+}
