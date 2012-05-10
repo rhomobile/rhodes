@@ -27,19 +27,16 @@
 package com.rhomobile.rhodes;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.camera.Camera;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
-import com.rhomobile.rhodes.signature.Signature;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
-import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.webview.GoogleWebView;
 import com.rhomobile.rhodes.webview.IRhoWebView;
 
@@ -53,13 +50,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebView;
+import android.widget.AbsoluteLayout;
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
 	
@@ -87,8 +84,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		return uiThreadId;
 	}
 	
-	private ArrayList<RhodesActivityListener> mListeners = null;
-	
 	private boolean mIsForeground = false;
 	private boolean mIsInsideStartStop = false;
 	
@@ -100,53 +95,16 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		return mIsInsideStartStop;
 	}
 	
-	public void addRhodesActivityListener(RhodesActivityListener listener) {
-		if (!mListeners.contains(listener)) {
-			mListeners.add(listener);
-		}
-	}
 	
-	public void removeRhodesActivityListener(RhodesActivityListener listener) {
-		mListeners.remove(listener);
-	}
-	
-	public void processStartupListeners() {
-		int i;
-		for (i = 1; i < RhodesActivityStartupListeners.ourRunnableList.length; i++) {
-			String classname = RhodesActivityStartupListeners.ourRunnableList[i];
-			Class<? extends RhodesActivityListener> klass = null;
-			try {
-				klass = Class.forName(classname).asSubclass(RhodesActivityListener.class);
-			} catch (ClassNotFoundException e) {
-				Utils.platformLog("RhodesActivity", "processStartupListeners() : ClassNotFoundException for ["+classname+"]");
-				e.printStackTrace();
-			}
-			RhodesActivityListener listener = null;
-			try {
-				if (klass != null) {
-					listener = klass.newInstance();
-				}
-			} catch (InstantiationException e) {
-				Utils.platformLog("RhodesActivity", "processStartupListeners() : InstantiationException for ["+classname+"]");
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				Utils.platformLog("RhodesActivity", "processStartupListeners() : IllegalAccessException for ["+classname+"]");
-				e.printStackTrace();
-			}
-			if (listener != null) {
-				listener.onRhodesActivityStartup(this);
-			}
-		}
-	}
-	
+	//public void removeRhodesActivityListener(IRhoListener listener) {
+	//	mListeners.remove(listener);
+	//}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         Logger.T(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		
-		mListeners = new ArrayList<RhodesActivityListener>();
-
 		Thread ct = Thread.currentThread();
 		//ct.setPriority(Thread.MAX_PRIORITY);
 		uiThreadId = ct.getId();
@@ -165,27 +123,46 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         mHandler = new Handler();
 
+        Logger.T(TAG, "Creating splash screen");
         mSplashScreen = new SplashScreen(this, createWebView(), this);
         setMainView(mSplashScreen);
 
-        Signature.registerSignatureCaptureExtension();
-
-        processStartupListeners();
-        {
-            Iterator<RhodesActivityListener> iterator = mListeners.iterator();
-            while (iterator.hasNext()) {
-                iterator.next().onCreate(this, getIntent());
-            }
-        }
+        RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
         notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
+        
+        
+        if (!isPassMotoLicence()) {
+        	Logger.E(TAG, "############################");
+        	Logger.E(TAG, " ");
+        	Logger.E(TAG, "ERROR: motorola_license is INVALID !");
+        	Logger.E(TAG, " ");
+        	Logger.E(TAG, "############################");
+            AlertDialog.Builder b = new AlertDialog.Builder(this);
+            b.setCancelable(true);
+            b.setOnCancelListener( new DialogInterface.OnCancelListener() {
+				public void onCancel(DialogInterface dialog) {
+					//RhodesService.exit();
+				}
+			});
+            AlertDialog securityAlert = b.create();
+            securityAlert.setMessage("Please provide RhoElements license key.");
+            securityAlert.setButton("OK", new DialogInterface.OnClickListener(){
+				public void onClick(DialogInterface arg0, int arg1) {
+					//RhodesService.exit();
+				}
+            	
+            });
+            securityAlert.show();
+            return;
+        }        
     }
 
     public IRhoWebView createWebView() {
-        IRhoWebView view = null;//new GoogleWebView(context);
+        IRhoWebView view = null;
         if (Capabilities.WEBKIT_BROWSER_ENABLED) {
-            Logger.D(TAG, "Creating Motorola WebKIT view");
+            Logger.T(TAG, "Creating Motorola WebKIT view");
             try {
                 Class<? extends IRhoWebView> viewClass = Class.forName("com.rhomobile.rhodes.webview.EkiohWebView").asSubclass(IRhoWebView.class);
                 if (Capabilities.MOTOROLA_BROWSER_ENABLED) {
@@ -200,7 +177,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 RhodesApplication.stop();
             }
         } else {
-            Logger.D(TAG, "Creating Google web view");
+            Logger.T(TAG, "Creating Google web view");
             final GoogleWebView googleWebView = new GoogleWebView(this);
             view = googleWebView;
             RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
@@ -211,11 +188,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 }
             });
         }
+        AbsoluteLayout containerView = new AbsoluteLayout(this);
+        containerView.addView(view.getView(), new AbsoluteLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0, 0));
+        view.setContainerView(containerView);
+
         return view;
     }
 
     public MainView switchToSimpleMainView(MainView currentView) {
-        MainView view = new SimpleMainView(currentView.detachWebView()); 
+        IRhoWebView rhoWebView = currentView.detachWebView();
+        SimpleMainView view = new SimpleMainView(rhoWebView);
+        rhoWebView.setWebClient(this);
         setMainView(view);
         return view;
     }
@@ -267,51 +250,35 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         handleStartParams(intent);
 
-        {
-        	Iterator<RhodesActivityListener> iterator = mListeners.iterator();
-        	while (iterator.hasNext()) {
-        		iterator.next().onNewIntent(this, intent);
-        	}
-        }
+        RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
     }
 
-	@Override
-	public void onStart() {
-		super.onStart();
+    @Override
+    public void onStart() {
+        super.onStart();
 
         Logger.D(TAG, "onStart");
         mIsInsideStartStop = true;
-        
+
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityStarted);
-        
-        for(RhodesActivityListener listener: mListeners) {
-            listener.onStart(this);
-        }
-	}
-	
-	@Override
-	public void onResume() {
+        RhoExtManager.getImplementationInstance().onStartActivity(this);
+    }
+
+    @Override
+    public void onResume() {
         Logger.D(TAG, "onResume");
-    	mIsForeground = true;
-		super.onResume();
-        {
-        	Iterator<RhodesActivityListener> iterator = mListeners.iterator();
-        	while (iterator.hasNext()) {
-        		iterator.next().onResume(this);
-        	}
-        }
-	}
+        mIsForeground = true;
+        super.onResume();
+
+        RhoExtManager.getImplementationInstance().onResumeActivity(this);
+    }
 
     @Override
     public void onPause() 
     {
-    	mIsForeground = false;
-        {
-        	Iterator<RhodesActivityListener> iterator = mListeners.iterator();
-        	while (iterator.hasNext()) {
-        		iterator.next().onPause(this);
-        	}
-        }
+        mIsForeground = false;
+
+        RhoExtManager.getImplementationInstance().onPauseActivity(this);
 
         super.onPause();
         Logger.D(TAG, "onPause");
@@ -320,27 +287,25 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     }
 
     @Override
-	public void onStop() 
-	{
-		super.onStop();
+    public void onStop() 
+    {
+        super.onStop();
         Logger.D(TAG, "onStop");
-        for(RhodesActivityListener listener: mListeners) {
-            listener.onStop(this);
-        }
+
+        RhoExtManager.getImplementationInstance().onStopActivity(this);
+
         mIsInsideStartStop = false;
-	}
-	
-	@Override
-	public void onDestroy() {
+    }
+
+    @Override
+    public void onDestroy() {
         Logger.D(TAG, "onDestroy");
 
-        for(RhodesActivityListener listener: mListeners) {
-            listener.onDestroy(this);
-        }
-        
+        RhoExtManager.getImplementationInstance().onDestroyActivity(this);
+
         sInstance = null;
-		super.onDestroy();
-	}
+        super.onDestroy();
+    }
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -386,13 +351,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     
     @Override
     protected Dialog onCreateDialog(int id/*, Bundle args*/) {
-        Dialog res = null;
-        for(RhodesActivityListener handler: mListeners) {
-            res = handler.onCreateDialog(this, id/*, args*/);
-            if(res != null)
-                break;
-        }
-        return res;
+        return RhoExtManager.getImplementationInstance().onCreateDialog(this, id);
     }
 
 	@Deprecated
@@ -442,7 +401,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         handleStartParams(getIntent());
 
-		ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
+		//ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 	}
 
     private void handleStartParams(Intent intent)
@@ -514,25 +473,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
             */
             return;
         }
-        if (!isPassMotoLicence()) {
-            AlertDialog.Builder b = new AlertDialog.Builder(this);
-            b.setCancelable(true);
-            b.setOnCancelListener( new DialogInterface.OnCancelListener() {
-				public void onCancel(DialogInterface dialog) {
-					RhodesService.exit();
-				}
-			});
-            AlertDialog securityAlert = b.create();
-            securityAlert.setMessage("Your Motorola licence key is invalid !");
-            securityAlert.setButton("OK", new DialogInterface.OnClickListener(){
-				public void onClick(DialogInterface arg0, int arg1) {
-					RhodesService.exit();
-				}
-            	
-            });
-            securityAlert.show();
-            return;
-        }
+
 
 //        String urlStart = uri.getPath();
 //        if (urlStart != null) { 
@@ -543,7 +484,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 //            }
 //        }
     }
-    
+
     private boolean isPassMotoLicence() {
     	if (Capabilities.MOTOROLA_ENABLED) {
     		return true;

@@ -15,21 +15,21 @@ def build_extension(name, arch, src_files)
   #Dir.glob("*.c").each do |f|
   src_files.each do |f|
     objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
-    objects << objname
+    objects << ('"'+objname+'"')
 
     args = []
     args << "-I."
-    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
-    args << "-I#{$rootdir}/platform/shared/ruby/include"
-    args << "-I#{$rootdir}/platform/shared"
-    args << "-I#{$rootdir}/platform/shared/common"
+    args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
+    args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
+    args << "-I\"#{$rootdir}/platform/shared\""
+    args << "-I\"#{$rootdir}/platform/shared/common\""
 
-    args << "-I#{$std_includes}" unless $std_includes.nil?
+    args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
     args << "-D__NEW__" if use_own_stlport
-    args << "-I#{$stlport_includes}" if use_own_stlport
+    args << "-I\"#{$stlport_includes}\"" if use_own_stlport
 
-    args << "-I#{$rootdir}/platform/shared/ruby/android"
-    args << "-I#{$rootdir}/platform/shared/ruby/generated"
+    args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
+    args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
 
     cc_compile f, $tempdir, args or exit 1
 
@@ -37,7 +37,7 @@ def build_extension(name, arch, src_files)
 
   mkdir_p $targetdir unless File.exist? $targetdir
 
-  cc_ar File.join( $targetdir, 'lib' + name + '.a' ), Dir.glob($tempdir + "/**/*.o") or exit 1
+   cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
 
 end
 

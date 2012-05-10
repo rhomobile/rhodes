@@ -27,6 +27,9 @@
 #include "stdafx.h"
 #include "MainWindow.h"
 #include "IEBrowserEngine.h"
+//#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
+#include "LogMemory.h"
+//#endif
 
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
@@ -38,8 +41,6 @@
 #include "common/RhoFilePath.h"
 #include "common/app_build_capabilities.h"
 #include "common/app_build_configs.h"
-
-#include <algorithm>
 
 using namespace rho;
 using namespace rho::common;
@@ -62,9 +63,7 @@ extern "C" void rho_webview_navigate(const char* url, int index);
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
-extern "C" {
-	CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
-};
+extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 #endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
 extern "C" {
@@ -74,12 +73,37 @@ extern "C" {
 	const char* rho_wmimpl_get_logpath();
 	const char* rho_wmimpl_get_logurl();
 	bool rho_wmimpl_get_fullscreen();
-	void rho_wmimpl_set_is_version2();
+	void rho_wmimpl_set_is_version2(const char* path);
 	bool rho_wmimpl_get_is_version2();
+
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && !defined(APP_BUILD_CAPABILITY_MOTOROLA)
+    bool rho_wmimpl_get_is_version2(){ return 1;}
+    void rho_wmimpl_set_is_version2(const char* path){}
+    void rho_wmimpl_set_configfilepath(const char* path){}
+    void rho_wmimpl_set_configfilepath_wchar(const WCHAR* path){}
+    void rho_wmimpl_set_startpage(const char* path){}
+    TCHAR* rho_wmimpl_get_startpage(){ return L""; }
+    const unsigned int* rho_wmimpl_get_logmemperiod(){ return 0; }
+    const unsigned int* rho_wmimpl_get_logmaxsize(){ return 0; }
+    const char* rho_wmimpl_get_logurl(){ return ""; }
+    bool rho_wmimpl_get_fullscreen(){ return 0; }
+    const char* rho_wmimpl_get_logpath(){ return ""; }
+    int rho_wmimpl_is_loglevel_enabled(int nLogLevel){ return true; }
+	const int* rho_wmimpl_get_loglevel(){ return NULL; }
+#endif
+
 	const unsigned int* rho_wmimpl_get_logmaxsize();
 	const int* rho_wmimpl_get_loglevel();
+	const unsigned int* rho_wmimpl_get_logmemperiod();
 };
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
+#if !defined( APP_BUILD_CAPABILITY_MOTOROLA ) && !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+extern "C" bool rho_wmimpl_get_resize_on_sip()
+{
+    return true;
+}
+#endif
 
 #if defined(_WIN32_WCE) && !defined(OS_PLATFORM_MOTCE)
 #include <regext.h>
@@ -270,7 +294,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				}
 				m_strRootPath = path;
 				free(path);
-				std::replace( m_strRootPath.begin(), m_strRootPath.end(), '\\', '/');
+				String_replace(m_strRootPath, '\\', '/');
 			}
 		} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
         {
@@ -280,7 +304,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 			if (path) {
 				m_strRhodesPath = path;
 				free(path);
-				std::replace( m_strRhodesPath.begin(), m_strRhodesPath.end(), '\\', '/');
+				String_replace(m_strRhodesPath, '\\', '/');
 			}
 		} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
         {
@@ -320,12 +344,12 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				m_strRootPath = path;
                 if (m_strRootPath.substr(0,7).compare("file://")==0)
                     m_strRootPath.erase(0,7);
-                ::std::replace(m_strRootPath.begin(), m_strRootPath.end(), '\\', '/');
+                String_replace(m_strRootPath, '\\', '/');
                 if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
                     m_strRootPath.append("/");
                 m_strRootPath.append("rho/");
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
-                rho_wmimpl_set_is_version2();
+                rho_wmimpl_set_is_version2(m_strRootPath.c_str());
 #endif
         	}
 			free(path);
@@ -412,9 +436,15 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
     if (rho_wmimpl_get_fullscreen())
         RHOCONF().setBool("full_screen", true, false);
+	if (rho_wmimpl_get_logmemperiod())
+		LOGCONF().setCollectMemoryInfoInterval(*rho_wmimpl_get_logmemperiod());
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
+
+//#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
+	LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
+//#endif // RHODES_EMULATOR
 
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
@@ -549,7 +579,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if (bRE1App)
     {
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
         registerRhoExtension();
 #endif
 	    m_appWindow.Navigate2(_T("about:blank")
@@ -773,8 +803,8 @@ extern "C" void rho_wm_impl_CheckLicense()
 extern "C" int rho_wm_impl_CheckSymbolDevice()
 {
 #ifdef OS_WINDOWS_DESKTOP
-    return true;
-#else
+    return false;
+#else 
     int res = -1;
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
 	if(hLicenseInstance)

@@ -40,6 +40,8 @@
 
 #include "common/app_build_capabilities.h"
 
+#include "InitMemoryInfoCollector.h"
+
 
 
 /*
@@ -575,6 +577,7 @@ static Rhodes *instance = NULL;
         const char *szUserPath = rho_native_rhouserpath();
         NSLog(@"Init logconf");
         rho_logconf_Init_with_separate_user_path(szRootPath, szRootPath, "", szUserPath);
+        InitMemoryInfoCollector();
         NSLog(@"Create rhodes app");
         rho_rhodesapp_create_with_separate_user_path(szRootPath, szUserPath);
         app_created = YES;
@@ -938,11 +941,18 @@ static Rhodes *instance = NULL;
     if (!rho_can_app_started_with_current_licence()) {
 		NSLog(@"############################");
 		NSLog(@" ");
-		NSLog(@"ERROR: motorola_licence is INVALID !");
+		NSLog(@"ERROR: motorola_license is INVALID !");
 		NSLog(@" ");
 		NSLog(@"############################");
         //exit(EXIT_SUCCESS);
-        [self exit_with_errormessage:@"Motorola Licence" message:@"Your licence key is invalid !"];
+        //[self exit_with_errormessage:@"Motorola Licence" message:@"Your licence key is invalid !"];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Motorola License" 
+                                                            message:@"Please provide RhoElements license key."
+                                                           delegate:nil 
+                                                  cancelButtonTitle:@"OK" 
+                                                  otherButtonTitles: nil];
+            [alert show];
+            [alert release];
     }
 	
 	return NO;

@@ -58,11 +58,15 @@ public:
 
     String makeFullPath(const char* szFileName){
         String res = m_szPath;
-        if ( res.length() > 0 && !findLastSlash() )
-            res += "/";
+        if (res.length() > 0)
+        {
+            const char* pSlash = findLastSlash();
+            if (!pSlash || (pSlash != (res.c_str() + res.length())))
+                res += "/";
+        }
 
         res += szFileName;
-        
+
         return res;
     }
 

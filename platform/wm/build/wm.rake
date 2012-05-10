@@ -25,7 +25,10 @@
 #------------------------------------------------------------------------
 
 def kill_detool
-  `taskkill /F /IM detool.exe`
+  begin 
+    `taskkill /F /IM detool.exe`
+  rescue Exception => e
+  end  
 end
 
 def sign (cabfile)
@@ -516,7 +519,7 @@ namespace "run" do
 
       File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
       Jake.run_rho_log_server($app_path)
-      puts "RhoLogServer is starting"
+      puts "Start Log Server. Wating while Log Server is started..."
       while true do
         if File.exists?($app_path + "/started")
           break

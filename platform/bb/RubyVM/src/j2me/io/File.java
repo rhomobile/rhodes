@@ -36,7 +36,7 @@ public class File {
 	
     private String _path;
     private transient int prefixLength = 0;
-    private IRAFile m_raFile;
+    //private IRAFile m_raFile;
     private String m_strFullPath;
     
     public File(String path) 
@@ -50,8 +50,6 @@ public class File {
             if ( m_strFullPath != null && m_strFullPath.length() > 0 && !m_strFullPath.startsWith("file:")) 
             	m_strFullPath = FilePath.join(RhoClassFactory.createFile().getDirPath(""), m_strFullPath);
         	
-        	m_raFile = RhoClassFactory.createFSRAFile();
-            m_raFile.open(m_strFullPath);
         }catch(Exception exc)
         {
         }
@@ -67,8 +65,6 @@ public class File {
             if ( m_strFullPath != null && m_strFullPath.length() > 0 && !m_strFullPath.startsWith("file:")) 
             	m_strFullPath = FilePath.join(RhoClassFactory.createFile().getDirPath(""), m_strFullPath);
         	
-        	m_raFile = RhoClassFactory.createFSRAFile();
-            m_raFile.open(m_strFullPath, mode);
         }catch(Exception exc)
         {
         }
@@ -108,12 +104,40 @@ public class File {
     
     public boolean exists() 
     {
-    	return m_raFile != null && m_raFile.exists();
+    	IRAFile raFile = null;
+    	try
+    	{
+        	raFile = RhoClassFactory.createFSRAFile();
+    		raFile.open(m_strFullPath, "r");
+    	
+    		return raFile.exists();
+    	}catch(Exception exc)
+    	{
+    		return false;
+    	}finally
+    	{
+    		if (raFile!= null)
+    			try{ raFile.close(); } catch(Exception exc){}
+    	}
     }
 
     public boolean isDirectory() 
     {
-    	return m_raFile != null && m_raFile.isDirectory();    	
+    	IRAFile raFile = null;
+    	try
+    	{
+        	raFile = RhoClassFactory.createFSRAFile();
+    		raFile.open(m_strFullPath, "r");
+    	
+    		return raFile.isDirectory();
+    	}catch(Exception exc)
+    	{
+    		return false;
+    	}finally
+    	{
+    		if (raFile!= null)
+    			try{ raFile.close(); } catch(Exception exc){}
+    	}
     }
 
     public File[] listFiles() {
@@ -123,23 +147,31 @@ public class File {
     
     public Vector list() 
     {
-    	if ( m_raFile == null )
-    		return new Vector();
-
     	Vector res = new Vector();
+
+    	IRAFile raFile = null;
+    	try
+    	{
+        	raFile = RhoClassFactory.createFSRAFile();
+    		raFile.open(m_strFullPath, "r");
     	
-    	try{
-	    	Enumeration eFiles = m_raFile.list();
+	    	Enumeration eFiles = raFile.list();
 	    	while( eFiles != null && eFiles.hasMoreElements() )
 	    	{
 	    		res.addElement(eFiles.nextElement());
 	    	}
-    	}catch(IOException exc)
+	    	
+	    	return res;
+    	}catch(Exception exc)
     	{
-    		
+    		return res;
+    	}finally
+    	{
+    		if (raFile!= null)
+    			try{ raFile.close(); } catch(Exception exc){}
     	}
-    	return res;
     }
+    
     public String getAbsolutePath() 
     {
     	return m_strFullPath;
@@ -147,35 +179,61 @@ public class File {
     
     public boolean mkdir() 
     {
-    	if ( m_raFile != null )
-    		return m_raFile.mkdir();
+    	IRAFile raFile = null;
+    	try
+    	{
+        	raFile = RhoClassFactory.createFSRAFile();
+    		raFile.open(m_strFullPath, "dw");
     	
-    	return false;
+    		return raFile.mkdir();
+    	}catch(Exception exc)
+    	{
+    		return false;
+    	}finally
+    	{
+    		if (raFile!= null)
+    			try{ raFile.close(); } catch(Exception exc){}
+    	}
     }
     
     public boolean delete() 
     {
+    	IRAFile raFile = null;
     	try
     	{
-	    	if ( m_raFile != null )
-	    	{
-	    		m_raFile.close();
-	    		m_raFile.open(m_strFullPath, "w");
-	    		m_raFile.delete();
-	    		m_raFile.close();
-	    		m_raFile = null;
-	    		return true;
-	    	}
-    	}catch(IOException exc)
-    	{
+        	raFile = RhoClassFactory.createFSRAFile();
+
+    		raFile.open(m_strFullPath, "w");
+    		raFile.delete();
     		
+    		return true;
+    	}catch(Exception exc)
+    	{
+    		return false;
+    	}finally
+    	{
+    		if (raFile!= null)
+    			try{ raFile.close(); } catch(Exception exc){}
     	}
-    	
-    	return false;
     }
     
-    public boolean isFile() {
-    	return m_raFile != null && m_raFile.isFile();    	
+    public boolean isFile() 
+    {
+    	IRAFile raFile = null;
+    	try
+    	{
+        	raFile = RhoClassFactory.createFSRAFile();
+    		raFile.open(m_strFullPath, "r");
+    	
+    		return raFile.isFile();
+    	}catch(Exception exc)
+    	{
+    		return false;
+    	}finally
+    	{
+    		if (raFile!= null)
+    			try{ raFile.close(); } catch(Exception exc){}
+    	}
     }
     
     public boolean canWrite() {
@@ -195,13 +253,21 @@ public class File {
     }
     public long length() 
     {
-    	try{
-	    	if ( m_raFile != null )
-	    		return m_raFile.size();
-    	}catch(IOException exc)
+    	IRAFile raFile = null;
+    	try
     	{
+        	raFile = RhoClassFactory.createFSRAFile();
+    		raFile.open(m_strFullPath, "r");
+    	
+    		return raFile.size();
+    	}catch(Exception exc)
+    	{
+    		return 0;
+    	}finally
+    	{
+    		if (raFile!= null)
+    			try{ raFile.close(); } catch(Exception exc){}
     	}
-    	return 0;
     }
     
     public boolean renameTo(File dest) {

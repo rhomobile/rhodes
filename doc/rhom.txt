@@ -444,13 +444,12 @@ Calls `find` with a limit on the # of records.  This emulates rails' classic pag
 	  :order => 'name'
 	) #=> you can have :conditions and :order as well
 
-### `sync(callback = nil, callback_data = "", show_status_popup = nil, query_params = "")`
+### `sync(callback, callback_data, show_status_popup, query_params)`
 Start the sync process for a model. If the callback is set, `SyncEngine.set_notification` is called before `SyncEngine.dosync`.
-query_params will pass to sync server
+query_params (this is optional) will pass to sync server. The query_params value must be URL encoded. In this example, the value for @params["sku"] -- the value of the sku -- must be URL encoded.
 	
 	:::ruby
-	Account.sync( url_for(:action => :sync_callback) )
-	Account.sync( url_for(:action => :sync_callback), "", false, "param1=123&param2=abc" )
+	Product.sync( url_for(:action => :sync_callback), "", false, "query=#{@params["sku"]}" )
 
 ### `set_notification(url, params = nil)`
 Set a notification to be called when the sync is complete for this model.  This is useful for example if you want to refresh the current list page or display an alert when new data is synchronized. See the [sync notification docs](/rhodes/synchronization#notifications) for more information.
@@ -566,6 +565,9 @@ Or multiple declarations:
 	belongs_to :parent_id, 'Cases'
 
 **NOTE: After a new product is created, the `:product_id` for the `Customer` records will be updated to the new value.**
+
+If you are planning to use bulk sync feature for your associated models, then you should take into consideration 
+corresponding support on RhoConnect server side. See [RhoConnect Bulk Sync associations](/rhoconnect/bulk-sync#bulk-sync-associations).
 
 ## Freezed models
 If you want to limit model attributes by specific list - you can 'freeze' model:

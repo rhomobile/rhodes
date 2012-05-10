@@ -12,10 +12,10 @@ extern "C" {
 /*
  * Class:     com_rhomobile_rhodes_file_RhoFileApi
  * Method:    nativeInitPath
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitPath
-  (JNIEnv *, jclass, jstring, jstring, jstring);
+  (JNIEnv *, jclass, jstring, jstring, jstring, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_file_RhoFileApi
@@ -64,6 +64,22 @@ JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_needEmulate
  */
 JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_makeRelativePath
   (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_file_RhoFileApi
+ * Method:    setFsModeTransparrent
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_setFsModeTransparrent
+  (JNIEnv *, jclass, jboolean);
+
+/*
+ * Class:     com_rhomobile_rhodes_file_RhoFileApi
+ * Method:    removeBundleUpgrade
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_removeBundleUpgrade
+  (JNIEnv *, jclass);
 
 #ifdef __cplusplus
 }

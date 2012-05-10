@@ -92,7 +92,7 @@ private:
 
 public:
     int m_nErrCode;
-    String m_strError, m_strServerError;
+    String m_strError;
     String m_strQueryParams;
 
 public:
@@ -103,7 +103,6 @@ public:
     int getID()const { return m_nID; }
     String getName() { return m_strName; }
     String getSyncType(){ return m_strSyncType; }
-    String getServerError(){ return m_strServerError; }
     int getErrorCode(){ return m_nErrCode; }
 
     int getServerObjectsCount()const{ return m_nInserted+m_nDeleted; }
@@ -165,7 +164,7 @@ public:
     void updateAssociation(const String& strOldObject, const String& strNewObject, const String& strAttrib);
 
     void applyChangedValues();
-    boolean processServerErrors(json::CJSONEntry& oCmds);
+    void processServerErrors(json::CJSONEntry& oCmds);
 
     void checkProgressStepNotify(boolean bEndTransaction);
 

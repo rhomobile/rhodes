@@ -219,6 +219,10 @@ public class GeoLocationImpl {
 	}
 	
 	private synchronized void setLocation(Location location) {
+		if (location == null) {
+			Logger.T(TAG, "setCurrentGpsLocation: location = null");
+			return;
+		}
 		Logger.T(TAG, "setCurrentGpsLocation: location=" + location);
 		try {
 			// We've received location update

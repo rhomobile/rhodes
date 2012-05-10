@@ -30,10 +30,17 @@
 #include "logging/RhoLog.h"
 #include "common/rhoparams.h"
 
+
+
 //#define RHO_MAP_DEBUG
 
 #ifdef RHO_MAP_DEBUG
+#ifdef OS_ANDROID
+#include <android/log.h>
+#   define RHO_MAP_TRACE(fmt) __android_log_write(ANDROID_LOG_INFO, "MapEngineNative", fmt)
+#else
 #   define RHO_MAP_TRACE(fmt) RAWTRACE(fmt)
+#endif
 #   define RHO_MAP_TRACE1(fmt, arg1) RAWTRACE1(fmt, arg1)
 #   define RHO_MAP_TRACE2(fmt, arg1, arg2) RAWTRACE2(fmt, arg1, arg2)
 #   define RHO_MAP_TRACE3(fmt, arg1, arg2, arg3) RAWTRACE3(fmt, arg1, arg2, arg3)

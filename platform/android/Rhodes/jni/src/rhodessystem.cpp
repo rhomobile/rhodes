@@ -33,6 +33,7 @@
 #include "common/RhoStd.h"
 #include "common/RhoConf.h"
 #include "common/RhodesAppBase.h"
+#include "common/app_build_capabilities.h"
 #include "sqlite/sqlite3.h"
 #include "logging/RhoLogConf.h"
 
@@ -42,17 +43,24 @@ static rho::common::CAutoPtr<rho::common::AndroidMemoryInfoCollector> s_memory_i
 
 static rho::String s_root_path;
 static rho::String s_sqlite_path;
+static rho::String s_shared_path;
 
 //--------------------------------------------------------------------------------------------------
-RHO_GLOBAL void android_set_path(const rho::String& root, const rho::String& sqlite)
+RHO_GLOBAL void android_set_path(const rho::String& root, const rho::String& sqlite, const rho::String& shared)
 {
     s_root_path = root;
     s_sqlite_path = sqlite;
+    s_shared_path = shared;
 }
 //--------------------------------------------------------------------------------------------------
 rho::String const &rho_root_path()
 {
     return s_root_path;
+}
+//--------------------------------------------------------------------------------------------------
+rho::String const &rho_shared_path()
+{
+    return s_shared_path;
 }
 //--------------------------------------------------------------------------------------------------
 const char* rho_native_rhopath()
@@ -167,7 +175,11 @@ RHO_GLOBAL void android_setup(JNIEnv *env)
     sqlite3_temp_directory = (char*)s_sqlite_path.c_str();
 
     // Init logconf
+#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
+    rho_logconf_Init(rho_shared_path().c_str(), rho_native_rhopath(), "");
+#else
     rho_logconf_Init(rho_native_rhopath(), rho_native_rhopath(), "");
+#endif
 
     // Disable log to stdout as on android all stdout redirects to /dev/null
     RHOCONF().setBool("LogToOutput", false, true);

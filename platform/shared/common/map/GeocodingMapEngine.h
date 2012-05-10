@@ -36,6 +36,29 @@
 #include <list>
 
 
+//#define USE_ANDROID_NET_REQUEST
+
+#ifdef OS_ANDROID
+
+#ifdef USE_ANDROID_NET_REQUEST
+#define ENABLE_ANDROID_NET_REQUEST
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+
+    int  mapengine_request_make();
+
+    int  mapengine_request_data(int request_id, const char* url, void** data, int* datasize);
+
+    void mapengine_request_cancel(int request_id);
+
+#ifdef __cplusplus
+}
+#endif //__cplusplus
+
+#endif
 
 
 namespace rho
@@ -80,13 +103,30 @@ public:
     void resolve(String const &address, GeoCodingCallback *cb);
     void resolve(float latitude, float longitude, GeoCodingCallback *cb);
 
+    void cancel() {
+#ifdef ENABLE_ANDROID_NET_REQUEST
+    	mapengine_request_cancel(mNetRequestID);
+    	mNetRequestID = 0;
+#else
+    	m_NetRequest.cancel();
+#endif
+    }
+
 private:
     bool fetchData(String const &url, void **data, size_t *datasize);
 
     void processCommand(IQueueCommand* cmd);
+#ifdef ENABLE_ANDROID_NET_REQUEST
+#else
     net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
+#endif
+
 private:
+#ifdef ENABLE_ANDROID_NET_REQUEST
+    int mNetRequestID;
+#else
     NetRequest              m_NetRequest;
+#endif
 };
     
 

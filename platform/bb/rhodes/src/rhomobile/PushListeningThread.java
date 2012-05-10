@@ -124,9 +124,9 @@ public class PushListeningThread extends Thread {
                 {
                     
                     // NOTE: the following will block until data is received.
-                	LOG.TRACE("Block push thread until data is recieved");
+                	LOG.INFO("Block push thread until data is recieved");
                     stream = _notify.acceptAndOpen();
-                	LOG.TRACE("Recieved push data");
+                	LOG.INFO("Recieved push data");
                     
                     try 
                     {

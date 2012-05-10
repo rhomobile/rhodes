@@ -167,7 +167,9 @@ void CSyncNotify::fireObjectsNotification()
         callNotify( CSyncNotification(strUrl,"",false), strBody);
     }else if (m_pObjectNotify->m_cCallback)
     {
+        m_isInsideCallback = true;
         (*m_pObjectNotify->m_cCallback)(strBody.c_str(), m_pObjectNotify->m_cCallbackData);
+        m_isInsideCallback = false;
         //callNotify( CSyncNotification(m_pObjectNotify->m_cCallback,m_pObjectNotify->m_cCallbackData,false), strBody);
     }
 }
@@ -442,6 +444,11 @@ CSyncNotification* CSyncNotify::getSyncNotifyBySrc(CSyncSource* src)
     return pSN != null ? pSN : &m_emptyNotify;
 }
 
+void CSyncNotify::fireSyncNotification2( CSyncSource* src, boolean bFinish, int nErrCode, String strServerError)
+{
+    doFireSyncNotification(src, bFinish, nErrCode, "", "", strServerError);
+}
+
 void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int nErrCode, String strError, String strParams, String strServerError)
 {
 	if ( getSync().isStoppedByUser() )
@@ -499,8 +506,6 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
 
                     if ( strServerError.length() > 0 )
                         strBody += "&" + strServerError;
-                    else if ( src != null && (*src).m_strServerError.length() > 0  )
-                        strBody += "&" + (*src).m_strServerError;
 	            }
 
                 if ( src != null )
@@ -527,17 +532,31 @@ void CSyncNotify::doFireSyncNotification( CSyncSource* src, boolean bFinish, int
         clearNotification(src);
 }
 
+const String& CSyncNotify::getNotifyBody()
+{
+    const static String emptyBody = String();
+    if ( m_arNotifyBody.size() == 0 )
+        return emptyBody;
+
+    if ( isFakeServerResponse() )
+        return m_arNotifyBody[0];
+
+    return m_arNotifyBody[m_arNotifyBody.size()-1];
+}
+
 boolean CSyncNotify::callNotify(const CSyncNotification& oNotify, const String& strBody )
 {
     String strUrl = oNotify.m_strUrl; //Need to copy url since notify may be cleared in callback
     if ( getSync().isNoThreadedMode() )
     {
-        m_strNotifyBody = strBody;
+        m_arNotifyBody.addElement( strBody );
         return false;
     }
     if ( oNotify.m_cCallback )
     {
+        m_isInsideCallback = true;        
         int nRet = (*oNotify.m_cCallback)(strBody.c_str(), oNotify.m_cCallbackData);
+        m_isInsideCallback = false;
         return nRet == 1;
     }
     if ( strUrl.length() == 0 )
@@ -639,11 +658,6 @@ void CSyncNotify::callLoginCallback(const CSyncNotification& oNotify, int nErrCo
 	//{
 	//	LOG.ERROR("Call Login callback failed.", exc);
 	//}
-}
-
-bool CSyncNotify::isInsideRequest() const
-{
-	return m_NetRequest.isInsideRequest();
 }
 
 }

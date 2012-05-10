@@ -387,7 +387,11 @@ public class System {
     		return ObjectFactory.createBoolean(com.rho.Capabilities.USE_SQLITE);
     	if ( strPropName.equalsIgnoreCase("webview_framework") ) {
     		Version.SoftVersion ver = Version.getSoftVersion();
-    		return ObjectFactory.createString((ver.nMajor < 6 ? "BB" : "WEBKIT")+"/"+DeviceInfo.getSoftwareVersion() ); 
+    		
+    		if ( rhomobile.RhodesApplication.isFullBrowser() )
+    			return ObjectFactory.createString( "WEBKIT"+"/"+DeviceInfo.getSoftwareVersion() );
+    		
+    		return ObjectFactory.createString( "BB" +"/"+DeviceInfo.getSoftwareVersion() ); 
     	}
         if (strPropName.equalsIgnoreCase("security_token_not_passed"))
         	return ObjectFactory.createBoolean(RHODESAPP().isSecurityTokenNotPassed());

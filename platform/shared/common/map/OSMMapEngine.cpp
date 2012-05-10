@@ -63,6 +63,7 @@ int OSMMapView::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void** 
 {
     void *data = NULL;
     size_t datasize = 0;
+    //int datasize = 0;
     String url = "";//cmd->baseUrl;
 
     // Make url
@@ -77,6 +78,13 @@ int OSMMapView::getMapTile(uint64 p_zoom, uint64 p_row, uint64 p_column, void** 
 
     if (!fetchData(url, &data, &datasize))
         return 0;
+    //{
+    //	int id = mapengine_request_make();
+    //	if (!mapengine_request_data(id, url.c_str(), &data, &datasize)) {
+    //		return 0;
+    //	}
+    //}
+
 
     //RAWLOG_ERROR("###########  getMapTime() AFTER FETCH");
 
@@ -93,7 +101,10 @@ IMapView *OSMMapEngine::createMapView(IDrawingDevice *device)
 
 void OSMMapEngine::destroyMapView(IMapView *view)
 {
-    delete view;
+    RHO_MAP_TRACE("OSMMapEngine::destroyMapView() start");
+    //delete view;
+     BaseMapView::processClean((BaseMapView*)view);
+    RHO_MAP_TRACE("OSMMapEngine::destroyMapView() finish");
 }
 
 } // namespace map

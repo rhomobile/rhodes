@@ -1,9 +1,15 @@
 package com.rhomobile.rhodes.webview;
 
+
+import android.app.Activity;
 import android.view.View;
+import android.view.ViewGroup;
 
 public interface IRhoWebView {
     View getView();
+    void setContainerView(ViewGroup view);
+    ViewGroup getContainerView();
+    void setWebClient(Activity activity);
     boolean canGoBack();
     void goBack();
     void goForward();
@@ -16,4 +22,5 @@ public interface IRhoWebView {
     void stopLoad();
     void setZoom(int scale);
     void setTextZoom(int scale);
+    String getEngineId();
 }
