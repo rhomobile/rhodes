@@ -34,6 +34,8 @@ The Sun JDK for Windows or Linux is available [here](http://java.sun.com/javase/
 
 For Mac OS 10.6 and earlier, the JDK is already installed. For Mac OS 10.7, Java is not automatically installed. Download the Java for Mac Installer from [Apple support](http://support.apple.com/kb/DL1421) and install Java.
 
+NOTE: To build for Android it is required JDK 1.6 (JDK 1.7 is not supported)
+
 ### Setting the JDK Path
 
 On Windows installs for RhoMobile, go to RhoStudio Preferences (Windows -> Preferences) and set the JDK path in the rhobuild.yml file. On Windows 64-bit installations, you must set this path to the 32-bit version of the JDK, such as `C:/Program Files (x86)/Java/jdk1.7.0_01/bin`.
