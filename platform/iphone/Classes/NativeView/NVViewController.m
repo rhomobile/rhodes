@@ -46,7 +46,7 @@
 	nvDelegate = delegate;
 	self.view.frame = rect;
 
-	self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
 	self.view.autoresizesSubviews = YES;
 	
 	
@@ -54,7 +54,7 @@
 	srect.origin.y = 0;
 	
 	nvView = nvview;
-	nvView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	nvView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
 	nvView.autoresizesSubviews = YES;
 	nvView.frame = srect;
 	
@@ -92,10 +92,42 @@
 	[signatureView setNeedsDisplay];
 }
  */
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
+    UIViewController* ctrl = [self findViewController:nvView];
+    if (ctrl != nil) {
+        [ctrl willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+    }
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    UIViewController* ctrl = [self findViewController:nvView];
+    if (ctrl != nil) {
+        [ctrl didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    }
+}
+
 
 - (void)viewDidUnload {
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
+}
+
+
+- (UIViewController *)findViewController:(UIView*)view {
+    UIResponder *responder = view;
+    while (![responder isKindOfClass:[UIViewController class]]) {
+        responder = [responder nextResponder];
+        if (responder == self) {
+            return nil;
+        }
+        if (nil == responder) {
+            break;
+        }
+    }
+    if (responder == self) {
+        return nil;
+    }
+    return (UIViewController *)responder;
 }
 
 - (void)dealloc {
