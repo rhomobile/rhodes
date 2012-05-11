@@ -431,7 +431,6 @@ namespace "config" do
     $targetdir = File.join($bindir, "target/android")
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir = File.join($bindir, "tmp")
-    $resourcedir = File.join($tmpdir, "resource")
     $libs = File.join($androidpath, "Rhodes", "libs")
 
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
@@ -913,6 +912,7 @@ namespace "build" do
       ENV["RHO_ROOT"] = $startdir
       ENV["BUILD_DIR"] ||= $startdir + "/platform/android/build"
       ENV["RHO_INC"] = $appincdir
+      ENV["RHO_RES"] = $appres
       ENV["RHO_ANDROID_TMP_DIR"] = $tmpdir
       ENV["NEON_ROOT"] = $neon_root unless $neon_root.nil?
       ENV["CONFIG_XML"] = $config_xml unless $config_xml.nil?
@@ -1454,6 +1454,12 @@ namespace "build" do
              end
           end
       end
+      
+      unless $config_xml.nil?
+        rawres_path = File.join($tmpdir, 'res', 'raw')
+        mkdir_p rawres_path unless File.exist? rawres_path
+        cp $config_xml, File.join(rawres_path,'config.xml')
+      end
 
       generate_rjava
 
@@ -1747,6 +1753,10 @@ namespace "device" do
 
       puts "Signing APK file"
       args = []
+      args << "-sigalg"
+      args << "MD5withRSA"
+      args << "-digestalg"
+      args << "SHA1"
       args << "-verbose"
       args << "-keystore"
       args << $keystore

@@ -174,8 +174,8 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 {
-    //if (!rho_wm_impl_CheckSymbolDevice())
-        //return;
+    if (!rho_wm_impl_CheckSymbolDevice())
+        return;
 
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
@@ -246,5 +246,9 @@ void CIEBrowserEngine::OnDocumentComplete(LPCTSTR url)
 }
 
 void CIEBrowserEngine::setBrowserGesturing(bool bEnableGesturing)
+{
+}
+
+void CIEBrowserEngine::NotifyEngineOfSipPosition()
 {
 }
