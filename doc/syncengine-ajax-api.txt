@@ -6,7 +6,11 @@ It is implemented as a plain javascript library which doesn't require to use any
 
 NOTE: It is just for SyncEngine control and at the moment it doesn't provide any methods to read or manipulate stored objects.
 
-## Usage sample
+## Sample project
+
+[Rhodes API samples](http://github.com/rhomobile/rhodes-system-api-samples) has [SyncEngine AJAX API demo code](https://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/SyncengineJs).
+
+## Usage sample code
 
     :::html
     <!DOCTYPE html>
