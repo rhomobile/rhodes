@@ -803,11 +803,18 @@ extern "C" void rho_wm_impl_CheckLicense()
 extern "C" int rho_wm_impl_CheckSymbolDevice()
 {
 #ifdef OS_WINDOWS_DESKTOP
-    return false;
+    //return false;
+	return true;
 #else 
     int res = -1;
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
-	if(hLicenseInstance)
+	if(!hLicenseInstance)
+	{
+		MessageBox(NULL, L"license_rc.dll is absent. Application will be closed"
+						   , L"Rhodes", MB_SETFOREGROUND | MB_TOPMOST | MB_ICONSTOP | MB_OK);
+		return 0;
+	}
+	/*if(hLicenseInstance)
 	{
 		PCSD pCheckSymbolDevice = (PCSD) GetProcAddress(hLicenseInstance, L"CheckSymbolDevice");
 		if(pCheckSymbolDevice) 
@@ -819,7 +826,7 @@ extern "C" int rho_wm_impl_CheckSymbolDevice()
 		MessageBox(NULL, L"license_rc.dll is absent. Application will be closed"
 						   , L"Rhodes", MB_SETFOREGROUND | MB_TOPMOST | MB_ICONSTOP | MB_OK);
 		return 0;
-	}
+	}*/
 
     return 1;
 #endif
