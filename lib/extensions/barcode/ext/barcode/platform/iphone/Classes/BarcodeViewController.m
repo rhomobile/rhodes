@@ -154,11 +154,12 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
     resultText.font = [resultText.font fontWithSize:22];
     
     readerView = [[ZBarReaderView alloc] initWithImageScanner:[[ZBarImageScanner alloc] init]];//initWithFrame:srect];//CGRectZero];
+    //readerView = [[ZBarReaderView alloc] initWithFrame:srect];//CGRectZero];
+	readerView.frame = srect;
     
-	readerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	readerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
 	readerView.autoresizesSubviews = YES;
     
-	readerView.frame = srect;
 
     // the delegate receives decode results
     readerView.readerDelegate = self;
@@ -168,6 +169,9 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 	//signatureView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	//signatureView.autoresizesSubviews = YES;
 	//signatureView.frame = srect;
+    
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
+    self.view.autoresizesSubviews = YES;
 	
 	[self.view addSubview:readerView];
 	[self.view addSubview:resultText];
@@ -256,15 +260,21 @@ static RhoCreateBarcodeViewTask* instance_create = nil;
 }
 //*/
 
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+- (BOOL) shouldAutorotateToInterfaceOrientation: (UIInterfaceOrientation) orient
+{
+    // auto-rotation is supported
+    return(YES);
 }
 
-- (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) orient
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    //[readerView willRotateToInterfaceOrientation:self.interfaceOrientation duration:0];
+}
+
+- (void) willRotateToInterfaceOrientation: (UIInterfaceOrientation) orientation
                                  duration: (NSTimeInterval) duration
 {
     // compensate for view rotation so camera preview is not rotated
-    [readerView willRotateToInterfaceOrientation: orient
+    [readerView willRotateToInterfaceOrientation: orientation
                                         duration: duration];
 }
 
