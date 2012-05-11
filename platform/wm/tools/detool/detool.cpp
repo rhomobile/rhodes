@@ -859,6 +859,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			bundle_path = argv[4];
 			app_exe     = argv[5];
 			log_port    = argv[6];
+			lcdll_path  = argv[7];
 			deploy_type = DEPLOY_EMU;
 		}
 		if (strcmp(T2A(argv[1]), "emucab") == 0) {
@@ -985,6 +986,16 @@ int _tmain(int argc, _TCHAR* argv[])
 				int retval = copyExecutable (app_exe, app_dir, use_shared_runtime);
 				if (retval != EXIT_SUCCESS) {
 					printf ("Failed to copy application executable\n");
+					if (retval == 32) {
+						printf ("Please, stop application on device and try again.\n");
+					}
+					goto stop_emu_deploy;
+				}
+
+				if(!use_shared_runtime)
+					retval = copyLicenseDll(lcdll_path, app_dir);
+				if (retval != EXIT_SUCCESS) {
+					printf ("Failed to copy license dll\n");
 					if (retval == 32) {
 						printf ("Please, stop application on device and try again.\n");
 					}
