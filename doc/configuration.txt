@@ -98,6 +98,10 @@ Max log file size in Bytes, set 0 to unlimited size; when limit is reached, log 
 
 	MaxLogFileSize=50000
 
+Custom log file path
+
+	LogFilePath = '/mnt/sdcard/myapp.log'
+
 Enables the logging of memory usage in the system; specifies the time interval in milliseconds at which memory logs will be generated periodically
 
 	LogMemPeriod=5000
