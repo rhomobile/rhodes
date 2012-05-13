@@ -574,6 +574,9 @@ void CRhodesApp::callUiDestroyedCallback()
 
 void CRhodesApp::callAppActiveCallback(boolean bActive)
 {
+    if ( m_bExit )
+        return;
+
     LOG(INFO) + "callAppActiveCallback";
     if (bActive)
     {
