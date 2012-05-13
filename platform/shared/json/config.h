@@ -143,9 +143,9 @@
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 /* #undef size_t */
 
-#if !defined(OS_ANDROID)
-#include "tcmalloc/rhomem.h"
-#endif
+//#if !defined(OS_ANDROID)
+//#include "tcmalloc/rhomem.h"
+//#endif
 
 #if defined(WIN32)
 

@@ -18,6 +18,7 @@
 #include "eval_intern.h"
 
 //RHO
+#include "tcmalloc/rhomem.h"
 int rhoRubyFPrintf(FILE *, const char *, ...);
 #ifndef USE_STD_PRINTF
 #define fprintf rhoRubyFPrintf

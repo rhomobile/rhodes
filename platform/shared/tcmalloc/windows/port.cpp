@@ -212,12 +212,21 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
     extra = alignment - pagesize;
   }
 
-  void* result = VirtualAlloc(0, size + extra,
-                              MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
+    void *result = VirtualAlloc(0, size + extra, MEM_RESERVE, PAGE_NOACCESS);
+    result = VirtualAlloc(result, size + extra, MEM_COMMIT, PAGE_READWRITE);
+
+  //void* result = VirtualAlloc(0, size + extra,
+  //                            MEM_COMMIT|MEM_RESERVE, PAGE_READWRITE);
   //RAWLOG_INFO1("VirtualAlloc = %d", size + extra);
   g_nTotalMemory += size + extra;
   int nTotal = g_nTotalMemory/(1024*1024);
-  printf("TCMALLOC: VirtualAlloc = %d; Total: %d(Mb)\n", size + extra, nTotal);
+
+    MEMORYSTATUS sMemStat;
+    sMemStat.dwLength = sizeof(MEMORYSTATUS);
+    GlobalMemoryStatus(&sMemStat); 
+    sMemStat.dwAvailVirtual /= 1024;
+
+    printf("TCMALLOC: VirtualAlloc = %d; Total: %d(Mb); Free VM: %d\n", size + extra, nTotal, sMemStat.dwAvailVirtual);
 
   if (result == NULL)
     return NULL;

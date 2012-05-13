@@ -156,7 +156,7 @@ class PageHeap {
   // should keep this value big because various incarnations of Linux
   // have small limits on the number of mmap() regions per
   // address-space.
-  static const int kMinSystemAlloc = 1 << (20 - kPageShift);
+  static const int kMinSystemAlloc = 1 << (21 - kPageShift);
 
   // For all span-lengths < kMaxPages we keep an exact-size list.
   // REQUIRED: kMaxPages >= kMinSystemAlloc;

@@ -116,9 +116,9 @@ typedef int LogSeverity;
 
 #endif
 
-#if !defined(OS_ANDROID)
-#include "tcmalloc/rhomem.h"
-#endif
+//#if !defined(OS_ANDROID)
+//#include "tcmalloc/rhomem.h"
+//#endif
 
 #ifdef RHODES_EMULATOR
 #define RHO_RB_EXT ".rb"

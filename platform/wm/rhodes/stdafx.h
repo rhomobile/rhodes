@@ -194,7 +194,7 @@ using namespace ATL;
     #endif
 #endif
 
-#include "tcmalloc/rhomem.h"
+//#include "tcmalloc/rhomem.h"
 #include "logging/RhoLog.h"
 //#include <afxwin.h>
 
