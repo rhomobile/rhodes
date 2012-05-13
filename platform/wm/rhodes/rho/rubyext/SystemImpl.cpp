@@ -749,7 +749,7 @@ int rho_sys_is_app_installed(const char *appname)
     }
 
     if ( wszOutput )
-        sys_free( wszOutput );
+        free( wszOutput );
 #endif
 
     return nRet;
@@ -784,7 +784,7 @@ void rho_sys_app_uninstall(const char *appname)
     }
 
     if ( wszOutput )
-        sys_free( wszOutput );
+        free( wszOutput );
 #endif
 }
 

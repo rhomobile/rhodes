@@ -6,7 +6,7 @@
 #endif //_CRT_SECURE_NO_DEPRECATE
 
 //#ifndef __APPLE__
-#if defined( __WIN32_WCE )
+#if defined( REMOVE_WIN32_WCE ) || defined(REMOVE_WIN32)
 #include <stdlib.h>
 
 #ifndef _RHO_NO_MEMDEFINES

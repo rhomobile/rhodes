@@ -24,6 +24,7 @@
 #include <sys/types.h>
 
 //RHO
+#include "tcmalloc/rhomem.h"
 int rhoRubyFPrintf(FILE *, const char *, ...);
 int rhoRubyPrintf(const char *, ...);
 #ifndef USE_STD_PRINTF

@@ -11,7 +11,7 @@
 #ifndef STD_HEADERS_INCLUDED
 #define	STD_HEADERS_INCLUDED
 
-#include "tcmalloc/rhomem.h"
+//#include "tcmalloc/rhomem.h"
 #include "config.h"
 
 #ifdef __SYMBIAN32__
