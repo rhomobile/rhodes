@@ -265,6 +265,12 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitPath
     g_apk_path = (apk_path != NULL) ? rho_cast<std::string>(env, apk_path) : std::string();
 }
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitLogPath
+  (JNIEnv *env, jclass, jstring path)
+{
+    android_set_log_path(rho_cast<std::string>(env, path));
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
   (JNIEnv *env, jclass)
 {

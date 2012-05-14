@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private ArrayList<IRhoListener> mListeners = new ArrayList<IRhoListener>();
     private Object mLicense;
     private boolean mFirstNavigate = true;
+    private boolean mLogError = true;
+    private boolean mLogWarning = true;
+    private boolean mLogInfo = true;
+    private boolean mLogUser = true;
+    private boolean mLogDebug = true;
 
     private IRhoExtData makeDefExtData(View view) {
         return new RhoExtDataImpl(view, RhodesActivity.safeGetInstance().getMainView().activeTab());
@@ -202,6 +208,48 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     //-----------------------------------------------------------------------------------------------------------------
     // Rhodes implementation related methods are below
 
+    public void enableLogLevelError(boolean enabled) {
+        Log.i(TAG, "RE Error log: " + enabled);
+        mLogError = enabled;
+    }
+    public void enableLogLevelWarning(boolean enabled) { 
+        Log.i(TAG, "RE Warning log: " + enabled);
+        mLogWarning = enabled; 
+    }
+    public void enableLogLevelInfo(boolean enabled) { 
+        Log.i(TAG, "RE Info log: " + enabled);
+        mLogInfo = enabled;
+    }
+    public void enableLogLevelUser(boolean enabled) { 
+        Log.i(TAG, "RE User log: " + enabled);
+        mLogUser = enabled;
+    }
+    public void enableLogLevelDebug(boolean enabled) { 
+        Log.i(TAG, "RE Debug log: " + enabled);
+        mLogDebug = enabled;
+    }
+
+    void logT(String tag, String msg) {
+        if (mLogDebug)
+            Logger.I(tag, msg);
+    }
+
+    void logI(String tag, String msg) {
+        if (mLogInfo || mLogUser)
+            Logger.I(tag, msg);
+    }
+
+    void logW(String tag, String msg) {
+        if (mLogWarning)
+            Logger.W(tag, msg);
+    }
+
+    void logE(String tag, String msg) {
+        if (mLogError)
+            Logger.E(tag, msg);
+    }
+
+    
     public void onSetPropertiesData(View view,String propId, String data, int position, int total) {
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
