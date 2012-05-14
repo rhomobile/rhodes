@@ -589,7 +589,8 @@ static rhomap::AndroidMapDevice *device(JNIEnv *env, jlong nativeDevice)
     rhomap::AndroidMapDevice *d = (rhomap::AndroidMapDevice*)nativeDevice;
     if (!d)
     {
-        env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Specified wrong native device");
+        //TODO: investigate when this happens !
+        //env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Specified wrong native device");
         return NULL;
     }
 
@@ -604,7 +605,8 @@ static rhomap::IMapView *mapview(JNIEnv *env, jlong nativeDevice)
     rhomap::IMapView *mv = d->mapView();
     if (!mv)
     {
-        env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Specified native device does not have mapview");
+        //TODO: investigate when this happens !
+        //env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Specified native device does not have mapview");
         return NULL;
     }
 
