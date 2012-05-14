@@ -76,4 +76,6 @@ This will prompt you for where you installed the SDKs for the various platforms.
 
 If you are using RhoStudio, you can either run rhodes-setup, or you can set the SDK paths in RhoStudio Preferences.
 
+## Setting the Location of the RhoStudio Workspace Directory
 
+When you start RhoStudio, you can set the location of the workspace directory. The path to the workspace directory should not contain space symbols: if the path has spaces, a RhoConnect application created with RhoStudio will not work properly.
