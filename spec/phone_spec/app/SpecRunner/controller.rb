@@ -5,7 +5,7 @@ class SpecRunnerController < Rho::RhoController
 
   #GET /SpecRunner
   def index
-    GC.enable()
+    GC.enable() unless System::get_property('platform') == 'Blackberry'  
     
     @msg = 'MSpec version: '+MSpec::VERSION
     @runner = SpecRunner.new
