@@ -1,7 +1,5 @@
 package com.rhomobile.rhodes.extmanager;
 
-import com.rhomobile.rhodes.Logger;
-
 public class RhoExtManager extends Object {
     private static RhoExtManagerImpl ourRhoExtManager = null;
 
@@ -49,7 +47,7 @@ public class RhoExtManager extends Object {
      * @param msg - log message
      */
     public static void logT(String tag, String msg) {
-        Logger.T(tag, msg);
+        getImplementationInstance().logT(tag, msg);
     }
 
     /**
@@ -58,7 +56,7 @@ public class RhoExtManager extends Object {
      * @param msg - log message
      */
     public static void logI(String tag, String msg) {
-        Logger.I(tag, msg);
+        getImplementationInstance().logI(tag, msg);
     }
 
     /**
@@ -67,7 +65,7 @@ public class RhoExtManager extends Object {
      * @param msg - log message
      */
     public static void logW(String tag, String msg) {
-        Logger.W(tag, msg);
+        getImplementationInstance().logW(tag, msg);
     }
 
     /**
@@ -76,7 +74,7 @@ public class RhoExtManager extends Object {
      * @param msg - log message
      */
     public static void logE(String tag, String msg) {
-        Logger.E(tag, msg);
+        getImplementationInstance().logE(tag, msg);
     }
 
 }

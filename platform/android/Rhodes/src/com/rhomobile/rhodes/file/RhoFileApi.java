@@ -61,6 +61,7 @@ public class RhoFileApi {
     private static final String TMP_FOLDER = "tmp";
 
 	private static native void nativeInitPath(String rootPath, String sqliteJournalsPath, String apkPath, String sharedPath);
+	private static native void nativeInitLogPath(String path);
 	private static native void nativeInit();
 	private static native void updateStatTable(String path, String type, long size, long mtime);
 	
@@ -155,8 +156,12 @@ public class RhoFileApi {
         Log.d(TAG, "Shared path: " + sharedDir);
 
         nativeInitPath(root, sqliteJournals, apkPath, sharedDir);
-		return root;
-	}
+        return root;
+    }
+
+    public static void initLogPath(String path) {
+        nativeInitLogPath(path);
+    }
 
     public static String getRootPath() { return root; }
     public static String getDbFilesUriPath() { return DB_FILES_FOLDER; }

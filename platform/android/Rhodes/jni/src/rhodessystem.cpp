@@ -44,6 +44,7 @@ static rho::common::CAutoPtr<rho::common::AndroidMemoryInfoCollector> s_memory_i
 static rho::String s_root_path;
 static rho::String s_sqlite_path;
 static rho::String s_shared_path;
+static rho::String s_log_path;
 
 //--------------------------------------------------------------------------------------------------
 RHO_GLOBAL void android_set_path(const rho::String& root, const rho::String& sqlite, const rho::String& shared)
@@ -51,6 +52,11 @@ RHO_GLOBAL void android_set_path(const rho::String& root, const rho::String& sql
     s_root_path = root;
     s_sqlite_path = sqlite;
     s_shared_path = shared;
+}
+//--------------------------------------------------------------------------------------------------
+RHO_GLOBAL void android_set_log_path(const rho::String& path)
+{
+    s_log_path = path;
 }
 //--------------------------------------------------------------------------------------------------
 rho::String const &rho_root_path()
@@ -79,6 +85,22 @@ rho::String rho_cur_path()
     if (::getcwd(buf, sizeof(buf)) == NULL)
         return "";
     return buf;
+}
+//--------------------------------------------------------------------------------------------------
+rho::String rho_log_path()
+{
+    if (!s_log_path.empty())
+    {
+        return s_log_path;
+    }
+    else if (!s_shared_path.empty())
+    {
+        return s_shared_path;
+    }
+    else
+    {
+        return s_root_path;
+    }
 }
 //--------------------------------------------------------------------------------------------------
 static bool set_posix_environment(JNIEnv *env, jclass clsRE)
@@ -175,11 +197,7 @@ RHO_GLOBAL void android_setup(JNIEnv *env)
     sqlite3_temp_directory = (char*)s_sqlite_path.c_str();
 
     // Init logconf
-#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
-    rho_logconf_Init(rho_shared_path().c_str(), rho_native_rhopath(), "");
-#else
-    rho_logconf_Init(rho_native_rhopath(), rho_native_rhopath(), "");
-#endif
+    rho_logconf_Init(rho_log_path().c_str(), rho_native_rhopath(), "");
 
     // Disable log to stdout as on android all stdout redirects to /dev/null
     RHOCONF().setBool("LogToOutput", false, true);

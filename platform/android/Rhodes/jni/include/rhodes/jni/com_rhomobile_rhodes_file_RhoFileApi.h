@@ -19,6 +19,14 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitPath
 
 /*
  * Class:     com_rhomobile_rhodes_file_RhoFileApi
+ * Method:    nativeInitLogPath
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInitLogPath
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_file_RhoFileApi
  * Method:    nativeInit
  * Signature: ()V
  */
