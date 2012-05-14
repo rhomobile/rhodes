@@ -1282,6 +1282,9 @@ Application will restart automatically.
 
 NOTE: On iPhone and Android application has to be started manually.
 
+NOTE: When using Rho::RhoSupport.rhobundle_download method on a network that has proxies, you may need to configure a proxy exception on the device, if your  HTTP server is also on that same network. Ex: local network has an IP subnet of 192.168 and it uses a proxy. On the Windows Mobile device go into System >> Settings >> Connections >>Advanced and add 192.168.* to the proxy exception list. 
+
+NOTE: The URL parameter for rhobundle_download must be a HTTP URL - FTP is not supported
     
 ### Sample
 See [Reload bundle demo](http://github.com/rhomobile/ReloadBundleDemo) for more information.
