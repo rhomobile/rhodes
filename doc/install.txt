@@ -1,27 +1,24 @@
 # Install Rhodes
 
-## Important note!
-
-Don't mix standalone ruby installation with ruby installation under rvm control. If you need just only version of ruby, then feel free to install it as standalone. If you need to install additional version of ruby, then uninstall standalone ruby and install all needed ruby versions under control of rvm.
-In case you have mixed standalone and rvm-controlled ruby installation they may conflict and produce runtime issues in Rhodes applications.
-
 ## Mac OS
 
-If you're running Mac OS, download the latest [Motorola RhoMobile Suite Installer for Macintosh](http://rhomobile.com/rhostudio-mac). This contains [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
+If you're running Mac OS, download the latest [MotorolaRhoMobileSuite Installer for Macintosh](http://rhomobile.com/rhostudio-mac). This contains [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
-Mac OS has [Ruby](http://www.ruby-lang.org/en/) installed. It is recommended that you install [Ruby Version Manager](https://rvm.io//) and install Ruby version 1.9.3.
+Although Mac OS has [Ruby](http://www.ruby-lang.org/en/) installed, the official way to install Ruby for RhoStudio is to install [Ruby Version Manager](https://rvm.io//) and then install Ruby version 1.9.3.
 
-Click on the RhoMobileSuiteInstaller for Mac download file to open it. You will get a window similar to this:
+Click on the MotorolaRhoMobileSuite Installer for Mac download file to open it. You will get a window similar to this:
 
 <img src="http://rhodocs.s3.amazonaws.com/rhodes-devel/rhostudio-mac-install.png" alt="RhoStudioInstaller Mac" />
 
-Run the install gems script appropriate for you. If you have Ruby Version Manager, you can run "Install gems on rvm." A terminal window will open; wait for the gems install process to complete.
+Run "Install gems on rvm" (this requires that you have installed Ruby Version Manager). A terminal window will open; wait for the gems install process to complete.
 
-Then drag Motorola RhoStudio to the Applications folder. 
+Then drag Motorola RhoStudio to the Applications folder.
+
+**NOTE: Installing Ruby into the System folder is not supported by RhoMobile; the official RhoMobile way to install and use Ruby on the Macintosh is with Ruby Version Manager. If you do not use Ruby Version Manager and instead install Ruby into the System folder, you will need to start and run RhoStudio from the command line using sudo.**
 
 ## Windows
 
-If you're running Windows, download and run the latest [Motorola RhoMobile Suite Installer for Windows](http://rhomobile.com/rhostudio-windows) and run it. This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
+If you're running Windows, download and run the latest [MotorolaRhoMobileSuite Installer for Windows](http://rhomobile.com/rhostudio-windows) and run it. This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
 If you are running Windows 64-bit, you need to use 32-bit Java when you run RhoStudio. You can include the 32-bit Java in the PATH, or you can run RhoStudio with a link to 32-bit Java:
 
@@ -43,7 +40,7 @@ NOTE: To build for Android it is required JDK 1.6 (JDK 1.7 is not supported)
 
 ### Setting the JDK Path
 
-On Windows installs for RhoMobile, go to RhoStudio Preferences (Windows -> Preferences) and set the JDK path in the rhobuild.yml file. On Windows 64-bit installations, you must set this path to the 32-bit version of the JDK, such as `C:/Program Files (x86)/Java/jdk1.7.0_01/bin`.
+On Windows installs for RhoMobile, go to RhoStudio Preferences (Windows -> Preferences) and set the JDK path in the rhobuild.yml file. On Windows 64-bit installations, you must set this path to the 32-bit version of the JDK, such as `C:/Program Files (x86)/Java/jdk<version number>/bin`.
 
 On Mac OS, the path to the JDK is automatically set once Java is installed.
 
@@ -84,3 +81,7 @@ If you are using RhoStudio, you can either run rhodes-setup, or you can set the 
 ## Setting the Location of the RhoStudio Workspace Directory
 
 When you start RhoStudio, you can set the location of the workspace directory. The path to the workspace directory should not contain space symbols: if the path has spaces, a RhoConnect application created with RhoStudio will not work properly.
+
+## Standalone Ruby Installation and Ruby Version Manager
+
+Do not install Ruby as a standalone if you also use Ruby Version Manager (rvm) to install Ruby. If you need only one version of Ruby, you can install Ruby as a standalone. If you need more than one version of Ruby, you should uninstall standalone Ruby and then install Ruby with Ruby Version Manager. Mixed standalone Ruby and rvm-controlled Ruby installations can conflict and cause runtime issues in Rhodes applications.
