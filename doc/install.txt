@@ -1,5 +1,10 @@
 # Install Rhodes
 
+## Important note!
+
+Don't mix standalone ruby installation with ruby installation under rvm control. If you need just only version of ruby, then feel free to install it as standalone. If you need to install additional version of ruby, then uninstall standalone ruby and install all needed ruby versions under control of rvm.
+In case you have mixed standalone and rvm-controlled ruby installation they may conflict and produce runtime issues in Rhodes applications.
+
 ## Mac OS
 
 If you're running Mac OS, download the latest [Motorola RhoMobile Suite Installer for Macintosh](http://rhomobile.com/rhostudio-mac). This contains [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
