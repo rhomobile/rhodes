@@ -748,7 +748,7 @@ RHO_GLOBAL void mapview_close();
 
 
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_click
+RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_mapview_MapView_click
   (JNIEnv *env, jobject, jlong nativeDevice, jint x, jint y)
 {
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_click: start");
@@ -757,9 +757,11 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_mapview_MapView_click
         if (mv->handleClick(x, y) ) {
             // close
             mapview_close();
-	}
+            return 1;
+        }
     }
     RHO_MAP_TRACE("Java_com_rhomobile_rhodes_mapview_MapView_click: finish");
+    return 0;
 }
 
 

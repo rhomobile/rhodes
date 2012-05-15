@@ -82,7 +82,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	public native void setZoom(long nativeDevice, int zoom);
 	
 	public native void move(long nativeDevice, int dx, int dy);
-	public native void click(long nativeDevice, int x, int y);
+	public native int click(long nativeDevice, int x, int y);
 	
 	public native void paint(long nativeDevice, Canvas canvas);
 	public native void destroy(long nativeDevice);
@@ -100,6 +100,8 @@ public class MapView extends BaseActivity implements MapTouch {
 	private ZoomButtonsController mZoomController;
 	
 	private long mNativeDevice;
+	
+	public boolean mIsInExitProcess;
 	
 	private static int ourDensity = Bitmap.DENSITY_NONE;//DisplayMetrics.DENSITY_DEFAULT;
 	
@@ -143,6 +145,7 @@ public class MapView extends BaseActivity implements MapTouch {
 		final MapView mv = mc;
 		mc = null;
 		if (mv != null) {
+			mv.mIsInExitProcess = true;
 			Logger.I(TAG, "destroy() mc != null - process destroy");
 			PerformOnUiThread.exec(new Runnable() {
 				public void run() {
@@ -156,6 +159,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Logger.I(TAG, "onCreate()");
+		mIsInExitProcess = false;
 		super.onCreate(savedInstanceState);
 
 		mc = this;
@@ -251,6 +255,7 @@ public class MapView extends BaseActivity implements MapTouch {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    if (keyCode == KeyEvent.KEYCODE_BACK) {
 			Logger.I(TAG, "onBack button pressed()");
+			mIsInExitProcess = true;
 			mc = null;
 			mNativeDevice = 0;
 			destroy(mNativeDevice);
@@ -382,6 +387,9 @@ public class MapView extends BaseActivity implements MapTouch {
 	}
 	
 	public void redraw() {
+		if (mIsInExitProcess) {
+			return;
+		}
 		if (mc != null) {
 			PerformOnUiThread.exec(new Runnable() {
 				public void run() {
@@ -443,15 +451,25 @@ public class MapView extends BaseActivity implements MapTouch {
 
 	public void destroyDevice() {
 		mNativeDevice = 0;
+		mIsInExitProcess = true;
 	}
 	
 	@Override
 	public void touchClick(Touch touch) {
-		click(mNativeDevice, (int)touch.x, (int)touch.y);
+		if (mIsInExitProcess) {
+			return;
+		}
+		if (0 != click(mNativeDevice, (int)touch.x, (int)touch.y) ) {
+			// block all UI because we in exit process from now !
+			mIsInExitProcess = true;
+		}
 	}
 	
 	@Override
 	public void touchDown(Touch first, Touch second) {
+		if (mIsInExitProcess) {
+			return;
+		}
 		mTouchFirst = first;
 		mTouchSecond = second;
 		if (ENABLE_MULTI_TOUCH) {
@@ -465,6 +483,9 @@ public class MapView extends BaseActivity implements MapTouch {
 
 	@Override
 	public void touchUp(Touch first, Touch second) {
+		if (mIsInExitProcess) {
+			return;
+		}
 		mTouchFirst = first;
 		mTouchSecond = second;
 		if (ENABLE_MULTI_TOUCH) {
@@ -482,6 +503,9 @@ public class MapView extends BaseActivity implements MapTouch {
 
 	@Override
 	public void touchMove(Touch first, Touch second) {
+		if (mIsInExitProcess) {
+			return;
+		}
 		if (first == null || second == null) {
 			// Move
 			Touch t = first == null ? second : first;
