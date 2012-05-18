@@ -2,6 +2,8 @@
 
 The Near Field Communications (NFC) API allows you to use NFC functionality in your Rhodes application. With the NFC API, you can check to see if the mobile device supports NFC, and if so, have it listen for an NFC tag and register a callback if it finds one. You can also have your device push out an NFC tag. 
 
+**NOTE: As of Rhodes version 3.3.3, the NFC API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhoelements/rhoelements-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements']( /rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
+
 Example Code
 -----------
 Example code for NFC is located here.
