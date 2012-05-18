@@ -597,15 +597,12 @@ void CSyncSource::processServerErrors(CJSONEntry& oCmds)
 {
     String strServerError;
     const char* arErrTypes[] = {"source-error", "search-error", "create-error", "update-error", "delete-error", "update-rollback", null};
-    boolean bRes = false;
     for( int i = 0; ; i++ )
     {
         if ( arErrTypes[i] == null )
             break;
         if ( !oCmds.hasName(arErrTypes[i]) )
             continue;
-
-        bRes = true;
 
         CJSONEntry errSrc = oCmds.getEntry(arErrTypes[i]);
         CJSONStructIterator errIter(errSrc);
@@ -651,7 +648,8 @@ void CSyncSource::processServerErrors(CJSONEntry& oCmds)
         }
     }
 
-    getNotify().fireSyncNotification2(this, true, RhoAppAdapter.ERR_CUSTOMSYNCSERVER, strServerError);
+    if ( strServerError.length() > 0 )
+        getNotify().fireSyncNotification2(this, true, RhoAppAdapter.ERR_CUSTOMSYNCSERVER, strServerError);
 }
 
 void CSyncSource::processServerResponse_ver3(CJSONArrayIterator& oJsonArr)
