@@ -37,6 +37,8 @@ Rhodes provide access to device specific capabilities such as GPS, PIM, camera, 
 	<tr><td class='cap'>Printing</td><td>3.4</td><td>3.4</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td></tr>
 </table>	
 
+**NOTE: As of Rhodes version 3.3.3, the [Barcode](/rhodes/device-caps#barcode), [NFC](/rhodes/device-caps#nfc), and [Signature Capture](/rhodes/device-caps#signature-capture) APIs, as well as [Rhom data encryption](/rhodes/rhom#database-encryption) are removed from Rhodes. These features are only supported in Motorola RhoMobile Suite. If you wish to use these features, you will need to [upgrade to RhoMobile Suite](/rhoelements/rhoelements-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements']( /rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
+
 ## System class
 The System Ruby class provides access to the system specific information.
 
@@ -685,6 +687,8 @@ See controller and view in the /app/Image folder of the [ System API Samples app
 
 ## Barcode
 
+**NOTE: As of Rhodes version 3.3.3, the [Barcode](/rhodes/device-caps#barcode) API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/ rhoelements/rhoelements-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
+
 The Barcode API allows to try recognize barcode on an image:
 	:::ruby
 	Barcode.barcode_recognize(image_file_full_path)
@@ -717,6 +721,8 @@ In callback are these parameters.
 See controller and view in the /app/BarcodeRecognizer folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BarcodeRecognizer/controller.rb) for more information.
 
 ## Signature Capture
+
+**NOTE: As of Rhodes version 3.3.3, the [Signature Capture](/rhodes/device-caps#signature-capture) API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/ rhoelements/rhoelements-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
 
 The Signature Capture API allow take a signature and save it as an image:
 	:::ruby
@@ -974,8 +980,9 @@ You can find complete example of using Bluetooth API in [Rhodes-System-Api-Sampl
 ## NFC
 
 NFC (Near Field Communication). NFC API provide access to NFC functionality. You can check NFC availability on current device and register callback for listen event when NFC tag near of device. Currently NFC supported only on Android. And also Android version must be 2.3.3 or later.
-NFC API implemented in native extension. You should add "nfc" to extension list in your nuild.yml before start using NFC in your application. Please see detailed doc : [Rhodes NFC extension](nfc)
+NFC API implemented in native extension. You should add "nfc" to extension list in your nuild.yml before start using NFC in your application. Please see detailed doc: [Rhodes NFC extension](/rhodes/nfc).
 
+**NOTE: As of Rhodes version 3.3.3, the [NFC](/rhodes/nfc) API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhoelements/rhoelements-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
 
 ## Ringtone manager
 
