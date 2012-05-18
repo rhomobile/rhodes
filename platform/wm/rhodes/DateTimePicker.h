@@ -30,7 +30,7 @@
 #include "OkCancelModalDialog.h"
 #include "resource.h"
 
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
 #include "qt/rhodes/impl/DateTimePickerImpl.h"
 #else
 //TODO: delegates
