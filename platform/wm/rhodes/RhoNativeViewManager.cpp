@@ -98,7 +98,7 @@ public:
 	virtual void run() {
 		CMainWindow* mw = Rhodes_getMainWindow();
 		String sn(mView->factory_holder->viewtype);
-#ifndef RHODES_EMULATOR
+#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
 		mw->openNativeView(mView->factory_holder->factory, mView->n_view, sn);
 #endif
 		//delete this;
@@ -114,7 +114,7 @@ public:
 	}
 	virtual void run() {
 		CMainWindow* mw = Rhodes_getMainWindow();
-#ifndef RHODES_EMULATOR
+#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
 		mw->closeNativeView();
 #endif
 		//delete this;

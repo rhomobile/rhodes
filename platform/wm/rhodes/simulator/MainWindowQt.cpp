@@ -388,17 +388,29 @@ void CMainWindow::createToolbar(rho_param *p)
                     if ( icon && *icon )
                         strImagePath = rho::common::CFilePath::join( RHODESAPP().getRhoRootPath(), icon );
                     else {
+#if defined(RHODES_EMULATOR)
+#define RHODES_EMULATOR_PLATFORM_STR ".wm"
+#elif defined(RHO_SYMBIAN)
+#define RHODES_EMULATOR_PLATFORM_STR ".sym"
+#else
+#define RHODES_EMULATOR_PLATFORM_STR
+#endif
                         if ( strcasecmp(action, "options")==0 )
-                            strImagePath = "res/options_btn.wm.png";
+                            strImagePath = "res/options_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
                         else if ( strcasecmp(action, "home")==0 )
-                            strImagePath = "res/home_btn.wm.png";
+                            strImagePath = "res/home_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
                         else if ( strcasecmp(action, "refresh")==0 )
-                            strImagePath = "res/refresh_btn.wm.png";
+                            strImagePath = "res/refresh_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
                         else if ( strcasecmp(action, "back")==0 )
-                            strImagePath = "res/back_btn.wm.png";
+                            strImagePath = "res/back_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
                         else if ( strcasecmp(action, "forward")==0 )
-                            strImagePath = "res/forward_btn.wm.png";
+                            strImagePath = "res/forward_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
+#undef RHODES_EMULATOR_PLATFORM_STR
+#ifdef RHODES_EMULATOR
                         strImagePath = strImagePath.length() > 0 ? CFilePath::join( RHOSIMCONF().getRhoRuntimePath(), "lib/framework/" + strImagePath) : String();
+#else
+                        strImagePath = strImagePath.length() > 0 ? CFilePath::join( rho_native_reruntimepath() , "lib/" + strImagePath) : String();
+#endif
                     }
 
                     ((QtMainWindow*)qtMainWindow)->toolbarAddAction(QIcon(QString(strImagePath.c_str())), QString(label), action, wasSeparator);

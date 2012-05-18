@@ -177,7 +177,7 @@ public :
 	CMainWindow* GetMainWindowObject() { return &m_appWindow;}
 	CMainWindow& GetAppWindow() { return m_appWindow; }
 	HWND GetWebViewWindow(int index) {	return m_appWindow.getWebViewHWND(
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
             index
 #endif
         );
@@ -197,7 +197,7 @@ HINSTANCE CRhodesModule::m_hInstance;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
 
-#ifndef RHODES_EMULATOR
+#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 {
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
@@ -206,7 +206,7 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
     return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 }
-#endif //RHODES_EMULATOR
+#endif //!RHODES_EMULATOR && !RHODES_WIN32
 
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( )
 {
@@ -388,7 +388,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
     // Note: In this sample, we don't respond differently to different hr success codes.
 
-#ifndef RHODES_EMULATOR
+#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
     // Allow only one instance of the application.
     // the "| 0x01" activates the correct owned window of the previous instance's main window
 	HWND hWnd = NULL;
@@ -537,14 +537,18 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     dwStyle |= WS_OVERLAPPEDWINDOW;
 #endif
     // Create the main application window
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
 #ifdef RHODES_EMULATOR
-    m_appWindow.Initialize(convertToStringW(RHOSIMCONF().getString("app_name")).c_str());
+    StringW windowTitle = convertToStringW(RHOSIMCONF().getString("app_name"));
+#else
+    StringW windowTitle = convertToStringW(RHODESAPP().getAppTitle());
+#endif
+    m_appWindow.Initialize(windowTitle.c_str());
     if (NULL == m_appWindow.m_hWnd)
     {
         return S_FALSE;
     }
     m_appWindow.ShowWindow(nShowCmd);
-
 #else
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
@@ -583,14 +587,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         registerRhoExtension();
 #endif
 	    m_appWindow.Navigate2(_T("about:blank")
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
             , -1
 #endif
         );
         
         rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
 /*    	m_appWindow.Navigate2( convertToStringW( RHOCONF().getString("start_path") ).c_str()
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
             , -1
 #endif
         );*/
@@ -601,7 +605,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
         // Navigate to the "loading..." page
 	    m_appWindow.Navigate2(_T("about:blank")
-    #ifdef RHODES_EMULATOR
+    #if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
             , -1
     #endif
         );
@@ -655,7 +659,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
 void CRhodesModule::RunMessageLoop( ) throw( )
 {
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
     m_appWindow.MessageLoop();
 #else
     m_appWindow.getWebKitEngine()->RunMessageLoop(m_appWindow);
@@ -677,7 +681,7 @@ void CRhodesModule::RunMessageLoop( ) throw( )
     rho_clientregister_destroy();
 #endif
 
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
     m_appWindow.DestroyUi();
 #endif
 
@@ -685,7 +689,7 @@ void CRhodesModule::RunMessageLoop( ) throw( )
 
     net::CNetRequestImpl::deinitConnection();
 
-#ifndef RHODES_EMULATOR
+#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
 //	ReleaseMutex(m_hMutex);
 #endif
 }
@@ -915,7 +919,7 @@ extern "C" void Init_openssl(void)
 //{
 //}
 
-#ifndef RHODES_EMULATOR
+#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
 extern "C" void Init_fcntl(void)
 {
 }

@@ -59,7 +59,7 @@ void rho_webview_navigate(const char* url, int index)
     }
 
     String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
     TNavigateData* nd = (TNavigateData*)malloc(sizeof(TNavigateData));
     nd->index = index;
     nd->url = _tcsdup(convertToStringW(strUrl).c_str());
@@ -90,7 +90,7 @@ const char* rho_webview_execute_js(const char* js, int index)
     StringW strJsW;
     convertToStringW(js, strJsW);
 
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
     TNavigateData* nd = (TNavigateData*)malloc(sizeof(TNavigateData));
     nd->index = index;
     nd->url = _tcsdup(strJsW.c_str());
@@ -109,7 +109,7 @@ const char* rho_webview_current_location(int index)
 
 int rho_webview_active_tab() 
 {
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
     return getAppWindow().tabbarGetCurrent();
 #else
 	return 0;

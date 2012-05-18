@@ -31,7 +31,7 @@
 #include "common/RhoFilePath.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/app_build_capabilities.h"
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
 #undef null
 #include <QWebPage>
 #endif
@@ -379,7 +379,7 @@ static void toHexString(int i, String& strRes, int radix)
     strRes += (buf+f+1);
 }
 
-#ifndef RHODES_EMULATOR
+#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
 int get_msie_version(rho::String& msieVer)
 // Return codes are as follows:
 //    0  : Success
@@ -429,7 +429,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
 	if (strcasecmp("webview_framework",szPropName) == 0)
 	{
-#ifdef RHODES_EMULATOR
+#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
 		*resValue = rho_ruby_create_string("WEBKIT/" QTWEBKIT_VERSION_STR);
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 		*resValue = rho_ruby_create_string("WEBKIT/MOTOROLA");

@@ -115,7 +115,9 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     QWebViewSelectionSuppressor* suppressor = new QWebViewSelectionSuppressor(this->ui->webView);
 #endif
 
+#if defined(RHODES_EMULATOR)
     webInspectorWindow->show();
+#endif
 }
 
 QtMainWindow::~QtMainWindow()

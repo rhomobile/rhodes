@@ -29,7 +29,7 @@
 #include <wininet.h>
 #include "net/INetRequest.h"
 #include "logging/RhoLog.h"
-#if defined(RHO_SYMBIAN) || defined(RHODES_EMULATOR)
+#if defined(RHO_SYMBIAN) || defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
 #include <atlstr.h>
 #endif
 
