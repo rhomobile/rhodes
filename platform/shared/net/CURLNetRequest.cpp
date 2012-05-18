@@ -133,6 +133,7 @@ INetResponse *CURLNetRequest::makeResponse(Vector<char> const &body, int nErrorC
 
 INetResponse *CURLNetRequest::makeResponse(char const *body, size_t bodysize, int nErrorCode)
 {
+    RAWTRACE1("CURLNetRequest::makeResponse - nErrorCode: %d", nErrorCode);
     if (!body) {
         body = "";
         bodysize = 0;
@@ -255,6 +256,8 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         long statusCode = 0;
         if (curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &statusCode) != 0)
             statusCode = 500;
+        
+        RAWTRACE2("CURLNetRequest::doPull - Status code: %d, response size: %d", (int)statusCode, respChunk.size() );
 		
 		if (statusCode == 416 )
 		{
@@ -424,6 +427,7 @@ int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodys
         RAWTRACE("END RESPONSE-----");
     }
 
+    RAWTRACE1("CURLNetRequest::getResponseCode - Status code: %d", (int)statusCode);
     return (int)statusCode;
 }
 
@@ -726,7 +730,7 @@ CURLcode CURLNetRequest::CURLHolder::perform()
         if (result == CURLE_OK && noactivity >= timeout)
             result = CURLE_OPERATION_TIMEDOUT;
         if (result == CURLE_OK || result == CURLE_PARTIAL_FILE) {
-            RAWTRACE("Operation completed successfully");
+            RAWTRACE2("Operation completed successfully with result %d: %s", (int)result, curl_easy_strerror(result));
         }
         else {
             RAWLOG_ERROR2("Operation finished with error %d: %s", (int)result, curl_easy_strerror(result));
