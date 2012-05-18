@@ -817,7 +817,6 @@ namespace "run" do
       install_script = install_script.gsub(/%APPICON%/, "rhodes.ico")
       install_script = install_script.gsub(/%SCUNISTALLPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\Uninstall " + $appname + ".lnk\"")
       install_script = install_script.gsub(/%SCAPPPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\" + $appname + ".lnk\"")
-      install_script = install_script.gsub(/%APPEXEPATH%/, "\"C:\\" + $appname + "\\" + $appname + ".exe\"")
       install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
       File.open(app_script_name, "w") { |file| file.puts install_script }
 

@@ -8,7 +8,7 @@
 ; Installer Information
  
   Name %APPNAME% #"Rhodes Installer"
-  OutFile "RhodesBundle.exe"
+  OutFile "%APPNAME%-setup.exe"
   InstallDir %APPINSTALLDIR% #C:\Rhodes
   BrandingText " "
 
@@ -55,12 +55,12 @@ section
     # create the uninstaller
     writeUninstaller "$INSTDIR\uninstall.exe"
  
-    SetOutPath %SMPROGDIR% #"$SMPROGRAMS\RhoStudio"
+    #SetOutPath %SMPROGDIR% #"$SMPROGRAMS\RhoStudio"
     
     # create a shortcut named "new shortcut" in the start menu programs directory
     # point the new shortcut at the program uninstaller
-    createShortCut %SCAPPPATH% %APPEXEPATH% #"$INSTDIR\app.exe"
-    createShortCut %SCUNISTALLPATH% "$INSTDIR\uninstall.exe" #"$SMPROGRAMS\RhoStudio\Uninstall RhoStudio.lnk" "$INSTDIR\uninstall.exe"
+    createShortCut %SCAPPPATH% "$INSTDIR\%APP_EXECUTABLE%"
+    createShortCut %SCUNISTALLPATH% "$INSTDIR\uninstall.exe"
 
     # added information in 'unistall programs' in contorol panel
     #WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RhoStudio" \
@@ -79,9 +79,9 @@ section "uninstall"
     delete "$INSTDIR\uninstall.exe"
  
     # second, remove the link from the start menu    
-    delete %SCUNISTALLPATH% #"$SMPROGRAMS\RhoStudio\Uninstall RhoStudio.lnk"
-    delete %SCAPPPATH% #"$SMPROGRAMS\RhoStudio\RhoStudio.lnk"
-    delete %SMPROGDIR% #"$SMPROGRAMS\RhoStudio"
+    delete %SCUNISTALLPATH%
+    delete %SCAPPPATH%
+    # delete %SMPROGDIR% #"$SMPROGRAMS\RhoStudio"
 
     # remove $INSTDIR
     RMDir /r /REBOOTOK $INSTDIR
