@@ -2,11 +2,11 @@
 
 ## Mac OS
 
-If you're running Mac OS, download the latest [MotorolaRhoMobileSuite Installer for Macintosh](http://rhomobile.com/rhostudio-mac). This contains [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
+If you're running Mac OS, download the latest [Motorola RhoMobile Suite Installer for Macintosh](http://rhomobile.com/rhostudio-mac). This contains [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
 Although Mac OS has [Ruby](http://www.ruby-lang.org/en/) installed, the official way to install Ruby for RhoStudio is to install [Ruby Version Manager](https://rvm.io//) and then install Ruby version 1.9.3.
 
-Click on the MotorolaRhoMobileSuite Installer for Mac download file to open it. You will get a window similar to this:
+Click on the Motorola RhoMobile Suite Installer for Mac download file to open it. You will get a window similar to this:
 
 <img src="http://rhodocs.s3.amazonaws.com/rhodes-devel/rhostudio-mac-install.png" alt="RhoStudioInstaller Mac" />
 
@@ -18,7 +18,7 @@ Then drag Motorola RhoStudio to the Applications folder.
 
 ## Windows
 
-If you're running Windows, download and run the latest [MotorolaRhoMobileSuite Installer for Windows](http://rhomobile.com/rhostudio-windows) and run it. This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
+If you're running Windows, download and run the latest [Motorola RhoMobile Suite Installer for Windows](http://rhomobile.com/rhostudio-windows) and run it. This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
 If you are running Windows 64-bit, you need to use 32-bit Java when you run RhoStudio. You can include the 32-bit Java in the PATH, or you can run RhoStudio with a link to 32-bit Java:
 
