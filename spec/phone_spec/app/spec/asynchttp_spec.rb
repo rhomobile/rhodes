@@ -62,7 +62,7 @@ if !defined?(RHO_WP7)
         puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should == 12554
+        res['headers']['content-length'].to_i.should == 12562
         res['http_error'].should == '206'
         #res['headers']['content-type'].should == 'image/jpeg'
 
