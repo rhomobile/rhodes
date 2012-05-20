@@ -1855,6 +1855,9 @@ extern void rho_sys_app_exit();
 #define unzip_file rho_sys_unzip_file
 extern int rho_sys_unzip_file(const char *path, const char* pwd);
 
+#define zip_file rho_sys_zip_file
+extern int rho_sys_zip_file( const char *zip_file_path, const char * tozip_path, const char* zip_pwd );
+
 #define set_sleeping rho_sys_set_sleeping
 extern int rho_sys_set_sleeping(int sleeping);
 
@@ -1976,7 +1979,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:C:\Install\swigwin-2.0.4\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LL(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2354,6 +2357,60 @@ _wrap_unzip_file(int argc, VALUE *argv, VALUE self) {
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_zip_file(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
+  int result;
+  VALUE vresult = Qnil;
+  
+  {
+    arg3 = 0;
+  }
+  if ((argc < 2) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","zip_file", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","zip_file", 2, argv[1] ));
+  }
+  arg2 = (char *)(buf2);
+  if (argc > 2) {
+    res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","zip_file", 3, argv[2] ));
+    }
+    arg3 = (char *)(buf3);
+  }
+  result = (int)zip_file((char const *)arg1,(char const *)arg2,(char const *)arg3);
+  vresult = SWIG_From_int((int)(result));
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return vresult;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
 }
 
@@ -3029,6 +3086,7 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "set_screen_rotation_notification", _wrap_set_screen_rotation_notification, -1);
   rb_define_module_function(mSystem, "exit", _wrap_exit, -1);
   rb_define_module_function(mSystem, "unzip_file", _wrap_unzip_file, -1);
+  rb_define_module_function(mSystem, "zip_file", _wrap_zip_file, -1);
   rb_define_module_function(mSystem, "set_sleeping", _wrap_set_sleeping, -1);
   rb_define_module_function(mSystem, "run_app", _wrap_run_app, -1);
   rb_define_module_function(mSystem, "bring_to_front", _wrap_bring_to_front, -1);

@@ -30,6 +30,9 @@ extern void rho_sys_app_exit();
 #define unzip_file rho_sys_unzip_file
 extern int rho_sys_unzip_file(const char *path, const char* pwd);
 
+#define zip_file rho_sys_zip_file
+extern int rho_sys_zip_file( const char *zip_file_path, const char * tozip_path, const char* zip_pwd );
+
 #define set_sleeping rho_sys_set_sleeping
 extern int rho_sys_set_sleeping(int sleeping);
 
@@ -119,6 +122,7 @@ extern void set_push_notification( const char *url, const char* params);
 extern void set_screen_rotation_notification(const char *url, const char* params);
 extern void exit();
 extern int unzip_file( const char *path, const char* zip_pwd );
+extern int zip_file( const char *zip_file_path, const char * tozip_path, const char* zip_pwd );
 extern int set_sleeping( bool sleeping );
 extern void run_app(const char *appname, VALUE params);
 extern void bring_to_front();

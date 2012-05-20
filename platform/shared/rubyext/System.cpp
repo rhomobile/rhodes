@@ -31,6 +31,8 @@
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
 #include "common/app_build_capabilities.h"
+#include "common/RhoFilePath.h"
+#include "unzip/zip.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoSystem"
@@ -193,6 +195,96 @@ void rho_sys_start_timer( int interval, const char *url, const char* params)
 void rho_sys_stop_timer( const char *url )
 {
     RHODESAPP().getTimer().stopTimer(url);
+}
+
+int rho_sys_zip_file(const char* szZipFilePath, const char* szToZipPath, const char* psw)
+{
+#if defined(UNICODE) && defined(WIN32)
+    rho::StringW strZipFilePathW;
+    rho::common::convertToStringW(szZipFilePath, strZipFilePathW);
+
+    rho::common::CFilePath oPath(szToZipPath);
+    rho::StringW strFileNameW;
+    rho::common::convertToStringW(oPath.getBaseName(), strFileNameW);
+
+    rho::StringW strToZipPathW;
+    rho::common::convertToStringW(szToZipPath, strToZipPathW);
+
+    HZIP hz = CreateZip(strZipFilePathW.c_str(), psw);
+    if ( !hz )
+        return -1;
+
+    ZRESULT res = ZipAdd( hz, strFileNameW.c_str(), strToZipPathW.c_str() );
+
+    res = CloseZip(hz);
+
+    return res;
+#else
+
+    HZIP hz = CreateZip(szZipFilePath, psw);
+    if ( !hz )
+        return -1;
+
+    rho::common::CFilePath oPath(szToZipPath);
+
+    ZRESULT res = ZipAdd( hz, oPath.getBaseName(), szToZipPath );
+
+    res = CloseZip(hz);
+
+    return res;
+
+#endif
+
+    return 0;
+/*
+    HZIP hz = CreateZip(L"c:\\simple1.zip",psw);
+    ZipAdd(hz,L"znsimple.bmp", L"c:\\simple.bmp");
+    ZipAdd(hz,L"znsimple.txt", L"c:\\simple.txt");
+    CloseZip(hz);
+
+    return 1;
+*/
+/*
+    rho::common::CFilePath oPath(szZipPath);
+    rho::String strBaseDir = oPath.getFolderName();
+#if defined(UNICODE) && defined(WIN32)
+    rho::StringW strZipPathW;
+    rho::common::convertToStringW(szZipPath, strZipPathW);
+    HZIP hz = OpenZipFile(strZipPathW.c_str(), psw);
+    if ( !hz )
+        return -1;
+
+	// Set base for unziping
+    SetUnzipBaseDir(hz, rho::common::convertToStringW(strBaseDir).c_str());
+#else
+    HZIP hz = OpenZipFile(szZipPath, psw);
+    if ( !hz )
+        return -1;
+
+	// Set base for unziping
+    SetUnzipBaseDir(hz,strBaseDir.c_str() );
+#endif
+
+    ZIPENTRY ze;
+    ZRESULT res = 0;
+	// Get info about the zip
+	// -1 gives overall information about the zipfile
+	res = GetZipItem(hz,-1,&ze);
+	int numitems = ze.index;
+
+	// Iterate through items and unzip them
+	for (int zi = 0; zi<numitems; zi++)
+	{ 
+		// fetch individual details, e.g. the item's name.
+		res = GetZipItem(hz,zi,&ze); 
+        if ( res == ZR_OK )
+    		res = UnzipItem(hz, zi, ze.name);         
+	}
+
+	CloseZip(hz);
+
+    return res;
+*/
 }
 
 } //extern "C"
