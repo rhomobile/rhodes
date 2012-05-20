@@ -29,7 +29,35 @@ describe "System" do
    			System::app_installed?("mythebesttestandroidapplication")
    	end
    end
-  
+
+if !defined?(RHO_WP7) && System.get_property('platform') != 'Blackberry'
+    it "should test zip/unzip" do
+
+        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'ziptest.txt')
+        file_name_zip = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'ziptest.zip')
+        
+        File.delete(file_name) if File.exists?(file_name)
+        File.exists?(file_name).should ==  false
+
+        File.delete(file_name_zip) if File.exists?(file_name_zip)
+        File.exists?(file_name_zip).should ==  false
+
+        write_data  = "this is zip rhodes test"
+        f = File.new(file_name, "wb")
+        f.write(write_data)
+        f.close
+
+        System.zip_file(file_name_zip, file_name)
+        File.exists?(file_name_zip).should == true
+        
+        File.delete(file_name) if File.exists?(file_name)
+        File.exists?(file_name).should ==  false
+
+        System.unzip_file(file_name_zip)
+        File.exists?(file_name).should == true
+    end    
+end
+    
 end
 
 describe "RhoConfig" do
@@ -164,12 +192,10 @@ describe "RhoRuby" do
 
   it "should create octet string" do
     val = "\1\2\3\0\5\8\6\7\34\39" #octet numbers
-=begin    
-    val[3].should == "\x00"
-    val[8].should == "\x1C"
-    val[9].should == "\x03"
-    val[10].should == '9'
-=end          
+    #val[3].should == "\x00"
+    #val[8].should == "\x1C"
+    #val[9].should == "\x03"
+    #val[10].should == '9'
   end
 if !defined?(RHO_WP7)
   it "should support encoding" do
@@ -179,10 +205,8 @@ end
   
   it "should create hex string" do
     val = "\x21\x43"
-=begin        
-    val[0].should == "\x21"
-    val[1].should == "\x43"
-=end              
+    #val[0].should == "\x21"
+    #val[1].should == "\x43"
   end
 
   it "should base64 binary string" do
