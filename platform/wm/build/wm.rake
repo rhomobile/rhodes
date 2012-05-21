@@ -144,6 +144,26 @@ namespace "config" do
     #puts $app_config["wm"]["use_shared_runtime"].inspect
     #puts $use_shared_runtime.inspect
   end
+
+  namespace "win32" do
+    task :qt do
+      $vscommontools = ENV['VS90COMNTOOLS']
+      unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
+        puts "\nPlease, set VS90COMNTOOLS environment variable to Common7\Tools directory path of Visual Studio 2008"
+        exit 1
+      end
+      $qtdir = ENV['QTDIR']
+      unless !$qtdir.nil? && ($qtdir !~ /^\s*$/) && File.directory?($qtdir)
+        puts "\nPlease, set QTDIR environment variable to Qt root directory path"
+        exit 1
+      end
+      $opensslhome = ENV['OPENSSL']
+      unless !$opensslhome.nil? && ($opensslhome !~ /^\s*$/) && File.directory?($opensslhome)
+        puts "\nWARNING: Please, set OPENSSL environment variable to OpenSSL root directory path, if Qt was built with OpenSSL"
+        $opensslhome = nil
+      end
+    end
+  end
 end
 
 namespace "build" do
@@ -247,6 +267,33 @@ namespace "build" do
   end #wm
   
   namespace "win32" do
+    task :deployqt => "config:win32:qt" do
+      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.CRT")
+      cp File.join(vsredistdir, "msvcm90.dll"), $target_path
+      cp File.join(vsredistdir, "msvcp90.dll"), $target_path
+      cp File.join(vsredistdir, "msvcr90.dll"), $target_path
+      cp File.join(vsredistdir, "Microsoft.VC90.CRT.manifest"), $target_path
+      if !$opensslhome.nil?
+        cp File.join($opensslhome, "bin/libeay32.dll"), $target_path
+        cp File.join($opensslhome, "bin/ssleay32.dll"), $target_path
+      end
+      cp File.join($qtdir, "bin/phonon4.dll"), $target_path
+      cp File.join($qtdir, "bin/QtCore4.dll"), $target_path
+      cp File.join($qtdir, "bin/QtGui4.dll"), $target_path
+      cp File.join($qtdir, "bin/QtNetwork4.dll"), $target_path
+      cp File.join($qtdir, "bin/QtWebKit4.dll"), $target_path
+      target_if_path = File.join($target_path, 'imageformats/')
+      if not File.directory?(target_if_path)
+        Dir.mkdir(target_if_path)
+      end
+      cp File.join($qtdir, "plugins/imageformats/qgif4.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qico4.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qjpeg4.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
+      cp File.join($qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
+    end
+
     task :extensions => "config:wm" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
@@ -304,7 +351,7 @@ namespace "build" do
 
     end
 
-    task :rhosimulator => ["config:set_win32_platform", "config:wm", "build:rhosimulator_version"] do
+    task :rhosimulator => ["config:set_win32_platform", "config:wm", "build:rhosimulator_version", "config:win32:qt"] do
       $rhosimulator_build = true
       $config["platform"] = $current_platform
       chdir $startdir
@@ -312,12 +359,6 @@ namespace "build" do
       Rake::Task["build:win32:extensions"].invoke
 
       chdir $config["build"]["wmpath"]
-
-      qtdir = ENV['QTDIR']
-      unless (qtdir !~/^\s*$/) and File.directory?(qtdir)
-        puts "\nPlease, set QTDIR environment variable to Qt root directory path"
-        exit 1
-      end
 
       args = ['/M4', $build_solution, '"SimulatorRelease|win32"']
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
@@ -330,27 +371,13 @@ namespace "build" do
         exit 1
       end
 
-      target_path = File.join( $startdir, "platform/win32/RhoSimulator/")
-      if not File.directory?(target_path)
-        Dir.mkdir(target_path)
+      $target_path = File.join( $startdir, "platform/win32/RhoSimulator/")
+      if not File.directory?($target_path)
+        Dir.mkdir($target_path)
       end
-      cp File.join($startdir, $vcbindir, "win32/rhodes/SimulatorRelease/rhosimulator.exe"), target_path
+      cp File.join($startdir, $vcbindir, "win32/rhodes/SimulatorRelease/rhosimulator.exe"), $target_path
 
-      cp File.join(qtdir, "bin/phonon4.dll"), target_path
-      cp File.join(qtdir, "bin/QtCore4.dll"), target_path
-      cp File.join(qtdir, "bin/QtGui4.dll"), target_path
-      cp File.join(qtdir, "bin/QtNetwork4.dll"), target_path
-      cp File.join(qtdir, "bin/QtWebKit4.dll"), target_path
-      target_if_path = File.join(target_path, 'imageformats/')
-      if not File.directory?(target_if_path)
-        Dir.mkdir(target_if_path)
-      end
-      cp File.join(qtdir, "plugins/imageformats/qgif4.dll"), target_if_path
-      cp File.join(qtdir, "plugins/imageformats/qico4.dll"), target_if_path
-      cp File.join(qtdir, "plugins/imageformats/qjpeg4.dll"), target_if_path
-      cp File.join(qtdir, "plugins/imageformats/qmng4.dll"), target_if_path
-      cp File.join(qtdir, "plugins/imageformats/qsvg4.dll"), target_if_path
-      cp File.join(qtdir, "plugins/imageformats/qtiff4.dll"), target_if_path
+      Rake::Task["build:win32:deployqt"].invoke
     end
 
   end
@@ -795,7 +822,7 @@ namespace "run" do
     end
 
     desc "Build production for Motorola device"
-    task :production => ["build:win32"] do
+    task :production => ["config:win32:qt", "build:win32"] do
 
       out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
       puts "out_dir - "  + out_dir
@@ -828,12 +855,18 @@ namespace "run" do
 
       chdir $bindir
 
-      cp_r  $srcdir, $bindir + "/rho"
+      target_rho_dir = File.join($bindir, "rho")
+      rm_rf target_rho_dir
+      mv $srcdir, target_rho_dir
+
+      $target_path = $bindir
+      Rake::Task["build:win32:deployqt"].invoke
+
       puts "$nsis - " + $nsis
       args = [$bindir + "/" + $appname + ".nsi"]
       puts "arg = " + args.to_s
-      puts Jake.run2($nsis, args, {:nowait => false} )
 
+      puts Jake.run2($nsis, args, {:nowait => false} )
     end
   end
 
