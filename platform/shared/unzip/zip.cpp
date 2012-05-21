@@ -1,3 +1,5 @@
+#include "common/RhoPort.h"
+
 #if defined (WIN32)
 #define _CRT_NON_CONFORMING_SWPRINTFS
 #define _CRT_SECURE_NO_WARNINGS
@@ -2536,23 +2538,28 @@ ZRESULT TZip::open_file(const TCHAR *fn)
 ZRESULT TZip::open_handle(HANDLE hf,unsigned int len)
 { 
   hfin=0; bufin=0; selfclosehf=false; crc=CRCVAL_INITIAL; isize=0; csize=0; ired=0;
-  if (hf==0 || hf==INVALID_HANDLE_VALUE) return ZR_ARGS;
+  if (hf==0 || hf==INVALID_HANDLE_VALUE) 
+      return ZR_ARGS;
+    
 #ifdef ZIP_STD
   fseek(hfout,0,SEEK_SET);
-
   iseekable=true; hfin=hf;
 #else
 
   DWORD res = SetFilePointer(hfout,0,0,FILE_CURRENT);
+    
   if (res!=0xFFFFFFFF)
-  { ZRESULT res = GetFileInfo(hf,&attr,&isize,&times,&timestamp);
-    if (res!=ZR_OK) return res;
+  { 
+    ZRESULT res = GetFileInfo(hf,&attr,&isize,&times,&timestamp);
+    if (res!=ZR_OK)
+        return res;
+      
     SetFilePointer(hf,0,NULL,FILE_BEGIN); // because GetFileInfo will have screwed it up
-    iseekable=true; hfin=hf;
-    return ZR_OK;
+    iseekable=true; hfin=hf;  
   }
   else
-  { attr= 0x80000000;      // just a normal file
+  { 
+    attr= 0x80000000;      // just a normal file
     isize = -1;            // can't know size until at the end
     if (len!=0) isize=len; // unless we were told explicitly!
     iseekable=false;
@@ -2564,9 +2571,9 @@ ZRESULT TZip::open_handle(HANDLE hf,unsigned int len)
     times.ctime = times.atime;
     timestamp = (WORD)dostime | (((DWORD)dosdate)<<16);
     hfin=hf;
-    return ZR_OK;
   }
 #endif
+  return ZR_OK;
 }
 
 /*
