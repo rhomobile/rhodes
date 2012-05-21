@@ -33,8 +33,11 @@ describe "System" do
 if !defined?(RHO_WP7) && System.get_property('platform') != 'Blackberry'
     it "should test zip/unzip" do
 
-        file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'ziptest.txt')
-        file_name_zip = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'ziptest.zip')
+		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
+		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
+
+        file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'ziptest.txt')
+        file_name_zip = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'ziptest.zip')
         
         File.delete(file_name) if File.exists?(file_name)
         File.exists?(file_name).should ==  false
