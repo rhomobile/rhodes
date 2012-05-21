@@ -280,7 +280,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         }
         
         if (err == CURLE_OPERATION_TIMEDOUT && respChunk.size() > 0) {
-            RAWTRACE("Connection was closed by timeout, but we have part of data received; try to restore connection");
+            RAWLOG_INFO("Connection was closed by timeout, but we have part of data received; try to restore connection");
             nStartFrom = oFile ? oFile->size() : respBody.size();
             continue;
         }
