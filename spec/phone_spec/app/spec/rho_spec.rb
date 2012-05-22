@@ -23,7 +23,7 @@ require 'date'
 require 'time'
 
 describe "System" do
-   
+
    it "should test app_installed?" do
    	[1..1000].each do |i|
    			System::app_installed?("mythebesttestandroidapplication")
@@ -31,7 +31,7 @@ describe "System" do
    end
 
 if !defined?(RHO_WP7) && System.get_property('platform') != 'Blackberry'
-    it "should test zip/unzip" do
+    it "should test zip/unzip file" do
 
 		dir_name = Rho::RhoApplication::get_app_path('DataTemp')
 		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
@@ -59,8 +59,59 @@ if !defined?(RHO_WP7) && System.get_property('platform') != 'Blackberry'
         System.unzip_file(file_name_zip)
         File.exists?(file_name).should == true
     end    
-end
+end    
+
+if System.get_property('platform') == 'WINDOWS'
+    it "should test zip/unzip folder" do
+
+		dir_name1 = Rho::RhoApplication::get_app_path('DataTemp')
+		Dir.mkdir(dir_name1) unless Dir.exists?(dir_name1)
+		dir_name = File.join(dir_name1, 'ZipFolder')
+		Dir.mkdir(dir_name) unless Dir.exists?(dir_name)
+
+        file_name = File.join(Rho::RhoApplication::get_app_path('DataTemp/ZipFolder'), 'ziptest.txt')
+        file_name1 = File.join(Rho::RhoApplication::get_app_path('DataTemp/ZipFolder'), 'ziptest1.txt')
+        file_name_zip = File.join(Rho::RhoApplication::get_app_path('DataTemp'), 'zipfolder.zip')
+        
+        File.delete(file_name) if File.exists?(file_name)
+        File.exists?(file_name).should ==  false
+        File.delete(file_name1) if File.exists?(file_name1)
+        File.exists?(file_name1).should ==  false
+
+        File.delete(file_name_zip) if File.exists?(file_name_zip)
+        File.exists?(file_name_zip).should ==  false
+
+        write_data  = "this is zip rhodes test"
+        f = File.new(file_name, "wb")
+        f.write(write_data)
+        f.close
+
+        write_data  = "this is zip rhodes test2"
+        f = File.new(file_name1, "wb")
+        f.write(write_data)
+        f.close
+
+        files = [] #[dir_name]
+        files += Dir.glob(File.join(dir_name, "*") )
+        puts "files: #{files}"
+        System.zip_files(file_name_zip, dir_name1, files)
+        File.exists?(file_name_zip).should == true
+        
+        File.delete(file_name) if File.exists?(file_name)
+        File.exists?(file_name).should ==  false
+        File.delete(file_name1) if File.exists?(file_name1)
+        File.exists?(file_name1).should ==  false
+        Dir.delete(dir_name) if Dir.exists?(dir_name)
+        Dir.exists?(dir_name).should ==  false
+
+        System.unzip_file(file_name_zip)
+        Dir.exists?(dir_name).should == true
+        File.exists?(file_name).should == true
+        File.exists?(file_name1).should == true
+    end    
     
+end
+
 end
 
 describe "RhoConfig" do
