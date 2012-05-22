@@ -67,50 +67,7 @@ Follow these instructions to build your own customized version of RhoSimulator.
 ### Preliminary steps for Windows
 
 * Currently only <b>Visual Studio 2008</b> is supported
-* Follow [Build for Windows - Prerequisites](build#build-for-windows), but do not install the Rhodes gem since you're going to use Rhodes SDK source.
-* Get the `rhodes` source (if haven't done it already) as described [here](build#setup-rhodes-source-code). Don't forget to add the `bin` folder to your path, run `rhodes-setup` and update Rhodes SDK path in `build.yml` at your application root folder.
-* First build the Qt libraries for VS 2008:
-    * Download the Qt source:
-        * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
-        * Jump to `Qt libraries`
-        * Download the [source code as a zip](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.zip) (237 MB)
-        * Extract the downloaded archive, e.g. into `C:\Qt\4.7.4`
-    * Prepare to build the OpenSSL library:
-        * Download [v1.0 source code](http://www.openssl.org/source/openssl-1.0.1.tar.gz) from [www.openssl.org](http://www.openssl.org/) and extract the downloaded archive, e.g. into `C:\Qt\openssl-1.0.1`
-        * Install Perl interpreter (if it's not installed yet), e.g. [ActiveState Perl](http://www.activestate.com/activeperl)
-        * Install [Netwide Assembler (NASM)](http://www.nasm.us/pub/nasm/releasebuilds/2.10/win32/nasm-2.10-installer.exe) from [www.nasm.us](http://www.nasm.us/) (if it's not installed yet)
-    * Open Control Panel » System » Advanced system settings » Environment Variables and then:
-        * Create new system variable `QTDIR` = `C:\Qt\4.7.4`
-        * Add to the `PATH` variable: `C:\Qt\4.7.4\bin;C:\Qt\openssl-1.0.1\bin` (it doesn't matter that `C:\Qt\openssl-1.0.1\bin` folder does not exist yet)
-        * Add to the `PATH` variable the path to `nasm.exe` (usually `C:\Program Files\nasm`)
-        * Either close all command prompts and Visual Studio instances, or reboot the computer so the new settings take effect.
-    * Open Visual Studio 2008 Command Prompt. This is accomplished using Start » All Programs » Microsoft Visual Studio 2008 » Visual Studio Tools » Visual Studio 2008 Command Prompt. Run in Visual Studio 2008 Command Prompt:
-
-			> vcvarsall.bat x86
-			> C:
-
-    * To build OpenSSL library run in the same command prompt:
-
-			> cd \Qt\openssl-1.0.1
-			> perl Configure VC-WIN32 enable-static-engine --prefix=C:/Qt/openssl-1.0.1
-			> ms\do_nasm
-			> nmake -f ms\ntdll.mak
-			> nmake -f ms\ntdll.mak install
-			> nmake -f ms\ntdll.mak clean
-
-    * To build Qt library run in the same command prompt:
-
-			> cd \Qt\4.7.4
-			> configure -opensource -platform win32-msvc2008
-			  -nomake examples -nomake demos -nomake docs
-			  -qt-libpng -qt-libjpeg -qt-libtiff -qt-libmng -qt-gif
-			  -openssl-linked -I C:/Qt/openssl-1.0.1/include
-			  -L C:/Qt/openssl-1.0.1/lib
-			> nmake
-			> nmake clean
-
-      Be aware that it will take a while to build the Qt libraries from sources (maybe few hours or so). Particularly the `configure` command may run for a few minutes, and the `nmake` command may run for a few hours.
-    * After the build process is completed exit Visual Studio 2008 Command Prompt
+* Follow [Build for Windows - Prerequisites](build#build-for-windows)
 
 ### Preliminary steps for Mac OS X
 
@@ -160,7 +117,7 @@ To run Rhodes applications in the custom built RhoSimulator, please ensure that 
 ### Build RhoSimulator for Windows in Visual Studio 2008:
 
 * Open the solution:
-  `C:\Rhomobile\rhodes\platform\wm\rhodes.sln`
+  `<path-to-ruby>\lib\ruby\gems\<version-number>\gems\rhodes-<version-number>\platform\wm\rhodes.sln`
 * Build solution for the configuration `SimulatorRelease|Win32`
 * Specify the path to custom built RhoSimulator at `rhobuild.yml`:
         env:
