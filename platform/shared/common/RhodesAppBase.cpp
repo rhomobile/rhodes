@@ -164,13 +164,20 @@ int rho_sys_unzip_file(const char* szZipPath, const char* psw)
 	res = GetZipItem(hz,-1,&ze);
 	int numitems = ze.index;
 
+    LOG(INFO) + "Unzip : " + szZipPath + "; Number of items : " + numitems;
 	// Iterate through items and unzip them
 	for (int zi = 0; zi<numitems; zi++)
 	{ 
 		// fetch individual details, e.g. the item's name.
 		res = GetZipItem(hz,zi,&ze); 
         if ( res == ZR_OK )
-    		res = UnzipItem(hz, zi, ze.name);         
+        {
+    		res = UnzipItem(hz, zi, ze.name);
+            if ( res != 0 )
+                LOG(ERROR) + "Unzip item failed: " + res + "; " + ze.name; 
+        }
+        else
+            LOG(ERROR) + "Get unzip item failed: " + res + "; " + zi; 
 	}
 
 	CloseZip(hz);

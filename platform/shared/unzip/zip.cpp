@@ -1,10 +1,5 @@
 #include "common/RhoPort.h"
 
-#if defined (WIN32)
-#define _CRT_NON_CONFORMING_SWPRINTFS
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #if defined(WIN32) || defined(_WIN32_WCE)
 #define _CRT_SECURE_NO_DEPRECATE 1
 #else
@@ -2353,7 +2348,7 @@ class TZip
   ZRESULT open_file(const TCHAR *fn);
   ZRESULT open_handle(HANDLE hf,unsigned int len);
   //ZRESULT open_mem(void *src,unsigned int len);
-  //ZRESULT open_dir();
+  ZRESULT open_dir();
   static unsigned sread(TState &s,char *buf,unsigned size);
   unsigned read(char *buf, unsigned size);
   ZRESULT iclose();
@@ -2592,12 +2587,14 @@ ZRESULT TZip::open_mem(void *src,unsigned int len)
   times.ctime = times.atime;
   timestamp = (WORD)dostime | (((DWORD)dosdate)<<16);
   return ZR_OK;
-}
+}*/
+
 ZRESULT TZip::open_dir()
 { hfin=0; bufin=0; selfclosehf=false; crc=CRCVAL_INITIAL; isize=0; csize=0; ired=0;
   attr= 0x41C00010; // a readable writable directory, and again directory
   isize = 0;
   iseekable=false;
+#ifndef ZIP_STD
   SYSTEMTIME st; GetLocalTime(&st);
   FILETIME ft;   SystemTimeToFileTime(&st,&ft);
   WORD dosdate,dostime; filetime2dosdatetime(ft,&dosdate,&dostime);
@@ -2605,8 +2602,10 @@ ZRESULT TZip::open_dir()
   times.mtime = times.atime;
   times.ctime = times.atime;
   timestamp = (WORD)dostime | (((DWORD)dosdate)<<16);
+#else
+#endif
   return ZR_OK;
-}*/
+}
 
 unsigned TZip::sread(TState &s,char *buf,unsigned size)
 { // static
@@ -2718,7 +2717,7 @@ ZRESULT TZip::Add(const TCHAR *odstzn, void *src,unsigned int len, DWORD flags)
   if (flags==ZIP_FILENAME) openres=open_file((const TCHAR*)src);
   else if (flags==ZIP_HANDLE) openres=open_handle((HANDLE)src,len);
   //else if (flags==ZIP_MEMORY) openres=open_mem(src,len);
-  //else if (flags==ZIP_FOLDER) openres=open_dir();
+  else if (flags==ZIP_FOLDER) openres=open_dir();
   else return ZR_ARGS;
   if (openres!=ZR_OK) return openres;
 
@@ -2958,7 +2957,7 @@ ZRESULT ZipAdd(HZIP hz,const TCHAR *dstzn, const TCHAR *fn) {return ZipAddIntern
 ZRESULT ZipAdd(HZIP hz,const TCHAR *dstzn, void *src,unsigned int len) {return ZipAddInternal(hz,dstzn,src,len,ZIP_MEMORY);}
 ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h) {return ZipAddInternal(hz,dstzn,h,0,ZIP_HANDLE);}
 ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h, unsigned int len) {return ZipAddInternal(hz,dstzn,h,len,ZIP_HANDLE);}
-ZRESULT ZipAddFolder(HZIP hz,const TCHAR *dstzn) {return ZipAddInternal(hz,dstzn,0,0,ZIP_FOLDER);}
+ZRESULT ZipAddFolder(HZIP hz,const TCHAR *dstzn, const TCHAR *fn) {return ZipAddInternal(hz,dstzn,(void*)fn,0,ZIP_FOLDER);}
 
 
 

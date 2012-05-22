@@ -79,7 +79,8 @@ ZRESULT ZipAdd(HZIP hz,const TCHAR *dstzn, const TCHAR *fn);
 ZRESULT ZipAdd(HZIP hz,const TCHAR *dstzn, void *src,unsigned int len);
 ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h);
 ZRESULT ZipAddHandle(HZIP hz,const TCHAR *dstzn, HANDLE h, unsigned int len);
-ZRESULT ZipAddFolder(HZIP hz,const TCHAR *dstzn);
+ZRESULT ZipAddFolder(HZIP hz,const TCHAR *dstzn, const TCHAR *fn);
+
 // ZipAdd - call this for each file to be added to the zip.
 // dstzn is the name that the file will be stored as in the zip file.
 // The file to be added to the zip can come
