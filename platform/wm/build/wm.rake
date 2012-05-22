@@ -273,6 +273,9 @@ namespace "build" do
       cp File.join(vsredistdir, "msvcp90.dll"), $target_path
       cp File.join(vsredistdir, "msvcr90.dll"), $target_path
       cp File.join(vsredistdir, "Microsoft.VC90.CRT.manifest"), $target_path
+      vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
+      cp File.join(vsredistdir, "vcomp90.dll"), $target_path
+      cp File.join(vsredistdir, "Microsoft.VC90.OpenMP.manifest"), $target_path
       if !$opensslhome.nil?
         cp File.join($opensslhome, "bin/libeay32.dll"), $target_path
         cp File.join($opensslhome, "bin/ssleay32.dll"), $target_path
@@ -838,7 +841,6 @@ namespace "run" do
       install_script = install_script.gsub(/%APPNAME%/, $appname)
       install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
       install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
-      install_script = install_script.gsub(/%SMPROGDIR%/, $appname)
       install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
       install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
       install_script = install_script.gsub(/%APPICON%/, "rhodes.ico")

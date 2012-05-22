@@ -48,15 +48,12 @@
 
 # start default section
 section
-     
     # set the installation directory as the destination for the following actions
     setOutPath $INSTDIR
  
     # create the uninstaller
     writeUninstaller "$INSTDIR\uninstall.exe"
  
-    #SetOutPath %SMPROGDIR% #"$SMPROGRAMS\RhoStudio"
-    
     # create a shortcut named "new shortcut" in the start menu programs directory
     # point the new shortcut at the program uninstaller
     createShortCut %SCAPPPATH% "$INSTDIR\%APP_EXECUTABLE%"
@@ -74,14 +71,12 @@ sectionEnd
  
 # uninstaller section start
 section "uninstall"
- 
     # first, delete the uninstaller
     delete "$INSTDIR\uninstall.exe"
  
     # second, remove the link from the start menu    
     delete %SCUNISTALLPATH%
     delete %SCAPPPATH%
-    # delete %SMPROGDIR% #"$SMPROGRAMS\RhoStudio"
 
     # remove $INSTDIR
     RMDir /r /REBOOTOK $INSTDIR
@@ -91,7 +86,6 @@ sectionEnd
 
 
 Section %SECTION_NAME% appSection
- 
   SetOutPath $INSTDIR
  
   File /r "rho"
