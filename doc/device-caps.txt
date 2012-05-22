@@ -37,7 +37,7 @@ Rhodes provide access to device specific capabilities such as GPS, PIM, camera, 
 	<tr><td class='cap'>Printing</td><td>3.4</td><td>3.4</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td></tr>
 </table>	
 
-**NOTE: As of Rhodes version 3.3.3, the [Barcode](/rhodes/device-caps#barcode), [NFC](/rhodes/device-caps#nfc), and [Signature Capture](/rhodes/device-caps#signature-capture) APIs, as well as [Rhom data encryption](/rhodes/rhom#database-encryption) are removed from Rhodes. These features are only supported in Motorola RhoMobile Suite. If you wish to use these features, you will need to [upgrade to RhoMobile Suite](/rhoelements/rhoelements-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements']( /rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
+**NOTE: As of Rhodes version 3.3.3, the [Barcode](/rhodes/device-caps#barcode), [NFC](/rhodes/device-caps#nfc), and [Inline Signature Capture](/rhodes/device-caps#signature-capture) APIs, as well as [Rhom data encryption](/rhodes/rhom#database-encryption) are removed from Rhodes. These features are only supported in Motorola RhoMobile Suite. If you wish to use these features, you will need to [upgrade to RhoMobile Suite](/rhoelements/rhoelements-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements']( /rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
 
 ## System class
 The System Ruby class provides access to the system specific information.
@@ -722,8 +722,6 @@ See controller and view in the /app/BarcodeRecognizer folder of the [System API 
 
 ## Signature Capture
 
-**NOTE: As of Rhodes version 3.3.3, the [Signature Capture](/rhodes/device-caps#signature-capture) API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/ rhoelements/rhoelements-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
-
 The Signature Capture API allow take a signature and save it as an image:
 	:::ruby
 	Rho::SignatureCapture.take(callback_url, params)
@@ -752,6 +750,8 @@ After user entered signature (or canceled) provided callback url will be called.
  * signature_uri - path to the image with signature   
 
 ### Inline signature capture
+**NOTE: As of Rhodes version 3.3.3, the Inline Signature Capture API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/ rhoelements/rhoelements-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
+
 Windows Mobile and Windows CE devices support signature capture started in window, which you can show over current page(scrolling is not supported in this case).
 
 To display window hand writing, where user draw his signature call:
