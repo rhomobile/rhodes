@@ -841,7 +841,6 @@ namespace "run" do
       install_script = install_script.gsub(/%APPNAME%/, $appname)
       install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
       install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
-      install_script = install_script.gsub(/%SMPROGDIR%/, $appname)
       install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
       install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
       install_script = install_script.gsub(/%APPICON%/, "rhodes.ico")
