@@ -49,6 +49,7 @@ protected:
 
     String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath, m_strAppUserPath, m_strRuntimePath;//, m_strRhodesPath;
     String m_strHomeUrl;
+    boolean m_bSendingLog;
 
     CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
 public:
@@ -70,17 +71,55 @@ public:
 
     String canonicalizeRhoUrl(const String& strUrl) ;
     boolean isBaseUrl(const String& strUrl);
+    
+    void setSendingLog(boolean bSending){m_bSendingLog = bSending; }
+    boolean sendLog(const String& strCallbackUrl);
+    boolean sendLogInSameThread();
+
 
 protected:
     virtual void run(){}
 
     void initAppUrls();
 };
+    
+    template <typename T>
+    class CRhoCallInThread : public common::CRhoThread
+    {
+    public:
+        CRhoCallInThread(T* cb)
+        :CRhoThread(), m_cb(cb)
+        {
+            start(epNormal);
+        }
+        
+    private:
+        virtual void run()
+        {
+            m_cb->run(*this);
+        }
+        
+        virtual void runObject()
+        {
+            common::CRhoThread::runObject();
+            delete this;
+        }
+        
+    private:
+        common::CAutoPtr<T> m_cb;
+    };
+    
+    template <typename T>
+    void rho_rhodesapp_call_in_thread(T *cb)
+    {
+        new CRhoCallInThread<T>(cb);
+    }
 
 }
 }
 
 inline rho::common::CRhodesAppBase& RHODESAPPBASE(){ return *rho::common::CRhodesAppBase::getInstance(); }
+
 
 #endif //__cplusplus
 

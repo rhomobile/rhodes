@@ -202,6 +202,8 @@ void rho_logconf_saveSettings();
 void rho_logconf_freeString(char* str);
 
 int rho_conf_send_log(const char* callback_url);
+int rho_conf_send_log_in_same_thread();
+
 void rho_conf_clean_log();
     
 void rho_log_resetup_http_url(const char* http_log_url);    

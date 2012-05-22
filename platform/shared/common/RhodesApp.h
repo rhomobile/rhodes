@@ -84,7 +84,6 @@ private:
     //int m_activateCounter;
 
     common::CAutoPtr<common::CThreadQueue> m_appCallbacksQueue;
-    boolean m_bSendingLog;
     CExtManager* m_pExtManager;
 
 public:
@@ -147,8 +146,6 @@ public:
     void setExtManager( CExtManager* pExtManager ){m_pExtManager = pExtManager; }
     CExtManager&   getExtManager(){ return *m_pExtManager; }
 
-    boolean sendLog(const String& strCallbackUrl);
-
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
     unsigned long getCallbackObject(int nIndex);
 
@@ -168,7 +165,6 @@ public:
     const char* getFreeListeningPort();
     int determineFreeListeningPort();
 
-    void setSendingLog(boolean bSending){m_bSendingLog = bSending; }
 protected:
     virtual void run();
 
