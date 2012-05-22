@@ -59,9 +59,7 @@ if !defined?(RHO_WP7) && System.get_property('platform') != 'Blackberry'
         System.unzip_file(file_name_zip)
         File.exists?(file_name).should == true
     end    
-end    
-
-if System.get_property('platform') == 'WINDOWS'
+    
     it "should test zip/unzip folder" do
 
 		dir_name1 = Rho::RhoApplication::get_app_path('DataTemp')

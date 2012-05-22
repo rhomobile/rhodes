@@ -1,82 +1,4 @@
-#include "common/RhoPort.h"
-
-#if defined(WIN32) || defined(_WIN32_WCE)
-#define _CRT_SECURE_NO_DEPRECATE 1
-#else
-#define ZIP_STD
-#define far
-typedef long long __int64;
-#endif
-
-#ifdef ZIP_STD
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-#ifdef _MSC_VER
-#include <sys/utime.h> // microsoft puts it here
-#else
-#include <utime.h>
-#endif
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__MINGW32__)
-#include <direct.h>
-#define lumkdir(t) (mkdir(t))
-#else
-#include <unistd.h>
-#define lumkdir(t) (mkdir(t,0755))
-#endif
-#include <sys/types.h>
-/* RHO BEGIN */
-#include <common/stat.h>
-/* RHO END */
 #include "zip.h"
-//
-#define stricmp strcasecmp
-
-typedef unsigned short WORD;
-#define _tcslen strlen
-#define _tcsicmp stricmp
-#define _tcsncpy strncpy
-#define _tcsstr strstr
-#define _tcscpy strcpy
-#define INVALID_HANDLE_VALUE 0
-#ifndef _T
-#define _T(s) s
-#endif
-#ifndef S_IWUSR
-#define S_IWUSR 0000200
-#define S_ISDIR(m) (((m) & _S_IFMT) == _S_IFDIR)
-#define S_ISREG(m) (((m) & _S_IFMT) == _S_IFREG)
-#endif
-//
-#else
-#include <windows.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <tchar.h>
-#include "zip.h"
-#endif
-//
-#ifdef UNICODE
-
-#ifdef __SYMBIAN32__
-        #define _tcslen wcslen
-        #define _tcsncpy wcsncpy
-        #define _tcsstr wcsstr
-        #define _tsprintf swprintf
-        #define _T(x)       (TCHAR*)__T(x)
-#else
-#endif
-
-#if defined(WIN32) || defined(_WIN32_WCE)
-#define _tsprintf wsprintf
-#endif
-#else
-#define _tsprintf sprintf
-#endif
-
-
 // THIS FILE is almost entirely based upon code by info-zip.
 // It has been modified by Lucian Wischik. The modifications
 // were a complete rewrite of the bit of code that generates the
@@ -148,6 +70,10 @@ typedef unsigned IPos; // A Pos is an index in the character window. Pos is used
 #ifndef EOF
 #define EOF (-1)
 #endif
+
+
+
+
 
 
 // Error return values.  The values 0..4 and 12..18 follow the conventions
@@ -226,7 +152,7 @@ typedef unsigned IPos; // A Pos is an index in the character window. Pos is used
 // The minimum and maximum match lengths
 
 
-#define WSIZE   (0x8000)
+#define WSIZE  (0x8000)
 // Maximum window size = 32K. If you are really short of memory, compile
 // with a smaller WSIZE but this reduces the compression ratio for files
 // of size > WSIZE. WSIZE must be a power of two in the current implementation.
@@ -501,8 +427,8 @@ class TTreeState
   int base_dist[D_CODES];
   // First normalized distance for each code (0 = distance of 1)
 
-  uch far l_buf[LIT_BUFSIZE];  // buffer for literals/lengths
-  ush far d_buf[DIST_BUFSIZE]; // buffer for distances
+  uch l_buf[LIT_BUFSIZE];  // buffer for literals/lengths
+  ush d_buf[DIST_BUFSIZE]; // buffer for distances
 
   uch flag_buf[(LIT_BUFSIZE/8)];
   // flag_buf is a bit array distinguishing literals from lengths in
@@ -626,7 +552,7 @@ class TDeflateState
   int nice_match; // Stop searching when current match exceeds this
 };
 
-typedef __int64 lutime_t;       // define it ourselves since we don't include time.h
+typedef long lutime_t;       // define it ourselves since we don't include time.h
 
 typedef struct iztimes {
   lutime_t atime,mtime,ctime;
@@ -647,7 +573,7 @@ typedef struct zlist {
   int mark;                     // Marker for files to operate on
   int trash;                    // Marker for files to delete
   int dosflag;                  // Set to force MSDOS file attributes
-  struct zlist far *nxt;        // Pointer to next header in list
+  struct zlist *nxt;        // Pointer to next header in list
 } TZipFileInfo;
 
 
@@ -666,6 +592,143 @@ struct TState
 
 
 
+// ----------------------------------------------------------------------
+// some windows<->linux portability things
+#ifdef ZIP_STD
+void filetime2dosdatetime(const FILETIME ft, WORD *dosdate, WORD *dostime)
+{ struct tm *st=gmtime(&ft);
+  *dosdate = (ush)(((st->tm_year+1900 -1980)&0x7f) << 9);
+  *dosdate |= (ush)((st->tm_mon&0xf) << 5);
+  *dosdate |= (ush)((st->tm_mday&0x1f));
+  *dostime = (ush)((st->tm_hour&0x1f) << 11);
+  *dostime |= (ush)((st->tm_min&0x3f) << 5);
+  *dostime |= (ush)((st->tm_sec*2)&0x1f);
+}
+
+void GetNow(lutime_t *ft, WORD *dosdate, WORD *dostime)
+{ time_t tm = time(0);
+  filetime2dosdatetime(tm,dosdate,dostime);
+  *ft = (lutime_t)tm;
+}
+
+DWORD GetFilePosZ(HANDLE hfout)
+{ struct stat st; fstat(fileno(hfout),&st); 
+  if ((st.st_mode&S_IFREG)==0) return 0xFFFFFFFF;
+  return ftell(hfout);
+}
+
+ZRESULT GetFileInfo(FILE *hf, ulg *attr, long *size, iztimes *times, ulg *timestamp)
+{ // The handle must be a handle to a file
+  // The date and time is returned in a long with the date most significant to allow
+  // unsigned integer comparison of absolute times. The attributes have two
+  // high bytes unix attr, and two low bytes a mapping of that to DOS attr.
+  struct stat bhi; int res=fstat(fileno(hf),&bhi); if (res==-1) return ZR_NOFILE;
+  ulg fa=bhi.st_mode; ulg a=0;
+  // Zip uses the lower word for its interpretation of windows stuff
+  if ((fa&S_IWUSR)==0) a|=0x01;
+  if (S_ISDIR(fa)) a|=0x10;
+  // It uses the upper word for standard unix attr
+  a |= ((fa&0xFFFF)<<16);
+  //
+  if (attr!=NULL) *attr = a;
+  if (size!=NULL) *size = bhi.st_size;
+  if (times!=NULL)
+  { times->atime = (lutime_t)bhi.st_atime;
+    times->mtime = (lutime_t)bhi.st_mtime;
+    times->ctime = (lutime_t)bhi.st_ctime;
+  }
+  if (timestamp!=NULL)
+  { ush dosdate,dostime;
+    filetime2dosdatetime(bhi.st_mtime,&dosdate,&dostime);
+    *timestamp = (ush)dostime | (((ulg)dosdate)<<16);
+  }
+  return ZR_OK;
+}
+
+
+// ----------------------------------------------------------------------
+#else
+void filetime2dosdatetime(const FILETIME ft, WORD *dosdate,WORD *dostime)
+{ // date: bits 0-4 are day of month 1-31. Bits 5-8 are month 1..12. Bits 9-15 are year-1980
+  // time: bits 0-4 are seconds/2, bits 5-10 are minute 0..59. Bits 11-15 are hour 0..23
+  SYSTEMTIME st; FileTimeToSystemTime(&ft,&st);
+  *dosdate = (WORD)(((st.wYear-1980)&0x7f) << 9);
+  *dosdate |= (WORD)((st.wMonth&0xf) << 5);
+  *dosdate |= (WORD)((st.wDay&0x1f));
+  *dostime = (WORD)((st.wHour&0x1f) << 11);
+  *dostime |= (WORD)((st.wMinute&0x3f) << 5);
+  *dostime |= (WORD)((st.wSecond*2)&0x1f);
+}
+
+lutime_t filetime2timet(const FILETIME ft)
+{ LONGLONG i = *(LONGLONG*)&ft; 
+  return (lutime_t)((i-116444736000000000LL)/10000000LL);
+}
+
+void GetNow(lutime_t *pft, WORD *dosdate, WORD *dostime)
+{ SYSTEMTIME st; GetLocalTime(&st);
+  FILETIME ft;   SystemTimeToFileTime(&st,&ft);
+  filetime2dosdatetime(ft,dosdate,dostime);
+  *pft = filetime2timet(ft);
+}
+
+DWORD GetFilePosZ(HANDLE hfout)
+{ return SetFilePointer(hfout,0,0,FILE_CURRENT);
+}
+
+
+ZRESULT GetFileInfo(HANDLE hf, ulg *attr, long *size, iztimes *times, ulg *timestamp)
+{ // The handle must be a handle to a file
+  // The date and time is returned in a long with the date most significant to allow
+  // unsigned integer comparison of absolute times. The attributes have two
+  // high bytes unix attr, and two low bytes a mapping of that to DOS attr.
+  //struct stat s; int res=stat(fn,&s); if (res!=0) return false;
+  // translate windows file attributes into zip ones.
+  BY_HANDLE_FILE_INFORMATION bhi; BOOL res=GetFileInformationByHandle(hf,&bhi);
+  if (!res) return ZR_NOFILE;
+  DWORD fa=bhi.dwFileAttributes; ulg a=0;
+  // Zip uses the lower word for its interpretation of windows stuff
+  if (fa&FILE_ATTRIBUTE_READONLY) a|=0x01;
+  if (fa&FILE_ATTRIBUTE_HIDDEN)   a|=0x02;
+  if (fa&FILE_ATTRIBUTE_SYSTEM)   a|=0x04;
+  if (fa&FILE_ATTRIBUTE_DIRECTORY)a|=0x10;
+  if (fa&FILE_ATTRIBUTE_ARCHIVE)  a|=0x20;
+  // It uses the upper word for standard unix attr, which we manually construct
+  if (fa&FILE_ATTRIBUTE_DIRECTORY)a|=0x40000000;  // directory
+  else a|=0x80000000;  // normal file
+  a|=0x01000000;      // readable
+  if (fa&FILE_ATTRIBUTE_READONLY) {} else a|=0x00800000; // writeable
+  // now just a small heuristic to check if it's an executable:
+  DWORD red, hsize=GetFileSize(hf,NULL); if (hsize>40)
+  { SetFilePointer(hf,0,NULL,FILE_BEGIN); unsigned short magic; ReadFile(hf,&magic,sizeof(magic),&red,NULL);
+    SetFilePointer(hf,36,NULL,FILE_BEGIN); unsigned long hpos;  ReadFile(hf,&hpos,sizeof(hpos),&red,NULL);
+    if (magic==0x54AD && hsize>hpos+4+20+28)
+    { SetFilePointer(hf,hpos,NULL,FILE_BEGIN); unsigned long signature; ReadFile(hf,&signature,sizeof(signature),&red,NULL);
+      if (signature==IMAGE_DOS_SIGNATURE || signature==IMAGE_OS2_SIGNATURE
+         || signature==IMAGE_OS2_SIGNATURE_LE || signature==IMAGE_NT_SIGNATURE)
+      { a |= 0x00400000; // executable
+      }
+    }
+  }
+  //
+  if (attr!=NULL) *attr = a;
+  if (size!=NULL) *size = hsize;
+  if (times!=NULL)
+  { // lutime_t is 32bit number of seconds elapsed since 0:0:0GMT, Jan1, 1970.
+    // but FILETIME is 64bit number of 100-nanosecs since Jan1, 1601
+    times->atime = filetime2timet(bhi.ftLastAccessTime);
+    times->mtime = filetime2timet(bhi.ftLastWriteTime);
+    times->ctime = filetime2timet(bhi.ftCreationTime);
+  }
+  if (timestamp!=NULL)
+  { WORD dosdate,dostime;
+    filetime2dosdatetime(bhi.ftLastWriteTime,&dosdate,&dostime);
+    *timestamp = (WORD)dostime | (((DWORD)dosdate)<<16);
+  }
+  return ZR_OK;
+}
+#endif
+// ----------------------------------------------------------------------
 
 
 
@@ -675,8 +738,8 @@ void Assert(TState &state,bool cond, const char *msg)
 { if (cond) return;
   state.err=msg;
 }
-void  Trace(const char *x, ...) {/*va_list paramList; va_start(paramList, x); paramList; va_end(paramList);*/}
-void  Tracec(bool ,const char *x, ...) {/*va_list paramList; va_start(paramList, x); paramList; va_end(paramList);*/}
+void Trace(const char *x, ...) {va_list paramList; va_start(paramList, x); paramList; va_end(paramList);}
+void Tracec(bool ,const char *x, ...) {va_list paramList; va_start(paramList, x); paramList; va_end(paramList);}
 
 
 
@@ -1653,8 +1716,8 @@ void lm_init (TState &state, int pack_level, ush *flags)
 int longest_match(TState &state,IPos cur_match)
 {
     unsigned chain_length = state.ds.max_chain_length;   /* max hash chain length */
-    register uch far *scan = state.ds.window + state.ds.strstart; /* current string */
-    register uch far *match;                    /* matched string */
+    register uch *scan = state.ds.window + state.ds.strstart; /* current string */
+    register uch *match;                    /* matched string */
     register int len;                           /* length of current match */
     int best_len = state.ds.prev_length;                 /* best match length so far */
     IPos limit = state.ds.strstart > (IPos)MAX_DIST ? state.ds.strstart - (IPos)MAX_DIST : NIL;
@@ -1668,7 +1731,7 @@ int longest_match(TState &state,IPos cur_match)
 
 
 
-    register uch far *strend = state.ds.window + state.ds.strstart + MAX_MATCH;
+    register uch *strend = state.ds.window + state.ds.strstart + MAX_MATCH;
     register uch scan_end1  = scan[best_len-1];
     register uch scan_end   = scan[best_len];
 
@@ -2036,7 +2099,7 @@ ulg deflate(TState &state)
 
 
 
-int putlocal(struct zlist far *z, WRITEFUNC wfunc,void *param)
+int putlocal(struct zlist *z, WRITEFUNC wfunc,void *param)
 { // Write a local header described by *z to file *f.  Return a ZE_ error code.
   PUTLG(LOCSIG, f);
   PUTSH(z->ver, f);
@@ -2057,7 +2120,7 @@ int putlocal(struct zlist far *z, WRITEFUNC wfunc,void *param)
   return ZE_OK;
 }
 
-int putextended(struct zlist far *z, WRITEFUNC wfunc, void *param)
+int putextended(struct zlist *z, WRITEFUNC wfunc, void *param)
 { // Write an extended local header described by *z to file *f. Returns a ZE_ code
   PUTLG(EXTLOCSIG, f);
   PUTLG(z->crc, f);
@@ -2066,7 +2129,7 @@ int putextended(struct zlist far *z, WRITEFUNC wfunc, void *param)
   return ZE_OK;
 }
 
-int putcentral(struct zlist far *z, WRITEFUNC wfunc, void *param)
+int putcentral(struct zlist *z, WRITEFUNC wfunc, void *param)
 { // Write a central header entry of *z to file *f. Returns a ZE_ code.
   PUTLG(CENSIG, f);
   PUTSH(z->vem, f);
@@ -2204,91 +2267,32 @@ char zencode(unsigned long *keys, char c)
 
 
 
+int lustricmp(const TCHAR *sa, const TCHAR *sb)
+{ for (const TCHAR *ca=sa, *cb=sb; ; ca++, cb++)
+  { int ia=tolower(*ca), ib=tolower(*cb);
+    if (ia==ib && ia==0) return 0;
+    if (ia==ib) continue;
+    if (ia<ib) return -1;
+    if (ia>ib) return 1;
+  }
+}
+
+
 bool HasZipSuffix(const TCHAR *fn)
 { const TCHAR *ext = fn+_tcslen(fn);
   while (ext>fn && *ext!='.') ext--;
   if (ext==fn && *ext!='.') return false;
-  if (_tcsicmp(ext,_T(".Z"))==0) return true;
-  if (_tcsicmp(ext,_T(".zip"))==0) return true;
-  if (_tcsicmp(ext,_T(".zoo"))==0) return true;
-  if (_tcsicmp(ext,_T(".arc"))==0) return true;
-  if (_tcsicmp(ext,_T(".lzh"))==0) return true;
-  if (_tcsicmp(ext,_T(".arj"))==0) return true;
-  if (_tcsicmp(ext,_T(".gz"))==0) return true;
-  if (_tcsicmp(ext,_T(".tgz"))==0) return true;
+  if (lustricmp(ext,_T(".Z"))==0) return true;
+  if (lustricmp(ext,_T(".zip"))==0) return true;
+  if (lustricmp(ext,_T(".zoo"))==0) return true;
+  if (lustricmp(ext,_T(".arc"))==0) return true;
+  if (lustricmp(ext,_T(".lzh"))==0) return true;
+  if (lustricmp(ext,_T(".arj"))==0) return true;
+  if (lustricmp(ext,_T(".gz"))==0) return true;
+  if (lustricmp(ext,_T(".tgz"))==0) return true;
   return false;
 }
 
-#ifndef ZIP_STD
-lutime_t filetime2timet(const FILETIME ft)
-{ __int64 i = *(__int64*)&ft;
-  return (lutime_t)((i-116444736000000000)/10000000);
-}
-
-void filetime2dosdatetime(const FILETIME ft, WORD *dosdate,WORD *dostime)
-{ // date: bits 0-4 are day of month 1-31. Bits 5-8 are month 1..12. Bits 9-15 are year-1980
-  // time: bits 0-4 are seconds/2, bits 5-10 are minute 0..59. Bits 11-15 are hour 0..23
-  SYSTEMTIME st; FileTimeToSystemTime(&ft,&st); 
-  *dosdate = (WORD)(((st.wYear-1980)&0x7f) << 9);
-  *dosdate |= (WORD)((st.wMonth&0xf) << 5);
-  *dosdate |= (WORD)((st.wDay&0x1f));
-  *dostime = (WORD)((st.wHour&0x1f) << 11);
-  *dostime |= (WORD)((st.wMinute&0x3f) << 5);
-  *dostime |= (WORD)((st.wSecond*2)&0x1f);
-}
-
-
-ZRESULT GetFileInfo(HANDLE hf, ulg *attr, long *size, iztimes *times, ulg *timestamp)
-{ // The handle must be a handle to a file
-  // The date and time is returned in a long with the date most significant to allow
-  // unsigned integer comparison of absolute times. The attributes have two
-  // high bytes unix attr, and two low bytes a mapping of that to DOS attr.
-  //struct stat s; int res=stat(fn,&s); if (res!=0) return false;
-  // translate windows file attributes into zip ones.
-  BY_HANDLE_FILE_INFORMATION bhi; BOOL res=GetFileInformationByHandle(hf,&bhi);
-  if (!res) return ZR_NOFILE;
-  DWORD fa=bhi.dwFileAttributes; ulg a=0;
-  // Zip uses the lower word for its interpretation of windows stuff
-  if (fa&FILE_ATTRIBUTE_READONLY) a|=0x01;
-  if (fa&FILE_ATTRIBUTE_HIDDEN)   a|=0x02;
-  if (fa&FILE_ATTRIBUTE_SYSTEM)   a|=0x04;
-  if (fa&FILE_ATTRIBUTE_DIRECTORY)a|=0x10;
-  if (fa&FILE_ATTRIBUTE_ARCHIVE)  a|=0x20;
-  // It uses the upper word for standard unix attr, which we manually construct
-  if (fa&FILE_ATTRIBUTE_DIRECTORY)a|=0x40000000;  // directory
-  else a|=0x80000000;  // normal file
-  a|=0x01000000;      // readable
-  if (fa&FILE_ATTRIBUTE_READONLY) {} else a|=0x00800000; // writeable
-  // now just a small heuristic to check if it's an executable:
-  DWORD red, hsize=GetFileSize(hf,NULL); if (hsize>40)
-  { SetFilePointer(hf,0,NULL,FILE_BEGIN); unsigned short magic; ReadFile(hf,&magic,sizeof(magic),&red,NULL);
-    SetFilePointer(hf,36,NULL,FILE_BEGIN); unsigned long hpos;  ReadFile(hf,&hpos,sizeof(hpos),&red,NULL);
-    if (magic==0x54AD && hsize>hpos+4+20+28)
-    { SetFilePointer(hf,hpos,NULL,FILE_BEGIN); unsigned long signature; ReadFile(hf,&signature,sizeof(signature),&red,NULL);
-      if (signature==IMAGE_DOS_SIGNATURE || signature==IMAGE_OS2_SIGNATURE
-         || signature==IMAGE_OS2_SIGNATURE_LE || signature==IMAGE_NT_SIGNATURE)
-      { a |= 0x00400000; // executable
-      }
-    }
-  }
-  //
-  if (attr!=NULL) *attr = a;
-  if (size!=NULL) *size = hsize;
-  if (times!=NULL)
-  { // lutime_t is 32bit number of seconds elapsed since 0:0:0GMT, Jan1, 1970.
-    // but FILETIME is 64bit number of 100-nanosecs since Jan1, 1601
-    times->atime = filetime2timet(bhi.ftLastAccessTime);
-    times->mtime = filetime2timet(bhi.ftLastWriteTime);
-    times->ctime = filetime2timet(bhi.ftCreationTime);
-  }
-  if (timestamp!=NULL)
-  { WORD dosdate,dostime;
-    filetime2dosdatetime(bhi.ftLastWriteTime,&dosdate,&dostime);
-    *timestamp = (WORD)dostime | (((DWORD)dosdate)<<16);
-  }
-  return ZR_OK;
-}
-#endif
 
 
 
@@ -2347,7 +2351,7 @@ class TZip
 
   ZRESULT open_file(const TCHAR *fn);
   ZRESULT open_handle(HANDLE hf,unsigned int len);
-  //ZRESULT open_mem(void *src,unsigned int len);
+  ZRESULT open_mem(void *src,unsigned int len);
   ZRESULT open_dir();
   static unsigned sread(TState &s,char *buf,unsigned size);
   unsigned read(char *buf, unsigned size);
@@ -2366,7 +2370,7 @@ class TZip
 ZRESULT TZip::Create(void *z,unsigned int len,DWORD flags)
 { if (hfout!=0 || hmapout!=0 || obuf!=0 || writ!=0 || oerr!=ZR_OK || hasputcen) return ZR_NOTINITED;
   //
-/*  if (flags==ZIP_HANDLE)
+  if (flags==ZIP_HANDLE)
   { HANDLE hf = (HANDLE)z;
     hfout=hf; mustclosehfout=false;
 #ifdef DuplicateHandle
@@ -2375,28 +2379,32 @@ ZRESULT TZip::Create(void *z,unsigned int len,DWORD flags)
 #endif
     // now we have hfout. Either we duplicated the handle and we close it ourselves
     // (while the caller closes h themselves), or we couldn't duplicate it.
-    DWORD res = SetFilePointer(hfout,0,0,FILE_CURRENT);
+    DWORD res=GetFilePosZ(hfout);
     ocanseek = (res!=0xFFFFFFFF);
-    if (ocanseek) ooffset=res; else ooffset=0;
+    ooffset = ocanseek ? res : 0;
     return ZR_OK;
   }
-  else*/ if (flags==ZIP_FILENAME)
+  else if (flags==ZIP_FILENAME)
   { const TCHAR *fn = (const TCHAR*)z;
-
 #ifdef ZIP_STD
     hfout = fopen(fn,"wb");
+    if (hfout==0) return ZR_NOFILE;
 #else
     hfout = CreateFile(fn,GENERIC_WRITE,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
-#endif
     if (hfout==INVALID_HANDLE_VALUE) {hfout=0; return ZR_NOFILE;}
+#endif
     ocanseek=true;
     ooffset=0;
     mustclosehfout=true;
     return ZR_OK;
   }
-  /*else if (flags==ZIP_MEMORY)
+  else if (flags==ZIP_MEMORY)
   { unsigned int size = len;
     if (size==0) return ZR_MEMSIZE;
+#ifdef ZIP_STD
+    if (z!=0) obuf=(char*)z;
+    else return ZR_ARGS;
+#else
     if (z!=0) obuf=(char*)z;
     else
     { hmapout = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,size,NULL);
@@ -2404,10 +2412,11 @@ ZRESULT TZip::Create(void *z,unsigned int len,DWORD flags)
       obuf = (char*)MapViewOfFile(hmapout,FILE_MAP_ALL_ACCESS,0,0,size);
       if (obuf==0) {CloseHandle(hmapout); hmapout=0; return ZR_NOALLOC;}
     }
+#endif
     ocanseek=true;
     opos=0; mapsize=size;
     return ZR_OK;
-  }*/
+  }
   else return ZR_ARGS;
 }
 
@@ -2440,12 +2449,11 @@ unsigned int TZip::write(const char *buf,unsigned int size)
     return size;
   }
   else if (hfout!=0)
-  { 
-    DWORD writ; 
+  {
 #ifdef ZIP_STD
-    writ = fwrite(srcbuf,1,size,hfout);    
+    DWORD writ=(DWORD)fwrite(srcbuf,1,size,hfout);
 #else
-    WriteFile(hfout,srcbuf,size,&writ,NULL);
+    DWORD writ; WriteFile(hfout,srcbuf,size,&writ,NULL);
 #endif
     return writ;
   }
@@ -2487,19 +2495,13 @@ ZRESULT TZip::Close()
   // then we do it now
   ZRESULT res=ZR_OK; if (!hasputcen) res=AddCentral(); hasputcen=true;
 #ifdef ZIP_STD
-  if (hfout!=0 && mustclosehfout) 
-      fclose(hfout);
-  hfout=0; mustclosehfout=false;
+  if (hfout!=0 && mustclosehfout) fclose(hfout); hfout=0; mustclosehfout=false;
 #else
-  if (obuf!=0 && hmapout!=0) 
-      UnmapViewOfFile(obuf); 
-  obuf=0;
-
+  if (obuf!=0 && hmapout!=0) UnmapViewOfFile(obuf); obuf=0;
   if (hmapout!=0) CloseHandle(hmapout); hmapout=0;
   if (hfout!=0 && mustclosehfout) CloseHandle(hfout); hfout=0; mustclosehfout=false;
 #endif
   return res;
-
 }
 
 
@@ -2509,69 +2511,53 @@ ZRESULT TZip::open_file(const TCHAR *fn)
 { hfin=0; bufin=0; selfclosehf=false; crc=CRCVAL_INITIAL; isize=0; csize=0; ired=0;
   if (fn==0) return ZR_ARGS;
 #ifdef ZIP_STD
-  HANDLE hf = fopen((const char*)fn,"rb");
+  HANDLE hf = fopen(fn,"rb");
   if (hf==0) return ZR_NOFILE;
+  ZRESULT res = open_handle(hf,0);
+  if (res!=ZR_OK) {fclose(hf); return res;}
 #else
   HANDLE hf = CreateFile(fn,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,0,NULL);
   if (hf==INVALID_HANDLE_VALUE) return ZR_NOFILE;
-#endif
-
   ZRESULT res = open_handle(hf,0);
-  if (res!=ZR_OK) 
-  {
-#ifdef ZIP_STD
-      fclose(hf);
-#else
-      CloseHandle(hf); 
+  if (res!=ZR_OK) {CloseHandle(hf); return res;}
 #endif
-      return res;
-  }
   selfclosehf=true;
   return ZR_OK;
 }
-
 ZRESULT TZip::open_handle(HANDLE hf,unsigned int len)
-{ 
-  hfin=0; bufin=0; selfclosehf=false; crc=CRCVAL_INITIAL; isize=0; csize=0; ired=0;
-  if (hf==0 || hf==INVALID_HANDLE_VALUE) 
-      return ZR_ARGS;
-    
+{ hfin=0; bufin=0; selfclosehf=false; crc=CRCVAL_INITIAL; isize=0; csize=0; ired=0;
+  if (hf==0 || hf==INVALID_HANDLE_VALUE) return ZR_ARGS;
+  bool canseek;
 #ifdef ZIP_STD
-  fseek(hfout,0,SEEK_SET);
-  iseekable=true; hfin=hf;
+    struct stat st; fstat(fileno(hf),&st); canseek = S_ISREG(st.st_mode);
 #else
-
   DWORD res = SetFilePointer(hfout,0,0,FILE_CURRENT);
-    
-  if (res!=0xFFFFFFFF)
-  { 
-    ZRESULT res = GetFileInfo(hf,&attr,&isize,&times,&timestamp);
-    if (res!=ZR_OK)
-        return res;
-      
+  canseek = (res!=0xFFFFFFFF);
+#endif
+  if (canseek)
+  { ZRESULT res = GetFileInfo(hf,&attr,&isize,&times,&timestamp);
+    if (res!=ZR_OK) return res;
+#ifdef ZIP_STD
+    fseek(hf,0,SEEK_SET);
+#else
     SetFilePointer(hf,0,NULL,FILE_BEGIN); // because GetFileInfo will have screwed it up
-    iseekable=true; hfin=hf;  
+#endif
+    iseekable=true; hfin=hf;
+    return ZR_OK;
   }
   else
-  { 
-    attr= 0x80000000;      // just a normal file
+  { attr= 0x80000000;      // just a normal file
     isize = -1;            // can't know size until at the end
     if (len!=0) isize=len; // unless we were told explicitly!
     iseekable=false;
-    SYSTEMTIME st; GetLocalTime(&st);
-    FILETIME ft;   SystemTimeToFileTime(&st,&ft);
-    WORD dosdate,dostime; filetime2dosdatetime(ft,&dosdate,&dostime);
-    times.atime = filetime2timet(ft);
-    times.mtime = times.atime;
-    times.ctime = times.atime;
+    WORD dosdate, dostime; GetNow(&times.atime, &dosdate, &dostime);
+    times.mtime=times.atime;
+    times.ctime=times.atime;
     timestamp = (WORD)dostime | (((DWORD)dosdate)<<16);
     hfin=hf;
+    return ZR_OK;
   }
-#endif
-  return ZR_OK;
 }
-
-/*
 ZRESULT TZip::open_mem(void *src,unsigned int len)
 { hfin=0; bufin=(const char*)src; selfclosehf=false; crc=CRCVAL_INITIAL; ired=0; csize=0; ired=0;
   lenin=len; posin=0;
@@ -2579,31 +2565,21 @@ ZRESULT TZip::open_mem(void *src,unsigned int len)
   attr= 0x80000000; // just a normal file
   isize = len;
   iseekable=true;
-  SYSTEMTIME st; GetLocalTime(&st);
-  FILETIME ft;   SystemTimeToFileTime(&st,&ft);
-  WORD dosdate,dostime; filetime2dosdatetime(ft,&dosdate,&dostime);
-  times.atime = filetime2timet(ft);
-  times.mtime = times.atime;
-  times.ctime = times.atime;
+  WORD dosdate, dostime; GetNow(&times.atime, &dosdate, &dostime);
+  times.mtime=times.atime;
+  times.ctime=times.atime;
   timestamp = (WORD)dostime | (((DWORD)dosdate)<<16);
   return ZR_OK;
-}*/
-
+}
 ZRESULT TZip::open_dir()
 { hfin=0; bufin=0; selfclosehf=false; crc=CRCVAL_INITIAL; isize=0; csize=0; ired=0;
   attr= 0x41C00010; // a readable writable directory, and again directory
   isize = 0;
   iseekable=false;
-#ifndef ZIP_STD
-  SYSTEMTIME st; GetLocalTime(&st);
-  FILETIME ft;   SystemTimeToFileTime(&st,&ft);
-  WORD dosdate,dostime; filetime2dosdatetime(ft,&dosdate,&dostime);
-  times.atime = filetime2timet(ft);
-  times.mtime = times.atime;
-  times.ctime = times.atime;
+  WORD dosdate, dostime; GetNow(&times.atime, &dosdate, &dostime);
+  times.mtime=times.atime;
+  times.ctime=times.atime;
   timestamp = (WORD)dostime | (((DWORD)dosdate)<<16);
-#else
-#endif
   return ZR_OK;
 }
 
@@ -2625,10 +2601,10 @@ unsigned TZip::read(char *buf, unsigned size)
     return red;
   }
   else if (hfin!=0)
-  { 
-    DWORD red;
+  { DWORD red;
 #ifdef ZIP_STD
-    red = fread(buf,1,size,hfin);
+    red = (DWORD)fread(buf,1,size,hfin);
+    if (red==0) return 0;
 #else
     BOOL ok = ReadFile(hfin,buf,size,&red,NULL);
     if (!ok) return 0;
@@ -2642,15 +2618,11 @@ unsigned TZip::read(char *buf, unsigned size)
 
 ZRESULT TZip::iclose()
 { 
-  if (selfclosehf && hfin!=0) 
 #ifdef ZIP_STD
-      fclose(hfin);
+  if (selfclosehf && hfin!=0) fclose(hfin); hfin=0;
 #else
-      CloseHandle(hfin); 
+  if (selfclosehf && hfin!=0) CloseHandle(hfin); hfin=0;
 #endif
-
-  hfin=0;
-
   bool mismatch = (isize!=-1 && isize!=ired);
   isize=ired; // and crc has been being updated anyway
   if (mismatch) return ZR_MISSIZE;
@@ -2705,7 +2677,7 @@ ZRESULT TZip::Add(const TCHAR *odstzn, void *src,unsigned int len, DWORD flags)
   int passex=0; if (password!=0 && flags!=ZIP_FOLDER) passex=12;
 
   // zip has its own notion of what its names should look like: i.e. dir/file.stuff
-  TCHAR dstzn[MAX_PATH]; _tcscpy(dstzn,odstzn);
+  TCHAR dstzn[MAX_PATH]; _tcsncpy(dstzn,odstzn,MAX_PATH); dstzn[MAX_PATH-1]=0;
   if (*dstzn==0) return ZR_ARGS;
   TCHAR *d=dstzn; while (*d!=0) {if (*d=='\\') *d='/'; d++;}
   bool isdir = (flags==ZIP_FOLDER);
@@ -2716,7 +2688,7 @@ ZRESULT TZip::Add(const TCHAR *odstzn, void *src,unsigned int len, DWORD flags)
   ZRESULT openres;
   if (flags==ZIP_FILENAME) openres=open_file((const TCHAR*)src);
   else if (flags==ZIP_HANDLE) openres=open_handle((HANDLE)src,len);
-  //else if (flags==ZIP_MEMORY) openres=open_mem(src,len);
+  else if (flags==ZIP_MEMORY) openres=open_mem(src,len);
   else if (flags==ZIP_FOLDER) openres=open_dir();
   else return ZR_ARGS;
   if (openres!=ZR_OK) return openres;
@@ -2730,7 +2702,7 @@ ZRESULT TZip::Add(const TCHAR *odstzn, void *src,unsigned int len, DWORD flags)
 #ifdef UNICODE
   WideCharToMultiByte(CP_UTF8,0,dstzn,-1,zfi.iname,MAX_PATH,0,0);
 #else
-  strcpy(zfi.iname,dstzn);
+  strncpy(zfi.iname,dstzn,MAX_PATH); zfi.iname[MAX_PATH-1]=0;
 #endif
   zfi.nam=strlen(zfi.iname);
   if (needs_trailing_slash) {strcat(zfi.iname,"/"); zfi.nam++;}
@@ -2793,19 +2765,11 @@ ZRESULT TZip::Add(const TCHAR *odstzn, void *src,unsigned int len, DWORD flags)
   keys[2]=878082192L;
   for (const char *cp=password; cp!=0 && *cp!=0; cp++) update_keys(keys,*cp);
   // generate some random bytes
-  if (!has_seeded) 
-  {
 #ifdef ZIP_STD
-        struct timeval tv;
-        gettimeofday( &tv, NULL );
-        unsigned long lTick = (unsigned long)((tv.tv_sec) * 1000 + tv.tv_usec / 1000);
-
-        srand(lTick^(unsigned long)0x34567);
+  if (!has_seeded) srand((unsigned)time(0));
 #else
-      srand(GetTickCount()^(unsigned long)GetDesktopWindow());
+  if (!has_seeded) srand(GetTickCount()^(unsigned long)GetDesktopWindow());
 #endif
-  }
-
   char encbuf[12]; for (int i=0; i<12; i++) encbuf[i]=(char)((rand()>>7)&0xff);
   encbuf[11] = (char)((zfi.tim>>8)&0xff);
   for (int ei=0; ei<12; ei++) encbuf[ei]=zencode(keys,encbuf[ei]);
@@ -2986,3 +2950,4 @@ bool IsZipHandleZ(HZIP hz)
   TZipHandleData *han = (TZipHandleData*)hz;
   return (han->flag==2);
 }
+
