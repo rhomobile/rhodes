@@ -416,7 +416,11 @@ namespace "config" do
 
     $rhologhostport = $config["log_host_port"] 
     $rhologhostport = 52363 unless $rhologhostport
-	$rhologhostaddr = Jake.localip()
+    begin
+	    $rhologhostaddr = Jake.localip()
+    rescue Exception => e      
+        puts "Jake.localip() error : #{e}"  
+    end
 
     $obfuscate_js = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["js"].nil?) ? nil : 1 )
     $obfuscate_css = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["css"].nil?) ? nil : 1 )
