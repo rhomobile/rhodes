@@ -21,6 +21,7 @@ platform/iphone/Tests/build/*
 platform/iphone/curl/build/*
 lib/extensions/barcode/ext/barcode/platform/iphone/build/*
 lib/extensions/esri/ext/esri/platform/iphone/build/*
+lib/extensions/zlib/ext/iphone/build/*
 platform/shared/*/iphone/*/build/*
 platform/shared/*/iphone/build/*
 platform/iphone/bin/*
