@@ -34,12 +34,14 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Vector;
 
+import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.extmanager.Config;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.extmanager.RhoExtManagerImpl;
 import com.rhomobile.rhodes.extmanager.WebkitExtension;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.signature.Signature;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.util.Utils.AssetsSource;
 import com.rhomobile.rhodes.util.Utils.FileSource;
@@ -135,6 +137,17 @@ public class RhodesApplication extends Application{
                     @Override
                     public void run() {
                         RhoExtManager.getImplementationInstance().onAppActivate(false);
+                    }
+                });
+        RhodesApplication.runWhen(
+                AppState.AppActivated,
+                new StateHandler(true) {
+                    @Override public void run() {
+                        PerformOnUiThread.exec(new Runnable() {
+                                @Override public void run() {
+                                    Camera.init_from_UI_Thread();
+                                }
+                        });
                     }
                 });
 

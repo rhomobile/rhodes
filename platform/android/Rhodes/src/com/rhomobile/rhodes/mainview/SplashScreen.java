@@ -31,14 +31,19 @@ import java.io.InputStream;
 import java.util.Map;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.webview.IRhoWebView;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.BitmapFactory;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class SplashScreen implements MainView {
@@ -47,45 +52,48 @@ public class SplashScreen implements MainView {
         void onSplashScreenGone(SplashScreen splashScreen);
         void onSplashScreenNavigateBack();
     }
-	
+
 	private static final String TAG = SplashScreen.class.getSimpleName();
-	
+
 	private static final boolean DEBUG = false;
-	
+
 	private static final String LOADING_ANDROID_PNG = "apps/app/loading.android.png";
 	private static final String LOADING_PNG = "apps/app/loading.png";
 	private static final String LOADING_PAGE = "apps/app/loading.html";
-	
+
 	private SplashScreenListener mSplashScreenListener;
 	private FrameLayout mView;
 	private IRhoWebView mWebView;
-	
+	private ImageView mImageView;
+	private Activity mActivity;
+
 	private native void nativeStart();
 	private native void nativeHide();
 	private native int howLongWaitMs();
-	
+
 	private boolean mFirstNavigate = true;
 	private long mStartTimeMs = 0;
 	private volatile String mUrlToNavigate = null;
 	private int mNavigateIndex = 0;
 	private Thread mSleepThread;
-	
-    public SplashScreen(Context context, IRhoWebView webView, SplashScreenListener listener) {
+
+    public SplashScreen(Activity activity, IRhoWebView webView, SplashScreenListener listener) {
         mSplashScreenListener = listener;
-        mView = new FrameLayout(context);
-        mView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-		AssetManager am = context.getResources().getAssets();
-		mWebView = loadContent(am, webView);
-		mView.addView(mWebView.getContainerView());
-	}
+        mActivity = activity;
+        mView = new FrameLayout(activity);
+        mWebView = webView;
+        loadContent();
+    }
 
     public synchronized String getUrlToNavigate() { return mUrlToNavigate; }
     private synchronized void setUrlToNavigate(String url) { mUrlToNavigate = url; }
 
-    private IRhoWebView loadContent(AssetManager am, IRhoWebView view) {
-
+    private void loadContent() {
+        AssetManager am = mActivity.getAssets();
         int type = 0;
-        final String[][] urls = {{LOADING_ANDROID_PNG, LOADING_PNG}, {LOADING_PAGE}};
+
+        Logger.I(TAG, "Looking for start page source");
+        final String[][] urls = {{LOADING_PNG}, {LOADING_PAGE}};
         String[] fn = new String[2];
         types: for (String[] X: urls) {
             for (String url:X) {
@@ -110,18 +118,28 @@ public class SplashScreen implements MainView {
             type++;
         }
 
+        mActivity.setContentView(mView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         switch (type) {
         case 0:
-          view.loadDataWithBaseURL("file:///android_asset/", "<html><body style=\"margin:0px\"><img src=\""+ fn[type] + "\" height=\"100%\" width=\"100%\" border=\"0\"/></body></html>", "text/html", "utf-8", null);
-          break;
+            try {
+                mImageView = new ImageView(mActivity);
+                mImageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));
+                mActivity.addContentView(mImageView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+            } catch (IOException e) {
+                Logger.E(TAG, e);
+            }
+            mView.addView(mWebView.getContainerView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)) ; 
+            //mWebView.loadDataWithBaseURL("file:///android_asset/", "<html><body style=\"margin:0px\"><img src=\""+ fn[type] + "\" height=\"100%\" width=\"100%\" border=\"0\"/></body></html>", "text/html", "utf-8", null);
+            break;
         case 1:
-          view.loadUrl("file:///android_asset/" + fn[type]);
-          break;
+            mView.addView(mWebView.getContainerView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)) ; 
+            mWebView.loadUrl("file:///android_asset/" + fn[type]);
+            break;
         default:
-          view.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
+            mView.addView(mWebView.getContainerView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)) ; 
+            mWebView.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
         }
-
-        return view;
+        Logger.I(TAG, "Done");
     }
 	
 	public void start() {
@@ -168,16 +186,22 @@ public class SplashScreen implements MainView {
                 @Override
                 public void run() {
                     SystemClock.sleep(threadDelay);
-                    PerformOnUiThread.exec(new Runnable() {
-                        public void run() {
-                            try {
-                                if (mNavigateIndex != 0) {
-                                    throw new IllegalStateException("Non zero tab index(" + mNavigateIndex + ") to navigate from Splash Screen");
-                                }
-                                mSplashScreenListener.onSplashScreenGone(curView);
-                            } catch (Throwable e) {
-                                Logger.E(TAG, e);
-                            }
+                    RhodesApplication.runWhen(
+                        RhodesApplication.AppState.AppActivated,
+                        new RhodesApplication.StateHandler(true) {
+                             @Override public void run() {
+                                 PerformOnUiThread.exec(new Runnable() {
+                                     public void run() {
+                                        try {
+                                            if (mNavigateIndex != 0) {
+                                                throw new IllegalStateException("Non zero tab index(" + mNavigateIndex + ") to navigate from Splash Screen");
+                                            }
+                                            mSplashScreenListener.onSplashScreenGone(curView);
+                                        } catch (Throwable e) {
+                                            Logger.E(TAG, e);
+                                        }
+                                    }
+                                });
                         }
                     });
                 }

@@ -91,12 +91,14 @@ public class Camera {
 	}
 	
 	public static void init_from_UI_Thread() {
-		int[] s_m = getCameraResolution("main");
-		mMainCamera_max_Width = s_m[0];
-		mMainCamera_max_Height = s_m[1];
-		int[] s_f = getCameraResolution("front");
-		mFrontCamera_max_Width = s_f[0];
-		mFrontCamera_max_Height = s_f[1];
+        if (Capabilities.CAMERA_ENABLED) {
+            int[] s_m = getCameraResolution("main");
+            mMainCamera_max_Width = s_m[0];
+            mMainCamera_max_Height = s_m[1];
+            int[] s_f = getCameraResolution("front");
+            mFrontCamera_max_Width = s_f[0];
+            mFrontCamera_max_Height = s_f[1];
+        }
 	}
 	
 	private static void init() {
