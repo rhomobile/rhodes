@@ -42,6 +42,7 @@
 - (void) copyFromMainBundle:(NSFileManager*)fileManager fromPath:(NSString*)source
 					 toPath:(NSString*)target remove:(BOOL)remove;
 - (void) configure;
+- (void) configure:(BOOL)make_sym_links force_update_content:(BOOL)force_update_content only_apps:(BOOL)only_apps;
 
 - (UIViewController *) documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller;
 

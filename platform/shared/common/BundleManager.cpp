@@ -37,6 +37,11 @@ using namespace rho::common;
 extern "C" void rho_sys_app_exit();
 extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
 
+#ifdef OS_MACOSX
+extern "C" int rho_prepare_folder_for_upgrade(const char* szPath);
+#endif
+
+
 #if !defined(OS_WINDOWS_DESKTOP) && !defined(OS_WINCE) && !defined(OS_MACOSX)
 void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 {
@@ -305,6 +310,15 @@ void CReplaceBundleThread::doReplaceBundle()
         showError(oFT.getError(), oFT.getErrorText());
         return;
     }
+    
+#ifdef OS_MACOSX
+    // prepare main folder for update (replace sym-link by real folder/files)
+    if ( rho_prepare_folder_for_upgrade( RHODESAPP().getAppRootPath().c_str() ) == 0) {
+        // error
+        showError(0, "Prepare bundle for upgrade on iOS failed." );
+        return;
+    }
+#endif    
 
     //Remove current files
     unsigned int nError = removeFilesByList( CFilePath::join( RHODESAPP().getAppRootPath(), "rhofilelist.txt"), ::RHODESAPP().getAppRootPath() );
