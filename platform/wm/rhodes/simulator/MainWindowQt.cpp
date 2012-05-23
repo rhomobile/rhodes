@@ -745,6 +745,13 @@ LRESULT CMainWindow::OnExecuteJS(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCt
     return 0;
 }
 
+LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    LOG(INFO) + "OnFullscreenCommand";
+    ((QtMainWindow*)qtMainWindow)->fullscreenCommand((int)hWndCtl);
+    return 0;
+};
+
 LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     TCookieData* cd = (TCookieData*)hWndCtl;

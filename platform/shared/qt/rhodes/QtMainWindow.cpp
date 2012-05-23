@@ -826,7 +826,8 @@ void QtMainWindow::takeSignature(void*) //TODO: Signature::Params*
 
 void QtMainWindow::fullscreenCommand(int enable)
 {
-    //TODO: fullscreenCommand
+    if ((enable && !isMaximized()) || (!enable && isMaximized()))
+        setWindowState(windowState() ^ Qt::WindowMaximized);
     LOG(INFO) + (enable ? "Switched to Fullscreen mode" : "Switched to Normal mode" );
 }
 
