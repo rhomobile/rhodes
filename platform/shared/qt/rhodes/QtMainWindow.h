@@ -112,6 +112,7 @@ private:
     //TODO: CSyncStatusDlg *m_SyncStatusDlg;
     int m_LogicalDpiX;
     int m_LogicalDpiY;
+	bool firstShow;
 
 private slots:
     void on_webView_urlChanged(QUrl );
