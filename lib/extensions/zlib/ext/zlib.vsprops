@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<VisualStudioPropertySheet 
+	ProjectType="Visual C++" 
+	Version="8.00" 
+	Name="zlib"
+	>
+	<UserMacro
+		Name="RHO_ROOT__"
+		Value="C:\projects\rhodes"
+	/>
+	<UserMacro
+		Name="TEMP_FILES_DIR__"
+		Value="$(RHO_ROOT)\platform\wm\bin\$(PlatformName)\$(ProjectName)"
+	/>
+	
+</VisualStudioPropertySheet>
