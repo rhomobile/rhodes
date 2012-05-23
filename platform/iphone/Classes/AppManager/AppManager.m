@@ -187,6 +187,8 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 	}
 }
 
+
+
 - (BOOL)isContentsEqual:(NSFileManager*)fileManager first:(NSString*)filePath1 second:(NSString*)filePath2 {
     NSLog(@"filePath1: %@", filePath1);
     NSLog(@"filePath2: %@", filePath2);
@@ -208,8 +210,13 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
  * Configures AppManager
  */
 - (void) configure {
+    [self configure:YES force_update_content:NO only_apps:NO];
+}
+
+
+- (void) configure:(BOOL)make_sym_links force_update_content:(BOOL)force_update_content only_apps:(BOOL)only_apps {
 	
-#define RHO_DONT_COPY_ON_START
+//#define RHO_DONT_COPY_ON_START
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
@@ -227,7 +234,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
     BOOL restoreSymLinks_only = NO;
 
-    BOOL contentChanged;
+    BOOL contentChanged = force_update_content;
     if (nameChanged)
         contentChanged = YES;
 	else {
@@ -263,147 +270,152 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 	
     
     if (contentChanged) {
-#ifdef RHO_DONT_COPY_ON_START
-        // we have next situations when we should remove old content:
-        // 1. we upgrade old version (where we copy all files)
-        //    we should remove all files
-        // 2. we upgrade version with symlinks
-        //    we should remove only symlinks
-        // 3. we should only restore sym-lins after that was cleared - OS upgrade/reinstall app with the same version/restore from bakup etc. 
-        // we check old "lib" file - if it is SymLink then we have new version of Rhodes (with SymLinks instead of files)
-
-        BOOL isNewVersion = isPathIsSymLink(fileManager, testName);
-        
-        RhoFileManagerDelegate_RemoveOnly_SymLinks* myDelegate = nil;
-        if (isNewVersion) {
-            myDelegate = [[RhoFileManagerDelegate_RemoveOnly_SymLinks alloc] init];
-            [fileManager setDelegate:myDelegate];
-        }
-
-        NSError *error;
-        
-        NSString *appsDocDir = [rhoUserRoot stringByAppendingPathComponent:@"apps"];
-        [fileManager createDirectoryAtPath:rhoRoot withIntermediateDirectories:YES attributes:nil error:&error];
-        
-        [fileManager createDirectoryAtPath:appsDocDir withIntermediateDirectories:YES attributes:nil error:&error];
-        
-        // Create symlink to "lib"
-        NSString *src = [bundleRoot stringByAppendingPathComponent:@"lib"];
-        NSLog(@"src: %@", src);
-        NSString *dst = [rhoRoot stringByAppendingPathComponent:@"lib"];
-        NSLog(@"dst: %@", dst);
-        [fileManager removeItemAtPath:dst error:&error];
-        
-        [fileManager createSymbolicLinkAtPath:dst withDestinationPath:src error:&error];
-        //[self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:YES];
-
-        NSString *dirs[] = {@"apps", @"db"};
-        for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
-            // Create directory
-            src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
-            NSLog(@"src: %@", src);
-            dst = [rhoRoot stringByAppendingPathComponent:dirs[i]];
-            NSLog(@"dst: %@", dst);
-            if (![fileManager fileExistsAtPath:dst])
-                [fileManager createDirectoryAtPath:dst withIntermediateDirectories:YES attributes:nil error:&error];
+        if (make_sym_links) {
+//#ifdef RHO_DONT_COPY_ON_START
+            // we have next situations when we should remove old content:
+            // 1. we upgrade old version (where we copy all files)
+            //    we should remove all files
+            // 2. we upgrade version with symlinks
+            //    we should remove only symlinks
+            // 3. we should only restore sym-lins after that was cleared - OS upgrade/reinstall app with the same version/restore from bakup etc. 
+            // we check old "lib" file - if it is SymLink then we have new version of Rhodes (with SymLinks instead of files)
             
-            // And make symlinks from its content
+            BOOL isNewVersion = isPathIsSymLink(fileManager, testName);
             
-            NSArray *subelements = [fileManager contentsOfDirectoryAtPath:src error:&error];
-            for (int i = 0, lim = [subelements count]; i < lim; ++i) {
-                NSString *child = [subelements objectAtIndex:i];
-                NSString *fchild = [src stringByAppendingPathComponent:child];
-                NSLog(@" .. src: %@", fchild);
-                NSString *target = [dst stringByAppendingPathComponent:child];
-                NSLog(@" .. dst: %@", target);
-                [fileManager removeItemAtPath:target error:&error];
-                if ([child isEqualToString:@"rhoconfig.txt"]) {
-                    [fileManager setDelegate:nil];
-                    [fileManager removeItemAtPath:target error:&error];
-                    [fileManager setDelegate:myDelegate];
-                    [fileManager copyItemAtPath:fchild toPath:target error:&error];
-                }
-                else {
-                    [fileManager createSymbolicLinkAtPath:target withDestinationPath:fchild error:&error];
-                }
-                //[self addSkipBackupAttributeToItemAtURL:target];
+            RhoFileManagerDelegate_RemoveOnly_SymLinks* myDelegate = nil;
+            if (isNewVersion) {
+                myDelegate = [[RhoFileManagerDelegate_RemoveOnly_SymLinks alloc] init];
+                [fileManager setDelegate:myDelegate];
             }
-        }
-        
-        // make symlinks for db files
-        
-        [fileManager setDelegate:nil];
-        if (myDelegate != nil) {
-            [myDelegate release];
-        }
-        // copy "db"
-        
-        
-        NSString* exclude_db[] = {@"syncdb.schema", @"syncdb.triggers", @"syncdb_java.triggers"};
-        
-        if (!restoreSymLinks_only) { 
-            NSString *copy_dirs[] = {@"db"};
-            for (int i = 0, lim = sizeof(copy_dirs)/sizeof(copy_dirs[0]); i < lim; ++i) {
-                BOOL remove = nameChanged;
-                if ([copy_dirs[i] isEqualToString:@"db"] && !hasOldName)
-                    remove = NO;
-                NSString *src = [bundleRoot stringByAppendingPathComponent:copy_dirs[i]];
-                NSLog(@"copy src: %@", src);
-                NSString *dst = [rhoDBRoot stringByAppendingPathComponent:copy_dirs[i]];
-                NSLog(@"copy dst: %@", dst);
+            
+            NSError *error;
+            
+            NSString *appsDocDir = [rhoUserRoot stringByAppendingPathComponent:@"apps"];
+            [fileManager createDirectoryAtPath:rhoRoot withIntermediateDirectories:YES attributes:nil error:&error];
+            
+            [fileManager createDirectoryAtPath:appsDocDir withIntermediateDirectories:YES attributes:nil error:&error];
+            
+            // Create symlink to "lib"
+            NSString *src = [bundleRoot stringByAppendingPathComponent:@"lib"];
+            NSLog(@"src: %@", src);
+            NSString *dst = [rhoRoot stringByAppendingPathComponent:@"lib"];
+            NSLog(@"dst: %@", dst);
+            [fileManager removeItemAtPath:dst error:&error];
+            
+            [fileManager createSymbolicLinkAtPath:dst withDestinationPath:src error:&error];
+            //[self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:YES];
+            
+            NSString *dirs[] = {@"apps", @"db"};
+            for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
+                // Create directory
+                src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
+                NSLog(@"src: %@", src);
+                dst = [rhoRoot stringByAppendingPathComponent:dirs[i]];
+                NSLog(@"dst: %@", dst);
+                if (![fileManager fileExistsAtPath:dst])
+                    [fileManager createDirectoryAtPath:dst withIntermediateDirectories:YES attributes:nil error:&error];
                 
-                //[self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
+                // And make symlinks from its content
                 
                 NSArray *subelements = [fileManager contentsOfDirectoryAtPath:src error:&error];
                 for (int i = 0, lim = [subelements count]; i < lim; ++i) {
                     NSString *child = [subelements objectAtIndex:i];
                     NSString *fchild = [src stringByAppendingPathComponent:child];
-                    NSLog(@" .. copy src: %@", fchild);
+                    NSLog(@" .. src: %@", fchild);
                     NSString *target = [dst stringByAppendingPathComponent:child];
-                    NSLog(@" .. copy dst: %@", target);
+                    NSLog(@" .. dst: %@", target);
+                    [fileManager removeItemAtPath:target error:&error];
+                    if ([child isEqualToString:@"rhoconfig.txt"]) {
+                        [fileManager setDelegate:nil];
+                        [fileManager removeItemAtPath:target error:&error];
+                        [fileManager setDelegate:myDelegate];
+                        [fileManager copyItemAtPath:fchild toPath:target error:&error];
+                    }
+                    else {
+                        [fileManager createSymbolicLinkAtPath:target withDestinationPath:fchild error:&error];
+                    }
+                    //[self addSkipBackupAttributeToItemAtURL:target];
+                }
+            }
+            
+            // make symlinks for db files
+            
+            [fileManager setDelegate:nil];
+            if (myDelegate != nil) {
+                [myDelegate release];
+            }
+            // copy "db"
+            
+            
+            NSString* exclude_db[] = {@"syncdb.schema", @"syncdb.triggers", @"syncdb_java.triggers"};
+            
+            if (!restoreSymLinks_only && !only_apps) { 
+                NSString *copy_dirs[] = {@"db"};
+                for (int i = 0, lim = sizeof(copy_dirs)/sizeof(copy_dirs[0]); i < lim; ++i) {
+                    BOOL remove = nameChanged;
+                    if ([copy_dirs[i] isEqualToString:@"db"] && !hasOldName)
+                        remove = NO;
+                    NSString *src = [bundleRoot stringByAppendingPathComponent:copy_dirs[i]];
+                    NSLog(@"copy src: %@", src);
+                    NSString *dst = [rhoDBRoot stringByAppendingPathComponent:copy_dirs[i]];
+                    NSLog(@"copy dst: %@", dst);
                     
-                    BOOL copyit = YES;
+                    //[self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
                     
-                    int j, jlim;
-                    for (j = 0, jlim = sizeof(exclude_db)/sizeof(exclude_db[0]); j < jlim; j++) {
-                        if ([child isEqualToString:exclude_db[j]]) {
-                            copyit = NO;
+                    NSArray *subelements = [fileManager contentsOfDirectoryAtPath:src error:&error];
+                    for (int i = 0, lim = [subelements count]; i < lim; ++i) {
+                        NSString *child = [subelements objectAtIndex:i];
+                        NSString *fchild = [src stringByAppendingPathComponent:child];
+                        NSLog(@" .. copy src: %@", fchild);
+                        NSString *target = [dst stringByAppendingPathComponent:child];
+                        NSLog(@" .. copy dst: %@", target);
+                        
+                        BOOL copyit = YES;
+                        
+                        int j, jlim;
+                        for (j = 0, jlim = sizeof(exclude_db)/sizeof(exclude_db[0]); j < jlim; j++) {
+                            if ([child isEqualToString:exclude_db[j]]) {
+                                copyit = NO;
+                            }
+                        }
+                        
+                        if (copyit) {
+                            [fileManager removeItemAtPath:target error:&error];
+                            [fileManager copyItemAtPath:fchild toPath:target error:&error];
                         }
                     }
                     
-                    if (copyit) {
-                        [fileManager removeItemAtPath:target error:&error];
-                        [fileManager copyItemAtPath:fchild toPath:target error:&error];
-                    }
                 }
-                
+                // Finally, copy "hash" and "name" files
+                NSString *items[] = {@"hash", @"name"};
+                for (int i = 0, lim = sizeof(items)/sizeof(items[0]); i < lim; ++i) {
+                    NSString *src = [bundleRoot stringByAppendingPathComponent:items[i]];
+                    NSLog(@"copy src: %@", src);
+                    NSString *dst = [rhoRoot stringByAppendingPathComponent:items[i]];
+                    NSLog(@"copy dst: %@", dst);
+                    [fileManager removeItemAtPath:dst error:&error];
+                    [fileManager copyItemAtPath:src toPath:dst error:&error];
+                    
+                    //[self addSkipBackupAttributeToItemAtURL:dst];
+                }
             }
-            // Finally, copy "hash" and "name" files
-            NSString *items[] = {@"hash", @"name"};
-            for (int i = 0, lim = sizeof(items)/sizeof(items[0]); i < lim; ++i) {
-                NSString *src = [bundleRoot stringByAppendingPathComponent:items[i]];
-                NSLog(@"copy src: %@", src);
-                NSString *dst = [rhoRoot stringByAppendingPathComponent:items[i]];
-                NSLog(@"copy dst: %@", dst);
-                [fileManager removeItemAtPath:dst error:&error];
-                [fileManager copyItemAtPath:src toPath:dst error:&error];
-                
-                //[self addSkipBackupAttributeToItemAtURL:dst];
+            
+        }
+        else {
+            NSString *dirs[] = {@"apps", @"lib", @"db", @"hash", @"name"};
+            for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
+                if (!only_apps || [dirs[i] isEqualToString:@"apps"]) {
+                    BOOL remove = nameChanged;
+                    if ([dirs[i] isEqualToString:@"db"] && !hasOldName)
+                        remove = NO;
+                    NSString *src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
+                    NSLog(@"src: %@", src);
+                    NSString *dst = [rhoRoot stringByAppendingPathComponent:dirs[i]];
+                    NSLog(@"dst: %@", dst);
+                    [self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
+                }
             }
         }
-#else
-        NSString *dirs[] = {@"apps", @"lib", @"db", @"hash", @"name"};
-        for (int i = 0, lim = sizeof(dirs)/sizeof(dirs[0]); i < lim; ++i) {
-            BOOL remove = nameChanged;
-            if ([dirs[i] isEqualToString:@"db"] && !hasOldName)
-                remove = NO;
-            NSString *src = [bundleRoot stringByAppendingPathComponent:dirs[i]];
-            NSLog(@"src: %@", src);
-            NSString *dst = [rhoRoot stringByAppendingPathComponent:dirs[i]];
-            NSLog(@"dst: %@", dst);
-            [self copyFromMainBundle:fileManager fromPath:src toPath:dst remove:remove];
-        }
-#endif
 	}
     
 	rho_logconf_Init_with_separate_user_path(rho_native_rhopath(), rho_native_rhopath(), "", rho_native_rhouserpath());
@@ -918,6 +930,36 @@ int rho_sys_set_do_not_bakup_attribute(const char* path, int value) {
     }
     
     return (int)(result == 0);
+}
+
+
+int rho_prepare_folder_for_upgrade(const char* szPath) {
+    // replace all folders/files to real folder/files in this path
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+
+    NSString* main_path = [NSString stringWithUTF8String:szPath];
+    
+    NSDirectoryEnumerator *enumerator = [fileManager enumeratorAtPath:main_path];
+    NSString *child;
+    while (child = [enumerator nextObject]) {
+        // check for sym_link
+        NSString* child_path = [main_path stringByAppendingPathComponent:child];
+        if (isPathIsSymLink(fileManager, child_path) ) {
+            
+            NSError *error;
+            
+            NSString* tmp_path = [main_path stringByAppendingPathComponent:@"temporary_path_for_copying_sym_link"];
+            
+            [[AppManager instance] copyFromMainBundle:fileManager fromPath:child_path toPath:tmp_path remove:NO];
+            if ([fileManager removeItemAtPath:child_path error:&error] != YES) {
+                return 0;
+            }
+            if ([fileManager moveItemAtPath:tmp_path toPath:child_path error:&error] != YES) {
+                return 0;
+            }
+        }
+    }
+    return 1;
 }
 
 
