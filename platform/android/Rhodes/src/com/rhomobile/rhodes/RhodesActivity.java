@@ -55,6 +55,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AbsoluteLayout;
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
 	
