@@ -1,0 +1,127 @@
+require 'fileutils'
+
+def build_extension(name, arch)
+  objects = []
+  mkdir_p $tempdir unless File.exists? $tempdir
+
+  Dir.glob("*.c").each do |f|
+    objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
+    objects << ('"'+objname+'"')
+
+    args = []
+    args << "-I."
+    args << "-I\"#{$rhoroot}/lib/extensions/zlib/ext\""
+    args << "-I\"#{$rhoroot}/platform/shared/ruby/include\""
+    args << "-I\"#{$rhoroot}/platform/shared\""
+    args << "-I\"#{$rhoroot}/platform/shared/common\""
+
+    if ENV['RHO_PLATFORM'] == 'android'
+      args << "-I\"#{$rhoroot}/platform/shared/ruby/android\""
+      args << "-I\"#{$rhoroot}/platform/shared/ruby/generated\""
+      cc_compile f, $tempdir, args or exit 1
+
+    elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
+      args << "-I\"#{$rhoroot}/platform/shared/ruby/iphone\""
+      args << "-D_XOPEN_SOURCE"
+      args << "-D_DARWIN_C_SOURCE"
+      args << "-isysroot \"#{$sdkroot}\""
+      args << "-fno-common"
+      args << "-arch #{arch}"
+      args << "-O2"
+      args << "-o \"#{objname}\""
+      args << "-c"
+      args << f
+      cmdline = $gccbin + ' ' + args.join(' ')
+      puts cmdline
+      puts `#{cmdline}`
+      exit unless $? == 0
+
+    end
+  end
+
+  mkdir_p $targetdir unless File.exist? $targetdir
+
+  if ENV['RHO_PLATFORM'] == 'android'
+    cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+
+  elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
+    args = []
+    args << 'rcs'
+    args << File.join( $targetdir, 'lib' + name + '.a' )
+    args += objects
+    cmdline = $arbin + ' ' + args.join(' ')
+    puts cmdline
+    puts `#{cmdline}`
+    exit unless $? == 0
+
+  elsif ENV['RHO_PLATFORM'] == 'wm'
+    args = []
+    args << "/M4"
+    args << name + ".sln"
+    args << "\"Release|#{$sdk}\""
+    cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
+    puts cmdline
+    puts `#{cmdline}`
+    exit unless $? == 0
+
+    cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
+
+  elsif ENV['RHO_PLATFORM'] == 'win32'
+    args = []
+    args << "/M4"
+    args << name + ".sln"
+    args << "\"#{ENV['RHO_BUILD_CONFIG']}|Win32\""
+    cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
+    puts cmdline
+    puts `#{cmdline}`
+    exit unless $? == 0
+
+    cp_r File.join($tempdir, ENV['RHO_BUILD_CONFIG'], name + ".lib"), $targetdir
+  end
+end
+
+namespace "build" do
+  task :config do
+    $rhoroot = ENV['RHO_ROOT']
+
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+
+    if ENV['RHO_PLATFORM'] == 'android'
+      require File.dirname(__FILE__) + '/../../../../platform/android/build/androidcommon.rb'
+
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+
+    elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
+      $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+      raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+      $sdkroot = ENV['SDKROOT']
+      raise "SDKROOT is not set" if $sdkroot.nil?
+      $arch = ENV['ARCHS']
+      raise "ARCHS is not set" if $arch.nil?
+      $gccbin = $bindir + '/gcc'
+      $arbin = $bindir + '/ar'
+
+    elsif ENV['RHO_PLATFORM'] == 'wm'
+      $vcbuild = ENV['VCBUILD']
+      raise "VCBUILD is not set" if $vcbuild.nil?
+      $sdk = ENV['SDK']
+      raise "SDK is not set" if $sdk.nil?
+
+    elsif ENV['RHO_PLATFORM'] == 'win32'
+      $vcbuild = ENV['VCBUILD']
+      raise "VCBUILD is not set" if $vcbuild.nil?
+      $sdk = ENV['SDK']
+      raise "SDK is not set" if $sdk.nil?
+
+    end
+  end
+
+  task :all => :config do
+    build_extension('zlib', $arch)
+  end
+end
+
+task :default => "build:all"
