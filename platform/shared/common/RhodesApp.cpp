@@ -42,6 +42,7 @@
 #include "rubyext/WebView.h"
 #include "rubyext/GeoLocation.h"
 #include "common/app_build_configs.h"
+#include "common/app_build_capabilities.h"
 #include "unzip/unzip.h"
 #include "common/Tokenizer.h"
 
@@ -2016,8 +2017,9 @@ int rho_is_motorola_licence_checked() {
     
 int rho_is_rho_elements_extension_can_be_used() {
     int res_check = 1;
+#if defined( OS_ANDROID ) && defined( APP_BUILD_CAPABILITY_MOTOROLA )
 
-#if defined( OS_ANDROID ) || defined( OS_MACOS )
+#elif defined( OS_ANDROID ) || defined( OS_MACOS )
 	const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
 	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
     
