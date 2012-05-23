@@ -30,7 +30,6 @@ import java.lang.reflect.Constructor;
 import java.util.Set;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
-import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
@@ -56,7 +55,6 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AbsoluteLayout;
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
 	
@@ -111,8 +109,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
 		sInstance = this;
 		
-		Camera.init_from_UI_Thread();
-
 		if (!RhodesService.isTitleEnabled()) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 		}
@@ -125,14 +121,14 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         Logger.T(TAG, "Creating splash screen");
         mSplashScreen = new SplashScreen(this, createWebView(), this);
-        setMainView(mSplashScreen);
+        mMainView = mSplashScreen;
 
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
         notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
-        
-        
+
+
         if (!isPassMotoLicence()) {
         	Logger.E(TAG, "############################");
         	Logger.E(TAG, " ");
