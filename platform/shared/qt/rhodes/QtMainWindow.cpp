@@ -44,6 +44,7 @@
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
+#include "common/RhoConf.h"
 #include "rubyext/WebView.h"
 #include "rubyext/NativeToolbarExt.h"
 #undef null
@@ -74,7 +75,8 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     cur_tbrp(0),
     m_alertDialog(0),
     m_LogicalDpiX(0),
-    m_LogicalDpiY(0)
+    m_LogicalDpiY(0),
+	firstShow(true)
     //TODO: m_SyncStatusDlg
 {
 #ifdef OS_WINDOWS_DESKTOP
@@ -223,6 +225,10 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
 
 void QtMainWindow::on_webView_loadStarted()
 {
+	if (firstShow && RHOCONF().getBool("full_screen")) {
+		firstShow = false;
+		fullscreenCommand(1);
+	}
     if (cb) cb->logEvent("WebView: loading...");
 }
 
