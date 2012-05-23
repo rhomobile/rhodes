@@ -106,6 +106,18 @@ To enable remote logging just add the line to `rhoconfig.txt`:
 
 Then all log messages will be sent to the specified URL via POST HTTP-requests.
 
+You can also send log to remote server manually. To do this add following lines to rholog.txt:
+
+	logserver = 'http://<host>:<port>[/path]'
+	logname = '<log_name>'
+
+Then call RhoConfig.send_log:
+
+	:::ruby
+	def index
+		Rho::RhoConfig.send_log()
+	end
+
 ### RhoError class
 
 You may find access to the error class useful in logging and reporting:
