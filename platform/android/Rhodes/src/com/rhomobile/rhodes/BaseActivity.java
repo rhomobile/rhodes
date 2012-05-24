@@ -169,7 +169,14 @@ public class BaseActivity extends Activity implements ServiceConnection {
 		else
 		{
 			super.onConfigurationChanged(newConfig);
-			getScreenProperties().reread(this);
+            
+			ScreenProperties props = getScreenProperties();
+			props.reread(this);
+			RhodesService.onScreenOrientationChanged(
+				props.getWidth(),
+				props.getHeight(),
+				(props.getOrientation()==Configuration.ORIENTATION_LANDSCAPE)?90:0
+			);
 		}
 	}
 
