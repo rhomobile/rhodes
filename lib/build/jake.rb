@@ -153,19 +153,23 @@ class Jake
     require 'rest_client'
     require 'json'
 
-    platform = platform
-    exact_url = SYNC_SERVER_BASE_URL.gsub(/exact_platform/, platform)
-    puts "going to reset server: #{exact_url}"
-    # login to the server
-    unless @srv_token
-      result = RestClient.post("#{exact_url}/login",
-                           {:login => SYNC_SERVER_CONSOLE_LOGIN, :password => SYNC_SERVER_CONSOLE_PASSWORD}.to_json,
-                           :content_type => :json)
-      srv_session_cookie = 'rhoconnect_session=' + result.cookies['rhoconnect_session']
-      @srv_token = RestClient.post("#{exact_url}/api/get_api_token", '', {'Cookie' => srv_session_cookie})
-    end
-    # reset server
-    RestClient.post("#{exact_url}/api/reset", {:api_token => @srv_token}.to_json, :content_type => :json)
+    begin
+        platform = platform
+        exact_url = SYNC_SERVER_BASE_URL.gsub(/exact_platform/, platform)
+        puts "going to reset server: #{exact_url}"
+        # login to the server
+        unless @srv_token
+          result = RestClient.post("#{exact_url}/login",
+                               {:login => SYNC_SERVER_CONSOLE_LOGIN, :password => SYNC_SERVER_CONSOLE_PASSWORD}.to_json,
+                               :content_type => :json)
+          srv_session_cookie = 'rhoconnect_session=' + result.cookies['rhoconnect_session']
+          @srv_token = RestClient.post("#{exact_url}/api/get_api_token", '', {'Cookie' => srv_session_cookie})
+        end
+        # reset server
+        RestClient.post("#{exact_url}/api/reset", {:api_token => @srv_token}.to_json, :content_type => :json)
+    rescue Exception => e
+      puts "reset_spec_server failed: #{e}"
+    end        
   end
 
   def self.run_spec_app(platform,appname)
