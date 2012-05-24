@@ -52,7 +52,7 @@ def execute_cmd(cmd, advanced)
   #$_s.write("execute_cmd end\n")
 end
 
-def get_variables(scope)
+def get_variables(scope)  
   #$_s.write("get_variables start\n")
 
   if (scope =~ /^GVARS/)
@@ -220,27 +220,40 @@ $_tracefunc = lambda{|event, file, line, id, bind, classname|
   $_methodname = id;
   file = file.to_s.gsub('\\', '/')
 
-  if (file[0, $_app_path.length] == $_app_path) || (!(file.index("./").nil?))
+  #$_s.write('[Debugger][1] file = ' + file.to_s + ' line = ' + line.to_s + "\n")
+
+  if (file[0, $_app_path.length] == $_app_path) || (!(file.index("./").nil?)) || (!(file.index("framework").nil?)) || (!(file.index("extensions").nil?))
+
+    $_s.write('[Debugger][2] file = ' + file.to_s + ' line = ' + line.to_s + "\n")
 
     if event =~ /^line/
-
       unhandled = true
       step_stop = ($_step > 0) && (($_step_level < 0) || ($_call_stack <= $_step_level))
 
-      #$_s.write('[Debugger][2] file = ' + file.to_s + ' line = ' + line.to_s + "\n")
+      $_s.write('[Debugger][3] bp list = ' +  $_breakpoint.to_s + "\n")
 
       if (step_stop || ($_breakpoints_enabled && (!($_breakpoint.empty?))))
         filename = ""
          
         if !(file.index("./").nil?)
           filename = "/" + file[file.index("./") + 2, file.length]
+        elsif !(file.index("framework").nil?)
+          filename = file[file.index("framework"), file.length]
+        elsif !(file.index("extensions").nil?)
+          filename = file[file.index("extensions"), file.length]
         else
           filename = file[$_app_path.length, file.length-$_app_path.length]
         end
 
         ln = line.to_i.to_s
+
+        $_s.write('[Debugger][3] $_breakpoints_enabled = ' +  $_breakpoints_enabled.to_s + "\n")
+        $_s.write('[Debugger][3] filename = ' +  filename.to_s + "\n")
+        $_s.write('[Debugger][3] line = ' +  ln.to_s + "\n")
+        $_s.write('[Debugger][3] flag = ' +  ($_breakpoint.has_key?(filename + ':' + ln)).to_s + "\n")
+
         if step_stop || ($_breakpoints_enabled && ($_breakpoint.has_key?(filename + ':' + ln)))
-          # $_s.write('[Debugger][3] step = ' + filename.to_s + ' line = ' + line.to_s + "\n")
+          $_s.write('[Debugger][3] stop on bp ' +  filename + ':' + ln + "\n")
 
           fn = filename.gsub(/:/, '|')
           cl = classname.to_s.gsub(/:/,'#')
