@@ -37,7 +37,7 @@ using namespace rho::common;
 extern "C" void rho_sys_app_exit();
 extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
 
-#ifdef OS_MACOSX
+#if defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
 extern "C" int rho_prepare_folder_for_upgrade(const char* szPath);
 #endif
 
@@ -311,7 +311,7 @@ void CReplaceBundleThread::doReplaceBundle()
         return;
     }
     
-#ifdef OS_MACOSX
+#if defined(OS_MACOSX) && !defined(RHODES_EMULATOR)
     // prepare main folder for update (replace sym-link by real folder/files)
     if ( rho_prepare_folder_for_upgrade( RHODESAPP().getAppRootPath().c_str() ) == 0) {
         // error
@@ -387,12 +387,3 @@ int rho_sysimpl_remove_bundle_files(const char* path, const char* fileListName)
 }
 
 } //extern "C"
-
-
-
-
-
-
-
-
-
