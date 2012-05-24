@@ -96,7 +96,8 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../common/RhoMath.h\
 ../../common/map/ESRIMapEngine.h\
 ../../common/map/GoogleMapEngine.h\
-../../common/map/MapEngine.h
+../../common/map/MapEngine.h\
+../../unzip/zip.h
 
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
@@ -131,4 +132,5 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/map/ESRIMapEngine.cpp\
 ../../common/map/GoogleMapEngine.cpp\
 ../../common/map/MapEngine.cpp\
-../../common/BundleManager.cpp
+../../common/BundleManager.cpp\
+../../unzip/zip.cpp
