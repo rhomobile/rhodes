@@ -119,7 +119,10 @@ public:
     void tabbarBadge(int index, char* badge);
     int tabbarGetCurrent();
     bool isExistJavascript(const wchar_t* szJSFunction, int index){return true;}
-
+	// window frame
+	void setFrame(int x, int y, int width, int height);
+	void setPosition(int x, int y);
+	void setSize(int width, int height);
 
     BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)

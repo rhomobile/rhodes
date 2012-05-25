@@ -55,6 +55,59 @@ extern "C" HWND getMainWnd();
 extern "C" char* wce_wctomb(const wchar_t* w);
 extern "C" int rho_wm_impl_CheckSymbolDevice();
 
+#if (defined(RHODES_EMULATOR) && defined(WINDOWS_PLATFORM)) || defined(RHODES_WIN32)
+
+//extern "C" CMainWindow* Rhodes_getMainWindow();
+CMainWindow& getAppWindow();
+
+namespace rho {
+
+class CRhoWindow
+{
+public:
+    class CParams
+    {
+	private:
+		int m_x;
+		int m_y;
+		int m_width;
+		int m_height;
+	public:
+		CParams(int x, int y, int width, int height) : m_x(x), m_y(y), m_width(width), m_height(height) {}
+		~CParams(){}
+		int getX() { return m_x; }
+		int getY() { return m_y; }
+		int getWidth() { return m_width; }
+		int getHeight() { return m_height; }
+	};
+
+public:
+	CRhoWindow(void){}
+	~CRhoWindow(void){}
+
+    static void setFrame(CParams* params)
+	{
+	    CParams& frame = *((CParams*)params);
+		CMainWindow& mainWin = getAppWindow();
+		mainWin.setFrame(frame.getX(), frame.getY(), frame.getWidth(), frame.getHeight());
+	}
+    static void setPosition(CParams* params)
+	{
+	    CParams& frame = *((CParams*)params);
+		CMainWindow& mainWin = getAppWindow();
+		mainWin.setPosition(frame.getX(), frame.getY());
+	}
+    static void setSize(CParams* params)
+	{
+	    CParams& frame = *((CParams*)params);
+		CMainWindow& mainWin = getAppWindow();
+		mainWin.setSize(frame.getWidth(), frame.getHeight());
+	}
+};
+
+}
+#endif
+
 extern "C"
 {
 #ifdef OS_WINCE__
@@ -795,17 +848,17 @@ void rho_sys_set_application_icon_badge(int badge_number) {
 #if (defined(RHODES_EMULATOR) && defined(WINDOWS_PLATFORM)) || defined(RHODES_WIN32)
 void rho_sys_set_window_frame(int x0, int y0, int width, int height)
 {
-    //rho_callInUIThread
+	rho_callInUIThread(CRhoWindow::setFrame, new CRhoWindow::CParams(x0, y0, width, height));
 }
 
 void rho_sys_set_window_position(int x0, int y0)
 {
-    //rho_callInUIThread
+	rho_callInUIThread(CRhoWindow::setPosition, new CRhoWindow::CParams(x0, y0, 0, 0));
 }
 
 void rho_sys_set_window_size(int width, int height)
 {
-    //rho_callInUIThread
+	rho_callInUIThread(CRhoWindow::setSize, new CRhoWindow::CParams(0, 0, width, height));
 }
 #endif
 
