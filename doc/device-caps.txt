@@ -107,6 +107,7 @@ Is specified application installed on device?
 	System.app_installed?(appname)
 
 **NOTE: On iPhone, appname is the same with registered application URL scheme.**
+
 	
 Uninstall specified application	
 	:::ruby
@@ -134,6 +135,13 @@ To get current application Locale:
 	:::ruby
     LocalizationSimplified::get_cur_locale #get current application locale
 
+Move/resize application window (on Win32 platform only):
+	:::ruby
+    System::set_window_frame(x, y, width, height) # move and resize window
+    System::set_window_position(x, y)             # move window
+    System::set_window_size(width, height)        # resize window
+
+These calls work also in [RhoSimulator for Windows](/rhodes/simulator). The default window size is 400 (width) x 600 (height) and the default position is the top left coner of the screen (0,0).
 
 ### Sample
 See layout.erb of [System API Sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/layout.erb)  for some of the examples of how to use System class. There is also [system test](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/SystemTest/controller.rb) which demonstrate System class usage.
