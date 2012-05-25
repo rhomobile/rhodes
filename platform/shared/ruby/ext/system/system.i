@@ -18,6 +18,13 @@ extern int rho_sys_get_screen_width();
 extern int rho_sys_get_screen_height();
 #define get_screen_height rho_sys_get_screen_height
 
+#define set_window_frame rho_sys_set_window_frame
+extern void rho_sys_set_window_frame(int x0, int y0, int width, int height);
+#define set_window_position rho_sys_set_window_position
+extern void rho_sys_set_window_position(int x0, int y0);
+#define set_window_size rho_sys_set_window_size
+extern void rho_sys_set_window_size(int width, int height);
+
 #define set_push_notification rho_sys_set_push_notification
 extern void rho_sys_set_push_notification( const char *url, const char* params);
 
@@ -121,6 +128,9 @@ extern VALUE has_network();
 extern VALUE get_locale();
 extern int get_screen_width();
 extern int get_screen_height();
+extern void set_window_frame(int x0, int y0, int width, int height);
+extern void set_window_position(int x0, int y0);
+extern void set_window_size(int width, int height);
 extern void set_push_notification( const char *url, const char* params);
 extern void set_screen_rotation_notification(const char *url, const char* params);
 extern void exit();
