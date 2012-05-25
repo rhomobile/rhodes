@@ -293,4 +293,21 @@ int rho_sys_zip_file(const char* szZipFilePath, const char* szToZipPath, const c
     return 0;
 }
 
+#if !(defined(RHODES_EMULATOR) && defined(WINDOWS_PLATFORM)) && !defined(RHODES_WIN32)
+void rho_sys_set_window_frame(int x0, int y0, int width, int height)
+{
+    LOG(INFO) + "System.set_window_frame is unsupported on current platform.";
+}
+
+void rho_sys_set_window_position(int x0, int y0)
+{
+    LOG(INFO) + "System.set_window_position is unsupported on current platform.";
+}
+
+void rho_sys_set_window_size(int width, int height)
+{
+    LOG(INFO) + "System.set_window_size is unsupported on current platform.";
+}
+#endif
+
 } //extern "C"

@@ -792,5 +792,21 @@ void rho_sys_set_application_icon_badge(int badge_number) {
     //unsupported on WM
 }
 
+#if (defined(RHODES_EMULATOR) && defined(WINDOWS_PLATFORM)) || defined(RHODES_WIN32)
+void rho_sys_set_window_frame(int x0, int y0, int width, int height)
+{
+    //rho_callInUIThread
+}
+
+void rho_sys_set_window_position(int x0, int y0)
+{
+    //rho_callInUIThread
+}
+
+void rho_sys_set_window_size(int width, int height)
+{
+    //rho_callInUIThread
+}
+#endif
 
 } //extern "C"
