@@ -24,7 +24,7 @@ Rhodes provide access to device specific capabilities such as GPS, PIM, camera, 
 	<tr><td class='cap'>Date/Time picker</td><td>1.2.2</td><td>2.0</td><td class='tbd'>TBD</td><td>1.2</td><td>1.2</td><td>3.0</td><td class='tbd'>TBD</td><td>3.0</td></tr>
 	<tr><td class='cap'>Menu</td><td>1.2.2</td><td>2.0</td><td>3.0</td><td>1.2</td><td>1.5</td><td>3.0</td><td>3.1</td><td>3.0</td></tr>
 	<tr><td class='cap'>Toolbar</td><td>1.2.2</td><td>2.3</td><td>3.0</td><td class='tbd'>n/a</td><td>1.5</td><td>3.0</td><td>3.1</td><td>3.0</td></tr>
-	<tr><td class='cap'>Tab Bar</td><td>1.2.2</td><td class='tbd'>3.5</td><td>3.0</td><td class='tbd'>n/a</td><td>1.5</td><td>3.1</td><td>3.1</td><td>3.1</td></tr>
+	<tr><td class='cap'>Tab Bar</td><td>1.2.2</td><td class='tbd'>3.5</td><td>3.0</td><td class='tbd'>n/a</td><td>1.5</td><td>3.1</td><td>3.1</td><td class='tbd'>3.4</td></tr>
 	<tr><td class='cap'>Nav Bar</td><td>2.0</td><td class='tbd'>3.5</td><td class='tbd'>TBD</td><td class='tbd'>n/a</td><td>2.0</td><td class='tbd'>4.0</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td></tr>
 	<tr><td class='cap'>Signature Capture</td><td>2.1</td><td>3.0</td><td class='tbd'>TBD</td><td class='tbd'>3.5</td><td>2.1</td><td class='tbd'>4.0</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td></tr>
 	<tr class='tbd'><td class='cap'>Audio/Video capture</td><td>4.0</td><td>4.0</td><td class='tbd'>TBD</td><td>4.0</td><td>4.0</td><td>4.0</td><td class='tbd'>TBD</td><td class='tbd'>TBD</td></tr>
@@ -134,14 +134,6 @@ This call does not change OS Locale, it will change only LocalizationSimplified 
 To get current application Locale:
 	:::ruby
     LocalizationSimplified::get_cur_locale #get current application locale
-
-Move/resize application window (on Win32 platform only):
-	:::ruby
-    System::set_window_frame(x, y, width, height) # move and resize window
-    System::set_window_position(x, y)             # move window
-    System::set_window_size(width, height)        # resize window
-
-These calls work also in [RhoSimulator for Windows](/rhodes/simulator). The default window size is 400 (width) x 600 (height) and the default position is the top left coner of the screen (0,0).
 
 ### Sample
 See layout.erb of [System API Sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/layout.erb)  for some of the examples of how to use System class. There is also [system test](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/SystemTest/controller.rb) which demonstrate System class usage.
