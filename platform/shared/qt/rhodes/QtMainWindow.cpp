@@ -187,6 +187,25 @@ void QtMainWindow::on_actionBack_triggered()
         ui->webView->back();
 }
 
+void QtMainWindow::on_actionRotateRight_triggered()
+{
+	this->resize(this->height(), this->width());
+	this->adjustWebInspector();
+	RHODESAPP().callScreenRotationCallback(this->width(), this->height(), 90);
+}
+
+void QtMainWindow::on_actionRotateLeft_triggered()
+{
+	this->resize(this->height(), this->width());
+	this->adjustWebInspector();
+	RHODESAPP().callScreenRotationCallback(this->width(), this->height(), -90);
+}
+
+void QtMainWindow::on_actionRotate180_triggered()
+{
+	RHODESAPP().callScreenRotationCallback(this->width(), this->height(), 180);
+}
+
 bool QtMainWindow::internalUrlProcessing(const QUrl& url)
 {
     int ipos;
