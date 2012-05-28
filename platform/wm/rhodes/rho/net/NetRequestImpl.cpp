@@ -758,7 +758,10 @@ void CNetRequestImpl::readInetFile( HINTERNET hRequest, CNetResponseImpl* pNetRe
         if (dwBytesRead > 0)
         {
             if ( pFile )
+            {
                 pFile->write(pBuf,dwBytesRead);
+                pFile->flush();
+            }
             else
                 pNetResp->getRawData().append(pBuf,dwBytesRead);
         }
