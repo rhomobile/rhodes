@@ -63,6 +63,7 @@ public:
     int getLogicalDpiX();
     int getLogicalDpiY();
     void bringToFront();
+	void adjustWebInspector();
     // webview
     void navigate(QString url, int index);
     void GoBack(void);

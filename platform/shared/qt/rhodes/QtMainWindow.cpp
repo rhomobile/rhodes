@@ -41,6 +41,7 @@
 #include <QtNetwork/QNetworkCookie>
 #include <QFileDialog>
 #include <QDesktopServices>
+#include <QDesktopWidget>
 #include "ext/rho/rhoruby.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -161,6 +162,15 @@ void QtMainWindow::resizeEvent(QResizeEvent *event)
     m_LogicalDpiY = this->logicalDpiY();
     if (cb)
         cb->updateSizeProperties(event->size().width(), event->size().height());
+}
+
+void QtMainWindow::adjustWebInspector()
+{
+	int screen_width = QApplication::desktop()->screenGeometry().width();
+	int wi_x = this->x() + this->width() + 16;
+	if ((wi_x + webInspectorWindow->width() + 16) > screen_width)
+		wi_x = screen_width - webInspectorWindow->width() - 16;
+	webInspectorWindow->move(wi_x, webInspectorWindow->y());
 }
 
 bool QtMainWindow::isStarted(void)
