@@ -57,8 +57,12 @@
     UIImage *img = [[UIImage alloc] initWithContentsOfFile:imagePath];
 	
     self.image = img;
+    
+    self.contentMode = UIViewContentModeScaleToFill;
 	
 	{
+        
+        
 		
 		float img_scale = 1;
 #ifdef __IPHONE_4_0
@@ -89,9 +93,32 @@
 		}
 		
 	
-		if ((image_width != scrnWidth) || (image_height != scrnHeight)) {
+		if ((image_width != scrnWidth) || (image_height != scrnHeight) || (img_scale != scales)) 
+        {
 			// scale to app frame
 			self.frame = appFrame;
+            CGRect rect;
+            
+            rect.origin.x = appFrame.origin.x;
+            rect.origin.y = appFrame.origin.y;
+            
+            float width_k = (appFrame.size.width * scales) / (float)image_width;
+            float height_k = (appFrame.size.height * scales) / (float)image_height;
+
+            if (width_k >= height_k) {
+                rect.size.width = appFrame.size.width;
+                rect.size.height = (((float)image_height) / scales) * width_k;
+            }
+            else {
+                rect.size.height = appFrame.size.height;
+                rect.size.width = (((float)image_width) / scales) * height_k;
+            }
+            
+            
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {    
+                self.frame = rect;
+            }
+            
 		}
 		else {
 			self.frame = srcrnBounds;
