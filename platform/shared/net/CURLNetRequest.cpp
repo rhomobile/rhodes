@@ -235,7 +235,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
     Hashtable<String,String> h;
     if (pHeaders)
         h = *pHeaders;
-    
+
     for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
         Vector<char> respChunk;
         
@@ -248,7 +248,10 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &respChunk);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &curlBodyBinaryCallback);
         if (nStartFrom > 0)
+		{
+			RAWLOG_INFO1("CURLNetRequest::doPull - resuming from %d",nStartFrom);
             curl_easy_setopt(curl, CURLOPT_RESUME_FROM, nStartFrom);
+		}
 
         CURLcode err = doCURLPerform(strUrl);
         curl_slist_free_all(hdrs);
@@ -269,7 +272,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
                 std::copy(respChunk.begin(), respChunk.end(), std::back_inserter(respBody));
             // Clear counter of attempts because 206 response does not considered to be failed attempt
             nAttempts = 0;
-        }
+		}
         else {
             if (oFile) {
                 oFile->movePosToStart();
@@ -281,7 +284,13 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
         
         if (err == CURLE_OPERATION_TIMEDOUT && respChunk.size() > 0) {
             RAWLOG_INFO("Connection was closed by timeout, but we have part of data received; try to restore connection");
-            nStartFrom = oFile ? oFile->size() : respBody.size();
+            nRespCode = -1;
+			if ( oFile != 0 ) {
+				oFile->flush();
+				nStartFrom = oFile->size();
+			} else {
+				nStartFrom = respBody.size();
+			}
             continue;
         }
         
