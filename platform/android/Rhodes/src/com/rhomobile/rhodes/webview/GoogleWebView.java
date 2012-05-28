@@ -173,4 +173,14 @@ public class GoogleWebView implements IRhoWebView {
     public String getEngineId() {
         return "WEBKIT/GOOGLE/" + Build.VERSION.RELEASE;
     }
+
+    @Override
+    public void onPause() {
+	AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,true);
+    }
+
+    @Override
+    public void onResume() {
+	AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,false);
+    }
 }

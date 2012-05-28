@@ -265,6 +265,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public void onResume() {
         Logger.D(TAG, "onResume");
         mIsForeground = true;
+	pauseWebViews(false);
         super.onResume();
 
         RhoExtManager.getImplementationInstance().onResumeActivity(this);
@@ -274,6 +275,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public void onPause() 
     {
         mIsForeground = false;
+	pauseWebViews(true);
 
         RhoExtManager.getImplementationInstance().onPauseActivity(this);
 
@@ -281,6 +283,30 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.D(TAG, "onPause");
 
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
+    }
+
+    private void pauseWebViews( boolean pause ) {
+	if ( mMainView != null ) {
+	    IRhoWebView wv = mMainView.getWebView(-1);
+	    if ( wv != null ) {
+		if ( pause ) {
+		    wv.onPause();
+		} else {
+		    wv.onResume();
+		}
+	    } else {
+		for ( int i = 0; i < mMainView.getTabsCount(); ++i ) {
+		    wv = mMainView.getWebView(i);
+		    if ( wv != null ) {
+			if ( pause ) {
+			    wv.onPause();
+			} else {
+			    wv.onResume();
+			}
+		    }
+		}
+	    }
+    	}
     }
 
     @Override

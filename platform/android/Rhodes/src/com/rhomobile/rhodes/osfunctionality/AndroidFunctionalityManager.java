@@ -40,7 +40,10 @@ public class AndroidFunctionalityManager {
 	public static AndroidFunctionality getAndroidFunctionality() {
 		if (ourFunctionality == null) {
 			int sdkVersion = Build.VERSION.SDK_INT;
-			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD_MR1) { // 2.3.3 and above - 10
+			if (sdkVersion >= Build.VERSION_CODES.HONEYCOMB) { // 3.0.x - 11
+				ourFunctionality = new AndroidFunctionality11();
+			}
+			else if (sdkVersion == Build.VERSION_CODES.GINGERBREAD_MR1) { // 2.3.3 and above - 10
 				ourFunctionality = new AndroidFunctionality10();
 			}
 			else if (sdkVersion == Build.VERSION_CODES.GINGERBREAD) { // 2.3, 2.3.1, 2.3.2 - 9

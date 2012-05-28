@@ -80,5 +80,8 @@ class AndroidFunctionality01 implements AndroidFunctionality {
             Logger.I(TAG, "Set web plugins disabled");
         }
     }
-	
+
+    @Override
+    public void pauseWebView( WebView view, boolean doPause ) {
+    }
 }
