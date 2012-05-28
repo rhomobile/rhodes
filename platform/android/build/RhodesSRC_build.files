@@ -117,4 +117,5 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunction
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality08.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality09.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality10.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality11.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionalityManager.java

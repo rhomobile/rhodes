@@ -26,15 +26,22 @@
 
 package com.rhomobile.rhodes.osfunctionality;
 
-import android.content.Context;
+import com.rhomobile.rhodes.Logger;
+
 import android.webkit.WebView;
 
 
-public interface AndroidFunctionality {
-    final String TAG = AndroidFunctionality.class.getSimpleName();
-    String AccessOwnerInfo_getEmail(Context context);
-    String AccessOwnerInfo_getUsername(Context context);
-    int getDeviceRotation();
-    void applyWebSettings(WebView view);
-    void pauseWebView( WebView view, boolean doPause );
+//Android 3.0.x
+class AndroidFunctionality11 extends AndroidFunctionality10 implements AndroidFunctionality {
+
+    @Override
+    public void pauseWebView( WebView view, boolean doPause ) {
+	if ( doPause ) {	    
+	    view.onPause();
+	    Logger.I(TAG, "Pause WebView");
+	} else {	    
+	    view.onResume();
+	    Logger.I(TAG, "Resume WebView");
+	}
+    }  
 }
