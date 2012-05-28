@@ -1319,6 +1319,7 @@ void CRhodesApp::initAppUrls()
     m_strHomeUrl = "http://127.0.0.1:";
 #endif
     m_strHomeUrl += getFreeListeningPort();
+    m_strHomeUrlLocalHost = String("http://localhost:") + getFreeListeningPort();
 
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
 	m_strLoadingPngPath = getRhoRootPath() + "apps/app/loading.png";

@@ -48,7 +48,7 @@ protected:
     static CRhodesAppBase* m_pInstance;
 
     String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath, m_strAppUserPath, m_strRuntimePath;//, m_strRhodesPath;
-    String m_strHomeUrl;
+    String m_strHomeUrl, m_strHomeUrlLocalHost;
     boolean m_bSendingLog;
 
     CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
@@ -70,6 +70,8 @@ public:
     const String& getHomeUrl(){ return m_strHomeUrl; }
 
     String canonicalizeRhoUrl(const String& strUrl) ;
+    String canonicalizeRhoUrl_LocalHost(const String& strUrl);
+
     boolean isBaseUrl(const String& strUrl);
     
     void setSendingLog(boolean bSending){m_bSendingLog = bSending; }

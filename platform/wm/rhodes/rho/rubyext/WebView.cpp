@@ -58,7 +58,7 @@ void rho_webview_navigate(const char* url, int index)
         return;
     }
 
-    String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
+    String strUrl = RHODESAPP().canonicalizeRhoUrl_LocalHost(url);
 #if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
     TNavigateData* nd = (TNavigateData*)malloc(sizeof(TNavigateData));
     nd->index = index;
