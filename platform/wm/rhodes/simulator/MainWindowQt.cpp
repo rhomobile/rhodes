@@ -621,6 +621,7 @@ void CMainWindow::setFrame(int x, int y, int width, int height)
 {
     ((QtMainWindow*)qtMainWindow)->move(x, y);
 	((QtMainWindow*)qtMainWindow)->resize(width, height);
+	((QtMainWindow*)qtMainWindow)->adjustWebInspector();
 }
 
 void CMainWindow::setPosition(int x, int y)
@@ -631,6 +632,7 @@ void CMainWindow::setPosition(int x, int y)
 void CMainWindow::setSize(int width, int height)
 {
 	((QtMainWindow*)qtMainWindow)->resize(width, height);
+	((QtMainWindow*)qtMainWindow)->adjustWebInspector();
 }
 
 
