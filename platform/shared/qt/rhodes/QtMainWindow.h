@@ -121,6 +121,9 @@ private slots:
     void on_webView_loadStarted();
     void on_webView_linkClicked(const QUrl&);
     void on_actionBack_triggered();
+    void on_actionRotateRight_triggered();
+    void on_actionRotateLeft_triggered();
+    void on_actionRotate180_triggered();
     void on_tabBar_currentChanged(int index);
     void on_menuMain_aboutToShow();
     void on_actionAbout_triggered();

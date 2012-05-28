@@ -56,11 +56,15 @@
      <string>Main</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menuNavigate">
+   <widget class="QMenu" name="menuSimulate">
     <property name="title">
-     <string>Navigate</string>
+     <string>Simulate</string>
     </property>
     <addaction name="actionBack"/>
+    <addaction name="separator"/>
+    <addaction name="actionRotateRight"/>
+    <addaction name="actionRotateLeft"/>
+    <addaction name="actionRotate180"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -69,7 +73,7 @@
     <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuMain"/>
-   <addaction name="menuNavigate"/>
+   <addaction name="menuSimulate"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QToolBar" name="toolBar">
@@ -121,6 +125,21 @@
   <action name="actionBack">
    <property name="text">
     <string>Back</string>
+   </property>
+  </action>
+  <action name="actionRotateRight">
+   <property name="text">
+    <string>Rotate 90° Clockwise</string>
+   </property>
+  </action>
+  <action name="actionRotateLeft">
+   <property name="text">
+    <string>Rotate 90° Counter-clockwise</string>
+   </property>
+  </action>
+  <action name="actionRotate180">
+   <property name="text">
+    <string>Rotate 180°</string>
    </property>
   </action>
   <action name="actionAbout">
