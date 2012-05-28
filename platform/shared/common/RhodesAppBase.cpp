@@ -135,6 +135,21 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl)
     return strUrl;
 }
 
+String CRhodesAppBase::canonicalizeRhoUrl_LocalHost(const String& strUrl) 
+{
+    if (strUrl.length() == 0 )
+        return m_strHomeUrlLocalHost;
+
+    if (0 == strUrl.find("javascript:"))
+    	return strUrl;
+
+    size_t pos = strUrl.find_first_of(":#");
+    if((pos == String::npos) || (strUrl.at(pos) == '#'))
+        return CFilePath::join(m_strHomeUrlLocalHost,strUrl);
+
+    return strUrl;
+}
+
 boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
 {
     return String_startsWith(strUrl, m_strHomeUrl);
