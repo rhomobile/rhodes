@@ -1394,6 +1394,7 @@ namespace "run" do
         puts "rho_reload_app_changes : #{ENV['rho_reload_app_changes']}"
         $path = ""
         $args = ["-approot='#{$app_path}'", "-rhodespath='#{$startdir}'"]
+        $args << "-security_token=#{ENV['security_token']}" if !ENV['security_token'].nil?
         cmd = nil
 
         if RUBY_PLATFORM =~ /(win|w)32$/
@@ -1491,6 +1492,9 @@ namespace "run" do
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
+
+        security_token = $app_config["security_token"]
+        sim_conf += "security_token=#{security_token}\r\n" if !security_token.nil?
         
         fdir = File.join($app_path, 'rhosimulator')
         mkdir fdir unless File.exist?(fdir)
