@@ -36,6 +36,7 @@
 #include "common/RhoFilePath.h"
 #undef null
 #include <QtGui/QApplication>
+#include <QMessageBox>
 #include "impl/MainWindowImpl.h"
 
 using namespace rho;
@@ -158,6 +159,7 @@ int main(int argc, char *argv[])
 
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
+        QMessageBox::critical(0,QString("This is hidden app and can be started only with security key."), QString("Security Token Verification Failed"));
         RAWLOGC_INFO("Main", "This is hidden app and can be started only with security key.");
         return 1;
     }

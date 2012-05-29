@@ -74,8 +74,7 @@ namespace "build" do
         end
     end
 
-    task :rhosimulator => ["config:set_osx_platform", "config:osx", "config:qt", "build:rhosimulator_version"] do
-        $rhosimulator_build = true
+    task :rhosimulator => ["config:rhosimulator", "config:set_osx_platform", "config:osx", "config:qt", "build:rhosimulator_version"] do
         $config["platform"] = $current_platform
         chdir $startdir
         $extensions_lib = ''

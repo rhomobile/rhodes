@@ -354,8 +354,7 @@ namespace "build" do
 
     end
 
-    task :rhosimulator => ["config:set_win32_platform", "config:wm", "build:rhosimulator_version", "config:win32:qt"] do
-      $rhosimulator_build = true
+    task :rhosimulator => ["config:rhosimulator", "config:set_win32_platform", "config:wm", "build:rhosimulator_version", "config:win32:qt"] do
       $config["platform"] = $current_platform
       chdir $startdir
       init_extensions(pwd, nil)
