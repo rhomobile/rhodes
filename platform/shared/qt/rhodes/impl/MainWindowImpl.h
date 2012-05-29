@@ -100,10 +100,6 @@ public:
     void tabbarSwitch(int index);
     void tabbarBadge(int index, char* badge);
     int tabbarGetCurrent();
-    // window frame
-    void setFrame(int x, int y, int width, int height);
-    void setPosition(int x, int y);
-    void setSize(int width, int height);
 
 private:
     //TODO: CLogView m_logView;
@@ -142,6 +138,9 @@ public:
     void fullscreenCommand(int);
     void setCookie(const char*, const char*);
     void bringToFront();
+    void setFrame(int x, int y, int width, int height);
+    void setPosition(int x, int y);
+    void setSize(int width, int height);
 
 signals:
     void doExitCommand(void);
@@ -161,4 +160,7 @@ signals:
     void doFullscreenCommand(int);
     void doSetCookie(const char*, const char*);
     void doBringToFront(void);
+    void doSetFrame(int x, int y, int width, int height);
+    void doSetPosition(int x, int y);
+    void doSetSize(int width, int height);
 };

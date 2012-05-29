@@ -276,4 +276,19 @@ int MotorolaLicence_check(const char* company, const char* licence)
     return 1;
 }
 
+void rho_sys_set_window_frame(int x0, int y0, int width, int height)
+{
+    CMainWindow::getInstance()->setFrame(x0, y0, width, height);
+}
+
+void rho_sys_set_window_position(int x0, int y0)
+{
+    CMainWindow::getInstance()->setPosition(x0, y0);
+}
+
+void rho_sys_set_window_size(int width, int height)
+{
+    CMainWindow::getInstance()->setSize(width, height);
+}
+
 } //extern "C"

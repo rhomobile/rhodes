@@ -63,7 +63,6 @@ public:
     int getLogicalDpiX();
     int getLogicalDpiY();
     void bringToFront();
-	void adjustWebInspector();
     // webview
     void navigate(QString url, int index);
     void GoBack(void);
@@ -98,6 +97,7 @@ private:
     void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);
     void tabbarDisconnectWebView(QWebView* webView, QWebInspector* webInspector);
     bool internalUrlProcessing(const QUrl& url);
+    void adjustWebInspector();
 
 private:
     Ui::QtMainWindow *ui;
@@ -147,6 +147,9 @@ public slots:
     void takeSignature(void*); //TODO: Signature::Params*
     void fullscreenCommand(int);
     void setCookie(const char* url, const char* cookie);
+    void setFrame(int x, int y, int width, int height);
+    void setPosition(int x, int y);
+    void setSize(int width, int height);
 protected:
     void resizeEvent(QResizeEvent *);
 };
