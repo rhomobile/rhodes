@@ -880,3 +880,22 @@ void QtMainWindow::bringToFront()
     this->raise();
     this->activateWindow();
 }
+
+// Window frame
+void QtMainWindow::setFrame(int x, int y, int width, int height)
+{
+    this->move(x, y);
+    this->resize(width, height);
+    this->adjustWebInspector();
+}
+
+void QtMainWindow::setPosition(int x, int y)
+{
+    this->move(x, y);
+}
+
+void QtMainWindow::setSize(int width, int height)
+{
+    this->resize(width, height);
+    this->adjustWebInspector();
+}
