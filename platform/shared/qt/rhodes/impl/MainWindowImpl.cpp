@@ -633,6 +633,26 @@ void CMainWindow::menuAddAction(const char* label, int item)
     ((QtMainWindow*)qtMainWindow)->menuAddAction(QString(label), item);
 }
 
+// Window frame
+void CMainWindow::setFrame(int x, int y, int width, int height)
+{
+    ((QtMainWindow*)qtMainWindow)->move(x, y);
+    ((QtMainWindow*)qtMainWindow)->resize(width, height);
+    ((QtMainWindow*)qtMainWindow)->adjustWebInspector();
+}
+
+void CMainWindow::setPosition(int x, int y)
+{
+    ((QtMainWindow*)qtMainWindow)->move(x, y);
+}
+
+void CMainWindow::setSize(int width, int height)
+{
+    ((QtMainWindow*)qtMainWindow)->resize(width, height);
+    ((QtMainWindow*)qtMainWindow)->adjustWebInspector();
+}
+
+// Handlers
 void CMainWindow::onActivate(int active)
 {
     rho_rhodesapp_callAppActiveCallback(active);

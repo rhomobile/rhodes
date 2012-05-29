@@ -100,6 +100,10 @@ public:
     void tabbarSwitch(int index);
     void tabbarBadge(int index, char* badge);
     int tabbarGetCurrent();
+    // window frame
+    void setFrame(int x, int y, int width, int height);
+    void setPosition(int x, int y);
+    void setSize(int width, int height);
 
 private:
     //TODO: CLogView m_logView;
