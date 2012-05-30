@@ -158,7 +158,7 @@ void CThreadQueue::run()
                 nWait = nWait2;
         }
 
-        if ( nWait >= 0 && !isStopping() && isNoCommands() )
+        if ( !isStopping() && isNoCommands() )
 		{
             LOG(INFO) + "ThreadQueue blocked for " + nWait + " seconds...";
             if ( wait(nWait) == 1 )
