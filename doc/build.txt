@@ -1084,7 +1084,7 @@ To read the log file from the emulator or your device:
 			  -nomake examples -nomake demos -nomake docs
 			  -qt-libpng -qt-libjpeg -qt-libtiff -qt-libmng -qt-gif
 			  -openssl-linked -I C:/Qt/openssl-1.0.1/include
-			  -L C:/Qt/openssl-1.0.1/lib
+			  -L C:/Qt/openssl-1.0.1/lib -no-qt3support
 			> nmake
 			> nmake clean
 

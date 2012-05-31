@@ -37,9 +37,15 @@ namespace "config" do
     $remove = "rm"
     $qt_project_dir = File.join( $startdir, 'platform/shared/qt/' )
     $build_dir = File.join( $startdir, 'platform/osx/bin/' )
-    $devroot = '/Developer' if $devroot.nil?
-    $xcodebuild = $devroot + "/usr/bin/xcodebuild"
-    $sdkroot = "/"
+
+    $devroot = '/Applications/Xcode.app/Contents/Developer'
+    $xcodebuild = $devroot + '/usr/bin/xcodebuild'
+    $sdkroot = $devroot + '/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk'
+    if !File.exists? $xcodebuild
+      $devroot = '/Developer'
+      $xcodebuild = '/usr/bin/xcodebuild'
+      $sdkroot = $devroot + '/MacOSX10.6.sdk'
+    end
   end
 end
 
@@ -117,7 +123,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         end
 
         chdir $qt_project_dir
-        args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro']
+        args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro', "QMAKE_MAC_SDK='#{$sdkroot}'"]
         puts Jake.run($qmake,args)
         puts Jake.run($make, ['clean'])
         puts Jake.run($make, ['all'])
