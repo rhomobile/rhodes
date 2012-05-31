@@ -77,22 +77,31 @@ Follow these instructions to build your own customized version of RhoSimulator.
     * Download the Qt source:
         * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
         * Jump to `Qt libraries`
-        * Download the [source code as a gzipped tar](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.8.1.tar.gz) (229 MB)
-        * Extract the downloaded archive, e.g. into `~/qt-4.8.1`
+        * Download the [source code as a gzipped tar](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.8.2.tar.gz) (228 MB)
+        * Extract the downloaded archive, e.g. into `~/qt-4.8.2`
     * Make sure that your `PATH` environment variable does not contain the path to any previously installed Qt binaries
     * Add to your `~/.profile` the new environment variable `QTDIR` by adding the line (or by changing the existing `QTDIR` variable):
 
 			export QTDIR=/Developer/SDKs/Qt
 
+    * Patch Qt sources by replacing all occurences of '/Developer/SDKs/MacOSX10' to '.*MacOSX10' in two project files:
+        * `~/qt-4.8.2/src/3rdparty/webkit/Source/WebKit/qt/QtWebKit.pro`
+        * `~/qt-4.8.2/src/plugins/bearer/corewlan/corewlan.pro`
     * Open `Terminal.app` and issue commands:
 
-			$ cd ~/qt-4.8.1
+			$ cd ~/qt-4.8.2
 			$ ./configure -opensource -platform macx-g++
 			  -nomake examples -nomake demos -nomake docs
 			  -qt-libpng -qt-libjpeg -qt-libtiff -qt-libmng
-			  -webkit -prefix /Developer/SDKs/Qt -release
+			  -no-qt3support -webkit -release
+			  -prefix /Developer/SDKs/Qt
+			  -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk
 			$ make
 			$ sudo make install
+
+      If you're using Xcode 4.2 or earlier, then change the last line of `./configure` command to:
+
+			  -sdk /Developer/SDKs/MacOSX10.6.sdk
 
       Be aware that it will take a while to build the Qt libraries from sources (maybe few hours or so).
 
