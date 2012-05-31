@@ -1049,16 +1049,19 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
             range_begin = range_end - 1;
         content_size = range_end - range_begin + 1;
         
-        snprintf(buf, FILE_BUF_SIZE, "bytes %lu-%lu/%lu", (unsigned long)range_begin,
-                 (unsigned long)range_end, (unsigned long)file_size);
-        headers.push_back(Header("Content-Range", buf));
-        
         if (fseek(fp, range_begin, SEEK_SET) == -1) {
             RAWLOG_ERROR1("Can not seek to specified range start: %lu", (unsigned long)range_begin);
+			snprintf(buf, FILE_BUF_SIZE, "bytes */%lu", (unsigned long)file_size);
+			headers.push_back(Header("Content-Range", buf));
+			send_response(create_response("416 Request Range Not Satisfiable",headers));
             fclose(fp);
             delete buf;
             return false;
         }
+		
+		snprintf(buf, FILE_BUF_SIZE, "bytes %lu-%lu/%lu", (unsigned long)range_begin,
+                 (unsigned long)range_end, (unsigned long)file_size);
+        headers.push_back(Header("Content-Range", buf));
         
         start_line = "206 Partial Content";
     }
@@ -1087,14 +1090,12 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
         if (need_to_read > FILE_BUF_SIZE)
             need_to_read = FILE_BUF_SIZE;
         size_t n = fread(buf, 1, need_to_read, fp);//fread(buf, 1, need_to_read, fp);
-        if (n < 0) {
-            RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
-            fclose(fp);
-            delete buf;
-            return false;
-        }
-        if (n == 0) {
-            RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)need_to_read);
+        if (n < need_to_read) {
+			if (ferror(fp) ) {
+				RAWLOG_ERROR2("Can not read part of file (at position %lu): %s", (unsigned long)start, strerror(errno));
+			} else if ( feof(fp) ) {
+				RAWLOG_ERROR1("End of file reached, but we expect data (%lu bytes)", (unsigned long)need_to_read);
+			}
             fclose(fp);
             delete buf;
             return false;
