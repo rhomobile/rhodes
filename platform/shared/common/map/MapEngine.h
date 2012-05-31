@@ -317,6 +317,7 @@ public:
 class IMapEngine
 {
 public:
+	virtual ~IMapEngine() {}
     virtual IMapView *createMapView(IDrawingDevice *drawingDevice) = 0;
     virtual void destroyMapView(IMapView *view) = 0;
 };
