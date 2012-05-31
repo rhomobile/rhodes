@@ -91,6 +91,93 @@ def get_api_level(marketversion)
 end
 module_function :get_api_level
 
+def get_addon_classpath(libnames, apilevel = nil)
+
+    if USE_TRACES
+      puts "Looking for #{libnames.inspect}"
+      puts "Looking for apilevel #{apilevel}" if apilevel
+    end
+
+    libpatterns = []
+    found_classpath = nil
+    found_apilevel = nil
+    libnames.each do |name|
+      libpatterns << Regexp.new("^(#{name})=(.+);.*$")
+    end
+
+    Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
+        next unless File.directory? dir
+    
+        libs = {}
+        cur_apilevel = nil
+        classpath = nil
+        props = File.join(dir, 'manifest.ini')
+        unless File.file? props
+            puts "+++ WARNING: no manifest.ini found in #{dir}"
+            next
+        end
+        
+        libs = {}
+        File.open(props, 'r') do |f|
+          while line = f.gets
+            if line =~ /^api=([0-9]+)$/
+              cur_apilevel = $1.to_i
+
+              puts "API level of #{dir}: #{cur_apilevel}" if USE_TRACES
+
+              break if apilevel and apilevel != cur_apilevel
+              break if found_apilevel and found_apilevel > cur_apilevel
+            end
+            libpatterns.each do |pat|
+              if(pat =~ line)
+                libs[$1] = $2
+              end
+            end
+          end
+        end
+        
+        next if apilevel and apilevel != cur_apilevel
+        next if found_apilevel and cur_apilevel < found_apilevel
+
+        libnames.each do |name|
+          if libs[name]
+            if classpath
+              classpath += $path_separator
+            else
+              classpath = ''
+            end
+            classpath += File.join(dir,'libs',libs[name])
+          else
+            classpath = nil
+            break
+          end
+        end
+        
+        next unless classpath
+        
+        found_apilevel = cur_apilevel
+        found_classpath = classpath
+        
+        puts "classpath: #{found_classpath.inspect}, API level: #{found_apilevel}" if USE_TRACES
+        
+    end
+
+    unless found_classpath
+      msg = "No Android SDK add-on found for libraries: #{libnames.inspect}"
+      msg += "; API level: #{apilevel}" if apilevel
+      raise msg
+    end
+    
+    if USE_TRACES
+      puts "Add-on libraries: #{libnames.inspect}"
+      puts "Add-on classpath: #{found_classpath}"
+      puts "Add-on API level: #{found_apilevel}"
+    end
+
+    found_classpath
+end
+module_function :get_addon_classpath
+
 def get_app_log (appname, device, silent = false)
   pkgname = "com.#{$vendor}." + appname.downcase.gsub(/[^A-Za-z_0-9]/, '')
   path = File.join('/data/data', pkgname, 'rhodata', 'RhoLog.txt')

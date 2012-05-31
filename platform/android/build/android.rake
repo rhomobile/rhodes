@@ -66,7 +66,8 @@ ANDROID_PERMISSIONS = {
   'motoroladev' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
   'webkit_browser' => nil,
   'shared_runtime' => nil,
-  'motorola_browser' => nil
+  'motorola_browser' => nil,
+  'msr' => nil
 }
 
 ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
@@ -115,10 +116,16 @@ def add_push(manifest)
 end
 
 def add_motosol_sdk(manifest)
-  uses_library = REXML::Element.new 'uses-library'
-  uses_library.add_attribute 'android:name', 'com.motorolasolutions.scanner'
+  uses_scanner = REXML::Element.new 'uses-library'
+  uses_scanner.add_attribute 'android:name', 'com.motorolasolutions.scanner'
+
+  uses_msr = REXML::Element.new 'uses-library'
+  uses_msr.add_attribute 'android:name', 'com.motorolasolutions.msr'
+  uses_msr.add_attribute 'android:required', 'false'
+
   manifest.elements.each('application') do |app|
-    app.add uses_library
+    app.add uses_scanner
+    app.add uses_msr unless $app_config["capabilities"].index("msr").nil?
   end  
 end
 
@@ -341,7 +348,6 @@ namespace "config" do
   end
 
   task :android => :set_android_platform do
-
     Rake::Task["config:common"].invoke
 
     $java = $config["env"]["paths"]["java"]
@@ -411,9 +417,6 @@ namespace "config" do
 
     $uri_host = $app_config["android"]["URIHost"] unless $app_config["android"].nil?
 
-    $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
-    $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
-
     # Here is switch between release/debug configuration used for
     # building native libraries
     if $app_config["debug"].nil?
@@ -450,8 +453,6 @@ namespace "config" do
     $app_startup_listeners_java = File.join $tmpdir, "RhodesStartupListeners.java"
 
     if RUBY_PLATFORM =~ /(win|w)32$/
-      $emulator = #"cmd /c " + 
-        File.join( $androidsdkpath, "tools", "emulator.exe" )
       $bat_ext = ".bat"
       $exe_ext = ".exe"
       $path_separator = ";"
@@ -464,7 +465,6 @@ namespace "config" do
       end
     else
       #XXX make these absolute
-      $emulator = File.join( $androidsdkpath, "tools", "emulator" )
       $bat_ext = ""
       $exe_ext = ""
       $path_separator = ":"
@@ -472,47 +472,6 @@ namespace "config" do
     end
 
     puts "+++ Looking for platform..." if USE_TRACES
-#    napilevel = $min_sdk_level
-    
-    $emuversion = AndroidTools.get_market_version($min_sdk_level) if $emuversion.nil?
-    if $emuversion.nil?
-      android_api_levels.each do |v|
-        puts "Check api level for emulator '#{v}'"
-        if v >= $min_sdk_level
-          $emuversion = AndroidTools.get_market_version(v)
-          puts "emulator version will used: '#{$emuversion}'"
-          break
-        end
-      end
-    end
-    requested_api_level = AndroidTools.get_api_level($emuversion)
-
-    if USE_TRACES
-      puts "Found API levels:"
-      android_api_levels.each do |level|
-        puts level
-      end
-      puts "Requested version: #{$emuversion}"
-      puts "Corresponding API level #{requested_api_level}"
-    end
-
-    if requested_api_level.nil?
-      puts "ERROR!!! Wrong Android API version: #{$emuversion}"
-      exit 1
-    end
-
-    is_api_level_installed = false
-    android_api_levels.each do |level|
-      if level == requested_api_level
-        is_api_level_installed = true
-        break
-      end
-    end
-
-    if !is_api_level_installed
-      puts "ERROR!!! API version is not found in installed Android SDK: #{$emuversion}"
-      exit 1
-    end
 
     if $androidplatform.nil?
       ajar = File.join($androidsdkpath, 'platforms', 'android-' + $min_sdk_level.to_s, 'android.jar')
@@ -585,8 +544,8 @@ namespace "config" do
     $app_package_name = "com.#{$vendor}." + $appname.downcase.gsub(/[^A-Za-z_0-9]/, '') unless $app_package_name
     $app_package_name.gsub!(/\.[\d]/, "._")
     
-    puts "$vendor = #{$vendor} >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-    puts "$app_package_name = #{$app_package_name} >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    puts "$vendor = #{$vendor}"
+    puts "$app_package_name = #{$app_package_name}"
 
     if $uri_host.nil?
       if $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
@@ -598,7 +557,7 @@ namespace "config" do
     end
 
     unless $app_config['capabilities'].index('motorola').nil? and $app_config['capabilities'].index('motoroladev').nil?
-      $use_motosol_barcode_api = true
+      $use_motosol_api = true
       $use_motosol_api_classpath = true unless $app_config['capabilities'].index('motoroladev').nil?
       raise 'Cannot use Motorola SDK addon and Google SDK addon together!' if $use_google_addon_api
     end
@@ -610,98 +569,24 @@ namespace "config" do
       $applog_path = File.join( $app_path, $applog_file )
     end 
 
-    # Look for Motorola barcode SDK addon
-    if $use_motosol_api_classpath
-      Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
-        apijar = File.join(dir, 'libs', 'com.motorolasolutions.scanner.jar')
-        if File.exists? apijar
-          $motosol_jar = apijar
-        end
-      end
-      if $motosol_jar.nil?
-        raise "No Motorola Solutions SDK addon is found!!!"
-      end
+    if $min_sdk_level > $found_api_level
+      raise "Latest installed Android platform '#{$androidplatform}' does not meet minSdk '#{$min_sdk_level}' requirement"
     end
 
-    # Detect android targets
-    if $androidtargets.nil?
-      $androidtargets = {}
-      id = nil
-
-      `"#{$androidbin}" list targets`.split(/\n/).each do |line|
-        line.chomp!
-
-        if line =~ /^id:\s+([0-9]+)/
-          id = $1
-        end
-
-        if $use_google_addon_api
-          if line =~ /:Google APIs:([0-9]+)/
-            apilevel = $1
-            $androidtargets[apilevel.to_i] = id.to_i
-          end
-        else
-          if line =~ /^\s+API\s+level:\s+([0-9]+)$/ and not id.nil?
-            apilevel = $1
-            $androidtargets[apilevel.to_i] = id.to_i
-          end
-        end
-      end
+    # Look for Motorola SDK addon
+    if $use_motosol_api_classpath
+      puts "Looking for Motorola API SDK add-on..." if USE_TRACES
+      motosol_jars = ['com.motorolasolutions.scanner']
+      motosol_jars << 'com.motorolasolutions.emdk.msr' unless $app_config["capabilities"].index("msr").nil?
+      $motosol_classpath = AndroidTools::get_addon_classpath(motosol_jars)
     end
 
     # Detect Google API add-on path
     if $use_google_addon_api
-      puts "+++ Looking for Google APIs add-on..." if USE_TRACES
-      puts "Previously found API level: #{$found_api_level}" if USE_TRACES
-      napilevel = $min_sdk_level
-      Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
-
-        props = File.join(dir, 'manifest.ini')
-        if !File.file? props
-          puts "+++ WARNING: no manifest.ini found in #{dir}"
-          next
-        end
-
-        apilevel = -1
-        File.open(props, 'r') do |f|
-          while line = f.gets
-            next unless line =~ /^api=([0-9]+)$/
-            apilevel = $1.to_i
-            break
-          end
-        end
-
-        puts "+++ API LEVEL of #{dir}: #{apilevel}" if USE_TRACES
-
-        if apilevel >= napilevel
-          
-          sgapijar = File.join(dir, 'libs', 'maps.jar')
-          if File.exists? sgapijar
-            napilevel = apilevel
-            $gapijar = sgapijar
-            $found_api_level = apilevel
-          end
-        end
-      end
-      if $gapijar.nil?
-        raise "+++ No Google APIs add-on found (which is required because appropriate capabilities enabled in build.yml)"
-      else
-        puts "+++ Google APIs add-on found: #{$gapijar}" if USE_TRACES
-      end
+      puts "Looking for Google API SDK add-on..." if USE_TRACES
+      google_jars = ['com.google.android.maps']
+      $google_classpath = AndroidTools::get_addon_classpath(google_jars, $found_api_level)
     end
-
-    if $min_sdk_level > $found_api_level
-        puts "Latest installed Android platform '#{$androidplatform}' does not meet minSdk '#{$min_sdk_level}' requirement"
-        exit 1
-    end
-
-    $emuversion = $emuversion.to_s
-    $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
-    $avdname += "ext" if $use_google_addon_api
-    $avdtarget = $androidtargets[get_api_level($emuversion)]
-
-    $appavdname = $app_config["android"]["emulator"] if $app_config["android"] != nil && $app_config["android"].length > 0
-    $appavdname = $config["android"]["emulator"] if $appavdname.nil? and !$config["android"].nil? and $config["android"].length > 0
 
     setup_ndk($androidndkpath, $found_api_level)
     
@@ -743,7 +628,7 @@ namespace "config" do
     mkdir_p $srcdir if not File.exists? $srcdir
     mkdir_p $libs if not File.exists? $libs
 
-  end
+  end #task 'config:android'
   
   namespace 'android' do
     task :extensions => ['config:android', 'build:bundle:noxruby'] do
@@ -841,7 +726,75 @@ namespace "config" do
       
     end #task :extensions
 
-  end #namespace 'android'  
+    task :emulator=>"config:android" do
+      $device_flag = "-e"
+      $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
+      $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
+
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        $emulator = #"cmd /c " + 
+          File.join( $androidsdkpath, "tools", "emulator.exe" )
+      else
+        $emulator = File.join( $androidsdkpath, "tools", "emulator" )
+      end
+
+      $emuversion = AndroidTools.get_market_version($min_sdk_level) if $emuversion.nil?
+      if $emuversion.nil?
+        raise "Wrong Android emulator version: #{$emuversion}. Android SDK target API is not installed"
+      end
+
+      # Detect android targets
+      $androidtargets = {}
+      id = nil
+
+      `"#{$androidbin}" list targets`.split(/\n/).each do |line|
+        line.chomp!
+
+        if line =~ /^id:\s+([0-9]+)/
+          id = $1
+
+          if $use_google_addon_api
+            if line =~ /Google Inc\.:Google APIs:([0-9]+)/
+              apilevel = $1
+              $androidtargets[apilevel.to_i] = id.to_i
+            end
+          else
+            if $use_motosol_api
+              if line =~ /MotorolaSolutions\s+Inc\.:MotorolaSolution\s+Value\s+Add\s+APIs.*:([0-9]+)/
+                apilevel = $1
+                $androidtargets[apilevel.to_i] = id.to_i
+              end
+            end
+          end
+        end        
+
+        unless $use_google_addon_api or $use_motosol_api
+          if line =~ /^\s+API\s+level:\s+([0-9]+)$/
+            apilevel = $1
+            $androidtargets[apilevel.to_i] = id.to_i
+          end
+        end
+
+      end
+
+      if USE_TRACES
+        puts "Android emulator version: #{$emuversion}"
+        puts "Android targets:"
+        puts $androidtargets.inspect
+      end
+
+      $emuversion = $emuversion.to_s
+
+      $appavdname = $app_config["android"]["emulator"] if $app_config["android"] != nil && $app_config["android"].length > 0
+      $appavdname = $config["android"]["emulator"] if $appavdname.nil? and !$config["android"].nil? and $config["android"].length > 0
+
+    end # task 'config:android:emulator'
+    
+    task :device=>"config:android" do
+      $device_flag = "-d"
+
+    end
+  end #namespace 'config:android'  
 end
 
 
@@ -860,10 +813,8 @@ namespace "build" do
       puts Jake.run($aapt, args)
 
       unless $?.success?
-        puts "Error in AAPT"
-        exit 1
+        raise "Error in AAPT"
       end
-
     end
 
     desc "Build RhoBundle for android"
@@ -1498,8 +1449,8 @@ namespace "build" do
       srclist = newsrclist
 
       classpath = $androidjar
-      classpath += $path_separator + $gapijar unless $gapijar.nil?
-      classpath += $path_separator + $motosol_jar unless $motosol_jar.nil?
+      classpath += $path_separator + $google_classpath if $google_classpath
+      classpath += $path_separator + $motosol_classpath if $motosol_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
 #      Dir.glob(File.join($extensionsdir, "*.jar")).each do |f|
 #        classpath += $path_separator + f
@@ -1538,8 +1489,8 @@ namespace "build" do
       puts 'Compile additional java files:'
 
       classpath = $androidjar
-      classpath += $path_separator + $gapijar unless $gapijar.nil?
-      classpath += $path_separator + $motosol_jar unless $motosol_jar.nil?
+      classpath += $path_separator + $google_classpath if $google_classpath
+      classpath += $path_separator + $motosol_classpath if $motosol_classpath
       classpath += $path_separator + File.join($tmpdir, 'Rhodes')
       Dir.glob(File.join($extensionsdir, '*.jar')).each do |jar|
         classpath += $path_separator + jar
@@ -1906,8 +1857,7 @@ namespace "run" do
     task :framework_spec => "framework_spec:emulator"
 
     namespace "phone_spec" do
-      task :device do
-        $device_flag = "-d"
+      task :device=>"config:android:device" do
         Jake.run_spec_app('android','phone_spec')
         unless $dont_exit_on_failure
           exit 1 if $total.to_i==0
@@ -1915,8 +1865,7 @@ namespace "run" do
         end
       end
 
-      task :emulator do
-        $device_flag = "-e"
+      task :emulator=>"config:android:emulator" do
         Jake.run_spec_app('android','phone_spec')
         unless $dont_exit_on_failure
           exit 1 if $total.to_i==0
@@ -1926,8 +1875,7 @@ namespace "run" do
     end
 
     namespace "framework_spec" do
-      task :device do
-        $device_flag = "-d"
+      task :device=>'config:android:device' do
         Jake.run_spec_app('android','framework_spec')
         unless $dont_exit_on_failure
           exit 1 if $total.to_i==0
@@ -1935,8 +1883,7 @@ namespace "run" do
         end
       end
 
-      task :emulator do
-        $device_flag = "-e"
+      task :emulator=>'config:android:emulator' do
         Jake.run_spec_app('android','framework_spec')
         unless $dont_exit_on_failure
           exit 1 if $total.to_i==0
@@ -1966,7 +1913,7 @@ namespace "run" do
       exit $failed.to_i
     end
 
-    task :emulator => "device:android:debug" do
+    task :emulator=>['config:android:emulator', 'device:android:debug']  do
         run_emulator
         load_app_and_run
     end
@@ -1994,61 +1941,64 @@ namespace "run" do
         Rake::Task["run:rhosimulator_debug"].invoke            
     end
     
-    task :get_info => "config:android" do
-        $androidtargets.each do |level|
-            puts "#{get_market_version(level[0])}"
-        end
-
-        emu_version = $emuversion
-        
-        puts ""        
-        cur_name = ""
-        
-        `"#{$androidbin}" list avd`.split(/\n/).each do |line|
-            line.each_line do |item|
-                ar = item.split(':')
-                ar[0].strip!
-                if ar[0] == "Name"
-                    cur_name = ar[1].strip!
-                    puts "#{cur_name}"
-                end
-                
-                if $appavdname && cur_name == $appavdname && (ar[0] == "Target" || ar.length == 1)
-                    
-                    text = ar[0] == "Target" ? ar[1] : ar[0]
-                    
-                    nAnd = text.index("Android")
-                    if nAnd
-                        nAnd = text.index(" ", nAnd)
-                        nAnd1 = text.index("-", nAnd+1)                    
-                        nAnd1 = text.index(" ", nAnd+1) unless nAnd1
-                        emu_version = text[nAnd+1, nAnd1-nAnd-1]
-                    end    
-                end
-                
-            end    
-        end
-
-        puts ""
-
-        puts "#{emu_version}"
-        puts "#{$appavdname}"
-
-    end
+#    task :get_info => "config:android" do
+#        $androidtargets.each do |level|
+#            puts "#{get_market_version(level[0])}"
+#        end
+#
+#        emu_version = $emuversion
+#        
+#        puts ""        
+#        cur_name = ""
+#        
+#        `"#{$androidbin}" list avd`.split(/\n/).each do |line|
+#            line.each_line do |item|
+#                ar = item.split(':')
+#                ar[0].strip!
+#                if ar[0] == "Name"
+#                    cur_name = ar[1].strip!
+#                    puts "#{cur_name}"
+#                end
+#                
+#                if $appavdname && cur_name == $appavdname && (ar[0] == "Target" || ar.length == 1)
+#                    
+#                    text = ar[0] == "Target" ? ar[1] : ar[0]
+#                    
+#                    nAnd = text.index("Android")
+#                    if nAnd
+#                        nAnd = text.index(" ", nAnd)
+#                        nAnd1 = text.index("-", nAnd+1)                    
+#                        nAnd1 = text.index(" ", nAnd+1) unless nAnd1
+#                        emu_version = text[nAnd+1, nAnd1-nAnd-1]
+#                    end    
+#                end
+#            end    
+#        end
+#
+#        puts ""
+#
+#        puts "#{emu_version}"
+#        puts "#{$appavdname}"
+#
+#    end
 
     def  run_emulator(options = {})
       apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
 
       #AndroidTools.kill_adb
       Jake.run($adb, ['start-server'], nil, true)
-      #puts 'Sleep for 5 sec. waiting for "adb start-server"'
-      #sleep 5
 
       rm_f $applog_path if !$applog_path.nil?
       AndroidTools.logcat_process()
 
       running = AndroidTools.is_emulator_running
       if !running
+        $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
+        $avdname += "google" if $use_google_addon_api
+        $avdname += "motosol" if $use_motosol_api
+        $avdtarget = $androidtargets[get_api_level($emuversion)]
+
+        raise "Unable to run Android emulator. No appropriate target API for SDK version: #{$emuversion}" unless $avdtarget
 
         if $appavdname != nil
           $avdname = $appavdname
@@ -2056,15 +2006,6 @@ namespace "run" do
 
         createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 128M "
         system("echo no | #{createavd}") unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
-
-        if $use_google_addon_api
-          avdini = File.join(ENV['HOME'], '.android', 'avd', "#{$avdname}.ini")
-          avd_using_gapi = true if File.new(avdini).read =~ /:Google APIs:/
-          unless avd_using_gapi
-            puts "Can not use specified AVD (#{$avdname}) because of incompatibility with Google APIs. Delete it and try again."
-            exit 1
-          end
-        end
 
         # Start the emulator, check on it every 5 seconds until it's running
         cmd = "\"#{$emulator}\" -cpu-delay 0"
