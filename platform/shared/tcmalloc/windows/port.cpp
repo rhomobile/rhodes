@@ -226,7 +226,7 @@ extern void* TCMalloc_SystemAlloc(size_t size, size_t *actual_size,
     GlobalMemoryStatus(&sMemStat); 
     sMemStat.dwAvailVirtual /= 1024;
 
-    printf("TCMALLOC: VirtualAlloc = %d; Total: %d(Mb); Free VM: %d\n", size + extra, nTotal, sMemStat.dwAvailVirtual);
+    //printf("TCMALLOC: VirtualAlloc = %d; Total: %d(Mb); Free VM: %d\n", size + extra, nTotal, sMemStat.dwAvailVirtual);
 
   if (result == NULL)
     return NULL;

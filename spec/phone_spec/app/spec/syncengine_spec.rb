@@ -58,7 +58,8 @@ def syncserver_url
                     when /blackberry/i then 'bb'
                     when /apple/i      then 'iphone'
                     when /symbian/i    then 'symbian'
-                    when /wp7/i    then 'wp'
+                    when /wp7/i        then 'wp'
+                    when /windows/i    then 'wm'
   end
   platform = 'win32' if System.get_property('device_name') == 'Win32'
 

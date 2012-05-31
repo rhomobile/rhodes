@@ -33,6 +33,8 @@ namespace sync {
 
 struct ISyncProtocol
 {
+	virtual ~ISyncProtocol() {}
+	
     virtual const String& getContentType() = 0;
     virtual int getVersion() = 0;
 
