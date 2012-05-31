@@ -39,12 +39,14 @@ namespace "config" do
     $build_dir = File.join( $startdir, 'platform/osx/bin/' )
 
     $devroot = '/Applications/Xcode.app/Contents/Developer'
-    $xcodebuild = $devroot + '/usr/bin/xcodebuild'
+    $devbin = $devroot + '/usr/bin'
     $sdkroot = $devroot + '/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk'
+    $xcodebuild = $devbin + '/xcodebuild'
     if !File.exists? $xcodebuild
       $devroot = '/Developer'
-      $xcodebuild = '/usr/bin/xcodebuild'
+      $devbin = '/usr/bin'
       $sdkroot = $devroot + '/MacOSX10.6.sdk'
+      $xcodebuild = $devbin + '/xcodebuild'
     end
   end
 end
@@ -54,7 +56,7 @@ namespace "build" do
 
     task :extensions do
         ENV['RHO_PLATFORM'] = 'osx'
-        ENV["PLATFORM_DEVELOPER_BIN_DIR"] = "/usr/bin"
+        ENV["PLATFORM_DEVELOPER_BIN_DIR"] = $devbin
         ENV["SDKROOT"] = $sdkroot
         ENV['PWD'] = $startdir
         ENV['RHO_ROOT'] = ENV['PWD']
