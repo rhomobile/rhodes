@@ -102,20 +102,20 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         Logger.T(TAG, "onCreate");
-		super.onCreate(savedInstanceState);
-		
-		Thread ct = Thread.currentThread();
-		//ct.setPriority(Thread.MAX_PRIORITY);
-		uiThreadId = ct.getId();
 
-		sInstance = this;
-		
+        Thread ct = Thread.currentThread();
+        //ct.setPriority(Thread.MAX_PRIORITY);
+        uiThreadId = ct.getId();
+
+        sInstance = this;
+
+        super.onCreate(savedInstanceState);
+
 		if (!RhodesService.isTitleEnabled()) {
 			requestWindowFeature(Window.FEATURE_NO_TITLE);
 		}
-		else {
-		}
-		requestWindowFeature(Window.FEATURE_PROGRESS);
+
+        requestWindowFeature(Window.FEATURE_PROGRESS);
         getWindow().setFeatureInt(Window.FEATURE_PROGRESS, MAX_PROGRESS);
 
         mHandler = new Handler();

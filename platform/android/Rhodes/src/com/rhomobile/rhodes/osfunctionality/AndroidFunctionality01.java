@@ -30,6 +30,9 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -45,7 +48,7 @@ class AndroidFunctionality01 implements AndroidFunctionality {
 		return "";
 	}
 	
-	public int getDeviceRotation() {
+	public int getDeviceRotation(Context context) {
 		return -1;
 	}
 
@@ -83,5 +86,34 @@ class AndroidFunctionality01 implements AndroidFunctionality {
 
     @Override
     public void pauseWebView( WebView view, boolean doPause ) {
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public int getScreenOrientation(Context context) {
+
+        int configOrientation = context.getResources().getConfiguration().orientation;
+        Logger.D(TAG, "Configuration orientation: " + context.getResources().getConfiguration().orientation);
+
+        switch (configOrientation) {
+        case Configuration.ORIENTATION_PORTRAIT:
+            return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        case Configuration.ORIENTATION_LANDSCAPE:
+            return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        default:
+            {
+                int displayOrientation = ((WindowManager)context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getOrientation();
+                Logger.D(TAG, "Default display orientation: " + displayOrientation);
+
+                switch(displayOrientation) {
+                case 0:
+                    return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+                case 1:
+                    return ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                default:
+                    return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                }
+            }
+        }
     }
 }

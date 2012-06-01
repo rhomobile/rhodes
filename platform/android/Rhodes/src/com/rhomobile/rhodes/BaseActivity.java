@@ -26,11 +26,14 @@
 
 package com.rhomobile.rhodes;
 
+import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -73,28 +76,8 @@ public class BaseActivity extends Activity implements ServiceConnection {
 
             mScreenPpiX = metrics.xdpi;
             mScreenPpiY = metrics.ydpi;
-            
-            int orientation;
-            orientation = context.getResources().getConfiguration().orientation;
-            Logger.D(TAG, "Resources orientation: "+ orientation);
 
-            if (orientation == Configuration.ORIENTATION_UNDEFINED)
-            {
-                orientation = d.getOrientation();
-                Logger.D(TAG, "DisplayMetrics orientation: "+ orientation);
-
-                if (orientation == Configuration.ORIENTATION_UNDEFINED) {
-                    if (d.getWidth() == d.getHeight())
-                        orientation = Configuration.ORIENTATION_SQUARE;
-                    else if(d.getWidth() < d.getHeight())
-                        orientation = Configuration.ORIENTATION_PORTRAIT;
-                    else
-                        orientation = Configuration.ORIENTATION_LANDSCAPE;
-
-                    Logger.D(TAG, "Screen resolution orientation: " + orientation);
-                }
-            }
-            mScreenOrientation = orientation;
+            mScreenOrientation = AndroidFunctionalityManager.getAndroidFunctionality().getScreenOrientation(context);
 
             Logger.D(TAG, "New screen properties - width: " + mScreenWidth + ", height: " + mScreenHeight + ", orientation: " + mScreenOrientation);
         }
@@ -156,29 +139,43 @@ public class BaseActivity extends Activity implements ServiceConnection {
 		RhodesService.activityStopped();
 		super.onStop();
 	}
-	
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		Logger.T(TAG, "onConfigurationChanged");
-		if (RhoConf.getBool("disable_screen_rotation"))
-		{
-			super.onConfigurationChanged(newConfig);
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        Logger.T(TAG, "onConfigurationChanged");
+        if (RhoConf.getBool("disable_screen_rotation"))
+        {
+            super.onConfigurationChanged(newConfig);
             Logger.D(TAG, "Screen rotation is disabled. Force old orientation: " + getScreenProperties().getOrientation());
-			setRequestedOrientation(getScreenProperties().getOrientation());
-		}
-		else
-		{
-			super.onConfigurationChanged(newConfig);
-            
-			ScreenProperties props = getScreenProperties();
-			props.reread(this);
-			RhodesService.onScreenOrientationChanged(
-				props.getWidth(),
-				props.getHeight(),
-				(props.getOrientation()==Configuration.ORIENTATION_LANDSCAPE)?90:0
-			);
-		}
-	}
+            setRequestedOrientation(getScreenProperties().getOrientation());
+        }
+        else
+        {
+            super.onConfigurationChanged(newConfig);
+
+            ScreenProperties props = getScreenProperties();
+            props.reread(this);
+
+            int rotation = 0;
+            switch(props.getOrientation()) {
+            case ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE:
+                rotation = 90;
+                break;
+            case ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT:
+                rotation = 180;
+                break;
+            case ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE:
+                rotation = 270;
+                break;
+            case ActivityInfo.SCREEN_ORIENTATION_PORTRAIT:
+            default:
+                rotation = 0;
+                break;
+            }
+
+            RhodesService.onScreenOrientationChanged(props.getWidth(), props.getHeight(), rotation);
+        }
+    }
 
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {

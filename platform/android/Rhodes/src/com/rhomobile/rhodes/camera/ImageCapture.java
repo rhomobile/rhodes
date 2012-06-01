@@ -37,6 +37,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.Utils;
 
 import android.content.ContentValues;
@@ -351,10 +352,10 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			}
 
 			Camera.Parameters parameters = camera.getParameters();
-	        
-	        int imgW = 0;
-	        int imgH = 0;
-	        
+
+            int imgW = 0;
+            int imgH = 0;
+
             //int nOrient = RhodesService.getInstance().getScreenOrientation();
             int nCamRotate = 90;
             if ( (m_rotation > 45 && m_rotation < 135) || (m_rotation > 225 && m_rotation < 315) ) {
@@ -364,14 +365,14 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
                 nCamRotate = 0;
                 parameters.set("rotation", nCamRotate );//.setRotation(270);
             }
-	        Logger.D(TAG, "Camera rotation: " + nCamRotate );
+            Logger.D(TAG, "Camera rotation: " + nCamRotate );
             parameters.set("rotation", nCamRotate );
             
-            int deviceRotation = AndroidFunctionalityManager.getAndroidFunctionality().getDeviceRotation();
+            int deviceRotation = AndroidFunctionalityManager.getAndroidFunctionality().getDeviceRotation(ContextFactory.getUiContext());
             if (deviceRotation >= 0) {
-            	// platform from 2.2
-            	parameters.set("rotation", deviceRotation );
-    	        Logger.D(TAG, "Camera rotation resetup for platforms >= 2.2: " + deviceRotation );
+                // platform from 2.2
+                parameters.set("rotation", deviceRotation );
+                Logger.D(TAG, "Camera rotation resetup for platforms >= 2.2: " + deviceRotation );
             }
             
             Utils.platformLog(TAG, "$$$   parameters.set(rotation, "+String.valueOf(nCamRotate)+" );");
