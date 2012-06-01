@@ -87,18 +87,14 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-    QWebSettings* qs = QWebSettings::globalSettings(); //this->ui->webView->settings();
+    QWebSettings* qs = QWebSettings::globalSettings();
     qs->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-    qs->setAttribute(QWebSettings::LocalStorageEnabled, true);
-    qs->setAttribute(QWebSettings::OfflineStorageDatabaseEnabled, true);
-    qs->setAttribute(QWebSettings::OfflineWebApplicationCacheEnabled, true);
     qs->setOfflineStorageDefaultQuota(1024*1024*1024);
 
     rho::String rs_dir = RHODESAPP().getRhoRootPath()+RHO_EMULATOR_DIR;
-    qs->setOfflineWebApplicationCachePath(rs_dir.c_str());
-    qs->setLocalStoragePath(rs_dir.c_str());
-    qs->setOfflineStoragePath(rs_dir.c_str());
+    qs->enablePersistentStorage(rs_dir.c_str());
 
+	this->ui->webView->setContextMenuPolicy(Qt::NoContextMenu);
     this->ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     this->ui->webView->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
     this->main_webView = this->ui->webView;
