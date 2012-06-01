@@ -1368,7 +1368,13 @@ When user rotate device, Rhodes update view corresponding to new orientation. To
 	:::ruby
 	System.set_screen_rotation_notification(callback, params) 
 
-Callback will be called when screen rotate (available since Rhodes 2.0). Callback parameters will be: width, height, degrees
+Callback will be called when screen has rotated (available since Rhodes 2.0).
+Callback parameters are:
+- width - new screen width
+- height - new screen height
+- degrees - screen rotation relative to portrait position
+
+NOTE: On tablet devices with default landscape form factor degrees value in normal position will be 90
 
 ### Sample
 See controller and view in the /app/ScreenRotation folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/ScreenRotation/controller.rb) for more information.

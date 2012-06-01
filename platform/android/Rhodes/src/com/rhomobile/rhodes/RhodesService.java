@@ -756,7 +756,9 @@ public class RhodesService extends Service {
 			else if (name.equalsIgnoreCase("screen_height"))
 				return new Integer(getScreenHeight());
 			else if (name.equalsIgnoreCase("screen_orientation")) {
-				if (getScreenOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+			    int orientation = getScreenOrientation();
+				if ((orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+				 || (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE))
 					return "landscape";
 				else
 					return "portrait";

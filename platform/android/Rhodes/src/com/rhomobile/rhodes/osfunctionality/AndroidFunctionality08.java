@@ -28,10 +28,12 @@ package com.rhomobile.rhodes.osfunctionality;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
-import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.util.ContextFactory;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.view.Display;
+import android.view.Surface;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
 
@@ -39,13 +41,33 @@ import android.webkit.WebSettings;
 class AndroidFunctionality08 extends AndroidFunctionality07 implements
         AndroidFunctionality {
 
-    public int getDeviceRotation() {
-        Display display = ((WindowManager) RhodesService.getContext()
-                .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+    public int getDeviceRotation(Context context) {
+        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         int rotation = display.getRotation();
         return rotation;
     }
 
+    @Override
+    public int getScreenOrientation(Context context) {
+        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+
+        @SuppressWarnings("deprecation")
+        int width = display.getWidth();
+        @SuppressWarnings("deprecation")
+        int height = display.getHeight();
+
+        switch(display.getRotation()){
+        case Surface.ROTATION_0:
+        case Surface.ROTATION_90:
+            return (width < height) ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        case Surface.ROTATION_180:
+        case Surface.ROTATION_270:
+            return (width < height) ? ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT : ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+        default:
+            return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        }
+    }
+    
     @Override
     protected void setWebPlugins(WebSettings settings) {
         if(RhoConf.getBool("enable_web_plugins")) {

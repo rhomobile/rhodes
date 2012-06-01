@@ -34,7 +34,19 @@ public interface AndroidFunctionality {
     final String TAG = AndroidFunctionality.class.getSimpleName();
     String AccessOwnerInfo_getEmail(Context context);
     String AccessOwnerInfo_getUsername(Context context);
-    int getDeviceRotation();
+
+    /**
+     * Returns current screen rotation against default device rotation
+     * @return screen rotation in degrees
+     */
+    int getDeviceRotation(Context context);
+
+    /**
+     * Returns current screen orientation
+     * @return value in terms of ActivityInfo.screenOrientation
+     */
+    int getScreenOrientation(Context context);
+
     void applyWebSettings(WebView view);
     void pauseWebView( WebView view, boolean doPause );
 }
