@@ -524,6 +524,56 @@ namespace "device" do
       chdir $startdir
     end
   end
+
+  namespace "win32" do
+    desc "Build installer for Windows"
+    task :production => ["config:win32:qt", "build:win32"] do
+
+      out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
+      puts "out_dir - "  + out_dir
+      cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
+      cp out_dir + $appname + ".exe", $bindir + "/" + $appname + ".exe"
+
+      script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
+      app_script_name = File.join($startdir, "platform", "wm", "build")
+      app_script_name += "/" + $appname + ".nsi"
+
+      # custumize install script for application
+      install_script = File.read(script_name)
+      install_script = install_script.gsub(/%APPNAME%/, $appname)
+      install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
+      install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
+      install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
+      install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
+      install_script = install_script.gsub(/%APPICON%/, "icon.ico")
+      install_script = install_script.gsub(/%SCUNISTALLPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\Uninstall " + $appname + ".lnk\"")
+      install_script = install_script.gsub(/%SCAPPPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\" + $appname + ".lnk\"")
+      install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
+      File.open(app_script_name, "w") { |file| file.puts install_script }
+
+      cp app_script_name, $bindir
+      puts "$appname - " + $appname
+      cp out_dir + "/" + $appname + ".exe", $bindir
+      rm app_script_name
+
+      cp $app_icon_path, $bindir + "/icon.ico"
+
+      chdir $bindir
+
+      target_rho_dir = File.join($bindir, "rho")
+      rm_rf target_rho_dir
+      mv $srcdir, target_rho_dir
+
+      $target_path = $bindir
+      Rake::Task["build:win32:deployqt"].invoke
+
+      puts "$nsis - " + $nsis
+      args = [$bindir + "/" + $appname + ".nsi"]
+      puts "arg = " + args.to_s
+
+      puts Jake.run2($nsis, args, {:nowait => false} )
+    end
+  end
 end
 
 namespace "clean" do
@@ -848,53 +898,6 @@ namespace "run" do
       exit $failed.to_i
     end
 
-    desc "Build production for Motorola device"
-    task :production => ["config:win32:qt", "build:win32"] do
-
-      out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
-      puts "out_dir - "  + out_dir
-      cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
-      cp out_dir + $appname + ".exe", $bindir + "/" + $appname + ".exe"
-
-      script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
-      app_script_name = File.join($startdir, "platform", "wm", "build")
-      app_script_name += "/" + $appname + ".nsi"
-
-      # custumize install script for application
-      install_script = File.read(script_name)
-      install_script = install_script.gsub(/%APPNAME%/, $appname)
-      install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
-      install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
-      install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
-      install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
-      install_script = install_script.gsub(/%APPICON%/, "icon.ico")
-      install_script = install_script.gsub(/%SCUNISTALLPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\Uninstall " + $appname + ".lnk\"")
-      install_script = install_script.gsub(/%SCAPPPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\" + $appname + ".lnk\"")
-      install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
-      File.open(app_script_name, "w") { |file| file.puts install_script }
-
-      cp app_script_name, $bindir
-      puts "$appname - " + $appname
-      cp out_dir + "/" + $appname + ".exe", $bindir
-      rm app_script_name
-
-      cp $app_icon_path, $bindir + "/icon.ico"
-
-      chdir $bindir
-
-      target_rho_dir = File.join($bindir, "rho")
-      rm_rf target_rho_dir
-      mv $srcdir, target_rho_dir
-
-      $target_path = $bindir
-      Rake::Task["build:win32:deployqt"].invoke
-
-      puts "$nsis - " + $nsis
-      args = [$bindir + "/" + $appname + ".nsi"]
-      puts "arg = " + args.to_s
-
-      puts Jake.run2($nsis, args, {:nowait => false} )
-    end
   end
 
 end

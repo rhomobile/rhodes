@@ -1090,7 +1090,7 @@ On 64-bit platform:
 To build intaller bundle use command:
 
 	:::term
-	$ rake run:win32:production 
+	$ rake device:win32:production 
 
 After the build process is finished you can find the installer bundle named `<application-name>-setup.exe` in `bin` subfolder of your application root folder.
 
