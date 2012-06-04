@@ -146,6 +146,7 @@ namespace "config" do
   end
 
   namespace "win32" do
+
     task :qt do
       $vscommontools = ENV['VS90COMNTOOLS']
       unless !$vscommontools.nil? && ($vscommontools !~ /^\s*$/) && File.directory?($vscommontools)
@@ -163,6 +164,28 @@ namespace "config" do
         $opensslhome = nil
       end
     end
+
+    task :application do
+      app_version = '1.0'
+      app_version = $app_config["version"] unless $app_config["version"].nil?
+      File.open(File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), "wb") do |fversion|
+        fversion.write( "#define RHOSIMULATOR_NAME \"#{$appname}\"\n" )
+        fversion.write( "#define RHOSIMULATOR_VERSION \"#{app_version}\"\n" )
+      end
+
+      $app_icon_path = $app_path + "/icon/icon.ico"
+      $app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exists? $app_icon_path
+      cp $app_icon_path, $startdir + "/platform/wm/rhodes/resources/icon.ico"
+      resfile = $startdir + "/platform/wm/bin/win32/rhodes/Release/Rhodes.res"
+      rm resfile if File.exists? resfile
+
+      $qt_icon_path = $app_path + "/icon/icon.png"
+      $qt_icon_path = $startdir + "/res/icons/rhodes.png" unless File.exists? $qt_icon_path
+      cp $qt_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
+      qrcfile = $startdir + "/platform/shared/qt/rhodes/GeneratedFiles/Release/qrc_simulator.cpp"
+      rm qrcfile if File.exists? qrcfile
+    end
+
   end
 end
 
@@ -360,6 +383,8 @@ namespace "build" do
       init_extensions(pwd, nil)
       Rake::Task["build:win32:extensions"].invoke
 
+      cp $startdir + "/res/icons/rhosim.png", $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
+
       chdir $config["build"]["wmpath"]
 
       args = ['/M4', $build_solution, '"SimulatorRelease|win32"']
@@ -385,7 +410,7 @@ namespace "build" do
   end
 
   #desc "Build rhodes for win32"
-  task :win32 => ["build:win32:rhobundle"] do
+  task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
     chdir $config["build"]["wmpath"]
 
     args = ['/M4', $build_solution,  "\"" + $buildcfg + '|win32"']
@@ -842,7 +867,7 @@ namespace "run" do
       install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
       install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
       install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
-      install_script = install_script.gsub(/%APPICON%/, "rhodes.ico")
+      install_script = install_script.gsub(/%APPICON%/, "icon.ico")
       install_script = install_script.gsub(/%SCUNISTALLPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\Uninstall " + $appname + ".lnk\"")
       install_script = install_script.gsub(/%SCAPPPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\" + $appname + ".lnk\"")
       install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
@@ -851,8 +876,9 @@ namespace "run" do
       cp app_script_name, $bindir
       puts "$appname - " + $appname
       cp out_dir + "/" + $appname + ".exe", $bindir
-      cp $startdir + "/res/icons/rhodes.ico", $bindir
       rm app_script_name
+
+      cp $app_icon_path, $bindir + "/icon.ico"
 
       chdir $bindir
 
