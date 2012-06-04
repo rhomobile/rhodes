@@ -27,7 +27,10 @@
 #ifndef RHOSIMULATOR_H
 #define RHOSIMULATOR_H
 
+#ifndef RHODES_WIN32
 #define RHOSIMULATOR_NAME "RhoSimulator"
+#endif
+
 #ifndef RHO_SYMBIAN
 #include "RhoSimulatorVersion.h"
 #endif
