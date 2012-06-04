@@ -1210,20 +1210,20 @@ int CRhodesApp::determineFreeListeningPort()
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if ( sockfd < 0 )
     {
-        LOG(WARNING) + "Unable to open socket";
+        LOG(ERROR) + "Unable to open socket";
         noerrors = 0;
     }
     
     int disable = 0;
     if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&disable, sizeof(disable)) != 0)
     {
-        LOG(WARNING) + "Unable to set socket option";
+        LOG(ERROR) + "Unable to set socket option";
         noerrors = 0;
     }
 #if defined(OS_MACOSX)
     if (noerrors && setsockopt(sockfd, SOL_SOCKET, SO_REUSEPORT, (const char *)&disable, sizeof(disable)) != 0)
     {
-        LOG(WARNING) + "Unable to set socket option";
+        LOG(ERROR) + "Unable to set socket option";
         noerrors = 0;
     }
 #endif
@@ -1245,8 +1245,10 @@ int CRhodesApp::determineFreeListeningPort()
         
         LOG(INFO) + "Trying to bind of " + listenPort + " port...";
 
-        if ( bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) ) != 0 )
+        int nBindRes = bind( sockfd, (struct sockaddr *) &serv_addr, sizeof( serv_addr ) );
+        if ( nBindRes != 0 )
         {
+            LOG(INFO) + "Bind of " + listenPort + " port is failed with code: " + nBindRes;
             if (listenPort != 0)
             {
                 // Fill serv_addr again but with dynamically selected port
@@ -1281,7 +1283,7 @@ int CRhodesApp::determineFreeListeningPort()
         
         if (getsockname( sockfd, (struct sockaddr *)&serv_addr, &length ) != 0)
         {
-            LOG(WARNING) + "Can not get socket info";
+            LOG(ERROR) + "Can not get socket info";
             nFreePort = 0;
         }
         else
