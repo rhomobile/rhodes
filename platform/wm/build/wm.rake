@@ -573,7 +573,6 @@ namespace "device" do
       puts "arg = " + args.to_s
 
       puts Jake.run2($nsis, args, {:nowait => false} )
-      rm_rf $tmpdir
     end
   end
 end
@@ -593,9 +592,10 @@ namespace "clean" do
   end
 
   desc "Clean win32"
-  task :win32 => [ "config:wm" ]do
+  task :win32 => [ "config:set_win32_platform", "config:wm" ]do
     rm_rf $vcbindir + "/win32"
-    #rm_rf $targetdir
+    rm_rf $tmpdir
+    rm_rf $targetdir
   end
 end
 
