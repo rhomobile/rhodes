@@ -1092,7 +1092,7 @@ To build intaller bundle use command:
 	:::term
 	$ rake device:win32:production 
 
-After the build process is finished you can find the installer bundle named `<application-name>-setup.exe` in `bin` subfolder of your application root folder.
+After the build process is finished you can find the installer bundle named `<application-name>-setup.exe` in `<application-root>/bin/target/Win32` folder.
 
 ### Logging
 
