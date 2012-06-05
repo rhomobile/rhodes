@@ -87,6 +87,12 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
+#ifdef RHODES_WIN32
+	ui->menuSimulate->clear();
+	ui->menuSimulate->setTitle("Navigate");
+	ui->menuSimulate->insertAction(0, ui->actionBack);
+#endif
+
     QWebSettings* qs = QWebSettings::globalSettings();
     qs->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     qs->setOfflineStorageDefaultQuota(1024*1024*1024);
