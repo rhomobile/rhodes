@@ -39,6 +39,7 @@ import com.rhomobile.rhodes.extmanager.Config;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.extmanager.RhoExtManagerImpl;
 import com.rhomobile.rhodes.extmanager.WebkitExtension;
+import com.rhomobile.rhodes.extmanager.WebkitExtensionBase;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.signature.Signature;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -95,12 +96,22 @@ public class RhodesApplication extends Application{
         }
     }
 
-    @Override
-    public void onCreate(){
-        super.onCreate();
 
-        Log.i(TAG, "Initializing...");
-        
+    @SuppressWarnings("unused")
+    private void registerWebkitExtension(Config config) {
+        if(Capabilities.WEBKIT_BROWSER_ENABLED || Capabilities.MOTOROLA_BROWSER_ENABLED) {
+            WebkitExtensionBase webkitExt;
+            if (Capabilities.MOTOROLA_ENABLED) {
+                webkitExt = new WebkitExtensionBase(config);
+            }
+            else {
+                webkitExt = new WebkitExtension(config);
+            }
+            RhoExtManager.getInstance().registerExtension(WebkitExtension.EXTNAME, webkitExt);
+        }
+    }
+    
+    private void registerStateHandlers() {
         sRhodesAppActiveWatcher = AppState.AppStarted.addObserver("RhodesAppActiveObserver", true);
         
         RhodesApplication.runWhen(
@@ -150,6 +161,15 @@ public class RhodesApplication extends Application{
                         });
                     }
                 });
+    }
+    
+    @Override
+    public void onCreate(){
+        super.onCreate();
+
+        Log.i(TAG, "Initializing...");
+
+        registerStateHandlers();
 
         initClassLoader(getClassLoader());
 
@@ -271,9 +291,7 @@ public class RhodesApplication extends Application{
 
         RhoFileApi.setFsModeTransparrent(true);
 
-        if(Capabilities.WEBKIT_BROWSER_ENABLED || Capabilities.MOTOROLA_BROWSER_ENABLED) {
-            WebkitExtension.registerWebkitExtension(config);
-        }
+        registerWebkitExtension(config);
         Signature.registerSignatureCaptureExtension();
         RhoExtManager.getImplementationInstance().createRhoListeners();
 
