@@ -103,7 +103,7 @@ private:
     Ui::QtMainWindow *ui;
     QWebInspector *main_webInspector;
     QtWebInspector* webInspectorWindow;
-    IMainWindowCallback* cb;
+    IMainWindowCallback* mainWindowCallback;
     std::vector<QWebView*> tabViews;
     std::vector<QWebInspector*> tabInspect;
     QWebView* main_webView;
