@@ -8,7 +8,7 @@
 ; Installer Information
  
   Name %APPNAME%
-  OutFile "%APPNAME%-setup.exe"
+  OutFile "%OUTPUTFILE%"
   InstallDir %APPINSTALLDIR%
   BrandingText " "
 
