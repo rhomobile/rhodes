@@ -61,7 +61,7 @@
 #include "qwebviewkineticscroller.h"
 #endif
 
-IMPLEMENT_LOGCLASS(QtMainWindow,"MainWindow");
+IMPLEMENT_LOGCLASS(QtMainWindow,"QtMainWindow");
 
 extern "C" {
     extern VALUE rb_thread_main(void);
@@ -72,7 +72,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QtMainWindow),
     webInspectorWindow(new QtWebInspector()),
-    cb(NULL),
+    mainWindowCallback(NULL),
     cur_tbrp(0),
     m_alertDialog(0),
     m_LogicalDpiX(0),
@@ -130,23 +130,23 @@ QtMainWindow::~QtMainWindow()
 
 void QtMainWindow::setCallback(IMainWindowCallback* callback)
 {
-    cb = callback;
+    mainWindowCallback = callback;
 }
 
 void QtMainWindow::hideEvent(QHideEvent *)
 {
-    if (cb) cb->onActivate(0);
+    if (mainWindowCallback) mainWindowCallback->onActivate(0);
 }
 
 void QtMainWindow::showEvent(QShowEvent *)
 {
-    if (cb) cb->onActivate(1);
+    if (mainWindowCallback) mainWindowCallback->onActivate(1);
 }
 
 void QtMainWindow::closeEvent(QCloseEvent *ce)
 {
     rb_thread_wakeup(rb_thread_main());
-    if (cb) cb->onWindowClose();
+    if (mainWindowCallback) mainWindowCallback->onWindowClose();
     tabbarRemoveAllTabs(false);
     webInspectorWindow->close();
     QMainWindow::closeEvent(ce);
@@ -156,8 +156,8 @@ void QtMainWindow::resizeEvent(QResizeEvent *event)
 {
     m_LogicalDpiX = this->logicalDpiY();
     m_LogicalDpiY = this->logicalDpiY();
-    if (cb)
-        cb->updateSizeProperties(event->size().width(), event->size().height());
+    if (mainWindowCallback)
+        mainWindowCallback->updateSizeProperties(event->size().width(), event->size().height());
 }
 
 void QtMainWindow::adjustWebInspector()
@@ -229,7 +229,7 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
 {
     QString sUrl = url.toString();
     if (sUrl.contains("rho_open_target=_blank")) {
-        if (cb) cb->logEvent("WebView: open external browser");
+        LOG(INFO) + "WebView: open external browser";
         ExternalWebView* externalWebView = new ExternalWebView();
         externalWebView->navigate(QUrl(sUrl.remove("rho_open_target=_blank")));
         externalWebView->show();
@@ -239,8 +239,8 @@ void QtMainWindow::on_webView_linkClicked(const QUrl& url)
             sUrl.remove(QRegExp("#+$"));
             if (sUrl.compare(ui->webView->url().toString())!=0) {
 #ifdef OS_MACOSX
-                if (cb && !sUrl.startsWith("javascript:", Qt::CaseInsensitive))
-                    cb->onWebViewUrlChanged(sUrl.toStdString());
+                if (mainWindowCallback && !sUrl.startsWith("javascript:", Qt::CaseInsensitive))
+                    mainWindowCallback->onWebViewUrlChanged(sUrl.toStdString());
 #endif
                 ui->webView->load(QUrl(sUrl));
             }
@@ -254,35 +254,33 @@ void QtMainWindow::on_webView_loadStarted()
 		firstShow = false;
 		fullscreenCommand(1);
 	}
-    if (cb) cb->logEvent("WebView: loading...");
+    LOG(INFO) + "WebView: loading...";
 }
 
 void QtMainWindow::on_webView_loadFinished(bool ok)
 {
-    if (cb) {
-        cb->logEvent((ok?"WebView: loaded ":"WebView: failed "));
+    LOG(INFO) + (ok?"WebView: loaded ":"WebView: failed ");
 #ifdef OS_MACOSX
-        if (ok) cb->onWebViewUrlChanged(ui->webView->url().toString().toStdString());
+    if (mainWindowCallback && ok) mainWindowCallback->onWebViewUrlChanged(ui->webView->url().toString().toStdString());
 #endif
-    }
 }
 
 void QtMainWindow::on_webView_urlChanged(QUrl url)
 {
-    if (cb) {
+    if (mainWindowCallback) {
 #ifdef OS_MACOSX
         ::std::string sUrl = url.toString().toStdString();
-        cb->logEvent("WebView: URL changed to " + sUrl);
-        cb->onWebViewUrlChanged(sUrl);
+        LOG(INFO) + "WebView: URL changed to " + sUrl;
+        mainWindowCallback->onWebViewUrlChanged(sUrl);
 #else
-        cb->logEvent("WebView: URL changed");
+        LOG(INFO) + "WebView: URL changed";
 #endif
     }
 }
 
 void QtMainWindow::on_menuMain_aboutToShow()
 {
-    if (cb) cb->createCustomMenu();
+    if (mainWindowCallback) mainWindowCallback->createCustomMenu();
 }
 
 void QtMainWindow::navigate(QString url, int index)
@@ -295,7 +293,7 @@ void QtMainWindow::navigate(QString url, int index)
             wv->page()->mainFrame()->evaluateJavaScript(url);
         } else if (!internalUrlProcessing(url)) {
 #ifdef OS_MACOSX
-            if (cb) cb->onWebViewUrlChanged(url.toStdString());
+            if (mainWindowCallback) mainWindowCallback->onWebViewUrlChanged(url.toStdString());
 #endif
             wv->load(QUrl(url));
         }
@@ -319,7 +317,7 @@ void QtMainWindow::Refresh(int index)
     QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
     if (wv) {
 #ifdef OS_MACOSX
-        if (cb) cb->onWebViewUrlChanged(wv->url().toString().toStdString());
+        if (mainWindowCallback) mainWindowCallback->onWebViewUrlChanged(wv->url().toString().toStdString());
 #endif
         wv->reload();
     }
@@ -628,8 +626,8 @@ void QtMainWindow::menuActionEvent(bool checked)
 {
     QObject* sender = QObject::sender();
     QAction* action;
-    if (sender && (action = dynamic_cast<QAction*>(sender)) && cb)
-        cb->onCustomMenuItemCommand(action->data().toInt());
+    if (sender && (action = dynamic_cast<QAction*>(sender)) && mainWindowCallback)
+        mainWindowCallback->onCustomMenuItemCommand(action->data().toInt());
 }
 
 void QtMainWindow::on_actionAbout_triggered()
