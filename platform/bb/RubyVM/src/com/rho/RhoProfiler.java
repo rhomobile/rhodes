@@ -30,7 +30,7 @@ import java.util.Calendar;
 
 public class RhoProfiler {
 
-	public static boolean RHO_STRIP_PROFILER = true;
+	public static boolean RHO_STRIP_PROFILER = false;
 	
 	public static final String FILE_READ = "FileRead";
 	public static final String FILE_WRITE = "FileWrite";
@@ -115,6 +115,17 @@ public class RhoProfiler {
 	        m_mapCounters.put( szCounterName, new CCounter(true) ); 
 	    else
 	        pCounter.start();
+	}
+
+	public void START_CREATED(String szCounterName){
+	    CCounter pCounter = (CCounter)m_mapCounters.get(szCounterName);
+	    if ( pCounter == null )
+	    	return;
+	    
+	    if ( !pCounter.isWasStarted() )
+	        LOG.INFO( szCounterName + " : START" );
+
+        pCounter.start();
 	}
 	
 	private String intervalToString(long nInterval){
