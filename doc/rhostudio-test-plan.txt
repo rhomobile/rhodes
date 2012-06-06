@@ -219,106 +219,81 @@ When you open the RhoStudio it asks a path to create (or open existing) `workspa
 1. Go to `Window > Preferences` (on Windows) or `RhoStudio > Preferences` (on Mac) in the top menu.
 2. Click on `Rhomobile` node, the message will appear: "Rhodes location is undefined. Please, open/create at least one Rhodes Application project".
 
-### Rhodes Application project creation test
+### RhoMobile Application project creation test
 
-1. Rhodes Application project creation in workspace test
+1. RhoMobile Application project creation in workspace test
 
 1.1. Go to `File > New > Project` in the top menu.
-1.2. Expand `Rhomobile` node, select `Rhodes application` and click `Next`.
+1.2. Expand `RhoMobile` node, select `RhoMobile application` and click `Next`.
 1.3. Leave all settings at their defaults and click `Finish`. Wait until the wizard finishes application generation.
-1.4. Something similar to the following output should appear in the Console window:
-       Generating with app generator:
-       [ADDED]   RhodesApplication1/rhoconfig.txt
-       [ADDED]   RhodesApplication1/build.yml
-       [ADDED]   RhodesApplication1/.gitignore
-       [ADDED]   RhodesApplication1/app/application.rb
-       [ADDED]   RhodesApplication1/app/index.erb
-       [ADDED]   RhodesApplication1/app/index.bb.erb
-       [ADDED]   RhodesApplication1/app/layout.erb
-       [ADDED]   RhodesApplication1/app/loading.html
-       [ADDED]   RhodesApplication1/Rakefile
-       [ADDED]   RhodesApplication1/app/helpers
-       [ADDED]   RhodesApplication1/icon
-       [ADDED]   RhodesApplication1/app/Settings
-       [ADDED]   RhodesApplication1/public
-       [ADDED]   RhodesApplication1/app/loading.png
-1.5. Check that project `RhodesApplication1` appeared at `Project Explorer` window.
+1.4. Something similar to the following output should appear in the Console view:
+PWD: /Users/sv/rhomobile/runtime-New_configuration
+CMD: rhoelements app RhoMobileApplication1
+Generating with app generator:
+ [32m     [ADDED] [0m  RhoMobileApplication1/rhoconfig.txt
+ [32m     [ADDED] [0m  RhoMobileApplication1/build.yml
+ [32m     [ADDED] [0m  RhoMobileApplication1/.gitignore
+ [32m     [ADDED] [0m  RhoMobileApplication1/app/application.rb
+ [32m     [ADDED] [0m  RhoMobileApplication1/app/index.erb
+ [32m     [ADDED] [0m  RhoMobileApplication1/app/index.bb.erb
+ [32m     [ADDED] [0m  RhoMobileApplication1/app/layout.erb
+ [32m     [ADDED] [0m  RhoMobileApplication1/app/loading.html
+ [32m     [ADDED] [0m  RhoMobileApplication1/Rakefile
+ [32m     [ADDED] [0m  RhoMobileApplication1/app/helpers
+ [32m     [ADDED] [0m  RhoMobileApplication1/icon
+ [32m     [ADDED] [0m  RhoMobileApplication1/app/Settings
+ [32m     [ADDED] [0m  RhoMobileApplication1/public
+ [32m     [ADDED] [0m  RhoMobileApplication1/app/loading.png
+RET: 0
+1.5. Check that project `RhoMobileApplication1` appeared at `Project Explorer` view.
 
-2. Rhodes Application project creation in selected folder test
+2. RhoMobile Application project creation in selected folder test
 
 2.1. Go to `File > New > Project` in the top menu.
-2.2. Expand `Rhomobile` node, select `Rhodes application` and click `Next`.
-2.3. Disable 'Create application in default workspace' and select destination folder 
+2.2. Expand `RhoMobile` node, select `RhoMobile application` and click `Next`.
+2.3. Clear 'Create application in default workspace' checkbox and select destination folder 
      (press on Browse button and select folder in directory window).
-2.4  Wait until the wizard finishes application generation.
-2.5. Something similar to the following output should appear in the Console window:
-       Generating with app generator:
-       [ADDED]   RhodesApplication1/rhoconfig.txt
-       [ADDED]   RhodesApplication1/build.yml
-       [ADDED]   RhodesApplication1/.gitignore
-       [ADDED]   RhodesApplication1/app/application.rb
-       [ADDED]   RhodesApplication1/app/index.erb
-       [ADDED]   RhodesApplication1/app/index.bb.erb
-       [ADDED]   RhodesApplication1/app/layout.erb
-       [ADDED]   RhodesApplication1/app/loading.html
-       [ADDED]   RhodesApplication1/Rakefile
-       [ADDED]   RhodesApplication1/app/helpers
-       [ADDED]   RhodesApplication1/icon
-       [ADDED]   RhodesApplication1/app/Settings
-       [ADDED]   RhodesApplication1/public
-       [ADDED]   RhodesApplication1/app/loading.png
-2.6. Check that project `RhodesApplication1` appeared at `Project Explorer` window.
+2.4  CLick `Finish` and wait until the wizard finishes application generation.
+2.5. Something similar to the following output should appear in the Console view:
+PWD: /Users/sv/tmp
+CMD: rhoelements app tmp
+Generating with app generator:
+ [32m     [ADDED] [0m  tmp/rhoconfig.txt
+ [32m     [ADDED] [0m  tmp/build.yml
+ [32m     [ADDED] [0m  tmp/.gitignore
+ [32m     [ADDED] [0m  tmp/app/application.rb
+ [32m     [ADDED] [0m  tmp/app/index.erb
+ [32m     [ADDED] [0m  tmp/app/index.bb.erb
+ [32m     [ADDED] [0m  tmp/app/layout.erb
+ [32m     [ADDED] [0m  tmp/app/loading.html
+ [32m     [ADDED] [0m  tmp/Rakefile
+ [32m     [ADDED] [0m  tmp/app/helpers
+ [32m     [ADDED] [0m  tmp/icon
+ [32m     [ADDED] [0m  tmp/app/Settings
+ [32m     [ADDED] [0m  tmp/public
+ [32m     [ADDED] [0m  tmp/app/loading.png
+RET: 0
+2.6. Check that project with given name appeared at `Project Explorer` view.
 
-3. Rhodes Application project creation from existing sources test
+3. RhoMoile Application project creation from existing sources test
 
-3.1. Go to `File > New > Project` in the top menu.
-3.2. Expand `Rhomobile` node, select `Rhodes application` and click `Next`.
-3.3. Enable 'Create application from existing sources' and select destination folder 
+3.1. Create application outside of workspace by hand.
+3.2. Go to `File > New > Project` in the top menu.
+3.3. Expand `RhoMobile` node, select `RhoMobile application` and click `Next`.
+3.4. Enable 'Create application from existing sources' and select application folder 
      (press on Browse button and select folder in directory window).
-3.4  Wait until the wizard finishes application generation.
-3.5. Something similar to the following output should appear in the Console window:
-       Generating with app generator:
-       [ADDED]   RhodesApplication1/rhoconfig.txt
-       [ADDED]   RhodesApplication1/build.yml
-       [ADDED]   RhodesApplication1/.gitignore
-       [ADDED]   RhodesApplication1/app/application.rb
-       [ADDED]   RhodesApplication1/app/index.erb
-       [ADDED]   RhodesApplication1/app/index.bb.erb
-       [ADDED]   RhodesApplication1/app/layout.erb
-       [ADDED]   RhodesApplication1/app/loading.html
-       [ADDED]   RhodesApplication1/Rakefile
-       [ADDED]   RhodesApplication1/app/helpers
-       [ADDED]   RhodesApplication1/icon
-       [ADDED]   RhodesApplication1/app/Settings
-       [ADDED]   RhodesApplication1/public
-       [ADDED]   RhodesApplication1/app/loading.png
-3.6. Check that project with selected name appeared at `Project Explorer` window.
+3.5. Click `Finish` and wait until the wizard finishes.
+3.6. Check new project in `Project Explorer` view.
 
-4. Rhodes Application project creation from existing sources in workspace test
+4. RhoMoile Application project creation from existing sources in workspace test
 
-4.1. Create application in workspace by hand
+4.1. Create application in workspace by hand.
 4.2. Go to `File > New > Project` in the top menu.
-4.3. Expand `Rhomobile` node, select `Rhodes application` and click `Next`.
+4.3. Expand `RhoMobile` node, select `RhoMobile application` and click `Next`.
 4.4. Enable 'Create application from existing sources' and select application folder in workspace  
      (press on Browse button and select folder in directory window).
-4.5  Wait until the wizard finishes application generation.
-4.6. Something similar to the following output should appear in the Console window:
-       Generating with app generator:
-       [ADDED]   RhodesApplication1/rhoconfig.txt
-       [ADDED]   RhodesApplication1/build.yml
-       [ADDED]   RhodesApplication1/.gitignore
-       [ADDED]   RhodesApplication1/app/application.rb
-       [ADDED]   RhodesApplication1/app/index.erb
-       [ADDED]   RhodesApplication1/app/index.bb.erb
-       [ADDED]   RhodesApplication1/app/layout.erb
-       [ADDED]   RhodesApplication1/app/loading.html
-       [ADDED]   RhodesApplication1/Rakefile
-       [ADDED]   RhodesApplication1/app/helpers
-       [ADDED]   RhodesApplication1/icon
-       [ADDED]   RhodesApplication1/app/Settings
-       [ADDED]   RhodesApplication1/public
-       [ADDED]   RhodesApplication1/app/loading.png
-4.7. Check that project with selected name appeared at `Project Explorer` window.
+4.5. Click `Finish` and wait until the wizard finishes.
+4.6. Check new project in `Project Explorer` view.
 
 ### Rhomobile Preferences editing success test
 
