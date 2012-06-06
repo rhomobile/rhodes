@@ -166,11 +166,11 @@ namespace "config" do
     end
 
     task :application do
-      app_version = '1.0'
-      app_version = $app_config["version"] unless $app_config["version"].nil?
+      $app_version = '1.0'
+      $app_version = $app_config["version"] unless $app_config["version"].nil?
       File.open(File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), "wb") do |fversion|
         fversion.write( "#define RHOSIMULATOR_NAME \"#{$appname}\"\n" )
-        fversion.write( "#define RHOSIMULATOR_VERSION \"#{app_version}\"\n" )
+        fversion.write( "#define RHOSIMULATOR_VERSION \"#{$app_version}\"\n" )
       end
 
       $app_icon_path = $app_path + "/icon/icon.ico"
@@ -545,13 +545,13 @@ namespace "device" do
       install_script = File.read(script_name)
       install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
       install_script = install_script.gsub(/%APPNAME%/, $appname)
+      install_script = install_script.gsub(/%APPVERSION%/, $app_version)
       install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
       install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
       install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
       install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
       install_script = install_script.gsub(/%APPICON%/, "icon.ico")
-      install_script = install_script.gsub(/%SCUNISTALLPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\Uninstall " + $appname + ".lnk\"")
-      install_script = install_script.gsub(/%SCAPPPATH%/, "\"$SMPROGRAMS\\" + $appname + "\\" + $appname + ".lnk\"")
+      install_script = install_script.gsub(/%GROUP_NAME%/, $app_config["vendor"])
       install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
       File.open(app_script_name, "w") { |file| file.puts install_script }
 
