@@ -13,7 +13,7 @@ class SpecRunner < MSpecScript
     config[:files] << "spec/string/lstrip_spec"
     config[:files] << "spec/string/slice_spec"
     config[:files] << "spec/array/pack_spec"
-    
+
     config[:files] << "spec/rho_spec"
 
 if !defined?(RHO_WP7)
@@ -49,15 +49,17 @@ end
     config[:files] << "spec/xruby_spec" if defined? RHO_ME
 
     config[:files] << [ "spec/syncengine_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
+
     config[:files] << [ "spec/blobsync_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
 
+	config[:files] << [ "spec/blob_bulksync_spec", [ {:schema_model=>false } ] ]
 if !defined?(RHO_WP7)
     config[:files] << "spec/bulksync_spec"
 end
-    
+
 if !defined?(RHO_WP7) && !(System.get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/))
     config[:files] << "spec/uri_spec"
-end    
+end
 
   end
 

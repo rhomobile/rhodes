@@ -91,7 +91,7 @@ CSyncSource::CSyncSource(int id, const String& strName, const String& strSyncTyp
     m_nRefreshTime = 0;
 
     m_nErrCode = RhoAppAdapter.ERR_NONE;
-
+	
     IDBResult res = db.executeSQL("SELECT token,associations from sources WHERE source_id=?", m_nID);
     if ( !res.isEnd() )
     {
@@ -1062,6 +1062,103 @@ boolean CSyncSource::processBlob( const String& strCmd, const String& strObject,
     oAttrValue.m_strValue = strDbValue;
     return true;
 }
+	
+boolean CSyncSource::processServerBlobAttrs() {
+	if ( m_bSchemaSource ) {
+		//TODO: Not supported yet
+		return true;
+	} else {
+		static const String selAttrsRequest = "SELECT source_attribs,blob_attribs from sources WHERE source_id=?";
+		static const String updAttrsRequest = "UPDATE sources SET source_attribs=?,blob_attribs=? WHERE source_id=?";
+		static const String updObjectsRequest = "UPDATE object_values SET attrib=? WHERE attrib=? and source_id=?";
+		static const String blobSfx = "-rhoblob";
+		
+		db::CDBAdapter db = getDB();
+		db.startTransaction();
+		IDBResult res = db.executeSQL(selAttrsRequest.c_str(),getID());
+		
+		Vector<String> attrsToRename;
+		
+		String newAttrs = "";
+		
+		for ( ; !res.isEnd(); res.next() ) {
+			String attrs = res.getStringByIdx(0);
+			String blobs = res.getStringByIdx(1);
+			
+			CTokenizer tokenizer(attrs,",");
+			while (tokenizer.hasMoreTokens()) {
+				String attrName = tokenizer.nextToken();
+				if (!tokenizer.hasMoreTokens()) {
+					break;
+				}
+				String attrVal = tokenizer.nextToken();
+				
+				
+				if ( String_endsWith(attrName, blobSfx.c_str() ) ) {
+					if ( blobs.length() > 0 ) {
+						blobs += ",";
+					}
+					blobs += attrName.substr(0,attrName.length()-blobSfx.length()) + "," + attrVal;
+					attrsToRename.push_back(attrName);
+				} else {
+					if (newAttrs.length() > 0 ) {
+						newAttrs += ",";
+					}
+					newAttrs += attrName + "," + attrVal;
+				}
+			}
+			
+			LOG(TRACE) + "Updating attributes for source " + getName() + ". Old attribs=" + attrs + ", new attribs=" + newAttrs + ", blob attribs=" + blobs;
+			
+			db.executeSQL(updAttrsRequest.c_str(), newAttrs, blobs, getID() );
+		}
+		
+		for ( Vector<String>::const_iterator it = attrsToRename.begin(); it != attrsToRename.end(); ++it ) {
+			LOG(TRACE) + "Updating objects with blob attribute " + (*it) + " for source " + getName();
+			db.executeSQL(updObjectsRequest.c_str(), (*it).substr(0,(*it).length()-blobSfx.length()), *it, getID() );
+		}
+		
+		db.endTransaction();
+	}
+	return true;
+}
+
+	
+boolean CSyncSource::processAllBlobs() {
+	
+	if (m_bSchemaSource) {
+		//TODO: Not supported yet
+		return true;
+	} else {
+		db::CDBAdapter& db = getDB();
+		Vector<String> blobAttrs = db.getAttrMgr().getBlobAttrs( getID() );
+	
+		for ( Vector<String>::const_iterator it = blobAttrs.begin(); it != blobAttrs.end(); ++it ) {
+			const char* attrName = (*it).c_str();
+			IDBResult res = db.executeSQL("SELECT object,value FROM object_values WHERE attrib=? and source_id=?",attrName,getID());
+		
+			LOG(TRACE) + "Processing blobs for source " + getName() + ", attribute " + *it;
+		
+			for ( ; !res.isEnd(); res.next() )
+			{ 
+				String object = res.getStringByIdx(0);
+				String value = res.getStringByIdx(1);
+			
+				if ( value.find("://") != String::npos ) {
+					LOG(TRACE) + "Processing remote blob: " + value;
+					CAttrValue attr((*it).c_str(),value.c_str());
+					if ( !downloadBlob( attr ) ) {
+						return false;
+					}
+				
+					res = db.executeSQL("UPDATE object_values SET value=? where object=? and source_id=? and attrib=?", attr.m_strValue.c_str(), object.c_str(), getID(), attrName);
+				}
+			}
+		}
+	}
+	
+	return true;
+}
 
 void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttriba, const String& strValuea)//throws Exception
 {
@@ -1182,6 +1279,9 @@ boolean CSyncSource::downloadBlob(CAttrValue& value)//throws Exception
 {
 	String fName = makeFileName( value );
 	String url = value.m_strValue;
+	
+	LOG(TRACE) + "Download blob: " + url + " => " + fName;
+	
 	const char* nQuest = strchr(url.c_str(),'?');
 	if ( nQuest > 0 )
 		url += "&";
