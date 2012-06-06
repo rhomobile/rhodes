@@ -246,6 +246,7 @@ Generating with app generator:
  [32m     [ADDED] [0m  RhoMobileApplication1/app/loading.png
 RET: 0
 1.5. Check that project `RhoMobileApplication1` appeared at `Project Explorer` view.
+1.6. Check project files in `Project Explorer` view item.
 
 2. RhoMobile Application project creation in selected folder test
 
@@ -274,6 +275,7 @@ Generating with app generator:
  [32m     [ADDED] [0m  tmp/app/loading.png
 RET: 0
 2.6. Check that project with given name appeared at `Project Explorer` view.
+2.7. Check project files in `Project Explorer` view item.
 
 3. RhoMoile Application project creation from existing sources test
 
@@ -283,7 +285,8 @@ RET: 0
 3.4. Enable 'Create application from existing sources' and select application folder 
      (press on Browse button and select folder in directory window).
 3.5. Click `Finish` and wait until the wizard finishes.
-3.6. Check new project in `Project Explorer` view.
+3.6. Check that project with given name appeared at `Project Explorer` view.
+3.7. Check project files in `Project Explorer` view item.
 
 4. RhoMoile Application project creation from existing sources in workspace test
 
@@ -293,7 +296,8 @@ RET: 0
 4.4. Enable 'Create application from existing sources' and select application folder in workspace  
      (press on Browse button and select folder in directory window).
 4.5. Click `Finish` and wait until the wizard finishes.
-4.6. Check new project in `Project Explorer` view.
+4.6. Check that project with given name appeared at `Project Explorer` view.
+4.7. Check project files in `Project Explorer` view item.
 
 ### Rhomobile Preferences editing success test
 
