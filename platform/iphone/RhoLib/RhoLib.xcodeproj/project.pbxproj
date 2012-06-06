@@ -170,6 +170,7 @@
 		BDFCB13C112EE2B500AE3724 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = ../../shared/net/ssl.h; sourceTree = SOURCE_ROOT; };
 		C5D47760156A4ED000943A2D /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zip.cpp; path = ../../shared/unzip/zip.cpp; sourceTree = "<group>"; };
 		C5D47761156A4ED000943A2D /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = ../../shared/unzip/zip.h; sourceTree = "<group>"; };
+		C5DEC5691575069800AE4AC1 /* RhoSettingsDefs.h */ = {isa = PBXFileReference; name = RhoSettingsDefs.h; path = ../../shared/common/RhoSettingsDefs.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librholib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librholib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = ../../shared/common/app_build_configs.c; sourceTree = SOURCE_ROOT; };
 		FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app_build_configs.h; path = ../../shared/common/app_build_configs.h; sourceTree = SOURCE_ROOT; };
@@ -299,6 +300,7 @@
 				BD8DF8861147C8090041A968 /* SplashScreen.cpp */,
 				BD8DF8871147C8090041A968 /* SplashScreen.h */,
 				5C71626E0F8B7E170096B6AA /* StringConverter.h */,
+				C5DEC5691575069800AE4AC1 /* RhoSettingsDefs.h */,
 			);
 			name = common;
 			sourceTree = "<group>";

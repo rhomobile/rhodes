@@ -127,6 +127,8 @@ module Rho
         return ""
       end  
 
+      RhoProfiler.start_counter('ERB_RENDER')      
+
       options = {} if options.nil? or !options.is_a?(Hash)
       options = options.symbolize_keys
 
@@ -194,6 +196,9 @@ module Rho
       RhoController.start_geoview_notification()
       @back_action = options[:back] if options[:back]
       @rendered = true
+      
+      RhoProfiler.stop_counter('ERB_RENDER')      
+      
       @content
     end
 

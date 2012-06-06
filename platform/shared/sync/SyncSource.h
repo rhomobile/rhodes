@@ -150,6 +150,8 @@ public:
     String makeFileName(const CAttrValue& value);//throws Exception
     boolean downloadBlob(CAttrValue& value);//throws Exception
     boolean processBlob( const String& strCmd, const String& strObject, CAttrValue& oAttrValue );
+	boolean processAllBlobs();
+	boolean processServerBlobAttrs();
 
     void setRefreshTime( int nRefreshTime ){ m_nRefreshTime = nRefreshTime;}
 

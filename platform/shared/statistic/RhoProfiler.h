@@ -35,12 +35,14 @@ extern "C"{
 
 #if RHO_STRIP_PROFILER==0
 void rhoStartProfilerCounter(const char* file, int line, const char* szCounterName );
+void rhoStartProfilerCreatedCounter(const char* file, int line, const char* szCounterName );
 void rhoStopProfilerCounter(const char* file, int line, const char* szCounterName );
 void rhoCreateProfilerCounter(const char* file, int line, const char* szCounterName );
 void rhoDestroyProfilerCounter(const char* file, int line, const char* szCounterName );
 void rhoFlushProfilerCounter(const char* file, int line, const char* szCounterName, const char* msg );
 
 #define PROF_START(name) rhoStartProfilerCounter(__FILE__, __LINE__, name )
+#define PROF_START_CREATED(name) rhoStartProfilerCreatedCounter(__FILE__, __LINE__, name )
 #define PROF_STOP(name)  rhoStopProfilerCounter(__FILE__, __LINE__, name )
 #define PROF_CALL(exp) PROF_START(#exp); exp; PROF_STOP(#exp);
 
@@ -52,6 +54,7 @@ void rhoFlushProfilerCounter(const char* file, int line, const char* szCounterNa
 #else
 
 #define PROF_START(name) 
+#define PROF_START_CREATED(name) 
 #define PROF_STOP(name)  
 #define PROF_CALL(exp) exp;
 

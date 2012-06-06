@@ -40,6 +40,8 @@
 #include "common/RhoAppAdapter.h"
 #include "SyncProtocol_3.h"
 #include "net/URI.h"
+#include "common/RhoSettingsDefs.h"
+#include "common/Tokenizer.h"
 
 #ifdef _MSC_VER
 // Disable warnings about using "this" in member initializater list
@@ -615,29 +617,84 @@ void CSyncEngine::doBulkSync()//throws Exception
 {
 //    processServerSources(String("{\"partition\":\"") + "application" + "\"}");
 
-    if ( !RHOCONF().isExist("bulksync_state") )
+    if ( !RHOCONF().isExist(RHO_SETTING_BULKSYNC_STATE) )
         return;
 
-    int nBulkSyncState = RHOCONF().getInt("bulksync_state");
-    if ( nBulkSyncState >= 1 || !isContinueSync() )
-        return;
-
-	LOG(INFO) + "Bulk sync: start";
-    getNotify().fireBulkSyncNotification(false, "start", "", RhoAppAdapter.ERR_NONE);        
-    Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
-    for (int i = 0; i < (int)arPartNames.size() && isContinueSync(); i++)
-    {
-        if ( arPartNames.elementAt(i).compare("local") !=0 )
-            loadBulkPartition(arPartNames.elementAt(i));
-    }
+    int nBulkSyncState = RHOCONF().getInt(RHO_SETTING_BULKSYNC_STATE);
+	if ( !isContinueSync() ) {
+		return;
+	}
+	
+	switch (nBulkSyncState) {
+		case ebsNotSynced:
+			loadBulkPartitions();
+			
+			if ( !isContinueSync() ) {
+				return;
+			}
+			
+			//no break here is intentional.
+		case ebsLoadBlobs:
+			if ( !processBlobs() ) {
+				return;
+			}
+			break;
+			
+		default:
+			return;
+	}
 
     if (isContinueSync())
     {
-        RHOCONF().setInt("bulksync_state", 1, true);
+        RHOCONF().setInt(RHO_SETTING_BULKSYNC_STATE, ebsSynced, true);
         getNotify().fireBulkSyncNotification(true, "complete", "", RhoAppAdapter.ERR_NONE);
     }
 }
+	
+void CSyncEngine::loadBulkPartitions() {
+	LOG(INFO) + "Bulk sync: start";
+	getNotify().fireBulkSyncNotification(false, "start", "", RhoAppAdapter.ERR_NONE);        
+	Vector<String> arPartNames = db::CDBAdapter::getDBAllPartitionNames();
+	
+	for (int i = 0; i < (int)arPartNames.size() && isContinueSync(); i++)
+	{
+		if ( arPartNames.elementAt(i).compare("local") !=0 )
+			loadBulkPartition(arPartNames.elementAt(i));
+	}
+}
 
+boolean CSyncEngine::processBlobs() {
+	LOG(INFO) + "Bulk sync: download BLOBs";
+	
+	RHOCONF().setInt(RHO_SETTING_BULKSYNC_STATE, ebsLoadBlobs, true );
+	getNotify().fireBulkSyncNotification( false, "blobs", "", RhoAppAdapter.ERR_NONE);
+	
+	LOG(TRACE) + "=== Processing server blob attributes ===";
+	
+	for ( int i = 0; i < m_sources.size(); ++i ) {
+		CSyncSource& src = *m_sources.elementAt(i);
+		if ( !src.processServerBlobAttrs() ) {
+			getNotify().fireBulkSyncNotification(false, "error", "", RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE);
+			return false;
+		}
+	}
+	
+	LOG(TRACE) + "=== Processing server blob attributes DONE ===";
+	
+	rho_db_init_attr_manager();
+	
+	for ( int i = 0; i < m_sources.size(); ++i ) {
+		CSyncSource& src = *m_sources.elementAt(i);
+		if (!src.processAllBlobs()) {
+			getNotify().fireBulkSyncNotification(false, "error", "", RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE);
+			return false;
+		}
+	}
+	
+	return true;
+}
+	
+	
 extern "C" int rho_sys_unzip_file(const char* szZipPath, const char* psw);
 
 static String getHostFromUrl( const String& strUrl );

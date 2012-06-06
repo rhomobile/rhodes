@@ -40,7 +40,7 @@ class CDBAttrManager
 
     HashtablePtr< int, Hashtable<String,int>* > m_mapBlobAttrs;
 
-    static void loadAttrs(CDBAdapter& db, HashtablePtr< int, Hashtable<String,int>* >& mapAttrs, String strDBAttr);
+    static void loadAttrs(CDBAdapter& db, HashtablePtr< int, Hashtable<String,int>* >& mapAttrs, const String& strDBAttr);
 public:
 /*    
     void add( int nSrcID, const char* szAttr );
@@ -53,6 +53,7 @@ public:
 //#endif //RHO_NO_RUBY
     boolean isBlobAttr(int nSrcID, const char* szAttr);
     boolean isOverwriteBlobFromServer(int nSrcID, const String& strAttr);
+	Vector<String> getBlobAttrs(int nSrcID);
     void loadBlobAttrs(CDBAdapter& db);
 };
 

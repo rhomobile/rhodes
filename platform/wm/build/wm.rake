@@ -531,15 +531,19 @@ namespace "device" do
 
       out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
       puts "out_dir - "  + out_dir
-      cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
-      cp out_dir + $appname + ".exe", $bindir + "/" + $appname + ".exe"
+
+      mkdir_p $targetdir
+      mkdir_p $tmpdir
+      mkdir_p out_dir
+
+      cp out_dir + "rhodes.exe", $tmpdir + "/" + $appname + ".exe"
 
       script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
-      app_script_name = File.join($startdir, "platform", "wm", "build")
-      app_script_name += "/" + $appname + ".nsi"
+      app_script_name = File.join($tmpdir, $appname + ".nsi")
 
       # custumize install script for application
       install_script = File.read(script_name)
+      install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
       install_script = install_script.gsub(/%APPNAME%/, $appname)
       install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
       install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
@@ -551,24 +555,21 @@ namespace "device" do
       install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
       File.open(app_script_name, "w") { |file| file.puts install_script }
 
-      cp app_script_name, $bindir
       puts "$appname - " + $appname
-      cp out_dir + "/" + $appname + ".exe", $bindir
-      rm app_script_name
 
-      cp $app_icon_path, $bindir + "/icon.ico"
+      cp $app_icon_path, $tmpdir + "/icon.ico"
 
-      chdir $bindir
+      chdir $tmpdir
 
-      target_rho_dir = File.join($bindir, "rho")
+      target_rho_dir = File.join($tmpdir, "rho")
       rm_rf target_rho_dir
       mv $srcdir, target_rho_dir
 
-      $target_path = $bindir
+      $target_path = $tmpdir
       Rake::Task["build:win32:deployqt"].invoke
 
       puts "$nsis - " + $nsis
-      args = [$bindir + "/" + $appname + ".nsi"]
+      args = [$tmpdir + "/" + $appname + ".nsi"]
       puts "arg = " + args.to_s
 
       puts Jake.run2($nsis, args, {:nowait => false} )
@@ -591,9 +592,10 @@ namespace "clean" do
   end
 
   desc "Clean win32"
-  task :win32 => [ "config:wm" ]do
+  task :win32 => [ "config:set_win32_platform", "config:wm" ]do
     rm_rf $vcbindir + "/win32"
-    #rm_rf $targetdir
+    rm_rf $tmpdir
+    rm_rf $targetdir
   end
 end
 
