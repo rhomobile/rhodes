@@ -265,7 +265,12 @@ void QtMainWindow::on_webView_loadStarted()
 
 void QtMainWindow::on_webView_loadFinished(bool ok)
 {
-    LOG(INFO) + (ok?"WebView: loaded ":"WebView: failed ");
+//    LOG(INFO) + (ok?"WebView: loaded ":"WebView: failed ");
+    if (ok)
+        RAWLOGC_INFO("WebView", "Page load complete." );
+    else
+        RAWLOGC_ERROR("WebView", "Page load failed." );
+
 #ifdef OS_MACOSX
     if (mainWindowCallback && ok) mainWindowCallback->onWebViewUrlChanged(ui->webView->url().toString().toStdString());
 #endif

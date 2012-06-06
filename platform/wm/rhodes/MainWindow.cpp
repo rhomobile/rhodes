@@ -1336,7 +1336,7 @@ void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
         ::ShowWindow(m_pBrowserEng->GetHTMLWND(), SW_SHOW);
 
 
-    LOG(TRACE) + "OnNavigateComplete2: " + url;
+    RAWLOGC_INFO("WebView", "Page load complete." );
 
     RHODESAPP().getExtManager().onNavigateComplete(url);
 }

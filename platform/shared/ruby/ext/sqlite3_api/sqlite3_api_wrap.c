@@ -27,6 +27,7 @@
 #include "sqlite/sqlite3.h"
 #include "ruby.h"
 
+#include "statistic/RhoProfiler.h"
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "DB"
@@ -249,17 +250,23 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 
     RAWTRACE1("db_execute: %s", sql);
 
+    PROF_START_CREATED("SQLITE");
     if ( is_batch )
     {
+        PROF_START_CREATED("SQLITE_EXEC");
+
         rho_db_lock(*ppDB);
         nRes = sqlite3_exec(db, sql,  NULL, NULL, &szErrMsg);
         rho_db_unlock(*ppDB);
+
+        PROF_STOP("SQLITE_EXEC");
     }
     else
     {
         rho_db_lock(*ppDB);
-
+        PROF_START_CREATED("SQLITE_PREPARE");
         nRes = rho_db_prepare_statement(*ppDB, sql, -1, &statement);
+        PROF_STOP("SQLITE_PREPARE");
         //nRes = sqlite3_prepare_v2(db, sql, -1, &statement, NULL);
         if ( nRes != SQLITE_OK)
         {
@@ -307,7 +314,11 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
             }
         }
 
-	    while( (nRes=sqlite3_step(statement)) == SQLITE_ROW) {
+        PROF_START_CREATED("SQLITE_EXEC");
+        nRes = sqlite3_step(statement);
+        PROF_STOP("SQLITE_EXEC");
+
+	    while( nRes== SQLITE_ROW ) {
 		    int nCount = sqlite3_data_count(statement);
 		    int nCol = 0;
 		    VALUE hashRec = rb_hash_new();
@@ -350,9 +361,15 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 		    }
     		
 		    rb_ary_push(arRes, hashRec);
+
+            PROF_START_CREATED("SQLITE_EXEC");
+            nRes = sqlite3_step(statement);
+            PROF_STOP("SQLITE_EXEC");
+
 	    }
 
         rho_db_unlock(*ppDB);
+
     }
 
     if ( statement )
@@ -369,6 +386,8 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
 
         rb_raise(rb_eArgError, "could not execute statement: %d; Message: %s",nRes, (szErrMsg?szErrMsg:""));
     }
+
+    PROF_STOP("SQLITE");
 
 	return arRes;
 }

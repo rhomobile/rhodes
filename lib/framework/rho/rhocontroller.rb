@@ -32,22 +32,21 @@ module Rho
   class RhoController
   	attr_accessor :menu
 
-    @@rholog = RhoLog.new
     @@before = nil
     def rho_info(str)
-      @@rholog.info("RHO " + self.class.to_s, str)
+      RhoLog.info("RHO " + self.class.to_s, str)
     end
 
     def rho_error(str)
-      @@rholog.error("RHO " + self.class.to_s, str)
+      RhoLog.error("RHO " + self.class.to_s, str)
     end
 
     def app_info(str)
-      @@rholog.info("APP " + self.class.to_s, str)
+      RhoLog.info("APP " + self.class.to_s, str)
     end
 
     def app_error(str)
-      @@rholog.error("APP " + self.class.to_s, str)
+      RhoLog.error("APP " + self.class.to_s, str)
     end
 
     def default_action

@@ -200,6 +200,45 @@ def make_application_build_config_java_file
     Jake.modify_file_if_content_changed( File.join( $startdir, "platform/bb/RubyVM/src/com/rho/AppBuildConfig.java" ), f )
 end
 
+def update_rhoprofiler_java_file
+    use_profiler = $app_config['profiler'] || ($app_config[$current_platform] && $app_config[$current_platform]['profiler'])
+    
+    content = ""
+    File.open( File.join( $startdir, "platform/bb/RubyVM/src/com/rho/RhoProfiler.java" ), 'rb' ){ |f| content = f.read() }
+    is_find = nil
+
+    if use_profiler
+        is_find = content.sub!( 'RHO_STRIP_PROFILER = true;', 'RHO_STRIP_PROFILER = false;' )
+    else
+        is_find = content.sub!( 'RHO_STRIP_PROFILER = false;', 'RHO_STRIP_PROFILER = true;' )
+    end    
+    
+    if is_find
+        puts "RhoProfiler.java has been modified: RhoProfiler is " + (use_profiler ? "enabled!" : "disabled!")
+        File.open( File.join( $startdir, "platform/bb/RubyVM/src/com/rho/RhoProfiler.java" ), 'wb' ){ |f| f.write(content) }
+    end
+
+end
+
+def update_rhodefs_header_file
+    use_profiler = $app_config['profiler'] || ($app_config[$current_platform] && $app_config[$current_platform]['profiler'])
+    
+    content = ""
+    File.open( File.join( $startdir, "platform/shared/common/RhoDefs.h" ), 'rb' ){ |f| content = f.read() }
+    is_find = nil
+
+    if use_profiler
+        is_find = content.sub!( '#define RHO_STRIP_PROFILER 1', '#define RHO_STRIP_PROFILER 0' )
+    else
+        is_find = content.sub!( '#define RHO_STRIP_PROFILER 0', '#define RHO_STRIP_PROFILER 1' )
+    end    
+    
+    if is_find
+        puts "RhoDefs.h has been modified: RhoProfiler is " + (use_profiler ? "enabled!" : "disabled!")
+        File.open( File.join( $startdir, "platform/shared/common/RhoDefs.h" ), 'wb' ){ |f| f.write(content) }
+    end
+end
+
 namespace "config" do
   task :common do
     $startdir = File.dirname(__FILE__)
@@ -416,10 +455,13 @@ namespace "config" do
 
     
     if $current_platform == "bb"  
-      make_application_build_config_java_file
-    else  
+      make_application_build_config_java_file()
+      update_rhoprofiler_java_file()
+    elsif $current_platform == "wp"  
+    else
       make_application_build_config_header_file    
       make_application_build_capabilities_header_file
+      update_rhodefs_header_file
     end
 
     $rhologhostport = $config["log_host_port"] 

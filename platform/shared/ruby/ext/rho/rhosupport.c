@@ -43,12 +43,16 @@
 #ifdef RHODES_EMULATOR
 #include "common/RhoSimConf.h"
 #endif
+#include "statistic/RhoProfiler.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 
-extern /*RHO static*/ VALUE
-eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
+static VALUE rb_RhoStdoutClass;
+static VALUE rb_RhoLogModule;
+static VALUE rb_RhoProfilerModule;
+
+extern /*RHO static*/ VALUE eval_string_with_cref(VALUE self, VALUE src, VALUE scope, NODE *cref, const char *file, int line);
 static VALUE loadISeqFromFile(VALUE path);
 VALUE require_compiled(VALUE fname, VALUE* result, int bLoad);
 VALUE RhoPreparePath(VALUE path);
@@ -74,8 +78,6 @@ VALUE __rhoGetDBDir(void)
 {
     return rb_str_new2(rho_native_rhodbpath());
 }
-
-
 
 #ifdef RHODES_EMULATOR
 VALUE __rhoGetRhodesDir(void)
@@ -564,8 +566,6 @@ rb_obj_rhom_init(VALUE obj, VALUE iv)
     return Qnil;
 }
 
-
-static VALUE rb_RhoLogClass;
 static VALUE rb_RhoModule;
 static VALUE rb_RhoJSON;
 static VALUE rb_RhoMessages;
@@ -578,7 +578,9 @@ void Init_RhoSupport()
 {
     rb_RhoModule = 0;
     rb_RhoJSON = 0;
-    rb_RhoLogClass = 0;   
+    rb_RhoLogModule = 0;   
+    rb_RhoStdoutClass = 0;   
+    rb_RhoProfilerModule = 0;   
     rb_RhoMessages = 0;
 	rb_RhoError = 0;
     get_message_mid = 0;
@@ -630,8 +632,7 @@ void rhoRubyLogWithSeverity(int severity, VALUE category, VALUE str) {
 
 }
 
-static VALUE
-rb_RhoLogInfo(VALUE rhoLog, VALUE category, VALUE str)
+static VALUE rb_RhoLogInfo(VALUE rhoLog, VALUE category, VALUE str)
 {
 #if RHO_STRIP_LOG <= L_INFO
     rhoRubyLogWithSeverity(L_INFO, category, str);
@@ -641,8 +642,7 @@ rb_RhoLogInfo(VALUE rhoLog, VALUE category, VALUE str)
     return Qnil;
 }
 
-static VALUE
-rb_RhoLogError(VALUE rhoLog, VALUE category, VALUE str)
+static VALUE rb_RhoLogError(VALUE rhoLog, VALUE category, VALUE str)
 {
 #if RHO_STRIP_LOG <= L_ERROR
    rhoRubyLogWithSeverity(L_ERROR, category, str);
@@ -652,30 +652,28 @@ rb_RhoLogError(VALUE rhoLog, VALUE category, VALUE str)
     return Qnil;
 }
 
-static VALUE
-rb_RhoLogWrite(VALUE rhoLog, VALUE str)
+static VALUE rb_RhoStdoutWrite(VALUE rhoLog, VALUE str)
 {
     return rb_RhoLogInfo(rhoLog,rb_str_new2("APP"),str);
 }
 
-static VALUE
-rb_RhoLogFlush(void)
+static VALUE rb_RhoStdoutFlush(void)
 {
     return Qnil;
 }
 
-static VALUE
-rb_RhoLogFileno(void)
+static VALUE rb_RhoStdoutFileno(void)
 {
     return ULONG2NUM(1);
 }
 
-
-void rhoRubyFatalError(const char* szError){
+void rhoRubyFatalError(const char* szError)
+{
     rhoPlainLog("",0,L_FATAL,"RubyVM",szError);
 }
 
-int rhoRubyVFPrintf(FILE *file, const char *format, va_list ap){
+int rhoRubyVFPrintf(FILE *file, const char *format, va_list ap)
+{
     int nRes = 1;
     if ( file == stderr || file == stdout ){
         int severity = L_INFO;
@@ -728,24 +726,69 @@ int rhoRubyPrintf(const char *format, ...){
     return nRes;
 }
 
-static VALUE rb_RhoLogClass;
+static VALUE rb_RhoProfilerCreate(VALUE rhoProfiler, VALUE strName)
+{
+    PROF_CREATE_COUNTER(RSTRING_PTR(strName));
+    return Qnil;
+}
+
+static VALUE rb_RhoProfilerDestroy(VALUE rhoProfiler, VALUE strName)
+{
+    PROF_DESTROY_COUNTER(RSTRING_PTR(strName));
+    return Qnil;
+}
+
+static VALUE rb_RhoProfilerStart(VALUE rhoProfiler, VALUE strName)
+{
+    PROF_START(RSTRING_PTR(strName));
+    return Qnil;
+}
+
+static VALUE rb_RhoProfilerStop(VALUE rhoProfiler, VALUE strName)
+{
+    PROF_STOP(RSTRING_PTR(strName));
+    return Qnil;
+}
+
+static VALUE rb_RhoProfilerFlush(VALUE rhoProfiler, VALUE strName, VALUE strMsg )
+{
+    PROF_FLUSH_COUNTER( RSTRING_PTR(strName), RSTRING_PTR(strMsg) );
+    return Qnil;
+}
+
+static VALUE rb_RhoProfilerStartCreated(VALUE rhoProfiler, VALUE strName)
+{
+    PROF_START_CREATED(RSTRING_PTR(strName));
+    return Qnil;
+}
+
 static void Init_RhoLog(){
 
-    VALUE appLog; //, appErrLog;
+    VALUE appStdout;
 
-    rb_RhoLogClass = rb_define_class("RhoLog", rb_cObject);
-    rb_define_method(rb_RhoLogClass, "write", rb_RhoLogWrite, 1);
-    rb_define_method(rb_RhoLogClass, "print", rb_RhoLogWrite, 1);
-    rb_define_method(rb_RhoLogClass, "info", rb_RhoLogInfo, 2);
-    rb_define_method(rb_RhoLogClass, "error", rb_RhoLogError, 2);
-    rb_define_method(rb_RhoLogClass, "flush", rb_RhoLogFlush, 0);
-    rb_define_method(rb_RhoLogClass, "fileno", rb_RhoLogFileno, 0);
-    rb_define_method(rb_RhoLogClass, "to_i", rb_RhoLogFileno, 0);
+    rb_RhoStdoutClass = rb_define_class("RhoStdout", rb_cObject);
+    rb_define_method(rb_RhoStdoutClass, "write", rb_RhoStdoutWrite, 1);
+    rb_define_method(rb_RhoStdoutClass, "print", rb_RhoStdoutWrite, 1);
+    rb_define_method(rb_RhoStdoutClass, "flush", rb_RhoStdoutFlush, 0);
+    rb_define_method(rb_RhoStdoutClass, "fileno", rb_RhoStdoutFileno, 0);
+    rb_define_method(rb_RhoStdoutClass, "to_i", rb_RhoStdoutFileno, 0);
 
-    appLog = rb_funcall(rb_RhoLogClass, rb_intern("new"), 0);
+    appStdout = rb_funcall(rb_RhoStdoutClass, rb_intern("new"), 0);
     
-    rb_gv_set("$stdout", appLog);
-    rb_gv_set("$stderr", appLog);
+    rb_gv_set("$stdout", appStdout);
+    rb_gv_set("$stderr", appStdout);
+
+    rb_RhoLogModule = rb_define_module("RhoLog");
+    rb_define_module_function(rb_RhoLogModule, "info", rb_RhoLogInfo, 2);
+    rb_define_module_function(rb_RhoLogModule, "error", rb_RhoLogError, 2);
+
+    rb_RhoProfilerModule = rb_define_module("RhoProfiler");
+    rb_define_module_function(rb_RhoProfilerModule, "create_counter", rb_RhoProfilerCreate, 1);
+    rb_define_module_function(rb_RhoProfilerModule, "destroy_counter", rb_RhoProfilerDestroy, 1);
+    rb_define_module_function(rb_RhoProfilerModule, "start_counter", rb_RhoProfilerStart, 1);
+    rb_define_module_function(rb_RhoProfilerModule, "stop_counter", rb_RhoProfilerStop, 1);
+    rb_define_module_function(rb_RhoProfilerModule, "flush_counter", rb_RhoProfilerFlush, 2);
+    rb_define_module_function(rb_RhoProfilerModule, "start_created_counter", rb_RhoProfilerStartCreated, 1);
 }
 
 static VALUE rb_RhoModule;

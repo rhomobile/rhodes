@@ -833,6 +833,8 @@ end
     
     def serve(req)
       begin
+        RhoProfiler.start_counter('CTRL_ACTION')            
+      
         puts "RHO serve: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         get_app(req['application']).send :serve, req, res
@@ -840,14 +842,19 @@ end
         init_nativebar
         Rho::RhoController.clean_cached_metadata()
         Rho::RhoConfig.clean_cached_changed
-        return send_response(res)
+        ret = send_response(res)
+        RhoProfiler.stop_counter('CTRL_ACTION') 
+        return ret
       rescue Exception => e
-        return send_error(e)
+        ret = send_error(e)
+        RhoProfiler.stop_counter('CTRL_ACTION') 
+        return ret
       end   
     end
 
     def serve_hash(req)
       begin
+        RhoProfiler.start_counter('CTRL_ACTION')            
         puts "RHO serve: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         get_app(req['application']).send :serve, req, res
@@ -855,16 +862,23 @@ end
         init_nativebar
         Rho::RhoController.clean_cached_metadata()
         Rho::RhoConfig.clean_cached_changed
-        return send_response_hash(res)
+        ret = send_response_hash(res)
+        RhoProfiler.stop_counter('CTRL_ACTION') 
+        return ret
       rescue Exception => e
-        return send_error(e,500,true)
+        ret = send_error(e,500,true)
+        RhoProfiler.stop_counter('CTRL_ACTION') 
+        return ret
       end 
     end
     
     def serve_index(index_name, req)
+      begin
+        RhoProfiler.start_counter('INDEX_ACTION')            
+      
     	# TODO: Removed hardcoded appname
     	get_app(APPNAME).set_menu
-      begin
+      
         puts "RHO serve_index: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         res['request-body'] = RhoController::renderfile(index_name, req, res)
@@ -872,16 +886,23 @@ end
         init_nativebar
         Rho::RhoController.clean_cached_metadata()
         Rho::RhoConfig.clean_cached_changed
-        return send_response(res)
+        ret = send_response(res)
+        RhoProfiler.stop_counter('INDEX_ACTION')            
+        return ret
       rescue Exception => e
-        return send_error(e)
+        ret = send_error(e)
+        RhoProfiler.stop_counter('INDEX_ACTION')            
+        return ret
       end
     end
 
     def serve_index_hash(index_name, req)
+      begin
+        RhoProfiler.start_counter('INDEX_ACTION')            
+      
     	# TODO: Removed hardcoded appname
     	get_app(APPNAME).set_menu
-      begin
+      
         puts "RHO serve_index: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
         res['request-body'] = RhoController::renderfile(index_name, req, res)
@@ -889,9 +910,14 @@ end
         init_nativebar
         Rho::RhoController.clean_cached_metadata()
         Rho::RhoConfig.clean_cached_changed
-        return send_response_hash(res)
+        ret = send_response_hash(res)
+        RhoProfiler.stop_counter('INDEX_ACTION')            
+        return ret
+        
       rescue Exception => e
-        return send_error(e, 500, true)
+        ret = send_error(e, 500, true)
+        RhoProfiler.stop_counter('INDEX_ACTION')            
+        return ret
       end
     end
 
