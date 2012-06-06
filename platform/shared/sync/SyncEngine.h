@@ -45,6 +45,7 @@ class CSyncEngine : public net::IRhoSession
     DEFINE_LOGCLASS;
 public:
     enum ESyncState{ esNone, esSyncAllSources, esSyncSource, esSearch, esStop, esExit };
+	enum EBulkSyncState { ebsNotSynced = 0, ebsSynced = 1, ebsLoadBlobs = 2 };
 
     struct CSourceID
     {
@@ -166,6 +167,9 @@ private:
 
     void syncOneSource(int i, const String& strQueryParams);
     void syncAllSources(const String& strQueryParams);
+	
+	boolean processBlobs();
+	void loadBulkPartitions();
 
     friend class CSyncSource;
 };

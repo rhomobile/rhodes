@@ -154,6 +154,22 @@ boolean CDBAttrManager::isBlobAttr(int nSrcID, const char* szAttr)
 
     return false;
 }
+	
+Vector<String> CDBAttrManager::getBlobAttrs(int nSrcID) {
+	Vector<String> blobAttrs;
+	
+	Hashtable<String,int>* pmapAttr = m_mapBlobAttrs.get(nSrcID);
+    if ( pmapAttr != null )
+    {
+        Hashtable<String,int>& mapAttr = *pmapAttr;
+        for ( Hashtable<String,int>::const_iterator it = mapAttr.begin(); it != mapAttr.end(); ++it ) {
+			blobAttrs.push_back(it->first);
+		}
+    }
+	
+	return blobAttrs;
+}
+
 
 boolean CDBAttrManager::isOverwriteBlobFromServer(int nSrcID, const String& strAttr)
 {
@@ -236,7 +252,7 @@ void CDBAttrManager::loadBlobAttrs(CDBAdapter& db)
     }
 }
 
-/*static*/void CDBAttrManager::loadAttrs(CDBAdapter& db, HashtablePtr< int, Hashtable<String,int>* >& mapAttrs, String strDBAttr)
+/*static*/void CDBAttrManager::loadAttrs(CDBAdapter& db, HashtablePtr< int, Hashtable<String,int>* >& mapAttrs, const String& strDBAttr)
 {
     mapAttrs.clear();
     String strSql = "SELECT source_id,";
@@ -273,6 +289,7 @@ void CDBAttrManager::loadBlobAttrs(CDBAdapter& db)
         mapAttrs.put(nSrcID,pmapAttr);
     }
 }
+
 
 }
 }

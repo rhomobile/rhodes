@@ -3,7 +3,9 @@ package com.xruby.runtime.lang;
 import com.rho.IRhoRubyHelper;
 import com.rho.RhoClassFactory;
 import com.rho.RhoEmptyLogger;
+import com.rho.RhoEmptyProfiler;
 import com.rho.RhoLogger;
+import com.rho.RhoProfiler;
 import com.rho.RhodesApp;
 import com.xruby.runtime.builtin.ObjectFactory;
 import com.xruby.runtime.builtin.RubyArray;
@@ -17,7 +19,7 @@ public class RhoSupport {
 	private static final RhoLogger LOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
 		new RhoLogger("RhoSupport");
 	
-	public static RubyClass  RhoLogClass;
+	public static RubyModule  RhoLogModule, m_RhoProfilerModule;
 	
 	public static void init(){
 
@@ -54,38 +56,17 @@ public class RhoSupport {
 				return RhodesApp.getInstance().getCallbackObject(arg.toInt());}
 		});
 		
-		RhoLogClass = RubyAPI.defineClass("RhoLog", RubyRuntime.ObjectClass);
-		RhoLog.initMethods(RhoLogClass);
+		RhoLogModule = RubyAPI.defineModule("RhoLog");
+		RhoLog.initMethods(RhoLogModule);
+		
+		m_RhoProfilerModule = RubyAPI.defineModule("RhoProfiler");
+		RhoProfilerModule.initMethods(m_RhoProfilerModule);
+		
 	}
 
-	public static class RhoLog extends RubyBasic 
+	public static class RhoLog// extends RubyBasic 
 	{
-		private static final RhoLogger APPLOG = RhoLogger.RHO_STRIP_LOG ? new RhoEmptyLogger() : 
-			new RhoLogger("APP");
-	
-	    private RhoLog() 
-	    {
-	        super(RhoLogClass);
-	    }
-		
-	    public static RhoLog alloc(RubyValue receiver) {
-	    	RhoLog res = new RhoLog();
-	    	res.setRubyClass((RubyClass) receiver);
-	        return res;
-	    }
-
-	    public RhoLog initialize() {
-	        return this;
-	    }
-	    
-	    public RubyValue rhoLog_Write(RubyValue arg) 
-	    {
-	        String msg = arg.toStr();
-	        APPLOG.INFO(msg);
-	        return RubyConstant.QNIL;
-	    }
-		
-	    public RubyValue rhoLog_Info(RubyValue arg, RubyValue arg2) 
+	    public static RubyValue rhoLog_Info(RubyValue arg, RubyValue arg2) 
 	    {
 	        String cat = arg.toStr();
 	        String msg = arg2.toStr();
@@ -97,7 +78,7 @@ public class RhoSupport {
 	        return RubyConstant.QNIL;
 	    }
 	    
-	    public RubyValue rhoLog_Error(RubyValue arg, RubyValue arg2) {
+	    public static RubyValue rhoLog_Error(RubyValue arg, RubyValue arg2) {
 	        String cat = arg.toStr();
 	        String msg = arg2.toStr();
 	        
@@ -108,42 +89,74 @@ public class RhoSupport {
 	        return RubyConstant.QNIL;
 	    }
 	    
-	    public static void initMethods( RubyClass klass)
+	    public static void initMethods( RubyModule klass)
 	    {
-	    	klass.defineMethod( "initialize", new RubyNoArgMethod(){ 
-				protected RubyValue run(RubyValue receiver, RubyBlock block )
-				{
-					return ((RhoLog)receiver).initialize();
-				}
-			});
-			klass.defineAllocMethod(new RubyNoArgMethod(){
-				protected RubyValue run(RubyValue receiver, RubyBlock block )	{
-					return RhoLog.alloc(receiver);
-				}
-			});
-			
-			klass.defineMethod( "write", new RubyOneArgMethod(){ 
-				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
-				{
-					return ((RhoLog)receiver).rhoLog_Write(arg);
-				}
-			});
-			klass.defineMethod( "print", new RubyOneArgMethod(){ 
-				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
-				{
-					return ((RhoLog)receiver).rhoLog_Write(arg);
-				}
-			});
-			klass.defineMethod( "info", new RubyTwoArgMethod(){ 
+	    	
+	    	klass.getSingletonClass().defineMethod( "info", new RubyTwoArgMethod(){ 
 				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyValue arg1, RubyBlock block )
 				{
-					return ((RhoLog)receiver).rhoLog_Info(arg, arg1);
+					return rhoLog_Info(arg, arg1);
 				}
 			});
-			klass.defineMethod( "error", new RubyTwoArgMethod(){ 
+	    	klass.getSingletonClass().defineMethod( "error", new RubyTwoArgMethod(){ 
 				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyValue arg1, RubyBlock block )
 				{
-					return ((RhoLog)receiver).rhoLog_Error(arg, arg1);
+					return rhoLog_Error(arg, arg1);
+				}
+			});
+	    	
+	    }
+	}
+
+	public static class RhoProfilerModule// extends RubyBasic 
+	{
+		private static final RhoProfiler PROF = RhoProfiler.RHO_STRIP_PROFILER ? new RhoEmptyProfiler() : 
+			new RhoProfiler();
+	    
+	    public static void initMethods( RubyModule klass)
+	    {
+	    	
+	    	klass.getSingletonClass().defineMethod( "create_counter", new RubyOneArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+				{
+					PROF.CREATE_COUNTER(arg.toStr());
+					return RubyConstant.QNIL;
+				}
+			});
+	    	klass.getSingletonClass().defineMethod( "destroy_counter", new RubyOneArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+				{
+					PROF.DESTROY_COUNTER(arg.toStr());
+					return RubyConstant.QNIL;
+				}
+			});
+	    	klass.getSingletonClass().defineMethod( "start_counter", new RubyOneArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+				{
+					PROF.START(arg.toStr());
+					return RubyConstant.QNIL;
+				}
+			});
+	    	klass.getSingletonClass().defineMethod( "stop_counter", new RubyOneArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+				{
+					PROF.STOP(arg.toStr());
+					return RubyConstant.QNIL;
+				}
+			});
+	    	klass.getSingletonClass().defineMethod( "start_created_counter", new RubyOneArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyBlock block )
+				{
+					PROF.START_CREATED(arg.toStr());
+					return RubyConstant.QNIL;
+				}
+			});
+	    	
+	    	klass.getSingletonClass().defineMethod( "flush_counter", new RubyTwoArgMethod(){ 
+				protected RubyValue run(RubyValue receiver, RubyValue arg, RubyValue arg1, RubyBlock block )
+				{
+					PROF.FLUSH_COUNTER(arg.toStr(), arg1.toStr());
+					return RubyConstant.QNIL;
 				}
 			});
 	    	

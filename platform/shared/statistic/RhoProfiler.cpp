@@ -86,6 +86,7 @@ public:
     ~CProfiler(){}
 
     void startCounter(const char* szCounterName);
+    void startCreatedCounter(const char* szCounterName);
     void stopCounter(const char* szCounterName, bool bDestroy =false);
     void createCounter(const char* szCounterName);
     void destroyCounter(const char* szCounterName);
@@ -106,11 +107,23 @@ void CProfiler::startCounter(const char* szCounterName)
         pCounter->start();
 }
 
+void CProfiler::startCreatedCounter(const char* szCounterName)
+{
+    CCounter* pCounter = m_mapCounters[szCounterName];
+    if ( !pCounter )
+        return;
+
+    if ( !pCounter->isWasStarted() )
+        LOG(INFO) + szCounterName + " : START";
+
+    pCounter->start();
+}
+
 void CProfiler::stopCounter(const char* szCounterName, bool bDestroy /*=false*/)
 {
     CCounter* pCounter = m_mapCounters[szCounterName];
     if ( !pCounter ){
-        LOG(ERROR) + szCounterName + " : Cannot find counter.";
+        //LOG(ERROR) + szCounterName + " : Cannot find counter.";
         return;
     }
 
@@ -156,6 +169,11 @@ extern "C"{
 void rhoStartProfilerCounter(const char* file, int line, const char* szCounterName )
 {
     g_oProfiler.startCounter(szCounterName);
+}
+
+void rhoStartProfilerCreatedCounter(const char* file, int line, const char* szCounterName )
+{
+    g_oProfiler.startCreatedCounter(szCounterName);
 }
 
 void rhoStopProfilerCounter(const char* file, int line, const char* szCounterName )
