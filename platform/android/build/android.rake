@@ -66,8 +66,7 @@ ANDROID_PERMISSIONS = {
   'motoroladev' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
   'webkit_browser' => nil,
   'shared_runtime' => nil,
-  'motorola_browser' => nil,
-  'msr' => nil
+  'motorola_browser' => nil
 }
 
 ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
@@ -125,7 +124,7 @@ def add_motosol_sdk(manifest)
 
   manifest.elements.each('application') do |app|
     app.add uses_scanner
-    app.add uses_msr unless $app_config["capabilities"].index("msr").nil?
+    app.add uses_msr
   end  
 end
 
@@ -577,7 +576,7 @@ namespace "config" do
     if $use_motosol_api_classpath
       puts "Looking for Motorola API SDK add-on..." if USE_TRACES
       motosol_jars = ['com.motorolasolutions.scanner']
-      motosol_jars << 'com.motorolasolutions.emdk.msr' unless $app_config["capabilities"].index("msr").nil?
+      motosol_jars << 'com.motorolasolutions.emdk.msr'
       $motosol_classpath = AndroidTools::get_addon_classpath(motosol_jars)
     end
 
