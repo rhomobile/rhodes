@@ -75,6 +75,13 @@ section
                  "NoModify" 1
     WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%APPNAME%" \
                  "NoRepair" 1
+
+    # update installed rhodes applications catalogue
+    WriteRegStr HKLM "Software\Rhomobile\RhoGallery\%APPNAME%" "InstallDir" "$INSTDIR"
+    WriteRegStr HKLM "Software\Rhomobile\RhoGallery\%APPNAME%" "Executable" "$INSTDIR\%APP_EXECUTABLE%"
+    WriteRegStr HKLM "Software\Rhomobile\RhoGallery\%APPNAME%" "Uninstaller" "$INSTDIR\uninstall.exe"
+    WriteRegStr HKLM "Software\Rhomobile\RhoGallery\%APPNAME%" "DisplayName" "%APPNAME% %APPVERSION%"
+
 sectionEnd
  
 # uninstaller section start
@@ -94,6 +101,9 @@ section "uninstall"
 
     # remove information in 'unistall programs' in contorol panel
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%APPNAME%"
+
+    # remove app from installed rhodes applications catalogue
+    DeleteRegKey HKLM "Software\Rhomobile\RhoGallery\%APPNAME%"
 
     # remove $INSTDIR
     RMDir /r /REBOOTOK $INSTDIR
