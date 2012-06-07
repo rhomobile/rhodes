@@ -22,13 +22,13 @@ require 'rho/rho'
 #require 'fileutils'
 
 def getBlobBulkTest
-    #return BlobTest_s if $spec_settings[:schema_model]
+    return BlobBulkTest_s if $spec_settings[:schema_model]
     
     BlobBulkTest
 end
 
 def getBlobBulkTest_str
-    #return 'BlobTest_s' if $spec_settings[:schema_model]
+    return 'BlobBulkTest_s' if $spec_settings[:schema_model]
     
     'BlobBulkTest'
 end
@@ -44,11 +44,11 @@ describe "BlobBulkSync_test" do
 	  #SyncEngine.set_syncserver('http://192.168.0.102:9292/application')
 	  
 	  Rho::RhoConfig.bulksync_state='1'
-	  getBlobBulkTest.sync("/app/Settings/SyncNotify")
-	  sleep(2)
-	  getBlobBulkTest.delete_all
-	  getBlobBulkTest.sync("/app/Settings/SyncNotify")
-	  sleep(2)
+	  #getBlobBulkTest.sync("/app/Settings/SyncNotify")
+	  #sleep(2)
+	  #getBlobBulkTest.delete_all
+	  #getBlobBulkTest.sync("/app/Settings/SyncNotify")
+	  #sleep(2)
   end
 	
   after(:all)  do
@@ -79,7 +79,7 @@ end
     File.open(File.join( dst_dir, File.basename(src) ), "wb"){|f| f.write(content) }
   end
 
-  it "should bulk sync BlobTest" do	  
+  it "should bulk sync BlobBulkTest" do	  
 	  SyncEngine.logged_in.should == 1
 
 	  file_name = File.join(Rho::RhoApplication::get_model_path('app',getBlobBulkTest_str()), 'test3.png')
@@ -94,6 +94,7 @@ end
 	  item = getBlobBulkTest.new
 	  item.name = 'BlobTestItem'
 	  item.image_uri = file_name
+	  puts "item = #{item.inspect}"
 	  item.save
 	  
 	  File.exists?(file_name).should == true
@@ -124,10 +125,10 @@ end
 	  end    
 	  content_new = File.read(new_file_name)
 	  content_new.should == file_content
+
   end
 
-  it "should delete blobs BlobTest" do
-=begin
+  it "should delete blobs BlobBulkTest" do
 	  SyncEngine.logged_in.should == 1
 	  
 	  getBlobBulkTest.delete_all
@@ -145,7 +146,6 @@ end
 	  items = getBlobBulkTest.find(:all) #, :conditions => {:name => 'BlobTestItem'})
 	  items.should_not == nil
 	  items.length.should == 0
-=end
   end
 
   it "should logout" do
