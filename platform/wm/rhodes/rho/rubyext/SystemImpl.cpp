@@ -717,6 +717,18 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
         CloseHandle(se.hProcess); 
 }
 
+#ifdef RHODES_WIN32
+void rho_win32sys_run_appW(const wchar_t* szPath, const wchar_t* szParams, const wchar_t* szDir)
+{
+	HINSTANCE result = ShellExecute(NULL, NULL, (WCHAR*)szPath, (WCHAR*)szParams, (WCHAR*)szDir, SW_SHOW);
+	if ((int)result > 32) {
+		LOG(INFO) + "Application started: " + szPath;
+	} else {
+		LOG(ERROR) + "Cannot start application: " + szPath;
+	}
+}
+#endif
+
 void rho_sys_open_url(const char* url)
 {
     rho_wmsys_run_app(url, 0);
@@ -724,11 +736,19 @@ void rho_sys_open_url(const char* url)
 
 void rho_sys_run_app(const char *appname, VALUE params)
 {
+#ifdef RHODES_WIN32
+    StringW strAppName;
+    rho::common::convertToStringW(appname, strAppName);
+
+	StringW strKeyPath = L"Software\\Rhomobile\\RhoGallery\\";
+    strKeyPath += strAppName;
+#else
     CFilePath oPath(appname);
     String strAppName = oPath.getFolderName();
 
     StringW strKeyPath = L"Software\\Apps\\";
     strKeyPath += convertToStringW(strAppName);
+#endif
 
     StringW strParamsW;
     if ( params && !rho_ruby_is_NIL(params) )
@@ -741,29 +761,40 @@ void rho_sys_run_app(const char *appname, VALUE params)
     if ( res != ERROR_SUCCESS )
     {
         LOG(ERROR) + "Cannot open registry key: " + strKeyPath + "; Code:" + res;
-    }else
+    } else
     {
-        TCHAR szBuf[256];
-        ULONG nChars = 255;
+        TCHAR szBuf[MAX_PATH+1];
+        ULONG nChars = MAX_PATH;
 
-        res = oKey.QueryStringValue(L"InstallDir", szBuf, &nChars );
+        res = oKey.QueryStringValue(L"InstallDir", szBuf, &nChars);
         if ( res != ERROR_SUCCESS )
             LOG(ERROR) + "Cannot read registry key: InstallDir; Code:" + res;
         else
         {
             StringW strFullPath = szBuf;
+
+#ifdef RHODES_WIN32
+			nChars = MAX_PATH;
+	        res = oKey.QueryStringValue(L"Executable", szBuf, &nChars);
+			if (res != ERROR_SUCCESS) {
+			    LOG(ERROR) + "Cannot read registry key: Executable; Code:" + res;
+				return;
+			}
+            StringW strExecutable = szBuf;
+
+			rho_win32sys_run_appW(strExecutable.c_str(), strParamsW.c_str(), strFullPath.c_str());
+#else
             if ( strFullPath[strFullPath.length()-1] != '/' && strFullPath[strFullPath.length()-1] != '\\' )
                 strFullPath += L"\\";
 
-            StringW strBaseName;
+			StringW strBaseName;
             convertToStringW(oPath.getBaseName(), strBaseName);
             strFullPath += strBaseName;
 
             rho_wmsys_run_appW(strFullPath.c_str(), strParamsW.c_str());
+#endif
         }
     }
-
-
 }
 
 void rho_sys_bring_to_front()
@@ -778,7 +809,16 @@ void rho_sys_report_app_started()
 
 int rho_sys_is_app_installed(const char *appname)
 {
-    int nRet = 0;
+#ifdef RHODES_WIN32
+    StringW name;
+    rho::common::convertToStringW(appname, name);
+	StringW strKeyPath = L"Software\\Rhomobile\\RhoGallery\\";
+	strKeyPath += name;
+    CRegKey oKey;
+    LONG res = oKey.Open(HKEY_LOCAL_MACHINE, strKeyPath.c_str(), KEY_READ);
+	return res == ERROR_SUCCESS ? 1 : 0;
+#else
+	int nRet = 0;
     CFilePath oPath(appname);
     String strAppName = oPath.getFolderName();
     
@@ -806,6 +846,7 @@ int rho_sys_is_app_installed(const char *appname)
 #endif
 
     return nRet;
+#endif
 }
 
 void rho_sys_app_install(const char *url)
@@ -815,7 +856,34 @@ void rho_sys_app_install(const char *url)
 
 void rho_sys_app_uninstall(const char *appname)
 {
-    CFilePath oPath(appname);
+#ifdef RHODES_WIN32
+    StringW strAppName;
+    rho::common::convertToStringW(appname, strAppName);
+
+	StringW strKeyPath = L"Software\\Rhomobile\\RhoGallery\\";
+    strKeyPath += strAppName;
+
+    CRegKey oKey;
+    LONG res = oKey.Open(HKEY_LOCAL_MACHINE, strKeyPath.c_str(), KEY_READ);
+    if ( res != ERROR_SUCCESS )
+    {
+        LOG(ERROR) + "Cannot open registry key: " + strKeyPath + "; Code:" + res;
+    } else
+    {
+        TCHAR szBuf[MAX_PATH+1];
+        ULONG nChars = MAX_PATH;
+
+        res = oKey.QueryStringValue(L"Uninstaller", szBuf, &nChars);
+        if ( res != ERROR_SUCCESS )
+            LOG(ERROR) + "Cannot read registry key: Uninstaller; Code:" + res;
+        else
+        {
+            StringW strFullPath = szBuf;
+			rho_win32sys_run_appW(strFullPath.c_str(), NULL, NULL);
+		}
+	}
+#else
+	CFilePath oPath(appname);
     String strAppName = oPath.getFolderName();
     
     StringW strRequest = 
@@ -838,6 +906,7 @@ void rho_sys_app_uninstall(const char *appname)
 
     if ( wszOutput )
         free( wszOutput );
+#endif
 #endif
 }
 
