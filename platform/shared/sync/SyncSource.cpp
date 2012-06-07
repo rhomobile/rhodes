@@ -1073,7 +1073,7 @@ boolean CSyncSource::processServerBlobAttrs() {
 		static const String updObjectsRequest = "UPDATE object_values SET attrib=? WHERE attrib=? and source_id=?";
 		static const String blobSfx = "-rhoblob";
 		
-		db::CDBAdapter db = getDB();
+		db::CDBAdapter& db = getDB();
 		db.startTransaction();
 		IDBResult res = db.executeSQL(selAttrsRequest.c_str(),getID());
 		
