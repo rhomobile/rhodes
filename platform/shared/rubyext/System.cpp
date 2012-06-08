@@ -206,8 +206,18 @@ void zip_iter(const char* szVal, void* par)
     rho::Vector<rho::String>& ar = *((rho::Vector<rho::String>*)(par));
     ar.addElement(szVal);
 }
+	
+int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, void* ptrFilesArray, const char* psw);
 
+	
 int rho_sys_zip_files(const char* szZipFilePath, const char *base_path, VALUE valToZipPaths, const char* psw)
+{
+	rho::Vector<rho::String> arFiles;
+    rho_ruby_enum_strary(valToZipPaths, zip_iter, &arFiles);
+	return rho_sys_zip_files_with_path_array_ptr(szZipFilePath,base_path,&arFiles,psw);
+}
+					   
+int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, void* ptrFilesArray, const char* psw)
 {
     ZRESULT res;
     HZIP hz = 0;
@@ -221,8 +231,8 @@ int rho_sys_zip_files(const char* szZipFilePath, const char *base_path, VALUE va
     if ( !hz )
         return -1;
 
-    rho::Vector<rho::String> arFiles;
-    rho_ruby_enum_strary(valToZipPaths, zip_iter, &arFiles);
+    rho::Vector<rho::String>& arFiles = *reinterpret_cast<rho::Vector<rho::String>*>(ptrFilesArray);
+    //rho_ruby_enum_strary(valToZipPaths, zip_iter, &arFiles);
 
     for ( int i = 0; i < (int)arFiles.size(); i++ )
     {

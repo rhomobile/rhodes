@@ -356,6 +356,8 @@ public:
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res, const char* szSt);
     void updateAllAttribChanges();
 	
+	String exportDatabase();
+	
 private:
 
     void checkDBVersion(String& strVer);
