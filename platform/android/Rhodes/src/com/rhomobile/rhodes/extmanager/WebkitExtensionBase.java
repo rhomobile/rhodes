@@ -4,14 +4,15 @@ public class WebkitExtensionBase extends AbstractRhoExtension implements IRhoExt
 
     public static final String EXTNAME = "MotorolaWebkit";
     static final String TAG = WebkitExtensionBase.class.getSimpleName();
-    private static WebkitExtension mInstance;
+    private static WebkitExtensionBase mInstance;
     private Config mConfig;
 
     public WebkitExtensionBase(Config config) {
         mConfig = config;
+        mInstance = this;
     }
 
-    public static WebkitExtension getInstance() {
+    public static WebkitExtensionBase getInstance() {
         return mInstance;
     }
 
