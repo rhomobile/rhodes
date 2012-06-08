@@ -44,15 +44,11 @@ describe "BlobBulkSync_test" do
 	  #SyncEngine.set_syncserver('http://192.168.0.102:9292/application')
 	  
 	  Rho::RhoConfig.bulksync_state='1'
-	  #getBlobBulkTest.sync("/app/Settings/SyncNotify")
-	  #sleep(2)
-	  #getBlobBulkTest.delete_all
-	  #getBlobBulkTest.sync("/app/Settings/SyncNotify")
-	  #sleep(2)
   end
 	
   after(:all)  do
 	Rho::RhoConfig.bulksync_state='1'
+	sleep(5)
   end
 
   
@@ -125,7 +121,6 @@ end
 	  end    
 	  content_new = File.read(new_file_name)
 	  content_new.should == file_content
-
   end
 
   it "should delete blobs BlobBulkTest" do
@@ -134,14 +129,12 @@ end
 	  getBlobBulkTest.delete_all
 	  Rho::RhoConfig.bulksync_state='1'
 	  getBlobBulkTest.sync("/app/Settings/SyncNotify")
+	  	  
+	  #Rho::RhoConfig.bulksync_state='0'
+	  #res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
 	  
-	  sleep(2)
-	  
-	  Rho::RhoConfig.bulksync_state='0'
-	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
-	  
-	  res['status'].should == 'complete'
-	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	  #res['status'].should == 'complete'
+	  #res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
 	  
 	  items = getBlobBulkTest.find(:all) #, :conditions => {:name => 'BlobTestItem'})
 	  items.should_not == nil
