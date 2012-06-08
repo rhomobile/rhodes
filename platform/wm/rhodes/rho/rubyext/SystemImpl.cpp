@@ -29,6 +29,9 @@
 #include "common/RhoPort.h"
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
+#ifdef RHODES_WIN32
+#include "common/RhoFile.h"
+#endif
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/app_build_capabilities.h"
 #if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
@@ -851,7 +854,26 @@ int rho_sys_is_app_installed(const char *appname)
 
 void rho_sys_app_install(const char *url)
 {
+#ifdef RHODES_WIN32
+	String sUrl = url;
+    CFilePath oFile(sUrl);
+	String filename = RHODESAPP().getRhoUserPath()+ oFile.getBaseName();
+	if (CRhoFile::isFileExist(filename.c_str()) && (CRhoFile::deleteFile(filename.c_str()) != 0)) {
+		LOG(ERROR) + "rho_sys_app_install() file delete failed: " + filename;
+	} else {
+		NetRequest NetRequest;
+		NetResponse resp = getNetRequest(&NetRequest).pullFile(sUrl, filename, NULL, NULL);
+		if (resp.isOK()) {
+			StringW filenameW = convertToStringW(filename);
+			LOG(INFO) + "Downloaded " + sUrl + " to " + filename;
+			rho_win32sys_run_appW(filenameW.c_str(), NULL, NULL);
+		} else {
+			LOG(ERROR) + "rho_sys_app_install() download failed: " + sUrl;
+		}
+	}
+#else
     rho_sys_open_url(url);
+#endif
 }
 
 void rho_sys_app_uninstall(const char *appname)
