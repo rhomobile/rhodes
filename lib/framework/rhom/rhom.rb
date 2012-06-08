@@ -199,6 +199,13 @@ module Rhom
         database_full_reset(true)
         SyncEngine.logout
       end
+	  
+	  def database_export(partition)
+		  db = ::Rho::RHO::get_db_partitions[partition]
+		  if db
+			  db.export
+		  end
+      end
 
         def search(args)
           searchParams = ""

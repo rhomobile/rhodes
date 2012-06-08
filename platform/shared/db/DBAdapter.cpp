@@ -944,6 +944,96 @@ void CDBAdapter::rollback()
 
     Unlock();
 }
+	
+extern "C" int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, void* ptrFilesArray, const char* psw);
+	
+	class BlobsRequest {
+	protected:
+		CDBAdapter& _db;
+		int _srcID;
+		Vector<String> _blobAttrs;
+		
+		virtual void requestBlobsForAttrib(const String& attr, Vector<String>& out ) = 0;
+		
+	public:
+		BlobsRequest(CDBAdapter& db, int srcID):_db(db),_srcID(srcID) {
+			_blobAttrs = db.getAttrMgr().getBlobAttrs(_srcID);
+		}
+		virtual ~BlobsRequest() {}
+		void getBlobs(Vector<String>& out) {
+			Vector<String> blobs;
+			for ( Vector<String>::const_iterator it = _blobAttrs.begin(); it != _blobAttrs.end(); ++it ) {
+				requestBlobsForAttrib(*it,out);
+			}
+		}
+	};
+	
+	class PropertyBagBlobsRequest : public BlobsRequest {
+	public:
+		PropertyBagBlobsRequest(CDBAdapter& db, int srcID) :
+			BlobsRequest(db, srcID) {}
+		
+		virtual void requestBlobsForAttrib(const String& attr, Vector<String>& out ) {
+			IDBResult res = _db.executeSQL( "SELECT value FROM object_values WHERE source_id=? AND attrib=?", _srcID, attr.c_str() );
+			for ( ;!res.isEnd();res.next()) {
+				out.push_back( CFilePath::join( RHODESAPP().getBlobsDirPath(), res.getStringByIdx(0)) );
+			}
+		}
+	
+	};
+	
+	class FixedSchemaBlobsRequest : public BlobsRequest {
+		const String _srcName;
+	public:
+		FixedSchemaBlobsRequest(CDBAdapter& db, int srcID, const String& srcName) :
+			BlobsRequest(db, srcID), _srcName(srcName) { }
+		
+		virtual void requestBlobsForAttrib(const String& attr, Vector<String>& out ) {
+			String sql = "SELECT " + attr + " FROM " + _srcName;
+			IDBResult res = _db.executeSQL(sql.c_str());
+			for ( ;!res.isEnd();res.next()) {
+				out.push_back( CFilePath::join( RHODESAPP().getBlobsDirPath(), res.getStringByIdx(0)) );
+			}
+		}
+
+	};
+	
+String CDBAdapter::exportDatabase() {
+	String basePath = CFilePath(m_strDbPath).getFolderName();
+	String zipName = m_strDbPath + ".zip";
+	
+	Lock();
+	
+	Vector<String> fileList;
+	
+	IDBResult res = executeSQL("SELECT source_id, name, schema FROM sources");
+	for ( ;!res.isEnd();res.next() ) {
+		int srcId = res.getIntByIdx(0);
+		String srcName = res.getStringByIdx(1);
+		boolean isSchemaSource = res.getStringByIdx(2).length() > 0;
+		
+		CAutoPtr<BlobsRequest> request;
+		if  (isSchemaSource) {
+			request = new FixedSchemaBlobsRequest(*this,srcId,srcName);
+		} else {
+			request = new PropertyBagBlobsRequest(*this,srcId);
+		}
+		
+		request->getBlobs(fileList);
+	}
+	
+	for ( Vector<String>::const_iterator it = fileList.begin(); it != fileList.end(); ++it ) {
+		LOG(INFO) + "Blob: " + *it;
+	}
+	
+	fileList.push_back(m_strDbPath);
+	
+	rho_sys_zip_files_with_path_array_ptr(zipName.c_str(),basePath.c_str(),&fileList,0);
+	
+	Unlock();
+	
+	return zipName;
+}
 
 /*static*/ void CDBAdapter::closeAll()
 {
@@ -1091,6 +1181,13 @@ int rho_db_destroy_tables(void* pDB, unsigned long arInclude, unsigned long arEx
     db.destroy_tables(arIncludeTables,arExcludeTables);
     return 0;
 }
+	
+VALUE rho_db_export(void* pDB)
+{
+	rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+	return rho_ruby_create_string(db.exportDatabase().c_str());
+}
+
 #endif //RHO_NO_RUBY
 
 void* rho_db_get_handle(void* pDB)
@@ -1134,7 +1231,7 @@ int rho_db_is_table_exist(void* pDB, const char* szTableName)
     rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
     return db.isTableExist(szTableName) ? 1 : 0;
 }
-
+	
 void rho_db_init_attr_manager()
 {
     rho::db::CDBAdapter::initAttrManager();
