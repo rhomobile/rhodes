@@ -1127,8 +1127,34 @@ boolean CSyncSource::processServerBlobAttrs() {
 boolean CSyncSource::processAllBlobs() {
 	
 	if (m_bSchemaSource) {
-		//TODO: Not supported yet
-		return true;
+		db::CDBAdapter& db = getDB();
+		Vector<String> blobAttrs = db.getAttrMgr().getBlobAttrs( getID() );
+		
+		for ( Vector<String>::const_iterator it = blobAttrs.begin(); it != blobAttrs.end(); ++it ) {
+			String sql = "SELECT object," + (*it) + " FROM " + getName();
+			
+			IDBResult res = db.executeSQL(sql.c_str());
+			
+			LOG(TRACE) + "Processing blobs for source " + getName() + ", attribute " + *it;
+			
+			for ( ; !res.isEnd(); res.next() )
+			{ 
+				String object = res.getStringByIdx(0);
+				String value = res.getStringByIdx(1);
+				
+				if ( value.find("://") != String::npos ) {
+					LOG(TRACE) + "Processing remote blob: " + value;
+					CAttrValue attr((*it).c_str(),value.c_str());
+					if ( !downloadBlob( attr ) ) {
+						return false;
+					}
+					
+					sql = "UPDATE " + getName() + " SET " + (*it) + "=? WHERE object=?";
+					
+					res = db.executeSQL(sql.c_str(), attr.m_strValue.c_str(), object.c_str() );
+				}
+			}
+		}
 	} else {
 		db::CDBAdapter& db = getDB();
 		Vector<String> blobAttrs = db.getAttrMgr().getBlobAttrs( getID() );
