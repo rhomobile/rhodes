@@ -599,7 +599,7 @@ namespace "build" do
       File.open(File.join($srcdir, "hash"), "w") { |f| f.write(get_dir_hash($srcdir).hexdigest) }
       # Store app name
       File.open(File.join($srcdir, "name"), "w") { |f| f.write($app_config["name"]) }
-
+      
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )  
 
     end
@@ -608,10 +608,99 @@ namespace "build" do
         #puts '$$$$$$$$$$$$$$$$$$'
         #puts 'targetdir = '+$targetdir.to_s
         #puts 'bindir = '+$bindir.to_s
+
         mkdir_p $targetdir if not File.exists? $targetdir
         zip_file_path = File.join($targetdir, "upgrade_bundle.zip")
         Jake.zip_upgrade_bundle( $bindir, zip_file_path)
     end    
+
+    task :upgrade_package_partial => ["build:iphone:rhobundle"] do
+        #puts '$$$$$$$$$$$$$$$$$$'
+        #puts 'targetdir = '+$targetdir.to_s
+        #puts 'bindir = '+$bindir.to_s
+
+        # process partial update
+      
+        add_list_full_name = File.join($app_path, 'upgrade_package_add_files.txt')
+        remove_list_full_name = File.join($app_path, 'upgrade_package_remove_files.txt')
+      
+        src_folder = File.join($bindir, 'RhoBundle')
+        src_folder = File.join(src_folder, 'apps')
+      
+        tmp_folder = $bindir + '_tmp_partial'
+        rm_rf tmp_folder if File.exists? tmp_folder
+        mkdir_p tmp_folder
+
+        dst_tmp_folder = File.join(tmp_folder, 'RhoBundle')
+        mkdir_p dst_tmp_folder
+        # copy all
+        cp_r src_folder, dst_tmp_folder
+        
+        dst_tmp_folder = File.join(dst_tmp_folder, 'apps')
+        mkdir_p dst_tmp_folder
+
+        add_files = []
+        if File.exists? add_list_full_name
+           File.open(add_list_full_name, "r") do |f|
+              while line = f.gets
+                 fixed_path = line.gsub('.rb', '.iseq').gsub('.erb', '_erb.iseq').chop
+                 add_files << fixed_path
+                 puts '### ['+fixed_path+']'
+              end
+           end
+        end
+        
+        remove_files = []
+        if File.exists? remove_list_full_name
+           File.open(remove_list_full_name, "r") do |f|
+              while line = f.gets
+                 fixed_path = line.gsub('.rb', '.iseq').gsub('.erb', '_erb.iseq').chop
+                 remove_files << fixed_path
+                 #puts '### ['+fixed_path+']'
+              end
+           end
+        end
+
+        psize = dst_tmp_folder.size+1
+        Dir.glob(File.join(dst_tmp_folder, '**/*')).sort.each do |f|
+          relpath = f[psize..-1]
+
+          if File.file?(f)
+             #puts '$$$ ['+relpath+']'
+             if not add_files.include?(relpath)
+                 rm_rf f
+             end 
+          end
+        end
+        
+        Jake.build_file_map( dst_tmp_folder, "upgrade_package_add_files.txt" )
+                 
+        #if File.exists? add_list_full_name
+        #   File.open(File.join(dst_tmp_folder, 'upgrade_package_add_files.txt'), "w") do |f|
+        #      add_files.each do |j|
+        #         f.puts "#{j}\tfile\t0\t0"
+        #      end
+        #   end
+        #end
+
+        if File.exists? remove_list_full_name
+           File.open(File.join(dst_tmp_folder, 'upgrade_package_remove_files.txt'), "w") do |f|
+              remove_files.each do |j|
+                 f.puts "#{j}"
+                 #f.puts "#{j}\tfile\t0\t0"
+              end
+           end
+        end
+
+        mkdir_p $targetdir if not File.exists? $targetdir
+        zip_file_path = File.join($targetdir, "upgrade_bundle_partial.zip")
+        Jake.zip_upgrade_bundle( tmp_folder, zip_file_path)
+    end    
+
+
+
+
+
 
     task :extensions => "config:iphone" do
       ENV['RHO_PLATFORM'] = 'iphone'
