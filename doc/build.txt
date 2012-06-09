@@ -1043,6 +1043,7 @@ To read the log file from the emulator or your device:
 * Visual Studio 2008
 * Install [Qt libraries 4.7.4 for Visual Studio 2008](http://download.qt.nokia.com/qt/source/qt-win-opensource-4.7.4-vs2008.exe) (235 MB)
 * Create new (or update existing) system environment variable `QTDIR` and make sure it points to root folder of the installed Qt libraries, e.g. `C:\Qt\4.7.4`
+* Add `bin` folder of installed Qt libraries, e.g. `C:\Qt\4.7.4\bin`, to `PATH` system environment variable
 
 NOTE: If your application uses HTTPS protocol, then you need to build Qt libraries with OpenSSL (see <a href="#build-for-windows-https">instructions below</a>).
 
