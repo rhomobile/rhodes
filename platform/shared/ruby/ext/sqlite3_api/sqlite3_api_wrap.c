@@ -116,10 +116,7 @@ static VALUE db_export( int argc, VALUE *argv, VALUE self) {
 	
 	Data_Get_Struct(self, void *, ppDB);
 	
-	VALUE vresult = Qnil;
-
-    vresult = rho_db_export(*ppDB);
-	return vresult;
+	return rho_db_export(*ppDB);
 }
 
 
