@@ -1,6 +1,7 @@
 /* system.i */
 %module System
 %{
+#include "ext/rho/rhoruby.h"
 extern VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_names, char** param_values);
 #define syscall rho_sys_makephonecall
 
@@ -77,7 +78,7 @@ extern void rho_sys_stop_timer( const char *url );
 extern void rho_sys_set_application_icon_badge(int badge_number);
 
 #define replace_current_bundle rho_sys_replace_current_bundle
-extern void rho_sys_replace_current_bundle(const char* path);
+extern void rho_sys_replace_current_bundle(const char* path, rho_param *p);
 
 #define delete_folder rho_sys_delete_folder
 extern int rho_sys_delete_folder(const char* path);
@@ -122,6 +123,18 @@ extern int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
   $1 = 0;
 }
 
+%typemap(default) (rho_param *p) {
+  $1 = 0;
+}
+%typemap(in) (rho_param *p) {
+  $1 = rho_param_fromvalue($input);
+}
+
+%typemap(freearg) (rho_param *p) {
+  rho_param_free($1);
+}
+
+
 extern VALUE syscall(const char* callname, int nparams, char** param_names, char** param_values);
 extern VALUE get_property(char* property);
 extern VALUE has_network();
@@ -149,6 +162,6 @@ extern void app_uninstall(const char *appname);
 extern void start_timer( int interval, const char *url, const char* params);
 extern void stop_timer( const char *url);
 extern void set_application_icon_badge(int badge_number);
-extern void replace_current_bundle(const char* path);
+extern void replace_current_bundle(const char* path, rho_param *p);
 extern int  delete_folder(const char* path);
 extern int set_do_not_bakup_attribute(const char* path, int value);

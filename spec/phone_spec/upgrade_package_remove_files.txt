@@ -1,0 +1,2 @@
+public/file_to_remove.png
+public/folder_to_remove
