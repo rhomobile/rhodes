@@ -33,6 +33,7 @@
 #include "common/Tokenizer.h"
 
 #include "ruby/ext/rho/rhoruby.h"
+#include <algorithm>
 
 using namespace rho;
 using namespace rho::common;
