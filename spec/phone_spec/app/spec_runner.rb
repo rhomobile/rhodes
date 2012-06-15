@@ -43,6 +43,8 @@ if !defined?(RHO_WP7)
     config[:files] << "spec/mapview_spec"  unless System.get_property('platform') == 'WINDOWS'    
 end
 
+    config[:files] << "spec/bundle_update_spec" if System.get_property('platform') == 'APPLE'
+
     config[:files] << "spec/nativebar_spec" if System.get_property('platform') != 'Blackberry'
     config[:files] << "spec/navbar_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
 
