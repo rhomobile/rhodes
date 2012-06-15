@@ -52,7 +52,9 @@ To install Rhodes on Linux, and to install Rhodes on Windows or Mac OS using the
 
 1. [Ruby v1.9.3](http://www.ruby-lang.org/en/downloads/) (On Windows, [RubyInstaller](http://rubyinstaller.org) is a convenient way to install Ruby; you should check "Add Ruby executables to your PATH" and "Associate .rb and .rbw files with this Ruby installation".)
 
-2. Install the Rhodes Gem. Run this command to install.
+2. Install the Rhodes Gem. 
+
+Run this command to install the Rhodes Gem.
 
 	:::term
   	$ [sudo] gem install rhodes
@@ -60,6 +62,8 @@ To install Rhodes on Linux, and to install Rhodes on Windows or Mac OS using the
 NOTE: If you get any `no such file to load -- something` messages while running the rake tasks or rhodes commands, this can usually be resolved by putting "sudo" in front of the command, as in `sudo gem install something`.
 
 NOTE: Windows doesn't come with the necessary build tools to install gems ('make', for example). There are various ways to get these tools, but the GnuWin32 project at http://gnuwin32.sourceforge.net/ provides the tools, and can be installed via the GetGnuWin32 installer at http://sourceforge.net/projects/getgnuwin32/files/. You should follow the GetGnuWin32 instructions carefully.
+
+**NOTE: Installing RhoStudio as a plugin for Eclipse is currently disabled.**
 
 RhoSimulator, which comes with RhoStudio for Mac and Windows, does not work with Linux.
 
