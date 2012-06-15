@@ -355,7 +355,7 @@ namespace "config" do
         
         if $app_config["extensions"].index("webkit-browser")
             $app_config["capabilities"] += ["webkit_browser"]
-            $app_config["extensions"].delete("webkit-browser") unless $current_platform == 'android'
+            $app_config["extensions"].delete("webkit-browser")
         end
         
         if  $app_config["capabilities"].index("webkit_browser") || $app_config["capabilities"].index("motorola")
