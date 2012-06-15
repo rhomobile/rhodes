@@ -740,7 +740,7 @@ void rho_sys_replace_current_bundle(const char* path, rho_param *p)
     CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, &is_finished_flag);  
     if (not_thread_mode) {
         while (!is_finished_flag) {
-            //sleep(1);
+            sleep(1);
         }
     }
 }
