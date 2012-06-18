@@ -17,21 +17,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#require 'spec/spec_helper'
+
 require 'rho/rho'
-#require 'fileutils'
-
-def getBlobBulkTest
-    return BlobBulkTest_s if $spec_settings[:schema_model]
-    
-    BlobBulkTest
-end
-
-def getBlobBulkTest_str
-    return 'BlobBulkTest_s' if $spec_settings[:schema_model]
-    
-    'BlobBulkTest'
-end
 
 describe "BlobBulkSync_test" do
 
@@ -48,7 +35,7 @@ describe "BlobBulkSync_test" do
 	
   after(:all)  do
 	Rho::RhoConfig.bulksync_state='1'
-	sleep(5)
+	sleep(2)
   end
 
   
@@ -64,8 +51,6 @@ describe "BlobBulkSync_test" do
 
   end
 
-
-
   def copy_file(src, dst_dir)
 if !defined?(RHO_WP7)  
     content = File.binread(src)  
@@ -75,70 +60,96 @@ end
     File.open(File.join( dst_dir, File.basename(src) ), "wb"){|f| f.write(content) }
   end
 
-  it "should bulk sync BlobBulkTest" do	  
+  def createBlob(model,dir,filename)
 	  SyncEngine.logged_in.should == 1
-
-	  file_name = File.join(Rho::RhoApplication::get_model_path('app',getBlobBulkTest_str()), 'test3.png')
+	  
+	  file_name = File.join(Rho::RhoApplication::get_model_path('app',dir),filename)
 	  copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
-	  file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'test3.png')
+	  file_name = File.join(Rho::RhoApplication::get_blob_folder(), filename)
 	  File.exists?(file_name).should == true
 	  if !defined?(RHO_WP7)   
-		  file_size = File.size(file_name)
+		file_size = File.size(file_name)
 	  end    
 	  file_content = File.read(file_name)
-	  
-	  item = getBlobBulkTest.new
+							
+	  item = model.new
 	  item.name = 'BlobTestItem'
 	  item.image_uri = file_name
-	  puts "item = #{item.inspect}"
 	  item.save
-	  
+							
 	  File.exists?(file_name).should == true
-	  
-	  getBlobBulkTest.sync( "/app/Settings/sync_notify")
-	  
+							
+	  model.sync( "/app/Settings/sync_notify")
+							
 	  if (File.exists?(file_name))
-		  File.delete(file_name)
+		File.delete(file_name)
 	  end
 	  File.exists?(file_name).should == false
+							
+	  return file_size,file_content
 
-	  sleep(2) #wait till sync server update data
+  end
+							
+  propBagSize = 0
+  propBagContent = nil
+  fixedSchemaSize = 0
+  fixedSchemaContent = nil
 
-	  Rho::RhoConfig.bulksync_state='0'
-	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
-
-	  res['status'].should == 'complete'
-	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-
-	  items = getBlobBulkTest.find(:all) #, :conditions => {:name => 'BlobTestItem'})
-	  items.should_not == nil
-	  items.length.should == 1
-	  
-	  items[0].image_uri.should_not == file_name
-	  new_file_name = File.join(Rho::RhoApplication::get_blob_path(items[0].image_uri))
-	  if !defined?(RHO_WP7)    
-		  File.size(new_file_name).should == file_size
-	  end    
-	  content_new = File.read(new_file_name)
-	  content_new.should == file_content
+  it "should create property bag blob" do
+	propBagSize, propBagContent = createBlob(BlobBulkTest,'BlobBulkTest','blob_bulk_test.png')
   end
 
-  it "should delete blobs BlobBulkTest" do
-	  SyncEngine.logged_in.should == 1
-	  
-	  getBlobBulkTest.delete_all
-	  Rho::RhoConfig.bulksync_state='1'
-	  getBlobBulkTest.sync("/app/Settings/SyncNotify")
-	  	  
-	  #Rho::RhoConfig.bulksync_state='0'
-	  #res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
-	  
-	  #res['status'].should == 'complete'
-	  #res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-	  
-	  items = getBlobBulkTest.find(:all) #, :conditions => {:name => 'BlobTestItem'})
-	  items.should_not == nil
-	  items.length.should == 0
+  it "should create fixed schema blob" do
+	fixedSchemaSize, fixedSchemaContent = createBlob(BlobBulkTest_s,'BlobBulkTest_s','blob_bulk_test_s.png')
+  end
+							
+  def checkBlob(model,size,content,old_filename)
+	items = model.find(:all)
+	items.should_not == nil
+	items.length.should == 1
+	puts "items = #{items.inspect}"
+							
+	items[0].image_uri.should_not == old_filename
+	new_file_name = File.join(Rho::RhoApplication::get_blob_path(items[0].image_uri))
+	File.exists?(new_file_name).should == true
+	if !defined?(RHO_WP7)    
+	  File.size(new_file_name).should == size
+	end    
+	content_new = File.read(new_file_name)
+	content_new.should == content
+  end
+
+  it "should bulk sync blobs" do
+	Rho::RhoConfig.bulksync_state='0'
+	res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+							
+	res['status'].should == 'complete'
+	res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+							
+	checkBlob(BlobBulkTest,propBagSize,propBagContent,'blob_bulk_test.png')
+	checkBlob(BlobBulkTest_s,fixedSchemaSize,fixedSchemaContent,'blob_bulk_test_s.png')
+  end
+							
+  def deleteBlob(model)
+	SyncEngine.logged_in.should == 1
+							
+	model.delete_all
+	Rho::RhoConfig.bulksync_state='1'
+	model.sync("/app/Settings/SyncNotify")
+							
+	items = model.find(:all)
+	items.should_not == nil
+	items.length.should == 0
+  end
+
+  it "should create objects after bulk sync" do
+    propBagItem = BlobBulkTest.new
+    propBagItem.name = "test"
+    propBagItem.should_not be_nil
+
+    schemaItem = BlobBulkTest_s.new
+    schemaItem.name = "test"
+    schemaItem.should_not be_nil
   end
 
   it "should logout" do
