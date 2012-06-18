@@ -38,6 +38,9 @@
 
 #import "SignatureDelegate.h"
 
+#include "statistic/RhoProfiler.h"
+
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SimpleMainView"
 
@@ -1002,11 +1005,14 @@ static BOOL makeHiddenUntilLoadContent = YES;
 - (void)webViewDidStartLoad:(UIWebView *)webview {
     // TODO
     //[self active];
+    PROF_START("BROWSER_PAGE");
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webview {
     // Disable default context menu on touch
     [webview stringByEvaluatingJavaScriptFromString:@"document.documentElement.style.webkitTouchCallout = \"none\";"];
+
+    PROF_STOP("BROWSER_PAGE");
     
     // Set empty application cache. Otherwise memory used by UIWebView increased rapidly
     // and finally application got out of memory
@@ -1067,6 +1073,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     // TODO
+    PROF_STOP("BROWSER_PAGE");
 	if (self.view.hidden) {
 		[[Rhodes sharedInstance] hideSplash];
 		self.view.hidden = NO;
