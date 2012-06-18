@@ -757,7 +757,7 @@ In your Rhodes application folder, create a folder called "extensions". This is 
 
 ### Create Your Extensions Configuration File
 
-In the folder named for your extension, such as `accel/extensions/accelerometer`, create a file named ext.yml.
+In the folder named according to your extension name, such as `accel/extensions/accelerometer`, create `ext.yml` file.
 
 In this file, you have two lines to define your initialization function and your libraries. Here is an example for an accelerometer extension.
 
@@ -773,48 +773,28 @@ You can have more that one library, in which case you would separate the librari
 
 	libraries: [ "extension1", "extension2" ]
 
-For Android, add the following parameters to your ext.yml file.
+For Android you may add additional extension parameters within android section:
 
-* android_rhodes_activity_listener - Java class name implemented interface com.rhomobile.rhodes.RhodesActivityListener (used for attach to main Rhodes application activity)
-* android_manifest_changes - filename with Android manifest items (in format of Android manifest) 0 this file will join to main AndroidManifest.xml of application
-* android_resources_addons - folder with any additional files for add to main application build folder (can contain any resources, layouts, etc.)
-* android_additional_sources_list - filename with list of *.java files for building with main Rhodes application package.
-
-<table border="1">
-<tr>
-	<td><code>android_rhodes_activity_listener</code></td>
-	<td>Java class name implemented interface com.rhomobile.rhodes.RhodesActivityListener (used for attach to main Rhodes application activity)</td>	
-</tr>
-<tr>
-	<td><code>android_manifest_changes</code></td>
-	<td>filename with Android manifest items (in format of Android manifest) 0 this file will join to main AndroidManifest.xml of application</td>	
-</tr>
-<tr>
-	<td><code>android_resources_addons</code></td>
-	<td>folder with any additional files for add to main application build folder (can contain any resources, layouts, etc.)</td>	
-</tr>
-<tr>
-	<td><code>android_additional_sources_list</code></td>
-	<td>filename with list of *.java files for building with main Rhodes application package</td>	
-</tr>
-</table>
+* rhodes_listener - Java class name which implements com.rhomobile.rhodes.extmanager.IRhoListener interface (used to handle Rhodes application UI events)
+* manifest_changes - filename with Android manifest items (in form of common AndroidManifest.xml), this file will be joined with main AndroidManifest.xml
+* adds - folder with any additional files for add to main application build folder (may contain resources, assets and shared libraries)
+* source_list - filename with list of *.java files to build with main Rhodes application package.
 
 Here is an example of an ext.yml file for an NFC extension. This example is taken from the Rhodes installation, located at [Rhodes root]/lib/extensions/Nfc.
 
 	entry: Init_Nfc
-	android_rhodes_activity_listener: com.rhomobile.nfc.Nfc
-	android_manifest_changes: ext/nfc/platform/android/AndroidManifest.xml
-	android_resources_addons: ext/nfc/platform/android/additional_files
-	android_additional_sources_list: ext/nfc/platform/android/ext_build.files
 	libraries: ["Nfc"]
+	android:
+	  rhodes_listener: com.rhomobile.nfc.Nfc
+	  manifest_changes: ext/nfc/platform/android/AndroidManifest.xml
+	  adds: ext/nfc/platform/android/additional_files
+	  source_list: ext/nfc/platform/android/ext_build.files
 
 ### Create Your Build Script
 
 In the "ext" folder, such as `accel/extensions/accelerometer/ext`, you will create your build scripts and your native extension code.
 
 Create a build script file. Name this file `build` for Macintosh and `build.bat` for Windows. This file executes a rake file that contains all your compiling commands for your extension. (You can instead put your compiling commands in the build file, but this chapter uses the Rakefile method.)
-
-When running on Linux and Macintosh, make sure the build files are executable.
 
 For the Macintosh, the build file contains:
 
@@ -843,7 +823,7 @@ The following environment variables are used by all the platforms.
 </tr>
 <tr>
 	<td><code>RHO_PLATFORM</code></td>
-	<td>mobile platform fot this application build. Possible values are 'iphone', 'android' and 'wm'</td>	
+	<td>mobile platform for this application build. Possible values are 'iphone', 'android' and 'wm'</td>	
 </tr>
 <tr>
 	<td><code>RHO_ROOT</code></td>
@@ -851,7 +831,7 @@ The following environment variables are used by all the platforms.
 </tr>
 <tr>
 	<td><code>TEMP_FILES_DIR</code></td>
-	<td>used for temporay files</td>	
+	<td>used for temporary files like object files</td>	
 </tr>
 </table>
 
@@ -946,6 +926,12 @@ The sections that you write specifically for your platform are:
  * Compile code specific for your platform (such as objective C for iphone).
  * Build the linking command for your platform.
 
+For Android build you may use next android build helpers:
+
+ * setup_ndk(NDK_path, android_API_level) - in order to use cc_compile and cc_ar
+ * cc_compile(filename, objdir, params) - compile source file
+ * cc_ar(libname, objects) - create archive library
+
 For other platforms, you can use the Rakefile in the digest extension, which is located in your Rhodes folder: `<rhodes>/lib/extensions/digest/ext/Rakefile`.
 
 	:::term
@@ -978,6 +964,9 @@ For other platforms, you can use the Rakefile in the digest extension, which is 
 	    args << "-I#{$rootdir}/platform/shared"
 
 	    if ENV['RHO_PLATFORM'] == 'android'
+          require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+          setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+          # ...
 	    
 	    # *** IPHONE SPECIFIC: set arguments (and execute the compile command)
 	    elsif ENV['RHO_PLATFORM'] == 'iphone'
