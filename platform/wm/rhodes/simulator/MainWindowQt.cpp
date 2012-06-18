@@ -197,7 +197,11 @@ void* CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
 {
     int argc = 0;
     QCoreApplication::setOrganizationName("Rhomobile");
+#ifdef RHODES_WIN32
+	QCoreApplication::setApplicationName(RHODESAPP().getAppName().c_str());
+#else
     QCoreApplication::setApplicationName("RhoSimulator");
+#endif
     qtApplication = (void*)new QApplication(argc, 0);
     qtMainWindow = (void*)new QtMainWindow();
     ((QtMainWindow*)qtMainWindow)->setWindowTitle(QString::fromWCharArray(title));
