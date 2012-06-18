@@ -113,6 +113,14 @@ Uninstall specified application
 	:::ruby
 	System.app_uninstall(appname)
 
+Zip one file to specified zip
+	:::ruby
+	System.zip_file(local_path_to_zip, local_path_to_file, password)
+
+Zip several files to specified zip
+	:::ruby
+	System.zip_files(local_path_to_zip, base_path, array_of_files_to_be_zipped, password)
+
 Unzip file to the same folder where zip file is	
 	:::ruby
 	System.unzip_file(local_path_to_zip)
