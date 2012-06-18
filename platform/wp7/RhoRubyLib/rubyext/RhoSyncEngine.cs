@@ -54,6 +54,8 @@ namespace rho.rubyext
                 {
                     if (args[0] is int)
                         bShowStatus = ((int)args[0]).Equals(1);
+                    else if (args[0] is bool)
+                        bShowStatus = (bool)args[0];
                     else
                     {
                         String str = ((MutableString)args[0]).ToString();
@@ -136,6 +138,8 @@ namespace rho.rubyext
                 {
                     if (args[1] is int)
                         bShowStatus = ((int)args[1]).Equals(1);
+                    else if (args[1] is bool)
+                        bShowStatus = (bool)args[1];
                     else
                     {
                         String str = ((MutableString)args[1]).ToString();
