@@ -546,11 +546,13 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
 LRESULT CMainWindow::OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    PROF_STOP("BROWSER_PAGE");
     return RHODESAPP().getExtManager().OnNavigateTimeout((LPCTSTR)lParam);
 }
 
 LRESULT CMainWindow::OnNavigateError (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    PROF_STOP("BROWSER_PAGE");
     return RHODESAPP().getExtManager().OnNavigateError((LPCTSTR)lParam);
 }
 
@@ -1261,6 +1263,8 @@ bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url)
 {
     LOG(TRACE) + "OnBeforeNavigate2: " + url;
 
+    PROF_START("BROWSER_PAGE");
+
     RHODESAPP().getExtManager().onBeforeNavigate(url);
 
     const wchar_t *to_remove;
@@ -1337,6 +1341,8 @@ void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
 
 
     RAWLOGC_INFO("WebView", "Page load complete." );
+
+    PROF_STOP("BROWSER_PAGE");
 
     RHODESAPP().getExtManager().onNavigateComplete(url);
 }

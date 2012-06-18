@@ -50,6 +50,7 @@
 #include "rubyext/NativeToolbarExt.h"
 #undef null
 #include "DateTimeDialog.h"
+#include "statistic/RhoProfiler.h"
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
 #define stricmp strcasecmp
@@ -261,6 +262,7 @@ void QtMainWindow::on_webView_loadStarted()
 		fullscreenCommand(1);
 	}
     LOG(INFO) + "WebView: loading...";
+    PROF_START("BROWSER_PAGE");
 }
 
 void QtMainWindow::on_webView_loadFinished(bool ok)
@@ -270,6 +272,8 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
         RAWLOGC_INFO("WebView", "Page load complete." );
     else
         RAWLOGC_ERROR("WebView", "Page load failed." );
+
+    PROF_STOP("BROWSER_PAGE");
 
 #ifdef OS_MACOSX
     if (mainWindowCallback && ok) mainWindowCallback->onWebViewUrlChanged(ui->webView->url().toString().toStdString());
