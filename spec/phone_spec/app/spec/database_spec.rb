@@ -46,20 +46,16 @@ end
 		
 	
 	it "should export database Database spec" do		
-		file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobBulkTest'), 'test3.png')
+		file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobBulkTest_s'), 'blob_bulk_test_s.png')
 		copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
-		file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'test3.png')
+		file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'blob_bulk_test_s.png')
 		File.exists?(file_name).should == true
 		if !defined?(RHO_WP7)   
 			file_size = File.size(file_name)
 		end    
 		file_content = File.read(file_name)
 		
-		item = BlobBulkTest.new
-		puts "item = #{item.inspect}"
-		item.name = 'BlobTestItem'
-		item.image_uri = 'test3.png'
-		item.save
+		item = BlobBulkTest_s.create( { 'name'=>'BlobTestItem','image_uri'=>'blob_bulk_test_s.png' })
 		
 		File.exists?(file_name).should == true
 
