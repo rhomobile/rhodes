@@ -361,26 +361,48 @@ end
                 
                 db.start_transaction
                 begin
+					mapProps = {}
+					mapFreezed = {}
+					
+					Rho::RhoConfig::sources().each do |key,value|
+						if value['partition']==str_partition
+							mapProps[key] = value['property']
+							mapFreezed[key] = value['freezed']
+						end
+					end
+										
                     Rho::RhoConfig::sources().delete_if {|key, value| value['partition']==str_partition }
                     arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
                         {'partition'=>str_partition} )
                     arSrcs.each do |src|
                         
-                        if src && src['schema'] && src['schema'].length() > 0
+                        if src 
+							if src['schema'] && src['schema'].length() > 0
                         
-                            #puts "src['schema'] :  #{src['schema']}"
-                            hashSchema = Rho::JSON.parse(src['schema'])
-                            #puts "hashSchema :  #{hashSchema}"
+								#puts "src['schema'] :  #{src['schema']}"
+								hashSchema = Rho::JSON.parse(src['schema'])
+								#puts "hashSchema :  #{hashSchema}"
                             
-                            src['schema'] = {}
-                            src['schema']['sql'] = ::Rho::RHO.make_createsql_script( src['name'], hashSchema)
-                            src['schema_version'] = hashSchema['version']
+								src['schema'] = hashSchema
+								src['schema']['sql'] = ::Rho::RHO.make_createsql_script( src['name'], hashSchema)
+								src['schema_version'] = hashSchema['version']
                             
-                            db.update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
+								db.update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
                             
-                            #if str_partition != 'user'
-                            #    @db_partitions['user'].update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
-                            #end
+								#if str_partition != 'user'
+								#    @db_partitions['user'].update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
+								#end
+							else
+								props = mapProps[src['name']]
+								if props
+									src['property'] = props
+								end
+								
+								freezed = mapFreezed[src['name']]
+								if freezed
+									src['freezed'] = freezed
+								end
+							end
                         end
 
                         src[:loaded] = true
