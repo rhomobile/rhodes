@@ -151,10 +151,48 @@ You can use the [RhoStudio debugger](/rhostudio.tutorial#using-the-debugger) to 
 To perform performance measurements or found applications bottlenecks you can use RhoMobile Profiler tool.
 
 RhoMobile Profiler use performance counters to calculate execution time of specific function/code. There are 2 types of counters: global and local:
+
 * Global counters created once and can be stopped/started many times. When Global counter destroyed, it log accumulative time of all start/stop intervals.
 * Local counters can be stopped/started only once. While stopped, counter will log time interval between start and stop.
 
-There are two API available: Ruby and Native(C/C++).
+When Counter stopped (Local counters) or destroyed(Global counters) information from counter will be logged in the following format:
+
+(log prefix) PRFILER| (counter name)( (counter time) ): START/STOP
+
+For example:
+
+I 06/18/2012 23:27:20:311 00002ffc             PROFILER| BROWSER_PAGE (0:03:104) : STOP
+
+### Built-in performance counters.
+
+These counters start working after you turn on Profiler in build.yml:
+
+* ERB_RENDER - ERB-file render (Ruby)
+* CTRL_ACTION - Controller action (Ruby)
+* INDEX_ACTION - Index page render
+* ERB_RENDER - ERB-file render (Ruby)
+* BROWSER_PAGE  - Browser page loading time (Native)
+* SyncEngine components has several native counters:
+
+    'Sync' - Full sync time
+    
+    'DB' - Time spend for database insert/update/delete while sync
+    
+    'Net' - Time spend for network communication while sync
+
+These counters works only if you create them in application. You can create counter in controller action and destroy it after some operations:
+
+* Sqlite database (Native)
+
+    'SQLITE' - counter for whole time processing SQL query including data conversion , sqlite3_step and prepare statement
+    
+    'SQLITE_EXEC' - sqlite3_step time only. 
+
+To Enable Ruby Garbage collector logging modify rhoconfig.txt(set log level to Trace):
+
+    MinSeverity = 0
+
+There are two Profiler API available: Ruby and Native(C/C++).
 
 ### RhoProfiler Ruby module.
 
@@ -168,8 +206,8 @@ RhoProfiler Ruby module will contain the following static methods:
 * flush_counter(name, message) # Log information from counter(Local or Global). Counter does not stopped or started.
 
 * start_created_counter(name) # Counter will start only if it is already created previously(Global counter)
- 
-Example:
+
+Example of custom counter:
 
 	:::ruby
 	def index
@@ -187,6 +225,19 @@ Example:
                             		
 		RhoProfiler.destroy_counter('Counter1') #Will log summary of function1 and function2 execution time
 	end
+
+Example using 'SQLITE' built-in counter:
+
+	:::ruby
+    def some_method
+
+     RhoProfiler.create_counter('SQLITE')
+
+     #do something: create/update objects for example
+
+     RhoProfiler.destroy_counter('SQLITE')
+
+    end
  
 ### RhoProfiler C/C++ API.
 RhoProfiler C/C++ API contains several defines to manipulate Performance Counters.  Here is the list of defines:
