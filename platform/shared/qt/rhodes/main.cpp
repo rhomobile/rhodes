@@ -164,7 +164,8 @@ int main(int argc, char *argv[])
     {
         QMessageBox::critical(0,QString("This is hidden app and can be started only with security key."), QString("Security Token Verification Failed"));
         RAWLOGC_INFO("Main", "This is hidden app and can be started only with security key.");
-        //return 1;
+        if (RHOCONF().getString("invalid_security_token_start_path").length() <= 0)
+            return 1;
     }
 
     RAWLOGC_INFO("Main", "Rhodes started");
