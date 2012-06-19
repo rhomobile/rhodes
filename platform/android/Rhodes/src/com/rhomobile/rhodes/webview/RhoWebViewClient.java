@@ -53,6 +53,8 @@ public class RhoWebViewClient extends WebViewClient
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
         
+        Logger.profStart("BROWSER_PAGE");
+        
         if (!RhoConf.getBool("disable_loading_indication"))
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
         else
@@ -63,6 +65,9 @@ public class RhoWebViewClient extends WebViewClient
     
     @Override
     public void onPageFinished(WebView view, String url) {
+        
+        Logger.profStop("BROWSER_PAGE");
+        
         // Set title
         String title = view.getTitle();
         RhodesActivity.safeGetInstance().setTitle(title);
