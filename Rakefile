@@ -737,9 +737,6 @@ def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
 end
 
 def copy_rhoconfig(source, target)
-  puts 'source', source
-  puts 'target', target
-
   override = get_override
   mentioned = Set.new
 
