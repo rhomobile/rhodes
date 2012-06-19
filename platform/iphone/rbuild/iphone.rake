@@ -211,7 +211,18 @@ def prepare_production_ipa (app_path, app_name)
   
   cp_r app_file, app_in_payload
   
-  cp mprovision_in_app, mprovision_in_payload
+  executable_file =  File.join(app_in_payload, 'rhorunner')
+  if !File.executable? executable_file
+     begin
+         File.chmod 0700, executable_file
+         puts 'executable attribute was writed for : '+executable_file
+     rescue Exception => e
+         puts 'ERROR: can not change attribute for executable in application package ! Try to run build command with sudo: prefix.' 
+     end    
+  end
+
+  
+  #cp mprovision_in_app, mprovision_in_payload
   
   
   itunes_artwork = File.join($config["build"]["iphonepath"], "iTunesArtwork.jpg")
@@ -239,7 +250,7 @@ def prepare_production_ipa (app_path, app_name)
   
   currentdir = Dir.pwd()      
   chdir tmp_dir 
-  sh %{zip -r temporary_archive.zip .}
+  sh %{zip -r -y temporary_archive.zip .}
   ipa_file_path = File.join(app_path, app_name + ".ipa")  
   rm_rf ipa_file_path 
   cp 'temporary_archive.zip', ipa_file_path     
