@@ -1014,7 +1014,7 @@ Run
 
 Make sure you cradle your emulator (menu Tools/Device Emulator Manager/Select Running Emulator/Actions/Cradle)
 
-Copy `rhodes.exe` and `rhobundle` (located at `<source-code-root>\platform\wm\bin\Win32\rhodes\Debug\rho`) created at the previous step to the device: `My Computer\Mobile Device` and folder in Program Files on that device (for example, `\Program Files\rhodes`). You can first delete the contents of `\Program Files\rhodes\rho` folder on your device if you want to ensure there are no old files left over.
+Copy `rhodes.exe` and `rhobundle` (located at `<source-code-root>\platform\wm\bin\win32\rhodes\Debug\rho`) created at the previous step to the device: `My Computer\Mobile Device` and folder in Program Files on that device (for example, `\Program Files\rhodes`). You can first delete the contents of `\Program Files\rhodes\rho` folder on your device if you want to ensure there are no old files left over.
 
 If you changed your application, then recompile your application code by running the following command again, and copying `rhobundle` and `rhodes.exe` again:
 
@@ -1093,7 +1093,7 @@ To build intaller bundle use command:
 	:::term
 	$ rake device:win32:production 
 
-After the build process is finished you can find the installer bundle named `<application-name>-setup.exe` in `<application-root>/bin/target/Win32` folder.
+After the build process is finished you can find the installer bundle named `<application-name>-setup.exe` in `<application-root>/bin/target/win32` folder.
 
 ### Logging
 

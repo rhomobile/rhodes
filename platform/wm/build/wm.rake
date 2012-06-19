@@ -66,7 +66,7 @@ namespace "config" do
 
   task :set_win32_platform do
     $current_platform = "win32" unless $current_platform
-    $sdk = "Win32"
+    $sdk = "win32"
   end
 
   task :wm => [:set_wm_platform, "config:common"] do
@@ -387,7 +387,7 @@ namespace "build" do
 
       chdir $config["build"]["wmpath"]
 
-      args = ['/M4', $build_solution, '"SimulatorRelease|win32"']
+      args = ['/M4', $build_solution, '"SimulatorRelease|Win32"']
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       puts Jake.run($vcbuild,args)
 
@@ -413,7 +413,7 @@ namespace "build" do
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
     chdir $config["build"]["wmpath"]
 
-    args = ['/M4', $build_solution,  "\"" + $buildcfg + '|win32"']
+    args = ['/M4', $build_solution,  "\"" + $buildcfg + '|Win32"']
     puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
     puts Jake.run($vcbuild,args)
 
@@ -541,6 +541,26 @@ namespace "device" do
       script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
       app_script_name = File.join($tmpdir, $appname + ".nsi")
 
+      license_filename = "LICENSE.txt"
+      license_file = File.join($app_path, license_filename)
+      license_present = '#'
+      license_line = ''
+      if File.exists? license_file
+        cp license_file, $tmpdir
+        license_present = ''
+        license_line = 'File "' + license_filename + '"'
+      end
+
+      readme_filename = "README.html"
+      readme_file = File.join($app_path, readme_filename)
+      readme_present = '#'
+      readme_line = '#'
+      if File.exists? readme_file
+        cp readme_file, $tmpdir
+        readme_present = ''
+        readme_line = 'File "' + readme_filename + '"'
+      end
+
       # custumize install script for application
       install_script = File.read(script_name)
       install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
@@ -553,6 +573,10 @@ namespace "device" do
       install_script = install_script.gsub(/%APPICON%/, "icon.ico")
       install_script = install_script.gsub(/%GROUP_NAME%/, $app_config["vendor"])
       install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
+      install_script = install_script.gsub(/%LICENSE_FILE%/, license_line)
+      install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
+      install_script = install_script.gsub(/%README_FILE%/, readme_line)
+      install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
       File.open(app_script_name, "w") { |file| file.puts install_script }
 
       puts "$appname - " + $appname

@@ -131,4 +131,4 @@ To run Rhodes applications in the custom built RhoSimulator, please ensure that 
 * Specify the path to custom built RhoSimulator at `rhobuild.yml`:
         env:
           paths:
-            rhosimulator: platform/wm/bin/Win32/rhodes/SimulatorRelease
+            rhosimulator: platform/wm/bin/win32/rhodes/SimulatorRelease

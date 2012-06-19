@@ -300,12 +300,13 @@ namespace "config" do
       $debug = true
     end
     
-    extensions = []
-    extensions += $app_config["extensions"] if $app_config["extensions"] and
+    extensions = Set.new
+    extensions.merge($app_config["extensions"]) if $app_config["extensions"] and
        $app_config["extensions"].is_a? Array
-    extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
+    extensions.merge($app_config[$config["platform"]]["extensions"]) if $app_config[$config["platform"]] and
        $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
-    $app_config["extensions"] = extensions
+    extensions.merge(get_extensions)
+    $app_config["extensions"] = extensions.to_a
     
     capabilities = []
     capabilities += $app_config["capabilities"] if $app_config["capabilities"] and
@@ -917,7 +918,12 @@ def get_override
     return override
 end
 
-  
+def get_extensions
+    value = ENV['rho_extensions']
+    return value.split(',') if value
+    return []
+end
+
 namespace "build" do
   namespace "bundle" do
     task :xruby do
