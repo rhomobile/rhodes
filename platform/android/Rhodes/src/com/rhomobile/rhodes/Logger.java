@@ -29,10 +29,6 @@ package com.rhomobile.rhodes;
 import java.io.CharArrayWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
-import android.app.ActivityManager;
-import android.content.Context;
-
-import java.io.*;
 
 public class Logger {
 
@@ -46,7 +42,11 @@ public class Logger {
 	public native static void D(String tag, String msg);
 	// Trace
 	public native static void T(String tag, String msg);
-	
+
+    //Profiling
+    public native static void profStart(String tag);
+    public native static void profStop(String tag);
+
 	public static void E(String tag, Throwable e) {
 	    Writer bufWriter = new CharArrayWriter(256);
 	    PrintWriter writer = new PrintWriter(bufWriter);

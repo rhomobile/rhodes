@@ -47,6 +47,22 @@ JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_D
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_T
   (JNIEnv *, jclass, jstring, jstring);
 
+/*
+ * Class:     com_rhomobile_rhodes_Logger
+ * Method:    profStart
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_profStart
+  (JNIEnv *, jclass, jstring);
+
+/*
+ * Class:     com_rhomobile_rhodes_Logger
+ * Method:    profStop
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_profStop
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif

@@ -24,6 +24,8 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
+#include "statistic/RhoProfiler.h"
+
 #include "rhodes/JNIRhodes.h"
 
 #include "rhodes/jni/com_rhomobile_rhodes_Logger.h"
@@ -60,4 +62,18 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_T
 {
     RAWTRACEC(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
 }
+
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_profStart
+  (JNIEnv *env, jclass, jstring tag)
+{
+    PROF_START(rho_cast<std::string>(env, tag).c_str());
+}
+
+JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_Logger_profStop
+  (JNIEnv *env, jclass, jstring tag)
+{
+    PROF_STOP(rho_cast<std::string>(env, tag).c_str());
+}
+
+
 
