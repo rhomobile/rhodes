@@ -468,7 +468,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	    ::MessageBoxW(0, L"This is hidden app and can be started only with security key.", L"Security Token Verification Failed", MB_ICONERROR | MB_OK);
 #endif
 		LOG(INFO) + "This is hidden app and can be started only with security key.";
-		//return S_FALSE;
+		if (RHOCONF().getString("invalid_security_token_start_path").length() <= 0)
+			return S_FALSE;
     }
 
 	LOG(INFO) + "Rhodes started";
