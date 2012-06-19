@@ -1191,6 +1191,7 @@ module Rhom
                     nSrcID = get_source_id()
                     db_partition = Rho::RhoConfig.sources[get_source_name]['partition'].to_s
                     tableName = is_schema_source() ? get_schema_table_name : 'object_values'
+                    is_full_update = Rho::RhoConfig.sources[get_source_name]['full_update']
                     
                     db = ::Rho::RHO.get_src_db(get_source_name)                            
                     db.start_transaction
@@ -1207,16 +1208,25 @@ module Rhom
                         else
                     
                             objects.each do |obj, values|
-                              values['attributes'].each do |attrib, value|
-                                  resUpdateType =  db.select_from_table('changed_values', 'update_type', 
-                                    {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
-                                  next if resUpdateType && resUpdateType.length > 0 
-                              
-                                  attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
-                                  db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
-                                    "value"=>value, "update_type"=>'update', "attrib_type"=>attrib_type })
-                              end      
-                            end
+                                if is_full_update
+                                    resUpdateType =  db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0})
+                                    
+                                    unless resUpdateType && resUpdateType.length > 0 
+                                        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>'update'})
+                                    end    
+                                else
+                            
+                                  values['attributes'].each do |attrib, value|
+                                      resUpdateType =  db.select_from_table('changed_values', 'update_type', 
+                                        {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
+                                      next if resUpdateType && resUpdateType.length > 0 
+                                  
+                                      attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
+                                      db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
+                                        "value"=>value, "update_type"=>'update', "attrib_type"=>attrib_type })
+                                  end      
+                                end
+                            end    
                         end
                             
                         db.commit

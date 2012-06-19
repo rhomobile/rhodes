@@ -99,7 +99,7 @@ describe "SyncEngine_test" do
     ::Rho::RHO.get_user_db().delete_all_from_table('changed_values')
 
     Rho::RhoConfig.bulksync_state='1'    
-    
+    Rho::RhoConfig.sources[getProduct_str]['full_update'] = false
   end
 
 if !defined?(RHO_WP7)
@@ -217,12 +217,10 @@ end
     dbRes.length.should == 1
     dbRes[0]['token_sent'].should == 0
     dbRes[0]['token'].should be_nil
-    if $spec_settings[:schema_model]
-        dbRes[0]['client_id'].should be_nil
-    else
+    if ( dbRes[0]['client_id'] )
         dbRes[0]['client_id'].should == ""
-    end    
-  
+    end
+    
     res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
     res['status'].should == 'ok'
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
@@ -599,7 +597,7 @@ end
     
   end
     
-  it "should process update-error" do    
+  it "should process retry update-error" do    
     err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"update-error\":{\"broken_object_id\":{\"name\":\"wrongname\",\"an_attribute\":\"error update\"},\"broken_object_id-error\":{\"message\":\"error update\"}}}]"
     
     SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
@@ -643,6 +641,31 @@ end
         records1[0]["update_type"].should == "update"
     end
         
+  end
+
+  it "should process retry update-error full_update model" do    
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"update-error\":{\"broken_object_id\":{\"name\":\"wrongname\",\"an_attribute\":\"error update\"},\"broken_object_id-error\":{\"message\":\"error update\"}}}]"
+    
+    SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
+    res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
+    puts "res : #{res}"
+    
+    res['server_errors'].should_not be_nil
+    res['server_errors']['update-error'].should_not be_nil
+    res['server_errors']['update-error']['broken_object_id'].should_not be_nil    
+    res['server_errors']['update-error']['broken_object_id']['message'].should == "error update"
+    res['server_errors']['update-error']['broken_object_id']['attributes']['name'].should == "wrongname"    
+
+    records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+    records.length.should == 0
+
+    Rho::RhoConfig.sources[getProduct_str]['full_update'] = true
+    getProduct.on_sync_update_error( res['server_errors']['update-error'], :retry)
+    
+    records1 = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
+    records1.length.should == 1
+    records1[0]["attrib"].should == 'object'
+
   end
 
   it "should rollback update-error" do
