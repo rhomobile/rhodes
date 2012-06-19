@@ -80,9 +80,10 @@ public class RhoWebViewClient extends WebViewClient
     }
     
     @Override
-    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl)
-    {
+    public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
         super.onReceivedError(view, errorCode, description, failingUrl);
+        
+        Logger.profStop("BROWSER_PAGE");
         
         RhoExtManager.getImplementationInstance().onLoadError(view);
         
