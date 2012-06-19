@@ -736,6 +736,45 @@ def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
   end
 end
 
+def copy_rhoconfig(source, target)
+  puts 'source', source
+  puts 'target', target
+
+  override = get_override
+  mentioned = Set.new
+
+  lines = []
+
+  # read file and edit overriden parameters
+  File.open(source, 'r') do |file|
+    while line = file.gets
+      match = line.match(/^(\s*)(\w+)(\s*=\s*)/)
+      if match
+        name = match[2]
+        if override.has_key?(name)
+          lines << "#{match[1]}#{name}#{match[3]}#{override[name]}"
+          mentioned << name
+          next
+        end
+      end
+      lines << line
+    end
+  end
+
+  # append rest of overriden parameters to text
+  override.each do |key, value|
+    if !mentioned.include?(key)
+      lines << ''
+      lines << "#{key} = #{value}"
+    end
+  end
+
+  # write text to target file
+  File.open(target, 'w') do |file|
+    lines.each { |l| file.puts l }
+  end
+end
+
 def common_bundle_start(startdir, dest)
   puts "common_bundle_start"
   
@@ -773,7 +812,7 @@ def common_bundle_start(startdir, dest)
       public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, 1
     end
   end
-  cp app + '/rhoconfig.txt', File.join($srcdir,'apps'), :preserve => true
+  copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
 
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
@@ -870,6 +909,17 @@ def process_exclude_folders
   end
 
 end
+
+def get_override
+    override = {}
+    ENV.each do |key, value|
+        key.match(/^rho_override_(.+)$/) do |match|
+            override[match[1]] = value
+        end
+    end
+    return override
+end
+
   
 namespace "build" do
   namespace "bundle" do
@@ -1541,6 +1591,14 @@ namespace "run" do
         fdir = File.join($app_path, 'rhosimulator')
         mkdir fdir unless File.exist?(fdir)
             
+        get_override.each do |key, value|
+            if key != 'start_path'
+                puts "Override '#{key}' is not supported."
+                next
+            end
+            sim_conf += "#{key}=#{value}\r\n"
+        end
+
         fname = File.join(fdir, 'rhosimconfig.txt')
         File.open(fname, "wb") do |fconf|
             fconf.write( sim_conf )
