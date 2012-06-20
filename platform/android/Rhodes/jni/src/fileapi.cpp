@@ -116,6 +116,7 @@ static jmethodID midClose;
 static jmethodID midRead;
 static jmethodID midSeek;
 static jmethodID midGetChildren;
+static jmethodID midReloadStatTable;
 
 typedef FILE *(*func_sfp_t)();
 typedef int (*func_sflags_t)(const char *mode, int *optr);
@@ -288,6 +289,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_nativeInit
     if (!midSeek) return;
     midGetChildren = getJNIClassStaticMethod(env, clsFileApi, "getChildren", "(Ljava/lang/String;)[Ljava/lang/String;");
     if (!midGetChildren) return;
+    midReloadStatTable = getJNIClassStaticMethod(env, clsFileApi, "reloadStatTable", "()V");
+    if (!midReloadStatTable) return;
 
     const char *libc = "/system/lib/libc.so";
     void *pc = dlopen(libc, RTLD_LAZY);
@@ -1717,3 +1720,18 @@ RHO_GLOBAL void rho_file_patch_stat_table(const rho::String& path)
 
     env->CallStaticVoidMethod(clsFileApi, mid, jhPath.get());
 }
+
+
+
+RHO_GLOBAL void rho_android_file_reload_stat_table() {
+    
+    RHO_LOG("rho_android_file_reload_stat_table() START");
+    
+    rho_stat_map.clear();
+    
+    JNIEnv *env = jnienv();
+    env->CallStaticVoidMethod(clsFileApi, midReloadStatTable);
+    
+    RHO_LOG("rho_android_file_reload_stat_table() FINISH");
+}
+

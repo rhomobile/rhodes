@@ -706,6 +706,7 @@ namespace "build" do
         mkdir_p $targetdir if not File.exists? $targetdir
         zip_file_path = File.join($targetdir, "upgrade_bundle_partial.zip")
         Jake.zip_upgrade_bundle( tmp_folder, zip_file_path)
+        rm_rf tmp_folder
     end    
 
 
