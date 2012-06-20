@@ -51,6 +51,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
+#include "statistic/RhoProfiler.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
