@@ -134,7 +134,7 @@
 	
 	[self beforeTests];
 	
-	sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+	sclient.sync_server = @"http://rhodes-store-server.herokuapp.com/application";
 	RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
 	int nErr = res.error_code;
 	[res release];
@@ -435,7 +435,7 @@
 	NSArray* ops = [NSArray arrayWithObjects: @"Create bench", @"Search bench", @"Bulk bench", nil];//, @"bench_", @"read by one", @"update", @"delete", nil];
 	[self beforeTests];
 	
-	sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+	sclient.sync_server = @"http://rhodes-store-server.herokuapp.com/application";
 	
 	RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
 	int nErr = res.error_code;

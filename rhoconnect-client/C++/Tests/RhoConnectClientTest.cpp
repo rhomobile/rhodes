@@ -192,7 +192,7 @@ TEST(SyncClient, shouldBulkSync)
 
 TEST(SyncClient, ResetAndLogout) 
 {
-    //rho_sync_set_syncserver("http://rhodes-store-server.heroku.com/application");
+    //rho_sync_set_syncserver("http://rhodes-store-server.herokuapp.com/application");
     rho_sync_set_syncserver("http://rhoconnect-spec-win32.heroku.com/application");
     rho_conf_remove_property("bulksync_state");
     rho_connectclient_database_full_reset_and_logout();

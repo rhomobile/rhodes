@@ -68,7 +68,7 @@ static RhoConnectEngine *sharedInst = nil;
         [sclient setLogSeverity:1];
 
         sclient.sync_server = @"http://store-bulk.rhohub.com/application";
-		//sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+		//sclient.sync_server = @"http://rhodes-store-server.herokuapp.com/application";
         //sclient.sync_server = @"http://localhost:9292/application";
 		sclient.threaded_mode = TRUE;
 		

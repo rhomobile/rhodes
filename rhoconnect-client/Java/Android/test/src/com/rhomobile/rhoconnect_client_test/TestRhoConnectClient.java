@@ -49,7 +49,7 @@ import com.rhomobile.rhoconnect.RhoConnectNotify;
 public class TestRhoConnectClient extends AndroidTestCase {
     private static final String TAG = TestRhoConnectClient.class.getSimpleName();
 
-	private final String SYNC_URL = "http://rhodes-store-server.heroku.com/application";
+	private final String SYNC_URL = "http://rhodes-store-server.herokuapp.com/application";
 	
 	class ObjectNotifyDelegate implements RhoConnectObjectNotify.IDelegate
 	{

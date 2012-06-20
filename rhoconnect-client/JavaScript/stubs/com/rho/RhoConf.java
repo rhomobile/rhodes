@@ -94,7 +94,7 @@ public class RhoConf {
 
     private void loadFromJar()
     {
-    	setString("syncserver", "http://rhodes-store-server.heroku.com/application", false);
+    	setString("syncserver", "http://rhodes-store-server.herokuapp.com/application", false);
     }
     
 }
