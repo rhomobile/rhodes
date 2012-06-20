@@ -117,6 +117,16 @@ public class RhoFileApi {
 				is.close();
 		}
 	}
+    
+    static void reloadStatTable() {
+        Log.i(TAG, "reloadStatTable()");
+        try {
+            fillStatTable();
+        }
+        catch (Throwable e) {
+            Log.e(TAG, "Exception during update Stat Table !!!");
+        }
+    }
 
     static void patchStatTable(String path) {
         //TODO: Implement rho.dat patching from bundle filelist.txt
