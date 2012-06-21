@@ -453,8 +453,12 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
 	unsigned int nError = 0;
     String strList;
     CRhoFile::loadTextFile(strListPath.c_str(), strList);
-    
-    CTokenizer oTokenizer( strList, "\n" );
+#ifdef OS_WINCE    
+    const char nl[] = { 0xD, 0xA };
+#else    
+    const char nl[] = "\n";
+#endif    
+    CTokenizer oTokenizer( strList, nl );
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
@@ -529,7 +533,13 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
     CRhoFile::loadTextFile(strListPath.c_str(), strList);
     
     
-    CTokenizer oTokenizer( strList, "\n" );
+#ifdef OS_WINCE    
+    const char nl[] = { 0xD, 0xA };
+#else    
+    const char nl[] = "\n";
+#endif    
+    CTokenizer oTokenizer( strList, nl );
+
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
