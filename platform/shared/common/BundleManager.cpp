@@ -453,15 +453,18 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
 	unsigned int nError = 0;
     String strList;
     CRhoFile::loadTextFile(strListPath.c_str(), strList);
-#ifdef OS_WINCE    
-    const char nl[] = { 0xD, 0xA };
-#else    
     const char nl[] = "\n";
-#endif    
     CTokenizer oTokenizer( strList, nl );
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
+        
+        if ((strLine[0] == 0xD) || (strLine[0] == 0xA)) {
+            strLine = strLine.substr(1, strLine.length()-1);
+        }
+        if ((strLine[strLine.length()-1] == 0xD) || (strLine[strLine.length()-10] == 0xA)) {
+            strLine = strLine.substr(0, strLine.length()-1);
+        }
         
         CTokenizer oLineTok( strLine, "\t" );
         if ( !oLineTok.hasMoreTokens() )
@@ -533,16 +536,19 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
     CRhoFile::loadTextFile(strListPath.c_str(), strList);
     
     
-#ifdef OS_WINCE    
-    const char nl[] = { 0xD, 0xA };
-#else    
     const char nl[] = "\n";
-#endif    
     CTokenizer oTokenizer( strList, nl );
 
 	while (oTokenizer.hasMoreTokens()) 
     {
 		String strLine = oTokenizer.nextToken();
+
+        if ((strLine[0] == 0xD) || (strLine[0] == 0xA)) {
+            strLine = strLine.substr(1, strLine.length()-1);
+        }
+        if ((strLine[strLine.length()-1] == 0xD) || (strLine[strLine.length()-10] == 0xA)) {
+            strLine = strLine.substr(0, strLine.length()-1);
+        }
         
         CTokenizer oLineTok( strLine, "\t" );
         if ( !oLineTok.hasMoreTokens() )
