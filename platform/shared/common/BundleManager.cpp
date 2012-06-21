@@ -459,11 +459,13 @@ unsigned int CReplaceBundleThread::partialAddFilesByList( const String& strListP
     {
 		String strLine = oTokenizer.nextToken();
         
-        if ((strLine[0] == 0xD) || (strLine[0] == 0xA)) {
-            strLine = strLine.substr(1, strLine.length()-1);
-        }
-        if ((strLine[strLine.length()-1] == 0xD) || (strLine[strLine.length()-10] == 0xA)) {
-            strLine = strLine.substr(0, strLine.length()-1);
+        if (strLine.length() > 0) {
+            if ((strLine[0] == 0xD) || (strLine[0] == 0xA)) {
+                strLine = strLine.substr(1, strLine.length()-1);
+            }
+            if ((strLine[strLine.length()-1] == 0xD) || (strLine[strLine.length()-1] == 0xA)) {
+                strLine = strLine.substr(0, strLine.length()-1);
+            }
         }
         
         CTokenizer oLineTok( strLine, "\t" );
@@ -543,11 +545,13 @@ unsigned int CReplaceBundleThread::partialRemoveItemsByList( const String& strLi
     {
 		String strLine = oTokenizer.nextToken();
 
-        if ((strLine[0] == 0xD) || (strLine[0] == 0xA)) {
-            strLine = strLine.substr(1, strLine.length()-1);
-        }
-        if ((strLine[strLine.length()-1] == 0xD) || (strLine[strLine.length()-10] == 0xA)) {
-            strLine = strLine.substr(0, strLine.length()-1);
+        if (strLine.length() > 0) {
+            if ((strLine[0] == 0xD) || (strLine[0] == 0xA)) {
+                strLine = strLine.substr(1, strLine.length()-1);
+            }
+            if ((strLine[strLine.length()-1] == 0xD) || (strLine[strLine.length()-1] == 0xA)) {
+                strLine = strLine.substr(0, strLine.length()-1);
+            }
         }
         
         CTokenizer oLineTok( strLine, "\t" );
