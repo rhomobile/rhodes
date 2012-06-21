@@ -300,13 +300,13 @@ namespace "config" do
       $debug = true
     end
     
-    extensions = Set.new
-    extensions.merge($app_config["extensions"]) if $app_config["extensions"] and
+    extensions = []
+    extensions += $app_config["extensions"] if $app_config["extensions"] and
        $app_config["extensions"].is_a? Array
-    extensions.merge($app_config[$config["platform"]]["extensions"]) if $app_config[$config["platform"]] and
+    extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
        $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
-    extensions.merge(get_extensions)
-    $app_config["extensions"] = extensions.to_a
+    extensions += get_extensions
+    $app_config["extensions"] = extensions.uniq
     
     capabilities = []
     capabilities += $app_config["capabilities"] if $app_config["capabilities"] and
