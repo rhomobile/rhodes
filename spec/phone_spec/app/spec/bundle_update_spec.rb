@@ -23,11 +23,13 @@ end
 
     content = ''
     fileName = File.join(public_root, 'file_for_replace.txt')
-    if File.exist?(fileName)
-       File.open(fileName).each do |line|
-         content = content + line
-       end    
-    end
+    
+    content = File.read(fileName) if File.exist?(fileName)
+    #if File.exist?(fileName)
+    #   File.open(fileName).each do |line|
+    #     content = content + line
+    #   end    
+    #end
     content.should == 'original'    
   
       
@@ -63,11 +65,12 @@ end
         
     content = ''
     fileName = File.join(public_root, 'file_for_replace.txt')
-    if File.exist?(fileName)
-       File.open(fileName).each do |line|
-          content = content + line
-       end    
-    end
+    content = File.read(fileName) if File.exist?(fileName)
+    #if File.exist?(fileName)
+    #   File.open(fileName).each do |line|
+    #      content = content + line
+    #   end    
+    #end
     content.should == 'replaced'    
             
     File.exists?(File.join(public_root, 'file_to_remove.png')).should == false   
