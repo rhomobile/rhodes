@@ -246,6 +246,14 @@ void Init_NavBar()
 {
 }
 
+void init_rhoext_Signature()
+{
+}
+
+const char* rho_native_reruntimepath(){ return ""; }
+const char* rho_native_rhouserpath(){ return ""; }
+const char* rho_native_rhodbpath(){ return ""; }
+
 VALUE has_network(){
     return Qfalse;
 }
