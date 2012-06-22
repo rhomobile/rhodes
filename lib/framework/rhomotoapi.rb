@@ -32,6 +32,8 @@ class << self
 
     def take_barcode( callback, hashParams = {} )
         enable(callback, hashParams)
+        # Work around bug(?) in enable meta which is non blocking and processed asynchronously
+        sleep 0.5 if System.get_property('platform') == 'ANDROID'
         RhoElementsExt.meta_proc('scanner', 'start', "")
     end
 
