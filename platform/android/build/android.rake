@@ -117,9 +117,10 @@ end
 def add_motosol_sdk(manifest)
   uses_scanner = REXML::Element.new 'uses-library'
   uses_scanner.add_attribute 'android:name', 'com.motorolasolutions.scanner'
+  uses_scanner.add_attribute 'android:required', 'false'
 
   uses_msr = REXML::Element.new 'uses-library'
-  uses_msr.add_attribute 'android:name', 'com.motorolasolutions.msr'
+  uses_msr.add_attribute 'android:name', 'com.motorolasolutions.emdk.msr'
   uses_msr.add_attribute 'android:required', 'false'
 
   manifest.elements.each('application') do |app|
