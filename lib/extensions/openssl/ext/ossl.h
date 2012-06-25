@@ -11,8 +11,8 @@
 #if !defined(_OSSL_H_)
 #define _OSSL_H_
 
-#ifdef RUBY_EXTCONF_H
-#include RUBY_EXTCONF_H
+#if defined(WIN32) || defined (WINCE)
+#include "windows/extconf.h"
 #endif
 
 #if defined(__cplusplus)
