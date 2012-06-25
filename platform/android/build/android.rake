@@ -649,6 +649,8 @@ namespace "config" do
       $ext_android_additional_sources = {}
       $ext_android_additional_lib = []
       $ext_android_build_scripts = {}
+      $ext_android_manifest_changes = {}
+      $ext_android_adds = {}
 
       $app_config["extensions"].each do |ext|
         puts "#{ext} is processing..."
@@ -693,8 +695,7 @@ namespace "config" do
                   end
                 end
                 if manifest_changes
-                  mkdir_p addspath
-                  cp manifest_changes, File.join(addspath,'AndroidManifest.xml')            
+                  $ext_android_manifest_changes[ext] = manifest_changes
                 end
 
                 resource_addons = extconf["android_resources_addons"]
@@ -709,10 +710,7 @@ namespace "config" do
                 end
                 
                 if resource_addons
-                  mkdir_p addspath
-                  Dir.glob(File.join(resource_addons,'*')).each do |add|
-                    cp_r add, addspath
-                  end
+                  $ext_android_adds[ext] = resource_addons
                 end
 
                 additional_sources = extconf["android_additional_sources_list"]
@@ -769,27 +767,9 @@ namespace "config" do
                 $ext_android_build_scripts[extpath] = 'build.bat' if File.exists? build_script
               else
                 $ext_android_build_scripts[extpath] = File.join('.', 'build' + $bat_ext) if File.exists? build_script
-              
-                # modify executable attribute
-                #if File.exists? build_script
-                  #if !File.executable? build_script
-                  #     #puts 'change executable attribute for build script in extension : '+build_script
-                  #     begin
-                  #         #File.chmod 0700, build_script
-                  #         #puts 'executable attribute was writed for : '+build_script
-                  #     rescue Exception => e
-                  #         puts 'ERROR: can not change attribute for build script in extension ! Try to run build command with sudo: prefix.' 
-                  #     end    
-                  #else
-                  #     puts 'build script in extension already executable : '+build_script
-                  #end
-                #else
-                #  puts 'build script in extension not found => pure ruby extension'
-                #end
               end
             end
-            
-            
+
             puts "#{extpath} is configured"
             # to prevent to build 2 extensions with same name
             break
@@ -945,6 +925,21 @@ namespace "build" do
         raise "Cannot build #{extpath}" unless $?.success?
         puts "Extension build script finished"
       end
+      
+      $ext_android_manifest_changes.each do |ext, path|
+        addspath = File.join($app_builddir,'extensions',ext,'adds')
+        mkdir_p addspath
+        cp path, File.join(addspath,'AndroidManifest.xml')
+      end
+
+      $ext_android_adds.each do |ext, path|
+        addspath = File.join($app_builddir,'extensions',ext,'adds')
+        mkdir_p addspath
+        Dir.glob(File.join(path,'*')).each do |add|
+          cp_r add, addspath if File.directory? add
+        end
+      end
+
     end #task :extensions
 
     task :libsqlite => "config:android" do
