@@ -2,7 +2,7 @@ require 'fileutils'
 
 USE_STLPORT = true
 
-puts "zlib extension !"
+puts "openssl extension !"
 
 namespace "build" do
 
@@ -50,13 +50,13 @@ namespace "build" do
        $configuration = 'Release'
     end
 
-    result_lib = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/libzlib.a'
-    target_lib = $targetdir + '/libzlib.a'
+    result_lib = iphone_path + '/build/' + $configuration + '-' + ( simulator ? "iphonesimulator" : "iphoneos") + '/libopenssl.a'
+    target_lib = $targetdir + '/libopenssl.a'
 
     rm_rf 'build'
     rm_rf target_lib
 
-    args = ['build', '-target', 'zlib', '-configuration', $configuration, '-sdk', $sdk]
+    args = ['build', '-target', 'openssl', '-configuration', $configuration, '-sdk', $sdk]
 
     if simulator
         args << '-arch'
