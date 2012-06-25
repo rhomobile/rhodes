@@ -606,6 +606,8 @@ public class RhodesService extends Service {
 				conn.setDoInput( true );
 				conn.setDoOutput( true );
 				conn.setUseCaches( false );
+				conn.setConnectTimeout( 10000 );
+				conn.setReadTimeout( 10000 );
 
 				hostExists = (conn.getContentLength() > 0);
 				if(hostExists)
