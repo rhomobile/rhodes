@@ -8,8 +8,8 @@
  * This program is licenced under the same licence as Ruby.
  * (See the file 'LICENCE'.)
  */
-#ifdef RUBY_EXTCONF_H
-#include RUBY_EXTCONF_H
+#if defined(WIN32) || defined (WINCE)
+#include "windows/extconf.h"
 #endif
 
 #if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_ST_ENGINE)
