@@ -925,9 +925,11 @@ extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
 {
 }
 
+#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
 extern "C" void Init_openssl(void)
 {
 }
+#endif
 
 //extern "C" void Init_digest(void)
 //{

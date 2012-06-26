@@ -1,2 +1,2 @@
 entry: Init_openssl
-libraries: [ "openssl" ]
+libraries: [ "openssl", "libeay32", "ssleay32" ]
