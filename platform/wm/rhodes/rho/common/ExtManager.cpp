@@ -324,6 +324,17 @@ bool CExtManager::onWndMsg(MSG& oMsg)
     return false;
 }
 
+bool CExtManager::onHTMLWndMsg(MSG& oMsg)
+{
+    for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+    {
+        if ( (it->second)->onHTMLWndMsg( oMsg ) )
+            return true;
+    }
+
+    return false;
+}
+
 long CExtManager::OnNavigateTimeout(const wchar_t* szUrlBeingNavigatedTo)
 {
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )

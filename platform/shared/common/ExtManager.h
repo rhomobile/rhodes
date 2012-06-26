@@ -61,6 +61,7 @@ struct IRhoExtension
     virtual long OnNavigateError(const wchar_t* szUrlBeingNavigatedTo, const CRhoExtData& oExtData){return 0;}
     virtual void OnAppActivate(bool bActivate, const CRhoExtData& oExtData){}
     virtual void OnWindowChanged(LPVOID lparam){}
+    virtual bool onHTMLWndMsg(MSG& oMsg){return false;}
 };
 
 struct IRhoExtManager
@@ -117,6 +118,7 @@ public:
     void onNavigateComplete(const wchar_t* szUrlBeingNavigatedTo);
     void onDocumentComplete(const wchar_t* szUrlOfDocument);
     bool onWndMsg(MSG& oMsg);
+    bool onHTMLWndMsg(MSG& oMsg);
     long OnNavigateTimeout(const wchar_t* szUrlBeingNavigatedTo);
     long OnSIPState(bool bSIPState);
     long OnAlertPopup(int nEnum, void* pData);
