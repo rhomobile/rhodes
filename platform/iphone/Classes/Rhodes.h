@@ -72,10 +72,6 @@
 @property (nonatomic, copy) NVDelegate* nvDelegate;
 @property (nonatomic, assign) BOOL mBlockExit;
 
-#ifdef __IPHONE_4_0
-@property (nonatomic, readonly) EKEventStore *eventStore;
-#endif
-
 + (Rhodes*)sharedInstance;
 
 + (UIApplication*)application;
@@ -113,5 +109,10 @@
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
 
 - (void) exit_with_errormessage:(NSString*)title message:(NSString*)message;
+
+#ifdef __IPHONE_4_0
+- (EKEventStore*) getEventStore;
+#endif
+
 
 @end
