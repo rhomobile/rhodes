@@ -176,13 +176,13 @@ namespace "config" do
       $app_icon_path = $app_path + "/icon/icon.ico"
       $app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exists? $app_icon_path
       cp $app_icon_path, $startdir + "/platform/wm/rhodes/resources/icon.ico"
-      resfile = $startdir + "/platform/wm/bin/win32/rhodes/Release/Rhodes.res"
+      resfile = $startdir + "/platform/wm/bin/win32/rhodes/" +$buildcfg + "/Rhodes.res"
       rm resfile if File.exists? resfile
 
       $qt_icon_path = $app_path + "/icon/icon.png"
       $qt_icon_path = $startdir + "/res/icons/rhodes.png" unless File.exists? $qt_icon_path
       cp $qt_icon_path, $startdir + "/platform/shared/qt/rhodes/resources/rho.png"
-      qrcfile = $startdir + "/platform/shared/qt/rhodes/GeneratedFiles/Release/qrc_simulator.cpp"
+      qrcfile = $startdir + "/platform/shared/qt/rhodes/GeneratedFiles/" + $buildcfg + "/qrc_simulator.cpp"
       rm qrcfile if File.exists? qrcfile
     end
 
@@ -233,11 +233,11 @@ namespace "build" do
           chdir $startdir
 
           ENV['RHO_PLATFORM'] = $current_platform
-          ENV['RHO_BUILD_CONFIG'] = 'Release'
+          ENV['RHO_BUILD_CONFIG'] = $buildcfg
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
 
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", 'wm', "bin", $sdk, "rhodes", $current_platform == 'wm' ? "Release" : $buildcfg)
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
           ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
           ENV['VCBUILD'] = $vcbuild
           ENV['SDK'] = $sdk
@@ -269,7 +269,7 @@ namespace "build" do
 
       cp $app_path + "/icon/icon.ico", "rhodes/resources" if File.exists? $app_path + "/icon/icon.ico"
 
-      args = ['/M4', $build_solution, "\"Release|#{$sdk}\""]
+      args = ['/M4', $build_solution, "\"#{$buildcfg}|#{$sdk}\""]
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       puts Jake.run($vcbuild,args)
       unless $? == 0
@@ -524,7 +524,7 @@ namespace "device" do
 
       wm_icon = $app_path + '/icon/icon.ico'
       if $use_shared_runtime.nil? then
-        out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
+        out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
         cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
         cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
       else
@@ -759,7 +759,7 @@ namespace "run" do
         end
       end
 
-      args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+      args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
       Jake.run2( detool, args, {:nowait => false})
     end
   end
@@ -818,7 +818,7 @@ namespace "run" do
           end
         end
 
-        args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+        args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
         Jake.run2( detool, args, {:nowait => false})
       end
     end
@@ -829,7 +829,7 @@ namespace "run" do
 
         cd $startdir + "/res/build-tools"
         detool = "detool.exe"    
-        args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
+        args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port]
         puts "\nStarting application on the WM6 emulator\n\n"
         log_file = gelLogPath
 
