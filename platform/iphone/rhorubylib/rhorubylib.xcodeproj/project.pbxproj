@@ -837,10 +837,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					armv7,
-					armv6,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -860,7 +857,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
-				VALID_ARCHS = "armv6 armv7 i386";
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Debug;
 		};
@@ -868,10 +865,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					armv7,
-					armv6,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 1;
@@ -888,7 +882,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
-				VALID_ARCHS = "armv6 armv7 i386";
+				VALID_ARCHS = "armv7 i386";
 			};
 			name = Release;
 		};
@@ -937,10 +931,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					armv6,
-					armv7,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 1;
@@ -957,6 +948,7 @@
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SYMROOT = ../build;
+				VALID_ARCHS = armv7;
 			};
 			name = Distribution;
 		};
