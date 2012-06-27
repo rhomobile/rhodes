@@ -482,7 +482,15 @@
 #define HAVE_POSIX_STRERROR_R 1
 
 /* Define to 1 if you have the <pwd.h> header file. */
+#ifdef __APPLE__
+#import <Availability.h>
+#ifndef __IPHONE_6_0
 #define HAVE_PWD_H 1
+#endif
+#else
+#define HAVE_PWD_H 1
+#endif
+
 
 /* Define to 1 if you have the `RAND_egd' function. */
 /* #undef HAVE_RAND_EGD */
