@@ -80,8 +80,25 @@
 #define HAVE_SYS_TIME_H 1
 #define HAVE_SYS_TIMES_H 1
 #define HAVE_SYS_PARAM_H 1
+
+#ifdef __APPLE__
+#import <Availability.h>
+#ifndef __IPHONE_6_0
 #define HAVE_PWD_H 1
+#endif
+#else
+#define HAVE_PWD_H 1
+#endif
+
+#ifdef __APPLE__
+#import <Availability.h>
+#ifndef __IPHONE_6_0
 #define HAVE_GRP_H 1
+#endif
+#else
+#define HAVE_GRP_H 1
+#endif
+
 #define HAVE_UTIME_H 1
 #define HAVE_SYS_RESOURCE_H 1
 #define HAVE_NETINET_IN_SYSTM_H 1
@@ -193,9 +210,20 @@
 #define HAVE_SETPGRP 1
 #define HAVE_GETPGID 1
 #define HAVE_SETPGID 1
+
+#ifdef __APPLE__
+#import <Availability.h>
+#ifndef __IPHONE_6_0
 #define HAVE_INITGROUPS 1
 #define HAVE_GETGROUPS 1
 #define HAVE_SETGROUPS 1
+#endif
+#else
+#define HAVE_INITGROUPS 1
+#define HAVE_GETGROUPS 1
+#define HAVE_SETGROUPS 1
+#endif
+
 #define HAVE_GETPRIORITY 1
 #define HAVE_GETRLIMIT 1
 #define HAVE_SETRLIMIT 1
