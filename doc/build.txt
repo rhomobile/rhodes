@@ -899,14 +899,14 @@ Also check that the vcbuild path is shown in the rhobuild.yml file. The rhobuild
 
 	env:
 	  paths:
-	    vcbuild: C:/Program Files/Microsoft Visual Studio 9/VC/vcpackages/vcbuild.exe
+	    vcbuild: C:/Program Files/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
 	    cabwiz: C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz
 
 On 64-bit installations:
 
 	env:
 	  paths:
-	    vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9/VC/vcpackages/vcbuild.exe
+	    vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
 	    cabwiz: C:/Program Files (x86)/Windows Mobile 6 SDK/Tools/CabWiz
 
 ### Setup target SDK and emulator
@@ -1049,9 +1049,9 @@ NOTE: If your application uses HTTPS protocol, then you need to build Qt librari
 
 ### Build application from the command line
 
-Make sure that path to vcbuild.exe (something like `C:\Program Files\Microsoft Visual Studio 9\VC\vcpackages`) is in your PATH env variable. The list of paths which should be in PATH env variable:
+Make sure that path to vcbuild.exe (something like `C:\Program Files\Microsoft Visual Studio 9.0\VC\vcpackages`) is in your PATH env variable. The list of paths which should be in PATH env variable:
 
-<i>C:\Program Files\Microsoft Visual Studio 9\Common7\IDE;C:\Program Files\Microsoft Visual Studio 9\VC\BIN;C:\Program Files\Microsoft Visual Studio 9\Common7\Tools;C:\Program Files\Microsoft Visual Studio 9\Common7\Tools\bin;C:\Program Files\Microsoft Visual Studio 9\VC\PlatformSDK\bin;C:\Program Files\Microsoft Visual Studio 9\SDK\v2.0\bin</i>
+<i>C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE;C:\Program Files\Microsoft Visual Studio 9.0\VC\BIN;C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools;C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\bin;C:\Program Files\Microsoft Visual Studio 9.0\VC\PlatformSDK\bin;C:\Program Files\Microsoft Visual Studio 9.0\SDK\v2.0\bin</i>
 
 If you use Visual Studio 2010 : add path to `msbuild` to `rhobuild.yml` in rhodes folder:
 
