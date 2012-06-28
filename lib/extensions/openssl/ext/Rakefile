@@ -10,7 +10,7 @@ def build_extension(name, arch)
 
     args = []
     args << "-I."
-    args << "-I\"#{$openssldir}/include\""
+    args << "-I\"#{$rootdir}/lib/extensions/openssl.so/include\""
     args << "-I\"#{$rootdir}/lib/extensions/openssl/ext\""
     args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
     args << "-I\"#{$rootdir}/platform/shared\""
@@ -89,8 +89,6 @@ namespace "build" do
     raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
     $rootdir = ENV['RHO_ROOT']
     raise "RHO_ROOT is not set" if $rootdir.nil?
-    $openssldir = ENV['OPENSSL']
-    raise "OPENSSL is not set" if $openssldir.nil?
 
     if ENV['RHO_PLATFORM'] == 'android'
       require File.join($rootdir, 'platform/android/build/androidcommon.rb')
