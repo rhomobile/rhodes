@@ -158,11 +158,6 @@ namespace "config" do
         puts "\nPlease, set QTDIR environment variable to Qt root directory path"
         exit 1
       end
-      $opensslhome = ENV['OPENSSL']
-      unless !$opensslhome.nil? && ($opensslhome !~ /^\s*$/) && File.directory?($opensslhome)
-        puts "\nWARNING: Please, set OPENSSL environment variable to OpenSSL root directory path, if Qt was built with OpenSSL"
-        $opensslhome = nil
-      end
     end
 
     task :application do
@@ -389,10 +384,8 @@ namespace "build" do
       vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.OPENMP")
       cp File.join(vsredistdir, "vcomp90.dll"), $target_path
       cp File.join(vsredistdir, "Microsoft.VC90.OpenMP.manifest"), $target_path
-      if !$opensslhome.nil?
-        cp File.join($opensslhome, "bin/libeay32.dll"), $target_path
-        cp File.join($opensslhome, "bin/ssleay32.dll"), $target_path
-      end
+      cp File.join($startdir, "lib/extensions/openssl.so/win32/bin/libeay32.dll"), $target_path
+      cp File.join($startdir, "lib/extensions/openssl.so/win32/bin/ssleay32.dll"), $target_path
       cp File.join($qtdir, "bin/phonon4.dll"), $target_path
       cp File.join($qtdir, "bin/QtCore4.dll"), $target_path
       cp File.join($qtdir, "bin/QtGui4.dll"), $target_path
