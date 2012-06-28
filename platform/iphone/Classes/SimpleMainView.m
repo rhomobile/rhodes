@@ -803,7 +803,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 - (void)loadRequestToWebView:(NSURLRequest*)request {
     [webView stopLoading];
     [webView loadRequest:request];
-    [request release];
+    //[request release];
 }
 
 - (void)navigate:(NSString *)url tab:(int)index {

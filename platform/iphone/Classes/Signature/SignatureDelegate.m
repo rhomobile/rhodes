@@ -157,7 +157,7 @@ SignatureDelegate* ourSD = nil;
 {
     if (signatureInlineView != nil) {
         [signatureInlineView removeFromSuperview];
-        [signatureInlineView release];
+        //[signatureInlineView release];
         signatureInlineView = nil;
     }
 }
@@ -179,7 +179,7 @@ SignatureDelegate* ourSD = nil;
     rect.size.width = properties.width;
     rect.size.height = properties.height;
     
-    signatureInlineView = [[SignatureView alloc] initWithFrame:rect];
+    signatureInlineView = [[[SignatureView alloc] initWithFrame:rect] autorelease];
 
     [signatureInlineView setPenColor:properties.penColor];
     [signatureInlineView setPenWidth:properties.penWidth];
