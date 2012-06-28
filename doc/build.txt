@@ -1106,7 +1106,7 @@ If your application needs HTTPS, then you need to build the Qt libraries for Vis
 * Download the [Qt 4.7.4 source](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.zip) (237 MB) and extract the archive, e.g. into `C:\Qt\4.7.4-src`
 * Prepare to build the OpenSSL library:
     * Download [v1.0 source code](http://www.openssl.org/source/openssl-1.0.1.tar.gz) from [www.openssl.org](http://www.openssl.org/) and extract the downloaded archive, e.g. into `C:\Qt\openssl-1.0.1`
-    * Install Perl interpreter (if it's not installed yet), e.g. [ActiveState Perl](http://www.activestate.com/activeperl)
+    * Install Perl interpreter (if it's not installed yet), e.g. [ActiveState Perl](http://www.activestate.com/activeperl), and add path to `perl.exe` to `PATH` variable, e.g. `C:\Perl\bin`
     * Install [Netwide Assembler (NASM)](http://www.nasm.us/pub/nasm/releasebuilds/2.10/win32/nasm-2.10-installer.exe) from [www.nasm.us](http://www.nasm.us/) (if it's not installed yet)
 * Open Control Panel » System » Advanced system settings » Environment Variables and then:
     * Create new (or update existing) system variable `QTDIR` = `C:\Qt\4.7.4` (this will be the installation folder for the compiled Qt libraries)
