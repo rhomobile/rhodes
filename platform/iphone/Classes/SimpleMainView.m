@@ -383,7 +383,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		int cg = (int)(CGColorGetComponents([web_bkg_color CGColor])[1] * 255);
 		int cb = (int)(CGColorGetComponents([web_bkg_color CGColor])[2] * 255);
 		int c = (cr << 16) | (cg << 8) | cb;
+        
+        //self.isBackgroundSetted = NO;
+        //webView.hidden = YES;
 		[self setWebBackgroundColor:c];
+
 		assert([webView retainCount] == 1);
 	}
 	else {
@@ -634,7 +638,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 -(void)setWebBackgroundColor:(int)bkg_color {
-	self.isBackgroundSetted = NO;
+	//self.isBackgroundSetted = NO;
 	int cR = (bkg_color & 0xFF0000) >> 16;
 	int cG = (bkg_color & 0xFF00) >> 8;
 	int cB = (bkg_color & 0xFF);
@@ -643,16 +647,21 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	self.webView.backgroundColor = bc;
 	self.view.backgroundColor = bc;
 	
-	NSString* datas = [NSString stringWithFormat:@"<body bgcolor=\"#%6X\"></body>", bkg_color]; 
-	    
-	self.webView.hidden = YES;
+	//NSString* datas = [NSString stringWithFormat:@"<body bgcolor=\"#%6X\"></body>", bkg_color];
+	NSString* datas = [NSString stringWithFormat:@"<body><script type=\"text/javascript\">document.body.style.backgroundColor = \"#%6X\";</script></body>", bkg_color];
+    
 	
-	[self loadHTMLString:datas];
+	//[self loadHTMLString:datas];
+    NSString* jscode = [NSString stringWithFormat:@"document.body.style.backgroundColor = \"#%6X\";", bkg_color];
+    [self.webView stringByEvaluatingJavaScriptFromString:jscode];
+
+	//self.webView.hidden = YES;
 }
 
 
 - (void)loadHTMLString:(NSString *)data {
 	[self restoreWebView];
+    [webView stopLoading];
     [webView loadHTMLString:data baseURL:[NSURL URLWithString:@""]];
 }
 
@@ -791,6 +800,12 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
 }
 
+- (void)loadRequestToWebView:(NSURLRequest*)request {
+    [webView stopLoading];
+    [webView loadRequest:request];
+    [request release];
+}
+
 - (void)navigate:(NSString *)url tab:(int)index {
 	if (!self.isBackgroundSetted) {
 		self.url_after_set_background = url;
@@ -804,10 +819,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		return;
 	}
 	else {
-		//NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:encodedUrl]];
-		NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:cleared_url]];
-		[webView loadRequest:request];
-		[request release];
+		NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:encodedUrl]];
+        [self performSelectorOnMainThread:@selector(loadRequestToWebView:) withObject:request waitUntilDone:NO];
 	}
 }
 
@@ -825,12 +838,19 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
 	else {
 		NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
-		NSString *redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, cleared_url];
-		//[self navigate:redirect tab:index];
-		NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:redirect]];
-		[webView loadRequest:request];
-		[request release];
-	}
+		
+        //MOHUS
+        //if ([cleared_url hasPrefix:@"http:"]) {
+        //    NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:cleared_url]];
+        //    [self performSelectorOnMainThread:@selector(loadRequestToWebView:) withObject:request waitUntilDone:NO];
+        //}
+        //else {
+            NSString *redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, cleared_url];
+            //[self navigate:redirect tab:index];
+            NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:redirect]];
+            [self performSelectorOnMainThread:@selector(loadRequestToWebView:) withObject:request waitUntilDone:NO];
+        //}
+    }
 }
 
 - (void)reload:(int)index {
@@ -838,6 +858,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		[nativeViewView setNeedsDisplay];
 	}
 	else {
+        [webView stopLoading];
 		[webView reload];
 	}
 }
@@ -959,6 +980,10 @@ static BOOL makeHiddenUntilLoadContent = YES;
     if (!url)
         return NO;
     
+    const char* curl = [[url absoluteString] UTF8String];
+    RAWLOG_INFO1("WebView shouldStartLoadWithRequest( %s )", curl);
+    
+    
     BOOL external = NO;
     
     NSString *scheme = url.scheme;
@@ -1072,8 +1097,13 @@ static BOOL makeHiddenUntilLoadContent = YES;
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-    // TODO
+ 
     PROF_STOP("BROWSER_PAGE");
+
+    NSString* info = [error localizedDescription];
+    NSString* reason = [error localizedFailureReason];
+    RAWLOG_INFO2("WebView FAIL load with error: [%s] , reason: [%s]", [info UTF8String], [reason UTF8String]);
+    
 	if (self.view.hidden) {
 		[[Rhodes sharedInstance] hideSplash];
 		self.view.hidden = NO;
@@ -1088,6 +1118,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     }
 	self.isBackgroundSetted = YES;
 	self.url_after_set_background = nil;
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
