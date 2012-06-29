@@ -121,16 +121,18 @@ static VALUE db_export( int argc, VALUE *argv, VALUE self) {
 }
 
 static VALUE db_import( int argc, VALUE *argv, VALUE self) {
-	void **ppDB = NULL;		
+	void **ppDB = NULL;
+	char* szZipName = NULL;
+	int rc = 0;
 	
 	if (argc != 1)
 		rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc);
 	
 	Data_Get_Struct(self, void *, ppDB);
 	
-	const char* szZipName = StringValuePtr(argv[0]);
+	szZipName = StringValuePtr(argv[0]);
 
-	int rc = rho_db_import(*ppDB,szZipName);
+	rc = rho_db_import(*ppDB,szZipName);
 	
 	return rc ? Qtrue : Qfalse;
 }
