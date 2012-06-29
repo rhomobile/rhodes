@@ -298,6 +298,9 @@ const char* rho_rhodesapp_getplatform()
     if ( strPlatform.compare("wm") == 0 )
         return "WINDOWS";
 
+    if ( strPlatform.compare("win32") == 0 )
+        return "WIN32";
+
     if ( strPlatform.compare("wp") == 0 )
         return "WP7";
 
@@ -318,6 +321,8 @@ const char* rho_rhodesapp_getplatform()
 {
 #if defined(OS_MACOSX)
 	return "APPLE";
+#elif defined(RHODES_WIN32)
+	return "WIN32";
 #elif defined(WINDOWS_PLATFORM)
 	return "WINDOWS";
 #elif defined(OS_SYMBIAN)
