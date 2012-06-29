@@ -1,4 +1,4 @@
-#
+	#
 #  database_spec.rb
 #  rhodes
 #
@@ -43,17 +43,18 @@ def copy_file(src, dst_dir)
     File.open(File.join( dst_dir, File.basename(src) ), "wb"){|f| f.write(content) }
 end
 	  
-		
-	
+
 	it "should export database Database spec" do		
 		file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobBulkTest_s'), 'blob_bulk_test_s.png')
 		copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
 		file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'blob_bulk_test_s.png')
 		File.exists?(file_name).should == true
-		if !defined?(RHO_WP7)   
-			file_size = File.size(file_name)
-		end    
-		file_content = File.read(file_name)
+		#if !defined?(RHO_WP7)   
+		#	file_size = File.size(file_name)
+		#end    
+		#file_content = File.read(file_name)
+		
+		puts "blob path = #{file_name}"
 		
 		item = BlobBulkTest_s.create( { 'name'=>'BlobTestItem','image_uri'=>'blob_bulk_test_s.png' })
 		
@@ -63,6 +64,27 @@ end
 		exportPath.should_not be_nil		
 		File.exists?(exportPath).should == true
 		File.size(exportPath).should_not == 0
+		File.delete(exportPath)
+		File.exists?(exportPath).should == false
+	end
 
+	it "should reset database Database spec" do
+		::Rhom::Rhom.database_full_reset_and_logout
+	end
+
+	it "should import database Database spec" do
+		::Rhom::Rhom.database_import('user',File.join(Rho::RhoApplication::get_base_app_path(),'app/Data/valid_import_db.zip')).should == true
+		
+		items = BlobBulkTest_s.find(:all)
+		items.should_not be_nil
+		items.size.should == 1
+		item = items[0]
+		item.name.should == 'BlobTestItem'
+		item.image_uri.should == 'blob_bulk_test_s.png'
+		puts "item = #{item.inspect}"
+		File.exists?(File.join(Rho::RhoApplication::get_blob_folder(),item.image_uri)).should == true
+	end
+
+	it "should import invalid data and rollback" do
 	end
 end

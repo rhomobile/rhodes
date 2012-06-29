@@ -15,8 +15,6 @@
 #include "common/RhoAppAdapter.h"
 #include "sync/SyncThread.h"
 
-#include <sstream>
-
 using namespace rho::common;
 
 namespace rho {
@@ -27,23 +25,23 @@ namespace db {
 	CDBImportTransaction::CDBImportTransaction( CDBAdapter& db, const String& zipPath ) :
 		_db(db), 
 		_srcZipPath(zipPath),
-		_state(txnInvalid),
-		_stateFileName(_db.getDBPath() + ".importTxnState" ),
-		_importDirPath(_db.getDBPath() + ".importData" ),
-		_importZipPath(CFilePath::join(_importDirPath, "import.zip")),
-		_backupDirPath(_db.getDBPath() + ".backupData" ),
-		_backupBlobsDirPath(CFilePath::join(_backupDirPath, "blobs")),
-		_blobsListPath(CFilePath::join(_backupDirPath,"blobs.list"))
-	{
+		_state(txnInvalid)
 		
+	{
+		_stateFileName = _db.getDBPath() + ".importTxnState";
+		_importDirPath = _db.getDBPath() + ".importData";
+		_importZipPath = CFilePath::join(_importDirPath, "import.zip");
+		_backupDirPath = _db.getDBPath() + ".backupData";
+		_backupBlobsDirPath = CFilePath::join(_backupDirPath, "blobs");
+		_blobsListPath = CFilePath::join(_backupDirPath,"blobs.list");
 	}
 	
 	bool CDBImportTransaction::commit() {
 		determineTxnState();
 		
-		std::stringstream sState;
-		sState << _state;		
-		LOG(INFO) + "Commiting DB import transaction, starting from state = " + sState.str();
+		char sState[8];
+		snprintf(sState, 8, "%d",_state);
+		LOG(INFO) + "Commiting DB import transaction, starting from state = " + sState;
 		
 		//DBLock lock(_db);
 		
@@ -205,7 +203,7 @@ namespace db {
 		for (Vector<String>::const_iterator it = blobs.begin(); it != blobs.end(); ++it ) {
 			String toWrite = *it + "\n";
 			f.write((void*)toWrite.c_str(),toWrite.length());
-		}		
+		}
 		
 		return true;
 	}
@@ -248,7 +246,6 @@ namespace db {
 			}
 		}
 		
-		
 		return true; 
 	}
 	
@@ -263,7 +260,8 @@ namespace db {
 		
 		_db.setImportDB(fDataName, "");		
 
-		RhoAppAdapter.loadServerSources(String("{\"partition\":\"") + _db.getPartitionName() + "\"}");
+		RhoAppAdapter.loadServerSources(String("{\"partition\":\"") + _db.getPartitionName() + "\", \"skip_schema\":\"1\" }");
+
 		rho_db_init_attr_manager();
 
 		return true; 
@@ -276,15 +274,7 @@ namespace db {
 		
 		CRhoFile::renameFile(CFilePath::join(_importDirPath, "db-files").c_str(), RHODESAPP().getBlobsDirPath().c_str());
 		
-		/*
-		CRhoFile::moveFoldersContentToAnotherFolder(
-			CFilePath::join(_importDirPath, "db-files").c_str(),
-			RHODESAPP().getBlobsDirPath().c_str()
-		);
-		 */
 		
-		//CDBRequestHelper reqHelper(_db);
-		//Vector<String> blobs = reqHelper.requestBlobs();
 		return true; 
 	}
 	
@@ -306,6 +296,5 @@ namespace db {
 		
 		return true; 
 	}
-
 }
 }

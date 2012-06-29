@@ -38,6 +38,10 @@
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
 #include "common/app_build_configs.h"
+#include "DBImportTransaction.h"
+#include "DBRequestHelper.h"
+
+#include <sstream>
 
 namespace rho{
 namespace db{
@@ -146,7 +150,7 @@ boolean CDBAdapter::checkDbErrorEx(int rc, rho::db::CDBResult& res)
     return false;
 }
 
-void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
+void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp, boolean checkImportState)
 {
     if ( strcasecmp(strDbPath.c_str(),m_strDbPath.c_str() ) == 0 )
         return;
@@ -155,6 +159,7 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
     //close();
 
     m_mxRuby.create();
+	
     m_strDbPath = strDbPath;
     if ( !bTemp )
     {
@@ -162,7 +167,16 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
         m_strDbVer = strVer;
 
         checkDBVersion(strVer);
-    }
+    }	
+	
+	if (checkImportState) {
+		CDBImportTransaction importTxn(*this);
+		if (importTxn.pending()) {
+			//if (!importTxn.commit()) {
+				importTxn.rollback();
+			//}
+		}
+	}
 
     boolean bExist = CRhoFile::isFileExist(strDbPath.c_str());
     int nRes = sqlite3_open(strDbPath.c_str(),&m_dbHandle);
@@ -205,7 +219,7 @@ void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp)
     {
         LOG(INFO) + "Copy client_info table from old database";
         CDBAdapter db(m_strDbPartition.c_str(), true);
-        db.open( strDbPath+"_oldver", m_strDbVer, true );
+        db.open( strDbPath+"_oldver", m_strDbVer, true, false );
         copyTable( "client_info", db, *this );
         {
             IDBResult res = executeSQL( "SELECT client_id FROM client_info" );
@@ -299,7 +313,7 @@ boolean CDBAdapter::migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVe
         LOG(INFO) + "Migrate database from " + dbVer.m_strRhoVer + " to " + dbNewVer.m_strRhoVer;
 
         CDBAdapter db(m_strDbPartition.c_str(), true);
-        db.open( m_strDbPath, m_strDbVer, true );
+        db.open( m_strDbPath, m_strDbVer, true, false );
         IDBResult res = db.executeSQL( "ALTER TABLE sources ADD priority INTEGER" );
         IDBResult res1 = db.executeSQL( "ALTER TABLE sources ADD backend_refresh_time int default 0" );
 
@@ -491,7 +505,7 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
     CRhoFile::deleteFile((dbNewName+".version").c_str());
 
     CDBAdapter db(m_strDbPartition.c_str(), true);
-    db.open( dbNewName, m_strDbVer, true );
+    db.open( dbNewName, m_strDbVer, true, false );
 
     //Copy all tables
 
@@ -522,7 +536,7 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
 
     CRhoFile::deleteFile(dbOldName.c_str());
     CRhoFile::renameFile(dbNewName.c_str(),dbOldName.c_str());
-    open( dbOldName, m_strDbVer, false );
+    open( dbOldName, m_strDbVer, false, false );
 }
 
 void CDBAdapter::copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo)
@@ -657,7 +671,7 @@ void CDBAdapter::setBulkSyncDB(String fDataName, String strCryptKey)
 {
     CDBAdapter db(m_strDbPartition.c_str(), true);
     db.setCryptKey(strCryptKey);
-    db.open( fDataName, m_strDbVer, true );
+    db.open( fDataName, m_strDbVer, true, false );
     db.createTriggers();
 
     db.startTransaction();
@@ -680,8 +694,38 @@ void CDBAdapter::setBulkSyncDB(String fDataName, String strCryptKey)
     CRhoFile::deleteFile(dbOldName.c_str());
     CRhoFile::renameFile(fDataName.c_str(),dbOldName.c_str());
     setCryptKey(strCryptKey);
-    open( dbOldName, m_strDbVer, false );
+    open( dbOldName, m_strDbVer, false, false );
 }
+	
+	void CDBAdapter::setImportDB(String fDataName, String strCryptKey)
+	{
+		CDBAdapter db(m_strDbPartition.c_str(), true);
+		db.setCryptKey(strCryptKey);
+		db.open( fDataName, m_strDbVer, true, false );
+		//db.createTriggers();
+		
+		db.startTransaction();
+		
+		copyTable("client_info", *this, db );
+		//copyChangedValues(db);
+		
+		//getDBPartitions().put(m_strDbPartition.c_str(), &db);
+		//sync::CSyncThread::getSyncEngine().applyChangedValues(db);
+		//getDBPartitions().put(m_strDbPartition.c_str(), this);
+		
+		db.endTransaction();
+		db.close();
+		
+		String dbOldName = m_strDbPath;
+		close(false);
+		
+		CRhoFile::deleteFilesInFolder(RHODESAPPBASE().getBlobsDirPath().c_str());
+		
+		CRhoFile::deleteFile(dbOldName.c_str());
+		CRhoFile::renameFile(fDataName.c_str(),dbOldName.c_str());
+		setCryptKey(strCryptKey);
+		open( dbOldName, m_strDbVer, false, false );
+	}
 
 void CDBAdapter::executeBatch(const char* szSql, CDBError& error)
 {
@@ -735,7 +779,7 @@ void CDBAdapter::createTriggers()
 
     if ( strSqlTriggers.length() == 0 )
     {
-        LOG(ERROR)+"createSchema failed. Cannot read triggers file: " + strSqlTriggers;
+        LOG(ERROR)+"createTriggers failed. Cannot read triggers file: " + strSqlTriggers;
         return;
     }
 
@@ -947,92 +991,39 @@ void CDBAdapter::rollback()
 	
 extern "C" int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, void* ptrFilesArray, const char* psw);
 	
-	class BlobsRequest {
-	protected:
-		CDBAdapter& _db;
-		int _srcID;
-		Vector<String> _blobAttrs;
-		
-		virtual void requestBlobsForAttrib(const String& attr, Vector<String>& out ) = 0;
-		
-	public:
-		BlobsRequest(CDBAdapter& db, int srcID):_db(db),_srcID(srcID) {
-			_blobAttrs = db.getAttrMgr().getBlobAttrs(_srcID);
-		}
-		virtual ~BlobsRequest() {}
-		void getBlobs(Vector<String>& out) {
-			Vector<String> blobs;
-			for ( Vector<String>::const_iterator it = _blobAttrs.begin(); it != _blobAttrs.end(); ++it ) {
-				requestBlobsForAttrib(*it,out);
-			}
-		}
-	};
 	
-	class PropertyBagBlobsRequest : public BlobsRequest {
-	public:
-		PropertyBagBlobsRequest(CDBAdapter& db, int srcID) :
-			BlobsRequest(db, srcID) {}
-		
-		virtual void requestBlobsForAttrib(const String& attr, Vector<String>& out ) {
-			IDBResult res = _db.executeSQL( "SELECT value FROM object_values WHERE source_id=? AND attrib=?", _srcID, attr.c_str() );
-			for ( ;!res.isEnd();res.next()) {
-				out.push_back( CFilePath::join( RHODESAPP().getBlobsDirPath(), res.getStringByIdx(0)) );
-			}
-		}
-	
-	};
-	
-	class FixedSchemaBlobsRequest : public BlobsRequest {
-		const String _srcName;
-	public:
-		FixedSchemaBlobsRequest(CDBAdapter& db, int srcID, const String& srcName) :
-			BlobsRequest(db, srcID), _srcName(srcName) { }
-		
-		virtual void requestBlobsForAttrib(const String& attr, Vector<String>& out ) {
-			String sql = "SELECT " + attr + " FROM " + _srcName;
-			IDBResult res = _db.executeSQL(sql.c_str());
-			for ( ;!res.isEnd();res.next()) {
-				out.push_back( CFilePath::join( RHODESAPP().getBlobsDirPath(), res.getStringByIdx(0)) );
-			}
-		}
-
-	};
 	
 String CDBAdapter::exportDatabase() {
+	
 	String basePath = CFilePath(m_strDbPath).getFolderName();
 	String zipName = m_strDbPath + ".zip";
 	
-	Lock();
-	
-	Vector<String> fileList;
-	
-	IDBResult res = executeSQL("SELECT source_id, name, schema FROM sources");
-	for ( ;!res.isEnd();res.next() ) {
-		int srcId = res.getIntByIdx(0);
-		String srcName = res.getStringByIdx(1);
-		boolean isSchemaSource = res.getStringByIdx(2).length() > 0;
+	DBLock lock(*this);
 		
-		CAutoPtr<BlobsRequest> request;
-		if  (isSchemaSource) {
-			request = new FixedSchemaBlobsRequest(*this,srcId,srcName);
-		} else {
-			request = new PropertyBagBlobsRequest(*this,srcId);
-		}
+	CDBRequestHelper reqHelper(*this);
+	Vector<String> fileList = reqHelper.requestBlobs();
+	
+	//TODO: process only blobs in blobs_dir
+	for ( Vector<String>::iterator it = fileList.begin(); it != fileList.end(); ++it ) {
+		(*it) = common::CFilePath::join( RHODESAPP().getBlobsDirPath(),*it);
+	}
 		
-		request->getBlobs(fileList);
-	}
-	
-	for ( Vector<String>::const_iterator it = fileList.begin(); it != fileList.end(); ++it ) {
-		LOG(INFO) + "Blob: " + *it;
-	}
-	
 	fileList.push_back(m_strDbPath);
 	
-	rho_sys_zip_files_with_path_array_ptr(zipName.c_str(),basePath.c_str(),&fileList,0);
-	
-	Unlock();
+	if (rho_sys_zip_files_with_path_array_ptr(zipName.c_str(),basePath.c_str(),&fileList,0)!=0) {
+		return "";
+	}
 	
 	return zipName;
+}
+	
+bool CDBAdapter::importDatabase( const String& zipName ) {
+	CDBImportTransaction importTxn(*this,zipName);
+	if (!importTxn.commit()) {
+		importTxn.rollback();
+	  return false;
+	}
+	return true;
 }
 
 /*static*/ void CDBAdapter::closeAll()
@@ -1095,6 +1086,7 @@ String CDBAdapter::exportDatabase() {
 
     return *getDBPartitions().get(USER_PARTITION_NAME());
 }
+	
 
 }
 }
@@ -1113,8 +1105,8 @@ int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
         CDBAdapter::getDBPartitions().put(szDBPartition, pDB);
     }
 
-    rho::String strVer = RhoAppAdapter.getRhoDBVersion(); 
-    pDB->open(szDBPath,strVer, false);
+    rho::String strVer = RhoAppAdapter.getRhoDBVersion();
+    pDB->open(szDBPath,strVer, false,true);
 
     *ppDB = pDB;
     return 0;
@@ -1186,6 +1178,12 @@ VALUE rho_db_export(void* pDB)
 {
 	rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
 	return rho_ruby_create_string(db.exportDatabase().c_str());
+}
+	
+int rho_db_import(void* pDB, const char* zipName)
+{
+	rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
+	return db.importDatabase(zipName)? 1 : 0;
 }
 
 #endif //RHO_NO_RUBY

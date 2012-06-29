@@ -44,6 +44,10 @@
 		5C9817360FBC4F70002597A5 /* DBResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817320FBC4F70002597A5 /* DBResult.h */; };
 		5CE2940B1009D8B7009A75F6 /* ClientRegister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE294091009D8B7009A75F6 /* ClientRegister.cpp */; };
 		5CE2940C1009D8B7009A75F6 /* ClientRegister.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE2940A1009D8B7009A75F6 /* ClientRegister.h */; };
+		C522F0FC159B1FFF007FF96E /* DBImportTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C522F0F8159B1FFF007FF96E /* DBImportTransaction.cpp */; };
+		C522F0FD159B1FFF007FF96E /* DBImportTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = C522F0F9159B1FFF007FF96E /* DBImportTransaction.h */; };
+		C522F0FE159B1FFF007FF96E /* DBRequestHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C522F0FA159B1FFF007FF96E /* DBRequestHelper.cpp */; };
+		C522F0FF159B1FFF007FF96E /* DBRequestHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = C522F0FB159B1FFF007FF96E /* DBRequestHelper.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -87,6 +91,10 @@
 		5C9817320FBC4F70002597A5 /* DBResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBResult.h; path = ../../shared/db/DBResult.h; sourceTree = SOURCE_ROOT; };
 		5CE294091009D8B7009A75F6 /* ClientRegister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientRegister.cpp; path = ../../shared/sync/ClientRegister.cpp; sourceTree = SOURCE_ROOT; };
 		5CE2940A1009D8B7009A75F6 /* ClientRegister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientRegister.h; path = ../../shared/sync/ClientRegister.h; sourceTree = SOURCE_ROOT; };
+		C522F0F8159B1FFF007FF96E /* DBImportTransaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBImportTransaction.cpp; path = ../../shared/db/DBImportTransaction.cpp; sourceTree = "<group>"; };
+		C522F0F9159B1FFF007FF96E /* DBImportTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBImportTransaction.h; path = ../../shared/db/DBImportTransaction.h; sourceTree = "<group>"; };
+		C522F0FA159B1FFF007FF96E /* DBRequestHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBRequestHelper.cpp; path = ../../shared/db/DBRequestHelper.cpp; sourceTree = "<group>"; };
+		C522F0FB159B1FFF007FF96E /* DBRequestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBRequestHelper.h; path = ../../shared/db/DBRequestHelper.h; sourceTree = "<group>"; };
 		D2AAC046055464E500DB518D /* librhosynclib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = librhosynclib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -181,6 +189,10 @@
 		5C98172E0FBC4F53002597A5 /* db */ = {
 			isa = PBXGroup;
 			children = (
+				C522F0F8159B1FFF007FF96E /* DBImportTransaction.cpp */,
+				C522F0F9159B1FFF007FF96E /* DBImportTransaction.h */,
+				C522F0FA159B1FFF007FF96E /* DBRequestHelper.cpp */,
+				C522F0FB159B1FFF007FF96E /* DBRequestHelper.h */,
 				5C7405881064AA4900163569 /* DBAttrManager.cpp */,
 				5C7405891064AA4900163569 /* DBAttrManager.h */,
 				5C98172F0FBC4F70002597A5 /* DBAdapter.cpp */,
@@ -225,6 +237,8 @@
 				5CE2940C1009D8B7009A75F6 /* ClientRegister.h in Headers */,
 				5C74058B1064AA4900163569 /* DBAttrManager.h in Headers */,
 				5C7405F3106CF7F400163569 /* SyncNotify.h in Headers */,
+				C522F0FD159B1FFF007FF96E /* DBImportTransaction.h in Headers */,
+				C522F0FF159B1FFF007FF96E /* DBRequestHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,6 +305,8 @@
 				5C74058A1064AA4900163569 /* DBAttrManager.cpp in Sources */,
 				5C7405F2106CF7F400163569 /* SyncNotify.cpp in Sources */,
 				5C329221112C748F00FD3F13 /* RJSONTokener.c in Sources */,
+				C522F0FC159B1FFF007FF96E /* DBImportTransaction.cpp in Sources */,
+				C522F0FE159B1FFF007FF96E /* DBRequestHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

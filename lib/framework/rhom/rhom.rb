@@ -206,6 +206,14 @@ module Rhom
 			  db.export
 		  end
       end
+	  
+	  def database_import(partition, zipName)
+		  db = ::Rho::RHO::get_db_partitions[partition]
+		  if db
+			  db.import(zipName)
+		  end
+      end
+		  
 
         def search(args)
           searchParams = ""

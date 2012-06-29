@@ -6,7 +6,10 @@ LOCAL_MODULE    := rhodb
 LOCAL_SRC_FILES := \
     DBAdapter.cpp \
     DBAttrManager.cpp \
-    DBResult.cpp
+    DBResult.cpp \
+	DBRequestHelper.cpp \
+	DBImportTransaction.cpp
+	
 LOCAL_C_INCLUDES := $(LOCAL_PATH)b $(SHARED_PATH_INC) $(SHARED_PATH_INC)/sqlite
 
 include $(BUILD_STATIC_LIBRARY)

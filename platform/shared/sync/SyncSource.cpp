@@ -1065,7 +1065,6 @@ boolean CSyncSource::processBlob( const String& strCmd, const String& strObject,
 	
 boolean CSyncSource::processServerBlobAttrs() {
 	if ( m_bSchemaSource ) {
-		//TODO: Not supported yet
 		return true;
 	} else {
 		static const String selAttrsRequest = "SELECT source_attribs,blob_attribs from sources WHERE source_id=?";
