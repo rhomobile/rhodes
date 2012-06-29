@@ -2510,6 +2510,22 @@
 				RelativePath="..\..\shared\db\DBResult.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\shared\db\DBRequestHelper.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\db\DBRequestHelper.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\db\DBImportTransaction.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\db\DBImportTransaction.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
