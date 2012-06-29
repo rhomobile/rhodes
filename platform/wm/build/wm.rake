@@ -365,12 +365,6 @@ namespace "build" do
         Jake.zip_upgrade_bundle( tmp_folder, zip_file_path)
         rm_rf tmp_folder
     end    
-    
-    
-    
-    
-    
-    
 
   end #wm
   
@@ -432,7 +426,11 @@ namespace "build" do
     end
 
     task :set_debug_config do
-        $buildcfg = 'debug'
+        $buildcfg = 'Debug'
+    end
+
+    task :set_release_config do
+        $buildcfg = 'Release'
     end
 
     task :devrhobundle => ["config:set_win32_platform", :set_debug_config, "build:wm:rhobundle", :after_bundle] do
@@ -610,7 +608,7 @@ namespace "device" do
 
   namespace "win32" do
     desc "Build installer for Windows"
-    task :production => ["config:win32:qt", "build:win32"] do
+    task :production => ["build:win32:set_release_config", "config:win32:qt", "build:win32"] do
 
       out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
       puts "out_dir - "  + out_dir
