@@ -738,7 +738,7 @@ def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
 end
 
 def copy_rhoconfig(source, target)
-  override = get_override
+  override = get_config_override_params
   mentioned = Set.new
 
   lines = []
@@ -908,7 +908,7 @@ def process_exclude_folders
 
 end
 
-def get_override
+def get_config_override_params
     override = {}
     ENV.each do |key, value|
         key.match(/^rho_override_(.+)$/) do |match|
@@ -1594,7 +1594,7 @@ namespace "run" do
         fdir = File.join($app_path, 'rhosimulator')
         mkdir fdir unless File.exist?(fdir)
             
-        get_override.each do |key, value|
+        get_config_override_params.each do |key, value|
             if key != 'start_path'
                 puts "Override '#{key}' is not supported."
                 next
