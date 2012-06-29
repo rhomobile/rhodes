@@ -571,7 +571,10 @@ boolean CSyncNotify::callNotify(const CSyncNotification& oNotify, const String& 
     }
 #endif
 
+	m_isInsideCallback = true;        
     NetResponse resp = getNet().pushData( strUrl, strBody, null );
+	m_isInsideCallback = false;        
+
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
     else
