@@ -253,6 +253,10 @@
 		5CCB15A013DB5549001337D6 /* RhoError.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCB159D13DB5549001337D6 /* RhoError.h */; };
 		5CCB15A113DB5549001337D6 /* RhoConnectClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CCB159E13DB5549001337D6 /* RhoConnectClient.h */; };
 		5CCB15A213DB5549001337D6 /* RhoConnectClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CCB159F13DB5549001337D6 /* RhoConnectClient.cpp */; };
+		C5D277EB159CAC3E00A7EFC7 /* DBImportTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D277E7159CAC3E00A7EFC7 /* DBImportTransaction.cpp */; };
+		C5D277EC159CAC3E00A7EFC7 /* DBImportTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = C5D277E8159CAC3E00A7EFC7 /* DBImportTransaction.h */; };
+		C5D277ED159CAC3E00A7EFC7 /* DBRequestHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D277E9159CAC3E00A7EFC7 /* DBRequestHelper.cpp */; };
+		C5D277EE159CAC3E00A7EFC7 /* DBRequestHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = C5D277EA159CAC3E00A7EFC7 /* DBRequestHelper.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -502,6 +506,10 @@
 		5CCB159D13DB5549001337D6 /* RhoError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoError.h; path = ../../platform/shared/RhoConnectClient/RhoError.h; sourceTree = "<group>"; };
 		5CCB159E13DB5549001337D6 /* RhoConnectClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoConnectClient.h; path = ../../platform/shared/RhoConnectClient/RhoConnectClient.h; sourceTree = "<group>"; };
 		5CCB159F13DB5549001337D6 /* RhoConnectClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoConnectClient.cpp; path = ../../platform/shared/RhoConnectClient/RhoConnectClient.cpp; sourceTree = "<group>"; };
+		C5D277E7159CAC3E00A7EFC7 /* DBImportTransaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBImportTransaction.cpp; path = ../../platform/shared/db/DBImportTransaction.cpp; sourceTree = "<group>"; };
+		C5D277E8159CAC3E00A7EFC7 /* DBImportTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBImportTransaction.h; path = ../../platform/shared/db/DBImportTransaction.h; sourceTree = "<group>"; };
+		C5D277E9159CAC3E00A7EFC7 /* DBRequestHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBRequestHelper.cpp; path = ../../platform/shared/db/DBRequestHelper.cpp; sourceTree = "<group>"; };
+		C5D277EA159CAC3E00A7EFC7 /* DBRequestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBRequestHelper.h; path = ../../platform/shared/db/DBRequestHelper.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libRhoConnectClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRhoConnectClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -663,6 +671,10 @@
 		5C0D0880121CFF5A0022E83C /* db */ = {
 			isa = PBXGroup;
 			children = (
+				C5D277E7159CAC3E00A7EFC7 /* DBImportTransaction.cpp */,
+				C5D277E8159CAC3E00A7EFC7 /* DBImportTransaction.h */,
+				C5D277E9159CAC3E00A7EFC7 /* DBRequestHelper.cpp */,
+				C5D277EA159CAC3E00A7EFC7 /* DBRequestHelper.h */,
 				5C0D0881121CFF7E0022E83C /* DBAdapter.cpp */,
 				5C0D0882121CFF7E0022E83C /* DBAdapter.h */,
 				5C0D0883121CFF7E0022E83C /* DBAttrManager.cpp */,
@@ -1025,6 +1037,8 @@
 				5C5CD3C013620579006DD4C5 /* RhoConnectObjectNotify.h in Headers */,
 				5CCB15A013DB5549001337D6 /* RhoError.h in Headers */,
 				5CCB15A113DB5549001337D6 /* RhoConnectClient.h in Headers */,
+				C5D277EC159CAC3E00A7EFC7 /* DBImportTransaction.h in Headers */,
+				C5D277EE159CAC3E00A7EFC7 /* DBRequestHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1210,6 +1224,8 @@
 				5C83677A134660310008F198 /* INetRequest.cpp in Sources */,
 				5C5CD3C113620579006DD4C5 /* RhoConnectObjectNotify.m in Sources */,
 				5CCB15A213DB5549001337D6 /* RhoConnectClient.cpp in Sources */,
+				C5D277EB159CAC3E00A7EFC7 /* DBImportTransaction.cpp in Sources */,
+				C5D277ED159CAC3E00A7EFC7 /* DBRequestHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

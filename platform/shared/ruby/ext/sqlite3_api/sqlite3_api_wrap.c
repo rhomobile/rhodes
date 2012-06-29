@@ -49,6 +49,7 @@ extern void rho_db_unlock(void* pDB);
 extern int  rho_db_is_table_exist(void* pDB, const char* szTableName);
 extern VALUE ruby_db_execute(int argc, VALUE *argv, VALUE self);
 extern VALUE rho_db_export( void* pDB );
+extern int rho_db_import( void* pDB, const char* zipName );
 
 static VALUE db_allocate(VALUE klass)
 {
@@ -117,6 +118,21 @@ static VALUE db_export( int argc, VALUE *argv, VALUE self) {
 	Data_Get_Struct(self, void *, ppDB);
 	
 	return rho_db_export(*ppDB);
+}
+
+static VALUE db_import( int argc, VALUE *argv, VALUE self) {
+	void **ppDB = NULL;		
+	
+	if (argc != 1)
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc);
+	
+	Data_Get_Struct(self, void *, ppDB);
+	
+	const char* szZipName = StringValuePtr(argv[0]);
+
+	int rc = rho_db_import(*ppDB,szZipName);
+	
+	return rc ? Qtrue : Qfalse;
 }
 
 
@@ -423,5 +439,6 @@ void Init_sqlite3_api(void)
     rb_define_method(mDatabase, "table_exist?", db_is_table_exist, -1);
     rb_define_method(mDatabase, "is_ui_waitfordb", db_is_ui_waitfordb, -1);
 	rb_define_method(mDatabase, "export", db_export, -1 );
+	rb_define_method(mDatabase, "import", db_import, -1 );
 }
 

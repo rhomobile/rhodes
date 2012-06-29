@@ -52,6 +52,7 @@ public:
 }
 
 namespace db{
+	
 
 class CDBAdapter
 {
@@ -108,7 +109,7 @@ public:
         m_mxRuby(bNoRubyLock), m_bUIWaitDB(false), m_nTransactionCounter(0) {}
     ~CDBAdapter(void){}
 
-    void open (String strDbPath, String strVer, boolean bTemp);
+    void open (String strDbPath, String strVer, boolean bTemp, boolean checkImportState);
     void close(boolean bCloseRubyMutex = true);
     sqlite3* getDbHandle(){ return m_dbHandle; }
     CDBAttrManager& getAttrMgr(){ return m_attrMgr; }
@@ -120,6 +121,8 @@ public:
     const String& getDBPath(){ return m_strDbPath; }
     common::IRhoCrypt* getCrypt(){ return m_ptrCrypt; }
     void setCryptKey(String& strKey){ m_strCryptKey = strKey; }
+	const String& getPartitionName() const { return m_strDbPartition; }
+	const String& getDBVersion() const { return m_strDbVer; }
 
     static HashtablePtr<String,CDBAdapter*>& getDBPartitions(){ return  m_mapDBPartitions; }
     static void closeAll();
@@ -348,6 +351,7 @@ public:
     void rollback();
     void destroy_tables(const rho::Vector<rho::String>& arIncludeTables, const rho::Vector<rho::String>& arExcludeTables);
     void setBulkSyncDB(String fDataName, String strCryptKey);
+	void setImportDB(String fDataName, String strCryptKey);
 
     void createTrigger(const String& strSQL);
     void dropTrigger(const String& strName);
@@ -357,6 +361,7 @@ public:
     void updateAllAttribChanges();
 	
 	String exportDatabase();
+	bool importDatabase( const String& zipName );
 	
 private:
 
@@ -370,6 +375,13 @@ private:
     boolean migrateDB(const CDBVersion& dbVer, const CDBVersion& dbNewVer);
     void copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo);
     void copyChangedValues(CDBAdapter& db);
+};
+	
+class DBLock {
+	CDBAdapter& _db;
+public:
+	DBLock(CDBAdapter& db) : _db(db) { _db.Lock(); }
+	~DBLock() { _db.Unlock(); }
 };
 
 }

@@ -4,16 +4,16 @@
 
 namespace rho {
 namespace db {
-	
+
 class CDBImportTransaction {
 	CDBAdapter& _db;
-	const String _srcZipPath;
-	const String _stateFileName;
-	const String _importDirPath;
-	const String _importZipPath;
-	const String _backupDirPath;
-	const String _backupBlobsDirPath;
-	const String _blobsListPath;
+	String _srcZipPath;
+	String _stateFileName;
+	String _importDirPath;
+	String _importZipPath;
+	String _backupDirPath;
+	String _backupBlobsDirPath;
+	String _blobsListPath;
 	
 	enum enTxnState {
 		txnInvalid,
