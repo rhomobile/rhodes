@@ -964,6 +964,12 @@ namespace "run" do
   end
 
   namespace "win32" do
+    desc "Run application on RhoSimulator"    
+    task :rhosimulator => ["config:set_win32_platform", "config:common"] do
+      $rhosim_config = "platform='win32'\r\n"
+      Rake::Task["run:rhosimulator"].invoke
+    end
+    
     task :delete_db do
       $buildcfg = $app_config["buildcfg"]
       $buildcfg = "Release" unless $buildcfg
