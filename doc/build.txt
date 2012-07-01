@@ -1104,29 +1104,14 @@ Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
 If your application needs HTTPS, then you need to build the Qt libraries for Visual Studio 2008 with OpenSSL as described below:
 
 * Download the [Qt 4.7.4 source](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.zip) (237 MB) and extract the archive, e.g. into `C:\Qt\4.7.4-src`
-* Prepare to build the OpenSSL library:
-    * Download [v1.0 source code](http://www.openssl.org/source/openssl-1.0.1.tar.gz) from [www.openssl.org](http://www.openssl.org/) and extract the downloaded archive, e.g. into `C:\Qt\openssl-1.0.1`
-    * Install Perl interpreter (if it's not installed yet), e.g. [ActiveState Perl](http://www.activestate.com/activeperl), and add path to `perl.exe` to `PATH` variable, e.g. `C:\Perl\bin`
-    * Install [Netwide Assembler (NASM)](http://www.nasm.us/pub/nasm/releasebuilds/2.10/win32/nasm-2.10-installer.exe) from [www.nasm.us](http://www.nasm.us/) (if it's not installed yet)
 * Open Control Panel » System » Advanced system settings » Environment Variables and then:
     * Create new (or update existing) system variable `QTDIR` = `C:\Qt\4.7.4` (this will be the installation folder for the compiled Qt libraries)
-    * Create new (or update existing) system variable `OPENSSL` = `C:\Qt\openssl` (this will be the installation folder for the compiled OpenSSL libraries)
-    * Add to the `PATH` variable: `C:\Qt\4.7.4\bin;C:\Qt\openssl\bin` (it doesn't matter that these folders do not exist yet)
-    * Add to the `PATH` variable the path to `nasm.exe` (usually `C:\Program Files\nasm`)
+    * Add to the `PATH` variable: `C:\Qt\4.7.4\bin` (it doesn't matter that this folder does not exist yet)
     * Either close all command prompts and Visual Studio instances, or reboot the computer so the new settings take effect.
 * Open Visual Studio 2008 Command Prompt. This is accomplished using Start » All Programs » Microsoft Visual Studio 2008 » Visual Studio Tools » Visual Studio 2008 Command Prompt. Run in Visual Studio 2008 Command Prompt:
 
 		> vcvarsall.bat x86
 		> C:
-
-* To build OpenSSL library run in the same command prompt:
-
-		> cd \Qt\openssl-1.0.1
-		> perl Configure VC-WIN32 enable-static-engine --prefix=C:/Qt/openssl
-		> ms\do_nasm
-		> nmake -f ms\ntdll.mak
-		> nmake -f ms\ntdll.mak install
-		> nmake -f ms\ntdll.mak clean
 
 * To build Qt library run in the same command prompt:
 
@@ -1134,8 +1119,9 @@ If your application needs HTTPS, then you need to build the Qt libraries for Vis
 		> configure -opensource -platform win32-msvc2008
 		  -nomake examples -nomake demos -nomake docs
 		  -qt-libpng -qt-libjpeg -qt-libtiff -qt-libmng -qt-gif
-		  -openssl-linked -I C:/Qt/openssl/include
-		  -L C:/Qt/openssl/lib -no-qt3support -prefix C:/Qt/4.7.4
+		  -openssl-linked -no-qt3support -prefix C:/Qt/4.7.4
+		  -I <path-to-rhodes>/lib/extensions/openssl.so/include
+		  -L <path-to-rhodes>/lib/extensions/openssl.so/win32/lib
 		> nmake
 		> nmake install
 		> nmake clean
