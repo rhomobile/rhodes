@@ -54,7 +54,7 @@ int shouldFindBySql()
 
 int shouldLogin()
 {
-	RhoConnectNotify* res = [sclient loginWithUser:@"" pwd:@""];
+	RhoConnectNotify* res = [sclient loginWithUser:@"test" pwd:@""];
 	int nErr = res.error_code;
 	if ( nErr!= RHO_ERR_NONE || ![sclient is_logged_in]) {
 		return 0;
@@ -519,7 +519,7 @@ int runObjCClientTest()
         if ( !ResetAndLogout() )
             @throw e;
         
-        sclient.sync_server = @"http://rhodes-store-server.heroku.com/application";
+        sclient.sync_server = @"http://rhodes-store-server.herokuapp.com/application";
         //sclient.sync_server = @"http://192.168.0.103:9292/application";
         sclient.bulksync_state = 1;
         

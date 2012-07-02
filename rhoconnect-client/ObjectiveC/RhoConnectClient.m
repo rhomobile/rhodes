@@ -272,6 +272,28 @@ void rho_free_callbackdata(void* pData)
 	rho_connectclient_database_client_reset();	
 }
 
+- (NSString*) database_export: (NSString*) partition
+{
+	NSString* ret;
+	char* res = rho_connectclient_database_export([partition cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	
+	if ( res != 0 )
+	{
+		ret = [NSString stringWithUTF8String:res];
+		free(res);
+	} else {
+		ret = [NSString stringWithUTF8String:""];
+	}
+	
+	return ret;
+}
+
+- (BOOL) database_import: (NSString*) partition zip:(NSString*) zip
+{
+	int res = rho_connectclient_database_import([partition cStringUsingEncoding:[NSString defaultCStringEncoding]], [zip cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+	return res == 0 ? FALSE : TRUE;
+}
+
 - (BOOL) is_logged_in
 {
 	return rho_sync_logged_in() == 1 ? TRUE : FALSE;

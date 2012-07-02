@@ -106,6 +106,9 @@ void rho_connectclient_database_full_reset_and_logout();
 void rho_connectclient_database_fullclient_reset_and_logout();
 void rho_connectclient_database_full_reset(bool bClientReset);
 	
+char* rho_connectclient_database_export(const char* partition);
+int rho_connectclient_database_import(const char* partition, const char* zipName);
+	
 void rho_connectclient_parsenotify(const char* msg, RHO_CONNECT_NOTIFY* pNotify);
 void rho_connectclient_free_syncnotify(RHO_CONNECT_NOTIFY* pNotify);
 

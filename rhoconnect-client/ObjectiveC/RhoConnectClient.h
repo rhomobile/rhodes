@@ -58,6 +58,9 @@
 - (void) database_client_reset;
 - (BOOL) is_logged_in;
 
+- (NSString*) database_export: (NSString*) partition;
+- (BOOL) database_import: (NSString*) partition zip:(NSString*) zip;
+
 - (RhoConnectNotify*) loginWithUser: (NSString*) user pwd:(NSString*) pwd;
 - (void) loginWithUser: (NSString*) user pwd:(NSString*) pwd callback:(SEL) callback target:(id)target;
 - (void) logout;

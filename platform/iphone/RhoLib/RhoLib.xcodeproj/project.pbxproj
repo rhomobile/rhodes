@@ -77,6 +77,7 @@
 		BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */ = {isa = PBXBuildFile; fileRef = BDD11ECC113664E700349BE3 /* rhoparams.h */; };
 		BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB13B112EE2B500AE3724 /* ssl.cpp */; };
 		BDFCB13E112EE2B500AE3724 /* ssl.h in Headers */ = {isa = PBXBuildFile; fileRef = BDFCB13C112EE2B500AE3724 /* ssl.h */; };
+		C5D2784415A1F33A00A7EFC7 /* ZipFiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D2784315A1F33A00A7EFC7 /* ZipFiles.cpp */; };
 		C5D47762156A4ED000943A2D /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D47760156A4ED000943A2D /* zip.cpp */; };
 		C5D47763156A4ED000943A2D /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = C5D47761156A4ED000943A2D /* zip.h */; };
 		FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */; };
@@ -168,6 +169,7 @@
 		BDD11ECC113664E700349BE3 /* rhoparams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoparams.h; path = ../../shared/common/rhoparams.h; sourceTree = SOURCE_ROOT; };
 		BDFCB13B112EE2B500AE3724 /* ssl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ssl.cpp; path = ../../shared/net/ssl.cpp; sourceTree = SOURCE_ROOT; };
 		BDFCB13C112EE2B500AE3724 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = ../../shared/net/ssl.h; sourceTree = SOURCE_ROOT; };
+		C5D2784315A1F33A00A7EFC7 /* ZipFiles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ZipFiles.cpp; path = ../../shared/rubyext/ZipFiles.cpp; sourceTree = "<group>"; };
 		C5D47760156A4ED000943A2D /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zip.cpp; path = ../../shared/unzip/zip.cpp; sourceTree = "<group>"; };
 		C5D47761156A4ED000943A2D /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = ../../shared/unzip/zip.h; sourceTree = "<group>"; };
 		C5DEC5691575069800AE4AC1 /* RhoSettingsDefs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RhoSettingsDefs.h; path = ../../shared/common/RhoSettingsDefs.h; sourceTree = "<group>"; };
@@ -323,6 +325,7 @@
 		5C798931113BD10C005F8736 /* rubyext */ = {
 			isa = PBXGroup;
 			children = (
+				C5D2784315A1F33A00A7EFC7 /* ZipFiles.cpp */,
 				5C2CE15B122ACA9E005EDBC4 /* RhoAppAdapter.cpp */,
 				5CECDBB2113FE3620084A75B /* System.cpp */,
 				5C798932113BD148005F8736 /* GeoLocation.cpp */,
@@ -541,6 +544,7 @@
 				A22F9EFF14605D82006D8F1A /* PhonebookParams.cpp in Sources */,
 				656E39321497A64300288105 /* BundleManager.cpp in Sources */,
 				C5D47762156A4ED000943A2D /* zip.cpp in Sources */,
+				C5D2784415A1F33A00A7EFC7 /* ZipFiles.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
