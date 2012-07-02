@@ -703,7 +703,13 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     db::CDBAdapter& dbPartition = getDB(strPartition); 
     String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "bulk_data";
-    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
+    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition + "&sources=";
+	for ( int i = 0; i < m_sources.size(); ++i ) {
+		strQuery += URI::urlEncode(m_sources[i]->getName());
+		if ( i < m_sources.size()-1 ) {
+			strQuery += ",";
+		}
+	}
     String strDataUrl = "", strCmd = "", strCryptKey = "";
 
   	getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoAppAdapter.ERR_NONE);
