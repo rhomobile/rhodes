@@ -306,6 +306,18 @@ void rho_connectclient_database_full_reset(bool bClientReset)
     
     rho_sync_set_pollinterval(pollInterval);
 }
+	
+char* rho_connectclient_database_export(const char* partition)
+{
+	db::CDBAdapter& db = db::CDBAdapter::getDB(partition);	
+	return strdup(db.exportDatabase().c_str());
+}
+
+int rho_connectclient_database_import(const char* partition, const char* zipName)
+{
+	db::CDBAdapter& db = db::CDBAdapter::getDB(partition);
+	return db.importDatabase(zipName) ? 1 : 0;
+}
 
 void rho_connectclient_destroy()
 {                                                                     

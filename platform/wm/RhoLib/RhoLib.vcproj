@@ -2967,6 +2967,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\shared\rubyext\ZipFiles.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\shared\rubyext\WebView.h"
 				>
 			</File>
