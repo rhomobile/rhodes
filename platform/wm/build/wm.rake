@@ -210,24 +210,24 @@ namespace "build" do
           
           puts "ext_config_path - " + ext_config_path.to_s
           if File.exist? ext_config_path
-            ext_config = YAML::load_file(ext_config_path)
+            ext_config = Jake.config(File.open(ext_config_path))
           end
 
           puts "extpath - " + commin_ext_path.to_s
           chdir commin_ext_path 
-            if ext_config != nil && ext_config["files"] != nil
+          if ext_config != nil && ext_config["files"] != nil
               puts "ext_config[files] - " + ext_config["files"].to_s
               $additional_dlls_paths << File.expand_path(ext_config["files"])
-            end
+          end
             
-            puts 'start read reg key'
-            if ext_config != nil && ext_config["regkeys"] != nil
+          puts 'start read reg key'
+          if ext_config != nil && ext_config["regkeys"] != nil
               ext_config["regkeys"].each do |key|
                 puts "extension " + ext + " add regkey to cab. key: " + key
                 $regkeys << key
               end
-            end
-            puts 'end read reg key'
+          end
+          puts 'end read reg key'
           chdir $startdir
 
           ENV['RHO_PLATFORM'] = $current_platform
@@ -245,9 +245,17 @@ namespace "build" do
           ENV['VCBUILD'] = $vcbuild
           ENV['SDK'] = $sdk
 
-          chdir extpath
-          puts `build.bat`
-          chdir $startdir
+          if File.exists? File.join(extpath,'build.bat')
+            chdir extpath
+            puts `build.bat`
+            chdir $startdir
+          end
+
+          if ext_config && ext_config['wm'] && ext_config['wm']['exttype'] && ext_config['wm']['exttype'] == 'prebuilt'
+            Dir.glob(File.join(extpath,'**','wm','lib','*.lib')).each do |lib|
+              cp_r lib, ENV['TARGET_TEMP_DIR']
+            end
+          end
 
           break
         end
