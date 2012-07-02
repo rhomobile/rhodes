@@ -75,6 +75,9 @@ namespace "config" do
     unless $sdk
       $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
       $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
+      value = ENV['rho_wm_sdk']
+      $sdk = value if value
+      puts "$sdk [#{$sdk}]"
     end
 
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
