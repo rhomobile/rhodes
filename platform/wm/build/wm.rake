@@ -205,13 +205,15 @@ namespace "build" do
           commin_ext_path = File.join(p, ext)
           ext_config_path = File.join(p, ext, "ext.yml")
           ext_config = nil
-
-          next unless File.exists? File.join(extpath, "build.bat")
           
-          puts "ext_config_path - " + ext_config_path.to_s
+          #puts "ext_config_path - " + ext_config_path.to_s
           if File.exist? ext_config_path
             ext_config = Jake.config(File.open(ext_config_path))
           end
+
+          puts "#{ext_config}"
+          is_prebuilt = ext_config && ext_config['wm'] && ext_config['wm']['exttype'] && ext_config['wm']['exttype'] == 'prebuilt'
+          next unless (File.exists?( File.join(extpath, "build.bat") ) || is_prebuilt )
 
           puts "extpath - " + commin_ext_path.to_s
           chdir commin_ext_path 
@@ -249,14 +251,14 @@ namespace "build" do
             chdir extpath
             puts `build.bat`
             chdir $startdir
-          end
-
-          if ext_config && ext_config['wm'] && ext_config['wm']['exttype'] && ext_config['wm']['exttype'] == 'prebuilt'
-            Dir.glob(File.join(extpath,'**','wm','lib','*.lib')).each do |lib|
+          elsif is_prebuilt
+            file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
+            puts "PREBUILD: #{file_mask}"
+            Dir.glob( file_mask ).each do |lib|
               cp_r lib, ENV['TARGET_TEMP_DIR']
             end
           end
-
+          
           break
         end
       end
