@@ -54,7 +54,7 @@ The toolbar div supports three positions:
 <li><code>class="ui-btn-right"</code></li>
 </ul>
 
-Note that placing an item as the `<a class="ui-btn-center>"` tag will prevent the page title from being displayed on the iPhone, and is not in compliance with Apple's human interface guidelines.
+Note that placing an item as the <code><a class="ui-btn-center"></code> tag will prevent the page title from being displayed on the iPhone, and is not in compliance with Apple's human interface guidelines.
 If you wish to include more than two items in an application targeting iPhone, you may wish to add a secondary toolbar directly below the application toolbar.
 
 #### Toolbar Button Styles
