@@ -767,6 +767,20 @@ Case|priority|4900dc4c072c|High|
 
 **NOTE: The column names are always the first line of the file.**
 
+## Importing and exporting the database
+You can export local database partition with all its blob objects to zip archive. Also you can import previously exported partition:
+
+### `Rhom::Rhom.database_export(partition)`
+
+	:::ruby
+	@path_to_zip_file = Rhom::Rhom.database_export('partition_name')
+
+### 'Rhom::Rhom.database_import(partition,zip)'
+
+	:::ruby
+	Rhom::Rhom.database_import('partition_name',@path_to_zip_file) 
+
+
 ## Advanced Queries
 
 ### `find(*args)` (advanced conditions)
