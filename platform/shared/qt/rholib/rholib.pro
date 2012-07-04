@@ -133,4 +133,5 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/map/GoogleMapEngine.cpp\
 ../../common/map/MapEngine.cpp\
 ../../common/BundleManager.cpp\
-../../unzip/zip.cpp
+../../unzip/zip.cpp\
+../../rubyext/ZipFiles.cpp

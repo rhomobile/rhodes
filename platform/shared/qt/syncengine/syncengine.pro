@@ -54,12 +54,14 @@ HEADERS += ../../json/arraylist.h\
 ../../json/linkhash.h\
 ../../json/printbuf.h\
 ../../sync/syncthread.h\
-../../db/DBAttrManager.h\
 ../../sync/SyncNotify.h\
 ../../json/JSONIterator.h\
 ../../sync/SyncEngine.h\
 ../../sync/SyncSource.h\
 ../../db/DBAdapter.h\
+../../db/DBAttrManager.h\
+../../db/DBImportTransaction.h\
+../../db/DBRequestHelper.h\
 ../../db/DBResult.h\
 ../../sync/ClientRegister.h
 
@@ -72,11 +74,13 @@ SOURCES += ../../json/arraylist.c\
 ../../json/printbuf.c\
 ../../json/RJSONTokener.c\
 ../../sync/syncthread.cpp\
-../../db/DBAttrManager.cpp\
 ../../sync/SyncNotify.cpp\
 ../../json/JSONIterator.cpp\
 ../../sync/SyncEngine.cpp\
 ../../sync/SyncSource.cpp\
 ../../db/DBAdapter.cpp\
+../../db/DBAttrManager.cpp\
+../../db/DBImportTransaction.cpp\
+../../db/DBRequestHelper.cpp\
 ../../db/DBResult.cpp\
 ../../sync/ClientRegister.cpp
