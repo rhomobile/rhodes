@@ -135,12 +135,62 @@ describe "BulkSync_test" do
     items2.length().should == 0
 
   end
+	
+=begin	
+  def do_bulk_sync
+	Rho::RhoConfig.bulksync_state='0'
+	res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+	res['status'].should == 'complete'
+	res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	Rho::RhoConfig.bulksync_state.should=='1'
+  end
 
+  def is_source_present(src)
+	  result = ::Rho::RHO.get_user_db().select_from_table('sources','name',{'name'=>src})
+	  return (result != nil) && (result.length() > 0)
+  end
+
+  it "should do selective bulk sync" do	  
+	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login("la rs", "", "/app/Settings/login_callback")
+	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	  SyncEngine.logged_in.should == 1
+	  
+	  ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'incremental'}, {'name'=>'Customer'})
+	  ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'incremental'}, {'name'=>'Product'})
+	  
+	  do_bulk_sync
+	  
+	  is_source_present('Product').should == true
+	  is_source_present('Customer').should == true
+	  
+	  products = Product.find(:all)
+	  products.should_not be_nil
+	  products.length().should_not == 0
+	  
+	  customers = Customer.find(:all)
+	  customers.should_not be_nil
+	  customers.length().should_not == 0
+	  
+	  ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'}, {'name'=>'Product'})
+
+	  do_bulk_sync
+
+	  is_source_present('Product').should == true
+	  is_source_present('Customer').should == true
+	  
+	  products = Product.find(:all)
+	  products.length().should == 0
+	  
+	  customers = Customer.find(:all)
+	  customers.should_not be_nil
+	  customers.length().should_not == 0
+  end
+=end
   it "should logout" do
     SyncEngine.logout()
   
     SyncEngine.logged_in.should == 0
   end
-  
+
 
 end
