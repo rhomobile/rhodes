@@ -342,7 +342,7 @@ def generate_rjava
       #rjava = Jake.get_absolute(File.join($androidpath, "Rhodes", "gen", "com", "rhomobile", "rhodes"))
 
       args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-J", $app_rjava_dir]
-      puts Jake.run($aapt, args)
+      Jake.run($aapt, args)
 
       unless $?.success?
         raise "Error in AAPT"
@@ -1728,7 +1728,7 @@ namespace "package" do
         args << jar
     end
 
-    Jake.run("java", args)
+    Jake.run(File.join($java, 'java'+$exe_ext), args)
     unless $?.success?
       raise "Error running DX utility"
     end
@@ -1744,7 +1744,7 @@ namespace "package" do
     #set_app_name_android($appname)
 
     args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-F", resourcepkg]
-    puts Jake.run($aapt, args)
+    Jake.run($aapt, args)
     unless $?.success?
       raise "Error running AAPT (1)"
     end
@@ -1755,7 +1755,7 @@ namespace "package" do
       relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s
       puts "Add #{relpath} to #{resourcepkg}..."
       args = ["uf", resourcepkg, relpath]
-      puts Jake.run($jarbin, args, $tmpdir)
+      Jake.run($jarbin, args, $tmpdir)
       unless $?.success?
         raise "Error running AAPT (2)"
       end
@@ -1780,7 +1780,7 @@ namespace "package" do
       cc_run($stripbin, ['"'+lib+'"'])
       args << "lib/armeabi/#{File.basename(lib)}"
     end
-    puts Jake.run($jarbin, args, $tmpdir)
+    Jake.run($jarbin, args, $tmpdir)
     err = $?
     #rm_rf $tmpdir + "/lib"
     unless err.success?
@@ -1808,7 +1808,8 @@ namespace "device" do
       args << "4"
       args << simple_apkfile
       args << final_apkfile
-      puts Jake.run($zipalign, args)
+      out = Jake.run2($zipalign, args, :hide_output => true)
+      puts out if USE_TRACES
       unless $?.success?
         puts "Error running zipalign"
         exit 1
@@ -1824,6 +1825,7 @@ namespace "device" do
 
     task :install => :debug do
       apkfile = $targetdir + "/" + $appname + "-debug.apk"
+      Jake.run $adb, ['-d', 'wait-for-device']
       puts "Install APK file"
       Jake.run($adb, ["-d", "install", "-r", apkfile])
       unless $?.success?
@@ -1861,7 +1863,7 @@ namespace "device" do
         args << $storepass
         args << "-keypass"
         args << $keypass
-        puts Jake.run($keytool, args)
+        Jake.run($keytool, args)
         unless $?.success?
           puts "Error generating keystore file"
           exit 1
@@ -1883,7 +1885,7 @@ namespace "device" do
       args << signed_apkfile
       args << simple_apkfile
       args << $storealias
-      puts Jake.run($jarsigner, args)
+      Jake.run($jarsigner, args)
       unless $?.success?
         puts "Error running jarsigner"
         exit 1
@@ -1896,7 +1898,7 @@ namespace "device" do
       args << "4"
       args << '"' + signed_apkfile + '"'
       args << '"' + final_apkfile + '"'
-      puts Jake.run($zipalign, args)
+      Jake.run($zipalign, args)
       unless $?.success?
         puts "Error running zipalign"
         exit 1
