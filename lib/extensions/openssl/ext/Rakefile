@@ -16,12 +16,12 @@ def build_extension(name, arch)
     args << "-I\"#{$rootdir}/platform/shared\""
     args << "-I\"#{$rootdir}/platform/shared/common\""
 
-    if ENV['RHO_PLATFORM'] == 'android'
+    if $platform == 'android'
       args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
       args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
       cc_compile f, $tempdir, args or exit 1
 
-    elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
+    elsif ($platform == 'iphone') or ($platform == 'osx')
       args << "-I\"#{$rootdir}/platform/shared/ruby/iphone\""
       args << "-D_XOPEN_SOURCE"
       args << "-D_DARWIN_C_SOURCE"
@@ -42,10 +42,10 @@ def build_extension(name, arch)
 
   mkdir_p $targetdir unless File.exist? $targetdir
 
-  if ENV['RHO_PLATFORM'] == 'android'
+  if $platform == 'android'
     cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
 
-  elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
+  elsif ($platform == 'iphone') or ($platform == 'osx')
     args = []
     args << 'rcs'
     args << File.join( $targetdir, 'lib' + name + '.a' )
@@ -55,7 +55,7 @@ def build_extension(name, arch)
     puts `#{cmdline}`
     exit unless $? == 0
 
-  elsif ENV['RHO_PLATFORM'] == 'wm'
+  elsif $platform == 'wm'
     args = []
     args << "/M4"
     args << name + ".sln"
@@ -67,7 +67,7 @@ def build_extension(name, arch)
 
     cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
 
-  elsif ENV['RHO_PLATFORM'] == 'win32'
+  elsif $platform == 'win32'
     args = []
     args << "/M4"
     args << name + ".sln"
@@ -83,6 +83,8 @@ end
 
 namespace "build" do
   task :config do
+    $platform = ENV['RHO_PLATFORM']
+
     $targetdir = ENV['TARGET_TEMP_DIR']
     raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
     $tempdir = ENV['TEMP_FILES_DIR']
@@ -90,12 +92,12 @@ namespace "build" do
     $rootdir = ENV['RHO_ROOT']
     raise "RHO_ROOT is not set" if $rootdir.nil?
 
-    if ENV['RHO_PLATFORM'] == 'android'
+    if $platform == 'android'
       require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
 
-    elsif (ENV['RHO_PLATFORM'] == 'iphone') or (ENV['RHO_PLATFORM'] == 'osx')
+    elsif ($platform == 'iphone') or ($platform == 'osx')
       $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
       raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
       $sdkroot = ENV['SDKROOT']
@@ -105,13 +107,13 @@ namespace "build" do
       $gccbin = $bindir + '/gcc'
       $arbin = $bindir + '/ar'
 
-    elsif ENV['RHO_PLATFORM'] == 'wm'
+    elsif $platform == 'wm'
       $vcbuild = ENV['VCBUILD']
       raise "VCBUILD is not set" if $vcbuild.nil?
       $sdk = ENV['SDK']
       raise "SDK is not set" if $sdk.nil?
 
-    elsif ENV['RHO_PLATFORM'] == 'win32'
+    elsif $platform == 'win32'
       $vcbuild = ENV['VCBUILD']
       raise "VCBUILD is not set" if $vcbuild.nil?
       $sdk = ENV['SDK']

@@ -22,6 +22,7 @@ platform/iphone/curl/build/*
 lib/extensions/barcode/ext/barcode/platform/iphone/build/*
 lib/extensions/esri/ext/esri/platform/iphone/build/*
 lib/extensions/zlib/ext/iphone/build/*
+lib/extensions/openssl.so/wm/tmp/*
 platform/shared/*/iphone/*/build/*
 platform/shared/*/iphone/build/*
 platform/iphone/bin/*
@@ -176,7 +177,6 @@ platform/android/**/default.properties
 *.user
 *.pdb
 *.idb
-*.lib
 
 *.mode1v3
 *.mode2v3
@@ -231,6 +231,7 @@ platform/wm/tools/Debug/*
 platform/wm/tools/Release/*
 platform/wm/tools/detool/Debug/*
 platform/wm/tools/detool/Release/*
+rhosetup.lib
 
 platform/osx/bin/curl/*
 platform/osx/bin/extensions/*
