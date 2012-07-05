@@ -25,3 +25,7 @@ int ftime(struct timeb *tp)
 	return 0;
 }
 
+int _ftime(struct timeb *tp)
+{
+    return ftime(tp);
+}

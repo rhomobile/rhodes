@@ -17,6 +17,7 @@ extern "C" {
 #endif
 
 int ftime(struct timeb *tp);
+int _ftime(struct timeb *tp);
 
 #ifdef __cplusplus
 };
