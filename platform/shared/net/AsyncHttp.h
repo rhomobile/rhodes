@@ -45,12 +45,13 @@ class CAsyncHttp : public common::CThreadQueue
     class CAsyncHttpResponse : public rho::ICallbackObject
     {
         NetResponse m_NetResponse;
-        String m_strContentType;
+        String m_strContentType, m_strContentEncoding;
     public:
-        CAsyncHttpResponse(NetResponse& resp, const String& strContentType)
+        CAsyncHttpResponse(NetResponse& resp, const String& strContentType, const String& strContentEncoding)
         {
             m_NetResponse = resp;
             m_strContentType = strContentType;
+            m_strContentEncoding = strContentEncoding;
         }
         ~CAsyncHttpResponse();
 
