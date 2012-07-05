@@ -277,7 +277,7 @@ void CAsyncHttp::CHttpCommand::callNotify(NetResponse& resp, int nError )
             m_strResBody += "&" + strHeaders;
 
         m_strResBody += "&" + RHODESAPP().addCallbackObject(
-            new CAsyncHttpResponse(resp, m_mapHeaders.get("content-type")), "body");
+            new CAsyncHttpResponse(resp, m_mapHeaders.get("content-type"), m_mapHeaders.get("content-encoding")), "body");
     }
 
     if ( m_strCallbackParams.length() > 0 )
@@ -286,6 +286,7 @@ void CAsyncHttp::CHttpCommand::callNotify(NetResponse& resp, int nError )
     if ( m_strCallback.length() > 0 )
     {
         String strFullUrl = m_NetRequest.resolveUrl(m_strCallback);
+        LOG(TRACE) + "Callback:" + m_strCallback + "Result body: " + m_strResBody;
         getNet().pushData( strFullUrl, m_strResBody, null );
     }
 }
@@ -297,7 +298,7 @@ unsigned long CAsyncHttp::CAsyncHttpResponse::getObjectValue()
 {
     if (m_NetResponse.isSuccess())
     {
-        if ( m_strContentType.find("application/json") != String::npos )
+        if ( m_strContentType.find("application/json") != String::npos && m_strContentEncoding.find("gzip") == String::npos)
         {
             char* szError = 0;
             unsigned long valBody = rjson_tokener_parse(m_NetResponse.getCharData(), &szError);
