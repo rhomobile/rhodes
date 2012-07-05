@@ -3,4 +3,4 @@ libraries: [ "openssl" ]
 win32:
   libraries: [ "libeay32", "ssleay32" ]
 wm:
-  libraries: [ "libopenssl", "wcecompat" ]
+  libraries: [ "libopenssl", "wcecompat", "crypt32" ]
