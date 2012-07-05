@@ -28,7 +28,7 @@ if System.get_property('platform') != 'APPLE'
   end
 end
     
-if ( System.get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'APPLE')
+if ( System.get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP' && System.get_property('platform') != 'APPLE')
   it "returns true if named file is readable by the real user id of the process, otherwise false" do
     @object.send(@method, @file1).should == true
   end

@@ -109,7 +109,7 @@ describe "File.open" do
     File.exist?(@file).should == true
   end
 
-if ( System.get_property('platform') != 'WINDOWS' )
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
   it "creates the file and returns writable descriptor when called with 'w' mode and r-o permissions" do
     # it should be possible to write to such a file via returned descriptior,
     # even though the file permissions are r-r-r.
@@ -173,7 +173,7 @@ end
   it "opens a file that no exists when use File::NONBLOCK mode" do
     lambda { File.open(@nonexistent, File::NONBLOCK) }.should raise_error(Errno::ENOENT)
   end
-if ( System.get_property('platform') != 'WINDOWS' )
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
   platform_is_not :openbsd do
     it "opens a file that no exists when use File::TRUNC mode" do
       lambda { File.open(@nonexistent, File::TRUNC) }.should raise_error(Errno::ENOENT)
@@ -185,7 +185,7 @@ end
       lambda { File.open(@nonexistent, File::TRUNC) }.should raise_error(Errno::EINVAL)
     end
   end
-if ( System.get_property('platform') != 'WINDOWS' )
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
   it "opens a file that no exists when use File::NOCTTY mode" do
     lambda { File.open(@nonexistent, File::NOCTTY) }.should raise_error(Errno::ENOENT)
   end
@@ -369,7 +369,7 @@ end
       f.gets().should == nil
     end
   end
-if ( System.get_property('platform') != 'WINDOWS' )
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
   ruby_bug "#", "1.8.7.299" do
     it "raises an IOError if the file exists when open with File::RDONLY|File::APPEND" do
       lambda {
@@ -381,7 +381,7 @@ if ( System.get_property('platform') != 'WINDOWS' )
   end
 end
   platform_is_not :openbsd do
-if ( System.get_property('platform') != 'WINDOWS' )    
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
     it "truncates the file when passed File::TRUNC mode" do
       File.open(@file, File::RDWR) { |f| f.puts "hello file" }
       @fh = File.open(@file, File::TRUNC)
@@ -406,7 +406,7 @@ end
       fh1.close
     end
   end
-if ( System.get_property('platform') != 'WINDOWS' )
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
   platform_is_not :openbsd do
     it "can't write in a block when call open with File::TRUNC mode" do
       lambda {

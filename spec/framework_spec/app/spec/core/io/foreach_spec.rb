@@ -32,7 +32,7 @@ describe "IO.foreach" do
     obj = mock('lines.txt fixture')
     obj.should_receive(:to_str).and_return(@name)
     IO.foreach(obj) { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'      
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
     ScratchPad.recorded.should == IOSpecs.lines
 end    
   end
@@ -40,7 +40,7 @@ end
   ruby_version_is "1.8.7" do
     it "returns an Enumerator when called without a block" do
       IO.foreach(@name).should be_an_instance_of(enumerator_class)
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
       IO.foreach(@name).to_a.should == IOSpecs.lines
 end      
     end
@@ -49,7 +49,7 @@ end
   describe "with no separator argument" do
     it "yields a sequence of Strings that were separated by $/" do
       IO.foreach(@name) { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
       ScratchPad.recorded.should == IOSpecs.lines
 end      
     end
@@ -62,7 +62,7 @@ end
   ruby_version_is "1.9.2" do
     it "accepts an optional options argument" do
       IO.foreach(@name, :mode => 'r') {|l| ScratchPad << l}
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
       ScratchPad.recorded.should == IOSpecs.lines
 end      
     end
@@ -71,7 +71,7 @@ end
   describe "with nil as the separator argument" do
     it "yields a single string with entire content" do
       IO.foreach(@name, nil) { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
       ScratchPad.recorded.should == [IOSpecs.lines.join]
 end      
     end
@@ -84,7 +84,7 @@ end
   describe "with an empty String as the separator argument" do
     it "yields a sequence of paragraphs when the separator is an empty string" do
       IO.foreach(@name, "") { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
       ScratchPad.recorded.should == IOSpecs.lines_empty_separator
 end      
     end
@@ -97,7 +97,7 @@ end
   describe "with an arbitrary String as the separator argument" do
     it "yields a sequence of Strings that were separated by r" do
       IO.foreach(@name, "r") { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'            
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
       ScratchPad.recorded.should == IOSpecs.lines_r_separator
 end      
     end
@@ -120,7 +120,7 @@ end
         obj = mock("IO.foreach separator 'r'")
         obj.should_receive(:to_str).once.and_return("r")
         IO.foreach(@name, obj) { |l| ScratchPad << l }
-if System.get_property('platform') == 'WINDOWS'              
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
         ScratchPad.recorded.should == IOSpecs.lines_r_separator
 end        
       end

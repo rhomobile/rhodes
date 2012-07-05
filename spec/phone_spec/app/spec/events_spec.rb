@@ -30,7 +30,7 @@ describe "Events" do
     event['title'] = title
     event['location'] = 'loc1'
     event['notes'] = 'notes1'
-    event['reminder'] = 10 if System::get_property('platform') == 'Blackberry' || System::get_property('platform') == 'WINDOWS'
+    event['reminder'] = 10 if System::get_property('platform') == 'Blackberry' || System::get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
     event['privacy'] = 'private'
     start_date = Time.now+600
     start_date -= start_date.sec #usec.to_f/1000000
@@ -66,7 +66,7 @@ describe "Events" do
     c['title'].should == title
     c['location'].should == 'loc1'
     c['notes'].should == 'notes1'
-    c['reminder'].should == 10 if System::get_property('platform') == 'Blackberry' || System::get_property('platform') == 'WINDOWS'
+    c['reminder'].should == 10 if System::get_property('platform') == 'Blackberry' || System::get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
     c['privacy'].should == 'private' unless System::get_property('platform') == 'APPLE'
     c['start_date'].to_s.should == start_date.to_s
     c['end_date'].to_s.should == end_date.to_s
@@ -105,7 +105,7 @@ describe "Events" do
     event['title'].should ==  'RANDOM' 
     event['location'].should == 'loc2'
     event['notes'].should == 'notes2'
-    event['reminder'].should == 15 if System::get_property('platform') == 'Blackberry' || System::get_property('platform') == 'WINDOWS'
+    event['reminder'].should == 15 if System::get_property('platform') == 'Blackberry' || System::get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
     event['privacy'].should == 'confidential' unless System::get_property('platform') == 'APPLE'
     event['start_date'].to_s.should == start_date.to_s
     event['end_date'].to_s.should == end_date.to_s
@@ -117,7 +117,7 @@ describe "Events" do
 
     # https://www.pivotaltracker.com/story/show/5484747
     # https://www.pivotaltracker.com/story/show/5484751
-    if System::get_property('platform') == 'Blackberry' ||System.get_property('platform') == 'WINDOWS'
+    if System::get_property('platform') == 'Blackberry' ||System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
       recValues = {'frequency'=>'daily', "interval"=>2 }
       Rho::RhoEvent.update_attributes( 'id' => @id, 'recurrence' => recValues )
       event = Rho::RhoEvent.find(@id)

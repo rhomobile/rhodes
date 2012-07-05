@@ -16,7 +16,7 @@ describe "Net::FTP#retrlines" do
     @ftp.close
     @server.stop
   end
-if System::get_property('platform') != 'WINDOWS'
+if System::get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
   it "sends the passed command over the socket" do
     @ftp.retrlines("LIST test.dir") {}
     @ftp.last_response.should == "226 transfer complete (LIST test.dir)\n"

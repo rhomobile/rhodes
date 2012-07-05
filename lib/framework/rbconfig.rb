@@ -27,7 +27,7 @@ module RbConfig
   CONFIG["host_alias"] = ""
   CONFIG["build_alias"] = ""
 
-  if ( System.get_property('platform') == 'WINDOWS' )  
+  if ( System.get_property('platform') == 'WINDOWS' ) || ( System.get_property('platform') == 'WINDOWS_DESKTOP' )
     CONFIG["host_os"] = "mingw32"
   elsif ( System.get_property('platform') == 'APPLE' )    
     CONFIG["host_os"] = "darwin"

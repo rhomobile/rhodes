@@ -18,7 +18,7 @@ describe :net_ftp_getbinaryfile, :shared => :true do
 
     rm_r @tmp_file
   end
-if System::get_property('platform') != 'WINDOWS'
+if System::get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
   it "sends the RETR command to the server" do
     @ftp.send(@method, "test", @tmp_file)
     @ftp.last_response.should == "226 Closing data connection. (RETR test)\n"

@@ -8,7 +8,7 @@ end
 
 describe "File.sticky?" do
   it "returns false if file does not exist" do
-    if System.get_property('platform') == 'WINDOWS'  
+    if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
         File.sticky?("I_am_a_bogus_file").should == nil
     else
         File.sticky?("I_am_a_bogus_file").should == false
@@ -19,7 +19,7 @@ describe "File.sticky?" do
     filename = tmp("i_exist")
     touch(filename)
 
-    if System.get_property('platform') == 'WINDOWS'  
+    if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
         File.sticky?(filename).should == nil
     else
         File.sticky?(filename).should == false

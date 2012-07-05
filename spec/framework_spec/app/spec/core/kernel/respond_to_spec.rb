@@ -51,7 +51,7 @@ describe "Kernel#respond_to?" do
   end
 
   ruby_version_is "1.9" do
-    if ( System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'APPLE')
+    if ( System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP' || System.get_property('platform') == 'APPLE')
       it "returns false for a method which exists but is unimplemented" do
         Process.methods.include?(:fork).should be_true
         unless System.get_property('platform') == 'APPLE'

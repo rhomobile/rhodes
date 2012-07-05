@@ -21,7 +21,7 @@ describe "Net::FTP#storbinary" do
 
     rm_r @tmp_file
   end
-if System::get_property('platform') != 'WINDOWS'
+if System::get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
   it "sends the passed command and the passed File object's content to the server" do
     File.open(@local_fixture_file) do |f|
       f.binmode

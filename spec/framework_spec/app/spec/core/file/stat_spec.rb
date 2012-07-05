@@ -4,7 +4,7 @@ require File.expand_path('../shared/stat', __FILE__)
 describe "File.stat" do
   it_behaves_like :file_stat, :stat
 end
-if ( System.get_property('platform') != 'WINDOWS' )
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
 describe "File.stat" do
 
   before :each do

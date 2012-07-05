@@ -13,7 +13,7 @@ describe :net_ftp_list, :shared => true do
     @ftp.close
     @server.stop
   end
-if System::get_property('platform') != 'WINDOWS'
+if System::get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
   describe "when passed a block" do
     it "yields each file in the list of files in the passed dir" do
       expected = [
