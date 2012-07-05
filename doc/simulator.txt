@@ -29,7 +29,7 @@ To run application in RhoSimulator just run in rhodes or application folder:
     rake run:wm:rhosimulator
     rake run:wp:rhosimulator
 
-    #run RhoSimulator to simulate 'UNKNOWN' platform:
+    #run RhoSimulator to simulate 'WINDOWS_DESKTOP' platform:
     rake run:win32:rhosimulator
 
 If you modified Rhodes application sources, just press 'Refresh' in RhoSimulator to reload application, i.e. generally no RhoSimulator restart is required.

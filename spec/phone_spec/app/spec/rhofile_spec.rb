@@ -118,7 +118,7 @@ end
 
         #TODO: crash after this exception on windows mobile(rb_sys_fail)
         #https://www.pivotaltracker.com/story/show/4164945
-        if System.get_property('platform') != 'WINDOWS'    
+        if System.get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
             bExc = false
             begin
                 File.binread(file_name)

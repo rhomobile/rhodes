@@ -16,7 +16,7 @@ describe "Net::FTP#retrbinary" do
     @ftp.close
     @server.stop
   end
-if System::get_property('platform') != 'WINDOWS'
+if System::get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
   it "sends the passed command to the server" do
     @ftp.retrbinary("RETR test", 4096) {}
     @ftp.last_response.should == "226 Closing data connection. (RETR test)\n"

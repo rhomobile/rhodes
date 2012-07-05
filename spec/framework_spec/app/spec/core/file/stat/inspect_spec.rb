@@ -10,7 +10,7 @@ describe "File::Stat#inspect" do
   after :each do
     rm_r @file
   end
-if ( System.get_property('platform') != 'WINDOWS' )
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
   it "produces a nicely formatted description of a File::Stat object" do
     st = File.stat(@file)
     expected = "#<File::Stat dev=0x#{st.dev.to_s(16)}, ino=#{st.ino}, mode=#{sprintf("%07o", st.mode)}, nlink=#{st.nlink}, uid=#{st.uid}, gid=#{st.gid}, rdev=0x#{st.rdev.to_s(16)}, size=#{st.size}, blksize=#{st.blksize}, blocks=#{st.blocks}, atime=#{st.atime}, mtime=#{st.mtime}, ctime=#{st.ctime}>"

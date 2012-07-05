@@ -61,7 +61,7 @@ describe "File.new" do
     ensure
       f.close
     end
-if ( System.get_property('platform') != 'WINDOWS' )    
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
     File.stat(@file).mode.to_s(8).should == orig_perms
 end
     # it should be still possible to read from the file
@@ -154,7 +154,7 @@ end
     lambda { File.new(-1) }.should raise_error(Errno::EBADF)
   end
 
-if ( System.get_property('platform') != 'WINDOWS' )
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
   it "can't alter mode or permissions when opening a file" do
     @fh = File.new(@file)
     lambda { File.new(@fh.fileno, @flags) }.should raise_error(Errno::EINVAL)

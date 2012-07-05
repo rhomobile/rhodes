@@ -10,7 +10,7 @@ describe "File::Stat#nlink" do
   after :each do
     rm_r @link, @file
   end
-if ( System.get_property('platform') != 'WINDOWS' )
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
   it "returns the number of links to a file" do
     File::Stat.new(@file).nlink.should == 1
     File.link(@file, @link)

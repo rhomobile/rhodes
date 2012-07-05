@@ -16,7 +16,7 @@ describe :file_stat, :shared => true do
     st.zero?.should == false
     st.size.should == 8
     st.size?.should == 8
-if ( System.get_property('platform') != 'WINDOWS' )    
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
     st.blksize.should > 0
 end    
     st.atime.should be_kind_of(Time)
@@ -33,7 +33,7 @@ end
       st.zero?.should == false
       st.size.should == 8
       st.size?.should == 8
-if ( System.get_property('platform') != 'WINDOWS' )      
+if ( System.get_property('platform') != 'WINDOWS' ) && ( System.get_property('platform') != 'WINDOWS_DESKTOP' )
       st.blksize.should > 0
 end      
       st.atime.should be_kind_of(Time)

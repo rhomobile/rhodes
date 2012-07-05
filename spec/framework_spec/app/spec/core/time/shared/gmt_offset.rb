@@ -8,7 +8,7 @@ if System.get_property('platform') != 'APPLE'
   it "returns the correct offset for US Eastern time zone around daylight savings time change" do
     with_timezone("EST5EDT") do
       Time.local(2010,3,14,1,59,59).send(@method).should == -5*60*60
-      if System.get_property('platform') != 'WINDOWS'
+      if System.get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
         Time.local(2010,3,14,2,0,0).send(@method).should == -4*60*60
       end  
     end

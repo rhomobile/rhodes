@@ -20,7 +20,7 @@ describe :file_file, :shared => true do
 
   it "returns true if the named file exists and is a regular file." do
     @object.send(@method, @file).should == true
-if System.get_property('platform') == 'WINDOWS'
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
     @object.send(@method, @dir).should == false
 end    
   end

@@ -17,7 +17,7 @@ describe "Net::FTP#nlst" do
     @ftp.close
     @server.stop
   end
-if System::get_property('platform') != 'WINDOWS'
+if System::get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
   describe "when passed no arguments" do
     it "returns an Array containing a list of files in the current dir" do
       @ftp.nlst.should == ["last_response_code.rb", "list.rb", "pwd.rb"]

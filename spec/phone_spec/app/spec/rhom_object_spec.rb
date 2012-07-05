@@ -32,7 +32,7 @@ if defined? RHO_WP7
  USE_COPY_FILES = false
 end
 
-if ( System.get_property('platform') == 'WINDOWS' && System.get_property('device_name') != 'Win32' )
+if System.get_property('platform') == 'WINDOWS'
     USE_COPY_FILES = false
 end
 

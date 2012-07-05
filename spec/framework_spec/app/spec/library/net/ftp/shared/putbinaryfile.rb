@@ -18,7 +18,7 @@ describe :net_ftp_putbinaryfile, :shared => :true do
 
     rm_r @remote_tmp_file
   end
-if System::get_property('platform') != 'WINDOWS'
+if System::get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
   it "sends the STOR command to the server" do
     @ftp.send(@method, @local_fixture_file, "binary")
     @ftp.last_response.should == "200 OK, Data received. (STOR binary)\n"

@@ -61,7 +61,7 @@ def syncserver_url
                     when /wp7/i        then 'wp'
                     when /windows/i    then 'wm'
   end
-  platform = 'win32' if System.get_property('device_name') == 'Win32'
+  platform = 'win32' if System.get_property('platform') == 'WINDOWS_DESKTOP'
 
   exact_url = SYNC_SERVER_URL.gsub(/exact_platform/, platform)
   puts "going to reset server: #{exact_url}"
@@ -411,7 +411,7 @@ end
   end
 
   it "should client register" do
-    if System.get_property('device_name') == 'Win32' || System.get_property('platform') == 'Blackberry'
+    if System.get_property('platform') == 'WINDOWS_DESKTOP' || System.get_property('platform') == 'Blackberry'
         dbRes = ::Rho::RHO.get_user_db().select_from_table('client_info','token,token_sent, client_id')
         dbRes.length.should == 1
         dbRes[0]['token_sent'].should == 1
