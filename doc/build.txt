@@ -1120,7 +1120,7 @@ If your application needs HTTPS, then you need to build the Qt libraries for Vis
 		  -nomake examples -nomake demos -nomake docs
 		  -qt-libpng -qt-libjpeg -qt-libtiff -qt-libmng -qt-gif
 		  -openssl-linked -no-qt3support -prefix C:/Qt/4.7.4
-		  -I <path-to-rhodes>/lib/extensions/openssl.so/include
+		  -I <path-to-rhodes>/lib/extensions/openssl.so/win32/include
 		  -L <path-to-rhodes>/lib/extensions/openssl.so/win32/lib
 		> nmake
 		> nmake install
