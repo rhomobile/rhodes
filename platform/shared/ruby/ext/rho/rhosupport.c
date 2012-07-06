@@ -477,7 +477,7 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
         strcmp("digest.so",szName1)==0 || 
         strcmp("openssl.so",szName1)==0 || 
         strcmp("fcntl",szName1)==0 || strcmp("digest/md5",szName1)==0 ||
-        strcmp("digest/sha1",szName1)==0 )
+        strcmp("digest/sha1",szName1)==0 || strcmp("digest/sha2",szName1)==0  )
         return Qtrue;
 
     RHO_LOCK(require_lock);

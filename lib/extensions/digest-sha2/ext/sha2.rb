@@ -1,0 +1,1 @@
+require 'sha2/sha2'

@@ -1,0 +1,122 @@
+= ActiveCrypto - Easy to use Crypto for Ruby on Rails
+
+ActiveCrypto is based on EzCrypto and provides application oriented crypto support for Ruby on Rails applications.
+
+== Features
+
+* Transparent encryption/decryption
+* Ruby on Rails like domain language
+
+== Installation
+
+Download it from here:
+
+http://rubyforge.org/frs/?group_id=755
+
+or install it via Ruby Gems:
+
+	gem install ezruby
+
+
+== Simple examples
+
+==== A simple encrypted class
+
+You specify in your class which fields are encrypted:
+
+	class Document < ActiveRecord::Base
+		encrypt :title,:body
+	end
+
+Two encrypt it you need to enter a key. For ease of use there is a method called enter_password which sets the key based on a password of your choice.
+
+	doc=Document.new
+	doc.enter_password "This stuff is secret man!!!"
+	doc.title="Plan to take over the world"
+	doc.body="Write apps in Rails"
+	doc.save
+	
+This needs to be done as well if you want to read your document:
+
+	doc=Document.find 1
+	doc.enter_password "This stuff is secret man!!!"
+	puts doc.name
+	
+If you don't remember to set a key it will through a MissingKeyError.
+
+==== More realistic example with KeyHolder
+
+It probably isn't much use if each record needs its own key. The solution to this is the KeyHolder. A KeyHolder is an object that holds keys for use by other objects. A typical example would be a user.
+
+	class User < ActiveRecord::Base
+		has_many :documents
+		keyholder
+	end
+
+We use standard ActiveRecord associations to associate the User with his documents. We also need to specify that he is a keyholder. We now modify our Document class as follows:
+
+	class Document < ActiveRecord::Base
+		belongs_to :user
+		encrypt :title,:body,:key=>:user
+	end
+
+We have the standard associations going on here, but we have also added the option :key=>:user to the encrypt statement. Now we could do this:
+
+	@user=User.new
+	@user.enter_password "This stuff is secret man!!!"
+	@user.save
+	 
+	@doc=Document.new
+	@doc.user=@user 
+	@doc.title="Plan to take over the world"
+	@doc.body="Write apps in Rails"
+	@doc.save
+	
+You could also do ordinary rails like stuf such as:
+
+	@user.documents.each do |doc|
+		puts doc.name
+	end
+
+Decryption is done transparently.
+
+When doing this within a rails application, active_crypto automatically maintains a list of keys for each user session. Besides the 2 steps below you don't need to do anything special within your controller.
+
+1. When a user logs on with a password enter his password like this:
+
+	@user.enter_password @params['password']
+
+2. When a user logs off call the following
+
+	clear_session_keys
+	
+== Usage as a Rails plugin
+
+Just unpack it into your $MY_RAILS_PROJECTS/vendor/plugins folder to use it as a self contained plugin. Otherwise you can install it as a gem using:
+
+	$ gem install ezcrypto
+
+Then make sure to require "active_crypto.rb" at the end of your environment.rb file.
+
+== Database Schema issues
+
+ActiveCrypto doesn't really care about the schema, but that said you do need a schema that will accept and not mangle it's output. On MySQL I normally use TINYBLOB instead of VARCHAR and BLOB instead of TEXT.
+
+== License
+
+EzCrypto and ActionCrypto is released under the MIT license.
+
+
+== Support
+
+To contact the author, send mail to pelleb@gmail.com
+
+Also see my blogs at:
+http://stakeventures.com and
+http://neubia.com
+
+This project was based on code used in my projects WideWord where you can securely share documents and StakeItOut, where you can securely share web services with your partners.
+https://wideword.net
+https://stakeitout.com
+
+(C) 2005 Pelle Braendgaard
