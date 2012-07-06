@@ -97,7 +97,9 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../common/map/ESRIMapEngine.h\
 ../../common/map/GoogleMapEngine.h\
 ../../common/map/MapEngine.h\
-../../unzip/zip.h
+../../unzip/zip.h\
+../../common/push/IRhoPushClient.h\
+../../common/push/RhoPushManager.h
 
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
@@ -134,4 +136,5 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/map/MapEngine.cpp\
 ../../common/BundleManager.cpp\
 ../../unzip/zip.cpp\
-../../rubyext/ZipFiles.cpp
+../../rubyext/ZipFiles.cpp\
+../../common/push/RhoPushManager.cpp
