@@ -38,6 +38,7 @@
 #include "SplashScreen.h"
 #include "AppMenu.h"
 #include "ExtManager.h"
+#include "push/RhoPushManager.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -74,8 +75,9 @@ private:
     Vector<String> m_arAppBackUrl, m_arAppBackUrlOrig;
     Vector<ICallbackObject*> m_arCallbackObjects;
 
-    common::CMutex m_mxPushCallback;
+    mutable common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
+    RhoPushManager m_appPushMgr;
 	
     common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
@@ -153,8 +155,11 @@ public:
 
     void runCallbackInThread(const String& strCallback, const String& strBody);
 
-    void setPushNotification(String strUrl, String strParams );
-    boolean callPushCallback(String strData);
+    void setPushNotification(const String& strUrl, const String& strParams, const String& types);
+    //void checkPushRegistration(const String& strUrl, const String& strParams, const String& type);
+
+    // Deprecated
+    boolean callPushCallback(const String& strData) const;
 	
     void setScreenRotationNotification(String strUrl, String strParams);
     void callScreenRotationCallback(int width, int height, int degrees);
