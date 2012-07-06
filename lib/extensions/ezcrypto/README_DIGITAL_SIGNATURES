@@ -1,0 +1,55 @@
+= EzSig - Easy to use Digital Signatures for Ruby
+
+EzSig is based on OpenSSL and allows you to do create and verify digital signatures in Ruby without learning too much crypto goobledegook.
+
+== Features
+
+* Simple Signer class
+* Simple Verifier class
+* Certificate sub class of Verifier which lets you read the certificate data in clear ruby.
+
+== Installation
+
+Download it from here:
+
+http://rubyforge.org/frs/?group_id=755
+
+or install it via Ruby Gems:
+
+	gem install ezruby
+
+
+== Simple examples
+
+==== Load Private key and sign
+
+	signer=EzCrypto::Signer.from_file "testsigner.pem"
+	sig=signer.sign "hello"
+
+==== Load Certificate and verify
+
+	cert=EzCrypto::Verifier.from_file "testsigner.cert"
+	cert.verify( sig,"hello")
+
+==== Query Certificate for information
+	
+	assert_equal cert.email,"pelleb@gmail.com"
+	assert_equal cert.country,"DK"
+	assert_equal cert.state,"Denmark"
+	assert_equal cert.locality,"Copenhagen"
+
+== PKYP integration
+
+http://pkyp.org allows you register your public keys and certificates on a public server. If you have web applications with certificates or public keys you can point your users at http://pkyp.org/{key.digest} for more info about a certificate.
+
+Register a public key or certificate at PKYP with the new method register_with_pkyp like this:
+
+	signer=EzCrypto::Signer.generate
+	signer.verifier.register_with_pkyp
+
+If you have the public key or certificate digest you can fetch the full public key or certificate like this:
+
+	verifier=EzCrypto::Verifier.from_pkyp "e93e18114cbefaaa89fda908b09df63d3662879a"
+	verifier.verify sig, request_text
+
+This allows a simpler way of transfering certificates. The idea of including certificates with every request is not really necessary in an online world. For example you could pass the digest in a HTTP header for a REST web services request.

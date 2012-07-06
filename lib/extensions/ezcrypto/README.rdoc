@@ -1,0 +1,152 @@
+= EzCrypto - Easy to use Crypto for Ruby
+
+EzCrypto is an easy to use wrapper around the poorly documented OpenSSL ruby library.
+
+== Features
+
+* Defaults to AES 128 CBC
+* Will use the systems OpenSSL library for transparent hardware crypto support
+* Single class object oriented access to most commonly used features
+* Ruby like
+
+== Installation
+
+Download it from here:
+
+http://rubyforge.org/frs/?group_id=755
+
+or install it via Ruby Gems:
+
+	gem install ezcrypto
+
+== Simple examples
+
+==== To encrypt:
+
+Generate a key using a password and a salt. Use the keys encrypt method to encrypt a strings worth of data:
+
+  @key=EzCrypto::Key.with_password "password", "system salt"
+  @encrypted=@key.encrypt "Top secret should not be revealed"
+    
+==== To decrypt:
+
+Same procedure as encrypt. Generate a key using a password and a salt. Use the keys decrypt method to decrypt a strings worth of data:
+
+  @key=EzCrypto::Key.with_password "password", "system salt"
+  @key.decrypt @encrypted
+  
+==== One liners:
+
+These simple examples use one line each:
+
+  @encrypted=EzCrypto::Key.encrypt_with_password "password", @salt,"Top secret should not be revealed"
+  
+  EzCrypto::Key.decrypt_with_password "password", @salt,@encrypted
+
+== Keys
+
+The only class you need to know for most uses og EzCrypto is the Key class. You don't need understand ciphers or the encryption life cycle.
+
+==== Generating a random key
+
+The most secure type of key is the randomly generated key:
+
+  @key=EzCrypto::Key.generate
+  
+==== Initializing a key with raw key data
+
+If you already have a key from some other source, you simply have to call the constructor with the raw data:
+
+  @key=EzCrypto::Key.new @binarykey
+  
+==== Initializing a Key with a Base64 encoded key
+
+As seen above you can create a key from a password. This should be used if you don't want the key to be stored on disk for example:
+
+  @key=EzCrypto::Key.with_password "Secret password"
+
+==== Initializing a Key with a Base64 encoded key
+
+If you already have a key from some other source in the popular Base64 encoded format, you use the decode class method:
+
+  @key=EzCrypto::Key.decode @binarykey
+
+==== Exporting the key
+
+To export or save a key use the encode method (or to_s) method for a Base64 encoded key or raw as the raw binary data.
+
+  puts @key.encode
+  puts @key.raw
+  
+The raw method could be used for storing in a database using a tinyblob column.
+
+== Encryption and Decryption
+
+EzCrypto is optimized for simple encryption and decryption of strings. There are encrypt/decrypt pairs for normal binary use as well as for Base64 encoded use.
+
+==== Regular raw use
+
+Assuming you have generated a key using one of the above methods:
+
+  @encrypted=@key.encrypt("clear text")
+  @decrypted=@key.decrypt(@encrypted)
+  assert "clear text", @decrypted
+
+==== Base64 encoded use
+
+This uses the encrypt64 and decrypt64 methods. Otherwise it is all the same:
+
+  @encrypted=@key.encrypt64("clear text")
+  @decrypted=@key.decrypt64(@encrypted)
+  assert "clear text", @decrypted
+
+== FAQ
+
+=== What algorithm does this use?
+
+It uses as the default algorithm the AES 128 bit standard. This is a very fast and highly secure algorithm specified as the national standard in the US. For more information see:
+
+http://en.wikipedia.org/wiki/AES
+
+=== Only 128 bits. Is that enough?
+
+While it might sound like more would make it more secure, there is really no real security advantage for most commercial applications to use more than 128 bit AES.
+
+=== What is Base64 encoding?
+
+This is the most efficient and commonly used encoding scheme for binary data. This is used amongst other things for email attachments. It is also very common to use it for encrypted data.
+
+=== What is a Salt?
+
+A salt is just a piece of data we hash in with the password to create the key. If it is a server based application you could use store a salt within your source file. The salt must be the same for both encryption and decryption.
+
+
+== License
+
+EzCrypto and ActionCrypto is released under the MIT license.
+
+
+== Support
+
+To contact the author, send mail to pelle@stakeventures.com
+
+Also see my blogs at:
+http://stakeventures.com and
+http://blog.extraeagle.com
+
+This project was based on code used in my projects Agree2, WideWord and WideBlog.
+
+Agree2 lets you create legal business agreements instantly.
+
+https://agree2.com
+
+WideWord lets you collaboratively write and share documents that remain 100% encrypted on the server. Only you have the keys:
+
+http://wideword.net
+
+WideBlog is a secure private blogging system designed for private project blogs. It uses the same encryption technology as WideWord and is very easy to use:
+
+http://wideblog.net
+
+
+(C) 2005-2009 Pelle Braendgaard
