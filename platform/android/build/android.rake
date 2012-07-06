@@ -445,7 +445,6 @@ namespace "config" do
     $targetdir = File.join($bindir,'target','android')
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir = File.join($bindir, "tmp")
-    $libs = File.join($androidpath, "Rhodes", "libs")
 
     $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
@@ -638,7 +637,6 @@ namespace "config" do
     mkdir_p $rhobindir if not File.exists? $rhobindir
     mkdir_p $targetdir if not File.exists? $targetdir
     mkdir_p $srcdir if not File.exists? $srcdir
-    mkdir_p $libs if not File.exists? $libs
 
   end #task 'config:android'
   
@@ -2340,34 +2338,13 @@ namespace "clean" do
   desc "Clean Android"
   task :android => "clean:android:all"
   namespace "android" do
-    #task :assets => "config:android" do
-    #  Dir.glob($androidpath + "/Rhodes/assets/**/*") do |f|
-    #    rm f, :force => true unless f =~ /\/loading\.html$/
-    #  end
-    #end
     task :files => "config:android" do
       rm_rf $targetdir
       rm_rf $app_builddir
-      #rm_rf File.join( $bindir, "libs" )
       Dir.glob( File.join( $bindir, "*.*" ) ) { |f| rm f, :force => true }
       rm_rf $srcdir
-      rm_rf $libs
       rm_rf $tmpdir
     end
-  #task :libsqlite => "config:android" do
-  #  cc_clean "sqlite"
-  #end
-  #task :libs => ["config:android"] do
-  #  $native_libs.each do |l|
-  #    cc_clean l
-  #  end
-  #end
-  #task :librhodes => "config:android" do
-  #  rm_rf File.join($rhobindir,$confdir,'librhodes')
-  #  rm_rf File.join($app_builddir,'librhodes','lib','armeabi','librhodes.so')
-  #end
-#  desc "clean android"
-  #task :all => [:assets,:librhodes,:libs,:files] 
   task :all => :files 
   end
 end

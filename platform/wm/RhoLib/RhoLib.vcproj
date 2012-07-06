@@ -2842,6 +2842,22 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="push"
+				>
+				<File
+					RelativePath="..\..\shared\common\push\IRhoPushClient.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\common\push\RhoPushManager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\common\push\RhoPushManager.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="logging"
