@@ -1,5 +1,7 @@
-require File.expand_path('../../../spec_helper', __FILE__)
-require File.expand_path('../shared/constants', __FILE__)
+#require File.expand_path('../../../spec_helper', __FILE__)
+#require File.expand_path('../shared/constants', __FILE__)
+require File.dirname(File.join(__rhoGetCurrentDir(), __FILE__)) + '/shared/constants'
+
 require 'openssl'
 
 describe "OpenSSL::Cipher's CipherError" do

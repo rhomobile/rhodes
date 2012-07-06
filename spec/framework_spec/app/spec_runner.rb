@@ -1,4 +1,5 @@
 require 'mspec'
+require 'spec/spec_helper'
 
 class SpecRunner < MSpecScript
   def initialize
