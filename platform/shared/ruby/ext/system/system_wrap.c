@@ -1853,7 +1853,7 @@ extern void rho_sys_set_window_position(int x0, int y0);
 extern void rho_sys_set_window_size(int width, int height);
 
 #define set_push_notification rho_sys_set_push_notification
-extern void rho_sys_set_push_notification( const char *url, const char* params);
+extern void rho_sys_set_push_notification( const char *url, const char* params, const char* push_types);
 
 #define set_screen_rotation_notification rho_sys_set_screen_rotation_notification
 extern void rho_sys_set_screen_rotation_notification(const char *url, const char* params);
@@ -1991,7 +1991,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:/opt/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LL(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2355,14 +2355,21 @@ SWIGINTERN VALUE
 _wrap_set_push_notification(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
   int res2 ;
   char *buf2 = 0 ;
   int alloc2 = 0 ;
+  int res3 ;
+  char *buf3 = 0 ;
+  int alloc3 = 0 ;
   
-  if ((argc < 2) || (argc > 2)) {
+  {
+    arg3 = 0;
+  }
+  if ((argc < 2) || (argc > 3)) {
     rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
@@ -2375,13 +2382,22 @@ _wrap_set_push_notification(int argc, VALUE *argv, VALUE self) {
     SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","set_push_notification", 2, argv[1] ));
   }
   arg2 = (char *)(buf2);
-  set_push_notification((char const *)arg1,(char const *)arg2);
+  if (argc > 2) {
+    res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","set_push_notification", 3, argv[2] ));
+    }
+    arg3 = (char *)(buf3);
+  }
+  set_push_notification((char const *)arg1,(char const *)arg2,(char const *)arg3);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return Qnil;
 }
 
