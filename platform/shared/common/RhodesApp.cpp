@@ -1531,16 +1531,28 @@ unsigned long CRhodesApp::getCallbackObject(int nIndex)
     return valRes;
 }
 
-void CRhodesApp::setPushNotification(String strUrl, String strParams )
+void CRhodesApp::setPushNotification(const String& strUrl, const String& strParams, const String& strType )
 {
-    synchronized(m_mxPushCallback)
+    if(strType == "legacy")
     {
-        m_strPushCallback = canonicalizeRhoUrl(strUrl);
-        m_strPushCallbackParams = strParams;
+        synchronized(m_mxPushCallback)
+        {
+            m_strPushCallback = canonicalizeRhoUrl(strUrl);
+            m_strPushCallbackParams = strParams;
+        }
+    }
+    else
+    {
+        String canonicalUrl = canonicalizeRhoUrl(strUrl);
+        if(strType != "")
+            m_appPushMgr.registerClient(canonicalUrl, strParams, strType);
+        else
+            m_appPushMgr.registerAllClients(canonicalUrl, strParams);
     }
 }
 
-boolean CRhodesApp::callPushCallback(String strData)
+// Deprecated
+boolean CRhodesApp::callPushCallback(const String& strData) const
 {
     synchronized(m_mxPushCallback)
     {

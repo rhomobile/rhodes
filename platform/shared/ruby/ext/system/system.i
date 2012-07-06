@@ -27,7 +27,7 @@ extern void rho_sys_set_window_position(int x0, int y0);
 extern void rho_sys_set_window_size(int width, int height);
 
 #define set_push_notification rho_sys_set_push_notification
-extern void rho_sys_set_push_notification( const char *url, const char* params);
+extern void rho_sys_set_push_notification( const char *url, const char* params, const char* push_types);
 
 #define set_screen_rotation_notification rho_sys_set_screen_rotation_notification
 extern void rho_sys_set_screen_rotation_notification(const char *url, const char* params);
@@ -134,6 +134,9 @@ extern int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
   rho_param_free($1);
 }
 
+%typemap(default) const char* push_types {
+  $1 = 0;
+}
 
 extern VALUE syscall(const char* callname, int nparams, char** param_names, char** param_values);
 extern VALUE get_property(char* property);
@@ -144,7 +147,7 @@ extern int get_screen_height();
 extern void set_window_frame(int x0, int y0, int width, int height);
 extern void set_window_position(int x0, int y0);
 extern void set_window_size(int width, int height);
-extern void set_push_notification( const char *url, const char* params);
+extern void set_push_notification(const char *url, const char* params, const char* push_types);
 extern void set_screen_rotation_notification(const char *url, const char* params);
 extern void exit();
 extern int unzip_file( const char *path, const char* zip_pwd );

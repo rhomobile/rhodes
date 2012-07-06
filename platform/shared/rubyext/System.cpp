@@ -158,9 +158,19 @@ VALUE rho_sys_get_property(char* szPropName)
     return rho_ruby_get_NIL();
 }
 
-void rho_sys_set_push_notification(const char *url, const char* params)
+void rho_sys_set_push_notification(const char *url, const char* params, const char* types)
 {
-    RHODESAPP().setPushNotification(url, params);
+    String strTypes = types ? types : String();
+    if((types == 0) || (*types == '\0'))
+    {
+        strTypes = RHOCONF().isExist("push_options") ? RHOCONF().getString("push_options") : String("legacy");
+    }
+    String item;
+    String::size_type pos = 0;
+
+    while (String_getline(strTypes, item, pos, ';')) {
+        RHODESAPP().setPushNotification(url, params, item);
+    }
 }
 
 void rho_sys_set_screen_rotation_notification(const char *url, const char* params)

@@ -110,6 +110,19 @@ inline void String_replace(StrType& str, int from, int to)
     }
 }
 
+template<typename StrType, typename CharType>
+inline bool String_getline(const StrType& str, StrType& line, size_t& pos, CharType delim = ' ')
+{
+    bool res = pos != StrType::npos;
+    if(res)
+    {
+        size_t end = str.find(delim, pos);
+        line = str.substr(pos, end);
+        pos = (end == StrType::npos) ? end : end +1;
+    }
+    return res;
+}
+
 template<class Type>
 class Vector : public std::vector<Type>{
 public:
