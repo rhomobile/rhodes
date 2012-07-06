@@ -311,7 +311,7 @@ unsigned long CAsyncHttp::CAsyncHttpResponse::getObjectValue()
         }
     }
 
-    return rho_ruby_create_string(m_NetResponse.getCharData());
+    return rho_ruby_create_string_withlen2(m_NetResponse.getCharData(), m_NetResponse.getDataSize() );
 }
 
 } // namespace net
