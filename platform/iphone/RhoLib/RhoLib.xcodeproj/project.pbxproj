@@ -65,6 +65,9 @@
 		656E39321497A64300288105 /* BundleManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 656E39311497A64300288105 /* BundleManager.cpp */; };
 		A22F9EFB14605D09006D8F1A /* PhonebookParams.h in Headers */ = {isa = PBXBuildFile; fileRef = A22F9EFA14605D09006D8F1A /* PhonebookParams.h */; };
 		A22F9EFF14605D82006D8F1A /* PhonebookParams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A22F9EFE14605D82006D8F1A /* PhonebookParams.cpp */; };
+		A2D0557D15A7500A002376EE /* IRhoPushClient.h in Headers */ = {isa = PBXBuildFile; fileRef = A2D0557A15A7500A002376EE /* IRhoPushClient.h */; };
+		A2D0557E15A7500A002376EE /* RhoPushManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2D0557B15A7500A002376EE /* RhoPushManager.cpp */; };
+		A2D0557F15A7500A002376EE /* RhoPushManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A2D0557C15A7500A002376EE /* RhoPushManager.h */; };
 		BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */; };
 		BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */; };
 		BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */; };
@@ -157,6 +160,9 @@
 		656E39311497A64300288105 /* BundleManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BundleManager.cpp; path = ../../shared/common/BundleManager.cpp; sourceTree = "<group>"; };
 		A22F9EFA14605D09006D8F1A /* PhonebookParams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhonebookParams.h; path = ../../shared/common/phonebook/PhonebookParams.h; sourceTree = "<group>"; };
 		A22F9EFE14605D82006D8F1A /* PhonebookParams.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PhonebookParams.cpp; path = ../../shared/common/phonebook/PhonebookParams.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		A2D0557A15A7500A002376EE /* IRhoPushClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoPushClient.h; path = ../../shared/common/push/IRhoPushClient.h; sourceTree = "<group>"; };
+		A2D0557B15A7500A002376EE /* RhoPushManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoPushManager.cpp; path = ../../shared/common/push/RhoPushManager.cpp; sourceTree = "<group>"; };
+		A2D0557C15A7500A002376EE /* RhoPushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoPushManager.h; path = ../../shared/common/push/RhoPushManager.h; sourceTree = "<group>"; };
 		BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PosixThreadImpl.cpp; path = ../../shared/common/PosixThreadImpl.cpp; sourceTree = SOURCE_ROOT; };
 		BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PosixThreadImpl.h; path = ../../shared/common/PosixThreadImpl.h; sourceTree = SOURCE_ROOT; };
 		BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CURLNetRequest.cpp; path = ../../shared/net/CURLNetRequest.cpp; sourceTree = SOURCE_ROOT; };
@@ -258,6 +264,7 @@
 		5C7162600F8B7DEE0096B6AA /* common */ = {
 			isa = PBXGroup;
 			children = (
+				A2D0558115A75027002376EE /* push */,
 				A22F9EFD14605D12006D8F1A /* phonebook */,
 				FAC6EE4C143B1F1E00B8E352 /* map */,
 				FAC6EE67143B20B600B8E352 /* RhoMath.cpp */,
@@ -371,6 +378,16 @@
 			name = phonebook;
 			sourceTree = "<group>";
 		};
+		A2D0558115A75027002376EE /* push */ = {
+			isa = PBXGroup;
+			children = (
+				A2D0557A15A7500A002376EE /* IRhoPushClient.h */,
+				A2D0557B15A7500A002376EE /* RhoPushManager.cpp */,
+				A2D0557C15A7500A002376EE /* RhoPushManager.h */,
+			);
+			name = push;
+			sourceTree = "<group>";
+		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
@@ -453,6 +470,8 @@
 				FAC6EE6A143B20B600B8E352 /* RhoMath.h in Headers */,
 				A22F9EFB14605D09006D8F1A /* PhonebookParams.h in Headers */,
 				C5D47763156A4ED000943A2D /* zip.h in Headers */,
+				A2D0557D15A7500A002376EE /* IRhoPushClient.h in Headers */,
+				A2D0557F15A7500A002376EE /* RhoPushManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,6 +564,7 @@
 				656E39321497A64300288105 /* BundleManager.cpp in Sources */,
 				C5D47762156A4ED000943A2D /* zip.cpp in Sources */,
 				C5D2784415A1F33A00A7EFC7 /* ZipFiles.cpp in Sources */,
+				A2D0557E15A7500A002376EE /* RhoPushManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
