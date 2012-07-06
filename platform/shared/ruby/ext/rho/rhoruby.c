@@ -511,6 +511,11 @@ VALUE rho_ruby_create_string_withlen(int len)
     return rb_str_new("", len);
 }
 
+VALUE rho_ruby_create_string_withlen2(const char* szVal, int len)
+{
+    return rb_str_new(szVal, len);
+}
+
 VALUE rho_ruby_create_time(long t)
 {
     return rb_time_new(t,0);
