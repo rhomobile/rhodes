@@ -7,6 +7,7 @@ platform/shared/common/map/ESRIMapEngine.cpp
 platform/shared/common/map/GoogleMapEngine.cpp
 platform/shared/common/map/OSMMapEngine.cpp
 platform/shared/common/map/MapEngine.cpp
+platform/shared/common/push/RhoPushManager.cpp
 platform/shared/common/PosixThreadImpl.cpp
 platform/shared/common/RhoConf.cpp
 platform/shared/common/RhoFile.cpp
