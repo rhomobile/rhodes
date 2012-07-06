@@ -1543,11 +1543,20 @@ void CRhodesApp::setPushNotification(const String& strUrl, const String& strPara
     }
     else
     {
-        String canonicalUrl = canonicalizeRhoUrl(strUrl);
-        if(strType != "")
-            m_appPushMgr.registerClient(canonicalUrl, strParams, strType);
-        else
-            m_appPushMgr.registerAllClients(canonicalUrl, strParams);
+        if (strUrl.length())
+        {
+            String canonicalUrl = canonicalizeRhoUrl(strUrl);
+            if(strType.length())
+                m_appPushMgr.registerClient(canonicalUrl, strParams, strType);
+            else
+                m_appPushMgr.registerAllClients(canonicalUrl, strParams);
+        } else
+        {
+            if(strType.length())
+                m_appPushMgr.unregisterClient(strType);
+            else
+                m_appPushMgr.unregisterAllClients();
+        }
     }
 }
 

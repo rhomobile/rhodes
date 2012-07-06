@@ -113,6 +113,16 @@ void RhoPushManager::registerAllClients(const String& url, const String& urlPara
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+void RhoPushManager::unregisterAllClients()
+{
+    for(Vector<IRhoPushClient*>::iterator I = m_Clients.begin(); I != m_Clients.end(); ++I)
+    {
+        (*I)->doUnregister();
+        LOG(INFO) + "Push client unregistration has requested ("+(*I)->getType()+")";
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 IRhoPushClient* RhoPushManager::getClient(const String& pushType)
 {
     for(Vector<IRhoPushClient*>::iterator I = m_Clients.begin(); I != m_Clients.end(); ++I)

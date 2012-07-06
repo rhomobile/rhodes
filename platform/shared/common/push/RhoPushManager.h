@@ -48,6 +48,7 @@ public:
     //void checkClientRegistered(const String& pushType);
 
     void registerAllClients(const String& url, const String& urlParams);
+    void unregisterAllClients();
 
 private:
     IRhoPushClient* getClient(const String& pushType);
