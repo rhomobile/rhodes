@@ -66,6 +66,7 @@ def build_extension(name, arch)
     exit unless $? == 0
 
     cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
+    cp_r File.join($rootdir, "lib/extensions/openssl.so/wm/lib/libopenssl.lib"), $targetdir
 
   elsif $platform == 'win32'
     args = []
@@ -78,6 +79,8 @@ def build_extension(name, arch)
     exit unless $? == 0
 
     cp_r File.join($tempdir, ENV['RHO_BUILD_CONFIG'], name + ".lib"), $targetdir
+    cp_r File.join($rootdir, "lib/extensions/openssl.so/win32/lib/libeay32.lib"), $targetdir
+    cp_r File.join($rootdir, "lib/extensions/openssl.so/win32/lib/ssleay32.lib"), $targetdir
   end
 end
 
