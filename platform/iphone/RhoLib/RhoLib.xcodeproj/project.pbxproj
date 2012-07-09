@@ -591,7 +591,7 @@
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				STRIPFLAGS = armv7;
+				STRIPFLAGS = "";
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared";
 				VALID_ARCHS = "armv7 i386";
@@ -615,7 +615,7 @@
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				STRIPFLAGS = armv7;
+				STRIPFLAGS = "";
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared";
 				VALID_ARCHS = "armv7 i386";
@@ -680,7 +680,7 @@
 				PRODUCT_NAME = rholib;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
-				STRIPFLAGS = armv7;
+				STRIPFLAGS = "";
 				SYMROOT = ../build;
 				USER_HEADER_SEARCH_PATHS = "../../shared/curl/include ../../shared";
 				VALID_ARCHS = armv7;
