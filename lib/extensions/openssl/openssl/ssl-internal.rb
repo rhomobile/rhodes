@@ -15,7 +15,6 @@
 =end
 
 require "openssl/buffering"
-require "fcntl"
 
 module OpenSSL
   module SSL
@@ -63,6 +62,7 @@ module OpenSSL
       end
 
       def fcntl(*args)
+        require "fcntl"
         to_io.fcntl(*args)
       end
 
@@ -77,6 +77,7 @@ module OpenSSL
 
     module Nonblock
       def initialize(*args)
+        require "fcntl"
         flag = File::NONBLOCK
         flag |= @io.fcntl(Fcntl::F_GETFL) if defined?(Fcntl::F_GETFL)
         @io.fcntl(Fcntl::F_SETFL, flag)
