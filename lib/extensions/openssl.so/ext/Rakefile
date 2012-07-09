@@ -1,0 +1,67 @@
+require 'fileutils'
+
+def build_extension(name, arch)
+
+  mkdir_p $targetdir unless File.exist? $targetdir
+
+  if $platform == 'android'
+
+  elsif ($platform == 'iphone') or ($platform == 'osx')
+
+  elsif $platform == 'wm'
+
+    cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/wm/lib/libopenssl.lib"), $targetdir
+
+  elsif $platform == 'win32'
+    cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/win32/lib/libeay32.lib"), $targetdir
+    cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/win32/lib/ssleay32.lib"), $targetdir
+  end
+end
+
+namespace "build" do
+  task :config do
+    $platform = ENV['RHO_PLATFORM']
+
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rootdir.nil?
+
+    if $platform == 'android'
+      require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+
+    elsif ($platform == 'iphone') or ($platform == 'osx')
+      $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+      raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+      $sdkroot = ENV['SDKROOT']
+      raise "SDKROOT is not set" if $sdkroot.nil?
+      $arch = ENV['ARCHS']
+      raise "ARCHS is not set" if $arch.nil?
+      $gccbin = $bindir + '/gcc'
+      $arbin = $bindir + '/ar'
+
+    elsif $platform == 'wm'
+      $vcbuild = ENV['VCBUILD']
+      raise "VCBUILD is not set" if $vcbuild.nil?
+      $sdk = ENV['SDK']
+      raise "SDK is not set" if $sdk.nil?
+
+    elsif $platform == 'win32'
+      $vcbuild = ENV['VCBUILD']
+      raise "VCBUILD is not set" if $vcbuild.nil?
+      $sdk = ENV['SDK']
+      raise "SDK is not set" if $sdk.nil?
+
+    end
+  end
+
+  task :all => :config do
+    build_extension('openssl.so', $arch)
+  end
+end
+
+task :default => "build:all"

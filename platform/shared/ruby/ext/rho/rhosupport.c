@@ -473,11 +473,7 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
     szName1 = RSTRING_PTR(fname);
 
     if ( strcmp("strscan",szName1)==0 || strcmp("enumerator",szName1)==0 ||
-        strcmp("stringio",szName1)==0 || strcmp("socket",szName1)==0 ||
-        strcmp("digest.so",szName1)==0 || 
-        strcmp("openssl.so",szName1)==0 || 
-        strcmp("fcntl",szName1)==0 || strcmp("digest/md5",szName1)==0 ||
-        strcmp("digest/sha1",szName1)==0 || strcmp("digest/sha2",szName1)==0  )
+        strcmp("stringio",szName1)==0 || strcmp("socket",szName1)==0 )
         return Qtrue;
 
     RHO_LOCK(require_lock);
@@ -573,7 +569,6 @@ static VALUE rb_RhoMessages;
 static VALUE rb_RhoError;
 static ID get_message_mid;
 static ID err_message_mid;
-
 
 void Init_RhoSupport()
 {

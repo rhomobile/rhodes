@@ -1,6 +1,2 @@
 entry: Init_openssl
 libraries: [ "openssl" ]
-win32:
-  libraries: [ "libeay32", "ssleay32" ]
-wm:
-  libraries: [ "libopenssl", "crypt32" ]
