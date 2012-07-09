@@ -183,20 +183,27 @@ class Jake
     $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
     $config = Jake.config(File.open(rhobuildyml,'r'))
 
-    server, addr, port = run_local_server
-    File.open(File.join($app_path, 'app', 'local_server.rb'), 'w') do |f|
-      f.puts "SPEC_LOCAL_SERVER_HOST = '#{addr}'"
-      f.puts "SPEC_LOCAL_SERVER_PORT = #{port}"
+    if appname =~ /phone_spec/
+        server, addr, port = run_local_server
+        File.open(File.join($app_path, 'app', 'local_server.rb'), 'w') do |f|
+          f.puts "SPEC_LOCAL_SERVER_HOST = '#{addr}'"
+          f.puts "SPEC_LOCAL_SERVER_PORT = #{port}"
+        end
+        if File.exists?(File.join($app_path, 'server.rb'))
+          $local_server = server
+          require File.join($app_path, 'server.rb')
+        end
     end
-    if File.exists?(File.join($app_path, 'server.rb'))
-      $local_server = server
-      require File.join($app_path, 'server.rb')
-    end
+    
     begin
       Rake::Task.tasks.each { |t| t.reenable }
       Rake::Task['run:' + platform + ':spec'].invoke
     ensure
-      server.shutdown
+    
+      if appname =~ /phone_spec/
+        server.shutdown
+      end
+        
     end
     
     $failed.to_i
