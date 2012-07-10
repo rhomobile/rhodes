@@ -407,6 +407,18 @@ long CExtManager::OnNavigateError(const wchar_t* szUrlBeingNavigatedTo)
     return 0;
 }
 
+long CExtManager::OnLicenseError(const wchar_t* szUrlBeingNavigatedTo)
+{
+    for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
+    {
+        long lRes = (it->second)->OnLicenseError( szUrlBeingNavigatedTo, makeExtData() );
+        if ( lRes )
+            return lRes;
+    }
+
+    return 0;
+}
+
 void CExtManager::OnAppActivate(bool bActivate)
 {
     for ( HashtablePtr<String, IRhoExtension*>::iterator it = m_hashExtensions.begin(); it != m_hashExtensions.end(); ++it )
