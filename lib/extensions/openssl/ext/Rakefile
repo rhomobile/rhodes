@@ -10,7 +10,6 @@ def build_extension(name, arch)
 
     args = []
     args << "-I."
-    args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/include\""
     args << "-I\"#{$rootdir}/lib/extensions/openssl/ext\""
     args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
     args << "-I\"#{$rootdir}/platform/shared\""
