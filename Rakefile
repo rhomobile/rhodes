@@ -106,7 +106,7 @@ def make_application_build_config_header_file
 
   f.puts 'static const char* values[] = { ""'
   $application_build_configs.keys.each do |key|
-    f.puts ',"'+$application_build_configs[key].to_s+'"'
+    f.puts ',"'+$application_build_configs[key].to_s().gsub('\\', "\\\\\\")+'"'
     count = count + 1
   end
   f.puts '};'
@@ -131,6 +131,7 @@ def make_application_build_config_header_file
   f.puts ''
   
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_configs.c"), f)
+  
 end
 
 def make_application_build_capabilities_header_file
