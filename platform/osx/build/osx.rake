@@ -74,8 +74,10 @@ namespace "build" do
                 extpath = File.join(p, ext, 'ext')
                 next unless File.exists? File.join(extpath, "build")
                 ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "osx", "bin", "extensions", ext)
-                $extensions_lib << " -l#{ext}"
-                $pre_targetdeps << " ../../../osx/bin/extensions/lib#{ext}.a"
+                if ext != 'openssl.so'
+                    $extensions_lib << " -l#{ext}"
+                    $pre_targetdeps << " ../../../osx/bin/extensions/lib#{ext}.a"
+                end
                 puts Jake.run('./build', [], extpath)
                 exit 1 unless $? == 0
             end
