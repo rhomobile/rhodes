@@ -1581,10 +1581,10 @@ namespace "run" do
                 end
             else
             
-                if $config["platform"] != "bb"
-                    extyml = File.join(extpath, "ext.yml")
-                    next if File.file? extyml
-                end
+                # if $config["platform"] != "bb"
+                #     extyml = File.join(extpath, "ext.yml")
+                #     next if File.file? extyml
+                # end
                 
                 config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0                     
             end    
