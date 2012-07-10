@@ -254,6 +254,8 @@ namespace "build" do
           elsif is_prebuilt
             file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
             puts "PREBUILD: #{file_mask}"
+            
+            mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
             Dir.glob( file_mask ).each do |lib|
               cp_r lib, ENV['TARGET_TEMP_DIR']
             end
