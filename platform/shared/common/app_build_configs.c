@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "app_build_configs.h"
+#include "common/RhoSimConf.h"
 
 static const char* keys[] = { ""
 };
@@ -14,6 +15,9 @@ static const char* values[] = { ""
 
 const char* get_app_build_config_item(const char* key) {
   int i;
+  if (strcmp(key, "security_token") == 0) {
+    return rho_simconf_getString("security_token");
+  }
   for (i = 1; i < APP_BUILD_CONFIG_COUNT; i++) {
     if (strcmp(key, keys[i]) == 0) {
       return values[i];
