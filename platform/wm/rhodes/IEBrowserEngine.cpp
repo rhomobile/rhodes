@@ -48,6 +48,9 @@ CIEBrowserEngine::~CIEBrowserEngine(void)
 BOOL CIEBrowserEngine::Navigate(LPCTSTR szURL)
 {
     BSTR bstrUrl = SysAllocString(szURL);
+    if ( wcsncmp(szURL, L"http://127.0.0.1", 16 ) == 0 )
+        wcsncpy( bstrUrl+7, L"localhost", 9 );
+
     BOOL bRes = m_spIWebBrowser2->Navigate(bstrUrl, NULL, &CComVariant(L"_self"), NULL, NULL) == S_OK;
 
     SysFreeString(bstrUrl);    
