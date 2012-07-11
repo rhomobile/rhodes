@@ -75,6 +75,16 @@ struct CSyncProtocol_3 : public ISyncProtocol
             ",\"device_type\":" + json::CJSONEntry::quoteValue(strType) + "}";
     }
 
+	String getClientAnsRegisterBody( const String& strClientID, const String& strPin, int nPort, const String& strType, const String& strPhoneID )
+    {
+        return "{\"client_id\":" + json::CJSONEntry::quoteValue(strClientID) + 
+            ",\"device_pin\":" + json::CJSONEntry::quoteValue(strPin) +
+            ( strPhoneID.length() > 0 ? ",\"phone_id\":" + json::CJSONEntry::quoteValue(strPhoneID) : "") +
+            ",\"device_port\":" + json::CJSONEntry::quoteValue(common::convertToStringA(nPort)) +
+            ",\"device_type\":" + json::CJSONEntry::quoteValue(strType) + 
+			",\"device_push_type\":\"rhoconnect_push\"}";
+    }
+
     String getClientResetUrl(const String& strClientID)
     {
         String strUrl = RHOCONF().getPath("syncserver") + "clientreset?client_id=" + strClientID;

@@ -51,7 +51,12 @@ IRhoCrypt* CRhoClassFactory::createRhoCrypt()
 extern "C" {
 void rho_clientregister_create(const char* szDevicePin)
 {
-    rho::sync::CClientRegister::Create(szDevicePin);
+	rho::sync::CClientRegister::Create(szDevicePin, false);
+}
+
+void rho_clientansregister_create(const char* szDevicePin)
+{
+	rho::sync::CClientRegister::Create(szDevicePin, true);
 }
 
 void rho_clientregister_destroy()
