@@ -236,37 +236,6 @@ module Rho
       options = {} if options.nil? or !options.is_a?(Hash)
       options = options.symbolize_keys
 
-      localclass = Class.new(::Rho::RhoController) do
-        require 'helpers/application_helper'
-        include ApplicationHelper
-        require 'helpers/browser_helper'
-        include BrowserHelper
-        
-        def initialize()
-        end
-        
-        def set_vars(obj=nil)
-          @vars = {}
-          if obj
-            obj.each do |key,value|
-              @vars[key.to_sym()] = value if key && key.length > 0
-            end
-          end
-        end
-        def method_missing(name, *args)
-            unless name == Fixnum
-              if name[name.length()-1] == '='
-                @vars[name.to_s.chop.to_sym()] = args[0]  
-              else
-                @vars[name]
-              end
-            end
-        end
-        def get_binding
-          binding
-        end
-      end
-
       splitpartial = options[:partial].split('/')
       partial_name = splitpartial[-1]
       model = nil
@@ -278,10 +247,33 @@ module Rho
        
       content = ""
       if options[:collection].nil?
-        locals = localclass.new()
+        locals = self.clone
 
-        self.instance_variables.each do |ivar|
-          locals.instance_variable_set(ivar,self.instance_variable_get(ivar))
+        class << locals
+
+          def set_vars(obj = nil)
+            @vars = {}
+            if obj
+              obj.each do |key,value|
+                @vars[key.to_sym()] = value if key && key.length > 0
+              end
+            end
+          end
+
+          def method_missing(name, *args)
+            unless name == Fixnum
+              if name[name.length()-1] == '='
+                @vars[name.to_s.chop.to_sym()] = args[0]
+              else
+                @vars[name]
+              end
+            end
+          end
+
+          def get_binding
+            binding
+          end
+
         end
         
         locals.set_vars(options[:locals])
