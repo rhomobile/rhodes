@@ -671,7 +671,7 @@ boolean CSyncEngine::processBlobs() {
 	
 	LOG(TRACE) + "=== Processing server blob attributes ===";
 	
-	for ( int i = 0; i < m_sources.size(); ++i ) {
+	for ( int i = 0; i < (int)m_sources.size(); ++i ) {
 		CSyncSource& src = *m_sources.elementAt(i);
 		if ( !src.processServerBlobAttrs() ) {
 			getNotify().fireBulkSyncNotification(false, "error", "", RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE);
@@ -683,7 +683,7 @@ boolean CSyncEngine::processBlobs() {
 	
 	rho_db_init_attr_manager();
 	
-	for ( int i = 0; i < m_sources.size(); ++i ) {
+	for ( int i = 0; i < (int)m_sources.size(); ++i ) {
 		CSyncSource& src = *m_sources.elementAt(i);
 		if (!src.processAllBlobs()) {
 			getNotify().fireBulkSyncNotification(false, "error", "", RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE);
@@ -704,9 +704,9 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "bulk_data";
     String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition + "&sources=";
-	for ( int i = 0; i < m_sources.size(); ++i ) {
+	for ( int i = 0; i < (int)m_sources.size(); ++i ) {
 		strQuery += URI::urlEncode(m_sources[i]->getName());
-		if ( i < m_sources.size()-1 ) {
+		if ( i < (int)m_sources.size()-1 ) {
 			strQuery += ",";
 		}
 	}

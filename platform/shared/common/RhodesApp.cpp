@@ -1404,7 +1404,7 @@ void CRhodesApp::navigateBack()
 String CRhodesApp::getAppName()
 {
     String strAppName;
-#ifdef OS_WINCE
+#ifdef WINDOWS_PLATFORM
     String path = rho_native_rhopath();
     String_replace(path, '/', '\\');
 
