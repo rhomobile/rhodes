@@ -43,12 +43,12 @@ IMPLEMENT_LOGCLASS(CClientRegister,"ClientRegister");
 
 CClientRegister* CClientRegister::m_pInstance = 0;
 	
-/*static*/ CClientRegister* CClientRegister::Create(const char* device_pin) 
+/*static*/ CClientRegister* CClientRegister::Create(const char* device_pin, bool isAns) 
 {
 	if ( m_pInstance ) 
 		return m_pInstance;
 
-	m_pInstance = new CClientRegister(device_pin);
+	m_pInstance = new CClientRegister(device_pin, isAns);
 	return m_pInstance;
 }
 
@@ -60,8 +60,9 @@ CClientRegister* CClientRegister::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CClientRegister::CClientRegister(const char* device_pin) : CRhoThread() 
+CClientRegister::CClientRegister(const char* device_pin, const bool isAns) : CRhoThread() 
 {
+	m_isAns = isAns;
 	m_strDevicePin = device_pin;
     m_nPollInterval = POLL_INTERVAL_SECONDS;
 
@@ -113,8 +114,12 @@ String CClientRegister::getRegisterBody(const String& strClientID)
 {
 	int port = RHOCONF().getInt("push_port");
 
-    return CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin, 
-        port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id() );
+    if(m_isAns)
+		return CSyncThread::getSyncEngine().getProtocol().getClientAnsRegisterBody( strClientID, m_strDevicePin, 
+			port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id() );
+	else
+		return CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin, 
+			port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id() );
 }
 
 boolean CClientRegister::doRegister(CSyncEngine& oSync)

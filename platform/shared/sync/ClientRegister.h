@@ -50,8 +50,9 @@ class CClientRegister : public common::CRhoThread
 	NetRequest              m_NetRequest;
 	String                  m_strDevicePin;
     unsigned int            m_nPollInterval;
+	bool m_isAns;
 public:
-    static CClientRegister* Create(const char* device_pin);
+    static CClientRegister* Create(const char* device_pin, bool isAns = false);
     static void Destroy();
 	static CClientRegister* getInstance() { return m_pInstance; }
 	
@@ -65,7 +66,7 @@ public:
 
     void setSslVerifyPeer(boolean b){m_NetRequest.setSslVerifyPeer(b);}
 private:
-	CClientRegister(const char* device_pin);
+	CClientRegister(const char* device_pin, const bool isAns = false);
     ~CClientRegister();
 
     boolean doRegister(CSyncEngine& oSync);
@@ -82,6 +83,7 @@ extern "C" {
 #endif //__cplusplus
 	
 void rho_clientregister_create(const char* szDevicePin);
+void rho_clientansregister_create(const char* szDevicePin);
 void rho_clientregister_destroy();
 
 #ifdef __cplusplus
