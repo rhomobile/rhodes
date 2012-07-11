@@ -15,6 +15,8 @@
 #include "windows/extconf.h"
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 #include "macosx/extconf.h"
+#elif defined(ANDROID)
+#include "android/extconf.h"
 #endif
 
 #if defined(__cplusplus)

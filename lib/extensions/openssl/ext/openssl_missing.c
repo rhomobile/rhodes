@@ -12,6 +12,8 @@
 #include "windows/extconf.h"
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 #include "macosx/extconf.h"
+#elif defined(ANDROID)
+#include "android/extconf.h"
 #endif
 
 #if defined(HAVE_OPENSSL_ENGINE_H) && defined(HAVE_ST_ENGINE)
