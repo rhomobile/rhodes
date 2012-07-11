@@ -6,6 +6,56 @@ def build_extension(name, arch)
 
   if $platform == 'android'
 
+    #cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/android/libs/armeabi/libopenssl.so"), $targetdir
+    objects = []
+    mkdir_p $tempdir unless File.exists? $tempdir
+
+    Dir.glob("sources/**/*.c").each do |f|
+
+      toskip = [ "ncbc_enc.c" ]
+
+      if toskip.include? File.basename(f)
+        next
+      end
+
+      if File.basename(f).match(/^LPdir/)
+        next
+      end
+
+      objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
+      objects << ('"'+objname+'"')
+    	
+      args = []
+      
+      args << "-DOPENSSL_SMALL_FOOTPRINT"
+      args << "-DOPENSSL_NO_RC5"
+      args << "-DOPENSSL_NO_MD2"
+      args << "-DOPENSSL_NO_KRB5"
+      args << "-DOPENSSL_NO_JPAKE"
+      args << "-DOPENSSL_NO_DYNAMIC_ENGINE"
+  
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/include\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/apps\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/engines\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/ssl\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/asn1\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/evp\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/rsa\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/modes\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/dsa\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/asn1\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/ccgost\""
+  
+      args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
+      args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
+
+      cc_compile f, $tempdir, args or exit 1
+    end
+
+    cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+
   elsif ($platform == 'iphone') or ($platform == 'osx')
 
   elsif $platform == 'wm'
