@@ -93,6 +93,15 @@ namespace "build" do
       raise "ARCHS is not set" if $arch.nil?
       $gccbin = $bindir + '/gcc'
       $arbin = $bindir + '/ar'
+      
+      $xcodebuild = ENV['XCODEBUILD']	
+      raise "XCODEBUILD is not set" if $xcodebuild.nil?
+    
+      $configuration = ENV['CONFIGURATION']	
+      raise "CONFIGURATION is not set" if $configuration.nil?
+
+      $sdk = ENV['SDK_NAME']	
+      raise "SDK_NAME is not set" if $sdk.nil?
 
     elsif $platform == 'wm'
       $vcbuild = ENV['VCBUILD']
