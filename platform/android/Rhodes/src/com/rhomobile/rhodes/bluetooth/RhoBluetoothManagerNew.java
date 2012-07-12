@@ -174,7 +174,19 @@ public class RhoBluetoothManagerNew implements IRhoBluetoothManager {
         // Check that there's actually something to send
         if (message.length() > 0) {
             // Get the message bytes and tell the BluetoothChatService to write
-            byte[] send = message.getBytes(Charset.forName("UTF-8"));// getBytes();
+            byte[] send = null;
+            try {
+            	Charset chset = Charset.forName("UTF-8");
+            	if (chset != null) {
+            		send = message.getBytes(chset);// getBytes();
+            	}
+            	else {
+                	send = message.getBytes();
+            	}
+            }
+            catch(Exception e) {
+            	send = message.getBytes();
+            }
             mSession.write(send);
 
          }
