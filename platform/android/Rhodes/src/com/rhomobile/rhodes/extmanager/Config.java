@@ -56,6 +56,9 @@ public class Config
 	public static final String	SETTING_P3_ENABLED				= "enablefunctionkey_f3";
 	public static final String	METATAG							= "metatag";
 	public static final String	GEOLOCATION_ENABLED				= "geolocationenabled";
+    public static final String  HTTP_AUTHENTICATION_USERNAME    = "username";
+    public static final String  HTTP_AUTHENTICATION_PASSWORD    = "password";
+    public static final String  APPLICATION_LICENSE             = "licensekey";
 
 	public static final	String[] REQUIRED_OPTIONS				= { };
 

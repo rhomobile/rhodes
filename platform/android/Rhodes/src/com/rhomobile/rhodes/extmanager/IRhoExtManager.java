@@ -40,7 +40,7 @@ public interface IRhoExtManager {
     void executeJavascript(String jsFunction);
 
     String getCurrentUrl();
-    void stopNavigate();
+    void stopNavigate(IRhoExtension.LoadErrorReason reason);
     void historyForward();
     void historyBack();
     void refreshPage(boolean bFromCache);

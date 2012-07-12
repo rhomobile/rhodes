@@ -66,7 +66,7 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     }
 
     @Override
-    public void onNavigateError(IRhoExtManager extManager, String url, IRhoExtData ext) {
+    public void onNavigateError(IRhoExtManager extManager, String url, LoadErrorReason reason, IRhoExtData ext) {
     }
 
     @Override

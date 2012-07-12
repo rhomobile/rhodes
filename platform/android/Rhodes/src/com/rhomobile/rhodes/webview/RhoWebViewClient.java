@@ -30,6 +30,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 import android.graphics.Bitmap;
@@ -85,13 +86,13 @@ public class RhoWebViewClient extends WebViewClient
         
         Logger.profStop("BROWSER_PAGE");
         
-        RhoExtManager.getImplementationInstance().onLoadError(view);
-        
         StringBuilder msg = new StringBuilder(failingUrl);
         msg.append(" failed: ");
         msg.append(errorCode);
         msg.append(" - " + description);
         Logger.E(TAG, msg.toString());
+
+        RhoExtManager.getImplementationInstance().onLoadError(view, IRhoExtension.LoadErrorReason.INTERNAL_ERROR);
     }
 
     @Override

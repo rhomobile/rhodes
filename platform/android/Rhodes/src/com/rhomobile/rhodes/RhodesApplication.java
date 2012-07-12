@@ -30,16 +30,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Vector;
 
 import com.rhomobile.rhodes.camera.Camera;
 import com.rhomobile.rhodes.extmanager.Config;
+import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.extmanager.RhoExtManagerImpl;
-import com.rhomobile.rhodes.extmanager.WebkitExtension;
-import com.rhomobile.rhodes.extmanager.WebkitExtensionBase;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.signature.Signature;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -100,14 +100,23 @@ public class RhodesApplication extends Application{
     @SuppressWarnings("unused")
     private void registerWebkitExtension(Config config) {
         if(Capabilities.WEBKIT_BROWSER_ENABLED || Capabilities.MOTOROLA_BROWSER_ENABLED) {
-            WebkitExtensionBase webkitExt;
-            if (Capabilities.MOTOROLA_ENABLED) {
-                webkitExt = new WebkitExtensionBase(config);
+            try {
+                IRhoExtension webkitExt;
+                Class<? extends IRhoExtension> webkitExtClass;
+                if (Capabilities.MOTOROLA_ENABLED) {
+                    //webkitExt = new WebkitExtensionBase(config);
+                    webkitExtClass = Class.forName("com.rhomobile.rhoelements.rhoelements.WebkitExtensionBase").asSubclass(IRhoExtension.class);
+                }
+                else {
+                    //webkitExt = new WebkitExtension(config);
+                    webkitExtClass = Class.forName("com.rhomobile.rhoelements.rhoelements.WebkitExtension").asSubclass(IRhoExtension.class);
+                }
+                Constructor<? extends IRhoExtension> webkitExtCtor = webkitExtClass.getConstructor(Config.class);
+                webkitExt = webkitExtCtor.newInstance(config);
+                RhoExtManager.getInstance().registerExtension("MotorolaWebkit", webkitExt);
+            } catch (Throwable ex) {
+                Logger.E(TAG, ex);
             }
-            else {
-                webkitExt = new WebkitExtension(config);
-            }
-            RhoExtManager.getInstance().registerExtension(WebkitExtension.EXTNAME, webkitExt);
         }
     }
     

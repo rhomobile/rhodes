@@ -1,6 +1,5 @@
 package com.rhomobile.rhodes.extmanager;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -9,9 +8,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
@@ -20,7 +17,6 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 import com.rhomobile.rhodes.mainview.MainView;
-import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
 public class RhoExtManagerImpl implements IRhoExtManager {
@@ -28,8 +24,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     private Hashtable<String, IRhoExtension> mExtensions = new Hashtable<String, IRhoExtension>();
     private ArrayList<IRhoListener> mListeners = new ArrayList<IRhoListener>();
-    private Object mLicense;
-    private boolean mFirstNavigate = true;
     private boolean mLogError = true;
     private boolean mLogWarning = true;
     private boolean mLogInfo = true;
@@ -134,8 +128,10 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     @Override
-    public void stopNavigate() {
+    public void stopNavigate(IRhoExtension.LoadErrorReason reason) {
         WebView.stopNavigate();
+        MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+        onLoadError(mainView.getWebView(mainView.activeTab()).getView(), reason);
     }
 
     @Override
@@ -264,30 +260,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                 ext.onBeforeNavigate(this, url, makeDefExtData(view));
             }
         }
-        if(mFirstNavigate) {
-            if(Capabilities.MOTOROLA_ENABLED) {
-                PerformOnUiThread.exec(new Runnable() {
-                    @SuppressWarnings("deprecation")
-                    @Override
-                    public void run() {
-                        Logger.I(TAG, "Init license now");
-                        try {
-                            RhodesActivity activity = RhodesActivity.safeGetInstance();
-                            LayoutInflater inflater = activity.getLayoutInflater();
-                            View licenseView = inflater.inflate(getResId("layout", "license"), null);  
-                            activity.addContentView(licenseView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
-                            Class<?> licenseClass = Class.forName("com.motorolasolutions.rhoelements.License");
-                            Constructor<?> licenseCtor = licenseClass.getConstructor();
-                            mLicense = licenseCtor.newInstance();
-                        } catch(Throwable e) {
-                            Logger.E(TAG, e);
-                            Logger.T(TAG, "No motorola runtime licensing");
-                        }
-                    }
-                });
-            }
-            mFirstNavigate = false;
-        }
     }
 
     public void onNavigateComplete(View view, String url) {
@@ -346,10 +318,10 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         }
     }
 
-    public void onLoadError(View view) {
+    public void onLoadError(View view, IRhoExtension.LoadErrorReason reason) {
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onNavigateError(this, "", makeDefExtData(view));
+                ext.onNavigateError(this, "", reason, makeDefExtData(view));
             }
         }
     }
