@@ -43,12 +43,12 @@ IMPLEMENT_LOGCLASS(CClientRegister,"ClientRegister");
 
 CClientRegister* CClientRegister::m_pInstance = 0;
 	
-/*static*/ CClientRegister* CClientRegister::Create(const char* device_pin) 
+/*static*/ CClientRegister* CClientRegister::Create(const char* device_pin, bool isAns) 
 {
 	if ( m_pInstance ) 
 		return m_pInstance;
 
-	m_pInstance = new CClientRegister(device_pin);
+	m_pInstance = new CClientRegister(device_pin, isAns);
 	return m_pInstance;
 }
 
@@ -60,8 +60,9 @@ CClientRegister* CClientRegister::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CClientRegister::CClientRegister(const char* device_pin) : CRhoThread() 
+CClientRegister::CClientRegister(const char* device_pin, const bool isAns) : CRhoThread() 
 {
+	m_isAns = isAns;
 	m_strDevicePin = device_pin;
     m_nPollInterval = POLL_INTERVAL_SECONDS;
 
@@ -111,10 +112,25 @@ void CClientRegister::run()
 
 String CClientRegister::getRegisterBody(const String& strClientID)
 {
+	IRhoPushClient* pushClient = RHODESAPP().getDefaultPushClient();
 	int port = RHOCONF().getInt("push_port");
 
-    return CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin, 
-        port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id() );
+	String body = CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin,
+        port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id(),
+        /*device_push_type*/ (0 != pushClient) ? pushClient->getType() : "" /*it means native push type*/);
+
+	LOG(INFO)+"getRegisterBody() BODY is: " + body;
+	return body;
+
+	/*
+    if(m_isAns)
+		body = CSyncThread::getSyncEngine().getProtocol().getClientAnsRegisterBody( strClientID, m_strDevicePin,
+			port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id() );
+	else
+		body = CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin,
+			port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id() );
+	*/
+
 }
 
 boolean CClientRegister::doRegister(CSyncEngine& oSync)

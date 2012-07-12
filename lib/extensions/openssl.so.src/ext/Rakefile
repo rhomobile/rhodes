@@ -1,0 +1,107 @@
+require 'fileutils'
+
+def build_extension(name, arch)
+
+  mkdir_p $targetdir unless File.exist? $targetdir
+
+  if $platform == 'android'
+
+    #cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/android/libs/armeabi/libopenssl.so"), $targetdir
+    objects = []
+    mkdir_p $tempdir unless File.exists? $tempdir
+
+    Dir.glob("#{$rootdir}/lib/extensions/openssl.so/ext/sources/**/*.c").each do |f|
+
+      toskip = [ "ncbc_enc.c" ]
+
+      if toskip.include? File.basename(f)
+        next
+      end
+
+      if File.basename(f).match(/^LPdir/)
+        next
+      end
+
+      objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
+      objects << ('"'+objname+'"')
+    	
+      args = []
+      
+      args << "-DOPENSSL_SMALL_FOOTPRINT"
+      args << "-DOPENSSL_NO_RC5"
+      args << "-DOPENSSL_NO_MD2"
+      args << "-DOPENSSL_NO_KRB5"
+      args << "-DOPENSSL_NO_JPAKE"
+      args << "-DOPENSSL_NO_DYNAMIC_ENGINE"
+  
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/include\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/apps\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/engines\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/ssl\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/asn1\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/evp\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/rsa\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/modes\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/dsa\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/asn1\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/crypto/ccgost\""
+  
+      args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
+      args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
+
+      cc_compile f, $tempdir, args or exit 1
+    end
+
+    cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+  end
+end
+
+namespace "build" do
+  task :config do
+    $platform = ENV['RHO_PLATFORM']
+
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rootdir.nil?
+
+    if $platform == 'android'
+      require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+
+      setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+
+    elsif ($platform == 'iphone') or ($platform == 'osx')
+      $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+      raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+      $sdkroot = ENV['SDKROOT']
+      raise "SDKROOT is not set" if $sdkroot.nil?
+      $arch = ENV['ARCHS']
+      raise "ARCHS is not set" if $arch.nil?
+      $gccbin = $bindir + '/gcc'
+      $arbin = $bindir + '/ar'
+
+    elsif $platform == 'wm'
+      $vcbuild = ENV['VCBUILD']
+      raise "VCBUILD is not set" if $vcbuild.nil?
+      $sdk = ENV['SDK']
+      raise "SDK is not set" if $sdk.nil?
+
+    elsif $platform == 'win32'
+      $vcbuild = ENV['VCBUILD']
+      raise "VCBUILD is not set" if $vcbuild.nil?
+      $sdk = ENV['SDK']
+      raise "SDK is not set" if $sdk.nil?
+
+    end
+  end
+
+  task :all => :config do
+    build_extension('openssl.so', $arch)
+  end
+end
+
+task :default => "build:all"

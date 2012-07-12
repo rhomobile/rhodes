@@ -791,12 +791,13 @@ void rho_platform_restart_application()
     rho_wmsys_run_app(module, (g_strCmdLine + " -restarting").c_str());
 }
 
-typedef void (WINAPI *PCL)(HWND);
 typedef bool (WINAPI *PCSD)();
 
 #ifdef APP_BUILD_CAPABILITY_MOTOROLA
 extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent);
 #endif
+
+typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR);
 
 extern "C" void rho_wm_impl_CheckLicense()
 {
@@ -811,8 +812,17 @@ extern "C" void rho_wm_impl_CheckLicense()
     if(hLicenseInstance)
     {
         PCL pCheckLicense = (PCL) GetProcAddress(hLicenseInstance, L"CheckLicense");
-        if(pCheckLicense) 
-	        pCheckLicense(getMainWnd());
+        LPCWSTR szLogText = 0;
+        if(pCheckLicense)
+        {
+            StringW strLicenseW;
+            common::convertToStringW( get_app_build_config_item("motorola_license"), strLicenseW );
+
+            szLogText = pCheckLicense( getMainWnd(), L"rhodes-system-api-samples", strLicenseW.c_str() );
+        }
+
+        if ( szLogText && *szLogText )
+            LOGC(INFO, "License") + szLogText;
     }
 #endif
 
