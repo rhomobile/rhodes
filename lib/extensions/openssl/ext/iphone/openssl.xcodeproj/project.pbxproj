@@ -7,20 +7,118 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		FA64196B14A25397001BDDEC /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = FA64196814A25397001BDDEC /* zip.h */; };
-		FA64196C14A25397001BDDEC /* zlib.c in Sources */ = {isa = PBXBuildFile; fileRef = FA64196914A25397001BDDEC /* zlib.c */; };
-		FAC155E7145855CF0016F3BD /* zlib_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* zlib_Prefix.pch */; };
-		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
-		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+		C508A35A15AF31B400B28675 /* openssl_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = C508A35915AF31B400B28675 /* openssl_Prefix.pch */; };
+		C508A39015AF31E900B28675 /* openssl_missing.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A35B15AF31E900B28675 /* openssl_missing.c */; };
+		C508A39115AF31E900B28675 /* openssl_missing.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A35C15AF31E900B28675 /* openssl_missing.h */; };
+		C508A39215AF31E900B28675 /* ossl.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A35D15AF31E900B28675 /* ossl.c */; };
+		C508A39315AF31E900B28675 /* ossl.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A35E15AF31E900B28675 /* ossl.h */; };
+		C508A39415AF31E900B28675 /* ossl_asn1.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A35F15AF31E900B28675 /* ossl_asn1.c */; };
+		C508A39515AF31E900B28675 /* ossl_asn1.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A36015AF31E900B28675 /* ossl_asn1.h */; };
+		C508A39615AF31E900B28675 /* ossl_bio.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A36115AF31E900B28675 /* ossl_bio.c */; };
+		C508A39715AF31E900B28675 /* ossl_bio.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A36215AF31E900B28675 /* ossl_bio.h */; };
+		C508A39815AF31E900B28675 /* ossl_bn.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A36315AF31E900B28675 /* ossl_bn.c */; };
+		C508A39915AF31E900B28675 /* ossl_bn.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A36415AF31E900B28675 /* ossl_bn.h */; };
+		C508A39A15AF31E900B28675 /* ossl_cipher.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A36515AF31E900B28675 /* ossl_cipher.c */; };
+		C508A39B15AF31E900B28675 /* ossl_cipher.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A36615AF31E900B28675 /* ossl_cipher.h */; };
+		C508A39C15AF31E900B28675 /* ossl_config.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A36715AF31E900B28675 /* ossl_config.c */; };
+		C508A39D15AF31E900B28675 /* ossl_config.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A36815AF31E900B28675 /* ossl_config.h */; };
+		C508A39E15AF31E900B28675 /* ossl_digest.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A36915AF31E900B28675 /* ossl_digest.c */; };
+		C508A39F15AF31E900B28675 /* ossl_digest.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A36A15AF31E900B28675 /* ossl_digest.h */; };
+		C508A3A015AF31E900B28675 /* ossl_engine.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A36B15AF31E900B28675 /* ossl_engine.c */; };
+		C508A3A115AF31E900B28675 /* ossl_engine.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A36C15AF31E900B28675 /* ossl_engine.h */; };
+		C508A3A215AF31E900B28675 /* ossl_hmac.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A36D15AF31E900B28675 /* ossl_hmac.c */; };
+		C508A3A315AF31E900B28675 /* ossl_hmac.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A36E15AF31E900B28675 /* ossl_hmac.h */; };
+		C508A3A415AF31E900B28675 /* ossl_ns_spki.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A36F15AF31E900B28675 /* ossl_ns_spki.c */; };
+		C508A3A515AF31E900B28675 /* ossl_ns_spki.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A37015AF31E900B28675 /* ossl_ns_spki.h */; };
+		C508A3A615AF31E900B28675 /* ossl_ocsp.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A37115AF31E900B28675 /* ossl_ocsp.c */; };
+		C508A3A715AF31E900B28675 /* ossl_ocsp.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A37215AF31E900B28675 /* ossl_ocsp.h */; };
+		C508A3A815AF31E900B28675 /* ossl_pkcs12.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A37315AF31E900B28675 /* ossl_pkcs12.c */; };
+		C508A3A915AF31E900B28675 /* ossl_pkcs12.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A37415AF31E900B28675 /* ossl_pkcs12.h */; };
+		C508A3AA15AF31E900B28675 /* ossl_pkcs5.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A37515AF31E900B28675 /* ossl_pkcs5.c */; };
+		C508A3AB15AF31E900B28675 /* ossl_pkcs5.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A37615AF31E900B28675 /* ossl_pkcs5.h */; };
+		C508A3AC15AF31E900B28675 /* ossl_pkcs7.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A37715AF31E900B28675 /* ossl_pkcs7.c */; };
+		C508A3AD15AF31E900B28675 /* ossl_pkcs7.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A37815AF31E900B28675 /* ossl_pkcs7.h */; };
+		C508A3AE15AF31E900B28675 /* ossl_pkey.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A37915AF31E900B28675 /* ossl_pkey.c */; };
+		C508A3AF15AF31E900B28675 /* ossl_pkey.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A37A15AF31E900B28675 /* ossl_pkey.h */; };
+		C508A3B015AF31E900B28675 /* ossl_pkey_dh.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A37B15AF31E900B28675 /* ossl_pkey_dh.c */; };
+		C508A3B115AF31E900B28675 /* ossl_pkey_dsa.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A37C15AF31E900B28675 /* ossl_pkey_dsa.c */; };
+		C508A3B215AF31E900B28675 /* ossl_pkey_ec.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A37D15AF31E900B28675 /* ossl_pkey_ec.c */; };
+		C508A3B315AF31E900B28675 /* ossl_pkey_rsa.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A37E15AF31E900B28675 /* ossl_pkey_rsa.c */; };
+		C508A3B415AF31E900B28675 /* ossl_rand.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A37F15AF31E900B28675 /* ossl_rand.c */; };
+		C508A3B515AF31E900B28675 /* ossl_rand.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A38015AF31E900B28675 /* ossl_rand.h */; };
+		C508A3B615AF31E900B28675 /* ossl_ssl.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38115AF31E900B28675 /* ossl_ssl.c */; };
+		C508A3B715AF31E900B28675 /* ossl_ssl.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A38215AF31E900B28675 /* ossl_ssl.h */; };
+		C508A3B815AF31E900B28675 /* ossl_ssl_session.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38315AF31E900B28675 /* ossl_ssl_session.c */; };
+		C508A3B915AF31E900B28675 /* ossl_version.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A38415AF31E900B28675 /* ossl_version.h */; };
+		C508A3BA15AF31E900B28675 /* ossl_x509.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38515AF31E900B28675 /* ossl_x509.c */; };
+		C508A3BB15AF31E900B28675 /* ossl_x509.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A38615AF31E900B28675 /* ossl_x509.h */; };
+		C508A3BC15AF31E900B28675 /* ossl_x509attr.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38715AF31E900B28675 /* ossl_x509attr.c */; };
+		C508A3BD15AF31E900B28675 /* ossl_x509cert.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38815AF31E900B28675 /* ossl_x509cert.c */; };
+		C508A3BE15AF31E900B28675 /* ossl_x509crl.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38915AF31E900B28675 /* ossl_x509crl.c */; };
+		C508A3BF15AF31E900B28675 /* ossl_x509ext.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38A15AF31E900B28675 /* ossl_x509ext.c */; };
+		C508A3C015AF31E900B28675 /* ossl_x509name.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38B15AF31E900B28675 /* ossl_x509name.c */; };
+		C508A3C115AF31E900B28675 /* ossl_x509req.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38C15AF31E900B28675 /* ossl_x509req.c */; };
+		C508A3C215AF31E900B28675 /* ossl_x509revoked.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38D15AF31E900B28675 /* ossl_x509revoked.c */; };
+		C508A3C315AF31E900B28675 /* ossl_x509store.c in Sources */ = {isa = PBXBuildFile; fileRef = C508A38E15AF31E900B28675 /* ossl_x509store.c */; };
+		C508A3C415AF31E900B28675 /* ruby_missing.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A38F15AF31E900B28675 /* ruby_missing.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		FA64196814A25397001BDDEC /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = ../zip.h; sourceTree = "<group>"; };
-		FA64196914A25397001BDDEC /* zlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = zlib.c; path = ../zlib.c; sourceTree = "<group>"; };
-		FAC155F3145855CF0016F3BD /* libzlib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libzlib.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FAD45FD51225FED600141873 /* zlib_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib_Prefix.pch; sourceTree = "<group>"; };
-		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		C508A35915AF31B400B28675 /* openssl_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = openssl_Prefix.pch; sourceTree = "<group>"; };
+		C508A35B15AF31E900B28675 /* openssl_missing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = openssl_missing.c; path = ../openssl_missing.c; sourceTree = "<group>"; };
+		C508A35C15AF31E900B28675 /* openssl_missing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = openssl_missing.h; path = ../openssl_missing.h; sourceTree = "<group>"; };
+		C508A35D15AF31E900B28675 /* ossl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl.c; path = ../ossl.c; sourceTree = "<group>"; };
+		C508A35E15AF31E900B28675 /* ossl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl.h; path = ../ossl.h; sourceTree = "<group>"; };
+		C508A35F15AF31E900B28675 /* ossl_asn1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_asn1.c; path = ../ossl_asn1.c; sourceTree = "<group>"; };
+		C508A36015AF31E900B28675 /* ossl_asn1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_asn1.h; path = ../ossl_asn1.h; sourceTree = "<group>"; };
+		C508A36115AF31E900B28675 /* ossl_bio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_bio.c; path = ../ossl_bio.c; sourceTree = "<group>"; };
+		C508A36215AF31E900B28675 /* ossl_bio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_bio.h; path = ../ossl_bio.h; sourceTree = "<group>"; };
+		C508A36315AF31E900B28675 /* ossl_bn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_bn.c; path = ../ossl_bn.c; sourceTree = "<group>"; };
+		C508A36415AF31E900B28675 /* ossl_bn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_bn.h; path = ../ossl_bn.h; sourceTree = "<group>"; };
+		C508A36515AF31E900B28675 /* ossl_cipher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_cipher.c; path = ../ossl_cipher.c; sourceTree = "<group>"; };
+		C508A36615AF31E900B28675 /* ossl_cipher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_cipher.h; path = ../ossl_cipher.h; sourceTree = "<group>"; };
+		C508A36715AF31E900B28675 /* ossl_config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_config.c; path = ../ossl_config.c; sourceTree = "<group>"; };
+		C508A36815AF31E900B28675 /* ossl_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_config.h; path = ../ossl_config.h; sourceTree = "<group>"; };
+		C508A36915AF31E900B28675 /* ossl_digest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_digest.c; path = ../ossl_digest.c; sourceTree = "<group>"; };
+		C508A36A15AF31E900B28675 /* ossl_digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_digest.h; path = ../ossl_digest.h; sourceTree = "<group>"; };
+		C508A36B15AF31E900B28675 /* ossl_engine.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_engine.c; path = ../ossl_engine.c; sourceTree = "<group>"; };
+		C508A36C15AF31E900B28675 /* ossl_engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_engine.h; path = ../ossl_engine.h; sourceTree = "<group>"; };
+		C508A36D15AF31E900B28675 /* ossl_hmac.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_hmac.c; path = ../ossl_hmac.c; sourceTree = "<group>"; };
+		C508A36E15AF31E900B28675 /* ossl_hmac.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_hmac.h; path = ../ossl_hmac.h; sourceTree = "<group>"; };
+		C508A36F15AF31E900B28675 /* ossl_ns_spki.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_ns_spki.c; path = ../ossl_ns_spki.c; sourceTree = "<group>"; };
+		C508A37015AF31E900B28675 /* ossl_ns_spki.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_ns_spki.h; path = ../ossl_ns_spki.h; sourceTree = "<group>"; };
+		C508A37115AF31E900B28675 /* ossl_ocsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_ocsp.c; path = ../ossl_ocsp.c; sourceTree = "<group>"; };
+		C508A37215AF31E900B28675 /* ossl_ocsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_ocsp.h; path = ../ossl_ocsp.h; sourceTree = "<group>"; };
+		C508A37315AF31E900B28675 /* ossl_pkcs12.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_pkcs12.c; path = ../ossl_pkcs12.c; sourceTree = "<group>"; };
+		C508A37415AF31E900B28675 /* ossl_pkcs12.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_pkcs12.h; path = ../ossl_pkcs12.h; sourceTree = "<group>"; };
+		C508A37515AF31E900B28675 /* ossl_pkcs5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_pkcs5.c; path = ../ossl_pkcs5.c; sourceTree = "<group>"; };
+		C508A37615AF31E900B28675 /* ossl_pkcs5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_pkcs5.h; path = ../ossl_pkcs5.h; sourceTree = "<group>"; };
+		C508A37715AF31E900B28675 /* ossl_pkcs7.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_pkcs7.c; path = ../ossl_pkcs7.c; sourceTree = "<group>"; };
+		C508A37815AF31E900B28675 /* ossl_pkcs7.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_pkcs7.h; path = ../ossl_pkcs7.h; sourceTree = "<group>"; };
+		C508A37915AF31E900B28675 /* ossl_pkey.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_pkey.c; path = ../ossl_pkey.c; sourceTree = "<group>"; };
+		C508A37A15AF31E900B28675 /* ossl_pkey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_pkey.h; path = ../ossl_pkey.h; sourceTree = "<group>"; };
+		C508A37B15AF31E900B28675 /* ossl_pkey_dh.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_pkey_dh.c; path = ../ossl_pkey_dh.c; sourceTree = "<group>"; };
+		C508A37C15AF31E900B28675 /* ossl_pkey_dsa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_pkey_dsa.c; path = ../ossl_pkey_dsa.c; sourceTree = "<group>"; };
+		C508A37D15AF31E900B28675 /* ossl_pkey_ec.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_pkey_ec.c; path = ../ossl_pkey_ec.c; sourceTree = "<group>"; };
+		C508A37E15AF31E900B28675 /* ossl_pkey_rsa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_pkey_rsa.c; path = ../ossl_pkey_rsa.c; sourceTree = "<group>"; };
+		C508A37F15AF31E900B28675 /* ossl_rand.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_rand.c; path = ../ossl_rand.c; sourceTree = "<group>"; };
+		C508A38015AF31E900B28675 /* ossl_rand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_rand.h; path = ../ossl_rand.h; sourceTree = "<group>"; };
+		C508A38115AF31E900B28675 /* ossl_ssl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_ssl.c; path = ../ossl_ssl.c; sourceTree = "<group>"; };
+		C508A38215AF31E900B28675 /* ossl_ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_ssl.h; path = ../ossl_ssl.h; sourceTree = "<group>"; };
+		C508A38315AF31E900B28675 /* ossl_ssl_session.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_ssl_session.c; path = ../ossl_ssl_session.c; sourceTree = "<group>"; };
+		C508A38415AF31E900B28675 /* ossl_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_version.h; path = ../ossl_version.h; sourceTree = "<group>"; };
+		C508A38515AF31E900B28675 /* ossl_x509.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_x509.c; path = ../ossl_x509.c; sourceTree = "<group>"; };
+		C508A38615AF31E900B28675 /* ossl_x509.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ossl_x509.h; path = ../ossl_x509.h; sourceTree = "<group>"; };
+		C508A38715AF31E900B28675 /* ossl_x509attr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_x509attr.c; path = ../ossl_x509attr.c; sourceTree = "<group>"; };
+		C508A38815AF31E900B28675 /* ossl_x509cert.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_x509cert.c; path = ../ossl_x509cert.c; sourceTree = "<group>"; };
+		C508A38915AF31E900B28675 /* ossl_x509crl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_x509crl.c; path = ../ossl_x509crl.c; sourceTree = "<group>"; };
+		C508A38A15AF31E900B28675 /* ossl_x509ext.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_x509ext.c; path = ../ossl_x509ext.c; sourceTree = "<group>"; };
+		C508A38B15AF31E900B28675 /* ossl_x509name.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_x509name.c; path = ../ossl_x509name.c; sourceTree = "<group>"; };
+		C508A38C15AF31E900B28675 /* ossl_x509req.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_x509req.c; path = ../ossl_x509req.c; sourceTree = "<group>"; };
+		C508A38D15AF31E900B28675 /* ossl_x509revoked.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_x509revoked.c; path = ../ossl_x509revoked.c; sourceTree = "<group>"; };
+		C508A38E15AF31E900B28675 /* ossl_x509store.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ossl_x509store.c; path = ../ossl_x509store.c; sourceTree = "<group>"; };
+		C508A38F15AF31E900B28675 /* ruby_missing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ruby_missing.h; path = ../ruby_missing.h; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libopenssl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libopenssl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -28,8 +126,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
-				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,7 +135,7 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155F3145855CF0016F3BD /* libzlib.a */,
+				FAC155F3145855CF0016F3BD /* libopenssl.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -58,8 +154,6 @@
 		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
-				FAD4602C12260A8500141873 /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -67,8 +161,59 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				FA64196814A25397001BDDEC /* zip.h */,
-				FA64196914A25397001BDDEC /* zlib.c */,
+				C508A35B15AF31E900B28675 /* openssl_missing.c */,
+				C508A35C15AF31E900B28675 /* openssl_missing.h */,
+				C508A35D15AF31E900B28675 /* ossl.c */,
+				C508A35E15AF31E900B28675 /* ossl.h */,
+				C508A35F15AF31E900B28675 /* ossl_asn1.c */,
+				C508A36015AF31E900B28675 /* ossl_asn1.h */,
+				C508A36115AF31E900B28675 /* ossl_bio.c */,
+				C508A36215AF31E900B28675 /* ossl_bio.h */,
+				C508A36315AF31E900B28675 /* ossl_bn.c */,
+				C508A36415AF31E900B28675 /* ossl_bn.h */,
+				C508A36515AF31E900B28675 /* ossl_cipher.c */,
+				C508A36615AF31E900B28675 /* ossl_cipher.h */,
+				C508A36715AF31E900B28675 /* ossl_config.c */,
+				C508A36815AF31E900B28675 /* ossl_config.h */,
+				C508A36915AF31E900B28675 /* ossl_digest.c */,
+				C508A36A15AF31E900B28675 /* ossl_digest.h */,
+				C508A36B15AF31E900B28675 /* ossl_engine.c */,
+				C508A36C15AF31E900B28675 /* ossl_engine.h */,
+				C508A36D15AF31E900B28675 /* ossl_hmac.c */,
+				C508A36E15AF31E900B28675 /* ossl_hmac.h */,
+				C508A36F15AF31E900B28675 /* ossl_ns_spki.c */,
+				C508A37015AF31E900B28675 /* ossl_ns_spki.h */,
+				C508A37115AF31E900B28675 /* ossl_ocsp.c */,
+				C508A37215AF31E900B28675 /* ossl_ocsp.h */,
+				C508A37315AF31E900B28675 /* ossl_pkcs12.c */,
+				C508A37415AF31E900B28675 /* ossl_pkcs12.h */,
+				C508A37515AF31E900B28675 /* ossl_pkcs5.c */,
+				C508A37615AF31E900B28675 /* ossl_pkcs5.h */,
+				C508A37715AF31E900B28675 /* ossl_pkcs7.c */,
+				C508A37815AF31E900B28675 /* ossl_pkcs7.h */,
+				C508A37915AF31E900B28675 /* ossl_pkey.c */,
+				C508A37A15AF31E900B28675 /* ossl_pkey.h */,
+				C508A37B15AF31E900B28675 /* ossl_pkey_dh.c */,
+				C508A37C15AF31E900B28675 /* ossl_pkey_dsa.c */,
+				C508A37D15AF31E900B28675 /* ossl_pkey_ec.c */,
+				C508A37E15AF31E900B28675 /* ossl_pkey_rsa.c */,
+				C508A37F15AF31E900B28675 /* ossl_rand.c */,
+				C508A38015AF31E900B28675 /* ossl_rand.h */,
+				C508A38115AF31E900B28675 /* ossl_ssl.c */,
+				C508A38215AF31E900B28675 /* ossl_ssl.h */,
+				C508A38315AF31E900B28675 /* ossl_ssl_session.c */,
+				C508A38415AF31E900B28675 /* ossl_version.h */,
+				C508A38515AF31E900B28675 /* ossl_x509.c */,
+				C508A38615AF31E900B28675 /* ossl_x509.h */,
+				C508A38715AF31E900B28675 /* ossl_x509attr.c */,
+				C508A38815AF31E900B28675 /* ossl_x509cert.c */,
+				C508A38915AF31E900B28675 /* ossl_x509crl.c */,
+				C508A38A15AF31E900B28675 /* ossl_x509ext.c */,
+				C508A38B15AF31E900B28675 /* ossl_x509name.c */,
+				C508A38C15AF31E900B28675 /* ossl_x509req.c */,
+				C508A38D15AF31E900B28675 /* ossl_x509revoked.c */,
+				C508A38E15AF31E900B28675 /* ossl_x509store.c */,
+				C508A38F15AF31E900B28675 /* ruby_missing.h */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -76,7 +221,7 @@
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
-				FAD45FD51225FED600141873 /* zlib_Prefix.pch */,
+				C508A35915AF31B400B28675 /* openssl_Prefix.pch */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -88,17 +233,37 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAC155E7145855CF0016F3BD /* zlib_Prefix.pch in Headers */,
-				FA64196B14A25397001BDDEC /* zip.h in Headers */,
+				C508A35A15AF31B400B28675 /* openssl_Prefix.pch in Headers */,
+				C508A39115AF31E900B28675 /* openssl_missing.h in Headers */,
+				C508A39315AF31E900B28675 /* ossl.h in Headers */,
+				C508A39515AF31E900B28675 /* ossl_asn1.h in Headers */,
+				C508A39715AF31E900B28675 /* ossl_bio.h in Headers */,
+				C508A39915AF31E900B28675 /* ossl_bn.h in Headers */,
+				C508A39B15AF31E900B28675 /* ossl_cipher.h in Headers */,
+				C508A39D15AF31E900B28675 /* ossl_config.h in Headers */,
+				C508A39F15AF31E900B28675 /* ossl_digest.h in Headers */,
+				C508A3A115AF31E900B28675 /* ossl_engine.h in Headers */,
+				C508A3A315AF31E900B28675 /* ossl_hmac.h in Headers */,
+				C508A3A515AF31E900B28675 /* ossl_ns_spki.h in Headers */,
+				C508A3A715AF31E900B28675 /* ossl_ocsp.h in Headers */,
+				C508A3A915AF31E900B28675 /* ossl_pkcs12.h in Headers */,
+				C508A3AB15AF31E900B28675 /* ossl_pkcs5.h in Headers */,
+				C508A3AD15AF31E900B28675 /* ossl_pkcs7.h in Headers */,
+				C508A3AF15AF31E900B28675 /* ossl_pkey.h in Headers */,
+				C508A3B515AF31E900B28675 /* ossl_rand.h in Headers */,
+				C508A3B715AF31E900B28675 /* ossl_ssl.h in Headers */,
+				C508A3B915AF31E900B28675 /* ossl_version.h in Headers */,
+				C508A3BB15AF31E900B28675 /* ossl_x509.h in Headers */,
+				C508A3C415AF31E900B28675 /* ruby_missing.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		FAC155E5145855CF0016F3BD /* zlib */ = {
+		FAC155E5145855CF0016F3BD /* openssl */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "zlib" */;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "openssl" */;
 			buildPhases = (
 				FAC155E6145855CF0016F3BD /* Headers */,
 				FAC155E9145855CF0016F3BD /* Sources */,
@@ -108,9 +273,9 @@
 			);
 			dependencies = (
 			);
-			name = zlib;
+			name = openssl;
 			productName = Barcode;
-			productReference = FAC155F3145855CF0016F3BD /* libzlib.a */;
+			productReference = FAC155F3145855CF0016F3BD /* libopenssl.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -118,7 +283,7 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "zlib" */;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "openssl" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -133,7 +298,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FAC155E5145855CF0016F3BD /* zlib */,
+				FAC155E5145855CF0016F3BD /* openssl */,
 			);
 		};
 /* End PBXProject section */
@@ -143,7 +308,38 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA64196C14A25397001BDDEC /* zlib.c in Sources */,
+				C508A39015AF31E900B28675 /* openssl_missing.c in Sources */,
+				C508A39215AF31E900B28675 /* ossl.c in Sources */,
+				C508A39415AF31E900B28675 /* ossl_asn1.c in Sources */,
+				C508A39615AF31E900B28675 /* ossl_bio.c in Sources */,
+				C508A39815AF31E900B28675 /* ossl_bn.c in Sources */,
+				C508A39A15AF31E900B28675 /* ossl_cipher.c in Sources */,
+				C508A39C15AF31E900B28675 /* ossl_config.c in Sources */,
+				C508A39E15AF31E900B28675 /* ossl_digest.c in Sources */,
+				C508A3A015AF31E900B28675 /* ossl_engine.c in Sources */,
+				C508A3A215AF31E900B28675 /* ossl_hmac.c in Sources */,
+				C508A3A415AF31E900B28675 /* ossl_ns_spki.c in Sources */,
+				C508A3A615AF31E900B28675 /* ossl_ocsp.c in Sources */,
+				C508A3A815AF31E900B28675 /* ossl_pkcs12.c in Sources */,
+				C508A3AA15AF31E900B28675 /* ossl_pkcs5.c in Sources */,
+				C508A3AC15AF31E900B28675 /* ossl_pkcs7.c in Sources */,
+				C508A3AE15AF31E900B28675 /* ossl_pkey.c in Sources */,
+				C508A3B015AF31E900B28675 /* ossl_pkey_dh.c in Sources */,
+				C508A3B115AF31E900B28675 /* ossl_pkey_dsa.c in Sources */,
+				C508A3B215AF31E900B28675 /* ossl_pkey_ec.c in Sources */,
+				C508A3B315AF31E900B28675 /* ossl_pkey_rsa.c in Sources */,
+				C508A3B415AF31E900B28675 /* ossl_rand.c in Sources */,
+				C508A3B615AF31E900B28675 /* ossl_ssl.c in Sources */,
+				C508A3B815AF31E900B28675 /* ossl_ssl_session.c in Sources */,
+				C508A3BA15AF31E900B28675 /* ossl_x509.c in Sources */,
+				C508A3BC15AF31E900B28675 /* ossl_x509attr.c in Sources */,
+				C508A3BD15AF31E900B28675 /* ossl_x509cert.c in Sources */,
+				C508A3BE15AF31E900B28675 /* ossl_x509crl.c in Sources */,
+				C508A3BF15AF31E900B28675 /* ossl_x509ext.c in Sources */,
+				C508A3C015AF31E900B28675 /* ossl_x509name.c in Sources */,
+				C508A3C115AF31E900B28675 /* ossl_x509req.c in Sources */,
+				C508A3C215AF31E900B28675 /* ossl_x509revoked.c in Sources */,
+				C508A3C315AF31E900B28675 /* ossl_x509store.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,17 +398,25 @@
 					armv6,
 				);
 				COPY_PHASE_STRIP = NO;
-				DSTROOT = /tmp/zlib.dst;
+				DSTROOT = /tmp/openssl.dst;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = zlib_Prefix.pch;
+				GCC_PREFIX_HEADER = openssl_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/lib/extensions/openssl.so/ext/sources/include",
+				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				PRODUCT_NAME = zlib;
+				PRODUCT_NAME = openssl;
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "i386 armv6 armv7";
 			};
@@ -226,14 +430,22 @@
 					armv7,
 					armv6,
 				);
-				DSTROOT = /tmp/zlib.dst;
+				DSTROOT = /tmp/openssl.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = zlib_Prefix.pch;
+				GCC_PREFIX_HEADER = openssl_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/lib/extensions/openssl.so/ext/sources/include",
+				);
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				PRODUCT_NAME = zlib;
+				PRODUCT_NAME = openssl;
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "i386 armv6 armv7";
 			};
@@ -242,7 +454,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "zlib" */ = {
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "openssl" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB922308733DC00010E9CD /* Debug */,
@@ -251,7 +463,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "zlib" */ = {
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "openssl" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FAC155F1145855CF0016F3BD /* Debug */,

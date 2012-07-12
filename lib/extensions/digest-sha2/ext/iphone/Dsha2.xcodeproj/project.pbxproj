@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C508A34015AF2F0400B28675 /* digest.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A33F15AF2F0400B28675 /* digest.h */; };
+		C508A34315AF2F2100B28675 /* defs.h in Headers */ = {isa = PBXBuildFile; fileRef = C508A34215AF2F2100B28675 /* defs.h */; };
 		FA64196A14A25397001BDDEC /* sha2init.c in Sources */ = {isa = PBXBuildFile; fileRef = FA64196714A25397001BDDEC /* sha2init.c */; };
 		FA64196B14A25397001BDDEC /* sha2.h in Headers */ = {isa = PBXBuildFile; fileRef = FA64196814A25397001BDDEC /* sha2.h */; };
 		FA64196C14A25397001BDDEC /* sha2.c in Sources */ = {isa = PBXBuildFile; fileRef = FA64196914A25397001BDDEC /* sha2.c */; };
@@ -17,6 +19,8 @@
 
 /* Begin PBXFileReference section */
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C508A33F15AF2F0400B28675 /* digest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = digest.h; path = ../../../digest/ext/digest.h; sourceTree = "<group>"; };
+		C508A34215AF2F2100B28675 /* defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = defs.h; path = ../../../digest/ext/defs.h; sourceTree = "<group>"; };
 		FA64196714A25397001BDDEC /* sha2init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha2init.c; path = ../sha2init.c; sourceTree = "<group>"; };
 		FA64196814A25397001BDDEC /* sha2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha2.h; path = ../sha2.h; sourceTree = "<group>"; };
 		FA64196914A25397001BDDEC /* sha2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha2.c; path = ../sha2.c; sourceTree = "<group>"; };
@@ -69,6 +73,8 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C508A34215AF2F2100B28675 /* defs.h */,
+				C508A33F15AF2F0400B28675 /* digest.h */,
 				FA64196714A25397001BDDEC /* sha2init.c */,
 				FA64196814A25397001BDDEC /* sha2.h */,
 				FA64196914A25397001BDDEC /* sha2.c */,
@@ -93,6 +99,8 @@
 			files = (
 				FAC155E7145855CF0016F3BD /* Dsha2_Prefix.pch in Headers */,
 				FA64196B14A25397001BDDEC /* sha2.h in Headers */,
+				C508A34015AF2F0400B28675 /* digest.h in Headers */,
+				C508A34315AF2F2100B28675 /* defs.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
