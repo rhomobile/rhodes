@@ -29,10 +29,10 @@
 
 #include "common/RhoStd.h"
 #include "logging/RhoLog.h"
+#include "common/push/IRhoPushClient.h"
 
 namespace rho { namespace common {
 
-class IRhoPushClient;
 class RhoPushManager {
 public:
     RhoPushManager() {}
@@ -41,6 +41,8 @@ public:
     DEFINE_LOGCLASS;
 
 public:
+    IRhoPushClient* getDefaultClient();
+
     void addClient(IRhoPushClient* pClient);
 
     void registerClient(const String& url, const String& urlParams, const String& pushType);

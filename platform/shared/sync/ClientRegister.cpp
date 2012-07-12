@@ -112,14 +112,25 @@ void CClientRegister::run()
 
 String CClientRegister::getRegisterBody(const String& strClientID)
 {
+	IRhoPushClient* pushClient = RHODESAPP().getDefaultPushClient();
 	int port = RHOCONF().getInt("push_port");
 
+	String body = CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin,
+        port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id(),
+        /*device_push_type*/ (0 != pushClient) ? pushClient->getType() : "" /*it means native push type*/);
+
+	LOG(INFO)+"getRegisterBody() BODY is: " + body;
+	return body;
+
+	/*
     if(m_isAns)
-		return CSyncThread::getSyncEngine().getProtocol().getClientAnsRegisterBody( strClientID, m_strDevicePin, 
+		body = CSyncThread::getSyncEngine().getProtocol().getClientAnsRegisterBody( strClientID, m_strDevicePin,
 			port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id() );
 	else
-		return CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin, 
+		body = CSyncThread::getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin,
 			port > 0 ? port : DEFAULT_PUSH_PORT, rho_rhodesapp_getplatform(), rho_sysimpl_get_phone_id() );
+	*/
+
 }
 
 boolean CClientRegister::doRegister(CSyncEngine& oSync)

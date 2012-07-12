@@ -2029,7 +2029,7 @@ int rho_is_motorola_licence_checked() {
 
     int res_check = 1;
 #ifdef OS_ANDROID
-    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
+    // res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
 #endif
     
 #ifdef OS_MACOSX

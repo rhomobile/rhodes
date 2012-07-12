@@ -46,6 +46,15 @@ RhoPushManager::~RhoPushManager()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+IRhoPushClient* RhoPushManager::getDefaultClient() {
+    for(Vector<IRhoPushClient*>::iterator I = m_Clients.begin(); I != m_Clients.end(); ++I)
+    {
+        return *I;
+    }
+    return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 void RhoPushManager::addClient(IRhoPushClient* pClient)
 {
     if(getClient(pClient->getType()))

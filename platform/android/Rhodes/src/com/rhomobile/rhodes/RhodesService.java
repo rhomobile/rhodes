@@ -1157,7 +1157,7 @@ public class RhodesService extends Service {
         }
     }
 
-	private native void setPushRegistrationId(String id);
+	public native void setPushRegistrationId(String id);
 	private native String getPushRegistrationId(); 
 	
 	private native boolean callPushCallback(String data);

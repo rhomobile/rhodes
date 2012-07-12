@@ -20,6 +20,7 @@ LOCAL_SRC_FILES := \
     map/OSMMapEngine.cpp \
     map/MapEngine.cpp \
     map/GeocodingMapEngine.cpp \
+    push/RhoPushManager.cpp \
     PosixThreadImpl.cpp \
     RhoConf.cpp \
     RhoFile.cpp \
