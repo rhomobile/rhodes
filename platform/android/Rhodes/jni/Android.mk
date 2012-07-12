@@ -51,6 +51,7 @@ LOCAL_C_INCLUDES := \
 LOCAL_STATIC_LIBRARIES := \
 	ruby rhorubyext json rhomain rhocommon rhodb rhoconnect rhonet curl sqlite rholog \
 	rhocommon rhonet rhostat rhorubyext unzip \
+	anspush
 	
 #barcode nfc
 
@@ -67,8 +68,9 @@ $(call import-module,logging)
 $(call import-module,common)
 $(call import-module,net)
 $(call import-module,statistic)
-$(call import-module,unzip)
 $(call import-module,db)
 $(call import-module,sync)
 #$(call import-module,barcode)
 #$(call import-module,nfc)
+$(call import-module,anspush)
+$(call import-module,unzip)

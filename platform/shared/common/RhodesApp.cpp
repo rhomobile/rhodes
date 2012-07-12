@@ -1404,7 +1404,7 @@ void CRhodesApp::navigateBack()
 String CRhodesApp::getAppName()
 {
     String strAppName;
-#ifdef OS_WINCE
+#ifdef WINDOWS_PLATFORM
     String path = rho_native_rhopath();
     String_replace(path, '/', '\\');
 
@@ -2029,7 +2029,7 @@ int rho_is_motorola_licence_checked() {
 
     int res_check = 1;
 #ifdef OS_ANDROID
-    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
+    // res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
 #endif
     
 #ifdef OS_MACOSX

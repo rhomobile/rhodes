@@ -66,13 +66,25 @@ struct CSyncProtocol_3 : public ISyncProtocol
         return RHOCONF().getPath("syncserver") + "clientregister";
     }
 
-    String getClientRegisterBody( const String& strClientID, const String& strPin, int nPort, const String& strType, const String& strPhoneID )
+    String getClientRegisterBody( const String& strClientID, const String& strPin, int nPort, const String& strType, const String& strPhoneID, const String& strDevicePushType)
     {
         return "{\"client_id\":" + json::CJSONEntry::quoteValue(strClientID) + 
             ",\"device_pin\":" + json::CJSONEntry::quoteValue(strPin) +
             ( strPhoneID.length() > 0 ? ",\"phone_id\":" + json::CJSONEntry::quoteValue(strPhoneID) : "") +
             ",\"device_port\":" + json::CJSONEntry::quoteValue(common::convertToStringA(nPort)) +
-            ",\"device_type\":" + json::CJSONEntry::quoteValue(strType) + "}";
+            ",\"device_type\":" + json::CJSONEntry::quoteValue(strType) +
+            ((strDevicePushType.length() > 0) ? (",\"device_push_type\":" + json::CJSONEntry::quoteValue(strDevicePushType)) : String("")) +
+            "}";
+    }
+
+	String getClientAnsRegisterBody( const String& strClientID, const String& strPin, int nPort, const String& strType, const String& strPhoneID )
+    {
+        return "{\"client_id\":" + json::CJSONEntry::quoteValue(strClientID) + 
+            ",\"device_pin\":" + json::CJSONEntry::quoteValue(strPin) +
+            ( strPhoneID.length() > 0 ? ",\"phone_id\":" + json::CJSONEntry::quoteValue(strPhoneID) : "") +
+            ",\"device_port\":" + json::CJSONEntry::quoteValue(common::convertToStringA(nPort)) +
+            ",\"device_type\":" + json::CJSONEntry::quoteValue(strType) + 
+			",\"device_push_type\":\"rhoconnect_push\"}";
     }
 
     String getClientResetUrl(const String& strClientID)

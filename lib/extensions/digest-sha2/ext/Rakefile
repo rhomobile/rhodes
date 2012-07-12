@@ -11,7 +11,7 @@ def build_extension(name, arch)
     args = []
     args << "-I."
     args << "-I\"#{$rhoroot}/lib/extensions/digest/ext\""
-    args << "-I\"#{$rhoroot}/lib/extensions/openssl.so\sources\include\""
+    args << "-I\"#{$rhoroot}/lib/extensions/openssl.so/ext/sources/include\""
     args << "-I\"#{$rhoroot}/platform/shared/ruby/include\""
     args << "-I\"#{$rhoroot}/platform/shared\""
     args << "-I\"#{$rhoroot}/platform/shared/common\""

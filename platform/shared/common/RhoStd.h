@@ -103,7 +103,7 @@ inline boolean String_startsWith(const String& str, const String& strPrefix)
 template<typename StrType>
 inline void String_replace(StrType& str, int from, int to)
 {
-    for( int i = 0; i < str.length(); i++)
+    for( int i = 0; i < (int)str.length(); i++)
     {
         if ( str[i] == from )
             str[i] = to;

@@ -18,6 +18,7 @@ def build_extension(name, arch)
     if $platform == 'android'
       args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
       args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
+      args << "-I\"#{$rootdir}/lib/extensions/openssl.so/ext/sources/include\""
       cc_compile f, $tempdir, args or exit 1
 
     elsif ($platform == 'iphone') or ($platform == 'osx')
