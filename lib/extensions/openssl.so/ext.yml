@@ -3,4 +3,5 @@ win32:
 wm:
   libraries: [ "libopenssl", "crypt32" ]
 android:
+  exttype: prebuilt
   libraries: [ "libopenssl" ]
