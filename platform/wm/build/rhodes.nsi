@@ -47,6 +47,8 @@
 ;======================================================
 ; Sections
 
+RequestExecutionLevel admin #NOTE: You still need to check user rights with UserInfo!
+
 # start default section
 section
     SetShellVarContext all
@@ -62,6 +64,7 @@ section
     # create shortcuts
     createShortCut "$SMPROGRAMS\%GROUP_NAME%\%APPNAME%.lnk" "$INSTDIR\%APP_EXECUTABLE%"
     createShortCut "$SMPROGRAMS\%GROUP_NAME%\Uninstall %APPNAME%.lnk" "$INSTDIR\uninstall.exe"
+    createShortCut "$DESKTOP\%APPNAME%.lnk" "$INSTDIR\%APP_EXECUTABLE%" "" "$INSTDIR\icon.ico" 0
 
     # added information in 'unistall programs' in contorol panel
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\%APPNAME%" \
@@ -98,6 +101,7 @@ section "uninstall"
     # second, remove the link from the start menu    
     delete "$SMPROGRAMS\%GROUP_NAME%\%APPNAME%.lnk"
     delete "$SMPROGRAMS\%GROUP_NAME%\Uninstall %APPNAME%.lnk"
+    delete "$DESKTOP\%APPNAME%.lnk"
     RMDir "$SMPROGRAMS\%GROUP_NAME%"
 
     # remove information in 'unistall programs' in contorol panel
@@ -125,6 +129,7 @@ Section %SECTION_NAME% appSection
   File *.dll
   File *.manifest
   File /r "imageformats"
+  File "icon.ico"
 
 SectionEnd
 
