@@ -155,6 +155,7 @@ public:
 
     void runCallbackInThread(const String& strCallback, const String& strBody);
 
+    IRhoPushClient* getDefaultPushClient() {return m_appPushMgr.getDefaultClient(); }
     void addPushClient(IRhoPushClient* pClient) { m_appPushMgr.addClient(pClient); }
     void setPushNotification(const String& strUrl, const String& strParams, const String& types);
     //void checkPushRegistration(const String& strUrl, const String& strParams, const String& type);
