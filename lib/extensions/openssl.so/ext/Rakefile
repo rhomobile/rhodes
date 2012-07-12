@@ -5,7 +5,7 @@ def build_extension(name, arch)
   mkdir_p $targetdir unless File.exist? $targetdir
 
   if $platform == 'android'
-
+=begin
     #cp_r File.join($rootdir, "lib/extensions/openssl.so/ext/android/libs/armeabi/libopenssl.so"), $targetdir
     objects = []
     mkdir_p $tempdir unless File.exists? $tempdir
@@ -55,7 +55,7 @@ def build_extension(name, arch)
     end
 
     cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
-
+=end
   elsif ($platform == 'iphone') or ($platform == 'osx')
 
   elsif $platform == 'wm'
