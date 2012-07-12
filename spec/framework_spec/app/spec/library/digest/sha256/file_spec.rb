@@ -34,7 +34,11 @@ describe "Digest::SHA256.file" do
   it_behaves_like :file_read_directory, :file, Digest::SHA256
 
   it 'raises a Errno::ENOENT when passed a path that does not exist' do
-    lambda { Digest::SHA256.file("") }.should raise_error(Errno::ENOENT)
+	if System.get_property('platform') == 'ANDROID'
+      lambda { Digest::SHA256.file("") }.should raise_error(Errno::EFAULT)
+	else
+	  lambda { Digest::SHA256.file("") }.should raise_error(Errno::ENOENT)
+	end
   end
 
   it 'raises a TypeError when passed nil' do
