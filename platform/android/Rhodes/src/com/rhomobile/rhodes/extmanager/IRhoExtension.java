@@ -3,6 +3,8 @@ package com.rhomobile.rhodes.extmanager;
 import android.graphics.Rect;
 
 public interface IRhoExtension {
+    
+    public enum LoadErrorReason { STOP, INTERNAL_ERROR, BAD_LICENSE }
 
     void onSetPropertiesData(IRhoExtManager extManager, String propId, String data, int pos, int total, IRhoExtData ext);
     void onSetPropertiesDataEnd(IRhoExtManager extManager, IRhoExtData ext);
@@ -22,7 +24,7 @@ public interface IRhoExtension {
     void onTitle(IRhoExtManager extManager, String title, IRhoExtData ext);
     void onConsole(IRhoExtManager extManager, String message, IRhoExtData ext);
     void onInputMethod(IRhoExtManager extManager, boolean enabled, String type, Rect area, IRhoExtData ext);
-    void onNavigateError(IRhoExtManager extManager, String url, IRhoExtData ext);
+    void onNavigateError(IRhoExtManager extManager, String url, LoadErrorReason reason, IRhoExtData ext);
 
     void onAppActivate(IRhoExtManager extManager, boolean bActivate);
 
