@@ -128,10 +128,21 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     @Override
-    public void stopNavigate(IRhoExtension.LoadErrorReason reason) {
-        WebView.stopNavigate();
-        MainView mainView = RhodesActivity.safeGetInstance().getMainView();
-        onLoadError(mainView.getWebView(mainView.activeTab()).getView(), reason);
+    public void stopNavigate(final IRhoExtension.LoadErrorReason reason) {
+        
+        //TODO: cannot do stopNavigate due to EkiohView bug
+        //WebView.stopNavigate();
+        
+        final RhodesActivity activity = RhodesActivity.safeGetInstance();
+        final MainView mainView = activity.getMainView();
+        
+        // In case stopNavigate is called from onBeforeNavigate
+        // we must be aware that all other parties (extensions) finish to proceed current event
+        activity.post(new Runnable() {
+            @Override public void run() {
+                onLoadError(mainView.getWebView(mainView.activeTab()).getView(), reason);
+            }
+        });
     }
 
     @Override
