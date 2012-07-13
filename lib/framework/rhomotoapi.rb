@@ -26,6 +26,63 @@
 
 if Object.const_defined?('RhoElementsExt')
 
+module Camera
+    @@current_image_path = nil
+    
+class << self
+    def take_picture( callback, hashParams = {})
+        #puts "take_picture : #{callback}; #{hashParams}"
+
+        RhoElementsExt.meta_proc('keyCapture', "KeyValue:All; Dispatch:True; KeyEvent:url('#{callback+'_key'}');", "")
+
+        time = Time.now
+        @@current_image_path = File.join( Rho::RhoFSConnector::get_blob_folder(), "Image_#{time.month}_#{time.mday}_#{time.year}_#{time.hour}_#{time.min}_#{time.sec}.bmp" )
+        puts "@@current_image_path : #{@@current_image_path}"
+        
+        strParams = ""
+        strParams += "imagerEvent:url('#{callback}');" if callback
+        strParams += "destination:url('#{@@current_image_path}');"
+        strParams += "left:0;";
+        strParams += "top:0;";
+        strParams += "width:#{hashParams['desired_width'] ? hashParams['desired_width'] : System.get_property('screen_width')};";
+        strParams += "height:#{hashParams['desired_height'] ? hashParams['desired_height'] : System.get_property('screen_height')};";
+        strParams += "aim:on;"
+        strParams += "lamp:on;" if hashParams['flash_mode'] && hashParams['flash_mode'] != 'off'
+        
+        strParams += "enable;"
+        
+        puts "meta_proc : #{strParams}"
+        RhoElementsExt.meta_proc('imager', strParams, "")
+    end
+
+    def rho_process_moto_callback(params)
+        #puts "Camera::rho_process_moto_callback : #{params}"        
+
+        return unless @@current_image_path
+        
+        if @@current_image_path && params['transferResult']
+            RhoElementsExt.meta_proc('imager', "disable;", "")
+            
+            if params['transferResult'].index('OK')
+                params['image_uri'] = File.join( '/db/db-files', File.basename(@@current_image_path) )
+                params['status'] = 'ok'
+            else
+                params['status'] = 'cancel'
+                params['message'] = 'User canceled operation.'
+            end
+            
+            @@current_image_path = nil
+        end
+
+        if params['keyValue'] == '13'
+            RhoElementsExt.meta_proc('imager', "capture;", "")
+        end
+        
+    end
+    
+end
+end
+
 module Barcode
 
 class << self
@@ -97,7 +154,7 @@ class << self
     end
       
     def rho_process_moto_callback(params)
-        puts "rho_process_moto_callback : #{params}"        
+        #puts "rho_process_moto_callback : #{params}"        
         
         return unless params['event'] == 'Decode'
         if params['data']

@@ -67,6 +67,10 @@ module Rho
                 if barcodeModule && barcodeModule.respond_to?( :rho_process_moto_callback )
                     barcodeModule.rho_process_moto_callback(params)
                 end
+                cameraModule = Object.const_get('Camera') if Object.const_defined?('Camera')
+                if cameraModule && cameraModule.respond_to?( :rho_process_moto_callback )
+                    cameraModule.rho_process_moto_callback(params)
+                end
                 
             else
                 params[name] = __rhoGetCallbackObject(index.to_i())
