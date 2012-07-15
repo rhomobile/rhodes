@@ -543,7 +543,7 @@ end
     if $spec_settings[:sync_model]        
         records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 1
-        records[0]['attrib'].should == 'object'
+        records[0]['attrib'].should == 'created_by_name'
     end    
     
   end
@@ -563,7 +563,7 @@ end
     if $spec_settings[:sync_model]        
         records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
         records.length.should == 1
-        records[0]['attrib'].should == 'object'
+        records[0]['attrib'].should == 'created_by_name'
     end    
     
   end

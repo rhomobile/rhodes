@@ -359,7 +359,8 @@ public:
     virtual DBResultPtr prepareStatement( const char* szSt );
     DBResultPtr executeStatement(common::CAutoPtr<CDBResult>& res, const char* szSt);
     void updateAllAttribChanges();
-	
+    void updateFullUpdateChanges(int nSrcID);
+
 	String exportDatabase();
 	bool importDatabase( const String& zipName );
 	

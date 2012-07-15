@@ -1227,13 +1227,13 @@ module Rhom
                         else
                     
                             objects.each do |obj, values|
-                                if is_full_update
-                                    resUpdateType =  db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0})
-                                    
-                                    unless resUpdateType && resUpdateType.length > 0 
-                                        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>'update'})
-                                    end    
-                                else
+                                #if is_full_update
+                                #    resUpdateType =  db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0})
+                                #    
+                                #    unless resUpdateType && resUpdateType.length > 0 
+                                #        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>'update'})
+                                #    end    
+                                #else
                             
                                   values['attributes'].each do |attrib, value|
                                       resUpdateType =  db.select_from_table('changed_values', 'update_type', 
@@ -1244,7 +1244,7 @@ module Rhom
                                       db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
                                         "value"=>value, "update_type"=>'update', "attrib_type"=>attrib_type })
                                   end      
-                                end
+                                #end
                             end    
                         end
                             
@@ -1602,12 +1602,12 @@ module Rhom
                         update_type = resUpdateType[0]['update_type'] if resUpdateType && resUpdateType.length > 0 
                         ignore_changed_values = update_type=='create'
                         
-                        if is_inst_full_update
-                            unless resUpdateType && resUpdateType.length > 0 
-                                db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>update_type})
-                            end    
-                            ignore_changed_values = update_type=='update'
-                        end
+                        #if is_inst_full_update
+                        #    unless resUpdateType && resUpdateType.length > 0 
+                        #        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>update_type})
+                        #    end    
+                        #    ignore_changed_values = update_type=='update'
+                        #end
                     end
     				
                     self.vars.each do |key_a,value|
@@ -1634,9 +1634,9 @@ module Rhom
                         
                             isModified = false
 
-                            if is_inst_full_update
-                              isModified = true
-                            else
+                            #if is_inst_full_update
+                            #  isModified = true
+                            #else
                                 oldValue = isSchemaSrc ? resValue[0][key] : resValue[0]['value']
                                 
                                 isModified = oldValue != val
@@ -1646,7 +1646,7 @@ module Rhom
                                 if isModified && oldValue && val.nil? && oldValue.to_s().length == 0
                                   isModified = false
                                 end
-                            end
+                            #end
                             
                             if isModified
                             
@@ -1734,12 +1734,12 @@ module Rhom
                         update_type = resUpdateType[0]['update_type'] if resUpdateType && resUpdateType.length > 0 
                         ignore_changed_values = update_type=='create'
                         
-                        if is_inst_full_update
-                            unless resUpdateType && resUpdateType.length > 0 
-                                db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>update_type})
-                            end    
-                            ignore_changed_values = update_type=='update'
-                        end
+                        #if is_inst_full_update
+                        #    unless resUpdateType && resUpdateType.length > 0 
+                        #        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>update_type})
+                        #    end    
+                        #    ignore_changed_values = update_type=='update'
+                        #end
                     end
                                     
                     attrs.each do |attrib,val|
