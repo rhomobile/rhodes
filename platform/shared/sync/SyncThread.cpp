@@ -511,6 +511,13 @@ void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char
     CSyncEngine::getSourceOptions().setProperty(nSrcID, szPropName, szPropValue);
 }
 
+#ifndef RHO_NO_RUBY
+unsigned long rho_sync_get_source_property(int nSrcID, const char* szPropName)
+{
+    return rho_ruby_create_string( CSyncEngine::getSourceOptions().getProperty(nSrcID, szPropName).c_str() );
+}
+#endif //RHO_NO_RUBY
+
 void rho_sync_set_ssl_verify_peer(int b)
 {
     CSyncThread::getSyncEngine().setSslVerifyPeer(b == 0 ? false : true);

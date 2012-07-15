@@ -596,7 +596,7 @@ end
 
     def self.init_sync_source_properties(uniq_sources)
         uniq_sources.each do|src|
-            ['pass_through'].each do |prop|
+            ['pass_through', 'full_update'].each do |prop|
                 next unless src.has_key?(prop)        
                 SyncEngine.set_source_property(src['source_id'], prop, src[prop] ? src[prop].to_s() : '' )
             end            

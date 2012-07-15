@@ -119,6 +119,13 @@ boolean CSyncEngine::CSourceOptions::getBoolProperty(int nSrcID, const char* szP
     return strValue.compare("1") == 0 || strValue.compare("true") == 0 ? true : false;
 }
 
+int CSyncEngine::CSourceOptions::getIntProperty(int nSrcID, const char* szPropName)
+{
+    String strValue = getProperty(nSrcID, szPropName);
+
+    return strValue.length() ? atoi(strValue.c_str()) : 0;
+}
+
 void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
 {
     setState(eState);
