@@ -26,6 +26,8 @@
 
 if Object.const_defined?('RhoElementsExt')
 
+if System.get_property('platform') != 'ANDROID'
+
 module Camera
     @@current_image_path = nil
     
@@ -80,6 +82,7 @@ class << self
         
     end
     
+end
 end
 end
 
