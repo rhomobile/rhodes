@@ -696,21 +696,25 @@ void rho_wmsys_run_app(const char* szPath, const char* szParams )
 
 void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
 {
-    SHELLEXECUTEINFO se = {0};
+	SHELLEXECUTEINFO se = {0};
     se.cbSize = sizeof(SHELLEXECUTEINFO);
-    se.fMask = SEE_MASK_NOCLOSEPROCESS;
+    se.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
     se.lpVerb = L"Open";
     se.nShow = SW_SHOWNORMAL;
 
     StringW strAppNameW = szPath;
     String_replace(strAppNameW, '/', '\\' );
+
     se.lpFile = strAppNameW.c_str();
 
     if ( szParams && *szParams )
         se.lpParameters = szParams;
 
     if ( !ShellExecuteEx(&se) )
+	{
         LOG(ERROR) + "Cannot execute: " + strAppNameW + ";Error: " + GetLastError();
+		SetLastError(-1);
+	}
 
     if(se.hProcess)
         CloseHandle(se.hProcess); 
