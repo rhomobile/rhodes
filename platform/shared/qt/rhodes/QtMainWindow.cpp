@@ -88,7 +88,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-#ifdef RHODES_WIN32
+#ifdef OS_WINDOWS_DESKTOP
 	ui->menuSimulate->clear();
 	ui->menuSimulate->setTitle("Navigate");
 	ui->menuSimulate->insertAction(0, ui->actionBack);
@@ -647,9 +647,15 @@ void QtMainWindow::menuActionEvent(bool checked)
 
 void QtMainWindow::on_actionAbout_triggered()
 {
-    #ifndef RHO_SYMBIAN
+#ifndef RHO_SYMBIAN
+#ifdef RHODES_EMULATOR
     QMessageBox::about(this, RHOSIMULATOR_NAME, RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION);
-    #endif
+#else
+    QMessageBox::about(this, APPLICATION_NAME, APPLICATION_NAME " v" APPLICATION_VERSION);
+
+#endif
+
+#endif
 }
 
 // slots:
