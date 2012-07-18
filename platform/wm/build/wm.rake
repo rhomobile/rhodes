@@ -684,6 +684,8 @@ namespace "device" do
 
       cp $app_icon_path, $tmpdir + "/icon.ico"
 
+      File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + "/" + $appname + "/" + $appname + ".exe") }
+
       chdir $tmpdir
 
       target_rho_dir = File.join($tmpdir, "rho")
@@ -698,6 +700,7 @@ namespace "device" do
       puts "arg = " + args.to_s
 
       puts Jake.run2($nsis, args, {:nowait => false} )
+      
     end
   end
 end

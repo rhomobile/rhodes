@@ -161,10 +161,9 @@ VALUE rho_sys_get_property(char* szPropName)
 void rho_sys_set_push_notification(const char *url, const char* params, const char* types)
 {
     String strTypes = types ? types : String();
-    if((types == 0) || (*types == '\0'))
-    {
+    if ( strTypes.length() == 0 )
         strTypes = RHOCONF().isExist("push_options") ? RHOCONF().getString("push_options") : String("legacy");
-    }
+
     String item;
     String::size_type pos = 0;
 
