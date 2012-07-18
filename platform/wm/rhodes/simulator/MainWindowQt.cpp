@@ -197,7 +197,7 @@ void* CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
 {
     int argc = 0;
     QCoreApplication::setOrganizationName("Rhomobile");
-#ifdef RHODES_WIN32
+#ifndef RHODES_EMULATOR
 	QCoreApplication::setApplicationName(RHODESAPP().getAppName().c_str());
 #else
     QCoreApplication::setApplicationName("RhoSimulator");

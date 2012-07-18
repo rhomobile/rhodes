@@ -74,14 +74,14 @@ VALUE nativebar_started()
 //Tabbar
 void remove_native_tabbar()
 {
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
     getAppWindow().performOnUiThread(new CNativeTabbar::CRemoveTask() );
 #endif
 }
 
 void create_native_tabbar(int bar_type, rho_param *p)
 {
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
     // check for iPad SplitTabBar type -> redirect to TabBar
     if (bar_type == VTABBAR_TYPE) {
         bar_type = TABBAR_TYPE;
@@ -101,14 +101,14 @@ void create_native_tabbar(int bar_type, rho_param *p)
 
 void native_tabbar_switch_tab(int index)
 {
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
     getAppWindow().performOnUiThread(new CNativeTabbar::CSwitchTask(index) );
 #endif
 }
 
 void native_tabbar_set_tab_badge(int index,char *val)
 {
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
     getAppWindow().performOnUiThread(new CNativeTabbar::CBadgeTask(index, val) );
 #endif
 }
@@ -121,7 +121,7 @@ void nativebar_set_tab_badge(int index,char* val)
 
 int native_tabbar_get_current_tab() 
 {
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
 	return getAppWindow().tabbarGetCurrent();
 #else
 	return 0;

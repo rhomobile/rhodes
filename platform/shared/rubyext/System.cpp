@@ -268,7 +268,7 @@ int rho_sys_zip_file(const char* szZipFilePath, const char* szToZipPath, const c
     return 0;
 }
 
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
 void rho_sys_set_window_frame(int x0, int y0, int width, int height)
 {
     LOG(INFO) + "System.set_window_frame is unsupported on current platform.";

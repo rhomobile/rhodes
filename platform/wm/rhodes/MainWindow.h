@@ -26,7 +26,7 @@
 
 #pragma once
 
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
 
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE )
 #include <exdispid.h>

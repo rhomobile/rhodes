@@ -64,7 +64,7 @@ CRhoExtData CExtManager::makeExtData()
     CRhoExtData oData;
     oData.m_hWnd = getMainWnd();
     oData.m_hInstance = rho_wmimpl_get_appinstance();
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
     oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND();
 #endif
 
@@ -148,7 +148,7 @@ void CExtManager::navigate(const wchar_t* szUrl)
 
 bool CExtManager::existsJavascript(const wchar_t* szJSFunction)
 {
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
     return getAppWindow().getWebKitEngine()->isExistJavascript(szJSFunction, rho_webview_active_tab());
 #else
     return true;
@@ -157,7 +157,7 @@ bool CExtManager::existsJavascript(const wchar_t* szJSFunction)
 
 void CExtManager::setBrowserGesturing(bool bEnableGesturing)
 {
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
     getAppWindow().getWebKitEngine()->setBrowserGesturing(bEnableGesturing);
 #endif
 
@@ -165,7 +165,7 @@ void CExtManager::setBrowserGesturing(bool bEnableGesturing)
 
 void CExtManager::passSipPositionToEngine()
 {
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
     getAppWindow().getWebKitEngine()->NotifyEngineOfSipPosition();
 #endif
 }
@@ -237,7 +237,7 @@ void CExtManager::zoomText(int nZoom)
 
 int CExtManager::getTextZoom() //Enum (0 to 4)
 {
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
     return getAppWindow().getWebKitEngine()->GetTextZoomOnTab(rho_webview_active_tab());
 #else
     return 2;
@@ -255,7 +255,7 @@ StringW CExtManager::getConfigPath()
 
 StringW CExtManager::getPageTitle(UINT iTab)
 {
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
     wchar_t szBuf[1025];
     szBuf[0]=0;
     getAppWindow().getWebKitEngine()->GetTitleOnTab( szBuf, 1024, iTab );    
