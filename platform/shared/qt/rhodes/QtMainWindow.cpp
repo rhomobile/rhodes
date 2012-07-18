@@ -88,7 +88,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
 
     ui->setupUi(this);
 
-#ifdef RHODES_WIN32
+#ifdef OS_WINDOWS_DESKTOP
 	ui->menuSimulate->clear();
 	ui->menuSimulate->setTitle("Navigate");
 	ui->menuSimulate->insertAction(0, ui->actionBack);

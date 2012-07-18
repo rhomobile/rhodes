@@ -29,12 +29,12 @@
 #include "common/RhoPort.h"
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
-#ifdef RHODES_WIN32
+#ifdef OS_WINDOWS_DESKTOP
 #include "common/RhoFile.h"
 #endif
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/app_build_capabilities.h"
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
 #undef null
 #include <QWebPage>
 #endif
@@ -58,7 +58,7 @@ extern "C" HWND getMainWnd();
 extern "C" char* wce_wctomb(const wchar_t* w);
 extern "C" int rho_wm_impl_CheckSymbolDevice();
 
-#if (defined(RHODES_EMULATOR) && defined(WINDOWS_PLATFORM)) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
 
 //extern "C" CMainWindow* Rhodes_getMainWindow();
 CMainWindow& getAppWindow();
@@ -435,7 +435,7 @@ static void toHexString(int i, String& strRes, int radix)
     strRes += (buf+f+1);
 }
 
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
 int get_msie_version(rho::String& msieVer)
 // Return codes are as follows:
 //    0  : Success
@@ -485,7 +485,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
 	if (strcasecmp("webview_framework",szPropName) == 0)
 	{
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
 		*resValue = rho_ruby_create_string("WEBKIT/" QTWEBKIT_VERSION_STR);
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 		*resValue = rho_ruby_create_string("WEBKIT/MOTOROLA");
@@ -703,11 +703,7 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
     se.nShow = SW_SHOWNORMAL;
 
     StringW strAppNameW = szPath;
-    for(int i = 0; i<(int)strAppNameW.length();i++)
-    {
-        if ( strAppNameW.at(i) == '/' )
-            strAppNameW.at(i) = '\\';
-    }
+    String_replace(strAppNameW, '/', '\\' );
     se.lpFile = strAppNameW.c_str();
 
     if ( szParams && *szParams )
@@ -720,7 +716,7 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
         CloseHandle(se.hProcess); 
 }
 
-#ifdef RHODES_WIN32
+#ifdef OS_WINDOWS_DESKTOP
 void rho_win32sys_run_appW(const wchar_t* szPath, const wchar_t* szParams, const wchar_t* szDir)
 {
 	HINSTANCE result = ShellExecute(NULL, NULL, (WCHAR*)szPath, (WCHAR*)szParams, (WCHAR*)szDir, SW_SHOW);
@@ -737,30 +733,33 @@ void rho_sys_open_url(const char* url)
     rho_wmsys_run_app(url, 0);
 }
 
-void rho_sys_run_app(const char *appname, VALUE params)
+static LONG openRegAppPath(const char *appname, CRegKey& oKey, StringW& strKeyPath)
 {
-#ifdef RHODES_WIN32
-    StringW strAppName;
-    rho::common::convertToStringW(appname, strAppName);
-
-	StringW strKeyPath = L"Software\\Rhomobile\\RhoGallery\\";
-    strKeyPath += strAppName;
-#else
     CFilePath oPath(appname);
     String strAppName = oPath.getFolderName();
 
-    StringW strKeyPath = L"Software\\Apps\\";
-    strKeyPath += convertToStringW(strAppName);
+#ifdef OS_WINDOWS_DESKTOP
+    strKeyPath = L"SOFTWARE\\";
+#else
+    strKeyPath = L"Software\\Apps\\";
 #endif
 
-    StringW strParamsW;
-    if ( params && !rho_ruby_is_NIL(params) )
-    {
-        convertToStringW(getStringFromValue(params), strParamsW);
-    }
+    strKeyPath += convertToStringW(strAppName);
+    String_replace(strKeyPath, '/', '\\' );
 
+    return oKey.Open(HKEY_LOCAL_MACHINE, strKeyPath.c_str(), KEY_READ
+#ifdef OS_WINDOWS_DESKTOP
+        |KEY_WOW64_64KEY 
+#endif
+    );
+}
+
+void rho_sys_run_app(const char *appname, VALUE params)
+{
     CRegKey oKey;
-    LONG res = oKey.Open(HKEY_LOCAL_MACHINE, strKeyPath.c_str(), KEY_READ);
+    StringW strKeyPath;
+    LONG res = openRegAppPath(appname, oKey, strKeyPath);
+
     if ( res != ERROR_SUCCESS )
     {
         LOG(ERROR) + "Cannot open registry key: " + strKeyPath + "; Code:" + res;
@@ -776,26 +775,21 @@ void rho_sys_run_app(const char *appname, VALUE params)
         {
             StringW strFullPath = szBuf;
 
-#ifdef RHODES_WIN32
-			nChars = MAX_PATH;
-	        res = oKey.QueryStringValue(L"Executable", szBuf, &nChars);
-			if (res != ERROR_SUCCESS) {
-			    LOG(ERROR) + "Cannot read registry key: Executable; Code:" + res;
-				return;
-			}
-            StringW strExecutable = szBuf;
-
-			rho_win32sys_run_appW(strExecutable.c_str(), strParamsW.c_str(), strFullPath.c_str());
-#else
             if ( strFullPath[strFullPath.length()-1] != '/' && strFullPath[strFullPath.length()-1] != '\\' )
                 strFullPath += L"\\";
 
 			StringW strBaseName;
+            CFilePath oPath(appname);
             convertToStringW(oPath.getBaseName(), strBaseName);
             strFullPath += strBaseName;
 
+            StringW strParamsW;
+            if ( params && !rho_ruby_is_NIL(params) )
+            {
+                convertToStringW(getStringFromValue(params), strParamsW);
+            }
+
             rho_wmsys_run_appW(strFullPath.c_str(), strParamsW.c_str());
-#endif
         }
     }
 }
@@ -812,13 +806,11 @@ void rho_sys_report_app_started()
 
 int rho_sys_is_app_installed(const char *appname)
 {
-#ifdef RHODES_WIN32
-    StringW name;
-    rho::common::convertToStringW(appname, name);
-	StringW strKeyPath = L"Software\\Rhomobile\\RhoGallery\\";
-	strKeyPath += name;
+#ifdef OS_WINDOWS_DESKTOP
     CRegKey oKey;
-    LONG res = oKey.Open(HKEY_LOCAL_MACHINE, strKeyPath.c_str(), KEY_READ);
+    StringW strKeyPath;
+    LONG res = openRegAppPath(appname, oKey, strKeyPath);
+
 	return res == ERROR_SUCCESS ? 1 : 0;
 #else
 	int nRet = 0;
@@ -854,7 +846,7 @@ int rho_sys_is_app_installed(const char *appname)
 
 void rho_sys_app_install(const char *url)
 {
-#ifdef RHODES_WIN32
+#ifdef OS_WINDOWS_DESKTOP
 	String sUrl = url;
     CFilePath oFile(sUrl);
 	String filename = RHODESAPP().getRhoUserPath()+ oFile.getBaseName();
@@ -866,7 +858,7 @@ void rho_sys_app_install(const char *url)
 		if (resp.isOK()) {
 			StringW filenameW = convertToStringW(filename);
 			LOG(INFO) + "Downloaded " + sUrl + " to " + filename;
-			rho_win32sys_run_appW(filenameW.c_str(), NULL, NULL);
+			rho_wmsys_run_appW(filenameW.c_str(), L"");
 		} else {
 			LOG(ERROR) + "rho_sys_app_install() download failed: " + sUrl;
 		}
@@ -878,15 +870,10 @@ void rho_sys_app_install(const char *url)
 
 void rho_sys_app_uninstall(const char *appname)
 {
-#ifdef RHODES_WIN32
-    StringW strAppName;
-    rho::common::convertToStringW(appname, strAppName);
-
-	StringW strKeyPath = L"Software\\Rhomobile\\RhoGallery\\";
-    strKeyPath += strAppName;
-
+#ifdef OS_WINDOWS_DESKTOP
     CRegKey oKey;
-    LONG res = oKey.Open(HKEY_LOCAL_MACHINE, strKeyPath.c_str(), KEY_READ);
+    StringW strKeyPath;
+    LONG res = openRegAppPath(appname, oKey, strKeyPath);
     if ( res != ERROR_SUCCESS )
     {
         LOG(ERROR) + "Cannot open registry key: " + strKeyPath + "; Code:" + res;
@@ -901,7 +888,7 @@ void rho_sys_app_uninstall(const char *appname)
         else
         {
             StringW strFullPath = szBuf;
-			rho_win32sys_run_appW(strFullPath.c_str(), NULL, NULL);
+			rho_wmsys_run_appW( strFullPath.c_str(), L"" );
 		}
 	}
 #else
@@ -936,7 +923,7 @@ void rho_sys_set_application_icon_badge(int badge_number) {
     //unsupported on WM
 }
 
-#if (defined(RHODES_EMULATOR) && defined(WINDOWS_PLATFORM)) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
 void rho_sys_set_window_frame(int x0, int y0, int width, int height)
 {
 	rho_callInUIThread(CRhoWindow::setFrame, new CRhoWindow::CParams(x0, y0, width, height));
