@@ -83,7 +83,7 @@ describe "Json" do
     it "should webservice" do
             
         res = Rho::AsyncHttp.get( :url => 'http://rhostore.heroku.com/products.json' )
-        #puts "res : #{res}"  
+        puts "res : #{res}"  
         res['status'].should == 'ok'
         
         parsed = res['body']
