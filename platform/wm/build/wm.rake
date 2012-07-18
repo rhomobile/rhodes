@@ -166,10 +166,14 @@ namespace "config" do
     task :application do
       $app_version = '1.0'
       $app_version = $app_config["version"] unless $app_config["version"].nil?
-      File.open(File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), "wb") do |fversion|
-        fversion.write( "#define RHOSIMULATOR_NAME \"#{$appname}\"\n" )
-        fversion.write( "#define RHOSIMULATOR_VERSION \"#{$app_version}\"\n" )
-      end
+      
+      require $startdir + "/lib/rhodes.rb"
+      fversion = StringIO.new("", "w+")          
+      fversion.write( "#define RHOSIMULATOR_NAME \"RhoSimulator\"\n" )
+      fversion.write( "#define RHOSIMULATOR_VERSION \"#{Rhodes::VERSION}\"\n" )
+      fversion.write( "#define APPLICATION_NAME \"#{$appname}\"\n" )
+      fversion.write( "#define APPLICATION_VERSION \"#{$app_version}\"\n" )
+      Jake.modify_file_if_content_changed( File.join($startdir, 'platform/shared/qt/rhodes/RhoSimulatorVersion.h'), fversion )  
 
       $app_icon_path = $app_path + "/icon/icon.ico"
       $app_icon_path = $startdir + "/res/icons/rhodes.ico" unless File.exists? $app_icon_path
@@ -453,7 +457,7 @@ namespace "build" do
         $buildcfg = 'Release'
     end
 
-    task :devrhobundle => ["config:set_win32_platform", :set_debug_config, "build:wm:rhobundle", :after_bundle] do
+    task :devrhobundle => ["config:set_win32_platform", :set_debug_config, "build:wm:rhobundle", "config:win32:application", :after_bundle] do
     end
 
     task :after_bundle do
