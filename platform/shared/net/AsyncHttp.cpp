@@ -298,7 +298,7 @@ unsigned long CAsyncHttp::CAsyncHttpResponse::getObjectValue()
 {
     if (m_NetResponse.isSuccess())
     {
-        if ( m_strContentType.find("application/json") != String::npos && m_strContentEncoding.find("gzip") == String::npos)
+        if ( m_strContentType.find("application/json") != String::npos/* && m_strContentEncoding.find("gzip") == String::npos*/ )
         {
             char* szError = 0;
             unsigned long valBody = rjson_tokener_parse(m_NetResponse.getCharData(), &szError);
