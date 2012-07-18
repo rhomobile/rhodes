@@ -82,10 +82,10 @@ section
 
     # update installed rhodes applications catalogue
     #WriteRegStr HKCU "Software\Rhomobile\%APPNAME%" "" ""
-    WriteRegStr HKCU "Software\Rhomobile\%APPNAME%" "InstallDir" "$INSTDIR"
-    WriteRegStr HKCU "Software\Rhomobile\%APPNAME%" "Executable" "$INSTDIR\%APP_EXECUTABLE%"
-    WriteRegStr HKCU "Software\Rhomobile\%APPNAME%" "Uninstaller" "$INSTDIR\uninstall.exe"
-    WriteRegStr HKCU "Software\Rhomobile\%APPNAME%" "DisplayName" "%APPNAME% %APPVERSION%"
+    WriteRegStr HKCU "Software\%VENDOR%\%APPNAME%" "InstallDir" "$INSTDIR"
+    WriteRegStr HKCU "Software\%VENDOR%\%APPNAME%" "Executable" "$INSTDIR\%APP_EXECUTABLE%"
+    WriteRegStr HKCU "Software\%VENDOR%\%APPNAME%" "Uninstaller" "$INSTDIR\uninstall.exe"
+    WriteRegStr HKCU "Software\%VENDOR%\%APPNAME%" "DisplayName" "%APPNAME% %APPVERSION%"
 
 sectionEnd
  

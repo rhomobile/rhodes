@@ -682,6 +682,7 @@ namespace "device" do
       install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
       install_script = install_script.gsub(/%README_FILE%/, readme_line)
       install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
+      install_script = install_script.gsub(/%VENDOR%/, $app_config["vendor"])
       File.open(app_script_name, "w") { |file| file.puts install_script }
 
       puts "$appname - " + $appname
