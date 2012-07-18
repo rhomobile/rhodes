@@ -161,10 +161,9 @@ VALUE rho_sys_get_property(char* szPropName)
 void rho_sys_set_push_notification(const char *url, const char* params, const char* types)
 {
     String strTypes = types ? types : String();
-    if((types == 0) || (*types == '\0'))
-    {
+    if ( strTypes.length() == 0 )
         strTypes = RHOCONF().isExist("push_options") ? RHOCONF().getString("push_options") : String("legacy");
-    }
+
     String item;
     String::size_type pos = 0;
 
@@ -269,7 +268,7 @@ int rho_sys_zip_file(const char* szZipFilePath, const char* szToZipPath, const c
     return 0;
 }
 
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
 void rho_sys_set_window_frame(int x0, int y0, int width, int height)
 {
     LOG(INFO) + "System.set_window_frame is unsupported on current platform.";

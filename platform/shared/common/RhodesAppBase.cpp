@@ -321,7 +321,7 @@ const char* rho_rhodesapp_getplatform()
 {
 #if defined(OS_MACOSX)
 	return "APPLE";
-#elif defined(RHODES_WIN32)
+#elif defined(OS_WINDOWS_DESKTOP)
 	return "WINDOWS_DESKTOP";
 #elif defined(WINDOWS_PLATFORM)
 	return "WINDOWS";

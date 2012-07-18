@@ -177,7 +177,7 @@ public :
 	CMainWindow* GetMainWindowObject() { return &m_appWindow;}
 	CMainWindow& GetAppWindow() { return m_appWindow; }
 	HWND GetWebViewWindow(int index) {	return m_appWindow.getWebViewHWND(
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
             index
 #endif
         );
@@ -197,7 +197,7 @@ HINSTANCE CRhodesModule::m_hInstance;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
 
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 {
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
@@ -206,7 +206,7 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
     return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 }
-#endif //!RHODES_EMULATOR && !RHODES_WIN32
+#endif //!OS_WINDOWS_DESKTOP
 
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( )
 {
@@ -388,7 +388,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
     // Note: In this sample, we don't respond differently to different hr success codes.
 
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
     // Allow only one instance of the application.
     // the "| 0x01" activates the correct owned window of the previous instance's main window
 	HWND hWnd = NULL;
@@ -545,7 +545,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     dwStyle |= WS_OVERLAPPEDWINDOW;
 #endif
     // Create the main application window
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
 #ifdef RHODES_EMULATOR
     StringW windowTitle = convertToStringW(RHOSIMCONF().getString("app_name"));
 #else
@@ -595,14 +595,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         registerRhoExtension();
 #endif
 	    m_appWindow.Navigate2(_T("about:blank")
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
             , -1
 #endif
         );
         
         rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
 /*    	m_appWindow.Navigate2( convertToStringW( RHOCONF().getString("start_path") ).c_str()
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
             , -1
 #endif
         );*/
@@ -620,7 +620,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
         // Navigate to the "loading..." page
 	    m_appWindow.Navigate2(_T("about:blank")
-    #if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+    #if defined(OS_WINDOWS_DESKTOP)
             , -1
     #endif
         );
@@ -674,7 +674,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
 void CRhodesModule::RunMessageLoop( ) throw( )
 {
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
     m_appWindow.MessageLoop();
 #else
     m_appWindow.getWebKitEngine()->RunMessageLoop(m_appWindow);
@@ -696,7 +696,7 @@ void CRhodesModule::RunMessageLoop( ) throw( )
     rho_clientregister_destroy();
 #endif
 
-#if defined(RHODES_EMULATOR) || defined(RHODES_WIN32)
+#if defined(OS_WINDOWS_DESKTOP)
     m_appWindow.DestroyUi();
 #endif
 
@@ -704,7 +704,7 @@ void CRhodesModule::RunMessageLoop( ) throw( )
 
     net::CNetRequestImpl::deinitConnection();
 
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
 //	ReleaseMutex(m_hMutex);
 #endif
 }
@@ -944,7 +944,7 @@ extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
 //{
 //}
 
-#if !defined(RHODES_EMULATOR) && !defined(RHODES_WIN32)
+#if !defined(OS_WINDOWS_DESKTOP)
 extern "C" void Init_fcntl(void)
 {
 }
