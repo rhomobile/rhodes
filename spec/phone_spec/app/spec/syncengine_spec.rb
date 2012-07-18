@@ -48,7 +48,7 @@ def getTestDB
     ::Rho::RHO.get_db_partitions['user']
 end
 
-SYNC_SERVER_URL = 'http://rhodes-store-server.heroku.com/application'
+SYNC_SERVER_URL = 'http://rhodes-store-server.herokuapp.com/application'
 #SYNC_SERVER_URL = 'http://localhost:9292/application'
 
 describe "SyncEngine_test" do
@@ -298,10 +298,10 @@ if !defined?(RHO_WP7)
     records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
     records.length.should == 0
     
-    cust1 = getCustomer.create( {:first => "CustTest1"})
+    cust1 = getCustomer.create( {:first => "CustTest1", :last => "Last1"})
 
-    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
-    records.length.should_not == 0
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
 
     Rho::RhoConfig.syncserver = 'http://rhodes-store-server.heroku2.com/application'
     res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync
@@ -309,8 +309,19 @@ if !defined?(RHO_WP7)
     res['error_code'].to_i.should >  ::Rho::RhoError::ERR_NONE
     res['error_code'].to_i.should <  ::Rho::RhoError::ERR_RUNTIME
 
-    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*')
-    records.length.should_not == 0
+    records = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'create')
+    records.length.should == 1
+    records[0]['attrib'].should == 'object'
+
+    cust1.update_attributes( {:first => "CustTest2"} )
+    records2 = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'create')
+    records2.length.should == records.length
+
+    items2 = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'attrib' => 'first')
+    items2.length.should == 0
+    
+    records3 = ::Rho::RHO.get_user_db().select_from_table('changed_values','*', 'update_type' => 'update')
+    records3.length.should == 0
 
     Rho::RhoConfig.syncserver = SYNC_SERVER_URL
     res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync
@@ -321,7 +332,7 @@ if !defined?(RHO_WP7)
     records.length.should == 0
     
   end
-end  
+end
   it "should modify Product" do
     SyncEngine.logged_in.should == 1
   

@@ -361,19 +361,73 @@ void CSyncSource::doSyncClientChanges()
             }
         }
 
-        for( i = 0; i < 3 && m_nErrCode == RhoAppAdapter.ERR_NONE; i++ )
+        getDB().Lock();
+        for( i = 0; i < 3; i++ )
         {
             if ( arUpdateSent[i] )
             {
-                //oo conflicts
-                if ( i < 1 &&  !getSync().getSourceOptions().getBoolProperty(getID(), "pass_through") ) //create
-                    getDB().executeSQL("UPDATE changed_values SET sent=2 WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
-                else
-                //
-                    getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
+                if ( m_nErrCode == RhoAppAdapter.ERR_NONE )
+                {
+                    //oo conflicts
+                    if ( i < 1 &&  !getSync().getSourceOptions().getBoolProperty(getID(), "pass_through") ) //create
+                        getDB().executeSQL("UPDATE changed_values SET sent=2 WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
+                    else
+                    //
+                        getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
+                }else
+                {
+                    if ( i == 0 ) //create
+                    {
+                        //remove deleted while sync objects
+                        Hashtable<String,int> hashDeletes;
+                        {
+                            IDBResult res = getDB().executeSQL("SELECT distinct(object) FROM changed_values where source_id=? and update_type=? and sent=0", getID(), "delete" );
+                            for( ; !res.isEnd(); res.next() )
+                                hashDeletes.put( res.getStringByIdx(0), 1 );
+                        }
+
+                        Vector<String> arObjs;
+                        IDBResult res = getDB().executeSQL("SELECT distinct(object) FROM changed_values where source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
+                        for( ; !res.isEnd(); res.next() )
+                            arObjs.addElement( res.getStringByIdx(0) );
+
+                        for ( int j = 0; j < (int)arObjs.size(); j++ )
+                        {
+                            if ( !hashDeletes.containsKey(arObjs[j]) )
+                                getDB().executeSQL("INSERT INTO changed_values(update_type, attrib, source_id, object) VALUES(?,?,?,?)", arUpdateTypes[i], "object", getID(), arObjs[j] );
+                        }
+
+                        for ( int j = 0; j < (int)arObjs.size(); j++ )
+                            getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and object=? and attrib<>?", getID(), arObjs[j], "object" );
+
+                    }
+                    else if ( i == 1 )//update
+                    {
+                        //remove updates with sent=1 if sent=0 exists
+                        Vector<String> arObjs, arAttribs;
+                        IDBResult res = getDB().executeSQL("SELECT object, attrib FROM changed_values where source_id=? and update_type=? and sent=0", getID(), arUpdateTypes[i] );
+                        for( ; !res.isEnd(); res.next() )
+                        {
+                            arObjs.addElement( res.getStringByIdx(0) );
+                            arAttribs.addElement( res.getStringByIdx(1) );
+                        }
+                        for ( int j = 0; j < (int)arObjs.size(); j++ )
+                        {
+                            getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and object=? and attrib=? and update_type = ? and sent=1", getID(), arObjs[j], arAttribs[j], arUpdateTypes[i] );
+                        }
+
+                        getDB().executeSQL("UPDATE changed_values SET sent=0 WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
+                    }
+                    else
+                        getDB().executeSQL("UPDATE changed_values SET sent=0 WHERE source_id=? and update_type=? and sent=1", getID(), arUpdateTypes[i] );
+                }
             }
         }
 
+        if (m_nErrCode == RhoAppAdapter.ERR_NONE)
+            getDB().executeSQL("DELETE FROM changed_values WHERE source_id=? and update_type=?", getID(), "push_changes" );
+
+        getDB().Unlock();
     }
 
     m_arMultipartItems.removeAllElements();
