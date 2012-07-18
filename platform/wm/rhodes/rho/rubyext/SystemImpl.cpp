@@ -747,11 +747,11 @@ static LONG openRegAppPath(const char *appname, CRegKey& oKey, StringW& strKeyPa
     strKeyPath += convertToStringW(strAppName);
     String_replace(strKeyPath, '/', '\\' );
 
-    return oKey.Open(HKEY_LOCAL_MACHINE, strKeyPath.c_str(), KEY_READ
 #ifdef OS_WINDOWS_DESKTOP
-        |KEY_WOW64_64KEY 
+    return oKey.Open(HKEY_CURRENT_USER, strKeyPath.c_str(), KEY_READ|KEY_WOW64_64KEY );
+#else
+    return oKey.Open(HKEY_LOCAL_MACHINE, strKeyPath.c_str(), KEY_READ ); 
 #endif
-    );
 }
 
 void rho_sys_run_app(const char *appname, VALUE params)
