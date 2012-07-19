@@ -2251,3 +2251,8 @@ Rhodes contains code from the following other projects:
  pdf-writer (http://ruby-pdf.rubyforge.org/pdf-writer/index.html)
  License: MIT-Style (http://ruby-pdf.rubyforge.org/pdf-writer/licence.html)
  
+ OpenSSL (http://www.openssl.org) based on SSLeay library (license of OpenSSL contains both licenses - see link below)
+ License: BSD-style (http://www.openssl.org/source/license.html)
+ 
+ EzCrypto (http://ezcrypto.rubyforge.org/)
+ License: MIT (http://ezcrypto.rubyforge.org/)
