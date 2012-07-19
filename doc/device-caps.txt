@@ -49,7 +49,7 @@ To get value of a named system property:
 
 Properties:
 
-* platform - APPLE, Blackberry, WINDOWS, ANDROID, SYMBIAN
+* platform - APPLE, Blackberry, WINDOWS, ANDROID, WINDOWS_DESKTOP, SYMBIAN
 * has_camera - is camera available on the device
 * screen_width - screen width in logical pixels (used for set coordinates)
 * screen_height - screen height in logical pixels (used for set coordinates)
@@ -92,26 +92,53 @@ Open application associated with url; behavior may be different on different pla
 	System.open_url(url)
 **NOTE: On iPhone, if you post path of local file, then the specific iOS control (UIDocumentInteractionController) where file will previewed and user will be able open this file by selected application wich supported this filetype.**
 
-Run specified application. Note: appname is platform dependent
+Run specified application. Note: 
 	:::ruby
 	System.run_app(appname, params)
-**NOTE: On iPhone, appname is the same with registered application URL scheme. Params just string. Example : System.run_app('myapp', 'someparams'). Also this the same with : System.open_url('myapp:someparams')**
+	
+appname is platform dependent:
 
+* iPhone: appname is the same with registered application URL scheme. Params just string. Example : 
 
+    System.run_app('myapp', 'someparams'). 
+        
+  Also this the same with : 
+  
+    System.open_url('myapp:someparams')
+    
+* Android: appname is package name : com.<vendor>.<app_name> . For example:
+
+    System.run_app('com.rhomobile.store', 'someparams')
+
+* Windows Mobile, Windows CE: appname is path in registry: <vendor> <app_name>/<app_name>.exe . For example:
+
+    System.run_app('rhomobile store/store.exe', 'someparams')
+
+* Windows Desktop: appname is path in registry: <vendor>/<app_name>/<app_name>.exe . For example:
+
+    System.run_app('rhomobile/store/store.exe', 'someparams')
+
+* Blackberry: appname is <app_name> . For example:
+
+    System.run_app('store', 'someparams')
+        
 Install application from specified url
 	:::ruby
 	System.app_install(url) 
 
 Is specified application installed on device?
+
 	:::ruby
 	System.app_installed?(appname)
 
-**NOTE: On iPhone, appname is the same with registered application URL scheme.**
+**NOTE: see System.run_app for appname information **
 
 	
 Uninstall specified application	
 	:::ruby
 	System.app_uninstall(appname)
+
+**NOTE: see System.run_app for appname information **
 
 Zip one file to specified zip
 	:::ruby
@@ -142,6 +169,14 @@ This call does not change OS Locale, it will change only LocalizationSimplified 
 To get current application Locale:
 	:::ruby
     LocalizationSimplified::get_cur_locale #get current application locale
+
+To modify application window position and size:
+    :::ruby
+    System.set_window_frame(x,y,width,height) #change application window position and size
+    System.set_window_position(x,y) #change application window position
+    System.set_window_size(width,height) #change application window size
+
+**NOTE: These methods implemented only for Windows Desktop  **
 
 ### Sample
 See layout.erb of [System API Sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/layout.erb)  for some of the examples of how to use System class. There is also [system test](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/SystemTest/controller.rb) which demonstrate System class usage.

@@ -1087,6 +1087,10 @@ On 64-bit platform:
       paths:
         nsis: C:/Program Files (x86)/NSIS/makensis.exe
 
+#### Readme, license and icon
+* Application License can be provided by application developer. If file with LICENSE.txt name exists in the root of application folder when Installer will display separate page to confirm the license.
+* Application Readme file can be provided by application developer. If file with README.html name exists in the root of application folder when Installer will display show readme at the final page of the Installer
+* Application Icon should be used for Installer and application exe
 
 To build intaller bundle use command:
 
