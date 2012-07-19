@@ -809,6 +809,13 @@ Example :
 	:::ruby
 	Rho::SignatureCapture.visible(true, { :imageFormat => "jpg", :penColor => 0xff0000, :penWidth=>3, :bgColor => 0x00ff00 })
 
+`visible` uses the same hash parameters as `take`, with the following additional parameters.
+
+* left - Sets the top left horizontal position of the rectangular capture area in pixels
+* top - Sets the top left vertical position of the rectangular capture area in pixels
+* width - Sets the width of the rectangular capture area in pixels
+* height - Sets the height of the rectangular capture area in pixels
+
 To save Signature to an image file and call callback:
 	:::ruby
 	Rho::SignatureCapture.capture(callback_url)
