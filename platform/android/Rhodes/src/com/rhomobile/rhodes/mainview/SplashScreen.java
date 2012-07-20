@@ -125,6 +125,8 @@ public class SplashScreen implements MainView {
                 mImageView = new ImageView(mActivity);
                 mImageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));
                 mActivity.addContentView(mImageView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                mImageView.setAdjustViewBounds(true);
+                mImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             } catch (IOException e) {
                 Logger.E(TAG, e);
             }
