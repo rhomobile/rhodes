@@ -276,6 +276,27 @@ You can now use the added library to access additional functionality not provide
 
 NOTE: Once again, it should be mentioned that not all libraries are guaranteed to work with Rhodes.
 
+## Encryption libraries
+### digest - based extensions
+
+digest, digest-sha1, digest-md5
+
+Add to build.yml:
+	
+	extensions: ["digest", "digest-sha1", "digest-md5"]
+
+NOTE: digest should be included in extensions list to use digest-base libraries
+
+### OpenSSL - based libraries
+
+openssl, digest-sha2, ezcrypto
+
+Add to build.yml:
+	
+	extensions: ["openssl.so", "openssl", "digest-sha2", "ezcrypto"]
+
+NOTE: openssl.so is native c-library and should be included in extensions list to use openssl-base libraries
+
 ## Native Extensions 
 
 Starting from 2.0, Rhodes supports native extensions for Android, iPhone, WM and BlackBerry platforms. Native extensions are extensions written in the native language for the platform (C/C++/ObjC for iPhone, C/C++/Java for Android, C/C++ for WM, Java for Blackberry).
