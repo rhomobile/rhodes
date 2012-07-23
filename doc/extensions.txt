@@ -289,11 +289,17 @@ NOTE: digest should be included in extensions list to use digest-base libraries
 
 ### OpenSSL - based libraries
 
-openssl, digest-sha2, ezcrypto
+openssl, ezcrypto
 
 Add to build.yml:
 	
 	extensions: ["openssl.so", "openssl", "digest-sha2", "ezcrypto"]
+
+digest-sha2
+
+Add to build.yml:
+	
+	extensions: ["openssl.so", "openssl", "digest", "digest-sha2" ]
 
 NOTE: openssl.so is native c-library and should be included in extensions list to use openssl-base libraries
 
