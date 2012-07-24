@@ -26,6 +26,7 @@
 
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
+require File.dirname(__FILE__) + '/manifest_generator.rb'
 require 'pathname'
 require 'tempfile'
 
@@ -147,189 +148,7 @@ def set_app_name_android(newname)
   doc.elements["resources/string[@name='app_name']"].text = newname
   File.open(appstrings, "w") { |f| doc.write f }
 
-  version = {'major' => 0, 'minor' => 0, 'patch' => 0}
-  if $app_config["version"]
-    if $app_config["version"] =~ /^(\d+)$/
-      version["major"] = $1.to_i
-    elsif $app_config["version"] =~ /^(\d+)\.(\d+)$/
-      version["major"] = $1.to_i
-      version["minor"] = $2.to_i
-    elsif $app_config["version"] =~ /^(\d+)\.(\d+)\.(\d+)$/
-      version["major"] = $1.to_i
-      version["minor"] = $2.to_i
-      version["patch"] = $3.to_i
-    end
-  end
   
-  version = version["major"]*10000 + version["minor"]*100 + version["patch"]
-
-  doc = REXML::Document.new(File.new($rhomanifest))
-  doc.root.attributes['package'] = $app_package_name
-  if version > 0
-    doc.root.attributes['android:versionCode'] = version.to_s
-    doc.root.attributes['android:versionName'] = $app_config["version"]
-  end
-
-  doc.elements.delete "manifest/application/uses-library[@android:name='com.google.android.maps']" unless $use_geomapping
-
-  caps_proc = []
-  # Default permissions. Need to be always enabled.
-  caps = ['INTERNET', 'PERSISTENT_ACTIVITY', 'WAKE_LOCK']
-  $app_config["capabilities"].each do |cap|
-    cap = ANDROID_PERMISSIONS[cap]
-    next if cap.nil?
-    cap = [cap] unless cap.is_a? Array
-
-    cap.each do |cap_item|
-      if cap_item.is_a? Proc
-        caps_proc << cap_item
-        next
-      end
-      if cap_item.is_a? String
-        caps << cap_item
-        next
-      end
-    end
-  end
-  caps.uniq!
-
-  manifest = doc.elements["manifest"]
-
-  manifest.elements.each('uses-sdk') { |e| manifest.delete e }
-  
-  element = REXML::Element.new('uses-sdk')
-  element.add_attribute('android:minSdkVersion', $min_sdk_level.to_s)
-  element.add_attribute('android:maxSdkVersion', $max_sdk_level.to_s) unless $max_sdk_level.nil?  
-  manifest.add element
-
-  # Remove category LAUNCHER from all activities if hidden_app is set
-  hidden_app = get_boolean($app_config['hidden_app'])
-  if hidden_app
-    manifest.elements.each('application') do |app|
-      app.elements.each('activity') do |activity|
-        activity.elements.each('intent-filter') do |intf|
-          intf.elements.each('category') do |c|
-            name = c.attribute('name', 'android')
-            next if name.nil?
-            intf.delete(c) if name.to_s == 'android.intent.category.LAUNCHER'
-          end
-        end
-      end
-    end
-  end
-
-  # Clear C2DM stuff
-  doc.elements.delete "manifest/application/receiver[@android:name='#{JAVA_PACKAGE_NAME}.PushReceiver']"
-  manifest.elements.each('permission') do |e|
-    name = e.attribute('name', 'android')
-    next if name.nil?
-    manifest.delete(e) if name.to_s =~ /\.C2D_MESSAGE$/
-  end
-
-  app = doc.elements["manifest/application"]
-
-  app.elements.each("activity") do |a|
-    a.elements.each("intent-filter") do |filter|
-      filter.elements.each("action") do |act|
-        act_name = act.attribute("name", "android")
-        next if act_name.nil?
-        if act_name.to_s =~ /\.VIEW$/
-          default_filter = false
-          browsable_filter = false
-          filter.elements.each("category") do |c|
-            cat_name = c.attribute("name", "android")
-            next if cat_name.nil?
-            default_filter = true if cat_name.to_s =~ /\.DEFAULT$/
-            browsable_filter = true if cat_name.to_s =~ /\.BROWSABLE$/
-          end
-          if default_filter and browsable_filter
-            filter.elements.each("data") do |d|
-              filter.delete d
-            end
-            uri_params = {"android:scheme" => $uri_scheme, "android:host" => $uri_host}
-            uri_params["android:pathPrefix"] = $uri_path_prefix unless $uri_path_prefix.nil?
-            filter.add_element "data", uri_params
-          end
-        end
-      end
-    end
-  end
-
-  provider = app.add_element(
-    "provider",
-    { "android:name" => "#{JAVA_PACKAGE_NAME}.LocalFileProvider",
-      "android:authorities" => $app_package_name,
-      "android:grantUriPermissions" => "false" } )
-
-  provider.add_element "grant-uri-permission", { "android:pathPrefix" => "/rhodes/apps/" }
-
-  manifest.elements.each('uses-permission') { |e| manifest.delete e }
-
-
-  uses_camera = false
-  uses_autofocus = false
-  uses_front = false
-  uses_flash = false
-
-  manifest.elements.each('uses-feature') do |e|
-    uname = e.attribute("name", "android").to_s 
-    if "android.hardware.camera".eql? uname
-       uses_camera = true
-    end
-    if "android.hardware.camera.autofocus".eql? uname
-       uses_autofocus = true
-    end
-    if "android.hardware.camera.front".eql? uname
-       uses_front = true
-    end
-    if "android.hardware.camera.flash".eql? uname
-       uses_flash = true
-    end
-  end
-
-  caps.sort.each do |cap|
-    element = REXML::Element.new('uses-permission')
-    element.add_attribute('android:name', "android.permission.#{cap}")
-    manifest.add element
-    if cap == 'CAMERA'
-        if !uses_camera
-           element = REXML::Element.new('uses-feature')
-           element.add_attribute('android:required', "false")
-           element.add_attribute('android:name', "android.hardware.camera")
-           manifest.add element
-        end
-        if !uses_autofocus
-           element = REXML::Element.new('uses-feature')
-           element.add_attribute('android:required', "false")
-           element.add_attribute('android:name', "android.hardware.camera.autofocus")
-           manifest.add element
-        end
-        if !uses_front
-           element = REXML::Element.new('uses-feature')
-           element.add_attribute('android:required', "false")
-           element.add_attribute('android:name', "android.hardware.camera.front")
-           manifest.add element
-        end
-        if !uses_flash
-           element = REXML::Element.new('uses-feature')
-           element.add_attribute('android:required', "false")
-           element.add_attribute('android:name', "android.hardware.camera.flash")
-           manifest.add element
-        end
-    end
-  end
-
-  caps_proc.each do |p|
-    p.call manifest
-  end
-
-  puts 'save updated application manifest'
-  app_f = File.open($appmanifest, "w")
-  doc.write app_f, 2
-  app_f.close
-
-  #File.open($appmanifest, "w") { |f| doc.write f, 2 }
-
   buf = File.new($rho_android_r,"r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/,"\nimport #{$app_package_name}.R;\n")
   File.open($app_android_r,"w") { |f| f.write(buf) }
 end
@@ -446,7 +265,8 @@ namespace "config" do
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir = File.join($bindir, "tmp")
 
-    $rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
+    #$rhomanifest = File.join $androidpath, "Rhodes", "AndroidManifest.xml"
+    $rhomanifesterb = File.join $androidpath, "Rhodes", "AndroidManifest.xml.erb"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
 
     $rhores = File.join $androidpath, "Rhodes", "res"
@@ -1364,13 +1184,67 @@ namespace "build" do
       cc_run($stripbin, ['"'+File.join(destdir, File.basename(libname))+'"'])
     end
 
-    #desc "Build Rhodes for android"
-    task :rhodes => [:rhobundle, :librhodes] do
+    task :manifest => ["config:android", :extensions] do
 
-      set_app_name_android($appname)
+      version = {'major' => 0, 'minor' => 0, 'patch' => 0}
+      if $app_config["version"]
+        if $app_config["version"] =~ /^(\d+)$/
+          version["major"] = $1.to_i
+        elsif $app_config["version"] =~ /^(\d+)\.(\d+)$/
+          version["major"] = $1.to_i
+          version["minor"] = $2.to_i
+        elsif $app_config["version"] =~ /^(\d+)\.(\d+)\.(\d+)$/
+          version["major"] = $1.to_i
+          version["minor"] = $2.to_i
+          version["patch"] = $3.to_i
+        end
+      end
 
-      rm_rf $tmpdir + "/Rhodes"
-      mkdir_p $tmpdir + "/Rhodes"
+      version = version["major"]*10000 + version["minor"]*100 + version["patch"]
+      
+      usesPermissions = ['android.permission.INTERNET', 'android.permission.PERSISTENT_ACTIVITY', 'android.permission.WAKE_LOCK']
+      $app_config["capabilities"].each do |cap|
+        cap = ANDROID_PERMISSIONS[cap]
+        next if cap.nil?
+        cap = [cap] unless cap.is_a? Array
+
+        cap.each do |cap_item|
+          if cap_item.is_a? Proc
+            #caps_proc << cap_item
+            next
+          end
+        
+          if cap_item.is_a? String
+            usesPermissions << "android.permission.#{cap_item}"
+            next
+          end
+        end
+      end
+      usesPermissions.uniq!
+      
+      hidden = get_boolean($app_config['hidden_app'])
+
+      generator = ManifestGenerator.new JAVA_PACKAGE_NAME, $app_package_name, hidden, usesPermissions
+      
+      generator.versionName = $app_config["version"]
+      generator.versionCode = version
+      generator.installLocation = 'auto'
+      generator.minSdkVer = $min_sdk_level
+      generator.maxSdkVer = $max_sdk_level
+
+      generator.usesLibraries['com.google.android.maps'] = true if $use_google_addon_api
+      generator.addGooglePush(File.join($androidpath,'Rhodes','PushReceiver.erb')) if $app_config["capabilities"].index 'push'
+
+      generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
+      
+      manifest = generator.render $rhomanifesterb
+      
+      File.open($appmanifest, "w") { |f| f.write manifest }
+
+
+      #######################################################
+      # Deprecated staff below 
+
 
       app_f = File.new($appmanifest)
       manifest_orig_doc = REXML::Document.new(app_f)
@@ -1384,11 +1258,6 @@ namespace "build" do
         if a.attribute('name','android').to_s == 'com.rhomobile.rhodes.RhodesActivity'
             puts '          $$$ FOUND !'
             dst_main_activity = a
-        end
-        if $android_orientation != nil
-            if a.attribute('screenOrientation','android').to_s == 'unspecified'
-                a.add_attribute('android:screenOrientation', $android_orientation)
-            end
         end
       end
 
@@ -1441,16 +1310,6 @@ namespace "build" do
 
       end
 
-      #puts 'Result Manifest :'
-      #manifest_orig_doc.elements['manifest'].elements.each do |e|
-      #   puts '     + '+e.xpath
-      #   if e.xpath == '/manifest/application'
-      #       manifest_orig_doc.elements['manifest/application'].elements.each do |t|
-      #             puts '              + '+t.xpath
-      #       end
-      #   end
-      #end
-
       puts 'delete original manifest'
       File.delete($appmanifest)
 
@@ -1460,6 +1319,17 @@ namespace "build" do
 
       #rm tappmanifest
       puts 'Manifest updated by extension is saved!'
+    end
+    
+    task :resources => [:rhobundle, :extensions] do
+      set_app_name_android($appname)
+    end
+
+    #desc "Build Rhodes for android"
+    task :rhodes => [:rhobundle, :librhodes, :manifest, :resources] do
+
+      rm_rf $tmpdir + "/Rhodes"
+      mkdir_p $tmpdir + "/Rhodes"
 
 
       # RhodesActivity Listeners
