@@ -47,7 +47,8 @@ class CProfiler
         virtual bool isGlobal()const{ return false;}
 
         virtual void start(){ m_startTime = common::CTimeInterval::getCurrentTime(); m_bWasStarted = true; }
-        virtual common::CTimeInterval stop(){
+        virtual common::CTimeInterval stop()
+        {
             if ( m_startTime.isEmpty() )
                 return m_startTime;
 
@@ -55,7 +56,15 @@ class CProfiler
             m_startTime = common::CTimeInterval();
             return res;
         }
-        virtual common::CTimeInterval flush(){ return stop(); }
+        virtual common::CTimeInterval flush()
+        { 
+            if ( m_startTime.isEmpty() )
+                return m_startTime;
+
+            common::CTimeInterval res = common::CTimeInterval::getCurrentTime()-m_startTime;
+            m_startTime = common::CTimeInterval::getCurrentTime();
+            return res;
+        }
 
         bool isWasStarted()const{ return m_bWasStarted;}
     };
@@ -67,13 +76,16 @@ class CProfiler
         CGlobalCounter() : CCounter(false){ }
         virtual bool isGlobal()const{ return true;}
 
-        virtual common::CTimeInterval stop(){
+        virtual common::CTimeInterval stop()
+        {
             m_sumGlobal += CCounter::stop();
 
             return m_sumGlobal;
         }
-        virtual common::CTimeInterval flush(){ 
-            common::CTimeInterval res = stop(); 
+        virtual common::CTimeInterval flush()
+        { 
+            m_sumGlobal += CCounter::flush();
+            common::CTimeInterval res = m_sumGlobal;
             m_sumGlobal = common::CTimeInterval();
             return res;
         }
