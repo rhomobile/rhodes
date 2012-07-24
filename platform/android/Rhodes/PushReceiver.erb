@@ -1,0 +1,14 @@
+        <receiver
+            android:name="com.rhomobile.rhodes.PushReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <!-- Receive the actual message -->
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name='<%=@appPackageName%>' />
+            </intent-filter>
+            <!-- Receive the registration id -->
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name='<%=@appPackageName%>' />
+            </intent-filter>
+        </receiver>

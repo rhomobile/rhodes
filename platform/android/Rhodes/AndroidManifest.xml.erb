@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?> 
+<manifest xmlns:android='http://schemas.android.com/apk/res/android'
+          package='<%= @appPackageName %>'
+          android:versionName='<%= @versionName %>'
+          android:versionCode='<%= @versionCode %>'
+          android:installLocation='<%= @installLocation %>'>
+
+  <!-- Android SDK -->
+  <uses-sdk android:minSdkVersion='<%= @minSdkVer %>'
+    <% if @maxSdkVer %>
+      android:maxSdkVersion='<%= @maxSdkVer %>'
+    <% end %>
+  />
+  
+  <!-- Permission declarations -->
+  <% @permissions.each do |name, protectionLevel| %>
+  <permission android:name='<%=name%>' android:protectionLevel='<%=protectionLevel%>'/>
+  <% end %>
+  
+  <!-- Uses permissions -->
+  <% @usesPermissions.each do |name| %>
+  <uses-permission android:name='<%=name%>'/>
+  <% end %>
+
+  <supports-screens android:normalScreens='true' android:largeScreens='true' android:xlargeScreens='true'/>
+  <application android:name='com.rhomobile.rhodes.RhodesApplication'
+               android:label='@string/app_name'
+               android:icon='@drawable/icon'
+               android:debuggable='<%= @debuggable %>'>
+
+    <!-- Uses libraries -->
+    <% @usesLibraries.each do |name, isrequired| %>
+    <uses-library android:name='<%=name%>'
+    <% unless isrequired %>
+      android:required='<%=isrequired%>'
+    <% end %>
+    />
+    <% end %>
+
+    <!-- Main activity -->
+    <activity android:name='com.rhomobile.rhodes.RhodesActivity'
+              android:label='@string/app_name'
+              android:launchMode='singleTask'
+              android:configChanges='orientation|keyboardHidden'
+              android:screenOrientation='<%= @screenOrientation %>'>
+      <% @rhodesActivityIntentFilters.each do |filter| %>
+        <%= makeIntentFilter(filter) %>
+      <% end %>
+
+    </activity>
+    <activity android:name='com.rhomobile.rhodes.alert.PopupActivity' android:theme='@style/PopupTheme' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
+    <activity android:name='com.rhomobile.rhodes.camera.FileList' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
+    <activity android:name='com.rhomobile.rhodes.camera.ImageCapture' android:screenOrientation='landscape'/>
+    <activity android:name='com.rhomobile.rhodes.signature.ImageCapture' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
+    <activity android:name='com.rhomobile.rhodes.datetime.DateTimePickerScreen' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
+    <activity android:name='com.rhomobile.rhodes.mapview.MapView' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
+    <activity android:name='com.rhomobile.rhodes.mapview.GoogleMapView' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
+    <activity android:name='com.rhomobile.rhodes.bluetooth.RhoBluetoothDeviceListActivity' android:configChanges='orientation' android:screenOrientation='<%= @screenOrientation %>'/>
+    <service android:name='com.rhomobile.rhodes.RhodesService'/>
+
+    <provider android:name='com.rhomobile.rhodes.LocalFileProvider' android:authorities='<%=@appPackageName%>' android:grantUriPermissions='false'>
+      <grant-uri-permission android:pathPrefix='/rhodes/apps/'/>
+    </provider>
+
+    <!-- application tag addon templates from extensions -->
+    <% @applicationManifestAdds.each do |extAdd| %>
+      <%=render extAdd%>
+    <% end %>
+    
+  </application>
+
+  <!-- manifest tag addon templates from extensions-->
+  <% @manifestManifestAdds.each do |extAdd| %>
+    <%=render extAdd%>
+  <% end %>
+
+</manifest>
