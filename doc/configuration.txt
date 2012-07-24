@@ -151,6 +151,8 @@ Show status bar on windows mobile. Default is 1 (show)
 	
 	wm_show_statusbar = 1
 
+**NOTE: This parameter works only with Internet Explorer Browser. When you use Motorola WebKit browser, statusbar is not available **
+
 Disable screen rotation. By default set to 0 (enabled). This option available on ANDROID and iPhone ONLY
 	
 	disable_screen_rotation = 1
