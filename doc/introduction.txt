@@ -13,7 +13,7 @@ BlackBerry 4.6, 4.7, 5.0, 6.0, 7.0
 NOTE: 4.2 and 4.5 are supported but database access is very slow on these devices.
 
 ### Windows Mobile
-Windows Mobile 6.x Professional, 6.0 Standard
+**NOTE: As of Rhodes 3.3.3 Windows Mobile/CE are only supported under [RhoElements](/rhoelements/rhoelements-introduction)**
 
 ### Android
 Android 2.1 and greater
