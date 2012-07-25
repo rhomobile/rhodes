@@ -504,12 +504,24 @@ namespace "config" do
 
                 manifest_changes = extconf["android_manifest_changes"]
                 manifest_changes = extconf_android['manifest_changes'] if manifest_changes.nil? and extconf_android
+                
                 if manifest_changes
-                  manifest_changes = File.join(p,ext,manifest_changes)
+                  manifest_changes = [manifest_changes] unless manifest_changes.is_a? Array
+                  manifest_changes.map! { |path| File.join(p,ext,path) }
                 else
                   if prebuiltpath
-                    manifest_changes = File.join(prebuiltpath,'adds','AndroidManifest.xml')
-                    manifest_changes = nil unless File.file? manifest_changes
+                    manifest_changes = []
+
+                    path = File.join(prebuiltpath,'adds','AndroidManifest.rb')
+                    manifest_changes << path if File.file? path
+
+                    templates = Dir.glob File.join(prebuiltpath,'adds','*.erb')
+                    manifest_changes += templates
+                      
+                    if templates.empty?
+                      path = File.join(prebuiltpath,'adds','AndroidManifest.xml')
+                      manifest_changes << path if File.file? path
+                    end
                   end
                 end
                 if manifest_changes
@@ -744,10 +756,24 @@ namespace "build" do
         puts "Extension build script finished"
       end
       
-      $ext_android_manifest_changes.each do |ext, path|
+      $ext_android_manifest_changes.each do |ext, manifest_changes|
         addspath = File.join($app_builddir,'extensions',ext,'adds')
         mkdir_p addspath
-        cp path, File.join(addspath,'AndroidManifest.xml')
+        manifest_changes.each do |path|
+          if File.extname(path) == '.xml'
+            cp path, File.join(addspath,'AndroidManifest.xml')
+          else 
+            if File.extname(path) == '.rb'
+              cp path, File.join(addspath,'AndroidManifest.rb')
+            else
+              if File.extname(path) == '.erb'
+                cp path, addspath
+              else
+                raise "Wrong AndroidManifest patch file: #{path}"
+              end
+            end
+          end
+        end
       end
 
       $ext_android_adds.each do |ext, path|
@@ -1237,6 +1263,19 @@ namespace "build" do
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
       
+      Dir.glob(File.join($app_builddir,'extensions','*','adds','AndroidManifest.rb')).each do |extscript|
+        puts "Evaluating #{extscript}"
+        eval(File.new(extscript).read)
+      end
+      Dir.glob(File.join($app_builddir,'extensions','*','adds','Manifest*.erb')).each do |exttemplate|
+        puts "Adding template #{exttemplate}"
+        generator.manifestManifestAdds << exttemplate
+      end
+      Dir.glob(File.join($app_builddir,'extensions','*','adds','Application*.erb')).each do |exttemplate|
+        puts "Adding template #{exttemplate}"
+        generator.applicationManifestAdds << exttemplate
+      end
+
       manifest = generator.render $rhomanifesterb
       
       File.open($appmanifest, "w") { |f| f.write manifest }
