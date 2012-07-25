@@ -198,7 +198,7 @@ end
 
 def prepare_production_ipa (app_path, app_name)
   puts 'Preparing *.IPA file ...'
-
+  
   tmp_dir = File.join(app_path, "tmp_ipa")
   mkdir_p tmp_dir
   payload_dir = File.join(tmp_dir, "Payload")  
@@ -1408,6 +1408,11 @@ namespace "device" do
     if appname == nil
        appname = 'rhorunner'
     end
+    
+    # fix appname for remove restricted symbols
+    #appname = appname.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("_")
+    appname = appname.split(/[^a-zA-Z0-9\_\-]/).map{|w| w}.join("_")
+    
     src_file = File.join(iphone_path, 'rhorunner.app')
     dst_file = File.join(app_path, appname+'.app')
     
