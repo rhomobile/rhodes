@@ -191,6 +191,9 @@ def make_app_info
   urlscheme = 'rhodes'
   urlscheme = $app_config["name"] unless $app_config["name"].nil?
   urlscheme = $app_config["iphone"]["BundleURLScheme"] unless $app_config["iphone"]["BundleURLScheme"].nil?
+  
+  urlscheme = urlscheme.split(/[^a-zA-Z0-9\_\-]/).map{|w| w}.join("_")
+  
   buf << urlscheme
   File.open(fname,"w") { |f| f.write(buf) }
 end
