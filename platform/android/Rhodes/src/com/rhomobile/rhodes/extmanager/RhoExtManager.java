@@ -60,6 +60,16 @@ public class RhoExtManager extends Object {
     }
 
     /**
+     * Convenient way to print info message to rhodes log
+     * @param tag - log source
+     * @param msg - log message
+     */
+    public static void logU(String tag, String msg) {
+        getImplementationInstance().logU(tag, msg);
+    }
+    
+    
+    /**
      * Convenient way to print warning message to rhodes log
      * @param tag - log source
      * @param msg - log message
