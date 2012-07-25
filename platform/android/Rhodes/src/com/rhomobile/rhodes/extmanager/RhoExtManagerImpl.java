@@ -242,7 +242,12 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     void logI(String tag, String msg) {
-        if (mLogInfo || mLogUser)
+        if (mLogInfo)
+            Logger.I(tag, msg);
+    }
+
+    void logU(String tag, String msg) {
+        if (mLogUser)
             Logger.I(tag, msg);
     }
 
