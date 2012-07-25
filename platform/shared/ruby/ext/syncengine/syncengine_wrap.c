@@ -1888,6 +1888,9 @@ static VALUE mSyncEngine;
     extern void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
 	#define set_source_property rho_sync_set_source_property
 
+    extern VALUE rho_sync_get_source_property(int nSrcID, const char* szPropName);
+	#define get_source_property rho_sync_get_source_property
+
 	extern void rho_sync_set_ssl_verify_peer(int b);
 	#define set_ssl_verify_peer rho_sync_set_ssl_verify_peer
 
@@ -1921,27 +1924,27 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
-SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
+/*@SWIG:C:\Install\swigwin-2.0.4\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
+SWIGINTERN VALUE SWIG_AUX_NUM2LL(VALUE *args)
 {
   VALUE obj = args[0];
   VALUE type = TYPE(obj);
-  long *res = (long *)(args[1]);
-  *res = type == T_FIXNUM ? NUM2LONG(obj) : rb_big2long(obj);
+  long long *res = (long long *)(args[1]);
+  *res = type == T_FIXNUM ? NUM2LL(obj) : rb_big2ll(obj);
   return obj;
 }
 /*@SWIG@*/
 
 SWIGINTERN int
-SWIG_AsVal_long (VALUE obj, long* val)
+SWIG_AsVal_long_SS_long (VALUE obj, long long *val)
 {
   VALUE type = TYPE(obj);
   if ((type == T_FIXNUM) || (type == T_BIGNUM)) {
-    long v;
+    long long v;
     VALUE a[2];
     a[0] = obj;
     a[1] = (VALUE)(&v);
-    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LONG), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
+    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LL), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
       if (val) *val = v;
       return SWIG_OK;
     }
@@ -1953,8 +1956,8 @@ SWIG_AsVal_long (VALUE obj, long* val)
 SWIGINTERN int
 SWIG_AsVal_int (VALUE obj, int *val)
 {
-  long v;
-  int res = SWIG_AsVal_long (obj, &v);
+  long long v = 0;
+  int res = SWIG_AsVal_long_SS_long (obj, &v);
   if (SWIG_IsOK(res)) {
     if ((v < INT_MIN || v > INT_MAX)) {
       return SWIG_OverflowError;
@@ -2043,10 +2046,17 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
   #define SWIG_From_long   LONG2NUM 
 
 
+SWIGINTERNINLINE VALUE 
+SWIG_From_long_SS_long  (long long value)
+{
+  return LL2NUM(value);
+}
+
+
 SWIGINTERNINLINE VALUE
 SWIG_From_int  (int value)
 {    
-  return SWIG_From_long  (value);
+  return SWIG_From_long_SS_long  (value);
 }
 
 SWIGINTERN VALUE
@@ -2732,6 +2742,41 @@ fail:
 
 
 SWIGINTERN VALUE
+_wrap_get_source_property(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  char *arg2 = (char *) 0 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 2) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "int","get_source_property", 1, argv[0] ));
+  } 
+  arg1 = (int)(val1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","get_source_property", 2, argv[1] ));
+  }
+  arg2 = (char *)(buf2);
+  result = (VALUE)get_source_property(arg1,(char const *)arg2);
+  vresult = result;
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return vresult;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
 _wrap_set_ssl_verify_peer(int argc, VALUE *argv, VALUE self) {
   bool arg1 ;
   bool val1 ;
@@ -3141,6 +3186,7 @@ SWIGEXPORT void Init_SyncEngine(void) {
   rb_define_module_function(mSyncEngine, "set_threaded_mode", _wrap_set_threaded_mode, -1);
   rb_define_module_function(mSyncEngine, "enable_status_popup", _wrap_enable_status_popup, -1);
   rb_define_module_function(mSyncEngine, "set_source_property", _wrap_set_source_property, -1);
+  rb_define_module_function(mSyncEngine, "get_source_property", _wrap_get_source_property, -1);
   rb_define_module_function(mSyncEngine, "set_ssl_verify_peer", _wrap_set_ssl_verify_peer, -1);
   rb_define_module_function(mSyncEngine, "update_blob_attribs", _wrap_update_blob_attribs, -1);
   rb_define_module_function(mSyncEngine, "is_syncing", _wrap_is_syncing, -1);

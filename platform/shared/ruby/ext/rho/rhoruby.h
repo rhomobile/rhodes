@@ -64,6 +64,8 @@ void rho_ruby_loadallsyncsources();
 void rho_ruby_reset_db_on_sync_user_changed();
 void rho_ruby_start_threadidle();
 void rho_ruby_stop_threadidle();
+int  rho_ruby_is_started();
+void rho_ruby_callmethod(const char* szMethodPath);
 
 VALUE rho_ruby_createHash();
 VALUE addTimeToHash(VALUE hash, const char* key, time_t val);	
@@ -98,6 +100,7 @@ long rho_ruby_get_int(VALUE val);
 VALUE rho_ruby_create_array();
 VALUE rho_ruby_create_string(const char* szVal);
 VALUE rho_ruby_create_string_withlen(int len);
+VALUE rho_ruby_create_string_withlen2(const char* szVal, int len);
 VALUE rho_ruby_create_boolean(unsigned char b);
 VALUE rho_ruby_create_integer(__int64 i);
 VALUE rho_ruby_create_double(double d);

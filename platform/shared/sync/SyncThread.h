@@ -203,6 +203,7 @@ void rho_sync_setobjectnotify_url_c(/*RHOC_CALLBACK*/void* callback, void* callb
     
 void rho_sync_stop();
 void rho_sync_set_source_property(int nSrcID, const char* szPropName, const char* szPropValue);
+unsigned long rho_sync_get_source_property(int nSrcID, const char* szPropName);
 int  rho_sync_issyncing();
 
 #ifdef __cplusplus

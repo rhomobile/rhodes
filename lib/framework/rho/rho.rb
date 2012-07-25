@@ -352,6 +352,12 @@ end
         
         begin
             res = Rho::JSON.parse(data)
+
+			skip_schema = false
+			if res['skip_schema']
+				skip_schema = res['skip_schema'].to_i() > 0
+			end
+			puts "skip_schema = #{skip_schema}"
             if res['partition']
                 str_partition = res['partition']
                 puts "reload sources for partition: #{str_partition}"
@@ -361,26 +367,49 @@ end
                 
                 db.start_transaction
                 begin
+					mapProps = {}
+					mapFreezed = {}
+					
+					Rho::RhoConfig::sources().each do |key,value|
+						if value['partition']==str_partition
+							mapProps[key] = value['property']
+							mapFreezed[key] = value['freezed']
+						end
+					end
+										
                     Rho::RhoConfig::sources().delete_if {|key, value| value['partition']==str_partition }
                     arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
                         {'partition'=>str_partition} )
                     arSrcs.each do |src|
                         
-                        if src && src['schema'] && src['schema'].length() > 0
-                        
-                            #puts "src['schema'] :  #{src['schema']}"
-                            hashSchema = Rho::JSON.parse(src['schema'])
-                            #puts "hashSchema :  #{hashSchema}"
+                        if src 
+							if src['schema'] && src['schema'].length() > 0
+								if !skip_schema
+									#puts "src['schema'] :  #{src['schema']}"
+									hashSchema = Rho::JSON.parse(src['schema'])
+									#puts "hashSchema :  #{hashSchema}"
                             
-                            src['schema'] = {}
-                            src['schema']['sql'] = ::Rho::RHO.make_createsql_script( src['name'], hashSchema)
-                            src['schema_version'] = hashSchema['version']
+									src['schema'] = hashSchema
+									src['schema']['sql'] = ::Rho::RHO.make_createsql_script( src['name'], hashSchema)
+									src['schema_version'] = hashSchema['version']
                             
-                            db.update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
+									db.update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
                             
-                            #if str_partition != 'user'
-                            #    @db_partitions['user'].update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
-                            #end
+									#if str_partition != 'user'
+									#    @db_partitions['user'].update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
+									#end
+								end
+							else
+								props = mapProps[src['name']]
+								if props
+									src['property'] = props
+								end
+								
+								freezed = mapFreezed[src['name']]
+								if freezed
+									src['freezed'] = freezed
+								end
+							end
                         end
 
                         src[:loaded] = true
@@ -567,11 +596,20 @@ end
 
     def self.init_sync_source_properties(uniq_sources)
         uniq_sources.each do|src|
-            ['pass_through'].each do |prop|
+            ['pass_through', 'full_update'].each do |prop|
                 next unless src.has_key?(prop)        
                 SyncEngine.set_source_property(src['source_id'], prop, src[prop] ? src[prop].to_s() : '' )
             end            
         end
+        
+        uniq_sources.each do|src|
+            if src.has_key?('freezed') || !src['schema'].nil?
+                hash_props = !src['schema'].nil? ? src['schema']["property"] : src["property"]
+                str_props = hash_props.keys.join(',')
+                SyncEngine.set_source_property(src['source_id'], 'freezed', str_props )
+            end            
+        end
+        
     end
     
     def self.processIndexes(index_param, src_name, is_unique)
@@ -1246,7 +1284,7 @@ module SyncEngine
     end
 
     def self.push_changes( src_name )
-        raise ArgumentError, 'on_sync_create_error src_name should be string' unless src_name.is_a?(String)
+        raise ArgumentError, 'push_changes src_name should be string' unless src_name.is_a?(String)
         
         Object.const_get(src_name).push_changes()
     end

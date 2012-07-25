@@ -62,6 +62,8 @@ module Rhom
               end
               
               def initialize(obj=nil)
+                check_freezing_model(obj)
+              
                 @vars = {}
                 self.rhom_init(@vars)
                 self.vars[:object] = "#{generate_id()}" unless obj && obj[:object]
@@ -93,12 +95,29 @@ module Rhom
               def method_missing(name, *args)
                 unless name == Fixnum
                   if name[name.length()-1] == '='
-                    @vars[name.to_s.chop.to_sym()] = args[0]  
+                    s_name = name.to_s.chop
+                    check_freezing_model(s_name)
+                    @vars[s_name.to_sym()] = args[0]  
                   else
                     @vars[name]
                   end
                 end
               end
+
+                def check_freezing_model(obj)
+                    isSchemaSrc = is_inst_schema_source()
+                    return unless obj && (isSchemaSrc || Rho::RhoConfig.sources[get_inst_source_name()]['freezed'])
+                     
+                    hash_props = isSchemaSrc ? Rho::RhoConfig.sources[get_inst_source_name()]['schema']["property"] : Rho::RhoConfig.sources[get_inst_source_name()]["property"]
+                    if obj.is_a?(Hash)
+                        obj.each do |key, value|
+                            next if key.to_s() == 'object'
+                            raise ArgumentError.new( "Non-exist property : #{key}. For model : #{get_inst_source_name()}" ) unless hash_props[key.to_s()]
+                        end
+                    elsif obj.to_s() != 'object'
+                        raise ArgumentError.new( "Non-exist property : #{obj}. For model : #{get_inst_source_name()}" ) unless hash_props[obj.to_s()]
+                    end    
+                end
 
               class << self
 
@@ -1208,13 +1227,13 @@ module Rhom
                         else
                     
                             objects.each do |obj, values|
-                                if is_full_update
-                                    resUpdateType =  db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0})
-                                    
-                                    unless resUpdateType && resUpdateType.length > 0 
-                                        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>'update'})
-                                    end    
-                                else
+                                #if is_full_update
+                                #    resUpdateType =  db.select_from_table('changed_values', 'update_type', {"object"=>obj, "source_id"=>nSrcID, 'sent'=>0})
+                                #    
+                                #    unless resUpdateType && resUpdateType.length > 0 
+                                #        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>'update'})
+                                #    end    
+                                #else
                             
                                   values['attributes'].each do |attrib, value|
                                       resUpdateType =  db.select_from_table('changed_values', 'update_type', 
@@ -1225,7 +1244,7 @@ module Rhom
                                       db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
                                         "value"=>value, "update_type"=>'update', "attrib_type"=>attrib_type })
                                   end      
-                                end
+                                #end
                             end    
                         end
                             
@@ -1583,12 +1602,12 @@ module Rhom
                         update_type = resUpdateType[0]['update_type'] if resUpdateType && resUpdateType.length > 0 
                         ignore_changed_values = update_type=='create'
                         
-                        if is_inst_full_update
-                            unless resUpdateType && resUpdateType.length > 0 
-                                db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>update_type})
-                            end    
-                            ignore_changed_values = update_type=='update'
-                        end
+                        #if is_inst_full_update
+                        #    unless resUpdateType && resUpdateType.length > 0 
+                        #        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>update_type})
+                        #    end    
+                        #    ignore_changed_values = update_type=='update'
+                        #end
                     end
     				
                     self.vars.each do |key_a,value|
@@ -1615,9 +1634,9 @@ module Rhom
                         
                             isModified = false
 
-                            if is_inst_full_update
-                              isModified = true
-                            else
+                            #if is_inst_full_update
+                            #  isModified = true
+                            #else
                                 oldValue = isSchemaSrc ? resValue[0][key] : resValue[0]['value']
                                 
                                 isModified = oldValue != val
@@ -1627,7 +1646,7 @@ module Rhom
                                 if isModified && oldValue && val.nil? && oldValue.to_s().length == 0
                                   isModified = false
                                 end
-                            end
+                            #end
                             
                             if isModified
                             
@@ -1697,6 +1716,8 @@ module Rhom
               # updates the current record in the viewable list and adds
               # a sync operation to update
               def update_attributes(attrs)
+                check_freezing_model(attrs)
+              
                 obj = self.object #self.inst_strip_braces(self.object)
                 update_type='update'
                 nSrcID = self.get_inst_source_id
@@ -1713,12 +1734,12 @@ module Rhom
                         update_type = resUpdateType[0]['update_type'] if resUpdateType && resUpdateType.length > 0 
                         ignore_changed_values = update_type=='create'
                         
-                        if is_inst_full_update
-                            unless resUpdateType && resUpdateType.length > 0 
-                                db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>update_type})
-                            end    
-                            ignore_changed_values = update_type=='update'
-                        end
+                        #if is_inst_full_update
+                        #    unless resUpdateType && resUpdateType.length > 0 
+                        #        db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>'object', "value"=>"", "update_type"=>update_type})
+                        #    end    
+                        #    ignore_changed_values = update_type=='update'
+                        #end
                     end
                                     
                     attrs.each do |attrib,val|
