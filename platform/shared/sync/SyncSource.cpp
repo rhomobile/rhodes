@@ -1223,7 +1223,7 @@ boolean CSyncSource::processAllBlobs() {
 					
 					sql = "UPDATE " + getName() + " SET " + (*it) + "=? WHERE object=?";
 					
-					res = db.executeSQL(sql.c_str(), attr.m_strValue.c_str(), object.c_str() );
+					db.executeSQL(sql.c_str(), attr.m_strValue.c_str(), object.c_str() );
 				}
 			}
 		}
@@ -1249,7 +1249,7 @@ boolean CSyncSource::processAllBlobs() {
 						return false;
 					}
 				
-					res = db.executeSQL("UPDATE object_values SET value=? where object=? and source_id=? and attrib=?", attr.m_strValue.c_str(), object.c_str(), getID(), attrName);
+					db.executeSQL("UPDATE object_values SET value=? where object=? and source_id=? and attrib=?", attr.m_strValue.c_str(), object.c_str(), getID(), attrName);
 				}
 			}
 		}
