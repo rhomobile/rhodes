@@ -43,27 +43,111 @@ def copy_file(src, dst_dir)
     File.open(File.join( dst_dir, File.basename(src) ), "wb"){|f| f.write(content) }
 end
 	  
-
 	it "should export database Database spec" do		
 		file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobBulkTest_s'), 'blob_bulk_test_s.png')
 		copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
 		file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'blob_bulk_test_s.png')
 		File.exists?(file_name).should == true
-		#if !defined?(RHO_WP7)   
-		#	file_size = File.size(file_name)
-		#end    
-		#file_content = File.read(file_name)
-		
-		puts "blob path = #{file_name}"
-		
+		puts "blob path = #{file_name}"		
 		item = BlobBulkTest_s.create( { 'name'=>'BlobTestItem','image_uri'=>'blob_bulk_test_s.png' })
-		
+		items = BlobBulkTest_s.find(:all)
+		items.size.should == 1
+
+		file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobBulkTest'), 'blob_bulk_test.png')
+		copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
+		file_name = File.join(Rho::RhoApplication::get_blob_folder(), 'blob_bulk_test.png')
 		File.exists?(file_name).should == true
+		puts "blob path = #{file_name}"		
+		item = BlobBulkTest.create( { 'name'=>'BlobTestItem','image_uri'=>'blob_bulk_test.png' })
+		items = BlobBulkTest.find(:all)
+		items.size.should == 1		
 
 		exportPath = ::Rhom::Rhom.database_export('user')
 		exportPath.should_not be_nil		
 		File.exists?(exportPath).should == true
 		File.size(exportPath).should_not == 0
+
+		Rhom::Rhom.database_full_reset
+
+		items = BlobBulkTest_s.find(:all)
+		puts "BlobBulkTest_s = #{items}"
+		items.size.should == 0
+
+		items = BlobBulkTest.find(:all)
+		puts "BlobBulkTest = #{items}"
+		items.size.should == 0
+
+		::Rhom::Rhom.database_import('user',exportPath).should == true
+
+		BlobBulkTest_s.find(:all).size.should == 1
+		BlobBulkTest.find(:all).size.should == 1
+
+		File.delete(exportPath)
+		File.exists?(exportPath).should == false
+	end
+
+	it "should export database after blob bulk sync Database spec" do		
+		Rhom::Rhom.database_full_reset
+		SyncEngine.set_syncserver('http://store-bulk.rhohub.com/application')
+    		login_name = System.get_property('platform') + System.get_property('device_name')    
+		res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('login_name', '', "/app/Settings/login_callback")
+		res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE    
+		SyncEngine.logged_in.should == 1
+
+		Rho::RhoConfig.bulksync_state='0'
+		res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+							
+		res['status'].should == 'complete'
+		res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+
+		items = BlobBulkTest.find(:all)
+		pbSize = items.size
+		items.each do |item|
+			path = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
+			puts "item = #{item.inspect}, path = #{path}"
+			File.exists?(path).should == true
+		end
+		items = BlobBulkTest_s.find(:all)
+		shSize = items.size
+		items.each do |item|
+			path = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
+			puts "item = #{item.inspect}, path = #{path}"
+			File.exists?(path).should == true
+		end
+
+		exportPath = ::Rhom::Rhom.database_export('user')
+		exportPath.should_not be_nil		
+		File.exists?(exportPath).should == true
+		File.size(exportPath).should_not == 0
+
+		Rhom::Rhom.database_full_reset
+
+		items = BlobBulkTest_s.find(:all)
+		puts "BlobBulkTest_s = #{items}"
+		items.size.should == 0
+
+		items = BlobBulkTest.find(:all)
+		puts "BlobBulkTest = #{items}"
+		items.size.should == 0
+
+		::Rhom::Rhom.database_import('user',exportPath).should == true
+
+		items = BlobBulkTest_s.find(:all)
+		items.size.should == shSize
+		items.each do |item|
+			path = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
+			puts "item = #{item.inspect}, path = #{path}"
+			File.exists?(path).should == true
+		end
+
+		items = BlobBulkTest.find(:all)
+		items.size.should == pbSize
+		items.each do |item|
+			path = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
+			puts "item = #{item.inspect}, path = #{path}"
+			File.exists?(path).should == true
+		end
+
 		File.delete(exportPath)
 		File.exists?(exportPath).should == false
 	end

@@ -1100,18 +1100,32 @@ String CDBAdapter::exportDatabase() {
 	CDBRequestHelper reqHelper(*this);
 	Vector<String> fileList = reqHelper.requestBlobs();
 	
-	//TODO: process only blobs in blobs_dir
 	for ( Vector<String>::iterator it = fileList.begin(); it != fileList.end(); ++it ) {
-		(*it) = common::CFilePath::join( RHODESAPP().getBlobsDirPath(),*it);
-	}
+		String rel = RHODESAPP().getRelativeDBFilesPath(*it);
 		
+		if ( ((rel).find('/') == String::npos) && ((rel).find('\\') == String::npos) ) {
+			(*it) = common::CFilePath::join( RHODESAPP().getBlobsDirPath(),rel);
+		} else {
+			*it = common::CFilePath::join( RHODESAPP().getDBFileRoot(),rel);
+		}
+	}
+
 	fileList.push_back(m_strDbPath);
+
+	String path = m_strDbPath;
+	String ver = m_strDbVer;
+
+	close(false);
+
+	String ret = zipName;
 	
 	if (rho_sys_zip_files_with_path_array_ptr(zipName.c_str(),basePath.c_str(),&fileList,0)!=0) {
-		return "";
+		ret = "";
 	}
+
+	open(path,ver,false,false);
 	
-	return zipName;
+	return ret;
 }
 	
 bool CDBAdapter::importDatabase( const String& zipName ) {
