@@ -59,6 +59,7 @@ public:
 
     String resolveDBFilesPath(const String& strFilePath);
     String getRelativeDBFilesPath(const String& strFilePath);
+	String getDBFileRoot();
     const String& getRhoRootPath(){return m_strRhoRootPath;}
     const String& getRhoUserPath(){return m_strAppUserPath;}
     const String& getRhoRuntimePath(){return m_strRuntimePath;}
