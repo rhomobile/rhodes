@@ -43,6 +43,11 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.Vector;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import com.rhomobile.rhodes.RhodesApplication.AppState;
 import com.rhomobile.rhodes.alert.Alert;
 import com.rhomobile.rhodes.alert.StatusNotification;
@@ -434,18 +439,48 @@ public class RhodesService extends Service {
 				Log.i(TAG, "Received PUSH registration id: " + id);
 				setPushRegistrationId(id);
 				break;
-			case PushReceiver.INTENT_TYPE_MESSAGE:
-				final Bundle extras = intent.getBundleExtra(PushReceiver.INTENT_EXTRAS);
-				Log.i(TAG, "Received PUSH message: " + extras);
-				RhodesApplication.runWhen(
-				        RhodesApplication.AppState.AppStarted,
-				        new RhodesApplication.StateHandler(true) {
+            case PushReceiver.INTENT_TYPE_MESSAGE:
+                if(intent.hasExtra(PushReceiver.INTENT_MESSAGE_EXTRAS)) {
+                    final Bundle extras = intent.getBundleExtra(PushReceiver.INTENT_MESSAGE_EXTRAS);
+                    Log.i(TAG, "Received PUSH message: " + extras);
+                    RhodesApplication.runWhen(
+                        RhodesApplication.AppState.AppStarted,
+                        new RhodesApplication.StateHandler(true) {
                             @Override
                             public void run()
                             {
                                 handlePushMessage(extras);
                             }
                         });
+                }
+                else if(intent.hasExtra(PushReceiver.INTENT_MESSAGE_JSON)){
+                    final String json = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_JSON);
+                    final String url = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_CALLBACK_URL);
+                    Log.i(TAG, "Received PUSH message: " + json);
+                    RhodesApplication.runWhen(
+                        RhodesApplication.AppState.AppStarted,
+                        new RhodesApplication.StateHandler(true) {
+                            @Override
+                            public void run()
+                            {
+                                handlePushMessage(url, json);
+                            }
+                        });
+                }
+                else if(intent.hasExtra(PushReceiver.INTENT_MESSAGE_ERROR)){
+                    final String error = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_ERROR);
+                    final String url = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_CALLBACK_URL);
+                    Log.w(TAG, "Received PUSH error: " + error);
+                    RhodesApplication.runWhen(
+                        RhodesApplication.AppState.AppStarted,
+                        new RhodesApplication.StateHandler(true) {
+                            @Override
+                            public void run()
+                            {
+                                doRequestEx(url, "error=" + error, null, false);
+                            }
+                        });
+                }
 				break;
 			default:
 				Log.w(TAG, "Unknown command type received from " + source + ": " + type);
@@ -1161,9 +1196,10 @@ public class RhodesService extends Service {
 	private native String getPushRegistrationId(); 
 	
 	private native boolean callPushCallback(String data);
+    private native boolean callPushCallbackWithJsonBody(String url, String data);
 	
 	private void handlePushMessage(Bundle extras) {
-		Logger.D(TAG, "Receive PUSH message");
+		Logger.D(TAG, "Handle PUSH message");
 		
 		if (extras == null) {
 			Logger.W(TAG, "Empty PUSH message received");
@@ -1268,7 +1304,72 @@ public class RhodesService extends Service {
 			}
 		}
 	}
-	
+
+    private void handlePushMessage(String url, String json) {
+        Logger.T(TAG, "Handle push message");
+        
+        Logger.I(TAG, "Push message: " + json);
+        
+        if (callPushCallbackWithJsonBody(url, json)) {
+            Logger.T(TAG, "Push message completely handled in callback");
+            return;
+        }
+        JSONObject jsonObject;
+        try {
+            jsonObject = (JSONObject)new JSONTokener(json).nextValue();
+
+            final String alert = jsonObject.optString("alert");
+
+            boolean statusNotification = false;
+            if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
+                statusNotification = true;
+            else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND))
+                statusNotification = !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated);
+
+            if (statusNotification) {
+                Intent intent = new Intent(getContext(), RhodesActivity.class);
+                StatusNotification.simpleNotification(TAG, 0, getContext(), intent, "PUSH message", alert);
+            }
+
+            if (alert.length() > 0) {
+                Logger.D(TAG, "PUSH: Alert: " + alert);
+                Alert.showPopup(alert);
+            }
+            final String sound = jsonObject.optString("sound");
+            if (sound.length() > 0) {
+                Logger.D(TAG, "PUSH: Sound file name: " + sound);
+                Alert.playFile("/public/alerts/" + sound, null);
+            }
+            int vibrate = jsonObject.optInt("vibrate");
+            if (vibrate > 0) {
+                Logger.D(TAG, "PUSH: Vibrate: " + vibrate);
+                Logger.D(TAG, "Vibrate " + vibrate + " seconds");
+                Alert.vibrate(vibrate);
+            }
+            JSONArray syncSources = jsonObject.optJSONArray("do_sync");
+            if ((syncSources != null) && (syncSources.length() > 0)) {
+                Logger.D(TAG, "PUSH: Sync:");
+                boolean syncAll = false;
+                for (int i = 0; i < syncSources.length(); ++i) {
+                    String source = syncSources.optString(i);
+                    Logger.D(TAG, "source = " + source);
+                    if (source.equalsIgnoreCase("all")) {
+                        syncAll = true;
+                        break;
+                    } else {
+                        doSyncSource(source);
+                    }
+                }
+                
+                if (syncAll) {
+                    doSyncAllSources(true); 
+                }
+            }
+        } catch (JSONException e) {
+            Logger.E(TAG, "Error parsing JSON payload in push message: " + e.getMessage());
+        }
+    }
+
 	private void restartGeoLocationIfNeeded() {
 		if (mNeedGeoLocationRestart) {
 			//GeoLocation.restart();

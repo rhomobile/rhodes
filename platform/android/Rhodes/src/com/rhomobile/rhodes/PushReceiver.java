@@ -46,7 +46,11 @@ public class PushReceiver extends BroadcastReceiver {
 	
 	public static final String INTENT_TYPE = INTENT_PREFIX + ".type";
 	public static final String INTENT_REGISTRATION_ID = INTENT_PREFIX + ".registration_id";
-	public static final String INTENT_EXTRAS = INTENT_PREFIX + ".extras";
+	public static final String INTENT_MESSAGE_EXTRAS = INTENT_PREFIX + ".extras";
+    public static final String INTENT_MESSAGE_JSON = INTENT_PREFIX + ".json";
+    public static final String INTENT_MESSAGE_ERROR = INTENT_PREFIX + ".error";
+    
+    public static final String INTENT_MESSAGE_CALLBACK_URL = INTENT_PREFIX + ".url";
 	
 	public static final int INTENT_TYPE_UNKNOWN = 0;
 	public static final int INTENT_TYPE_REGISTRATION_ID = 1;
@@ -91,7 +95,7 @@ public class PushReceiver extends BroadcastReceiver {
 		Intent serviceIntent = new Intent(context, RhodesService.class);
 		serviceIntent.putExtra(RhodesService.INTENT_SOURCE, INTENT_SOURCE);
 		serviceIntent.putExtra(INTENT_TYPE, INTENT_TYPE_MESSAGE);
-		serviceIntent.putExtra(INTENT_EXTRAS, extras);
+		serviceIntent.putExtra(INTENT_MESSAGE_EXTRAS, extras);
 		context.startService(serviceIntent);
 	}
 	

@@ -120,7 +120,7 @@ String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
     return CFilePath::join(strDbFileRoot, strFilePath);
 }
 
-String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) 
+String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
 {
     if (strUrl.length() == 0 )
         return m_strHomeUrl;
@@ -135,7 +135,7 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl)
     return strUrl;
 }
 
-String CRhodesAppBase::canonicalizeRhoUrl_LocalHost(const String& strUrl) 
+String CRhodesAppBase::canonicalizeRhoUrl_LocalHost(const String& strUrl) const
 {
     if (strUrl.length() == 0 )
         return m_strHomeUrlLocalHost;

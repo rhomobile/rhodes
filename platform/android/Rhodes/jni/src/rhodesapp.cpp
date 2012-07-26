@@ -322,10 +322,17 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegist
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
   (JNIEnv *env, jobject, jstring jData)
 {
-    std::string data = rho_cast<std::string>(env, jData);
-    return (jboolean)rho_rhodesapp_callPushCallback(data.c_str());
+    return (jboolean)rho_rhodesapp_callPushCallback(
+                    rho_cast<std::string>(env, jData).c_str());
 }
 
+RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallbackWithJsonBody
+  (JNIEnv *env, jobject, jstring jUrl, jstring jData)
+{
+    return (jboolean)rho_rhodesapp_callPushCallbackWithJsonBody(
+                    rho_cast<std::string>(env, jUrl).c_str(),
+                    rho_cast<std::string>(env, jData).c_str());
+}
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_resetHttpLogging
   (JNIEnv *env, jobject, jstring jId)

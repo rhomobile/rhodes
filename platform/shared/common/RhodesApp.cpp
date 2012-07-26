@@ -646,6 +646,7 @@ class CJsonResponse : public rho::ICallbackObject
 {
     String m_strJson;
 public:
+    CJsonResponse(const String& strJson) : m_strJson(strJson) { }
     CJsonResponse(const char* szJson) : m_strJson(szJson) { }
     virtual unsigned long getObjectValue()
     {
@@ -1585,6 +1586,31 @@ boolean CRhodesApp::callPushCallback(const String& strData) const
     return false;
 }
 
+boolean CRhodesApp::callPushCallbackWithJsonBody(const String& strUrl, const String& strData)
+{
+    synchronized(m_mxPushCallback)
+    {
+        if (strUrl.length() == 0)
+            return false;
+
+        String strCanonicalUrl = canonicalizeRhoUrl(strUrl);
+
+        String strBody = addCallbackObject( new CJsonResponse( strData ), "__rho_inline" ) + "&rho_callback=1";
+
+        NetResponse resp = getNetRequest().pushData( strCanonicalUrl, strBody, null );
+        if (!resp.isOK())
+            LOG(ERROR) + "Push notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        else
+        {
+            const char* szData = resp.getCharData();
+            LOG(TRACE) + "Push callback resp data: " + (szData ? szData : "NULL");
+            return !(szData && strcmp(szData,"rho_push") == 0);
+        }
+    }
+
+    return false;
+}
+
 void CRhodesApp::setScreenRotationNotification(String strUrl, String strParams)
 {
     synchronized(m_mxScreenRotationCallback)
@@ -1920,6 +1946,15 @@ int rho_rhodesapp_callPushCallback(const char* szData)
 
     return RHODESAPP().callPushCallback(szData?szData:"") ? 1 : 0;
 }
+
+int rho_rhodesapp_callPushCallbackWithJsonBody(const char* szUrl, const char* szData)
+{
+    if ( !rho::common::CRhodesApp::getInstance() )
+        return 1;
+
+    return RHODESAPP().callPushCallbackWithJsonBody(szUrl, szData) ? 1 : 0;
+}
+
 
 void rho_rhodesapp_callScreenRotationCallback(int width, int height, int degrees)
 {
