@@ -84,7 +84,7 @@ namespace "build" do
 
       setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
 
-    elsif ($platform == 'iphone') or ($platform == 'osx')
+    elsif $platform == 'iphone'
       $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
       raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
       $sdkroot = ENV['SDKROOT']
@@ -102,6 +102,19 @@ namespace "build" do
 
       $sdk = ENV['SDK_NAME']	
       raise "SDK_NAME is not set" if $sdk.nil?
+
+    elsif $platform == 'osx'
+      $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+      raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+      $sdkroot = ENV['SDKROOT']
+      raise "SDKROOT is not set" if $sdkroot.nil?
+      $arch = ENV['ARCHS']
+      raise "ARCHS is not set" if $arch.nil?
+      $gccbin = $bindir + '/gcc'
+      $arbin = $bindir + '/ar'
+
+      $xcodebuild = ENV['XCODEBUILD']
+      raise "XCODEBUILD is not set" if $xcodebuild.nil?
 
     elsif $platform == 'wm'
       $vcbuild = ENV['VCBUILD']
