@@ -104,7 +104,7 @@ end
   end
 							
   def checkBlob(model,size,content,old_filename)
-	items = model.find(:all)
+	items = model.find(:all, :conditions => { :name => old_filename} )
 	items.should_not == nil
 	items.length.should == 1
 	puts "items = #{items.inspect}"
