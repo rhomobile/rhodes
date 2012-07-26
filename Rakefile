@@ -446,6 +446,9 @@ namespace "config" do
         
     $app_config['extensions'].uniq!() if $app_config['extensions']
     $app_config['capabilities'].uniq!() if $app_config['capabilities']
+
+    $app_config['extensions'].delete("mspec") if !$debug && $app_config['extensions'].index('mspec')
+    $app_config['extensions'].delete("rhospec") if !$debug && $app_config['extensions'].index('rhospec')
     
     if $invalid_license
         $application_build_configs["motorola_license"] = '123' if !$application_build_configs["motorola_license"]
@@ -837,9 +840,8 @@ def common_bundle_start(startdir, dest)
   File.open(File.join($srcdir,'apps/rhoconfig.txt.timestamp'), "w"){ |f| f.write(Time.now.to_f().to_s()) }
   
   unless $debug
-    rm_rf $srcdir + "/apps/app/test"
     rm_rf $srcdir + "/apps/app/SpecRunner"
-    rm_rf $srcdir + "/apps/app/mspec"
+    rm_rf $srcdir + "/apps/app/spec"
     rm_rf $srcdir + "/apps/app/mspec.rb"
     rm_rf $srcdir + "/apps/app/spec_runner.rb"
   end
