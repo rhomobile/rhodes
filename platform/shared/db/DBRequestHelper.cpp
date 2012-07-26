@@ -44,7 +44,7 @@ namespace db {
 		virtual void requestBlobsForAttrib(const String& attr, Vector<String>& out ) {
 			IDBResult res = _db.executeSQL( "SELECT value FROM object_values WHERE source_id=? AND attrib=?", _srcID, attr.c_str() );
 			for ( ;!res.isEnd();res.next()) {
-				out.push_back( common::CFilePath::join( RHODESAPP().getBlobsDirPath(), res.getStringByIdx(0)) );
+				out.push_back( /*common::CFilePath::join( RHODESAPP().getBlobsDirPath(), */res.getStringByIdx(0)/*)*/ );
 			}
 		}
 		

@@ -119,6 +119,16 @@ String CRhodesAppBase::resolveDBFilesPath(const String& strFilePath)
 
     return CFilePath::join(strDbFileRoot, strFilePath);
 }
+	
+String CRhodesAppBase::getDBFileRoot()
+{
+#ifndef RHODES_EMULATOR
+		String strDbFileRoot = rho_native_rhodbpath();//getRhoRootPath();
+#else
+		String strDbFileRoot = getRhoRootPath() + RHO_EMULATOR_DIR;
+#endif
+	return strDbFileRoot;
+}
 
 String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
 {
