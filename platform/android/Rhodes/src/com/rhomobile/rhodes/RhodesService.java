@@ -853,6 +853,9 @@ public class RhodesService extends Service {
 				//return "WEBKIT/" + Build.VERSION.RELEASE;
 			    return RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId();
 			}
+            else if (name.equalsIgnoreCase("is_motorola_device")) {
+                return isMotorolaDevice();
+            }
 		}
 		catch (Exception e) {
 			Logger.E(TAG, "Can't get property \"" + name + "\": " + e);
@@ -860,6 +863,18 @@ public class RhodesService extends Service {
 		
 		return null;
 	}
+    
+    public static boolean isMotorolaDevice() {
+        Boolean res = false;
+        try
+        {
+            Class<?> commonClass = Class.forName("com.motorolasolutions.rhoelements.Common");
+            Method isEmdkDeviceMethod = commonClass.getDeclaredMethod("isEmdkDevice");
+            res = (Boolean)isEmdkDeviceMethod.invoke(null);
+        } 
+        catch (Throwable e) { }
+        return new Boolean(Capabilities.MOTOROLA_ENABLED && res);
+    }
 	
 	public static String getTimezoneStr() {
 		Calendar cal = Calendar.getInstance();
