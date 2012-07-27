@@ -650,7 +650,12 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 #if defined( OS_WINCE )
 	if (strcasecmp("is_motorola_device",szPropName) == 0)
     {
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
         *resValue = rho_ruby_create_boolean( rho_wm_impl_CheckSymbolDevice() );
+#else
+        *resValue = rho_ruby_create_boolean(0);
+#endif
+
         return 1;
     }
 #endif
