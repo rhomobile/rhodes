@@ -10,11 +10,11 @@ Click on the Motorola RhoMobile Suite Installer for Mac download file to open it
 
 <img src="http://rhodocs.s3.amazonaws.com/rhodes-devel/rhostudio-mac-install.png" alt="RhoStudioInstaller Mac" />
 
-Run "Install gems on rvm" (this requires that you have installed Ruby Version Manager). A terminal window will open; wait for the gems install process to complete.
+Run "Install gems" (this requires that you have installed Ruby Version Manager). A terminal window will open; wait for the gems install process to complete.
 
 Then drag Motorola RhoStudio to the Applications folder.
 
-**NOTE: Installing Ruby into the System folder is not supported by RhoMobile; the official RhoMobile way to install and use Ruby on the Macintosh is with Ruby Version Manager. If you do not use Ruby Version Manager and instead install Ruby into the System folder, you will need to start and run RhoStudio from the command line using sudo.**
+**NOTE: Installing Ruby into the System folder is not supported by RhoMobile; the official RhoMobile way to install and use Ruby on the Macintosh is with Ruby Version Manager.**
 
 ## Windows
 
