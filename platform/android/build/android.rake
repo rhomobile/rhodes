@@ -485,7 +485,7 @@ namespace "config" do
                 
                 extconf = Jake.config(File.open(extyml))
                 extconf_android = extconf['android']
-                exttype = 'native'
+                exttype = 'build'
                 exttype = extconf_android['exttype'] if extconf_android and extconf_android['exttype']
                 addspath = File.join($app_builddir,'extensions',ext,'adds')
                 prebuiltpath = nil
@@ -591,12 +591,17 @@ namespace "config" do
                 puts  "#{extyml} is processed"
             end
 
-            build_script = File.join(extpath, 'build' + $bat_ext)
-            if File.exists? build_script
-              if RUBY_PLATFORM =~ /(win|w)32$/
-                $ext_android_build_scripts[extpath] = 'build.bat' if File.exists? build_script
-              else
-                $ext_android_build_scripts[extpath] = File.join('.', 'build' + $bat_ext) if File.exists? build_script
+            if exttype == 'rakefile'
+              rakedir = Dir.glob File.join(extpath,'**','android')
+              $ext_android_build_scripts[ext] = [rakedir.first, 'rake' + $exe_ext]
+            else
+              build_script = File.join(extpath, 'build' + $bat_ext)
+              if File.exists? build_script
+                if RUBY_PLATFORM =~ /(win|w)32$/
+                  $ext_android_build_scripts[ext] = [extpath, 'build.bat']
+                else
+                  $ext_android_build_scripts[ext] = [extpath, File.join('.', 'build' + $bat_ext)]
+                end
               end
             end
 
@@ -736,23 +741,23 @@ namespace "build" do
       ENV["NEON_ROOT"] = $neon_root unless $neon_root.nil?
       ENV["CONFIG_XML"] = $config_xml unless $config_xml.nil?
 
-      $ext_android_build_scripts.each do |extpath, script|
-        ext = File.basename(File.dirname(extpath))
+      $ext_android_build_scripts.each do |ext, builddata|
+        #ext = File.basename(File.dirname(extpath))
         ENV["TARGET_TEMP_DIR"] = File.join($app_builddir,'extensions',ext)
         ENV['TEMP_FILES_DIR'] = File.join($tmpdir,ext)
         mkdir_p ENV["TARGET_TEMP_DIR"] unless File.directory? ENV["TARGET_TEMP_DIR"]
         mkdir_p ENV["TEMP_FILES_DIR"] unless File.directory? ENV["TEMP_FILES_DIR"]
 
         puts "Executing extension build script: #{ext}"
-        if RUBY_PLATFORM =~ /(win|w)32$/
-             Jake.run(script, [], extpath)
+        if RUBY_PLATFORM =~ /(win|w)32$/ || (builddata[1] == "rake#{$exe_ext}")
+             Jake.run(builddata[1], [], builddata[0])
         else
              currentdir = Dir.pwd()      
-             Dir.chdir extpath 
-             sh %{$SHELL ./build}
+             Dir.chdir builddata[0]
+             sh %{$SHELL #{builddata[1]}}
              Dir.chdir currentdir 
         end
-        raise "Cannot build #{extpath}" unless $?.success?
+        raise "Cannot build #{builddata[0]}" unless $?.success?
         puts "Extension build script finished"
       end
       
