@@ -45,6 +45,13 @@
                 // Rhodes custom option!
                 // how long to wait transition end before "loading.." message will be shown
                 $.mobile.loadingMessageDelay = 300; // in ms
+
+                // Uncomment these options in case of performance problem in pages transition
+                //$.mobile.defaultPageTransition = 'none';
+                //$.mobile.defaultDialogTransition = 'none';
+                //$.mobile.ajaxEnabled = false;
+                //$.mobile.pushStateEnabled = false;
+                //$.mobile.loadingMessageDelay = 50; // in ms
             });
         </script>
         <%% if System::get_property('platform') == 'WP7' %>
