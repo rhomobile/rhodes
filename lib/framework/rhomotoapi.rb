@@ -44,8 +44,8 @@ class << self
         strParams = ""
         strParams += "imagerEvent:url('#{callback}');" if callback
         strParams += "destination:url('#{@@current_image_path}');"
-        strParams += "left:0;";
-        strParams += "top:0;";
+        strParams += "left:#{hashParams['left'] ? hashParams['left'] : 0};"
+        strParams += "top:#{hashParams['top'] ? hashParams['top'] : 0};"
         strParams += "width:#{hashParams['desired_width'] ? hashParams['desired_width'] : System.get_property('screen_width')};";
         strParams += "height:#{hashParams['desired_height'] ? hashParams['desired_height'] : System.get_property('screen_height')};";
         strParams += "aim:on;"
