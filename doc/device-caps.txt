@@ -695,7 +695,7 @@ Choose a picture from Image Gallery (currently supported only on iPhone):
 	Camera::choose_picture('/app/model/camera_callback', options_hash)
 
 
-options_has - hash contain additional parameters :
+options_hash - hash contain additional parameters :
 
 * "camera_type" - "default"(is the same with "main"), "main", "front". Default value = "default"
 * "desired_width" - number, desired width in pixels. Default value = max camera width
@@ -725,6 +725,18 @@ In returned hash:
 
  * "max_resolution" - hash with "width" and "height" numeric values.
 
+### Extended API for Motorola devices (RhoElements applications)
+
+Take a picture:
+	:::ruby
+	Camera::take_picture('/app/model/camera_callback', options_hash)
+
+options_hash - hash contain additional parameters :
+
+* "left" - number, camera left position in pixels. Default value = 0
+* "top" - number, camera top position in pixels. Default value = 0
+* "desired_width" - number, desired width in pixels. Default value = max camera width
+* "desired_height" - number, desired height in pixels. Default value = max camera height
 
 ### Sample
 See controller and view in the /app/Image folder of the [ System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Image/controller.rb) for more information.
