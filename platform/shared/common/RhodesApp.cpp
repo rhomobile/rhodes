@@ -1325,8 +1325,13 @@ void CRhodesApp::initAppUrls()
     m_strHomeUrl += getFreeListeningPort();
     m_strHomeUrlLocalHost = String("http://localhost:") + getFreeListeningPort();
 
+#ifndef RHODES_EMULATOR
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "apps/app/loading.html";
 	m_strLoadingPngPath = getRhoRootPath() + "apps/app/loading.png";
+#else
+    m_strLoadingPagePath = "file://" + getRhoRootPath() + "app/loading.html";
+	m_strLoadingPngPath = getRhoRootPath() + "app/loading.png";
+#endif
 }
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
