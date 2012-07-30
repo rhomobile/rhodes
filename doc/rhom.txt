@@ -775,10 +775,14 @@ You can export local database partition with all its blob objects to zip archive
 	:::ruby
 	@path_to_zip_file = Rhom::Rhom.database_export('partition_name')
 
+Call to database_export will return local path to created archive with database and blob objects.
+
 ### 'Rhom::Rhom.database_import(partition,zip)'
 
 	:::ruby
 	Rhom::Rhom.database_import('partition_name',@path_to_zip_file) 
+
+This will import database and blob objects from zip archive, created with 'database_export' call. If imported archive is inconsistent, or other failure will occur during import process, original database will be restored.
 
 
 ## Advanced Queries
