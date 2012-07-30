@@ -51,6 +51,7 @@
 #undef null
 #include "DateTimeDialog.h"
 #include "statistic/RhoProfiler.h"
+#include <QStylePainter>
 
 #if defined(OS_MACOSX) || defined(OS_LINUX)
 #define stricmp strcasecmp
@@ -68,6 +69,7 @@ extern "C" {
     extern VALUE rb_thread_main(void);
     extern VALUE rb_thread_wakeup(VALUE thread);
 }
+using namespace rho::common;
 
 QtMainWindow::QtMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -78,7 +80,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     m_alertDialog(0),
     m_LogicalDpiX(0),
     m_LogicalDpiY(0),
-	firstShow(true)
+	firstShow(true), m_bFirstLoad(true)
     //TODO: m_SyncStatusDlg
 {
 #ifdef OS_WINDOWS_DESKTOP
@@ -112,8 +114,17 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     this->ui->toolBar->hide();
     this->ui->toolBarRight->hide();
 
+    this->main_webView->hide();
+    //this->ui->centralWidget->hide();
+
+    //this->ui->centralWidget->setStyleSheet("background-color: yellow");
+    //this->ui->centralWidget->setStyleSheet("QWidget {background-image: url(test.jpg)}" );
+
+
+#if defined(RHODES_EMULATOR)
     // connecting WebInspector
     main_webInspector->setPage(ui->webView->page());
+#endif
 
 #ifdef OS_SYMBIAN
     QWebViewKineticScroller *newScroller = new QWebViewKineticScroller();
@@ -133,6 +144,41 @@ QtMainWindow::~QtMainWindow()
     //TODO: m_SyncStatusDlg
     delete webInspectorWindow;
     delete ui;
+}
+
+void QtMainWindow::paintEvent(QPaintEvent *p2)
+{
+    if ( m_bFirstLoad )
+    {
+        QPainter paint(this);
+
+        QImage image;
+        image.load(RHODESAPP().getLoadingPngPath().c_str());
+        QSize imSize = image.size();
+
+        QRect rcClient = this->rect();
+        rcClient.setBottom( rcClient.bottom() - this->ui->toolBar->rect().height() ) ;
+        RHODESAPP().getSplashScreen().start();
+/*
+        CSplashScreen& splash = RHODESAPP().getSplashScreen();
+
+        int nLeft = rcClient.left(), nTop = rcClient.top(), nWidth = imSize.width(), nHeight = imSize.height(), Width = rcClient.right() - rcClient.left(), Height = rcClient.bottom() - rcClient.top();
+        if (splash.isFlag(CSplashScreen::HCENTER) )
+		    nLeft = (Width-nWidth)/2;
+	    if (splash.isFlag(CSplashScreen::VCENTER) )
+		    nTop = (Height-nHeight)/2;
+	    if (splash.isFlag(CSplashScreen::VZOOM) )
+		    nHeight = Height;
+	    if (splash.isFlag(CSplashScreen::HZOOM) )
+		    nWidth = Width;
+
+        QRect rc( nLeft, nTop, nWidth, nHeight );*/
+
+        paint.drawImage( rcClient, image );
+    }
+
+    QMainWindow::paintEvent(p2);
+
 }
 
 void QtMainWindow::setCallback(IMainWindowCallback* callback)
@@ -278,6 +324,30 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
 #ifdef OS_MACOSX
     if (mainWindowCallback && ok) mainWindowCallback->onWebViewUrlChanged(ui->webView->url().toString().toStdString());
 #endif
+
+    if ( m_bFirstLoad && ui->webView->url().toString() != "about:blank")
+    {
+        long lMS = RHODESAPP().getSplashScreen().howLongWaitMs();
+        if ( lMS > 0 )
+            m_SplashTimer.start(lMS, this);
+        else
+        {
+            m_bFirstLoad = false;
+            main_webView->show();
+        }
+    }
+
+}
+
+void QtMainWindow::timerEvent(QTimerEvent *event)
+{
+    if (event->timerId() == m_SplashTimer.timerId()) 
+    {
+        m_bFirstLoad = false;
+        main_webView->show();
+     } else {
+         QWidget::timerEvent(event);
+     }
 }
 
 void QtMainWindow::on_webView_urlChanged(QUrl url)

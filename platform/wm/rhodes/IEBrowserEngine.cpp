@@ -8,7 +8,7 @@
 #include <webvw.h>
 #endif
 
-extern "C" void rho_wm_impl_CheckLicense();
+extern "C" int rho_wm_impl_CheckLicense();
 extern "C" int rho_wm_impl_CheckSymbolDevice();
 
 CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :

@@ -396,6 +396,10 @@ namespace "config" do
     if $current_platform == "wm"
         $rhoelements_features += "- Windows Mobile/Windows CE platform support\n"
     end
+
+    if $current_platform == "win32" && !$is_rho_simulator
+        $rhoelements_features += "- Windows Desktop platform support\n"
+    end
     
     if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
         #$application_build_configs.delete('encrypt_database')
@@ -409,6 +413,15 @@ namespace "config" do
     if $app_config['extensions'].index('webkit-browser')
         $rhoelements_features += "- Motorola WebKit Browser\n"                
     end
+
+    if File.exist?(File.join($app_path, "license.yml"))
+        license_config = Jake.config(File.open(File.join($app_path, "license.yml")))    
+    
+        if ( license_config )
+            $application_build_configs["motorola_license"] = license_config["motorola_license"] if license_config["motorola_license"]
+            $application_build_configs["motorola_license_company"] = license_config["motorola_license_company"] if license_config["motorola_license_company"]
+        end    
+    end    
     
     $invalid_license = false
 
