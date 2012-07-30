@@ -372,6 +372,7 @@ extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const c
 
 extern "C" void rho_scanner_TEST(HWND hwnd);
 extern "C" void rho_scanner_TEST2();
+extern "C" int rho_wm_impl_CheckLicense();
 
 // This method is called immediately before entering the message loop.
 // It contains initialization code for the application.
@@ -465,7 +466,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
-#ifdef RHODES_EMULATOR
+#ifdef OS_WINDOWS_DESKTOP
 	    ::MessageBoxW(0, L"This is hidden app and can be started only with security key.", L"Security Token Verification Failed", MB_ICONERROR | MB_OK);
 #endif
 		LOG(INFO) + "This is hidden app and can be started only with security key.";
@@ -557,6 +558,13 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         return S_FALSE;
     }
     m_appWindow.ShowWindow(nShowCmd);
+
+#ifndef RHODES_EMULATOR
+    int nRes = rho_wm_impl_CheckLicense();
+    if ( !nRes )
+        ::MessageBoxW(0, L"Please provide RhoElements license key.", L"Motorola License", MB_ICONERROR | MB_OK);
+#endif
+
 #else
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
@@ -797,13 +805,14 @@ typedef bool (WINAPI *PCSD)();
 extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent);
 #endif
 
-typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR);
+typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR, LPCWSTR);
+typedef int (WINAPI *FUNC_IsLicenseOK)();
 
-extern "C" void rho_wm_impl_CheckLicense()
+extern "C" int rho_wm_impl_CheckLicense()
 {
-#ifdef OS_WINDOWS_DESKTOP
-    return;
-#else
+//#ifdef OS_WINDOWS_DESKTOP
+//    return;
+//#else
 
 #ifdef APP_BUILD_CAPABILITY_MOTOROLA
     rho_wm_impl_CheckLicenseWithBarcode(getMainWnd());
@@ -811,22 +820,34 @@ extern "C" void rho_wm_impl_CheckLicense()
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
     if(hLicenseInstance)
     {
+#ifdef OS_WINDOWS_DESKTOP
+        PCL pCheckLicense = (PCL) ::GetProcAddress(hLicenseInstance, "_CheckLicense@16");
+        FUNC_IsLicenseOK pIsOK = (FUNC_IsLicenseOK) ::GetProcAddress(hLicenseInstance, "_IsLicenseOK@0");
+#else
         PCL pCheckLicense = (PCL) GetProcAddress(hLicenseInstance, L"CheckLicense");
+        FUNC_IsLicenseOK pIsOK = (FUNC_IsLicenseOK) GetProcAddress(hLicenseInstance, L"IsLicenseOK");
+#endif
         LPCWSTR szLogText = 0;
         if(pCheckLicense)
         {
             StringW strLicenseW;
             common::convertToStringW( get_app_build_config_item("motorola_license"), strLicenseW );
 
-            szLogText = pCheckLicense( getMainWnd(), L"rhodes-system-api-samples", strLicenseW.c_str() );
+            StringW strCompanyW;
+            common::convertToStringW( get_app_build_config_item("motorola_license_company"), strCompanyW );
+
+            szLogText = pCheckLicense( getMainWnd(), L"rhodes-system-api-samples", strLicenseW.c_str(), strCompanyW.c_str() );
         }
 
         if ( szLogText && *szLogText )
             LOGC(INFO, "License") + szLogText;
+
+        return pIsOK ? pIsOK() : 0;
     }
 #endif
 
-#endif
+    return 0;
+//#endif
 }
 
 extern "C" int rho_wm_impl_CheckSymbolDevice()

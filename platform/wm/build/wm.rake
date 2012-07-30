@@ -528,6 +528,7 @@ namespace "build" do
       puts "Error building"
       exit 1
     end
+    
   end
 end
 
@@ -642,6 +643,7 @@ namespace "device" do
       mkdir_p out_dir
 
       cp out_dir + "rhodes.exe", $tmpdir + "/" + $appname + ".exe"
+      cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), $tmpdir
 
       script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
       app_script_name = File.join($tmpdir, $appname + ".nsi")
@@ -968,6 +970,9 @@ namespace "run" do
 
   desc "Run win32"
   task :win32 => ["build:win32"] do
+  
+    cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), File.join( $config["build"]["wmpath"], "bin/win32/rhodes", $buildcfg )
+
     args = [' ']
     #    chdir $config["build"]["wmpath"]
     #    Thread.new { Jake.run("bin\\win32\\rhodes\\Debug\\rhodes", args) }

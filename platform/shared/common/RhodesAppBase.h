@@ -71,7 +71,6 @@ public:
     const String& getHomeUrl(){ return m_strHomeUrl; }
 
     String canonicalizeRhoUrl(const String& strUrl) const;
-    String canonicalizeRhoUrl_LocalHost(const String& strUrl) const;
 
     boolean isBaseUrl(const String& strUrl);
     

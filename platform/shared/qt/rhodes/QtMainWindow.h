@@ -34,6 +34,7 @@
 #include <QtWebKit/QWebInspector>
 #include <QAction>
 #include <QMessageBox>
+#include <QBasicTimer>
 #include "QtWebInspector.h"
 #include "MainWindowCallback.h"
 #include "common/IRhoThreadImpl.h"
@@ -59,6 +60,8 @@ public:
     virtual void hideEvent(QHideEvent *);
     virtual void showEvent(QShowEvent *);
     virtual void closeEvent(QCloseEvent *);
+    virtual void paintEvent(QPaintEvent *);
+    virtual void timerEvent(QTimerEvent *event);
     void setCallback(IMainWindowCallback* callback);
     int getLogicalDpiX();
     int getLogicalDpiY();
@@ -113,7 +116,8 @@ private:
     //TODO: CSyncStatusDlg *m_SyncStatusDlg;
     int m_LogicalDpiX;
     int m_LogicalDpiY;
-	bool firstShow;
+	bool firstShow, m_bFirstLoad;
+    QBasicTimer m_SplashTimer;
 
 private slots:
     void on_webView_urlChanged(QUrl );
