@@ -151,6 +151,8 @@ These parameters are included in all notifications.
  "download": when client start downloading database from server
  
  "change_db": when client start applying new database
+
+ "blobs": when client start downloading remote blob files
  
  "ok": when sync of partition finished without error
  
