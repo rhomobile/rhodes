@@ -14,7 +14,15 @@
 #if defined(WIN32) || defined (WINCE)
 #include "windows/extconf.h"
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
+#include <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
+
+#include "iphone/extconf.h"
+
+#else
 #include "macosx/extconf.h"
+#endif
 #elif defined(ANDROID)
 #include "android/extconf.h"
 #endif
