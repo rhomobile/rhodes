@@ -593,7 +593,7 @@ namespace "config" do
 
             if exttype == 'rakefile'
               rakedir = Dir.glob File.join(extpath,'**','android')
-              $ext_android_build_scripts[ext] = [rakedir.first, 'rake' + $exe_ext]
+              $ext_android_build_scripts[ext] = [rakedir.first, 'rake']
             else
               build_script = File.join(extpath, 'build' + $bat_ext)
               if File.exists? build_script
@@ -749,7 +749,7 @@ namespace "build" do
         mkdir_p ENV["TEMP_FILES_DIR"] unless File.directory? ENV["TEMP_FILES_DIR"]
 
         puts "Executing extension build script: #{ext}"
-        if RUBY_PLATFORM =~ /(win|w)32$/ || (builddata[1] == "rake#{$exe_ext}")
+        if RUBY_PLATFORM =~ /(win|w)32$/ || (builddata[1] == 'rake')
              Jake.run(builddata[1], [], builddata[0])
         else
              currentdir = Dir.pwd()      
