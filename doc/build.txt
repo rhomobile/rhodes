@@ -1064,6 +1064,8 @@ To build and run the application issue command:
 	:::term
 	$ rake run:win32
 
+*NOTE: If you use HTTPS, add to the `PATH` variable: `<path-to-rhodes>\lib\extensions\openssl.so\ext\win32\bin`
+
 To clean all temporary and binary files execute command:
 
 	:::term
@@ -1111,6 +1113,7 @@ If your application needs HTTPS, then you need to build the Qt libraries for Vis
 * Open Control Panel » System » Advanced system settings » Environment Variables and then:
     * Create new (or update existing) system variable `QTDIR` = `C:\Qt\4.7.4` (this will be the installation folder for the compiled Qt libraries)
     * Add to the `PATH` variable: `C:\Qt\4.7.4\bin` (it doesn't matter that this folder does not exist yet)
+    * To make command 'rake run:win32' work - Add to the `PATH` variable: `<path-to-rhodes>\lib\extensions\openssl.so\ext\win32\bin`
     * Either close all command prompts and Visual Studio instances, or reboot the computer so the new settings take effect.
 * Open Visual Studio 2008 Command Prompt. This is accomplished using Start » All Programs » Microsoft Visual Studio 2008 » Visual Studio Tools » Visual Studio 2008 Command Prompt. Run in Visual Studio 2008 Command Prompt:
 
