@@ -38,6 +38,9 @@ module Rake
 end
 
 $app_basedir = pwd
+$startdir = File.dirname(__FILE__)
+$startdir.gsub!('\\', '/')
+
 chdir File.dirname(__FILE__)
 
 require File.join(pwd, 'lib/build/jake.rb')
@@ -242,8 +245,6 @@ end
 
 namespace "config" do
   task :common do
-    $startdir = File.dirname(__FILE__)
-    $startdir.gsub!('\\', '/')
     
     $binextensions = []
     buildyml = 'rhobuild.yml'
@@ -263,7 +264,7 @@ namespace "config" do
         $rubypath = "res/build-tools/rubylinux"
       end
     end
-	
+
     if $app_path.nil? #if we are called from the rakefile directly, this wont be set
       #load the apps path and config
 
