@@ -1848,6 +1848,12 @@ namespace "run" do
   namespace "android" do
     
     task :spec => ["device:android:debug"] do
+    
+        if $device_flag == '-e'
+            Rake::Task["config:android:emulator"].invoke
+        else
+            Rake::Task["config:android:device"].invoke
+        end
 
         log_name  = $app_path + '/RhoLogSpec.txt'
         File.delete(log_name) if File.exist?(log_name)
@@ -1937,7 +1943,8 @@ namespace "run" do
     task :framework_spec => "framework_spec:emulator"
 
     namespace "phone_spec" do
-      task :device=>"config:android:device" do
+      task :device do
+        $device_flag = '-d'
         Jake.run_spec_app('android','phone_spec')
         unless $dont_exit_on_failure
           exit 1 if $total.to_i==0
@@ -1945,7 +1952,8 @@ namespace "run" do
         end
       end
 
-      task :emulator=>"config:android:emulator" do
+      task :emulator do
+        $device_flag = '-e'
         Jake.run_spec_app('android','phone_spec')
         unless $dont_exit_on_failure
           exit 1 if $total.to_i==0
@@ -1955,7 +1963,8 @@ namespace "run" do
     end
 
     namespace "framework_spec" do
-      task :device=>'config:android:device' do
+      task :device do
+        $device_flag = '-d'
         Jake.run_spec_app('android','framework_spec')
         unless $dont_exit_on_failure
           exit 1 if $total.to_i==0
@@ -1963,7 +1972,8 @@ namespace "run" do
         end
       end
 
-      task :emulator=>'config:android:emulator' do
+      task :emulator do
+        $device_flag = '-e'
         Jake.run_spec_app('android','framework_spec')
         unless $dont_exit_on_failure
           exit 1 if $total.to_i==0
