@@ -37,6 +37,7 @@ import java.net.SocketImpl;
 import java.net.SocketOptions;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoConf;
 
 public class RhoSocketImpl extends SocketImpl {
 	
@@ -44,7 +45,9 @@ public class RhoSocketImpl extends SocketImpl {
 	
 	private int sockfd = -1;
 	
-	private int soTimeout = 0;
+	private static final int DEFAULT_TIMEOUT = 30000;
+	
+	private int soTimeout = DEFAULT_TIMEOUT;
 	private int ipTos = 0;
 	
 	private RhoSockAddr remote;
@@ -56,6 +59,11 @@ public class RhoSocketImpl extends SocketImpl {
 	
 	public RhoSocketImpl(int s, RhoSockAddr rem) {
 		Logger.D(TAG, "New socket wrapper. fd: " + s + ", host: " + rem.host + ", port: " + rem.port);
+		
+		soTimeout = RhoConf.getInt("net_timeout");
+		if ( 0 == soTimeout ) {
+			soTimeout = DEFAULT_TIMEOUT;
+		}
 		
 		sockfd = s;
 		remote = rem;
