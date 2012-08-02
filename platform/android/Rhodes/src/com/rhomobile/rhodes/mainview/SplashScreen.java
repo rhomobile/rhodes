@@ -36,15 +36,15 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
-import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.webview.GoogleWebView;
 import com.rhomobile.rhodes.webview.WebView;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
-import android.util.Log;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 public class SplashScreen implements MainView {
@@ -57,9 +57,9 @@ public class SplashScreen implements MainView {
 	private static final String LOADING_PNG = "apps/app/loading.png";
 	private static final String LOADING_PAGE = "apps/app/loading.html";
 	
-	private FrameLayout mView;
-	
 	private WebView mWebView;
+	private FrameLayout mView;
+	private ImageView mImageView;
 	
 	private native void nativeStart();
 	private native void nativeHide();
@@ -68,18 +68,21 @@ public class SplashScreen implements MainView {
 	private boolean mFirstNavigate = true;
 	
     public SplashScreen(RhodesActivity context) {
+    	Logger.T(TAG, "Creating splash screen");
         mView = new FrameLayout(context);
         mView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-		AssetManager am = context.getResources().getAssets();
-		mWebView = createHtmlView(context, am);
-		mView.addView(mWebView.getView());
+        AssetManager am = context.getAssets();
 		mFirstNavigate = true;
+        mWebView = createWebView(context, am);
+		loadContent(context, am);
 	}
 
-    private WebView createHtmlView(RhodesActivity context, AssetManager am) {
-
+    
+    private void loadContent(Activity activity, AssetManager am) {
         int type = 0;
-        final String[][] urls = {{LOADING_ANDROID_PNG, LOADING_PNG}, {LOADING_PAGE}};
+
+        Logger.T(TAG, "Looking for start page source");
+        final String[][] urls = {{LOADING_PNG}, {LOADING_PAGE}};
         String[] fn = new String[2];
         types: for (String[] X: urls) {
             for (String url:X) {
@@ -104,11 +107,41 @@ public class SplashScreen implements MainView {
             type++;
         }
 
-        // Now create WebView and load appropriate content there
-        WebView view = null;//new GoogleWebView(context);
+        activity.setContentView(mView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+        switch (type) {
+        case 0:
+        	Logger.T(TAG, "Creating image view");
+            try {
+                mImageView = new ImageView(activity);
+                mImageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));
+                activity.addContentView(mImageView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+                mImageView.setAdjustViewBounds(true);
+                mImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            } catch (IOException e) {
+                Logger.E(TAG, e);
+            }
+            mView.addView(mWebView.getView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)) ; 
+            //mWebView.loadDataWithBaseURL("file:///android_asset/", "<html><body style=\"margin:0px\"><img src=\""+ fn[type] + "\" height=\"100%\" width=\"100%\" border=\"0\"/></body></html>", "text/html", "utf-8", null);
+            break;
+        case 1:
+        	Logger.T(TAG, "Loading html");
+            mView.addView(mWebView.getView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)) ; 
+            mWebView.loadUrl("file:///android_asset/" + fn[type]);
+            break;
+        default:
+        	Logger.T(TAG, "Loading default content");
+            mView.addView(mWebView.getView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)) ; 
+            mWebView.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
+        }
+        Logger.T(TAG, "Done");
+    }
+    
+    private WebView createWebView(Activity context, AssetManager am) {
+
+    	WebView view = null;//new GoogleWebView(context);
         if (Capabilities.WEBKIT_BROWSER_ENABLED) {
             try {
-                Class<? extends WebView> viewClass = (Class<? extends WebView>)Class.forName("com.rhomobile.rhodes.webview.EkiohWebView");
+                Class<? extends WebView> viewClass = Class.forName("com.rhomobile.rhodes.webview.EkiohWebView").asSubclass(WebView.class);
                 Constructor<? extends WebView> viewCtor = viewClass.getConstructor(Activity.class);
                 view = viewCtor.newInstance(context);
             } catch (Throwable e) {
@@ -119,25 +152,16 @@ public class SplashScreen implements MainView {
             final GoogleWebView googleWebView = new GoogleWebView(context);
             view = googleWebView;
             RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
-                @Override
-                public void run()
-                {
-                    googleWebView.applyWebSettings();
+                @Override public void run() {
+                	PerformOnUiThread.exec(new Runnable() {
+						@Override public void run() {
+							Logger.T(TAG, "Applying web settings");
+	                        googleWebView.applyWebSettings();
+						}                		
+                	});
                 }
             });
         }
-
-        switch (type) {
-        case 0:
-            view.loadDataWithBaseURL("file:///android_asset/", "<html><body style=\"margin:0px\"><img src=\""+ fn[type] + "\" height=\"100%\" width=\"100%\" border=\"0\"/></body></html>", "text/html", "utf-8", null);
-            break;
-        case 1:
-            view.loadUrl("file:///android_asset/" + fn[type]);
-            break;
-        default:
-            view.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
-        }
-
         return view;
     }
 	

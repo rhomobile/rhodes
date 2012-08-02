@@ -159,7 +159,7 @@ public class RhodesActivity extends BaseActivity {
 		mHandler = new Handler();
 
         mSplashScreen = new SplashScreen(this);
-        setMainView(mSplashScreen);
+        mMainView = mSplashScreen; 
 
 		processStartupListeners();
         {
