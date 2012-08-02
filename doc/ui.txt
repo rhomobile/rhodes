@@ -170,6 +170,56 @@ In case you have jQueryMobile rendering broken on Windows Phone 7.0 you need to 
 
 It should fix jQueryMobile rendering problems on Windows Phone 7.0 platform.
 
+#### White page flickering while transition
+It may happen if controller action method doesn't return any rendered value but performs [WebView.navigate(someUrl)](#control-webview-from-controller-actions) call instead.
+It is important to avoid using [WebView.navigate](#control-webview-from-controller-actions) in action methods because it is intended to be used in callback methods asynchronously.
+
+#### How to make an AJAX call and update page elements
+When one need to update some information on the page without any transition an AJAX call may be performed this way:
+
+    :::html
+    <div data-role="page">
+
+      <div data-role="header" data-position="inline">
+        <h1>AJAX sample</h1>
+      </div>
+
+      <div data-role="content">
+        <ul data-role="listview">
+          <li><p>To reset result just reload the page..</p></li>
+          <li>
+            <a href="#"
+               onclick="$.get('<%= url_for :action => :get_json %>').success(function(data){showResult(data)}); return false;">
+                    Read JSON object via AJAX call
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div>A = <span id="result_a"></span></div>
+      <div>B = <span id="result_b"></span></div>
+      <div>C = <span id="result_c"></span></div>
+
+    </div>
+
+To handle AJAX request a controller action method can return JSON object this way:
+
+    ::::ruby
+    def get_json
+      render :string => '{"a": 1, "b": 2, "c": 3}'
+    end
+
+**NOTE: It is very important to don't use [WebView.execute_js](#control-webview-from-controller-actions) method to update some page elements.
+See next section for details.
+
+#### Improper using of WebView.execute_js method
+At the moment for most of mobile platforms it has been implemented via redirection to URL with 'javascript:' schema.
+
+In case it used in some AJAX call handler method in the controller it may lead to the situation where *success* javascript handler will never be executed.
+
+It may happen because at the moment of *success* handler should be executed an URL of the page already has been changed. It means no any handlers anymore from the previous page which are still valid.
+
+
 ## Loading screen
 
 Rhodes supports the display of a custom "Loading" screen while your application is launching. This screen's source is the file loading.html, located at <application-root>/app/loading.html.
@@ -271,6 +321,8 @@ WebView.navigate supports an optional index parameter (defaults to 0, useful for
 	:::ruby
 	WebView.navigate(url, index)
 
+**NOTE: See [Important notes](#javascript-frameworks) section for details on possible issues with improper use of this method.
+
 Force WebView to navigate to previous page using Browser back
 	:::ruby
 	WebView.navigate_back
@@ -299,6 +351,7 @@ The same as above but for specified tab (if tab bar present)
 	#call method test on the tab page 
 	WebView.execute_js("test();", index) 
 
+**NOTE: See [Important notes](#javascript-frameworks) section for details on possible issues with improper use of this method.
 
 Returns index of @tabs array for the currently selected tab
 	:::ruby
