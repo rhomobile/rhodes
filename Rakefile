@@ -37,6 +37,17 @@ module Rake
   end
 end
 
+# Restore process error mode on Windows.
+# Error mode controls wether system error message boxes will be shown to user.
+# Java disables message boxes and we enable them back.
+if RUBY_PLATFORM =~ /(win|w)32$/
+  require 'win32/process'
+  class WindowsError
+    include Windows::Error
+  end
+  WindowsError.new.SetErrorMode(0)
+end
+
 $app_basedir = pwd
 chdir File.dirname(__FILE__)
 
