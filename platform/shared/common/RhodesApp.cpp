@@ -71,7 +71,6 @@ void rho_appmanager_load( void* httpContext, const char* szQuery);
 void rho_db_init_attr_manager();
 void rho_sys_app_exit();
 void rho_sys_report_app_started();
-VALUE rho_sys_get_property(char* property);
 
 #ifdef OS_ANDROID
 void rho_file_set_fs_mode(int mode);
@@ -2078,19 +2077,12 @@ int rho_is_motorola_licence_checked() {
     
 int rho_is_rho_elements_extension_can_be_used() {
     int res_check = 1;
-#if defined( OS_ANDROID ) || defined( OS_MACOSX )
-#ifdef OS_ANDROID
-    VALUE is_moto_value = rho_sys_get_property("is_motorola_device");
-    if (rho_ruby_is_NIL(is_moto_value) || !rho_ruby_get_bool(is_moto_value)) {
-#endif
+#if defined( OS_MACOSX ) || (defined( OS_ANDROID ) && defined ( APP_BUILD_CAPABILITY_MOTOROLA ))
         const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
         const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
     
         if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL))
             res_check = 0;
-#ifdef OS_ANDROID
-    }
-#endif
 #endif
 
     return res_check;
@@ -2105,15 +2097,8 @@ int rho_can_app_started_with_current_licence() {
     }
         
     int res_check = 1;
-#if defined( OS_ANDROID ) || defined( OS_MACOSX )
-#ifdef OS_ANDROID
-    VALUE is_moto_value = rho_sys_get_property("is_motorola_device");
-    if (rho_ruby_is_NIL(is_moto_value) || !rho_ruby_get_bool(is_moto_value)) {
-#endif
+#if defined( OS_MACOSX ) || (defined( OS_ANDROID ) && defined ( APP_BUILD_CAPABILITY_MOTOROLA ))
         res_check = rho_is_motorola_licence_checked();
-#ifdef OS_ANDROID
-    }
-#endif
 #endif        
     return res_check;
 }

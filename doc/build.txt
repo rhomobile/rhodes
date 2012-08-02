@@ -283,13 +283,16 @@ Check that your [OS is compatible with the Android SDK](http://developer.android
 
 Download the [Android SDK](http://developer.android.com/sdk/index.html), and unzip it to the location of your choice.
 
-On Macintosh and Linux, navigate to and run <Android SDK>/tools/android. On Windows, navigate to and run <Android SDK>/SDK Setup.exe. The Android SDK and AVD Manager window appears. Then perform the following steps:
+On Macintosh and Linux, navigate to and run `<Android SDK>/tools/android sdk`. On Windows, navigate to and run <Android SDK>/SDK Manager.exe. The Android SDK Manager window appears. Then perform the following steps:
 
  * Select Settings, then check "check `Force https://... sources to be fetched using http://".
- * Select Available packages, expand the Android repository and Third Party add-ons, check the Android SDK Platform(s) and Google APIs of your choice, then click the "Add Add-on site" button to download them.
- * Set up an AVD (Android Virtual Device) by clicking on Virtual Devices, and clicking the New button. More detailed instructions can be on the Google site for [Managing AVDs with AVD Manager](http://developer.android.com/guide/developing/devices/managing-avds.html).
+ * Run Android SDK Manager, check latest Android SDK Platform(s) and Google APIs, then click "Install packages" button to download and install them.
+
+** NOTE: To use Google Map View you need to install latest Google API from Android SDK Manager **
 
 Download and unzip the [Android NDK](http://developer.android.com/sdk/ndk/index.html) to the location of your choice.
+
+** NOTE: You need to update Android SDK platforms and Android NDK to latest ones as you update to new rhodes **
 
 In RhoStudio -> Preferences on the Macintosh or Winndows -> Preferences on Windows, open Rhomobile->Android and set the paths to your Android SDK and NDK installations.
 

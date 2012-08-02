@@ -4,13 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -19,7 +16,6 @@ import android.nfc.FormatException;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
-import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.tech.IsoDep;
 import android.nfc.tech.MifareClassic;
@@ -32,17 +28,15 @@ import android.nfc.tech.NfcF;
 import android.nfc.tech.NfcV;
 import android.nfc.tech.TagTechnology;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
-import com.rhomobile.rhodes.extmanager.IRhoExtManager;;
+import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
-import com.rhomobile.rhodes.extmanager.RhoExtManager;;
-import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.util.Utils;
 
 public class Nfc implements IRhoListener {
 
@@ -123,31 +117,24 @@ public class Nfc implements IRhoListener {
 		return ourInstance;
 	}
 	
-	public static NfcAdapter getDefaultAdapter(Context ctx) {
-		Context context = ctx;
-		if (ctx == null) {
-			context = RhodesActivity.getContext();
-		}
+	private static NfcAdapter getDefaultAdapter(Context ctx) {
 		NfcAdapter da = null;
 		try {
 			int sdkVersion = Build.VERSION.SDK_INT;
 			if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD_MR1) {
-				da = NfcAdapter.getDefaultAdapter(RhodesActivity.getContext());
+				da = NfcAdapter.getDefaultAdapter(ctx);
 			} 
-			else if (sdkVersion >= Build.VERSION_CODES.GINGERBREAD) {
-				da = NfcAdapter.getDefaultAdapter();
-			}
 		}
 		catch (Exception e) {
 			// nothing
-			Utils.platformLog(TAG, "Exception during get NFCAdapter");
+			Utils.platformLog(TAG, "Exception during get NFCAdapter: " + e.getMessage());
 			e.printStackTrace();
 		}
 		return da;
 	}
 	
 	public static int isSupported() {
-		NfcAdapter da = getDefaultAdapter(null);
+		NfcAdapter da = getDefaultAdapter(ContextFactory.getContext());
 		if (da == null) {
 			return 0;
 		}
@@ -207,7 +194,7 @@ public class Nfc implements IRhoListener {
 	@Override
 	public void onPause(RhodesActivity activity) {
 		log(" $$$$$$$$$ onPause() ");
-		NfcAdapter nfcAdapter = getDefaultAdapter(RhodesActivity.getContext());
+		NfcAdapter nfcAdapter = getDefaultAdapter(activity);
 		if (nfcAdapter != null) {
 			nfcAdapter.disableForegroundDispatch(activity);
 			nfcAdapter.disableForegroundNdefPush(activity);
@@ -217,7 +204,7 @@ public class Nfc implements IRhoListener {
 	@Override
 	public void onResume(RhodesActivity activity) {
 		log(" $$$$$$$$$ onResume() ");
-		NfcAdapter nfcAdapter = getDefaultAdapter(RhodesActivity.getContext());
+		NfcAdapter nfcAdapter = getDefaultAdapter(activity);
 		if ((nfcAdapter != null) && (ourIsEnable)) {
 			IntentFilter[] filters = new IntentFilter[1];
 			filters[0] = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
