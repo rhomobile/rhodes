@@ -304,6 +304,8 @@ Load from 'partials' folder:
 	
 ## Control WebView from controller actions
 It is possible to call on the WebView (browser) directly from your controllers. This API is recommended for use from callbacks, such as sync callback or camera callbacks.
+**NOTE: WebView do not support opening internet URLs required authentification. Use AsyncHTTP/AsyncHTTPS API for access to URL required authentification..
+
 
 Force WebView refresh current page
 	:::ruby
