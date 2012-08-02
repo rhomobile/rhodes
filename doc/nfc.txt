@@ -25,11 +25,10 @@ To create a Rhodes NFC application, you generate a Rhodes application, then you 
 
 ## Setting up build.yml
 
-NFC is currently supported only on the Android platform, OS version 2.3.3 or later. You must edit the Android section in your build.yml file for NFC. The version must be 2.3.3 or later, and NFC must be in the extension list.
+NFC is supported only on Android devices with Android 2.3.3 or later. You must edit the Android section in your build.yml file for NFC: 'nfc' extension must be in the extension list.
 
 	:::text
 	android:
-	  version: 2.3.3
 	  extensions:
 	  - nfc
 

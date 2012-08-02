@@ -1030,8 +1030,11 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     
     // Detect mime type
     headers.push_back(Header("Content-Type", get_mime_type(path)));
-    //headers.push_back(Header("Expires", "Thu, 15 Apr 2020 20:00:00 GMT") );
-    //headers.push_back(Header("Cache-Control", "max-age=2592000") );
+    if ( String_startsWith(path, "/public") )
+    {
+        headers.push_back(Header("Expires", "Thu, 15 Apr 2020 20:00:00 GMT") );
+        headers.push_back(Header("Cache-Control", "max-age=2592000") );
+    }
 
     // Content length
     char* buf = new char[FILE_BUF_SIZE];
