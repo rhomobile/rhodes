@@ -260,6 +260,7 @@
 		C5D2781F15A1BD1100A7EFC7 /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D2781D15A1BD1100A7EFC7 /* zip.cpp */; };
 		C5D2782015A1BD1100A7EFC7 /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = C5D2781E15A1BD1100A7EFC7 /* zip.h */; };
 		C5D2782715A1C77500A7EFC7 /* ZipFiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D2782615A1C77500A7EFC7 /* ZipFiles.cpp */; };
+		C5DD5C2815CC0735003F6F33 /* RhoPushManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5DD5C2715CC0735003F6F33 /* RhoPushManager.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -516,6 +517,7 @@
 		C5D2781D15A1BD1100A7EFC7 /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zip.cpp; path = ../../platform/shared/unzip/zip.cpp; sourceTree = "<group>"; };
 		C5D2781E15A1BD1100A7EFC7 /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = ../../platform/shared/unzip/zip.h; sourceTree = "<group>"; };
 		C5D2782615A1C77500A7EFC7 /* ZipFiles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ZipFiles.cpp; path = ../../platform/shared/rubyext/ZipFiles.cpp; sourceTree = "<group>"; };
+		C5DD5C2715CC0735003F6F33 /* RhoPushManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoPushManager.cpp; path = ../../platform/shared/common/push/RhoPushManager.cpp; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libRhoConnectClient.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRhoConnectClient.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -697,6 +699,7 @@
 		5C0D088D121D00B40022E83C /* common */ = {
 			isa = PBXGroup;
 			children = (
+				C5DD5C2715CC0735003F6F33 /* RhoPushManager.cpp */,
 				5C0D0A24121D26600022E83C /* iphone */,
 				5C0D088E121D01230022E83C /* AutoPointer.h */,
 				5C0D088F121D01230022E83C /* InputStream.h */,
@@ -1246,6 +1249,7 @@
 				C5D277ED159CAC3E00A7EFC7 /* DBRequestHelper.cpp in Sources */,
 				C5D2781F15A1BD1100A7EFC7 /* zip.cpp in Sources */,
 				C5D2782715A1C77500A7EFC7 /* ZipFiles.cpp in Sources */,
+				C5DD5C2815CC0735003F6F33 /* RhoPushManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
