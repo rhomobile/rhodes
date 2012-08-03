@@ -2077,7 +2077,7 @@ int rho_is_motorola_licence_checked() {
     
 int rho_is_rho_elements_extension_can_be_used() {
     int res_check = 1;
-#if defined( OS_MACOSX ) || (defined( OS_ANDROID ) && defined ( APP_BUILD_CAPABILITY_MOTOROLA ))
+#if defined( OS_MACOSX ) || (defined( OS_ANDROID ) && !defined ( APP_BUILD_CAPABILITY_MOTOROLA ))
         const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
         const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
     
@@ -2097,7 +2097,7 @@ int rho_can_app_started_with_current_licence() {
     }
         
     int res_check = 1;
-#if defined( OS_MACOSX ) || (defined( OS_ANDROID ) && defined ( APP_BUILD_CAPABILITY_MOTOROLA ))
+#if defined( OS_MACOSX ) || (defined( OS_ANDROID ) && !defined ( APP_BUILD_CAPABILITY_MOTOROLA ))
         res_check = rho_is_motorola_licence_checked();
 #endif        
     return res_check;
