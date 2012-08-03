@@ -26,6 +26,7 @@
 
 if Object.const_defined?('RhoElementsExt')
 
+=begin
 if System.get_property('platform') != 'ANDROID'
 
 module Camera
@@ -85,6 +86,7 @@ class << self
 end
 end
 end
+=end
 
 module Barcode
 
