@@ -317,7 +317,7 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
     if (ok)
         RAWLOGC_INFO("WebView", "Page load complete." );
     else
-        RAWLOGC_ERROR("WebView", "Page load failed." );
+        LOG(ERROR) + "Page load failed:" + ui->webView->url().toString().utf16();
 
     PROF_STOP("BROWSER_PAGE");
 
@@ -325,15 +325,18 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
     if (mainWindowCallback && ok) mainWindowCallback->onWebViewUrlChanged(ui->webView->url().toString().toStdString());
 #endif
 
-    if ( m_bFirstLoad && ui->webView->url().toString() != "about:blank")
+    if ( m_bFirstLoad )
     {
-        long lMS = RHODESAPP().getSplashScreen().howLongWaitMs();
-        if ( lMS > 0 )
-            m_SplashTimer.start(lMS, this);
-        else
+        if ( ui->webView->url().toString() != "about:blank" )
         {
-            m_bFirstLoad = false;
-            main_webView->show();
+            long lMS = RHODESAPP().getSplashScreen().howLongWaitMs();
+            if ( lMS > 0 )
+                m_SplashTimer.start(lMS, this);
+            else
+            {
+                m_bFirstLoad = false;
+                main_webView->show();
+            }
         }
     }
 
@@ -374,7 +377,7 @@ void QtMainWindow::navigate(QString url, int index)
     if (wv) {
         if (url.startsWith("javascript:", Qt::CaseInsensitive)) {
             url.remove(0,11);
-            wv->stop();
+            //wv->stop();
             wv->page()->mainFrame()->evaluateJavaScript(url);
         } else if (!internalUrlProcessing(url)) {
 #ifdef OS_MACOSX
