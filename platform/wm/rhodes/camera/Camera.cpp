@@ -41,11 +41,6 @@ extern "C" HWND getMainWnd();
 
 //#if defined(_WIN32_WCE)
 
-static bool copy_file(LPTSTR from, LPTSTR to);
-static LPTSTR get_file_name(LPTSTR from, LPTSTR to);
-static LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt );
-static void create_folder(LPTSTR Path);
-
 IMPLEMENT_LOGCLASS(Camera,"Camera");
 
 Camera::Camera(void) {
@@ -60,26 +55,22 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
 #if defined(_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
     SHCAMERACAPTURE shcc;
 
-    StringW root;
-    convertToStringW(rho_rhodesapp_getblobsdirpath(), root);
-    wsprintf( pszFilename, L"%s", root.c_str() );
+    StringW imageDir;
+    convertToStringW(rho_rhodesapp_getblobsdirpath(), imageDir);
 
-	create_folder(pszFilename);
-
-    //LPCTSTR szExt = wcsrchr(pszFilename, '.');
-    TCHAR filename[256];
-	generate_filename(filename,L".jpg");
+	StringW strFileName = generate_filename(L".jpg");
 
     // Set the SHCAMERACAPTURE structure.
     ZeroMemory(&shcc, sizeof(shcc));
     shcc.cbSize             = sizeof(shcc);
     shcc.hwndOwner          = hwndOwner;
-    shcc.pszInitialDir      = pszFilename;
-    shcc.pszDefaultFileName = filename;
+    shcc.pszInitialDir      = imageDir.c_str();
+    shcc.pszDefaultFileName = strFileName.c_str();
     shcc.pszTitle           = TEXT("Camera");
     shcc.VideoTypes			= CAMERACAPTURE_VIDEOTYPE_MESSAGING;
     shcc.nResolutionWidth   = 176;
     shcc.nResolutionHeight  = 144;
+    shcc.StillQuality       = CAMERACAPTURE_STILLQUALITY_LOW;
     shcc.nVideoTimeLimit    = 15;
     shcc.Mode               = CAMERACAPTURE_MODE_STILL;
 
@@ -88,10 +79,14 @@ HRESULT Camera::takePicture(HWND hwndOwner,LPTSTR pszFilename)
 
     // The next statements will execute only after the user takes
     // a picture or video, or closes the Camera Capture dialog.
-    if (S_OK == hResult) {
-        LPTSTR fname = get_file_name(shcc.szFile,pszFilename);
+    if (S_OK == hResult) 
+    {
+        LOG(INFO) + "takePicture get file: " + shcc.szFile;
+
+        LPTSTR fname = get_file_name( shcc.szFile, imageDir.c_str() );
 		if (fname) {
-			StringCchCopy(pszFilename, MAX_PATH, fname);
+
+			StringCchCopy( pszFilename, MAX_PATH, fname );
 			free(fname);
 		} else {
             LOG(ERROR) + "takePicture error get file: " + shcc.szFile;
@@ -145,21 +140,15 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename)
         StringW strBlobRoot = convertToStringW( RHODESAPP().getBlobsDirPath() );
 
         LPCTSTR szExt = wcsrchr(pszFilename, '.');
-		TCHAR filename[256];
-		generate_filename(filename, szExt);
-		
-		int len = strBlobRoot.length() + wcslen(L"\\") + wcslen(filename);
-		wchar_t* full_name = (wchar_t*) malloc((len+2)*sizeof(wchar_t));
-		wsprintf(full_name,L"%s\\%s",strBlobRoot.c_str(),filename);
+		StringW strFileName = generate_filename(szExt);
+		StringW strFullName = strBlobRoot + L"\\" + strFileName;
 
-		if (copy_file(pszFilename,full_name)) 
+		if (copy_file( pszFilename, strFullName.c_str() )) 
         {
-			wcscpy( pszFilename, filename );
+			wcscpy( pszFilename, strFileName.c_str() );
 		} else {
 			hResult = E_INVALIDARG;
 		}
-
-		free(full_name);
 
 		return hResult;
 	} else if (GetLastError()==ERROR_SUCCESS) {
@@ -168,7 +157,7 @@ HRESULT Camera::selectPicture(HWND hwndOwner,LPTSTR pszFilename)
 	return E_INVALIDARG;
 }
 
-bool copy_file(LPTSTR from, LPTSTR to) 
+bool Camera::copy_file(LPCTSTR from, LPCTSTR to) 
 {
 	RHO_ASSERT(from);
 	RHO_ASSERT(to);
@@ -198,25 +187,35 @@ bool copy_file(LPTSTR from, LPTSTR to)
 	return true;
 }
 
-LPTSTR get_file_name(LPTSTR from, LPTSTR to) {
+LPTSTR Camera::get_file_name(LPCTSTR from, LPCTSTR to) 
+{
 	int len = wcslen(to);
-	if (wcsncmp(to,from,len)==0) {
-		LPTSTR fname = from+len;
-		if ( (wcsncmp(L"\\",fname,1)==0) || 
-			 (wcsncmp(L"/",fname,1)==0) ) {
-			fname++;
-		}
-		len = wcslen(fname);
-		wchar_t* name = (wchar_t*) malloc(len*sizeof(wchar_t)+1);
-		wcscpy(name,fname);
-		return name;
-	} else {
-		return NULL;
+
+	LPCTSTR fname = from+len;
+	if ( (wcsncmp(L"\\",fname,1)==0) || 
+		 (wcsncmp(L"/",fname,1)==0) ) {
+		fname++;
 	}
+	len = wcslen(fname);
+	wchar_t* name = (wchar_t*) malloc(len*sizeof(wchar_t)+1);
+	wcscpy(name,fname);
+
+	if (wcsncmp( to, from, len )!=0) 
+    {
+        StringW strPathTo = to;
+        strPathTo += L"\\";
+        strPathTo += fname;
+
+        if ( !copy_file( from, strPathTo.c_str() ) )
+            return 0;
+    }
+
+	return name;
 }
 
-LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt) {
-	RHO_ASSERT(filename);
+StringW Camera::generate_filename(LPCTSTR szExt) 
+{
+    TCHAR filename[256];
 
 	CTime time(CTime::GetCurrentTime());
 	tm tl, tg;
@@ -229,26 +228,6 @@ LPTSTR generate_filename(LPTSTR filename, LPCTSTR szExt) {
         tz>0?'_':'-',abs(tz),(szExt?szExt:L""));
 
 	return filename;
-}
-
-void create_folder(LPTSTR Path)
-{
-	TCHAR DirName[256];
-	LPTSTR p = Path;
-	LPTSTR q = DirName; 
-	while(*p)
-	{
-		if (('\\' == *p) || ('/' == *p))
-		{
-			if (':' != *(p-1))
-			{
-				CreateDirectory(DirName, NULL);
-			}
-		}
-		*q++ = *p++;
-		*q = '\0';
-	}
-	CreateDirectory(DirName, NULL);
 }
 
 //#endif //_WIN32_WCE
