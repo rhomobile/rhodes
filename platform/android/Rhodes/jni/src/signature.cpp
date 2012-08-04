@@ -48,7 +48,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_signature_Signature_callback
 
 RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
 {
-
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_SIGNATURE);
     if (!cls) return;
@@ -56,35 +55,16 @@ RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
     if (!mid) return;
     jhstring objCallback = rho_cast<jhstring>(callback_url);
 
-    /*
-    char* image_format = 0;
-    if (p)
-    {
-        rho_param* pFF = rho_param_hash_get(p, "imageFormat");
-        if ( pFF )
-            image_format = pFF->v.string;
-    }
-    if (!image_format)
-        image_format = "";
-
-    jhstring objFormat = rho_cast<jhstring>(image_format);
-    env->CallStaticVoidMethod(cls, mid, objCallback.get(), objFormat.get());
-     */
-    
     jobject paramsObj = RhoValueConverter(env).createObject(p);
     env->CallStaticVoidMethod(cls, mid, objCallback.get(), paramsObj);
     env->DeleteLocalRef(paramsObj);
-    
-    
-    
 }
 
 RHO_GLOBAL void rho_signature_visible(bool visible, rho_param* p)
 {
     // check for RhoElements :
     if (!rho_is_rho_elements_extension_can_be_used()) {
-        RAWLOG_ERROR("Rho::SignatureCapture.visible() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
-        return;
+        RAWLOG_WARNING("Rho::SignatureCapture.visible() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
 
     JNIEnv *env = jnienv();
@@ -102,8 +82,7 @@ RHO_GLOBAL void rho_signature_capture(const char* callback_url)
 {
     // check for RhoElements :
     if (!rho_is_rho_elements_extension_can_be_used()) {
-        RAWLOG_ERROR("Rho::SignatureCapture.capture() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
-        return;
+        RAWLOG_WARNING("Rho::SignatureCapture.capture() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
     
     JNIEnv *env = jnienv();
@@ -114,16 +93,13 @@ RHO_GLOBAL void rho_signature_capture(const char* callback_url)
     jhstring objCallback = rho_cast<jhstring>(callback_url);
     
     env->CallStaticVoidMethod(cls, mid, objCallback.get());
-    
-    
 }
 
 RHO_GLOBAL void rho_signature_clear() 
 {
     // check for RhoElements :
     if (!rho_is_rho_elements_extension_can_be_used()) {
-        RAWLOG_ERROR("Rho::SignatureCapture.clear() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
-        return;
+        RAWLOG_WARNING("Rho::SignatureCapture.clear() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
     }
     
     JNIEnv *env = jnienv();
@@ -132,5 +108,4 @@ RHO_GLOBAL void rho_signature_clear()
     jmethodID mid = getJNIClassStaticMethod(env, cls, "inline_signature_clear", "()V");
     if (!mid) return;
     env->CallStaticVoidMethod(cls, mid);
-    
 }
