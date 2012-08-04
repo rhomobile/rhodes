@@ -313,11 +313,10 @@ void QtMainWindow::on_webView_loadStarted()
 
 void QtMainWindow::on_webView_loadFinished(bool ok)
 {
-//    LOG(INFO) + (ok?"WebView: loaded ":"WebView: failed ");
     if (ok)
-        RAWLOGC_INFO("WebView", "Page load complete." );
+        LOG(INFO) + "Page load complete.";
     else
-        LOG(ERROR) + "Page load failed:" + ui->webView->url().toString().utf16();
+        LOG(ERROR) + "Page load failed.";
 
     PROF_STOP("BROWSER_PAGE");
 
