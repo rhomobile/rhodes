@@ -246,8 +246,9 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	            	p.set("effect", Camera.Parameters.EFFECT_MONO);//p.setColorEffect(Camera.Parameters.EFFECT_MONO);
 	            }
 	            if (mSettings.getFlashMode() != null) {
-	            	p.set("flash-mode", mSettings.getFlashMode());
-	            	
+	            	if (com.rhomobile.rhodes.camera.Camera.getCameraService().isFlashModeSupported(camera, mSettings.getFlashMode())) {
+	            		p.set("flash-mode", mSettings.getFlashMode());
+	            	}
 	            }
 			}
 			camera.setParameters(p);
@@ -414,8 +415,9 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 	            	parameters.set("effect", Camera.Parameters.EFFECT_MONO);//setColorEffect(Camera.Parameters.EFFECT_MONO);
 	            }
 	            if (mSettings.getFlashMode() != null) {
-	            	parameters.set("flash-mode", mSettings.getFlashMode());
-	            	
+	            	if (com.rhomobile.rhodes.camera.Camera.getCameraService().isFlashModeSupported(camera, mSettings.getFlashMode())) {
+	            		parameters.set("flash-mode", mSettings.getFlashMode());
+	            	}
 	            }
             }
 			iccb = new ImageCaptureCallback(this, callbackUrl, osCommon, dir + "/" + filename + ".jpg", imgW, imgH, "jpg");
