@@ -30,23 +30,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import android.app.Activity;
+import android.content.res.AssetManager;
+import android.graphics.BitmapFactory;
+import android.os.SystemClock;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.webview.IRhoWebView;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.res.AssetManager;
-import android.graphics.BitmapFactory;
-import android.os.SystemClock;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-
-public class SplashScreen implements MainView {
+public class SplashScreen implements MainView{
     
     public interface SplashScreenListener {
         void onSplashScreenGone(SplashScreen splashScreen);
@@ -62,10 +60,8 @@ public class SplashScreen implements MainView {
 	private static final String LOADING_PAGE = "apps/app/loading.html";
 
 	private SplashScreenListener mSplashScreenListener;
-	private FrameLayout mView;
-	private IRhoWebView mWebView;
-	private ImageView mImageView;
-	private Activity mActivity;
+	private View mView;
+	private MainView mBackendView;
 
 	private native void nativeStart();
 	private native void nativeHide();
@@ -77,19 +73,22 @@ public class SplashScreen implements MainView {
 	private int mNavigateIndex = 0;
 	private Thread mSleepThread;
 
-    public SplashScreen(Activity activity, IRhoWebView webView, SplashScreenListener listener) {
+    public SplashScreen(Activity activity, MainView mainView, SplashScreenListener listener) {
         mSplashScreenListener = listener;
-        mActivity = activity;
-        mView = new FrameLayout(activity);
-        mWebView = webView;
-        loadContent();
+        mBackendView = mainView;
+        loadContent(activity);
     }
 
-    public synchronized String getUrlToNavigate() { return mUrlToNavigate; }
-    private synchronized void setUrlToNavigate(String url) { mUrlToNavigate = url; }
+    public MainView getBackendView() {
+        return mBackendView;
+    }
 
-    private void loadContent() {
-        AssetManager am = mActivity.getAssets();
+    public View getSplashView() {
+        return mView;
+    }
+
+    private void loadContent(Activity activity) {
+        AssetManager am = activity.getAssets();
         int type = 0;
 
         Logger.I(TAG, "Looking for start page source");
@@ -118,29 +117,43 @@ public class SplashScreen implements MainView {
             type++;
         }
 
-        mActivity.setContentView(mView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         switch (type) {
         case 0:
             try {
-                mImageView = new ImageView(mActivity);
-                mImageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));
-                mActivity.addContentView(mImageView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-                mImageView.setAdjustViewBounds(true);
-                mImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                Logger.I(TAG, "Loading image: " + fn[type]);
+                
+                ImageView imageView = new ImageView(activity);
+                imageView.setImageBitmap(BitmapFactory.decodeStream(am.open(fn[type])));
+                imageView.setAdjustViewBounds(true);
+                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                mView = imageView;
             } catch (IOException e) {
                 Logger.E(TAG, e);
             }
-            mView.addView(mWebView.getContainerView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)) ; 
-            //mWebView.loadDataWithBaseURL("file:///android_asset/", "<html><body style=\"margin:0px\"><img src=\""+ fn[type] + "\" height=\"100%\" width=\"100%\" border=\"0\"/></body></html>", "text/html", "utf-8", null);
             break;
         case 1:
-            mView.addView(mWebView.getContainerView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)) ; 
-            mWebView.loadUrl("file:///android_asset/" + fn[type]);
+            {
+                Logger.I(TAG, "Loading html: " + fn[type]);
+
+                WebView webView = new WebView(activity);
+                webView.setVerticalScrollBarEnabled(false);
+                webView.setHorizontalScrollBarEnabled(false);
+                webView.loadUrl("file:///android_asset/" + fn[type]);
+                mView = webView;
+            }
             break;
         default:
-            mView.addView(mWebView.getContainerView(), new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)) ; 
-            mWebView.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
+            {
+                Logger.I(TAG, "Loading default html data");
+
+                WebView webView = new WebView(activity);
+                webView.setVerticalScrollBarEnabled(false);
+                webView.setHorizontalScrollBarEnabled(false);
+                webView.loadData("<html><title>Loading</title><body text='white' bgcolor='black'>Loading...</body></html>", "text/html", "utf-8");
+                mView = webView;
+            }
         }
+        activity.addContentView(mView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
         Logger.I(TAG, "Done");
     }
 	
@@ -151,23 +164,25 @@ public class SplashScreen implements MainView {
 	
 	@Override
 	public View getView() {
-		return mView;
+		return mBackendView.getView();
 	}
 	
 	@Override
 	public IRhoWebView getWebView(int index) {
-		return mWebView;
+		return mBackendView.getWebView(index);
 	}
 	
 	@Override
 	public void goBack() {
-		// Nothing here
+		mBackendView.goBack();
 	}
 	
 	@Override
 	public void navigate(final String url, final int index) {
 
         Logger.D(TAG, "navigate: url=" + url);
+
+        mBackendView.navigate(url, index);
 
         long delay = howLongWaitMs();
         if (delay <= 0) {
@@ -181,12 +196,10 @@ public class SplashScreen implements MainView {
         Logger.D(TAG, "DELAY for SplashScreen = " + String.valueOf(delay));
         final SplashScreen curView = this;
 
-        if (getUrlToNavigate() == null) {
-            setUrlToNavigate(url);
-            final long threadDelay = delay;
-            mSleepThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
+        final long threadDelay = delay;
+        mSleepThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
                     SystemClock.sleep(threadDelay);
                     RhodesApplication.runWhen(
                         RhodesApplication.AppState.AppActivated,
@@ -207,28 +220,17 @@ public class SplashScreen implements MainView {
                         }
                     });
                 }
-            });
-            mSleepThread.start();
-        } else {
-            setUrlToNavigate(url);
-        }
-        
+        });
+        mSleepThread.start();
 	}
 
     @Override
     public IRhoWebView detachWebView() {
-        IRhoWebView v = null;
-        if (mWebView != null) {
-            mView.removeView(mWebView.getContainerView());
-            v = mWebView;
-            mWebView = null;
-        }
-        return v;
+        return mBackendView.detachWebView();
     }
 
     @Override
-    public void back(int index) 
-    {
+    public void back(int index) {
         mSplashScreenListener.onSplashScreenNavigateBack();
     }
 
@@ -237,36 +239,39 @@ public class SplashScreen implements MainView {
 	}
 	@Override
 	public void reload(int index) {
+	    mBackendView.reload(index);
 	}
 	@Override
 	public String currentLocation(int index) {
-		return null;
+		return mBackendView.currentLocation(index);
 	}
 	@Override
 	public void switchTab(int index) {
+	    mBackendView.switchTab(index);
 	}
 	@Override
 	public int activeTab() {
-		return 0;
+		return mBackendView.activeTab();
 	}
 	@Override
 	public int getTabsCount() {
-		return 1;
+		return mBackendView.getTabsCount();
 	}
 	@Override
 	public void loadData(String data, int index) {
 	}
 	@Override
-	public void addNavBar(String title, Map<Object, Object> left,
-			Map<Object, Object> right) {
+	public void addNavBar(String title, Map<Object, Object> left, Map<Object, Object> right) {
 	}
 	@Override
 	public void removeNavBar() {
 	}
     @Override
     public void executeJS(String js, int index) {
+        mBackendView.executeJS(js, index);
     }
     @Override
     public void stopNavigate(int index) {
+        mBackendView.stopNavigate(index);
     }
 }

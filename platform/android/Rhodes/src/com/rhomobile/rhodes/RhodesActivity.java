@@ -121,7 +121,12 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         mHandler = new Handler();
 
         Logger.T(TAG, "Creating splash screen");
-        mSplashScreen = new SplashScreen(this, createWebView(), this);
+        
+        IRhoWebView webView = createWebView();
+        webView.setWebClient(this);
+        setMainView(new SimpleMainView(webView));
+        
+        mSplashScreen = new SplashScreen(this, mMainView, this);
         mMainView = mSplashScreen;
 
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
@@ -364,7 +369,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     @Override
     public void onSplashScreenGone(SplashScreen splashScreen) {
-        switchToSimpleMainView(splashScreen).navigate(splashScreen.getUrlToNavigate(), 0);
+        ViewGroup parent = (ViewGroup)splashScreen.getSplashView().getParent();
+        parent.removeView(splashScreen.getSplashView());
+        mMainView = splashScreen.getBackendView();
     }
 
     @Override
