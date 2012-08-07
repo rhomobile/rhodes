@@ -1056,6 +1056,20 @@ Make sure that path to vcbuild.exe (something like `C:\Program Files\Microsoft V
 
 <i>C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE;C:\Program Files\Microsoft Visual Studio 9.0\VC\BIN;C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools;C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\bin;C:\Program Files\Microsoft Visual Studio 9.0\VC\PlatformSDK\bin;C:\Program Files\Microsoft Visual Studio 9.0\SDK\v2.0\bin</i>
 
+Also check that the vcbuild path is shown in the rhobuild.yml file. The rhobuild.yml file is located in the Rhodes folder (example location: `C:/RhoStudio/ruby/lib/ruby/gems/1.8/gems/rhodes-3.1.1`).
+
+If you use Visual Studio 2008 :
+
+	env:
+	  paths:
+	    vcbuild: C:/Program Files/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
+
+If you use Visual Studio 2008 on 64-bit installations:
+
+	env:
+	  paths:
+	    vcbuild: C:/Program Files (x86)/Microsoft Visual Studio 9.0/VC/vcpackages/vcbuild.exe
+
 If you use Visual Studio 2010 : add path to `msbuild` to `rhobuild.yml` in rhodes folder:
 
 	env:
@@ -1251,7 +1265,10 @@ In the build.yml in your application folder there is an entry "name". This is th
 	name: My Own App
 
 ### Application Icon
-Place your image to use as an icon in a folder called `icon` in your application. If you created an app called `testapp` then the folder would be `testapp/icon`. The icon should be named `icon.png` and  `icon.ico` for Windows Mobile. Starting from iOS 4.0, Apple require three icons for application: 57x57, 72x72 and 114x114 pixels. Prepare such files, name them as `icon57.png`, `icon72.png` and `icon114.png` and place into `icon` folder
+Place your image to use as an icon in a folder called `icon` in your application. If you created an app called `testapp` then the folder would be `testapp/icon`. 
+
+* Windows Mobile and Windows: Add icon in two formats : `icon.png` and  `icon.ico`. 
+* iOS 4.0: Apple require three icons for application: 57x57, 72x72 and 114x114 pixels. Prepare such files, name them as `icon57.png`, `icon72.png` and `icon114.png` and place into `icon` folder
 
 	testapp/
 		build.yml
