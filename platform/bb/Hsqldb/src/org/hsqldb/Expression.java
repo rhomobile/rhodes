@@ -1670,9 +1670,11 @@ public class Expression {
                     TableFilter filter     = (TableFilter) filters.get(j);
                     String      filterName = filter.getName();
 
-                    if (tableName == null || filterName.equals(tableName)) {
+                    if (tableName == null || filterName.equalsIgnoreCase(tableName)) {
                         Table table = filter.getTable();
                         int   i     = table.findColumn(columnName);
+                        if (i == -1)
+                        	i = table.findColumn(columnNameOrig);
 
                         if (i != -1) {
                             if (tableName == null) {
@@ -1957,7 +1959,7 @@ public class Expression {
 
                 String filterName = f.getName();
 
-                if (tableName == null || tableName.equals(filterName)) {
+                if (tableName == null || tableName.equalsIgnoreCase(filterName)) {
                     Table table = f.getTable();
                     int   i     = table.findColumn(columnName);
                     if (i == -1)
