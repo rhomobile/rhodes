@@ -1052,9 +1052,10 @@ NOTE: If your application uses HTTPS protocol, then you need to build Qt librari
 
 ### Build application from the command line
 
-Make sure that path to vcbuild.exe (something like `C:\Program Files\Microsoft Visual Studio 9.0\VC\vcpackages`) is in your PATH env variable. The list of paths which should be in PATH env variable:
+Make sure that path to vcbuild.exe (something like `C:\Program Files\Microsoft Visual Studio 9.0\VC\vcpackages`) is in your PATH env variable. 
 
-<i>C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE;C:\Program Files\Microsoft Visual Studio 9.0\VC\BIN;C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools;C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\bin;C:\Program Files\Microsoft Visual Studio 9.0\VC\PlatformSDK\bin;C:\Program Files\Microsoft Visual Studio 9.0\SDK\v2.0\bin</i>
+The list of paths which should be in PATH env variable:
+<i>C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE;C:\Program Files\Microsoft Visual Studio 9.0\VC\BIN;C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools;C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\bin;C:\Program Files\Microsoft Visual Studio 9.0\VC\PlatformSDK\bin;C:\Program Files\Microsoft Visual Studio 9.0\SDK\v3.5\bin</i>
 
 Also check that the vcbuild path is shown in the rhobuild.yml file. The rhobuild.yml file is located in the Rhodes folder (example location: `C:/RhoStudio/ruby/lib/ruby/gems/1.8/gems/rhodes-3.1.1`).
 
@@ -1081,7 +1082,7 @@ To build and run the application issue command:
 	:::term
 	$ rake run:win32
 
-*NOTE: If you use HTTPS, add to the `PATH` variable: `<path-to-rhodes>\lib\extensions\openssl.so\ext\win32\bin`
+*NOTE: To use `rake run:win32` command, add to the `PATH` variable: `<path-to-rhodes>\lib\extensions\openssl.so\ext\win32\bin`
 
 To clean all temporary and binary files execute command:
 
