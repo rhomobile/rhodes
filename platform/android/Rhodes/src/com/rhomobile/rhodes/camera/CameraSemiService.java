@@ -146,5 +146,19 @@ class CameraSemiService implements CameraService {
 		return auto_focus_supported;
 	}
 	
+	public boolean isFlashModeSupported(android.hardware.Camera camera, String flash_mode) {
+		String camera_flash_mode = camera.getParameters().getFlashMode();
+		boolean flash_supported = false;
+		if ( camera_flash_mode != null ) {
+			List<String> modes_list = camera.getParameters().getSupportedFlashModes();
+			if (modes_list != null) {
+				if (modes_list.contains(flash_mode)) {
+					flash_supported = true;
+				}
+			}
+		}
+		return flash_supported;
+	}
+
 	
 }
