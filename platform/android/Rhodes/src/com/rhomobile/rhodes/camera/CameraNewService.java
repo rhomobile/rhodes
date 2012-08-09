@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.rhomobile.rhodes.camera.CameraService.Size;
+import com.rhomobile.rhodes.util.Utils;
 
 import android.hardware.Camera;
 
@@ -176,5 +177,24 @@ class CameraNewService implements CameraService {
 		return auto_focus_supported;
 	}
 	
+	public boolean isFlashModeSupported(android.hardware.Camera camera, String flash_mode) {
+		String camera_flash_mode = camera.getParameters().getFlashMode();
+		if (flash_mode != null) { 
+			//Utils.platformLog("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  FLASH_MODE", camera_flash_mode);
+		}
+		else {
+			//Utils.platformLog("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  FLASH_MODE", "NULL");
+		}
+		boolean flash_supported = false;
+		if ( camera_flash_mode != null ) {
+			List<String> modes_list = camera.getParameters().getSupportedFlashModes();
+			if (modes_list != null) {
+				if (modes_list.contains(flash_mode)) {
+					flash_supported = true;
+				}
+			}
+		}
+		//Utils.platformLog("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  FLASH_MODE return", String.valueOf(flash_supported));
+		return flash_supported;	}
 
 }

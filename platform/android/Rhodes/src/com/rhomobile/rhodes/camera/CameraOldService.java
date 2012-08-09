@@ -49,5 +49,10 @@ class CameraOldService implements CameraService {
 		return false;
 	}
 	
+	public boolean isFlashModeSupported(android.hardware.Camera camera, String flash_mode) {
+		return false;
+	}
+	
+	
 	
 }

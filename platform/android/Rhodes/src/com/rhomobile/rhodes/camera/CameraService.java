@@ -47,5 +47,7 @@ public interface CameraService {
 	Size getClosestPreviewSize(android.hardware.Camera camera, int w, int h);
 	
 	boolean isAutoFocusSupported(android.hardware.Camera camera);
+	
+	boolean isFlashModeSupported(android.hardware.Camera camera, String flash_mode);
 
 }
