@@ -277,6 +277,8 @@ Use <b>iTunes</b> for installing your application package (your_application_name
 
 ## Build for Android
 
+**NOTE: To build for Android it is required JDK 1.6 (JDK 1.7 is not supported).**
+
 ### Setting Up the Android SDK and NDK
 
 Check that your [OS is compatible with the Android SDK](http://developer.android.com/sdk/requirements.html).
