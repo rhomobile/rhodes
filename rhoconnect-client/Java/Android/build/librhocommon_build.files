@@ -10,4 +10,5 @@
 ../platform/shared/net/ssl.cpp
 ../platform/shared/net/URI.cpp
 ../platform/shared/net/INetRequest.cpp
-
+../platform/shared/common/BundleManager.cpp
+../platform/shared/common/push/RhoPushManager.cpp

@@ -35,8 +35,9 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
 
         ApplicationInfo appInfo = this.getContext().getApplicationInfo();
         try {
-            RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
+            RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, null);
             RhoFileApi.init(this.getContext());
+			RhoFileApi.setFsModeTransparrent(true);
             
             RhoLogConf.setMinSeverity(0);
             RhoLogConf.setEnabledCategories("*");
@@ -70,7 +71,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
     
     public void test1Login()
     {
-        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("test", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
     }
@@ -117,7 +118,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
     }
     public void test3SyncBlobTest()
     {
-        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("test", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
 
@@ -127,7 +128,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
     
     public void test4DeleteAllBlobs()
     {
-        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("test", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
 
@@ -153,7 +154,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
         String fileName = "androidtest.png";
         String filePath = new File("apps", fileName).getPath();
 
-        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("test", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
 
@@ -174,7 +175,7 @@ public class TestRhoConnectClientBlobs extends AndroidTestCase
         assertFalse(filePath.equals(newItem.get("image_uri")));
 
         String files[] = new String[] {"apps/" + fileName };
-        RhoFileApi.initCopy(this.getContext(), files);
+        RhoFileApi.initialCopy(this.getContext(), files);
 
         File file = new File(RhoFileApi.absolutePath(filePath));
         File newFile = new File(RhoFileApi.absolutePath(newItem.get("image_uri")));

@@ -49,7 +49,7 @@ import com.rhomobile.rhoconnect.RhoConnectNotify;
 public class TestRhoConnectClient extends AndroidTestCase {
     private static final String TAG = TestRhoConnectClient.class.getSimpleName();
 
-	private final String SYNC_URL = "http://rhodes-store-server.heroku.com/application";
+	private final String SYNC_URL = "http://rhodes-store-server.herokuapp.com/application";
 	
 	class ObjectNotifyDelegate implements RhoConnectObjectNotify.IDelegate
 	{
@@ -72,8 +72,9 @@ public class TestRhoConnectClient extends AndroidTestCase {
 
 		ApplicationInfo appInfo = this.getContext().getApplicationInfo();
 		try {
-			RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir);
+			RhoFileApi.initRootPath(appInfo.dataDir, appInfo.sourceDir, null);
 			RhoFileApi.init(this.getContext());
+			RhoFileApi.setFsModeTransparrent(true);
 			
 			RhoLogConf.setMinSeverity(0);
 			RhoLogConf.setEnabledCategories("*");
@@ -117,13 +118,13 @@ public class TestRhoConnectClient extends AndroidTestCase {
     }
     public void test2Login()
     {
-        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("test", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
     }
     public void test3SyncProductByName()
     {
-        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("test", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
 
@@ -133,7 +134,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     
     public void test4SyncAll()
     {
-        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("test", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
 
@@ -167,7 +168,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
 
     public void test6CreateNewProductWithCustomer()
     {
-        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("test", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
 
@@ -213,7 +214,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
     
     public void test7CreateObjectNotify()
     {
-        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("test", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
 
@@ -249,7 +250,7 @@ public class TestRhoConnectClient extends AndroidTestCase {
 
     public void test8ModifyProduct()
     {
-        RhoConnectNotify notify = mClient.loginWithUserSync("", "");
+        RhoConnectNotify notify = mClient.loginWithUserSync("test", "");
         assertEquals(notify.getErrorCode(), 0);
         assertTrue(mClient.isLoggedIn());
 
