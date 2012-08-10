@@ -119,6 +119,33 @@ Then call RhoConfig.send_log:
 		Rho::RhoConfig.send_log()
 	end
 
+
+### How see log messages from iOS device.
+
+You have next ways for get log from iOS device :
+ 
+1. See full console output
+ 
+* open XCode
+* open Organizer ("window" submenu in top menu)
+* select "Devices" tab
+* select your connected device in left panel
+* select "Console"
+  
+2. Get the rholog.txt file from device 
+ 
+* open XCode
+* open Organizer ("window" submenu in top menu)
+* select "Devices" tab
+* select your connected device in left panel
+* select "Applications"
+* select your application and wait few seconds
+* you can select local file in your application's local folder and download it to computer - use "Download" button in bottom panel
+ 
+3. Send log to server from application
+
+
+
 ### RhoError class
 
 You may find access to the error class useful in logging and reporting:
