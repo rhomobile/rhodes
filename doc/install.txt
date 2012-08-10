@@ -30,30 +30,49 @@ RhoStudio Suite has two launchers: RhoStudio 32 bits and RhoStudio 64 bits. Use 
 
 ### Installing the Java Development Kit
 
-The Sun JDK for Windows is available [here](http://java.sun.com/javase/downloads/index.jsp). For 32-bit system install Windows x86 JDK. For 64-bit system it is recommended to install x64 JDK, but you can also use x86 JDK or both.
+The Sun JDK for Windows is available [here](http://java.sun.com/javase/downloads/index.jsp).
+
+* <b>Win32:</b> Install Windows x86 JDK.
+
+* <b>Win64:</b> Install Windows x64 JDK or x86 JDK or both.
 
 ### Installing RhoStudio 
 
 Download and run the latest [Motorola RhoMobile Suite Installer for Windows](http://rhomobile.com/rhostudio-windows). This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
+* <b>Win32:</b>
+  Reduce JVM heap size:<br>
+  Open <tt>&lt;RhoMobileSuiteDir&gt;\rhostudio\win32.win32.x86\RhoStudio.ini</tt> file in editor.<br>
+  Find "<tt>-Xmx1024m</tt>" line and change it to "<tt>-Xmx512m</tt>".<br>
+
 ### Running RhoStudio 
 
-RhoStudio Suite has two launchers: Motorola RhoStudio 32-bit and Motorola RhoStudio 64-bit. Use one compatible with your operating system and installed JDK. 32-bit launcher is compatible with x86 JDK. 64-bit launcher is compatible with x64 JDK.
+* <b>Win32:</b> Run Motorola RhoStudio 32-bit launcher.
+
+* <b>Win64:</b> Run Motorola RhoStudio 64-bit or Motorola RhoStudio 32-bit. Use one compatible with installed JDK:
+  - 32-bit launcher is compatible with x86 JDK.
+  - 64-bit launcher is compatible with x64 JDK.
 
 ### Setting the JDK Path
 
 Go to RhoStudio Preferences (Windows -> Preferences), select RhoMobile section and set the Java bin path. On Windows 64-bit installations, you must set this path to the 32-bit version of the JDK, such as <tt>C:\Program Files (x86)\Java\jdk<version number>\bin</tt> .
 
-### Memory troubleshooting
+### Troubleshooting
 
-On Windows XP 32-bit it is recommended to reduce JVM heap size:<br>
-Open <tt>&lt;RhoMobileSuiteDir&gt;\rhostudio\win32.win32.x86\RhoStudio.ini</tt> file in editor.<br>
-Find "<tt>-Xmx1024m</tt>" line and change it to "<tt>-Xmx512m</tt>".<br>
-After this change RhoStudio will start succesfully.
+* <b>Win32:</b> If RhoStudio doesn't start with message "Failed to create the Java Virtual Machine" then reduce JVM heap size. Likely your computer has not enough memory or address space.
 
-You also have to reduce JVM heap size if RhoStudio doesn't start with message "Failed to create the Java Virtual Machine". Likely your computer has not enough memory or address space. Later could happen on 32-bit Windows.
+  Open <tt>&lt;RhoMobileSuiteDir&gt;\rhostudio\win32.win32.x86\RhoStudio.ini</tt> file in editor.<br>
+  Find "<tt>-Xmx1024m</tt>" line and change it to "<tt>-Xmx512m</tt>".<br>
 
-If you get "Failed to create the Java Virtual Machine" for Motorola RhoStudio 64-bit then reduce JVM heap size in <tt>&lt;RhoMobileSuiteDir&gt;\rhostudio\win32.win32.x86_64\RhoStudio.ini</tt> file.
+* <b>Win64:</b> If RhoStudio doesn't start with message "Failed to create the Java Virtual Machine" then reduce JVM heap size. Likely your computer has not enough memory.
+
+  Open <tt>&lt;RhoMobileSuiteDir&gt;\rhostudio\win32.win32.x86_64\RhoStudio.ini</tt> file in editor.<br>
+  Find "<tt>-Xmx1024m</tt>" line and change it to "<tt>-Xmx512m</tt>".<br>
+
+* <b>Win64:</b> If RhoStudio doesn't start with message "Failed to load the JNI shared library..." then check compatibility between RhoStudio launcher and JDK version:
+
+  - 32-bit launcher is compatible with x86 JDK.
+  - 64-bit launcher is compatible with x64 JDK.
 
 ## Installing Rhodes from the Command Line
 
