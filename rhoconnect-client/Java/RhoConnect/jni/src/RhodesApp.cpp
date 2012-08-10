@@ -28,6 +28,7 @@
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
 
+
 namespace rho {
 namespace common {
 
@@ -40,10 +41,52 @@ const String& CRhodesApp::getBaseUrl()
 {
     return rho_root_path();
 }
+	
+void CRhodesApp::stopApp()
+{
+}
 
 }}
-
+/*
 RHO_GLOBAL int rho_conf_send_log(const char* callback)
 {
     return 0;//RHODESAPP().sendLog();
+}
+*/
+
+RHO_GLOBAL int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char* base_path, void* ptrFilesArray, const char* psw)
+{
+return -1;
+}
+
+RHO_GLOBAL void rho_rhodesapp_callAppActiveCallback( int nActive )
+{
+}
+
+RHO_GLOBAL void rho_rhodesapp_callUiCreatedCallback()
+{
+}
+
+RHO_GLOBAL void rho_rhodesapp_callUiDestroyedCallback()
+{
+}
+
+RHO_GLOBAL char* rho_http_normalizeurl(const char* szUrl)
+{
+	return 0;
+}
+
+RHO_GLOBAL void rho_http_free(void* data)
+{
+	
+}
+
+RHO_GLOBAL void rho_platform_restart_application()
+{
+	
+}
+
+RHO_GLOBAL void rho_sys_app_exit()
+{
+	
 }
