@@ -1270,7 +1270,7 @@ These parameters from [PushApplicationDescriptor](http://www.blackberry.com/deve
 In case of Blackberry, if the audio file is in the public folder, the file name will be `/apps/public/alerts/test-file.mp3`.
 
 ### Push Callback
-Rhodes applications can also handle PUSH notifications that didn't come from a RhoConnect application. 
+<a id="push-callback"></a>Rhodes applications can also handle PUSH notifications that didn't come from a RhoConnect application. 
 
 In this example, we will get the device ID so we can register the device with some push server:
 	:::ruby
@@ -1298,7 +1298,7 @@ Example:
 	end
 
 ### Push Payload
-The Rhodes push payload allows more than one operation in a single message. 
+<a id="push-payload"></a>The Rhodes push payload allows more than one operation in a single message. 
  
 There are no required operations. There are default operations - if operation is not specified, no default operation will be performed.
 
