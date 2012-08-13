@@ -4,7 +4,8 @@ extern "C" {
 
 
 // return 1 if correct
-int  MotorolaLicence_check(const char* company, const char* licence);
+int  MotorolaLicence_check(const char* company, const char* licence, const char* appName);
+//int  MotorolaLicence_check(const char* company, const char* licence);
 
 
 

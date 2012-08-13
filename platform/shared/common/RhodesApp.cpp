@@ -539,7 +539,7 @@ void CRhodesApp::callUiDestroyedCallback()
         LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
     }
 }
-
+	
 void CRhodesApp::callAppActiveCallback(boolean bActive)
 {
     if ( m_bExit )
@@ -2062,6 +2062,7 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
 int rho_is_motorola_licence_checked() {
 	const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
 	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
+	const char* szAppName = get_app_build_config_item("name");
     
     if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
         return 0;
@@ -2069,7 +2070,8 @@ int rho_is_motorola_licence_checked() {
 
     int res_check = 1;
 #if defined( OS_ANDROID ) || defined( OS_MACOSX )
-    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
+    //res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
+    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence, szAppName);
 #endif
     
     return res_check;
