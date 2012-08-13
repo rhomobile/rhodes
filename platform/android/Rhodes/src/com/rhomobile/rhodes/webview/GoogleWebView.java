@@ -1,6 +1,7 @@
 package com.rhomobile.rhodes.webview;
 
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 

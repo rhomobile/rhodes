@@ -41,8 +41,8 @@ import android.widget.LinearLayout;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesApplication;
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
-import com.rhomobile.rhodes.webview.IRhoWebView;
 
 public class SplashScreen implements MainView{
     
@@ -166,7 +166,12 @@ public class SplashScreen implements MainView{
 	public View getView() {
 		return mBackendView.getView();
 	}
-	
+
+   @Override
+    public void setWebView(IRhoWebView view, int index) {
+       mBackendView.setWebView(view, index);
+    }
+
 	@Override
 	public IRhoWebView getWebView(int index) {
 		return mBackendView.getWebView(index);

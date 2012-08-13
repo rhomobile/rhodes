@@ -30,6 +30,7 @@ import java.lang.reflect.Constructor;
 import java.util.Set;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
@@ -37,7 +38,6 @@ import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.webview.GoogleWebView;
-import com.rhomobile.rhodes.webview.IRhoWebView;
 
 import android.app.Dialog;
 import android.app.AlertDialog;
@@ -120,14 +120,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         mHandler = new Handler();
 
-        Logger.T(TAG, "Creating splash screen");
+        Logger.T(TAG, "Creating default main view");
         
-        IRhoWebView webView = createWebView();
-        webView.setWebClient(this);
-        setMainView(new SimpleMainView(webView));
+        SimpleMainView simpleMainView = new SimpleMainView();
+        setMainView(simpleMainView);
+        
+        Logger.T(TAG, "Creating splash screen");
         
         mSplashScreen = new SplashScreen(this, mMainView, this);
         mMainView = mSplashScreen;
+
+        mMainView.setWebView(createWebView(0), -1);
 
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
@@ -161,24 +164,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         }        
     }
 
-    public IRhoWebView createWebView() {
-        IRhoWebView view = null;
-        if (Capabilities.WEBKIT_BROWSER_ENABLED) {
-            Logger.T(TAG, "Creating Motorola WebKIT view");
-            try {
-                Class<? extends IRhoWebView> viewClass = Class.forName("com.rhomobile.rhodes.webview.EkiohWebView").asSubclass(IRhoWebView.class);
-                if (Capabilities.MOTOROLA_BROWSER_ENABLED) {
-                    Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class, String.class);
-                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true), RhoFileApi.getRootPath());
-                } else {
-                    Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class);
-                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true));
-                }
-            } catch (Throwable e) {
-                Logger.E(TAG, e);
-                RhodesApplication.stop();
-            }
-        } else {
+    public IRhoWebView createWebView(int tabIndex) {
+        IRhoWebView view = RhoExtManager.getImplementationInstance().createWebView(tabIndex);
+        if (view == null) {
             Logger.T(TAG, "Creating Google web view");
             final GoogleWebView googleWebView = new GoogleWebView(this);
             view = googleWebView;
@@ -193,6 +181,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         AbsoluteLayout containerView = new AbsoluteLayout(this);
         containerView.addView(view.getView(), new AbsoluteLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0, 0));
         view.setContainerView(containerView);
+        view.setWebClient(this);
 
         return view;
     }
@@ -200,7 +189,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public MainView switchToSimpleMainView(MainView currentView) {
         IRhoWebView rhoWebView = currentView.detachWebView();
         SimpleMainView view = new SimpleMainView(rhoWebView);
-        rhoWebView.setWebClient(this);
+        //rhoWebView.setWebClient(this);
         setMainView(view);
         return view;
     }
@@ -270,7 +259,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public void onResume() {
         Logger.D(TAG, "onResume");
         mIsForeground = true;
-	pauseWebViews(false);
+        pauseWebViews(false);
         super.onResume();
 
         RhoExtManager.getImplementationInstance().onResumeActivity(this);
@@ -280,7 +269,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public void onPause() 
     {
         mIsForeground = false;
-	pauseWebViews(true);
+        pauseWebViews(true);
 
         RhoExtManager.getImplementationInstance().onPauseActivity(this);
 

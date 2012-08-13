@@ -6,6 +6,7 @@ public interface IRhoExtension {
     
     public enum LoadErrorReason { STOP, INTERNAL_ERROR, BAD_LICENSE }
 
+    IRhoWebView onCreateWebView(IRhoExtManager extManager, int tabIndex);
     void onSetPropertiesData(IRhoExtManager extManager, String propId, String data, int pos, int total, IRhoExtData ext);
     void onSetPropertiesDataEnd(IRhoExtManager extManager, IRhoExtData ext);
     void onSetProperty(IRhoExtManager extManager, String name, String value, IRhoExtData ext);

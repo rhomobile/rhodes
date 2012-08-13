@@ -28,7 +28,7 @@ package com.rhomobile.rhodes.mainview;
 
 import java.util.Map;
 
-import com.rhomobile.rhodes.webview.IRhoWebView;
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
 
 import android.view.View;
 
@@ -36,7 +36,8 @@ public interface MainView {
 
 	public View getView();
 
-	public IRhoWebView getWebView(int tab_index);
+	public void setWebView(IRhoWebView view, int tabIndex);
+	public IRhoWebView getWebView(int tabIndex);
 	
 	public IRhoWebView detachWebView();
 	

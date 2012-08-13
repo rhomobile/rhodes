@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 import com.rhomobile.rhodes.mainview.MainView;
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.Utils;
 
 public class RhoExtManagerImpl implements IRhoExtManager {
@@ -70,6 +72,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         if (!mListeners.contains(listener)) {
             mListeners.add(listener);
         }
+    }
+    
+    @Override
+    public Context getContext() {
+        return ContextFactory.getUiContext();
     }
 
     @Override
@@ -215,24 +222,40 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     //-----------------------------------------------------------------------------------------------------------------
     // Rhodes implementation related methods are below
 
+    public IRhoWebView createWebView(int tabIndex) {
+        IRhoWebView res = null;
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                IRhoWebView view = ext.onCreateWebView(this, tabIndex);
+                if (view != null) {
+                    if (res != null) {
+                        Logger.W(TAG, "WebView has already created by another extension, overlapping it");
+                    }
+                    res = view;
+                }
+            }
+        }
+        return res;
+    }
+    
     public void enableLogLevelError(boolean enabled) {
-        Log.i(TAG, "RE Error log: " + enabled);
+        Logger.I(TAG, "RE Error log: " + enabled);
         mLogError = enabled;
     }
     public void enableLogLevelWarning(boolean enabled) { 
-        Log.i(TAG, "RE Warning log: " + enabled);
+        Logger.I(TAG, "RE Warning log: " + enabled);
         mLogWarning = enabled; 
     }
     public void enableLogLevelInfo(boolean enabled) { 
-        Log.i(TAG, "RE Info log: " + enabled);
+        Logger.I(TAG, "RE Info log: " + enabled);
         mLogInfo = enabled;
     }
     public void enableLogLevelUser(boolean enabled) { 
-        Log.i(TAG, "RE User log: " + enabled);
+        Logger.I(TAG, "RE User log: " + enabled);
         mLogUser = enabled;
     }
     public void enableLogLevelDebug(boolean enabled) { 
-        Log.i(TAG, "RE Debug log: " + enabled);
+        Logger.I(TAG, "RE Debug log: " + enabled);
         mLogDebug = enabled;
     }
 
@@ -287,8 +310,10 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     public void onAppActivate(boolean isActivate) {
+        Logger.T(TAG, "onAppActivate: " + isActivate);
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
+                Logger.T(TAG, "onAppActivate: " + ext.getClass().getSimpleName());
                 ext.onAppActivate(this, isActivate);
             }
         }

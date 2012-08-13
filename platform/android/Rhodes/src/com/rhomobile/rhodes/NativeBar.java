@@ -26,11 +26,11 @@
 
 package com.rhomobile.rhodes;
 
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.TabbedMainView;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
-import com.rhomobile.rhodes.webview.IRhoWebView;
 
 public class NativeBar {
 	

@@ -34,13 +34,14 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.nativeview.IRhoCustomView;
 import com.rhomobile.rhodes.nativeview.RhoNativeViewManager;
+import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
-import com.rhomobile.rhodes.webview.IRhoWebView;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -501,20 +502,14 @@ public class SimpleMainView implements MainView {
 		}
 	}
 	
-	private void init(IRhoWebView v, Object params) {
-		RhodesActivity activity = RhodesActivity.safeGetInstance();
+	private void init(Object params) {
+		Context activity = ContextFactory.getUiContext();
 		
 		view = new MyView(activity);
 		view.setOrientation(LinearLayout.VERTICAL);
 		view.setGravity(Gravity.BOTTOM);
 		view.setLayoutParams(new LinearLayout.LayoutParams(FILL_PARENT, FILL_PARENT));
-		
-		webView = v;
-		if (webView == null) {
-		    webView = activity.createWebView();
-		}
-		addWebViewToMainView(webView, 0, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
-		
+
 		LinearLayout bottom = new LinearLayout(activity);
 		bottom.setOrientation(LinearLayout.HORIZONTAL);
 		bottom.setBackgroundColor(Color.GRAY);
@@ -527,17 +522,25 @@ public class SimpleMainView implements MainView {
 	}
 	
 	public SimpleMainView() {
-		init(null, null);
+		init(null);
 	}
 	
 	public SimpleMainView(IRhoWebView v) {
-		init(v, null);
+		init(null);
+		setWebView(v, 0);
 	}
 	
 	public SimpleMainView(IRhoWebView v, Object params) {
-		init(v, params);
+		init(params);
+		setWebView(v, 0);
 	}
-	
+
+    @Override
+    public void setWebView(IRhoWebView view, int tabIndex) {
+        webView = view;
+        addWebViewToMainView(webView, 0, new LinearLayout.LayoutParams(FILL_PARENT, 0, 1));
+    }
+
 	public void setWebBackgroundColor(int color) {
 		view.setBackgroundColor(color);
 		webView.getContainerView().setBackgroundColor(color);
