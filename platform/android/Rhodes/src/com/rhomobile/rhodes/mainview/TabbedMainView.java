@@ -32,9 +32,9 @@ import java.util.Vector;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
-import com.rhomobile.rhodes.webview.IRhoWebView;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -607,19 +607,19 @@ public class TabbedMainView implements MainView {
 				spec.setIndicator(label);
 			else
 				spec.setIndicator(label, drawable);
-			
-			SimpleMainView view = null;
-			if (use_current_view_for_tab) {
-                MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+
+            SimpleMainView view = null;
+            RhodesActivity activity = RhodesActivity.safeGetInstance();
+            if (use_current_view_for_tab) {
+                MainView mainView = activity.getMainView();
                 action = mainView.currentLocation(-1);
                 IRhoWebView webView = mainView.detachWebView();
                 view = new SimpleMainView(webView);
-			}
-			if (view == null) {
-				view = new SimpleMainView();
-				view.getWebView(-1).setWebClient(RhodesActivity.safeGetInstance());
-			}
-			
+            }
+            if (view == null) {
+                view = new SimpleMainView(activity.createWebView(i));
+            }
+
 			// Set view factory
 			
 			if (web_bkg_color_Obj != null) {
@@ -850,12 +850,17 @@ public class TabbedMainView implements MainView {
 	public View getView() {
 		return host;
 	}
-	
+
+   @Override
+    public void setWebView(IRhoWebView view, int index) {
+       getTabMainView(index).setWebView(view, -1);
+    }
+
     @Override
     public IRhoWebView getWebView(int tab_index) {
         return getTabMainView(tab_index).getWebView(-1);
     }
-	
+
 	@Override
 	public IRhoWebView detachWebView() {
 		return getTabMainView(activeTab()).detachWebView();

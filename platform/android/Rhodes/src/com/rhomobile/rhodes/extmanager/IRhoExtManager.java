@@ -1,7 +1,6 @@
 package com.rhomobile.rhodes.extmanager;
 
-import java.util.Map;
-
+import android.content.Context;
 import android.view.View;
 
 public interface IRhoExtManager {
@@ -11,6 +10,11 @@ public interface IRhoExtManager {
 
     void addRhoListener(IRhoListener listener);
 
+    /**
+     * 
+     */
+    Context getContext();
+    
     /**
      * Web view getter. In case of Motorola WebKit is used it returns object which may be directly casted to NeonEkihView
      * @return Current web view instance from MainView

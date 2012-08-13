@@ -1,4 +1,4 @@
-package com.rhomobile.rhodes.webview;
+package com.rhomobile.rhodes.extmanager;
 
 
 import android.app.Activity;
