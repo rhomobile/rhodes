@@ -224,6 +224,15 @@ public class BrowserAdapter5 implements IBrowserAdapter
 		    			m_oMainScreen.add(browserField);
 		    		}
 		     	}
+		    	
+				try {
+					IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
+					helper.wakeUpGeoLocation();
+				}catch(Exception exc)
+				{
+					LOG.ERROR("wakeUpGeoLocation failed", exc);
+				}
+		    	
 		     }
 		};
 		m_oBrowserField.addListener( _listener );
