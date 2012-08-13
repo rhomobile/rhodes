@@ -216,14 +216,17 @@ public class GeoLocation extends RhoThread{
 						m_lp = null;
 					}
 					
-					if ( getPingTimeoutSec() != -1 )
+					if ( getPingTimeoutSec() != -1 && isCallbackExists() )
 					{
-						m_lp = LocationProvider.getInstance(null);
+		                Criteria criteria = new Criteria();
+		                criteria.setCostAllowed(false);
+						
+						m_lp = LocationProvider.getInstance(criteria);
 						if ( m_lp != null ){
 							m_locListener = new LocationListenerImpl(this);
-							LOG.TRACE("setLocationListener");
-							m_lp.setLocationListener( m_locListener, 
-									m_nDeterminedTime == 0 ? 1 : getPingTimeoutSec(), -1, -1);
+							int nInterval = m_nDeterminedTime == 0 ? 1 : getPingTimeoutSec(); 
+							LOG.TRACE("setLocationListener with interval : " + nInterval);
+							m_lp.setLocationListener( m_locListener, nInterval, -1, -1);
 							m_nDeterminedTime = nNow;
 						}else
 							bErrorNotify = true;
@@ -255,6 +258,18 @@ public class GeoLocation extends RhoThread{
         { 
         	m_strUrl = strUrl; 
         	m_strParams = strParams; 
+        }
+        
+        boolean isEmptyCallback()
+        {
+        	if (m_strUrl != null && m_strUrl.length() > 0)
+        	{
+    			LOG.TRACE("isEmptyCallback: " + m_strUrl);
+        		
+        		return false;
+        	}
+        	
+        	return true;
         }
         
         void fire(boolean bError)
@@ -295,6 +310,7 @@ public class GeoLocation extends RhoThread{
     {
 		synchronized(sync)
 		{
+			LOG.TRACE("setViewNotification: " + strUrl + ";" + strParams + ";" + nTimeout);
 			m_ViewNotify = new GeoNotification(strUrl, strParams);
 			
 			setPingTimeoutSec(nTimeout);
@@ -384,6 +400,16 @@ public class GeoLocation extends RhoThread{
 		}		
 	}
 	
+	public boolean isCallbackExists()
+	{
+		if ( m_Notify != null && !m_Notify.isEmptyCallback() )
+			return true;
+		if ( m_ViewNotify != null && !m_ViewNotify.isEmptyCallback() )
+			return true;
+
+		return false;
+	}
+	
 	public static void stop() {
 		if ( m_pInstance != null )
 		{
@@ -393,7 +419,8 @@ public class GeoLocation extends RhoThread{
 	}
 	
 	public static void wakeUp() {
-		if ( m_pInstance != null )
+		if ( m_pInstance != null && m_pInstance.isCallbackExists() )
+			LOG.TRACE("wakeUp");
 			m_pInstance.stopWait();
 	}
 	

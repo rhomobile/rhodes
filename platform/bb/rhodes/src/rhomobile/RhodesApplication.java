@@ -1416,15 +1416,6 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
         m_oBrowserAdapter.processConnection(connection, e);
         m_bDisableInput = false;
         PROF.STOP("BROWSER_PAGE");
-        
-		try {
-			IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-			helper.wakeUpGeoLocation();
-		}catch(Exception exc)
-		{
-			LOG.ERROR("wakeUpGeoLocation failed", exc);
-		}
-        
     }
 
     public static class PrimaryResourceFetchThread {//extends Thread {
