@@ -227,7 +227,8 @@ public class BrowserAdapter5 implements IBrowserAdapter
 		    	
 				try {
 					IRhoRubyHelper helper = RhoClassFactory.createRhoRubyHelper();
-					helper.wakeUpGeoLocation();
+					if ( helper != null )
+						helper.wakeUpGeoLocation();
 				}catch(Exception exc)
 				{
 					LOG.ERROR("wakeUpGeoLocation failed", exc);
