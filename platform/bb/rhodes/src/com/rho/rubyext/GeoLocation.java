@@ -81,12 +81,12 @@ public class GeoLocation extends RhoThread{
 					return;
 				}
 				
-				if( !location.isValid() )
+				/*if( !location.isValid() )
 				{
 					String strExtraInfo = location.getExtraInfo("text/plain");
 					LOG.TRACE("locationUpdated: location invalid.Extra info: " + (strExtraInfo!=null ? strExtraInfo :"") );
 					return;
-				}
+				}*/
 				
 				coord = location.getQualifiedCoordinates();
 				if(coord != null ) 
@@ -351,7 +351,7 @@ public class GeoLocation extends RhoThread{
 
 			try{
 				Location location = LocationProvider.getLastKnownLocation();
-				if ( location != null && location.isValid() )
+				if ( location != null/* && location.isValid()*/ )
 				{
 					long locTime = location.getTimestamp();
 					long curTime = java.lang.System.currentTimeMillis();
