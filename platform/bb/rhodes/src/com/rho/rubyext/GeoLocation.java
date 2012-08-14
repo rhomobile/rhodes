@@ -420,8 +420,10 @@ public class GeoLocation extends RhoThread{
 	
 	public static void wakeUp() {
 		if ( m_pInstance != null && m_pInstance.isCallbackExists() )
+		{
 			LOG.TRACE("wakeUp");
 			m_pInstance.stopWait();
+		}
 	}
 	
 	public static boolean isAvailable(){
