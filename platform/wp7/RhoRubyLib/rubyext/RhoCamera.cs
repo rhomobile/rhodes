@@ -32,6 +32,7 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.Phone.Tasks;
 using rho.common;
+using rho.net;
 
 namespace rho.rubyext
 {
@@ -103,16 +104,18 @@ namespace rho.rubyext
 
         private static void cameraTask_Completed(object sender, PhotoResult e)
         {
+            NetRequest pNetRequest = RhoClassFactory.createNetRequest();
+            String strFullUrl = pNetRequest.resolveUrl(m_callback);
             switch (e.TaskResult)
             {
                 case TaskResult.OK:
-                    RhoClassFactory.createNetRequest().pushData(m_callback, "status=ok&image_uri=" + e.OriginalFileName + "&rho_callback=1", null);
+                    pNetRequest.pushData(strFullUrl, "status=ok&image_uri=" + e.OriginalFileName + "&rho_callback=1", null);
                     break;
                 case TaskResult.None:
-                    RhoClassFactory.createNetRequest().pushData(m_callback, "status=error&message=Error&rho_callback=1", null);
+                    pNetRequest.pushData(strFullUrl, "status=error&message=Error&rho_callback=1", null);
                     break;
                 case TaskResult.Cancel:
-                    RhoClassFactory.createNetRequest().pushData(m_callback, "status=cancel&message=User cancelled operation&rho_callback=1", null);
+                    pNetRequest.pushData(strFullUrl, "status=cancel&message=User cancelled operation&rho_callback=1", null);
                     break;
                 default:
                     break;
