@@ -836,7 +836,10 @@ extern "C" int rho_wm_impl_CheckLicense()
             StringW strCompanyW;
             common::convertToStringW( get_app_build_config_item("motorola_license_company"), strCompanyW );
 
-            szLogText = pCheckLicense( getMainWnd(), L"rhodes-system-api-samples", strLicenseW.c_str(), strCompanyW.c_str() );
+            StringW strAppNameW;
+            common::convertToStringW( get_app_build_config_item("name"), strAppNameW );
+
+            szLogText = pCheckLicense( getMainWnd(), strAppNameW.c_str(), strLicenseW.c_str(), strCompanyW.c_str() );
         }
 
         if ( szLogText && *szLogText )
