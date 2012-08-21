@@ -210,6 +210,14 @@ module Rho
       
     end
 
+    @@current_controller = nil
+    def self.current_controller()
+        @@current_controller        
+    end
+    def self.set_current_controller(ctrl)
+        @@current_controller = ctrl
+    end
+    
     def serve(req,res)
       req[:modelpath] = self.class.get_model_path req['application'], req['model']
       controller_class = req['model']+'Controller'
@@ -223,7 +231,8 @@ module Rho
         require req['model'] + '/controller' #req[:modelpath]+'controller'
       end
       
-      res['request-body'] = (Object.const_get(req['model']+'Controller').new).send :serve, self, @rhom, req, res
+      @@current_controller = (Object.const_get(req['model']+'Controller').new) 
+      res['request-body'] = @@current_controller.send :serve, self, @rhom, req, res
     end
 
   end # RhoApplication

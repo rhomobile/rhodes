@@ -56,7 +56,12 @@ module Rho
           res = ""
 
           if filename.end_with?(RHO_ERB_EXT)
-            res = (RhoController.new).inst_render_index(filename, req, res)
+            if RhoApplication::current_controller()
+                puts "reuse current action controller."
+                res = RhoApplication::current_controller().inst_render_index(filename, req, res)            
+            else
+                res = (RhoController.new).inst_render_index(filename, req, res)
+            end    
           else
             res = IO.read(filename)
           end
