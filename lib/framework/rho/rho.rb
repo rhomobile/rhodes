@@ -888,7 +888,9 @@ end
         ret = send_error(e)
         RhoProfiler.stop_counter('CTRL_ACTION') 
         return ret
-      end   
+      ensure
+        RhoApplication::set_current_controller(nil)
+      end
     end
 
     def serve_hash(req)
@@ -908,7 +910,10 @@ end
         ret = send_error(e,500,true)
         RhoProfiler.stop_counter('CTRL_ACTION') 
         return ret
-      end 
+      ensure
+        RhoApplication::set_current_controller(nil)
+      end
+      
     end
     
     def serve_index(index_name, req)
