@@ -442,9 +442,11 @@ rb_f_require(VALUE obj, VALUE fname)
 {
     //RHO
     //#ifndef RUBYLINUX
-    //return rb_require_compiled(obj, fname);
+    return rb_require_compiled(obj, fname);
     //#else
-    return rb_require_safe(fname, rb_safe_level());
+	//char s[255];
+	//sprintf(s,"%s",RSTRING_PTR(fname));
+    //return rb_require_safe(fname, rb_safe_level());
     //#endif
     //RHO
 }

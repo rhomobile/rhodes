@@ -291,8 +291,8 @@ CSyncNotification::CSyncNotification(String strUrl, String strParams, boolean bR
 
 CSyncNotification::~CSyncNotification()
 {
-    if ( m_cCallbackData )
-		rho_free_callbackdata(m_cCallbackData);
+  //  if ( m_cCallbackData )
+	//	rho_free_callbackdata(m_cCallbackData);
 }
 	
 String CSyncNotification::toString()const
@@ -315,8 +315,8 @@ CObjectNotification::CObjectNotification(String strUrl) :
 
 CObjectNotification::~CObjectNotification()
 {
-    if ( m_cCallbackData )
-        rho_free_callbackdata(m_cCallbackData);
+   // if ( m_cCallbackData )
+     //   rho_free_callbackdata(m_cCallbackData);
 }
 
 String CObjectNotification::toString()const
@@ -345,8 +345,8 @@ void CSyncNotify::showStatusPopup(const String& status)
     if ( m_strStatusHide.length() == 0 )
         m_strStatusHide = RhoAppAdapter.getMessageText("hide");
 
-    if ( status.length() > 0 )
-        alert_show_status("", status.c_str(), m_strStatusHide.c_str());
+    //if ( status.length() > 0 )
+       // alert_show_status("", status.c_str(), m_strStatusHide.c_str());
 }
 
 void CSyncNotify::reportSyncStatus(String status, int error, String strDetails) 
@@ -566,15 +566,12 @@ boolean CSyncNotify::callNotify(const CSyncNotification& oNotify, const String& 
     if (0 == strUrl.find("javascript:"))
     {
         String js = strUrl.substr(11) + "('" + strBody + "');";
-        rho_webview_execute_js(js.c_str(), -1);
+        //rho_webview_execute_js(js.c_str(), -1);
     	return true;
     }
 #endif
 
-	m_isInsideCallback = true;        
     NetResponse resp = getNet().pushData( strUrl, strBody, null );
-	m_isInsideCallback = false;        
-
     if ( !resp.isOK() )
         LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
     else
@@ -670,6 +667,6 @@ extern "C"
 {
 void rho_alert_show_status(char* szTitle, char* szText, char* szHideLabel)
 {
-    alert_show_status( szTitle ? szTitle : "", szText ? szText : "", szHideLabel ? szHideLabel : "");
+    //alert_show_status( szTitle ? szTitle : "", szText ? szText : "", szHideLabel ? szHideLabel : "");
 }
 }

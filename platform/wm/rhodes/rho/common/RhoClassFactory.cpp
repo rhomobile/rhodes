@@ -24,7 +24,7 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#include "stdafx.h"
+#include "pch.h"
 
 #include "RhoClassfactory.h"
 #include "sync/SyncThread.h"
@@ -51,12 +51,7 @@ IRhoCrypt* CRhoClassFactory::createRhoCrypt()
 extern "C" {
 void rho_clientregister_create(const char* szDevicePin)
 {
-	rho::sync::CClientRegister::Create(szDevicePin, false);
-}
-
-void rho_clientansregister_create(const char* szDevicePin)
-{
-	rho::sync::CClientRegister::Create(szDevicePin, true);
+    rho::sync::CClientRegister::Create(szDevicePin);
 }
 
 void rho_clientregister_destroy()

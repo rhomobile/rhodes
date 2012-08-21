@@ -151,7 +151,7 @@ public:
         CTimeInterval res;
 
 #if defined( WINDOWS_PLATFORM )
-        res.m_nativeTime = GetTickCount();
+        res.m_nativeTime = 0;//GetTickCount();
 #else
         struct timeval tv;
         gettimeofday( &tv, NULL );

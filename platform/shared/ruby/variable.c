@@ -1346,7 +1346,10 @@ NORETURN(static void uninitialized_constant(VALUE, ID));
 static void
 uninitialized_constant(VALUE klass, ID id)
 {
-    if (klass && klass != rb_cObject)
+   char s[255];
+	sprintf(s,"%s",rb_class2name(klass));
+	sprintf(s,"%s",rb_id2name(id));
+	if (klass && klass != rb_cObject)
 	rb_name_error(id, "uninitialized constant %s::%s",
 		      rb_class2name(klass),
 		      rb_id2name(id));

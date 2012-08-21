@@ -615,7 +615,7 @@ static char *envarea;
 static void
 exit_handler(void)
 {
-    if (NtSocketsInitialized) {
+  /*  if (NtSocketsInitialized) {
 	WSACleanup();
 	st_free_table(socklist);
 	socklist = NULL;
@@ -625,13 +625,13 @@ exit_handler(void)
 	FreeEnvironmentStrings(envarea);
 	envarea = NULL;
     }
-    DeleteCriticalSection(&select_mutex);
+    DeleteCriticalSection(&select_mutex);*/
 }
 
 static void
 StartSockets(void)
 {
-    WORD version;
+   /* WORD version;
     WSADATA retdata;
 
     //
@@ -646,7 +646,7 @@ StartSockets(void)
 
     socklist = st_init_numtable();
 
-    NtSocketsInitialized = 1;
+    NtSocketsInitialized = 1;*/
 }
 
 //
@@ -2036,12 +2036,15 @@ set_pioinfo_extra(void)
     int fd;
 
     fd = _open("NUL", O_RDONLY);
-    for (pioinfo_extra = 0; pioinfo_extra <= 64; pioinfo_extra += sizeof(void *)) {
+    if(fd > 0)
+	{
+	for (pioinfo_extra = 0; pioinfo_extra <= 64; pioinfo_extra += sizeof(void *)) {
 	if (_osfhnd(fd) == _get_osfhandle(fd)) {
 	    break;
 	}
     }
     _close(fd);
+	}
 
     if (pioinfo_extra > 64) {
 	/* not found, maybe something wrong... */
@@ -2338,12 +2341,13 @@ rb_w32_fdclr(int fd, fd_set *set)
 int
 rb_w32_fdisset(int fd, fd_set *set)
 {
-    int ret;
+   /* int ret;
     SOCKET s = TO_SOCKET(fd);
     if (s == (SOCKET)INVALID_HANDLE_VALUE)
         return 0;
     RUBY_CRITICAL(ret = __WSAFDIsSet(s, set));
-    return ret;
+    return ret;*/
+	return 0;
 }
 
 //
@@ -2559,7 +2563,7 @@ int WSAAPI
 rb_w32_select(int nfds, fd_set *rd, fd_set *wr, fd_set *ex,
 	      struct timeval *timeout)
 {
-    int r;
+    /*int r;
     rb_fdset_t pipe_rd;
     rb_fdset_t cons_rd;
     rb_fdset_t else_rd;
@@ -2676,7 +2680,8 @@ rb_w32_select(int nfds, fd_set *rd, fd_set *wr, fd_set *ex,
     rb_fd_term(&pipe_rd);
     rb_fd_term(&else_rd);
 
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef accept
@@ -2684,7 +2689,7 @@ rb_w32_select(int nfds, fd_set *rd, fd_set *wr, fd_set *ex,
 int WSAAPI
 rb_w32_accept(int s, struct sockaddr *addr, int *addrlen)
 {
-#ifdef _WIN32_WCE
+/*#ifdef _WIN32_WCE
     return 0;
 #else
     SOCKET r;
@@ -2716,6 +2721,8 @@ rb_w32_accept(int s, struct sockaddr *addr, int *addrlen)
     });
     return fd;
 #endif //_WIN32_WCE
+	*/
+return 0;
 }
 
 #undef bind
@@ -2723,7 +2730,7 @@ rb_w32_accept(int s, struct sockaddr *addr, int *addrlen)
 int WSAAPI
 rb_w32_bind(int s, const struct sockaddr *addr, int addrlen)
 {
-    int r;
+   /* int r;
 
     if (!NtSocketsInitialized) {
 	StartSockets();
@@ -2733,7 +2740,8 @@ rb_w32_bind(int s, const struct sockaddr *addr, int addrlen)
 	if (r == SOCKET_ERROR)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef connect
@@ -2741,7 +2749,7 @@ rb_w32_bind(int s, const struct sockaddr *addr, int addrlen)
 int WSAAPI
 rb_w32_connect(int s, const struct sockaddr *addr, int addrlen)
 {
-    int r;
+   /* int r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -2755,7 +2763,8 @@ rb_w32_connect(int s, const struct sockaddr *addr, int addrlen)
 		errno = EINPROGRESS;
 	}
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 
@@ -2764,7 +2773,7 @@ rb_w32_connect(int s, const struct sockaddr *addr, int addrlen)
 int WSAAPI
 rb_w32_getpeername(int s, struct sockaddr *addr, int *addrlen)
 {
-    int r;
+  /*  int r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -2773,7 +2782,8 @@ rb_w32_getpeername(int s, struct sockaddr *addr, int *addrlen)
 	if (r == SOCKET_ERROR)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef getsockname
@@ -2781,7 +2791,7 @@ rb_w32_getpeername(int s, struct sockaddr *addr, int *addrlen)
 int WSAAPI
 rb_w32_getsockname(int s, struct sockaddr *addr, int *addrlen)
 {
-    int r;
+    /*int r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -2790,13 +2800,14 @@ rb_w32_getsockname(int s, struct sockaddr *addr, int *addrlen)
 	if (r == SOCKET_ERROR)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 int WSAAPI
 rb_w32_getsockopt(int s, int level, int optname, char *optval, int *optlen)
 {
-    int r;
+    /*int r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -2805,7 +2816,8 @@ rb_w32_getsockopt(int s, int level, int optname, char *optval, int *optlen)
 	if (r == SOCKET_ERROR)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef ioctlsocket
@@ -2813,7 +2825,7 @@ rb_w32_getsockopt(int s, int level, int optname, char *optval, int *optlen)
 int WSAAPI
 rb_w32_ioctlsocket(int s, long cmd, u_long *argp)
 {
-    int r;
+    /*int r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -2822,7 +2834,7 @@ rb_w32_ioctlsocket(int s, long cmd, u_long *argp)
 	if (r == SOCKET_ERROR)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/return 0;
 }
 
 #undef listen
@@ -2830,7 +2842,7 @@ rb_w32_ioctlsocket(int s, long cmd, u_long *argp)
 int WSAAPI
 rb_w32_listen(int s, int backlog)
 {
-    int r;
+    /*int r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -2839,7 +2851,8 @@ rb_w32_listen(int s, int backlog)
 	if (r == SOCKET_ERROR)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef recv
@@ -2851,7 +2864,7 @@ static int
 overlapped_socket_io(BOOL input, int fd, char *buf, int len, int flags,
 		     struct sockaddr *addr, int *addrlen)
 {
-    int r;
+  /*  int r;
     int ret;
     int mode;
     st_data_t data;
@@ -2922,12 +2935,12 @@ overlapped_socket_io(BOOL input, int fd, char *buf, int len, int flags,
 		    r = size;
 		    break;
 		}
-		/* thru */
+		
 	      default:
 		errno = map_errno(WSAGetLastError());
-		/* thru */
+		
 	      case WAIT_OBJECT_0 + 1:
-		/* interrupted */
+		
 		r = -1;
 		cancel_io((HANDLE)s);
 		break;
@@ -2940,7 +2953,8 @@ overlapped_socket_io(BOOL input, int fd, char *buf, int len, int flags,
 	CloseHandle(wol.hEvent);
     }
 
-    return r;
+    return r;*/
+		return 0;
 }
 
 int WSAAPI
@@ -3006,7 +3020,7 @@ typedef struct {
 int
 recvmsg(int fd, struct msghdr *msg, int flags)
 {
-    typedef int (WSAAPI *WSARecvMsg_t)(SOCKET, WSAMSG *, DWORD *, WSAOVERLAPPED *, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
+   /* typedef int (WSAAPI *WSARecvMsg_t)(SOCKET, WSAMSG *, DWORD *, WSAOVERLAPPED *, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
     static WSARecvMsg_t pWSARecvMsg = NULL;
     WSAMSG wsamsg;
     SOCKET s;
@@ -3055,7 +3069,7 @@ recvmsg(int fd, struct msghdr *msg, int flags)
 	});
 
 	if (ret != SOCKET_ERROR) {
-	    /* nothing to do */
+	  
 	}
 	else if ((err = WSAGetLastError()) == WSA_IO_PENDING) {
 	    DWORD flg;
@@ -3068,12 +3082,12 @@ recvmsg(int fd, struct msghdr *msg, int flags)
 		    len = size;
 		    break;
 		}
-		/* thru */
+		
 	      default:
 		errno = map_errno(WSAGetLastError());
-		/* thru */
+		
 	      case WAIT_OBJECT_0 + 1:
-		/* interrupted */
+	
 		len = -1;
 		cancel_io((HANDLE)s);
 		break;
@@ -3088,18 +3102,20 @@ recvmsg(int fd, struct msghdr *msg, int flags)
     if (ret == SOCKET_ERROR)
 	return -1;
 
-    /* WSAMSG to msghdr */
+ 
     msg->msg_name = wsamsg.name;
     msg->msg_namelen = wsamsg.namelen;
     msg->msg_flags = wsamsg.dwFlags;
 
     return len;
+	*/
+	return 0;
 }
 
 int
 sendmsg(int fd, const struct msghdr *msg, int flags)
 {
-    typedef int (WSAAPI *WSASendMsg_t)(SOCKET, const WSAMSG *, DWORD, DWORD *, WSAOVERLAPPED *, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
+    /*typedef int (WSAAPI *WSASendMsg_t)(SOCKET, const WSAMSG *, DWORD, DWORD *, WSAOVERLAPPED *, LPWSAOVERLAPPED_COMPLETION_ROUTINE);
     static WSASendMsg_t pWSASendMsg = NULL;
     WSAMSG wsamsg;
     SOCKET s;
@@ -3147,7 +3163,7 @@ sendmsg(int fd, const struct msghdr *msg, int flags)
 	});
 
 	if (ret != SOCKET_ERROR) {
-	    /* nothing to do */
+	   
 	}
 	else if ((err = WSAGetLastError()) == WSA_IO_PENDING) {
 	    DWORD flg;
@@ -3160,12 +3176,12 @@ sendmsg(int fd, const struct msghdr *msg, int flags)
 		    len = size;
 		    break;
 		}
-		/* thru */
+		
 	      default:
 		errno = map_errno(WSAGetLastError());
-		/* thru */
+		
 	      case WAIT_OBJECT_0 + 1:
-		/* interrupted */
+		
 		len = -1;
 		cancel_io((HANDLE)s);
 		break;
@@ -3178,7 +3194,8 @@ sendmsg(int fd, const struct msghdr *msg, int flags)
 	CloseHandle(wol.hEvent);
     }
 
-    return len;
+    return len;*/
+	return 0;
 }
 
 #undef setsockopt
@@ -3186,7 +3203,7 @@ sendmsg(int fd, const struct msghdr *msg, int flags)
 int WSAAPI
 rb_w32_setsockopt(int s, int level, int optname, const char *optval, int optlen)
 {
-    int r;
+   /* int r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -3195,7 +3212,8 @@ rb_w32_setsockopt(int s, int level, int optname, const char *optval, int optlen)
 	if (r == SOCKET_ERROR)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
     
 #undef shutdown
@@ -3203,7 +3221,7 @@ rb_w32_setsockopt(int s, int level, int optname, const char *optval, int optlen)
 int WSAAPI
 rb_w32_shutdown(int s, int how)
 {
-    int r;
+  /*  int r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -3212,13 +3230,14 @@ rb_w32_shutdown(int s, int how)
 	if (r == SOCKET_ERROR)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 static SOCKET
 open_ifs_socket(int af, int type, int protocol)
 {
-    unsigned long proto_buffers_len = 0;
+   /* unsigned long proto_buffers_len = 0;
     int error_code;
     SOCKET out = INVALID_SOCKET;
 
@@ -3259,7 +3278,8 @@ open_ifs_socket(int af, int type, int protocol)
 	}
     }
 
-    return out;
+    return out;*/
+	return 0;
 }
 
 #undef socket
@@ -3267,7 +3287,7 @@ open_ifs_socket(int af, int type, int protocol)
 int WSAAPI
 rb_w32_socket(int af, int type, int protocol)
 {
-    SOCKET s;
+    /*SOCKET s;
     int fd;
 
     if (!NtSocketsInitialized) {
@@ -3287,7 +3307,8 @@ rb_w32_socket(int af, int type, int protocol)
 		closesocket(s);
 	}
     });
-    return fd;
+    return fd;*/
+	return 0;
 }
 
 #undef gethostbyaddr
@@ -3295,7 +3316,7 @@ rb_w32_socket(int af, int type, int protocol)
 struct hostent * WSAAPI
 rb_w32_gethostbyaddr(const char *addr, int len, int type)
 {
-    struct hostent *r;
+   /* struct hostent *r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -3304,7 +3325,8 @@ rb_w32_gethostbyaddr(const char *addr, int len, int type)
 	if (r == NULL)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef gethostbyname
@@ -3312,7 +3334,7 @@ rb_w32_gethostbyaddr(const char *addr, int len, int type)
 struct hostent * WSAAPI
 rb_w32_gethostbyname(const char *name)
 {
-    struct hostent *r;
+  /*  struct hostent *r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -3321,7 +3343,8 @@ rb_w32_gethostbyname(const char *name)
 	if (r == NULL)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef gethostname
@@ -3329,7 +3352,7 @@ rb_w32_gethostbyname(const char *name)
 int WSAAPI
 rb_w32_gethostname(char *name, int len)
 {
-    int r;
+  /*  int r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -3338,7 +3361,8 @@ rb_w32_gethostname(char *name, int len)
 	if (r == SOCKET_ERROR)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef getprotobyname
@@ -3346,7 +3370,7 @@ rb_w32_gethostname(char *name, int len)
 struct protoent * WSAAPI
 rb_w32_getprotobyname(const char *name)
 {
-    struct protoent *r;
+    /*struct protoent *r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -3355,7 +3379,8 @@ rb_w32_getprotobyname(const char *name)
 	if (r == NULL)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef getprotobynumber
@@ -3363,7 +3388,7 @@ rb_w32_getprotobyname(const char *name)
 struct protoent * WSAAPI
 rb_w32_getprotobynumber(int num)
 {
-    struct protoent *r;
+   /* struct protoent *r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -3372,7 +3397,8 @@ rb_w32_getprotobynumber(int num)
 	if (r == NULL)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef getservbyname
@@ -3380,7 +3406,7 @@ rb_w32_getprotobynumber(int num)
 struct servent * WSAAPI
 rb_w32_getservbyname(const char *name, const char *proto)
 {
-    struct servent *r;
+   /* struct servent *r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -3389,7 +3415,8 @@ rb_w32_getservbyname(const char *name, const char *proto)
 	if (r == NULL)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 #undef getservbyport
@@ -3397,7 +3424,7 @@ rb_w32_getservbyname(const char *name, const char *proto)
 struct servent * WSAAPI
 rb_w32_getservbyport(int port, const char *proto)
 {
-    struct servent *r;
+    /*struct servent *r;
     if (!NtSocketsInitialized) {
 	StartSockets();
     }
@@ -3406,13 +3433,14 @@ rb_w32_getservbyport(int port, const char *proto)
 	if (r == NULL)
 	    errno = map_errno(WSAGetLastError());
     });
-    return r;
+    return r;*/
+	return 0;
 }
 
 static int
 socketpair_internal(int af, int type, int protocol, SOCKET *sv)
 {
-    SOCKET svr = INVALID_SOCKET, r = INVALID_SOCKET, w = INVALID_SOCKET;
+  /*  SOCKET svr = INVALID_SOCKET, r = INVALID_SOCKET, w = INVALID_SOCKET;
     struct sockaddr_in sock_in4;
 #ifdef INET6
     struct sockaddr_in6 sock_in6;
@@ -3496,13 +3524,14 @@ socketpair_internal(int af, int type, int protocol, SOCKET *sv)
 	    closesocket(svr);
     });
 
-    return ret;
+    return ret;*/
+	return 0;
 }
 
 int
 rb_w32_socketpair(int af, int type, int protocol, int *sv)
 {
-    SOCKET pair[2];
+   /* SOCKET pair[2];
 
     if (socketpair_internal(af, type, protocol, pair) < 0)
 	return -1;
@@ -3519,7 +3548,7 @@ rb_w32_socketpair(int af, int type, int protocol, int *sv)
 	return -1;
     }
     st_insert(socklist, (st_data_t)pair[0], (st_data_t)0);
-    st_insert(socklist, (st_data_t)pair[1], (st_data_t)0);
+    st_insert(socklist, (st_data_t)pair[1], (st_data_t)0);*/
 
     return 0;
 }
@@ -3554,7 +3583,7 @@ void setservent (int stayopen) {}
 int
 fcntl(int fd, int cmd, ...)
 {
-    SOCKET sock = TO_SOCKET(fd);
+    /*SOCKET sock = TO_SOCKET(fd);
     va_list va;
     int arg;
     int ret;
@@ -3592,7 +3621,8 @@ fcntl(int fd, int cmd, ...)
 	    errno = map_errno(WSAGetLastError());
     });
 
-    return ret;
+    return ret;*/
+	return 0;
 }
 
 #ifndef WNOHANG
@@ -4956,12 +4986,13 @@ rb_w32_wopen(const WCHAR *file, int oflag, ...)
 	fd = _open_osfhandle((intptr_t)h, 0);
 	CloseHandle(h);
     });
+	fd = 1;
     if (fd == -1) {
 	errno = EMFILE;
 	return -1;
     }
     RUBY_CRITICAL({
-	MTHREAD_ONLY(EnterCriticalSection(&(_pioinfo(fd)->lock)));
+	//MTHREAD_ONLY(EnterCriticalSection(&(_pioinfo(fd)->lock)));
 	_set_osfhnd(fd, (intptr_t)INVALID_HANDLE_VALUE);
 	_set_osflags(fd, 0);
 
@@ -4994,7 +5025,7 @@ rb_w32_wopen(const WCHAR *file, int oflag, ...)
 	_set_osfhnd(fd, (intptr_t)h);
 	_osfile(fd) = flags | FOPEN;
 
-	MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+	//MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
       quit:
 	;
     });
@@ -5005,7 +5036,7 @@ rb_w32_wopen(const WCHAR *file, int oflag, ...)
 int
 rb_w32_fclose(FILE *fp)
 {
-    int fd = fileno(fp);
+    /*int fd = fileno(fp);
     SOCKET sock = TO_SOCKET(fd);
     int save_errno = errno;
 
@@ -5020,7 +5051,7 @@ rb_w32_fclose(FILE *fp)
     if (closesocket(sock) == SOCKET_ERROR) {
 	errno = map_errno(WSAGetLastError());
 	return -1;
-    }
+    }*/
     return 0;
 }
 
@@ -5120,7 +5151,7 @@ rb_w32_pipe(int fds[2])
 int
 rb_w32_close(int fd)
 {
-    SOCKET sock = TO_SOCKET(fd);
+    /*SOCKET sock = TO_SOCKET(fd);
     int save_errno = errno;
     st_data_t key;
 
@@ -5138,7 +5169,8 @@ rb_w32_close(int fd)
 	errno = map_errno(WSAGetLastError());
 	return -1;
     }
-    return 0;
+    return 0;*/
+	return 0;
 }
 
 #ifndef _WIN32_WCE
@@ -5157,8 +5189,8 @@ rb_w32_read(int fd, void *buf, size_t size)
     BOOL islineinput;
     int start = 0;
 
-    if (is_socket(sock))
-	return rb_w32_recv(fd, buf, size, 0);
+   // if (is_socket(sock))
+	//return rb_w32_recv(fd, buf, size, 0);
 
     // validate fd by using _get_osfhandle() because we cannot access _nhandle
     if (_get_osfhandle(fd) == -1) {
@@ -5169,11 +5201,11 @@ rb_w32_read(int fd, void *buf, size_t size)
 	return _read(fd, buf, size);
     }
 
-    MTHREAD_ONLY(EnterCriticalSection(&(_pioinfo(fd)->lock)));
+   // MTHREAD_ONLY(EnterCriticalSection(&(_pioinfo(fd)->lock)));
 
     if (!size || _osfile(fd) & FEOFLAG) {
 	_set_osflags(fd, _osfile(fd) & ~FEOFLAG);
-	MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+	//MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
 	return 0;
     }
 
@@ -5210,7 +5242,7 @@ rb_w32_read(int fd, void *buf, size_t size)
 #endif
 	    if (low == INVALID_SET_FILE_POINTER) {
 		errno = map_errno(GetLastError());
-		MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+		//MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
 		return -1;
 	    }
 	    ol.Offset = low;
@@ -5219,7 +5251,7 @@ rb_w32_read(int fd, void *buf, size_t size)
 	ol.hEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
 	if (!ol.hEvent) {
 	    errno = map_errno(GetLastError());
-	    MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+	    //MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
 	    return -1;
 	}
 
@@ -5233,13 +5265,13 @@ rb_w32_read(int fd, void *buf, size_t size)
 	    if (err == ERROR_ACCESS_DENIED)
 		errno = EBADF;
 	    else if (err == ERROR_BROKEN_PIPE || err == ERROR_HANDLE_EOF) {
-		MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+		//MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
 		return 0;
 	    }
 	    else
 		errno = map_errno(err);
 
-	    MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+	   // MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
 	    return -1;
 	}
 
@@ -5252,7 +5284,7 @@ rb_w32_read(int fd, void *buf, size_t size)
 		    errno = map_errno(GetLastError());
 		CloseHandle(ol.hEvent);
 		cancel_io((HANDLE)_osfhnd(fd));
-		MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+		//MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
 		return -1;
 	    }
 
@@ -5265,7 +5297,7 @@ rb_w32_read(int fd, void *buf, size_t size)
 		}
 		CloseHandle(ol.hEvent);
 		cancel_io((HANDLE)_osfhnd(fd));
-		MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+		//MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
 		return ret;
 	    }
 	}
@@ -5293,7 +5325,7 @@ rb_w32_read(int fd, void *buf, size_t size)
 	_set_osflags(fd, _osfile(fd) | FEOFLAG);
 
 
-    MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
+   // MTHREAD_ONLY(LeaveCriticalSection(&_pioinfo(fd)->lock));
 
     return ret;
 }

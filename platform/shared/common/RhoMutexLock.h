@@ -28,17 +28,18 @@
 #define _RHOMUTEXLOCK_H_
 
 #include "RhoPort.h"
+#include <synchapi.h>
 
 #ifdef __cplusplus
 
 namespace rho{
 namespace common{
 
-#if defined(WINDOWS_PLATFORM)
+//#if defined(WINDOWS_PLATFORM)
 typedef CRITICAL_SECTION MutexType;
-#else
-typedef pthread_mutex_t MutexType;
-#endif 
+//#else
+
+//#endif 
 
 class CMutex{
 public:
@@ -55,7 +56,7 @@ private:
 };
 
 #if defined(WINDOWS_PLATFORM)
-CMutex::CMutex()             { InitializeCriticalSection(&m_nativeMutex); }
+CMutex::CMutex()             { InitializeCriticalSectionEx(&m_nativeMutex,0,0); }
 CMutex::~CMutex()            { DeleteCriticalSection(&m_nativeMutex); }
 void CMutex::Lock()         { EnterCriticalSection(&m_nativeMutex); }
 void CMutex::Unlock()       { LeaveCriticalSection(&m_nativeMutex); }

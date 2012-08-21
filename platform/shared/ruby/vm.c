@@ -1147,6 +1147,7 @@ vm_exec(rb_thread_t *th)
     VALUE result, err;
     VALUE initial = 0;
     VALUE *escape_dfp = NULL;
+		char s[255];
 
     TH_PUSH_TAG(th);
     _tag.retval = Qnil;
@@ -1357,7 +1358,10 @@ vm_exec(rb_thread_t *th)
 	    }
 	    else {
 		vm_pop_frame(th);
+
 		th->errinfo = err;
+	
+	//sprintf(s,"%s",RSTRING_PTR(rb_obj_classname(th->errinfo)));
 		TH_POP_TAG2();
 		JUMP_TAG(state);
 	    }

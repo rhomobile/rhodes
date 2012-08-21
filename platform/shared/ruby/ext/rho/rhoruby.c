@@ -172,7 +172,7 @@ char *tzname[2];
 
 void RhoRubyStart()
 {
-    const char* szRoot = rho_native_rhopath();
+	const char* szRoot = rho_native_rhopath();
     //VALUE moduleRhom;
 #ifdef HAVE_LOCALE_H
     setlocale(LC_CTYPE, "");
@@ -221,7 +221,10 @@ void RhoRubyStart()
 
 #endif
 
-    Init_strscan();
+  Init_strscan();
+  Init_sqlite3_api();
+  //Init_RhoConf();
+	/* Init_strscan();
     Init_sqlite3_api();
     Init_GeoLocation();
     Init_SyncEngine();
@@ -230,14 +233,15 @@ void RhoRubyStart()
     Init_Phonebook();
     Init_WebView();
     Init_RhoConf();
-    Init_Alert();
+    Init_Alert();*/
 #if defined(WINDOWS_PLATFORM)
-    init_rhoext_Signature();
+    //init_rhoext_Signature();
 #else
     Init_SignatureCapture();
 #endif
-    
-    Init_RhoBluetooth();	
+	Init_stringio();
+	Init_RhoSupport();
+    /*Init_RhoBluetooth();	
 	Init_RhodesNativeViewManager();	
     Init_Camera();
     Init_stringio();
@@ -249,10 +253,10 @@ void RhoRubyStart()
     Init_socket();
     Init_NavBar();
     Init_RhoEvent();
-    Init_Calendar();
+    Init_Calendar();*/
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)
-    Init_Extensions();
+    //Init_Extensions();
 #endif //RHO_SYMBIAN
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
@@ -274,11 +278,12 @@ void RhoRubyStart()
     {
         VALUE res = rho_ruby_disable_gc();
         require_compiled(rb_str_new2("rhoframework"), &framework );
+		//require_compiled(rb_str_new2("test"), &framework );
         rho_ruby_enable_gc(res);
     }
 #endif //RHODES_EMULATOR
 
-    if ( framework == 0 || framework == Qnil )
+	if ( framework == 0 || framework == Qnil )
     {
         RAWLOG_FATAL("RHO framework creating failed. Application will exit.");
     }
@@ -373,13 +378,6 @@ void rho_ruby_loadserversources(const char* szData)
 void rho_ruby_loadallsyncsources()
 {
     rb_funcall(framework, loadAllSyncSources_mid, 0 );
-}
-
-void rho_ruby_callmethod(const char* szMethodPath)
-{
-    ID rbMethodCall;
-    CONST_ID(rbMethodCall, szMethodPath);
-    rb_funcall(Qnil, rbMethodCall, 0);
 }
 
 void rho_ruby_reset_db_on_sync_user_changed()
@@ -516,11 +514,6 @@ VALUE rho_ruby_create_string(const char* szVal)
 VALUE rho_ruby_create_string_withlen(int len)
 {
     return rb_str_new("", len);
-}
-
-VALUE rho_ruby_create_string_withlen2(const char* szVal, int len)
-{
-    return rb_str_new(szVal, len);
 }
 
 VALUE rho_ruby_create_time(long t)

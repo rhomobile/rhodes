@@ -4529,6 +4529,7 @@ sysopen_func(void *ptr)
 {
     const struct sysopen_struct *data = ptr;
     const char *fname = RSTRING_PTR(data->fname);
+	//int ret = open("rho/lib/rhoframework.iseq", data->oflags, data->perm);
     return (VALUE)open(fname, data->oflags, data->perm);
 }
 

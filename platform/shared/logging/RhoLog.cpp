@@ -51,6 +51,7 @@ LogMessage::LogMessage(const char* file, int line, LogSeverity severity, LogSett
 }
 
 bool LogMessage::isEnabled()const{
+	return true;
 	if(m_category.getName() == "NO_LOGGING" || common::CThreadQueue::getLogThreadId() == common::CSystem::getThreadID()) return false;
 
     if ( m_bForceEnable )
@@ -87,8 +88,8 @@ void LogMessage::addPrefix(const char* file, int line){
 }
 
 void LogMessage::flushLog(){
-    if ( !isEnabled() )
-        return;
+  //  if ( !isEnabled() )
+     //   return;
 
     if ( m_strMessage.length() > 0 ){
         if ( m_strMessage[m_strMessage.length()-1] != '\n' )

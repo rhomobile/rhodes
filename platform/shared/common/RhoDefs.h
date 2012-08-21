@@ -47,7 +47,7 @@
 #endif
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
-#define WINDOWS_PLATFORM
+#define WINDOWS_PLATFORM = 1
 #endif
 
 #ifdef __cplusplus
