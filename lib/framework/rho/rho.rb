@@ -1390,7 +1390,7 @@ module Kernel
     
 end    
 
-if defined?(RHO_WP7).nil?
+if !defined?(RHO_WP7) && !defined?( RHO_ME )
 module WebView
 
     class << self
