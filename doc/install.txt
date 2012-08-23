@@ -25,6 +25,8 @@
 
 * Download and run the latest [Motorola RhoMobile Suite Installer for Windows](http://rhomobile.com/rhostudio-windows). This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
 
+**NOTE: If you use Symantec Antivirus it can warn about "Suspicious.MLApp" security risk in rubyw.exe file during installation. It is known false positive in Symantec antivirus.<br>Ignore this warning.**
+
 * On Windows XP reduce JVM heap size:<br>
 Open <tt>&lt;RhoMobileSuiteDir&gt;\rhostudio\win32.win32.x86\RhoStudio.ini</tt> file in editor.<br>
 Find "<tt>-Xmx1024m</tt>" line and change it to "<tt>-Xmx512m</tt>".
@@ -50,6 +52,8 @@ Find "<tt>-Xmx1024m</tt>" line and change it to "<tt>-Xmx512m</tt>".
 * Ensure that Java Development Kit is installed. The Sun JDK for Windows is available [here](http://java.sun.com/javase/downloads/index.jsp). Install Windows x64 JDK or x86 JDK or both.
 
 * Download and run the latest [Motorola RhoMobile Suite Installer for Windows](http://rhomobile.com/rhostudio-windows). This installs the [Ruby stack](http://www.ruby-lang.org/en/), [Redis](http://redis.io/), [RhoConnect](/rhoconnect/introduction) and [Rhodes](/rhodes/introduction).
+
+**NOTE: If you use Symantec Antivirus it can warn about "Suspicious.MLApp" security risk in rubyw.exe file during installation. It is known false positive in Symantec antivirus.<br>Ignore this warning.**
 
 **NOTE: Use Motorola RhoStudio 64-bit to run RhoStudio with x64 JDK.<br>
 Use Motorola RhoStudio 32-bit to run RhoStudio with x86 JDK.**
