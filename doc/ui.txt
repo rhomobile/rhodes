@@ -454,7 +454,7 @@ The following is the default Rhodes menu if none is provided in application.rb:
 Here is list of allowed values for actions for user defined menus, toolbars and tabbars:
 
 * :back - do back navigation using web view history or application's back url
-**NOTE: Android: when press Back on application Home page, application  will exit
+**NOTE: Android: when press Back on application Home page, application will go to background
 
 * :forward - do forward navigation
 * :home - navigate to configured start_path
