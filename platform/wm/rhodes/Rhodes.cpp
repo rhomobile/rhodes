@@ -837,8 +837,11 @@ extern "C" int rho_wm_impl_CheckLicense()
             common::convertToStringW( get_app_build_config_item("motorola_license_company"), strCompanyW );
 
             StringW strAppNameW;
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+            strAppNameW = RHODESAPP().getAppNameW();
+#else
             common::convertToStringW( get_app_build_config_item("name"), strAppNameW );
-
+#endif
             szLogText = pCheckLicense( getMainWnd(), strAppNameW.c_str(), strLicenseW.c_str(), strCompanyW.c_str() );
         }
 
