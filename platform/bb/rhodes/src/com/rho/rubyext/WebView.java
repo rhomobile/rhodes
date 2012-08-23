@@ -139,7 +139,22 @@ public class WebView
 			protected RubyValue run(RubyValue receiver, RubyArray args, RubyBlock block) 
 			{
 				try {
-					RhodesApplication.getInstance().executeJavascript(args.get(0).toStr());
+					if ( args.size() >= 3 && args.get(0) != null )
+					{
+						RubyArray vals = (RubyArray)args.get(2);
+						String strFunc = "(";
+						for ( int i = 0; i < vals.size(); i++)
+						{
+							strFunc += vals.get(i).toStr();
+							if ( i + 1 < vals.size() )
+								strFunc += ",";
+						}
+			            strFunc += ");";
+						
+				        RhodesApplication.getInstance().executeJavascript(strFunc);
+					}else
+						RhodesApplication.getInstance().executeJavascript(args.get(0).toStr());
+					
 					//String url = "javascript:"+args.get(0).toStr();
 					//RhodesApplication.getInstance().navigateUrl(url);
 					return RubyConstant.QNIL;
