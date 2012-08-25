@@ -19,7 +19,7 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	#
 	#   Ruby interface of LineaSDK.
 	#   see LineaSDK.h and Linea documentation for details
-	#   This main class Linea have the very simiilar interface with main Linea class in objective-C LineaSDK
+	#   This main class Linea have the very similar interface with main Linea class in objective-C LineaSDK
 	#   All constants and methods have the same name and practically the same results/parameters (with little Ruby specific)
 	#   All method can raise Ruby exception like methods of Linea objective-C class
 	#
@@ -195,7 +195,7 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	# Prints EAN128 optimized barcode. Supported only on PP-60, DPP-350 and DPP-250 printers, it makes the barcode lot smaller especially when numbers only are used
 		BAR_PRN_EAN128AUTO = 11
 
-	# Barcode Text Positopn
+	# Barcode Text Position
 		BAR_TEXT_NONE = 0
 		BAR_TEXT_ABOVE = 1
 		BAR_TEXT_BELOW = 2
@@ -257,7 +257,7 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	# Encryption key, if set magnetic card data will be encrypted
 		KEY_ENCRYPTION  = 1
 
-	  # Creates and initializes new Linea class instance or returns already initalized one. Use this function, if you want to \
+	  # Creates and initializes new Linea class instance or returns already initialized one. Use this function, if you want to \
 	  # access Linea from multiple classes
 	  # return instance of Linea device class (Linea)
 	  def self.sharedDevice
@@ -539,7 +539,7 @@ Ruby interface located in [https://github.com/rhomobile/linea-rhodes/blob/master
 	  def barcodeEngineWriteString?(data)
 	  end	
 
-	  # max_length - int with maximum length of readed data in bytes
+	  # max_length - int with maximum length of read data in bytes
 	  # timeout - float
 	  # return array of bytes or nil if nothing
 	  def barcodeEngineRead(max_length, timeout)
@@ -579,7 +579,7 @@ This is simple example of ruby code where you can see how LineSDK is used in rub
 		begin
 		  Linea.sharedDevice.connect
 		rescue
-		  puts 'Linea exception catched : '+$!.to_s
+		  puts 'Linea exception caught : '+$!.to_s
 		end
 	  end
 
@@ -587,7 +587,7 @@ This is simple example of ruby code where you can see how LineSDK is used in rub
 		begin
 		  Linea.sharedDevice.disconnect
 		rescue
-		  puts 'Linea exception catched : '+$!.to_s
+		  puts 'Linea exception caught : '+$!.to_s
 		end
 	  end
 
@@ -595,7 +595,7 @@ This is simple example of ruby code where you can see how LineSDK is used in rub
 		begin
 		  Linea.sharedDevice.startScan
 		rescue
-		  puts 'Linea exception catched : '+$!.to_s
+		  puts 'Linea exception caught : '+$!.to_s
 		end
 	  end
 
@@ -603,7 +603,7 @@ This is simple example of ruby code where you can see how LineSDK is used in rub
 		begin
 		  Linea.sharedDevice.stopScan
 		rescue
-		  puts 'Linea exception catched : '+$!.to_s
+		  puts 'Linea exception caught : '+$!.to_s
 		end
 	  end
 
@@ -611,7 +611,7 @@ This is simple example of ruby code where you can see how LineSDK is used in rub
 		begin
 		  Linea.sharedDevice.msStartScan
 		rescue
-		  puts 'Linea exception catched : '+$!.to_s
+		  puts 'Linea exception caught : '+$!.to_s
 		end
 	  end
 
@@ -619,7 +619,7 @@ This is simple example of ruby code where you can see how LineSDK is used in rub
 		begin
 		  Linea.sharedDevice.msStopScan
 		rescue
-		  puts 'Linea exception catched : '+$!.to_s
+		  puts 'Linea exception caught : '+$!.to_s
 		end
 	  end
 
@@ -627,7 +627,7 @@ This is simple example of ruby code where you can see how LineSDK is used in rub
 		begin
 			Linea.sharedDevice.enableBarcode(Linea::BAR_ALL, true)
 		rescue
-		  puts 'Linea exception catched : '+$!.to_s
+		  puts 'Linea exception caught : '+$!.to_s
 		end
 	  end
 
