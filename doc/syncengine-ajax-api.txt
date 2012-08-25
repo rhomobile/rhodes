@@ -99,7 +99,7 @@ NOTE: It is just for SyncEngine control and at the moment it doesn't provide any
 All API methods are defined in the *Rho.syncengine* namespace. Each method is accessible in javascript as *window.Rho.syncengine.method_name*.
 Each API method receives callback functions as two last parameters, those are:
 
-* success - Success handler function. Paremeters are:
+* success - Success handler function. Parameters are:
     * result - String value with AJAX response. Contains just "ok" value if different behavior is not described for exact API method as *RETURNED* value.
     * status - Number value with HTTP response status
     * xhr - XmlHttpRequest object associated with response

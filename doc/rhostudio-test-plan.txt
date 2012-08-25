@@ -6,7 +6,7 @@ RhoStudio is a multi-platform application and should act identically on all plat
 The only process that differs from platform to platform is an installation. So the installation tests are
 described separately for each platform. All other tests should be performed on all platforms and yield the identical results.
 
-Any deviation from the described behaviour is a possible bug and should be reported to the developers.
+Any deviation from the described behavior is a possible bug and should be reported to the developers.
 
 ## On Virtual Machines
 
@@ -42,17 +42,17 @@ It is recommended to run all tests on virtual machines (e.g. using freeware [Ora
 
    NOTE: Pay attention to `System > Processor > Processors` property -- if you plan to connect USB devices directly to virtual machine, set the number of processors strictly to 1
    (this is a workaround for the bug in VirtualBox). Also for USB pass-thru you need to install [VirtualBox Extension Pack](https://www.virtualbox.org/wiki/Downloads) and,
-   if VirtualBox is installed on Linux host, then you need to add all users runnung virtual machines to `vboxusers` group.
+   if VirtualBox is installed on Linux host, then you need to add all users running virtual machines to `vboxusers` group.
 
 2. Install desired operating system to virtual machine using original installation media (CD or DVD) and product license key
    (see VirtualBox help and documentation for details on guest operating systems installation).
 
 3. Install all updates, service packs and official patches for installed OS.
 
-4. Install all latest avaiable SDKs for supported mobile platforms:
+4. Install all latest available SDKs for supported mobile platforms:
 
    1. Install latest Android SDK and NDK. Do not forget to run Android SDK Manager to download and install all latest tools, platforms and APIs.
-      Don't use path with spaces, install SDK and NDK to something like `C:\Anrdoid\android-sdk` and `C:\Anrdoid\android-ndk` on Windows
+      Don't use path with spaces, install SDK and NDK to something like `C:\Android\android-sdk` and `C:\Android\android-ndk` on Windows
       and to something like `/Developer/SDKs/android-sdk` and `/Developer/SDKs/android-ndk` on Mac.
    2. On Windows: install Visual Studio 2008 and Windows Mobile 6 Professional SDK Refresh
       (don't forget to run Microsoft Update after Visual Studio installation to apply all latest updates, service packs and fixes).
@@ -78,7 +78,7 @@ It is recommended to run all tests on virtual machines (e.g. using freeware [Ora
 Thus you will always have an up-to-date clean fresh installation of each operating system with all required SDKs for testing purposes.
 
 NOTE: Never create a snapshot of crashed or abnormally exited virtual machine! Always restore previous good state
-from latest snapshot, install neccesary updates/service-packs/patches, create new snapshot, and delete previous snapshot.
+from latest snapshot, install necessary updates/service-packs/patches, create new snapshot, and delete previous snapshot.
 
 NOTE: Deletion of previous snapshots lets you save a lot of free disk space on a physical (host) machine especially for Windows virtual machines (guests).
 
@@ -121,14 +121,14 @@ Take a fresh clean installation of Mac OS X with all available Software Updates 
 
 ### Installation failure test on Mac OS X without Xcode
 
-1. Open 'Install gems' shorcut. The Terminal window will appear.
+1. Open 'Install gems' shortcut. The Terminal window will appear.
 2. If asked for a password, enter the password.
 3. The message will appear: "Please install building tools"
 
 ### Installation failure test on Mac OS X without Java
 
 1. Install latest available Xcode with iOS SDK.
-2. Open 'Install gems' shorcut again.
+2. Open 'Install gems' shortcut again.
 3. If asked for a password, enter the password.
 4. The message will appear: "Please install java development kit"
 
@@ -141,7 +141,7 @@ Take a fresh clean installation of Mac OS X with all available Software Updates 
 
    The window will appear asking you about installation of Java -- agree and proceed JDK installation.
 
-2. Open 'Install gems' shorcut again.
+2. Open 'Install gems' shortcut again.
 
 3. If asked for password, enter your password.
 
@@ -203,7 +203,7 @@ When you open the RhoStudio it asks a path to create (or open existing) `workspa
 4. Expand 'Rhomobile' node.
 5. 'RhoStudio' should be grayed out -- that means the latest version is already installed.
 6. To double-check this write down the version number of RhoStudio available from the update site (that is displayed in this list).
-7. Click 'What is <u>alreay installed</u>?' link.
+7. Click 'What is <u>already installed</u>?' link.
 8. Switch to 'Plug-ins' tab.
 9. Find plug-in named 'com.rhomobile.rhostudio' and write down its version number.
 10. The version numbers written down on step 6 and step 9 should be the same -- if not, the RhoStudio installer contains
@@ -277,7 +277,7 @@ RET: 0
 2.6. Check that project with given name appeared at `Project Explorer` view.
 2.7. Check project files in `Project Explorer` view item.
 
-3. RhoMoile Application project creation from existing sources test
+3. RhoMobile Application project creation from existing sources test
 
 3.1. Create application outside of workspace by hand.
 3.2. Go to `File > New > Project` in the top menu.
@@ -288,7 +288,7 @@ RET: 0
 3.6. Check that project with given name appeared at `Project Explorer` view.
 3.7. Check project files in `Project Explorer` view item.
 
-4. RhoMoile Application project creation from existing sources in workspace test
+4. RhoMobile Application project creation from existing sources in workspace test
 
 4.1. Create application in workspace by hand.
 4.2. Go to `File > New > Project` in the top menu.
@@ -306,7 +306,7 @@ RET: 0
 3. Enter the correct path to `bin` folder of the installed JDK (typically `/Library/Java/Home/bin` on Mac,
    and the `bin` folder of JDK installed during installation tests on Windows, e.g. `C:\Program Files\Java\jdk1.7.0\bin`).
 4. Expand `Rhomobile` node and enter correct paths to 'Android SDK' and 'Android NDK' on `Android` tab,
-   e.g. `C:\Anrdoid\android-sdk` and `C:\Anrdoid\android-ndk` on Windows
+   e.g. `C:\Android\android-sdk` and `C:\Android\android-ndk` on Windows
    and `/Developer/SDKs/android-sdk` and `/Developer/SDKs/android-ndk` on Mac.
 5. On Windows go to `Windows Mobile` tab and set a correct path to 'Cab wizard'.
 6. Click `OK` to finish editing and apply changes.

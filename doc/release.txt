@@ -66,7 +66,7 @@ Run on Platform Simulator from 'mytest' folder.
     - Date and Time: you should see 2 fields Date, Time
     - Date only: only date should be displayed
     - Time only: only time should be displayed
-    Setting date/time should be processed without reload page. When you reopen DateTime Picker you should see date time from field (previosly setted).
+    Setting date/time should be processed without reload page. When you reopen DateTime Picker you should see date time from field (previously set).
 * Alerts: select each link. you should see corresponding actions
 * Ringtones: all phone ring-tones should be listed. Select 2 of them  - you should listen some sound. On second press [stop], sound should     stopped immediately
 * AsyncHttpTest: Apache license page should be displayed
@@ -83,7 +83,7 @@ Run on Platform Simulator from 'mytest' folder.
    - press 'Test back with alert', enter some text to edit, when press Back button - you should see<br/> Alert with message 'Do you want to leave?'. Press No - text from edit should not disappear. <br/>Press back again, on alert press Yes - you should return to dynamic menu test
    - press 'Test back with close', when press Back button - application should exit
 * Rho tests: press on each link, you should see corresponding page with message
-* Barcode recognize test: open "My Barcode recognize ..." press [scan] under image - see Alert with correct recognized code. Press [Take Picture] for make shot of barcode by camea and see Alert with recognized code or "[]" if not recognized.
+* Barcode recognize test: open "My Barcode recognize ..." press [scan] under image - see Alert with correct recognized code. Press [Take Picture] for make shot of barcode by camera and see Alert with recognized code or "[]" if not recognized.
 * Bluetooth Chat Demo: 
   1. Phone and external Bluetooth device (for example external GPS Bluetooth device) - for Android, Windows Mobile and Blackberry only.
      - pair device with phone
@@ -222,7 +222,7 @@ Same procedure as for plug-in
 
 4. Import into workspace DLTK plugins
 
-    Select 'Pluigns and Fragments' item in Import Dialog and going to 'Selection' page. 
+    Select 'Plugins and Fragments' item in Import Dialog and going to 'Selection' page.
     In left list of plugins select items with names:
 
     org.eclipse.dltk.debug
@@ -245,7 +245,7 @@ Same procedure as for plug-in
 8. Export. Select File/Export/Plugin Development
 
 8.1 For update site need select - Deployable features
-8.2 For installer (or for export only Rhostudio plugin) need select Deplyable plugin and fragments
+8.2 For installer (or for export only Rhostudio plugin) need select Deployable plugin and fragments
 
 ##Build Rhodes Eclipse
 

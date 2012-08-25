@@ -3,7 +3,7 @@ Connecting Directly to Web Services with Rhodes
 Rhodes provides another utility for connecting to backend services besides the [`SyncEngine`](/rhodes/synchronization) called `AsyncHttp`.  Your application can use the `AsyncHttp` library to interact with web services, pull remote images, etc.
 
 ## AsyncHttp API
-Below is the list of available `AsyncHttp` methods you can use to asyncrhonously make calls to http(s) services:
+Below is the list of available `AsyncHttp` methods you can use to asynchronously make calls to http(s) services:
 
 ### Common Parameters
 * `:url` - URL of the request.

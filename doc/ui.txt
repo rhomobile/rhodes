@@ -100,7 +100,7 @@ Rhodes 2.0+ includes an improved [CSS Framework](css-framework) which takes adva
 To implement advanced UI for your Rhodes View you may consider using such JavaScript UI frameworks as [Sencha](http://www.sencha.com/). Place one of these libraries in public/js folder of your application, load it in your [layout.erb](#layout), and you are ready to go.
 [Jquery Mobile](http://jquerymobile.com/) is supported out of the box.
 
-Rhodes support for [jQTouch library](http://jqtouch.com/) has been dropped, here you can find instructions on [how to transit your legacy Rhodes application fom jQTouch to jQuery Mobile](jqt-jqm-transition).
+Rhodes support for [jQTouch library](http://jqtouch.com/) has been dropped, here you can find instructions on [how to transit your legacy Rhodes application from jQTouch to jQuery Mobile](jqt-jqm-transition).
 
 ### jQuery Mobile modifications
 
@@ -759,7 +759,7 @@ Set the iPhone badge to Tab (only on iOS devices).
 	# set badge '12' to tab 1
 	Rho::NativeTabbar.set_tab_badge( 1, '12')
 
-Rho::NativeTabbar.create() createa a native tab bar UI element and activates its first tab. If you want to see another tab, call Rho::NativeTabbar.switch_tab explicitly just after NativeBar.create, as in the following example.
+Rho::NativeTabbar.create() creates a native tab bar UI element and activates its first tab. If you want to see another tab, call Rho::NativeTabbar.switch_tab explicitly just after NativeBar.create, as in the following example.
 
 	:::ruby
 	require 'rho/rhotabbar'
