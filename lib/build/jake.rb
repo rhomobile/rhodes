@@ -34,6 +34,10 @@ SYNC_SERVER_BASE_URL = 'http://rhoconnect-spec-exact_platform.heroku.com'
 SYNC_SERVER_CONSOLE_LOGIN = 'rhoadmin'
 SYNC_SERVER_CONSOLE_PASSWORD = ''
 
+BULK_SYNC_SERVER_URL = 'http://store-bulk.rhohub.com'
+BULK_SYNC_SERVER_CONSOLE_LOGIN = 'rhoadmin'
+BULK_SYNC_SERVER_CONSOLE_PASSWORD = ''
+
 class Hash
   def fetch_r(key)
     if self.has_key?(key) and not self[key].is_a?(Hash)
@@ -172,8 +176,32 @@ class Jake
     end        
   end
 
+  def self.reset_bulk_server()
+	require 'rest_client'
+	require 'json'
+	
+	begin
+		platform = platform
+		exact_url = BULK_SYNC_SERVER_URL
+		puts "going to reset server: #{exact_url}"
+		# login to the server
+		unless @srv_token
+			result = RestClient.post("#{exact_url}/login",
+								 {:login => BULK_SYNC_SERVER_CONSOLE_LOGIN, :password => BULK_SYNC_SERVER_CONSOLE_PASSWORD}.to_json,
+								 :content_type => :json)
+			srv_session_cookie = 'rhoconnect_session=' + result.cookies['rhoconnect_session']
+			@srv_token = RestClient.post("#{exact_url}/api/get_api_token", '', {'Cookie' => srv_session_cookie})
+		end
+		# reset server
+		RestClient.post("#{exact_url}/api/reset", {:api_token => @srv_token}.to_json, :content_type => :json)
+    rescue Exception => e
+		puts "reset_bulk_server failed: #{e}"
+	end        
+  end
+
   def self.run_spec_app(platform,appname)
     reset_spec_server(platform) if appname =~ /phone_spec/
+	reset_bulk_server
 
     rhobuildyml = File.join(basedir,'rhobuild.yml')
     #rhobuild = YAML::load_file(rhobuildyml)
