@@ -89,6 +89,18 @@ inline boolean String_endsWith(const String& str, const char* szSuffix)
     return strcmp(str.c_str()+nOff, szSuffix) == 0;
 }
 
+inline boolean String_endsWith(const String& str, const String& strSuffix)
+{
+    if ( strSuffix.length() == 0 )
+        return false;
+
+    int nOff = str.length() - strSuffix.length();
+    if ( nOff < 0 )
+        return false;
+
+    return strcmp(str.c_str()+nOff, strSuffix.c_str()) == 0;
+}
+
 inline boolean String_startsWith(const String& str, const String& strPrefix)
 {
     if ( strPrefix.length() == 0 )
