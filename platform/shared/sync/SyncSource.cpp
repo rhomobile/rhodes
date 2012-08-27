@@ -1140,20 +1140,17 @@ boolean CSyncSource::processServerBlobAttrs() {
 	if ( m_bSchemaSource ) {
 		return true;
 	} else {
-		static const String selAttrsRequest = "SELECT source_attribs,blob_attribs from sources WHERE source_id=?";
-		static const String updAttrsRequest = "UPDATE sources SET source_attribs=?,blob_attribs=? WHERE source_id=?";
-		static const String updObjectsRequest = "UPDATE object_values SET attrib=? WHERE attrib=? and source_id=?";
 		static const String blobSfx = "-rhoblob";
 		
-		db::CDBAdapter& db = getDB();
-		db.startTransaction();
-		IDBResult res = db.executeSQL(selAttrsRequest.c_str(),getID());
+		getDB().startTransaction();
+		IDBResult res = getDB().executeSQL( "SELECT source_attribs,blob_attribs from sources WHERE source_id=?", getID() );
 		
 		Vector<String> attrsToRename;
 		
 		String newAttrs = "";
 		
-		for ( ; !res.isEnd(); res.next() ) {
+		for ( ; !res.isEnd(); res.next() ) 
+        {
 			String attrs = res.getStringByIdx(0);
 			String blobs = res.getStringByIdx(1);
 			
@@ -1166,12 +1163,12 @@ boolean CSyncSource::processServerBlobAttrs() {
 				String attrVal = tokenizer.nextToken();
 				
 				
-				if ( String_endsWith(attrName, blobSfx.c_str() ) ) {
+				if ( String_endsWith( attrName, blobSfx ) ) {
 					if ( blobs.length() > 0 ) {
 						blobs += ",";
 					}
 					blobs += attrName.substr(0,attrName.length()-blobSfx.length()) + "," + attrVal;
-					attrsToRename.push_back(attrName);
+					attrsToRename.addElement(attrName);
 				} else {
 					if (newAttrs.length() > 0 ) {
 						newAttrs += ",";
@@ -1182,32 +1179,35 @@ boolean CSyncSource::processServerBlobAttrs() {
 			
 			LOG(TRACE) + "Updating attributes for source " + getName() + ". Old attribs=" + attrs + ", new attribs=" + newAttrs + ", blob attribs=" + blobs;
 			
-			db.executeSQL(updAttrsRequest.c_str(), newAttrs, blobs, getID() );
+			getDB().executeSQL("UPDATE sources SET source_attribs=?,blob_attribs=? WHERE source_id=?", newAttrs, blobs, getID() );
 		}
 		
-		for ( Vector<String>::const_iterator it = attrsToRename.begin(); it != attrsToRename.end(); ++it ) {
-			LOG(TRACE) + "Updating objects with blob attribute " + (*it) + " for source " + getName();
-			db.executeSQL(updObjectsRequest.c_str(), (*it).substr(0,(*it).length()-blobSfx.length()), *it, getID() );
+		for ( int i = 0; i < (int)attrsToRename.size(); i++ ) 
+		{
+			String strAttr = (String)attrsToRename.elementAt(i);
+			LOG(TRACE) + "Updating objects with blob attribute " + strAttr + " for source " + getName();
+			getDB().executeSQL( "UPDATE object_values SET attrib=? WHERE attrib=? and source_id=?", strAttr.substr( 0, strAttr.length()-blobSfx.length()), strAttr, getID() );
 		}
-		
-		db.endTransaction();
+
+		getDB().endTransaction();
 	}
 	return true;
 }
 
 	
-boolean CSyncSource::processAllBlobs() {
-	
+boolean CSyncSource::processAllBlobs() 
+{
 	if (m_bSchemaSource) {
-		db::CDBAdapter& db = getDB();
-		Vector<String> blobAttrs = db.getAttrMgr().getBlobAttrs( getID() );
-		
-		for ( Vector<String>::const_iterator it = blobAttrs.begin(); it != blobAttrs.end(); ++it ) {
-			String sql = "SELECT object," + (*it) + " FROM " + getName();
+		Vector<String> blobAttrs = getDB().getAttrMgr().getBlobAttrs( getID() );
+
+		for ( int i = 0; i < (int)blobAttrs.size(); i ++ ) 
+		{
+			String strAttr = (String)blobAttrs.elementAt(i);
+			String sql = "SELECT object," + strAttr + " FROM " + getName();
 			
-			IDBResult res = db.executeSQL(sql.c_str());
+			IDBResult res = getDB().executeSQL( sql.c_str() );
 			
-			LOG(TRACE) + "Processing blobs for source " + getName() + ", attribute " + *it;
+			LOG(TRACE) + "Processing blobs for source " + getName() + ", attribute " + strAttr;
 			
 			for ( ; !res.isEnd(); res.next() )
 			{ 
@@ -1216,26 +1216,26 @@ boolean CSyncSource::processAllBlobs() {
 				
 				if ( value.find("://") != String::npos ) {
 					LOG(TRACE) + "Processing remote blob: " + value;
-					CAttrValue attr((*it).c_str(),value.c_str());
+					CAttrValue attr( strAttr, value );
 					if ( !downloadBlob( attr ) ) {
 						return false;
 					}
 					
-					sql = "UPDATE " + getName() + " SET " + (*it) + "=? WHERE object=?";
+					sql = "UPDATE " + getName() + " SET " + strAttr + "=? WHERE object=?";
 					
-					db.executeSQL(sql.c_str(), attr.m_strValue.c_str(), object.c_str() );
+					getDB().executeSQL( sql.c_str(), attr.m_strValue, object  );
 				}
 			}
 		}
 	} else {
-		db::CDBAdapter& db = getDB();
-		Vector<String> blobAttrs = db.getAttrMgr().getBlobAttrs( getID() );
+		Vector<String> blobAttrs = getDB().getAttrMgr().getBlobAttrs( getID() );
 	
-		for ( Vector<String>::const_iterator it = blobAttrs.begin(); it != blobAttrs.end(); ++it ) {
-			const char* attrName = (*it).c_str();
-			IDBResult res = db.executeSQL("SELECT object,value FROM object_values WHERE attrib=? and source_id=?",attrName,getID());
+		for ( int i = 0; i < (int)blobAttrs.size(); i ++ ) 
+		{
+			String strAttr = (String)blobAttrs.elementAt(i);
+			IDBResult res = getDB().executeSQL("SELECT object,value FROM object_values WHERE attrib=? and source_id=?", strAttr, getID());
 		
-			LOG(TRACE) + "Processing blobs for source " + getName() + ", attribute " + *it;
+			LOG(TRACE) + "Processing blobs for source " + getName() + ", attribute " + strAttr;
 		
 			for ( ; !res.isEnd(); res.next() )
 			{ 
@@ -1244,12 +1244,12 @@ boolean CSyncSource::processAllBlobs() {
 			
 				if ( value.find("://") != String::npos ) {
 					LOG(TRACE) + "Processing remote blob: " + value;
-					CAttrValue attr((*it).c_str(),value.c_str());
+					CAttrValue attr( strAttr, value );
 					if ( !downloadBlob( attr ) ) {
 						return false;
 					}
 				
-					db.executeSQL("UPDATE object_values SET value=? where object=? and source_id=? and attrib=?", attr.m_strValue.c_str(), object.c_str(), getID(), attrName);
+					getDB().executeSQL("UPDATE object_values SET value=? where object=? and source_id=? and attrib=?", attr.m_strValue, object, getID(), strAttr);
 				}
 			}
 		}
@@ -1304,7 +1304,7 @@ void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strO
         {
             getNotify().onObjectChanged(getID(), strObject, CSyncNotify::enDelete);
             // oo conflicts
-            getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and update_type=? and source_id=?", strObject, oAttrValue.m_strAttrib, getID(), "create" );
+            getDB().executeSQL("UPDATE changed_values SET sent=3 where object=? and attrib=? and source_id=? and update_type=?", strObject, oAttrValue.m_strAttrib, getID(), "create" );
             //
         }
 
