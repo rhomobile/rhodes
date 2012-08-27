@@ -302,4 +302,9 @@ public class RhoRubyHelper implements IRhoRubyHelper
 	{
 		com.rho.rubyext.System.unzip_file(strPath);
 	}
+	
+	public void webview_execute_js(String strScript)
+	{
+		RhodesApplication.getInstance().executeJavascript(strScript);
+	}
 }

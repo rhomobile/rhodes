@@ -108,14 +108,14 @@ final class CompiledStatementExecutor {
         			bReportNonUnique )
         	{}
         	else
-        		LOG.ERROR("execute statement failed.", e);
+        		LOG.ERROR("execute statement failed: " + cs.describe(this.session) + ";", e);
         	
             result = new Result(e, cs.sql);
         } catch (Exception e) {
-        	LOG.ERROR("execute statement failed.", e);
+        	LOG.ERROR("execute statement failed: " + cs.describe(this.session) + ";", e);
             result = new Result(e, cs.sql);
         } catch (Throwable t) {
-        	LOG.ERROR("execute statement failed.", t);
+        	LOG.ERROR("execute statement failed: " + cs.describe(this.session) + ";", t);
             result = new Result(t, cs.sql);
         }
 

@@ -60,6 +60,11 @@ public class SyncNotify {
         	m_strParams = strParams; 
         	m_bRemoveAfterFire = bRemoveAfterFire; 
         }
+        
+        public String toString()
+        {
+        	return "Url: " + m_strUrl + ";Params:" + m_strParams + ";RemoveAfterFire: " + m_bRemoveAfterFire;
+        }
     };
 	
 	public static final Integer enNone = new Integer(0), enDelete=new Integer(1), enUpdate=new Integer(2), enCreate=new Integer(3);
@@ -83,18 +88,22 @@ public class SyncNotify {
     ISyncStatusListener m_syncStatusListener = null;
     boolean m_bEnableReporting = false;
     boolean m_bEnableReportingGlobal = true;
-    String m_strNotifyBody = "";
+    Vector/*<String>*/ m_arNotifyBody = new Vector();
+    boolean m_bFakeServerResponse = false;
+    boolean m_isInsideCallback = false;
     NetRequest m_NetRequest;
     
     SyncEngine getSync(){ return m_syncEngine; }
     NetRequest getNet() { return m_NetRequest;}
 
-	String getNotifyBody(){ return m_strNotifyBody; }
-	void cleanNotifyBody(){ m_strNotifyBody = ""; }
+    void cleanNotifyBody(){ m_arNotifyBody.removeAllElements(); setFakeServerResponse(false); }
+    boolean isFakeServerResponse(){ return m_bFakeServerResponse; }
+    void setFakeServerResponse(boolean bFakeServerResponse){ m_bFakeServerResponse = bFakeServerResponse; }
 
     boolean isReportingEnabled(){return m_bEnableReporting&&m_bEnableReportingGlobal;}
     void enableReporting(boolean bEnable) {	m_bEnableReporting = bEnable; }
     void enableStatusPopup(boolean bEnable){m_bEnableReportingGlobal = bEnable;}
+    boolean isInsideCallback() { return m_isInsideCallback; }
     
     SyncNotify( SyncEngine syncEngine ) 
     {
@@ -486,6 +495,11 @@ public class SyncNotify {
 	    return pSN != null ? pSN : m_emptyNotify;
 	}
 	
+	void fireSyncNotification2( SyncSource src, boolean bFinish, int nErrCode, String strServerError)
+	{
+	    doFireSyncNotification(src, bFinish, nErrCode, "", "", strServerError);
+	}
+	
 	void doFireSyncNotification( SyncSource src, boolean bFinish, int nErrCode, String strError, String strParams, String strServerError )
 	{
 		if ( getSync().isStoppedByUser() )
@@ -559,13 +573,6 @@ public class SyncNotify {
 						    	
 						    	strBody += "&" + strServerError;
 						    }
-						    else if ( src != null && src.m_strServerError != null && src.m_strServerError.length() > 0  )
-						    {
-							    if ( src.m_strServerError.length() > MAX_SERVER_ERROR_LEN )
-							    	src.m_strServerError = src.m_strServerError.substring(0, MAX_SERVER_ERROR_LEN);
-						    	
-						    	strBody += "&" + src.m_strServerError;
-						    }
 				        }
 				        
 		                if ( src != null )
@@ -589,7 +596,7 @@ public class SyncNotify {
 		    if ( bRemoveAfterFire )
 		    	clearNotification(src);
 		    
-		    LOG.INFO("Fire notification. Source : " + (src != null ? (src).getName():"") + "; " + pSN.toString());
+		    LOG.INFO("Fire notification. Source : " + (src != null ? (src).getName():"") + "; " + pSN.toString() + ";Body: " + strBody);
 		    
             if ( callNotify(pSN, strBody) )
                 clearNotification(src);
@@ -599,18 +606,41 @@ public class SyncNotify {
 		}
 	}
 
+	String getNotifyBody()
+	{
+	    String emptyBody = "";
+	    if ( m_arNotifyBody.size() == 0 )
+	        return emptyBody;
+
+	    if ( isFakeServerResponse() )
+	        return (String)m_arNotifyBody.elementAt(0);
+
+	    return (String)m_arNotifyBody.elementAt(m_arNotifyBody.size()-1);
+	}
+	
     boolean callNotify(SyncNotification oNotify, String strBody )throws Exception
     {
+        String strUrl = new String(oNotify.m_strUrl); //Need to copy url since notify may be cleared in callback
+        
         if ( getSync().isNoThreadedMode() )
         {
-            m_strNotifyBody = strBody;
+        	m_arNotifyBody.addElement( strBody );
             return false;
         }
 
-        if ( oNotify.m_strUrl.length() == 0 )
+        if ( strUrl.length() == 0 )
             return true;
+
+        if ( strUrl.startsWith("javascript:") )
+        {
+            String js = strUrl.substring(11) + "('" + strBody + "');";
+            RhoClassFactory.createRhoRubyHelper().webview_execute_js(js);
+        	return true;
+        }
         
-        NetResponse resp = getNet().pushData( oNotify.m_strUrl, strBody, null );
+        m_isInsideCallback = true; 
+        NetResponse resp = getNet().pushData( strUrl, strBody, null );
+        m_isInsideCallback = false; 
         if ( !resp.isOK() )
             LOG.ERROR( "Fire object notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData() );
         else

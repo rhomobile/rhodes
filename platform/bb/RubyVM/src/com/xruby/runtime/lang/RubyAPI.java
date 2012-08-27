@@ -617,6 +617,24 @@ public class RubyAPI {
 
         return RubyConstant.QTRUE;
     }
+
+    public static RubyValue callGlobalNoArgMethod(RubyBlock block, RubyID mid) 
+    {
+		RubyModule module = RubyRuntime.KernelModule;
+    	
+    	try{
+	        RubyMethod m = module.findMethod(mid);
+	        if (null != m && !UndefMethod.isUndef(m)) {
+	            return m.invoke(module, block);
+	        }
+	
+	        return callMethodMissing(module, null, block, mid);
+    	}catch(Exception e)
+		{
+    		return processException(e,module,mid);
+		}
+	        
+    }
     
     private static RubyValue callUninitializedConstant(RubyModule module, String name) 
     {

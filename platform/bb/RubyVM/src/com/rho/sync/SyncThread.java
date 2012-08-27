@@ -173,6 +173,7 @@ public class SyncThread extends ThreadQueue
 	public void Destroy()
 	{
 	    m_oSyncEngine.exitSync();
+	    LOG.INFO("Stopping Sync thread");
 	    stop(SYNC_WAIT_BEFOREKILL_SECONDS);
 		
 	    if ( ClientRegister.getInstance() != null )
@@ -326,22 +327,40 @@ public class SyncThread extends ThreadQueue
 	
 	public static void stopSync()throws Exception
 	{
+		SyncThread.getInstance().stopAll();		
+	}
+	
+	public void stopAll()throws Exception
+	{
 		LOG.INFO("STOP sync");
 		
 		if ( getSyncEngine().isSyncing() )
 		{
 			LOG.INFO("STOP sync in progress.");
+
+            synchronized(getCommandLock())
+	        {
+	            getCommands().clear();
+	        }
 			
 			getSyncEngine().stopSyncByUser();
+			
+			//don't wait if calling from notify callback
+			if ( getSyncEngine().getNotify().isInsideCallback() )
+			{
+				LOG.INFO("STOP sync called inside notify.");
+				return;
+			}
+			
 			getInstance().stopWait();
 			
 			int nWait = 0;
 			//while( nWait < 30000 && getSyncEngine().getState() != SyncEngine.esNone )
-			while( nWait < 30000 && DBAdapter.isAnyInsideTransaction() )
+			while( nWait < 30000 && isWaiting() /*DBAdapter.isAnyInsideTransaction()*/ )
 				try{ Thread.sleep(100); nWait += 100; }catch(Exception e){}
 				
 			//if (getSyncEngine().getState() != SyncEngine.esNone)
-			if ( DBAdapter.isAnyInsideTransaction() )
+			if ( /*DBAdapter.isAnyInsideTransaction()*/ isWaiting() )
 			{
 				getSyncEngine().exitSync();
 				getInstance().stop(0);
@@ -811,6 +830,22 @@ public class SyncThread extends ThreadQueue
 						}
 					}
 			});
+		klass.getSingletonClass().defineMethod("get_source_property",
+				new RubyTwoArgMethod() {
+					protected RubyValue run(RubyValue receiver, RubyValue arg0, RubyValue arg1, RubyBlock block) {
+						try{
+							Integer nSrcID = new Integer(arg0.toInt());
+							String strPropName = arg1.toStr();
+							
+							return ObjectFactory.createString(SyncEngine.getSourceOptions().getProperty(nSrcID, strPropName) );
+						}catch(Exception e)
+						{
+							LOG.ERROR("get_src_attrs failed", e);
+							throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
+						}
+					}
+			});
+		
 		klass.getSingletonClass().defineMethod("set_ssl_verify_peer",
 				new RubyOneArgMethod() {
 					protected RubyValue run(RubyValue receiver, RubyValue arg1, RubyBlock block) {

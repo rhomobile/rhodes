@@ -450,7 +450,12 @@ public class Jsr75File implements SimpleFile
             }
             if ( fconn.exists() )
             {
-            	fileSize = fconn.fileSize();
+            	try{
+            		fileSize = fconn.fileSize();
+            	}catch(Exception exc)
+            	{
+            		fileSize = 0;
+            	}
             	m_bOpened = true;
 	            if (!readOnly) {
 	                //fconn.setWritable(true);	                    
