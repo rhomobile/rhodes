@@ -64,7 +64,9 @@ if !defined?(RHO_WP7) && !(System.get_property('platform') == 'Blackberry' && (S
     config[:files] << "spec/uri_spec"
 end
 
+if !defined?(RHO_WP7) && !defined?( RHO_ME )
 	config[:files] << "spec/database_spec"
+end
 
   end
 
