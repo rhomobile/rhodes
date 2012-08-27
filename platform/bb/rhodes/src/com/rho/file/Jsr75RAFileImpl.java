@@ -85,7 +85,12 @@ public class Jsr75RAFileImpl implements IRAFile {
 					throw new FileNotFoundException("File '" + name + "' not exists");
 	        }
 			
-	        m_fileSize = m_file.fileSize();
+			try{
+				m_fileSize = m_file.fileSize();
+			}catch(Exception exc)
+			{
+				m_fileSize = 0;
+			}
 	        m_nSeekPos = 0;
 		}
 		catch (Exception exc) {

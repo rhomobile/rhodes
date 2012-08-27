@@ -61,4 +61,6 @@ public interface IRhoRubyHelper {
 	public void app_exit();
 	
 	public void unzip_file(String strPath)throws Exception;
+	
+	public void webview_execute_js(String strScript);
 }

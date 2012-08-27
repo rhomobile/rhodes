@@ -213,12 +213,17 @@ public abstract class ThreadQueue extends RhoThread
 	    while(!isStopping() && !isNoCommands())
 	    {
 		    IQueueCommand pCmd = null;
-		    synchronized(m_mxStackCommands)
-		    {
-    		    pCmd = (IQueueCommand)m_stackCommands.removeFirst();
-    	    }
-    		
-		    processCommandBase(pCmd);
+	    	try
+	    	{
+			    synchronized(m_mxStackCommands)
+			    {
+	    		    pCmd = (IQueueCommand)m_stackCommands.removeFirst();
+	    	    }
+	    	}catch(Exception exc){}
+	    	
+	    	if ( pCmd != null )
+	    		processCommandBase(pCmd);
+	    	
 	    }
     }
 

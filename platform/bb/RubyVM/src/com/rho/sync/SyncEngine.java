@@ -50,7 +50,9 @@ public class SyncEngine implements NetRequest.IRhoSession
 	RhoConf RHOCONF(){ return RhoConf.getInstance(); }
 	
     public static final int esNone = 0, esSyncAllSources = 1, esSyncSource = 2, esSearch=3, esStop = 4, esExit = 5;
-
+    public static final int ebsNotSynced = 0, ebsSynced = 1, ebsLoadBlobs = 2;    
+    //public static final String RHO_SETTING_BULKSYNC_STATE  = "bulksync_state";
+    
     static class SourceID
     {
         String m_strName = "";
@@ -116,6 +118,14 @@ public class SyncEngine implements NetRequest.IRhoSession
             return strValue.compareTo("1") == 0 || strValue.compareTo("true") == 0 ? true : false;
         	
         }
+        
+        public int getIntProperty(Integer nSrcID, String szPropName)
+        {
+            String strValue = getProperty(nSrcID, szPropName);
+
+            return strValue != null && strValue.length() > 0 ? Integer.valueOf(strValue).intValue() : 0;
+        }
+        
     };
     
     Vector/*<SyncSource*>*/ m_sources = new Vector();
@@ -351,7 +361,10 @@ public class SyncEngine implements NetRequest.IRhoSession
 		
 		        String szData = null;
 		        if ( strTestResp != null && strTestResp.length() > 0 )
+		        {
 		        	szData = strTestResp;
+		        	getNotify().setFakeServerResponse(true);
+		        }
 		        else
 		        	szData = resp.getCharData();		        
 		
@@ -409,15 +422,6 @@ public class SyncEngine implements NetRequest.IRhoSession
 		            pSrc.processServerResponse_ver3(oSrcArr);
 		
 		            nSearchCount += pSrc.getCurPageCount();
-		            
-		            if ( pSrc.getServerError().length() > 0 )
-		            {
-		            	if ( m_strServerError.length() > 0 )
-		            		m_strServerError +=  "&";
-		            	
-		            	m_strServerError += pSrc.getServerError();
-		            	m_nErrCode = pSrc.getErrorCode();
-		            }		            
 		        }
 		
 		        if ( nSearchCount == 0 )
@@ -430,6 +434,9 @@ public class SyncEngine implements NetRequest.IRhoSession
 					}		        	
 		            break;
 		        }
+		        
+		        if ( strTestResp!= null && strTestResp.length() > 0 )
+		        	break;		        
 		    }  
 		
 		    getNotify().fireAllSyncNotifications(true, m_nErrCode, m_strError, m_strServerError);
@@ -741,30 +748,98 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    if ( !RhoConf.getInstance().isExist("bulksync_state") )
 	        return;
 		
-	    int nBulkSyncState = RhoConf.getInstance().getInt("bulksync_state");;
-	    if ( nBulkSyncState >= 1 || !isContinueSync() )
-	        return;
-
-		LOG.INFO("Bulk sync: start");
-		getNotify().fireBulkSyncNotification(false, "start", "", RhoAppAdapter.ERR_NONE);
+	    int nBulkSyncState = RHOCONF().getInt("bulksync_state");
+		if ( !isContinueSync() ) {
+			return;
+		}
 		
-		Vector/*<String>*/ arPartNames = DBAdapter.getDBAllPartitionNames();
-	    for( int i = 0; i < (int)arPartNames.size()&& isContinueSync(); i++ )
-	        loadBulkPartition( (String)arPartNames.elementAt(i));
-
+		switch (nBulkSyncState) {
+			case ebsNotSynced:
+				loadBulkPartitions();
+				
+				if ( !isContinueSync() ) {
+					return;
+				}
+				
+				//no break here is intentional.
+			case ebsLoadBlobs:
+				if ( !processBlobs() ) {
+					return;
+				}
+				break;
+				
+			default:
+				return;
+		}
+	    
 	    if (isContinueSync())
 	    {
-	    	RhoConf.getInstance().setInt("bulksync_state", 1, true);
-	        getNotify().fireBulkSyncNotification(true, "", "", RhoAppAdapter.ERR_NONE);
+	    	RHOCONF().setInt("bulksync_state", ebsSynced, true);
+	    	getNotify().fireBulkSyncNotification(true, "complete", "", RhoAppAdapter.ERR_NONE);
 	    }
 	}
 
+	void loadBulkPartitions()throws Exception 
+	{
+		LOG.INFO( "Bulk sync: start" );
+		getNotify().fireBulkSyncNotification(false, "start", "", RhoAppAdapter.ERR_NONE);        
+		Vector/*<String>*/ arPartNames = DBAdapter.getDBAllPartitionNames();
+		
+		for (int i = 0; i < (int)arPartNames.size() && isContinueSync(); i++)
+		{
+			if ( ((String)arPartNames.elementAt(i)).compareTo("local") !=0 )
+				loadBulkPartition( (String)arPartNames.elementAt(i) );
+		}
+	}
+
+	boolean processBlobs()throws Exception 
+	{
+		LOG.INFO("Bulk sync: download BLOBs");
+		
+		RHOCONF().setInt("bulksync_state", ebsLoadBlobs, true );
+		getNotify().fireBulkSyncNotification( false, "blobs", "", RhoAppAdapter.ERR_NONE);
+		
+		LOG.TRACE( "=== Processing server blob attributes ===" );
+		
+		for ( int i = 0; i < (int)m_sources.size(); ++i ) 
+		{
+			SyncSource src = (SyncSource)m_sources.elementAt(i);
+			if ( !src.processServerBlobAttrs() ) {
+				getNotify().fireBulkSyncNotification(false, "error", "", RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE);
+				return false;
+			}
+		}
+		
+		LOG.TRACE( "=== Processing server blob attributes DONE ===" );
+		
+		DBAdapter.initAttrManager();
+		
+		for ( int i = 0; i < (int)m_sources.size(); ++i ) 
+		{
+			SyncSource src = (SyncSource)m_sources.elementAt(i);
+			if (!src.processAllBlobs()) {
+				getNotify().fireBulkSyncNotification(false, "error", "", RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE);
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	void loadBulkPartition(String strPartition )throws Exception
 	{
 		DBAdapter dbPartition = getDB(strPartition); 		
 	    String serverUrl = RhoConf.getInstance().getPath("syncserver");
 	    String strUrl = serverUrl + "bulk_data";
-	    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
+	    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition + "&sources=";
+		for ( int i = 0; i < (int)m_sources.size(); ++i ) 
+		{
+			strQuery += URI.urlEncode( ((SyncSource)m_sources.elementAt(i)).getName() );
+			if ( i < (int)m_sources.size()-1 ) {
+				strQuery += ",";
+			}
+		}
+	    
 	    String strDataUrl = "", strCmd = "";
 
 	    getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoAppAdapter.ERR_NONE);
@@ -802,7 +877,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    if ( strCmd.compareTo("nop") == 0)
 	    {
 		    LOG.INFO("Bulk sync return no data.");
-		    getNotify().fireBulkSyncNotification(true, "", strPartition, RhoAppAdapter.ERR_NONE);		    
+		    getNotify().fireBulkSyncNotification(true, "ok", strPartition, RhoAppAdapter.ERR_NONE);		    
 		    return;
 	    }
 
@@ -849,7 +924,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    processServerSources("{\"partition\":\"" + strPartition + "\"}");
 	    
 		LOG.INFO("Bulk sync: end change db");
-		getNotify().fireBulkSyncNotification(false, "", strPartition, RhoAppAdapter.ERR_NONE);
+		getNotify().fireBulkSyncNotification(false, "ok", strPartition, RhoAppAdapter.ERR_NONE);
 	}
 	
 	void downloadBulkDataAndUnzip(String strDataUrl, String fDataName, String strPartition)throws Exception

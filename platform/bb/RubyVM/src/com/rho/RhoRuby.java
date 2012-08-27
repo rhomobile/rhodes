@@ -137,6 +137,12 @@ public class RhoRuby {
 		return receiver!= null && receiver != RubyConstant.QNIL;
 	}
 	
+	public static void rho_ruby_callmethod(String strMethod)
+	{
+		RubyID methodID = RubyID.intern(strMethod);
+		RubyAPI.callGlobalNoArgMethod(null, methodID);
+	}
+	
 	public static boolean isMainRubyThread()
 	{
 		return RubyThread.isMainThread();

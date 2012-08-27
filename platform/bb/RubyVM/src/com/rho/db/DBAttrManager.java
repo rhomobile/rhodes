@@ -32,6 +32,7 @@ import com.rho.Mutex;
 import com.rho.Tokenizer;
 import com.xruby.runtime.lang.RubyValue;
 import com.rho.RhoRuby;
+import java.util.Vector;
 
 public class DBAttrManager {
     //private Mutex m_mxSrcAttrs = new Mutex();
@@ -48,6 +49,23 @@ public class DBAttrManager {
         return false;
     }
 
+    public Vector/*<String>*/ getBlobAttrs(Integer nSrcID) 
+    {
+    	Vector/*<String>*/ blobAttrs = new Vector();
+    	
+    	Hashtable/*<String,int>* */ mapAttr = (Hashtable)m_mapBlobAttrs.get( nSrcID );
+    	if ( mapAttr != null )
+    	{
+        	Enumeration enumAttrs = mapAttr.keys();
+    		while (enumAttrs.hasMoreElements()) 
+    		{
+    			blobAttrs.addElement(enumAttrs.nextElement());
+    		}
+    	}
+    	
+    	return blobAttrs;
+    }
+    
     public boolean hasBlobAttrs()
     {
     	return m_mapBlobAttrs.size() > 0;
