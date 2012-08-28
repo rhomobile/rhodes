@@ -227,7 +227,7 @@ void CExtManager::resizeBrowserWindow(RECT rc)
 
 void CExtManager::zoomPage(float fZoom)
 {
-    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_ZOOMPAGE, (LPARAM)fZoom );
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_ZOOMPAGE, (LPARAM)new CRhoFloatData(fZoom) );
 }
 
 void CExtManager::zoomText(int nZoom)

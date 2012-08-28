@@ -994,7 +994,9 @@ LRESULT CMainWindow::OnStopNavigate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWn
 
 LRESULT CMainWindow::OnZoomPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    float fZoom = (float)(long)(hWndCtl);
+    CRhoFloatData* pFloatData = (CRhoFloatData*)(hWndCtl);
+    float fZoom = pFloatData->m_fValue;
+    delete pFloatData;
     if ( m_pBrowserEng )
         m_pBrowserEng->ZoomPageOnTab(fZoom, rho_webview_active_tab());
 
