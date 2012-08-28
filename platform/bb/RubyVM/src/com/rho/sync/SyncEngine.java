@@ -126,6 +126,14 @@ public class SyncEngine implements NetRequest.IRhoSession
             return strValue != null && strValue.length() > 0 ? Integer.valueOf(strValue).intValue() : 0;
         }
         
+        void clearProperties()
+        {
+        	synchronized(m_mxSrcOptions)
+        	{
+        		m_hashSrcOptions.clear();
+        	}
+        }
+        
     };
     
     Vector/*<SyncSource*>*/ m_sources = new Vector();
@@ -921,6 +929,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 		getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoAppAdapter.ERR_NONE);
 		
 	    dbPartition.setBulkSyncDB(fDataName, fScriptName);
+	    getSourceOptions().clearProperties();
 	    processServerSources("{\"partition\":\"" + strPartition + "\"}");
 	    
 		LOG.INFO("Bulk sync: end change db");
