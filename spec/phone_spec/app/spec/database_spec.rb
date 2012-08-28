@@ -93,6 +93,8 @@ end
 		res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('login_name', '', "/app/Settings/login_callback")
 		res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE    
 		SyncEngine.logged_in.should == 1
+		
+		sleep(15)
 
 		Rho::RhoConfig.bulksync_state='0'
 		res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
@@ -101,6 +103,7 @@ end
 		res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
 
 		items = BlobBulkTest.find(:all)
+		items.size.should_not == 0
 		pbSize = items.size
 		items.each do |item|
 			path = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
@@ -108,6 +111,7 @@ end
 			File.exists?(path).should == true
 		end
 		items = BlobBulkTest_s.find(:all)
+		items.size.should_not == 0
 		shSize = items.size
 		items.each do |item|
 			path = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
@@ -171,4 +175,5 @@ end
 
 	it "should import invalid data and rollback" do
 	end
+
 end

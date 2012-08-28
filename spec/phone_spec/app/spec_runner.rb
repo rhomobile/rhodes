@@ -54,11 +54,10 @@ end
 
     config[:files] << [ "spec/blobsync_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]	  
 
-	config[:files] << "spec/blob_bulksync_spec"
-
 if !defined?(RHO_WP7)
     config[:files] << "spec/bulksync_spec"
 end
+	config[:files] << "spec/blob_bulksync_spec"
 
 if !defined?(RHO_WP7) && !(System.get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/))
     config[:files] << "spec/uri_spec"

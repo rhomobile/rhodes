@@ -145,7 +145,7 @@ public:
     int  getTotalCount(){return m_nTotalCount;}
 
     void processServerResponse_ver3(json::CJSONArrayIterator& oJsonArr);
-    void processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttrib, const String& strValue);//throws Exception
+    void processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttrib, const String& strValue, boolean bCheckUIRequest);//throws Exception
 
     String makeFileName(const CAttrValue& value);//throws Exception
     boolean downloadBlob(CAttrValue& value);//throws Exception
@@ -159,7 +159,7 @@ public:
 
     void processSyncCommand(const String& strCmd, json::CJSONEntry oCmdEntry, boolean bCheckUIRequest );
 
-    void processServerCmd_Ver3_Schema(const String& strCmd, const String& strObject, json::CJSONStructIterator& attrIter);//throws Exception
+    void processServerCmd_Ver3_Schema(const String& strCmd, const String& strObject, json::CJSONStructIterator& attrIter, boolean bCheckUIRequest);//throws Exception
 
     void parseAssociations(const String& strAssociations);
     void processAssociations(const String& strOldObject, const String& strNewObject);
