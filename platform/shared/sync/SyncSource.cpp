@@ -870,7 +870,7 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry,
         String strObject = objIter.getCurKey();
         CJSONStructIterator attrIter( objIter.getCurValue() );
         if ( m_bSchemaSource )
-            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter);
+            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter,bCheckUIRequest);
         else
         {
             for( ; !attrIter.isEnd(); attrIter.next() )
@@ -878,7 +878,7 @@ void CSyncSource::processSyncCommand(const String& strCmd, CJSONEntry oCmdEntry,
                 String strAttrib = attrIter.getCurKey();
                 String strValue = attrIter.getCurString();
 
-                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
+                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue,bCheckUIRequest);
             }
         }
 
@@ -947,7 +947,7 @@ void CSyncSource::updateAssociation(const String& strOldObject, const String& st
         strNewObject, strAttrib, getID(), strOldObject );
 }
 
-void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const String& strObject, CJSONStructIterator& attrIter)//throws Exception
+void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const String& strObject, CJSONStructIterator& attrIter, boolean bCheckUIRequest)//throws Exception
 {
     if ( strCmd.compare("insert") == 0 )
     {
@@ -956,13 +956,16 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
         for( ; !attrIter.isEnd(); attrIter.next() )
         {
             CAttrValue oAttrValue(attrIter.getCurKey(),attrIter.getCurString());
-
-            String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
-            if ( strFreezedProps.length() > 0 && strFreezedProps.find(oAttrValue.m_strAttrib) == String::npos )
-            {
-                LOG(INFO) + "Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName();
-                continue;
-            }
+			
+			if (bCheckUIRequest)
+			{
+				String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
+				if ( strFreezedProps.length() > 0 && strFreezedProps.find(oAttrValue.m_strAttrib) == String::npos )
+				{
+					LOG(INFO) + "Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName();
+					continue;
+				}
+			}
 
             if ( !processBlob(strCmd,strObject,oAttrValue) )
                 break;
@@ -1258,18 +1261,39 @@ boolean CSyncSource::processAllBlobs()
 	return true;
 }
 
-void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttriba, const String& strValuea)//throws Exception
+void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttriba, const String& strValuea, boolean bCheckUIRequest)//throws Exception
 {
     CAttrValue oAttrValue(strAttriba,strValuea);
 
     if ( strCmd.compare("insert") == 0 )
     {
-        String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
-        if ( strFreezedProps.length() > 0 && strFreezedProps.find(oAttrValue.m_strAttrib) == String::npos )
+		if ( bCheckUIRequest )
         {
-            LOG(INFO) + "Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName();
-            return;
-        }
+			String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
+		
+			if ( strFreezedProps.length() > 0 )
+			{
+				CTokenizer oTokenizer( strFreezedProps, "," );
+				bool bFound =false;
+				while (oTokenizer.hasMoreTokens() && (!bFound) ) 
+				{
+					String tok = oTokenizer.nextToken();
+					if (tok.length() == 0)
+						continue;
+				
+					if (tok.compare(oAttrValue.m_strAttrib)==0)
+					{
+						bFound = true;
+					}
+				}
+			
+				if (!bFound)
+				{
+					LOG(INFO) + "Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName();
+					return;				
+				}
+			}
+		}
 
         if ( !processBlob(strCmd,strObject,oAttrValue) )
             return;

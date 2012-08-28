@@ -125,7 +125,15 @@ int CSyncEngine::CSourceOptions::getIntProperty(int nSrcID, const char* szPropNa
 
     return strValue.length() ? atoi(strValue.c_str()) : 0;
 }
-
+	
+void CSyncEngine::CSourceOptions::clearProperties()
+{
+	synchronized(m_mxSrcOptions)
+	{
+		m_hashSrcOptions.clear();
+	}
+}
+	
 void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
 {
     setState(eState);
@@ -710,13 +718,24 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
     db::CDBAdapter& dbPartition = getDB(strPartition); 
     String serverUrl = RHOCONF().getPath("syncserver");
     String strUrl = serverUrl + "bulk_data";
-    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition + "&sources=";
+	
+	//old code
+    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition + "&sources=";	
 	for ( int i = 0; i < (int)m_sources.size(); ++i ) {
 		strQuery += URI::urlEncode(m_sources[i]->getName());
 		if ( i < (int)m_sources.size()-1 ) {
 			strQuery += ",";
 		}
 	}
+		
+	//new code
+/*
+    String strQuery = "?client_id=" + m_clientID + "&partition=" + strPartition;
+	for ( int i = 0; i < (int)m_sources.size(); ++i ) {
+		strQuery += "&sources[]=";
+		strQuery += URI::urlEncode(m_sources[i]->getName());
+	}	
+*/	
     String strDataUrl = "", strCmd = "", strCryptKey = "";
 
   	getNotify().fireBulkSyncNotification(false, "start", strPartition, RhoAppAdapter.ERR_NONE);
@@ -798,6 +817,7 @@ void CSyncEngine::loadBulkPartition(const String& strPartition )
    	getNotify().fireBulkSyncNotification(false, "change_db", strPartition, RhoAppAdapter.ERR_NONE);
     
     dbPartition.setBulkSyncDB(fDataName, strCryptKey);
+	getSourceOptions().clearProperties();
     processServerSources(String("{\"partition\":\"") + strPartition + "\"}");
 
 	LOG(INFO) + "Bulk sync: end change db";

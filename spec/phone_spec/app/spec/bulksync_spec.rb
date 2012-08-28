@@ -28,7 +28,8 @@ describe "BulkSync_test" do
     ::Rhom::Rhom.database_full_reset_and_logout
     
     SyncEngine.set_syncserver('http://store-bulk.rhohub.com/application')
-    #SyncEngine.set_syncserver('http://localhost:9292/application')
+	#SyncEngine.set_syncserver('http://192.168.0.103:9292/application')
+	#SyncEngine.set_syncserver('http://localhost:9292/application')
     Rho::RhoConfig.bulksync_state='0'
 
     Rho::RHO.load_all_sources()
@@ -51,22 +52,30 @@ describe "BulkSync_test" do
     
     SyncEngine.logged_in.should == 1
   end
+	
+  def do_bulk_sync
+	towait = 15
+	puts "Waiting #{towait} secs for next bulk data"
+	sleep(towait)
+	Rho::RhoConfig.bulksync_state='0'
+	res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+	res['status'].should == 'complete'
+	res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	Rho::RhoConfig.bulksync_state.should=='1'
+  end
 
   it "should bulk sync" do
     SyncEngine.logged_in.should == 1
 
-    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
-    res['status'].should == 'complete'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    
-    Rho::RhoConfig.bulksync_state.should == '1'
-    
+	do_bulk_sync
+	  
     items = Product.find(:all)
     items.should_not be_nil
     items.length().should_not == 0
   end
-  
+
   it "should bulk sync with create" do
+	  
     SyncEngine.logged_in.should == 1
     ::Rhom::Rhom.database_full_reset_and_logout
     
@@ -81,14 +90,10 @@ describe "BulkSync_test" do
 
     item1 = Product.create({'name'=>'PhoneSpec', 'sku'=>22})  
     
-    Rho::RhoConfig.bulksync_state='0'
-    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
-    res['status'].should == 'complete'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    
-    Rho::RhoConfig.bulksync_state.should == '1'
+	do_bulk_sync
     
     items = Product.find(:all)
+	puts "items = #{items.inspect}"
     items.should_not be_nil
     items.length().should_not == 0
     
@@ -96,6 +101,7 @@ describe "BulkSync_test" do
     item2.should be_nil
 
     items2 = Product.find(:all, :conditions=>{:name=>'PhoneSpec'} )
+	puts "items2 = #{items2.inspect}"
     items2.should_not be_nil
     items2.length().should_not == 0
 
@@ -108,13 +114,10 @@ describe "BulkSync_test" do
     end    
     bFound22.should == true
 
-    Rho::RhoConfig.bulksync_state='0'
-    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
-    res['status'].should == 'complete'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    Rho::RhoConfig.bulksync_state.should == '1'
+	  do_bulk_sync
 
     items2 = Product.find(:all, :conditions=>{:name=>'PhoneSpec'} )
+	puts "items2 = #{items2.inspect}"
     items2.should_not be_nil
     items2.length().should_not == 0
 
@@ -122,35 +125,24 @@ describe "BulkSync_test" do
         item.sku.should == '44'
         
         item.destroy
-    end    
-
-    Rho::RhoConfig.bulksync_state='0'
-    res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
-    res['status'].should == 'complete'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-    Rho::RhoConfig.bulksync_state.should == '1'
-
+    end
+	  
+	  do_bulk_sync
+	  
     items2 = Product.find(:all, :conditions=>{:name=>'PhoneSpec'} )
     items2.should_not be_nil
     items2.length().should == 0
 
-  end
-	
-=begin	
-  def do_bulk_sync
-	Rho::RhoConfig.bulksync_state='0'
-	res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
-	res['status'].should == 'complete'
-	res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-	Rho::RhoConfig.bulksync_state.should=='1'
-  end
+end
 
   def is_source_present(src)
 	  result = ::Rho::RHO.get_user_db().select_from_table('sources','name',{'name'=>src})
 	  return (result != nil) && (result.length() > 0)
   end
 
-  it "should do selective bulk sync" do	  
+  it "should do selective bulk sync" do
+	  
+	  
 	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login("la rs", "", "/app/Settings/login_callback")
 	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
 	  SyncEngine.logged_in.should == 1
@@ -172,25 +164,25 @@ describe "BulkSync_test" do
 	  customers.length().should_not == 0
 	  
 	  ::Rho::RHO.get_user_db().update_into_table('sources',{'sync_type'=>'none'}, {'name'=>'Product'})
-
+	  
 	  do_bulk_sync
 
 	  is_source_present('Product').should == true
 	  is_source_present('Customer').should == true
 	  
 	  products = Product.find(:all)
+	  puts "products = #{products.inspect}"
 	  products.length().should == 0
 	  
 	  customers = Customer.find(:all)
 	  customers.should_not be_nil
 	  customers.length().should_not == 0
   end
-=end
+
   it "should logout" do
     SyncEngine.logout()
   
     SyncEngine.logged_in.should == 0
   end
-
 
 end

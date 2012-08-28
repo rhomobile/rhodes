@@ -422,7 +422,8 @@ end
                     raise
                 end                
                 
-                #puts "sources after: #{Rho::RhoConfig::sources()}"            
+                ::Rho::RHO.init_sync_source_properties(Rho::RhoConfig::sources().values())
+				#puts "sources after: #{Rho::RhoConfig::sources()}"            
                 return
             end
         rescue Exception => e
@@ -595,18 +596,21 @@ end
     end
 
     def self.init_sync_source_properties(uniq_sources)
+
         uniq_sources.each do|src|
             ['pass_through', 'full_update'].each do |prop|
-                next unless src.has_key?(prop)        
+                next unless src.has_key?(prop)
                 SyncEngine.set_source_property(src['source_id'], prop, src[prop] ? src[prop].to_s() : '' )
             end            
         end
         
         uniq_sources.each do|src|
             if src.has_key?('freezed') || !src['schema'].nil?
-                hash_props = !src['schema'].nil? ? src['schema']["property"] : src["property"]
-                str_props = hash_props.keys.join(',')
-                SyncEngine.set_source_property(src['source_id'], 'freezed', str_props )
+				hash_props = !src['schema'].nil? ? src['schema']["property"] : src["property"]
+				if (!hash_props.nil?)
+					str_props = hash_props.keys.join(',')
+					SyncEngine.set_source_property(src['source_id'], 'freezed', str_props )
+				end
             end            
         end
         

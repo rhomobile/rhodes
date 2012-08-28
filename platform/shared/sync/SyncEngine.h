@@ -68,6 +68,7 @@ public:
         String getProperty(int nSrcID, const char* szPropName);
         boolean getBoolProperty(int nSrcID, const char* szPropName);
         int getIntProperty(int nSrcID, const char* szPropName);
+		void clearProperties();
     };
 
 private:
