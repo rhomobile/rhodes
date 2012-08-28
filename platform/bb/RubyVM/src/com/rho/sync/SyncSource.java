@@ -952,7 +952,7 @@ public class SyncSource
 	        try
 	        {
 		        if ( m_bSchemaSource )
-		            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter);
+		            processServerCmd_Ver3_Schema(strCmd,strObject,attrIter,bCheckUIRequest);
 		        else
 		        {
 		            for( ; !attrIter.isEnd(); attrIter.next() )
@@ -960,7 +960,7 @@ public class SyncSource
 		                String strAttrib = attrIter.getCurKey();
 		                String strValue = attrIter.getCurString();
 	
-		                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue);
+		                processServerCmd_Ver3(strCmd,strObject,strAttrib,strValue,bCheckUIRequest);
 		            }
 		        }
 	        }catch(DBException exc)
@@ -1033,7 +1033,7 @@ public class SyncSource
 	        strNewObject, strAttrib, getID(), strOldObject );
 	}
 	
-	void processServerCmd_Ver3_Schema(String strCmd, String strObject, JSONStructIterator attrIter)throws Exception
+	void processServerCmd_Ver3_Schema(String strCmd, String strObject, JSONStructIterator attrIter, boolean bCheckUIRequest)throws Exception
 	{
 	    if ( strCmd.compareTo("insert") == 0 )
 	    {
@@ -1043,12 +1043,8 @@ public class SyncSource
 	        {
 	            CAttrValue oAttrValue = new CAttrValue(attrIter.getCurKey(),attrIter.getCurString());
 	            
-	            String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
-	            if ( strFreezedProps.length() > 0 && strFreezedProps.indexOf(oAttrValue.m_strAttrib) < 0 )
-	            {
-	                LOG.INFO("Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName());
-	                continue;
-	            }
+		    	if ( bCheckUIRequest && !checkFreezedProps(oAttrValue.m_strAttrib))
+		    		continue;
 	            
 	            if ( !processBlob(strCmd,strObject,oAttrValue) )
 	                break;
@@ -1364,18 +1360,44 @@ public class SyncSource
 		return true;
 	}
 	
-	void processServerCmd_Ver3(String strCmd, String strObject, String strAttriba, String strValuea)throws Exception
+	boolean checkFreezedProps(String strProp)
+	{
+		String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
+		
+		if ( strFreezedProps.length() > 0 )
+		{
+			Tokenizer oTokenizer = new Tokenizer( strFreezedProps, "," );
+			boolean bFound =false;
+			while (oTokenizer.hasMoreTokens() && (!bFound) ) 
+			{
+				String tok = oTokenizer.nextToken();
+				if (tok.length() == 0)
+					continue;
+			
+				if (tok.compareTo(strProp)==0)
+				{
+					bFound = true;
+				}
+			}
+		
+			if (!bFound)
+			{
+				LOG.INFO("Skip Non-exist property : " + strProp + ". For model : " + getName());
+				return false;				
+			}
+		}
+		
+		return true;
+	}
+	
+	void processServerCmd_Ver3(String strCmd, String strObject, String strAttriba, String strValuea, boolean bCheckUIRequest)throws Exception
 	{
 	    CAttrValue oAttrValue = new CAttrValue(strAttriba,strValuea);
 		
 	    if ( strCmd.compareTo("insert") == 0 )
 	    {
-            String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
-            if ( strFreezedProps.length() > 0 && strFreezedProps.indexOf(oAttrValue.m_strAttrib) < 0 )
-            {
-                LOG.INFO("Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName());
-                return;
-            }
+	    	if ( bCheckUIRequest && !checkFreezedProps(oAttrValue.m_strAttrib))
+	    		return;
 	    	
 	        if ( !processBlob(strCmd,strObject,oAttrValue) )
 	            return;
