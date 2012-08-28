@@ -39,7 +39,7 @@ If you are interested us using your patch to Rhodes you will need to submit a  [
 Rhodes includes automated tests that can (and should) be run periodically against the codebase if you're modifying the Rhodes framework itself.
 
 ### Install Rhodes
-The automated tests are a part of the Rhodes project on GitHub. To obtain the Rhodes source code and access the automated tests, follow the instructions in the [Setup Rhodes Source Code](http://rhodocs.rhohub.com/rhodes/build#setup-rhodes-source-code) section. You will find two automated test sets under rhodes/spec/. One is called phone_spec, the other is framework_spec.
+The automated tests are a part of the Rhodes project on GitHub. To obtain the Rhodes source code and access the automated tests, follow the instructions in the [Setup Rhodes Source Code](build#setting-up-rhodes-source-code) section. You will find two automated test sets under rhodes/spec/. One is called phone_spec, the other is framework_spec.
 
 ### Running Tests
 Assuming you have already downloaded the necessary SDKs (instructions can be found [here](http://rhodocs.rhohub.com/rhodes/build)), all you need to do is execute the appropriate rake task. To execute the phone_spec, for example, you can do the following in Terminal:
