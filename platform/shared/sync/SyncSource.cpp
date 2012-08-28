@@ -956,17 +956,10 @@ void CSyncSource::processServerCmd_Ver3_Schema(const String& strCmd, const Strin
         for( ; !attrIter.isEnd(); attrIter.next() )
         {
             CAttrValue oAttrValue(attrIter.getCurKey(),attrIter.getCurString());
-			
-			if (bCheckUIRequest)
-			{
-				String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
-				if ( strFreezedProps.length() > 0 && strFreezedProps.find(oAttrValue.m_strAttrib) == String::npos )
-				{
-					LOG(INFO) + "Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName();
-					continue;
-				}
-			}
 
+    	    if ( bCheckUIRequest && !checkFreezedProps(oAttrValue.m_strAttrib))
+    		    continue;
+			
             if ( !processBlob(strCmd,strObject,oAttrValue) )
                 break;
 
@@ -1261,39 +1254,44 @@ boolean CSyncSource::processAllBlobs()
 	return true;
 }
 
+boolean CSyncSource::checkFreezedProps(String strProp)
+{
+	String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
+	
+	if ( strFreezedProps.length() > 0 )
+	{
+		CTokenizer oTokenizer( strFreezedProps, "," );
+		boolean bFound =false;
+		while (oTokenizer.hasMoreTokens() && (!bFound) ) 
+		{
+			String tok = oTokenizer.nextToken();
+			if (tok.length() == 0)
+				continue;
+		
+			if (tok.compare(strProp)==0)
+			{
+				bFound = true;
+			}
+		}
+	
+		if (!bFound)
+		{
+			LOG(INFO) + "Skip Non-exist property : " + strProp + ". For model : " + getName();
+			return false;				
+		}
+	}
+	
+	return true;
+}
+
 void CSyncSource::processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttriba, const String& strValuea, boolean bCheckUIRequest)//throws Exception
 {
     CAttrValue oAttrValue(strAttriba,strValuea);
 
     if ( strCmd.compare("insert") == 0 )
     {
-		if ( bCheckUIRequest )
-        {
-			String strFreezedProps = getSync().getSourceOptions().getProperty(getID(), "freezed");
-		
-			if ( strFreezedProps.length() > 0 )
-			{
-				CTokenizer oTokenizer( strFreezedProps, "," );
-				bool bFound =false;
-				while (oTokenizer.hasMoreTokens() && (!bFound) ) 
-				{
-					String tok = oTokenizer.nextToken();
-					if (tok.length() == 0)
-						continue;
-				
-					if (tok.compare(oAttrValue.m_strAttrib)==0)
-					{
-						bFound = true;
-					}
-				}
-			
-				if (!bFound)
-				{
-					LOG(INFO) + "Skip Non-exist property : " + oAttrValue.m_strAttrib + ". For model : " + getName();
-					return;				
-				}
-			}
-		}
+    	if ( bCheckUIRequest && !checkFreezedProps(oAttrValue.m_strAttrib))
+    		return;
 
         if ( !processBlob(strCmd,strObject,oAttrValue) )
             return;

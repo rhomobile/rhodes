@@ -169,6 +169,7 @@ public:
     void processServerErrors(json::CJSONEntry& oCmds);
 
     void checkProgressStepNotify(boolean bEndTransaction);
+    boolean checkFreezedProps(String strProp);
 
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
