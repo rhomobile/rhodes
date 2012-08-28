@@ -1177,7 +1177,7 @@ Now your RhoConnect application is ready to send APNS messages.
 Next, you can setup your Apple Push Provisioning Profile using Apple's [developer site instructions](https://developer.apple.com/iphone/library/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/ProvisioningDevelopment/ProvisioningDevelopment.html#//apple_ref/doc/uid/TP40008194-CH104-SW5).  Once you have the profile installed in XCode and on your test device, you are ready to test push.
 
 #### Setup iPhone Device
-Setting up the device is the same process as [building any normal Rhodes application](build#build-for-iphoneipad). When you start the application, make sure to also open the console window (cmd-shift-R). When the application starts, you should see some output in the console that shows the device token (towards the top):
+Setting up the device is the same process as [building any normal Rhodes application](build#building-a-rhodes-application-for-iphoneipad). When you start the application, make sure to also open the console window (cmd-shift-R). When the application starts, you should see some output in the console that shows the device token (towards the top):
 
 	2010-08-19 10:14:22.627 rhorunner[1486:307] Device token is <10fd92ab fa8ee481 55d9af6e 73290863 22b323fd 0d18fdbd 19e92d03 c0fef7c8>
 
@@ -1581,7 +1581,7 @@ Map settings:
 * zoom_enabled - true if zoom of the map is enabled
 * scroll_enabled - true if scroll of the map is enabled
 * shows_user_location - true if current user location is displayed on the map 
-* api_key - Maps JavaScript API Key ([sign up for it here](http://code.google.com/apis/maps/signup.html)). Note that this parameter is ignored on Android! For Android you should get another key and specify it in the app's build.yml as described [here](build#Prerequisites_5)
+* api_key - Maps JavaScript API Key ([sign up for it here](http://code.google.com/apis/maps/signup.html)). Note that this parameter is ignored on Android! For Android you should get another key and specify it in the app's build.yml as described [here](build#build-for-android)
 
 Annotations - array of map annotation objects (list of pins on the map). Annotation:
 
