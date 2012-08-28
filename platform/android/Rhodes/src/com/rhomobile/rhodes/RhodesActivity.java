@@ -130,9 +130,9 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         mSplashScreen = new SplashScreen(this, mMainView, this);
         mMainView = mSplashScreen;
 
-        mMainView.setWebView(createWebView(0), -1);
-
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
+
+        mMainView.setWebView(createWebView(0), -1);
 
         notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
