@@ -44,6 +44,13 @@ struct CRhoExtData
     HWND       m_hBrowserWnd;
 };
 
+struct CRhoFloatData
+{
+    float m_fValue;
+
+    CRhoFloatData(float fValue):m_fValue(fValue){}
+};
+
 struct IRhoExtension 
 {
     virtual ~IRhoExtension(){}
