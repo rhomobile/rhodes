@@ -162,15 +162,12 @@ class Jake
         exact_url = SYNC_SERVER_BASE_URL.gsub(/exact_platform/, platform)
         puts "going to reset server: #{exact_url}"
         # login to the server
-        unless @srv_token
-          result = RestClient.post("#{exact_url}/login",
-                               {:login => SYNC_SERVER_CONSOLE_LOGIN, :password => SYNC_SERVER_CONSOLE_PASSWORD}.to_json,
-                               :content_type => :json)
-          srv_session_cookie = 'rhoconnect_session=' + result.cookies['rhoconnect_session']
-          @srv_token = RestClient.post("#{exact_url}/api/get_api_token", '', {'Cookie' => srv_session_cookie})
+        unless @srv_token			
+		  @srv_token = RestClient.post("#{exact_url}/rc/v1/system/login", { :login => SYNC_SERVER_CONSOLE_LOGIN, :password => SYNC_SERVER_CONSOLE_PASSWORD }.to_json, :content_type => :json)
         end
         # reset server
         RestClient.post("#{exact_url}/api/reset", {:api_token => @srv_token}.to_json, :content_type => :json)
+		puts "reset OK"
     rescue Exception => e
       puts "reset_spec_server failed: #{e}"
     end        
@@ -185,15 +182,11 @@ class Jake
 		exact_url = BULK_SYNC_SERVER_URL
 		puts "going to reset server: #{exact_url}"
 		# login to the server
-		unless @srv_token
-			result = RestClient.post("#{exact_url}/login",
-								 {:login => BULK_SYNC_SERVER_CONSOLE_LOGIN, :password => BULK_SYNC_SERVER_CONSOLE_PASSWORD}.to_json,
-								 :content_type => :json)
-			srv_session_cookie = 'rhoconnect_session=' + result.cookies['rhoconnect_session']
-			@srv_token = RestClient.post("#{exact_url}/api/get_api_token", '', {'Cookie' => srv_session_cookie})
+		unless @bulk_srv_token
+			@bulk_srv_token = RestClient.post("#{exact_url}/rc/v1/system/login", { :login => BULK_SYNC_SERVER_CONSOLE_LOGIN, :password => BULK_SYNC_SERVER_CONSOLE_PASSWORD }.to_json, :content_type => :json)
 		end
-		# reset server
-		RestClient.post("#{exact_url}/api/reset", {:api_token => @srv_token}.to_json, :content_type => :json)
+		RestClient.post("#{exact_url}/api/reset", {:api_token => @bulk_srv_token}.to_json, :content_type => :json)
+		puts "reset OK"
     rescue Exception => e
 		puts "reset_bulk_server failed: #{e}"
 	end        
