@@ -1212,6 +1212,12 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 		}*/
 	}
 #endif
+
+    //Fix issue with lost focus after License Screen hides
+    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND() : NULL;
+    if (hBrowserWnd && !::IsIconic(m_hWnd))
+        ::SetFocus(hBrowserWnd);
+
 	return 0;
 }	
 
