@@ -131,6 +131,8 @@ public class RhodesService extends Service {
 	
 	private final IBinder mBinder = new LocalBinder();
 	
+	private BroadcastReceiver mConnectionChangeReceiver;
+	
 	@SuppressWarnings("rawtypes")
 	private static final Class[] mStartForegroundSignature = new Class[] {int.class, Notification.class};
 	@SuppressWarnings("rawtypes")
@@ -257,6 +259,8 @@ public class RhodesService extends Service {
 	
 	public static native boolean isMotorolaLicencePassed();
 	
+	public native void notifyNetworkStatusChanged( int status );
+	
 	
 	public static RhodesService getInstance() {
 		return sInstance;
@@ -343,6 +347,10 @@ public class RhodesService extends Service {
         } else {
             Logger.D(TAG, "Push is disabled");
         }
+        
+        mConnectionChangeReceiver = new ConnectionChangeReceiver();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(mConnectionChangeReceiver,filter);
 
 		RhodesApplication.start();
 

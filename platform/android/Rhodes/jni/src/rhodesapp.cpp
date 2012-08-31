@@ -44,6 +44,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesAppJNI"
 
+static rho::common::CAutoPtr<rho::common::AndroidNetworkStatusMonitor> s_network_status_monitor(new rho::common::AndroidNetworkStatusMonitor());
+
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_makeLink
   (JNIEnv *env, jclass, jstring src, jstring dst)
@@ -107,6 +109,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_createRhodes
 {
     // Start Rhodes application
     rho_rhodesapp_create(rho_native_rhopath());
+	RHODESAPP().setNetworkStatusMonitor(s_network_status_monitor);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_startRhodesApp
@@ -343,8 +346,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_resetHttpLogging
     //RAWLOG_ERROR("$$$$$$$$$$$ RESET HTTP LOGGING 2 $$$$$$$$$$$$$");
 }
 
-
-
 RHO_GLOBAL char *rho_timezone()
 {
     static char *tz = NULL;
@@ -373,3 +374,19 @@ RHO_GLOBAL void rho_conf_show_log()
     env->CallStaticVoidMethod(cls, mid);
 }
 
+	RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_notifyNetworkStatusChanged(JNIEnv *env, jobject, int status)
+	{
+		RAWLOG_ERROR("nativeNotify");
+		rho::common::enNetworkStatus s = rho::common::networkStatusUnknown;
+		switch(status)
+		{
+			case 1:
+				s = rho::common::networkStatusConnected;
+				break;
+			case 2:
+				s = rho::common::networkStatusDisconnected;
+				break;
+		}
+		
+		s_network_status_monitor->notifyReceiver(s);
+	}

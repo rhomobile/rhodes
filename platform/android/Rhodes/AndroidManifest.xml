@@ -97,7 +97,7 @@
                 <category android:name="com.rhomobile.rhodes" />
             </intent-filter>
         </receiver>
-        
+		
         <service
             android:name="com.rhomobile.rhodes.RhodesService" />
         
@@ -113,5 +113,6 @@
     <permission android:name="com.rhomobile.rhodes.permission.C2D_MESSAGE" android:protectionLevel="signature" />
     <uses-permission android:name="com.rhomobile.rhodes.permission.C2D_MESSAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     
 </manifest> 

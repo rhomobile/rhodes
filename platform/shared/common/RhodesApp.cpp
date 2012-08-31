@@ -331,13 +331,15 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 }
 
 CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
-    :CRhodesAppBase(strRootPath, strUserPath, strRuntimePath)
+    :CRhodesAppBase(strRootPath, strUserPath, strRuntimePath), 
+	m_networkStatusReceiver(m_mxNetworkStatus)
 {
     m_bExit = false;
     m_bDeactivationMode = false;
     m_bRestartServer = false;
     //m_activateCounter = 0;
     m_pExtManager = 0;
+	m_pNetworkStatusMonitor = 0;
 
     m_appCallbacksQueue = new CAppCallbacksQueue();
 
@@ -1648,6 +1650,11 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
 		
         if ( m_strScreenRotationCallbackParams.length() > 0 )
             strBody += "&" + m_strPushCallbackParams;
+		
+		String i = "calling Screen rotation notification: ";
+		i += m_strScreenRotationCallback;
+		RAWLOG_ERROR(i.c_str());
+
 			
 		NetResponse resp = getNetRequest().pushData( m_strScreenRotationCallback, strBody, null);
         if (!resp.isOK()) {
@@ -1706,6 +1713,95 @@ void CRhodesApp::notifyLocalServerStarted()
 {
     m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::local_server_started));
 }
+	
+	
+	void CRhodesApp::setNetworkStatusNotify(const String& url, int poll_interval)
+	{
+		synchronized(m_mxNetworkStatus)
+		{
+			String s = url;
+			if (s.length() > 0) {
+				s = canonicalizeRhoUrl(url);
+			}
+			m_networkStatusReceiver.setCallbackUrl(s);
+			if ( m_pNetworkStatusMonitor != 0 )
+			{
+				m_pNetworkStatusMonitor->setPollInterval(poll_interval);
+			}
+		}
+	}
+	
+	void CRhodesApp::clearNetworkStatusNotify()
+	{
+		synchronized(m_mxNetworkStatus)
+		{
+			m_networkStatusReceiver.setCallbackUrl("");
+		}
+	}
+	
+	void CRhodesApp::setNetworkStatusMonitor( INetworkStatusMonitor* netMonitor )
+	{
+		synchronized(m_mxNetworkStatus)
+		{
+			m_pNetworkStatusMonitor = netMonitor;
+			if ( m_pNetworkStatusMonitor != 0)
+			{
+				m_pNetworkStatusMonitor->setNetworkStatusReceiver(&m_networkStatusReceiver);
+				m_pNetworkStatusMonitor->setPollInterval( c_defaultNetworkStatusPollInterval );
+			}
+		}
+	}
+	
+	
+	NetworkStatusReceiver::NetworkStatusReceiver( common::CMutex& mxAccess ) :
+		m_prevStatus( networkStatusUnknown ),
+		m_mxAccess(mxAccess)
+	{
+	}
+	
+	
+	void NetworkStatusReceiver::onNetworkStatusChanged( enNetworkStatus currentStatus )
+	{
+		if ( !rho_ruby_is_started() )
+			return;
+		
+		synchronized(m_mxAccess)
+		{
+			if ( !m_callbackUrl.empty() )
+			{
+				String strBody = "";
+				strBody += "current_status=" + networkStatusToString(currentStatus);
+				strBody += "&prev_status=" + networkStatusToString(m_prevStatus);
+			
+				NetResponse resp = getNetRequest().pushData( m_callbackUrl, strBody, null );
+			
+				if ( !resp.isOK() )
+				{
+					LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+				}
+			}
+			m_prevStatus = currentStatus;
+		}
+	}
+	
+	rho::String NetworkStatusReceiver::networkStatusToString( enNetworkStatus status )
+	{
+		switch (status) 
+		{
+			case networkStatusConnected:
+				return "connected";
+				break;
+			case networkStatusDisconnected:
+				return "disconnected";
+				break;
+			case networkStatusUnknown:
+				return "unknown";
+				break;
+		}
+		return "";
+	}
+
+	
 
 } //namespace common
 } //namespace rho
@@ -2104,6 +2200,16 @@ int rho_can_app_started_with_current_licence() {
 #endif        
     return res_check;
 }
-    
+ 
+	void rho_sys_set_network_status_notify(const char* url, int poll_interval)
+	{
+		RHODESAPP().setNetworkStatusNotify(url,poll_interval);
+	}
+	
+	void rho_sys_clear_network_status_notify()
+	{
+		RHODESAPP().clearNetworkStatusNotify();
+	}
+
 
 } //extern "C"

@@ -45,6 +45,43 @@
 
 namespace rho {
 namespace common {
+	
+	enum enNetworkStatus {
+        networkStatusUnknown,
+        networkStatusConnected,
+        networkStatusDisconnected
+    };
+		
+    class INetworkStatusReceiver
+    {
+    public:
+        virtual ~INetworkStatusReceiver() {}
+        virtual void onNetworkStatusChanged(enNetworkStatus currentStatus) = 0;
+    };
+	
+	class INetworkStatusMonitor
+    {
+    public:
+        virtual ~INetworkStatusMonitor() {}
+        virtual void setPollInterval(int pollInterval) = 0;
+		virtual void setNetworkStatusReceiver(INetworkStatusReceiver* receiver) = 0;
+    };
+	
+	class NetworkStatusReceiver : public INetworkStatusReceiver
+    {
+    private:
+		enNetworkStatus m_prevStatus;
+        String m_callbackUrl;
+		common::CMutex& m_mxAccess;
+		
+    public:
+		NetworkStatusReceiver( common::CMutex& mxAccess );
+        virtual void onNetworkStatusChanged(enNetworkStatus currentStatus);
+        void setCallbackUrl( const String& url ) { m_callbackUrl = url; }
+		
+	private:
+		static String networkStatusToString( enNetworkStatus status );
+    };
 
 class CRhodesApp : public CRhodesAppBase
 {
@@ -87,6 +124,11 @@ private:
 
     common::CAutoPtr<common::CThreadQueue> m_appCallbacksQueue;
     CExtManager* m_pExtManager;
+	
+	common::CMutex m_mxNetworkStatus;
+	NetworkStatusReceiver m_networkStatusReceiver;
+    INetworkStatusMonitor* m_pNetworkStatusMonitor;
+	static const int c_defaultNetworkStatusPollInterval = 20;
 
 public:
     ~CRhodesApp(void);
@@ -172,6 +214,10 @@ public:
     void notifyLocalServerStarted();
     const char* getFreeListeningPort();
     int determineFreeListeningPort();
+	
+    void setNetworkStatusNotify(const String& url, int poll_interval);
+    void clearNetworkStatusNotify();
+    void setNetworkStatusMonitor(INetworkStatusMonitor* netMonitor);
 
 protected:
     virtual void run();
@@ -270,7 +316,10 @@ int rho_is_rho_elements_extension_can_be_used();
 
     
 // should be implemented in platforms code
-void rho_platform_restart_application();    
+void rho_platform_restart_application();
+    
+void rho_sys_set_network_status_notify(const char* url, int poll_interval);
+void rho_sys_clear_network_status_notify();
     
 #ifdef __cplusplus
 };
