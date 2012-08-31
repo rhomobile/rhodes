@@ -34,6 +34,7 @@
 
 #include <common/RhoDefs.h>
 #include <common/RhoStd.h>
+#include <common/RhodesApp.h>
 #include <logging/RhoLogConf.h>
 #include <logging/RhoLog.h>
 
@@ -95,6 +96,27 @@ class AndroidMemoryInfoCollector : public IMemoryInfoCollector
 {
 public:
     virtual String collect();
+};
+
+class AndroidNetworkStatusMonitor : public INetworkStatusMonitor
+{
+private:
+    INetworkStatusReceiver* m_pNetworkStatusReceiver;
+public:
+    AndroidNetworkStatusMonitor() : m_pNetworkStatusReceiver(0) {}
+    virtual ~AndroidNetworkStatusMonitor() {}
+    virtual void setPollInterval(int interval) {}
+    virtual void setNetworkStatusReceiver(INetworkStatusReceiver* receiver) { m_pNetworkStatusReceiver = receiver; }
+
+    void notifyReceiver(enNetworkStatus status)
+    {
+		RAWLOG_ERROR("enter notifyReceiver");
+        if ( m_pNetworkStatusReceiver != 0 )
+        {
+			RAWLOG_ERROR("calling onNetworkStatusChanged");
+            m_pNetworkStatusReceiver->onNetworkStatusChanged(status);
+        }
+    }
 };
 
 
