@@ -670,7 +670,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	            else
 	            	getUserDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
 	            
-		    	if ( ClientRegister.getInstance() != null )
+		    	if ( clientID != null && clientID.length() > 0 && ClientRegister.getInstance() != null )
 		    		ClientRegister.getInstance().startUp();	    	
 	            
 		    }else if ( bResetClient )
