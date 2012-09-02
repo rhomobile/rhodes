@@ -27,7 +27,7 @@ public class RubyBinding extends RubyBasic {
 
     public RubyValue clone(){
     	RubyBinding cl = new RubyBinding(this.class_);
-    	cl.doClone(this);
+    	cl.doClone((RubyValue)this);
     	return cl;
     }
     protected void doClone(RubyValue orig){

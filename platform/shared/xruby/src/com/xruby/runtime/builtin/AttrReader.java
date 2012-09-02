@@ -9,6 +9,7 @@ import com.xruby.runtime.lang.RubyBlock;
 import com.xruby.runtime.lang.RubyID;
 import com.xruby.runtime.lang.RubyNoArgMethod;
 import com.xruby.runtime.lang.RubyValue;
+import com.xruby.runtime.lang.RubyMethod;
 
 public class AttrReader extends RubyNoArgMethod {
     private RubyID attrName;
@@ -23,5 +24,17 @@ public class AttrReader extends RubyNoArgMethod {
 
     protected RubyValue run(RubyValue receiver, RubyBlock block) {
         return receiver.getInstanceVariable(attrName);
+    }
+    
+    public RubyMethod clone(){
+    	AttrReader cl = new AttrReader("");
+    	cl.doClone((RubyMethod)this);
+    	return cl;
+    }
+    
+    protected void doClone(RubyMethod orig){
+    	attrName = ((AttrReader)orig).attrName;
+    	
+    	super.doClone(orig);
     }
 }

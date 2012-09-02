@@ -30,8 +30,36 @@ module Rho
         render :string => "", :layout => false
     end
     
+    def partial_test(text1, text2, text3, text4)
+        @text1 = text1
+        @text2 = text2
+        @text3 = text3
+        @text4 = text4
+        
+        render :partial_test
+    end
+    
   end
 end
+
+describe "render" do
+
+  it "should partial render" do        
+    @application = AppApplication.new
+    @c = ::Rho::RhoControllerStub.new()
+    @c.serve(@application,nil,{'application' => 'app', 'model' => 'PartialTest', 'request-method' => 'GET', :modelpath => Rho::RhoFSConnector.get_model_path("app",'PartialTest'), 'headers' => {} },{})
+
+    res = @c.partial_test("TEXT1", "TEXT2", "TEXT3", "TEXT4")
+    puts "res : #{res}"
+    
+    res.index("TEXT1").should_not be_nil
+    res.index("TEXT2").should_not be_nil
+    res.index("TEXT3").should_not be_nil
+    res.index("TEXT4").should_not be_nil
+    
+  end
+  
+end  
 
 describe "url_for and link_to" do
 
@@ -174,3 +202,4 @@ describe "redirect" do
     end
 
 end #describe "redirect"
+

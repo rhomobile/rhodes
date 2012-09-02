@@ -47,6 +47,9 @@ abstract class BlockCallStatus {
         }
         return returned_in_block_;
     }
+    protected void doClone(BlockCallStatus orig){
+    	setReturnedInBlock(this.returned_in_block_, this.breaked_in_block_, this.do_not_allow_break_);
+    }
 
 }
 
@@ -66,6 +69,11 @@ public abstract class RubyValue extends BlockCallStatus implements Cloneable {
             throw new RubyException(RubyRuntime.ExceptionClass, e.toString());
         }
         return v;
+    }
+    protected void doClone(RubyValue orig){
+        frozen_ = orig.frozen_;
+        taint_ = orig.taint_;
+        super.doClone(orig);
     }
 
     public boolean equals(Object o) {

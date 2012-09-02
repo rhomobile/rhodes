@@ -22,6 +22,21 @@ public class RubyObject extends RubyBasic {
 	public RubyObject(RubyClass c) {
 		super(c);
 	}
+	public RubyObject() {
+		super();
+	}
+	
+    public RubyValue clone()
+    { 
+    	RubyObject cl = null;
+    	try{
+    		cl = (RubyObject)(this.getClass().newInstance());
+    		cl.doClone(this);
+    	}catch(Exception e){
+    		throw new RubyException(RubyRuntime.ExceptionClass, e.toString());    		
+    	}
+    	return cl; 
+    }
 	
     protected void doClone(RubyObject orig)
     {
