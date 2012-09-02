@@ -22,7 +22,7 @@ public class RubyHash extends RubyBasic {
 
     public RubyValue clone() {
     	RubyHash cl = new RubyHash();
-	  	cl.doClone(this);
+	  	cl.doClone((RubyValue)this);
 	  	return cl;
     }
     

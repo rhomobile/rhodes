@@ -31,7 +31,9 @@ public class RubyFixnum extends RubyInteger {
     }
 
 	public RubyValue clone() {
-		throw new RubyException(RubyRuntime.TypeErrorClass, "can't clone " + this.getRubyClass().getName());
+		RubyFixnum cl = new RubyFixnum(this.value_);
+		cl.doClone((RubyValue)this);
+		return cl;
 	}
     
 	public int toInt() {

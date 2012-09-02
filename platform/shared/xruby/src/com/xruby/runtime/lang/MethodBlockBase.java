@@ -18,6 +18,15 @@ public abstract class MethodBlockBase {
         default_argc_ = default_argc;
     }
 
+    protected void doClone(MethodBlockBase orig)
+    {
+    	argc_ = orig.argc_;
+    	has_asterisk_parameter_ = orig.has_asterisk_parameter_;
+    	default_argc_ = orig.default_argc_;
+    	default_values_ = orig.default_values_;
+    	scopeOfCurrentMethod_= orig.scopeOfCurrentMethod_;
+    }
+
     public int arity() {
         if (has_asterisk_parameter_ || default_argc_ > 0) {
             return -(argc_ - default_argc_) - 1;

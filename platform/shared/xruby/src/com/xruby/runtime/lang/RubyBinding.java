@@ -23,6 +23,22 @@ public class RubyBinding extends RubyBasic {
 		super(RubyRuntime.BindingClass);
 	}
 
+    public RubyValue clone(){
+    	RubyBinding cl = new RubyBinding(this.class_);
+    	cl.doClone((RubyValue)this);
+    	return cl;
+    }
+    protected void doClone(RubyValue orig){
+    	RubyBinding cl = (RubyBinding)orig; 
+    	scope_ = cl.scope_;
+    	self_ = cl.self_;
+    	block_ = cl.block_;
+    	variables_ = cl.variables_;
+    	names_ = cl.names_;
+    	
+    	super.doClone(orig);
+    }
+	
 	public boolean hasName(String name) {
 		return names_.indexOf(name) >= 0;
 	}

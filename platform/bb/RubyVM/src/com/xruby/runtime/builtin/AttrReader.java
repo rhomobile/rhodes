@@ -28,7 +28,7 @@ public class AttrReader extends RubyNoArgMethod {
     
     public RubyMethod clone(){
     	AttrReader cl = new AttrReader("");
-    	cl.doClone(this);
+    	cl.doClone((RubyMethod)this);
     	return cl;
     }
     

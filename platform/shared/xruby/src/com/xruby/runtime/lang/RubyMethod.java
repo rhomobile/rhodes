@@ -21,8 +21,28 @@ public abstract class RubyMethod extends MethodBlockBase implements Cloneable {
         super(argc, has_asterisk_parameter, default_argc);
         access_ = PUBLIC;
     }
+
+    public RubyMethod clone()
+    { 
+    	RubyMethod cl = null;
+    	try{
+    		cl = (RubyMethod)(this.getClass().newInstance());
+    		cl.doClone(this);
+    	}catch(Exception e){
+    		throw new RubyException(RubyRuntime.ExceptionClass, e.toString());    		
+    	}
+    	return cl; 
+    }
     
-    public RubyMethod clone() {
+    protected void doClone(RubyMethod orig)
+    {
+    	access_ = orig.access_;
+    	id_ = orig.id_;
+    	
+    	super.doClone(orig);
+    }    
+    
+    /*public RubyMethod clone() {
     	RubyMethod v;
         try {
             v = (RubyMethod) super.clone();
@@ -30,7 +50,7 @@ public abstract class RubyMethod extends MethodBlockBase implements Cloneable {
             throw new RubyException(RubyRuntime.ExceptionClass, e.toString());
         }
         return v;
-    }
+    }*/
 
     void setID(RubyID id) {
         id_ = id;

@@ -12,6 +12,8 @@ public abstract class RubyBasic extends RubyValue {
     public RubyBasic(RubyClass c) {
 		this.class_ = c;
 	}
+    public RubyBasic() {
+	}
 
     public void setRubyClass(RubyClass c) {
         class_ = c;
@@ -20,4 +22,11 @@ public abstract class RubyBasic extends RubyValue {
     public RubyClass getRubyClass() {
         return class_;
     }
+    
+    protected void doClone(RubyBasic orig)
+    {
+    	class_ = orig.class_;
+    	super.doClone(orig);
+    }
+    
 }
