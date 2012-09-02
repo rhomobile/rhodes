@@ -318,8 +318,9 @@ public class NetRequest
 	static String szMultipartContType = 
 	    "multipart/form-data; boundary=----------A6174410D6AD474183FDE48F5662FCC5";
 
-	void processMultipartItems( Vector/*Ptr<CMultipartItem*>&*/ arItems )throws Exception
+	int processMultipartItems( Vector/*Ptr<CMultipartItem*>&*/ arItems )throws Exception
 	{
+		int nSize = 0;
 	    for( int i = 0; i < (int)arItems.size(); i++ )
 	    {
 	        MultipartItem oItem = (MultipartItem)arItems.elementAt(i); 
@@ -373,8 +374,13 @@ public class NetRequest
 	            oItem.m_strDataPrefix += "Content-Length: " + nContentSize + "\r\n";
 
 	        oItem.m_strDataPrefix += "\r\n";
+	        
+	        nSize += oItem.m_strDataPrefix.length() + nContentSize;
 	    }
 
+	    nSize += szMultipartPostfix.length();
+
+	    return nSize;
 	}
 	
     public NetResponse pushMultipartData(String strUrl, Vector/*Ptr<CMultipartItem*>&*/ arItems, IRhoSession oSession, Hashtable/*<String,String>**/ headers)throws Exception
@@ -402,7 +408,8 @@ public class NetRequest
 				m_connection.setRequestMethod(IHttpConnection.POST);
 				
 				//PUSH specific
-				processMultipartItems( arItems );
+				int nContentSize = processMultipartItems( arItems );
+				m_connection.setRequestProperty("content-length", Integer.toString(nContentSize) );
 				os = m_connection.openOutputStream();
 		        //write all items
 		        for( int i = 0; i < (int)arItems.size(); i++ )
