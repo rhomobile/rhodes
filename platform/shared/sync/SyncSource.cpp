@@ -351,7 +351,7 @@ void CSyncSource::doSyncClientChanges()
     {
         LOG(INFO) + "Push client changes to server. Source: " + getName() + "Size :" + strBody.length();
         if ( !RHOCONF().getBool("log_skip_post") )
-            LOG(INFO) + "Push body: " + strBody;		
+            LOG(TRACE) + "Push body: " + strBody;		
 
         if ( getSync().getSourceOptions().getBoolProperty(getID(), "set_sync_push_body" ) )
             getSync().getSourceOptions().setProperty(getID(), "sync_push_body", strBody.c_str() );

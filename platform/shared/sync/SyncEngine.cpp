@@ -556,7 +556,7 @@ String CSyncEngine::loadClientID()
             else
                 getUserDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
 
-            if ( CClientRegister::getInstance() != null )
+            if ( clientID.length() > 0 && CClientRegister::getInstance() != null )
                 CClientRegister::getInstance()->startUp();
 
         }else if ( bResetClient )
