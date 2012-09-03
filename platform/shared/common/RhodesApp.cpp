@@ -1726,6 +1726,9 @@ void CRhodesApp::notifyLocalServerStarted()
 			m_networkStatusReceiver.setCallbackUrl(s);
 			if ( m_pNetworkStatusMonitor != 0 )
 			{
+				if ( poll_interval <= 0 ) {
+					poll_interval = c_defaultNetworkStatusPollInterval;
+				}
 				m_pNetworkStatusMonitor->setPollInterval(poll_interval);
 			}
 		}
