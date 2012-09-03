@@ -371,7 +371,11 @@ public class RhoConnection implements IHttpConnection {
 	public InputStream openInputStream() throws IOException {
 		LOG.TRACE("openInputStream");
 		processRequest();
-		return responseData;
+		
+		if ( responseData != null )
+			return responseData;
+		
+		throw new IOException("Not found: " + url_external);
 	}
 
 	public DataOutputStream openDataOutputStream() throws IOException {
@@ -508,12 +512,9 @@ public class RhoConnection implements IHttpConnection {
 
 	protected boolean httpGetIndexFile(){
 		String strIndex = null;
-		String slash = "";
-		if ( uri.getPath()!=null && uri.getPath().length() > 0 )
-			slash = uri.getPath().charAt(uri.getPath().length()-1) == '/' ? "" : "/";
 		
 		for( int i = 0; i < m_arIndexes.length; i++ ){
-			String name = uri.getPath() + slash + m_arIndexes[i];
+			String name = FilePath.join( URI.urlDecode(uri.getPath()), m_arIndexes[i] );
 			String nameClass = name;
 			if ( nameClass.endsWith(".iseq"))
 				nameClass = nameClass.substring(0, nameClass.length()-5);
@@ -558,7 +559,7 @@ public class RhoConnection implements IHttpConnection {
 	
 	protected boolean httpServeFile(String strContType)throws IOException
 	{
-		String strPath = uri.getPath();
+		String strPath = URI.urlDecode(uri.getPath());
 		//if ( !strPath.startsWith("/apps") )
 		//	strPath = "/apps" + strPath; 
 
@@ -638,19 +639,20 @@ public class RhoConnection implements IHttpConnection {
 	
 	protected boolean httpGetFile(String strContType)throws IOException
 	{
-		if ( !isDbFilesPath(uri.getPath()) && !isKnownExtension(uri.getPath()) && strContType.length() == 0 )
+		String strPath = URI.urlDecode(uri.getPath());
+		if ( !isDbFilesPath(strPath) && !isKnownExtension(strPath) && strContType.length() == 0 )
 		{
-			String strTemp = FilePath.join(uri.getPath(), "/");
+			String strTemp = FilePath.join(strPath, "/");
 	
 			if( RhoSupport.findClass(strTemp + "controller") != null )
 				return false;
 
-			int nPos = findIndex(uri.getPath());
+			int nPos = findIndex(strPath);
 			if ( nPos >= 0 )
 			{
-				String url = uri.getPath();// + (nPos == 0 ? ".iseq" : "");
+				String url = strPath;// + (nPos == 0 ? ".iseq" : "");
 				Properties reqHash = new Properties();
-				this.doDispatch(reqHash, url);
+				doDispatch(reqHash, url);
 			//	RubyValue res = RhoRuby.processIndexRequest(url);//erb-compiled should load from class
 				//processResponse(res);
 				
