@@ -84,3 +84,5 @@ syncserver = '<%=syncserver%>'
 jqtouch_mode=1
 
 splash_screen='zoom'
+
+use_bb_full_browser=6
