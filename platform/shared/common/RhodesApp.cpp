@@ -1767,7 +1767,7 @@ void CRhodesApp::notifyLocalServerStarted()
 		
 		synchronized(m_mxAccess)
 		{
-			if ( !m_callbackUrl.empty() )
+			if ( !m_callbackUrl.empty() && (m_prevStatus != currentStatus) )
 			{
 				String strBody = "";
 				strBody += "current_status=" + networkStatusToString(currentStatus);

@@ -41,7 +41,7 @@
 #include "common/app_build_capabilities.h"
 
 #include "InitMemoryInfoCollector.h"
-
+#include "Reachability.h"
 
 
 /*
@@ -588,6 +588,10 @@ static Rhodes *instance = NULL;
         app_created = YES;
         
         rotationLocked = rho_conf_getBool("disable_screen_rotation");
+		
+		NSLog(@"Init network monitor");
+		initNetworkMonitoring();
+		[self performSelectorInBackground:@selector(monitorNetworkStatus) withObject:nil];
         
         NSLog(@"Show loading page");
         [self performSelectorOnMainThread:@selector(showLoadingPagePost) withObject:nil waitUntilDone:NO];
@@ -595,7 +599,7 @@ static Rhodes *instance = NULL;
         NSLog(@"Start rhodes app");
         rho_rhodesapp_start();
 		rho_rhodesapp_callUiCreatedCallback();
-    }
+	}
     @finally {
         [pool release];
     }
@@ -659,9 +663,20 @@ static Rhodes *instance = NULL;
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
 #endif //__IPHONE_3_0
-#endif //APP_BUILD_CAPABILITY_PUSH    
-    
+#endif //APP_BUILD_CAPABILITY_PUSH
+        
     NSLog(@"Initialization finished");
+}
+
+- (void) monitorNetworkStatus
+{
+	while(true)
+	{
+		[NSThread sleepForTimeInterval:getNetworkStatusPollInterval()];
+		Reachability* r = [Reachability reachabilityForInternetConnection];
+		networkStatusNotify([r currentReachabilityStatus]==NotReachable?0:1);
+		[r release];
+	}
 }
 
 #ifdef __IPHONE_3_0
