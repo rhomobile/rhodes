@@ -39,6 +39,7 @@
 #import "PickImageDelegate.h"
 #import "SignatureDelegate.h"
 #import "NVDelegate.h"
+#import "NetworkStatusMonitor.h"
 
 @interface Rhodes : NSObject <UIApplicationDelegate,
     UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate>
