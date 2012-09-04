@@ -49,6 +49,31 @@ public class RubyModule extends RubyBasic {
         scope_ = owner;
     }
 
+    public RubyValue clone()
+    { 
+    	RubyModule cl = null;
+    	try{
+    		cl = (RubyModule)(this.getClass().newInstance());
+    		cl.doClone(this);
+    	}catch(Exception e){
+    		throw new RubyException(RubyRuntime.ExceptionClass, e.toString());    		
+    	}
+    	return cl; 
+    }
+    
+    protected void doClone(RubyValue orig){
+    	RubyModule m = (RubyModule)orig;
+    	name_ = m.name_;
+    	scope_ = m.scope_;
+    	superclass_ = m.superclass_;
+    	current_access_mode_ = m.current_access_mode_;
+    	//instance_varibles_ = m.instance_varibles_;
+    	methods_ = m.methods_;
+    	constants_ = m.constants_;
+    	
+    	super.doClone((RubyObject)orig);
+    }
+
     public String getName() {
         return name_;
     }
