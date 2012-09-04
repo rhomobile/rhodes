@@ -33,10 +33,10 @@ public class RubyBinding extends RubyBasic {
     protected void doClone(RubyValue orig){
     	RubyBinding cl = (RubyBinding)orig; 
     	scope_ = cl.scope_;
-    	self_ = cl.self_;
+    	self_ = cl.self_.clone();
     	block_ = cl.block_;
-    	variables_ = cl.variables_;
-    	names_ = cl.names_;
+    	variables_ = (RubyArray)cl.variables_.clone();
+    	names_ = new ArrayList(cl.names_);
     	
     	super.doClone(orig);
     }
