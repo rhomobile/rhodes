@@ -97,7 +97,7 @@ public:
     static CSourceOptions& getSourceOptions(){ return m_oSourceOptions; }
     net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
 
-    void doSyncAllSources(const String& strQueryParams);
+    void doSyncAllSources(const String& strQueryParams, boolean bSyncOnlyChangedSources);
     void doSyncSource(const CSourceID& oSrcID, const String& strQueryParams);
     void doSearch(rho::Vector<rho::String>& arSources, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep);
 
@@ -167,8 +167,8 @@ private:
     void processServerSources(String strSources);
     void checkSourceAssociations();
 
-    void syncOneSource(int i, const String& strQueryParams);
-    void syncAllSources(const String& strQueryParams);
+    void syncOneSource(int i, const String& strQueryParams, boolean bSyncOnlyIfChanged);
+    void syncAllSources(const String& strQueryParams, boolean bSyncOnlyChangedSources);
 	
 	boolean processBlobs();
 	void loadBulkPartitions();

@@ -1164,6 +1164,62 @@ end
     records2[0]['value'].should == 'Test2'
         
   end
+	
+  it "should skip unmodified models in sync" do
+	  SyncEngine.logged_in.should == 1
+	  #	  Rho::RhoConfig.bulksync_state='1'    
+	  
+	  Rhom::Rhom.database_full_reset
+	  Rho::RhoConfig.bulksync_state='1'    
+	  
+	  getProduct.create({:name => 'SkipLocalChanges'})
+	  getCustomer.create({:first => 'SkipLocalChanges'})
+	  
+	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync	  
+	  res['status'].should == 'complete'
+	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	  
+	  Rhom::Rhom.database_full_reset
+	  Rho::RhoConfig.bulksync_state='1'    
+	  
+	  getProduct.create({:name => 'SkipLocalChanges2'})
+	  
+	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync(false,'',true)
+	  res['status'].should == 'complete'
+	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	  
+	  items = getProduct.find(:all)
+	  items.length.should_not == 0
+	  
+	  items = getCustomer.find(:all)
+	  items.length.should == 0
+	  
+	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+	  res['status'].should == 'complete'
+	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	  
+	  items = getProduct.find(:all, :conditions => { :name=>'SkipLocalChanges' })
+	  items.length.should_not == 0
+	  items.each do |item|
+		  item.destroy
+	  end
+	  
+	  items = getProduct.find(:all, :conditions => { :name=>'SkipLocalChanges2' })
+	  items.length.should_not == 0
+	  items.each do |item|
+		  item.destroy
+	  end
+	  
+	  items = getCustomer.find(:all, :conditions => { :first=>'SkipLocalChanges' })
+	  items.length.should_not == 0
+	  items.each do |item|
+		  item.destroy
+	  end
+	  
+	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+	  res['status'].should == 'complete'
+	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+  end
   
   it "should logout" do
     SyncEngine.logout()

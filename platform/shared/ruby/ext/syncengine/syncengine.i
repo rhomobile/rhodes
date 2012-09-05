@@ -3,7 +3,7 @@
 %{
 /* Put header files here or function declarations like below */
 	#define dosync rho_sync_doSyncAllSources
-	extern VALUE rho_sync_doSyncAllSources(int show_status_popup, const char * query_params);
+	extern VALUE rho_sync_doSyncAllSources(int show_status_popup, const char * query_params, int sync_only_changed_sources);
 	#define dosync_source rho_sync_doSyncSource
 	extern VALUE rho_sync_doSyncSource(VALUE source_id,int show_status_popup, const char * query_params);
 	#define dosearch rho_sync_doSearch
@@ -91,7 +91,11 @@
  $1 = 0;
 }
 
-extern VALUE dosync(bool show_status_popup, const char * query_params);
+%typemap(default) bool sync_only_changed_sources {
+  $1 = 0;
+}
+
+extern VALUE dosync(bool show_status_popup, const char * query_params,bool sync_only_changed_sources);
 extern VALUE dosync_source(VALUE source_id, bool show_status_popup, const char * query_params);
 extern VALUE dosearch(VALUE ar_sources, const char *from, const char *params, bool sync_changes, int nProgressStep, const char* callback, const char* callback_params);
 extern VALUE login(const char *login, const char *password, const char* callback);

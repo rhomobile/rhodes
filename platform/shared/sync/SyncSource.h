@@ -170,13 +170,15 @@ public:
 
     void checkProgressStepNotify(boolean bEndTransaction);
     boolean checkFreezedProps(String strProp);
+	
+	bool haveChangedValues();
 
 private:
     CSyncEngine& getSync(){ return m_syncEngine; }
     CSyncNotify& getNotify();
     net::CNetRequestWrapper getNet();
     ISyncProtocol& getProtocol();
-
+	
 };
 
 }

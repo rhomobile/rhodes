@@ -1913,7 +1913,7 @@ extern int rho_sys_delete_folder(const char* path);
 extern int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
 
 #define set_network_status_notify rho_sys_set_network_status_notify
-extern void rho_sys_set_network_status_notify(const char* url, int value);
+extern void rho_sys_set_network_status_notify(const char* url, int poll_interval);
 
 #define clear_network_status_notify rho_sys_clear_network_status_notify
 extern void rho_sys_clear_network_status_notify();
@@ -1998,7 +1998,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:c:\swig\Lib\ruby\rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:/usr/local/share/swig/2.0.8/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LL(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2985,19 +2985,24 @@ _wrap_set_network_status_notify(int argc, VALUE *argv, VALUE self) {
   int val2 ;
   int ecode2 = 0 ;
   
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  {
+    arg2 = 0;
+  }
+  if ((argc < 1) || (argc > 2)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","set_network_status_notify", 1, argv[0] ));
   }
   arg1 = (char *)(buf1);
-  ecode2 = SWIG_AsVal_int(argv[1], &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","set_network_status_notify", 2, argv[1] ));
-  } 
-  arg2 = (int)(val2);
+  if (argc > 1) {
+    ecode2 = SWIG_AsVal_int(argv[1], &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","set_network_status_notify", 2, argv[1] ));
+    } 
+    arg2 = (int)(val2);
+  }
   set_network_status_notify((char const *)arg1,arg2);
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return Qnil;

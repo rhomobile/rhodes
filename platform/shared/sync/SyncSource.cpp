@@ -150,9 +150,10 @@ void CSyncSource::sync()
 //    {
         if ( isEmptyToken() )
             processToken(1);
+	
+			syncClientChanges();
+			syncServerChanges();		
 
-        syncClientChanges();
-        syncServerChanges();
 /*
         boolean bSyncedServer = syncClientChanges();
         if ( !bSyncedServer )
@@ -180,11 +181,8 @@ void CSyncSource::syncClientChanges()
 {
   	PROF_START("Pull");
 
-    boolean bSyncClient  = true;
-    {
-        IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID());
-        bSyncClient = !res.isEnd();
-    }
+    boolean bSyncClient  = haveChangedValues();
+
     if ( bSyncClient )
         doSyncClientChanges();
 
@@ -1438,6 +1436,12 @@ void CSyncSource::processToken(uint64 token)
         getDB().executeSQL("UPDATE sources SET token=? where source_id=?", token, getID() );
 	}
 
+}
+
+bool CSyncSource::haveChangedValues()
+{
+	IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID());
+	return !res.isEnd();
 }
 
 }

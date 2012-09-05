@@ -139,7 +139,7 @@ int CSyncThread::getLastPollInterval()
 void CSyncThread::onTimeout()//throws Exception
 {
     if ( isNoCommands() && getPollInterval()>0 )
-        addQueueCommandInt(new CSyncCommand(scSyncAll,false,""));
+        addQueueCommandInt(new CSyncCommand(scSyncAll,false,"",false));
 }
 
 void CSyncThread::checkShowStatus(CSyncCommand& oSyncCmd)
@@ -158,7 +158,7 @@ void CSyncThread::processCommand(IQueueCommand* pCmd)
     {
     case scSyncAll:
         checkShowStatus(oSyncCmd);
-        m_oSyncEngine.doSyncAllSources(oSyncCmd.m_strQueryParams);
+        m_oSyncEngine.doSyncAllSources(oSyncCmd.m_strQueryParams,oSyncCmd.m_bSyncOnlyChangedSources);
         break;
     case scSyncOne:
         {
@@ -255,9 +255,9 @@ extern "C" {
 using namespace rho::sync;
 using namespace rho::db;
 	
-unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * query_params/* = 0*/)
+unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * query_params/* = 0*/, int sync_only_changed_sources)
 {
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll,show_status_popup!=0,query_params));
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncAll,show_status_popup!=0,query_params,sync_only_changed_sources!=0));
 
     return CSyncThread::getInstance()->getRetValue();
 }
@@ -278,7 +278,7 @@ unsigned long rho_sync_doSyncSourceByName(const char* szSrcName)
 unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup, const char * query_params/* = 0*/)
 {
     CRhoRubyStringOrInt oSrcID = rho_ruby_getstringorint(nSrcID);
-    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt, show_status_popup!=0, query_params ) );
+    CSyncThread::getInstance()->addQueueCommand(new CSyncThread::CSyncCommand(CSyncThread::scSyncOne, oSrcID.m_szStr, (int)oSrcID.m_nInt, show_status_popup!=0, query_params, false ) );
 
     return CSyncThread::getInstance()->getRetValue();
 }	

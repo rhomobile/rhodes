@@ -55,36 +55,41 @@ public:
 	    int m_nCmdParam;
 	    String m_strCmdParam, m_strQueryParams;
    		boolean m_bShowStatus;
+		boolean m_bSyncOnlyChangedSources;
 
-	    CSyncCommand(int nCode, int nParam, boolean bShowStatus, const char * query_params)
+	    CSyncCommand(int nCode, int nParam, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources)
 	    {
 		    m_nCmdCode = nCode;
 		    m_nCmdParam = nParam;
             m_bShowStatus = bShowStatus;
             m_strQueryParams = query_params ? query_params : "";
+			m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
 	    }
-	    CSyncCommand(int nCode, String strParam, boolean bShowStatus, const char * query_params)
+	    CSyncCommand(int nCode, String strParam, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources)
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
             m_bShowStatus = bShowStatus;
             m_strQueryParams = query_params ? query_params : "";
+			m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
 	    }
-	    CSyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus, const char * query_params)
+	    CSyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources)
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
             m_nCmdParam = nCmdParam;
             m_bShowStatus = bShowStatus;
             m_strQueryParams = query_params ? query_params : "";
+			m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
 	    }
 
-	    CSyncCommand(int nCode, boolean bShowStatus, const char * query_params)
+	    CSyncCommand(int nCode, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources)
 	    {
 		    m_nCmdCode = nCode;
 		    m_nCmdParam = 0;
             m_bShowStatus = bShowStatus;
             m_strQueryParams = query_params ? query_params : "";
+			m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
 	    }
 
 	    boolean equals(const IQueueCommand& cmd)
@@ -92,7 +97,8 @@ public:
             const CSyncCommand& oSyncCmd = (const CSyncCommand&)cmd;
 		    return m_nCmdCode == oSyncCmd.m_nCmdCode && m_nCmdParam == oSyncCmd.m_nCmdParam &&
 			    m_strCmdParam == oSyncCmd.m_strCmdParam &&
-                m_strQueryParams == oSyncCmd.m_strQueryParams;
+                m_strQueryParams == oSyncCmd.m_strQueryParams &&
+				m_bSyncOnlyChangedSources == oSyncCmd.m_bSyncOnlyChangedSources;
 	    }
 
         virtual String toString();
@@ -165,7 +171,7 @@ private:
 extern "C" {
 #endif //__cplusplus
 	
-unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * query_params);
+unsigned long rho_sync_doSyncAllSources(int show_status_popup, const char * query_params, int sync_only_changed_sources);
 unsigned long rho_sync_doSyncSource(unsigned long nSrcID,int show_status_popup, const char * query_params);
 unsigned long rho_sync_doSyncSourceByID(int nSrcID);
 unsigned long rho_sync_doSyncSourceByName(const char* szSrcName);
