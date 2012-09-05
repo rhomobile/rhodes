@@ -87,7 +87,7 @@ extern int rho_sys_delete_folder(const char* path);
 extern int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
 
 #define set_network_status_notify rho_sys_set_network_status_notify
-extern void rho_sys_set_network_status_notify(const char* url, int value);
+extern void rho_sys_set_network_status_notify(const char* url, int poll_interval);
 
 #define clear_network_status_notify rho_sys_clear_network_status_notify
 extern void rho_sys_clear_network_status_notify();
@@ -145,6 +145,10 @@ extern void rho_sys_clear_network_status_notify();
   $1 = 0;
 }
 
+%typemap(default) int poll_interval {
+  $1 = 0;
+}
+
 extern VALUE syscall(const char* callname, int nparams, char** param_names, char** param_values);
 extern VALUE get_property(char* property);
 extern VALUE has_network();
@@ -175,6 +179,6 @@ extern void set_application_icon_badge(int badge_number);
 extern void replace_current_bundle(const char* path, rho_param *p);
 extern int  delete_folder(const char* path);
 extern int set_do_not_bakup_attribute(const char* path, int value);
-extern void set_network_status_notify(const char* url, int value);
+extern void set_network_status_notify(const char* url, int poll_interval);
 extern void clear_network_status_notify();
 

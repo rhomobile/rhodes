@@ -177,7 +177,7 @@ void CSyncEngine::prepareSync(ESyncState eState, const CSourceID* oSrcID)
     stopSync();
 }
 
-void CSyncEngine::doSyncAllSources(const String& strQueryParams)
+void CSyncEngine::doSyncAllSources(const String& strQueryParams, boolean bSyncOnlyChangedSources)
 {
     prepareSync(esSyncAllSources, null);
 
@@ -191,7 +191,7 @@ void CSyncEngine::doSyncAllSources(const String& strQueryParams)
 	    PROF_CREATE_COUNTER("Pull");
 	    PROF_START("Sync");
 
-        syncAllSources(strQueryParams);
+        syncAllSources(strQueryParams, bSyncOnlyChangedSources);
 
 	    PROF_DESTROY_COUNTER("Net");	    
 	    PROF_DESTROY_COUNTER("Parse");
@@ -858,7 +858,7 @@ int CSyncEngine::getStartSource()
     return -1;
 }*/
 
-void CSyncEngine::syncOneSource(int i, const String& strQueryParams)
+void CSyncEngine::syncOneSource(int i, const String& strQueryParams, boolean syncOnlyIfChanged)
 {
     CSyncSource& src = *m_sources.elementAt(i);
     if ( src.getSyncType().compare("bulk_sync_only")==0 )
@@ -867,7 +867,13 @@ void CSyncEngine::syncOneSource(int i, const String& strQueryParams)
     if ( isSessionExist() && getState() != esStop )
     {
         src.m_strQueryParams = strQueryParams;
-        src.sync();
+		if (syncOnlyIfChanged) {
+			if (src.haveChangedValues() ) {
+				src.sync();
+			}
+		} else {
+			src.sync();
+		}
     }
 
     getNotify().onSyncSourceEnd(i, m_sources);
@@ -875,7 +881,7 @@ void CSyncEngine::syncOneSource(int i, const String& strQueryParams)
 //    return src.m_nErrCode == RhoAppAdapter.ERR_NONE;
 }
 
-void CSyncEngine::syncAllSources(const String& strQueryParams)
+void CSyncEngine::syncAllSources(const String& strQueryParams, boolean bSyncOnlyChangedSources)
 {
 //    boolean bError = false;
 
@@ -885,7 +891,7 @@ void CSyncEngine::syncAllSources(const String& strQueryParams)
 
     for( int i = 0; i < (int)m_sources.size() && isContinueSync(); i++ )
     {
-        /*bError = !*/syncOneSource(i, strQueryParams);
+        /*bError = !*/syncOneSource(i, strQueryParams, bSyncOnlyChangedSources);
     }
 
     if ( !isSchemaChanged() && getState() != CSyncEngine::esStop )
