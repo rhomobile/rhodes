@@ -1824,29 +1824,27 @@ namespace "device" do
       end
     end
 
-    task :getlog => "config:android" do
-      AndroidTools.get_app_log($appname, true) or exit 1
-    end
+    #task :getlog => "config:android" do
+    #  AndroidTools.get_app_log($appname, true) or exit 1
+    #end
   end
 end
 
-namespace "emulator" do
-  namespace "android" do
-    task :getlog => "config:android" do
-      AndroidTools.get_app_log($appname, false) or exit 1
-    end
-  end
-end
-
-namespace "android" do
-    task :get_log => "config:android" do
-		puts "log_file=" + $applog_path
-	end
-end
+#namespace "emulator" do
+#  namespace "android" do
+#    task :getlog => "config:android" do
+#      AndroidTools.get_app_log($appname, false) or exit 1
+#    end
+#  end
+#end
 
 namespace "run" do
   namespace "android" do
-    
+
+    task :get_log => "config:android" do
+      puts "log_file=" + $applog_path
+    end
+
     task :spec => ["device:android:debug"] do
     
         if $device_flag == '-e'
