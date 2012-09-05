@@ -1741,8 +1741,7 @@ namespace "device" do
       puts "Install APK file"
       Jake.run($adb, ["-d", "install", "-r", apkfile])
       unless $?.success?
-        puts "Error installing APK file"
-        exit 1
+        raise "Error installing APK file"
       end
       puts "Install complete"
     end
@@ -1857,7 +1856,7 @@ namespace "run" do
         File.delete(log_name) if File.exist?(log_name)
 
         AndroidTools.logclear($device_flag)
-        run_emulator( :hidden => true ) if $device_flag == '-e'
+        AndroidTools.run_emulator( :hidden => true ) if $device_flag == '-e'
         do_uninstall($device_flag)
         
         # Failsafe to prevent eternal hangs
@@ -1866,11 +1865,12 @@ namespace "run" do
             if $device_flag == '-e'
                 AndroidTools.kill_adb_and_emulator
             else
-                AndroidTools.kill_adb
+                AndroidTools.restart_adb
             end
         }
 
-        load_app_and_run($device_flag)
+        apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
+        AndroidTools.load_app_and_run($device_flag, apkfile, $app_package_name)
         AndroidTools.logcat($device_flag, log_name)
 
         Jake.before_run_spec
@@ -1930,7 +1930,7 @@ namespace "run" do
             AndroidTools.kill_adb_and_emulator
         else
             do_uninstall($device_flag)
-            AndroidTools.kill_adb
+            AndroidTools.restart_adb
         end
 
         $stdout.flush
@@ -2002,8 +2002,11 @@ namespace "run" do
     end
 
     task :emulator=>['config:android:emulator', 'device:android:debug']  do
-        run_emulator
-        load_app_and_run
+        AndroidTools.run_emulator
+        AndroidTools.restart_adb
+        
+        apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
+        AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
     end
 
     desc "Run application on RhoSimulator"    
@@ -2070,130 +2073,16 @@ namespace "run" do
 #
 #    end
 
-    def  run_emulator(options = {})
-      apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
-
-      #AndroidTools.kill_adb
-      Jake.run($adb, ['start-server'], nil, true)
-
-      rm_f $applog_path if !$applog_path.nil?
-      AndroidTools.logcat_process()
-
-      running = AndroidTools.is_emulator_running
-      if !running
-        $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
-        $avdname += "google" if $use_google_addon_api
-        $avdname += "motosol" if $use_motosol_api
-        $avdtarget = $androidtargets[get_api_level($emuversion)]
-
-        raise "Unable to run Android emulator. No appropriate target API for SDK version: #{$emuversion}" unless $avdtarget
-
-        if $appavdname != nil
-          $avdname = $appavdname
-        end
-
-        createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 128M "
-        system("echo no | #{createavd}") unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
-
-        # Start the emulator, check on it every 5 seconds until it's running
-        cmd = "\"#{$emulator}\" -cpu-delay 0"
-        cmd << " -no-window" if options[:hidden]
-        cmd << " -avd #{$avdname}"
-        Thread.new { system(cmd) }
-
-        puts "Waiting for emulator..."
-        res = 'error'        
-        while res =~ /error/ do
-            sleep 5
-            res = Jake.run $adb, ['-e', 'wait-for-device']
-            puts res
-        end
-
-        puts "Waiting up to 600 seconds for emulator..."
-        startedWaiting = Time.now
-        adbRestarts = 1
-        while (Time.now - startedWaiting < 600 )
-          sleep 5
-          now = Time.now
-          started = false
-          booted = true
-          Jake.run2 $adb, ["-e", "shell", "ps"], :system => false, :hideerrors => false do |line|
-            #puts line
-            booted = false if line =~ /bootanimation/
-            started = true if line =~ /android\.process\.acore/
-            true
-          end
-          #puts "started: #{started}, booted: #{booted}"
-          unless started and booted
-            printf("%.2fs: ",(now - startedWaiting))
-            if (now - startedWaiting) > (180 * adbRestarts)
-              # Restart the adb server every 60 seconds to prevent eternal waiting
-              puts "Appears hung, restarting adb server"
-              AndroidTools.kill_adb
-              Jake.run($adb, ['start-server'], nil, true)
-              adbRestarts += 1
-
-              rm_f $applog_path if !$applog_path.nil?
-              AndroidTools.logcat_process()
-            else
-              puts "Still waiting..."
-            end
-          else
-            puts "Success"
-            puts "Device is ready after " + (Time.now - startedWaiting).to_s + " seconds"
-            break
-          end
-        end
-
-        if !AndroidTools.is_emulator_running
-          puts "Emulator still isn't up and running, giving up"
-          exit 1
-        end
-
-      else
-        puts "Emulator is up and running"
-      end
-
-      $stdout.flush
-    end
-    
-    def  load_app_and_run(device_flag = '-e')
-      puts "Loading package"
-      apkfile = Jake.get_absolute $targetdir + "/" + $appname + "-debug.apk"
-      count = 0
-      done = false
-      while count < 20
-        f = Jake.run2($adb, [device_flag, "install", "-r", apkfile], {:nowait => true})
-        theoutput = ""
-        while c = f.getc
-          $stdout.putc c
-          $stdout.flush
-          theoutput << c
-        end
-        f.close
-
-        if theoutput.to_s.match(/Success/)
-          done = true
-          break
-        end
-
-        puts "Failed to load (possibly because emulator not done launching)- retrying"
-        $stdout.flush
-        sleep 1
-        count += 1
-      end
-
-      puts "Loading complete, starting application.." if done
-      AndroidTools.run_application(device_flag) if done
-    end
-
     desc "build and install on device"
-    task :device => "device:android:install" do
-      puts "Starting application..."
-      AndroidTools.run_application("-d")
-      puts "Application was started"
-      AndroidTools.logcat_process("-d")
+    task :device => "device:android:debug" do
+      AndroidTools.restart_adb
+
+      apkfile = File.join $targetdir, $appname + "-debug.apk"
+      AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
+      #AndroidTools.run_application("-d", $app_package_name)
+
       puts "Starting log process ..."
+      AndroidTools.logcat_process("-d")
     end
   end
 

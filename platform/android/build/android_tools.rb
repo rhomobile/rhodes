@@ -205,40 +205,162 @@ def is_device_running
 end
 module_function :is_device_running
 
-def run_application (target_flag)
+def  run_emulator(options = {})
+  system("\"#{$adb}\" start-server")
+
+  rm_f $applog_path if !$applog_path.nil?
+  logcat_process()
+  
+  unless is_emulator_running
+    puts "Need to start emulator" if USE_TRACES
+
+    if $appavdname
+      $avdname = $appavdname
+    else
+      $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
+      $avdname += "google" if $use_google_addon_api
+      $avdname += "motosol" if $use_motosol_api
+    end
+    
+    $avdtarget = $androidtargets[get_api_level($emuversion)]
+    
+    puts "AVD name: #{$avdname}, target API: #{$avdtarget}"
+
+    unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
+      raise "Unable to create AVD image. No appropriate target API for SDK version: #{$emuversion}" unless $avdtarget
+      createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 128M"
+      puts "Creating AVD image: #{$avdname}"
+      #system("#{createavd}")
+      `#{createavd}`
+    else
+      raise "Unable to run Android emulator. No appropriate target API for SDK version: #{$emuversion}" unless $avdtarget
+    end
+
+    # Start the emulator, check on it every 5 seconds until it's running
+    cmd = "\"#{$emulator}\" -cpu-delay 0"
+    cmd << " -no-window" if options[:hidden]
+    cmd << " -avd #{$avdname}"
+    Thread.new { system(cmd) }
+
+    puts "Waiting for emulator..."
+    res = 'error'        
+    while res =~ /error/ do
+      sleep 5
+      res = Jake.run $adb, ['-e', 'wait-for-device']
+      puts res
+    end
+
+    puts "Waiting up to 600 seconds for emulator..."
+    startedWaiting = Time.now
+    adbRestarts = 1
+    while (Time.now - startedWaiting < 600 )
+        sleep 5
+        now = Time.now
+        started = false
+        booted = true
+        Jake.run2 $adb, ["-e", "shell", "ps"], :system => false, :hideerrors => false do |line|
+            #puts line
+            booted = false if line =~ /bootanimation/
+            started = true if line =~ /android\.process\.acore/
+            true
+        end
+        #puts "started: #{started}, booted: #{booted}"
+        unless started and booted
+            printf("%.2fs: ",(now - startedWaiting))
+            if (now - startedWaiting) > (180 * adbRestarts)
+              # Restart the adb server every 60 seconds to prevent eternal waiting
+              puts "Appears hung, restarting adb server"
+              restart_adb
+              Jake.run($adb, ['start-server'], nil, true)
+              adbRestarts += 1
+
+              rm_f $applog_path if !$applog_path.nil?
+              logcat_process()
+            else
+              puts "Still waiting..."
+            end
+        else
+            puts "Success"
+            puts "Device is ready after " + (Time.now - startedWaiting).to_s + " seconds"
+            break
+        end
+    end
+    raise "Emulator still isn't up and running, giving up" unless is_emulator_running
+  end
+
+  puts "Emulator is up and running"
+  $stdout.flush
+end
+module_function :run_emulator
+
+def run_application (device_flag, pkgname)
+  puts "Starting application.."
   args = []
-  args << target_flag
+  args << device_flag
   args << "shell"
   args << "am"
   args << "start"
   args << "-a"
   args << "android.intent.action.MAIN"
   args << "-n"
-  args << $app_package_name + "/#{JAVA_PACKAGE_NAME}.RhodesActivity"
+  args << pkgname + "/#{JAVA_PACKAGE_NAME}.RhodesActivity"
   Jake.run($adb, args)
 end
 module_function :run_application
 
-def application_running(flag, pkgname)
+def application_running(device_flag, pkgname)
   pkg = pkgname.gsub(/\./, '\.')
   system("\"#{$adb}\" start-server")
-  `"#{$adb}" #{flag} shell ps`.split.each do |line|
+  `"#{$adb}" #{device_flag} shell ps`.split.each do |line|
     return true if line =~ /#{pkg}/
   end
   false
 end
 module_function :application_running
 
-def  kill_adb
-    # stop app
-    if RUBY_PLATFORM =~ /(win|w)32$/
-        # Windows
-        `taskkill /F /IM adb.exe`
-    else
-        `killall -9 adb`
+def load_app_and_run(device_flag, apkfile, pkgname)
+  puts "Loading package..."
+
+  count = 0
+  done = false
+  while count < 20
+    f = Jake.run2($adb, [device_flag, "install", "-r", apkfile], {:nowait => true})
+    theoutput = ""
+    while c = f.getc
+      $stdout.putc c
+      $stdout.flush
+      theoutput << c
     end
+    f.close
+
+    if theoutput.to_s.match(/Success/)
+      done = true
+      break
+    end
+
+    puts "Failed to load (possibly because emulator not done launching)- retrying"
+    $stdout.flush
+    sleep 1
+    count += 1
+  end
+
+  run_application(device_flag, pkgname) if done
 end
-module_function :kill_adb
+module_function :load_app_and_run
+
+def restart_adb
+  puts 'Killing adb server'
+  system("#{$adb} kill-server")
+  #if RUBY_PLATFORM =~ /(win|w)32$/
+  #  # Windows
+  #  system ('taskkill /F /IM adb.exe')
+  #else
+  #  system ('killall -9 adb')
+  #end
+  sleep 3
+  system("#{$adb} start-server")
+end
+module_function :restart_adb
 
 def kill_adb_and_emulator
   if RUBY_PLATFORM =~ /windows|cygwin|mingw/
