@@ -243,6 +243,11 @@ module Rhom
             searchParams, args[:sync_changes] ? args[:sync_changes] : false, args[:progress_step] ? args[:progress_step] : -1,
             args[:callback], callbackParams )
         end
+	  
+		def have_local_changes
+			res = ::Rho::RHO.get_user_db().execute_sql("SELECT object FROM changed_values WHERE sent<=1 LIMIT 1 OFFSET 0")
+			return res.length > 0
+		end
       
     end #class methods
   end # Rhom
