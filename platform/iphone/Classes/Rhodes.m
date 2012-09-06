@@ -1040,6 +1040,12 @@ static Rhodes *instance = NULL;
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     RAWLOG_INFO("Application did become active");
+	
+	if (syncBackgroundTask != UIBackgroundTaskInvalid) {
+		[application endBackgroundTask: syncBackgroundTask];
+		syncBackgroundTask = UIBackgroundTaskInvalid;
+	}
+	
     if (!app_created) {
         NSLog(@"Application is not created yet so postpone activation callback");
         [NSThread detachNewThreadSelector:@selector(doRhoActivate) toTarget:self withObject:nil];
@@ -1060,6 +1066,38 @@ static Rhodes *instance = NULL;
     RAWLOG_INFO("Application go to background");
     rho_rhodesapp_callUiDestroyedCallback();
     rho_rhodesapp_canstartapp("", ", ");
+	
+	if (rho_conf_getBool("finish_sync_in_background") && (rho_sync_issyncing()==1)) {
+		if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) { 
+			if ([[UIDevice currentDevice] isMultitaskingSupported]) { //Check if device supports mulitasking 
+
+				syncBackgroundTask = [application beginBackgroundTaskWithExpirationHandler: ^ { 
+					NSLog(@"$$$ Background task is terminated by System !!!");
+					[application endBackgroundTask: syncBackgroundTask]; //Tell the system that we are done with the tasks 
+					syncBackgroundTask = UIBackgroundTaskInvalid; //Set the task to be invalid 
+				}]; 
+				
+				NSLog(@"Will wait sync thread to finish sync");
+				
+				dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ 
+					
+					NSLog(@"Waiting for sync thread");
+					
+					do 
+					{
+						NSLog(@"Check sync");
+						[NSThread sleepForTimeInterval:1];
+					}while (rho_sync_issyncing()==1);
+
+					NSLog(@"Sync is finished");
+					
+					[application endBackgroundTask: syncBackgroundTask]; //End the task so the system knows that you are done with what you need to perform 
+					syncBackgroundTask = UIBackgroundTaskInvalid; //Invalidate the background_task 
+					
+				}); 
+			}
+		}
+	}
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {

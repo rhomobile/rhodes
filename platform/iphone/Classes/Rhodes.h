@@ -59,6 +59,7 @@
 	NVDelegate* nvDelegate;
 #ifdef __IPHONE_4_0
     EKEventStore *eventStore;
+	__block UIBackgroundTaskIdentifier syncBackgroundTask;
 #endif
 	
     id<RhoMainView,NSObject> mainView;
