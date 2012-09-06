@@ -1175,18 +1175,26 @@ end
 	  getProduct.create({:name => 'SkipLocalChanges'})
 	  getCustomer.create({:first => 'SkipLocalChanges'})
 	  
+	  Rhom::Rhom.have_local_changes.should == true
+	  
 	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync	  
 	  res['status'].should == 'complete'
 	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	  
+	  Rhom::Rhom.have_local_changes.should == false
 	  
 	  Rhom::Rhom.database_full_reset
 	  Rho::RhoConfig.bulksync_state='1'    
 	  
 	  getProduct.create({:name => 'SkipLocalChanges2'})
 	  
+	  Rhom::Rhom.have_local_changes.should == true
+	  
 	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync(false,'',true)
 	  res['status'].should == 'complete'
 	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	  
+	  Rhom::Rhom.have_local_changes.should == false
 	  
 	  items = getProduct.find(:all)
 	  items.length.should_not == 0
