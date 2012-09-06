@@ -349,8 +349,23 @@ namespace "config" do
     $tmpdir =  $bindir +"/tmp"
 
     $devroot = '/Developer' if $devroot.nil?
+    $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim') if $iphonesim.nil?
+
 
     $xcodebuild = $devroot + "/usr/bin/xcodebuild"
+    
+    if !File.exists? $xcodebuild
+        $xcodebuild = "/Applications/Xcode.app/Contents/Developer" + "/usr/bin/xcodebuild"
+        $devroot = '/Applications/Xcode.app/Contents/Developer'
+        $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43')
+    end
+    
+    if !File.exists? $xcodebuild
+        puts 'ERROR: can not found XCode command line tools'
+        puts 'Install XCode to default location' 
+        puts 'For XCode from 4.3 and later - you should install Command Line Tools package ! Open XCode - Preferences... - Downloads - Components - Command Line Tools'
+        exit 1
+    end
 
     $homedir = ENV['HOME']
     $simdir = "#{$homedir}/Library/Application Support/iPhone Simulator/"
