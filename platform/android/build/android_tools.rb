@@ -358,7 +358,9 @@ def restart_adb
   #  system ('killall -9 adb')
   #end
   sleep 3
+  puts 'Starting adb server again'
   system("#{$adb} start-server")
+  sleep 3
 end
 module_function :restart_adb
 
