@@ -110,6 +110,29 @@ typedef struct _TCookieData {
     char* cookie;
 } TCookieData;
 
+namespace rho
+{
+	namespace common
+	{
+		class WMNetworkStatusMonitor : public INetworkStatusMonitor
+		{
+			INetworkStatusReceiver* m_pReceiver;
+		public:
+			WMNetworkStatusMonitor() : m_pReceiver(0) {}
+			  virtual void setPollInterval(int pollInterval) {}
+			  virtual void setNetworkStatusReceiver(INetworkStatusReceiver* receiver) { m_pReceiver = receiver; }
+			  void notifyReceiver( enNetworkStatus status )
+			  {
+				  if (m_pReceiver != 0)
+				  {
+					  m_pReceiver->onNetworkStatusChanged(status);
+				  }
+			  }
+		};
+
+	}
+}
+
 class CMainWindow :
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 	public CFrameWindowImpl<CMainWindow>, 
@@ -389,6 +412,8 @@ private:
 	CAlertDialog *m_alertDialog;
 
     CSyncStatusDlg m_SyncStatusDlg;
+
+	WMNetworkStatusMonitor m_networkStatusMonitor;
 };
 
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE ) 
