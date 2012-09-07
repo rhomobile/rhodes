@@ -275,6 +275,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	rho_rhodesapp_callUiCreatedCallback();
 
+	RHODESAPP().setNetworkStatusMonitor(&m_networkStatusMonitor);
+
     return 0;
 }
 
@@ -1061,6 +1063,7 @@ LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPA
 #if defined (_WIN32_WCE)
 
 	rho_sysimpl_sethas_network( wParam );
+	m_networkStatusMonitor.notifyReceiver( ((int)wParam!=0)?rho::common::networkStatusConnected:rho::common::networkStatusDisconnected );
 
 #endif
 	return 0;
@@ -1071,6 +1074,7 @@ LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPAR
 #if defined (_WIN32_WCE)
 
 	rho_sysimpl_sethas_cellnetwork( (int)wParam );
+	m_networkStatusMonitor.notifyReceiver( (wParam!=0)?rho::common::networkStatusConnected:rho::common::networkStatusDisconnected );
 
 #endif
 	return 0;
