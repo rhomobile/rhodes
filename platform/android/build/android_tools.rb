@@ -319,26 +319,46 @@ end
 module_function :application_running
 
 def load_app_and_run(device_flag, apkfile, pkgname)
+  device = 'started emulator'
+  if device_flag == '-d'
+    device = 'connected device'
+  end
+
   puts "Loading package..."
 
   count = 0
   done = false
   while count < 20
-    f = Jake.run2($adb, [device_flag, "install", "-r", apkfile], {:nowait => true})
     theoutput = ""
-    while c = f.getc
-      $stdout.putc c
-      $stdout.flush
-      theoutput << c
-    end
-    f.close
-
+    thr = Thread.new {
+      cmd = "#{$adb} #{device_flag} install -r #{apkfile}"
+      puts "CMD: #{cmd}" 
+      #f = Jake.run2($adb, [device_flag, "install", "-r", apkfile], {:nowait => true})
+      f = `#{cmd}`
+      theoutput << f
+      puts f
+      #while c = f.getc
+      #  $stdout.putc c
+      #  $stdout.flush
+      #  theoutput << c
+      #end
+      #f.close
+    }
+    thr.kill unless thr.join(15)
+    
     if theoutput.to_s.match(/Success/)
       done = true
       break
     end
-
-    puts "Failed to load (possibly because emulator not done launching)- retrying"
+    
+    if theoutput.to_s.match(/INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES/)
+      raise "Inconsistent sertificates: please, uninstall application signed with another sertificate from #{device} first"
+    end
+    if theoutput.to_s.match(/INSTALL_FAILED_MISSING_SHARED_LIBRARY/)
+      raise "Missing shared library: application is not compatible with #{device} due to lack of required libraries"
+    end
+    
+    puts "Failed to load (possibly because emulator/device is still offline) - retrying"
     $stdout.flush
     sleep 1
     count += 1
