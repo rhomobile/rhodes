@@ -32,13 +32,7 @@
 #include "sync/SyncThread.h"
 #include "unzip/unzip.h"
 
-extern "C" {
-    void rho_net_request_with_data(const char *url, const char *str_body) 
-    {
-        getNetRequest().pushData(url, str_body, null);
-    }
-
-}
+extern "C" void rho_net_request_with_data(const char *url, const char *str_body);
 
 namespace rho {
 namespace common{
