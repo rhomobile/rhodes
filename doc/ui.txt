@@ -415,6 +415,11 @@ This will create a default menu with the following items (in top-down order):
 
 All of these menu items with the exception of "View Accounts" call a reserved menu item.  The "View Accounts" item will navigate to the path specified by the hash value, in this case /app/Account.
 
+To disable the Rhodes default menu, use an empty parameter list, as below.
+
+	:::ruby
+	@default_menu = {}
+
 ### Controller Action Menu
 To change the menu for a specific action (in controller.rb):
 
