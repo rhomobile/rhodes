@@ -31,6 +31,10 @@
 
 #USE_TRACES = Rake.application.options.trace
 
+if RUBY_PLATFORM =~ /(win|w)32$/
+  require 'win32/process'
+end
+
 module AndroidTools
 
 def fill_api_levels(sdkpath)
@@ -326,26 +330,43 @@ def load_app_and_run(device_flag, apkfile, pkgname)
 
   puts "Loading package..."
 
+  argv = [$adb, device_flag, "install", "-r", apkfile]
+  cmd = ""
+  argv.each { |arg| cmd << "#{arg} "}
+  #cmd = "#{$adb} #{device_flag} install -r #{apkfile}"
+  #puts "CMD: #{cmd}" 
+
   count = 0
   done = false
+  child = nil
   while count < 20
     theoutput = ""
-    thr = Thread.new {
-      cmd = "#{$adb} #{device_flag} install -r #{apkfile}"
-      puts "CMD: #{cmd}" 
-      #f = Jake.run2($adb, [device_flag, "install", "-r", apkfile], {:nowait => true})
-      f = `#{cmd}`
-      theoutput << f
-      puts f
-      #while c = f.getc
-      #  $stdout.putc c
-      #  $stdout.flush
-      #  theoutput << c
-      #end
-      #f.close
-    }
-    thr.kill unless thr.join(15)
-    
+    begin
+      status = Timeout::timeout(30) {
+        puts "CMD: #{cmd}"
+        IO.popen(argv) do |pipe|
+          child = pipe.pid
+          while line = pipe.gets
+            theoutput << line
+	    puts "RET: #{line}"
+	  end
+        end
+      }
+    rescue
+      Process.kill 9, child
+      if theoutput == ""
+        puts "Timeout reached while empty output: killing adb server and retrying..."
+	`#{$adb} kill-server`
+	count += 1
+	sleep 1
+	next
+      else
+        puts "Timeout reached: try to run application"
+        done = true
+        break
+      end
+    end
+
     if theoutput.to_s.match(/Success/)
       done = true
       break
