@@ -598,8 +598,13 @@ def add_extension(path,dest)
   start = pwd
   chdir path if File.directory?(path)
 
-  Dir.glob("*").each { |f| cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ }
+  Dir.glob("*").each do |f| 
+    cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
+  end  
 
+  cp_r 'app', File.join( File.dirname(dest), "apps/app" ) if File.exist? 'app'
+  cp_r 'public', File.join( File.dirname(dest), "apps/public" ) if File.exist? 'public'
+  
   chdir start
 end
 
