@@ -140,10 +140,26 @@ static VALUE eventToRuby(EKEvent *event)
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_NOTES), rb_str_new2(notes));
     }
     
-    if (event.recurrenceRule) {
+	EKRecurrenceRule* rule = nil;
+#ifdef __IPHONE_5_0
+	if ([event respondsToSelector:@selector(hasRecurrenceRules)]) {
+		if ([event hasRecurrenceRules]) {
+			if (event.recurrenceRules.count > 0) {
+				// get first rule
+				rule = [event.recurrenceRules objectAtIndex:0];
+			}
+		}	
+	}
+	else {
+		rule = [event recurrenceRule];
+	}	
+#else
+	rule = [event recurrenceRule];
+#endif
+	if (rule != nil) {
         VALUE rRecurrence = rb_hash_new();
         const char *s;
-        switch (event.recurrenceRule.frequency) {
+        switch (rule.frequency) {
             case EKRecurrenceFrequencyDaily: s = RUBY_EV_RECURRENCE_FREQUENCY_DAILY; break;
             case EKRecurrenceFrequencyWeekly: s = RUBY_EV_RECURRENCE_FREQUENCY_WEEKLY; break;
             case EKRecurrenceFrequencyMonthly: s = RUBY_EV_RECURRENCE_FREQUENCY_MONTHLY; break;
@@ -152,8 +168,19 @@ static VALUE eventToRuby(EKEvent *event)
         }
         rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_FREQUENCY), rb_str_new2(s));
         
-        int interval = event.recurrenceRule.interval;
+        int interval = rule.interval;
         rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_INTERVAL), INT2FIX(interval));
+		
+		if (rule.recurrenceEnd != nil) {
+            NSDate* endDate = rule.recurrenceEnd.endDate;
+            if (endDate != nil) {
+                rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_END), dateToRuby(endDate));
+                [endDate release];
+            } else {
+                int count = rule.recurrenceEnd.occurrenceCount;
+                rb_hash_aset(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_COUNT), INT2FIX(count));
+            }
+        }
         
         rb_hash_aset(rEvent, rb_str_new2(RUBY_EV_RECURRENCE), rRecurrence);
     }
@@ -228,7 +255,16 @@ static EKEvent *eventFromRuby(EKEventStore *eventStore, VALUE rEvent)
         int interval = NUM2INT(rInterval);
         
         EKRecurrenceRule *rule = [[EKRecurrenceRule alloc] initRecurrenceWithFrequency:freq interval:interval end:nil];
+#ifdef __IPHONE_5_0
+		if ([event respondsToSelector:@selector(addRecurrenceRule:)]) {
+			[event addRecurrenceRule:rule];
+		}
+		else {
+			[event setRecurrenceRule:rule];
+		}
+#else
         event.recurrenceRule = rule;
+#endif
         [rule release];
     }
     
@@ -256,7 +292,23 @@ VALUE event_fetch(VALUE rParams)
     
     for (int i = 0, lim = [events count]; i != lim; ++i) {
         EKEvent *event = [events objectAtIndex:i];
-        if (!include_repeating && event.recurrenceRule)
+		
+		BOOL hasRecurRules = NO;
+		
+#ifdef __IPHONE_5_0
+		if ([event respondsToSelector:@selector(hasRecurrenceRules)]) {
+			if ([event hasRecurrenceRules]) {
+				hasRecurRules = YES;
+			}
+		}
+		else {
+			hasRecurRules = [event recurrenceRule] != nil;
+		}
+#else
+		hasRecurRules = [event recurrenceRule] != nil;
+#endif
+		
+        if (!include_repeating && hasRecurRules)
             continue;
         VALUE rEvent = eventToRuby(event);
         rho_ruby_add_to_array(ret, rEvent);
