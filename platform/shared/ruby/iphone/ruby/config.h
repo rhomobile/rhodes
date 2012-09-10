@@ -81,7 +81,7 @@
 #define HAVE_SYS_TIMES_H 1
 #define HAVE_SYS_PARAM_H 1
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(RHODES_EMULATOR)
 #import <Availability.h>
 #ifndef __IPHONE_6_0
 #define HAVE_PWD_H 1
@@ -90,7 +90,7 @@
 #define HAVE_PWD_H 1
 #endif
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(RHODES_EMULATOR)
 #import <Availability.h>
 #ifndef __IPHONE_6_0
 #define HAVE_GRP_H 1
@@ -211,7 +211,7 @@
 #define HAVE_GETPGID 1
 #define HAVE_SETPGID 1
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(RHODES_EMULATOR)
 #import <Availability.h>
 #ifndef __IPHONE_6_0
 #define HAVE_INITGROUPS 1
