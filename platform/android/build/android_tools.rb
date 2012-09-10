@@ -333,6 +333,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
   argv = [$adb, device_flag, "install", "-r", apkfile]
   cmd = ""
   argv.each { |arg| cmd << "#{arg} "}
+  argv = cmd if RUBY_VERSION =~ /^1\.8/
   #cmd = "#{$adb} #{device_flag} install -r #{apkfile}"
   #puts "CMD: #{cmd}" 
 
@@ -342,24 +343,24 @@ def load_app_and_run(device_flag, apkfile, pkgname)
   while count < 20
     theoutput = ""
     begin
-      status = Timeout::timeout(30) {
+      status = Timeout::timeout(30) do
         puts "CMD: #{cmd}"
         IO.popen(argv) do |pipe|
           child = pipe.pid
           while line = pipe.gets
             theoutput << line
-	    puts "RET: #{line}"
-	  end
+            puts "RET: #{line}"
+          end
         end
-      }
-    rescue
-      Process.kill 9, child
+      end
+    rescue Timeout::Error
+      Process.kill 9, child if child
       if theoutput == ""
         puts "Timeout reached while empty output: killing adb server and retrying..."
-	`#{$adb} kill-server`
-	count += 1
-	sleep 1
-	next
+        `#{$adb} kill-server`
+        count += 1
+        sleep 1
+        next
       else
         puts "Timeout reached: try to run application"
         done = true
