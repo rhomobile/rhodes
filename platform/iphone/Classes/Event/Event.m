@@ -248,7 +248,7 @@ VALUE event_fetch(VALUE rParams)
     NSDate *start = dateFromRuby(start_date);
     NSDate *finish = dateFromRuby(end_date);
     
-    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
+    EKEventStore *eventStore = [[Rhodes sharedInstance] getEventStore];
     NSPredicate *pred = [eventStore predicateForEventsWithStartDate:start endDate:finish calendars:nil];
     NSArray *events = [eventStore eventsMatchingPredicate:pred];
     
@@ -271,7 +271,7 @@ VALUE event_fetch_by_id(const char *eid)
     calendar_check();
     
 #if defined(__IPHONE_4_0)
-    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
+    EKEventStore *eventStore = [[Rhodes sharedInstance] getEventStore];
     EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
     
     return eventToRuby(event);
@@ -285,7 +285,7 @@ const char* event_save(VALUE rEvent)
     calendar_check();
     
 #if defined(__IPHONE_4_0)
-    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
+    EKEventStore *eventStore = [[Rhodes sharedInstance] getEventStore];
 
     EKEvent *event = eventFromRuby(eventStore, rEvent);
     
@@ -310,7 +310,7 @@ void event_delete(const char *eid)
     calendar_check();
     
 #if defined(__IPHONE_4_0)
-    EKEventStore *eventStore = [[Rhodes sharedInstance] eventStore];
+    EKEventStore *eventStore = [[Rhodes sharedInstance] getEventStore];
     EKEvent *event = [eventStore eventWithIdentifier:[NSString stringWithUTF8String:eid]];
     NSError *err;
     BOOL removed = [eventStore removeEvent:event span:EKSpanFutureEvents error:&err];

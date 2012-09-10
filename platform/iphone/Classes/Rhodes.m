@@ -97,9 +97,6 @@ static BOOL app_created = NO;
 @implementation Rhodes
 
 @synthesize window, player, cookies, signatureDelegate, nvDelegate;
-#ifdef __IPHONE_4_0
-@synthesize eventStore;
-#endif
 
 static Rhodes *instance = NULL;
 
@@ -120,7 +117,15 @@ static Rhodes *instance = NULL;
 }
 
 
+#ifdef __IPHONE_4_0
+- (EKEventStore*) getEventStore {
+	if (eventStore == nil) {
+		eventStore = [[EKEventStore alloc] init];
+	}
 
+	return eventStore;
+}
+#endif
 
 
 + (void)setStatusBarHidden:(BOOL)v {
@@ -625,10 +630,6 @@ static Rhodes *instance = NULL;
 #endif //__IPHONE_3_0
 #endif //APP_BUILD_CAPABILITY_PUSH    
     
-#ifdef __IPHONE_4_0
-    eventStore = [[EKEventStore alloc] init];
-#endif
-
     NSLog(@"Initialization finished");
 }
 
@@ -788,6 +789,8 @@ static Rhodes *instance = NULL;
 
 	NSURL* url = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
     NSLog(@"didFinishLaunchingWithOptions: %@", url);
+	
+	eventStore = nil;
 	
 	// store start parameter
 	NSString* start_parameter = [NSString stringWithUTF8String:""];

@@ -69,9 +69,6 @@
 @property (nonatomic, retain) NSMutableDictionary *cookies;
 @property (nonatomic, copy) SignatureDelegate* signatureDelegate;
 @property (nonatomic, copy) NVDelegate* nvDelegate;
-#ifdef __IPHONE_4_0
-@property (nonatomic, readonly) EKEventStore *eventStore;
-#endif
 
 + (Rhodes*)sharedInstance;
 
@@ -103,5 +100,9 @@
 
 - (void)openFullScreenNativeView:(UIView*)view;
 - (void)closeFullScreenNativeView;
+
+#ifdef __IPHONE_4_0
+- (EKEventStore*) getEventStore;
+#endif
 	
 @end
