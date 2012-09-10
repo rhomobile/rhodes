@@ -883,7 +883,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     wFrame.size.height -= nFrame.size.height;
 
     [root addSubview:navbar];
-    assert([navbar retainCount] == 2);
+    assert([navbar retainCount] > 1);
 
     [self setContentRect:wFrame];
 }
