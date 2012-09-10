@@ -239,6 +239,12 @@ namespace "config" do
     $use_google_addon_api = true if $use_geomapping
 
     #Additionally $use_google_addon_api set to true if PUSH capability is enabled
+    
+    $config_xml = $app_config["android"]["rhoelements"]["config"] if $app_config["android"]["rhoelements"] if $app_config["android"]
+    if $config_xml
+      $config_xml = File.expand_path $config_xml, $app_path
+      puts "Custom config.xml path: #{$config_xml}" 
+    end
 
     puts "Use Google addon API: #{$use_google_addon_api}" if USE_TRACES
 
@@ -788,7 +794,6 @@ namespace "build" do
           cp_r add, addspath if File.directory? add
         end
       end
-
     end #task :extensions
 
     task :libsqlite => "config:android" do
@@ -1398,8 +1403,9 @@ namespace "build" do
             cp_r res, $tmpdir
           end
       end
-      
-      unless $config_xml.nil?
+
+      if $config_xml
+        puts "Copying custom config.xml"
         rawres_path = File.join($tmpdir, 'res', 'raw')
         mkdir_p rawres_path unless File.exist? rawres_path
         cp $config_xml, File.join(rawres_path,'config.xml')
@@ -1411,7 +1417,6 @@ namespace "build" do
       buf = File.new(File.join($app_rjava_dir, "R.java"),"r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/,"\npackage com.rhomobile.rhodes;\n")
       buf.gsub!(/public\s*static\s*final\s*int/, "public static int")
       File.open(File.join($app_rjava_dir, "R", "R.java"),"w") { |f| f.write(buf) }
-
 
       srclist = File.join($builddir, "RhodesSRC_build.files")
       newsrclist = File.join($tmpdir, "RhodesSRC_build.files")
@@ -1518,7 +1523,7 @@ namespace "build" do
       end
     end
 
-    task :extensions_adds => "config:android:extensions" do
+    task :extensions_adds => "config:android:extensions" do    
     end
 
     task :upgrade_package => :rhobundle do
