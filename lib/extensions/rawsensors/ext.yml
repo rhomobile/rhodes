@@ -1,0 +1,4 @@
+entry: Init_RawSensors_extension	
+javaentry: com.rawsensors.RawSensors
+android_additional_sources_list: ext/rawsensors/platform/android/ext_build.files
+libraries: ["RawSensors"]
