@@ -73,6 +73,16 @@ Follow these instructions to build your own customized version of RhoSimulator.
 
 * Follow [Building a Rhodes Application for iPhone/iPad - Prerequisites](build#building-a-rhodes-application-for-iphoneipad), but do not install the Rhodes gem since you're going to use Rhodes SDK source.
 * Get the `rhodes` source (if haven't done it already) as described [here](build#setup-rhodes-source-code). Don't forget to add the `bin` folder to your path, run `rhodes-setup` and update Rhodes SDK path in `build.yml` at your application root folder.
+* If you're using Xcode 4.4 or later, then you must install the OS 10.6 SDK as follows:
+  1. [Download](https://developer.apple.com/downloads/index.action) a version of Xcode for OS 10.7 Lion (such as Xcode 4.3.3.)
+  2. Mount the disk image file by double-clicking on it (do not drag-install this older version of Xcode!)
+  3. On the disk image, control-click on the Xcode icon and select Show Package Contents.
+  4. Browse to the directory `Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs`. You should see a folder named `MacOSX10.6.sdk`
+  5. Control-click on your newer Xcode icon (which you previously installed on your hard drive) and select Show Package Contents.
+  6. In your newer Xcode Browse to the directory `Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs`.
+  7. Copy the `MacOSX10.6.sdk` folder from the SDKs folder on the older disk image to the SDKs folder in the newer Xcode.
+  8. Unmount the disk image by dragging it to the trash.
+
 * First build the Qt libraries for Mac from sources to enable HTTPS protocol support in RhoSimulator:
     * Download the Qt source:
         * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
