@@ -90,6 +90,7 @@
 		FA52317B12E7511700AB55CC /* esri.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52317412E7511700AB55CC /* esri.png */; };
 		FA52317C12E7511700AB55CC /* esri@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52317512E7511700AB55CC /* esri@2x.png */; };
 		FA52330112E9204300AB55CC /* BluePushpin@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA52330012E9204300AB55CC /* BluePushpin@2x.png */; };
+		FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA673A5615FCD787005CAD64 /* CoreMotion.framework */; };
 		FAC6EE6D143B3AF100B8E352 /* RhoMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE6C143B3AF100B8E352 /* RhoMapViewController.m */; };
 		FACA4C781270AC0900777CFF /* LeftViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C711270AC0900777CFF /* LeftViewController.m */; };
 		FACA4C791270AC0900777CFF /* RightViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C731270AC0900777CFF /* RightViewController.m */; };
@@ -301,6 +302,7 @@
 		FA52317412E7511700AB55CC /* esri.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = esri.png; path = ESRI/esri.png; sourceTree = "<group>"; };
 		FA52317512E7511700AB55CC /* esri@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "esri@2x.png"; path = "ESRI/esri@2x.png"; sourceTree = "<group>"; };
 		FA52330012E9204300AB55CC /* BluePushpin@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "BluePushpin@2x.png"; path = "ESRI/BluePushpin@2x.png"; sourceTree = "<group>"; };
+		FA673A5615FCD787005CAD64 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/CoreMotion.framework; sourceTree = DEVELOPER_DIR; };
 		FAC6EE6B143B3AF100B8E352 /* RhoMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMapViewController.h; path = MapView/RhoMapViewController.h; sourceTree = "<group>"; };
 		FAC6EE6C143B3AF100B8E352 /* RhoMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RhoMapViewController.m; path = MapView/RhoMapViewController.m; sourceTree = "<group>"; };
 		FACA4C701270AC0900777CFF /* LeftViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LeftViewController.h; path = SplitView/LeftViewController.h; sourceTree = "<group>"; };
@@ -322,6 +324,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */,
 				FA3C79E2136ED8BB002302E5 /* CoreMedia.framework in Frameworks */,
 				FA3C79AE136ED523002302E5 /* CoreVideo.framework in Frameworks */,
 				FA4D3F8D136B0A98009D6E63 /* libiconv.dylib in Frameworks */,
@@ -447,6 +450,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FA673A5615FCD787005CAD64 /* CoreMotion.framework */,
 				BDA4BA9F109A347400467AB9 /* libz.dylib */,
 				46B007061033776600D0C2F4 /* CoreGraphics.framework */,
 				F516695F0FFD78770079F023 /* AVFoundation.framework */,
