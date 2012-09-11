@@ -31,10 +31,6 @@
 
 #USE_TRACES = Rake.application.options.trace
 
-#if RUBY_PLATFORM =~ /(win|w)32$/
-#  require 'win32/process'
-#end
-
 module AndroidTools
 
 def fill_api_levels(sdkpath)
