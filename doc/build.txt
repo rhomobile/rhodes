@@ -939,6 +939,8 @@ To start the build process, create a Run Configuration: select your project in t
 
 The Run Configurations window appears.
 
+**NOTE: In the RhoStudio Run Configurations window, when you choose the Windows Mobile platform and any of the platform types (such as 6.0, 6.5.3, CE5.0), this platform setting overrides the SDK settings for Windows Mobile in the application build.yml file. This override does NOT affect RhoMobile Production Build, or using rake (without RhoStudio) to build and run a Windows Mobile app; these options use the Windows Mobile SDK settings in the build.yml file.**
+
 #### Running on the Windows Mobile Simulator in RhoStudio
 
 To run on the Windows Mobile simulator, select Windows Mobile in Platform and Simulator in Simulator type. Then click the Run button.
