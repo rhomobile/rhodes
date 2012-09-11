@@ -31,9 +31,9 @@
 
 #USE_TRACES = Rake.application.options.trace
 
-if RUBY_PLATFORM =~ /(win|w)32$/
-  require 'win32/process'
-end
+#if RUBY_PLATFORM =~ /(win|w)32$/
+#  require 'win32/process'
+#end
 
 module AndroidTools
 
