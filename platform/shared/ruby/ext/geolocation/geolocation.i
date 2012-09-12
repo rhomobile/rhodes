@@ -10,6 +10,9 @@ extern double rho_geo_latitude();
 #define longitude rho_geo_longitude
 extern double rho_geo_longitude();
 
+#define altitude rho_geo_altitude
+extern double rho_geo_altitude();
+
 #define accuracy rho_geo_accuracy
 extern float rho_geo_accuracy();
 
@@ -54,6 +57,7 @@ extern void rho_geoimpl_do_geocoding(rho_param* p, const char* callback, int cal
 
 extern double latitude();
 extern double longitude();
+extern double altitude();
 extern float  accuracy();
 extern int    known_position();
 extern void   set_view_notification( const char *url, char* params, int timeout_sec);
