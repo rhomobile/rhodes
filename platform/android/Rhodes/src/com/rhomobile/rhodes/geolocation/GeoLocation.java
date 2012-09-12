@@ -41,6 +41,7 @@ public class GeoLocation {
 	
 	private static double ourLatitude = 0;
 	private static double ourLongitude = 0;
+	private static double ourAltitude = 0;
 	private static double ourAccuracy = 0;
 	private static boolean ourIsKnownPosition = false;
 	private static boolean ourIsEnable = true;
@@ -56,12 +57,14 @@ public class GeoLocation {
 			if (loc != null) {
 				ourLatitude = loc.getLatitude();
 				ourLongitude = loc.getLongitude();
+				ourAltitude = loc.getAltitude();
 				ourAccuracy = loc.getAccuracy();
 				ourIsKnownPosition = true;
 			}
 			else {
 				ourLatitude = 0;
 				ourLongitude = 0;
+				ourAltitude = 0;
 				ourAccuracy = 0;
 				ourIsKnownPosition = false;
 			}
@@ -169,6 +172,19 @@ public class GeoLocation {
 			checkState();
 			Logger.T(TAG, "getLongitude");
 			return ourLongitude;
+		}
+		catch (Exception e) {
+            Logger.E(TAG, e);
+		}
+		return 0.0;
+	}
+	
+	public static double getAltitude() {
+		onUpdateLocation();
+		try {
+			checkState();
+			Logger.T(TAG, "getAltitude");
+			return ourAltitude;
 		}
 		catch (Exception e) {
             Logger.E(TAG, e);
