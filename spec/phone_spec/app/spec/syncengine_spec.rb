@@ -204,7 +204,7 @@ end
     res['error_code'].to_i.should == ::Rho::RhoError::ERR_CLIENTISNOTLOGGEDIN
 
   end
-
+	
 =begin
   it "should update sources from database" do
     uniq_sources = Rho::RhoConfig::sources.values  
@@ -1090,47 +1090,57 @@ end
     item2 = getProduct.find(item.object)
     item2.vars.should_not be_nil
   end
-
-  it "should not sync non-exist properties from freezed model" do
-    SyncEngine.logged_in.should == 1
-  
-    res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync( "/app/Settings/sync_notify")
-    res['status'].should == 'ok'
-    res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-  
-    cust = getCustomer().find(:first, :conditions => {:first => 'CustTest2'} )
-    cust.should_not be_nil
-
-    Rhom::Rhom.database_full_reset
-    Rho::RhoConfig.bulksync_state='1'
-    
-    cust1 = getCustomer().find(:first)
-    cust1.should be_nil
-
-    saved_src = Rho::RhoConfig.sources[getCustomer_str()]
-    begin
-        if !$spec_settings[:schema_model]
-            Rho::RhoConfig.sources[getCustomer_str()]['freezed'] = true
-        else
-            Rho::RhoConfig.sources[getCustomer_str()]['schema']['property'].delete('first')
-        end
-        ::Rho::RHO.init_sync_source_properties(Rho::RhoConfig::sources.values)
-        
-        res2 = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync( "/app/Settings/sync_notify")
-        res2['status'].should == 'ok'
-        res2['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-
-        cust_all = getCustomer().find(:all)
-        cust_all.should_not be_nil
-        cust_all.size.should > 0
-
-        cust2 = getCustomer().find(:first, :conditions => {:first => 'CustTest2'} )
-        cust2.should be_nil
-    ensure
-        Rho::RhoConfig.sources[getCustomer_str()] = saved_src
-    end
-  end
-
+ 
+=begin
+	it "should not sync non-exist properties from freezed model with similar names" do
+		SyncEngine.logged_in.should == 1
+		
+		res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync( "/app/Settings/sync_notify")
+		res['status'].should == 'ok'
+		res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+		
+		puts "customers = #{getCustomer().find(:all).inspect}"
+		
+		cust = getCustomer().find(:first, :conditions => {:first => 'CustTest2'} )
+		cust.should_not be_nil
+		
+		Rhom::Rhom.database_full_reset
+		Rho::RhoConfig.bulksync_state='1'
+		
+		cust1 = getCustomer().find(:first)
+		cust1.should be_nil
+		
+		saved_src = Rho::RhoConfig.sources[getCustomer_str()]
+		begin
+			if !$spec_settings[:schema_model]
+				Rho::RhoConfig.sources[getCustomer_str()]['freezed'] = true
+				else
+				Rho::RhoConfig.sources[getCustomer_str()]['schema']['property'].delete('first')
+				Rho::RhoConfig.sources[getCustomer_str()]['schema']['property'].add('first1')
+				
+			end
+			::Rho::RHO.init_sync_source_properties(Rho::RhoConfig::sources.values)
+			
+			res2 = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync( "/app/Settings/sync_notify")
+			res2['status'].should == 'ok'
+			res2['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+			
+			cust_all = getCustomer().find(:all)
+			cust_all.should_not be_nil
+			cust_all.size.should > 0
+			
+			cust2 = getCustomer().find(:first, :conditions => {:first => 'CustTest2'} )
+			cust2.should be_nil
+			
+			cust3 = getCustomer().find(:first1, :conditions => {:first => 'CustTest2'} )
+			cust3.should be_nil
+			ensure
+			Rho::RhoConfig.sources[getCustomer_str()] = saved_src
+			::Rho::RHO.init_sync_source_properties(Rho::RhoConfig::sources.values)
+		end
+	end
+=end
+		
   it "should handle update created object while sync error" do
     SyncEngine.logged_in.should == 1
 
@@ -1167,7 +1177,6 @@ end
 	
   it "should skip unmodified models in sync" do
 	  SyncEngine.logged_in.should == 1
-	  #	  Rho::RhoConfig.bulksync_state='1'    
 	  
 	  Rhom::Rhom.database_full_reset
 	  Rho::RhoConfig.bulksync_state='1'    
@@ -1180,11 +1189,11 @@ end
 	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync	  
 	  res['status'].should == 'complete'
 	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-	  
+	  	  
 	  Rhom::Rhom.have_local_changes.should == false
 	  
 	  Rhom::Rhom.database_full_reset
-	  Rho::RhoConfig.bulksync_state='1'    
+	  Rho::RhoConfig.bulksync_state='1' 
 	  
 	  getProduct.create({:name => 'SkipLocalChanges2'})
 	  
@@ -1193,7 +1202,7 @@ end
 	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync(false,'',true)
 	  res['status'].should == 'complete'
 	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-	  
+	  	  
 	  Rhom::Rhom.have_local_changes.should == false
 	  
 	  items = getProduct.find(:all)
@@ -1202,23 +1211,29 @@ end
 	  items = getCustomer.find(:all)
 	  items.length.should == 0
 	  
+	  Rhom::Rhom.database_full_reset
+	  Rho::RhoConfig.bulksync_state='1' 
+	  
 	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
 	  res['status'].should == 'complete'
 	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
-	  
+	  	  
 	  items = getProduct.find(:all, :conditions => { :name=>'SkipLocalChanges' })
+	  puts "items = #{items.inspect}"
 	  items.length.should_not == 0
 	  items.each do |item|
 		  item.destroy
 	  end
 	  
 	  items = getProduct.find(:all, :conditions => { :name=>'SkipLocalChanges2' })
+	  puts "items = #{items.inspect}"	  
 	  items.length.should_not == 0
 	  items.each do |item|
 		  item.destroy
 	  end
 	  
 	  items = getCustomer.find(:all, :conditions => { :first=>'SkipLocalChanges' })
+	  puts "items = #{items.inspect}"	  
 	  items.length.should_not == 0
 	  items.each do |item|
 		  item.destroy
@@ -1228,6 +1243,47 @@ end
 	  res['status'].should == 'complete'
 	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
   end
+	
+	it "should not sync non-exist properties from freezed model" do
+		SyncEngine.logged_in.should == 1
+		
+		res = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync( "/app/Settings/sync_notify")
+		res['status'].should == 'ok'
+		res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+		
+		cust = getCustomer().find(:first, :conditions => {:first => 'CustTest2'} )
+		cust.should_not be_nil
+		
+		Rhom::Rhom.database_full_reset
+		Rho::RhoConfig.bulksync_state='1'
+		
+		cust1 = getCustomer().find(:first)
+		cust1.should be_nil
+		
+		saved_src = Rho::RhoConfig.sources[getCustomer_str()]
+		begin
+			if !$spec_settings[:schema_model]
+				Rho::RhoConfig.sources[getCustomer_str()]['freezed'] = true
+				else
+				Rho::RhoConfig.sources[getCustomer_str()]['schema']['property'].delete('first')
+			end
+			::Rho::RHO.init_sync_source_properties(Rho::RhoConfig::sources.values)
+			
+			res2 = ::Rho::RhoSupport::parse_query_parameters getCustomer.sync( "/app/Settings/sync_notify")
+			res2['status'].should == 'ok'
+			res2['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+			
+			cust_all = getCustomer().find(:all)
+			cust_all.should_not be_nil
+			cust_all.size.should > 0
+			
+			cust2 = getCustomer().find(:first, :conditions => {:first => 'CustTest2'} )
+			cust2.should be_nil
+			ensure
+			Rho::RhoConfig.sources[getCustomer_str()] = saved_src
+			::Rho::RHO.init_sync_source_properties(Rho::RhoConfig::sources.values)
+		end
+	end
   
   it "should logout" do
     SyncEngine.logout()
