@@ -861,7 +861,9 @@ Follow [All Platforms Prerequisites](#all-platforms-prerequisites).
 Make sure you have installed the following software.
 
 * .NET Compact Framework
-* Windows Mobile 6 Professional SDK(s) 
+* For Windows Mobile 6: Windows Mobile 6 Professional SDK Refresh
+* For Windows Mobile 6.5.3: Windows Mobile 6.5.3 Professional DTK
+* For Windows CE 5.0: MC3000c50b PSDK from [Motorola Support Central](http://support.symbol.com/support/supportcentral/supportcentral.do?id=m1)
 * Microsoft Active Sync 4.5 for Windows XP; Windows Mobile Device Center for Windows Vista or higher
 * Microsoft Device Emulator 3.0 for Windows Vista or higher
 * Visual Studio 2008. 
