@@ -20,11 +20,11 @@
 
 #define logging_enable false
 
-void logi(const char* text) {
+static void logi(const char* text) {
 	if (logging_enable) __android_log_write(ANDROID_LOG_INFO, "NFC jni", text);
 } 
 
-void loge(const char* text) {
+static void loge(const char* text) {
 	__android_log_write(ANDROID_LOG_INFO, "NFC jni ERROR : ", text);
 } 
 
