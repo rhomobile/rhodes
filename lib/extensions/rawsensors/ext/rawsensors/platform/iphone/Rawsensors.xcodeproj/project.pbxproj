@@ -247,11 +247,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RawSensors_Prefix.pch;
 				HEADER_SEARCH_PATHS = (
-					/Users/MOHUS/rhodes/platform/shared/common,
-					/Users/MOHUS/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/rhodes/platform/shared,
+					../../../../../../../platform/shared/common,
+					../../../../../../../platform/shared/rubyext,
+					../../../../../../../platform/shared/ruby/include,
+					../../../../../../../platform/shared/ruby/iphone,
+					../../../../../../../platform/shared,
 					"$(RHO_ROOT)/platform/shared",
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -273,11 +273,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = RawSensors_Prefix.pch;
 				HEADER_SEARCH_PATHS = (
-					/Users/MOHUS/rhodes/platform/shared/common,
-					/Users/MOHUS/rhodes/platform/shared/rubyext,
-					/Users/MOHUS/rhodes/platform/shared/ruby/include,
-					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
-					/Users/MOHUS/rhodes/platform/shared,
+					../../../../../../../platform/shared/common,
+					../../../../../../../platform/shared/rubyext,
+					../../../../../../../platform/shared/ruby/include,
+					../../../../../../../platform/shared/ruby/iphone,
+					../../../../../../../platform/shared,
 					"$(RHO_ROOT)/platform/shared",
 				);
 				INSTALL_PATH = /usr/local/lib;
