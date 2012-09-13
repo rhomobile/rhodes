@@ -45,7 +45,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhowebkit", "..\..\..\Motor
 		Release.AspNetCompiler.Debug = "False"
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RhoElementsExt", "..\..\..\MotoNeon2\vobs\NEON\R2D1\RhoElementsOneExtension\extensions\rhoelementsext\ext\rhoelementsext\platform\wm\RhoElementsExt.vcproj", "{93453E28-E84A-40C4-BD6A-51A8373D7044}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RhoElementsExt", "..\..\..\MotoNeon\vobs\NEON\R2D1\RhoElementsOneExtension\extensions\rhoelementsext\ext\rhoelementsext\platform\wm\RhoElementsExt.vcproj", "{93453E28-E84A-40C4-BD6A-51A8373D7044}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tcmalloc", "tcmalloc\tcmalloc.vcproj", "{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}"
 EndProject
@@ -567,7 +567,8 @@ Global
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Debug|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = Debug|Windows Mobile 6 Professional SDK (ARMV4I)
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Debug|Windows Mobile 6 Professional SDK (ARMV4I).Build.0 = Debug|Windows Mobile 6 Professional SDK (ARMV4I)
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Debug|Windows Mobile 6 Standard SDK (ARMV4I).ActiveCfg = Debug|Windows Mobile 6 Professional SDK (ARMV4I)
-		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Debug|Windows Mobile 6 Professional SDK (ARMV4I)
+		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
+		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I).Build.0 = Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Release|MC3000c50b (ARMV4I).ActiveCfg = Release|MC3000c50b (ARMV4I)
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Release|MC3000c50b (ARMV4I).Build.0 = Release|MC3000c50b (ARMV4I)
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Release|Pocket PC 2003 (ARMV4).ActiveCfg = Release|Windows Mobile 5.0 Smartphone SDK (ARMV4I)
@@ -583,7 +584,7 @@ Global
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Release|Windows Mobile 6 Professional SDK (ARMV4I).ActiveCfg = Release|Windows Mobile 6 Professional SDK (ARMV4I)
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Release|Windows Mobile 6 Professional SDK (ARMV4I).Build.0 = Release|Windows Mobile 6 Professional SDK (ARMV4I)
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Release|Windows Mobile 6 Standard SDK (ARMV4I).ActiveCfg = Release|Windows Mobile 6 Professional SDK (ARMV4I)
-		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Release|Windows Mobile 6 Professional SDK (ARMV4I)
+		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I).ActiveCfg = Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.SimulatorDebug|MC3000c50b (ARMV4I).ActiveCfg = Debug|Windows Mobile 5.0 Smartphone SDK (ARMV4I)
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.SimulatorDebug|Pocket PC 2003 (ARMV4).ActiveCfg = Debug|Windows Mobile 5.0 Smartphone SDK (ARMV4I)
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}.SimulatorDebug|Smartphone 2003 (ARMV4).ActiveCfg = Debug|Windows Mobile 5.0 Smartphone SDK (ARMV4I)
