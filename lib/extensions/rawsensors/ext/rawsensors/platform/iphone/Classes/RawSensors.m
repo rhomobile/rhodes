@@ -56,7 +56,7 @@ static RhoRawSensors* ourRhoSensors = nil;
         }
     }
     if ([RAW_SENSORS_SERVICE_MAGNETOMETER compare:service_name options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        if (motionManager.deviceMotionAvailable) {
+        if (motionManager.deviceMotionAvailable && ([CMMotionManager availableAttitudeReferenceFrames] & CMAttitudeReferenceFrameXArbitraryCorrectedZVertical)) {
             return rho_ruby_create_boolean(1);
         }
     }
@@ -182,7 +182,7 @@ static RhoRawSensors* ourRhoSensors = nil;
             //     [[RhoRawSensors getInstance] onMagnetometerUpdate:magData error:error];
             // }];
             
-            [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue currentQueue] withHandler: ^(CMDeviceMotion *motion, NSError *error)
+            [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue:[NSOperationQueue currentQueue] withHandler: ^(CMDeviceMotion *motion, NSError *error)
              {
                  [[RhoRawSensors getInstance] onMotionUpdate:motion error:error];
              }];
@@ -239,9 +239,12 @@ static RhoRawSensors* ourRhoSensors = nil;
 }
 
 - (void) onMotionUpdate:(CMDeviceMotion*)motion error:(NSError*)error {
-    magnetometer_x = motion.magneticField.field.x;
-    magnetometer_y = motion.magneticField.field.y;
-    magnetometer_z = motion.magneticField.field.z;
+    magnetometer_x = motionManager.deviceMotion.magneticField.field.x;// motion.magneticField.field.x;
+    magnetometer_y = motionManager.deviceMotion.magneticField.field.y;//motion.magneticField.field.y;
+    magnetometer_z = motionManager.deviceMotion.magneticField.field.z;//motion.magneticField.field.z;
+    //magnetometer_x = motion.magneticField.field.x;
+    //magnetometer_y = motion.magneticField.field.y;
+    //magnetometer_z = motion.magneticField.field.z;
 }
 
 
