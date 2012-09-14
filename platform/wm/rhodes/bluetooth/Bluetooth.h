@@ -225,7 +225,7 @@ public:
 
 
 
-	void fireCreateSessionCallBack(const char* status, const char* connected_device_name);
+	void fireCreateSessionCallBack(const char* status, const char* connected_device_name, bool in_thread = false);
 
 	void onDiscoverDlgSelectDevice(int index);
 	void onDiscoverDlgCancel();
@@ -244,8 +244,8 @@ public:
 
 private:
 
-	void fireRhodeCallback(const char* callback_url, const char* body);
-	void fireSessionCallBack(const char* connected_device_name, const char* event_type);
+	void fireRhodeCallback(const char* callback_url, const char* body, bool in_thread = false);
+	void fireSessionCallBack(const char* connected_device_name, const char* event_type, bool in_thread = false);
 
 	void init();
 	void freeAll();

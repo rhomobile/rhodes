@@ -110,13 +110,13 @@ DWORD WINAPI RhoBluetoothManager::runThreadDiscovered(LPVOID data) {
 	int iNameLen=0;
 	RhoBluetoothManager* mManager = RhoBluetoothManager::getInstance();
 	if(mManager->m_socketServer!=INVALID_SOCKET) {
-		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
+		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "", true);
 		return 0;
 	}
 	mManager->m_socketServer = socket (AF_BT, SOCK_STREAM, BTHPROTO_RFCOMM);
 	if (mManager->m_socketServer  == INVALID_SOCKET) 
 	{
-		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
+		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "", true);
 		return WSAGetLastError ();
 	}
 
@@ -126,23 +126,23 @@ DWORD WINAPI RhoBluetoothManager::runThreadDiscovered(LPVOID data) {
 	sa.port = 0;
 	if (bind (mManager->m_socketServer, (SOCKADDR *)&sa, sizeof(sa))) 
 	{
-		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
+		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "", true);
 		return WSAGetLastError ();
 	}
 	iNameLen = sizeof(sa);
 	if (getsockname(mManager->m_socketServer, (SOCKADDR *)&sa, &iNameLen))	
 	{
-		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
+		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "", true);
 		return WSAGetLastError ();
 	}
 
 	if(mManager->RegisterService(rgbSdpRecord, SDP_RECORD_SIZE, SDP_CHANNEL_OFFSET, (UCHAR)sa.port)!=0)
-		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
+		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "", true);
 		return WSAGetLastError();
 
 	if (listen (mManager->m_socketServer, SOMAXCONN)) 
 	{
-		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
+		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "", true);
 		return WSAGetLastError ();
 	}
 	int iSize=0, cbBytesRecd=0 ;
@@ -160,7 +160,7 @@ DWORD WINAPI RhoBluetoothManager::runThreadDiscovered(LPVOID data) {
 	sockaddr peer;
 	int size = sizeof(peer);
 	if (getpeername( mManager->m_socketServer, &peer, &size)) {
-		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
+		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "", true);
 		return WSAGetLastError ();
 	}
 	memcpy(mManager->mConnectedDeviceName, peer.sa_data, size);
@@ -177,7 +177,7 @@ DWORD WINAPI RhoBluetoothManager::runThreadDiscovered(LPVOID data) {
 			//if error occured in receiving, return error code
 			if (cbBytesRecd == SOCKET_ERROR) 
 			{
-				mManager->fireSessionCallBack(mManager->mConnectedDeviceName, RHO_BT_ERROR);
+				mManager->fireSessionCallBack(mManager->mConnectedDeviceName, RHO_BT_ERROR, true);
 				return WSAGetLastError();
 			}
 			else
@@ -197,7 +197,7 @@ DWORD WINAPI RhoBluetoothManager::runThreadDiscovered(LPVOID data) {
 		}
 	}
 	else {
-		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "");
+		mManager->fireCreateSessionCallBack(RHO_BT_ERROR, "", true);
 		mManager->terminateDiscoveredThread();
 	}
 	return 0;
@@ -332,7 +332,7 @@ void RhoBluetoothManager::rho_bluetooth_session_disconnect(const char* connected
 	}
 	freeAll();
 	init();
-	fireSessionCallBack(connected_device_name, RHO_BT_SESSION_DISCONNECT);
+	fireSessionCallBack(connected_device_name, RHO_BT_SESSION_DISCONNECT, true);
 }
 
 int RhoBluetoothManager::rho_bluetooth_session_get_status(const char* connected_device_name) {
@@ -357,13 +357,13 @@ void RhoBluetoothManager::rho_bluetooth_session_write_data(const char* connected
 	int iBytesSent = send (m_socketClient, (char *)buf, datasize, 0);
 	if (iBytesSent != datasize)
 	{
-		fireSessionCallBack(mConnectedDeviceName, RHO_BT_ERROR);
+		fireSessionCallBack(mConnectedDeviceName, RHO_BT_ERROR, true);
 		return;
 		//return WSAGetLastError ();
 	}
 }
 
-void RhoBluetoothManager::fireCreateSessionCallBack(const char* status, const char* connected_device_name) {
+void RhoBluetoothManager::fireCreateSessionCallBack(const char* status, const char* connected_device_name, bool in_thread) {
 	if (strlen(mCreateSessionCallback) <= 0) {
 		return;
 	}
@@ -372,10 +372,10 @@ void RhoBluetoothManager::fireCreateSessionCallBack(const char* status, const ch
 	strcat(body, status);
 	strcat(body, "&connected_device_name=");
 	strcat(body, connected_device_name);
-	fireRhodeCallback(mCreateSessionCallback, body);
+	fireRhodeCallback(mCreateSessionCallback, body, in_thread);
 }
 
-void RhoBluetoothManager::fireSessionCallBack(const char* connected_device_name, const char* event_type) {
+void RhoBluetoothManager::fireSessionCallBack(const char* connected_device_name, const char* event_type, bool in_thread) {
 	if (strlen(mSessionCallback) <= 0) {
 		return;
 	}
@@ -384,13 +384,18 @@ void RhoBluetoothManager::fireSessionCallBack(const char* connected_device_name,
 	strcat(body, connected_device_name);
 	strcat(body, "&event_type=");
 	strcat(body, event_type);
-	fireRhodeCallback(mSessionCallback, body);
+	fireRhodeCallback(mSessionCallback, body, in_thread);
 }
 
-void RhoBluetoothManager::fireRhodeCallback(const char* callback_url, const char* body) {
+void RhoBluetoothManager::fireRhodeCallback(const char* callback_url, const char* body, bool in_thread) {
 	LOG(INFO)  + "RhoBluetoothManager::fireRhodeCallback( "+callback_url+", "+body+")";
 	char* norm_url = rho_http_normalizeurl(callback_url);
-	rho_net_request_with_data(norm_url, body);
+    if (in_thread) {
+        rho_net_request_with_data_in_separated_thread(norm_url, body);
+    }
+    else {
+        rho_net_request_with_data(norm_url, body);
+    }
 	rho_http_free(norm_url);
 	//rho_rhodesapp_callBluetoothCallback(callback_url, body);
 	/*

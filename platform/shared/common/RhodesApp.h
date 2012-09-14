@@ -301,6 +301,7 @@ int rho_conf_send_log(const char* callback_url);
 
 void rho_net_request(const char *url);
 void rho_net_request_with_data(const char *url, const char *str_body);
+void rho_net_request_with_data_in_separated_thread(const char *url, const char *str_body);
 
 void rho_rhodesapp_load_url(const char *url);
 

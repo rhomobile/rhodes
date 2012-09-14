@@ -2085,15 +2085,21 @@ int rho_rhodesapp_isrubycompiler()
 void rho_net_request(const char *url)
 {
     String strCallbackUrl = RHODESAPP().canonicalizeRhoUrl(url);
-    RHODESAPP().runCallbackInThread(strCallbackUrl, null);
+    getNetRequest().pullData(strCallbackUrl.c_str(), null);
 }
     
 void rho_net_request_with_data(const char *url, const char *str_body)
 {
     String strCallbackUrl = RHODESAPP().canonicalizeRhoUrl(url);
+    getNetRequest().pushData(strCallbackUrl.c_str(), str_body, null);
+}
+    
+void rho_net_request_with_data_in_separated_thread(const char *url, const char *str_body) {
+    String strCallbackUrl = RHODESAPP().canonicalizeRhoUrl(url);
     String strBody = str_body;
     RHODESAPP().runCallbackInThread(strCallbackUrl, strBody);
 }
+    
 
 	
 void rho_rhodesapp_load_url(const char *url)
