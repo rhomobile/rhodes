@@ -689,6 +689,100 @@ This sample listing of ext_build.files shows that it already lists the generated
 	:::term
 	ext/yourextension/platform/android/src/com/yourextension/Yourextension.java
 
+### Make changes to application AndroidManifest.xml
+
+You can specify AndroidManifest.xml changes in ext.yml file as path to file with the changes:
+
+There are three formats recognized by build system depending on file extension:
+
+* .xml - xml file with common AndroidManifest.xml format which tags just will be merged into final manifest
+* .erb - ruby templates which will be injected into final manifest
+* .rb - ruby script which will run by manifest erb generator
+
+	android:
+	  manifest_changes:
+	  - ext/yourextension/platform/android/AndroidManifestAdds.xml
+	  - ext/yourextension/platform/android/ApplicationTagAdds1.erb
+	  - ext/yourextension/platform/android/ApplicationTagAdds2.erb
+	  - ext/yourextension/platform/android/ManifestTagAdds.erb
+	  - ext/yourextension/platform/android/AndroidManifestScript.rb
+
+#### XML
+
+Most simple way if you know how your manifest has to look. Just add final AndroidManifest.xml to extension and specify it in ext.yml.
+Build system will try to merge all tags from the file into final AndroidManifest.xml. Tags which exist in both Rhodes and extension manifest will be overwrited from extension one
+
+	android:
+	  manifest_changes: ext/yourextension/platform/android/AndroidManifest.xml
+
+#### ERB template
+
+There are two common levels where additional definitions can be injected into AndroidManifest.xml
+
+* Application tag
+* Manifest tag
+
+To add additional definitions to Application tag template name must fit next file name mask 'Application*.erb'
+To add additional definitions to RhodesActivity tag template name must fit next file name mask 'Manifest*.erb'
+It may be a number of templated of each type.
+In template you may access manifest generator fields which holds common values used to generate the manifest. 
+Below is example of Broadcust Receiver definition added to Application tag by rhoconnect-push extension:
+
+	:::xml
+	<receiver android:name="com.motsolutions.rhomobile.services.ans.test3.ANSBroadcastReceiver"
+	          android:permission="com.motsolutions.cto.services.ans.permission.RECEIVE"
+	          android:enabled="true">
+	    <!-- Receive actual messages -->
+	    <intent-filter>
+	        <action android:name="com.motsolutions.cto.services.ans.action.RECEIVE" />
+	        <category android:name='<%=@appPackageName%>' />
+	    </intent-filter>
+	    <!-- Receive registration ids -->
+	    <intent-filter>
+	        <action android:name="com.motsolutions.cto.services.ans.action.REGISTRATION" />
+	        <category android:name='<%=@appPackageName%>' />
+	    </intent-filter>
+	</receiver>
+
+
+#### RB script
+
+In case these methods listed above are not enought you can write your oun script that will change values used to generate the manifest.
+It may be just single script per extension.
+
+In the script you may access ERB generator instance as local variable
+
+	:::ruby
+	generator.permissions["#{generator.appPackageName}.permission.ANS"] = 'signature'
+	generator.usesPermissions << "#{generator.appPackageName}.permission.ANS"
+	generator.usesPermissions << 'com.motsolutions.cto.services.ans.permission.REGISTER'
+
+#### ERB Manifest Generator
+
+Next generator fields may be accessed from erb templates or scripts
+
+*javaPackageName - read-only string
+*appPackageName - read-only string
+*versionName - read-write string
+*versionCode - read-write string
+*installLocation - read-write string
+*minSdkVer - read-write string
+*maxSdkVer - read-write string
+*permissions - hash of permission name/protectionLevel pairs
+*usesPermissions - array of permission names
+*usesLibraries - hash of library name/isRequired pairs
+*screenOrientation - read-write string
+*debuggable - read-write string (allows two values: 'true' or 'false')
+*rhodesActivityIntentFilters - array of hashes with filter values. Each hash can contain next keys:
+**:act - string, intent action name
+**:cat - array of strings with category names
+**:data - hash with data tag attributes (name/value pairs)
+*manifestManifestAdds - array of strings with full paths to erb templates for 'manifest' tag
+*applicationManifestAdds - array of strings with full paths to erb templates for 'application' tag
+
+For more details about possible values refer to [Android Developer Documentation](http://developer.android.com/guide/topics/manifest/manifest-intro.html)
+Also you may look at <Rhodes>/platform/android/Rhodes/AndroidManifest.xml.erb to study how these values are used.
+
 ## Rewriting the Generated Native Extension Source Code for Windows Mobile
 
 The Windows Mobile generated native extension code is contained in the following structure.
