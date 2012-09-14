@@ -364,6 +364,13 @@ You can set a greater minimal API level in build.yml. For example, the following
    android:
      minSDK: 11
 
+### Customizing application's AndroidManifest.xml
+
+In case of urgent need to make some AndroidManifest.xml changes that is not supported bu build settings you may edit a manifest template located at <Rhodes>/platform/android/Rhodes/AndroidManifest.xml.erb
+Please pay attention that this template does not correspond to particular application and used for every Android application build.
+
+** NOTE: To study how to change AndroidManifest.xml by extension build script see [Extending the Rhodes Framework](extensions#Make changes to application AndroidManifest.xml)  
+
 ### Building and Running Your Android Application with RhoStudio
 
 To start the build process, create a Run Configuration: select your project in the Project Explorer, and either:
