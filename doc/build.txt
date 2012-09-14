@@ -366,10 +366,10 @@ You can set a greater minimal API level in build.yml. For example, the following
 
 ### Customizing application's AndroidManifest.xml
 
-In case of urgent need to make some AndroidManifest.xml changes that is not supported bu build settings you may edit a manifest template located at <Rhodes>/platform/android/Rhodes/AndroidManifest.xml.erb
-Please pay attention that this template does not correspond to particular application and used for every Android application build.
+In case of urgent need to make some AndroidManifest.xml changes that is not supported by build settings you may edit a manifest template located at <Rhodes>/platform/android/Rhodes/AndroidManifest.xml.erb
+Please pay attention that this template does not relate to particular application and is used for every Android application build.
 
-** NOTE: To study how to change AndroidManifest.xml by extension build script see [Extending the Rhodes Framework](extensions#Make changes to application AndroidManifest.xml)  
+** NOTE: To study how to change AndroidManifest.xml at extension build see [Extending the Rhodes Framework](extensions#rewriting-the-generated-native-extension-source-code-for-android)  
 
 ### Building and Running Your Android Application with RhoStudio
 
