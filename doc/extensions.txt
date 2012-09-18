@@ -691,12 +691,12 @@ This sample listing of ext_build.files shows that it already lists the generated
 
 ### Make changes to application AndroidManifest.xml
 
-You can specify AndroidManifest.xml changes in ext.yml file as path to file with the changes.
-There are three formats recognized by build system depending on file extension:
+You can specify changes to AndroidManifest.xml in the ext.yml file as a path to the files with the changes.
+There are three formats recognized by the build system, depending on the file extension:
 
-* .xml - xml file with common AndroidManifest.xml format which tags just will be merged into final manifest
-* .erb - ruby templates which will be injected into final manifest
-* .rb - ruby script which will run by manifest erb generator
+* .xml - xml file with common AndroidManifest.xml format; its tags will be merged into the final manifest.
+* .erb - ruby templates which will be injected into the final manifest.
+* .rb - ruby script which will run by manifest erb generator.
 
 	android:
 	  manifest_changes:
@@ -708,25 +708,25 @@ There are three formats recognized by build system depending on file extension:
 
 #### XML
 
-Most simple way if you know how your manifest has to look. Just add final AndroidManifest.xml to extension and specify it in ext.yml.
-Build system will try to merge all tags from the file into final AndroidManifest.xml. Tags which exist in both Rhodes and extension manifest will be overwrited from extension one
+This is the simplest way, if you know how your manifest has to look. Add the final AndroidManifest.xml to the extension and specify it in ext.yml.
+The build system will try to merge all the tags from the file into the final AndroidManifest.xml. Tags which exist in both Rhodes and extension manifest will be overwritten from the extension manifest.
 
 	android:
 	  manifest_changes: ext/yourextension/platform/android/AndroidManifest.xml
 
 #### ERB template
 
-There are two common levels where additional definitions can be injected into AndroidManifest.xml
+There are two common levels where additional definitions can be injected into AndroidManifest.xml.
 
 * Application tag
 * Manifest tag
 
-To add additional definitions to Application tag template name must fit next file name mask 'Application*.erb'
+To add additional definitions to the Application tag, the template name must fit the file name mask of `Application*.erb`, such as `ApplicationManifestAdds.erb`.
 
-To add additional definitions to Manifest tag template name must fit next file name mask 'Manifest*.erb'
+To add additional definitions to Manifest tag, the template name must fit the file name mask of `Manifest*.erb`.
 
-It may be a number of templates of each type.
-In template you may access manifest generator fields which holds common values used to generate the manifest. 
+There may be a number of templates of each type.
+In the template, you may access manifest generator fields which holds common values used to generate the manifest. 
 Below is example of a broadcast receiver definition added to 'application' tag by rhoconnect-push extension:
 
 	:::xml
@@ -748,10 +748,10 @@ Below is example of a broadcast receiver definition added to 'application' tag b
 
 #### RB script
 
-In case these methods listed above are not enought you can write your oun script that will change values used to generate the manifest.
-It may be just single script per extension.
+In case the methods listed above are not enough, you can write your own script that will change the values used to generate the manifest.
+You can hove a single script per extension.
 
-In the script you may access ERB generator instance as local variable
+In the script, you may access the ERB generator instance as a local variable.
 
 	:::ruby
 	generator.permissions["#{generator.appPackageName}.permission.ANS"] = 'signature'
@@ -760,7 +760,7 @@ In the script you may access ERB generator instance as local variable
 
 #### ERB Manifest Generator
 
-Next generator fields may be accessed from erb templates or scripts
+The following generator fields may be accessed from erb templates or scripts.
 
 * javaPackageName - read-only string
 * appPackageName - read-only string
@@ -781,9 +781,9 @@ Next generator fields may be accessed from erb templates or scripts
 * manifestManifestAdds - array of strings with full paths to erb templates for 'manifest' tag
 * applicationManifestAdds - array of strings with full paths to erb templates for 'application' tag
 
-For more details about possible values refer to [Android Developer Documentation](http://developer.android.com/guide/topics/manifest/manifest-intro.html)
+For more details about the values for the generator fields, refer to [Android Developer Documentation](http://developer.android.com/guide/topics/manifest/manifest-intro.html).
 
-Also you may look at <Rhodes>/platform/android/Rhodes/AndroidManifest.xml.erb to study how these values are used.
+You may also look in your Rhodes installation under /platform/android/Rhodes/AndroidManifest.xml.erb to study how these values are used.
 
 ## Rewriting the Generated Native Extension Source Code for Windows Mobile
 
