@@ -104,3 +104,8 @@ RHO_GLOBAL VALUE get_camera_info(const char* camera_type) {
     
     return hash;
 }
+
+RHO_GLOBAL void save_image_to_device_gallery(const char* image_path, rho_param* options_hash) {
+	
+}
+

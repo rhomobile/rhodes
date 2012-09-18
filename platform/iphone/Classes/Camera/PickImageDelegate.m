@@ -454,6 +454,15 @@ void choose_picture(char* callback_url, rho_param *options_hash) {
                                               withObject:settings waitUntilDone:NO];
 }
 
+void save_image_to_device_gallery(const char* image_path, rho_param* options_hash) {
+	NSString* path = [NSString stringWithUTF8String:image_path];
+	UIImage* img = [UIImage imageWithContentsOfFile:path];
+	
+	if ( img != nil ) {
+		UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil);
+	}
+}
+
 
 VALUE get_camera_info(const char* camera_type) {
     
