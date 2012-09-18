@@ -7,6 +7,7 @@ extern void take_picture(char* callback_url, rho_param *options_hash);
 extern void choose_picture(char* callback_url, rho_param *options_hash);
 
 extern VALUE get_camera_info(const char* camera_type);
+extern void save_image_to_device_gallery(const char* image_path, rho_param* options_hash);
 
 %}
 
@@ -27,3 +28,4 @@ extern void take_picture(char* callback_url, rho_param *options_hash );
 extern void choose_picture(char* callback_url, rho_param *options_hash);
 
 extern VALUE get_camera_info(const char* camera_type);
+extern void save_image_to_device_gallery(const char* image_path, rho_param* options_hash);
