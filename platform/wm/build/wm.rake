@@ -46,6 +46,7 @@ def sign (cabfile)
   if Dir.exists?("C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
     ENV['PATH'] = ENV['PATH'] + "C:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin" + ";"
   end
+  
   if Dir.exists?("D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin")
     ENV['PATH'] = ENV['PATH'] + "D:\\Program Files\\Microsoft SDKs\\Windows\\v6.0A\\bin" + ";"
   end
@@ -60,6 +61,11 @@ def sign (cabfile)
 end
 
 namespace "config" do
+  task :set_wince_platform do
+    $current_platform = "wince" unless $current_platform
+    $sdk = "MC3000c50b (ARMV4I)"
+  end
+
   task :set_wm_platform do
     $current_platform = "wm" unless $current_platform
   end
@@ -76,8 +82,7 @@ namespace "config" do
       $sdk = "Windows Mobile 6 Professional SDK (ARMV4I)"
       $sdk = $app_config["wm"]["sdk"] if $app_config["wm"] && $app_config["wm"]["sdk"]
       value = ENV['rho_wm_sdk']
-      $sdk = value if value
-      puts "$sdk [#{$sdk}]"
+      $sdk = value if value      
     end
 
     $rubypath = "res/build-tools/RhoRuby.exe" #path to RubyMac
@@ -134,18 +139,12 @@ namespace "config" do
 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
 
-    #$app_config["extensions"] = [] unless $app_config["extensions"].is_a? Array
-    #if $app_config["wm"] and $app_config["wm"]["extensions"]
-    #  $app_config["extensions"] += $app_config["wm"]["extensions"]
-    #  $app_config["wm"]["extensions"] = nil
-    #end
-
     $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
     $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
 
     $use_shared_runtime = (($app_config["use_shared_runtime"].nil? && ($app_config["wm"].nil? || $app_config["wm"]["use_shared_runtime"].nil?)) ? nil : 1 )
-    #puts $app_config["wm"]["use_shared_runtime"].inspect
-    #puts $use_shared_runtime.inspect
+      
+      puts "$sdk [#{$sdk}]"
   end
 
   namespace "win32" do
@@ -193,6 +192,7 @@ end
 
 namespace "build" do
   namespace "wm" do
+    
     task :extensions => "config:wm" do
       if not $use_shared_runtime.nil? then next end
 
@@ -267,13 +267,7 @@ namespace "build" do
           
           break
         end
-      end
-      
-      #test
-      #$additional_dlls_paths.each do |x|
-      #  puts " - " + x.to_s
-      #end
-      #exit
+      end      
     end
 
     #    desc "Build wm rhobundle"
@@ -393,6 +387,7 @@ namespace "build" do
   end #wm
   
   namespace "win32" do
+    
     task :deployqt => "config:win32:qt" do
       vsredistdir = File.join($vscommontools, "../../VC/redist/x86/Microsoft.VC90.CRT")
       cp File.join(vsredistdir, "msvcm90.dll"), $target_path
@@ -533,6 +528,12 @@ namespace "build" do
 end
 
 namespace "device" do
+
+  namespace "wince" do
+    desc "Build production for device or emulator"
+    task :production => ["config:set_wince_platform", "config:wm", "build:wm:rhobundle","build:wm:rhodes", "device:wm:production"] do
+    end
+  end
 
   namespace "wm" do
     desc "Build production for device or emulator"
@@ -714,8 +715,20 @@ end
 
 namespace "clean" do
 
+  desc "Clean windows ce"
+  task :wince => "clean:wince:all" do
+  end
+
   desc "Clean wm"
   task :wm => "clean:wm:all" do
+  end
+
+  namespace "wince" do
+    task :rhodes => ["config:set_wince_platform", "config:wm"] do
+      rm_rf $vcbindir + "/#{$sdk}"
+      rm_rf $targetdir
+    end
+    task :all => "clean:wince:rhodes"
   end
 
   namespace "wm" do
@@ -735,6 +748,7 @@ namespace "clean" do
 end
 
 namespace "run" do
+  
   task :mylogserver => ["config:wm"] do
     Jake.run_rho_log_server($app_path)
   end
@@ -742,6 +756,10 @@ namespace "run" do
   def gelLogPath
     log_file_path =  File.join($app_path, $log_file)
     return log_file_path
+  end
+
+  task :wince  do
+    puts "Windows CE emulator not working on windows system."
   end
 
   desc "Build and run on WM6 emulator"
@@ -785,6 +803,45 @@ namespace "run" do
     end
   end
 
+  namespace "wince" do
+    task :get_log => "run:wm" do
+    end
+
+    desc "Run application on RhoSimulator"    
+    task :rhosimulator => ["config:set_wince_platform", "config:common"] do      
+      $rhosim_config = "platform='wm'\r\n"
+      Rake::Task["run:rhosimulator"].invoke
+    end
+    
+    task :rhosimulator_debug => ["config:set_wince_platform", "config:common"] do
+      $rhosim_config = "platform='wm'\r\n"
+      Rake::Task["run:rhosimulator_debug"].invoke
+    end
+    
+    desc "Build and run on the Windows CE device"
+    task :device => ["device:wince:production"] do      
+    end
+
+    namespace "device" do
+      desc "Build, install .cab and run on the Windows CE device"
+      task :cab => ["device:wince:production"] do
+        # kill all running detool
+        kill_detool
+
+        cd $startdir + "/res/build-tools"
+        detool = "detool.exe"
+        args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, (($use_shared_runtime.nil?) ? "0" : "1")]
+        puts "\nStarting application on the device"
+        puts "Please, connect you device via ActiveSync.\n\n"
+        log_file = gelLogPath
+
+        # temporary disable log from device (caused enormous delays)
+        # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+        Jake.run(detool,args)
+      end
+    end
+  end
+  
   namespace "wm" do
     task :get_log => "config:wm" do
       puts "log_file=" + gelLogPath
@@ -876,11 +933,11 @@ namespace "run" do
         puts "waiting for log: " + log_file
         
         for i in 0..120
-		if !File.exist?(log_file)
-			sleep(1)
-		else
-			break
-		end
+		      if !File.exist?(log_file)
+			      sleep(1)
+		      else
+		      break
+		      end
         end
 
 	    if !File.exist?(log_file)
