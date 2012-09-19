@@ -55,7 +55,7 @@ class NativeView
   end
 
  
-  # destory this native view
+  # destroy this native view
   def destroy
      RhodesNativeViewManager.destroy_native_view(@nv_id)		
   end
@@ -75,8 +75,8 @@ class NativeViewManager
   # make and return NativeView object
   # view_type - string with registered native view type
   # tab_index - tab index where native view will opened, can be OPEN_IN_MODAL_FULL_SCREEN_WINDOW
-  # params - HASH or another ruby type wich will be transferred to native view with call create()
-  # this function execute NativeView fabric porvided in native code and link native NativeView 
+  # params - HASH or another ruby type which will be transferred to native view with call create()
+  # this function execute NativeView fabric provided in native code and link native NativeView 
   # object received from fabric to Ruby NativeView object returned by this function
   def self.create_native_view(view_type, tab_index, params = nil)
       id = RhodesNativeViewManager.create_native_view(view_type, tab_index, params) 
