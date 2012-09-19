@@ -247,3 +247,7 @@ void take_picture(char* callback_url, rho_param * options_hash) {
 VALUE get_camera_info(const char* camera_type) {
      return rho_ruby_get_NIL();
 }
+
+void save_image_to_device_gallery(const char* image_path, rho_param* options_hash) {
+
+}
