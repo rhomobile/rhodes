@@ -6,5 +6,5 @@ class <%= class_name %>
   # Uncomment the following line to enable sync with <%= class_name %>.
   # enable :sync
 
-  #add model specifc code here
+  #add model specific code here
 end
