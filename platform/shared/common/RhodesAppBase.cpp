@@ -146,7 +146,7 @@ boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
     
 void rho_do_send_log(const String& strCallback)
 {
-    String strDevicePin = rho::sync::CClientRegister::getInstance() ? rho::sync::CClientRegister::getInstance()->getDevicePin() : "";
+    String strDevicePin = rho::sync::CClientRegister::Get()->getDevicePin();
     String strClientID = rho::sync::CSyncThread::getSyncEngine().readClientID();
     
     String strLogUrl = RHOCONF().getPath("logserver");

@@ -76,8 +76,7 @@ void CSyncEngine::setSslVerifyPeer(boolean b)
     m_NetRequest.setSslVerifyPeer(b); 
     m_NetRequestClientID.setSslVerifyPeer(b); 
 
-    if ( CClientRegister::getInstance() != null )
-        CClientRegister::getInstance()->setSslVerifyPeer(b);
+    CClientRegister::SetSslVerifyPeer(b);
 }
 
 void CSyncEngine::CSourceOptions::setProperty(int nSrcID, const char* szPropName, const char* szPropValue)
@@ -556,9 +555,6 @@ String CSyncEngine::loadClientID()
             else
                 getUserDB().executeSQL("INSERT INTO client_info (client_id) values (?)", clientID);
 
-            if ( clientID.length() > 0 && CClientRegister::getInstance() != null )
-                CClientRegister::getInstance()->startUp();
-
         }else if ( bResetClient )
         {
     	    if ( !resetClientIDByNet(clientID) )
@@ -968,11 +964,9 @@ void CSyncEngine::login(String name, String password, const CSyncNotification& o
 	
     PROF_STOP("Login");
 
-    if ( CClientRegister::getInstance() != null )
-    {
-        getUserDB().executeSQL("UPDATE client_info SET token_sent=?", 0 );
-        CClientRegister::getInstance()->startUp();
-    }
+    getUserDB().executeSQL("UPDATE client_info SET token_sent=?", 0 );
+    CClientRegister::Get()->setRhoconnectCredentials(name, password, strSession);
+
 	//}catch(Exception exc)
 	//{
 	//	LOG.ERROR("Login failed.", exc);
@@ -1003,6 +997,9 @@ String CSyncEngine::loadSession()
 
 void CSyncEngine::logout_int()
 {
+    CClientRegister::Get()->dropRhoconnectCredentials(m_strSession);
+    CClientRegister::Destroy();
+
     getUserDB().executeSQL( "UPDATE client_info SET session=NULL" );
     m_strSession = "";
 
@@ -1014,7 +1011,7 @@ void CSyncEngine::logout()
     stopSync();
     logout_int();
 }
-	
+
 void CSyncEngine::setSyncServer(const char* syncserver)
 {
 	String strOldSrv = RHOCONF().getString("syncserver");

@@ -361,14 +361,12 @@ void rho_sync_set_syncserver(const char* syncserver)
     if ( syncserver && *syncserver )
     {
         CSyncThread::getInstance()->start(CSyncThread::epLow);
-        if ( CClientRegister::getInstance() != null )
-            CClientRegister::getInstance()->startUp();
+        CClientRegister::Create();
     }
     else
     {
         CSyncThread::getInstance()->stop(CSyncThread::SYNC_WAIT_BEFOREKILL_SECONDS);
-        if ( CClientRegister::getInstance() != null )
-            CClientRegister::getInstance()->stop(CSyncThread::SYNC_WAIT_BEFOREKILL_SECONDS);
+        CClientRegister::Stop();
     }
 }
 
@@ -526,12 +524,7 @@ void rho_sync_set_ssl_verify_peer(int b)
 
 void rho_sync_register_push()
 {
-    if ( CClientRegister::getInstance() != null )
-    {
-        rho::db::CDBAdapter::getUserDB().executeSQL("UPDATE client_info SET token_sent=?", 0 );
-        CClientRegister::getInstance()->startUp();
-    }
-
+    RAWLOG_WARNING("'register_push' is not implemented!");
 }
 
 }

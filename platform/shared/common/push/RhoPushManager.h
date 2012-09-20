@@ -33,11 +33,9 @@
 
 namespace rho { namespace common {
 
-class RhoPushManager {
-public:
-    RhoPushManager() {}
-    ~RhoPushManager();
 
+class PushManager {
+public:
     DEFINE_LOGCLASS;
 
 public:
@@ -45,32 +43,19 @@ public:
 
     void addClient(IRhoPushClient* pClient);
 
-    void registerClient(const String& url, const String& urlParams, const String& pushType);
-    void unregisterClient(const String& pushType);
+    void setNotificationUrl(const String& url, const String& urlParams, const String& pushType);
+    void setNotificationUrl(const String& url, const String& urlParams);
+    //void unregisterClient(const String& pushType);
     //void checkClientRegistered(const String& pushType);
 
-    void registerAllClients(const String& url, const String& urlParams);
-    void unregisterAllClients();
+    //void registerAllClients(const String& url, const String& urlParams);
+    //void unregisterAllClients();
 
 private:
     IRhoPushClient* getClient(const String& pushType);
-//    {
-//        for(Vector<IRhoPushClient*>::iterator I = m_Clients.begin(); I != m_Clients.end(); ++I)
-//        {
-//            if((*I)->getType() == pushType) return *I;
-//        }
-//        return 0;
-//    }
-//    const IRhoPushClient* getClient(const String& pushType) const
-//    {
-//        for(Vector<IRhoPushClient*>::iterator I = m_Clients.begin(); I != m_Clients.end(); ++I)
-//        {
-//            if((*I)->getType() == pushType) return *I;
-//        }
-//        return 0;
-//    }
+
 private:
-    Vector<IRhoPushClient*> m_Clients;
+    VectorPtr<IRhoPushClient*> m_Clients;
 };
 
 }}

@@ -104,10 +104,7 @@ VALUE rho_sys_get_property(char* szPropName)
 
 	if (strcasecmp("device_id",szPropName) == 0) 
     {
-        rho::String strDeviceID = "";
-        if ( rho::sync::CClientRegister::getInstance() )
-            strDeviceID = rho::sync::CClientRegister::getInstance()->getDevicePin();
-
+        rho::String strDeviceID = rho::sync::CClientRegister::Get()->getDevicePin();
         return rho_ruby_create_string(strDeviceID.c_str());
     }
 

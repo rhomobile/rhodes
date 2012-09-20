@@ -25,7 +25,8 @@
 *------------------------------------------------------------------------*/
 
 #include "ClientRegister.h"
-#include "sync/SyncThread.h"
+#include "SyncThread.h"
+#include "ILoginListener.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
 
@@ -42,14 +43,41 @@ using namespace rho::db;
 IMPLEMENT_LOGCLASS(CClientRegister,"ClientRegister");
 
 CClientRegister* CClientRegister::m_pInstance = 0;
+bool CClientRegister::s_sslVerifyPeer = true;
+VectorPtr<ILoginListener*> CClientRegister::s_loginListeners;
 	
-/*static*/ CClientRegister* CClientRegister::Create(const char* device_pin, bool isAns) 
+/*static*/ CClientRegister* CClientRegister::Get()
 {
-	if ( m_pInstance ) 
-		return m_pInstance;
+    if (!m_pInstance)
+    {
+        m_pInstance = new CClientRegister();
+        m_pInstance->m_strDevicePin = QueryDevicePin();
+    }
+    return m_pInstance;
+}
 
-	m_pInstance = new CClientRegister(device_pin, isAns);
-	return m_pInstance;
+/*static*/ CClientRegister* CClientRegister::Create()
+{
+    if (!m_pInstance)
+    {
+        m_pInstance = new CClientRegister();
+        m_pInstance->setDevicehPin(QueryDevicePin());
+    }
+    return m_pInstance;
+}
+
+/*static*/ CClientRegister* CClientRegister::Create(const char* pin)
+{
+    Get()->setDevicehPin(pin);
+    return m_pInstance;
+}
+
+/*static*/ void CClientRegister::Stop()
+{
+    if(m_pInstance)
+    {
+        m_pInstance->doStop();
+    }
 }
 
 /*static*/ void CClientRegister::Destroy()
@@ -60,28 +88,71 @@ CClientRegister* CClientRegister::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CClientRegister::CClientRegister(const char* device_pin, const bool isAns) : CRhoThread() 
+/*static*/ void CClientRegister::SetSslVerifyPeer(boolean b)
 {
-	m_isAns = isAns;
-	m_strDevicePin = device_pin;
-    m_nPollInterval = POLL_INTERVAL_SECONDS;
+    s_sslVerifyPeer = b;
+    if (m_pInstance)
+        m_pInstance->m_NetRequest.setSslVerifyPeer(b);
+}
 
-    startUp();
+
+/*static*/void CClientRegister::AddLoginListener(ILoginListener* listener)
+{
+    s_loginListeners.addElement(listener);
+}
+
+/*static*/ String CClientRegister::QueryDevicePin()
+{
+    IDBResult res = CDBAdapter::getUserDB().executeSQL("SELECT token from client_info");
+    return res.isEnd() ? "" : res.getStringByIdx(0);
+}
+
+CClientRegister::CClientRegister() : m_nPollInterval(POLL_INTERVAL_SECONDS)
+{
+    m_NetRequest.setSslVerifyPeer(s_sslVerifyPeer);
+
 }
 
 CClientRegister::~CClientRegister()
 {
-	m_NetRequest.cancel();
-	
-    stop(WAIT_BEFOREKILL_SECONDS);
+    doStop();
     m_pInstance = null;
 }
+void CClientRegister::setRhoconnectCredentials(const String& user, const String& pass, const String& session)
+{
+    doStop();
+    reset();
+    for(VectorPtr<ILoginListener*>::iterator I = s_loginListeners.begin(); I != s_loginListeners.end(); ++I)
+    {
+        (*I)->onLogin(user, pass, session);
+    }
+}
 
-void CClientRegister::startUp() 
-{	
+void CClientRegister::dropRhoconnectCredentials(const String& session)
+{
+    doStop();
+    for(VectorPtr<ILoginListener*>::iterator I = s_loginListeners.begin(); I != s_loginListeners.end(); ++I)
+    {
+        (*I)->onLogout(session);
+    }
+    reset();
+}
+
+void CClientRegister::setDevicehPin(const String& pin)
+{
+    m_strDevicePin = pin;
+    startUp();
+}
+
+void CClientRegister::startUp()
+{
+    if(isAlive() || isWaiting())
+    {
+        doStop();
+    }
     if ( RHOCONF().getString("syncserver").length() > 0 )
     {
-    	start(epLow);
+        start(epLow);
         stopWait();
     }
 }
@@ -135,12 +206,18 @@ String CClientRegister::getRegisterBody(const String& strClientID)
 
 boolean CClientRegister::doRegister(CSyncEngine& oSync)
 {
-	String session = oSync.loadSession();
-	if ( session.length() == 0 )
+    String session = oSync.loadSession();
+    if ( session.length() == 0 )
     {
         m_nPollInterval = POLL_INTERVAL_INFINITE;
         LOG(INFO)+"Session is empty, do register later";
-		return false;
+        return false;
+    }
+    if ( m_strDevicePin.length() == 0 )
+    {
+        m_nPollInterval = POLL_INTERVAL_INFINITE;
+        LOG(INFO)+"Device PUSH pin is empty, do register later";
+        return false;
     }
     m_nPollInterval = POLL_INTERVAL_SECONDS;
 
@@ -177,6 +254,18 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 
 	LOG(WARNING)+"Network error: "+ resp.getRespCode();
 	return false;
+}
+
+void CClientRegister::doStop()
+{
+    m_NetRequest.cancel();
+    stop(WAIT_BEFOREKILL_SECONDS);
+}
+
+void CClientRegister::reset()
+{
+    m_nPollInterval = POLL_INTERVAL_SECONDS;
+    m_strDevicePin = "";
 }
 
 }

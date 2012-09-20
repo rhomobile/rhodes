@@ -29,12 +29,14 @@
 
 #include "logging/RhoLog.h"
 #include "common/RhoThread.h"
+#include "common/RhoStd.h"
 #include "net/INetRequest.h"
 #include "common/IRhoClassFactory.h"
 
 namespace rho{
 namespace sync{
 
+class ILoginListener;
 class CSyncEngine;
 
 #define WAIT_BEFOREKILL_SECONDS  3
@@ -42,33 +44,46 @@ class CSyncEngine;
 #define POLL_INTERVAL_INFINITE (unsigned int)(-1)
 #define DEFAULT_PUSH_PORT 100
 
-class CClientRegister : public common::CRhoThread
+class CClientRegister : protected common::CRhoThread
 {
     DEFINE_LOGCLASS;
 
-	static CClientRegister* m_pInstance;
-	NetRequest              m_NetRequest;
-	String                  m_strDevicePin;
+    static CClientRegister* m_pInstance;
+    static bool s_sslVerifyPeer;
+    static VectorPtr<ILoginListener*> s_loginListeners;
+
+    NetRequest              m_NetRequest;
+    String                  m_strDevicePin;
     unsigned int            m_nPollInterval;
-	bool m_isAns;
 public:
-    static CClientRegister* Create(const char* device_pin, bool isAns = false);
+    static void SetSslVerifyPeer(boolean b);
+    static void AddLoginListener(ILoginListener* listener);
+    static CClientRegister* Get();
+    static CClientRegister* Create();
+    static CClientRegister* Create(const char* pin);
+    static void Stop();
     static void Destroy();
-	static CClientRegister* getInstance() { return m_pInstance; }
-	
-	virtual void run();	
+    static CClientRegister* getInstance() { return m_pInstance; }
 
-    const String& getDevicePin(){return m_strDevicePin;}
-
-    String getRegisterBody(const String& strClientID);
+    void setRhoconnectCredentials(const String& user, const String& pass, const String& session);
+    void dropRhoconnectCredentials(const String& session);
+    void setDevicehPin(const String& pin);
+    const String& getDevicePin() const { return m_strDevicePin; }
 
     void startUp();
 
-    void setSslVerifyPeer(boolean b){m_NetRequest.setSslVerifyPeer(b);}
+protected:
+    virtual void run();
+
 private:
-	CClientRegister(const char* device_pin, const bool isAns = false);
+    static String QueryDevicePin();
+    String getRegisterBody(const String& strClientID);
+
+    CClientRegister();
     ~CClientRegister();
 
+    void reset();
+    void doStop();
     boolean doRegister(CSyncEngine& oSync);
     net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
 
@@ -83,8 +98,6 @@ extern "C" {
 #endif //__cplusplus
 	
 void rho_clientregister_create(const char* szDevicePin);
-void rho_clientansregister_create(const char* szDevicePin);
-void rho_clientregister_destroy();
 
 #ifdef __cplusplus
 };

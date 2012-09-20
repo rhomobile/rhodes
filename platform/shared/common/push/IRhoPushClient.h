@@ -34,8 +34,8 @@ namespace rho { namespace common {
 class IRhoPushClient {
 public:
     virtual const String& getType() const = 0;
-    virtual void doRegister(const String& callBackUrl, const String& urlParams) = 0;
-    virtual void doUnregister() = 0;
+    virtual void setNotificationUrl(const String& callBackUrl, const String& urlParams) = 0;
+    //virtual void doUnregister() = 0;
     //virtual void checkRegistered(const String& callBackUrl, const String& urlParams) = 0;
     virtual ~IRhoPushClient() {};
 };
