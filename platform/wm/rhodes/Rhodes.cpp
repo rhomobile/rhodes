@@ -701,7 +701,7 @@ void CRhodesModule::RunMessageLoop( ) throw( )
     rho_ringtone_manager_stop();
 
 #if !defined(_WIN32_WCE)
-    rho_clientregister_destroy();
+    rho::sync::CClientRegister::Destroy();
 #endif
 
 #if defined(OS_WINDOWS_DESKTOP)

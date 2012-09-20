@@ -114,7 +114,7 @@ private:
 
     mutable common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
-    RhoPushManager m_appPushMgr;
+    PushManager m_appPushMgr;
 	
     common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;

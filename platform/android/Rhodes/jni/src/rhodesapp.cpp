@@ -306,20 +306,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callActivationCa
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrationId
   (JNIEnv *env, jobject, jstring jId)
 {
-    std::string id = rho_cast<std::string>(env, jId);
-    rho::sync::CClientRegister* pClientRegister = rho::sync::CClientRegister::getInstance();
-    if(pClientRegister && (pClientRegister->getDevicePin().compare(id) != 0))
-    {
-        rho::sync::CClientRegister::Destroy();
-    }
-    rho::sync::CClientRegister::Create(id.c_str());
-    RHOCONF().setString("push_pin", id.c_str(), true);
+    rho::sync::CClientRegister::Create(rho_cast<std::string>(env, jId).c_str());
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegistrationId
   (JNIEnv * env, jobject)
 {
-    return rho_cast<jhstring>(RHOCONF().getString("push_pin").c_str()).release();
+    return rho_cast<jhstring>(env, rho::sync::CClientRegister::Get()->getDevicePin()).release();
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback

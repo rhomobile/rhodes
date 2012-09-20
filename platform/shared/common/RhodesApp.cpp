@@ -312,10 +312,6 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
     m_pInstance = new CRhodesApp(strRootPath, strUserPath, strRuntimePath);
 
-    String push_pin = RHOCONF().getString("push_pin");
-    if(!push_pin.empty())
-        rho::sync::CClientRegister::Create(push_pin.c_str());
-
     return (CRhodesApp*)m_pInstance;
 }
 
@@ -374,6 +370,7 @@ void CRhodesApp::run()
 
     LOG(INFO) + "Starting sync engine...";
     sync::CSyncThread::Create();
+    sync::CClientRegister::Create();
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
@@ -1545,26 +1542,23 @@ void CRhodesApp::setPushNotification(const String& strUrl, const String& strPara
     {
         synchronized(m_mxPushCallback)
         {
-            m_strPushCallback = canonicalizeRhoUrl(strUrl);
+            m_strPushCallback = strUrl;
+            if (m_strPushCallback.length())
+                m_strPushCallback = canonicalizeRhoUrl(m_strPushCallback);
+
             m_strPushCallbackParams = strParams;
         }
     }
     else
     {
+        String canonicalUrl;
         if (strUrl.length())
-        {
-            String canonicalUrl = canonicalizeRhoUrl(strUrl);
-            if(strType.length())
-                m_appPushMgr.registerClient(canonicalUrl, strParams, strType);
-            else
-                m_appPushMgr.registerAllClients(canonicalUrl, strParams);
-        } else
-        {
-            if(strType.length())
-                m_appPushMgr.unregisterClient(strType);
-            else
-                m_appPushMgr.unregisterAllClients();
-        }
+            canonicalUrl = canonicalizeRhoUrl(strUrl);
+
+        if(strType.length())
+            m_appPushMgr.setNotificationUrl(canonicalUrl, strParams, strType);
+        else
+            m_appPushMgr.setNotificationUrl(canonicalUrl, strParams);
     }
 }
 
