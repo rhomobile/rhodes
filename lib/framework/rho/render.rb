@@ -95,9 +95,10 @@ module Rho
           rho_info 'index layout' 
           layout = File.dirname(filename) + "/layout" + RHO_ERB_EXT
           @content = eval_compiled_file(layout, getBinding() ) if Rho::file_exist?(layout)
-	  else
+      else
           if @request["headers"]["Transition-Enabled"] == "true"
-			  @content = "<div>#{@content}</div>"
+            #puts "add 'div' in inst_render_index"
+            @content = "<div>#{@content}</div>"
           end
       end
           
@@ -185,7 +186,12 @@ module Rho
       if xhr? and options[:use_layout_on_ajax] != true
         options[:layout] = false
         if options[:partial].nil? && @request["headers"]["Transition-Enabled"] == "true"
-          @content = "<div>#{@content}</div>"
+          #puts "add 'div' in render"
+          if !(@request["headers"]["Accept"] =~ /^\*\/\*/ || @request["headers"]["Accept"] =~ /^text\/html/)
+            @response["headers"]["Content-Type"] = @request["headers"]["Accept"].gsub(/\,.*/, '')
+          else
+            @content = "<div>#{@content}</div>"
+          end
         end
       elsif options[:layout].nil? or options[:layout] == true
         options[:layout] = self.class.get_layout_name
