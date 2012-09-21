@@ -6,7 +6,7 @@ The most common way to install Rhodes on a Windows or Macintosh platform is to i
 
 [Click here for the RhoMobile Suite installation instructions](/rhomobile-install). 
 
-NOTE: The rest of this chapter consists of instructions for installing Rhodes from the command line, without using the RhoMobile Suite installer. You do not need to perform those instructions if you intalled using the RhoMobile Suite installer.
+NOTE: The rest of this chapter consists of instructions for installing Rhodes from the command line, without using the RhoMobile Suite installer. You do not need to perform those instructions if you installed using the RhoMobile Suite installer.
 
 ## Installing Rhodes from the Command Line
 
