@@ -598,8 +598,10 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
 
     if (bRE1App)
-    {
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+    {				
+
+		// This code is moved to rho::CRhoWKBrowserEngine::ProcessOnTopMostWnd()
+/*#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
         registerRhoExtension();
 #endif
 	    m_appWindow.Navigate2(_T("about:blank")
@@ -608,7 +610,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
         );
         
-        rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
+        rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );*/
+
 /*    	m_appWindow.Navigate2( convertToStringW( RHOCONF().getString("start_path") ).c_str()
 #if defined(OS_WINDOWS_DESKTOP)
             , -1
