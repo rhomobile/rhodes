@@ -1540,14 +1540,14 @@ MapView class provides an embeddable map interface, similar to the one provided 
 
 Provider:
 
-There are two providers supported now - 'Google', 'ESRI', "RhoGoogle" and "OSM". 
+The supported providers are 'Google', 'ESRI', "RhoGoogle" and "OSM". 
 
 * 'Google' supported on iPhone, Android and BB. 
 * 'ESRI' supported on iPhone, Android, BB and WM. 
-* 'RhoGoogle' own GoogleMap provider based on Google Static Map API. Have additional features (offline caching for example).  Supported on Android and WM
-* 'OSM' - Open Street Map, support only 'roadmap' map type.   Supported on Android and WM
+* 'RhoGoogle' own GoogleMap provider based on Google Static Map API. Has additional features (offline caching for example). Supported on Android and WM.
+* 'OSM' - Open Street Map, supports only 'roadmap' map type. Supported on Android and WM.
 
-For use ESRI maps in your projects on iPhone:
+To use ESRI maps in your projects on iPhone:
 
 * Install [ESRI iOS SDK](http://resources.arcgis.com/content/arcgis-iphone/api) - use default folders during installations !
 * Add "esri" to your applications extensions list in build.yml file.
