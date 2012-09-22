@@ -47,6 +47,9 @@ platform/wp7/*.sdf
 platform/wp7/rhodes/obj/*
 platform/wp7/**/obj/*
 platform/wp7/IronRuby/bin/Silverlight3Debug
+platform/wp8/bin/*
+platform/wp8/*/obj/*
+platform/wp8/ipch/*
 platform/symbian/rhodes/apps/*
 platform/symbian/rhodes/db/*
 platform/symbian/rhodes/lib/*
@@ -177,6 +180,8 @@ platform/android/**/default.properties
 *.user
 *.pdb
 *.idb
+*.sdf
+*.opensdf
 
 *.mode1v3
 *.mode2v3
