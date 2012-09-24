@@ -1587,7 +1587,7 @@ boolean CRhodesApp::callPushCallback(const String& strData) const
     return false;
 }
 
-boolean CRhodesApp::callPushCallbackWithJsonBody(const String& strUrl, const String& strData)
+boolean CRhodesApp::callPushCallbackWithJsonBody(const String& strUrl, const String& strData, const String& strParams)
 {
     synchronized(m_mxPushCallback)
     {
@@ -1597,6 +1597,11 @@ boolean CRhodesApp::callPushCallbackWithJsonBody(const String& strUrl, const Str
         String strCanonicalUrl = canonicalizeRhoUrl(strUrl);
 
         String strBody = addCallbackObject( new CJsonResponse( strData ), "__rho_inline" ) + "&rho_callback=1";
+        if (strParams.length() > 0)
+        {
+            strBody += "&";
+            strBody += strParams;
+        }
 
         NetResponse resp = getNetRequest().pushData( strCanonicalUrl, strBody, null );
         if (!resp.isOK())
@@ -2045,12 +2050,12 @@ int rho_rhodesapp_callPushCallback(const char* szData)
     return RHODESAPP().callPushCallback(szData?szData:"") ? 1 : 0;
 }
 
-int rho_rhodesapp_callPushCallbackWithJsonBody(const char* szUrl, const char* szData)
+int rho_rhodesapp_callPushCallbackWithJsonBody(const char* szUrl, const char* szData, const char* szParam)
 {
     if ( !rho::common::CRhodesApp::getInstance() )
         return 1;
 
-    return RHODESAPP().callPushCallbackWithJsonBody(szUrl, szData) ? 1 : 0;
+    return RHODESAPP().callPushCallbackWithJsonBody(szUrl, szData, szParam) ? 1 : 0;
 }
 
 
