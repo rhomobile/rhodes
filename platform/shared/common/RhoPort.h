@@ -171,6 +171,10 @@ RHO_GLOBAL int vswnprintf(wchar_t *, size_t, const wchar_t *, void *);
 #  define	vswnprintf vswprintf
 #endif //OS_WINCE
 
+#if defined( OS_WP8 )
+#  include <stdlib.h>
+#endif
+
 //#include "tcmalloc/rhomem.h"
 
 #ifdef __cplusplus

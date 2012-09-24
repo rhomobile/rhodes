@@ -151,7 +151,11 @@ public:
         CTimeInterval res;
 
 #if defined( WINDOWS_PLATFORM )
+#if defined( OS_WP8 )
+		res.m_nativeTime = GetTickCount64();
+#else
         res.m_nativeTime = GetTickCount();
+#endif // OS_WP8
 #else
         struct timeval tv;
         gettimeofday( &tv, NULL );
