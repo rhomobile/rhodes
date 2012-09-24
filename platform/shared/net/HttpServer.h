@@ -39,8 +39,6 @@ typedef int SOCKET;
 #else
 #  if defined(OS_WINCE)
 #    include <winsock.h>
-#  else
-#  include <winsock2.h>
 #  endif
 #  define RHO_NET_ERROR_CODE ::WSAGetLastError()
 #endif
