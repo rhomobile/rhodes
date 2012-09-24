@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="json">
+      <UniqueIdentifier>{277fe3c9-36c0-4ae7-9774-0bf5a64b7cbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sync">
+      <UniqueIdentifier>{66086b6c-07ca-4e3f-817e-98b7649b6afc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="db">
+      <UniqueIdentifier>{bf9f24af-3d66-4d14-bf1c-bf3f00f44175}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\..\shared\json\arraylist.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\bits.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\config.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\json.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\json_debug.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\json_object.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\json_object_private.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\json_tokener.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\json_util.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\JSONIterator.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\linkhash.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\json\printbuf.h">
+      <Filter>json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\sync\ClientRegister.h">
+      <Filter>sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\sync\ILoginListener.h">
+      <Filter>sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\sync\ISyncProtocol.h">
+      <Filter>sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\sync\SyncEngine.h">
+      <Filter>sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\sync\SyncNotify.h">
+      <Filter>sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\sync\SyncProtocol_3.h">
+      <Filter>sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\sync\SyncSource.h">
+      <Filter>sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\sync\SyncThread.h">
+      <Filter>sync</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\db\DBAdapter.h">
+      <Filter>db</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\db\DBAttrManager.h">
+      <Filter>db</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\db\DBImportTransaction.h">
+      <Filter>db</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\db\DBRequestHelper.h">
+      <Filter>db</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\db\DBResult.h">
+      <Filter>db</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\shared\json\arraylist.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json\json_debug.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json\json_object.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json\json_tokener.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json\json_util.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json\JSONIterator.cpp">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json\linkhash.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json\printbuf.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\json\RJSONTokener.c">
+      <Filter>json</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\sync\ClientRegister.cpp">
+      <Filter>sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\sync\SyncEngine.cpp">
+      <Filter>sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\sync\SyncNotify.cpp">
+      <Filter>sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\sync\SyncSource.cpp">
+      <Filter>sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\sync\SyncThread.cpp">
+      <Filter>sync</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\db\DBAdapter.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\db\DBAttrManager.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\db\DBImportTransaction.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\db\DBRequestHelper.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\db\DBResult.cpp">
+      <Filter>db</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
