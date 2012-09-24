@@ -204,7 +204,7 @@ public:
 
     // Deprecated
     boolean callPushCallback(const String& strData) const;
-    boolean callPushCallbackWithJsonBody(const String& strUrl, const String& strData);
+    boolean callPushCallbackWithJsonBody(const String& strUrl, const String& strData, const String& strParams);
 	
     void setScreenRotationNotification(String strUrl, String strParams);
     void callScreenRotationCallback(int width, int height, int degrees);
@@ -292,7 +292,7 @@ void rho_rhodesapp_setViewMenu(unsigned long valMenu);
 const char* rho_rhodesapp_getappbackurl();
 
 int rho_rhodesapp_callPushCallback(const char* szData);
-int rho_rhodesapp_callPushCallbackWithJsonBody(const char* szUrl, const char* szData);
+int rho_rhodesapp_callPushCallbackWithJsonBody(const char* szUrl, const char* szData, const char* szParam);
 
 void rho_rhodesapp_callScreenRotationCallback(int width, int height, int degrees);
 void rho_rhodesapp_callPopupCallback(const char *strCallbackUrl, const char *id, const char *title);

@@ -464,6 +464,7 @@ public class RhodesService extends Service {
                 else if(intent.hasExtra(PushReceiver.INTENT_MESSAGE_JSON)){
                     final String json = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_JSON);
                     final String url = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_CALLBACK_URL);
+                    final String opt = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_CALLBACK_OPT);
                     Log.i(TAG, "Received PUSH message: " + json);
                     RhodesApplication.runWhen(
                         RhodesApplication.AppState.AppStarted,
@@ -471,13 +472,14 @@ public class RhodesService extends Service {
                             @Override
                             public void run()
                             {
-                                handlePushMessage(url, json);
+                                handlePushMessage(url, json, opt);
                             }
                         });
                 }
                 else if(intent.hasExtra(PushReceiver.INTENT_MESSAGE_ERROR)){
                     final String error = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_ERROR);
                     final String url = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_CALLBACK_URL);
+                    final String opt = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_CALLBACK_OPT);
                     Log.w(TAG, "Received PUSH error: " + error);
                     RhodesApplication.runWhen(
                         RhodesApplication.AppState.AppStarted,
@@ -485,7 +487,7 @@ public class RhodesService extends Service {
                             @Override
                             public void run()
                             {
-                                doRequestEx(url, "error=" + error, null, false);
+                                doRequestEx(url, "error=" + error, opt, false);
                             }
                         });
                 }
@@ -1219,7 +1221,7 @@ public class RhodesService extends Service {
 	private native String getPushRegistrationId(); 
 	
 	private native boolean callPushCallback(String data);
-    private native boolean callPushCallbackWithJsonBody(String url, String data);
+    private native boolean callPushCallbackWithJsonBody(String url, String data, String opt);
 	
 	private void handlePushMessage(Bundle extras) {
 		Logger.D(TAG, "Handle PUSH message");
@@ -1328,12 +1330,12 @@ public class RhodesService extends Service {
 		}
 	}
 
-    private void handlePushMessage(String url, String json) {
+    private void handlePushMessage(String url, String json, String opt) {
         Logger.T(TAG, "Handle push message");
         
         Logger.I(TAG, "Push message: " + json);
         
-        if (callPushCallbackWithJsonBody(url, json)) {
+        if (callPushCallbackWithJsonBody(url, json, opt)) {
             Logger.T(TAG, "Push message completely handled in callback");
             return;
         }

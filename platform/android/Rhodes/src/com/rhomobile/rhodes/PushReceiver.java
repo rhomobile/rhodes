@@ -51,6 +51,7 @@ public class PushReceiver extends BroadcastReceiver {
     public static final String INTENT_MESSAGE_ERROR = INTENT_PREFIX + ".error";
     
     public static final String INTENT_MESSAGE_CALLBACK_URL = INTENT_PREFIX + ".url";
+    public static final String INTENT_MESSAGE_CALLBACK_OPT = INTENT_PREFIX + ".opt";
 	
 	public static final int INTENT_TYPE_UNKNOWN = 0;
 	public static final int INTENT_TYPE_REGISTRATION_ID = 1;

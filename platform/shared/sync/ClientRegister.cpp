@@ -61,7 +61,16 @@ VectorPtr<ILoginListener*> CClientRegister::s_loginListeners;
     if (!m_pInstance)
     {
         m_pInstance = new CClientRegister();
-        m_pInstance->setDevicehPin(QueryDevicePin());
+        String devicePin = QueryDevicePin();
+        if (devicePin.length() == 0)
+        {
+            String session = CSyncThread::getSyncEngine().loadSession();
+            if (session.length() > 0)
+            {
+                m_pInstance->setRhoconnectCredentials("", "", session);
+            }
+        }
+        m_pInstance->setDevicehPin(devicePin);
     }
     return m_pInstance;
 }
@@ -120,6 +129,8 @@ CClientRegister::~CClientRegister()
 }
 void CClientRegister::setRhoconnectCredentials(const String& user, const String& pass, const String& session)
 {
+    LOG(INFO) + "New Sync credentials - user: " + user + ", sess: " + session;
+
     doStop();
     reset();
     for(VectorPtr<ILoginListener*>::iterator I = s_loginListeners.begin(); I != s_loginListeners.end(); ++I)
@@ -152,6 +163,8 @@ void CClientRegister::startUp()
     }
     if ( RHOCONF().getString("syncserver").length() > 0 )
     {
+        LOG(INFO) + "Starting ClientRegister...";
+
         start(epLow);
         stopWait();
     }
@@ -160,7 +173,7 @@ void CClientRegister::startUp()
 void CClientRegister::run()
 {
     unsigned i = 0;
-    LOG(INFO)+"ClientRegister start";
+    LOG(INFO)+"ClientRegister is started";
 	while(!isStopping()) 
 	{
 	    i++;
@@ -258,6 +271,8 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
 
 void CClientRegister::doStop()
 {
+    LOG(INFO) + "Stopping ClientRegister...";
+
     m_NetRequest.cancel();
     stop(WAIT_BEFOREKILL_SECONDS);
 }

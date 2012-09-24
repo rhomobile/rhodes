@@ -169,7 +169,7 @@ JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallb
  * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallbackWithJsonBody
-  (JNIEnv *, jobject, jstring, jstring);
+  (JNIEnv *, jobject, jstring, jstring, jstring);
 
 #ifdef __cplusplus
 }
