@@ -1,5 +1,5 @@
 ﻿//
-// pch.h
+// pch_sqlite.h
 // Header for standard system include files.
 //
 
