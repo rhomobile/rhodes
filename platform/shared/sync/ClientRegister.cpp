@@ -38,7 +38,9 @@ namespace sync{
 using namespace rho::common;
 using namespace rho::db;
 
-#define THREAD_WAIT_TIMEOUT 10
+static const int THREAD_WAIT_TIMEOUT = 10;
+static const char * const PUSH_PIN_NAME = "push_pin";
+
 
 IMPLEMENT_LOGCLASS(CClientRegister,"ClientRegister");
 
@@ -137,15 +139,16 @@ void CClientRegister::dropRhoconnectCredentials(const String& session)
 void CClientRegister::setDevicehPin(const String& pin)
 {
     m_strDevicePin = pin;
+    RHOCONF().setString(PUSH_PIN_NAME, pin, true);
     startUp();
 }
 
 void CClientRegister::startUp()
 {
-//    if(isAlive() || isWaiting())
-//    {
-//        doStop();
-//    }
+    if(isAlive() || isWaiting())
+    {
+        doStop();
+    }
     if ( RHOCONF().getString("syncserver").length() > 0 )
     {
         LOG(INFO) + "Starting ClientRegister...";
@@ -213,7 +216,7 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
     }
     if ( m_strDevicePin.length() == 0 )
     {
-        m_strDevicePin = RHOCONF().getString("push_pin");
+        m_strDevicePin = RHOCONF().getString(PUSH_PIN_NAME);
     }
     if ( m_strDevicePin.length() == 0 )
     {
@@ -270,6 +273,7 @@ void CClientRegister::reset()
 {
     m_nPollInterval = POLL_INTERVAL_SECONDS;
     m_strDevicePin = "";
+    RHOCONF().removeProperty(PUSH_PIN_NAME, true);
 }
 
 }
