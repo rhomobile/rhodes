@@ -370,7 +370,6 @@ void CRhodesApp::run()
 
     LOG(INFO) + "Starting sync engine...";
     sync::CSyncThread::Create();
-    sync::CClientRegister::Create();
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
