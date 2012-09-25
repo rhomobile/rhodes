@@ -594,7 +594,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if (rho_wm_is_web_app())
     {				
-
 		// This code is moved to rho::CRhoWKBrowserEngine::ProcessOnTopMostWnd()
 /*#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
         registerRhoExtension();
@@ -690,17 +689,12 @@ extern "C" int rho_wm_is_web_app()
     return bRE1App; 
 }
 
-extern "C" void rho_wm_init_web_app()
+extern "C" void rho_wm_registerRhoExtension()
 {
-    if ( !rho_wm_is_web_app())
-        return;
-
     //Initialize RhoElements Extension
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     registerRhoExtension();
 #endif
-    rho_webview_navigate("about:blank", 0);
-    rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
 }
 
 
