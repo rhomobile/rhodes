@@ -81,7 +81,6 @@ private:
     CClientRegister();
     ~CClientRegister();
 
-    void reset();
     void doStop();
     boolean doRegister(CSyncEngine& oSync);
     net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }

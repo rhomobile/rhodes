@@ -118,37 +118,39 @@ void CClientRegister::setRhoconnectCredentials(const String& user, const String&
 {
     LOG(INFO) + "New Sync credentials - user: " + user + ", sess: " + session;
 
-    doStop();
-    reset();
     for(VectorPtr<ILoginListener*>::iterator I = s_loginListeners.begin(); I != s_loginListeners.end(); ++I)
     {
         (*I)->onLogin(user, pass, session);
     }
+    startUp();
 }
 
 void CClientRegister::dropRhoconnectCredentials(const String& session)
 {
-    doStop();
     for(VectorPtr<ILoginListener*>::iterator I = s_loginListeners.begin(); I != s_loginListeners.end(); ++I)
     {
         (*I)->onLogout(session);
     }
-    reset();
 }
 
 void CClientRegister::setDevicehPin(const String& pin)
 {
     m_strDevicePin = pin;
     RHOCONF().setString(PUSH_PIN_NAME, pin, true);
-    startUp();
+
+    if (pin.length() > 0)
+    {
+        startUp();
+    } else
+    {
+        doStop();
+    }
 }
 
 void CClientRegister::startUp()
 {
-    if(isAlive() || isWaiting())
-    {
-        doStop();
-    }
+    doStop();
+
     if ( RHOCONF().getString("syncserver").length() > 0 )
     {
         LOG(INFO) + "Starting ClientRegister...";
@@ -267,13 +269,6 @@ void CClientRegister::doStop()
 
     m_NetRequest.cancel();
     stop(WAIT_BEFOREKILL_SECONDS);
-}
-
-void CClientRegister::reset()
-{
-    m_nPollInterval = POLL_INTERVAL_SECONDS;
-    m_strDevicePin = "";
-    RHOCONF().removeProperty(PUSH_PIN_NAME, true);
 }
 
 }
