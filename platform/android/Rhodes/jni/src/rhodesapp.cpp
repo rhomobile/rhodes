@@ -307,7 +307,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrat
   (JNIEnv *env, jobject, jstring jId)
 {
     std::string deviceId = rho_cast<std::string>(env, jId);
-    RHOCONF().setString("push_pin", deviceId, true);
     rho::sync::CClientRegister::Create(deviceId);
 }
 
