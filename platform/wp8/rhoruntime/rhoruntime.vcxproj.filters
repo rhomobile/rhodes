@@ -8,10 +8,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rhoruntime.cpp" />
-    <ClCompile Include="pch.cpp" />
+    <ClCompile Include=".\pch_rhoruntime.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include=".\pch_rhoruntime.h" />
   </ItemGroup>
 </Project>
