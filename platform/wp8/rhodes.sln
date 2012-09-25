@@ -5,6 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rhodes", "rhodes\rhodes.csp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhoruntime", "rhoruntime\rhoruntime.vcxproj", "{19B2CB23-B0FC-44C0-BD59-3DA4F3113585}"
 	ProjectSection(ProjectDependencies) = postProject
+		{51A2A712-4D2E-47CC-8AA4-44170232D128} = {51A2A712-4D2E-47CC-8AA4-44170232D128}
 		{A0746642-F215-4587-8B81-9D432FD4E468} = {A0746642-F215-4587-8B81-9D432FD4E468}
 	EndProjectSection
 EndProject
