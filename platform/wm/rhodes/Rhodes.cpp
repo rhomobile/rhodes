@@ -625,11 +625,11 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	#endif
 
         // Navigate to the "loading..." page
-	    m_appWindow.Navigate2(_T("about:blank")
+	    /*m_appWindow.Navigate2(_T("about:blank")
     #if defined(OS_WINDOWS_DESKTOP)
             , -1
     #endif
-        );
+        );*/
     }
     // Show the main application window
     //m_appWindow.ShowWindow(nShowCmd);
