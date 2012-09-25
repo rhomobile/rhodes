@@ -394,6 +394,7 @@ void CRhodesApp::run()
 
     getExtManager().close();
     rubyext::CGeoLocation::Destroy();
+    sync::CClientRegister::Destroy();
     sync::CSyncThread::Destroy();
 
     net::CAsyncHttp::Destroy();

@@ -51,33 +51,24 @@ VectorPtr<ILoginListener*> CClientRegister::s_loginListeners;
     if (!m_pInstance)
     {
         m_pInstance = new CClientRegister();
-        m_pInstance->m_strDevicePin = QueryDevicePin();
     }
     return m_pInstance;
 }
 
 /*static*/ CClientRegister* CClientRegister::Create()
 {
-    if (!m_pInstance)
+    String session = CSyncThread::getSyncEngine().loadSession();
+    if (session.length() > 0)
     {
-        m_pInstance = new CClientRegister();
-        String devicePin = QueryDevicePin();
-        if (devicePin.length() == 0)
-        {
-            String session = CSyncThread::getSyncEngine().loadSession();
-            if (session.length() > 0)
-            {
-                m_pInstance->setRhoconnectCredentials("", "", session);
-            }
-        }
-        m_pInstance->setDevicehPin(devicePin);
+        Get()->setRhoconnectCredentials("", "", session);
     }
+    m_pInstance->startUp();
     return m_pInstance;
 }
 
-/*static*/ CClientRegister* CClientRegister::Create(const char* pin)
+/*static*/ CClientRegister* CClientRegister::Create(const String& devicePin)
 {
-    Get()->setDevicehPin(pin);
+    Get()->setDevicehPin(devicePin);
     return m_pInstance;
 }
 
@@ -108,12 +99,6 @@ VectorPtr<ILoginListener*> CClientRegister::s_loginListeners;
 /*static*/void CClientRegister::AddLoginListener(ILoginListener* listener)
 {
     s_loginListeners.addElement(listener);
-}
-
-/*static*/ String CClientRegister::QueryDevicePin()
-{
-    IDBResult res = CDBAdapter::getUserDB().executeSQL("SELECT token from client_info");
-    return res.isEnd() ? "" : res.getStringByIdx(0);
 }
 
 CClientRegister::CClientRegister() : m_nPollInterval(POLL_INTERVAL_SECONDS)
@@ -176,7 +161,7 @@ void CClientRegister::run()
     LOG(INFO)+"ClientRegister is started";
 	while(!isStopping()) 
 	{
-	    i++;
+        i++;
         LOG(INFO)+"Try to register: " + i;
         if ( CSyncThread::getInstance() != null )
 		{
@@ -225,6 +210,10 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
         m_nPollInterval = POLL_INTERVAL_INFINITE;
         LOG(INFO)+"Session is empty, do register later";
         return false;
+    }
+    if ( m_strDevicePin.length() == 0 )
+    {
+        m_strDevicePin = RHOCONF().getString("push_pin");
     }
     if ( m_strDevicePin.length() == 0 )
     {
