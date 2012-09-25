@@ -17,6 +17,9 @@ namespace rhodes
 {
     public partial class App : Application
     {
+        // exception to exit application
+        private class QuitException : Exception { }
+
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
@@ -59,6 +62,12 @@ namespace rhodes
 
         }
 
+        // throw unhandled exception to exit application (see Application_UnhandledException below)
+        public static void Quit()
+        {
+            throw new QuitException();
+        }
+
         // Code to execute when the application is launching (eg, from Start)
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
@@ -96,6 +105,10 @@ namespace rhodes
         // Code to execute on Unhandled Exceptions
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
+            // just ignore QuitException
+            if (e.ExceptionObject is QuitException)
+                return;
+            
             if (System.Diagnostics.Debugger.IsAttached)
             {
                 // An unhandled exception has occurred; break into the debugger
