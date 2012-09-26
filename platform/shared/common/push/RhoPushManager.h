@@ -43,13 +43,9 @@ public:
 
     void addClient(IRhoPushClient* pClient);
 
+    void initClients();
     void setNotificationUrl(const String& url, const String& urlParams, const String& pushType);
     void setNotificationUrl(const String& url, const String& urlParams);
-    //void unregisterClient(const String& pushType);
-    //void checkClientRegistered(const String& pushType);
-
-    //void registerAllClients(const String& url, const String& urlParams);
-    //void unregisterAllClients();
 
 private:
     IRhoPushClient* getClient(const String& pushType);
