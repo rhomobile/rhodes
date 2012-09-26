@@ -662,13 +662,7 @@ def init_extensions(startdir, dest)
             end
           end
           
-          if !entry.nil? 
-            if $config["platform"] == "wm" && entry == 'Init_RhoElementsExt_extension'
-                extentries << 'Init_RhoElementsExt'
-            else
-                extentries << entry
-            end     
-          end
+          extentries << entry unless entry.nil?
           
           if type.to_s() != "nativelib"
             libs = extconf["libraries"]
