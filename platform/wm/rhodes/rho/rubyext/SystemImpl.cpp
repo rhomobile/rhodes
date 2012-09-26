@@ -814,6 +814,7 @@ void rho_sys_bring_to_front()
 void rho_sys_report_app_started()
 {
     LOG(INFO) + "rho_sys_report_app_started() has no implementation on Win Mobile.";
+	RHODESAPP().initPushClients();
 }
 
 int rho_sys_is_app_installed(const char *appname)
