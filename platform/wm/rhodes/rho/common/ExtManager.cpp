@@ -435,6 +435,14 @@ void CExtManager::OnWindowChanged(LPVOID lparam)
     }
 }
 
+DWORD CExtManager::getProcessId()
+{
+#if !defined(OS_WINDOWS_DESKTOP)
+    return getAppWindow().getWebKitEngine()->GetProcessID();    
+#else
+    return 0;
+#endif
+}
 } //namespace common
 } //namespace rho
 

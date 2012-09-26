@@ -258,3 +258,8 @@ void CIEBrowserEngine::setBrowserGesturing(bool bEnableGesturing)
 void CIEBrowserEngine::NotifyEngineOfSipPosition()
 {
 }
+
+DWORD CIEBrowserEngine::GetProcessID()
+{
+    return ::GetCurrentProcessId();
+}
