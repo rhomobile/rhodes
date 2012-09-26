@@ -9,9 +9,9 @@ If you have [Rhodes gem](/install#installing-rhodes-from-the-command-line), then
 If you would like to run RhoSimulator without Rhodes gem, download [Windows](http://rhosimulator.s3.amazonaws.com/RhoSimulator.zip) or
 [Mac OS X](http://rhosimulator.s3.amazonaws.com/RhoSimulator.tbz2) version, extract it and specify path to `rhosimulator.exe` or `RhoSimulator.app` respectively at `rhodes/rhobuild.yml`:
 
-        env: 
-           paths:    
-              rhosimulator: <RhoSimulator folder>
+    env: 
+      paths:    
+        rhosimulator: <RhoSimulator folder>
 
 Alternatively you may [build](#build-rhosimulator) your own customized version of RhoSimulator as described [below](#build-rhosimulator).
 
@@ -68,6 +68,9 @@ Follow these instructions to build your own customized version of RhoSimulator.
 
 * Currently only <b>Visual Studio 2008</b> is supported
 * Follow [Build for Windows - Prerequisites](build#build-for-windows)
+* Clean temporary and generated files by running the rake command in the `rhodes` source folder:
+
+      rake clean:win32
 
 ### Preliminary steps for Mac OS X
 
@@ -92,7 +95,7 @@ Follow these instructions to build your own customized version of RhoSimulator.
     * Make sure that your `PATH` environment variable does not contain the path to any previously installed Qt binaries
     * Add to your `~/.bash_profile` the new environment variable `QTDIR` by adding the line (or by changing the existing `QTDIR` variable):
 
-			export QTDIR=/Developer/SDKs/Qt
+          export QTDIR=/Developer/SDKs/Qt
 
     * Restart terminal windows to enable new environment setting.
     * Patch Qt sources by replacing all occurrences of '/Developer/SDKs/MacOSX10' to '.*MacOSX10' in two project files:
@@ -100,19 +103,19 @@ Follow these instructions to build your own customized version of RhoSimulator.
         * `~/qt-4.8.2/src/plugins/bearer/corewlan/corewlan.pro`
     * Open `Terminal.app` and issue commands:
 
-			$ cd ~/qt-4.8.2
-			$ ./configure -opensource -platform macx-g++
-			  -nomake examples -nomake demos -nomake docs
-			  -qt-libpng -qt-libjpeg -qt-libtiff -qt-libmng
-			  -no-qt3support -webkit -release
-			  -prefix /Developer/SDKs/Qt
-			  -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk
-			$ make
-			$ sudo make install
+          $ cd ~/qt-4.8.2
+          $ ./configure -opensource -platform macx-g++
+            -nomake examples -nomake demos -nomake docs
+            -qt-libpng -qt-libjpeg -qt-libtiff -qt-libmng
+            -no-qt3support -webkit -release
+            -prefix /Developer/SDKs/Qt
+            -sdk /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.6.sdk
+          $ make
+          $ sudo make install
 
       If you're using Xcode 4.2 or earlier, then change the last line of `./configure` command to:
 
-			  -sdk /Developer/SDKs/MacOSX10.6.sdk
+            -sdk /Developer/SDKs/MacOSX10.6.sdk
 
       Be aware that it will take a while to build the Qt libraries from sources (maybe few hours or so).
 
@@ -140,6 +143,6 @@ To run Rhodes applications in the custom built RhoSimulator, please ensure that 
   `<path-to-ruby>\lib\ruby\gems\<version-number>\gems\rhodes-<version-number>\platform\wm\rhodes.sln`
 * Build solution for the configuration `SimulatorRelease|Win32`
 * Specify the path to custom built RhoSimulator at `rhobuild.yml`:
-        env:
-          paths:
-            rhosimulator: platform/wm/bin/win32/rhodes/SimulatorRelease
+      env:
+        paths:
+          rhosimulator: platform/wm/bin/win32/rhodes/SimulatorRelease
