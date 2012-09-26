@@ -149,8 +149,6 @@ void CClientRegister::setDevicehPin(const String& pin)
 
 void CClientRegister::startUp()
 {
-    //doStop();
-
     if ( RHOCONF().getString("syncserver").length() > 0 )
     {
         LOG(INFO) + "Starting ClientRegister...";
