@@ -108,6 +108,7 @@ struct IRhoExtManager
 
     virtual void setBrowserGesturing(bool bEnableGesturing) = 0;
     virtual void passSipPositionToEngine() = 0;
+	virtual DWORD getProcessId() = 0;
 };
 
 class CExtManager : public IRhoExtManager
@@ -168,6 +169,7 @@ public:
     virtual StringW getConfigPath();
     virtual void setBrowserGesturing(bool bEnableGesturing);
     virtual void passSipPositionToEngine();
+	virtual DWORD getProcessId();
 };
 
 } //namespace common
