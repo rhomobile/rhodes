@@ -280,6 +280,11 @@ void rho_sys_set_window_size(int width, int height)
 {
     LOG(INFO) + "System.set_window_size is unsupported on current platform.";
 }
+
+void rho_sys_lock_window_size(int locked)
+{
+    LOG(INFO) + "System.lock_window_size is unsupported on current platform.";
+}
 #endif
 
 } //extern "C"

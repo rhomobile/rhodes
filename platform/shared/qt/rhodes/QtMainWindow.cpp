@@ -986,3 +986,11 @@ void QtMainWindow::setSize(int width, int height)
     this->resize(width, height);
     this->adjustWebInspector();
 }
+
+void QtMainWindow::lockSize(int locked)
+{
+	if (locked)
+		this->setFixedSize(this->width(), this->height());
+	else
+		this->setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+}

@@ -25,6 +25,8 @@ extern void rho_sys_set_window_frame(int x0, int y0, int width, int height);
 extern void rho_sys_set_window_position(int x0, int y0);
 #define set_window_size rho_sys_set_window_size
 extern void rho_sys_set_window_size(int width, int height);
+#define lock_window_size rho_sys_lock_window_size
+extern void rho_sys_lock_window_size(int locked);
 
 #define set_push_notification rho_sys_set_push_notification
 extern void rho_sys_set_push_notification( const char *url, const char* params, const char* push_types);
@@ -158,6 +160,7 @@ extern int get_screen_height();
 extern void set_window_frame(int x0, int y0, int width, int height);
 extern void set_window_position(int x0, int y0);
 extern void set_window_size(int width, int height);
+extern void lock_window_size(int locked);
 extern void set_push_notification(const char *url, const char* params, const char* push_types);
 extern void set_screen_rotation_notification(const char *url, const char* params);
 extern void exit();
