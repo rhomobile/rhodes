@@ -616,13 +616,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     {
         RHODESAPP().startApp();
 
-	#ifdef RHODES_EMULATOR
-		int width = RHOSIMCONF().getInt("screen_width");
-		int height = RHOSIMCONF().getInt("screen_height");
-		if ((width>0) && (height>0))
-			m_appWindow.setSize(width, height);
-	#endif
-
         // Navigate to the "loading..." page
 	    /*m_appWindow.Navigate2(_T("about:blank")
     #if defined(OS_WINDOWS_DESKTOP)
