@@ -203,13 +203,6 @@ int main(int argc, char *argv[])
 
     RHODESAPP().startApp();
 
-#ifdef RHODES_EMULATOR
-    int width = RHOSIMCONF().getInt("screen_width");
-    int height = RHOSIMCONF().getInt("screen_height");
-    if ((width>0) && (height>0))
-        m_appWindow->setSize(width, height);
-#endif
-
     // Navigate to the "loading..." page
     m_appWindow->navigate(L"about:blank", -1);
 
