@@ -719,7 +719,9 @@ uintptr_t rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self, int argc
 #endif
 
 //RHO
-#ifdef _WIN32_WCE
+#if defined(_WP8_LIB)// || defined(_WINRT_DLL)
+#include "wp8/wp8.h"
+#elif _WIN32_WCE
 #include "wince.h"
 #endif
 //RHO
