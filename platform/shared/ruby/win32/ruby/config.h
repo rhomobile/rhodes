@@ -6,9 +6,6 @@
 #ifndef CONFIG_RUBY_H
 #define CONFIG_RUBY_H 1
 
-#if !((_MSC_VER == 1400)||(_MSC_VER == 1500))
-#error MSC version unmatch: _MSC_VER: 1400 or 1500 is expected.
-#endif
 //#define WIN95 0
 #define RT_VER 80
 #define STDC_HEADERS 1
