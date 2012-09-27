@@ -33,12 +33,15 @@
 
 namespace rho { namespace common {
 
+class CRhodesApp;
 
 class PushManager {
 public:
     DEFINE_LOGCLASS;
 
 public:
+    PushManager(CRhodesApp& rhoApp) : m_rhoApp(rhoApp) {}
+
     IRhoPushClient* getDefaultClient();
 
     void addClient(IRhoPushClient* pClient);
@@ -46,11 +49,13 @@ public:
     void initClients();
     void setNotificationUrl(const String& url, const String& urlParams, const String& pushType);
     void setNotificationUrl(const String& url, const String& urlParams);
+    bool callNotification(const String& pushType, const String& json, const String& data);
 
 private:
     IRhoPushClient* getClient(const String& pushType);
 
 private:
+    CRhodesApp& m_rhoApp;
     VectorPtr<IRhoPushClient*> m_Clients;
 };
 

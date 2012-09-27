@@ -328,7 +328,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
 CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
     :CRhodesAppBase(strRootPath, strUserPath, strRuntimePath), 
-	m_networkStatusReceiver(m_mxNetworkStatus)
+     m_appPushMgr(*this), m_networkStatusReceiver(m_mxNetworkStatus)
 {
     m_bExit = false;
     m_bDeactivationMode = false;
@@ -348,7 +348,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 
     initAppUrls();
 
-   	LOGCONF().initRemoteLog();
+    LOGCONF().initRemoteLog();
 
     initHttpServer();
 
@@ -1566,7 +1566,7 @@ void CRhodesApp::setPushNotification(const String& strUrl, const String& strPara
             canonicalUrl = canonicalizeRhoUrl(strUrl);
 
         if(strType.length())
-            m_appPushMgr.setNotificationUrl(canonicalUrl, strParams, strType);
+            m_appPushMgr.setNotificationUrl(strType, canonicalUrl, strParams);
         else
             m_appPushMgr.setNotificationUrl(canonicalUrl, strParams);
     }
@@ -1625,6 +1625,11 @@ boolean CRhodesApp::callPushCallbackWithJsonBody(const String& strUrl, const Str
     }
 
     return false;
+}
+
+boolean CRhodesApp::callPushCallback(const String& strType, const String& strJson, const String& strData)
+{
+    return m_appPushMgr.callNotification(strType, strJson, strData);
 }
 
 void CRhodesApp::setScreenRotationNotification(String strUrl, String strParams)
@@ -2060,13 +2065,13 @@ int rho_rhodesapp_callPushCallback(const char* szData)
     return RHODESAPP().callPushCallback(szData?szData:"") ? 1 : 0;
 }
 
-int rho_rhodesapp_callPushCallbackWithJsonBody(const char* szUrl, const char* szData, const char* szParam)
-{
-    if ( !rho::common::CRhodesApp::getInstance() )
-        return 1;
-
-    return RHODESAPP().callPushCallbackWithJsonBody(szUrl, szData, szParam) ? 1 : 0;
-}
+//int rho_rhodesapp_callPushCallbackWithJsonBody(const char* szUrl, const char* szData, const char* szParam)
+//{
+//    if ( !rho::common::CRhodesApp::getInstance() )
+//        return 1;
+//
+//    return RHODESAPP().callPushCallbackWithJsonBody(szUrl, szData, szParam) ? 1 : 0;
+//}
 
 
 void rho_rhodesapp_callScreenRotationCallback(int width, int height, int degrees)
