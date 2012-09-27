@@ -291,4 +291,9 @@ void rho_sys_set_window_size(int width, int height)
     CMainWindow::getInstance()->setSize(width, height);
 }
 
+void rho_sys_lock_window_size(int locked)
+{
+    CMainWindow::getInstance()->lockSize(locked);
+}
+
 } //extern "C"

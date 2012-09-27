@@ -142,6 +142,11 @@ Set this option to 1 in order to enable WebView zoom (Android only). Default is 
 
 	enable_screen_zoom = 1
 
+Set application window width and hieght (Win32 only). Default is 400 x 600.
+
+	screen_width = 800
+	screen_height = 600
+
 Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.
 **NOTE WARNING!!! Remove this parameter before put application to production. **
 	

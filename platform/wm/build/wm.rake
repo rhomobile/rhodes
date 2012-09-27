@@ -744,6 +744,7 @@ namespace "clean" do
     rm_rf $vcbindir + "/win32"
     rm_rf $tmpdir
     rm_rf $targetdir
+    rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
   end
 end
 

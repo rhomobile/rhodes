@@ -222,18 +222,24 @@ def  run_emulator(options = {})
       $avdname += "motosol" if $use_motosol_api
     end
     
-    $avdtarget = $androidtargets[get_api_level($emuversion)]
+    targetid = $androidtargets[get_api_level($emuversion)]
     
-    puts "AVD name: #{$avdname}, target API: #{$avdtarget}"
-
     unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
-      raise "Unable to create AVD image. No appropriate target API for SDK version: #{$emuversion}" unless $avdtarget
-      createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{$avdtarget} --sdcard 128M"
+      if USE_TRACES
+        puts "AVD name: #{$avdname}, emulator version: #{$emuversion}, target id: #{targetid}"
+      end
+      raise "Unable to create AVD image. No appropriate target API for SDK version: #{$emuversion}" unless targetid
+      createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{targetid} --sdcard 128M"
       puts "Creating AVD image: #{$avdname}"
-      #system("#{createavd}")
-      `#{createavd}`
+      IO.popen(createavd, 'r+') do |io|
+        io.puts "\n"
+        while line = io.gets
+          puts line
+        end
+      end
+      
     else
-      raise "Unable to run Android emulator. No appropriate target API for SDK version: #{$emuversion}" unless $avdtarget
+      raise "Unable to run Android emulator. No appropriate target API for SDK version: #{$emuversion}" unless targetid
     end
 
     # Start the emulator, check on it every 5 seconds until it's running

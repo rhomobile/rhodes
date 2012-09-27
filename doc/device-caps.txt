@@ -175,6 +175,7 @@ To modify application window position and size:
     System.set_window_frame(x,y,width,height) #change application window position and size
     System.set_window_position(x,y) #change application window position
     System.set_window_size(width,height) #change application window size
+    System.lock_window_size(locked) #lock/unlock window size change by user
 
 **NOTE: These methods implemented only for Windows Desktop  **
 

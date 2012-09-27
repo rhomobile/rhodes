@@ -46,6 +46,7 @@
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
+#include "common/RhoSimConf.h"
 #include "rubyext/WebView.h"
 #include "rubyext/NativeToolbarExt.h"
 #undef null
@@ -120,6 +121,19 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     //this->ui->centralWidget->setStyleSheet("background-color: yellow");
     //this->ui->centralWidget->setStyleSheet("QWidget {background-image: url(test.jpg)}" );
 
+#ifdef RHODES_EMULATOR
+	int width = RHOSIMCONF().getInt("screen_width");
+	int height = RHOSIMCONF().getInt("screen_height");
+#else
+	int width = RHOCONF().getInt("screen_width");
+	int height = RHOCONF().getInt("screen_height");
+#endif
+	if ((width>0) && (height>0))
+		this->setSize(width, height);
+	else if (width>0)
+		this->setSize(width, this->height());
+	else if (height>0)
+		this->setSize(this->width(), height);
 
 #if defined(RHODES_EMULATOR)
     // connecting WebInspector
@@ -985,4 +999,12 @@ void QtMainWindow::setSize(int width, int height)
 {
     this->resize(width, height);
     this->adjustWebInspector();
+}
+
+void QtMainWindow::lockSize(int locked)
+{
+	if (locked)
+		this->setFixedSize(this->width(), this->height());
+	else
+		this->setFixedSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 }

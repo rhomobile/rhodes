@@ -10,6 +10,7 @@
 
 extern "C" int rho_wm_impl_CheckLicense();
 extern "C" int rho_wm_impl_CheckSymbolDevice();
+extern "C" void rho_wm_registerRhoExtension();
 
 CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     m_spIWebBrowser2(NULL)
@@ -37,6 +38,8 @@ CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
 
     if ( !RHOCONF().getBool("wm_show_statusbar") )
         m_spIWebBrowser2->put_StatusBar(VARIANT_FALSE);
+
+    rho_wm_registerRhoExtension();
 
 }
 
@@ -254,4 +257,9 @@ void CIEBrowserEngine::setBrowserGesturing(bool bEnableGesturing)
 
 void CIEBrowserEngine::NotifyEngineOfSipPosition()
 {
+}
+
+DWORD CIEBrowserEngine::GetProcessID()
+{
+    return ::GetCurrentProcessId();
 }

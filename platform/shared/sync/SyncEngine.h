@@ -128,7 +128,12 @@ public:
     void setSchemaChanged(boolean bChanged){ m_bIsSchemaChanged = bChanged; }
     boolean isSchemaChanged(){ return m_bIsSchemaChanged; }
 //IRhoSession
-    virtual const String& getSession(){ return m_strSession; }
+    virtual const String& getSession()
+    { 
+        synchronized(m_mxLoadClientID){
+            return m_strSession;
+        }
+    }
     virtual const String& getContentType(){ return getProtocol().getContentType();}
 
     void loadAllSources();
