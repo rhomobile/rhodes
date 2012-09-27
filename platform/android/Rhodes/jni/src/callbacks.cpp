@@ -231,6 +231,8 @@ RHO_GLOBAL void rho_sys_bring_to_front()
 
 RHO_GLOBAL void rho_sys_report_app_started()
 {
+    RHODESAPP().initPushClients();
+
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
     if (!cls) return;

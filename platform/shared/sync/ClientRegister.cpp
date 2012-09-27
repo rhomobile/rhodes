@@ -38,7 +38,9 @@ namespace sync{
 using namespace rho::common;
 using namespace rho::db;
 
-#define THREAD_WAIT_TIMEOUT 10
+static const int THREAD_WAIT_TIMEOUT = 10;
+static const char * const PUSH_PIN_NAME = "push_pin";
+
 
 IMPLEMENT_LOGCLASS(CClientRegister,"ClientRegister");
 
@@ -51,33 +53,24 @@ VectorPtr<ILoginListener*> CClientRegister::s_loginListeners;
     if (!m_pInstance)
     {
         m_pInstance = new CClientRegister();
-        m_pInstance->m_strDevicePin = QueryDevicePin();
     }
     return m_pInstance;
 }
 
 /*static*/ CClientRegister* CClientRegister::Create()
 {
-    if (!m_pInstance)
+    String session = CSyncThread::getSyncEngine().loadSession();
+    if (session.length() > 0)
     {
-        m_pInstance = new CClientRegister();
-        String devicePin = QueryDevicePin();
-        if (devicePin.length() == 0)
-        {
-            String session = CSyncThread::getSyncEngine().loadSession();
-            if (session.length() > 0)
-            {
-                m_pInstance->setRhoconnectCredentials("", "", session);
-            }
-        }
-        m_pInstance->setDevicehPin(devicePin);
+        Get()->setRhoconnectCredentials("", "", session);
     }
+    Get()->startUp();
     return m_pInstance;
 }
 
-/*static*/ CClientRegister* CClientRegister::Create(const char* pin)
+/*static*/ CClientRegister* CClientRegister::Create(const String& devicePin)
 {
-    Get()->setDevicehPin(pin);
+    Get()->setDevicehPin(devicePin);
     return m_pInstance;
 }
 
@@ -110,12 +103,6 @@ VectorPtr<ILoginListener*> CClientRegister::s_loginListeners;
     s_loginListeners.addElement(listener);
 }
 
-/*static*/ String CClientRegister::QueryDevicePin()
-{
-    IDBResult res = CDBAdapter::getUserDB().executeSQL("SELECT token from client_info");
-    return res.isEnd() ? "" : res.getStringByIdx(0);
-}
-
 CClientRegister::CClientRegister() : m_nPollInterval(POLL_INTERVAL_SECONDS)
 {
     m_NetRequest.setSslVerifyPeer(s_sslVerifyPeer);
@@ -131,36 +118,37 @@ void CClientRegister::setRhoconnectCredentials(const String& user, const String&
 {
     LOG(INFO) + "New Sync credentials - user: " + user + ", sess: " + session;
 
-    doStop();
-    reset();
     for(VectorPtr<ILoginListener*>::iterator I = s_loginListeners.begin(); I != s_loginListeners.end(); ++I)
     {
         (*I)->onLogin(user, pass, session);
     }
+    startUp();
 }
 
 void CClientRegister::dropRhoconnectCredentials(const String& session)
 {
-    doStop();
     for(VectorPtr<ILoginListener*>::iterator I = s_loginListeners.begin(); I != s_loginListeners.end(); ++I)
     {
         (*I)->onLogout(session);
     }
-    reset();
 }
 
 void CClientRegister::setDevicehPin(const String& pin)
 {
     m_strDevicePin = pin;
-    startUp();
+    RHOCONF().setString(PUSH_PIN_NAME, pin, true);
+
+    if (pin.length() > 0)
+    {
+        startUp();
+    } else
+    {
+        doStop();
+    }
 }
 
 void CClientRegister::startUp()
 {
-    if(isAlive() || isWaiting())
-    {
-        doStop();
-    }
     if ( RHOCONF().getString("syncserver").length() > 0 )
     {
         LOG(INFO) + "Starting ClientRegister...";
@@ -176,7 +164,7 @@ void CClientRegister::run()
     LOG(INFO)+"ClientRegister is started";
 	while(!isStopping()) 
 	{
-	    i++;
+        i++;
         LOG(INFO)+"Try to register: " + i;
         if ( CSyncThread::getInstance() != null )
 		{
@@ -228,6 +216,10 @@ boolean CClientRegister::doRegister(CSyncEngine& oSync)
     }
     if ( m_strDevicePin.length() == 0 )
     {
+        m_strDevicePin = RHOCONF().getString(PUSH_PIN_NAME);
+    }
+    if ( m_strDevicePin.length() == 0 )
+    {
         m_nPollInterval = POLL_INTERVAL_INFINITE;
         LOG(INFO)+"Device PUSH pin is empty, do register later";
         return false;
@@ -275,12 +267,6 @@ void CClientRegister::doStop()
 
     m_NetRequest.cancel();
     stop(WAIT_BEFOREKILL_SECONDS);
-}
-
-void CClientRegister::reset()
-{
-    m_nPollInterval = POLL_INTERVAL_SECONDS;
-    m_strDevicePin = "";
 }
 
 }

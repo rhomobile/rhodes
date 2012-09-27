@@ -122,6 +122,7 @@ public:
 	void setFrame(int x, int y, int width, int height);
 	void setPosition(int x, int y);
 	void setSize(int width, int height);
+	void lockSize(int locked);
 
     BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)

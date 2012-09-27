@@ -199,6 +199,7 @@ public:
 
     IRhoPushClient* getDefaultPushClient() {return m_appPushMgr.getDefaultClient(); }
     void addPushClient(IRhoPushClient* pClient) { m_appPushMgr.addClient(pClient); }
+    void initPushClients();
     void setPushNotification(const String& strUrl, const String& strParams, const String& types);
     //void checkPushRegistration(const String& strUrl, const String& strParams, const String& type);
 

@@ -370,7 +370,6 @@ void CRhodesApp::run()
 
     LOG(INFO) + "Starting sync engine...";
     sync::CSyncThread::Create();
-    sync::CClientRegister::Create();
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
@@ -394,6 +393,7 @@ void CRhodesApp::run()
 
     getExtManager().close();
     rubyext::CGeoLocation::Destroy();
+    sync::CClientRegister::Destroy();
     sync::CSyncThread::Destroy();
 
     net::CAsyncHttp::Destroy();
@@ -1534,6 +1534,16 @@ unsigned long CRhodesApp::getCallbackObject(int nIndex)
     delete pCallbackObject;
 
     return valRes;
+}
+
+void CRhodesApp::initPushClients()
+{
+    static bool first = true;
+    if(first)
+    {
+        first = false;
+        m_appPushMgr.initClients();
+    }
 }
 
 void CRhodesApp::setPushNotification(const String& strUrl, const String& strParams, const String& strType )

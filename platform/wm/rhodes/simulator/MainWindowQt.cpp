@@ -618,22 +618,23 @@ void CMainWindow::menuAddAction(const char* label, int item)
 // Window frame
 void CMainWindow::setFrame(int x, int y, int width, int height)
 {
-    ((QtMainWindow*)qtMainWindow)->move(x, y);
-	((QtMainWindow*)qtMainWindow)->resize(width, height);
-	((QtMainWindow*)qtMainWindow)->adjustWebInspector();
+	((QtMainWindow*)qtMainWindow)->setFrame(x, y, width, height);
 }
 
 void CMainWindow::setPosition(int x, int y)
 {
-    ((QtMainWindow*)qtMainWindow)->move(x, y);
+    ((QtMainWindow*)qtMainWindow)->setPosition(x, y);
 }
 
 void CMainWindow::setSize(int width, int height)
 {
-	((QtMainWindow*)qtMainWindow)->resize(width, height);
-	((QtMainWindow*)qtMainWindow)->adjustWebInspector();
+	((QtMainWindow*)qtMainWindow)->setSize(width, height);
 }
 
+void CMainWindow::lockSize(int locked)
+{
+	((QtMainWindow*)qtMainWindow)->lockSize(locked);
+}
 
 
 // **************************************************************************

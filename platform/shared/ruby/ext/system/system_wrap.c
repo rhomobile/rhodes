@@ -1851,6 +1851,8 @@ extern void rho_sys_set_window_frame(int x0, int y0, int width, int height);
 extern void rho_sys_set_window_position(int x0, int y0);
 #define set_window_size rho_sys_set_window_size
 extern void rho_sys_set_window_size(int width, int height);
+#define lock_window_size rho_sys_lock_window_size
+extern void rho_sys_lock_window_size(int locked);
 
 #define set_push_notification rho_sys_set_push_notification
 extern void rho_sys_set_push_notification( const char *url, const char* params, const char* push_types);
@@ -2352,6 +2354,27 @@ _wrap_set_window_size(int argc, VALUE *argv, VALUE self) {
   } 
   arg2 = (int)(val2);
   set_window_size(arg1,arg2);
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_lock_window_size(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  ecode1 = SWIG_AsVal_int(argv[0], &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "int","lock_window_size", 1, argv[0] ));
+  } 
+  arg1 = (int)(val1);
+  lock_window_size(arg1);
   return Qnil;
 fail:
   return Qnil;
@@ -3347,6 +3370,7 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "set_window_frame", _wrap_set_window_frame, -1);
   rb_define_module_function(mSystem, "set_window_position", _wrap_set_window_position, -1);
   rb_define_module_function(mSystem, "set_window_size", _wrap_set_window_size, -1);
+  rb_define_module_function(mSystem, "lock_window_size", _wrap_lock_window_size, -1);
   rb_define_module_function(mSystem, "set_push_notification", _wrap_set_push_notification, -1);
   rb_define_module_function(mSystem, "set_screen_rotation_notification", _wrap_set_screen_rotation_notification, -1);
   rb_define_module_function(mSystem, "exit", _wrap_exit, -1);

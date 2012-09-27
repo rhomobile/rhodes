@@ -60,7 +60,7 @@ public:
     static void AddLoginListener(ILoginListener* listener);
     static CClientRegister* Get();
     static CClientRegister* Create();
-    static CClientRegister* Create(const char* pin);
+    static CClientRegister* Create(const String& devicePin);
     static void Stop();
     static void Destroy();
     static CClientRegister* getInstance() { return m_pInstance; }
@@ -76,13 +76,11 @@ protected:
     virtual void run();
 
 private:
-    static String QueryDevicePin();
     String getRegisterBody(const String& strClientID);
 
     CClientRegister();
     ~CClientRegister();
 
-    void reset();
     void doStop();
     boolean doRegister(CSyncEngine& oSync);
     net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }

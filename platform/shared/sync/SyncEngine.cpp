@@ -986,19 +986,22 @@ boolean CSyncEngine::isLoggedIn()
 
 String CSyncEngine::loadSession()
 {
-    m_strSession = "";
-    IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
+    synchronized(m_mxLoadClientID)
+    {
+        m_strSession = "";
+        IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
     
-    if ( !res.isEnd() )
-    	m_strSession = res.getStringByIdx(0);
+        if ( !res.isEnd() )
+    	    m_strSession = res.getStringByIdx(0);
     
-    return m_strSession;
+        return m_strSession;
+    }
 }
 
 void CSyncEngine::logout_int()
 {
     CClientRegister::Get()->dropRhoconnectCredentials(m_strSession);
-    CClientRegister::Destroy();
+    //CClientRegister::Destroy();
 
     getUserDB().executeSQL( "UPDATE client_info SET session=NULL" );
     m_strSession = "";

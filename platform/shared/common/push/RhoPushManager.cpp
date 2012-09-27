@@ -54,6 +54,15 @@ void PushManager::addClient(IRhoPushClient* pClient)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+void PushManager::initClients()
+{
+    for(Vector<IRhoPushClient*>::iterator I = m_Clients.begin(); I != m_Clients.end(); ++I)
+    {
+        (*I)->init();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 void PushManager::setNotificationUrl(const String& url, const String& urlParams, const String& pushType)
 {
     IRhoPushClient* pClient = getClient(pushType);

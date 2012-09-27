@@ -361,7 +361,7 @@ void rho_sync_set_syncserver(const char* syncserver)
     if ( syncserver && *syncserver )
     {
         CSyncThread::getInstance()->start(CSyncThread::epLow);
-        CClientRegister::Create();
+        //CClientRegister::Create();
     }
     else
     {
