@@ -106,6 +106,12 @@ public:
 		CMainWindow& mainWin = getAppWindow();
 		mainWin.setSize(frame.getWidth(), frame.getHeight());
 	}
+	static void lockSize(CParams* params)
+	{
+	    CParams& p = *((CParams*)params);
+		CMainWindow& mainWin = getAppWindow();
+		mainWin.lockSize(p.getX());
+	}
 };
 
 }
@@ -950,6 +956,11 @@ void rho_sys_set_window_position(int x0, int y0)
 void rho_sys_set_window_size(int width, int height)
 {
 	rho_callInUIThread(CRhoWindow::setSize, new CRhoWindow::CParams(0, 0, width, height));
+}
+
+void rho_sys_lock_window_size(int locked)
+{
+	rho_callInUIThread(CRhoWindow::lockSize, new CRhoWindow::CParams(locked, 0, 0, 0));
 }
 #endif
 

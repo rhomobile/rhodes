@@ -154,6 +154,7 @@ public slots:
     void setFrame(int x, int y, int width, int height);
     void setPosition(int x, int y);
     void setSize(int width, int height);
+    void lockSize(int locked);
 protected:
     void resizeEvent(QResizeEvent *);
 };
