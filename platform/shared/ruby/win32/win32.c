@@ -27,7 +27,11 @@
 #include <winbase.h>
 #include <wincon.h>
 #include <share.h>
+
+#ifndef _WP8_LIB
 #include <shlobj.h>
+#endif
+
 #ifndef _WIN32_WCE
 #include <mbstring.h>
 #if _MSC_VER >= 1400
