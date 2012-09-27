@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{22caf76e-a7a2-4363-913e-b840306545f3}</ProjectGuid>
+    <RootNamespace>rubylib</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <TargetPlatformIdentifier>Windows Phone</TargetPlatformIdentifier>
+    <TargetPlatformVersion>8.0</TargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110_wp80</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <IncludePath>..\..\shared\ruby\;..\..\shared\ruby\include;..\..\shared\ruby\wp8;..\..\shared\ruby\wp8\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)\bin\x86\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)\bin\x86\$(Configuration)\</IntDir>
+    <IncludePath>..\..\shared\ruby\;..\..\shared\ruby\include;..\..\shared\ruby\wp8;..\..\shared\ruby\wp8\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)\bin\x86\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IntDir>$(SolutionDir)\bin\x86\$(Configuration)\</IntDir>
+    <IncludePath>..\..\shared\ruby\;..\..\shared\ruby\include;..\..\shared\ruby\wp8;..\..\shared\ruby\wp8\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <IntDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>..\..\shared\ruby\;..\..\shared\ruby\include;..\..\shared\ruby\wp8;..\..\shared\ruby\wp8\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <PreprocessorDefinitions>_LIB;_WP8_LIB;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <PreprocessorDefinitions>_MSC_VER=1500;_WP8_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <PreprocessorDefinitions>_MSC_VER=1500;_WP8_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <PreprocessorDefinitions>_MSC_VER=1500;_WP8_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shared\ruby\debug.h" />
+    <ClInclude Include="..\..\shared\ruby\dln.h" />
+    <ClInclude Include="..\..\shared\ruby\eval_intern.h" />
+    <ClInclude Include="..\..\shared\ruby\ext\rho\rhoruby.h" />
+    <ClInclude Include="..\..\shared\ruby\gc.h" />
+    <ClInclude Include="..\..\shared\ruby\id.h" />
+    <ClInclude Include="..\..\shared\ruby\iseq.h" />
+    <ClInclude Include="..\..\shared\ruby\node.h" />
+    <ClInclude Include="..\..\shared\ruby\regenc.h" />
+    <ClInclude Include="..\..\shared\ruby\regint.h" />
+    <ClInclude Include="..\..\shared\ruby\regparse.h" />
+    <ClInclude Include="..\..\shared\ruby\revision.h" />
+    <ClInclude Include="..\..\shared\ruby\timev.h" />
+    <ClInclude Include="..\..\shared\ruby\transcode_data.h" />
+    <ClInclude Include="..\..\shared\ruby\transdb.h" />
+    <ClInclude Include="..\..\shared\ruby\version.h" />
+    <ClInclude Include="..\..\shared\ruby\vm_core.h" />
+    <ClInclude Include="..\..\shared\ruby\vm_opts.h" />
+    <ClInclude Include="..\..\shared\ruby\win32\dir.h" />
+    <ClInclude Include="..\..\shared\ruby\win32\ruby\config.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\assert.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\direct.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\errno.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\fcntl.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\io.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\process.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\signal.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\sys\stat.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\sys\timeb.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\sys\types.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\sys\utime.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\varargs.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\wincon.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\wp8.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Windows">
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
+    <Reference Include="platform.winmd">
+      <IsWinMDFile>true</IsWinMDFile>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\shared\ruby\array.c" />
+    <ClCompile Include="..\..\shared\ruby\bignum.c" />
+    <ClCompile Include="..\..\shared\ruby\class.c" />
+    <ClCompile Include="..\..\shared\ruby\compar.c" />
+    <ClCompile Include="..\..\shared\ruby\compile.c" />
+    <ClCompile Include="..\..\shared\ruby\complex.c" />
+    <ClCompile Include="..\..\shared\ruby\cont.c" />
+    <ClCompile Include="..\..\shared\ruby\debug.c" />
+    <ClCompile Include="..\..\shared\ruby\dir.c" />
+    <ClCompile Include="..\..\shared\ruby\dln.c" />
+    <ClCompile Include="..\..\shared\ruby\dln_find.c" />
+    <ClCompile Include="..\..\shared\ruby\dmydln.c" />
+    <ClCompile Include="..\..\shared\ruby\dmyencoding.c" />
+    <ClCompile Include="..\..\shared\ruby\dmyext.c" />
+    <ClCompile Include="..\..\shared\ruby\encoding.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\ascii.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\encdb.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\iso_8859_1.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\iso_8859_9.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\unicode.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\us_ascii.c" />
+    <ClCompile Include="..\..\shared\ruby\enc\utf_8.c" />
+    <ClCompile Include="..\..\shared\ruby\enum.c" />
+    <ClCompile Include="..\..\shared\ruby\enumerator.c" />
+    <ClCompile Include="..\..\shared\ruby\error.c" />
+    <ClCompile Include="..\..\shared\ruby\eval.c" />
+    <ClCompile Include="..\..\shared\ruby\eval_jump.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\rhoconf\rhoconf_wrap.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\rho\extensions.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\rho\rhoruby.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\rho\rhosupport.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\sqlite3_api\sqlite3_api_wrap.c" />
+    <ClCompile Include="..\..\shared\ruby\gc.c" />
+    <ClCompile Include="..\..\shared\ruby\generated\parse.c" />
+    <ClCompile Include="..\..\shared\ruby\hash.c" />
+    <ClCompile Include="..\..\shared\ruby\inits.c" />
+    <ClCompile Include="..\..\shared\ruby\io.c" />
+    <ClCompile Include="..\..\shared\ruby\iseq.c" />
+    <ClCompile Include="..\..\shared\ruby\load.c" />
+    <ClCompile Include="..\..\shared\ruby\marshal.c" />
+    <ClCompile Include="..\..\shared\ruby\math.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\acosh.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\cbrt.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\crypt.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\dup2.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\erf.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\hypot.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\lgamma_r.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\strlcat.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\strlcpy.c" />
+    <ClCompile Include="..\..\shared\ruby\missing\tgamma.c" />
+    <ClCompile Include="..\..\shared\ruby\node.c" />
+    <ClCompile Include="..\..\shared\ruby\numeric.c" />
+    <ClCompile Include="..\..\shared\ruby\object.c" />
+    <ClCompile Include="..\..\shared\ruby\pack.c" />
+    <ClCompile Include="..\..\shared\ruby\proc.c" />
+    <ClCompile Include="..\..\shared\ruby\process.c" />
+    <ClCompile Include="..\..\shared\ruby\range.c" />
+    <ClCompile Include="..\..\shared\ruby\rational.c" />
+    <ClCompile Include="..\..\shared\ruby\re.c" />
+    <ClCompile Include="..\..\shared\ruby\regcomp.c" />
+    <ClCompile Include="..\..\shared\ruby\regenc.c" />
+    <ClCompile Include="..\..\shared\ruby\regerror.c" />
+    <ClCompile Include="..\..\shared\ruby\regexec.c" />
+    <ClCompile Include="..\..\shared\ruby\regparse.c" />
+    <ClCompile Include="..\..\shared\ruby\regsyntax.c" />
+    <ClCompile Include="..\..\shared\ruby\ruby.c" />
+    <ClCompile Include="..\..\shared\ruby\safe.c" />
+    <ClCompile Include="..\..\shared\ruby\signal.c" />
+    <ClCompile Include="..\..\shared\ruby\sprintf.c" />
+    <ClCompile Include="..\..\shared\ruby\st.c" />
+    <ClCompile Include="..\..\shared\ruby\strftime.c" />
+    <ClCompile Include="..\..\shared\ruby\string.c" />
+    <ClCompile Include="..\..\shared\ruby\struct.c" />
+    <ClCompile Include="..\..\shared\ruby\thread.c" />
+    <ClCompile Include="..\..\shared\ruby\time.c" />
+    <ClCompile Include="..\..\shared\ruby\transcode.c" />
+    <ClCompile Include="..\..\shared\ruby\util.c" />
+    <ClCompile Include="..\..\shared\ruby\variable.c" />
+    <ClCompile Include="..\..\shared\ruby\version.c" />
+    <ClCompile Include="..\..\shared\ruby\vm.c" />
+    <ClCompile Include="..\..\shared\ruby\vm_dump.c" />
+    <ClCompile Include="..\..\shared\ruby\win32\miniprelude.c" />
+    <ClCompile Include="..\..\shared\ruby\win32\newline.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\assert.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\direct.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\errno.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\io_wp8.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\process_wp8.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\signal_wp8.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\stdio.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\stdlib.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\string_wp8.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\sys\stat.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\sys\timeb.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\sys\utime.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\wp8.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\wp8main.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
