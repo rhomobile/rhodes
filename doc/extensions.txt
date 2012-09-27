@@ -1306,19 +1306,22 @@ Build your application as usual. It will call the build script for your extensio
 
 If you want to use any resources in your code, use com.rhomobile.rhodes.R instead of just R. This will make all resources (include your additonal resources) accessible from this R file.
 
-### Calling JNI Functions
+### Calling JNI Functions at Android
 
 If you need to call JNI functions from your native code, you need to retrieve the `JNIEnv *env` variable. To get it, include the file `RHO_ROOT/platform/android/Rhodes/jni/include/rhodes.h` in your C/C++ files. The global function `JNIEnv *jnienv()` is defined in this file, so use it anywhere when `JNIEnv *` needed.
 
-### Using Java Code in Native Extension
+### Using Java Code at Android
 
-If your native extension uses Java code, your build script should create file ext_build.files in the TARGET_TEMP_DIR. This file should contain java source file names (full names, with path) - one by line. Rhodes will include all of them to the final build.
+Prepare a text file with list of your java files to build (one file with path per line) and set relative path to the file in ext.yml.
 
-**NOTE: We recommend you use new android_additional_sources_list parameter from ext.yml config - just prepare file with list of your java files for build and set up that parameter.
+	android:
+	  source_list: ext/rhoconnect-push/platform/android/ext_build.files
+
+Also it is possible to prebuild jar library yourself and include it to build. See [Using Prebuilt Libraries (jars)](#using-prebuilt-libraries-jars)
 
 ### Using Prebuilt Libraries (jars)
 
-If your native extension uses prebuilt libraries (jars), your build script must copy all such jar files to the TARGET_TEMP_DIR. The jar files must have the extension '.jar'. Rhodes will include these files in the final build.
+If your native extension uses prebuilt libraries (jars), your build script has to copy all such jar files to the TARGET_TEMP_DIR. The jar files must have the extension '.jar'. Rhodes will include these files in the final build.
 
 ### Creating Native Threads
 
