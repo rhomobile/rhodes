@@ -5,10 +5,7 @@
 #include <tchar.h>
 #include <winsock2.h>
 //#include "tcmalloc/rhomem.h"
-
-#if defined(_WP8_LIB)
 #include <wchar.h>
-#endif
 
 #ifndef _OFF_T_DEFINED
 
@@ -80,48 +77,48 @@ extern "C" {
 
 /* Win32 API redifinition. */
 
-#undef GetCommandLine
-#define GetCommandLine GetCommandLineA
-
-#undef SetFileAttributes
-#define SetFileAttributes SetFileAttributesA
-
-#undef GetFileAttributes
-#define GetFileAttributes GetFileAttributesA
-
-#undef FormatMessage
-#define FormatMessage FormatMessageA
-
-#undef GetModuleFileName
-#define GetModuleFileName GetModuleFileNameA
-
-#undef CreateFile
-#define CreateFile CreateFileA
-
-#undef MoveFile
-#define MoveFile MoveFileA
-
-#undef DeleteFile
-#define DeleteFile DeleteFileA
-
-#undef CreateProcess
-#define CreateProcess CreateProcessA
-
-#undef CharNext
-#define CharNext CharNextA
-
-#undef CharPrev
-#define CharPrev CharPrevA
-
-#undef WIN32_FIND_DATA
-#define WIN32_FIND_DATA WIN32_FIND_DATAA
-
-#undef FindFirstFile
-#define FindFirstFile FindFirstFileA
-
-#undef FindNextFile
-#define FindNextFile FindNextFileA
-
+//#undef GetCommandLine
+//#define GetCommandLine GetCommandLineA
+//
+//#undef SetFileAttributes
+//#define SetFileAttributes SetFileAttributesA
+//
+//#undef GetFileAttributes
+//#define GetFileAttributes GetFileAttributesA
+//
+//#undef FormatMessage
+//#define FormatMessage FormatMessageA
+//
+//#undef GetModuleFileName
+//#define GetModuleFileName GetModuleFileNameA
+//
+//#undef CreateFile
+//#define CreateFile CreateFileA
+//
+//#undef MoveFile
+//#define MoveFile MoveFileA
+//
+//#undef DeleteFile
+//#define DeleteFile DeleteFileA
+//
+//#undef CreateProcess
+//#define CreateProcess CreateProcessA
+//
+//#undef CharNext
+//#define CharNext CharNextA
+//
+//#undef CharPrev
+//#define CharPrev CharPrevA
+//
+//#undef WIN32_FIND_DATA
+//#define WIN32_FIND_DATA WIN32_FIND_DATAA
+//
+//#undef FindFirstFile
+//#define FindFirstFile FindFirstFileA
+//
+//#undef FindNextFile
+//#define FindNextFile FindNextFileA
+//
 /* stdio.c */
 FILE *freopen(const char *filename, const char *mode, FILE *file);
 FILE *fdopen( int handle, const char *mode );
@@ -143,33 +140,33 @@ int strnicmp( const char *s1, const char *s2, size_t count );
 /* for win32.c */
 FARPROC GetProcAddressX(HMODULE hModule, LPCSTR lpProcName);
 
-WINBASEAPI BOOL WINAPI MoveFileEx(LPCSTR oldname, LPCSTR newname, DWORD dwFlags);
-WINBASEAPI BOOL WINAPI DuplicateHandle(
-	HANDLE source_process, HANDLE source,
-	HANDLE dest_process, HANDLE *dest,
-	DWORD access, BOOL inherit, DWORD options);
+//WINBASEAPI BOOL WINAPI MoveFileEx(LPCSTR oldname, LPCSTR newname, DWORD dwFlags);
+//WINBASEAPI BOOL WINAPI DuplicateHandle(
+//	HANDLE source_process, HANDLE source,
+//	HANDLE dest_process, HANDLE *dest,
+//	DWORD access, BOOL inherit, DWORD options);
 BOOL LockFile(HANDLE hFile,
 	DWORD dwFileOffsetLow, DWORD dwFileOffsetHigh,
 	DWORD nNumberOfBytesToLockLow, DWORD nNumberOfBytesToLockHigh);
-WINBASEAPI BOOL WINAPI LockFileEx(HANDLE hFile,
-	DWORD dwFlags, DWORD dwReserved,
-	DWORD nNumberOfBytesToLockLow, DWORD nNumberOfBytesToLockHigh,
-	LPOVERLAPPED lpOverlapped);
-WINBASEAPI BOOL UnlockFile( HFILE hFile,
-	DWORD dwFileOffsetLow, DWORD dwFileOffsetHigh,
-	DWORD nNumberOfBytesToUnlockLow, DWORD nNumberOfBytesToUnlockHigh);
-WINBASEAPI BOOL WINAPI UnlockFileEx(HANDLE hFile,
-	DWORD dwReserved, DWORD nNumberOfBytesToUnlockLow,
-	DWORD nNumberOfBytesToUnlockHigh, LPOVERLAPPED lpOverlapped);
-BOOL GetUserName(LPSTR lpBuffer, LPDWORD nSize);
+//WINBASEAPI BOOL WINAPI LockFileEx(HANDLE hFile,
+//	DWORD dwFlags, DWORD dwReserved,
+//	DWORD nNumberOfBytesToLockLow, DWORD nNumberOfBytesToLockHigh,
+//	LPOVERLAPPED lpOverlapped);
+//WINBASEAPI BOOL UnlockFile( HFILE hFile,
+//	DWORD dwFileOffsetLow, DWORD dwFileOffsetHigh,
+//	DWORD nNumberOfBytesToUnlockLow, DWORD nNumberOfBytesToUnlockHigh);
+//WINBASEAPI BOOL WINAPI UnlockFileEx(HANDLE hFile,
+//	DWORD dwReserved, DWORD nNumberOfBytesToUnlockLow,
+//	DWORD nNumberOfBytesToUnlockHigh, LPOVERLAPPED lpOverlapped);
+//BOOL GetUserName(LPSTR lpBuffer, LPDWORD nSize);
 BOOL CreatePipe(PHANDLE hReadPipe, PHANDLE hWritePipe,
 	LPSECURITY_ATTRIBUTES lpPipeAttributes, DWORD nSize);
 HANDLE GetStdHandle(DWORD nStdHandle);
 BOOL SetStdHandle(DWORD nStdHandle, HANDLE h);
 DWORD GetLogicalDrives(VOID);
-WINBASEAPI DWORD WINAPI WaitForMultipleObjectsEx(DWORD count,
-	const HANDLE *handles, BOOL wait_all,
-	DWORD timeout, BOOL alertable);
+//WINBASEAPI DWORD WINAPI WaitForMultipleObjectsEx(DWORD count,
+//	const HANDLE *handles, BOOL wait_all,
+//	DWORD timeout, BOOL alertable);
 DWORD GetEnvironmentVariable(LPCSTR name, LPSTR value, DWORD size);
 LPVOID GetEnvironmentStrings(VOID);
 BOOL FreeEnvironmentStrings(LPSTR lpszEnvironmentBlock);
@@ -188,24 +185,24 @@ void wce_FreeCommandLine(void);
 TCHAR *wce_replaceRelativeDir(const char* str);
 void wce_SetCurrentDir();
 
-#if _WIN32_WCE < 300
-  /* for Handheld PC Pro. */
-  char *strrchr( const char *p, int c );
-  int stricmp( const char *p1, const char *p2 );
-  VOID ZeroMemory(PVOID p, DWORD length);
-
-  #define isascii(c) ( (c>=0x00&&c<=0x7f)?1:0 )
-  #define isspace(c) ( ((c>=0x09&&c<=0x0d)||c==0x20)?1:0 )
-  #define isdigit(c) ( (c>=0x00&&c<=0x09)?1:0 )
-  #define isupper(c) ( (c>='A'&&c<='Z')?1:0 )
-  #define isalpha(c) ( ((c>='A'&&c<='Z')||(c>='a'&&c<='z'))?1:0 )
-  #define isprint(c) ( (c>=0x20&&c<=0x7e)?1:0 )
-  #define isalnum(c) ( (isalpha(c)||isdigit(c))?1:0 )
-  #define iscntrl(c) ( ((c>=0x00&&c<=0x1f)||c==0x7f)?1:0 )
-  #define islower(c) ( (c>='a'&&c<='z')?1:0 )
-  #define ispunct(c) ( !(isalnum(c)||isspace(c))?1:0 )
-  #define isxdigit(c) ( ((c>=0&&c<=9)||(c>='A'&&c<='F')||(c>='a'&&c<='f'))?1:0 )
-#endif
+//#if _WIN32_WCE < 300
+//  /* for Handheld PC Pro. */
+//  char *strrchr( const char *p, int c );
+//  int stricmp( const char *p1, const char *p2 );
+//  VOID ZeroMemory(PVOID p, DWORD length);
+//
+//  #define isascii(c) ( (c>=0x00&&c<=0x7f)?1:0 )
+//  #define isspace(c) ( ((c>=0x09&&c<=0x0d)||c==0x20)?1:0 )
+//  #define isdigit(c) ( (c>=0x00&&c<=0x09)?1:0 )
+//  #define isupper(c) ( (c>='A'&&c<='Z')?1:0 )
+//  #define isalpha(c) ( ((c>='A'&&c<='Z')||(c>='a'&&c<='z'))?1:0 )
+//  #define isprint(c) ( (c>=0x20&&c<=0x7e)?1:0 )
+//  #define isalnum(c) ( (isalpha(c)||isdigit(c))?1:0 )
+//  #define iscntrl(c) ( ((c>=0x00&&c<=0x1f)||c==0x7f)?1:0 )
+//  #define islower(c) ( (c>='a'&&c<='z')?1:0 )
+//  #define ispunct(c) ( !(isalnum(c)||isspace(c))?1:0 )
+//  #define isxdigit(c) ( ((c>=0&&c<=9)||(c>='A'&&c<='F')||(c>='a'&&c<='f'))?1:0 )
+//#endif
 
 #ifdef __cplusplus
 };
@@ -231,7 +228,7 @@ DWORD GetFileType(
   HANDLE hFile
 );
 
-void GetSystemTimeAsFileTime(
+WINBASEAPI void WINAPI GetSystemTimeAsFileTime(
   LPFILETIME lpSystemTimeAsFileTime
 );
 
@@ -252,7 +249,7 @@ int __cdecl _getdrive (void);
 
 #define BUFSIZ  512
 
-#if defined(OS_PLATFORM_CE)
+//#if defined(OS_PLATFORM_CE)
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -272,6 +269,6 @@ extern long _timezone;
 };
 #endif
 
-#endif
+//#endif
 
 #endif /* _EXT_CE_ */
