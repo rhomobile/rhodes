@@ -36,8 +36,7 @@ public:
     virtual const String& getType() const = 0;
     virtual void init() = 0;
     virtual void setNotificationUrl(const String& callBackUrl, const String& urlParams) = 0;
-    //virtual void doUnregister() = 0;
-    //virtual void checkRegistered(const String& callBackUrl, const String& urlParams) = 0;
+    virtual bool callNotification(const String& json, const String& data) = 0;
     virtual ~IRhoPushClient() {};
 };
 

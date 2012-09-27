@@ -25,6 +25,7 @@
 *------------------------------------------------------------------------*/
 
 #include "common/RhoStd.h"
+#include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
 
 #include "common/push/RhoPushManager.h"
@@ -63,7 +64,7 @@ void PushManager::initClients()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void PushManager::setNotificationUrl(const String& url, const String& urlParams, const String& pushType)
+void PushManager::setNotificationUrl(const String& pushType, const String& url, const String& urlParams)
 {
     IRhoPushClient* pClient = getClient(pushType);
     if(pClient)
@@ -78,36 +79,6 @@ void PushManager::setNotificationUrl(const String& url, const String& urlParams,
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//void PushManager::unregisterClient(const String& pushType)
-//{
-//    IRhoPushClient* pClient = getClient(pushType);
-//    if(pClient)
-//    {
-//        pClient->doUnregister();
-//        LOG(INFO) + "Push client unregistration has requested ("+pushType+")";
-//    }
-//    else
-//    {
-//        LOG(WARNING) + "Cannot unregister Push client ("+pushType+"): not exist";
-//    }
-//}
-//
-//----------------------------------------------------------------------------------------------------------------------
-//void RhoPushManager::checkClientRegistered(const String& pushType)
-//{
-//    IRhoPushClient* pClient = getClient(pushType);
-//    if(pClient)
-//    {
-//        pClient->checkRegistered(url);
-//        LOG(INFO) + "Push client registration check has requested ("+pushType+")";
-//    }
-//    else
-//    {
-//        LOG(WARNING) + "Cannot check Push client registration ("+pushType+"): not exist";
-//    }
-//}
-
-//----------------------------------------------------------------------------------------------------------------------
 void PushManager::setNotificationUrl(const String& url, const String& urlParams)
 {
     for(Vector<IRhoPushClient*>::iterator I = m_Clients.begin(); I != m_Clients.end(); ++I)
@@ -117,15 +88,25 @@ void PushManager::setNotificationUrl(const String& url, const String& urlParams)
     }
 }
 
-////----------------------------------------------------------------------------------------------------------------------
-//void PushManager::unregisterAllClients()
-//{
-//    for(Vector<IRhoPushClient*>::iterator I = m_Clients.begin(); I != m_Clients.end(); ++I)
-//    {
-//        (*I)->doUnregister();
-//        LOG(INFO) + "Push client unregistration has requested ("+(*I)->getType()+")";
-//    }
-//}
+//----------------------------------------------------------------------------------------------------------------------
+bool PushManager::callNotification(const String& type, const String& json, const String& data)
+{
+    if(type.length() > 0)
+    {
+        IRhoPushClient* pClient = getClient(type);
+        if(pClient)
+        {
+            return pClient->callNotification(json, data);
+        } else
+        {
+            LOG(WARNING) + "Wrong push message type: " + type;
+            return false;
+        }
+    } else
+    {
+        m_rhoApp.callPushCallback(data);
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 IRhoPushClient* PushManager::getClient(const String& pushType)
@@ -137,6 +118,7 @@ IRhoPushClient* PushManager::getClient(const String& pushType)
     return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
 
 }}
 

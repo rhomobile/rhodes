@@ -46,13 +46,11 @@ public class PushReceiver extends BroadcastReceiver {
 	
 	public static final String INTENT_TYPE = INTENT_PREFIX + ".type";
 	public static final String INTENT_REGISTRATION_ID = INTENT_PREFIX + ".registration_id";
-	public static final String INTENT_MESSAGE_EXTRAS = INTENT_PREFIX + ".extras";
+    public static final String INTENT_MESSAGE_TYPE = INTENT_PREFIX + ".message_type";
+    public static final String INTENT_MESSAGE_EXTRAS = INTENT_PREFIX + ".extras";
     public static final String INTENT_MESSAGE_JSON = INTENT_PREFIX + ".json";
-    public static final String INTENT_MESSAGE_ERROR = INTENT_PREFIX + ".error";
-    
-    public static final String INTENT_MESSAGE_CALLBACK_URL = INTENT_PREFIX + ".url";
-    public static final String INTENT_MESSAGE_CALLBACK_OPT = INTENT_PREFIX + ".opt";
-	
+    public static final String INTENT_MESSAGE_DATA = INTENT_PREFIX + ".data";
+
 	public static final int INTENT_TYPE_UNKNOWN = 0;
 	public static final int INTENT_TYPE_REGISTRATION_ID = 1;
 	public static final int INTENT_TYPE_MESSAGE = 2;
