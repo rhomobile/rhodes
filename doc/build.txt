@@ -1279,9 +1279,9 @@ In the build.yml in your application folder there is an entry "name". This is th
 	name: My Own App
 
 ### Application Icon
-Place your image to use as an icon in a folder called `icon` in your application. If you created an app called `testapp` then the folder would be `testapp/icon`. 
+Place your image to use as an icon into the folder called `icon` in your application. If you created an app called `testapp` then the folder would be `testapp/icon`. 
 
-* Windows Mobile and Windows: Add icon in two formats : `icon.png` and  `icon.ico`. 
+* Windows Mobile and Windows: You can add an icon in two formats: `icon.png` and  `icon.ico`. 
 * iOS 4.0: Apple require three icons for application: 57x57, 72x72 and 114x114 pixels. Prepare such files, name them as `icon57.png`, `icon72.png` and `icon114.png` and place into `icon` folder
 
 	testapp/
@@ -1301,12 +1301,14 @@ Place your image to use as an icon in a folder called `icon` in your application
 * rhodes\platform\iphone\icon.png, icon57.png, icon72.png, icon114.png - change to your icons
 * check rhodes\platform\iphone\Info.plist it should contain BundleName=${PRODUCT_NAME}
 
+### Android
+You can change the icon for your Android application by replacing icon.png, which is in your application icon folder, with a new icon.png.
+
 ### Windows Mobile
-Windows Mobile Shell program caches program icons. This cache is cleared only when device or simulator is restarted.
-So if you change icon of application, you have to restart device/simulator(uninstall/install is not enough).
+Windows Mobile Shell program caches program icons. This cache is cleared only when the device or the simulator is restarted. If you change the icon of your application, you have to restart the device or simulator: uninstall/install is not enough.
 
 ### Symbian
-You can change icon for your Symbian application replacing icon.svg which is in your application icon folder with a new one.
+You can change the icon for your Symbian application by replacing icon.svg, which is in your application icon folder, with a new icon.svg.
 
 ## Upgrade Application
 
