@@ -46,7 +46,7 @@ public class StoreActivity extends Activity {
 
     	mSyncClient.initialize(mModels);
     	mSyncClient.setPollInterval(0);
-    	mSyncClient.setSyncServer("http://rhodes-store-server.heroku.com/application");
+    	mSyncClient.setSyncServer("http://rhodes-store-server.herokuapp.com/application");
     	mSyncClient.setBulkSyncState(1);
 
     	mSyncClient.loginWithUserAsync("", "", new RhoConnectNotify.IDelegate()
