@@ -7,7 +7,7 @@
 # Sync server url. Typically this will look like 'http://<hostname>:<port>/application'
 # For example: 'http://localhost:9292/application'
 #syncserver = 'http://localhost:9292/application'
-#syncserver = 'http://rhodes-store-server.heroku.com/application'
+#syncserver = 'http://rhodes-store-server.herokuapp.com/application'
 #sync_poll_interval=0
 
 #syncserver = 'http://store-bulk.rhohub.com/application'
