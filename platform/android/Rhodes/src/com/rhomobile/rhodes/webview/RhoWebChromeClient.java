@@ -100,6 +100,10 @@ public class RhoWebChromeClient extends WebChromeClient {
     public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
         return false;
     }
+    public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+        callback.invoke(origin, true, false);
+    }
+
 }
 
 
