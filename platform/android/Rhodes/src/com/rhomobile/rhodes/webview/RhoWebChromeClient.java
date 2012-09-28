@@ -28,6 +28,7 @@ package com.rhomobile.rhodes.webview;
 
 import android.app.Activity;
 import android.view.Window;
+import android.webkit.GeolocationPermissions;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebStorage;
