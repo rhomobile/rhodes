@@ -38,6 +38,12 @@
     <Filter Include="ext\rhoconf">
       <UniqueIdentifier>{25f8b020-5691-410e-9583-8d034bb27bf0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ext\webview">
+      <UniqueIdentifier>{0cb30fff-257e-41af-acd0-57f059c48f3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\geo">
+      <UniqueIdentifier>{47f9b28c-4ac4-4a9f-80da-f1c362458421}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h" />
@@ -119,7 +125,6 @@
     <ClCompile Include="..\..\shared\ruby\complex.c" />
     <ClCompile Include="..\..\shared\ruby\cont.c" />
     <ClCompile Include="..\..\shared\ruby\debug.c" />
-    <ClCompile Include="..\..\shared\ruby\dir.c" />
     <ClCompile Include="..\..\shared\ruby\dln.c" />
     <ClCompile Include="..\..\shared\ruby\dln_find.c" />
     <ClCompile Include="..\..\shared\ruby\dmydln.c" />
@@ -286,6 +291,13 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\rho\rhosupport.c">
       <Filter>ext\rho</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\random.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\webview\webview_wrap.c">
+      <Filter>ext\webview</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c">
+      <Filter>ext\geo</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

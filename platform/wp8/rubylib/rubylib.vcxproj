@@ -186,7 +186,6 @@
     <ClCompile Include="..\..\shared\ruby\complex.c" />
     <ClCompile Include="..\..\shared\ruby\cont.c" />
     <ClCompile Include="..\..\shared\ruby\debug.c" />
-    <ClCompile Include="..\..\shared\ruby\dir.c" />
     <ClCompile Include="..\..\shared\ruby\dln.c" />
     <ClCompile Include="..\..\shared\ruby\dln_find.c" />
     <ClCompile Include="..\..\shared\ruby\dmydln.c" />
@@ -205,11 +204,13 @@
     <ClCompile Include="..\..\shared\ruby\error.c" />
     <ClCompile Include="..\..\shared\ruby\eval.c" />
     <ClCompile Include="..\..\shared\ruby\eval_jump.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\rhoconf\rhoconf_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\rho\extensions.c" />
     <ClCompile Include="..\..\shared\ruby\ext\rho\rhoruby.c" />
     <ClCompile Include="..\..\shared\ruby\ext\rho\rhosupport.c" />
     <ClCompile Include="..\..\shared\ruby\ext\sqlite3_api\sqlite3_api_wrap.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\webview\webview_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\gc.c" />
     <ClCompile Include="..\..\shared\ruby\generated\parse.c" />
     <ClCompile Include="..\..\shared\ruby\hash.c" />
@@ -235,6 +236,7 @@
     <ClCompile Include="..\..\shared\ruby\pack.c" />
     <ClCompile Include="..\..\shared\ruby\proc.c" />
     <ClCompile Include="..\..\shared\ruby\process.c" />
+    <ClCompile Include="..\..\shared\ruby\random.c" />
     <ClCompile Include="..\..\shared\ruby\range.c" />
     <ClCompile Include="..\..\shared\ruby\rational.c" />
     <ClCompile Include="..\..\shared\ruby\re.c" />
