@@ -3913,7 +3913,7 @@ ZRESULT TUnzip::Open(void *z,unsigned int len,DWORD flags)
 { if (uf!=0 || currentfile!=-1) return ZR_NOTINITED;
   //
 #ifdef ZIP_STD
-  getcwd(rootdir,MAX_PATH-1);
+//  getcwd(rootdir,MAX_PATH-1);
 #else
 #ifdef GetCurrentDirectory
   GetCurrentDirectory(MAX_PATH-1,rootdir);

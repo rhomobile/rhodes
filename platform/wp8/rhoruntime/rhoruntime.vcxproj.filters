@@ -5,13 +5,40 @@
       <UniqueIdentifier>5fd0e509-b6ae-4f29-bd2a-4d2cc10f3aa0</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{bf0c8341-f452-446c-a451-bdc1ac77a16b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rhoruntime.cpp" />
     <ClCompile Include=".\pch_rhoruntime.cpp" />
+    <ClCompile Include="common\ExtManager.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\RhoClassFactory.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\RhoCryptImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\RhoThreadImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="FakeDefs.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />
     <ClInclude Include=".\pch_rhoruntime.h" />
+    <ClInclude Include="common\RhoClassFactory.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RhoCryptImpl.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RhoThreadImpl.h">
+      <Filter>common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

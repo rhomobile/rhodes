@@ -28,6 +28,7 @@ package com.rhomobile.rhodes.webview;
 
 import android.app.Activity;
 import android.view.Window;
+import android.webkit.GeolocationPermissions;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebStorage;
@@ -100,6 +101,10 @@ public class RhoWebChromeClient extends WebChromeClient {
     public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
         return false;
     }
+    public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+        callback.invoke(origin, true, false);
+    }
+
 }
 
 

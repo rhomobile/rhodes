@@ -161,14 +161,6 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegistr
  * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    callPushCallback
- * Signature: (Ljava/lang/String;)Z
- */
-JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallbackWithJsonBody
   (JNIEnv *, jobject, jstring, jstring, jstring);
 
 #ifdef __cplusplus

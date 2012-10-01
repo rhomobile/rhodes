@@ -386,7 +386,12 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     WIN32_FIND_DATAW FindFileData;
     HANDLE hFind = INVALID_HANDLE_VALUE;
 
+#if defined(OS_WP8)
+	hFind = FindFirstFileExW(wFolderMask.c_str(), FindExInfoStandard,  &FindFileData, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE);
+#else
     hFind = FindFirstFileW(wFolderMask.c_str(), &FindFileData);
+#endif
+
     if (hFind == INVALID_HANDLE_VALUE) 
         return;
 
@@ -497,6 +502,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     
 /*static*/ unsigned int CRhoFile::deleteFolder(const char* szFolderPath) 
 {
+#if !defined(OS_WP8)
 #if defined(WINDOWS_PLATFORM)
 
 	StringW  swPath;
@@ -529,7 +535,9 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     rho_file_impl_delete_folder(szFolderPath);
     return 0;
 #endif
-
+#else
+	return 0;
+#endif
 }
 
 #if defined(WINDOWS_PLATFORM)
@@ -544,7 +552,12 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
     WIN32_FIND_DATAW FindFileData = {0};
     HANDLE hFind = INVALID_HANDLE_VALUE;
 
+#if defined(OS_WP8)
+	hFind = FindFirstFileExW(wFolderMask.c_str(), FindExInfoStandard,  &FindFileData, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE);
+#else
     hFind = FindFirstFileW(wFolderMask.c_str(), &FindFileData);
+#endif
+
     if (hFind == INVALID_HANDLE_VALUE) 
         return GetLastError();
 

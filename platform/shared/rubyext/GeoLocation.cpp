@@ -41,6 +41,8 @@ void rho_geoimpl_settimeout(int nTimeoutSec);
 int rho_geo_is_available();
 }
 
+#if !defined(OS_WP8)
+
 namespace rho {
 using namespace common;
 namespace rubyext{
@@ -290,3 +292,5 @@ double rho_geo_haversine_distance(double lat1, double lon1, double lat2, double 
 }
 
 } //extern "C"
+
+#endif //OS_WP8

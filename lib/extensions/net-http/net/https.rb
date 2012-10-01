@@ -91,45 +91,11 @@ It can be replaced by the following code:
 require 'net/http'
 
 if System::get_property('platform') != 'Blackberry'
-    require 'openssl' 
+  require 'openssl' 
 else
-    module OpenSSL    
-        module SSL
-            VERIFY_NONE = 0
-        end
-    end
-end
-
-module Net
-  class HTTP
-    remove_method :use_ssl?
-    def use_ssl?
-      @use_ssl
-    end
-
-    # Turn on/off SSL.
-    # This flag must be set before starting session.
-    # If you change use_ssl value after session started,
-    # a Net::HTTP object raises IOError.
-    def use_ssl=(flag)
-      flag = (flag ? true : false)
-      if started? and @use_ssl != flag
-        raise IOError, "use_ssl value changed, but session already started"
-      end
-      @use_ssl = flag
-    end
-
-    SSL_ATTRIBUTES = %w(
-      ssl_version key cert ca_file ca_path cert_store ciphers
-      verify_mode verify_callback verify_depth ssl_timeout
-    )
-    attr_accessor(*SSL_ATTRIBUTES)
-
-    def peer_cert
-      if not use_ssl? or not @socket
-        return nil
-      end
-      @socket.io.peer_cert
+  module OpenSSL    
+    module SSL
+      VERIFY_NONE = 0
     end
   end
 end

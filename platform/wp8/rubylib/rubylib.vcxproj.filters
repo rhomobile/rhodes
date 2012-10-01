@@ -46,7 +46,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="targetver.h" />
     <ClInclude Include="..\..\shared\ruby\debug.h" />
     <ClInclude Include="..\..\shared\ruby\dln.h" />
     <ClInclude Include="..\..\shared\ruby\eval_intern.h" />
