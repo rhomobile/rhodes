@@ -2,6 +2,8 @@
 #include "pch_rhoruntime.h"
 #include "rhoruntime.h"
 
+#include "../../shared/sqlite/sqlite3.h"
+
 using namespace rhoruntime;
 using namespace Platform;
 
@@ -10,6 +12,7 @@ CRhoRuntime::CRhoRuntime():
 	m_UpdateWebViewCallback(nullptr),
 	m_ExitCallback(nullptr)
 {
+	sqlite3_initialize();
 }
 
 // this callback is an example of calling the C# API methods from C++
