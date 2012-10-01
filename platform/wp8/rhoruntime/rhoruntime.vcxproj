@@ -78,16 +78,19 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch_rhoruntime.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>../../shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
+      <AdditionalLibraryDirectories>C:\work\rhodes\platform\wp8\bin\x86\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sqlite3.lib;syncengine.lib;rholib.lib;ws2_32.lib;rubylib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -142,10 +145,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\RhoClassFactory.h" />
+    <ClInclude Include="common\RhoCryptImpl.h" />
+    <ClInclude Include="common\RhoThreadImpl.h" />
     <ClInclude Include="rhoruntime.h" />
     <ClInclude Include=".\pch_rhoruntime.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="common\ExtManager.cpp" />
+    <ClCompile Include="common\RhoClassFactory.cpp" />
+    <ClCompile Include="common\RhoCryptImpl.cpp" />
+    <ClCompile Include="common\RhoThreadImpl.cpp" />
+    <ClCompile Include="FakeDefs.cpp" />
     <ClCompile Include="rhoruntime.cpp" />
     <ClCompile Include=".\pch_rhoruntime.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

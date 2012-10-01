@@ -409,18 +409,20 @@ public class RhodesService extends Service {
 			handleCommand(intent, startId);
 		}
 		catch (Exception e) {
-			Log.e(TAG, "Can't handle service command", e);
+			Logger.E(TAG, "Can't handle service command");
+			Logger.E(TAG, e);
 		}
 	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Log.d(TAG, "+++ onStartCommand");
+		Logger.D(TAG, "onStartCommand");
 		try {
 			handleCommand(intent, startId);
 		}
 		catch (Exception e) {
-			Log.e(TAG, "Can't handle service command", e);
+            Logger.E(TAG, "Can't handle service command");
+            Logger.E(TAG, e);
 		}
 		return Service.START_STICKY;
 	}
@@ -430,12 +432,12 @@ public class RhodesService extends Service {
 			return;
 		}
 		String source = intent.getStringExtra(INTENT_SOURCE);
-		Log.i(TAG, "handleCommand: startId=" + startId + ", source=" + source);
+		Logger.I(TAG, "handleCommand: startId=" + startId + ", source=" + source);
 		if (source == null)
 			throw new IllegalArgumentException("Service command received from empty source");
 		
 		if (source.equals(BaseActivity.INTENT_SOURCE)) {
-			Log.d(TAG, "New activity was created");
+			Logger.D(TAG, "New activity was created");
 		}
 		else if (source.equals(PushReceiver.INTENT_SOURCE)) {
 			int type = intent.getIntExtra(PushReceiver.INTENT_TYPE, PushReceiver.INTENT_TYPE_UNKNOWN);
@@ -444,13 +446,13 @@ public class RhodesService extends Service {
 				String id = intent.getStringExtra(PushReceiver.INTENT_REGISTRATION_ID);
 				if (id == null)
 					throw new IllegalArgumentException("Empty registration id received in service command");
-				Log.i(TAG, "Received PUSH registration id: " + id);
+				Logger.I(TAG, "Received PUSH registration id: " + id);
 				setPushRegistrationId(id);
 				break;
             case PushReceiver.INTENT_TYPE_MESSAGE:
                 if(intent.hasExtra(PushReceiver.INTENT_MESSAGE_EXTRAS)) {
                     final Bundle extras = intent.getBundleExtra(PushReceiver.INTENT_MESSAGE_EXTRAS);
-                    Log.i(TAG, "Received PUSH message: " + extras);
+                    Logger.D(TAG, "Received PUSH message: " + extras);
                     RhodesApplication.runWhen(
                         RhodesApplication.AppState.AppStarted,
                         new RhodesApplication.StateHandler(true) {
@@ -460,41 +462,30 @@ public class RhodesService extends Service {
                                 handlePushMessage(extras);
                             }
                         });
+                    break;
                 }
-                else if(intent.hasExtra(PushReceiver.INTENT_MESSAGE_JSON)){
+                else if (intent.hasExtra(PushReceiver.INTENT_MESSAGE_TYPE)){
+                    final String pushType = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_TYPE);
                     final String json = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_JSON);
-                    final String url = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_CALLBACK_URL);
-                    final String opt = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_CALLBACK_OPT);
-                    Log.i(TAG, "Received PUSH message: " + json);
-                    RhodesApplication.runWhen(
-                        RhodesApplication.AppState.AppStarted,
-                        new RhodesApplication.StateHandler(true) {
-                            @Override
-                            public void run()
-                            {
-                                handlePushMessage(url, json, opt);
-                            }
-                        });
+                    final String data = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_DATA);
+                    if (json != null) {
+                        Logger.D(TAG, "Received PUSH message (JSON): " + json);
+                        Logger.D(TAG, "Received PUSH message (Data): " + data);
+                        RhodesApplication.runWhen(
+                            RhodesApplication.AppState.AppStarted,
+                            new RhodesApplication.StateHandler(true) {
+                                @Override
+                                public void run()
+                                {
+                                    handlePushMessage(pushType, json, data);
+                                }
+                            });
+                    } else
+                    break;
                 }
-                else if(intent.hasExtra(PushReceiver.INTENT_MESSAGE_ERROR)){
-                    final String error = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_ERROR);
-                    final String url = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_CALLBACK_URL);
-                    final String opt = intent.getStringExtra(PushReceiver.INTENT_MESSAGE_CALLBACK_OPT);
-                    Log.w(TAG, "Received PUSH error: " + error);
-                    RhodesApplication.runWhen(
-                        RhodesApplication.AppState.AppStarted,
-                        new RhodesApplication.StateHandler(true) {
-                            @Override
-                            public void run()
-                            {
-                                doRequestEx(url, "error=" + error, opt, false);
-                            }
-                        });
-                }
-				break;
-			default:
-				Log.w(TAG, "Unknown command type received from " + source + ": " + type);
-			}
+            default:
+                Logger.W(TAG, "Unknown command type received from " + source + ": " + type);
+            }
 		}
 	}
 	
@@ -1219,10 +1210,9 @@ public class RhodesService extends Service {
 
 	public native void setPushRegistrationId(String id);
 	private native String getPushRegistrationId(); 
-	
-	private native boolean callPushCallback(String data);
-    private native boolean callPushCallbackWithJsonBody(String url, String data, String opt);
-	
+
+    private native boolean callPushCallback(String type, String json, String data);
+
 	private void handlePushMessage(Bundle extras) {
 		Logger.D(TAG, "Handle PUSH message");
 		
@@ -1266,7 +1256,7 @@ public class RhodesService extends Service {
         String data = builder.toString();
 
         Logger.D(TAG, "Received PUSH message: " + data);
-        if (callPushCallback(data)) {
+        if (callPushCallback(null, null, data)) {
             Logger.T(TAG, "Push message completely handled in callback");
             return;
         }
@@ -1330,68 +1320,71 @@ public class RhodesService extends Service {
 		}
 	}
 
-    private void handlePushMessage(String url, String json, String opt) {
+    private void handlePushMessage(String type, String json, String data) {
         Logger.T(TAG, "Handle push message");
         
-        Logger.I(TAG, "Push message: " + json);
+        Logger.D(TAG, "Push message JSON: " + json);
+        Logger.D(TAG, "Push message data: " + data);
         
-        if (callPushCallbackWithJsonBody(url, json, opt)) {
+        if (callPushCallback(type, json, data)) {
             Logger.T(TAG, "Push message completely handled in callback");
             return;
         }
-        JSONObject jsonObject;
-        try {
-            jsonObject = (JSONObject)new JSONTokener(json).nextValue();
-
-            final String alert = jsonObject.optString("alert");
-
-            boolean statusNotification = false;
-            if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
-                statusNotification = true;
-            else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND))
-                statusNotification = !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated);
-
-            if (statusNotification) {
-                Intent intent = new Intent(getContext(), RhodesActivity.class);
-                StatusNotification.simpleNotification(TAG, 0, getContext(), intent, "PUSH message", alert);
-            }
-
-            if (alert.length() > 0) {
-                Logger.D(TAG, "PUSH: Alert: " + alert);
-                Alert.showPopup(alert);
-            }
-            final String sound = jsonObject.optString("sound");
-            if (sound.length() > 0) {
-                Logger.D(TAG, "PUSH: Sound file name: " + sound);
-                Alert.playFile("/public/alerts/" + sound, null);
-            }
-            int vibrate = jsonObject.optInt("vibrate");
-            if (vibrate > 0) {
-                Logger.D(TAG, "PUSH: Vibrate: " + vibrate);
-                Logger.D(TAG, "Vibrate " + vibrate + " seconds");
-                Alert.vibrate(vibrate);
-            }
-            JSONArray syncSources = jsonObject.optJSONArray("do_sync");
-            if ((syncSources != null) && (syncSources.length() > 0)) {
-                Logger.D(TAG, "PUSH: Sync:");
-                boolean syncAll = false;
-                for (int i = 0; i < syncSources.length(); ++i) {
-                    String source = syncSources.optString(i);
-                    Logger.D(TAG, "source = " + source);
-                    if (source.equalsIgnoreCase("all")) {
-                        syncAll = true;
-                        break;
-                    } else {
-                        doSyncSource(source);
+        if (json != null) {
+            JSONObject jsonObject;
+            try {
+                jsonObject = (JSONObject)new JSONTokener(json).nextValue();
+    
+                final String alert = jsonObject.optString("alert");
+    
+                boolean statusNotification = false;
+                if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
+                    statusNotification = true;
+                else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND))
+                    statusNotification = !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated);
+    
+                if (statusNotification) {
+                    Intent intent = new Intent(getContext(), RhodesActivity.class);
+                    StatusNotification.simpleNotification(TAG, 0, getContext(), intent, "PUSH message", alert);
+                }
+    
+                if (alert.length() > 0) {
+                    Logger.D(TAG, "PUSH: Alert: " + alert);
+                    Alert.showPopup(alert);
+                }
+                final String sound = jsonObject.optString("sound");
+                if (sound.length() > 0) {
+                    Logger.D(TAG, "PUSH: Sound file name: " + sound);
+                    Alert.playFile("/public/alerts/" + sound, null);
+                }
+                int vibrate = jsonObject.optInt("vibrate");
+                if (vibrate > 0) {
+                    Logger.D(TAG, "PUSH: Vibrate: " + vibrate);
+                    Logger.D(TAG, "Vibrate " + vibrate + " seconds");
+                    Alert.vibrate(vibrate);
+                }
+                JSONArray syncSources = jsonObject.optJSONArray("do_sync");
+                if ((syncSources != null) && (syncSources.length() > 0)) {
+                    Logger.D(TAG, "PUSH: Sync:");
+                    boolean syncAll = false;
+                    for (int i = 0; i < syncSources.length(); ++i) {
+                        String source = syncSources.optString(i);
+                        Logger.D(TAG, "source = " + source);
+                        if (source.equalsIgnoreCase("all")) {
+                            syncAll = true;
+                            break;
+                        } else {
+                            doSyncSource(source);
+                        }
+                    }
+                    
+                    if (syncAll) {
+                        doSyncAllSources(true); 
                     }
                 }
-                
-                if (syncAll) {
-                    doSyncAllSources(true); 
-                }
+            } catch (JSONException e) {
+                Logger.E(TAG, "Error parsing JSON payload in push message: " + e.getMessage());
             }
-        } catch (JSONException e) {
-            Logger.E(TAG, "Error parsing JSON payload in push message: " + e.getMessage());
         }
     }
 

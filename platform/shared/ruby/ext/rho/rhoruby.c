@@ -221,6 +221,7 @@ void RhoRubyStart()
 
 #endif
 
+#if !defined(_WP8_LIB)
     Init_strscan();
     Init_sqlite3_api();
     Init_GeoLocation();
@@ -254,6 +255,7 @@ void RhoRubyStart()
 #if !defined(RHO_SYMBIAN)
     Init_Extensions();
 #endif //RHO_SYMBIAN
+#endif //_WP8_LIB
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     rb_require("rhomotoapi");

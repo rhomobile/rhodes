@@ -4,16 +4,14 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rhodes", "rhodes\rhodes.csproj", "{B3A01AFB-4608-4598-9C5F-43A9D7F42589}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhoruntime", "rhoruntime\rhoruntime.vcxproj", "{19B2CB23-B0FC-44C0-BD59-3DA4F3113585}"
-	ProjectSection(ProjectDependencies) = postProject
-		{51A2A712-4D2E-47CC-8AA4-44170232D128} = {51A2A712-4D2E-47CC-8AA4-44170232D128}
-		{A0746642-F215-4587-8B81-9D432FD4E468} = {A0746642-F215-4587-8B81-9D432FD4E468}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "sqlite3\sqlite3.vcxproj", "{A0746642-F215-4587-8B81-9D432FD4E468}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "syncengine", "syncengine\syncengine.vcxproj", "{51A2A712-4D2E-47CC-8AA4-44170232D128}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rubylib", "rubylib\rubylib.vcxproj", "{22CAF76E-A7A2-4363-913E-B840306545F3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rholib", "rholib\rholib.vcxproj", "{DDCDEB35-E294-4421-BB60-7249A7CE5150}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,6 +129,24 @@ Global
 		{B3A01AFB-4608-4598-9C5F-43A9D7F42589}.Release|x86.ActiveCfg = Release|x86
 		{B3A01AFB-4608-4598-9C5F-43A9D7F42589}.Release|x86.Build.0 = Release|x86
 		{B3A01AFB-4608-4598-9C5F-43A9D7F42589}.Release|x86.Deploy.0 = Release|x86
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Debug|ARM.ActiveCfg = Debug|ARM
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Debug|ARM.Build.0 = Debug|ARM
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Debug|Win32.Build.0 = Debug|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Debug|x86.ActiveCfg = Debug|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Debug|x86.Build.0 = Debug|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|ARM.ActiveCfg = Release|ARM
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|ARM.Build.0 = Release|ARM
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|Any CPU.ActiveCfg = Release|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|Win32.ActiveCfg = Release|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|Win32.Build.0 = Release|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|x86.ActiveCfg = Release|Win32
+		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

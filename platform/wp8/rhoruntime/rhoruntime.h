@@ -1,29 +1,48 @@
-﻿#pragma once
+﻿/*------------------------------------------------------------------------
+* (The MIT License)
+* 
+* Copyright (c) 2008-2011 Rhomobile, Inc.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+* 
+* http://rhomobile.com
+*------------------------------------------------------------------------*/
+
+#pragma once
 
 namespace rhoruntime
 {
-	public delegate void WaitCallbackPointer(int timeout);
-	public delegate void UpdateWebViewCallbackPointer(int counter);
-	public delegate void ExitCallbackPointer();
+	public interface class IMainPage
+	{
+	public:
+		void DoWait(int timeout);
+		void UpdateWebView(int counter);
+		void DoExit();
+	};
 
     public ref class CRhoRuntime sealed
     {
     public:
-		CRhoRuntime();
-
-		// this callback is an example of calling the C# API methods from C++
-		void SetWaitCallback(WaitCallbackPointer^ callback);
-		// this callback is an example of updating UI controls from C++ non-UI thread
-		void SetUpdateWebViewCallback(UpdateWebViewCallbackPointer^ callback);
-		// this callback is an example of application exit technique
-		void SetExitCallback(ExitCallbackPointer^ callback);
-
+		CRhoRuntime(IMainPage^ mainPage);
 		// rhodes executed in a separate thread
 		void Execute();
-
 	private:
-		WaitCallbackPointer^ m_WaitCallback;
-		UpdateWebViewCallbackPointer^ m_UpdateWebViewCallback;
-		ExitCallbackPointer^ m_ExitCallback;
+		IMainPage^ m_MainPage;
     };
 }

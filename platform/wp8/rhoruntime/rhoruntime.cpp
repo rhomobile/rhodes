@@ -1,4 +1,29 @@
-﻿// rhoruntime.cpp
+﻿/*------------------------------------------------------------------------
+* (The MIT License)
+* 
+* Copyright (c) 2008-2011 Rhomobile, Inc.
+* 
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+* 
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+* 
+* http://rhomobile.com
+*------------------------------------------------------------------------*/
+
 #include "pch_rhoruntime.h"
 #include "rhoruntime.h"
 
@@ -7,30 +32,10 @@
 using namespace rhoruntime;
 using namespace Platform;
 
-CRhoRuntime::CRhoRuntime():
-	m_WaitCallback(nullptr),
-	m_UpdateWebViewCallback(nullptr),
-	m_ExitCallback(nullptr)
+CRhoRuntime::CRhoRuntime(IMainPage^ mainPage):
+	m_MainPage(mainPage)
 {
 	sqlite3_initialize();
-}
-
-// this callback is an example of calling the C# API methods from C++
-void CRhoRuntime::SetWaitCallback(WaitCallbackPointer^ callback)
-{
-	m_WaitCallback = callback;
-}
-
-// this callback is an example of updating UI controls from C++ non-UI thread
-void CRhoRuntime::SetUpdateWebViewCallback(UpdateWebViewCallbackPointer^ callback)
-{
-	m_UpdateWebViewCallback = callback;
-}
-
-// this callback is an example of application exit technique
-void CRhoRuntime::SetExitCallback(ExitCallbackPointer^ callback)
-{
-	m_ExitCallback = callback;
 }
 
 // rhodes executed in a separate thread
@@ -39,13 +44,11 @@ void CRhoRuntime::Execute()
 	// sample code just for testing
 	for (int i=0; i<10; i++) {
 		// wait for 1 second
-		if ((i > 0) && m_WaitCallback)
-			m_WaitCallback(1000);
+		if (i > 0)
+			m_MainPage->DoWait(1000);
 		// update HTML code in WebView
-		if (m_UpdateWebViewCallback)
-			m_UpdateWebViewCallback(i);
+		m_MainPage->UpdateWebView(i);
 	}
 	// exit application
-	if (m_ExitCallback)
-		m_ExitCallback();
+	m_MainPage->DoExit();
 }

@@ -1159,7 +1159,11 @@ enc_set_filesystem_encoding(void)
     idx = rb_enc_to_index(rb_default_external_encoding());
 #elif defined _WIN32 || defined __CYGWIN__
     char cp[sizeof(int) * 8 / 3 + 4];
+
+#if !defined(_WP8_LIB)
     snprintf(cp, sizeof cp, "CP%d", AreFileApisANSI() ? GetACP() : GetOEMCP());
+#endif 
+
     idx = rb_enc_find_index(cp);
     if (idx < 0) idx = rb_ascii8bit_encindex();
 #else
