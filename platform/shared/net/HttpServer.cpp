@@ -388,11 +388,11 @@ bool CHttpServer::init()
         return false;
     }
     
-    //if (listen(m_listener, 128) == SOCKET_ERROR) {
-    //    RAWLOG_ERROR1("Can not listen on socket: %d", RHO_NET_ERROR_CODE);
-    //    close_listener();
-    //    return false;
-    //}
+    if (listen(m_listener, 128) == SOCKET_ERROR) {
+        RAWLOG_ERROR1("Can not listen on socket: %d", RHO_NET_ERROR_CODE);
+        close_listener();
+        return false;
+    }
     
     RAWLOG_INFO1("Listen for connections on port %d", m_port);
     return true;
@@ -573,10 +573,10 @@ bool CHttpServer::send_response_impl(String const &data, bool continuation)
     // First of all, make socket blocking
 #if defined(WINDOWS_PLATFORM)
     unsigned long optval = 0;
-    //    if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
-    //    RAWLOG_ERROR1("Can not set blocking socket mode: %d", RHO_NET_ERROR_CODE);
-    //    return false;
-    //}
+        if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
+        RAWLOG_ERROR1("Can not set blocking socket mode: %d", RHO_NET_ERROR_CODE);
+        return false;
+    }
 #else
     int flags = fcntl(m_sock, F_GETFL);
     if (flags == -1) {
@@ -681,10 +681,10 @@ bool CHttpServer::process(SOCKET sock)
 	// First of all, make socket non-blocking
 #if defined(WINDOWS_PLATFORM)
 	unsigned long optval = 1;
-	//if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
-	//	RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", RHO_NET_ERROR_CODE);
-	//	return false;
-	//}
+	if(::ioctlsocket(m_sock, FIONBIO, &optval) == SOCKET_ERROR) {
+		RAWLOG_ERROR1("Can not set non-blocking socket mode: %d", RHO_NET_ERROR_CODE);
+		return false;
+	}
 #else
 	int flags = fcntl(m_sock, F_GETFL);
 	if (flags == -1) {
