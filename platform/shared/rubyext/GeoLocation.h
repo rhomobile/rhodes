@@ -36,23 +36,6 @@
 namespace rho {
 namespace rubyext {
 
-#if defined(OS_WP8)
-
-// temprorary 
-class CGeoLocation
-{
-public:
-    DEFINE_LOGCLASS;
-	static CGeoLocation* Create() {return 0;}
-	static void Destroy() {}
-	static CGeoLocation* getInstance() {return 0;}
-	void setGeoCallback(const char *url, const char* params, int timeout_sec, boolean bView) {}
-	void callGeoCallback(const char* pszError = 0, boolean bRunInThread=false) {}
-	int getGeoTimeoutSec() {return 0;}
-	static void callback_geolocation(void *arg, String const &/*query*/ ) {}
-};
-#else
-
 class CGeoLocation
 {
 public:
@@ -101,7 +84,6 @@ private:
     net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
 };
 
-#endif //OS_WP8
 }
 }
 
