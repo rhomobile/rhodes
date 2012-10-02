@@ -77,7 +77,7 @@ private:
     common::CAutoPtr<ISyncProtocol> m_SyncProtocol;
     ESyncState m_syncState;
     String     m_clientID;
-    common::CMutex m_mxLoadClientID;
+    common::CMutex m_mxLoadClientID, m_mxSessionID;
     String m_strSession;
     CSyncNotify m_oSyncNotify;
     boolean m_bStopByUser;
@@ -130,7 +130,7 @@ public:
 //IRhoSession
     virtual const String& getSession()
     { 
-        synchronized(m_mxLoadClientID){
+        synchronized(m_mxSessionID){
             return m_strSession;
         }
     }
