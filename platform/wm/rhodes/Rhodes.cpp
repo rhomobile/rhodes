@@ -586,6 +586,11 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 #endif
 */
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA_BROWSER
+    if (!rho_wm_is_web_app())
+        RHODESAPP().startApp();
+#endif
+
     m_appWindow.InvalidateRect(NULL, TRUE);
     m_appWindow.UpdateWindow();
 
@@ -614,8 +619,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
     else
     {
+#ifndef APP_BUILD_CAPABILITY_MOTOROLA_BROWSER
         RHODESAPP().startApp();
-
+#endif
         // Navigate to the "loading..." page
 	    /*m_appWindow.Navigate2(_T("about:blank")
     #if defined(OS_WINDOWS_DESKTOP)

@@ -101,6 +101,42 @@ module Rhogen
       file.source = 'app/loading.png'
       file.destination = "#{name}/app/loading.png"
     end
+
+    file :loadingpng5 do |file|
+      file.source = 'app/loading-568h@2x.png'
+      file.destination = "#{name}/app/loading-568h@2x.png"
+    end
+
+    file :loadingpngl do |file|
+      file.source = 'app/loading-Landscape.png'
+      file.destination = "#{name}/app/loading-Landscape.png"
+    end
+
+    file :loadingpngll do |file|
+      file.source = 'app/loading-LandscapeLeft.png'
+      file.destination = "#{name}/app/loading-LandscapeLeft.png"
+    end
+
+    file :loadingpnglr do |file|
+      file.source = 'app/loading-LandscapeRight.png'
+      file.destination = "#{name}/app/loading-LandscapeRight.png"
+    end
+
+    file :loadingpngp do |file|
+      file.source = 'app/loading-Portrait.png'
+      file.destination = "#{name}/app/loading-Portrait.png"
+    end
+
+    file :loadingpngpud do |file|
+      file.source = 'app/loading-PortraitUpsideDown.png'
+      file.destination = "#{name}/app/loading-PortraitUpsideDown.png"
+    end
+
+    file :loadingpngx do |file|
+      file.source = 'app/loading@2x.png'
+      file.destination = "#{name}/app/loading@2x.png"
+    end
+
     
     directory :helpers do |directory|
       directory.source = 'app/helpers'

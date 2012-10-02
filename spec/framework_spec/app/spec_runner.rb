@@ -123,6 +123,18 @@ class SpecRunner < MSpecScript
       config[:files] << file
     end
     
+    # RHOMOBILE
+    specs = app_folder + "spec/rhomobile/*_spec" + RHO_RB_EXT
+    Dir.glob(specs) do |file|
+      file.gsub!(app_folder,"")
+      if RHO_RB_EXT == '.rb'
+        file.gsub!(/\.rb/,"")
+      else
+        file.gsub!(/\.iseq/,"")
+      end
+      config[:files] << file
+    end
+    
   end
 
   def run
