@@ -1360,14 +1360,14 @@ Popup window always close after clicking on any button.
 	* :question - '?' icon
 	* :info - informational icon
 * :buttons - array of buttons for popup window. Each button defined by its id and title. Button can be specified by Hash with :id and :title keys or just String - in this case both id and title will be set to this value.
-* :callback - url to be called when any of the button will be clicked. This callback will be called with @params hash containing three keys: :button_id, :button_title and :button_index.
+* :callback - url to be called when any of the button will be clicked. This callback will be called with @params hash containing three keys: button_id, button_title, and button_index.
 
 Example:
 	:::ruby
 	def on_dismiss_popup
-	  id = @params[:button_id]
-	  title = @params[:button_title]
-	  index = @params[:button_index]
+	  id = @params['button_id']
+	  title = @params['button_title']
+	  index = @params['button_index']
 	  if id == 'Yes'
 	    # Handle 'Yes' button
 	  elsif id == 'No'
