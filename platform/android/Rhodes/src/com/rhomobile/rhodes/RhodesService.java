@@ -480,7 +480,7 @@ public class RhodesService extends Service {
                                     handlePushMessage(pushType, json, data);
                                 }
                             });
-                    } else
+                    }
                     break;
                 }
             default:
@@ -1338,12 +1338,16 @@ public class RhodesService extends Service {
                 final String alert = jsonObject.optString("alert");
     
                 boolean statusNotification = false;
-                if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
+                if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS)) {
+                    Logger.D(TAG, "Show push notification always");
                     statusNotification = true;
-                else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND))
+                } else if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_BACKGROUND)) {
+                    Logger.D(TAG, "Show push notification from background");
                     statusNotification = !RhodesApplication.canHandleNow(RhodesApplication.AppState.AppActivated);
+                }
     
                 if (statusNotification) {
+                    Logger.D(TAG, "Showing status push notification");
                     Intent intent = new Intent(getContext(), RhodesActivity.class);
                     StatusNotification.simpleNotification(TAG, 0, getContext(), intent, "PUSH message", alert);
                 }
