@@ -90,7 +90,7 @@
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>C:\work\rhodes\platform\wp8\bin\x86\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sqlite3.lib;syncengine.lib;rholib.lib;ws2_32.lib;rubylib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>sqlite3.lib;syncengine.lib;rholib.lib;rubylib.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
