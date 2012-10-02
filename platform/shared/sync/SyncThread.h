@@ -57,7 +57,7 @@ public:
    		boolean m_bShowStatus;
 		boolean m_bSyncOnlyChangedSources;
 
-	    CSyncCommand(int nCode, int nParam, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources)
+	    CSyncCommand(int nCode, int nParam, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources = false)
 	    {
 		    m_nCmdCode = nCode;
 		    m_nCmdParam = nParam;
@@ -65,7 +65,7 @@ public:
             m_strQueryParams = query_params ? query_params : "";
 			m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
 	    }
-	    CSyncCommand(int nCode, String strParam, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources)
+	    CSyncCommand(int nCode, String strParam, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources = false )
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
@@ -73,7 +73,7 @@ public:
             m_strQueryParams = query_params ? query_params : "";
 			m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
 	    }
-	    CSyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources)
+	    CSyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources = false)
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
@@ -83,7 +83,7 @@ public:
 			m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
 	    }
 
-	    CSyncCommand(int nCode, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources)
+	    CSyncCommand(int nCode, boolean bShowStatus, const char * query_params, boolean bSyncOnlyChangedSources = false)
 	    {
 		    m_nCmdCode = nCode;
 		    m_nCmdParam = 0;
@@ -111,7 +111,7 @@ public:
 	    String m_strName, m_strPassword;
         common::CAutoPtr<CSyncNotification> m_pNotify;
         CSyncLoginCommand(String name, String password, CSyncNotification* pNotify) : 
-            CSyncCommand(CSyncThread::scLogin,"",false,NULL)
+            CSyncCommand(CSyncThread::scLogin,"",false,"", false)
 	    {
 		    m_strName = name;
 		    m_strPassword = password;
