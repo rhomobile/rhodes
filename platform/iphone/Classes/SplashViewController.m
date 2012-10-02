@@ -145,7 +145,10 @@
 	splashView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	splashView.autoresizesSubviews = YES;
 	self.view = splashView;
-    [parentView addSubview:splashView];
+    
+    //[parentView addSubview:splashView];
+    ((UIWindow*)parentView).rootViewController = self;
+    
     return self;
 }
 
