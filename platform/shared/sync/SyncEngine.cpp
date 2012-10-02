@@ -986,7 +986,7 @@ boolean CSyncEngine::isLoggedIn()
 
 String CSyncEngine::loadSession()
 {
-    synchronized(m_mxLoadClientID)
+    synchronized(m_mxSessionID)
     {
         m_strSession = "";
         IDBResult res = getUserDB().executeSQL("SELECT session FROM client_info");
