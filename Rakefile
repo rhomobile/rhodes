@@ -426,6 +426,10 @@ namespace "config" do
         $rhoelements_features += "- Motorola WebKit Browser\n"                
     end
 
+    if $app_config['extensions'].index('rho-javascript')
+        $rhoelements_features += "- Javascript API for device capabilities\n"                
+    end
+
     if File.exist?(File.join($app_path, "license.yml"))
         license_config = Jake.config(File.open(File.join($app_path, "license.yml")))    
     
@@ -627,13 +631,10 @@ def init_extensions(startdir, dest)
       end
     end    
     
-    puts '1'
-
     if extpath.nil?
       begin
         $rhodes_extensions = nil
         require extname
-        puts '1-2'
         if $rhodes_extensions
             extpath = $rhodes_extensions[0]
             $app_config["extpaths"] << extpath
