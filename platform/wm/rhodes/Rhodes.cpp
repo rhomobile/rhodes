@@ -59,7 +59,6 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance();
 extern "C" int rho_sys_check_rollback_bundle(const char* szRhoPath);
 extern "C" void registerRhoExtension();
 extern "C" void rho_webview_navigate(const char* url, int index);
-extern "C" int rho_wm_is_web_app();
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 class CEng;
@@ -592,7 +591,13 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     m_appWindow.initBrowserWindow();
 #endif
 
-    if (rho_wm_is_web_app())
+    bool bRE1App = false;
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+    if (!rho_wmimpl_get_is_version2())
+        bRE1App = true;
+#endif
+
+    if (bRE1App)
     {				
 
 		// This code is moved to rho::CRhoWKBrowserEngine::ProcessOnTopMostWnd()
@@ -671,31 +676,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     return S_OK;
 }
-
-extern "C" int rho_wm_is_web_app()
-{
-    bool bRE1App = false;
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-    if (!rho_wmimpl_get_is_version2())
-        bRE1App = true;
-#endif
-
-    return bRE1App; 
-}
-
-extern "C" void rho_wm_init_web_app()
-{
-    if ( !rho_wm_is_web_app())
-        return;
-
-    //Initialize RhoElements Extension
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
-    registerRhoExtension();
-#endif
-    rho_webview_navigate("about:blank", 0);
-    rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
-}
-
 
 void CRhodesModule::RunMessageLoop( ) throw( )
 {
