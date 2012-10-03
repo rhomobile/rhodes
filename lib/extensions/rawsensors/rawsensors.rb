@@ -11,7 +11,7 @@ class RawSensors
    end 
 
    def self.getSensorData
-       RawSensorsNative.self.getSensorData
+       RawSensorsNative.getSensorData
    end
 
 
