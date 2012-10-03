@@ -30,6 +30,7 @@
 #include "common/RhoConf.h"
 #include "net/URI.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "common/Tokenizer.h"
 
 #include <algorithm>
 
@@ -926,13 +927,33 @@ bool CHttpServer::dispatch(String const &uri, Route &route)
     //check if there is controller.rb to run
 	struct stat st;
 
-    String newfilename = m_root + "/" + route.application + "/" + route.model + "/" + controllerName + "_controller"RHO_RB_EXT;
-    String filename = m_root + "/" + route.application + "/" + route.model + "/controller"RHO_RB_EXT;
+    String newfilename = CFilePath::join(m_root, route.application) + "/" + route.model + "/" + controllerName + "_controller"RHO_RB_EXT;
+    String filename = CFilePath::join(m_root, route.application) + "/" + route.model + "/controller"RHO_RB_EXT;
 
     //look for controller.rb or model_name_controller.rb
     if ((stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) && (stat(newfilename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)))
+    {
+#ifdef RHODES_EMULATOR
+        CTokenizer oTokenizer( RHOSIMCONF().getString("ext_path"), ";" );
+	    while (oTokenizer.hasMoreTokens()) 
+        {
+		    String tok = oTokenizer.nextToken();
+		    tok = String_trim(tok);
+
+            newfilename = CFilePath::join(tok, route.application) + "/" + route.model + "/" + controllerName + "_controller"RHO_RB_EXT;
+            filename = CFilePath::join(tok, route.application) + "/" + route.model + "/controller"RHO_RB_EXT;
+
+            //look for controller.rb or model_name_controller.rb
+            if ((stat(filename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)) && (stat(newfilename.c_str(), &st) != 0 || !S_ISREG(st.st_mode)))
+                continue;
+
+            return true;
+        }
+#endif
+
         return false;
-    
+    }
+
     return true;
 }
 
@@ -1011,11 +1032,37 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 
     if ( doesNotExists ) {
         if ( stat(fullPath.c_str(), &st) != 0 || !S_ISREG(st.st_mode) ) {
-            RAWLOG_ERROR1("The file %s was not found", path.c_str());
-            String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
-            send_response(create_response("404 Not Found",error));
-            return false;
+            doesNotExists = true;
+        }else
+            doesNotExists = false;
+    }
+
+#ifdef RHODES_EMULATOR
+    if ( doesNotExists )
+    {
+        CTokenizer oTokenizer( RHOSIMCONF().getString("ext_path"), ";" );
+	    while (oTokenizer.hasMoreTokens()) 
+        {
+		    String tok = oTokenizer.nextToken();
+		    tok = String_trim(tok);
+            
+            String fullPath1 = CFilePath::join( tok, path );
+            if (stat(fullPath1.c_str(), &st) == 0 && S_ISREG(st.st_mode))
+            {
+                fullPath = fullPath1;
+                doesNotExists = false;
+                break;
+            }
+
         }
+    }
+#endif
+
+    if ( doesNotExists ) {
+        RAWLOG_ERROR1("The file %s was not found", path.c_str());
+        String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
+        send_response(create_response("404 Not Found",error));
+        return false;
     }
     
     FILE *fp = fopen(fullPath.c_str(), "rb");
