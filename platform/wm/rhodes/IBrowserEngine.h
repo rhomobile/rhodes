@@ -29,7 +29,6 @@ public:
     virtual void OnDocumentComplete(LPCTSTR url) = 0;
     virtual void setBrowserGesturing(bool bEnableGesturing) = 0;
     virtual void NotifyEngineOfSipPosition() = 0;
-	virtual DWORD GetProcessID() = 0;
 };
 
 }

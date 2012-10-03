@@ -43,5 +43,4 @@ public:
     virtual void OnDocumentComplete(LPCTSTR url);
     virtual void setBrowserGesturing(bool bEnableGesturing);
     virtual void NotifyEngineOfSipPosition();
-    virtual DWORD GetProcessID();
 };
