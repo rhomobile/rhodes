@@ -380,6 +380,14 @@ static VALUE find_file(VALUE fname)
                     if ( eaccess(RSTRING_PTR(res), R_OK) == 0 )
                         break;
 
+                    res = rb_str_new( szPath, szSep-szPath);
+                    rb_str_cat2(res,"/app/");
+                    rb_str_append(res,fname);
+                    rb_str_cat2(res,RHO_RB_EXT);
+
+                    if ( eaccess(RSTRING_PTR(res), R_OK) == 0 )
+                        break;
+
                     res = 0;
                     szPath = szSep+1;
                 }

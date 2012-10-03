@@ -224,10 +224,23 @@ module Rho
       undercase = controller_class.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
 	  undercase.slice!(0) if undercase.start_with?('_')
 	  #TODO: WP7 - for some reason it added _ at the start
-	  	
+
+      is_found = false  	  	
+      
       if Rho::file_exist?(  req[:modelpath]+ undercase +RHO_RB_EXT )
         require req['model'] + '/' + undercase #req[:modelpath]+ undercase
-      else
+        
+        is_found = true
+      elsif defined?( RHODES_EMULATOR )
+        begin
+            require req['model'] + '/' + undercase #req[:modelpath]+ undercase
+            is_found = true
+        rescue Exception => exc
+        end
+        
+      end
+      
+      unless is_found
         require req['model'] + '/controller' #req[:modelpath]+'controller'
       end
       
