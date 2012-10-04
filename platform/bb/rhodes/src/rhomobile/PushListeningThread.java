@@ -72,26 +72,6 @@ public class PushListeningThread extends Thread {
         }
     }
 
-    public static boolean isMDSPushEnabled()
-    {
-    	if ( !RhoConf.getInstance().isExist("push_options") )
-    		return true;
-    	
-    	String strOptions = RhoConf.getInstance().getString("push_options");
-    	
-    	return strOptions.indexOf("mds") >= 0;
-    }
-
-    public static boolean isPushServiceEnabled()
-    {
-    	if ( !RhoConf.getInstance().isExist("push_options") )
-    		return false;
-    	
-    	String strOptions = RhoConf.getInstance().getString("push_options");
-    	
-    	return strOptions.indexOf("push_service") >= 0;
-    }
-    
     public void run()
     {
 
