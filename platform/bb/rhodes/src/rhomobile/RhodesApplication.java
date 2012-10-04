@@ -1462,7 +1462,7 @@ final public class RhodesApplication extends RhodesApplicationPlatform implement
     	    	
     	    	if ( com.rho.Capabilities.ENABLE_PUSH  )
     	    	{
-    	    		if ( PushListeningThread.isMDSPushEnabled() )
+    	    		if ( com.rho.sync.ClientRegister.isMDSPushEnabled() )
     	    		{
 		    	    	_pushListeningThread = new PushListeningThread();
 		    	    	_pushListeningThread.start();

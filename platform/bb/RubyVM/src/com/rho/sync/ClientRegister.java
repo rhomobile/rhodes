@@ -102,7 +102,8 @@ public class ClientRegister extends RhoThread
 		int port = RhoConf.getInstance().getInt("push_port");
 
         return SyncThread.getSyncEngine().getProtocol().getClientRegisterBody( strClientID, m_strDevicePin, 
-            port > 0 ? port : DEFAULT_PUSH_PORT, m_sysInfo.getPlatform());
+            port > 0 ? port : DEFAULT_PUSH_PORT, m_sysInfo.getPlatform(),
+            isPushServiceEnabled() ? "bis" : "" );
     }
     
     private boolean doRegister(	SyncEngine oSync )throws Exception
@@ -147,5 +148,26 @@ public class ClientRegister extends RhoThread
 		}
 		
 		return false;
-    }    
+    }
+    
+    public static boolean isMDSPushEnabled()
+    {
+    	if ( !RhoConf.getInstance().isExist("push_options") )
+    		return true;
+    	
+    	String strOptions = RhoConf.getInstance().getString("push_options");
+    	
+    	return strOptions.indexOf("mds") >= 0;
+    }
+
+    public static boolean isPushServiceEnabled()
+    {
+    	if ( !RhoConf.getInstance().isExist("push_options") )
+    		return false;
+    	
+    	String strOptions = RhoConf.getInstance().getString("push_options");
+    	
+    	return strOptions.indexOf("push_service") >= 0;
+    }
+    
 }
