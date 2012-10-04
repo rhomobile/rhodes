@@ -375,6 +375,9 @@ public class RhoConnection implements IHttpConnection {
 		if ( responseData != null )
 			return responseData;
 		
+		if ( m_isDispatchCall )
+			return null;
+		
 		throw new IOException("Not found: " + url_external);
 	}
 
