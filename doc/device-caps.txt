@@ -801,10 +801,14 @@ The following parameters are in the hash.
 
 **NOTE: On Windows Mobile and Windows CE devices only "bmp" is supported as 'imageFormat'.**
 
+**NOTE: On Blackberry devices only "png" is supported as 'imageFormat'.**
+
 After user entered signature (or canceled) provided callback url will be called. Callback parameters will be the following.
 
  * status - 'ok' or 'cancel'
  * signature_uri - path to the image with signature   
+
+**NOTE: To take signature on Blackberry devices press Menu button then select 'Capture'.**
 
 ### Inline signature capture
 **NOTE: As of Rhodes version 3.3.3, the Inline Signature Capture API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
