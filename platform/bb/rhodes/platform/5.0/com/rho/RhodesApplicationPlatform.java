@@ -225,7 +225,7 @@ public class RhodesApplicationPlatform extends UiApplication implements PushAppl
 	{
 		if ( com.rho.Capabilities.ENABLE_PUSH )
 		{
-			if ( !rhomobile.PushListeningThread.isPushServiceEnabled() )
+			if ( !com.rho.sync.ClientRegister.isPushServiceEnabled() )
 				return;
 			
 			getUiApplication().invokeLater( new Runnable()
