@@ -128,25 +128,20 @@ public class SignatureCapture extends MainScreen
 	 */
 	private MenuItem _captureItem = new MenuItem("Capture", 200000, 10) {
 		public void run() {
-			//Create a new instance of the encoder to encode the bitmap into an image
-			PNGEncoder encoder = new PNGEncoder(_bitmap, true);
+	        net.rim.device.api.system.PNGEncodedImage encodedImage = net.rim.device.api.system.PNGEncodedImage.encode(_bitmap);
+			byte[] imageBytes = encodedImage.getData();
 			try {
-				byte[] imageBytes = encoder.encode(true);
-				EncodedImage image = EncodedImage.createEncodedImage(imageBytes, 0, imageBytes.length);
-				try {
-					String fileName = getFilePath();
-					
-					FileConnection fconn = (FileConnection) Connector.open(fileName);
-					if (!fconn.exists())
-						fconn.create();
-					DataOutputStream ds = fconn.openDataOutputStream();
-					ds.write(image.getData());
-					ds.close();
-					fconn.close();
-				} catch (Exception e) {
-					LOG.ERROR("Save signature failed.", e);
-				}
-			} catch (IOException e) {
+				String fileName = getFilePath();
+				
+				FileConnection fconn = (FileConnection) Connector.open(fileName);
+				if (!fconn.exists())
+					fconn.create();
+				java.io.OutputStream outputStream = fconn.openOutputStream();
+				outputStream.write(imageBytes);
+		        outputStream.close();   
+		        
+				fconn.close(); 
+			} catch (Exception e) {
 				LOG.ERROR("Save signature failed.", e);
 			}
 			
