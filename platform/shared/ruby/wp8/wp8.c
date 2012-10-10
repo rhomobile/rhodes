@@ -14,152 +14,82 @@
 #include "ruby\config.h"
 #include <errno.h>
 #include <process.h>
-//#include "ruby.h"
+#include "missing_wp8.h"
+
+#include "../../common/RhoDefs.h"
 
 /* global for GetCommandLineA */
 char *_commandLine;
 
 extern char _currentdir[];
 
-/* make up Win32API except wce_* functions.  */
+/* ---------------  files functions. ------------------- */
 
-DWORD GetModuleFileNameA( 
-	HMODULE hModule, LPSTR lpFileName,
-	DWORD size )
-{
-	LPWSTR lpFileNameW;
-	LPSTR  mb;
-	size_t ret =0;
-
-	//if( size==0 ) return 0;
-
-	//lpFileNameW = (LPWSTR)malloc( size*sizeof(wchar_t) );
-	//ret = GetModuleFileNameW( hModule, lpFileNameW, size );
-	//mb = wce_wctomb(lpFileNameW);
-	//strcpy(lpFileName, mb);
-	//free(mb);
-	//free(lpFileNameW);
-
-	return ret;
-}
-
-#if _WIN32_WCE < 300
-FARPROC GetProcAddressA(HMODULE hModule, LPCSTR lpProcName)
-{
-	FARPROC p = NULL;
-	//LPWSTR  lpwProcName;
-
-	//lpwProcName = wce_mbtowc( lpProcName );
-	//p = GetProcAddressW( hModule, lpwProcName );
-	//free( lpwProcName );
-	return p;
-}
-#endif 
-
-char * GetCommandLineA(void)
-{
-	return _commandLine;
-}
-
-/* this is not Win32API. GetCommandLineA helper. */
-void wce_SetCommandLine(LPCWSTR wcmd)
-{
-	//char* acmd;
-
-	//acmd = wce_wctomb( wcmd );
-	//_commandLine = (char*)malloc( strlen(acmd)+5 );
-	//sprintf( _commandLine, "ruby %s", acmd );
-	//free(acmd);
-}
-
-/* this is not Win32API. GetCommandLineA helper. */
-void wce_FreeCommandLine(void)
-{
-	//free(_commandLine);
-	_commandLine = NULL;
-}
-
-/* I have no idea how to replace this. */
-BOOL GetProcessTimes(HANDLE hprocess,
-	LPFILETIME lpCreationTime, LPFILETIME lpExitTime,
-	LPFILETIME lpKernelTime, LPFILETIME lpUserTime) 
+RHO_GLOBAL DWORD SetFilePointer(_In_ HANDLE hFile,
+								_In_ LONG lDistanceToMove,
+								_Inout_opt_ PLONG lpDistanceToMoveHigh,
+								_In_ DWORD dwMoveMethod)
 {
 	return 0;
 }
 
-/* --------------  file attributes functions. ------------------- */
-/*
-DWORD GetFileAttributesA(LPCSTR lpFileName)
+RHO_GLOBAL DWORD GetFileType(_In_ HANDLE hFile)
 {
-	LPWSTR lpwFileName;
-	DWORD dw=0;
-
-	//lpwFileName = wce_mbtowc(lpFileName);
-	//dw = GetFileAttributesW(lpwFileName);
-	//free(lpwFileName);
-	return dw;
-}
-
-BOOL SetFileAttributesA(
-	LPCSTR lpFileName, DWORD attributes) 
-{
-	LPWSTR lpwFileName;
-	BOOL b;
-
-	//lpwFileName = wce_mbtowc(lpFileName);
-	//b = SetFileAttributesW(lpwFileName, attributes);
-	//free(lpwFileName);
-	return b;
-}
-*/
-/* ---------------  move and remove functions. ------------------- */
-/*
-BOOL MoveFileA(LPCSTR fn1, LPCSTR fn2)
-{
-	//LPWSTR wfn1, wfn2;
-	//BOOL b;
-
-	//wfn1 = wce_mbtowc(fn1);
-	//wfn2 = wce_mbtowc(fn2);
-	//b = MoveFileW(wfn1, wfn2);
-	//free(wfn1);
-	//free(wfn2);
 	return 0;
 }
 
-BOOL MoveFileEx(LPCSTR oldname, LPCSTR newname, DWORD dwFlags)
+RHO_GLOBAL BOOL MoveFileW(_In_ LPCWSTR lpExistingFileName, _In_ LPCWSTR lpNewFileName)
 {
-	//LPWSTR woldname, wnewname;
-	BOOL b=FALSE;
-
-	//woldname = wce_mbtowc(oldname);
-	//wnewname = wce_mbtowc(newname);
-
-	//if( (dwFlags&MOVEFILE_REPLACE_EXISTING)!=0 )
-	//	DeleteFileW( wnewname );
-
-	//b = MoveFileW( woldname, wnewname );
-
-	//free(woldname);
-	//free(wnewname);
-
-	return b;
+	return FALSE;
 }
 
-BOOL DeleteFileA(LPCSTR path)
-{ 
-	LPWSTR wpath;
-	BOOL b;
 
-	wpath = wce_mbtowc(path);
-	b = DeleteFileW(wpath);
-	free(wpath);
-	return 0;
+BOOL LockFile(HANDLE hFile,
+	DWORD dwFileOffsetLow, DWORD dwFileOffsetHigh,
+	DWORD nNumberOfBytesToLockLow, DWORD nNumberOfBytesToLockHigh)
+{
+	return FALSE;
+}
+
+BOOL UnlockFile( HFILE hFile,
+	DWORD dwFileOffsetLow, DWORD dwFileOffsetHigh,
+	DWORD nNumberOfBytesToUnlockLow, DWORD nNumberOfBytesToUnlockHigh)
+{
+	return FALSE;
+}
+
+RHO_GLOBAL HANDLE CreateFile(
+    _In_ LPCWSTR lpFileName,
+    _In_ DWORD dwDesiredAccess,
+    _In_ DWORD dwShareMode,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+    _In_ DWORD dwCreationDisposition,
+    _In_ DWORD dwFlagsAndAttributes,
+    _In_opt_ HANDLE hTemplateFile)
+{
+	return INVALID_HANDLE_VALUE;
+}
+
+RHO_GLOBAL HANDLE CreateFileW(
+    _In_ LPCWSTR lpFileName,
+    _In_ DWORD dwDesiredAccess,
+    _In_ DWORD dwShareMode,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+    _In_ DWORD dwCreationDisposition,
+    _In_ DWORD dwFlagsAndAttributes,
+    _In_opt_ HANDLE hTemplateFile)
+{
+	return INVALID_HANDLE_VALUE;
+}
+
+RHO_GLOBAL BOOL GetFileInformationByHandle(_In_ HANDLE hFile, _Out_ LPBY_HANDLE_FILE_INFORMATION lpFileInformation)
+{
+	return FALSE;
 }
 
 /* --------------- EnvironmentVariable functions. ----------------- */
-DWORD GetEnvironmentVariable(
-	LPCSTR name, LPSTR value, DWORD size)
+
+DWORD GetEnvironmentVariable(LPCSTR name, LPSTR value, DWORD size)
 {
     return 0;
 #if 0
@@ -250,300 +180,130 @@ BOOL FreeEnvironmentStrings(LPSTR lpszEnvironmentBlock)
 
 /* DuplicateHandle, LockFile, etc... */
 /* I have no idea...  */
-BOOL GenerateConsoleCtrlEvent(DWORD dwCtrlEvent,
-		DWORD dwProcessGroupID)
+BOOL GenerateConsoleCtrlEvent(DWORD dwCtrlEvent, DWORD dwProcessGroupID)
 {
 	return 0;
 }
 
-//BOOL DuplicateHandle(
-//	HANDLE source_process, HANDLE source,
-//	HANDLE dest_process, HANDLE *dest,
-//	DWORD access, BOOL inherit, DWORD options)
-//{
-//	return 0;
-//}
+/* --------------------- process stuff fucntiuons ----------------------- */
 
-BOOL LockFile(HANDLE hFile,
-	DWORD dwFileOffsetLow, DWORD dwFileOffsetHigh,
-	DWORD nNumberOfBytesToLockLow, DWORD nNumberOfBytesToLockHigh)
+RHO_GLOBAL BOOL GetProcessTimes(_In_ HANDLE hProcess,
+								_Out_ LPFILETIME lpCreationTime,
+								_Out_ LPFILETIME lpExitTime,
+								_Out_ LPFILETIME lpKernelTime,
+								_Out_ LPFILETIME lpUserTime)
 {
 	return FALSE;
 }
 
-//BOOL LockFileEx(HANDLE hFile,
-//	DWORD dwFlags, DWORD dwReserved,
-//	DWORD nNumberOfBytesToLockLow, DWORD nNumberOfBytesToLockHigh,
-//	LPOVERLAPPED lpOverlapped)
-//{
-//	return FALSE;
-//}
-
-BOOL UnlockFile( HFILE hFile,
-	DWORD dwFileOffsetLow, DWORD dwFileOffsetHigh,
-	DWORD nNumberOfBytesToUnlockLow, DWORD nNumberOfBytesToUnlockHigh)
+RHO_GLOBAL BOOL GetVersionEx(OSVERSIONINFOA *v)
 {
 	return FALSE;
 }
 
-//BOOL UnlockFileEx(HANDLE hFile,
-//	DWORD dwReserved, DWORD nNumberOfBytesToUnlockLow,
-//	DWORD nNumberOfBytesToUnlockHigh, LPOVERLAPPED lpOverlapped)
-//{
-//	return FALSE;
-//}
-
-/* --------------------- etc, etc, etc... ----------------------- */
-BOOL GetVersionExA(OSVERSIONINFOA *v)
+BOOL CreateProcess(LPCSTR appname, LPCSTR commandline,
+	LPSECURITY_ATTRIBUTES att, LPSECURITY_ATTRIBUTES threadatt,
+	BOOL bOpt, DWORD dwFlag, LPVOID lpEnv, LPSTR dir,
+	LPSTARTUPINFO lpsi, LPPROCESS_INFORMATION lppi)
 {
-	OSVERSIONINFOW wv;
-	BOOL b=FALSE;
-	//LPSTR mb;
-
-	//b = GetVersionExW(&wv);
-	//mb = wce_wctomb(wv.szCSDVersion);
-
-	//strcpy( v->szCSDVersion, mb );
-	//free(mb);
-	return b;
+	return FALSE;
 }
 
-//DWORD WaitForMultipleObjectsEx(DWORD count,
-//	const HANDLE *handles, BOOL wait_all,
-//	DWORD timeout, BOOL alertable)
-//{
-//	return 0;/*WaitForMultipleObjects(
-//		count, handles, wait_all,
-//		timeout );*/
-//}
-
-//BOOL CreateProcessA(LPCSTR appname, LPCSTR commandline,
-//	LPSECURITY_ATTRIBUTES att, LPSECURITY_ATTRIBUTES threadatt,
-//	BOOL bOpt, DWORD dwFlag, LPVOID lpEnv, LPSTR dir,
-//	LPSTARTUPINFO lpsi, LPPROCESS_INFORMATION lppi)
-//{
-//	LPWSTR wappname, wcommandline, wdir;
-//	BOOL b;
-//
-//	wappname     = wce_mbtowc(appname);
-//	wcommandline = wce_mbtowc(commandline);
-//	wdir         = wce_mbtowc(dir);
-//
-//	b = CreateProcessW(wappname, wcommandline,
-//			att, threadatt, bOpt, dwFlag, lpEnv,
-//			wdir, lpsi, lppi);
-//
-//	free(wappname);
-//	free(wcommandline);
-//	free(wdir);
-//
-//	return b;
-//}
-
-//HANDLE CreateEventA(SECURITY_ATTRIBUTES *sa, 
-//	BOOL manual_reset, BOOL initial_state, LPCSTR name)
-//{
-//	HANDLE h=INVALID_HANDLE_VALUE;
-//	LPWSTR wname;
-//
-//	//wname = wce_mbtowc(name);
-//	//h = CreateEventW(sa, manual_reset,
-//	//	initial_state, wname);
-//	//free(wname);
-//
-//	return h;
-//}
-
-//DWORD FormatMessageA(DWORD dwFlags, LPCVOID lpSource, 
-//	DWORD dwMessageId, DWORD dwLanguageId, LPSTR lpBuffer, 
-//	DWORD nSize, va_list* args)
-//{
-//	DWORD dw;
-//	//LPWSTR lpWBuffer;
-//
-//	//lpWBuffer = wce_mbtowc(lpBuffer);
-//	//dw = FormatMessageW( dwFlags, lpSource,
-//	//		dwMessageId, dwLanguageId,
-//	//		lpWBuffer, nSize, (va_list*)args );
-//	//free(lpWBuffer);
-//	return dw;
-//}
-
-/*---------------- FindFirstFile, FindNextFile ------------------ */
-static void copy_fund_data(WIN32_FIND_DATAA *data,WIN32_FIND_DATAW *wdata) {
-	LPSTR mb;
-
- // data->dwFileAttributes = wdata->dwFileAttributes;
- // data->ftCreationTime = wdata->ftCreationTime;
- // data->ftLastAccessTime = wdata->ftLastAccessTime;
- // data->ftLastWriteTime = wdata->ftLastWriteTime;
- // data->nFileSizeHigh = wdata->nFileSizeHigh;
- // data->nFileSizeLow = wdata->nFileSizeLow;
-
- // mb = wce_wctomb( wdata->cFileName );
-	//strcpy( data->cFileName, mb );
-	//free(mb);
+RHO_GLOBAL HANDLE OpenProcess(_In_ DWORD dwDesiredAccess,
+  							  _In_ BOOL bInheritHandle,
+						      _In_ DWORD dwProcessId)
+{
+	return INVALID_HANDLE_VALUE;
 }
 
-//HANDLE FindFirstFileA(LPCSTR path,
-//			WIN32_FIND_DATAA *data)
-//{
-//	LPWSTR wpath;
-//	HANDLE h;
-// //   WIN32_FIND_DATAW wdata = {0};
-// //   int i = 0;
-// //   DWORD dwErr = 0;
-//	//wpath = wce_mbtowc(path);
-// //   for( i = 0; wpath[i]; i++)
-// //   {
-// //       if ( wpath[i] == L'/' )
-// //           wpath[i] = L'\\';
-// //   }
-//
-// //   //if ( wpath[wcslen(wpath)-1] == '*')  //wince does not support *
-// //   //    wpath[wcslen(wpath)-1] = 0;
-//
-//	//h = FindFirstFileExW( wpath, FindExInfoStandard, &wdata, FindExSearchNameMatch, NULL, FindExInfoStandard);
-// //   dwErr = GetLastError();
-// //   if ( h == INVALID_HANDLE_VALUE && dwErr == 18)
-// //       h = 0;
-//	//free(wpath);
-//	//
-// //   copy_fund_data(data,&wdata);
-//
-//	return h;
-//}
+RHO_GLOBAL BOOL GetExitCodeProcess(_In_ HANDLE hProcess,  _Out_ LPDWORD lpExitCode)
+{
+	return FALSE;
+}
 
-//BOOL FindNextFileA(HANDLE handle,
-//	WIN32_FIND_DATAA *data)
-//{
-//	BOOL b;
-//	WIN32_FIND_DATAW wdata;
-//
-//    if ( !handle )
-//        return FALSE;
-//
-//	b = FindNextFileW(handle, &wdata);
-//
-//  copy_fund_data(data,&wdata);
-//
-//	return b;
-//}
+RHO_GLOBAL BOOL TerminateProcess(_In_ HANDLE hProcess, _In_ UINT uExitCode)
+{
+	return FALSE;
+}
 
-/* CreateFile doesn't support SECURITY_ATTRIBUTES in WinCE. */
-/* it must be NULL. */
-//HANDLE CreateFileA(LPCSTR filename, DWORD access,
-//	DWORD sharing, LPSECURITY_ATTRIBUTES sa,
-//	DWORD creation, DWORD attributes, HANDLE template)
-//{
-//	//LPWSTR wfilename;
-//	//HANDLE h;
-//
-//	//wfilename = wce_mbtowc(filename);
-//	//h = CreateFileW(wfilename, access, sharing,
-//	//		NULL, creation, 0, NULL);
-//	//free(wfilename);
-//
-//	//return 0;
-//
-//	return INVALID_HANDLE_VALUE;
-//}
+RHO_GLOBAL DWORD GetModuleFileNameA(
+    _In_opt_ HMODULE hModule,
+    _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPSTR lpFilename,
+    _In_ DWORD nSize)
+{
+	return (HMODULE)0;
+}
+
+RHO_GLOBAL DWORD GetModuleFileName(
+    _In_opt_ HMODULE hModule,
+    _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPSTR lpFilename,
+    _In_ DWORD nSize)
+{
+	return (HMODULE)0;
+}
+
+RHO_GLOBAL HMODULE GetModuleHandle(_In_opt_ LPCWSTR lpModuleName)
+{
+	return (HMODULE)0;
+}
 
 /* ---------------- CharNext, CharPrev. ---------------------*/
-LPSTR CharNextA(LPCSTR a)
-{
-	char *p=(char *)a;
-	//if( TRUE==IsDBCSLeadByteEx(CP_UTF8, (BYTE)*a) )
-	//	p+=2;
-	//else
-	//	p++;
 
-	return p;
+LPSTR CharNext(LPCSTR a)
+{
+	return NULL;
 }
 
-LPSTR CharPrevA(LPCSTR start, LPCSTR ptr)
+RHO_GLOBAL LPCWSTR CharPrevW(LPCWSTR start, LPCWSTR ptr)
 {
-	//if( start==ptr ) return (LPSTR)start;
-	//else if( start+1==ptr ) return (LPSTR)start;
-	//else if( TRUE==IsDBCSLeadByteEx(CP_UTF8, (BYTE)*(ptr-2)) )
-	//	return (LPSTR)(ptr-2);
-	//else
-		return (LPSTR)(ptr-1);
-}
-
-/* WinCE doesn't have "drives". */
-DWORD GetLogicalDrives(VOID)
-{
-	return 0;
-}
-
-/* WinCE doesn't have "user name". */
-BOOL GetUserName(LPSTR lpBuffer, LPDWORD nSize)
-{
-	return 0;
+	return NULL;
 }
 
 /*------------------- LoadLibrary -----------------------*/
-HINSTANCE LoadLibraryA(LPCSTR libname)
-{
-//	HINSTANCE h;
-//	LPWSTR wlibname;
-//
-//	// if starts ".\", replace current directory.
-////	wlibname = wce_replaceRelativeDir(libname);
-//
-//	wlibname = wce_mbtowc(libname);
-//	h = LoadLibraryW(wlibname);
-//	free(wlibname);
-//	return h;
-	return NULL;
-}
-
-HINSTANCE LoadLibraryExA(LPCSTR lpLibFileName, HANDLE hFile,
-			DWORD dwFlags)
-{
-//	HINSTANCE h;
-//	LPWSTR wlibname;
-//
-//	wlibname = wce_mbtowc(lpLibFileName);
-////	wlibname = wce_replaceRelativeDir(lpLibFileName);
-//
-//#if _WIN32_WCE < 300
-//	h = LoadLibraryW(wlibname);
-//#else
-//	h = LoadLibraryExW(wlibname, hFile, dwFlags);
-//#endif
-//	free(wlibname);
-//	return h;
-
-	return NULL;
-}
 
 /* WinCE doesn't have "CreatePipe". */
-BOOL CreatePipe(PHANDLE hReadPipe, PHANDLE hWritePipe,
-	LPSECURITY_ATTRIBUTES lpPipeAttributes, DWORD nSize)
+
+RHO_GLOBAL HANDLE CreateNamedPipe(
+    _In_     LPCSTR lpName,
+    _In_     DWORD dwOpenMode,
+    _In_     DWORD dwPipeMode,
+    _In_     DWORD nMaxInstances,
+    _In_     DWORD nOutBufferSize,
+    _In_     DWORD nInBufferSize,
+    _In_     DWORD nDefaultTimeOut,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes)
+{
+	return INVALID_HANDLE_VALUE;
+}
+
+RHO_GLOBAL BOOL PeekNamedPipe(
+    _In_ HANDLE hNamedPipe,
+    _Out_writes_bytes_to_opt_(nBufferSize, *lpBytesRead) LPVOID lpBuffer,
+    _In_ DWORD nBufferSize,
+    _Out_opt_ LPDWORD lpBytesRead,
+    _Out_opt_ LPDWORD lpTotalBytesAvail,
+    _Out_opt_ LPDWORD lpBytesLeftThisMessage)
 {
 	return FALSE;
 }
 
-/* WinCE doesn't have "Standard Devices". */
-HANDLE GetStdHandle(DWORD nStdHandle)
-{
-	return NULL;
-}
-
-BOOL SetStdHandle(DWORD nStdHandle, HANDLE h)
+RHO_GLOBAL BOOL PeekConsoleInput(
+    _In_ HANDLE hConsoleInput,
+    _Out_writes_(nLength) PINPUT_RECORD lpBuffer,
+    _In_ DWORD nLength,
+    _Out_ LPDWORD lpNumberOfEventsRead)
 {
 	return FALSE;
 }
 
-//#if _WIN32_WCE < 300
-//VOID ZeroMemory(PVOID p, DWORD length)
-//{
-//	memset(p,0,length);
-//}
-//#endif
-
+RHO_GLOBAL BOOL ReadConsoleInput(
+	_In_ HANDLE hConsoleInput,
+    _Out_writes_to_(nLength, *lpNumberOfEventsRead) PINPUT_RECORD lpBuffer,
+    _In_ DWORD nLength,
+    _Out_ _Deref_out_range_(<=, nLength) LPDWORD lpNumberOfEventsRead)
+{
+	return FALSE;
+}
 
 /* need in ruby/io.c. */
 int ReadDataPending()
@@ -551,220 +311,195 @@ int ReadDataPending()
 	return 0;
 }
 
-/*---------------- helper functions. ---------------------------- */
-FILE *wce_fopen( const char *fname, const char *mode )
+/*---------------- sync functions. ---------------------------- */
+
+RHO_GLOBAL BOOL GetExitCodeThread(_In_ HANDLE hThread, _Out_ LPDWORD lpExitCode)
 {
-	//TCHAR* tfname = wce_replaceRelativeDir(fname);
-	//TCHAR* tmode = wce_mbtowc(mode);
-	FILE* fp =0; // _wfopen(tfname, tmode);
-	//free(tfname); free(tmode);
-	return fp;
+	return FALSE;
 }
 
-void wce_SetCurrentDir()
+RHO_GLOBAL BOOL TerminateThread(_In_ HANDLE hThread, _In_ DWORD dwExitCode)
 {
-	//WCHAR tbuf[MAX_PATH+1]={0};
-	//WCHAR *tp;
-	//char *buf;
-
-	//GetModuleFileNameW( NULL, tbuf, MAX_PATH );
-	//tp = wcsrchr( tbuf, '\\' );
-	//if( tp!=NULL ) *tp=_T('\0');
-	//buf = wce_wctomb(tbuf);
-	//strcpy( _currentdir, buf );
-	//free(buf);
+	return FALSE;
 }
 
-TCHAR *wce_replaceRelativeDir(const char* str)
+RHO_GLOBAL HANDLE CreateThread(_In_opt_ LPSECURITY_ATTRIBUTES lpThreadAttributes,
+								_In_ SIZE_T dwStackSize,
+								_In_ LPTHREAD_START_ROUTINE lpStartAddress,
+								_In_opt_ __drv_aliasesMem LPVOID lpParameter,
+								_In_ DWORD dwCreationFlags,
+								_Out_opt_ LPDWORD lpThreadId)
 {
-	TCHAR *tbuf = NULL;
-
-	//if( 2<=strlen(str) && str[0]=='.' &&
-	//	(str[1]=='/' || str[1]=='\\') )
-	//{
-	//	char *buf;
-	//	int len = strlen(str) + strlen(_currentdir);
-	//	buf = malloc( len+1 );
-	//	sprintf(buf, "%s%s", _currentdir, &str[1]);
-	//	tbuf = wce_mbtowc(buf);
-	//	free(buf);
-	//}
-	//else
-	//	tbuf = wce_mbtowc(str);
-	return tbuf;
+	return INVALID_HANDLE_VALUE;
 }
 
-/* char -> wchar_t */
-wchar_t* wce_mbtowc(const char* a)
-{
-	int length;
-	wchar_t *wbuf=0;
-
-	//length = MultiByteToWideChar(CP_UTF8, 0, 
-	//	a, -1, NULL, 0);
-	//wbuf = (wchar_t*)malloc( (length+1)*sizeof(wchar_t) );
-	//MultiByteToWideChar(CP_UTF8, 0,
-	//	a, -1, wbuf, length);
-
-	return wbuf;
+RHO_GLOBAL VOID Sleep(_In_ DWORD dwMilliseconds)
+{	
 }
 
-/* wchar_t -> char */
-char* wce_wctomb(const wchar_t* w)
+RHO_GLOBAL UINT GetConsoleCP(VOID)
 {
-	DWORD charlength;
-	char* pChar=0;
-
-	//charlength = WideCharToMultiByte(CP_UTF8, 0, w,
-	//				-1, NULL, 0, NULL, NULL);
-	//pChar = (char*)malloc(charlength+1);
-	//WideCharToMultiByte(CP_UTF8, 0, w,
-	//	-1, pChar, charlength, NULL, NULL);
-
-	return pChar;
+	return 0;
 }
 
-BOOL GetHandleInformation(
-  HANDLE hObject,
-  LPDWORD lpdwFlags
-)
+RHO_GLOBAL DWORD WaitForSingleObject(_In_ HANDLE hHandle, _In_ DWORD dwMilliseconds)
 {
-    return FALSE;
+	return 0;
 }
 
-DWORD GetFileType(
-  HANDLE hFile
-)
+RHO_GLOBAL DWORD TlsAlloc(VOID)
 {
-    return FILE_TYPE_DISK;
+	return 0;
 }
 
-//void GetSystemTimeAsFileTime(
-//  LPFILETIME lpSystemTimeAsFileTime
-//)
-//{
-//    SYSTEMTIME st; 
-//    GetSystemTime( &st ); 
-//    SystemTimeToFileTime( &st, lpSystemTimeAsFileTime ); 
-//}
-
-DWORD GetCurrentDirectoryA(
-  DWORD nBufferLength,
-  LPSTR lpBuffer
-)
+RHO_GLOBAL LPVOID TlsGetValue(_In_ DWORD dwTlsIndex)
 {
-    char *p, *p2;
-    char szDirectory[MAX_PATH+1];
-    DWORD err = 0, len = 0;
-    szDirectory[0] = 0;
-    // get current directory
-    len = GetModuleFileNameA(NULL, szDirectory, MAX_PATH);
-    if ( len == 0 )
-        err = GetLastError();
-
-    // trim off the exe name
-    p = strrchr(szDirectory, '\\' );
-
-    if(p == NULL)
-    {
-        // no slash found - return root?
-        strcpy(szDirectory, _T("\\"));
-        return;
-    }
-    *(p+1) = 0;
-
-    if ( lpBuffer )
-        strcpy(lpBuffer,szDirectory);
-    return strlen(szDirectory);
+	return 0;
 }
 
-//int __cdecl _getdrive (
-//        void
-//        )
-//{
-//    ULONG drivenum=0;
-//    UCHAR curdirstr[_MAX_PATH+1];
-//    UCHAR *cdirstr = curdirstr;
-//    int r=0;
-//
-//    r = GetCurrentDirectoryA(MAX_PATH+1,(LPTSTR)cdirstr);
-//    drivenum = 0;
-//    if (r)
-//    {
-//        if (cdirstr[1] == ':')
-//        {
-//                drivenum = toupper(cdirstr[0]) - 64;
-//        }
-//    }
-//    else
-//    {
-//        errno=ENOMEM;
-//    }
-//
-//    return drivenum;
-//}
 
-//BOOL RemoveDirectoryA( LPCSTR lpPathName  )
-//{
-//	wchar_t *wdir;
-//	BOOL rc;
-//
-//	/* replace with RemoveDirectory. */
-//	wdir = wce_mbtowc(lpPathName);
-//	rc = RemoveDirectoryW(wdir);
-//	free(wdir);
-//
-//	return rc;
-//}
-
-//BOOL CreateDirectoryA(LPCSTR lpPathName,  LPSECURITY_ATTRIBUTES lpSecurityAttributes)
-//{
-//	wchar_t* wdir;
-//	BOOL rc;
-//
-//	/* replace with CreateDirectory. */
-//	wdir = wce_mbtowc(lpPathName);
-//	rc = CreateDirectoryW(wdir, lpSecurityAttributes);
-//	free(wdir);
-//
-//	return rc;
-//}
-
-HMODULE GetModuleHandleA(  LPCSTR lpModuleName  )
+RHO_GLOBAL BOOL TlsSetValue(_In_ DWORD dwTlsIndex, _In_opt_ LPVOID lpTlsValue)
 {
-	wchar_t* wdir;
-	HMODULE rc = NULL;
-
-	///* replace with CreateDirectory. */
-	//wdir = wce_mbtowc(lpModuleName);
-	//rc = GetModuleHandleW(wdir);
-	//free(wdir);
-
-	return rc;
+	return FALSE;
 }
 
-//SOCKET
-//WSASocketA(
-//    IN int af,
-//    IN int type,
-//    IN int protocol,
-//    IN LPWSAPROTOCOL_INFOA lpProtocolInfo,
-//    IN GROUP g,
-//    IN DWORD dwFlags
-//    )
-//{
-//    //TODO:WSASocketA 
-//	return 0;
-//}
-
-int
-WSAAPI
-WSAEnumProtocolsA(
-    IN LPINT lpiProtocols,
-    OUT LPWSAPROTOCOL_INFOA lpProtocolBuffer,
-    IN OUT LPDWORD lpdwBufferLength
-    )
+RHO_GLOBAL HANDLE CreateEvent(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+    _In_ BOOL bManualReset,
+    _In_ BOOL bInitialState,
+    _In_opt_ LPCSTR lpName)
 {
-    //TODO: WSAEnumProtocolsA
-    return 0;
+	return INVALID_HANDLE_VALUE;
+}
+
+RHO_GLOBAL HANDLE CreateEventW(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+    _In_ BOOL bManualReset,
+    _In_ BOOL bInitialState,
+    _In_opt_ LPCWSTR lpName)
+{
+	return INVALID_HANDLE_VALUE;
+}
+
+RHO_GLOBAL VOID InitializeCriticalSection(_Out_ LPCRITICAL_SECTION lpCriticalSection)
+{
+}
+
+RHO_GLOBAL DWORD WaitForMultipleObjects( 
+    _In_ DWORD nCount,
+    _In_reads_(nCount) CONST HANDLE *lpHandles,
+    _In_ BOOL bWaitAll,
+    _In_ DWORD dwMilliseconds)
+{
+	return 0;
+}
+
+RHO_GLOBAL DWORD  ResumeThread(_In_ HANDLE hThread)
+{
+	return 0;
+}
+
+RHO_GLOBAL BOOL SetThreadPriority(_In_ HANDLE hThread, _In_ int nPriority)
+{
+	return FALSE;
+}
+
+/* --------------  file attributes functions. ------------------- */
+
+RHO_GLOBAL DWORD GetFileAttributesA(_In_ LPCSTR lpFileName)
+{
+	return 0;
+}
+
+RHO_GLOBAL DWORD GetFileAttributesW(_In_ LPCWSTR lpFileName)
+{
+	return 0;
+}
+
+RHO_GLOBAL DWORD GetFileSize(_In_ HANDLE hFile, _Out_opt_ LPDWORD lpFileSizeHigh)
+{
+	
+	return 0;
+}
+
+RHO_GLOBAL BOOL SetFileTime(_In_ HANDLE hFile,
+							_In_opt_ CONST FILETIME * lpCreationTime,
+							_In_opt_ CONST FILETIME * lpLastAccessTime,
+							_In_opt_ CONST FILETIME * lpLastWriteTime)
+{
+	return FALSE;
+}
+
+/* --------------  file find functions. ------------------- */
+
+RHO_GLOBAL HANDLE FindFirstFile(LPCWSTR path, WIN32_FIND_DATAA *data)
+{
+	return INVALID_HANDLE_VALUE;
+}
+
+RHO_GLOBAL HANDLE FindFirstFileW(_In_ LPCWSTR lpFileName, _Out_ LPWIN32_FIND_DATAW lpFindFileData)
+{
+	return INVALID_HANDLE_VALUE;
+}
+
+
+/* unsorted */
+RHO_GLOBAL DWORD GetLogicalDrives(VOID)
+{
+	return 0;
+}
+
+RHO_GLOBAL void LocalFileTimeToFileTime(FILETIME *lft, FILETIME *ft)
+{ 
+}
+
+RHO_GLOBAL BOOL GetOverlappedResult(_In_ HANDLE hFile,
+									_In_ LPOVERLAPPED lpOverlapped,
+									_Out_ LPDWORD lpNumberOfBytesTransferred,
+									_In_ BOOL bWait)
+{
+	return FALSE;
+}
+
+RHO_GLOBAL HANDLE GetStdHandle(_In_ DWORD nStdHandle)
+{
+	return INVALID_HANDLE_VALUE;
+}
+
+RHO_GLOBAL BOOL GetConsoleMode(_In_ HANDLE hConsoleHandle, _Out_ LPDWORD lpMode)
+{
+	return FALSE;
+}
+
+RHO_GLOBAL BOOL VirtualFree(_In_ LPVOID lpAddress, 
+							_In_ SIZE_T dwSize,  
+							_In_ DWORD dwFreeType)
+{
+	return FALSE;
+}
+
+RHO_GLOBAL BOOL GetHandleInformation(_In_ HANDLE hObject, 
+									 _Out_ LPDWORD lpdwFlags)
+{
+	return FALSE;
+}
+
+RHO_GLOBAL int lstrlenW(LPCWSTR lpString)
+{
+	return 0;
+}
+
+RHO_GLOBAL LPWSTR lstrcpyW(LPWSTR lpString1, LPCWSTR lpString2)
+{
+	return NULL;
+}
+
+RHO_GLOBAL LPWSTR lstrcatW(LPWSTR lpString1, LPCWSTR lpString2)
+{
+	return NULL;
+}
+
+RHO_GLOBAL int wsprintfW(_Out_ LPWSTR lpOut, _In_ _Printf_format_string_ LPCWSTR lpFormat, ...)
+{
+	return 0;
 }

@@ -143,104 +143,30 @@ FILETIME wce_time_t2FILETIME(const time_t t)
 }
 
 /* time.h difinition */
-time_t time( time_t *timer )
-{
-	SYSTEMTIME s;
-	FILETIME   f;
-	time_t     t;
+//time_t time( time_t *timer )
+//{
+//	SYSTEMTIME s;
+//	FILETIME   f;
+//	time_t     t;
+//
+//	GetSystemTime( &s );
+//
+//	SystemTimeToFileTime( &s, &f );
+//
+//	t = wce_FILETIME2time_t(&f);
+//	if( timer==NULL ) 
+//		return t;
+//	else
+//	  *timer = t;
+//	return *timer;
+//}
 
-	GetSystemTime( &s );
-
-	SystemTimeToFileTime( &s, &f );
-
-	t = wce_FILETIME2time_t(&f);
-	if( timer==NULL ) 
-		return t;
-	else
-	  *timer = t;
-	return *timer;
-}
 #ifdef OS_PLATFORM_CE
 struct tm *__cdecl localtime_s(const time_t *t)
 {
     return localtime_s(t);
 }
 #endif //OS_PLATFORM_CE
-
-/*
-struct tm *localtime( const time_t *timer )
-{
-	SYSTEMTIME ss, ls, s;
-	FILETIME   sf, lf, f;
-	__int64 t, diff;
-	static struct tm tms;
-
-	GetSystemTime(&ss);
-	GetLocalTime(&ls);
-
-	SystemTimeToFileTime( &ss, &sf );
-	SystemTimeToFileTime( &ls, &lf );
-
-	diff = wce_FILETIME2int64(sf) - wce_FILETIME2int64(lf);
-
-	f = wce_time_t2FILETIME(*timer);
-	t = wce_FILETIME2int64(f) - diff;
-	f = wce_int642FILETIME(t);
-
-	FileTimeToSystemTime( &f, &s );
-
-	tms = wce_SYSTEMTIME2tm(&s);
-
-	return &tms;
-}*/
-
-time_t mktime(struct tm* pt)
-{
-	SYSTEMTIME ss, ls, s;
-	FILETIME   sf, lf, f;
-	__int64 diff;
-
-	GetSystemTime(&ss);
-	GetLocalTime(&ls);
-	SystemTimeToFileTime( &ss, &sf );
-	SystemTimeToFileTime( &ls, &lf );
-
-	diff = (wce_FILETIME2int64(lf)-wce_FILETIME2int64(sf))/_onesec_in100ns;
-
-	s = wce_tm2SYSTEMTIME(pt);
-	SystemTimeToFileTime( &s, &f );
-	return wce_FILETIME2time_t(&f) - (time_t)diff;
-}
-
-struct tm *gmtime(const time_t *t)
-{
-	FILETIME f;
-	SYSTEMTIME s;
-	static struct tm tms;
-	
-	f = wce_time_t2FILETIME(*t);
-	FileTimeToSystemTime(&f, &s);
-	tms = wce_SYSTEMTIME2tm(&s);
-	return &tms;
-}
-
-char* ctime( const time_t *t )
-{
-	// Wed Jan 02 02:03:55 1980\n\0
-	static char buf[30]={0};
-	char week[] = "Sun Mon Tue Wed Thr Fri Sat ";
-	char month[]= "Jan Feb Mar Apl May Jun Jul Aug Sep Oct Nov Dec ";
-	struct tm tms;
-
-	tms = *localtime(t);
-
-	strncpy( buf,    week+tms.tm_wday*4, 4 );
-	strncpy( buf+4,  month+tms.tm_mon*4, 4 );
-	sprintf( buf+8,  "%02d ", tms.tm_mday );
-	sprintf( buf+11, "%02d:%02d:%02d %d\n", 
-		tms.tm_hour, tms.tm_min, tms.tm_sec, tms.tm_year+1900 );
-	return buf;
-}
 
 char *asctime(const struct tm *pt)
 {
@@ -298,12 +224,6 @@ void tzset(void)
 		WideCharToMultiByte(CP_ACP, 0, Info.StandardName, -1, Standard_Name, sizeof(Standard_Name) - 1, NULL, NULL);
 	if (Info.DaylightName[0])
 		WideCharToMultiByte(CP_ACP, 0, Info.DaylightName, -1, Daylight_Name, sizeof(Daylight_Name) - 1, NULL, NULL);
-}
-
-
-int clock(void)
-{
-	return 1;
 }
 
 //---------------------------------------------------------------
