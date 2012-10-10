@@ -450,11 +450,49 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 - (void)documentInteractionControllerDidEndPreview:(UIDocumentInteractionController *)docController
 {
-    [docController autorelease];
+    //[docController release];
+    //docController = nil;
 }
 
 - (void)openDocInteract:(NSString*)url {
 	[self performSelectorOnMainThread:@selector(openDocInteractCommand:) withObject:url waitUntilDone:NO];	
+}
+
+
+- (void) openURLComand:(NSString*)url {
+    
+    RAWLOG_INFO1("rho_sys_open_url: %s", url);
+	
+	NSString* strUrl = url;//[NSString stringWithUTF8String:url];
+	BOOL res = FALSE;
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:strUrl];
+    if (!fileExists) {
+        NSString *fixed_path = [NSString stringWithUTF8String:rho_rhodesapp_getapprootpath()];
+        fixed_path = [fixed_path stringByAppendingString:strUrl];
+        fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fixed_path];
+        if (fileExists) {
+            strUrl = fixed_path;
+        }
+    }
+    if (fileExists) {
+        res = TRUE;
+        [[AppManager instance] openDocInteract:strUrl];
+    }
+    else {
+        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:strUrl]]) {
+            res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:strUrl]];
+        }
+    }
+	if ( res)
+		RAWLOG_INFO("rho_sys_open_url suceeded.");
+	else
+		RAWLOG_INFO("rho_sys_open_url failed.");
+}
+
+
+- (void) openURL:(NSString*)url {
+    [self performSelectorOnMainThread:@selector(openURLComand:) withObject:[url retain] waitUntilDone:NO];
 }
 
 
@@ -609,33 +647,7 @@ void rho_sys_app_uninstall(const char *appname) {
 
 void rho_sys_open_url(const char* url) 
 {
-    RAWLOG_INFO1("rho_sys_open_url: %s", url);	
-	
-	NSString* strUrl = [NSString stringWithUTF8String:url];
-	BOOL res = FALSE;
-
-    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:strUrl];
-    if (!fileExists) {
-        NSString *fixed_path = [NSString stringWithUTF8String:rho_rhodesapp_getapprootpath()];
-        fixed_path = [fixed_path stringByAppendingString:strUrl];
-        fileExists = [[NSFileManager defaultManager] fileExistsAtPath:fixed_path];
-        if (fileExists) {
-            strUrl = fixed_path;
-        }
-    }
-    if (fileExists) {
-        res = TRUE;
-        [[AppManager instance] openDocInteract:strUrl];
-    }
-    else {
-        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:strUrl]]) {
-            res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:strUrl]];
-        }
-    }
-	if ( res)
-		RAWLOG_INFO("rho_sys_open_url suceeded.");	
-	else
-		RAWLOG_INFO("rho_sys_open_url failed.");	
+    [[AppManager instance] openURL:[NSString stringWithUTF8String:url]];
 }
 
 void rho_sys_app_install(const char *url) {

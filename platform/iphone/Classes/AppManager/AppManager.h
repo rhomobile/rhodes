@@ -46,6 +46,6 @@
 
 - (UIViewController *) documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller;
 
-
+- (void) openURL:(NSString*)url;
 
 @end

@@ -1,0 +1,5 @@
+entry: Init_AudioCapture_extension	
+javaentry: com.audiocapture.audioCapture
+android_additional_sources_list: ext/audiocapture/platform/android/ext_build.files
+android_manifest_changes: ext/audiocapture/platform/android/AndroidManifest.xml
+libraries: ["audioCapture"]
