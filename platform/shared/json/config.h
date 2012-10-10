@@ -90,7 +90,7 @@
 #endif
 
 /* Define to 1 if you have the `vasprintf' function. */
-#if !defined(_WIN32_WCE)&& !defined(WIN32)
+#if !defined(_WIN32_WCE)&& !defined(WIN32)&& !defined(_WP8_LIB)
 #define HAVE_VASPRINTF 1
 #endif
 
