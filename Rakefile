@@ -378,6 +378,16 @@ namespace "config" do
         end
     end
 
+    # add rawsensors extension for rhoelements app
+    if $current_platform == "iphone" || $current_platform == "android"
+        if $app_config["app_type"] == 'rhoelements'
+        
+            $app_config["extensions"] += ["rawsensors"] unless $app_config['extensions'].index('rawsensors')
+            $app_config["extensions"] += ["audiocapture"] unless $app_config['extensions'].index('audiocapture')
+        
+        end
+    end
+
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
     #application build configs
