@@ -1,7 +1,6 @@
 #if defined(WIN32) || defined(_WIN32_WCE)
 #else
 #define ZIP_STD
-
 #endif
 
 #ifdef ZIP_STD
@@ -14,6 +13,8 @@
 #include <memory.h>
 #include <string.h>
 #include <ctype.h>
+
+#include "../common/RhoDefs.h"
 
 // # i n c l u d e "zip.h"
 //
@@ -34,7 +35,11 @@ typedef unsigned short WORD;
 
 //
 #else
-#include <windows.h>
+
+//#if !defined(OS_WP8)
+//#include <windows.h>
+//#endif
+
 #include <tchar.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -50,10 +55,12 @@ typedef unsigned short WORD;
 #ifndef MAX_PATH
 #define MAX_PATH 1024
 #endif
+
 typedef unsigned long DWORD;
 typedef char TCHAR;
 typedef FILE* HANDLE;
 typedef time_t FILETIME;
+
 #endif
 
 // ZIP functions -- for creating zip files
