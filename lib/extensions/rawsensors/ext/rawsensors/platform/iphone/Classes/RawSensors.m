@@ -135,6 +135,7 @@ static RhoRawSensors* ourRhoSensors = nil;
             if (period < 200) {
                 period = 200;
             }
+            need_resetup_update = YES;
             updatePeriod = period;
         }
     }
