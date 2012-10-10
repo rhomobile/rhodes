@@ -188,9 +188,9 @@ public :
     void RunMessageLoop( ) throw( );
     const rho::String& getRhoRootPath();
     const rho::String& getRhoRuntimePath();
-    void parseHttpProxyURI(const rho::String &http_proxy);
-
 };
+
+void parseHttpProxyURI(const rho::String &http_proxy);
 
 static String g_strCmdLine;
 HINSTANCE CRhodesModule::m_hInstance;
@@ -478,11 +478,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #ifdef OS_WINDOWS_DESKTOP
 	if (m_strHttpProxy.length() > 0) {
 		parseHttpProxyURI(m_strHttpProxy);
-	} else {
+	} else
+#endif
+	{
 		if (RHOCONF().isExist("http_proxy_url")) {
 			parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
 		}
 	}
+
 #ifdef RHODES_EMULATOR
     if (RHOSIMCONF().getString("debug_host").length() > 0)
         SetEnvironmentVariableA("RHOHOST", RHOSIMCONF().getString("debug_host").c_str() );
@@ -490,7 +493,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         SetEnvironmentVariableA("rho_debug_port", RHOSIMCONF().getString("debug_port").c_str() );
 #endif
 
-#endif
     //::SetThreadPriority(GetCurrentThread(),10);
 
 	//Check for bundle directory is exists.
@@ -1186,7 +1188,7 @@ HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
 
 #endif
 
-void CRhodesModule::parseHttpProxyURI(const rho::String &http_proxy)
+void parseHttpProxyURI(const rho::String &http_proxy)
 {
 	// http://<login>:<passwod>@<host>:<port>
 	const char *default_port = "8080";
@@ -1310,4 +1312,10 @@ void CRhodesModule::parseHttpProxyURI(const rho::String &http_proxy)
 		LOG(ERROR) + "empty host name in HTTP-proxy URL";
 	}
 
+}
+
+extern "C" void rho_sys_set_http_proxy_url(const char* url)
+{
+	String m_strHttpProxy = url;
+    parseHttpProxyURI(m_strHttpProxy);
 }
