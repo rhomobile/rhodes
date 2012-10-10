@@ -378,6 +378,16 @@ namespace "config" do
         end
     end
 
+    # add rawsensors extension for rhoelements app
+    if $current_platform == "iphone" || $current_platform == "android"
+        if $app_config["app_type"] == 'rhoelements'
+        
+            $app_config["extensions"] += ["rawsensors"] unless $app_config['extensions'].index('rawsensors')
+            $app_config["extensions"] += ["audiocapture"] unless $app_config['extensions'].index('audiocapture')
+        
+        end
+    end
+
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
     
     #application build configs
@@ -403,6 +413,14 @@ namespace "config" do
     if $app_config['extensions'].index('nfc')
         #$app_config['extensions'].delete('nfc')
         $rhoelements_features += "- NFC extension\n"
+    end
+    if $app_config['extensions'].index('rawsensors')
+        #$app_config['extensions'].delete('rawsensors')
+        $rhoelements_features += "- Raw Sensors\n"
+    end
+    if $app_config['extensions'].index('audiocapture')
+        #$app_config['extensions'].delete('audiocapture')
+        $rhoelements_features += "- Audio Capture\n"
     end
     
     if $current_platform == "wm"
@@ -465,6 +483,12 @@ namespace "config" do
             end
             if $app_config['extensions'].index('nfc')
                 $app_config['extensions'].delete('nfc')
+            end
+            if $app_config['extensions'].index('rawsensors')
+                $app_config['extensions'].delete('rawsensors')
+            end
+            if $app_config['extensions'].index('audiocapture')
+                $app_config['extensions'].delete('audiocapture')
             end
             
             if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
