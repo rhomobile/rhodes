@@ -3,6 +3,8 @@
 //#include "../../shared/ruby/include/ruby.h"
 #include "../../shared/common/RhoDefs.h"
 
+
+
 extern "C" HINSTANCE rho_wmimpl_get_appinstance()
 {
     return 0;//_AtlModule.GetModuleInstance();
@@ -25,9 +27,6 @@ extern "C" void rho_webview_navigate_forward()
 
 extern "C" const char* rho_webview_execute_js(const char* js, int index) 
 {
-/*    String strJS = "javascript:";
-    strJS += js;
-    rho_webview_navigate(strJS.c_str(), index)*/;
     return "";
 }
 
@@ -53,9 +52,6 @@ extern "C" void rho_webview_set_cookie(const char *url, const char *cookie)
 
 RHO_GLOBAL void rho_map_location(char* query)
 {
-    //rho::String url = "http://maps.google.com/?";
-    //url += query;
-    //rho_webview_navigate(url.c_str(), 0);
 }
 
 RHO_GLOBAL void rho_appmanager_load( void* /*httpContext*/, const char* /*szQuery*/)
@@ -93,70 +89,41 @@ RHO_GLOBAL const char* rho_native_reruntimepath()
     return "";//rho_root_path().c_str();
 }
 
-_Success_(return != 0)
-_Ret_range_(1, nSize)
-DWORD
-WINAPI
-GetModuleFileNameA(
-    _In_opt_ HMODULE hModule,
-    _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPSTR lpFilename,
-    _In_ DWORD nSize
-    )
+RHO_GLOBAL HWND getMainWnd()
 {
 	return 0;
 }
 
-_Success_(return != 0)
-_Ret_range_(1, nSize)
-DWORD
-WINAPI
-GetModuleFileNameW(
-    _In_opt_ HMODULE hModule,
-    _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPWSTR lpFilename,
-    _In_ DWORD nSize
-    )
+RHO_GLOBAL double rho_geo_latitude()
 {
 	return 0;
 }
 
-#ifdef UNICODE
-#define GetModuleFileName  GetModuleFileNameW
-#else
-#define GetModuleFileName  GetModuleFileNameA
-#endif // !UNICODE
-
-RHO_GLOBAL VOID
-WINAPI
-Sleep(
-    _In_ DWORD dwMilliseconds
-    )
-{
-}
-
-BOOL
-WINAPI
-DeleteFileW(
-    _In_ LPCWSTR lpFileName
-    )
-{
-	return FALSE;
-}
-
-UINT
-WINAPI
-GetConsoleCP(
-    VOID
-    )
+RHO_GLOBAL double rho_geo_longitude()
 {
 	return 0;
 }
 
-DWORD
-WINAPI
-WaitForSingleObject(
-    _In_ HANDLE hHandle,
-    _In_ DWORD dwMilliseconds
-    )
+RHO_GLOBAL float rho_geo_accuracy()
 {
 	return 0;
+}
+
+RHO_GLOBAL int rho_geo_known_position()
+{
+	return 0;
+}
+
+RHO_GLOBAL void rho_geoimpl_settimeout(int nTimeoutSec)
+{
+	
+}
+
+RHO_GLOBAL int rho_geo_is_available()
+{
+	return 0;
+}
+
+RHO_GLOBAL void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
+{
 }
