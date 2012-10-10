@@ -414,6 +414,14 @@ namespace "config" do
         #$app_config['extensions'].delete('nfc')
         $rhoelements_features += "- NFC extension\n"
     end
+    if $app_config['extensions'].index('rawsensors')
+        #$app_config['extensions'].delete('rawsensors')
+        $rhoelements_features += "- Raw Sensors\n"
+    end
+    if $app_config['extensions'].index('audiocapture')
+        #$app_config['extensions'].delete('audiocapture')
+        $rhoelements_features += "- Audio Capture\n"
+    end
     
     if $current_platform == "wm"
         $rhoelements_features += "- Windows Mobile/Windows CE platform support\n"
@@ -475,6 +483,12 @@ namespace "config" do
             end
             if $app_config['extensions'].index('nfc')
                 $app_config['extensions'].delete('nfc')
+            end
+            if $app_config['extensions'].index('rawsensors')
+                $app_config['extensions'].delete('rawsensors')
+            end
+            if $app_config['extensions'].index('audiocapture')
+                $app_config['extensions'].delete('audiocapture')
             end
             
             if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
