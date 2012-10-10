@@ -300,5 +300,8 @@
     <ClCompile Include="..\..\shared\ruby\wp8\time_wp8.c">
       <Filter>wp8</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\missing\langinfo.c">
+      <Filter>missing</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

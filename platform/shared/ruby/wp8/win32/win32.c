@@ -12,6 +12,8 @@
 
 #include "ruby/ruby.h"
 #include "ruby/encoding.h"
+#include "../../../common/RhoDefs.h"
+
 #include "dln.h"
 #include <fcntl.h>
 #include <process.h>
@@ -23,9 +25,7 @@
 #include <assert.h>
 #include <ctype.h>
 
-
-#ifndef _WP8_LIB
-#include <shlobj.h>
+#ifdef OS_WP8
 #include <wincon.h>
 #include <processthreadsapi.h>
 #include <wtypesbase.h>
@@ -81,65 +81,6 @@ static int wstati64(const WCHAR *path, struct stati64 *st);
 VALUE rb_w32_conv_from_wchar(const WCHAR *wstr, rb_encoding *enc);
 
 #define RUBY_CRITICAL(expr) do { expr; } while (0)
-
-/* windows phone 8 stabbing */
-
-typedef struct _STARTUPINFOA {
-    DWORD   cb;
-    LPSTR   lpReserved;
-    LPSTR   lpDesktop;
-    LPSTR   lpTitle;
-    DWORD   dwX;
-    DWORD   dwY;
-    DWORD   dwXSize;
-    DWORD   dwYSize;
-    DWORD   dwXCountChars;
-    DWORD   dwYCountChars;
-    DWORD   dwFillAttribute;
-    DWORD   dwFlags;
-    WORD    wShowWindow;
-    WORD    cbReserved2;
-    LPBYTE  lpReserved2;
-    HANDLE  hStdInput;
-    HANDLE  hStdOutput;
-    HANDLE  hStdError;
-} STARTUPINFOA, *LPSTARTUPINFOA;
-typedef struct _STARTUPINFOW {
-    DWORD   cb;
-    LPWSTR  lpReserved;
-    LPWSTR  lpDesktop;
-    LPWSTR  lpTitle;
-    DWORD   dwX;
-    DWORD   dwY;
-    DWORD   dwXSize;
-    DWORD   dwYSize;
-    DWORD   dwXCountChars;
-    DWORD   dwYCountChars;
-    DWORD   dwFillAttribute;
-    DWORD   dwFlags;
-    WORD    wShowWindow;
-    WORD    cbReserved2;
-    LPBYTE  lpReserved2;
-    HANDLE  hStdInput;
-    HANDLE  hStdOutput;
-    HANDLE  hStdError;
-} STARTUPINFOW, *LPSTARTUPINFOW;
-#ifdef UNICODE
-typedef STARTUPINFOW STARTUPINFO;
-typedef LPSTARTUPINFOW LPSTARTUPINFO;
-#else
-typedef STARTUPINFOA STARTUPINFO;
-typedef LPSTARTUPINFOA LPSTARTUPINFO;
-#endif // UNICODE
-
-typedef struct _PROCESS_INFORMATION {
-    HANDLE hProcess;
-    HANDLE hThread;
-    DWORD dwProcessId;
-    DWORD dwThreadId;
-} PROCESS_INFORMATION, *PPROCESS_INFORMATION, *LPPROCESS_INFORMATION;
-
-/* ------------------------ */
 
 /* errno mapping */
 static struct {

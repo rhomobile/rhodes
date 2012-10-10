@@ -503,3 +503,13 @@ RHO_GLOBAL int wsprintfW(_Out_ LPWSTR lpOut, _In_ _Printf_format_string_ LPCWSTR
 {
 	return 0;
 }
+
+RHO_GLOBAL int vsnprintf(char * _DstBuf, size_t _MaxCount, const char * _Format, va_list _ArgList)
+{
+	return 0;
+}
+
+RHO_GLOBAL wchar_t* wce_mbtowc(const char* a)
+{
+	return NULL;
+}

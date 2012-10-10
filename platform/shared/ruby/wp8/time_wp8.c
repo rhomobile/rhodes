@@ -142,25 +142,6 @@ FILETIME wce_time_t2FILETIME(const time_t t)
 	return f;
 }
 
-/* time.h difinition */
-//time_t time( time_t *timer )
-//{
-//	SYSTEMTIME s;
-//	FILETIME   f;
-//	time_t     t;
-//
-//	GetSystemTime( &s );
-//
-//	SystemTimeToFileTime( &s, &f );
-//
-//	t = wce_FILETIME2time_t(&f);
-//	if( timer==NULL ) 
-//		return t;
-//	else
-//	  *timer = t;
-//	return *timer;
-//}
-
 #ifdef OS_PLATFORM_CE
 struct tm *__cdecl localtime_s(const time_t *t)
 {
