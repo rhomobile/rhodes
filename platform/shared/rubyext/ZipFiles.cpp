@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "unzip/zip.h"
 #include "common/RhoStd.h"
+#include "unzip/zip.h"
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
 #include "logging/RhoLog.h"
