@@ -228,6 +228,7 @@
     <ClCompile Include="..\..\shared\rubyext\GeoLocation.cpp" />
     <ClCompile Include="..\..\shared\rubyext\RhoAppAdapter.cpp" />
     <ClCompile Include="..\..\shared\rubyext\System.cpp" />
+    <ClCompile Include="..\..\shared\rubyext\ZipFiles.cpp" />
     <ClCompile Include="..\..\shared\statistic\RhoProfiler.cpp" />
     <ClCompile Include="..\..\shared\unzip\unzip.cpp" />
     <ClCompile Include="..\..\shared\unzip\zip.cpp" />

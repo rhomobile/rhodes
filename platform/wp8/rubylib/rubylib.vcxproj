@@ -152,7 +152,6 @@
     <ClInclude Include="..\..\shared\ruby\win32\dir.h" />
     <ClInclude Include="..\..\shared\ruby\win32\ruby\config.h" />
     <ClInclude Include="..\..\shared\ruby\wp8\assert.h" />
-    <ClInclude Include="..\..\shared\ruby\wp8\direct.h" />
     <ClInclude Include="..\..\shared\ruby\wp8\errno.h" />
     <ClInclude Include="..\..\shared\ruby\wp8\fcntl.h" />
     <ClInclude Include="..\..\shared\ruby\wp8\io.h" />
@@ -164,6 +163,7 @@
     <ClInclude Include="..\..\shared\ruby\wp8\sys\utime.h" />
     <ClInclude Include="..\..\shared\ruby\wp8\varargs.h" />
     <ClInclude Include="..\..\shared\ruby\wp8\wincon.h" />
+    <ClInclude Include="..\..\shared\ruby\wp8\winsock_wp8.h" />
     <ClInclude Include="..\..\shared\ruby\wp8\wp8.h" />
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +184,7 @@
     <ClCompile Include="..\..\shared\ruby\complex.c" />
     <ClCompile Include="..\..\shared\ruby\cont.c" />
     <ClCompile Include="..\..\shared\ruby\debug.c" />
+    <ClCompile Include="..\..\shared\ruby\dir.c" />
     <ClCompile Include="..\..\shared\ruby\dln.c" />
     <ClCompile Include="..\..\shared\ruby\dln_find.c" />
     <ClCompile Include="..\..\shared\ruby\dmydln.c" />
@@ -263,19 +264,19 @@
     <ClCompile Include="..\..\shared\ruby\win32\miniprelude.c" />
     <ClCompile Include="..\..\shared\ruby\win32\newline.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\assert.c" />
-    <ClCompile Include="..\..\shared\ruby\wp8\direct.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\errno.c" />
-    <ClCompile Include="..\..\shared\ruby\wp8\io_wp8.c" />
-    <ClCompile Include="..\..\shared\ruby\wp8\process_wp8.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\signal_wp8.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\stdio.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\stdlib.c" />
-    <ClCompile Include="..\..\shared\ruby\wp8\string_wp8.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\sys\stat.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\sys\timeb.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\sys\utime.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\time_wp8.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\win32\win32.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\winsock_wp8.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\wp8.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\wp8main.c" />
+    <ClCompile Include="file.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

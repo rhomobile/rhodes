@@ -11,6 +11,6 @@
     <ClInclude Include="..\..\shared\sqlite\sqlite3ext.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\sqlite\sqlite3wp8.c" />
+    <ClCompile Include="sqlite3.c" />
   </ItemGroup>
 </Project>

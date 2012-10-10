@@ -246,9 +246,6 @@
     <ClCompile Include="..\..\shared\unzip\unzip.cpp">
       <Filter>unzip</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\unzip\zip.cpp">
-      <Filter>unzip</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\statistic\RhoProfiler.cpp">
       <Filter>statistic</Filter>
     </ClCompile>
@@ -281,6 +278,12 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\rubyext\GeoLocation.cpp">
       <Filter>rubyext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\rubyext\ZipFiles.cpp">
+      <Filter>rubyext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\unzip\zip.cpp">
+      <Filter>unzip</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
