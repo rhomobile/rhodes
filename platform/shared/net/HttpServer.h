@@ -40,7 +40,7 @@ typedef int SOCKET;
 #  if defined(OS_WINCE)
 #    include <winsock.h>
 #  elif defined(OS_WP8)
-#    include <winsock2.h>
+#    include "ruby/wp8/winsock_wp8.h"
 #  endif
 #  define RHO_NET_ERROR_CODE ::WSAGetLastError()
 #endif
