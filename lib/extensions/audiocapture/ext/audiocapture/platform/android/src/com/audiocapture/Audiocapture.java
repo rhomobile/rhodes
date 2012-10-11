@@ -28,7 +28,7 @@ public class Audiocapture {
 	private String mCallbackURL = null;
 	private String mDestination = null;
 	private String mName = null;
-	private int mDuration = 0;
+	private int mDuration = 20000;
 	private boolean mIsSaveFile = false; 
 	
 	private ExtAudioRecorder mRecorder = null;
