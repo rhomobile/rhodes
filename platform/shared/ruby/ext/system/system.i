@@ -94,6 +94,8 @@ extern void rho_sys_set_network_status_notify(const char* url, int poll_interval
 #define clear_network_status_notify rho_sys_clear_network_status_notify
 extern void rho_sys_clear_network_status_notify();
 
+#define set_http_proxy_url rho_sys_set_http_proxy_url
+extern void rho_sys_set_http_proxy_url(const char* url);
 
 	#if !defined(bool)
 	#define bool int
@@ -184,4 +186,4 @@ extern int  delete_folder(const char* path);
 extern int set_do_not_bakup_attribute(const char* path, int value);
 extern void set_network_status_notify(const char* url, int poll_interval);
 extern void clear_network_status_notify();
-
+extern void set_http_proxy_url(const char* url);

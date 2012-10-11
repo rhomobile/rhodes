@@ -1076,7 +1076,7 @@ static Rhodes *instance = NULL;
     rho_rhodesapp_callUiDestroyedCallback();
     rho_rhodesapp_canstartapp("", ", ");
 	
-	if (rho_conf_getBool("finish_sync_in_background") && (rho_sync_issyncing()==1)) {
+	if (rho_conf_getBool("finish_sync_in_background")/* && (rho_sync_issyncing()==1)*/) {
 		if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) { 
 			if ([[UIDevice currentDevice] isMultitaskingSupported]) { //Check if device supports mulitasking 
 
