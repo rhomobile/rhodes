@@ -28,7 +28,7 @@
 @property (readwrite, copy) NSString *callbackURL;
 @property (readwrite, copy) NSString *destination;
 @property (readwrite, copy) NSString *recorderFilePath;
-@property (readwrite, copy) int duration;
+@property (readwrite, assign) int duration;
 
 + (RhoAudioCapture*) getInstance;
 
