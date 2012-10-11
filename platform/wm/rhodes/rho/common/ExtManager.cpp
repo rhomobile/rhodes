@@ -212,7 +212,8 @@ static void __minimize_restoreApp(int nParam)
 
 void CExtManager::minimizeApp()
 {
-    rho_callInUIThread(__minimize_restoreApp, SW_MINIMIZE);
+    //rho_callInUIThread(__minimize_restoreApp, SW_MINIMIZE);
+    ::PostMessage( getMainWnd(), WM_WINDOW_MINIMIZE, 0, 0 );
 }
 
 void CExtManager::restoreApp()
