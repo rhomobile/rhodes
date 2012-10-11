@@ -10,11 +10,12 @@ static RhoAudioCapture* ourRhoAudioCapture = nil;
 
 @implementation RhoAudioCapture
 
-@synthesize callbackURL, destination, recorderFilePath;
+@synthesize callbackURL, destination, recorderFilePath, duration;
 
 + (RhoAudioCapture*) getInstance {
     if (ourRhoAudioCapture == nil) {
         ourRhoAudioCapture = [[RhoAudioCapture alloc] init];
+        ourRhoAudioCapture.duration = 20000;
     }
     return ourRhoAudioCapture;
 }
