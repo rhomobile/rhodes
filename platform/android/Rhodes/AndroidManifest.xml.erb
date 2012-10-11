@@ -41,7 +41,7 @@
     <activity android:name='com.rhomobile.rhodes.RhodesActivity'
               android:label='@string/app_name'
               android:launchMode='singleTask'
-              android:configChanges='orientation|screenSize|smallestScreenSize'
+              android:configChanges='orientation|screenSize|smallestScreenSize|keyboard|keyboardHidden'
               android:screenOrientation='<%= @screenOrientation %>'>
       <% @rhodesActivityIntentFilters.each do |filter| %>
         <%= makeIntentFilter(filter) %>
