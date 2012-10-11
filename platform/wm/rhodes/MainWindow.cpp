@@ -581,6 +581,15 @@ LRESULT CMainWindow::OnAuthenticationRequest (UINT /*uMsg*/, WPARAM wParam, LPAR
 
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
+LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    ProcessActivate( FALSE, MAKEWPARAM(0,1), 0 );
+
+    ::ShowWindow( m_hWnd, SW_MINIMIZE );
+
+    return 0;
+}
+
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
@@ -589,12 +598,18 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     if (lParam) //We get activate from some internal window
     {
 #if defined(_WIN32_WCE) 
-	if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
-		RhoSetFullScreen(true);
+        if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
+	        RhoSetFullScreen(true);
 #endif
         return 0;
     }
 
+    ProcessActivate( fActive, wParam, lParam );    
+    return 0;
+}
+
+void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
+{
 #if defined(_WIN32_WCE) 
 	if (m_bFullScreen)
 		RhoSetFullScreen(fActive!=0);
@@ -604,24 +619,10 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 #if defined(_WIN32_WCE)  && !defined (OS_PLATFORM_MOTCE)
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
-
-    //pause_sync(!fActive);
-/* TBD: Commented this out because it was called before http server started 
-        We need to fix this properly
-    if ( fActive )
-        CHttpServer::Instance()->ResumeThread();
-    else
-        CHttpServer::Instance()->FreezeThread();
-*/
-    //activate calls after javascript alerts, so we have viciouse cycle if alert is display in home page
-    //if ( rho::common::CRhodesApp::getInstance() != null )
-    //    RHODESAPP().callAppActiveCallback(fActive!=0);
-
 #endif
 
     if (!fActive)
         rho_geoimpl_turngpsoff();
-    return 0;
 }
 
 LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
