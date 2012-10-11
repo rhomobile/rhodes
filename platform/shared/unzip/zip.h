@@ -36,9 +36,9 @@ typedef unsigned short WORD;
 //
 #else
 
-//#if !defined(OS_WP8)
-//#include <windows.h>
-//#endif
+#if !defined(OS_WP8)
+#include <windows.h>
+#endif
 
 #include <tchar.h>
 #include <ctype.h>
