@@ -212,8 +212,11 @@ static void __minimize_restoreApp(int nParam)
 
 void CExtManager::minimizeApp()
 {
-    //rho_callInUIThread(__minimize_restoreApp, SW_MINIMIZE);
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+    rho_callInUIThread(__minimize_restoreApp, SW_MINIMIZE);
+#else
     ::PostMessage( getMainWnd(), WM_WINDOW_MINIMIZE, 0, 0 );
+#endif
 }
 
 void CExtManager::restoreApp()
