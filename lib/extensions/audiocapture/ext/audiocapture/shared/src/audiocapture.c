@@ -1,3 +1,9 @@
+
+
+#include <ruby.h>
+#include "ruby/ext/rho/rhoruby.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -11,7 +17,7 @@ void Init_AudioCapture_extension(void) {
 	Init_AudioCaptureNative();
 
 	// You can add some code to this place:
-
+    rb_require("audiocapture");
 
 }
 

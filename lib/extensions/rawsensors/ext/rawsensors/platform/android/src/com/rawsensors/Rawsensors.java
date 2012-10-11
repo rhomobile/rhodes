@@ -65,6 +65,8 @@ public class Rawsensors {
 				mAccelerometerListener = new AccelerometerSensorEventListener();
 				mMagnetometerListener = new MagnetometerSensorEventListener();
 		//	}}, true);
+				
+		startHWUpdates();				
 	}
 
 	private double mAccelerometerX = 0.0;
@@ -247,18 +249,30 @@ public class Rawsensors {
 		mMagnetometerZ = z;
 	}
 	
+	public void startHWUpdates() {
+		if (mAccelerometer != null) {
+			mSensorManager.unregisterListener(mAccelerometerListener, mAccelerometer);
+			mSensorManager.registerListener(mAccelerometerListener, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+		}
+		if (mMagnetometer != null) {
+			mSensorManager.unregisterListener(mMagnetometerListener, mMagnetometer);
+			mSensorManager.registerListener(mMagnetometerListener, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+		}
+	}
+	
+	public void stopHWUpdates() {
+		if ((mAccelerometer != null) ) {
+			mSensorManager.unregisterListener(mAccelerometerListener, mAccelerometer);
+		}
+		if ((mMagnetometer != null) ) {
+			mSensorManager.unregisterListener(mMagnetometerListener, mMagnetometer);
+		}
+	}
+	
 	public void startUpdates() {
 		
 		//PerformOnUiThread.exec(new Runnable() {
 		//	public void run() {	
-				if ((mAccelerometer != null) && (mEnableAccelerometer || mEnableAll)) {
-					mSensorManager.unregisterListener(mAccelerometerListener, mAccelerometer);
-					mSensorManager.registerListener(mAccelerometerListener, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-				}
-				if ((mMagnetometer != null) && (mEnableMagnetometer || mEnableAll)) {
-					mSensorManager.unregisterListener(mMagnetometerListener, mMagnetometer);
-					mSensorManager.registerListener(mMagnetometerListener, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
-				}
 				if (mUpdateThread != null) {
 					//mUpdateThread.stop();
 					mUpdateThread.interrupt();
@@ -288,12 +302,6 @@ public class Rawsensors {
 	public void stopUpdates() {
 		//PerformOnUiThread.exec(new Runnable() {
 		//	public void run() {	
-				if ((mAccelerometer != null) ) {
-					mSensorManager.unregisterListener(mAccelerometerListener, mAccelerometer);
-				}
-				if ((mMagnetometer != null) ) {
-					mSensorManager.unregisterListener(mMagnetometerListener, mMagnetometer);
-				}
 				if (mUpdateThread != null) {
 					//mUpdateThread.stop();
 					mUpdateThread.interrupt();
@@ -329,7 +337,11 @@ public class Rawsensors {
 	}
 	
 	public static void getSensorData() {
-		getInstance().onUpdate();
+		PerformOnUiThread.exec( new Runnable() {
+			public void run() {
+				getInstance().onUpdate();
+			}
+		});
 	}
 	
 	

@@ -1,4 +1,4 @@
-class AudioCapture
+module AudioCapture
 
 
 

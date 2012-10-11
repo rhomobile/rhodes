@@ -1,4 +1,4 @@
-class RawSensors
+module RawSensors
 
   ACCELEROMETER = 'accelerometer'
   MAGNETOMETER = 'magnetometer'

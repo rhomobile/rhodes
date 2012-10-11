@@ -1,3 +1,8 @@
+
+#include <ruby.h>
+#include "ruby/ext/rho/rhoruby.h"
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -11,7 +16,7 @@ void Init_RawSensors_extension(void) {
 	Init_RawSensorsNative();
 
 	// You can add some code to this place:
-
+    rb_require("rawsensors");
 
 }
 
