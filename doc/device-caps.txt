@@ -170,6 +170,12 @@ To get current application Locale:
 	:::ruby
     LocalizationSimplified::get_cur_locale #get current application locale
 
+To use client with the HTTP proxy you should pass its URL as the first command line argument `-http_proxy_url=http://<login>:<passwod>@<host>:<port>` (Windows Desktop only), add it to rhoconfig.txt, or call the setter method from Ruby code:
+    :::ruby
+    System.set_http_proxy_url(url)
+
+**NOTE: These method implemented only for Windows Mobile, WinCE and Windows Desktop  **
+
 To modify application window position and size:
     :::ruby
     System.set_window_frame(x,y,width,height) #change application window position and size
@@ -1733,10 +1739,7 @@ Also you can set special iOS attribute "do not bakup" to any files or folders re
 
 
 #### Windows Mobile
-Device/simulator files folder root - Program Files/<app name>/rho
-
-#### Desktop win32 simulator
-To use client with the HTTP proxy you should pass its URL as the first command line argument `-http_proxy_url=http://<login>:<passwod>@<host>:<port>` or add it to rhoconfig.txt.
+Device/simulator files folder root - Program Files/&lt;app name>/rho
 
 ## Shutdown hook
 Like any application written in Ruby, rhodes can register a shutdown hook. Shutdown hook is routine registered for execution when the program exits. It useful for cleanup on exit, saving program states, etc. To create you own shutdown hook you should add at_exit block to the file application.rb. 

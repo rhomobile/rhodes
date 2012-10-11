@@ -985,7 +985,6 @@ SWIG_UnpackDataName(const char *c, void *ptr, size_t sz, const char *name) {
 #define rb_undef_alloc_func(klass) rb_undef_method(CLASS_OF((klass)), "new")
 #endif
 
-#define _mSWIG_defined
 static VALUE _mSWIG = Qnil;
 
 /* -----------------------------------------------------------------------------
@@ -1001,27 +1000,26 @@ static VALUE _mSWIG = Qnil;
    exceptions.  Note this only works for C++ since a global cannot be
    initialized by a function in C.  For C, fallback to rb_eRuntimeError.*/
 
-#define SWIG_rb_eNullReferenceError_defined
-static VALUE SWIG_rb_eNullReferenceError  = Qnil;
-
-
 SWIGINTERN VALUE 
 getNullReferenceError(void) {
-  if (SWIG_rb_eNullReferenceError == Qnil) {
-      SWIG_rb_eNullReferenceError = rb_define_class("NullReferenceError", rb_eRuntimeError);
+  static int init = 0;
+  static VALUE rb_eNullReferenceError ;
+  if (!init) {
+    init = 1;
+    rb_eNullReferenceError = rb_define_class("NullReferenceError", rb_eRuntimeError);
   }
-  return SWIG_rb_eNullReferenceError;
+  return rb_eNullReferenceError;
 } 
-
-#define SWIG_rb_eObjectPreviouslyDeleted_defined
-static  VALUE SWIG_rb_eObjectPreviouslyDeleted = Qnil;
 
 SWIGINTERN VALUE 
 getObjectPreviouslyDeletedError(void) {
-  if (SWIG_rb_eObjectPreviouslyDeleted == Qnil) {
-      SWIG_rb_eObjectPreviouslyDeleted = rb_define_class("ObjectPreviouslyDeleted", rb_eRuntimeError);
+  static int init = 0;
+  static VALUE rb_eObjectPreviouslyDeleted ;
+  if (!init) {
+    init = 1;
+    rb_eObjectPreviouslyDeleted = rb_define_class("ObjectPreviouslyDeleted", rb_eRuntimeError);
   }
-  return SWIG_rb_eObjectPreviouslyDeleted;
+  return rb_eObjectPreviouslyDeleted;
 } 
 
 
@@ -1172,13 +1170,11 @@ extern "C" {
 /* Global Ruby hash table to store Trackings from C/C++
    structs to Ruby Objects. 
 */
-#define swig_ruby_trackings_defined
 static VALUE swig_ruby_trackings = Qnil;
 
 /* Global variable that stores a reference to the ruby
    hash table delete function. */
-#define swig_ruby_hash_delete_defined
-static ID swig_ruby_hash_delete = 0;
+static ID swig_ruby_hash_delete;
 
 /* Setup a Ruby hash table to store Trackings */
 SWIGRUNTIME void SWIG_RubyInitializeTrackings(void) {
@@ -1417,17 +1413,11 @@ typedef struct {
 
 
 /* Global pointer used to keep some internal SWIG stuff */
-#define _cSWIG_Pointer_defined
 static VALUE _cSWIG_Pointer = Qnil;
-
-#define swig_runtime_data_type_pointer_defined
 static VALUE swig_runtime_data_type_pointer = Qnil;
 
 /* Global IDs used to keep some internal SWIG stuff */
-#define swig_arity_id_defined
 static ID swig_arity_id = 0;
-
-#define swig_call_id_defined
 static ID swig_call_id  = 0;
 
 /*
@@ -1448,8 +1438,7 @@ static ID swig_call_id  = 0;
 #  define Ruby_DirectorTypeMismatchException(x) \
           rb_raise( rb_eTypeError, "%s", x ); return c_result;
 
-#define swig_virtual_calls_defined
-static unsigned int swig_virtual_calls = 0;
+      static unsigned int swig_virtual_calls = 0;
 
 #else  /* normal non-embedded extension */
 
@@ -1463,12 +1452,12 @@ static unsigned int swig_virtual_calls = 0;
 
 SWIGRUNTIME VALUE 
 getExceptionClass(void) {
-  //static int init = 0;
+  static int init = 0;
   static VALUE rubyExceptionClass ;
-  //if (!init) {
-    //init = 1;
+  if (!init) {
+    init = 1;
     rubyExceptionClass = rb_const_get(_mSWIG, rb_intern("Exception"));
-  //}
+  }
   return rubyExceptionClass;
 } 
 
@@ -1490,11 +1479,11 @@ SWIG_Ruby_ExceptionType(swig_type_info *desc, VALUE obj) {
 SWIGRUNTIME void
 SWIG_Ruby_InitRuntime(void)
 {
-  //if (_mSWIG == Qnil) {
+  if (_mSWIG == Qnil) {
     _mSWIG = rb_define_module("SWIG");
     swig_call_id  = rb_intern("call");
     swig_arity_id = rb_intern("arity");
-  //}
+  }
 }
 
 /* Define Ruby class for C type */
@@ -1539,7 +1528,7 @@ SWIG_Ruby_NewPointerObj(void *ptr, swig_type_info *type, int flags)
         downcast methods. */
       if (obj != Qnil) {
         VALUE value = rb_iv_get(obj, "@__swigtype__");
-        char* type_name = RSTRING_PTR(value);
+        const char* type_name = RSTRING_PTR(value);
 				
         if (strcmp(type->name, type_name) == 0) {
           return obj;
@@ -1920,6 +1909,8 @@ extern void rho_sys_set_network_status_notify(const char* url, int poll_interval
 #define clear_network_status_notify rho_sys_clear_network_status_notify
 extern void rho_sys_clear_network_status_notify();
 
+#define set_http_proxy_url rho_sys_set_http_proxy_url
+extern void rho_sys_set_http_proxy_url(const char* url);
 
 	#if !defined(bool)
 	#define bool int
@@ -2000,27 +1991,27 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:/usr/local/share/swig/2.0.8/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
-SWIGINTERN VALUE SWIG_AUX_NUM2LL(VALUE *args)
+/*@SWIG:/usr/local/Cellar/swig/2.0.8/share/swig/2.0.8/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
+SWIGINTERN VALUE SWIG_AUX_NUM2LONG(VALUE *args)
 {
   VALUE obj = args[0];
   VALUE type = TYPE(obj);
-  long long *res = (long long *)(args[1]);
-  *res = type == T_FIXNUM ? NUM2LL(obj) : rb_big2ll(obj);
+  long *res = (long *)(args[1]);
+  *res = type == T_FIXNUM ? NUM2LONG(obj) : rb_big2long(obj);
   return obj;
 }
 /*@SWIG@*/
 
 SWIGINTERN int
-SWIG_AsVal_long_SS_long (VALUE obj, long long *val)
+SWIG_AsVal_long (VALUE obj, long* val)
 {
   VALUE type = TYPE(obj);
   if ((type == T_FIXNUM) || (type == T_BIGNUM)) {
-    long long v;
+    long v;
     VALUE a[2];
     a[0] = obj;
     a[1] = (VALUE)(&v);
-    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LL), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
+    if (rb_rescue(RUBY_METHOD_FUNC(SWIG_AUX_NUM2LONG), (VALUE)a, RUBY_METHOD_FUNC(SWIG_ruby_failed), 0) != Qnil) {
       if (val) *val = v;
       return SWIG_OK;
     }
@@ -2032,8 +2023,8 @@ SWIG_AsVal_long_SS_long (VALUE obj, long long *val)
 SWIGINTERN int
 SWIG_AsVal_int (VALUE obj, int *val)
 {
-  long long v = 0;
-  int res = SWIG_AsVal_long_SS_long (obj, &v);
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
   if (SWIG_IsOK(res)) {
     if ((v < INT_MIN || v > INT_MAX)) {
       return SWIG_OverflowError;
@@ -2048,17 +2039,10 @@ SWIG_AsVal_int (VALUE obj, int *val)
   #define SWIG_From_long   LONG2NUM 
 
 
-SWIGINTERNINLINE VALUE 
-SWIG_From_long_SS_long  (long long value)
-{
-  return LL2NUM(value);
-}
-
-
 SWIGINTERNINLINE VALUE
 SWIG_From_int  (int value)
 {    
-  return SWIG_From_long_SS_long  (value);
+  return SWIG_From_long  (value);
 }
 
 
@@ -3047,6 +3031,30 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_set_http_proxy_url(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  
+  if ((argc < 1) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 1)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","set_http_proxy_url", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  set_http_proxy_url((char const *)arg1);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -3131,41 +3139,7 @@ SWIG_InitializeModule(void *clientdata) {
   size_t i;
   swig_module_info *module_head, *iter;
   int found, init;
-
-  clientdata = clientdata;
-  
-  // clear static variables for support reinitialization
-  #ifdef SWIG_rb_eNullReferenceError_defined
-    SWIG_rb_eNullReferenceError  = Qnil;
-  #endif
-  #ifdef SWIG_rb_eObjectPreviouslyDeleted_defined
-    SWIG_rb_eObjectPreviouslyDeleted = Qnil;
-  #endif
-  //#ifdef _mSWIG_defined
-  //  _mSWIG = Qnil;
-  //#endif
-  #ifdef _cSWIG_Pointer_defined
-    _cSWIG_Pointer = Qnil;
-  #endif
-  #ifdef swig_runtime_data_type_pointer_defined
-    swig_runtime_data_type_pointer = Qnil;
-  #endif
-  #ifdef swig_arity_id_defined
-    swig_arity_id = 0;
-  #endif
-  #ifdef swig_call_id_defined
-    swig_call_id  = 0;
-  #endif 
-  #ifdef swig_virtual_calls_defined
-    swig_virtual_calls = 0;
-  #endif
-  #ifdef swig_ruby_trackings_defined
-    swig_ruby_trackings = Qnil;
-  #endif
-  #ifdef swig_ruby_hash_delete_defined
-    swig_ruby_hash_delete = 0;
-  #endif
-  
+  (void *)clientdata;
 
   /* check to see if the circular list has been setup, if not, set it up */
   if (swig_module.next==0) {
@@ -3393,5 +3367,6 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "set_do_not_bakup_attribute", _wrap_set_do_not_bakup_attribute, -1);
   rb_define_module_function(mSystem, "set_network_status_notify", _wrap_set_network_status_notify, -1);
   rb_define_module_function(mSystem, "clear_network_status_notify", _wrap_clear_network_status_notify, -1);
+  rb_define_module_function(mSystem, "set_http_proxy_url", _wrap_set_http_proxy_url, -1);
 }
 
