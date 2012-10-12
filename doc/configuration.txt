@@ -30,6 +30,7 @@ List of supported capabilities:
 * record_audio: allow recording audio ('audio' implies it)
 * vibrate: allow to use hardware vibration mechanism
 * bluetooth: allow to use bluetooth hardware
+* sdcard: allow writing to SD card on Android devices
 
 ### RhoGallery Security Token
 
@@ -98,7 +99,7 @@ Max log file size in Bytes, set 0 to unlimited size; when limit is reached, log 
 
 	MaxLogFileSize=50000
 
-Custom log file path
+Custom log file path. On Android devices "sdcard" capability must be enabled to allow writing to SD card.
 
 	LogFilePath = '/mnt/sdcard/myapp.log'
 
