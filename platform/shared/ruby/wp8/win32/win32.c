@@ -12,7 +12,7 @@
 
 #include "ruby/ruby.h"
 #include "ruby/encoding.h"
-#include "../../../common/RhoDefs.h"
+#include "common/RhoDefs.h"
 
 #include "dln.h"
 #include <fcntl.h>
@@ -659,7 +659,7 @@ StartSockets(void)
 void
 rb_w32_sysinit(int *argc, char ***argv)
 {
-#if RT_VER >= 80
+#if RT_VER >= 80 && !defined(OS_WP8)
     static void set_pioinfo_extra(void);
 
     _CrtSetReportMode(_CRT_ASSERT, 0);
@@ -2021,7 +2021,7 @@ typedef struct	{
 #define _CRTIMP __declspec(dllimport)
 #endif
 
-#if !defined(__BORLANDC__) && !defined(_WIN32_WCE)
+#if !defined(__BORLANDC__) && !defined(_WIN32_WCE) 
 EXTERN_C _CRTIMP ioinfo * __pioinfo[];
 
 #define IOINFO_L2E			5
@@ -2031,7 +2031,7 @@ EXTERN_C _CRTIMP ioinfo * __pioinfo[];
 #define _osfile(i)  (_pioinfo(i)->osfile)
 #define _pipech(i)  (_pioinfo(i)->pipech)
 
-#if RT_VER >= 80
+#if RT_VER >= 80 && !defined(OS_WP8)
 static size_t pioinfo_extra = 0;	/* workaround for VC++8 SP1 */
 
 static void
