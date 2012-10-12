@@ -85,6 +85,8 @@ public:
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     CNativeTabbar& getTabbar(){ return m_tabbar; }
     HWND getWebViewHWND(int index);
+	void setProxy();
+	void setProxy(const rho::String& host, const rho::String& port, const rho::String& login, const rho::String& password);
 	// for 'main_window_closed' System property
 	static bool mainWindowClosed;
 

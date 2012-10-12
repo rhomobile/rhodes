@@ -484,6 +484,10 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	{
 		if (RHOCONF().isExist("http_proxy_url")) {
 			parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+		} else {
+			GetAppWindow().setProxy();
+#endif
 		}
 	}
 
@@ -1194,6 +1198,14 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 	// http://<login>:<passwod>@<host>:<port>
 	const char *default_port = "8080";
 
+	if (http_proxy.length() == 0) {
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+		_AtlModule.GetAppWindow().setProxy();
+#else
+		//TODO: implement unsetting proxy for WM/CE
+#endif
+	}
+
 	if (http_proxy.length() < 8) {
 		LOG(ERROR) + "invalid http proxy url";
 		return;
@@ -1295,6 +1307,9 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 	LOG(INFO) + "HTTP proxy port     = " + port;
 
 	if (host.length()) {
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+		_AtlModule.GetAppWindow().setProxy(host, port, login, password);
+#endif
 		RHOCONF().setString ("http_proxy_host", host, false);
 
 		if (port.length()){

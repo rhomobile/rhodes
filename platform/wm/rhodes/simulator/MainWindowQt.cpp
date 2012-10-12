@@ -42,6 +42,8 @@
 #include <QApplication>
 #include <QtGui/QAction>
 #include <QHash>
+#include <QtNetwork/QNetworkProxy>
+#include <QtNetwork/QNetworkProxyFactory>
 #include "qt/rhodes/QtMainWindow.h"
 
 IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
@@ -910,4 +912,79 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     delete msg;
 
     return 0;
+}
+
+class CRhodesProxyFactory: public QNetworkProxyFactory
+{
+private:
+	static CRhodesProxyFactory* _instance;
+	QNetworkProxy _proxy;
+	QList<QNetworkProxy>* _proxyList;
+	QList<QNetworkProxy>* _defaultProxyList;
+	bool _useProxy;
+	CRhodesProxyFactory(): QNetworkProxyFactory(), _proxyList(NULL), _useProxy(false)
+	{
+		_defaultProxyList = new QList<QNetworkProxy>();
+		*_defaultProxyList << QNetworkProxy(QNetworkProxy::DefaultProxy);
+	}
+public:
+	static CRhodesProxyFactory* getInstance()
+	{
+		if (_instance == NULL) {
+			_instance = new CRhodesProxyFactory();
+			QNetworkProxyFactory::setUseSystemConfiguration(false);
+			QNetworkProxyFactory::setApplicationProxyFactory(_instance);
+		}
+		return _instance;
+	}
+	virtual QList<QNetworkProxy> queryProxy(const QNetworkProxyQuery& query = QNetworkProxyQuery())
+	{
+		if ((query.peerHostName().compare("localhost", Qt::CaseInsensitive) == 0) ||
+			(query.peerHostName().compare("127.0.0.1") == 0))
+		{
+			return *_defaultProxyList;
+		} else if (_useProxy) {
+			return *_proxyList;
+		} else {
+			return QNetworkProxyFactory::systemProxyForQuery(query);
+		}
+	}
+	void setProxy(QNetworkProxy& proxy)
+	{
+		_useProxy = true;
+		_proxy = proxy;
+		if (_proxyList)
+			delete _proxyList;
+		_proxyList = new QList<QNetworkProxy>();
+		*_proxyList << QNetworkProxy(_proxy);
+	}
+	void unsetProxy()
+	{
+		_useProxy = false;
+		if (_proxyList)
+			delete _proxyList;
+		_proxyList = NULL;
+	}
+};
+CRhodesProxyFactory* CRhodesProxyFactory::_instance = NULL;
+
+void CMainWindow::setProxy(const rho::String& host, const rho::String& port, const rho::String& login, const rho::String& password)
+{
+	if (host.length()) {
+		QNetworkProxy proxy;
+		proxy.setType(QNetworkProxy::HttpCachingProxy);
+		proxy.setHostName(host.c_str());
+		if (port.length())
+			proxy.setPort(atoi(port.c_str()));
+		if (login.length())
+			proxy.setUser(login.c_str());
+		if (password.length())
+			proxy.setPassword(password.c_str());
+		CRhodesProxyFactory::getInstance()->setProxy(proxy);
+	}
+}
+
+void CMainWindow::setProxy()
+{
+	CRhodesProxyFactory::getInstance()->unsetProxy();
 }
