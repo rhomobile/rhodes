@@ -62,6 +62,7 @@ load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp7/build/wp.rake')
+load File.join(pwd, 'platform/wp8/build/wp.rake')
 load File.join(pwd, 'platform/symbian/build/symbian.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
@@ -930,7 +931,8 @@ def common_bundle_start(startdir, dest)
       end
       
       Dir.glob("**/*.wm.*").each { |f| rm f }
-	    Dir.glob("**/*.wp7.*").each { |f| rm f }
+	  Dir.glob("**/*.wp7.*").each { |f| rm f }
+	  Dir.glob("**/*.wp8.*").each { |f| rm f }
       Dir.glob("**/*.iphone.*").each { |f| rm f }
       Dir.glob("**/*.bb.*").each { |f| rm f }
       Dir.glob("**/*.bb6.*").each { |f| rm f }
