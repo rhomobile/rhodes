@@ -40,9 +40,8 @@ void CRhoThread::start(EPriority ePriority)
 {
     if ( !isAlive() )
     {
-        m_pImpl->start(this, ePriority);
-
         m_nState = TS_RUNNING;
+        m_pImpl->start(this, ePriority);
     }
 }
 
