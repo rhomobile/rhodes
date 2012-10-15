@@ -175,41 +175,46 @@ public class CameraScreen extends MainScreen {
 	            file = RhoClassFactory.createFile();	        		
 	        	
 	        	if (fileName != null) {
-	        		String ext = fileName.substring(fileName.lastIndexOf('.'));
-	        		fname = makeFileName(ext);
-					fconnsrc = (FileConnection)Connector.open(fileName, Connector.READ_WRITE);
-					fconndst = (FileConnection)Connector.open(fname, Connector.READ_WRITE);
-					if (fconndst.exists())
-						fconndst.delete();
-					fconndst.create();
-					
-					LOG.TRACE("should be readed " + fconnsrc.fileSize() + " bytes");
-					
-					src = fconnsrc.openInputStream();
-					dst = fconndst.openOutputStream();
-					
-					long fullLength = 0;
-					
-					byte[] buf = new byte[64*1024];
-					int ret;
-					while((ret = src.read(buf)) > 0) {
-						fullLength += ret;
-						dst.write(buf, 0, ret);
-					}
-					dst.flush();
-					
-					LOG.TRACE("readed: " + fullLength + " bytes");
-					
-					try{
-						if ( src != null )
-							src.close();
-						src = null;
-
-						fconnsrc.delete();
-					}catch (Exception exc)
-					{
-						LOG.ERROR("Cannot delete file: " + fileName, exc);
-					}
+	        		int nDotIndex = fileName.lastIndexOf('.');
+	        		if ( nDotIndex >= 0 )
+	        		{
+		        		String ext = fileName.substring(nDotIndex);
+		        		fname = makeFileName(ext);
+						fconnsrc = (FileConnection)Connector.open(fileName, Connector.READ_WRITE);
+						fconndst = (FileConnection)Connector.open(fname, Connector.READ_WRITE);
+						if (fconndst.exists())
+							fconndst.delete();
+						fconndst.create();
+						
+						LOG.TRACE("should be readed " + fconnsrc.fileSize() + " bytes");
+						
+						src = fconnsrc.openInputStream();
+						dst = fconndst.openOutputStream();
+						
+						long fullLength = 0;
+						
+						byte[] buf = new byte[64*1024];
+						int ret;
+						while((ret = src.read(buf)) > 0) {
+							fullLength += ret;
+							dst.write(buf, 0, ret);
+						}
+						dst.flush();
+						
+						LOG.TRACE("readed: " + fullLength + " bytes");
+						
+						try{
+							if ( src != null )
+								src.close();
+							src = null;
+	
+							fconnsrc.delete();
+						}catch (Exception exc)
+						{
+							LOG.ERROR("Cannot delete file: " + fileName, exc);
+						}
+	        		}else
+	        			LOG.ERROR("File name does not contain extension. Skip it:" + fileName );
 				}
 	        	else {
 		            //A null encoding indicates that the camera should
