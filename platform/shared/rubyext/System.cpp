@@ -292,6 +292,11 @@ void rho_sys_set_http_proxy_url(const char* url)
 {
     LOG(INFO) + "System.set_http_proxy_url is unsupported on current platform.";
 }
+
+void rho_sys_unset_http_proxy()
+{
+    LOG(INFO) + "System.unset_http_proxy is unsupported on current platform.";
+}
 #endif
 
 } //extern "C"
