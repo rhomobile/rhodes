@@ -234,7 +234,7 @@ public class RubyAPI {
     public static RubyValue callMethod(RubyValue receiver, RubyArray args, RubyBlock block, RubyID mid) 
     {
     	try{
-	    	AssertMe.rho_assert(null == args || args.size() > 1);//use callOneArgMethod if has only one arg
+	    	//AssertMe.rho_assert(null == args || args.size() > 1);//use callOneArgMethod if has only one arg
 	        RubyMethod m = receiver.findMethod(mid);
 	        if (null != m && !UndefMethod.isUndef(m)) {
 	            return m.invoke(receiver, args, block);

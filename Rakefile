@@ -494,6 +494,9 @@ namespace "config" do
             if $app_config['extensions'].index('audiocapture')
                 $app_config['extensions'].delete('audiocapture')
             end
+            if $app_config['extensions'].index('rho-javascript')
+                $app_config['extensions'].delete('rho-javascript')
+            end
             
             if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
                 $application_build_configs.delete('encrypt_database')
@@ -634,8 +637,13 @@ def add_extension(path,dest)
     cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
   end  
 
-  cp_r 'app', File.join( File.dirname(dest), "apps/app" ) if File.exist? 'app'
-  cp_r 'public', File.join( File.dirname(dest), "apps/public" ) if File.exist? 'public'
+  if $current_platform == "bb"
+    cp_r 'app', File.join( dest, "apps/app" ) if File.exist? 'app'
+    cp_r 'public', File.join( dest, "apps/public" ) if File.exist? 'public'
+  else
+    cp_r 'app', File.join( File.dirname(dest), "apps/app" ) if File.exist? 'app'
+    cp_r 'public', File.join( File.dirname(dest), "apps/public" ) if File.exist? 'public'
+  end
   
   chdir start
 end
