@@ -383,6 +383,7 @@ RHO_GLOBAL HANDLE CreateEventW(
 
 RHO_GLOBAL VOID InitializeCriticalSection(_Out_ LPCRITICAL_SECTION lpCriticalSection)
 {
+	InitializeCriticalSectionEx(lpCriticalSection, 0, 0);
 }
 
 RHO_GLOBAL DWORD WaitForMultipleObjects( 
