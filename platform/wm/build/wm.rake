@@ -62,7 +62,7 @@ end
 
 namespace "config" do
   task :set_wince_platform do
-    $current_platform = "wince" unless $current_platform
+    $current_platform = "wm" unless $current_platform
     $sdk = "MC3000c50b (ARMV4I)"
   end
 
@@ -144,7 +144,7 @@ namespace "config" do
 
     $use_shared_runtime = (($app_config["use_shared_runtime"].nil? && ($app_config["wm"].nil? || $app_config["wm"]["use_shared_runtime"].nil?)) ? nil : 1 )
       
-      puts "$sdk [#{$sdk}]"
+    puts "$sdk [#{$sdk}]"
   end
 
   namespace "win32" do
@@ -531,7 +531,7 @@ namespace "device" do
 
   namespace "wince" do
     desc "Build production for device or emulator"
-    task :production => ["config:set_wince_platform", "config:wm", "build:wm:rhobundle","build:wm:rhodes", "device:wm:production"] do
+    task :production => ["config:set_wince_platform", "device:wm:production"] do
     end
   end
 
@@ -820,25 +820,12 @@ namespace "run" do
     end
     
     desc "Build and run on the Windows CE device"
-    task :device => ["device:wince:production"] do      
+    task :device => ["config:set_wince_platform", "run:wm:device"] do      
     end
 
     namespace "device" do
       desc "Build, install .cab and run on the Windows CE device"
-      task :cab => ["device:wince:production"] do
-        # kill all running detool
-        kill_detool
-
-        cd $startdir + "/res/build-tools"
-        detool = "detool.exe"
-        args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, (($use_shared_runtime.nil?) ? "0" : "1")]
-        puts "\nStarting application on the device"
-        puts "Please, connect you device via ActiveSync.\n\n"
-        log_file = gelLogPath
-
-        # temporary disable log from device (caused enormous delays)
-        # Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
-        Jake.run(detool,args)
+      task :cab => ["config:set_wince_platform", "run:wm:device:cab"] do
       end
     end
   end
