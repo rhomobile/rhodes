@@ -27,11 +27,8 @@
 package com.rhomobile.rhodes.camera;
 
 import java.io.File;
-import java.util.Iterator;
-import java.util.List;
 
 import android.content.Intent;
-import android.hardware.Camera.Size;
 import android.os.Build;
 
 import com.rhomobile.rhodes.Capabilities;
@@ -46,7 +43,7 @@ public class Camera {
 
 	private static final String TAG = "Camera";
 	
-	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "camera.";
+	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".camera.";
 	
 	private static int mMainCamera_max_Width = 0;
 	private static int mMainCamera_max_Height = 0;
@@ -133,12 +130,16 @@ public class Camera {
 		}
 		
 		public void run() {
-			init();
-			RhodesActivity ra = RhodesActivity.getInstance();
-			Intent intent = new Intent(ra, klass);
-			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
-			intent.putExtra(INTENT_EXTRA_PREFIX + "settings", settings);
-			ra.startActivity(intent);
+		    try {
+		        init();
+		        RhodesActivity ra = RhodesActivity.safeGetInstance();
+		        Intent intent = new Intent(ra, klass);
+		        intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
+		        intent.putExtra(INTENT_EXTRA_PREFIX + "settings", settings);
+		        ra.startActivity(intent);
+		    } catch (Exception e) {
+		        Logger.E(TAG, e);
+		    }
 		}
 	};
 	
@@ -146,7 +147,7 @@ public class Camera {
 		try {
 			Runnable runnable = Capabilities.CAMERA_ENABLED ? new Picture(url, ImageCapture.class, params_obj) :
 				new CameraDisabled(url);
-			PerformOnUiThread.exec(runnable, false);
+			PerformOnUiThread.exec(runnable);
 		}
 		catch (Exception e) {
 			reportFail("takePicture", e);
@@ -155,7 +156,7 @@ public class Camera {
 
 	public static void choosePicture(String url) {
 		try {
-			PerformOnUiThread.exec(new Picture(url, FileList.class, null), false);
+			PerformOnUiThread.exec(new Picture(url, FileList.class, null));
 		}
 		catch (Exception e) {
 			reportFail("choosePicture", e);
@@ -213,7 +214,7 @@ public class Camera {
 			}
 		}
 		catch (Exception e) {
-			Logger.E(TAG, e.getMessage());
+			Logger.E(TAG, e);
 		}
 
 		if (camera == null) {

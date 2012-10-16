@@ -62,8 +62,8 @@ public class GoogleMapView extends MapActivity {
 
 	private static final String TAG = "GoogleMapView";
 	
-	private static final String SETTINGS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "settings.";
-	private static final String ANNOTATIONS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "annotations.";
+	private static final String SETTINGS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".settings.";
+	private static final String ANNOTATIONS_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".annotations.";
 	
 	private static GoogleMapView mc = null;
 	

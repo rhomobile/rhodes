@@ -32,8 +32,6 @@ import java.util.Map;
 import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.webkit.WebView;
 import android.widget.AbsoluteLayout;
 
 import com.rhomobile.rhodes.Logger;
@@ -47,7 +45,6 @@ import com.rhomobile.rhodes.util.Utils;
 
 import com.rhomobile.rhodes.extmanager.AbstractRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoExtData;
-import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
@@ -55,7 +52,7 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 
 	static final String TAG = "Signature";
 	
-	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "signature.";
+	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".signature.";
 	
 	private static final String SIGNATURE_EXT = "signature_ext";
 	
