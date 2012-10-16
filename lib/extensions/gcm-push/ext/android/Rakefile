@@ -1,0 +1,66 @@
+require 'fileutils'
+
+def build_extension(name, arch, src_files)
+  objects = []
+  mkdir_p $tempdir unless File.exists? $tempdir
+
+  $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
+
+  args = []
+  args << "-I."
+  args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
+  args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details\""
+  #args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
+  args << "-I\"#{$rootdir}/platform/shared\""
+  #args << "-I\"#{$rootdir}/platform/shared/common\""
+  #args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
+  #args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
+  args << "-I\"#{$appincdir}\""
+  args << "-I\"#{$std_includes}\""
+  
+  src_files.each do |f|
+    puts "------------- Building #{f}"
+    cc_compile f, $tempdir, args or exit 1
+  end
+
+  mkdir_p $targetdir unless File.exist? $targetdir
+
+  cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+
+end
+
+namespace "build" do
+  task :config do
+    curdir = pwd
+    $ans_pushdir = curdir.gsub('/ext/android','');
+    $androidsdk = ENV['ANDROID_SDK']
+    raise 'ANDROID_SDK is not set' unless $androidsdk    
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" unless $targetdir
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" unless $tempdir
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" unless $rootdir
+    $appincdir = ENV["RHO_INC"]
+    raise "RHO_INC is not set" unless $appincdir
+
+    require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+
+    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+
+  end
+
+  task :all => :config do
+
+    src_files = []
+    src_files << $ans_pushdir + '/ext/android/jni/src/gcmpushclient.cpp'
+
+    # build native part
+    build_extension('gcm-push', $arch, src_files)
+    
+    cp File.join($androidsdk,'extras','google','gcm','gcm-client','dist','gcm.jar'), $targetdir
+
+  end
+end
+
+task :default => "build:all"

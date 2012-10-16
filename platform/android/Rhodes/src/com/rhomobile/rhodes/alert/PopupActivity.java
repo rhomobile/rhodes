@@ -36,7 +36,6 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.file.RhoFileApi;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -48,7 +47,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -118,7 +116,7 @@ public class PopupActivity extends BaseActivity {
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras == null) {
-			Log.e(TAG, "No data passed to popup activity");
+			Logger.E(TAG, "No data passed to popup activity");
 			finish();
 			return;
 		}
@@ -159,7 +157,7 @@ public class PopupActivity extends BaseActivity {
 		
 		Vector<CustomButton> buttons = new Vector<CustomButton>();
 		if (buttonIds.size() != buttonTitles.size()) {
-			Log.e(TAG, "Corrupted data passed to popup activity");
+			Logger.E(TAG, "Corrupted data passed to popup activity");
 			finish();
 			return;
 		}
@@ -209,7 +207,7 @@ public class PopupActivity extends BaseActivity {
 		
 		LinearLayout main = new LinearLayout(ctx);
 		main.setOrientation(LinearLayout.VERTICAL);
-		main.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.FILL_PARENT));
+		main.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		main.setPadding(10, nTopPadding, 10, 10);
 		
 		LinearLayout top = new LinearLayout(ctx);

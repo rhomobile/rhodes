@@ -62,7 +62,7 @@ ANDROID_PERMISSIONS = {
   'bluetooth' => ['BLUETOOTH_ADMIN', 'BLUETOOTH'],
   'calendar' => ['READ_CALENDAR', 'WRITE_CALENDAR'],
   'sdcard' => 'WRITE_EXTERNAL_STORAGE',
-  'push' => proc do |manifest| add_push(manifest) end,
+  'push' => proc do add_gcm_push end,
   'motorola' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
   'motoroladev' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
   'webkit_browser' => nil,
@@ -72,47 +72,8 @@ ANDROID_PERMISSIONS = {
 
 ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
 
-def add_push(manifest)
-  element = REXML::Element.new('permission')
-  element.add_attribute('android:name', "#{$app_package_name}.permission.C2D_MESSAGE")
-  element.add_attribute('android:protectionLevel', 'signature')
-  manifest.add element
-
-  element = REXML::Element.new('uses-permission')
-  element.add_attribute('android:name', "#{$app_package_name}.permission.C2D_MESSAGE")
-  manifest.add element
-
-  element = REXML::Element.new('uses-permission')
-  element.add_attribute('android:name', "com.google.android.c2dm.permission.RECEIVE")
-  manifest.add element
-
-  receiver = REXML::Element.new('receiver')
-  receiver.add_attribute('android:name', "#{JAVA_PACKAGE_NAME}.PushReceiver")
-  receiver.add_attribute('android:permission', "com.google.android.c2dm.permission.SEND")
-
-  action = REXML::Element.new('action')
-  action.add_attribute('android:name', "com.google.android.c2dm.intent.RECEIVE")
-  category = REXML::Element.new('category')
-  category.add_attribute('android:name', $app_package_name)
-
-  ie = REXML::Element.new('intent-filter')
-  ie.add_element(action)
-  ie.add_element(category)
-  receiver.add_element(ie)
-
-  action = REXML::Element.new('action')
-  action.add_attribute('android:name', "com.google.android.c2dm.intent.REGISTRATION")
-  category = REXML::Element.new('category')
-  category.add_attribute('android:name', $app_package_name)
-  
-  ie = REXML::Element.new('intent-filter')
-  ie.add_element(action)
-  ie.add_element(category)
-  receiver.add_element(ie)
-
-  manifest.elements.each('application') do |app|
-    app.add receiver
-  end
+def add_gcm_push
+  $app_config["extensions"] << 'gcm-push' unless $app_config["extensions"].index('gcm-push')
 end
 
 def add_motosol_sdk(manifest)
@@ -737,6 +698,7 @@ namespace "build" do
 
       ENV['RHO_PLATFORM'] = 'android'
       ENV["RHO_APP_DIR"] = $app_path
+      ENV["ANDROID_SDK"] = $androidsdkpath
       ENV["ANDROID_NDK"] = $androidndkpath
       ENV["ANDROID_API_LEVEL"] = $found_api_level.to_s
       ENV["RHO_ROOT"] = $startdir
@@ -1269,7 +1231,6 @@ namespace "build" do
       generator.maxSdkVer = $max_sdk_level
 
       generator.usesLibraries['com.google.android.maps'] = true if $use_google_addon_api
-      generator.addGooglePush(File.join($androidpath,'Rhodes','PushReceiver.erb')) if $app_config["capabilities"].index 'push'
 
       generator.addUriParams $uri_scheme, $uri_host, $uri_path_prefix
       
