@@ -38,6 +38,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using rho.common;
 
 namespace rhodes
 {
@@ -92,6 +93,11 @@ namespace rhodes
         public static void Quit()
         {
             throw new QuitException();
+        }
+
+        public void CopyResourceFiles()
+        {
+
         }
 
         // Code to execute when the application is launching (eg, from Start)
@@ -163,6 +169,8 @@ namespace rhodes
 
             // Ensure we don't initialize again
             phoneApplicationInitialized = true;
+
+            CRhoResourceMap.deployContent();//we have to create rho folder before
         }
 
         // Do not add any additional code to this method

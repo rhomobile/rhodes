@@ -136,6 +136,7 @@ public:
     long OnLicenseError(const wchar_t* szUrlBeingNavigatedTo);
     void OnAppActivate(bool bActivate);
     void OnWindowChanged(LPVOID lparam);
+	DWORD getProcessId();
 
     CRhoExtData makeExtData();
     void close();
