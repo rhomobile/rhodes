@@ -486,6 +486,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 			parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
 		} else {
+			// it's important to call this method from here to perform
+			// a proper initialization of proxy implementation for Win32
 			GetAppWindow().setProxy();
 #endif
 		}
@@ -1193,27 +1195,34 @@ HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
 
 #endif
 
+extern "C" void rho_sys_unset_http_proxy()
+{
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+	_AtlModule.GetAppWindow().setProxy();
+#endif
+	RHOCONF().removeProperty("http_proxy_host", false);
+	RHOCONF().removeProperty("http_proxy_port", false);
+	RHOCONF().removeProperty("http_proxy_login", false);
+	RHOCONF().removeProperty("http_proxy_password", false);
+	RAWLOG_INFO("Unsetting HTTP proxy");
+}
+
 void parseHttpProxyURI(const rho::String &http_proxy)
 {
 	// http://<login>:<passwod>@<host>:<port>
 	const char *default_port = "8080";
 
-	if (http_proxy.length() == 0) {
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-		_AtlModule.GetAppWindow().setProxy();
-#else
-		//TODO: implement unsetting proxy for WM/CE
-#endif
-	}
+	if (http_proxy.length() == 0)
+		rho_sys_unset_http_proxy();
 
 	if (http_proxy.length() < 8) {
-		LOG(ERROR) + "invalid http proxy url";
+		RAWLOG_ERROR("invalid http proxy url");
 		return;
 	}
 
 	int index = http_proxy.find("http://", 0, 7);
 	if (index == string::npos) {
-		LOG(ERROR) + "http proxy url should starts with \"http://\"";
+		RAWLOG_ERROR("http proxy url should starts with \"http://\"");
 		return;
 	}
 	index = 7;
@@ -1299,12 +1308,12 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 		}
 	}
 
-	LOG(INFO) + "Setting up HTTP proxy:";
-	LOG(INFO) + "URI: " + http_proxy;
-	LOG(INFO) + "HTTP proxy login    = " + login;
-	LOG(INFO) + "HTTP proxy password = " + password;
-	LOG(INFO) + "HTTP proxy host     = " + host;
-	LOG(INFO) + "HTTP proxy port     = " + port;
+	RAWLOG_INFO("Setting up HTTP proxy:");
+	RAWLOG_INFO1("URI: %s", http_proxy.c_str());
+	RAWLOG_INFO1("HTTP proxy login    = %s", login.c_str());
+	RAWLOG_INFO1("HTTP proxy password = %s", password.c_str());
+	RAWLOG_INFO1("HTTP proxy host     = %s", host.c_str());
+	RAWLOG_INFO1("HTTP proxy port     = %s", port.c_str());
 
 	if (host.length()) {
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
@@ -1315,7 +1324,7 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 		if (port.length()){
 			RHOCONF().setString ("http_proxy_port", port, false);
 		} else {
-			LOG(WARNING) + "there is no proxy port defined";
+			RAWLOG_WARNING("there is no proxy port defined");
 		}
 
 		if (login.length())
@@ -1325,9 +1334,8 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 			RHOCONF().setString ("http_proxy_password", password, false);
 
 	} else {
-		LOG(ERROR) + "empty host name in HTTP-proxy URL";
+		RAWLOG_ERROR("empty host name in HTTP-proxy URL");
 	}
-
 }
 
 extern "C" void rho_sys_set_http_proxy_url(const char* url)

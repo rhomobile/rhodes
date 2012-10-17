@@ -1911,6 +1911,8 @@ extern void rho_sys_clear_network_status_notify();
 
 #define set_http_proxy_url rho_sys_set_http_proxy_url
 extern void rho_sys_set_http_proxy_url(const char* url);
+#define unset_http_proxy rho_sys_unset_http_proxy
+extern void rho_sys_unset_http_proxy();
 
 	#if !defined(bool)
 	#define bool int
@@ -3055,6 +3057,18 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_unset_http_proxy(int argc, VALUE *argv, VALUE self) {
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  unset_http_proxy();
+  return Qnil;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -3368,5 +3382,6 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "set_network_status_notify", _wrap_set_network_status_notify, -1);
   rb_define_module_function(mSystem, "clear_network_status_notify", _wrap_clear_network_status_notify, -1);
   rb_define_module_function(mSystem, "set_http_proxy_url", _wrap_set_http_proxy_url, -1);
+  rb_define_module_function(mSystem, "unset_http_proxy", _wrap_unset_http_proxy, -1);
 }
 

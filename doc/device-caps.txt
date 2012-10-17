@@ -174,7 +174,11 @@ To use client with the HTTP proxy you should pass its URL as the first command l
     :::ruby
     System.set_http_proxy_url(url)
 
-**NOTE: These method implemented only for Windows Mobile, WinCE and Windows Desktop  **
+To stop using HTTP proxy (that was set by the command line, rhoconfig.txt or Ruby code) call:
+    :::ruby
+    System.unset_http_proxy()
+
+**NOTE: `System.set_http_proxy_url(url)` and `System.unset_http_proxy()` are implemented only for Windows Mobile, WinCE and Windows Desktop  **
 
 To modify application window position and size:
     :::ruby
