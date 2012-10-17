@@ -96,6 +96,8 @@ extern void rho_sys_clear_network_status_notify();
 
 #define set_http_proxy_url rho_sys_set_http_proxy_url
 extern void rho_sys_set_http_proxy_url(const char* url);
+#define unset_http_proxy rho_sys_unset_http_proxy
+extern void rho_sys_unset_http_proxy();
 
 	#if !defined(bool)
 	#define bool int
@@ -187,3 +189,4 @@ extern int set_do_not_bakup_attribute(const char* path, int value);
 extern void set_network_status_notify(const char* url, int poll_interval);
 extern void clear_network_status_notify();
 extern void set_http_proxy_url(const char* url);
+extern void unset_http_proxy();

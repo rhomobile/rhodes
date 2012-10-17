@@ -62,6 +62,7 @@ load File.join(pwd, 'platform/iphone/rbuild/iphone.rake')
 load File.join(pwd, 'platform/wm/build/wm.rake')
 load File.join(pwd, 'platform/linux/tasks/linux.rake')
 load File.join(pwd, 'platform/wp7/build/wp.rake')
+load File.join(pwd, 'platform/wp8/build/wp.rake')
 load File.join(pwd, 'platform/symbian/build/symbian.rake')
 load File.join(pwd, 'platform/osx/build/osx.rake')
 
@@ -494,6 +495,9 @@ namespace "config" do
             if $app_config['extensions'].index('audiocapture')
                 $app_config['extensions'].delete('audiocapture')
             end
+            if $app_config['extensions'].index('rho-javascript')
+                $app_config['extensions'].delete('rho-javascript')
+            end
             
             if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
                 $application_build_configs.delete('encrypt_database')
@@ -634,8 +638,13 @@ def add_extension(path,dest)
     cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
   end  
 
-  cp_r 'app', File.join( File.dirname(dest), "apps/app" ) if File.exist? 'app'
-  cp_r 'public', File.join( File.dirname(dest), "apps/public" ) if File.exist? 'public'
+  if $current_platform == "bb"
+    cp_r 'app', File.join( dest, "apps/app" ) if File.exist? 'app'
+    cp_r 'public', File.join( dest, "apps/public" ) if File.exist? 'public'
+  else
+    cp_r 'app', File.join( File.dirname(dest), "apps/app" ) if File.exist? 'app'
+    cp_r 'public', File.join( File.dirname(dest), "apps/public" ) if File.exist? 'public'
+  end
   
   chdir start
 end
@@ -922,7 +931,8 @@ def common_bundle_start(startdir, dest)
       end
       
       Dir.glob("**/*.wm.*").each { |f| rm f }
-	    Dir.glob("**/*.wp7.*").each { |f| rm f }
+	  Dir.glob("**/*.wp7.*").each { |f| rm f }
+	  Dir.glob("**/*.wp8.*").each { |f| rm f }
       Dir.glob("**/*.iphone.*").each { |f| rm f }
       Dir.glob("**/*.bb.*").each { |f| rm f }
       Dir.glob("**/*.bb6.*").each { |f| rm f }
