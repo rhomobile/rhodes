@@ -103,7 +103,8 @@ namespace rhodes
 		public void Refresh(int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { Refresh(index); }); return; }
-            RhodesWebBrowser.InvokeScript("eval", "history.go()");
+            //RhodesWebBrowser.InvokeScript("eval", "history.go()");
+            RhodesWebBrowser.Navigate(new Uri(RhodesWebBrowser.Source.AbsoluteUri, UriKind.Absolute));
         }
 
 		public bool isStarted()
