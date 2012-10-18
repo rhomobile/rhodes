@@ -52,7 +52,6 @@ namespace rhodes
             {
                 // create rhodes runtime object
                 var rhoruntime = new CRhoRuntime(this);
-                
                 // create and start rhodes main thread
                 _rhoruntimeThread = new Thread(rhoruntime.Execute);
                 _rhoruntimeThread.Start();
@@ -69,6 +68,7 @@ namespace rhodes
             Thread.Sleep(timeout);
         }
 
+        /*
         // this method is used for updating UI controls from C++ non-UI thread
         public void UpdateWebView(int counter)
         {
@@ -77,14 +77,192 @@ namespace rhodes
             // update WebView
             RhodesWebBrowser.NavigateToString("<html><head><title>Loading...</title></head><body>" + counter + "<input type=\"text\" name=\"test\" size=\"25\"/></body></html>");
         }
+        */
+
+		public int getLogicalDpiX()
+        {
+            return 0;
+        }
+		
+        public int getLogicalDpiY()
+        {
+            return 0;
+        }
+		
+        public void bringToFront()
+        {
+        }
+		
+
+        // *** WEBVIEW ***
+
+		public void navigate(string url, int index)
+        {
+        }
+
+		public void GoBack()
+        {
+        }
+
+		public void GoForward()
+        {
+        }
+
+		public void Refresh(int index)
+        {
+        }
+
+		public bool isStarted()
+        {
+            return true;
+        }
+
+        
+        // *** TOOLBAR ***
+
+		public void toolbarRemoveAllButtons()
+        {
+        }
+
+		public void toolbarShow()
+        {
+        }
+
+		public void toolbarHide()
+        {
+        }
+
+		public int toolbarGetHeight()
+        {
+            return 0;
+        }
+
+        public void toolbarAddAction(string text)
+        {
+        }
+
+		//void toolbarAddAction(const Icon^ icon, const String^ text, const char* action, bool rightAlign /*= false*/) { }
+
+		public void toolbarAddSeparator()
+        {
+        }
+
+		public void setToolbarStyle(bool border, string background)
+        {
+        }
+
+
+		// *** MENU ***
+
+		public void menuClear()
+        {
+        }
+
+		public void menuAddAction(string text, int item)
+        {
+        }
+
+		public void menuAddSeparator()
+        {
+        }
+
+
+        // *** TABBAR ***
+		public void tabbarInitialize()
+        {
+        }
+
+		public void tabbarRemoveAllTabs(bool restore)
+        {
+        }
+
+		public void tabbarShow()
+        {
+        }
+
+		public void tabbarHide()
+        {
+        }
+
+		public int tabbarGetHeight()
+        {
+            return 0;
+        }
+
+		public void tabbarSwitch(int index)
+        {
+        }
+
+		public int tabbarGetCurrent()
+        {
+            return 0;
+        }
+
+		//public int tabbarAddTab(const String^ label, const char* icon, bool disabled, const Color^ web_bkg_color, QTabBarRuntimeParams& tbri) { return 0; }
+		
+        public void tabbarSetBadge(int index, string badge)
+        {
+        }
+
+
+        // *** COMMANDS ***
 
         // this method is an example of application exit technique (see Quit method in App.xaml.cs)
-        public void DoExit()
+        public void exitCommand()
         {
             // perform this action on UI thread only
-            if (!isUIThread) { Dispatcher.BeginInvoke( delegate() { DoExit(); } );  return; }
+            if (!isUIThread) { Dispatcher.BeginInvoke( delegate() { exitCommand(); } );  return; }
             // exit application
             App.Quit();
         }
+
+        public void navigateBackCommand()
+        {
+        }
+
+		public void navigateForwardCommand()
+        {
+        }
+
+		public void logCommand()
+        {
+        }
+
+		public void refreshCommand(int tab_index)
+        {
+        }
+
+		//public void navigateCommand(TNavigateData* nd) {}
+		
+        public void takePicture(string callbackUrl)
+        {
+        }
+
+		public void selectPicture(string callbackUrl)
+        {
+        }
+
+		//public void alertShowPopup(CAlertParams *) {}
+
+		public void alertHidePopup()
+        {
+        }
+
+		//public void dateTimePicker(CDateTimeMessage *) {}
+		
+        //public void executeCommand(RhoNativeViewRunnable*) {}
+		
+        //public void executeRunnable(rho::common::IRhoRunnable* pTask) {}
+		
+        //public void takeSignature(void*); // Signature::Params*
+
+		public void fullscreenCommand(int fullScreen)
+        {
+        }
+
+		public void setCookie(string url, string cookie)
+        {
+        }
+
     }
 }
