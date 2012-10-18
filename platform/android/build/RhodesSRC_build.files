@@ -8,8 +8,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/Logger.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/MemoryInfoCollector.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NativeBar.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/NavBar.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/PushReceiver.java
-platform/android/Rhodes/src/com/rhomobile/rhodes/PushService.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/PushContract.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoConf.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoCryptImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/RhoLogConf.java
@@ -97,6 +96,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebChromeClient.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebViewClient.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/GoogleWebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoExtension.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoListener.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtData.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtManager.java

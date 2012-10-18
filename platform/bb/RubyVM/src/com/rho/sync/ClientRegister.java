@@ -63,7 +63,7 @@ public class ClientRegister extends RhoThread
 	
 	public void startUp() 
 	{	
-		if ( RhoConf.getInstance().getString("syncserver").length() > 0 )
+		if ( com.rho.Capabilities.ENABLE_PUSH && RhoConf.getInstance().getString("syncserver").length() > 0 )
 		{
 			start(epLow);	
 	        stopWait();
