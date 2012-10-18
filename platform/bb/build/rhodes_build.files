@@ -6,7 +6,6 @@ platform/bb/rhodes/src/com/rho/rubyext/XMLParser.java
 platform/bb/rhodes/src/com/rho/rubyext/Alert.java
 platform/bb/rhodes/src/com/rho/rubyext/RhoPhonebook.java
 platform/bb/rhodes/src/com/rho/rubyext/RhoCalendar.java
-platform/bb/rhodes/src/com/rho/rubyext/PNGEncoder.java
 platform/bb/rhodes/src/com/rho/net/BaseSocket.java
 platform/bb/rhodes/src/com/rho/net/bb/BBHttpConnection.java
 platform/bb/rhodes/src/com/rho/net/bb/NativeBBHttpConnection.java
