@@ -56,7 +56,6 @@ using namespace rho;
 using namespace rho::common;
 extern "C" HWND getMainWnd();
 extern "C" char* wce_wctomb(const wchar_t* w);
-extern "C" int rho_wm_impl_CheckSymbolDevice();
 
 #if defined(OS_WINDOWS_DESKTOP)
 
@@ -657,7 +656,15 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 	if (strcasecmp("is_motorola_device",szPropName) == 0)
     {
 #ifdef APP_BUILD_CAPABILITY_MOTOROLA
-        *resValue = rho_ruby_create_boolean( rho_wm_impl_CheckSymbolDevice() );
+   	    //get the system OEM string
+	    TCHAR szPlatform[MAX_PATH+1];
+	    memset(szPlatform, 0, MAX_PATH*sizeof(TCHAR));
+	    SystemParametersInfo(SPI_GETOEMINFO, MAX_PATH, szPlatform, 0);
+        _wcslwr(szPlatform);
+        if(wcsstr(szPlatform, L"symbol") || wcsstr(szPlatform, L"motorola"))
+            *resValue = rho_ruby_create_boolean( 1 );
+        else
+            *resValue = rho_ruby_create_boolean( 0 );
 #else
         *resValue = rho_ruby_create_boolean(0);
 #endif
