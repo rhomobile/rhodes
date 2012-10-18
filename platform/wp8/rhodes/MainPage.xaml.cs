@@ -62,23 +62,6 @@ namespace rhodes
             }
         }
 
-        // this method is used as a callback for calling the C# API methods from C++
-        public void DoWait(int timeout)
-        {
-            Thread.Sleep(timeout);
-        }
-
-        /*
-        // this method is used for updating UI controls from C++ non-UI thread
-        public void UpdateWebView(int counter)
-        {
-            // perform this action on UI thread only
-            if (!isUIThread) { Dispatcher.BeginInvoke( delegate() { UpdateWebView(counter); } );  return; }
-            // update WebView
-            RhodesWebBrowser.NavigateToString("<html><head><title>Loading...</title></head><body>" + counter + "<input type=\"text\" name=\"test\" size=\"25\"/></body></html>");
-        }
-        */
-
 		public int getLogicalDpiX()
         {
             return 0;
@@ -91,6 +74,7 @@ namespace rhodes
 		
         public void bringToFront()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { bringToFront(); }); return; }
         }
 		
 
@@ -295,6 +279,14 @@ namespace rhodes
 		public void setCookie(string url, string cookie)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setCookie(url, cookie); }); return; }
+        }
+
+
+        // *** MISC ***
+        // this method is used as a callback for calling the C# API methods from C++
+        public void DoWait(int timeout)
+        {
+            Thread.Sleep(timeout);
         }
 
     }
