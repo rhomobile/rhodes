@@ -98,18 +98,28 @@ namespace rhodes
 
 		public void navigate(string url, int index)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigate(url, index); }); return; }
+            RhodesWebBrowser.Navigate(new Uri(url));
         }
 
 		public void GoBack()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoBack(); }); return; }
+            if (RhodesWebBrowser.CanGoBack)
+                RhodesWebBrowser.GoBack();
         }
 
 		public void GoForward()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoForward(); }); return; }
+            if (RhodesWebBrowser.CanGoForward)
+                RhodesWebBrowser.GoForward();
         }
 
 		public void Refresh(int index)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { Refresh(index); }); return; }
+            RhodesWebBrowser.InvokeScript("eval", "history.go()");
         }
 
 		public bool isStarted()
@@ -122,14 +132,17 @@ namespace rhodes
 
 		public void toolbarRemoveAllButtons()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarRemoveAllButtons(); }); return; }
         }
 
 		public void toolbarShow()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarShow(); }); return; }
         }
 
 		public void toolbarHide()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarHide(); }); return; }
         }
 
 		public int toolbarGetHeight()
@@ -139,16 +152,19 @@ namespace rhodes
 
         public void toolbarAddAction(string text)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddAction(text); }); return; }
         }
 
 		//void toolbarAddAction(const Icon^ icon, const String^ text, const char* action, bool rightAlign /*= false*/) { }
 
 		public void toolbarAddSeparator()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddSeparator(); }); return; }
         }
 
 		public void setToolbarStyle(bool border, string background)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setToolbarStyle(border, background); }); return; }
         }
 
 
@@ -156,32 +172,39 @@ namespace rhodes
 
 		public void menuClear()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuClear(); }); return; }
         }
 
 		public void menuAddAction(string text, int item)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuAddAction(text, item); }); return; }
         }
 
 		public void menuAddSeparator()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuAddSeparator(); }); return; }
         }
 
 
         // *** TABBAR ***
 		public void tabbarInitialize()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarInitialize(); }); return; }
         }
 
 		public void tabbarRemoveAllTabs(bool restore)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarRemoveAllTabs(restore); }); return; }
         }
 
 		public void tabbarShow()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarShow(); }); return; }
         }
 
 		public void tabbarHide()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarHide(); }); return; }
         }
 
 		public int tabbarGetHeight()
@@ -191,6 +214,7 @@ namespace rhodes
 
 		public void tabbarSwitch(int index)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSwitch(index); }); return; }
         }
 
 		public int tabbarGetCurrent()
@@ -202,6 +226,7 @@ namespace rhodes
 		
         public void tabbarSetBadge(int index, string badge)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSetBadge(index, badge); }); return; }
         }
 
 
@@ -210,7 +235,6 @@ namespace rhodes
         // this method is an example of application exit technique (see Quit method in App.xaml.cs)
         public void exitCommand()
         {
-            // perform this action on UI thread only
             if (!isUIThread) { Dispatcher.BeginInvoke( delegate() { exitCommand(); } );  return; }
             // exit application
             App.Quit();
@@ -218,34 +242,41 @@ namespace rhodes
 
         public void navigateBackCommand()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigateBackCommand(); }); return; }
         }
 
 		public void navigateForwardCommand()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigateForwardCommand(); }); return; }
         }
 
 		public void logCommand()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { logCommand(); }); return; }
         }
 
 		public void refreshCommand(int tab_index)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { refreshCommand(tab_index); }); return; }
         }
 
 		//public void navigateCommand(TNavigateData* nd) {}
 		
         public void takePicture(string callbackUrl)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { takePicture(callbackUrl); }); return; }
         }
 
 		public void selectPicture(string callbackUrl)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { selectPicture(callbackUrl); }); return; }
         }
 
 		//public void alertShowPopup(CAlertParams *) {}
 
 		public void alertHidePopup()
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { alertHidePopup(); }); return; }
         }
 
 		//public void dateTimePicker(CDateTimeMessage *) {}
@@ -258,10 +289,12 @@ namespace rhodes
 
 		public void fullscreenCommand(int fullScreen)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { fullscreenCommand(fullScreen); }); return; }
         }
 
 		public void setCookie(string url, string cookie)
         {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setCookie(url, cookie); }); return; }
         }
 
     }
