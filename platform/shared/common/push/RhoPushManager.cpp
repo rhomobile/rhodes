@@ -104,7 +104,7 @@ bool PushManager::callNotification(const String& type, const String& json, const
         }
     } else
     {
-        m_rhoApp.callPushCallback(data);
+        return m_rhoApp.callPushCallback(data);
     }
 }
 

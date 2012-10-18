@@ -1,0 +1,7 @@
+entry: Init_GCMPushClient
+android:
+  manifest_changes: 
+  - ext/android/AndroidManifest.rb
+  - ext/android/ApplicationManifestAdds.erb
+  source_list: ext/android/ext_build.files
+libraries: ['gcm-push']
