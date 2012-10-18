@@ -41,14 +41,53 @@ CRhoRuntime::CRhoRuntime(IMainPage^ mainPage):
 // rhodes executed in a separate thread
 void CRhoRuntime::Execute()
 {
-	// sample code just for testing
-	for (int i=0; i<10; i++) {
-		// wait for 1 second
-		if (i > 0)
-			m_MainPage->DoWait(1000);
-		// update HTML code in WebView
-		m_MainPage->UpdateWebView(i);
-	}
+	// ...
+
+	// wait for 3 seconds
+	m_MainPage->DoWait(3000);
 	// exit application
-	m_MainPage->DoExit();
+	m_MainPage->exitCommand();
+}
+
+
+// *** CALLBACKS from MainPage object ***
+
+void CRhoRuntime::updateSizeProperties(int width, int height)
+{
+}
+
+void CRhoRuntime::onActivate(int active)
+{
+}
+
+void CRhoRuntime::logEvent(::Platform::String^ message)
+{
+}
+
+void CRhoRuntime::createCustomMenu(void)
+{
+}
+
+void CRhoRuntime::onCustomMenuItemCommand(int nItemPos)
+{
+}
+
+void CRhoRuntime::onWindowClose(void)
+{
+}
+
+void CRhoRuntime::onWebViewUrlChanged(::Platform::String^ url)
+{
+}
+
+
+// *** PUBLIC METHODS ***
+
+bool CRhoRuntime::Initialize(::Platform::String^ title)
+{
+	return true;
+}
+
+void CRhoRuntime::DestroyUi(void)
+{
 }
