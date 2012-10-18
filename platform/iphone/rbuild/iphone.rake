@@ -495,18 +495,15 @@ namespace "config" do
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir =  $bindir +"/tmp"
 
-    $devroot = '/Developer' if $devroot.nil?
+    $devroot = '/Applications/Xcode.app/Contents/Developer' if $devroot.nil?
     $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim') if $iphonesim.nil?
-
-
     $xcodebuild = $devroot + "/usr/bin/xcodebuild"
-    
     if !File.exists? $xcodebuild
-        $xcodebuild = "/Applications/Xcode.app/Contents/Developer" + "/usr/bin/xcodebuild"
-        $devroot = '/Applications/Xcode.app/Contents/Developer'
+        $devroot = '/Developer'
+        $xcodebuild = $devroot + "/usr/bin/xcodebuild"
         $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43')
     end
-    
+
     if !File.exists? $xcodebuild
         puts 'ERROR: can not found XCode command line tools'
         puts 'Install XCode to default location' 
