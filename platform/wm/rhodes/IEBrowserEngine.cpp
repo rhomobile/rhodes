@@ -239,7 +239,10 @@ void CIEBrowserEngine::OnDocumentComplete(LPCTSTR url)
 {
 	if(!m_bLoadingComplete && wcscmp(url,_T("about:blank"))!=0)
 	{
-		rho_wm_impl_CheckLicense();
+        int nRes = rho_wm_impl_CheckLicense();
+        if ( !nRes )
+            ::MessageBoxW(0, L"Please provide RhoElements license key.", L"Motorola License", MB_ICONERROR | MB_OK);
+
 		m_bLoadingComplete = true;
 	}
 }
