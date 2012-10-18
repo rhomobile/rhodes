@@ -9,7 +9,6 @@
 #endif
 
 extern "C" int rho_wm_impl_CheckLicense();
-extern "C" int rho_wm_impl_CheckSymbolDevice();
 
 CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     m_spIWebBrowser2(NULL)
@@ -177,9 +176,6 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 {
-    if (!rho_wm_impl_CheckSymbolDevice())
-        return;
-
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
