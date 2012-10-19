@@ -42,6 +42,9 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePicker.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/datetime/DateTimePickerScreen.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/event/Event.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/event/EventStore.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/event/CalendarIDsProvider.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/event/CalendarIDsProviderFroyo.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/event/CalendarIDsProviderICS.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/file/RhoFileApi.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocation.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/geolocation/GeoLocationImpl.java
@@ -117,4 +120,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunction
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality09.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality10.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality11.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality12.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality13.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality14.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionalityManager.java
