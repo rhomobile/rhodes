@@ -34,7 +34,7 @@ import com.rhomobile.rhodes.util.ContextFactory;
 public final class GCMFacade {
     private static final String TAG = GCMFacade.class.getSimpleName();
     
-    static final String GCM_PUSH_CLIENT = "gcm_push";
+    static final String GCM_PUSH_CLIENT = "gcm";
     
     public static void Register() {
         Logger.T(TAG, "Send GCM push register req");
