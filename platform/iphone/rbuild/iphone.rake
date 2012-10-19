@@ -496,12 +496,12 @@ namespace "config" do
     $tmpdir =  $bindir +"/tmp"
 
     $devroot = '/Applications/Xcode.app/Contents/Developer' if $devroot.nil?
-    $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim') if $iphonesim.nil?
+    $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43') if $iphonesim.nil?
     $xcodebuild = $devroot + "/usr/bin/xcodebuild"
     if !File.exists? $xcodebuild
         $devroot = '/Developer'
         $xcodebuild = $devroot + "/usr/bin/xcodebuild"
-        $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim_43')
+        $iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
     end
 
     if !File.exists? $xcodebuild
