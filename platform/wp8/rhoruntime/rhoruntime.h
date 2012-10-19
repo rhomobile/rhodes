@@ -81,7 +81,9 @@ namespace rhoruntime
 		void fullscreenCommand(int);
 		void setCookie(::Platform::String^ url, ::Platform::String^ cookie);
 
+		// misc
 		void DoWait(int timeout);
+		void DisplayMessage(::Platform::String^ msg);
 	};
 
     public ref class CRhoRuntime sealed

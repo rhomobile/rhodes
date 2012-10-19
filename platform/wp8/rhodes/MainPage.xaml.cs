@@ -26,6 +26,8 @@
 
 using System;
 using System.Threading;
+using System.Windows;
+using Microsoft.Devices;
 using Microsoft.Phone.Controls;
 using rhodes.Resources;
 using rhoruntime;
@@ -38,6 +40,11 @@ namespace rhodes
         private int _uiThreadID = -1;
         // rhodes main thread
         private Thread _rhoruntimeThread;
+        // internal variables
+        double _screenWidth;
+        double _screenHeight;
+        double _screenPhysicalWidth;
+        double _screenPhysicalHeight;
 
         private bool isUIThread
         {
@@ -47,6 +54,11 @@ namespace rhodes
         public MainPage()
         {
             _uiThreadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
+            _screenWidth = Application.Current.Host.Content.ActualWidth;
+            _screenHeight = Application.Current.Host.Content.ActualHeight;
+            _screenPhysicalHeight = 4; // assuming 4 inches
+            _screenPhysicalWidth = ( _screenPhysicalHeight / _screenHeight ) * _screenWidth; // assuming square pixels
+
             InitializeComponent();
             try
             {
@@ -64,17 +76,18 @@ namespace rhodes
 
 		public int getLogicalDpiX()
         {
-            return 0;
+            return (int)(_screenWidth / _screenPhysicalWidth);
         }
 		
         public int getLogicalDpiY()
         {
-            return 0;
+            return (int)(_screenHeight / _screenPhysicalHeight);
         }
 		
         public void bringToFront()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { bringToFront(); }); return; }
+            this.bringToFront();
         }
 		
 
@@ -103,12 +116,13 @@ namespace rhodes
 		public void Refresh(int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { Refresh(index); }); return; }
-            //RhodesWebBrowser.InvokeScript("eval", "history.go()");
             RhodesWebBrowser.Navigate(new Uri(RhodesWebBrowser.Source.AbsoluteUri, UriKind.Absolute));
+            // another possible implementation: RhodesWebBrowser.InvokeScript("eval", "history.go()");
         }
 
 		public bool isStarted()
         {
+            // TODO: implement
             return true;
         }
 
@@ -118,26 +132,31 @@ namespace rhodes
 		public void toolbarRemoveAllButtons()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarRemoveAllButtons(); }); return; }
+            // TODO: implement
         }
 
 		public void toolbarShow()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarShow(); }); return; }
+            // TODO: implement
         }
 
 		public void toolbarHide()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarHide(); }); return; }
+            // TODO: implement
         }
 
 		public int toolbarGetHeight()
         {
+            // TODO: implement
             return 0;
         }
 
         public void toolbarAddAction(string text)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddAction(text); }); return; }
+            // TODO: implement
         }
 
 		//void toolbarAddAction(const Icon^ icon, const String^ text, const char* action, bool rightAlign /*= false*/) { }
@@ -145,11 +164,13 @@ namespace rhodes
 		public void toolbarAddSeparator()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddSeparator(); }); return; }
+            // TODO: implement
         }
 
 		public void setToolbarStyle(bool border, string background)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setToolbarStyle(border, background); }); return; }
+            // TODO: implement
         }
 
 
@@ -158,16 +179,19 @@ namespace rhodes
 		public void menuClear()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuClear(); }); return; }
+            // TODO: implement
         }
 
 		public void menuAddAction(string text, int item)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuAddAction(text, item); }); return; }
+            // TODO: implement
         }
 
 		public void menuAddSeparator()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuAddSeparator(); }); return; }
+            // TODO: implement
         }
 
 
@@ -175,35 +199,42 @@ namespace rhodes
 		public void tabbarInitialize()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarInitialize(); }); return; }
+            // TODO: implement
         }
 
 		public void tabbarRemoveAllTabs(bool restore)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarRemoveAllTabs(restore); }); return; }
+            // TODO: implement
         }
 
 		public void tabbarShow()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarShow(); }); return; }
+            // TODO: implement
         }
 
 		public void tabbarHide()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarHide(); }); return; }
+            // TODO: implement
         }
 
 		public int tabbarGetHeight()
         {
+            // TODO: implement
             return 0;
         }
 
 		public void tabbarSwitch(int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSwitch(index); }); return; }
+            // TODO: implement
         }
 
 		public int tabbarGetCurrent()
         {
+            // TODO: implement
             return 0;
         }
 
@@ -212,6 +243,7 @@ namespace rhodes
         public void tabbarSetBadge(int index, string badge)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSetBadge(index, badge); }); return; }
+            // TODO: implement
         }
 
 
@@ -221,28 +253,31 @@ namespace rhodes
         public void exitCommand()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke( delegate() { exitCommand(); } );  return; }
-            // exit application
             App.Quit();
         }
 
         public void navigateBackCommand()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigateBackCommand(); }); return; }
+            this.GoBack();
         }
 
 		public void navigateForwardCommand()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigateForwardCommand(); }); return; }
+            this.GoForward();
         }
 
 		public void logCommand()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { logCommand(); }); return; }
+            // TODO: implement
         }
 
 		public void refreshCommand(int tab_index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { refreshCommand(tab_index); }); return; }
+            this.Refresh(tab_index);
         }
 
 		//public void navigateCommand(TNavigateData* nd) {}
@@ -250,11 +285,13 @@ namespace rhodes
         public void takePicture(string callbackUrl)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { takePicture(callbackUrl); }); return; }
+            // TODO: implement
         }
 
 		public void selectPicture(string callbackUrl)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { selectPicture(callbackUrl); }); return; }
+            // TODO: implement
         }
 
 		//public void alertShowPopup(CAlertParams *) {}
@@ -262,6 +299,7 @@ namespace rhodes
 		public void alertHidePopup()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { alertHidePopup(); }); return; }
+            // TODO: implement
         }
 
 		//public void dateTimePicker(CDateTimeMessage *) {}
@@ -275,11 +313,13 @@ namespace rhodes
 		public void fullscreenCommand(int fullScreen)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { fullscreenCommand(fullScreen); }); return; }
+            // TODO: implement
         }
 
 		public void setCookie(string url, string cookie)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setCookie(url, cookie); }); return; }
+            // TODO: implement
         }
 
 
@@ -290,5 +330,10 @@ namespace rhodes
             Thread.Sleep(timeout);
         }
 
+        public void DisplayMessage(string msg)
+        {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { DisplayMessage(msg); }); return; }
+            RhodesWebBrowser.NavigateToString("<html><head><title>Message</title></head><body>" + msg + "</body></html>");
+        }
     }
 }
