@@ -26,8 +26,6 @@
 
 package com.rhomobile.rhodes.gcm;
 
-import android.content.Context;
-
 import com.google.android.gcm.GCMRegistrar;
 import com.rhomobile.rhodes.Push;
 import com.rhomobile.rhodes.Logger;
@@ -49,7 +47,7 @@ public final class GCMFacade {
         }
     }
 
-    public static void Unregister(Context context) {
+    public static void Unregister() {
         Logger.T(TAG, "GCM push unregister req");
         GCMRegistrar.unregister(ContextFactory.getContext());
     }

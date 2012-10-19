@@ -128,7 +128,7 @@ void GcmPushClient::SyncLoginListener::onLogout(const String& session) const
     GcmPushUnregister();
 }
 //----------------------------------------------------------------------------------------------------------------------
-const String GcmPushClient::s_Type = "gcm_push";
+const String GcmPushClient::s_Type = "gcm";
 
 GcmPushClient::GcmPushClient()
 {
