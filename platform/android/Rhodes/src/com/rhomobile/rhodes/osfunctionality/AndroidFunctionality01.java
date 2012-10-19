@@ -28,6 +28,7 @@ package com.rhomobile.rhodes.osfunctionality;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
+import com.rhomobile.rhodes.event.CalendarIDsProvider;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -116,4 +117,9 @@ class AndroidFunctionality01 implements AndroidFunctionality {
             }
         }
     }
+
+	@Override
+	public CalendarIDsProvider buildCalendarIDsProvider() {
+		return new CalendarIDsProvider();
+	}
 }

@@ -28,6 +28,7 @@ package com.rhomobile.rhodes.event;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import android.database.Cursor;
@@ -36,32 +37,37 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.CalendarContract.Events;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.event.Event;
+import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 
 public class EventStore {
 	
 	private static final String TAG = "EventStore";
 	
-	private static final String AUTHORITY = Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO ? "com.android.calendar" : "calendar";
+	private static final CalendarIDsProvider mIDsProvider = AndroidFunctionalityManager.getAndroidFunctionality().buildCalendarIDsProvider();
+	
+	private static final String AUTHORITY = mIDsProvider.getAuthority();
+	
 	private static final Uri EVENTS_URI = Uri.parse("content://" + AUTHORITY + "/events");
 	
-	private static final String EVENTS_ID = "_id";
-    private static final String EVENTS_EVENT_ID = "event_id";
-	private static final String EVENTS_TITLE = "title";
-	private static final String EVENTS_START_DATE = "dtstart";
-	private static final String EVENTS_END_DATE = "dtend";
-	private static final String EVENTS_LOCATION = "eventLocation";
-	private static final String EVENTS_NOTES = "description";
-	private static final String EVENTS_PRIVACY = "visibility";
-	private static final String EVENTS_DELETED = "deleted";
-	private static final String EVENTS_DURATION = "duration";
-	private static final String EVENTS_BEGIN = "begin";
-	private static final String EVENTS_END = "end";
-	private static final String EVENTS_RRULE = "rrule";
+	private static final String EVENTS_ID = mIDsProvider.getEventsID();
+    private static final String EVENTS_EVENT_ID = mIDsProvider.getEventsEventID();
+	private static final String EVENTS_TITLE = mIDsProvider.getEventsTitle();
+	private static final String EVENTS_START_DATE = mIDsProvider.getEventsStartDate();
+	private static final String EVENTS_END_DATE = mIDsProvider.getEventsEndDate();
+	private static final String EVENTS_LOCATION = mIDsProvider.getEventsLocation();
+	private static final String EVENTS_NOTES = mIDsProvider.getEventsNotes();
+	private static final String EVENTS_PRIVACY = mIDsProvider.getEventsPrivacy();
+	private static final String EVENTS_DELETED = mIDsProvider.getEventsDeleted();
+	private static final String EVENTS_DURATION = mIDsProvider.getEventsDuration();
+	private static final String EVENTS_BEGIN = mIDsProvider.getEventsBegin();
+	private static final String EVENTS_END = mIDsProvider.getEventsEnd();
+	private static final String EVENTS_RRULE = mIDsProvider.getEventsRrule();
 	
     private static final String DATE_FORMAT_TRACE = "yyyy-MM-dd HH:mm:ss z";
 
@@ -326,17 +332,21 @@ public class EventStore {
 				values.put(EVENTS_RRULE, event.getRrule());
 				values.put(EVENTS_DURATION, event.getDuration());
 			}
-
-			Logger.D(TAG, "Event: id: " + event.id +
-					", title: " + event.title +
+			
+			if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH ) {
+				values.put(Events.EVENT_TIMEZONE, TimeZone.getDefault().getID());
+			}
+	/*		
+			Logger.D(TAG, "Event: id: " + String.valueOf((Object)event.id) +
+					", title: " + String.valueOf((Object)event.title) +
 					", begin: " + dateToString(new Date(values.getAsLong(EVENTS_START_DATE).longValue())) +
 					", end: " + dateToString(new Date(values.getAsLong(EVENTS_END_DATE).longValue())) +
-					", freq: " + event.frequency +
+					", freq: " + String.valueOf((Object)event.frequency) +
 					", interval: " + Integer.toString(event.interval) +
-					", recurrence end: " + event.recurrenceEnd +
-					", recurrence count: " + event.recurrenceTimes +
-					", rrule: " + values.get(EVENTS_RRULE));
-
+					", recurrence end: " + String.valueOf((Object)event.recurrenceEnd) +
+					", recurrence count: " + String.valueOf((Object)event.recurrenceTimes) +
+					", rrule: " + String.valueOf((Object)values.get(EVENTS_RRULE)));
+*/
 			long calendarId = getDefaultCalendarId();
 			values.put("calendar_id", calendarId);
 			
