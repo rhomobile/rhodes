@@ -33,3 +33,9 @@ typedef struct __LocalPhonebook {
 	CFIndex			 _index;
 	CFIndex			 _len;
 } LocalPhonebook;
+
+
+#define AUTHORIZATION_STATUS_NOT_DETERMINED "Not Determined"
+#define AUTHORIZATION_STATUS_RESTRICTED "Restricted"
+#define AUTHORIZATION_STATUS_DENIED "Denied"
+#define AUTHORIZATION_STATUS_AUTHORIZED "Authorized"
