@@ -30,6 +30,9 @@
 #include <android/log.h>
 #include <logging/RhoLogConf.h>
 
+#include "app_build_capabilities.h"
+
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "PhonebookJNI"
 
@@ -398,5 +401,13 @@ RHO_GLOBAL int deleteRecord(void* pb, void* record)
     doContactOp((jobject)pb, (jobject)record, "removeContact");
     jnienv()->DeleteGlobalRef((jobject)record);
     return 1;
+}
+
+RHO_GLOBAL const char* phonebook_get_authorization_status() {
+#ifdef APP_BUILD_CAPABILITY_PIM
+	return "Authorized";
+#else
+	return "Restricted";
+#endif
 }
 

@@ -1836,6 +1836,8 @@ extern const char* event_save(VALUE event);
 extern void event_delete(const char *id);
 #define delete event_delete
 
+extern const char* calendar_get_authorization_status(void);
+
 
 SWIGINTERN swig_type_info*
 SWIG_pchar_descriptor(void)
@@ -2003,6 +2005,22 @@ _wrap_delete(int argc, VALUE *argv, VALUE self) {
   return Qnil;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_calendar_get_authorization_status(int argc, VALUE *argv, VALUE self) {
+  char *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (char *)calendar_get_authorization_status();
+  vresult = SWIG_FromCharPtr((const char *)result);
+  return vresult;
+fail:
   return Qnil;
 }
 
@@ -2318,5 +2336,6 @@ SWIGEXPORT void Init_Calendar(void) {
   rb_define_module_function(mCalendar, "fetch_by_id", _wrap_fetch_by_id, -1);
   rb_define_module_function(mCalendar, "save", _wrap_save, -1);
   rb_define_module_function(mCalendar, "delete", _wrap_delete, -1);
+  rb_define_module_function(mCalendar, "calendar_get_authorization_status", _wrap_calendar_get_authorization_status, -1);
 }
 

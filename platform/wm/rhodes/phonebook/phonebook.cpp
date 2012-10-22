@@ -193,6 +193,15 @@ int deleteRecord(void* pb, void* record) {
 	return 1;
 }
 
+const char* phonebook_get_authorization_status() {
+#if defined (_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
+	return "Authorized";
+#else
+	return "Restricted";
+#endif
+}
+
+
 //==================================================================================
 
 

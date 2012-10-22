@@ -30,6 +30,8 @@
 #include <ruby.h>
 #include <ruby/ext/calendar/event.h>
 
+#include "app_build_capabilities.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "EventJNI"
 
@@ -558,4 +560,12 @@ RHO_GLOBAL void event_delete(const char *id)
         std::string error = rho_cast<std::string>(env, jError.get());
         rb_raise(rb_eRuntimeError, "Event delete failed: %s", error.c_str());
     }
+}
+
+RHO_GLOBAL const char* calendar_get_authorization_status() {
+#ifdef APP_BUILD_CAPABILITY_CALENDAR
+	return "Authorized";
+#else
+	return "Restricted";
+#endif
 }
