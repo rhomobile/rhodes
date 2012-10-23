@@ -28,6 +28,19 @@ require 'bsearch'
 
 module Rho
 	class RhoContact
+
+            AUTHORIZATION_STATUS_NOT_DETERMINED = 'Not Determined'            
+            AUTHORIZATION_STATUS_RESTRICTED = 'Restricted'            
+            AUTHORIZATION_STATUS_DENIED = 'Denied'            
+            AUTHORIZATION_STATUS_AUTHORIZED = 'Authorized'            
+
+            def self.get_authorization_status
+                    result = AUTHORIZATION_STATUS_AUTHORIZED
+                    if System::get_property('platform') == "ANDROID" or System::get_property('platform') == "APPLE"
+                        result = Phonebook::get_authorization_status()
+                    end
+                    result
+            end
 		class << self
             def open_phonebook()
                 return Phonebook::openPhonebook

@@ -31,9 +31,59 @@ namespace rhoruntime
 	public interface class IMainPage
 	{
 	public:
+		int getLogicalDpiX();
+		int getLogicalDpiY();
+		void bringToFront();
+
+		// webview
+		void navigate(::Platform::String^ url, int index);
+		void GoBack(void);
+		void GoForward(void);
+		void Refresh(int index);
+		bool isStarted(void);
+		// toolbar
+		void toolbarRemoveAllButtons(void);
+		void toolbarShow(void);
+		void toolbarHide(void);
+		int toolbarGetHeight(void);
+		void toolbarAddAction(::Platform::String^ text);
+		//void toolbarAddAction(Icon^ icon, String^ text, char* action, bool rightAlign /= false/);
+		void toolbarAddSeparator(void);
+		void setToolbarStyle(bool border, ::Platform::String^ background);
+		// menu
+		void menuClear(void);
+		void menuAddAction(::Platform::String^ text, int item);
+		void menuAddSeparator(void);
+		// tabbar
+		void tabbarInitialize(void);
+		void tabbarRemoveAllTabs(bool restore);
+		void tabbarShow(void);
+		void tabbarHide(void);
+		int tabbarGetHeight(void);
+		void tabbarSwitch(int index);
+		int tabbarGetCurrent();
+		//int tabbarAddTab(String^ label, char* icon, bool disabled, Color^ web_bkg_color, QTabBarRuntimeParams& tbri);
+		void tabbarSetBadge(int index, ::Platform::String^ badge);
+		void exitCommand(void);
+		void navigateBackCommand(void);
+		void navigateForwardCommand(void);
+		void logCommand(void);
+		void refreshCommand(int tab_index);
+		//void navigateCommand(TNavigateData* nd);
+		void takePicture(::Platform::String^ callbackUrl);
+		void selectPicture(::Platform::String^ callbackUrl);
+		//void alertShowPopup(CAlertParams *);
+		void alertHidePopup(void);
+		//void dateTimePicker(CDateTimeMessage *);
+		//void executeCommand(RhoNativeViewRunnable*);
+		//void executeRunnable(rho::common::IRhoRunnable* pTask);
+		//void takeSignature(void*); //TODO: Signature::Params*
+		void fullscreenCommand(int);
+		void setCookie(::Platform::String^ url, ::Platform::String^ cookie);
+
+		// misc
 		void DoWait(int timeout);
-		void UpdateWebView(int counter);
-		void DoExit();
+		void DisplayMessage(::Platform::String^ msg);
 	};
 
     public ref class CRhoRuntime sealed
@@ -42,6 +92,22 @@ namespace rhoruntime
 		CRhoRuntime(IMainPage^ mainPage);
 		// rhodes executed in a separate thread
 		void Execute();
+
+		// callbacks from MainPage object
+		virtual void updateSizeProperties(int width, int height);
+		virtual void onActivate(int active);
+		virtual void logEvent(::Platform::String^ message);
+		virtual void createCustomMenu(void);
+		virtual void onCustomMenuItemCommand(int nItemPos);
+		virtual void onWindowClose(void);
+		virtual void onWebViewUrlChanged(::Platform::String^ url);
+
+		// public methods:
+		bool Initialize(::Platform::String^ title);
+		void DestroyUi(void);
+		//CNativeToolbar& getToolbar(){ return m_toolbar; }
+		//CNativeTabbar& getTabbar(){ return m_tabbar; }
+
 	private:
 		IMainPage^ m_MainPage;
     };

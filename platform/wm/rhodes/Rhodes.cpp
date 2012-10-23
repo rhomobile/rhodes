@@ -75,7 +75,7 @@ extern "C" {
 	bool rho_wmimpl_get_fullscreen();
 	void rho_wmimpl_set_is_version2(const char* path);
 	bool rho_wmimpl_get_is_version2();
-
+    const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
 #if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && !defined(APP_BUILD_CAPABILITY_MOTOROLA)
     bool rho_wmimpl_get_is_version2(){ return 1;}
     void rho_wmimpl_set_is_version2(const char* path){}
@@ -90,6 +90,7 @@ extern "C" {
     const char* rho_wmimpl_get_logpath(){ return ""; }
     int rho_wmimpl_is_loglevel_enabled(int nLogLevel){ return true; }
 	const int* rho_wmimpl_get_loglevel(){ return NULL; }
+    const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName){return 0;}
 #endif
 
 	const unsigned int* rho_wmimpl_get_logmaxsize();
@@ -805,7 +806,7 @@ void rho_platform_restart_application()
 typedef bool (WINAPI *PCSD)();
 
 #ifdef APP_BUILD_CAPABILITY_MOTOROLA
-extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent);
+extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent, HINSTANCE hLicenseInstance);
 #endif
 
 typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR, LPCWSTR);
@@ -813,13 +814,7 @@ typedef int (WINAPI *FUNC_IsLicenseOK)();
 
 extern "C" int rho_wm_impl_CheckLicense()
 {
-//#ifdef OS_WINDOWS_DESKTOP
-//    return;
-//#else
-
-#ifdef APP_BUILD_CAPABILITY_MOTOROLA
-    rho_wm_impl_CheckLicenseWithBarcode(getMainWnd());
-#else
+    int nRes = 0;
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
     if(hLicenseInstance)
     {
@@ -839,6 +834,23 @@ extern "C" int rho_wm_impl_CheckLicense()
             StringW strCompanyW;
             common::convertToStringW( get_app_build_config_item("motorola_license_company"), strCompanyW );
 
+            bool bRE1App = false;
+        #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+            if (!rho_wmimpl_get_is_version2())
+                bRE1App = true;
+
+            if ( bRE1App )
+            {
+                LPCTSTR szLicense = rho_wmimpl_sharedconfig_getvalue( L"LicenseKey" );
+                if ( szLicense )
+                    strLicenseW = szLicense;
+
+                LPCTSTR szLicenseComp = rho_wmimpl_sharedconfig_getvalue( L"LicenseKeyCompany" );
+                if ( szLicenseComp )
+                    strCompanyW = szLicenseComp;
+            }
+        #endif
+
             StringW strAppNameW;
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
             strAppNameW = RHODESAPP().getAppNameW();
@@ -851,45 +863,18 @@ extern "C" int rho_wm_impl_CheckLicense()
         if ( szLogText && *szLogText )
             LOGC(INFO, "License") + szLogText;
 
-        return pIsOK ? pIsOK() : 0;
+        nRes = pIsOK ? pIsOK() : 0;
+    }
+
+#ifdef APP_BUILD_CAPABILITY_MOTOROLA
+    if ( nRes == 0 )
+    {
+        rho_wm_impl_CheckLicenseWithBarcode(getMainWnd(),hLicenseInstance);
+        return 1;
     }
 #endif
 
-    return 0;
-//#endif
-}
-
-extern "C" int rho_wm_impl_CheckSymbolDevice()
-{
-#ifdef OS_WINDOWS_DESKTOP
-    //return false;
-	return true;
-#else 
-    int res = -1;
-    HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
-	if(!hLicenseInstance)
-	{
-		MessageBox(NULL, L"license_rc.dll is absent. Application will be closed"
-						   , L"Rhodes", MB_SETFOREGROUND | MB_TOPMOST | MB_ICONSTOP | MB_OK);
-		return 0;
-	}
-	/*if(hLicenseInstance)
-	{
-		PCSD pCheckSymbolDevice = (PCSD) GetProcAddress(hLicenseInstance, L"CheckSymbolDevice");
-		if(pCheckSymbolDevice) 
-			res = pCheckSymbolDevice();
-	}
-
-	if(res == -1)
-	{
-		MessageBox(NULL, L"license_rc.dll is absent. Application will be closed"
-						   , L"Rhodes", MB_SETFOREGROUND | MB_TOPMOST | MB_ICONSTOP | MB_OK);
-		return 0;
-	}*/
-
-    return 1;
-#endif
-
+    return nRes;
 }
 
 static inline char *

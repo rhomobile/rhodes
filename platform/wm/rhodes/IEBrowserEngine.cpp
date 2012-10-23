@@ -9,7 +9,6 @@
 #endif
 
 extern "C" int rho_wm_impl_CheckLicense();
-extern "C" int rho_wm_impl_CheckSymbolDevice();
 
 CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     m_spIWebBrowser2(NULL)
@@ -177,9 +176,6 @@ LRESULT CIEBrowserEngine::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 void CIEBrowserEngine::RunMessageLoop(CMainWindow& mainWnd)
 {
-    if (!rho_wm_impl_CheckSymbolDevice())
-        return;
-
 	MSG msg;
     while (GetMessage(&msg, NULL, 0, 0))
     {
@@ -243,7 +239,10 @@ void CIEBrowserEngine::OnDocumentComplete(LPCTSTR url)
 {
 	if(!m_bLoadingComplete && wcscmp(url,_T("about:blank"))!=0)
 	{
-		rho_wm_impl_CheckLicense();
+        int nRes = rho_wm_impl_CheckLicense();
+        if ( !nRes )
+            ::MessageBoxW(0, L"Please provide RhoElements license key.", L"Motorola License", MB_ICONERROR | MB_OK);
+
 		m_bLoadingComplete = true;
 	}
 }

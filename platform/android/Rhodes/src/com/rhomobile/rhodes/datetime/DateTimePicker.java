@@ -36,15 +36,11 @@ public class DateTimePicker {
 	
 	private static final String TAG = "DateTimePicker";
 	
-	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + "datetime.";
+	public static final String INTENT_EXTRA_PREFIX = RhodesService.INTENT_EXTRA_PREFIX + ".datetime.";
 	
-	private static void reportFail(String name, Exception e) {
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
-	}
-
 	public static void choose(String callback, String title, long init, int v, byte[] opaque, long min_time, long max_time) {
 		try {
-			RhodesActivity r = RhodesActivity.getInstance();
+			RhodesActivity r = RhodesActivity.safeGetInstance();
 			Intent intent = new Intent(RhodesActivity.getContext(), DateTimePickerScreen.class);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "callback", callback);
 			intent.putExtra(INTENT_EXTRA_PREFIX + "title", title);
@@ -57,7 +53,7 @@ public class DateTimePicker {
 			r.startActivity(intent);
 		}
 		catch (Exception e) {
-			reportFail("choose", e);
+			Logger.E(TAG, e);
 		}
 	}
 	

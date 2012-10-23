@@ -32,12 +32,71 @@ BOOL is_rho_calendar_supported() {
 
 static void calendar_check()
 {
+    BOOL calendar_available = NO;
+    
 #if defined(__IPHONE_4_0)
     NSString *version = [[UIDevice currentDevice] systemVersion];
-    if ([version hasPrefix:@"3."] || [version hasPrefix:@"2."])
+    if ([version hasPrefix:@"3."] || [version hasPrefix:@"2."]) {
+        calendar_available = NO;
+    }
+    else {
+        calendar_available = YES;
+    }
 #endif
+    
+    
+    if (!calendar_available) {
         rb_raise(rb_eRuntimeError, "No calendar support on this device");
+    }
+    else {
+
+#if defined(__IPHONE_6_0)
+        __block BOOL accessGranted = NO;
+        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+        [[[Rhodes sharedInstance] getEventStore] requestAccessToEntityType:EKEntityTypeEvent completion:
+         ^(BOOL granted, NSError* error) {
+             accessGranted = granted;
+             dispatch_semaphore_signal(sema);
+         }
+         ];
+        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+        dispatch_release(sema);
+        
+        if (accessGranted) {
+        }
+#endif
+        
+    }
+    
 }
+
+const char* calendar_get_authorization_status(void) {
+    calendar_check();
+    const char* result = CALENDAR_AUTHORIZATION_STATUS_AUTHORIZED;
+#if defined(__IPHONE_6_0)
+    ABAuthorizationStatus status = [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent];
+        if ( status == kABAuthorizationStatusNotDetermined ) {
+            result = CALENDAR_AUTHORIZATION_STATUS_NOT_DETERMINED;
+        }
+        else if ( status == kABAuthorizationStatusDenied ) {
+            result = CALENDAR_AUTHORIZATION_STATUS_DENIED;
+        }
+        else if ( status == kABAuthorizationStatusAuthorized ) {
+            result = CALENDAR_AUTHORIZATION_STATUS_AUTHORIZED;
+        }
+        else if ( status == kABAuthorizationStatusRestricted ) {
+            result = CALENDAR_AUTHORIZATION_STATUS_RESTRICTED;
+        }
+        else {
+            result = CALENDAR_AUTHORIZATION_STATUS_NOT_DETERMINED;
+        }
+
+#endif
+    return result;
+    
+}
+
+
 
 #ifdef __IPHONE_4_0
 static VALUE dateToRuby(NSDate *date)

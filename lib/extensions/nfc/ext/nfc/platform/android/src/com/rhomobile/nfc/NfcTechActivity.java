@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.rhomobile.rhodes.PushService;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 

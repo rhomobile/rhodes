@@ -218,6 +218,7 @@ end
 
 def update_rhoprofiler_java_file
     use_profiler = $app_config['profiler'] || ($app_config[$current_platform] && $app_config[$current_platform]['profiler'])
+    use_profiler = use_profiler && use_profiler.to_i() != 0 ? true : false
     
     content = ""
     File.open( File.join( $startdir, "platform/bb/RubyVM/src/com/rho/RhoProfiler.java" ), 'rb' ){ |f| content = f.read() }
@@ -238,6 +239,7 @@ end
 
 def update_rhodefs_header_file
     use_profiler = $app_config['profiler'] || ($app_config[$current_platform] && $app_config[$current_platform]['profiler'])
+    use_profiler = use_profiler && use_profiler.to_i() != 0 ? true : false
     
     content = ""
     File.open( File.join( $startdir, "platform/shared/common/RhoDefs.h" ), 'rb' ){ |f| content = f.read() }

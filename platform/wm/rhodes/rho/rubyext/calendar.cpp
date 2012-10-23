@@ -531,4 +531,8 @@ extern "C" void event_delete(const char *eid)
 {
 }
 
+extern "C" const char* calendar_get_authorization_status(void) {
+	return "Restricted";
+}
+
 #endif

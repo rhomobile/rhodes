@@ -50,14 +50,61 @@ void* openPhonebook() {
 		return NULL;
 	
 	memset(phonebook, 0, sizeof(LocalPhonebook));
-	
-	phonebook->_ab = ABAddressBookCreate();
-	if (phonebook->_ab) {
-		phonebook->_people = NULL;
-		phonebook->_len = 0;
-	}
+    
+    __block BOOL accessGranted = YES;
+
+#if defined(__IPHONE_6_0)
+    if (ABAddressBookRequestAccessWithCompletion != NULL) { // we're on iOS 6
+        accessGranted = NO;
+        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+        ABAddressBookRequestAccessWithCompletion(phonebook->_ab, ^(bool granted, CFErrorRef error) {
+            accessGranted = granted;
+            dispatch_semaphore_signal(sema);
+        });
+        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+        dispatch_release(sema);
+    }
+    else { // we're on iOS 5 or older
+        accessGranted = YES;
+    }
+#endif
+    if (accessGranted) {
+        phonebook->_ab = ABAddressBookCreate();
+        if (phonebook->_ab) {
+            phonebook->_people = NULL;
+            phonebook->_len = 0;
+        }
+    }
+
 	return phonebook;
 }
+
+
+const char* phonebook_get_authorization_status() {
+    const char* result = AUTHORIZATION_STATUS_AUTHORIZED;
+#if defined(__IPHONE_6_0)
+    if (ABAddressBookGetAuthorizationStatus != NULL) {
+        ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
+        if ( status == kABAuthorizationStatusNotDetermined ) {
+            result = AUTHORIZATION_STATUS_NOT_DETERMINED;
+        }
+        else if ( status == kABAuthorizationStatusDenied ) {
+            result = AUTHORIZATION_STATUS_DENIED;
+        }
+        else if ( status == kABAuthorizationStatusAuthorized ) {
+            result = AUTHORIZATION_STATUS_AUTHORIZED;
+        }
+        else if ( status == kABAuthorizationStatusRestricted ) {
+            result = AUTHORIZATION_STATUS_RESTRICTED;
+        }
+        else {
+            result = AUTHORIZATION_STATUS_NOT_DETERMINED;
+        }
+    }
+#endif
+    return result;
+}
+
 
 void  closePhonebook(void* pb) {
 	if (logging_enable) RAWLOG_INFO("phonebook :: closePhonebook");

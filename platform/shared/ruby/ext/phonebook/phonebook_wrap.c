@@ -1859,6 +1859,9 @@ extern int saveRecord(void* pb, void* record);
 extern int deleteRecord(void* pb, void* record);
 
 
+extern const char* phonebook_get_authorization_status(void);
+#define get_authorization_status phonebook_get_authorization_status
+
 
 #include <limits.h>
 #if !defined(SWIG_NO_LLONG_MAX)
@@ -1939,6 +1942,30 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
+
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtrAndSize(const char* carray, size_t size)
+{
+  if (carray) {
+    if (size > LONG_MAX) {
+      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+      return pchar_descriptor ? 
+	SWIG_NewPointerObj((char *)(carray), pchar_descriptor, 0) : Qnil;
+    } else {
+      return rb_str_new(carray, (long)(size));
+    }
+  } else {
+    return Qnil;
+  }
+}
+
+
+SWIGINTERNINLINE VALUE 
+SWIG_FromCharPtr(const char *cptr)
+{ 
+  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
+}
 
 SWIGINTERN VALUE
 _wrap_openPhonebook(int argc, VALUE *argv, VALUE self) {
@@ -2331,6 +2358,22 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_get_authorization_status(int argc, VALUE *argv, VALUE self) {
+  char *result = 0 ;
+  VALUE vresult = Qnil;
+  
+  if ((argc < 0) || (argc > 0)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  result = (char *)get_authorization_status();
+  vresult = SWIG_FromCharPtr((const char *)result);
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2659,5 +2702,6 @@ SWIGEXPORT void Init_Phonebook(void) {
   rb_define_module_function(mPhonebook, "addRecord", _wrap_addRecord, -1);
   rb_define_module_function(mPhonebook, "saveRecord", _wrap_saveRecord, -1);
   rb_define_module_function(mPhonebook, "deleteRecord", _wrap_deleteRecord, -1);
+  rb_define_module_function(mPhonebook, "get_authorization_status", _wrap_get_authorization_status, -1);
 }
 

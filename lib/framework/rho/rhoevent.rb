@@ -35,6 +35,21 @@ end
 
 module Rho
 	module RhoEvent
+
+            AUTHORIZATION_STATUS_NOT_DETERMINED = 'Not Determined'            
+            AUTHORIZATION_STATUS_RESTRICTED = 'Restricted'            
+            AUTHORIZATION_STATUS_DENIED = 'Denied'            
+            AUTHORIZATION_STATUS_AUTHORIZED = 'Authorized'            
+
+            def self.get_authorization_status
+                    result = AUTHORIZATION_STATUS_AUTHORIZED
+                    if System::get_property('platform') == "ANDROID" or System::get_property('platform') == "APPLE"
+                        result = Rho::Calendar.calendar_get_authorization_status()
+                    end
+                    result
+            end
+
+
     MIN_TIME = Time.utc(1900, 'jan', 1, 0, 0, 0)
     MAX_TIME = Time.utc(2100, 'dec', 31, 23, 59, 59)
     
