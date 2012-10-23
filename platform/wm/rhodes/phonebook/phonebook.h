@@ -52,6 +52,8 @@ int addRecord(void* pb, void* record);
 int saveRecord(void* pb, void* record);
 int deleteRecord(void* pb, void* record);
 
+const char* phonebook_get_authorization_status();
+
 #if defined(__cplusplus)
 }
 #endif

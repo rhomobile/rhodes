@@ -107,10 +107,12 @@ To enable remote logging just add the line to `rhoconfig.txt`:
 
 Then all log messages will be sent to the specified URL via POST HTTP-requests.
 
-You can also send log to remote server manually. To do this add following lines to rholog.txt:
+You can also send log to remote server manually: Log server address where log will be posted by using RhoConf.send_log or from the log view. Log server source code is open and available at <http://github.com/rhomobile/rhologs>, so you can deploy your own logserver.
 
-	logserver = 'http://<host>:<port>[/path]'
-	logname = '<log_name>'
+Add the lines to `rhoconfig.txt`:
+
+	logserver = 'http://rhologs.heroku.com'
+	logname='helloworld'
 
 Then call RhoConfig.send_log:
 
@@ -119,6 +121,8 @@ Then call RhoConfig.send_log:
 		Rho::RhoConfig.send_log()
 	end
 
+
+See [Log Configuration](/rhodes/configuration#run-time-configuration) for all Logging configuration parameters.
 
 ### How see log messages from iOS device.
 

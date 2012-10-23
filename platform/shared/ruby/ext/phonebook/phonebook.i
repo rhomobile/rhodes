@@ -32,6 +32,9 @@ extern int addRecord(void* pb, void* record);
 extern int saveRecord(void* pb, void* record);
 extern int deleteRecord(void* pb, void* record);
 
+
+extern const char* phonebook_get_authorization_status(void);
+#define get_authorization_status phonebook_get_authorization_status
 %}
 
 %typemap(default) (rho_param* params) {
@@ -60,4 +63,5 @@ extern int setRecordValue(void* record, char* property, char* value);
 extern int addRecord(void* pb, void* record);
 extern int saveRecord(void* pb, void* record);
 extern int deleteRecord(void* pb, void* record);
+extern const char* get_authorization_status(void);
 

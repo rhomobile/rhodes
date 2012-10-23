@@ -8,7 +8,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.View;
 
 import com.rhomobile.rhodes.Capabilities;
@@ -26,11 +25,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     private Hashtable<String, IRhoExtension> mExtensions = new Hashtable<String, IRhoExtension>();
     private ArrayList<IRhoListener> mListeners = new ArrayList<IRhoListener>();
-    private boolean mLogError = true;
-    private boolean mLogWarning = true;
-    private boolean mLogInfo = true;
-    private boolean mLogUser = true;
-    private boolean mLogDebug = true;
+    private boolean mLogError = false;
+    private boolean mLogWarning = false;
+    private boolean mLogInfo = false;
+    private boolean mLogUser = false;
+    private boolean mLogDebug = false;
 
     private IRhoExtData makeDefExtData(View view) {
         return new RhoExtDataImpl(view, RhodesActivity.safeGetInstance().getMainView().activeTab());

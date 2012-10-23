@@ -59,31 +59,31 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\bin\x86\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)bin\x86\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(SolutionDir)\bin\x86\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)bin\x86\$(Configuration)\</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\bin\x86\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)bin\x86\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(SolutionDir)\bin\x86\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)bin\x86\$(Configuration)\</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <IntDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <IntDir>$(SolutionDir)\bin\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -26,6 +26,8 @@
 
 package com.rhomobile.rhodes.osfunctionality;
 
+import com.rhomobile.rhodes.event.CalendarIDsProvider;
+
 import android.content.Context;
 import android.webkit.WebView;
 
@@ -49,4 +51,6 @@ public interface AndroidFunctionality {
 
     void applyWebSettings(WebView view);
     void pauseWebView( WebView view, boolean doPause );
+    
+    CalendarIDsProvider buildCalendarIDsProvider();
 }
