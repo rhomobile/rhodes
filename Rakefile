@@ -862,7 +862,13 @@ def common_bundle_start(startdir, dest)
   start = pwd
   chdir rhodeslib
 
-  Dir.glob("*").each { |f| cp_r f,dest, :preserve => true }
+  Dir.glob("*").each { |f|
+    if f.to_s == "autocomplete"
+      next
+    end
+          
+    cp_r f,dest, :preserve => true 
+  }
 
   chdir dest
   Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
