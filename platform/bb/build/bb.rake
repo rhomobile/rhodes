@@ -962,6 +962,8 @@ namespace "clean" do
       command =  "clean.bat"
       args = []
       Jake.run2 command, args, {:directory => $bb_sim_path, :system => true}
+      
+      rm_rf $bb_sim_path + "/sdcard/Rho" if File.exists?($bb_sim_path + "/sdcard/Rho")
   end
   
   namespace "bb" do
@@ -1006,7 +1008,7 @@ namespace "run" do
 
       task :spec => ["config:checkbb", "run:bb:stopmdsandsim", "clean:bbsim", "package:bb:production_sim"] do
         cp_r File.join($targetdir,"/."), $bb_sim_path
-        rm_rf $bb_sim_path + "/sdcard/Rho"
+        #rm_rf $bb_sim_path + "/sdcard/Rho"
 
         log_name = $bb_sim_path + "/sdcard/Rho/" + $outfilebase + "/RhoLog.txt"
         puts log_name
