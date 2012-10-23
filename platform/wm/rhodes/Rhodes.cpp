@@ -64,6 +64,11 @@ extern "C" void rho_webview_navigate(const char* url, int index);
 class CEng;
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
+#else
+extern "C" void rho_wm_impl_SetApplicationLicenseObj(void* pAppLicenseObj)
+{
+    delete pAppLicenseObj;
+}
 #endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
 extern "C" {
@@ -808,9 +813,11 @@ typedef bool (WINAPI *PCSD)();
 #ifdef APP_BUILD_CAPABILITY_MOTOROLA
 extern "C" void rho_wm_impl_CheckLicenseWithBarcode(HWND hParent, HINSTANCE hLicenseInstance);
 #endif
+extern "C" void rho_wm_impl_SetApplicationLicenseObj(void* pAppLicenseObj);
 
 typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR, LPCWSTR);
 typedef int (WINAPI *FUNC_IsLicenseOK)();
+typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
 
 extern "C" int rho_wm_impl_CheckLicense()
 {
@@ -873,6 +880,14 @@ extern "C" int rho_wm_impl_CheckLicense()
         return 1;
     }
 #endif
+
+    if ( nRes )
+    {
+        FUNC_GetAppLicenseObj pGetAppLicenseObj = (FUNC_GetAppLicenseObj) GetProcAddress(hLicenseInstance, L"GetAppLicenseObj");
+        if ( pGetAppLicenseObj )
+            rho_wm_impl_SetApplicationLicenseObj( pGetAppLicenseObj() );
+    }
+
 
     return nRes;
 }
