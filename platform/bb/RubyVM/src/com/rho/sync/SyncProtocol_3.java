@@ -67,7 +67,7 @@ public class SyncProtocol_3 implements ISyncProtocol
         	",\"device_pin\":" + JSONEntry.quoteValue(strPin) +
             ",\"device_port\":\"" + nPort +
             "\",\"device_type\":" + JSONEntry.quoteValue(strType) +
-        	"\",\"push_type\":" + JSONEntry.quoteValue(strPushType) + "}";
+        	",\"push_type\":" + JSONEntry.quoteValue(strPushType) + "}";
     }
 
     public String getClientResetUrl(String strClientID)
