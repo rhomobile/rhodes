@@ -457,6 +457,11 @@ double rho_geo_longitude()
 #endif
 }
 
+double rho_geo_altitude() 
+{
+	return 0.0;
+}
+
 float rho_geo_accuracy() 
 {
 	return 0.0;
