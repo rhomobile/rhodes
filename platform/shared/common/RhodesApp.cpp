@@ -1410,15 +1410,7 @@ String CRhodesApp::getAppName()
 {
     String strAppName;
 #ifdef WINDOWS_PLATFORM
-    String path = rho_native_rhopath();
-    String_replace(path, '/', '\\');
-
-    int nEnd = path.find_last_of('\\');
-    nEnd = path.find_last_of('\\', nEnd-1)-1;
-
-    int nStart = path.find_last_of('\\', nEnd) +1;
-    strAppName = path.substr( nStart, nEnd-nStart+1);
-
+    strAppName = rho_native_get_appname();
 #else
     strAppName = "Rhodes";
 #endif

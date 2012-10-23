@@ -131,6 +131,7 @@ extern "C" {
 
 const char* rho_native_reruntimepath();
 const char* rho_native_rhopath();
+const char* rho_native_get_appname();
 const char* rho_native_rhouserpath();
 const char* rho_native_rhodbpath();    
 

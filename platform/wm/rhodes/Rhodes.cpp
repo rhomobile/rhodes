@@ -165,7 +165,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
     static HINSTANCE m_hInstance;
     CMainWindow m_appWindow;
-    rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath;//, m_strDebugHost, m_strDebugPort;*/
+    rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath, m_strAppName;//, m_strDebugHost, m_strDebugPort;*/
 	int m_nRestarting;
 #ifndef RHODES_EMULATOR
 	HANDLE m_hMutex;
@@ -194,6 +194,7 @@ public :
     void RunMessageLoop( ) throw( );
     const rho::String& getRhoRootPath();
     const rho::String& getRhoRuntimePath();
+    const rho::String& getAppName();
 };
 
 void parseHttpProxyURI(const rho::String &http_proxy);
@@ -730,7 +731,37 @@ const rho::String& CRhodesModule::getRhoRootPath()
 {
     if ( m_strRootPath.length() == 0 )
         m_strRootPath = getRhoRuntimePath();
+
     return m_strRootPath;
+}
+
+const rho::String& CRhodesModule::getAppName()
+{
+    if ( m_strAppName.length() == 0 )
+    {
+#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+        bool bRE1App = false;
+        if (!rho_wmimpl_get_is_version2())
+            bRE1App = true;
+        if ( bRE1App )
+            m_strAppName = convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"General\\Name" ) );
+        else
+        {
+            String path = getRhoRootPath();
+            String_replace(path, '/', '\\');
+
+            int nEnd = path.find_last_of('\\');
+            nEnd = path.find_last_of('\\', nEnd-1)-1;
+
+            int nStart = path.find_last_of('\\', nEnd) +1;
+            m_strAppName = path.substr( nStart, nEnd-nStart+1);
+        }
+#else
+        m_strAppName = get_app_build_config_item("name");
+#endif
+    }
+
+    return m_strAppName;
 }
 
 const rho::String& CRhodesModule::getRhoRuntimePath()
@@ -859,11 +890,11 @@ extern "C" int rho_wm_impl_CheckLicense()
         #endif
 
             StringW strAppNameW;
-#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
+//#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
             strAppNameW = RHODESAPP().getAppNameW();
-#else
-            common::convertToStringW( get_app_build_config_item("name"), strAppNameW );
-#endif
+//#else
+//            common::convertToStringW( get_app_build_config_item("name"), strAppNameW );
+//#endif
             szLogText = pCheckLicense( getMainWnd(), strAppNameW.c_str(), strLicenseW.c_str(), strCompanyW.c_str() );
         }
 
@@ -881,13 +912,14 @@ extern "C" int rho_wm_impl_CheckLicense()
     }
 #endif
 
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     if ( nRes )
     {
         FUNC_GetAppLicenseObj pGetAppLicenseObj = (FUNC_GetAppLicenseObj) GetProcAddress(hLicenseInstance, L"GetAppLicenseObj");
         if ( pGetAppLicenseObj )
             rho_wm_impl_SetApplicationLicenseObj( pGetAppLicenseObj() );
     }
-
+#endif
 
     return nRes;
 }
@@ -901,6 +933,11 @@ translate_char(char *p, int from, int to)
 	p = CharNextA(p);
     }
     return p;
+}
+
+extern "C" const char* rho_native_get_appname()
+{
+    return _AtlModule.getAppName().c_str();
 }
 
 extern "C" const char* rho_native_rhopath() 
