@@ -263,17 +263,19 @@ public class SyncSource
 	{
       	PROF.START("Pull");
 
-        boolean bSyncClient = false;
-        {
-            IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID());
-            bSyncClient = !res.isEnd();
-        }
+      	boolean bSyncClient  = haveChangedValues();
+      	
         if ( bSyncClient )
             doSyncClientChanges();
 
         PROF.STOP("Pull");
 	}
 	
+	boolean haveChangedValues()throws Exception
+	{
+		IDBResult res = getDB().executeSQL("SELECT object FROM changed_values WHERE source_id=? and sent<=1 LIMIT 1 OFFSET 0", getID());
+		return !res.isEnd();
+	}	
 /*
 	boolean syncClientChanges()throws Exception
 	{

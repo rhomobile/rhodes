@@ -61,36 +61,41 @@ public class SyncThread extends ThreadQueue
    		int m_nCmdParam;
    		String m_strCmdParam, m_strQueryParams;
    		boolean m_bShowStatus;
+   		boolean m_bSyncOnlyChangedSources;
    		
-   		SyncCommand(int nCode, int nParam, boolean bShowStatus, String query_params)
+   		SyncCommand(int nCode, int nParam, boolean bShowStatus, String query_params, boolean bSyncOnlyChangedSources)
    		{
    			m_nCmdCode = nCode;
    			m_nCmdParam = nParam;
    			m_bShowStatus = bShowStatus;
    			m_strQueryParams = query_params != null? query_params : "";
+   			m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
    		}
-   		SyncCommand(int nCode, String strParam, boolean bShowStatus, String query_params)
+   		SyncCommand(int nCode, String strParam, boolean bShowStatus, String query_params, boolean bSyncOnlyChangedSources)
    		{
    			m_nCmdCode = nCode;
    			m_strCmdParam = strParam;
    			m_bShowStatus = bShowStatus;
    			m_strQueryParams = query_params != null? query_params : "";
+   			m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
    		}
-	    SyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus, String query_params)
+	    SyncCommand(int nCode, String strParam, int nCmdParam, boolean bShowStatus, String query_params, boolean bSyncOnlyChangedSources)
 	    {
 		    m_nCmdCode = nCode;
 		    m_strCmdParam = strParam;
             m_nCmdParam = nCmdParam;
             m_bShowStatus = bShowStatus;
             m_strQueryParams = query_params != null? query_params : "";
+            m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
 	    }
    		
-   		SyncCommand(int nCode, boolean bShowStatus, String query_params)
+   		SyncCommand(int nCode, boolean bShowStatus, String query_params, boolean bSyncOnlyChangedSources)
    		{
    			m_nCmdCode = nCode;
    			m_nCmdParam = 0;
    			m_bShowStatus = bShowStatus;
    			m_strQueryParams = query_params != null? query_params : "";
+   			m_bSyncOnlyChangedSources = bSyncOnlyChangedSources;
    		}
    		
    		public boolean equals(IQueueCommand obj)
@@ -100,7 +105,8 @@ public class SyncThread extends ThreadQueue
    				(m_strCmdParam == oSyncCmd.m_strCmdParam ||
    				(m_strCmdParam != null && oSyncCmd.m_strCmdParam != null && m_strCmdParam.equals(oSyncCmd.m_strCmdParam)))&&
    				(m_strQueryParams == oSyncCmd.m_strQueryParams ||
-   				(m_strQueryParams != null && oSyncCmd.m_strQueryParams != null && m_strQueryParams.equals(oSyncCmd.m_strQueryParams)));  		
+   				(m_strQueryParams != null && oSyncCmd.m_strQueryParams != null && m_strQueryParams.equals(oSyncCmd.m_strQueryParams)))&&
+   			     m_bSyncOnlyChangedSources == oSyncCmd.m_bSyncOnlyChangedSources;  		
    		}
    		
    		public String toString()
@@ -132,7 +138,7 @@ public class SyncThread extends ThreadQueue
    		/*common::CAutoPtr<C*/SyncNotify.SyncNotification/*>*/ m_pNotify;
    		public SyncLoginCommand(String name, String password, String callback, SyncNotify.SyncNotification pNotify)
    		{
-   			super(scLogin,callback,false,"");
+   			super(scLogin,callback,false,"", false);
    			
    			m_strName = name;
    			m_strPassword = password;
@@ -147,7 +153,7 @@ public class SyncThread extends ThreadQueue
 	    
         public SyncSearchCommand(String from, String params, Vector arSources, boolean sync_changes, int nProgressStep)
 	    {
-        	super(scSearchOne,params,nProgressStep, false, "");
+        	super(scSearchOne,params,nProgressStep, false, "", false);
 		    m_strFrom = from;
 		    m_bSyncChanges = sync_changes;
 		    m_arSources = arSources;
@@ -247,7 +253,7 @@ public class SyncThread extends ThreadQueue
 	public void onTimeout()//throws Exception
 	{
 	    if ( isNoCommands() && getPollInterval()>0 )
-	        addQueueCommandInt(new SyncCommand(scSyncAll,false, ""));
+	        addQueueCommandInt(new SyncCommand(scSyncAll,false, "", false));
 	}
 	
 	void checkShowStatus(SyncCommand oSyncCmd)
@@ -265,7 +271,7 @@ public class SyncThread extends ThreadQueue
 	    {
 	    case scSyncAll:
 	    	checkShowStatus(oSyncCmd);
-	        m_oSyncEngine.doSyncAllSources(oSyncCmd.m_strQueryParams);
+	        m_oSyncEngine.doSyncAllSources(oSyncCmd.m_strQueryParams,oSyncCmd.m_bSyncOnlyChangedSources);
 	        break;
         case scSyncOne:
 	        {
@@ -314,7 +320,7 @@ public class SyncThread extends ThreadQueue
 	
 	public static void doSyncAllSources(boolean bShowStatus)
 	{
-		getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus, ""));
+		getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus, "", false));
 	}
 	
 	public static void doSyncSourceByName(String strSrcName, boolean bShowStatus)
@@ -322,7 +328,7 @@ public class SyncThread extends ThreadQueue
 		if (bShowStatus&&(m_statusListener != null)) {
 			m_statusListener.createStatusPopup(RhoAppAdapter.getMessageText("syncronizing_data"));
 		}
-	    getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus, "") );		
+	    getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strSrcName, (int)0, bShowStatus, "", false) );		
 	}
 	
 	public static void stopSync()throws Exception
@@ -385,6 +391,7 @@ public class SyncThread extends ThreadQueue
 				{
 					boolean bShowStatus = true;
 					String query_params = "";
+					boolean sync_only_changed_sources = false;
 					if ( args != null && args.size() > 0 )
 					{
 						String str = args.get(0).asString();
@@ -392,8 +399,13 @@ public class SyncThread extends ThreadQueue
 					}
 					if ( args != null &&  args.size() > 1 )
 						query_params = args.get(1).asString();
+					if ( args != null &&  args.size() > 2 )
+					{
+						String str = args.get(2).asString();
+						sync_only_changed_sources = args.get(2).equals(RubyConstant.QTRUE)||"true".equalsIgnoreCase(str);
+					}
 					
-					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus, query_params));
+					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncAll,bShowStatus, query_params, sync_only_changed_sources));
 				} catch(Exception e) {
 					LOG.ERROR("dosync failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));
@@ -423,7 +435,7 @@ public class SyncThread extends ThreadQueue
 					if ( args.size() > 2 )
 						query_params = args.get(2).asString();
 					
-					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, bShowStatus, query_params) );
+					getInstance().addQueueCommand(new SyncCommand(SyncThread.scSyncOne, strName, nSrcID, bShowStatus, query_params, false) );
 				} catch(Exception e) {
 					LOG.ERROR("dosync_source failed", e);
 					throw (e instanceof RubyException ? (RubyException)e : new RubyException(e.getMessage()));

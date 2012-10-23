@@ -270,7 +270,7 @@ public class SyncEngine implements NetRequest.IRhoSession
         stopSync();
     }
     
-    void doSyncAllSources(String strQueryParams)
+    void doSyncAllSources(String strQueryParams, boolean bSyncOnlyChangedSources)
     {
 	    try
 	    {
@@ -286,7 +286,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 			    PROF.CREATE_COUNTER("Pull");
 			    PROF.START("Sync");
 	
-	            syncAllSources(strQueryParams);
+	            syncAllSources(strQueryParams, bSyncOnlyChangedSources);
 	
 			    PROF.DESTROY_COUNTER("Net");	    
 			    PROF.DESTROY_COUNTER("Parse");
@@ -999,7 +999,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    return -1;
 	}
 */
-	void syncOneSource(int i, String strQueryParams)throws Exception
+	void syncOneSource(int i, String strQueryParams, boolean syncOnlyIfChanged)throws Exception
 	{
     	SyncSource src = null;
     	//boolean bError = false;
@@ -1011,7 +1011,13 @@ public class SyncEngine implements NetRequest.IRhoSession
 		    if ( isSessionExist() && getState() != esStop )
 		    {
 		    	src.m_strQueryParams = strQueryParams;
-		        src.sync();
+				if (syncOnlyIfChanged) {
+					if (src.haveChangedValues() ) {
+						src.sync();
+					}
+				} else {
+					src.sync();
+				}
 		    }
 		    
 		    //getNotify().onSyncSourceEnd(i, m_sources);
@@ -1031,7 +1037,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    //return !bError;
 	}
 	
-	void syncAllSources(String strQueryParams)throws Exception
+	void syncAllSources(String strQueryParams, boolean bSyncOnlyChangedSources)throws Exception
 	{
 //	    boolean bError = false;
 
@@ -1042,7 +1048,7 @@ public class SyncEngine implements NetRequest.IRhoSession
 	    //TODO: do not stop on error source
 	    for( int i = 0; i < (int)m_sources.size() && isContinueSync(); i++ )
 	    {
-	        /*bError = !*/syncOneSource(i, strQueryParams);
+	        /*bError = !*/syncOneSource(i, strQueryParams, bSyncOnlyChangedSources);
 	    }
 
 	    if ( !isSchemaChanged()  && getState() != SyncEngine.esStop )
