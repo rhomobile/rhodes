@@ -1,0 +1,41 @@
+#sdk: "C:/Ruby193/lib/ruby/gems/1.9.1/gems/rhodes-3.5.0.1.6.0.beta"
+app_type: rhoelements 
+
+capabilities: 
+- gps
+- pim
+- camera
+- vibrate
+- phone
+- bluetooth
+- calendar
+- motorola_browser
+
+#sdk: "c:/Android/rhodes"
+
+sdkversion: 3.5.0
+name: autocomplete_content_generator
+version: 1.0
+vendor: rhomobile
+build: debug
+bbver: 4.6
+applog: rholog.txt
+iphone:
+  configuration: Release
+  sdk: iphonesimulator5.0
+  provisionprofile:
+  codesignidentity:
+  entitlements:
+  BundleIdentifier: com.rhomobile.autocompletehelper
+  BundleURLScheme: autocompletehelper
+wp:
+  productid: '34ebdf30-feaf-012f-648c-64ce8f469495'
+symbian:
+  uid: '0xeece192a'
+android:
+  version: 2.1
+wm:
+  extensions: ["digest", "digest-md5", "digest-sha1", "digest-sha2", "openssl.so", "openssl", "ezcrypto"]
+  sdk: "MC3000c50b (ARMV4I)"
+
+extensions: ["json", "rhoxml", "rhodes_translator"]
