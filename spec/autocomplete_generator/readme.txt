@@ -1,0 +1,1 @@
+Content generator for rhostudio auto-completion

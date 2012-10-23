@@ -1,0 +1,8 @@
+rhodes_path='C:/Ruby193/lib/ruby/gems/1.9.1/gems/rhodes-3.5.0.1.6.0.beta'
+app_version='1.0'
+app_name='autocomplete_helper'
+reload_app_changes=1
+debug_port=
+debug_host='127.0.0.1'
+platform='wm'
+ext_path=C:/Ruby193/lib/ruby/gems/1.9.1/gems/rhodes-3.5.0.1.6.0.beta/lib/extensions/json;
