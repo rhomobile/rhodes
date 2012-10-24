@@ -174,5 +174,5 @@ void rho_webview_set_cookie(const char *u, const char *c)
 
 void rho_webview_save(const char* format, const char* path, int tab_index)
 {
-    RAWLOG_ERROR("rho_webview_save is not implemented at iOS")
+    RAWLOG_ERROR("rho_webview_save is not implemented at iOS");
 }
