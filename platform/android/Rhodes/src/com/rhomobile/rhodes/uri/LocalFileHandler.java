@@ -65,7 +65,7 @@ public class LocalFileHandler implements UriHandler
             return false;
         
         String noAnchorUrl = URLUtil.stripAnchor(url);
-        if (isHtmlUrl(noAnchorUrl) || isImageUrl(noAnchorUrl)) {
+        if (isHtmlUrl(noAnchorUrl)) {
             return false;
         }
 
