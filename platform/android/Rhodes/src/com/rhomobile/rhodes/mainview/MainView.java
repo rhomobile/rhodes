@@ -33,6 +33,8 @@ import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import android.view.View;
 
 public interface MainView {
+    public static final String FORMAT_JPEG = "jpeg";
+    public static final String FORMAT_HTML = "html";
 
 	public View getView();
 
@@ -63,4 +65,6 @@ public interface MainView {
 	
 	public void addNavBar(String title, Map<Object,Object> left, Map<Object,Object> right);
 	public void removeNavBar();
+	
+	public void saveCurrentPage(String format, String path, int index);
 }
