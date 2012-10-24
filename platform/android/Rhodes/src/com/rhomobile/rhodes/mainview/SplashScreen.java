@@ -279,4 +279,8 @@ public class SplashScreen implements MainView{
     public void stopNavigate(int index) {
         mBackendView.stopNavigate(index);
     }
+    @Override
+    public void saveCurrentPage(String format, String path, int index) {
+        mBackendView.saveCurrentPage(format, path, index);
+    }
 }

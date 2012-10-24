@@ -256,4 +256,17 @@ public class WebView {
             Logger.E(TAG, e);
         }
     }
+
+    public static void saveCurrentPage(final String format, final String path, final int index) {
+        try {
+            PerformOnUiThread.exec(new Runnable() {
+                @Override public void run() {
+                    RhodesActivity.safeGetInstance().getMainView().saveCurrentPage(format, path, index);
+                }
+            });
+        }
+        catch (Exception e) {
+            Logger.E(TAG, e);
+        }
+    }
 }

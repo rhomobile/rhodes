@@ -1,11 +1,16 @@
 package com.rhomobile.rhodes.webview;
 
+import java.io.FileOutputStream;
+
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Picture;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
@@ -183,5 +188,42 @@ public class GoogleWebView implements IRhoWebView {
     @Override
     public void onResume() {
 	AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,false);
+    }
+
+    @Override
+    public void capture(CaptureFormat format, String path) {
+        switch (format) {
+        case CAPTURE_FORMAT_HTML:
+            Logger.T(TAG, "Capturing current page as HTML archive: " + path);
+            mWebView.saveWebArchive(path);
+            break;
+        case CAPTURE_FORMAT_JPEG:
+            Logger.T(TAG, "Capturing current page as JPEG image: " + path);
+            saveJpeg(path);
+            break;
+        default:
+            //Should never happen
+            Logger.E(TAG, "Wrong capture format.");
+            break;
+        }
+    }
+    
+    private void saveJpeg(String path) {
+        Picture picture = mWebView.capturePicture(); 
+        Bitmap bitmap = Bitmap.createBitmap( picture.getWidth(), picture.getHeight(), Bitmap.Config.ARGB_8888); 
+        Canvas canvas = new Canvas(bitmap); 
+        picture.draw(canvas); 
+        FileOutputStream fos = null; 
+        try { 
+            fos = new FileOutputStream(path); 
+            if ( fos != null ) 
+            { 
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos ); 
+                fos.close(); 
+            } 
+        }
+        catch (Throwable e){
+            Logger.E(TAG, e);
+        }
     }
 }
