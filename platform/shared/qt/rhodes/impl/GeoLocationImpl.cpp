@@ -40,6 +40,12 @@ double rho_geo_longitude()
     return 0.0;
 }
 
+double rho_geo_altitude() 
+{
+    //TODO: rho_geo_altitude
+    return 0.0;
+}
+
 float rho_geo_accuracy()
 {
     //TODO: rho_geo_accuracy
