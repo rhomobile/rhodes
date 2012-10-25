@@ -35,7 +35,7 @@
     BOOL isEnabled;
 	
 @public	
-	double _dLatitude, _dLongitude, _dAccuracy;
+	double _dLatitude, _dLongitude, _dAccuracy, _dAltitude;
 	bool _bKnownPosition;
 	
 	//SEL onUpdateLocation;	
@@ -52,6 +52,7 @@
 - (double) getLatitude;
 - (double) getLongitude;
 - (double) getAccuracy;
+- (double) getAltitude;
 - (bool) isKnownPosition;
 - (bool) isAvailable;
 

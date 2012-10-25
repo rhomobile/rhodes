@@ -929,4 +929,10 @@ public class TabbedMainView implements MainView {
         getTabMainView(index).stopNavigate(0);
     }
 
+
+    @Override
+    public void saveCurrentPage(String format, String path, int index) {
+        getTabMainView(index).saveCurrentPage(format, path, 0);
+    }
+
 }

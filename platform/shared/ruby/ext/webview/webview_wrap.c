@@ -1825,11 +1825,11 @@ static VALUE mWebView;
 #define SWIG_as_voidptrptr(a) ((void)SWIG_as_voidptr(*a),(void**)(a)) 
 
 
-extern void rho_webview_refresh(int index);
+extern void rho_webview_refresh(int tab_index);
 #define refresh rho_webview_refresh 
 extern void rho_webview_navigate(const char* url, int tab_index);
 #define navigate rho_webview_navigate
-extern char* rho_webview_current_location(int index);
+extern char* rho_webview_current_location(int tab_index);
 #define current_location rho_webview_current_location
 extern char* rho_webview_execute_js(const char* js, int tab_index);
 #define execute_js rho_webview_execute_js
@@ -1846,6 +1846,9 @@ extern void rho_webview_set_cookie(const char* url, const char* cookie);
 
 extern void rho_webview_navigate_back();
 #define navigate_back rho_webview_navigate_back
+
+extern void rho_webview_save(const char* format, const char* path, int tab_index);
+#define save rho_webview_save
 
 
 
@@ -1866,7 +1869,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:/opt/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LL(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2236,6 +2239,54 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_save(int argc, VALUE *argv, VALUE self) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  int res1 ;
+  char *buf1 = 0 ;
+  int alloc1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  
+  {
+    arg3 = -1;
+  }
+  if ((argc < 2) || (argc > 3)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+  }
+  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","save", 1, argv[0] ));
+  }
+  arg1 = (char *)(buf1);
+  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","save", 2, argv[1] ));
+  }
+  arg2 = (char *)(buf2);
+  if (argc > 2) {
+    ecode3 = SWIG_AsVal_int(argv[2], &val3);
+    if (!SWIG_IsOK(ecode3)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode3), Ruby_Format_TypeError( "", "int","save", 3, argv[2] ));
+    } 
+    arg3 = (int)(val3);
+  }
+  save((char const *)arg1,(char const *)arg2,arg3);
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+fail:
+  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2551,5 +2602,6 @@ SWIGEXPORT void Init_WebView(void) {
   rb_define_module_function(mWebView, "full_screen_mode", _wrap_full_screen_mode, -1);
   rb_define_module_function(mWebView, "set_cookie", _wrap_set_cookie, -1);
   rb_define_module_function(mWebView, "navigate_back", _wrap_navigate_back, -1);
+  rb_define_module_function(mWebView, "save", _wrap_save, -1);
 }
 

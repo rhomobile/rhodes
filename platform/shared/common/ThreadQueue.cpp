@@ -158,7 +158,7 @@ void CThreadQueue::run()
                 nWait = nWait2;
         }
 
-        if ( !isStopping() && isNoCommands() )
+        if ( !m_bNoThreaded && !isStopping() && isNoCommands() )
 		{
             LOG(INFO) + "ThreadQueue blocked for " + nWait + " seconds...";
             if ( wait(nWait) == 1 )
@@ -166,7 +166,7 @@ void CThreadQueue::run()
         }
         nLastPollInterval = 0;
 
-        if ( !isStopping() )
+        if ( !m_bNoThreaded && !isStopping() )
     		processCommands();
 	}
 

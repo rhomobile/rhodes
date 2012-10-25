@@ -177,13 +177,13 @@ public abstract class ThreadQueue extends RhoThread
 	                LOG.INFO("ThreadQueue blocked for " + nWait + " seconds...");
 	                wait(nWait);
 	                
-	                if ( isNoCommands() )
+	                if ( !m_bNoThreaded && !isStopping() && isNoCommands() )
 	                	onTimeout();
 	            }
             }
             nLastPollInterval = 0;
 
-            if ( !isStopping() )
+            if ( !m_bNoThreaded && !isStopping() )
             {
 	        	try{
 	        		processCommands();

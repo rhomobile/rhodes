@@ -74,6 +74,16 @@ RHO_GLOBAL double rho_geo_longitude()
     return env->CallStaticDoubleMethod(cls, mid);
 }
 
+RHO_GLOBAL double rho_geo_altitude()
+{
+    JNIEnv *env = jnienv();
+    static jclass cls = getJNIClass(RHODES_JAVA_CLASS_GEO_LOCATION);
+    if (!cls) return 0;
+    static jmethodID mid = getJNIClassStaticMethod(env, cls, "getAltitude", "()D");
+    if (!mid) return 0;
+    return env->CallStaticDoubleMethod(cls, mid);
+}
+
 RHO_GLOBAL float rho_geo_accuracy()
 {
     JNIEnv *env = jnienv();

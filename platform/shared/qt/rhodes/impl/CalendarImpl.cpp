@@ -48,5 +48,9 @@ void event_delete(const char *eid)
 {
     //TODO: event_delete
 }
+    
+const char* calendar_get_authorization_status(void) {
+    return "Restricted";
+}
 
 } //extern "C"

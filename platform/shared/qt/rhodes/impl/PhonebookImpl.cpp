@@ -112,4 +112,8 @@ int deleteRecord(void* pb, void* record)
     return 1;
 }
 
+const char* phonebook_get_authorization_status() {
+        return "Restricted";
+}
+    
 } //extern "C"
