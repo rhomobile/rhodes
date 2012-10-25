@@ -679,4 +679,17 @@ public class SimpleMainView implements MainView {
 	public int getTabsCount() {
 		return 0;
 	}
+
+    @Override
+    public void saveCurrentPage(String format, String path, int index) {
+        if (format.equalsIgnoreCase(MainView.FORMAT_HTML)) {
+            webView.capture(IRhoWebView.CaptureFormat.CAPTURE_FORMAT_HTML, path);
+        }
+        else if (format.equalsIgnoreCase(MainView.FORMAT_JPEG)) {
+            webView.capture(IRhoWebView.CaptureFormat.CAPTURE_FORMAT_JPEG, path);
+        }
+        else {
+            Logger.E(TAG, "Wrong format to save current page: " + format);
+        }
+    }
 }

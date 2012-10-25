@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public interface IRhoWebView {
+    enum CaptureFormat { CAPTURE_FORMAT_HTML, CAPTURE_FORMAT_JPEG }
+    
     View getView();
     void setContainerView(ViewGroup view);
     ViewGroup getContainerView();
@@ -25,4 +27,6 @@ public interface IRhoWebView {
     String getEngineId();
     void onPause();
     void onResume();
+    
+    void capture(CaptureFormat format, String path);
 }

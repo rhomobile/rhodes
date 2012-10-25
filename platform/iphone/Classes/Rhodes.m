@@ -138,7 +138,20 @@ static Rhodes *instance = NULL;
     //CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
     //frame.origin.y += sbFrame.size.height;
     //frame.size.height -= sbFrame.size.height;
-    return frame;
+    
+    //CGRect screen_bounds = [[UIScreen mainScreen] bounds];
+
+    CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
+    UIDeviceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if (UIDeviceOrientationLandscapeLeft == orientation ||
+        UIDeviceOrientationLandscapeRight == orientation)
+    {
+        if (appFrame.size.width < appFrame.size.height)
+        {
+            appFrame = CGRectMake(appFrame.origin.y, appFrame.origin.x, appFrame.size.height, appFrame.size.width);
+        }
+    }
+    return appFrame;//frame;
 }
 
 

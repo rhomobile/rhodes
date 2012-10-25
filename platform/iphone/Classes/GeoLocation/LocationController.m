@@ -109,6 +109,7 @@ static LocationController *sharedLC = nil;
         timer = nil;
 		_dLatitude = 0;
 		_dLongitude = 0;
+		_dAltitude = 0;
         _dAccuracy = 0;
 		_bKnownPosition = false;
 		isErrorState = false;
@@ -153,7 +154,8 @@ static LocationController *sharedLC = nil;
 		
 		_dLatitude = newLocation.coordinate.latitude;
 		_dLongitude = newLocation.coordinate.longitude;
-        _dAccuracy = newLocation.horizontalAccuracy;//sqrt(newLocation.horizontalAccuracy*newLocation.horizontalAccuracy + newLocation.verticalAccuracy*newLocation.verticalAccuracy);
+        	_dAccuracy = newLocation.horizontalAccuracy;//sqrt(newLocation.horizontalAccuracy*newLocation.horizontalAccuracy + newLocation.verticalAccuracy*newLocation.verticalAccuracy);
+		_dAltitude = newLocation.altitude;
 		_bKnownPosition = true;	
 	}
     if (isFirstUpdateFromPlatform && isEnabled) {
@@ -186,6 +188,15 @@ static LocationController *sharedLC = nil;
 		res = _dLongitude;
 	}
 	return res;	
+}
+
+- (double) getAltitude{
+	double res = 0; 
+	@synchronized(self){
+		res = _dAltitude;
+	}
+	
+	return res;
 }
 
 - (bool) isKnownPosition{
@@ -303,6 +314,11 @@ void rho_geoimpl_init()
 double rho_geo_longitude() {
 	geo_update();
 	return [[LocationController sharedInstance] getLongitude];
+}
+
+double rho_geo_altitude() {
+	geo_update();
+	return [[LocationController sharedInstance] getAltitude];
 }
 
 float rho_geo_accuracy() {

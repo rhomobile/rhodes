@@ -76,7 +76,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;..\..\shared\qt\rhodes\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
-				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;ENABLE_DYNAMIC_RHOBUNDLE;UNICODE;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_WEBKIT_LIB"
+				PreprocessorDefinitions="_DEBUG;DEBUG;WIN32;_WINDOWS;UNICODE;QT_LARGEFILE_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_WEBKIT_LIB"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
 				TreatWChar_tAsBuiltInType="false"
@@ -799,7 +799,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="../../shared;./rho;../../shared/ruby;../../shared/wtl80/include;.;&quot;..\..\shared\qt\rhodes\GeneratedFiles&quot;;&quot;$(QTDIR)\include&quot;;&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\qtmain&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtWebKit&quot;"
-				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;ENABLE_DYNAMIC_RHOBUNDLE;UNICODE;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_WEBKIT_LIB"
+				PreprocessorDefinitions="_NDEBUG;NDEBUG;WIN32;_WINDOWS;UNICODE;QT_LARGEFILE_SUPPORT;QT_NO_DEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_NETWORK_LIB;QT_WEBKIT_LIB"
 				RuntimeLibrary="0"
 				TreatWChar_tAsBuiltInType="false"
 				UsePrecompiledHeader="2"
@@ -4171,6 +4171,16 @@
 				RelativePath="..\..\shared\qt\rhodes\resources\simulator.qrc"
 				>
 				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Rcc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name $(InputName) ..\..\shared\qt\rhodes\resources\simulator.qrc -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\qrc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\qrc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
@@ -4203,6 +4213,16 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Rcc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name $(InputName) ..\..\shared\qt\rhodes\resources\simulator.qrc -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\qrc_$(InputName).cpp&quot;&#x0D;&#x0A;"
+						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\qrc_$(InputName).cpp&quot;"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|Pocket PC 2003 (ARMV4)"
 					ExcludedFromBuild="true"
 					>
@@ -4232,26 +4252,6 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Rcc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name $(InputName) ..\..\shared\qt\rhodes\resources\simulator.qrc -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\qrc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\qrc_$(InputName).cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Rcc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name $(InputName) ..\..\shared\qt\rhodes\resources\simulator.qrc -o &quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\qrc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						Outputs="&quot;..\..\shared\qt\rhodes\GeneratedFiles\$(ConfigurationName)\qrc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -9492,13 +9492,11 @@
 						RelativePath="..\..\shared\qt\rhodes\GeneratedFiles\Debug\moc_DateTimeDialog.cpp"
 						>
 						<FileConfiguration
-							Name="SimulatorDebug|Win32"
-							ExcludedFromBuild="true"
+							Name="Debug|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -9584,11 +9582,13 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Win32"
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -9714,13 +9714,11 @@
 						RelativePath="..\..\shared\qt\rhodes\GeneratedFiles\Debug\moc_ExternalWebView.cpp"
 						>
 						<FileConfiguration
-							Name="SimulatorDebug|Win32"
-							ExcludedFromBuild="true"
+							Name="Debug|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -9806,11 +9804,13 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Win32"
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -9936,13 +9936,11 @@
 						RelativePath="..\..\shared\qt\rhodes\GeneratedFiles\Debug\moc_QtMainWindow.cpp"
 						>
 						<FileConfiguration
-							Name="SimulatorDebug|Win32"
-							ExcludedFromBuild="true"
+							Name="Debug|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -10028,11 +10026,13 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Win32"
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -10158,13 +10158,11 @@
 						RelativePath="..\..\shared\qt\rhodes\GeneratedFiles\Debug\moc_QtWebInspector.cpp"
 						>
 						<FileConfiguration
-							Name="SimulatorDebug|Win32"
-							ExcludedFromBuild="true"
+							Name="Debug|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -10250,11 +10248,13 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Debug|Win32"
+							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -10646,11 +10646,11 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorRelease|Win32"
-							ExcludedFromBuild="true"
+							Name="Release|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
+								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -10726,11 +10726,11 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="SimulatorRelease|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -10842,11 +10842,11 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorRelease|Win32"
-							ExcludedFromBuild="true"
+							Name="Release|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
+								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -10922,11 +10922,11 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="SimulatorRelease|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -11038,11 +11038,11 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorRelease|Win32"
-							ExcludedFromBuild="true"
+							Name="Release|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
+								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -11118,11 +11118,11 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="SimulatorRelease|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -11234,11 +11234,11 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="SimulatorRelease|Win32"
-							ExcludedFromBuild="true"
+							Name="Release|Win32"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
+								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -11314,11 +11314,11 @@
 							/>
 						</FileConfiguration>
 						<FileConfiguration
-							Name="Release|Win32"
+							Name="SimulatorRelease|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								UsePrecompiledHeader="0"
 							/>
 						</FileConfiguration>
 						<FileConfiguration

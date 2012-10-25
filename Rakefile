@@ -927,7 +927,7 @@ def common_bundle_start(startdir, dest)
 
   replace_platform = $config['platform']
   replace_platform = "bb6" if $bb6
-  replace_platform = "wm" if replace_platform == 'win32'
+  #replace_platform = "wm" if replace_platform == 'win32'
 
   [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
       chdir folder
@@ -964,7 +964,7 @@ def process_exclude_folders
 
   exclude_platform = $config['platform']
   exclude_platform = "bb6" if $bb6
-  exclude_platform = "wm" if exclude_platform == 'win32'
+  #exclude_platform = "wm" if exclude_platform == 'win32'
 
   if $app_config["excludedirs"]
       excl += $app_config["excludedirs"]['all'] if $app_config["excludedirs"]['all']
