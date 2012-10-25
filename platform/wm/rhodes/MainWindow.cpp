@@ -866,26 +866,57 @@ LRESULT CMainWindow::OnHotKey (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
     return 1;
 }
+extern "C" HWND getMainWnd();
+BOOL EnumChildProc(HWND hwnd,LPARAM lParam)
+{
+    if ( getMainWnd() != ::GetParent(hwnd) )
+        return TRUE;
+
+    wchar_t szBuf[200];
+    GetWindowText(hwnd, szBuf, 199);
+    if (!*szBuf)
+        return TRUE;
+
+    DWORD dwStyles = GetWindowLong(hwnd, GWL_STYLE);    
+    //LOG(INFO) + "Child: " + szBuf + "Styles: " + LOGFMT("0x%X") + dwStyles + "Popup: " + (((dwStyles&WS_POPUP) != 0) ? "1" : "0");
+
+	if ( *((HWND*)lParam) != hwnd && (dwStyles&WS_POPUP) != 0 )
+	{
+		HWND* pWnd = (HWND*)lParam;
+		*pWnd = hwnd;
+		return FALSE;
+	}
+
+	return TRUE;
+}
 
 LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND() : NULL;
-
-    if (hBrowserWnd && !::IsIconic(m_hWnd))
+    HWND hWndLostFocus = (HWND)wParam;
+	WCHAR wWindowName[30];
+	if (hWndLostFocus && GetClassName(hWndLostFocus, wWindowName, 30))
 	{
-		HWND hWndLostFocus = (HWND)wParam;
+		//  Allow the following windows to remain having focus, avoids
+		//  the bug where we're unable to select anything from a combo 
+		//  box
+		if (wcscmp(wWindowName, L"PopupWindowClass") == 0)
+	        return 0;
+	}
+
+    //Look for popup window
+    HWND hChildPopUp = hWndLostFocus;
+    EnumWindows( EnumChildProc, (LPARAM)&hChildPopUp);
+    if ( hChildPopUp && hChildPopUp != hWndLostFocus)
+    {
+        ::SetFocus(hChildPopUp);
+        return 0;
+    }
+
+    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND() : NULL;
+    if (hBrowserWnd && ::IsWindowVisible(m_hWnd) ) //!::IsIconic(m_hWnd))
+	{
 		if (hWndLostFocus == hBrowserWnd)
 	        return 0;
-
-		WCHAR wWindowName[30];
-		if (hWndLostFocus && GetClassName(hWndLostFocus, wWindowName, 30))
-		{
-			//  Allow the following windows to remain having focus, avoids
-			//  the bug where we're unable to select anything from a combo 
-			//  box
-			if (wcscmp(wWindowName, L"PopupWindowClass") == 0)
-		        return 0;
-		}
         ::SetFocus(hBrowserWnd);
 	}
 
