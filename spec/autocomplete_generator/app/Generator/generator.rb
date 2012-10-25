@@ -19,12 +19,33 @@ def printTitleInfo(file)
   file.puts " "
 end
 
-def decorateInstanceMethod(level, name)
-  return decorateOffset(level, "def " + name.to_s + "\n") + decorateOffset(level, "end") + decorateOffset(level, "")
+def decoratePattern(pattern, level, name, params)
+  if params.nil?
+    return decorateOffset(level, pattern + name.to_s + "\n") + decorateOffset(level, "end") + decorateOffset(level, "")
+  else    
+    paramsDeclaration = String.new
+    params.each { |param| 
+      paramsDeclaration += param.to_s 
+      paramsDeclaration += ","
+    }
+
+    if !paramsDeclaration.empty?
+      paramsDeclaration = paramsDeclaration[0..-2]
+      funcDef = decorateOffset(level, pattern + name.to_s + "(" + paramsDeclaration + ")\n")
+    else
+      funcDef = decorateOffset(level, pattern + name.to_s + "\n")
+    end
+
+    return funcDef + decorateOffset(level, "end") + decorateOffset(level, "")
+  end
 end
 
-def decorateMethod(level, name)
-  return decorateOffset(level, "def self." + name.to_s + "\n") + decorateOffset(level, "end") + decorateOffset(level, "")
+def decorateInstanceMethod(level, name, params)
+  decoratePattern("def ", level, name, params)
+end
+
+def decorateMethod(level, name, params)
+  decoratePattern("def self.", level, name, params)
 end
 
 def decorateOffset(columnNum, printLine)
@@ -87,7 +108,11 @@ def printClassInfo(cls, baseClass, level, moduleFile)
     case clsObj.class.to_s
       when "String"
         puts cls.to_s + ' - String const' 
-        moduleFile.puts decorateOffset(level, cls.to_s + " = \"" + clsObj + "\"")
+        if clsObj == "\\"
+          moduleFile.puts decorateOffset(level, cls.to_s + " = \"\\\\\"")
+        else
+          moduleFile.puts decorateOffset(level, cls.to_s + " = \"" + clsObj + "\"")
+        end
         moduleFile.puts ''
         return
       when "Integer"
@@ -158,8 +183,10 @@ def printClassInfo(cls, baseClass, level, moduleFile)
 
       methods = clsObj.methods(false)
 
-      methods.each { |method|      
-        moduleFile.puts decorateMethod(level + 1, method)
+      methods.each { |method|  
+          p '3.1- ' + method.to_s + " - " + clsObj.method(method.to_s).parameters.to_s #map(&:last).map(&:to_s).to_s
+          moduleFile.puts decorateMethod(level + 1, method, clsObj.method(method.to_s).parameters.map(&:last).map(&:to_s))
+          p '3.2- '
       }
     end
   rescue
@@ -173,7 +200,9 @@ def printClassInfo(cls, baseClass, level, moduleFile)
       instance_methods = clsObj.instance_methods(false)
 
       instance_methods.each { |method|      
-        moduleFile.puts decorateInstanceMethod(level + 1, method)
+        p '4.1- ' + method.to_s + " - " + clsObj.instance_method(method.to_s).parameters.to_s #map(&:last).map(&:to_s).to_s
+        moduleFile.puts decorateInstanceMethod(level + 1, method, clsObj.instance_method(method.to_s).parameters.map(&:last).map(&:to_s))
+        p '4.2- '
       }
     end
   rescue
