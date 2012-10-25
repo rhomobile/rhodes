@@ -372,6 +372,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     
 	CGRect wFrame = frame;
     wFrame.origin.y = 0;
+    wFrame.origin.x = 0;
     webView.frame = wFrame;
     
     webView.autoresizesSubviews = YES;
