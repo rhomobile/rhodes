@@ -203,6 +203,10 @@ Allows finish sync if sync is active at the time when application is put to back
 
 	finish_sync_in_background = 1
 
+Enable web plugins (Flash etc.) on Android devices.
+
+	enable_web_plugins = 1
+
 ### Last Visited Page
 To save/restore last visited page use WebView.current_location in on_ui_created/on_ui_destroyed of [AppApplication class](application#appapplication-class).
 
