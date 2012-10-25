@@ -67,7 +67,8 @@ extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstan
 #else
 extern "C" void rho_wm_impl_SetApplicationLicenseObj(void* pAppLicenseObj)
 {
-    delete pAppLicenseObj;
+    if (pAppLicenseObj)
+        delete pAppLicenseObj;
 }
 #endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
