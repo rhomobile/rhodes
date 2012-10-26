@@ -380,7 +380,7 @@ extern "C" void rho_sys_impl_exit_with_errormessage(const char* szTitle, const c
 
 extern "C" void rho_scanner_TEST(HWND hwnd);
 extern "C" void rho_scanner_TEST2();
-extern "C" int rho_wm_impl_CheckLicense();
+extern "C" void rho_wm_impl_CheckLicense();
 
 // This method is called immediately before entering the message loop.
 // It contains initialization code for the application.
@@ -577,9 +577,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     m_appWindow.ShowWindow(nShowCmd);
 
 #ifndef RHODES_EMULATOR
-    int nRes = rho_wm_impl_CheckLicense();
-    if ( !nRes )
-        ::MessageBoxW(0, L"Please provide RhoElements license key.", L"Motorola License", MB_ICONERROR | MB_OK);
+    rho_wm_impl_CheckLicense();
 #endif
 
 #else
@@ -851,7 +849,7 @@ typedef LPCWSTR (WINAPI *PCL)(HWND, LPCWSTR, LPCWSTR, LPCWSTR);
 typedef int (WINAPI *FUNC_IsLicenseOK)();
 typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
 
-extern "C" int rho_wm_impl_CheckLicense()
+extern "C" void rho_wm_impl_CheckLicense()
 {
     int nRes = 0;
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
@@ -909,7 +907,7 @@ extern "C" int rho_wm_impl_CheckLicense()
     if ( nRes == 0 )
     {
         rho_wm_impl_CheckLicenseWithBarcode(getMainWnd(),hLicenseInstance);
-        return 1;
+        return;
     }
 #endif
 
@@ -922,7 +920,8 @@ extern "C" int rho_wm_impl_CheckLicense()
     }
 #endif
 
-    return nRes;
+    if ( !nRes )
+        ::PostMessage( getMainWnd(), WM_SHOW_LICENSE_WARNING, 0, 0);
 }
 
 static inline char *

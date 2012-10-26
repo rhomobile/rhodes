@@ -8,7 +8,7 @@
 #include <webvw.h>
 #endif
 
-extern "C" int rho_wm_impl_CheckLicense();
+extern "C" void rho_wm_impl_CheckLicense();
 
 CIEBrowserEngine::CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance) :
     m_spIWebBrowser2(NULL)
@@ -239,10 +239,7 @@ void CIEBrowserEngine::OnDocumentComplete(LPCTSTR url)
 {
 	if(!m_bLoadingComplete && wcscmp(url,_T("about:blank"))!=0)
 	{
-        int nRes = rho_wm_impl_CheckLicense();
-        if ( !nRes )
-            ::MessageBoxW(0, L"Please provide RhoElements license key.", L"Motorola License", MB_ICONERROR | MB_OK);
-
+        rho_wm_impl_CheckLicense();
 		m_bLoadingComplete = true;
 	}
 }

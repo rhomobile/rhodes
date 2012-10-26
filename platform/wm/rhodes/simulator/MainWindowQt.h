@@ -50,6 +50,7 @@ static UINT WM_ALERT_HIDE_POPUP        = ::RegisterWindowMessage(L"RHODES_WM_ALE
 static UINT WM_DATETIME_PICKER         = ::RegisterWindowMessage(L"RHODES_WM_DATETIME_PICKER");
 static UINT WM_EXECUTE_COMMAND         = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_COMMAND");
 static UINT WM_EXECUTE_RUNNABLE        = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_RUNNABLE");
+static UINT WM_SHOW_LICENSE_WARNING	   = ::RegisterWindowMessage(L"RHOELEMENTS_WM_LICENSE_WARNING");
 
 #define ID_CUSTOM_MENU_ITEM_FIRST (WM_APP+3)
 #define ID_CUSTOM_MENU_ITEM_LAST  (ID_CUSTOM_MENU_ITEM_FIRST + (APP_MENU_ITEMS_MAX) - 1)
@@ -146,6 +147,7 @@ public:
         MESSAGE_HANDLER(WM_DATETIME_PICKER, OnDateTimePicker);
         MESSAGE_HANDLER(WM_EXECUTE_COMMAND, OnExecuteCommand);
         MESSAGE_HANDLER(WM_EXECUTE_RUNNABLE, OnExecuteRunnable);
+        MESSAGE_HANDLER(WM_SHOW_LICENSE_WARNING, OnLicenseWarning);
     END_MSG_MAP()
     
 private:
@@ -172,6 +174,7 @@ private:
     LRESULT OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnExecuteCommand (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnExecuteRunnable (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
 private:
     CLogView m_logView;
