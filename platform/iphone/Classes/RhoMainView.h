@@ -43,6 +43,7 @@
 - (void)executeJs:(NSString*)js tab:(int)index;
 
 - (NSString*)currentLocation:(int)index;
+- (NSString*)get_current_url:(int)index;
 
 - (void)switchTab:(int)index;
 - (int)activeTab;

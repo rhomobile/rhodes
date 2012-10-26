@@ -283,4 +283,8 @@ public class SplashScreen implements MainView{
     public void saveCurrentPage(String format, String path, int index) {
         mBackendView.saveCurrentPage(format, path, index);
     }
+    
+	public String get_current_url(int tab_index) {
+		return mBackendView.get_current_url(tab_index);
+	}    
 }

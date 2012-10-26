@@ -692,4 +692,17 @@ public class SimpleMainView implements MainView {
             Logger.E(TAG, "Wrong format to save current page: " + format);
         }
     }
+    
+	public String get_current_url(int tab_index) {
+		if (webView == null) {
+			return "";
+		}
+		android.webkit.WebView v = (android.webkit.WebView)webView.getView();
+		if (v == null) {
+			return "";
+		}
+		//Utils.platformLog("MOHUS", "$$$$$$$$$$$$$$$$$ = "+v.getUrl());
+		return v.getUrl();
+	}
+
 }

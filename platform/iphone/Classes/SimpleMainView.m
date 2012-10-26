@@ -878,6 +878,22 @@ static BOOL makeHiddenUntilLoadContent = YES;
     return [[webView.request mainDocumentURL] absoluteString];
 }
 
+#define CUR_URL_DICT_KEY @"CUR_URL_DICT_KEY"
+
+-(void) get_current_url_command:(NSMutableDictionary*)dict {
+    NSString* res = [webView stringByEvaluatingJavaScriptFromString:@"window.location.href"];
+    //NSString* res = [[webView.request mainDocumentURL] absoluteString];
+    [dict setValue:res forKey:CUR_URL_DICT_KEY];
+}
+
+- (NSString*)get_current_url:(int)index {
+    NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:1];
+    [self performSelectorOnMainThread:@selector(get_current_url_command:) withObject:dict waitUntilDone:YES];
+    NSString* res = (NSString*)[dict valueForKey:CUR_URL_DICT_KEY];
+    return res;
+    //return [webView stringByEvaluatingJavaScriptFromString:@"window.location.href"];
+}
+
 - (void)switchTab:(int)index {
     // Nothing
 }
