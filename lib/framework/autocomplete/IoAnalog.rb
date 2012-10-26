@@ -5,53 +5,53 @@
 #
  
 module IoAnalog
-  def self.generalVoltage1=
+  def self.generalVoltage1=(argument)
   end  
-  def self.generalVoltage1MaximumThreshold=
+  def self.generalVoltage1MaximumThreshold=(argument)
   end  
-  def self.generalVoltage1MinimumThreshold=
+  def self.generalVoltage1MinimumThreshold=(argument)
   end  
-  def self.generalVoltage1Debounce=
+  def self.generalVoltage1Debounce=(argument)
   end  
-  def self.generalVoltage2=
+  def self.generalVoltage2=(argument)
   end  
-  def self.generalVoltage2MaximumThreshold=
+  def self.generalVoltage2MaximumThreshold=(argument)
   end  
-  def self.generalVoltage2MinimumThreshold=
+  def self.generalVoltage2MinimumThreshold=(argument)
   end  
-  def self.generalVoltage2Debounce=
+  def self.generalVoltage2Debounce=(argument)
   end  
-  def self.BatteryVoltage=
+  def self.BatteryVoltage=(argument)
   end  
-  def self.BatteryVoltageMaximumThreshold=
+  def self.BatteryVoltageMaximumThreshold=(argument)
   end  
-  def self.BatteryVoltageMinimumThreshold=
+  def self.BatteryVoltageMinimumThreshold=(argument)
   end  
-  def self.BatteryVoltageDebounce=
+  def self.BatteryVoltageDebounce=(argument)
   end  
-  def self.BatteryCurrent=
+  def self.BatteryCurrent=(argument)
   end  
-  def self.BatteryCurrentMaximumThreshold=
+  def self.BatteryCurrentMaximumThreshold=(argument)
   end  
-  def self.BatteryCurrentMinimumThreshold=
+  def self.BatteryCurrentMinimumThreshold=(argument)
   end  
-  def self.BatteryCurrentDebounce=
+  def self.BatteryCurrentDebounce=(argument)
   end  
-  def self.AmbientTemperature=
+  def self.AmbientTemperature=(argument)
   end  
-  def self.AmbientTemperatureMaximumThreshold=
+  def self.AmbientTemperatureMaximumThreshold=(argument)
   end  
-  def self.AmbientTemperatureMinimumThreshold=
+  def self.AmbientTemperatureMinimumThreshold=(argument)
   end  
-  def self.AmbientTemperatureDebounce=
+  def self.AmbientTemperatureDebounce=(argument)
   end  
-  def self.HeaterTemperature=
+  def self.HeaterTemperature=(argument)
   end  
-  def self.HeaterTemperatureMaximumThreshold=
+  def self.HeaterTemperatureMaximumThreshold=(argument)
   end  
-  def self.HeaterTemperatureMinimumThreshold=
+  def self.HeaterTemperatureMinimumThreshold=(argument)
   end  
-  def self.HeaterTemperatureDebounce=
+  def self.HeaterTemperatureDebounce=(argument)
   end  
   def self.invokeGeneralVoltage1
   end  
@@ -65,9 +65,9 @@ module IoAnalog
   end  
   def self.invokeHeaterTemperature
   end  
-  def self.portEvent=
+  def self.portEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

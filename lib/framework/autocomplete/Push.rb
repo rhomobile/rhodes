@@ -5,23 +5,23 @@
 #
  
 module Push
-  def self.port=
+  def self.port=(argument)
   end  
-  def self.passKey=
+  def self.passKey=(argument)
   end  
-  def self.response=
+  def self.response=(argument)
   end  
-  def self.path=
+  def self.path=(argument)
   end  
-  def self.unattended=
+  def self.unattended=(argument)
   end  
   def self.start
   end  
   def self.stop
   end  
-  def self.detected=
+  def self.detected=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

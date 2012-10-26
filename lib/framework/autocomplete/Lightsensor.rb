@@ -5,15 +5,15 @@
 #
  
 module Lightsensor
-  def self.status=
+  def self.status=(argument)
   end  
-  def self.minimumInterval=
+  def self.minimumInterval=(argument)
   end  
   def self.getSensorData
   end  
-  def self.LightSensorEvent=
+  def self.LightSensorEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

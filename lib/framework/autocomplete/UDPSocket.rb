@@ -53,13 +53,13 @@ class UDPSocket
 
   FNM_SYSCASE = 8
 
-  def connect
+  def connect(req,req1)
   end  
-  def bind
+  def bind(req,req1)
   end  
-  def send
+  def send(rest)
   end  
-  def recvfrom_nonblock
+  def recvfrom_nonblock(rest)
   end  
 end
 

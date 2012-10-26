@@ -5,11 +5,11 @@
 #
  
 class Thread
-  def self.new
+  def self.new(rest)
   end  
-  def self.start
+  def self.start(rest)
   end  
-  def self.fork
+  def self.fork(rest)
   end  
   def self.main
   end  
@@ -17,7 +17,7 @@ class Thread
   end  
   def self.stop
   end  
-  def self.kill
+  def self.kill(req)
   end  
   def self.exit
   end  
@@ -27,13 +27,13 @@ class Thread
   end  
   def self.abort_on_exception
   end  
-  def self.abort_on_exception=
+  def self.abort_on_exception=(req)
   end  
   def self.exclusive
   end  
-  def raise
+  def raise(rest)
   end  
-  def join
+  def join(rest)
   end  
   def value
   end  
@@ -47,17 +47,17 @@ class Thread
   end  
   def wakeup
   end  
-  def []
+  def [](req)
   end  
-  def []=
+  def []=(req,req1)
   end  
-  def key?
+  def key?(req)
   end  
   def keys
   end  
   def priority
   end  
-  def priority=
+  def priority=(req)
   end  
   def status
   end  
@@ -67,7 +67,7 @@ class Thread
   end  
   def abort_on_exception
   end  
-  def abort_on_exception=
+  def abort_on_exception=(req)
   end  
   def safe_level
   end  
@@ -77,9 +77,9 @@ class Thread
   end  
   def inspect
   end  
-  def set_trace_func
+  def set_trace_func(req)
   end  
-  def add_trace_func
+  def add_trace_func(req)
   end  
 end
 

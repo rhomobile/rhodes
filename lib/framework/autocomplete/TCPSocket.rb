@@ -53,7 +53,7 @@ class TCPSocket
 
   FNM_SYSCASE = 8
 
-  def self.gethostbyname
+  def self.gethostbyname(req)
   end  
 end
 

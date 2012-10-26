@@ -5,15 +5,15 @@
 #
  
 module BottomCommandArea
-  def self.visibility=
+  def self.visibility=(argument)
   end  
-  def self.height=
+  def self.height=(argument)
   end  
-  def self.color=
+  def self.color=(argument)
   end  
-  def self.image=
+  def self.image=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

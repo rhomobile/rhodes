@@ -5,25 +5,25 @@
 #
  
 module CardReader
-  def self.pinTimeout=
+  def self.pinTimeout=(argument)
   end  
-  def self.pinEntry=
+  def self.pinEntry=(argument)
   end  
-  def self.panData=
+  def self.panData=(argument)
   end  
-  def self.autoTab=
+  def self.autoTab=(argument)
   end  
-  def self.autoEnter=
+  def self.autoEnter=(argument)
   end  
-  def self.moduleName=
+  def self.moduleName=(argument)
   end  
   def self.open
   end  
   def self.close
   end  
-  def self.readEvent=
+  def self.readEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

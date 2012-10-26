@@ -8,17 +8,17 @@ class DateTime
   module Format
   end
 
-  def self._strptime
+  def self._strptime(str,fmt)
   end  
-  def strftime
+  def strftime(fmt)
   end  
-  def iso8601
+  def iso8601(n)
   end  
-  def rfc3339
+  def rfc3339(n)
   end  
-  def xmlschema
+  def xmlschema(n)
   end  
-  def jisx0301
+  def jisx0301(n)
   end  
 end
 

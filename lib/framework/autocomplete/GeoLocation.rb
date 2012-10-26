@@ -5,23 +5,23 @@
 #
  
 module GeoLocation
-  def self.latitude
+  def self.latitude(rest)
   end  
-  def self.longitude
+  def self.longitude(rest)
   end  
-  def self.accuracy
+  def self.accuracy(rest)
   end  
-  def self.known_position?
+  def self.known_position?(rest)
   end  
-  def self.set_view_notification
+  def self.set_view_notification(rest)
   end  
-  def self.set_notification
+  def self.set_notification(rest)
   end  
-  def self.haversine_distance
+  def self.haversine_distance(rest)
   end  
-  def self.turnoff
+  def self.turnoff(rest)
   end  
-  def self.do_geocoding
+  def self.do_geocoding(rest)
   end  
 end
 

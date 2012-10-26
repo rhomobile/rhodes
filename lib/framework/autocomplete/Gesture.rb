@@ -5,67 +5,67 @@
 #
  
 module Gesture
-  def self.type=
+  def self.type=(argument)
   end  
-  def self.id=
+  def self.id=(argument)
   end  
-  def self.preset=
+  def self.preset=(argument)
   end  
-  def self.diagnostics=
+  def self.diagnostics=(argument)
   end  
-  def self.startX=
+  def self.startX=(argument)
   end  
-  def self.startY=
+  def self.startY=(argument)
   end  
-  def self.endX=
+  def self.endX=(argument)
   end  
-  def self.endY=
+  def self.endY=(argument)
   end  
-  def self.skew=
+  def self.skew=(argument)
   end  
-  def self.deviation=
+  def self.deviation=(argument)
   end  
-  def self.regionWidth=
+  def self.regionWidth=(argument)
   end  
-  def self.centerX=
+  def self.centerX=(argument)
   end  
-  def self.centerY=
+  def self.centerY=(argument)
   end  
-  def self.radius=
+  def self.radius=(argument)
   end  
-  def self.start=
+  def self.start=(argument)
   end  
-  def self.end=
+  def self.end=(argument)
   end  
-  def self.tolerance=
+  def self.tolerance=(argument)
   end  
-  def self.sensitivity=
+  def self.sensitivity=(argument)
   end  
-  def self.delay=
+  def self.delay=(argument)
   end  
-  def self.interval=
+  def self.interval=(argument)
   end  
-  def self.TargetX=
+  def self.TargetX=(argument)
   end  
-  def self.TargetY=
+  def self.TargetY=(argument)
   end  
-  def self.TargetZ=
+  def self.TargetZ=(argument)
   end  
-  def self.TiltTolerance=
+  def self.TiltTolerance=(argument)
   end  
-  def self.Hysteresis=
+  def self.Hysteresis=(argument)
   end  
-  def self.Threshold=
+  def self.Threshold=(argument)
   end  
-  def self.Quiet=
+  def self.Quiet=(argument)
   end  
   def self.create
   end  
   def self.delete
   end  
-  def self.detected=
+  def self.detected=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

@@ -5,17 +5,17 @@
 #
  
 module IoSystem
-  def self.ignition=
+  def self.ignition=(argument)
   end  
-  def self.powerSource=
+  def self.powerSource=(argument)
   end  
   def self.invokeIgnition
   end  
   def self.invokePowerSource
   end  
-  def self.portEvent=
+  def self.portEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

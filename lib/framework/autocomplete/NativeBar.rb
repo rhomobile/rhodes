@@ -5,27 +5,27 @@
 #
  
 module NativeBar
-  def self.create
+  def self.create(rest)
   end  
-  def self.remove
+  def self.remove(rest)
   end  
-  def self.switch_tab
+  def self.switch_tab(rest)
   end  
-  def self.started
+  def self.started(rest)
   end  
-  def self.create_native_toolbar
+  def self.create_native_toolbar(rest)
   end  
-  def self.remove_native_toolbar
+  def self.remove_native_toolbar(rest)
   end  
-  def self.create_native_tabbar
+  def self.create_native_tabbar(rest)
   end  
-  def self.remove_native_tabbar
+  def self.remove_native_tabbar(rest)
   end  
-  def self.native_tabbar_switch_tab
+  def self.native_tabbar_switch_tab(rest)
   end  
-  def self.native_tabbar_set_tab_badge
+  def self.native_tabbar_set_tab_badge(rest)
   end  
-  def self.native_tabbar_get_current_tab
+  def self.native_tabbar_get_current_tab(rest)
   end  
 end
 

@@ -5,19 +5,19 @@
 #
  
 module Telemetry
-  def self.queryFrequency=
+  def self.queryFrequency=(argument)
   end  
-  def self.enabled=
+  def self.enabled=(argument)
   end  
-  def self.disabled=
+  def self.disabled=(argument)
   end  
   def self.invoke
   end  
-  def self.telemetryDataEvent=
+  def self.telemetryDataEvent=(argument)
   end  
-  def self.telemetryArrayEvent=
+  def self.telemetryArrayEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

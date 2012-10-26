@@ -13,7 +13,7 @@ module Device
   end  
   def self.calibrate
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

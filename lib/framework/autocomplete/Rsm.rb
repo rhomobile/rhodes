@@ -5,55 +5,55 @@
 #
  
 module Rsm
-  def self.bluetoothAuthentication=
+  def self.bluetoothAuthentication=(argument)
   end  
-  def self.bluetoothEncryption=
+  def self.bluetoothEncryption=(argument)
   end  
-  def self.bluetoothPinCode=
+  def self.bluetoothPinCode=(argument)
   end  
-  def self.bluetoothPinCodeType=
+  def self.bluetoothPinCodeType=(argument)
   end  
-  def self.bluetoothReconnectAttempts=
+  def self.bluetoothReconnectAttempts=(argument)
   end  
-  def self.bluetoothBeepOnReconnectAttempt=
+  def self.bluetoothBeepOnReconnectAttempt=(argument)
   end  
-  def self.bluetoothHidAutoReconnect=
+  def self.bluetoothHidAutoReconnect=(argument)
   end  
-  def self.bluetoothFriendlyName=
+  def self.bluetoothFriendlyName=(argument)
   end  
-  def self.bluetoothInquiryMode=
+  def self.bluetoothInquiryMode=(argument)
   end  
-  def self.bluetoothAutoReconnect=
+  def self.bluetoothAutoReconnect=(argument)
   end  
-  def self.forceSavePairingBarcode=
+  def self.forceSavePairingBarcode=(argument)
   end  
-  def self.lowBatteryIndication=
+  def self.lowBatteryIndication=(argument)
   end  
-  def self.lowBatteryIndicationCycle=
+  def self.lowBatteryIndicationCycle=(argument)
   end  
-  def self.scanLineWidth=
+  def self.scanLineWidth=(argument)
   end  
-  def self.goodScansDelay=
+  def self.goodScansDelay=(argument)
   end  
-  def self.decodeFeedback=
+  def self.decodeFeedback=(argument)
   end  
-  def self.ignoreCode128Usps=
+  def self.ignoreCode128Usps=(argument)
   end  
-  def self.scanTriggerWakeup=
+  def self.scanTriggerWakeup=(argument)
   end  
-  def self.mems=
+  def self.mems=(argument)
   end  
-  def self.proximityEnable=
+  def self.proximityEnable=(argument)
   end  
-  def self.proximityContinuous=
+  def self.proximityContinuous=(argument)
   end  
-  def self.proximityDistance=
+  def self.proximityDistance=(argument)
   end  
-  def self.pagingEnable=
+  def self.pagingEnable=(argument)
   end  
-  def self.pagingBeepSequence=
+  def self.pagingBeepSequence=(argument)
   end  
-  def self.pagingActivate=
+  def self.pagingActivate=(argument)
   end  
   def self.markForRetrievalModelNumber
   end  
@@ -127,9 +127,9 @@ module Rsm
   end  
   def self.bluetoothUnpair
   end  
-  def self.rsmGetEvent=
+  def self.rsmGetEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

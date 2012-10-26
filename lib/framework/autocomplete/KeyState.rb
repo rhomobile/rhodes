@@ -5,19 +5,19 @@
 #
  
 module KeyState
-  def self.right=
+  def self.right=(argument)
   end  
-  def self.left=
+  def self.left=(argument)
   end  
-  def self.top=
+  def self.top=(argument)
   end  
-  def self.height=
+  def self.height=(argument)
   end  
-  def self.width=
+  def self.width=(argument)
   end  
-  def self.visibility=
+  def self.visibility=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

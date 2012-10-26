@@ -5,33 +5,33 @@
 #
  
 module Imager
-  def self.enabled=
+  def self.enabled=(argument)
   end  
-  def self.desiredWidth=
+  def self.desiredWidth=(argument)
   end  
-  def self.desiredHeight=
+  def self.desiredHeight=(argument)
   end  
-  def self.left=
+  def self.left=(argument)
   end  
-  def self.top=
+  def self.top=(argument)
   end  
-  def self.width=
+  def self.width=(argument)
   end  
-  def self.height=
+  def self.height=(argument)
   end  
-  def self.lamp=
+  def self.lamp=(argument)
   end  
-  def self.aim=
+  def self.aim=(argument)
   end  
-  def self.username=
+  def self.username=(argument)
   end  
-  def self.password=
+  def self.password=(argument)
   end  
-  def self.sound=
+  def self.sound=(argument)
   end  
-  def self.destination=
+  def self.destination=(argument)
   end  
-  def self.deviceId=
+  def self.deviceId=(argument)
   end  
   def self.enable
   end  
@@ -41,13 +41,13 @@ module Imager
   end  
   def self.enumerate
   end  
-  def self.imagerEvent=
+  def self.imagerEvent=(argument)
   end  
-  def self.imagerCaptureEvent=
+  def self.imagerCaptureEvent=(argument)
   end  
-  def self.imagerEnumEvent=
+  def self.imagerEnumEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

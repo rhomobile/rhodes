@@ -5,9 +5,9 @@
 #
  
 module PowerOn
-  def self.powerOnEvent=
+  def self.powerOnEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

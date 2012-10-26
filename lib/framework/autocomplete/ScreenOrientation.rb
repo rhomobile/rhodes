@@ -5,7 +5,7 @@
 #
  
 module ScreenOrientation
-  def self.autoRotate=
+  def self.autoRotate=(argument)
   end  
   def self.normal
   end  
@@ -15,9 +15,9 @@ module ScreenOrientation
   end  
   def self.upsideDown
   end  
-  def self.screenOrientationEvent=
+  def self.screenOrientationEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

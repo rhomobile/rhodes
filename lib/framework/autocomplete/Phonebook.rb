@@ -5,33 +5,35 @@
 #
  
 module Phonebook
-  def self.openPhonebook
+  def self.openPhonebook(rest)
   end  
-  def self.closePhonebook
+  def self.closePhonebook(rest)
   end  
-  def self.allRecords
+  def self.allRecords(rest)
   end  
-  def self.countRecords
+  def self.countRecords(rest)
   end  
-  def self.getRecords
+  def self.getRecords(rest)
   end  
-  def self.openRecord
+  def self.openRecord(rest)
   end  
-  def self.getRecord
+  def self.getRecord(rest)
   end  
-  def self.firstRecord
+  def self.firstRecord(rest)
   end  
-  def self.nextRecord
+  def self.nextRecord(rest)
   end  
-  def self.createRecord
+  def self.createRecord(rest)
   end  
-  def self.setRecordValue
+  def self.setRecordValue(rest)
   end  
-  def self.addRecord
+  def self.addRecord(rest)
   end  
-  def self.saveRecord
+  def self.saveRecord(rest)
   end  
-  def self.deleteRecord
+  def self.deleteRecord(rest)
+  end  
+  def self.get_authorization_status(rest)
   end  
 end
 

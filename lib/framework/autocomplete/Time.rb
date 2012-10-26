@@ -13,33 +13,33 @@ class Time
 
   def self.now
   end  
-  def self.at
+  def self.at(rest)
   end  
-  def self.utc
+  def self.utc(rest)
   end  
-  def self.gm
+  def self.gm(rest)
   end  
-  def self.local
+  def self.local(rest)
   end  
-  def self.mktime
+  def self.mktime(rest)
   end  
-  def self._load
+  def self._load(req)
   end  
-  def self.zone_offset
+  def self.zone_offset(zone,year)
   end  
-  def self.parse
+  def self.parse(date,now)
   end  
-  def self.strptime
+  def self.strptime(date,format,now)
   end  
-  def self.rfc2822
+  def self.rfc2822(date)
   end  
-  def self.rfc822
+  def self.rfc822(date)
   end  
-  def self.httpdate
+  def self.httpdate(date)
   end  
-  def self.xmlschema
+  def self.xmlschema(date)
   end  
-  def self.iso8601
+  def self.iso8601(date)
   end  
   def to_i
   end  
@@ -47,19 +47,19 @@ class Time
   end  
   def to_r
   end  
-  def <=>
+  def <=>(req)
   end  
-  def eql?
+  def eql?(req)
   end  
   def hash
   end  
-  def localtime
+  def localtime(rest)
   end  
   def gmtime
   end  
   def utc
   end  
-  def getlocal
+  def getlocal(rest)
   end  
   def getgm
   end  
@@ -75,13 +75,13 @@ class Time
   end  
   def to_a
   end  
-  def +
+  def +(req)
   end  
-  def -
+  def -(req)
   end  
   def succ
   end  
-  def round
+  def round(rest)
   end  
   def sec
   end  
@@ -145,9 +145,9 @@ class Time
   end  
   def subsec
   end  
-  def strftime
+  def strftime(date)
   end  
-  def _dump
+  def _dump(rest)
   end  
   def rfc2822
   end  
@@ -155,13 +155,13 @@ class Time
   end  
   def httpdate
   end  
-  def xmlschema
+  def xmlschema(fraction_digits)
   end  
-  def iso8601
+  def iso8601(fraction_digits)
   end  
-  def old_strftime
+  def old_strftime(req)
   end  
-  def to_formatted_s
+  def to_formatted_s(type)
   end  
 end
 

@@ -5,21 +5,21 @@
 #
  
 module KeyCapture
-  def self.dispatch=
+  def self.dispatch=(argument)
   end  
-  def self.keyValue=
+  def self.keyValue=(argument)
   end  
-  def self.remap=
+  def self.remap=(argument)
   end  
-  def self.accelerateKey=
+  def self.accelerateKey=(argument)
   end  
-  def self.homeKeyValue=
+  def self.homeKeyValue=(argument)
   end  
-  def self.keyEvent=
+  def self.keyEvent=(argument)
   end  
-  def self.triggerEvent=
+  def self.triggerEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

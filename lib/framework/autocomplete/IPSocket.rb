@@ -53,13 +53,13 @@ class IPSocket
 
   FNM_SYSCASE = 8
 
-  def self.getaddress
+  def self.getaddress(req)
   end  
   def addr
   end  
   def peeraddr
   end  
-  def recvfrom
+  def recvfrom(rest)
   end  
 end
 

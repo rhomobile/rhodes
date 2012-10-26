@@ -5,15 +5,15 @@
 #
  
 module MediaPlayer
-  def self.filename=
+  def self.filename=(argument)
   end  
-  def self.type=
+  def self.type=(argument)
   end  
   def self.start
   end  
   def self.stop
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

@@ -18,59 +18,59 @@ module OpenSSL
   end
 
   class BN
-    def self.rand
+    def self.rand(rest)
     end    
-    def self.pseudo_rand
+    def self.pseudo_rand(rest)
     end    
-    def self.rand_range
+    def self.rand_range(req)
     end    
-    def self.pseudo_rand_range
+    def self.pseudo_rand_range(req)
     end    
-    def self.generate_prime
+    def self.generate_prime(rest)
     end    
-    def copy
+    def copy(req)
     end    
     def num_bytes
     end    
     def num_bits
     end    
-    def +
+    def +(req)
     end    
-    def -
+    def -(req)
     end    
-    def *
+    def *(req)
     end    
     def sqr
     end    
-    def /
+    def /(req)
     end    
-    def %
+    def %(req)
     end    
-    def mod_add
+    def mod_add(req,req1)
     end    
-    def mod_sub
+    def mod_sub(req,req1)
     end    
-    def mod_mul
+    def mod_mul(req,req1)
     end    
-    def mod_sqr
+    def mod_sqr(req)
     end    
-    def **
+    def **(req)
     end    
-    def mod_exp
+    def mod_exp(req,req1)
     end    
-    def gcd
+    def gcd(req)
     end    
-    def cmp
+    def cmp(req)
     end    
-    def <=>
+    def <=>(req)
     end    
-    def ucmp
+    def ucmp(req)
     end    
-    def eql?
+    def eql?(req)
     end    
-    def ==
+    def ==(req)
     end    
-    def ===
+    def ===(req)
     end    
     def zero?
     end    
@@ -78,25 +78,25 @@ module OpenSSL
     end    
     def odd?
     end    
-    def prime?
+    def prime?(rest)
     end    
-    def set_bit!
+    def set_bit!(req)
     end    
-    def clear_bit!
+    def clear_bit!(req)
     end    
-    def bit_set?
+    def bit_set?(req)
     end    
-    def mask_bits!
+    def mask_bits!(req)
     end    
-    def <<
+    def <<(req)
     end    
-    def >>
+    def >>(req)
     end    
-    def lshift!
+    def lshift!(req)
     end    
-    def rshift!
+    def rshift!(req)
     end    
-    def to_s
+    def to_s(rest)
     end    
     def to_i
     end    
@@ -104,11 +104,11 @@ module OpenSSL
     end    
     def to_bn
     end    
-    def coerce
+    def coerce(req)
     end    
-    def mod_inverse
+    def mod_inverse(req)
     end    
-    def prime_fasttest?
+    def prime_fasttest?(rest)
     end    
   end
 
@@ -117,31 +117,31 @@ module OpenSSL
     end    
     def reset
     end    
-    def encrypt
+    def encrypt(rest)
     end    
-    def decrypt
+    def decrypt(rest)
     end    
-    def pkcs5_keyivgen
+    def pkcs5_keyivgen(rest)
     end    
-    def update
+    def update(rest)
     end    
     def final
     end    
     def name
     end    
-    def key=
+    def key=(req)
     end    
-    def key_len=
+    def key_len=(req)
     end    
     def key_len
     end    
-    def iv=
+    def iv=(req)
     end    
     def iv_len
     end    
     def block_size
     end    
-    def padding=
+    def padding=(req)
     end    
     def random_key
     end    
@@ -153,13 +153,13 @@ module OpenSSL
   end
 
   class Digest
-    def self.digest
+    def self.digest(name,data)
     end    
     def reset
     end    
-    def update
+    def update(req)
     end    
-    def <<
+    def <<(req)
     end    
     def digest_length
     end    
@@ -173,15 +173,15 @@ module OpenSSL
   end
 
   class HMAC
-    def self.digest
+    def self.digest(req,req1,req2)
     end    
-    def self.hexdigest
+    def self.hexdigest(req,req1,req2)
     end    
     def reset
     end    
-    def update
+    def update(req)
     end    
-    def <<
+    def <<(req)
     end    
     def digest
     end    
@@ -197,7 +197,7 @@ module OpenSSL
   end
 
   class PKCS12
-    def self.create
+    def self.create(rest)
     end    
     def key
     end    
@@ -210,59 +210,59 @@ module OpenSSL
   end
 
   class PKCS7
-    def self.read_smime
+    def self.read_smime(req)
     end    
-    def self.write_smime
+    def self.write_smime(rest)
     end    
-    def self.sign
+    def self.sign(rest)
     end    
-    def self.encrypt
+    def self.encrypt(rest)
     end    
     def data
     end    
     def error_string
     end    
-    def error_string=
+    def error_string=(req)
     end    
-    def type=
+    def type=(req)
     end    
     def type
     end    
-    def detached=
+    def detached=(req)
     end    
     def detached
     end    
     def detached?
     end    
-    def cipher=
+    def cipher=(req)
     end    
-    def add_signer
+    def add_signer(req)
     end    
     def signers
     end    
-    def add_recipient
+    def add_recipient(req)
     end    
     def recipients
     end    
-    def add_certificate
+    def add_certificate(req)
     end    
-    def certificates=
+    def certificates=(req)
     end    
     def certificates
     end    
-    def add_crl
+    def add_crl(req)
     end    
-    def crls=
+    def crls=(req)
     end    
     def crls
     end    
-    def add_data
+    def add_data(req)
     end    
-    def data=
+    def data=(req)
     end    
-    def verify
+    def verify(rest)
     end    
-    def decrypt
+    def decrypt(rest)
     end    
     def to_pem
     end    
@@ -273,9 +273,9 @@ module OpenSSL
   end
 
   module PKCS5
-    def self.pbkdf2_hmac
+    def self.pbkdf2_hmac(req,req1,req2,req3,req4)
     end    
-    def self.pbkdf2_hmac_sha1
+    def self.pbkdf2_hmac_sha1(req,req1,req2,req3)
     end    
   end
 
@@ -283,7 +283,7 @@ module OpenSSL
   end
 
   module SSL
-    def self.verify_certificate_identity
+    def self.verify_certificate_identity(cert,hostname)
     end    
   end
 
@@ -294,13 +294,13 @@ module OpenSSL
   end
 
   class Engine
-    def self.load
+    def self.load(rest)
     end    
     def self.cleanup
     end    
     def self.engines
     end    
-    def self.by_id
+    def self.by_id(req)
     end    
     def id
     end    
@@ -308,17 +308,17 @@ module OpenSSL
     end    
     def finish
     end    
-    def cipher
+    def cipher(req)
     end    
-    def digest
+    def digest(req)
     end    
-    def load_private_key
+    def load_private_key(rest)
     end    
-    def load_public_key
+    def load_public_key(rest)
     end    
-    def set_default
+    def set_default(req)
     end    
-    def ctrl_cmd
+    def ctrl_cmd(rest)
     end    
     def cmds
     end    
@@ -327,78 +327,78 @@ module OpenSSL
   end
 
   module ASN1
-    def self.traverse
+    def self.traverse(req)
     end    
-    def self.decode
+    def self.decode(req)
     end    
-    def self.decode_all
+    def self.decode_all(req)
     end    
-    def self.Boolean
+    def self.Boolean(rest)
     end    
-    def self.Integer
+    def self.Integer(rest)
     end    
-    def self.Enumerated
+    def self.Enumerated(rest)
     end    
-    def self.BitString
+    def self.BitString(rest)
     end    
-    def self.OctetString
+    def self.OctetString(rest)
     end    
-    def self.UTF8String
+    def self.UTF8String(rest)
     end    
-    def self.NumericString
+    def self.NumericString(rest)
     end    
-    def self.PrintableString
+    def self.PrintableString(rest)
     end    
-    def self.T61String
+    def self.T61String(rest)
     end    
-    def self.VideotexString
+    def self.VideotexString(rest)
     end    
-    def self.IA5String
+    def self.IA5String(rest)
     end    
-    def self.GraphicString
+    def self.GraphicString(rest)
     end    
-    def self.ISO64String
+    def self.ISO64String(rest)
     end    
-    def self.GeneralString
+    def self.GeneralString(rest)
     end    
-    def self.UniversalString
+    def self.UniversalString(rest)
     end    
-    def self.BMPString
+    def self.BMPString(rest)
     end    
-    def self.Null
+    def self.Null(rest)
     end    
-    def self.ObjectId
+    def self.ObjectId(rest)
     end    
-    def self.UTCTime
+    def self.UTCTime(rest)
     end    
-    def self.GeneralizedTime
+    def self.GeneralizedTime(rest)
     end    
-    def self.Sequence
+    def self.Sequence(rest)
     end    
-    def self.Set
+    def self.Set(rest)
     end    
   end
 
   module Buffering
     def sync
     end    
-    def sync=
+    def sync=(req)
     end    
-    def read
+    def read(size,buf)
     end    
-    def readpartial
+    def readpartial(maxlen,buf)
     end    
-    def read_nonblock
+    def read_nonblock(maxlen,buf)
     end    
-    def gets
+    def gets(eol,limit)
     end    
-    def each
+    def each(eol)
     end    
-    def each_line
+    def each_line(eol)
     end    
-    def readlines
+    def readlines(eol)
     end    
-    def readline
+    def readline(eol)
     end    
     def getc
     end    
@@ -406,23 +406,23 @@ module OpenSSL
     end    
     def readchar
     end    
-    def ungetc
+    def ungetc(c)
     end    
     def eof?
     end    
     def eof
     end    
-    def write
+    def write(s)
     end    
-    def write_nonblock
+    def write_nonblock(s)
     end    
-    def <<
+    def <<(s)
     end    
-    def puts
+    def puts(args)
     end    
-    def print
+    def print(args)
     end    
-    def printf
+    def printf(s,args)
     end    
     def flush
     end    
@@ -432,7 +432,7 @@ module OpenSSL
 
   def self.debug
   end  
-  def self.debug=
+  def self.debug=(req)
   end  
   def self.errors
   end  

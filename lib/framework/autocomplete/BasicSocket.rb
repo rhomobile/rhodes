@@ -55,33 +55,33 @@ class BasicSocket
 
   def self.do_not_reverse_lookup
   end  
-  def self.do_not_reverse_lookup=
+  def self.do_not_reverse_lookup=(req)
   end  
-  def self.for_fd
+  def self.for_fd(req)
   end  
   def close_read
   end  
   def close_write
   end  
-  def shutdown
+  def shutdown(rest)
   end  
-  def setsockopt
+  def setsockopt(req,req1,req2)
   end  
-  def getsockopt
+  def getsockopt(req,req1)
   end  
   def getsockname
   end  
   def getpeername
   end  
-  def send
+  def send(rest)
   end  
-  def recv
+  def recv(rest)
   end  
-  def recv_nonblock
+  def recv_nonblock(rest)
   end  
   def do_not_reverse_lookup
   end  
-  def do_not_reverse_lookup=
+  def do_not_reverse_lookup=(req)
   end  
 end
 

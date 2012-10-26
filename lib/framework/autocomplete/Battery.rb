@@ -5,29 +5,29 @@
 #
  
 module Battery
-  def self.visibility=
+  def self.visibility=(argument)
   end  
-  def self.left=
+  def self.left=(argument)
   end  
-  def self.top=
+  def self.top=(argument)
   end  
-  def self.layout=
+  def self.layout=(argument)
   end  
-  def self.color=
+  def self.color=(argument)
   end  
-  def self.sampleInterval=
+  def self.sampleInterval=(argument)
   end  
-  def self.setSystemNotifications=
+  def self.setSystemNotifications=(argument)
   end  
   def self.getSmartBatteryStatus
   end  
   def self.getBatteryStatus
   end  
-  def self.batteryEvent=
+  def self.batteryEvent=(argument)
   end  
-  def self.smartBatteryEvent=
+  def self.smartBatteryEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

@@ -5,19 +5,19 @@
 #
  
 module RhoConf
-  def self.set_property_by_name
+  def self.set_property_by_name(rest)
   end  
-  def self.get_property_by_name
+  def self.get_property_by_name(rest)
   end  
-  def self.show_log
+  def self.show_log(rest)
   end  
-  def self.send_log
+  def self.send_log(rest)
   end  
-  def self.clean_log
+  def self.clean_log(rest)
   end  
-  def self.read_log
+  def self.read_log(rest)
   end  
-  def self.is_property_exists
+  def self.is_property_exists(rest)
   end  
 end
 

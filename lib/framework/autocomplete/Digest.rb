@@ -20,9 +20,9 @@ module Digest
   class SHA512
   end
 
-  def self.hexencode
+  def self.hexencode(req)
   end  
-  def self.const_missing
+  def self.const_missing(name)
   end  
 end
 

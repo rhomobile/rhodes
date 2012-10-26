@@ -9,7 +9,7 @@ module Stylus
   end  
   def self.disable
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

@@ -5,23 +5,23 @@
 #
  
 module FileTransfer
-  def self.destination=
+  def self.destination=(argument)
   end  
-  def self.source=
+  def self.source=(argument)
   end  
-  def self.username=
+  def self.username=(argument)
   end  
-  def self.password=
+  def self.password=(argument)
   end  
-  def self.createFolders=
+  def self.createFolders=(argument)
   end  
-  def self.overWrite=
+  def self.overWrite=(argument)
   end  
   def self.transfer
   end  
-  def self.transferEvent=
+  def self.transferEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

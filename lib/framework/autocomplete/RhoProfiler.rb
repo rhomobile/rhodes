@@ -5,17 +5,17 @@
 #
  
 module RhoProfiler
-  def self.create_counter
+  def self.create_counter(req)
   end  
-  def self.destroy_counter
+  def self.destroy_counter(req)
   end  
-  def self.start_counter
+  def self.start_counter(req)
   end  
-  def self.stop_counter
+  def self.stop_counter(req)
   end  
-  def self.flush_counter
+  def self.flush_counter(req,req1)
   end  
-  def self.start_created_counter
+  def self.start_created_counter(req)
   end  
 end
 

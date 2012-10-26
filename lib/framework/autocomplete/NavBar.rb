@@ -5,11 +5,11 @@
 #
  
 module NavBar
-  def self.create
+  def self.create(rest)
   end  
-  def self.remove
+  def self.remove(rest)
   end  
-  def self.started
+  def self.started(rest)
   end  
 end
 

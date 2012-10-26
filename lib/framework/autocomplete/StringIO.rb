@@ -5,17 +5,17 @@
 #
  
 class StringIO
-  def self.open
+  def self.open(rest)
   end  
-  def reopen
+  def reopen(rest)
   end  
   def string
   end  
-  def string=
+  def string=(req)
   end  
   def lineno
   end  
-  def lineno=
+  def lineno=(req)
   end  
   def binmode
   end  
@@ -35,7 +35,7 @@ class StringIO
   end  
   def eof?
   end  
-  def fcntl
+  def fcntl(rest)
   end  
   def flush
   end  
@@ -43,23 +43,23 @@ class StringIO
   end  
   def pos
   end  
-  def pos=
+  def pos=(req)
   end  
   def rewind
   end  
-  def seek
+  def seek(rest)
   end  
   def sync
   end  
-  def sync=
+  def sync=(req)
   end  
   def tell
   end  
-  def each
+  def each(rest)
   end  
-  def each_line
+  def each_line(rest)
   end  
-  def lines
+  def lines(rest)
   end  
   def each_byte
   end  
@@ -75,9 +75,9 @@ class StringIO
   end  
   def getc
   end  
-  def ungetc
+  def ungetc(req)
   end  
-  def ungetbyte
+  def ungetbyte(req)
   end  
   def readchar
   end  
@@ -85,35 +85,35 @@ class StringIO
   end  
   def readbyte
   end  
-  def gets
+  def gets(rest)
   end  
-  def readline
+  def readline(rest)
   end  
-  def readlines
+  def readlines(rest)
   end  
-  def read
+  def read(rest)
   end  
-  def sysread
+  def sysread(rest)
   end  
-  def readpartial
+  def readpartial(rest)
   end  
-  def read_nonblock
+  def read_nonblock(rest)
   end  
-  def write
+  def write(req)
   end  
-  def <<
+  def <<(req)
   end  
-  def print
+  def print(rest)
   end  
-  def printf
+  def printf(rest)
   end  
-  def putc
+  def putc(req)
   end  
-  def puts
+  def puts(rest)
   end  
-  def syswrite
+  def syswrite(req)
   end  
-  def write_nonblock
+  def write_nonblock(req)
   end  
   def isatty
   end  
@@ -127,13 +127,13 @@ class StringIO
   end  
   def length
   end  
-  def truncate
+  def truncate(req)
   end  
   def external_encoding
   end  
   def internal_encoding
   end  
-  def set_encoding
+  def set_encoding(req)
   end  
 end
 

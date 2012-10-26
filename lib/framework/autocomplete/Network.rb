@@ -5,15 +5,15 @@
 #
  
 module Network
-  def self.host=
+  def self.host=(argument)
   end  
-  def self.port=
+  def self.port=(argument)
   end  
-  def self.networkPollInterval=
+  def self.networkPollInterval=(argument)
   end  
-  def self.connectionTimeout=
+  def self.connectionTimeout=(argument)
   end  
-  def self.connectWan=
+  def self.connectWan=(argument)
   end  
   def self.start
   end  
@@ -21,11 +21,11 @@ module Network
   end  
   def self.disconnectWan
   end  
-  def self.networkEvent=
+  def self.networkEvent=(argument)
   end  
-  def self.wanStatusEvent=
+  def self.wanStatusEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

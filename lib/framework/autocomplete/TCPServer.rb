@@ -59,7 +59,7 @@ class TCPServer
   end  
   def sysaccept
   end  
-  def listen
+  def listen(req)
   end  
 end
 

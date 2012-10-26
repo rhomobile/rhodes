@@ -5,21 +5,21 @@
 #
  
 module Registry
-  def self.hive=
+  def self.hive=(argument)
   end  
-  def self.key=
+  def self.key=(argument)
   end  
-  def self.setting=
+  def self.setting=(argument)
   end  
-  def self.type=
+  def self.type=(argument)
   end  
-  def self.persistent=
+  def self.persistent=(argument)
   end  
-  def self.value=
+  def self.value=(argument)
   end  
   def self.delete
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

@@ -5,19 +5,19 @@
 #
  
 module Alarm
-  def self.interval=
+  def self.interval=(argument)
   end  
-  def self.repeat=
+  def self.repeat=(argument)
   end  
-  def self.time=
+  def self.time=(argument)
   end  
   def self.clear
   end  
   def self.set
   end  
-  def self.alarmTriggered=
+  def self.alarmTriggered=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

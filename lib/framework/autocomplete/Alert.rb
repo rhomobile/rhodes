@@ -5,15 +5,15 @@
 #
  
 module Alert
-  def self.show_popup
+  def self.show_popup(rest)
   end  
-  def self.hide_popup
+  def self.hide_popup(rest)
   end  
-  def self.vibrate
+  def self.vibrate(rest)
   end  
-  def self.play_file
+  def self.play_file(rest)
   end  
-  def self.show_status
+  def self.show_status(rest)
   end  
 end
 
