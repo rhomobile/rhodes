@@ -253,6 +253,12 @@
 	return [v currentLocation:index];
 }
 
+- (NSString*)get_current_url:(int)index {
+	SimpleMainView* v = [self getSimpleView:index];
+	return [v get_current_url:index];
+}
+
+
 - (void)switchTabCommand:(SimpleMainView*)new_v {
 	int index = 0;
 	int i;

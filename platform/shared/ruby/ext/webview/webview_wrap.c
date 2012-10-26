@@ -1850,6 +1850,10 @@ extern void rho_webview_navigate_back();
 extern void rho_webview_save(const char* format, const char* path, int tab_index);
 #define save rho_webview_save
 
+extern VALUE rho_webview_get_current_url(int tab_index);
+#define get_current_url rho_webview_get_current_url
+
+
 
 
 #include <limits.h>
@@ -1869,7 +1873,7 @@ SWIG_ruby_failed(void)
 } 
 
 
-/*@SWIG:/opt/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
+/*@SWIG:/usr/local/share/swig/2.0.4/ruby/rubyprimtypes.swg,19,%ruby_aux_method@*/
 SWIGINTERN VALUE SWIG_AUX_NUM2LL(VALUE *args)
 {
   VALUE obj = args[0];
@@ -2287,6 +2291,35 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_get_current_url(int argc, VALUE *argv, VALUE self) {
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  VALUE result;
+  VALUE vresult = Qnil;
+  
+  {
+    arg1 = -1;
+  }
+  if ((argc < 0) || (argc > 1)) {
+    rb_raise(rb_eArgError, "wrong # of arguments(%d for 0)",argc); SWIG_fail;
+  }
+  if (argc > 0) {
+    ecode1 = SWIG_AsVal_int(argv[0], &val1);
+    if (!SWIG_IsOK(ecode1)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode1), Ruby_Format_TypeError( "", "int","get_current_url", 1, argv[0] ));
+    } 
+    arg1 = (int)(val1);
+  }
+  result = (VALUE)get_current_url(arg1);
+  vresult = result;
+  return vresult;
+fail:
+  return Qnil;
+}
+
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -2603,5 +2636,6 @@ SWIGEXPORT void Init_WebView(void) {
   rb_define_module_function(mWebView, "set_cookie", _wrap_set_cookie, -1);
   rb_define_module_function(mWebView, "navigate_back", _wrap_navigate_back, -1);
   rb_define_module_function(mWebView, "save", _wrap_save, -1);
+  rb_define_module_function(mWebView, "get_current_url", _wrap_get_current_url, -1);
 }
 

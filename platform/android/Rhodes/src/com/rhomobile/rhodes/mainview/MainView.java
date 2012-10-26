@@ -67,4 +67,6 @@ public interface MainView {
 	public void removeNavBar();
 	
 	public void saveCurrentPage(String format, String path, int index);
+	
+	public String get_current_url(int tab_index);	
 }

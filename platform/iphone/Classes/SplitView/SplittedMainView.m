@@ -256,6 +256,11 @@
 	return [rvc currentLocation:index];
 }
 
+- (NSString*)get_current_url:(int)index {
+	RightViewController* rvc = [self getRightViewController];
+	return [rvc get_current_url:index];
+}
+
 
 -(UIViewController*)getMainViewController {
     return self;

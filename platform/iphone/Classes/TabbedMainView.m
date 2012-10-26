@@ -588,6 +588,10 @@
     return [[self subView:index] currentLocation:0];
 }
 
+- (NSString*)get_current_url:(int)index {
+    return [[self subView:index] get_current_url:0];
+}
+
 - (void)switchTab:(int)index {
     tabbar.selectedIndex = index;
 	[self onSwitchTab];

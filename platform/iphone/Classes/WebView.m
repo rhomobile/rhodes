@@ -176,3 +176,12 @@ void rho_webview_save(const char* format, const char* path, int tab_index)
 {
     RAWLOG_ERROR("rho_webview_save is not implemented at iOS");
 }
+
+VALUE rho_webview_get_current_url(int tab_index) {
+    NSString* str = [[[Rhodes sharedInstance] mainView] get_current_url:tab_index];
+    if (str == nil) {
+        return rho_ruby_create_string("");
+    }
+    return rho_ruby_create_string([str UTF8String]);
+}
+
