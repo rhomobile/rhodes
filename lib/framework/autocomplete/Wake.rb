@@ -5,11 +5,11 @@
 #
  
 module Wake
-  def self.wakeLock=
+  def self.wakeLock=(argument)
   end  
-  def self.wifiLock=
+  def self.wifiLock=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

@@ -11,13 +11,13 @@ class File
 
   ALT_SEPARATOR = "\\"
 
-  PATH_SEPARATOR = ';'
+  PATH_SEPARATOR = ";"
 
   module Constants
   end
 
   class Stat
-    def <=>
+    def <=>(req)
     end    
     def dev
     end    
@@ -151,119 +151,119 @@ class File
 
   FNM_SYSCASE = 8
 
-  def self.directory?
+  def self.directory?(req)
   end  
-  def self.exist?
+  def self.exist?(req)
   end  
-  def self.exists?
+  def self.exists?(req)
   end  
-  def self.readable?
+  def self.readable?(req)
   end  
-  def self.readable_real?
+  def self.readable_real?(req)
   end  
-  def self.world_readable?
+  def self.world_readable?(req)
   end  
-  def self.writable?
+  def self.writable?(req)
   end  
-  def self.writable_real?
+  def self.writable_real?(req)
   end  
-  def self.world_writable?
+  def self.world_writable?(req)
   end  
-  def self.executable?
+  def self.executable?(req)
   end  
-  def self.executable_real?
+  def self.executable_real?(req)
   end  
-  def self.file?
+  def self.file?(req)
   end  
-  def self.zero?
+  def self.zero?(req)
   end  
-  def self.size?
+  def self.size?(req)
   end  
-  def self.size
+  def self.size(req)
   end  
-  def self.owned?
+  def self.owned?(req)
   end  
-  def self.grpowned?
+  def self.grpowned?(req)
   end  
-  def self.pipe?
+  def self.pipe?(req)
   end  
-  def self.symlink?
+  def self.symlink?(req)
   end  
-  def self.socket?
+  def self.socket?(req)
   end  
-  def self.blockdev?
+  def self.blockdev?(req)
   end  
-  def self.chardev?
+  def self.chardev?(req)
   end  
-  def self.setuid?
+  def self.setuid?(req)
   end  
-  def self.setgid?
+  def self.setgid?(req)
   end  
-  def self.sticky?
+  def self.sticky?(req)
   end  
-  def self.identical?
+  def self.identical?(req,req1)
   end  
-  def self.stat
+  def self.stat(req)
   end  
-  def self.lstat
+  def self.lstat(req)
   end  
-  def self.ftype
+  def self.ftype(req)
   end  
-  def self.atime
+  def self.atime(req)
   end  
-  def self.mtime
+  def self.mtime(req)
   end  
-  def self.ctime
+  def self.ctime(req)
   end  
-  def self.utime
+  def self.utime(rest)
   end  
-  def self.chmod
+  def self.chmod(rest)
   end  
-  def self.chown
+  def self.chown(rest)
   end  
   def self.lchmod
   end  
   def self.lchown
   end  
-  def self.link
+  def self.link(req,req1)
   end  
   def self.symlink
   end  
   def self.readlink
   end  
-  def self.unlink
+  def self.unlink(rest)
   end  
-  def self.delete
+  def self.delete(rest)
   end  
-  def self.rename
+  def self.rename(req,req1)
   end  
-  def self.umask
+  def self.umask(rest)
   end  
-  def self.truncate
+  def self.truncate(req,req1)
   end  
-  def self.expand_path
+  def self.expand_path(rest)
   end  
-  def self.absolute_path
+  def self.absolute_path(rest)
   end  
-  def self.realpath
+  def self.realpath(rest)
   end  
-  def self.realdirpath
+  def self.realdirpath(rest)
   end  
-  def self.basename
+  def self.basename(rest)
   end  
-  def self.dirname
+  def self.dirname(req)
   end  
-  def self.extname
+  def self.extname(req)
   end  
-  def self.path
+  def self.path(req)
   end  
-  def self.split
+  def self.split(req)
   end  
-  def self.join
+  def self.join(rest)
   end  
-  def self.fnmatch
+  def self.fnmatch(rest)
   end  
-  def self.fnmatch?
+  def self.fnmatch?(rest)
   end  
   def lstat
   end  
@@ -275,13 +275,13 @@ class File
   end  
   def size
   end  
-  def chmod
+  def chmod(req)
   end  
-  def chown
+  def chown(req,req1)
   end  
-  def truncate
+  def truncate(req)
   end  
-  def flock
+  def flock(req)
   end  
   def path
   end  

@@ -5,69 +5,69 @@
 #
  
 module IoDigital
-  def self.input1=
+  def self.input1=(argument)
   end  
-  def self.outputState1=
+  def self.outputState1=(argument)
   end  
-  def self.outputWarmBootState1=
+  def self.outputWarmBootState1=(argument)
   end  
-  def self.outputColdBootState1=
+  def self.outputColdBootState1=(argument)
   end  
-  def self.input2=
+  def self.input2=(argument)
   end  
-  def self.outputState2=
+  def self.outputState2=(argument)
   end  
-  def self.outputWarmBootState2=
+  def self.outputWarmBootState2=(argument)
   end  
-  def self.outputColdBootState2=
+  def self.outputColdBootState2=(argument)
   end  
-  def self.input3=
+  def self.input3=(argument)
   end  
-  def self.outputState3=
+  def self.outputState3=(argument)
   end  
-  def self.outputWarmBootState3=
+  def self.outputWarmBootState3=(argument)
   end  
-  def self.outputColdBootState3=
+  def self.outputColdBootState3=(argument)
   end  
-  def self.input4=
+  def self.input4=(argument)
   end  
-  def self.outputState4=
+  def self.outputState4=(argument)
   end  
-  def self.outputWarmBootState4=
+  def self.outputWarmBootState4=(argument)
   end  
-  def self.outputColdBootState4=
+  def self.outputColdBootState4=(argument)
   end  
-  def self.input5=
+  def self.input5=(argument)
   end  
-  def self.outputState5=
+  def self.outputState5=(argument)
   end  
-  def self.outputWarmBootState5=
+  def self.outputWarmBootState5=(argument)
   end  
-  def self.outputColdBootState5=
+  def self.outputColdBootState5=(argument)
   end  
-  def self.input6=
+  def self.input6=(argument)
   end  
-  def self.outputState6=
+  def self.outputState6=(argument)
   end  
-  def self.outputWarmBootState6=
+  def self.outputWarmBootState6=(argument)
   end  
-  def self.outputColdBootState6=
+  def self.outputColdBootState6=(argument)
   end  
-  def self.input7=
+  def self.input7=(argument)
   end  
-  def self.outputState7=
+  def self.outputState7=(argument)
   end  
-  def self.outputWarmBootState7=
+  def self.outputWarmBootState7=(argument)
   end  
-  def self.outputColdBootState7=
+  def self.outputColdBootState7=(argument)
   end  
-  def self.input8=
+  def self.input8=(argument)
   end  
-  def self.outputState8=
+  def self.outputState8=(argument)
   end  
-  def self.outputWarmBootState8=
+  def self.outputWarmBootState8=(argument)
   end  
-  def self.outputColdBootState8=
+  def self.outputColdBootState8=(argument)
   end  
   def self.InvokeDigital1
   end  
@@ -85,9 +85,9 @@ module IoDigital
   end  
   def self.InvokeDigital8
   end  
-  def self.PortEvent=
+  def self.PortEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

@@ -5,9 +5,9 @@
 #
  
 module AppSwitcher
-  def self.visibility=
+  def self.visibility=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

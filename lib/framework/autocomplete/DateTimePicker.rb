@@ -5,11 +5,11 @@
 #
  
 module DateTimePicker
-  def self.choose
+  def self.choose(rest)
   end  
-  def self.choose_with_range
+  def self.choose_with_range(rest)
   end  
-  def self.set_change_value_callback
+  def self.set_change_value_callback(rest)
   end  
 end
 

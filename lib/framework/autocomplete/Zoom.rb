@@ -5,11 +5,11 @@
 #
  
 module Zoom
-  def self.text=
+  def self.text=(argument)
   end  
-  def self.page=
+  def self.page=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

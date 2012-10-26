@@ -5,31 +5,31 @@
 #
  
 module Notification
-  def self.setLEDOnDuration=
+  def self.setLEDOnDuration=(argument)
   end  
-  def self.setLEDOffDuration=
+  def self.setLEDOffDuration=(argument)
   end  
-  def self.setLEDNumberOfCycles=
+  def self.setLEDNumberOfCycles=(argument)
   end  
-  def self.setBeeperFrequency=
+  def self.setBeeperFrequency=(argument)
   end  
-  def self.setBeeperVolume=
+  def self.setBeeperVolume=(argument)
   end  
-  def self.setBeeperDuration=
+  def self.setBeeperDuration=(argument)
   end  
-  def self.setVibrateDuration=
+  def self.setVibrateDuration=(argument)
   end  
-  def self.stateOn=
+  def self.stateOn=(argument)
   end  
-  def self.stateOff=
+  def self.stateOff=(argument)
   end  
-  def self.stateCycle=
+  def self.stateCycle=(argument)
   end  
   def self.enumerate
   end  
-  def self.enumNotificationsEvent=
+  def self.enumNotificationsEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

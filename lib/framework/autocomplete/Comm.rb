@@ -5,41 +5,41 @@
 #
  
 module Comm
-  def self.baudRate=
+  def self.baudRate=(argument)
   end  
-  def self.dataBits=
+  def self.dataBits=(argument)
   end  
-  def self.stopBits=
+  def self.stopBits=(argument)
   end  
-  def self.parity=
+  def self.parity=(argument)
   end  
-  def self.handshake=
+  def self.handshake=(argument)
   end  
-  def self.port=
+  def self.port=(argument)
   end  
-  def self.chars=
+  def self.chars=(argument)
   end  
-  def self.endChar=
+  def self.endChar=(argument)
   end  
-  def self.time=
+  def self.time=(argument)
   end  
-  def self.writeBytes=
+  def self.writeBytes=(argument)
   end  
-  def self.writeString=
+  def self.writeString=(argument)
   end  
-  def self.writeFile=
+  def self.writeFile=(argument)
   end  
-  def self.autoEnter=
+  def self.autoEnter=(argument)
   end  
-  def self.autoTab=
+  def self.autoTab=(argument)
   end  
   def self.open
   end  
   def self.close
   end  
-  def self.commEvent=
+  def self.commEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

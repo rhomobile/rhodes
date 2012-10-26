@@ -19,15 +19,15 @@ module LocalizationSimplified
   class ArrayHelper
   end
 
-  def self.localize_strftime
+  def self.localize_strftime(date,time)
   end  
   def self.get_cur_locale
   end  
-  def self.set_cur_locale
+  def self.set_cur_locale(loc,country)
   end  
   def self.init_current_locale
   end  
-  def self.requre_loc
+  def self.requre_loc(file,check_exist)
   end  
 end
 

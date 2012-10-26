@@ -5,29 +5,29 @@
 #
  
 module Wlan
-  def self.profileGuid=
+  def self.profileGuid=(argument)
   end  
-  def self.networkUsername=
+  def self.networkUsername=(argument)
   end  
-  def self.networkPassword=
+  def self.networkPassword=(argument)
   end  
-  def self.networkDomain=
+  def self.networkDomain=(argument)
   end  
-  def self.selectLoginProfile=
+  def self.selectLoginProfile=(argument)
   end  
-  def self.profileEssid=
+  def self.profileEssid=(argument)
   end  
-  def self.profileName=
+  def self.profileName=(argument)
   end  
-  def self.profilePassphrase=
+  def self.profilePassphrase=(argument)
   end  
-  def self.profileEncryption=
+  def self.profileEncryption=(argument)
   end  
-  def self.profileSecurityMode=
+  def self.profileSecurityMode=(argument)
   end  
-  def self.deleteAfterImport=
+  def self.deleteAfterImport=(argument)
   end  
-  def self.importConfigFromLocation=
+  def self.importConfigFromLocation=(argument)
   end  
   def self.enableAdapter
   end  
@@ -57,31 +57,31 @@ module Wlan
   end  
   def self.getConnectionState
   end  
-  def self.adapterPowerStateEvent=
+  def self.adapterPowerStateEvent=(argument)
   end  
-  def self.loginResponseEvent=
+  def self.loginResponseEvent=(argument)
   end  
-  def self.logoutResponseEvent=
+  def self.logoutResponseEvent=(argument)
   end  
-  def self.cancelLoginResponseEvent=
+  def self.cancelLoginResponseEvent=(argument)
   end  
-  def self.loginCandidateProfilesEvent=
+  def self.loginCandidateProfilesEvent=(argument)
   end  
-  def self.networkLoginEvent=
+  def self.networkLoginEvent=(argument)
   end  
-  def self.networkLoginCloseEvent=
+  def self.networkLoginCloseEvent=(argument)
   end  
-  def self.importConfigEvent=
+  def self.importConfigEvent=(argument)
   end  
-  def self.addedProfileEvent=
+  def self.addedProfileEvent=(argument)
   end  
-  def self.allProfilesEvent=
+  def self.allProfilesEvent=(argument)
   end  
-  def self.currentProfileEvent=
+  def self.currentProfileEvent=(argument)
   end  
-  def self.connectionStateEvent=
+  def self.connectionStateEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

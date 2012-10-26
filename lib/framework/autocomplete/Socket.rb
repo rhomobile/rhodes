@@ -316,31 +316,31 @@ class Socket
   end  
   def self.gethostname
   end  
-  def self.gethostbyname
+  def self.gethostbyname(req)
   end  
-  def self.gethostbyaddr
+  def self.gethostbyaddr(rest)
   end  
-  def self.getservbyname
+  def self.getservbyname(rest)
   end  
-  def self.getservbyport
+  def self.getservbyport(rest)
   end  
-  def self.getaddrinfo
+  def self.getaddrinfo(rest)
   end  
-  def self.getnameinfo
+  def self.getnameinfo(rest)
   end  
-  def self.sockaddr_in
+  def self.sockaddr_in(req,req1)
   end  
-  def self.pack_sockaddr_in
+  def self.pack_sockaddr_in(req,req1)
   end  
-  def self.unpack_sockaddr_in
+  def self.unpack_sockaddr_in(req)
   end  
-  def connect
+  def connect(req)
   end  
-  def connect_nonblock
+  def connect_nonblock(req)
   end  
-  def bind
+  def bind(req)
   end  
-  def listen
+  def listen(req)
   end  
   def accept
   end  
@@ -348,9 +348,9 @@ class Socket
   end  
   def sysaccept
   end  
-  def recvfrom
+  def recvfrom(rest)
   end  
-  def recvfrom_nonblock
+  def recvfrom_nonblock(rest)
   end  
 end
 

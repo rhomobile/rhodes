@@ -5,13 +5,13 @@
 #
  
 module Memory
-  def self.lowMemThreshold=
+  def self.lowMemThreshold=(argument)
   end  
   def self.getMemoryStats
   end  
-  def self.memoryEvent=
+  def self.memoryEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

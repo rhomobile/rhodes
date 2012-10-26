@@ -5,35 +5,35 @@
 #
  
 class HashWithIndifferentAccess
-  def default
+  def default(key)
   end  
-  def regular_writer
+  def regular_writer(req,req1)
   end  
-  def regular_update
+  def regular_update(req)
   end  
-  def []=
+  def []=(key,value)
   end  
-  def update
+  def update(other_hash)
   end  
-  def merge!
+  def merge!(other_hash)
   end  
-  def key?
+  def key?(key)
   end  
-  def include?
+  def include?(key)
   end  
-  def has_key?
+  def has_key?(key)
   end  
-  def member?
+  def member?(key)
   end  
-  def fetch
+  def fetch(key,extras)
   end  
-  def values_at
+  def values_at(indices)
   end  
   def dup
   end  
-  def merge
+  def merge(hash)
   end  
-  def delete
+  def delete(key)
   end  
   def stringify_keys!
   end  
@@ -43,9 +43,9 @@ class HashWithIndifferentAccess
   end  
   def to_hash
   end  
-  def convert_key
+  def convert_key(key)
   end  
-  def convert_value
+  def convert_value(value)
   end  
 end
 

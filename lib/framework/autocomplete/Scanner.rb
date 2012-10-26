@@ -5,357 +5,357 @@
 #
  
 module Scanner
-  def self.allDecoders=
+  def self.allDecoders=(argument)
   end  
-  def self.ausPostal=
+  def self.ausPostal=(argument)
   end  
-  def self.aztec=
+  def self.aztec=(argument)
   end  
-  def self.canPostal=
+  def self.canPostal=(argument)
   end  
-  def self.chinese2of5=
+  def self.chinese2of5=(argument)
   end  
-  def self.codabar=
+  def self.codabar=(argument)
   end  
-  def self.codabarClsiEditing=
+  def self.codabarClsiEditing=(argument)
   end  
-  def self.codabarMaxLength=
+  def self.codabarMaxLength=(argument)
   end  
-  def self.codabarMinLength=
+  def self.codabarMinLength=(argument)
   end  
-  def self.codabarNotisEditing=
+  def self.codabarNotisEditing=(argument)
   end  
-  def self.codabarRedundancy=
+  def self.codabarRedundancy=(argument)
   end  
-  def self.code11=
+  def self.code11=(argument)
   end  
-  def self.code11checkDigitCount=
+  def self.code11checkDigitCount=(argument)
   end  
-  def self.code11maxLength=
+  def self.code11maxLength=(argument)
   end  
-  def self.code11minLength=
+  def self.code11minLength=(argument)
   end  
-  def self.code11redundancy=
+  def self.code11redundancy=(argument)
   end  
-  def self.code11reportCheckDigit=
+  def self.code11reportCheckDigit=(argument)
   end  
-  def self.code128=
+  def self.code128=(argument)
   end  
-  def self.code128checkIsBtTable=
+  def self.code128checkIsBtTable=(argument)
   end  
-  def self.code128Ean128=
+  def self.code128Ean128=(argument)
   end  
-  def self.code128isBt128=
+  def self.code128isBt128=(argument)
   end  
-  def self.code128isBt128ConcatMode=
+  def self.code128isBt128ConcatMode=(argument)
   end  
-  def self.code128maxLength=
+  def self.code128maxLength=(argument)
   end  
-  def self.code128minLength=
+  def self.code128minLength=(argument)
   end  
-  def self.code128other128=
+  def self.code128other128=(argument)
   end  
-  def self.code128redundancy=
+  def self.code128redundancy=(argument)
   end  
-  def self.code128securityLevel=
+  def self.code128securityLevel=(argument)
   end  
-  def self.code39=
+  def self.code39=(argument)
   end  
-  def self.code39code32prefix=
+  def self.code39code32prefix=(argument)
   end  
-  def self.code39concatenation=
+  def self.code39concatenation=(argument)
   end  
-  def self.code39convertToCode32=
+  def self.code39convertToCode32=(argument)
   end  
-  def self.code39FullAscii=
+  def self.code39FullAscii=(argument)
   end  
-  def self.code39maxLength=
+  def self.code39maxLength=(argument)
   end  
-  def self.code39minLength=
+  def self.code39minLength=(argument)
   end  
-  def self.code39redundancy=
+  def self.code39redundancy=(argument)
   end  
-  def self.code39reportCheckDigit=
+  def self.code39reportCheckDigit=(argument)
   end  
-  def self.code39securityLevel=
+  def self.code39securityLevel=(argument)
   end  
-  def self.code39verifyCheckDigit=
+  def self.code39verifyCheckDigit=(argument)
   end  
-  def self.code93=
+  def self.code93=(argument)
   end  
-  def self.code93maxLength=
+  def self.code93maxLength=(argument)
   end  
-  def self.code93minLength=
+  def self.code93minLength=(argument)
   end  
-  def self.code93redundancy=
+  def self.code93redundancy=(argument)
   end  
-  def self.compositeAbUccLinkMode=
+  def self.compositeAbUccLinkMode=(argument)
   end  
-  def self.compositeAbUseUpcPreambleCheckDigitRules=
+  def self.compositeAbUseUpcPreambleCheckDigitRules=(argument)
   end  
-  def self.compositeAb=
+  def self.compositeAb=(argument)
   end  
-  def self.compositeC=
+  def self.compositeC=(argument)
   end  
-  def self.d2of5=
+  def self.d2of5=(argument)
   end  
-  def self.d2of5maxLength=
+  def self.d2of5maxLength=(argument)
   end  
-  def self.d2of5minLength=
+  def self.d2of5minLength=(argument)
   end  
-  def self.d2of5redundancy=
+  def self.d2of5redundancy=(argument)
   end  
-  def self.dataMatrix=
+  def self.dataMatrix=(argument)
   end  
-  def self.dutchPostal=
+  def self.dutchPostal=(argument)
   end  
-  def self.ean13=
+  def self.ean13=(argument)
   end  
-  def self.ean8=
+  def self.ean8=(argument)
   end  
-  def self.ean8convertToEan13=
+  def self.ean8convertToEan13=(argument)
   end  
-  def self.gs1dataBar=
+  def self.gs1dataBar=(argument)
   end  
-  def self.gs1dataBarExpanded=
+  def self.gs1dataBarExpanded=(argument)
   end  
-  def self.gs1dataBarLimited=
+  def self.gs1dataBarLimited=(argument)
   end  
-  def self.i2of5=
+  def self.i2of5=(argument)
   end  
-  def self.i2of5convertToEan13=
+  def self.i2of5convertToEan13=(argument)
   end  
-  def self.i2of5maxLength=
+  def self.i2of5maxLength=(argument)
   end  
-  def self.i2of5minLength=
+  def self.i2of5minLength=(argument)
   end  
-  def self.i2of5redundancy=
+  def self.i2of5redundancy=(argument)
   end  
-  def self.i2of5reportCheckDigit=
+  def self.i2of5reportCheckDigit=(argument)
   end  
-  def self.i2Of5verifyCheckDigit=
+  def self.i2Of5verifyCheckDigit=(argument)
   end  
-  def self.japPostal=
+  def self.japPostal=(argument)
   end  
-  def self.korean3of5maxLength=
+  def self.korean3of5maxLength=(argument)
   end  
-  def self.korean3of5minLength=
+  def self.korean3of5minLength=(argument)
   end  
-  def self.korean3of5redundancy=
+  def self.korean3of5redundancy=(argument)
   end  
-  def self.korean3of5=
+  def self.korean3of5=(argument)
   end  
-  def self.macroMicroPdf=
+  def self.macroMicroPdf=(argument)
   end  
-  def self.macroMicroPdfBufferLabels=
+  def self.macroMicroPdfBufferLabels=(argument)
   end  
-  def self.macroMicroPdfConvertToMicroPdf=
+  def self.macroMicroPdfConvertToMicroPdf=(argument)
   end  
-  def self.macroMicroPdfExclusive=
+  def self.macroMicroPdfExclusive=(argument)
   end  
-  def self.macroMicroPdfReportAppendInfo=
+  def self.macroMicroPdfReportAppendInfo=(argument)
   end  
-  def self.macroPdf=
+  def self.macroPdf=(argument)
   end  
-  def self.macroPdfBufferLabels=
+  def self.macroPdfBufferLabels=(argument)
   end  
-  def self.macroPdfConvertToPdf417=
+  def self.macroPdfConvertToPdf417=(argument)
   end  
-  def self.macroPdfExclusive=
+  def self.macroPdfExclusive=(argument)
   end  
-  def self.matrix2of5=
+  def self.matrix2of5=(argument)
   end  
-  def self.matrix2of5maxLength=
+  def self.matrix2of5maxLength=(argument)
   end  
-  def self.matrix2of5minLength=
+  def self.matrix2of5minLength=(argument)
   end  
-  def self.matrix2of5reportCheckDigit=
+  def self.matrix2of5reportCheckDigit=(argument)
   end  
-  def self.matrix2of5verifyCheckDigit=
+  def self.matrix2of5verifyCheckDigit=(argument)
   end  
-  def self.maxiCode=
+  def self.maxiCode=(argument)
   end  
-  def self.microPdf=
+  def self.microPdf=(argument)
   end  
-  def self.microQr=
+  def self.microQr=(argument)
   end  
-  def self.msi=
+  def self.msi=(argument)
   end  
-  def self.msiCheckDigits=
+  def self.msiCheckDigits=(argument)
   end  
-  def self.msiCheckDigitScheme=
+  def self.msiCheckDigitScheme=(argument)
   end  
-  def self.msiMaxlength=
+  def self.msiMaxlength=(argument)
   end  
-  def self.msiMinLength=
+  def self.msiMinLength=(argument)
   end  
-  def self.msiRedundancy=
+  def self.msiRedundancy=(argument)
   end  
-  def self.msiReportCheckDigit=
+  def self.msiReportCheckDigit=(argument)
   end  
-  def self.pdf417=
+  def self.pdf417=(argument)
   end  
-  def self.qrCode=
+  def self.qrCode=(argument)
   end  
-  def self.rss14=
+  def self.rss14=(argument)
   end  
-  def self.rssExp=
+  def self.rssExp=(argument)
   end  
-  def self.rssLim=
+  def self.rssLim=(argument)
   end  
-  def self.enabled=
+  def self.enabled=(argument)
   end  
-  def self.autoEnter=
+  def self.autoEnter=(argument)
   end  
-  def self.autoTab=
+  def self.autoTab=(argument)
   end  
-  def self.linearSecurityLevel=
+  def self.linearSecurityLevel=(argument)
   end  
-  def self.scanTimeout=
+  def self.scanTimeout=(argument)
   end  
-  def self.rasterMode=
+  def self.rasterMode=(argument)
   end  
-  def self.rasterHeight=
+  def self.rasterHeight=(argument)
   end  
-  def self.aimType=
+  def self.aimType=(argument)
   end  
-  def self.timedAimDuration=
+  def self.timedAimDuration=(argument)
   end  
-  def self.sameSymbolTimeout=
+  def self.sameSymbolTimeout=(argument)
   end  
-  def self.differentSymbolTimeout=
+  def self.differentSymbolTimeout=(argument)
   end  
-  def self.aimMode=
+  def self.aimMode=(argument)
   end  
-  def self.picklistMode=
+  def self.picklistMode=(argument)
   end  
-  def self.viewfinderMode=
+  def self.viewfinderMode=(argument)
   end  
-  def self.viewfinderX=
+  def self.viewfinderX=(argument)
   end  
-  def self.viewfinderY=
+  def self.viewfinderY=(argument)
   end  
-  def self.viewfinderWidth=
+  def self.viewfinderWidth=(argument)
   end  
-  def self.viewfinderHeight=
+  def self.viewfinderHeight=(argument)
   end  
-  def self.viewfinderFeedback=
+  def self.viewfinderFeedback=(argument)
   end  
-  def self.viewfinderFeedbackTime=
+  def self.viewfinderFeedbackTime=(argument)
   end  
-  def self.focusMode=
+  def self.focusMode=(argument)
   end  
-  def self.illuminationMode=
+  def self.illuminationMode=(argument)
   end  
-  def self.dpmMode=
+  def self.dpmMode=(argument)
   end  
-  def self.inverse1dMode=
+  def self.inverse1dMode=(argument)
   end  
-  def self.poorQuality1dMode=
+  def self.poorQuality1dMode=(argument)
   end  
-  def self.beamWidth=
+  def self.beamWidth=(argument)
   end  
-  def self.dbpMode=
+  def self.dbpMode=(argument)
   end  
-  def self.klasseEins=
+  def self.klasseEins=(argument)
   end  
-  def self.adaptiveScanning=
+  def self.adaptiveScanning=(argument)
   end  
-  def self.bidirectionalRedundancy=
+  def self.bidirectionalRedundancy=(argument)
   end  
-  def self.barcodeDataFormat=
+  def self.barcodeDataFormat=(argument)
   end  
-  def self.dataBufferSize=
+  def self.dataBufferSize=(argument)
   end  
-  def self.connectionIdleTimeout=
+  def self.connectionIdleTimeout=(argument)
   end  
-  def self.disconnectBtOnDisable=
+  def self.disconnectBtOnDisable=(argument)
   end  
-  def self.displayBtAddressBarcodeOnEnable=
+  def self.displayBtAddressBarcodeOnEnable=(argument)
   end  
-  def self.enableTimeout=
+  def self.enableTimeout=(argument)
   end  
-  def self.signature=
+  def self.signature=(argument)
   end  
-  def self.signatureImageHeight=
+  def self.signatureImageHeight=(argument)
   end  
-  def self.signatureImageQuality=
+  def self.signatureImageQuality=(argument)
   end  
-  def self.signatureImageSize=
+  def self.signatureImageSize=(argument)
   end  
-  def self.signatureImageWidth=
+  def self.signatureImageWidth=(argument)
   end  
-  def self.tlc39=
+  def self.tlc39=(argument)
   end  
-  def self.trioptic39=
+  def self.trioptic39=(argument)
   end  
-  def self.trioptic39redundancy=
+  def self.trioptic39redundancy=(argument)
   end  
-  def self.ukPostal=
+  def self.ukPostal=(argument)
   end  
-  def self.ukPostalreportCheckDigit=
+  def self.ukPostalreportCheckDigit=(argument)
   end  
-  def self.upca=
+  def self.upca=(argument)
   end  
-  def self.upcaReportCheckDigit=
+  def self.upcaReportCheckDigit=(argument)
   end  
-  def self.upcaPreamble=
+  def self.upcaPreamble=(argument)
   end  
-  def self.upce0=
+  def self.upce0=(argument)
   end  
-  def self.upce0convertToUpca=
+  def self.upce0convertToUpca=(argument)
   end  
-  def self.upce0preamble=
+  def self.upce0preamble=(argument)
   end  
-  def self.upce0reportCheckDigit=
+  def self.upce0reportCheckDigit=(argument)
   end  
-  def self.upce1=
+  def self.upce1=(argument)
   end  
-  def self.upce1convertToUpca=
+  def self.upce1convertToUpca=(argument)
   end  
-  def self.upce1preamble=
+  def self.upce1preamble=(argument)
   end  
-  def self.upce1reportCheckDigit=
+  def self.upce1reportCheckDigit=(argument)
   end  
-  def self.upcEanBookland=
+  def self.upcEanBookland=(argument)
   end  
-  def self.upcEanBooklandFormat=
+  def self.upcEanBooklandFormat=(argument)
   end  
-  def self.upcEanConvertGs1dataBarToUpcEan=
+  def self.upcEanConvertGs1dataBarToUpcEan=(argument)
   end  
-  def self.upcEanConvertRssToUpcEan=
+  def self.upcEanConvertRssToUpcEan=(argument)
   end  
-  def self.upcEanCoupon=
+  def self.upcEanCoupon=(argument)
   end  
-  def self.upcEanLinearDecode=
+  def self.upcEanLinearDecode=(argument)
   end  
-  def self.upcEanRandomWeightCheckDigit=
+  def self.upcEanRandomWeightCheckDigit=(argument)
   end  
-  def self.upcEanRetryCount=
+  def self.upcEanRetryCount=(argument)
   end  
-  def self.upcEanSecurityLevel=
+  def self.upcEanSecurityLevel=(argument)
   end  
-  def self.upcEanSupplemental2=
+  def self.upcEanSupplemental2=(argument)
   end  
-  def self.upcEanSupplemental5=
+  def self.upcEanSupplemental5=(argument)
   end  
-  def self.upcEanSupplementalMode=
+  def self.upcEanSupplementalMode=(argument)
   end  
-  def self.us4state=
+  def self.us4state=(argument)
   end  
-  def self.us4stateFics=
+  def self.us4stateFics=(argument)
   end  
-  def self.usPlanet=
+  def self.usPlanet=(argument)
   end  
-  def self.usPlanetreportCheckDigit=
+  def self.usPlanetreportCheckDigit=(argument)
   end  
-  def self.usPostNet=
+  def self.usPostNet=(argument)
   end  
-  def self.usPostNetreportCheckDigit=
+  def self.usPostNetreportCheckDigit=(argument)
   end  
-  def self.webcode=
+  def self.webcode=(argument)
   end  
-  def self.webcodeDecodeGtSubtype=
+  def self.webcodeDecodeGtSubtype=(argument)
   end  
   def self.enumerate
   end  
@@ -367,13 +367,13 @@ module Scanner
   end  
   def self.stop
   end  
-  def self.decodeEvent=
+  def self.decodeEvent=(argument)
   end  
-  def self.bluetoothStatusEvent=
+  def self.bluetoothStatusEvent=(argument)
   end  
-  def self.enumScannerEvent=
+  def self.enumScannerEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

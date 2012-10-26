@@ -5,7 +5,7 @@
 #
  
 module Backlight
-  def self.intensity=
+  def self.intensity=(argument)
   end  
   def self.on
   end  
@@ -13,9 +13,9 @@ module Backlight
   end  
   def self.getBacklightSettings
   end  
-  def self.backlightSettingsEvent=
+  def self.backlightSettingsEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

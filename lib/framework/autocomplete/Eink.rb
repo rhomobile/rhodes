@@ -5,7 +5,7 @@
 #
  
 module Eink
-  def self.screenUpdateBpp=
+  def self.screenUpdateBpp=(argument)
   end  
   def self.forceFullScreenUpdate
   end  
@@ -13,7 +13,7 @@ module Eink
   end  
   def self.resumeFullScreenUpdate
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

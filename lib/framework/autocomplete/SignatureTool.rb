@@ -5,7 +5,7 @@
 #
  
 module SignatureTool
-  def self.take_signature
+  def self.take_signature(callback,image_fmt)
   end  
 end
 

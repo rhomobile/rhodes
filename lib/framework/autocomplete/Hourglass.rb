@@ -5,13 +5,13 @@
 #
  
 module Hourglass
-  def self.visibility=
+  def self.visibility=(argument)
   end  
-  def self.left=
+  def self.left=(argument)
   end  
-  def self.top=
+  def self.top=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

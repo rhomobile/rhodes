@@ -5,15 +5,15 @@
 #
  
 module EmmlProfile
-  def self.name=
+  def self.name=(argument)
   end  
-  def self.importProfile=
+  def self.importProfile=(argument)
   end  
-  def self.clear=
+  def self.clear=(argument)
   end  
-  def self.apply=
+  def self.apply=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

@@ -5,13 +5,13 @@
 #
  
 module Camera
-  def self.take_picture
+  def self.take_picture(rest)
   end  
-  def self.choose_picture
+  def self.choose_picture(rest)
   end  
-  def self.get_camera_info
+  def self.get_camera_info(rest)
   end  
-  def self.save_image_to_device_gallery
+  def self.save_image_to_device_gallery(rest)
   end  
 end
 

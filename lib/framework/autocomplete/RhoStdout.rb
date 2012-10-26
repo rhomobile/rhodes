@@ -5,9 +5,9 @@
 #
  
 class RhoStdout
-  def write
+  def write(req)
   end  
-  def print
+  def print(req)
   end  
   def flush
   end  

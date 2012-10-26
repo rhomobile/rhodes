@@ -5,15 +5,15 @@
 #
  
 module VideoCapture
-  def self.duration=
+  def self.duration=(argument)
   end  
-  def self.destination=
+  def self.destination=(argument)
   end  
-  def self.username=
+  def self.username=(argument)
   end  
-  def self.password=
+  def self.password=(argument)
   end  
-  def self.name=
+  def self.name=(argument)
   end  
   def self.start
   end  
@@ -21,9 +21,9 @@ module VideoCapture
   end  
   def self.cancel
   end  
-  def self.videoSaveEvent=
+  def self.videoSaveEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

@@ -5,19 +5,19 @@
 #
  
 module MapView
-  def self.create
+  def self.create(rest)
   end  
-  def self.close
+  def self.close(rest)
   end  
-  def self.state_started
+  def self.state_started(rest)
   end  
-  def self.state_center_lat
+  def self.state_center_lat(rest)
   end  
-  def self.state_center_lon
+  def self.state_center_lon(rest)
   end  
-  def self.set_file_caching_enable
+  def self.set_file_caching_enable(rest)
   end  
-  def self.preload_map_tiles
+  def self.preload_map_tiles(rest)
   end  
 end
 

@@ -5,7 +5,7 @@
 #
  
 module RhoElementsExt
-  def self.meta_proc
+  def self.meta_proc(rest)
   end  
 end
 

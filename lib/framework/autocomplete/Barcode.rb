@@ -5,11 +5,11 @@
 #
  
 module Barcode
-  def self.take_barcode
+  def self.take_barcode(callback,hashParams)
   end  
-  def self.enable
+  def self.enable(callback,hashParams)
   end  
-  def self.enumerate
+  def self.enumerate(callback)
   end  
   def self.disable
   end  
@@ -17,11 +17,11 @@ module Barcode
   end  
   def self.stop
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
-  def self.method_missing
+  def self.method_missing(name,args)
   end  
-  def self.rho_process_moto_callback
+  def self.rho_process_moto_callback(params)
   end  
 end
 

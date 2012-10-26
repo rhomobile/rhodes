@@ -5,13 +5,13 @@
 #
  
 class Dir
-  def self.open
+  def self.open(rest)
   end  
-  def self.foreach
+  def self.foreach(rest)
   end  
-  def self.entries
+  def self.entries(rest)
   end  
-  def self.chdir
+  def self.chdir(rest)
   end  
   def self.getwd
   end  
@@ -19,23 +19,23 @@ class Dir
   end  
   def self.chroot
   end  
-  def self.mkdir
+  def self.mkdir(rest)
   end  
-  def self.rmdir
+  def self.rmdir(req)
   end  
-  def self.delete
+  def self.delete(req)
   end  
-  def self.unlink
+  def self.unlink(req)
   end  
-  def self.home
+  def self.home(rest)
   end  
-  def self.glob
+  def self.glob(rest)
   end  
-  def self.[]
+  def self.[](rest)
   end  
-  def self.exist?
+  def self.exist?(req)
   end  
-  def self.exists?
+  def self.exists?(req)
   end  
   def path
   end  
@@ -51,11 +51,11 @@ class Dir
   end  
   def tell
   end  
-  def seek
+  def seek(req)
   end  
   def pos
   end  
-  def pos=
+  def pos=(req)
   end  
   def close
   end  

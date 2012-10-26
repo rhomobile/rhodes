@@ -5,25 +5,25 @@
 #
  
 module WebView
-  def self.refresh
+  def self.refresh(rest)
   end  
-  def self.navigate
+  def self.navigate(rest)
   end  
-  def self.current_location
+  def self.current_location(rest)
   end  
-  def self.execute_js
+  def self.execute_js(func,index,vals)
   end  
-  def self.set_menu_items
+  def self.set_menu_items(rest)
   end  
-  def self.active_tab
+  def self.active_tab(rest)
   end  
-  def self.full_screen_mode
+  def self.full_screen_mode(rest)
   end  
-  def self.set_cookie
+  def self.set_cookie(rest)
   end  
-  def self.navigate_back
+  def self.navigate_back(rest)
   end  
-  def self.orig_execute_js
+  def self.orig_execute_js(rest)
   end  
 end
 

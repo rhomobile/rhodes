@@ -13,11 +13,11 @@ module Application
   end  
   def self.getVersion
   end  
-  def self.applicationEvent=
+  def self.applicationEvent=(argument)
   end  
-  def self.versionEvent=
+  def self.versionEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

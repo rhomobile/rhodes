@@ -8,25 +8,25 @@ class Date
   module Format
   end
 
-  def self._strptime
+  def self._strptime(str,fmt)
   end  
-  def self._parse
+  def self._parse(str,comp)
   end  
-  def self._iso8601
+  def self._iso8601(str)
   end  
-  def self._rfc3339
+  def self._rfc3339(str)
   end  
-  def self._xmlschema
+  def self._xmlschema(str)
   end  
-  def self._rfc2822
+  def self._rfc2822(str)
   end  
-  def self._rfc822
+  def self._rfc822(str)
   end  
-  def self._httpdate
+  def self._httpdate(str)
   end  
-  def self._jisx0301
+  def self._jisx0301(str)
   end  
-  def strftime
+  def strftime(fmt)
   end  
   def asctime
   end  

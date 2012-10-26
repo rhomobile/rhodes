@@ -5,13 +5,13 @@
 #
  
 module BrowserHelper
-  def placeholder
+  def placeholder(label)
   end  
   def platform
   end  
-  def selected
+  def selected(option_value,object_value)
   end  
-  def checked
+  def checked(option_value,object_value)
   end  
   def is_bb6
   end  

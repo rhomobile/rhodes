@@ -5,105 +5,105 @@
 #
  
 module Rfid
-  def self.antennaSelected=
+  def self.antennaSelected=(argument)
   end  
-  def self.beepOnRead=
+  def self.beepOnRead=(argument)
   end  
-  def self.discardTagsOnInventorystop=
+  def self.discardTagsOnInventorystop=(argument)
   end  
-  def self.enableTagAccessStatus=
+  def self.enableTagAccessStatus=(argument)
   end  
-  def self.enableTagAntennaID=
+  def self.enableTagAntennaID=(argument)
   end  
-  def self.enableTagCRC=
+  def self.enableTagCRC=(argument)
   end  
-  def self.enableTagXPC=
+  def self.enableTagXPC=(argument)
   end  
-  def self.enableTagPC=
+  def self.enableTagPC=(argument)
   end  
-  def self.enableTagRSSI=
+  def self.enableTagRSSI=(argument)
   end  
-  def self.enableTagSeenCount=
+  def self.enableTagSeenCount=(argument)
   end  
-  def self.enableTagUTCTimeStamp=
+  def self.enableTagUTCTimeStamp=(argument)
   end  
-  def self.invMemBank=
+  def self.invMemBank=(argument)
   end  
-  def self.lockField=
+  def self.lockField=(argument)
   end  
-  def self.lockPrivilege=
+  def self.lockPrivilege=(argument)
   end  
-  def self.matchPattern=
+  def self.matchPattern=(argument)
   end  
-  def self.newTagID=
+  def self.newTagID=(argument)
   end  
-  def self.newAccessPassword=
+  def self.newAccessPassword=(argument)
   end  
-  def self.newKillPassword=
+  def self.newKillPassword=(argument)
   end  
-  def self.preFilterBitCount=
+  def self.preFilterBitCount=(argument)
   end  
-  def self.preFilterBitOffset=
+  def self.preFilterBitOffset=(argument)
   end  
-  def self.preFilterHexPattern=
+  def self.preFilterHexPattern=(argument)
   end  
-  def self.preFilterID=
+  def self.preFilterID=(argument)
   end  
-  def self.preFilterMemBank=
+  def self.preFilterMemBank=(argument)
   end  
-  def self.startPeriod=
+  def self.startPeriod=(argument)
   end  
-  def self.reportTrigger=
+  def self.reportTrigger=(argument)
   end  
-  def self.reportUniqueTags=
+  def self.reportUniqueTags=(argument)
   end  
-  def self.RFMode=
+  def self.RFMode=(argument)
   end  
-  def self.singulationSession=
+  def self.singulationSession=(argument)
   end  
-  def self.singulationTagPopulation=
+  def self.singulationTagPopulation=(argument)
   end  
-  def self.startTriggerType=
+  def self.startTriggerType=(argument)
   end  
-  def self.stopDuration=
+  def self.stopDuration=(argument)
   end  
-  def self.stopObservationCount=
+  def self.stopObservationCount=(argument)
   end  
-  def self.stopTriggerType=
+  def self.stopTriggerType=(argument)
   end  
-  def self.tagByteOffset=
+  def self.tagByteOffset=(argument)
   end  
-  def self.tagID=
+  def self.tagID=(argument)
   end  
-  def self.tagKillPassword=
+  def self.tagKillPassword=(argument)
   end  
-  def self.tagMemBank=
+  def self.tagMemBank=(argument)
   end  
-  def self.tagPassword=
+  def self.tagPassword=(argument)
   end  
-  def self.tagPatternAByteOffset=
+  def self.tagPatternAByteOffset=(argument)
   end  
-  def self.tagPatternAHexMask=
+  def self.tagPatternAHexMask=(argument)
   end  
-  def self.tagPatternAHexPattern=
+  def self.tagPatternAHexPattern=(argument)
   end  
-  def self.tagPatternAMemBank=
+  def self.tagPatternAMemBank=(argument)
   end  
-  def self.tagPatternBByteOffset=
+  def self.tagPatternBByteOffset=(argument)
   end  
-  def self.tagPatternBHexMask=
+  def self.tagPatternBHexMask=(argument)
   end  
-  def self.tagPatternBHexPattern=
+  def self.tagPatternBHexPattern=(argument)
   end  
-  def self.tagPatternBMemBank=
+  def self.tagPatternBMemBank=(argument)
   end  
-  def self.tagReadSize=
+  def self.tagReadSize=(argument)
   end  
-  def self.tagWriteData=
+  def self.tagWriteData=(argument)
   end  
-  def self.transmitPower=
+  def self.transmitPower=(argument)
   end  
-  def self.useAccessFilter=
+  def self.useAccessFilter=(argument)
   end  
   def self.enumerate
   end  
@@ -153,21 +153,21 @@ module Rfid
   end  
   def self.setRFParams
   end  
-  def self.enumRFIDEvent=
+  def self.enumRFIDEvent=(argument)
   end  
-  def self.rfParamsEvent=
+  def self.rfParamsEvent=(argument)
   end  
-  def self.rfModeInfoEvent=
+  def self.rfModeInfoEvent=(argument)
   end  
-  def self.tagEvent=
+  def self.tagEvent=(argument)
   end  
-  def self.radioPowerStateEvent=
+  def self.radioPowerStateEvent=(argument)
   end  
-  def self.statusEvent=
+  def self.statusEvent=(argument)
   end  
-  def self.singulationEvent=
+  def self.singulationEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

@@ -5,15 +5,15 @@
 #
  
 module Timer
-  def self.interval=
+  def self.interval=(argument)
   end  
   def self.start
   end  
   def self.stop
   end  
-  def self.timeout=
+  def self.timeout=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

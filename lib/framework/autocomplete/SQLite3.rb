@@ -6,29 +6,29 @@
  
 module SQLite3
   class Database
-    def close
+    def close(rest)
     end    
-    def execute
+    def execute(rest)
     end    
-    def start_transaction
+    def start_transaction(rest)
     end    
-    def commit
+    def commit(rest)
     end    
-    def rollback
+    def rollback(rest)
     end    
-    def lock_db
+    def lock_db(rest)
     end    
-    def unlock_db
+    def unlock_db(rest)
     end    
-    def destroy_tables
+    def destroy_tables(rest)
     end    
-    def table_exist?
+    def table_exist?(rest)
     end    
-    def is_ui_waitfordb
+    def is_ui_waitfordb(rest)
     end    
-    def export
+    def export(rest)
     end    
-    def import
+    def import(rest)
     end    
   end
 

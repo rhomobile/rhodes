@@ -5,9 +5,9 @@
 #
  
 module RhoLog
-  def self.info
+  def self.info(req,req1)
   end  
-  def self.error
+  def self.error(req,req1)
   end  
 end
 

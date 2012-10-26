@@ -22,39 +22,39 @@ class StringScanner
   end  
   def string
   end  
-  def string=
+  def string=(req)
   end  
-  def concat
+  def concat(req)
   end  
-  def <<
+  def <<(req)
   end  
   def pos
   end  
-  def pos=
+  def pos=(req)
   end  
   def pointer
   end  
-  def pointer=
+  def pointer=(req)
   end  
-  def scan
+  def scan(req)
   end  
-  def skip
+  def skip(req)
   end  
-  def match?
+  def match?(req)
   end  
-  def check
+  def check(req)
   end  
-  def scan_full
+  def scan_full(req,req1,req2)
   end  
-  def scan_until
+  def scan_until(req)
   end  
-  def skip_until
+  def skip_until(req)
   end  
-  def exist?
+  def exist?(req)
   end  
-  def check_until
+  def check_until(req)
   end  
-  def search_full
+  def search_full(req,req1,req2)
   end  
   def getch
   end  
@@ -62,9 +62,9 @@ class StringScanner
   end  
   def getbyte
   end  
-  def peek
+  def peek(req)
   end  
-  def peep
+  def peep(req)
   end  
   def unscan
   end  
@@ -84,7 +84,7 @@ class StringScanner
   end  
   def matched_size
   end  
-  def []
+  def [](req)
   end  
   def pre_match
   end  

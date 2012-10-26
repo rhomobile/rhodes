@@ -5,43 +5,43 @@
 #
  
 module SignatureCapture
-  def self.visibility=
+  def self.visibility=(argument)
   end  
-  def self.border=
+  def self.border=(argument)
   end  
-  def self.width=
+  def self.width=(argument)
   end  
-  def self.height=
+  def self.height=(argument)
   end  
-  def self.left=
+  def self.left=(argument)
   end  
-  def self.top=
+  def self.top=(argument)
   end  
-  def self.penWidth=
+  def self.penWidth=(argument)
   end  
-  def self.penColor=
+  def self.penColor=(argument)
   end  
-  def self.bgColor=
+  def self.bgColor=(argument)
   end  
-  def self.destination=
+  def self.destination=(argument)
   end  
-  def self.username=
+  def self.username=(argument)
   end  
-  def self.password=
+  def self.password=(argument)
   end  
-  def self.name=
+  def self.name=(argument)
   end  
   def self.clear
   end  
   def self.capture
   end  
-  def self.signatureSaveEvent=
+  def self.signatureSaveEvent=(argument)
   end  
-  def self.signatureCaptureEvent=
+  def self.signatureCaptureEvent=(argument)
   end  
-  def self.vectorEvent=
+  def self.vectorEvent=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

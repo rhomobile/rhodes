@@ -5,7 +5,7 @@
 #
  
 module History
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

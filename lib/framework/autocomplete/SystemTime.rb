@@ -5,13 +5,13 @@
 #
  
 module SystemTime
-  def self.setLocal=
+  def self.setLocal=(argument)
   end  
-  def self.setUtc=
+  def self.setUtc=(argument)
   end  
-  def self.sntpServerIp=
+  def self.sntpServerIp=(argument)
   end  
-  def self.setEmml
+  def self.setEmml(argument)
   end  
 end
 

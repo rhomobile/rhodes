@@ -50,45 +50,45 @@ module JSON
   end
 
   class State
-    def self.from_state
+    def self.from_state(opts)
     end    
     def indent
     end    
-    def indent=
+    def indent=(req)
     end    
     def space
     end    
-    def space=
+    def space=(req)
     end    
     def space_before
     end    
-    def space_before=
+    def space_before=(req)
     end    
     def object_nl
     end    
-    def object_nl=
+    def object_nl=(req)
     end    
     def array_nl
     end    
-    def array_nl=
+    def array_nl=(req)
     end    
     def max_nesting
     end    
-    def max_nesting=
+    def max_nesting=(req)
     end    
-    def check_max_nesting
+    def check_max_nesting(depth)
     end    
     def check_circular?
     end    
     def allow_nan?
     end    
-    def seen?
+    def seen?(object)
     end    
-    def remember
+    def remember(object)
     end    
-    def forget
+    def forget(object)
     end    
-    def configure
+    def configure(opts)
     end    
     def to_h
     end    
@@ -96,47 +96,47 @@ module JSON
 
   JSON_LOADED = true
 
-  def self.[]
+  def self.[](object,opts)
   end  
   def self.parser
   end  
-  def self.parser=
+  def self.parser=(parser)
   end  
-  def self.deep_const_get
+  def self.deep_const_get(path)
   end  
-  def self.generator=
+  def self.generator=(generator)
   end  
   def self.generator
   end  
   def self.state
   end  
-  def self.state=
+  def self.state=(req)
   end  
   def self.create_id
   end  
-  def self.create_id=
+  def self.create_id=(req)
   end  
-  def self.generate
+  def self.generate(obj,state)
   end  
-  def self.fast_unparse
+  def self.fast_unparse(obj)
   end  
-  def self.pretty_unparse
+  def self.pretty_unparse(obj,opts)
   end  
-  def self.recurse_proc
+  def self.recurse_proc(result,proc)
   end  
-  def self.restore
+  def self.restore(source,proc)
   end  
-  def self.utf8_to_json
+  def self.utf8_to_json(string)
   end  
-  def self.swap!
+  def self.swap!(string)
   end  
-  def fast_generate
+  def fast_generate(obj)
   end  
-  def pretty_generate
+  def pretty_generate(obj,opts)
   end  
-  def load
+  def load(source,proc)
   end  
-  def dump
+  def dump(obj,anIO,limit)
   end  
 end
 

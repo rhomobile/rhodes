@@ -5,37 +5,37 @@
 #
  
 module RhoBluetooth
-  def self.is_bluetooth_available
+  def self.is_bluetooth_available(rest)
   end  
-  def self.off_bluetooth
+  def self.off_bluetooth(rest)
   end  
-  def self.set_device_name
+  def self.set_device_name(rest)
   end  
-  def self.get_device_name
+  def self.get_device_name(rest)
   end  
-  def self.get_last_error
+  def self.get_last_error(rest)
   end  
-  def self.create_session
+  def self.create_session(rest)
   end  
-  def self.create_custom_server_session
+  def self.create_custom_server_session(rest)
   end  
-  def self.create_custom_client_session
+  def self.create_custom_client_session(rest)
   end  
-  def self.stop_current_connection_process
+  def self.stop_current_connection_process(rest)
   end  
-  def self.session_set_callback
+  def self.session_set_callback(rest)
   end  
-  def self.session_disconnect
+  def self.session_disconnect(rest)
   end  
-  def self.session_get_status
+  def self.session_get_status(rest)
   end  
-  def self.session_read_string
+  def self.session_read_string(rest)
   end  
-  def self.session_write_string
+  def self.session_write_string(rest)
   end  
-  def self.session_read_data
+  def self.session_read_data(rest)
   end  
-  def self.session_write_data
+  def self.session_write_data(rest)
   end  
 end
 
