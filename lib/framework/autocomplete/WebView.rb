@@ -11,6 +11,8 @@ module WebView
   end  
   def self.current_location(rest)
   end  
+  def self.get_current_url(rest)
+  end
   def self.execute_js(func,index,vals)
   end  
   def self.set_menu_items(rest)
