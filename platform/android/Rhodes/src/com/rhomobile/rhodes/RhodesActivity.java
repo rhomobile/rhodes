@@ -136,32 +136,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
-
-
-        if (!isPassMotoLicence()) {
-        	Logger.E(TAG, "############################");
-        	Logger.E(TAG, " ");
-        	Logger.E(TAG, "ERROR: motorola_license is INVALID !");
-        	Logger.E(TAG, " ");
-        	Logger.E(TAG, "############################");
-            AlertDialog.Builder b = new AlertDialog.Builder(this);
-            b.setCancelable(true);
-            b.setOnCancelListener( new DialogInterface.OnCancelListener() {
-				public void onCancel(DialogInterface dialog) {
-					//RhodesService.exit();
-				}
-			});
-            AlertDialog securityAlert = b.create();
-            securityAlert.setMessage("Please provide RhoElements license key.");
-            securityAlert.setButton("OK", new DialogInterface.OnClickListener(){
-				public void onClick(DialogInterface arg0, int arg1) {
-					//RhodesService.exit();
-				}
-            	
-            });
-            securityAlert.show();
-            return;
-        }        
     }
 
     public IRhoWebView createWebView(int tabIndex) {
@@ -504,12 +478,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 //        }
     }
 
-    private boolean isPassMotoLicence() {
-    	if (Capabilities.MOTOROLA_ENABLED) {
-    		return true;
-    	}
-    	return RhodesService.isMotorolaLicencePassed();
-    }
 
 	public static Context getContext() {
 		RhodesActivity ra = RhodesActivity.getInstance();

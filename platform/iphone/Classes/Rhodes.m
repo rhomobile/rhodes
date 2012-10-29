@@ -977,7 +977,11 @@ static Rhodes *instance = NULL;
         */
         //exit(EXIT_SUCCESS);
     }
-    if (!rho_can_app_started_with_current_licence()) {
+    if (!rho_can_app_started_with_current_licence(
+               get_app_build_config_item("motorola_license"),
+               get_app_build_config_item("motorola_license_company"),
+               get_app_build_config_item("name")))
+    {
 		NSLog(@"############################");
 		NSLog(@" ");
 		NSLog(@"ERROR: motorola_license is INVALID !");

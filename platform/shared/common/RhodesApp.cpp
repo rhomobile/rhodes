@@ -2178,14 +2178,8 @@ int rho_rhodesapp_canstartapp(const char* szCmdLine, const char* szSeparators)
     return result; 
 }
     
-int rho_is_motorola_licence_checked() {
-	const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
-	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
-	const char* szAppName = get_app_build_config_item("name");
-    
-    if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
-        return 0;
-    }
+int rho_is_motorola_licence_checked(const char* szMotorolaLicence, const char* szMotorolaLicenceCompany, const char* szAppName)
+{
 
     int res_check = 1;
 #if defined( OS_ANDROID ) || defined( OS_MACOSX )
@@ -2196,30 +2190,29 @@ int rho_is_motorola_licence_checked() {
     return res_check;
 }
     
-int rho_is_rho_elements_extension_can_be_used() {
+int rho_is_rho_elements_extension_can_be_used(const char* szMotorolaLicence)
+{
     int res_check = 1;
-#if defined( OS_MACOSX ) || (defined( OS_ANDROID ) && !defined ( APP_BUILD_CAPABILITY_MOTOROLA ))
-        const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
-        const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
-    
-        if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL))
-            res_check = 0;
+#if defined( OS_MACOSX ) || defined( OS_ANDROID )
+    if (szMotorolaLicence == NULL)
+    {
+        res_check = 0;
+    }
 #endif
 
     return res_check;
 }
     
-int rho_can_app_started_with_current_licence() {
-	const char* szMotorolaLicence = get_app_build_config_item("motorola_license");
-	const char* szMotorolaLicenceCompany = get_app_build_config_item("motorola_license_company");
-    
-    if ((szMotorolaLicence == NULL) || (szMotorolaLicenceCompany == NULL)) {
+int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, const char* szMotorolaLicenceCompany, const char* szAppName)
+{
+    if (szMotorolaLicence == NULL)
+    {
         return 1;
     }
         
     int res_check = 1;
-#if defined( OS_MACOSX ) || (defined( OS_ANDROID ) && !defined ( APP_BUILD_CAPABILITY_MOTOROLA ))
-        res_check = rho_is_motorola_licence_checked();
+#if defined( OS_MACOSX ) || defined( OS_ANDROID )
+        res_check = rho_is_motorola_licence_checked(szMotorolaLicence, szMotorolaLicenceCompany, szAppName);
 #endif        
     return res_check;
 }

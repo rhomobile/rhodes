@@ -5,6 +5,8 @@ import android.view.View;
 
 public interface IRhoExtManager {
 
+    enum LicenseStatus {LICENSE_MISSED, LICENSE_FAILED, LICENSE_PASSED};
+
     void registerExtension(String strName, IRhoExtension ext);
     IRhoExtension getExtByName(String strName);
 
@@ -69,6 +71,9 @@ public interface IRhoExtManager {
      * @return true if it is allowed for extension to navigate start page itself
      */
     boolean onStartNewConfig();
+    
+    void setLicenseCredentials(String token, String company, String appName);
+    LicenseStatus getLicenseStatus();
 
 }
 

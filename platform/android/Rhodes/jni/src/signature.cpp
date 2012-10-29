@@ -30,6 +30,7 @@
 #include "rhodes/jni/com_rhomobile_rhodes_signature_Signature.h"
 
 #include "common/app_build_capabilities.h"
+#include "common/app_build_configs.h"
 #include "common/rhoparams.h"
 #include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
@@ -63,8 +64,8 @@ RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
 RHO_GLOBAL void rho_signature_visible(bool visible, rho_param* p)
 {
     // check for RhoElements :
-    if (!rho_is_rho_elements_extension_can_be_used()) {
-        RAWLOG_WARNING("Rho::SignatureCapture.visible() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
+    if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
+        RAWLOG_WARNING("Rho::SignatureCapture must be used under RhoElements license! For more information look at http://www.motorolasolutions.com/rhoelements");
     }
 
     JNIEnv *env = jnienv();
@@ -81,8 +82,8 @@ RHO_GLOBAL void rho_signature_visible(bool visible, rho_param* p)
 RHO_GLOBAL void rho_signature_capture(const char* callback_url) 
 {
     // check for RhoElements :
-    if (!rho_is_rho_elements_extension_can_be_used()) {
-        RAWLOG_WARNING("Rho::SignatureCapture.capture() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
+    if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
+        RAWLOG_WARNING("Rho::SignatureCapture must be used under RhoElements license! For more information look at http://www.motorolasolutions.com/rhoelements");
     }
     
     JNIEnv *env = jnienv();
@@ -98,8 +99,8 @@ RHO_GLOBAL void rho_signature_capture(const char* callback_url)
 RHO_GLOBAL void rho_signature_clear() 
 {
     // check for RhoElements :
-    if (!rho_is_rho_elements_extension_can_be_used()) {
-        RAWLOG_WARNING("Rho::SignatureCapture.clear() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
+    if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
+        RAWLOG_WARNING("Rho::SignatureCapture must be used under RhoElements license! For more information look at http://www.motorolasolutions.com/rhoelements");
     }
     
     JNIEnv *env = jnienv();
