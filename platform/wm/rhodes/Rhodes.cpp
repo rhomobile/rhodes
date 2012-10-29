@@ -51,7 +51,7 @@ using namespace stdext;
 typedef unsigned long VALUE;
 #endif //!RUBY_RUBY_H
 
-char* parseToken( const char* start, int len );
+LPTSTR parseToken(LPCTSTR start, LPCTSTR* next_token);
 extern "C" void rho_ringtone_manager_stop();
 extern "C" void rho_sysimpl_sethas_network(int nValue);
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue);
@@ -219,151 +219,135 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( )
 {
 	m_nRestarting = 1;
-	TCHAR szTokens[] = _T("-/");
-	LPCTSTR lpszToken = FindOneOf(lpCmdLine, szTokens);
+	LPCTSTR lpszToken = lpCmdLine;
+	LPCTSTR nextToken;
     getRhoRootPath();
 
 	m_logPort = "";
 
+	LOG(INFO) + lpCmdLine;
+
 	while (lpszToken != NULL)
 	{
-		if (WordCmpI(lpszToken, _T("Restarting"))==0) {
-			m_nRestarting = 10;
+		// skip leading spaces and double-quote (if present)
+	    bool doubleQuote = false;
+		while ((*lpszToken != 0) && ((*lpszToken==' ') || ((!doubleQuote) && (*lpszToken=='"')))) {
+			if (*lpszToken=='"')
+				doubleQuote = true;
+			lpszToken++;
 		}
+		// skip leading spaces and check for leading '/' or '-' of command line option
+		bool isCmdLineOpt = false;
+		while ((*lpszToken != 0) && ((*lpszToken==' ') || ((!isCmdLineOpt) && ((*lpszToken=='/') || (*lpszToken=='-'))))) {
+			if ((*lpszToken=='/') || (*lpszToken=='-'))
+				isCmdLineOpt = true;
+			lpszToken++;
+		}
+		// finish command line processing on EOL
+		if (*lpszToken == 0) break;
 
-		if (wcsncmp(lpszToken, _T("log"), 3)==0) 
-		{
-			String token = convertToStringA(lpszToken);
-			//parseToken will allocate extra byte at the end of the returned token value
-			char* port = parseToken( token.c_str(), token.length() );
-			if (port) {
-				String strLogPort = port;
-				m_logPort = strLogPort;
-				free(port);
+		// if option starts with double-quote, find its end by next double-quote;
+		// otherwise the end will be found automatically
+		nextToken = doubleQuote ? FindOneOf(lpszToken, _T("\"")) : NULL;
+
+		//parseToken will allocate extra byte at the end of the returned token value
+		LPTSTR value = parseToken( lpszToken, &nextToken );
+
+		if (isCmdLineOpt) {
+			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
+				m_nRestarting = 10;
 			}
-			else {
-				m_logPort = rho::String("11000");
+
+			else if (wcsncmp(lpszToken, _T("log"), 3)==0) 
+			{
+				if (value) {
+					m_logPort = convertToStringA(value);
+				}
+				else {
+					m_logPort = rho::String("11000");
+				}
 			}
-		}
 
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-        else if (wcsnicmp(lpszToken, _T("s"),1)==0)
-        {
-			String token = convertToStringA(lpszToken);
-			char* path = parseToken( token.c_str(), token.length() );
-			if (path) {
-				// RhoElements v1.0 compatibility mode
-                rho_wmimpl_set_startpage(path);
-				free(path);
+			else if (wcsnicmp(lpszToken, _T("s"),1)==0)
+			{
+				if (value) {
+					// RhoElements v1.0 compatibility mode
+					String strPath = convertToStringA(value);
+					rho_wmimpl_set_startpage(strPath.c_str());
+				}
 			}
-        }
-        else if (wcsnicmp(lpszToken, _T("c"),1)==0)
-        {
-			String token = convertToStringA(lpszToken);
-            char* path = parseToken( token.c_str(), token.length() );
-			if (path) {
-                token = path;
-                if (token.substr(0,7).compare("file://")==0)
-                    token.erase(0,7);
-				rho_wmimpl_set_configfilepath(token.c_str());
-				free(path);
+			else if (wcsnicmp(lpszToken, _T("c"),1)==0)
+			{
+				if (value) {
+					String strPath = convertToStringA(value);
+					if (strPath.substr(0,7).compare("file://")==0)
+						strPath.erase(0,7);
+					rho_wmimpl_set_configfilepath(strPath.c_str());
+				}
 			}
-        }
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
 #if defined(OS_WINDOWS_DESKTOP)
-		else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
-        {
-			String token = convertToStringA(lpszToken);
-            char *proxy = parseToken( token.c_str(), token.length() );
-			
-			if (proxy)
-            {
-				m_strHttpProxy = proxy;
-                free(proxy);
-            }
-			else 
-				LOG(WARNING) + "invalid value for \"http_proxy_url\" cmd parameter";
-
-		} else if (wcsncmp(lpszToken, _T("approot"),7)==0) 
-        {
-			String token = convertToStringA(lpszToken);
-			//parseToken will allocate extra byte at the end of the returned token value
-            char* path = parseToken( token.c_str(), token.length() );
-			if (path) {
-				int len = strlen(path);
-				if (!(path[len-1]=='\\' || path[len-1]=='/')) {
-#ifdef RHODES_EMULATOR
-					path[len] = '/';
-#else
-					path[len] = '\\';
-#endif
-					path[len+1]  = 0;
+			else if (wcsncmp(lpszToken, _T("http_proxy_url"),14)==0) 
+			{
+				if (value) {
+					m_strHttpProxy = convertToStringA(value);
 				}
-				m_strRootPath = path;
-				free(path);
-				String_replace(m_strRootPath, '\\', '/');
-			}
-		} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
-        {
-			String token = convertToStringA(lpszToken);
-			//parseToken will allocate extra byte at the end of the returned token value
-            char* path = parseToken( token.c_str(), token.length() );
-			if (path) {
-				m_strRhodesPath = path;
-				free(path);
-				String_replace(m_strRhodesPath, '\\', '/');
-			}
-		} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
-        {
-			String token = convertToStringA(lpszToken);
-			//parseToken will allocate extra byte at the end of the returned token value
-            char* path = parseToken( token.c_str(), token.length() );
-			if (path) {
-                convertToStringW(path, m_strAppNameW);
-				free(path);
-			}
-		} else if (wcsncmp(lpszToken, _T("debughost"),9)==0) 
-        {
-			String token = convertToStringA(lpszToken);
-			//parseToken will allocate extra byte at the end of the returned token value
-            char* host = parseToken( token.c_str(), token.length() );
-			if (host) {
-				m_strDebugHost = host;
-				free(host);
-			}
-		} else if (wcsncmp(lpszToken, _T("debugport"),9)==0) 
-        {
-			String token = convertToStringA(lpszToken);
-			//parseToken will allocate extra byte at the end of the returned token value
-            char* port = parseToken( token.c_str(), token.length() );
-			if (port) {
-				m_strDebugPort = port;
-				free(port);
-			}
-		} */
+				else 
+					LOG(WARNING) + "invalid value for \"http_proxy_url\" cmd parameter";
+
+			} else if (wcsncmp(lpszToken, _T("approot"),7)==0) 
+			{
+				if (value) {
+					m_strRootPath = convertToStringA(value);
+					String_replace(m_strRootPath, '\\', '/');
+					if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
+						m_strRootPath.append("/");
+				}
+			} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
+			{
+				if (value) {
+					m_strRhodesPath = convertToStringA(value);
+					String_replace(m_strRhodesPath, '\\', '/');
+				}
+			} /* else if (wcsncmp(lpszToken, _T("appname"),7)==0) 
+			{
+				if (value) {
+					m_strAppNameW = convertToStringW(value);
+				}
+			} else if (wcsncmp(lpszToken, _T("debughost"),9)==0) 
+			{
+				if (value) {
+					m_strDebugHost = convertToStringA(value);
+				}
+			} else if (wcsncmp(lpszToken, _T("debugport"),9)==0) 
+			{
+				if (value) {
+					m_strDebugPort = convertToStringA(value);
+				}
+			} */
 #else
-        else if (wcsnicmp(lpszToken, _T("approot"),7)==0)
-        {
-            String token = convertToStringA(lpszToken);
-			char* path = parseToken( token.c_str(), token.length() );
-			if (path) {
-				// RhoElements v2.0 Shared Runtime command line parameter
-				m_strRootPath = path;
-                if (m_strRootPath.substr(0,7).compare("file://")==0)
-                    m_strRootPath.erase(0,7);
-                String_replace(m_strRootPath, '\\', '/');
-                if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
-                    m_strRootPath.append("/");
-                m_strRootPath.append("rho/");
+			else if (wcsnicmp(lpszToken, _T("approot"),7)==0)
+			{
+				if (value) {
+					// RhoElements v2.0 Shared Runtime command line parameter
+					m_strRootPath = convertToStringA(value);
+					if (m_strRootPath.substr(0,7).compare("file://")==0)
+						m_strRootPath.erase(0,7);
+					String_replace(m_strRootPath, '\\', '/');
+					if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
+						m_strRootPath.append("/");
+					m_strRootPath.append("rho/");
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
-                rho_wmimpl_set_is_version2(m_strRootPath.c_str());
+					rho_wmimpl_set_is_version2(m_strRootPath.c_str());
 #endif
-        	}
-			free(path);
-        }
+        		}
+			}
 #endif
-		lpszToken = FindOneOf(lpszToken, szTokens);
+		}
+		if (value) free(value);
+		lpszToken = nextToken;
 	}
 
 	return __super::ParseCommandLine(lpCmdLine, pnRetCode);
@@ -1047,38 +1031,51 @@ extern "C" void Init_fcntl(void)
 
 //parseToken will allocate extra byte at the end of the 
 //returned token value
-char* parseToken( const char* start, int len ) {
+LPTSTR parseToken (LPCTSTR start, LPCTSTR* next_token) {
     int nNameLen = 0;
-    while(*start==' '){ start++; len--;}
+    while(*start==' '){ start++; }
 
     int i = 0;
-    for( i = 0; i < len; i++ ){
-        if (( start[i] == '=' ) || ( start[i] == ':' ) || ( start[i] == ' ' )) {
+    while( start[i] != L'\0' )
+	{
+        if (( start[i] == L'=' ) || ( start[i] == L':' ) || ( start[i] == L' ' )) {
             if ( i > 0 ){
                 int s = i-1;
                 for(; s >= 0 && start[s]==' '; s-- );
-
                 nNameLen = s+1;
                 break;
             }else 
                 break;
         }
+		++i;
     }
 
-    if ( nNameLen == 0 )
+	if ( nNameLen == 0 )
         return NULL;
 
-    const char* szValue = start + i+1;
+    LPCTSTR szValue = start + i+1;
     int nValueLen = 0;
 
-    while(*szValue==' ' || *szValue=='\'' || *szValue=='"' && nValueLen >= 0 ){ szValue++;}
-    while(szValue[nValueLen] && szValue[nValueLen] !='\'' && szValue[nValueLen] != '"' ){ nValueLen++;}
+	// skip leading spaces and optional delimiter (that is either ' or ") and keep the delimiter for further use
+	TCHAR delimiter = L' ';
+	while ((*szValue==delimiter) || ((delimiter==L' ') && ((*szValue==L'\'') || (*szValue==L'"')))) {
+		if ((delimiter==L' ') && ((*szValue==L'\'') || (*szValue==L'"'))) {
+			// delimiter found
+			delimiter = *szValue;
+			szValue++;
+			break;
+		}
+		szValue++;
+	}
+	// search for value end -- that is either end of line or delimiter
+	while ((szValue[nValueLen] != L'\0') && (szValue[nValueLen] != delimiter)) { nValueLen++; }
+	// next token begins with the character next to delimiter (if it's not the end of the line)
+	if (*next_token == NULL)
+		*next_token = szValue + nValueLen + (szValue[nValueLen] != L'\0' ? 1 : 0 );
 
-    //while(nValueLen > 0 && (szValue[nValueLen-1]==' ' || szValue[nValueLen-1]=='\'' || szValue[nValueLen-1]=='"')) nValueLen--;
-
-	char* value = (char*) malloc(nValueLen+2);
-	strncpy(value, szValue, nValueLen);
-	value[nValueLen] = '\0';
+	TCHAR* value = (TCHAR*) malloc((nValueLen+2)*sizeof(TCHAR));
+	wcsncpy(value, szValue, nValueLen);
+	value[nValueLen] = L'\0';
 
 	return value;
 }
