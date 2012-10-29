@@ -197,7 +197,7 @@ std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstri
 
 jhstring rho_cast_helper<jhstring, char const *>::operator()(JNIEnv *env, char const *s)
 {
-    return jhstring(env->NewStringUTF(s));
+    return jhstring(s ? env->NewStringUTF(s) : (jstring)0);
 }
 
 jclass RhoMapConvertor::clsString;
