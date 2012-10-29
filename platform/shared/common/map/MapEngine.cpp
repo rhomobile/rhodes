@@ -223,6 +223,8 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
     bool scroll_enabled = true;
     bool shows_user_location = true;
 
+    bool region_setted = false;
+    
     if (settings)
     {
         if (settings->type != RHO_PARAM_HASH)
@@ -267,6 +269,8 @@ rhomap::IMapView *rho_map_create(rho_param *p, rhomap::IDrawingDevice *device, i
                     latitudeSpan = latSpan->type == RHO_PARAM_STRING ? strtod(latSpan->v.string, NULL) : 0;
                     longitudeSpan = lonSpan->type == RHO_PARAM_STRING ? strtod(lonSpan->v.string, NULL) : 0;
 
+                    region_setted = true;
+                    
                     use_center_radius = false;
                 }
                 else if (value->type == RHO_PARAM_HASH)
@@ -486,9 +490,12 @@ private:
 
 int mapview_preload_map_tiles(rho_param* p, const char* callback)
 {
+    
     if (p == NULL) {
         return 0;
     }
+    
+
     if (p->type != RHO_PARAM_HASH) {
         RAWLOG_ERROR("preload_map_tiles: first params must be HASH!");
         return 0;
@@ -503,6 +510,13 @@ int mapview_preload_map_tiles(rho_param* p, const char* callback)
     double right_longitude = 0;
     int min_zoom = 0;
     int max_zoom = 0;
+    
+    bool top_latitude_setted = false;
+    bool left_longitude_setted = false;
+    bool bottom_latitude_setted = false;
+    bool right_longitude_setted = false;
+    bool min_zoom_setted = false;
+    bool max_zoom_setted = false;
     
 
     for (int j = 0, limm = p->v.hash->size; j < limm; ++j) {
@@ -522,22 +536,39 @@ int mapview_preload_map_tiles(rho_param* p, const char* callback)
         }
         else if (strcasecmp(name, "top_latitude") == 0) {
             top_latitude = strtod(v, NULL);
+            top_latitude_setted = true;
         }
         else if (strcasecmp(name, "left_longitude") == 0) {
             left_longitude = strtod(v, NULL);
+            left_longitude_setted = true;
         }
         else if (strcasecmp(name, "bottom_latitude") == 0) {
             bottom_latitude = strtod(v, NULL);
+            bottom_latitude_setted = true;
         }
         else if (strcasecmp(name, "right_longitude") == 0) {
             right_longitude = strtod(v, NULL);
+            right_longitude_setted = true;
         }
         else if (strcasecmp(name, "min_zoom") == 0) {
             min_zoom = (int)strtod(v, NULL);
+            min_zoom_setted = true;
         }
         else if (strcasecmp(name, "max_zoom") == 0) {
             max_zoom = (int)strtod(v, NULL);
+            max_zoom_setted = true;
         }
+    }
+    
+    const char* s_google = "google";
+    const char* s_type = "roadmap";
+
+    if (engine == NULL) {
+        engine = (char*)s_google;
+    }
+
+    if (map_type == NULL) {
+        map_type = (char*)s_type;
     }
     
     
@@ -550,13 +581,18 @@ int mapview_preload_map_tiles(rho_param* p, const char* callback)
         RAWLOG_ERROR1("Can not create MapView for provider=%s", engine);
         return 0;
     }
-
+    
+    if (!( top_latitude_setted && left_longitude_setted && bottom_latitude_setted && right_longitude_setted && min_zoom_setted && max_zoom_setted )) {
+        RAWLOG_ERROR("Invalid parameters in preload_map_tiles()");
+        return 0;
+    }
+    
     mapview->setMapType(map_type);
     mapview->set_file_caching_enable(true);
     
     int count = mapview->preloadMapTiles(top_latitude, left_longitude, bottom_latitude, right_longitude, min_zoom, max_zoom);
-     
-    CheckProgress* cp = new CheckProgress(mapview, callback, count);    
+    
+    CheckProgress* cp = new CheckProgress(mapview, callback, count);
     
     cp->start(rho::common::IRhoRunnable::epNormal);
     
