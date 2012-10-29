@@ -225,8 +225,6 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 
 	m_logPort = "";
 
-	LOG(INFO) + lpCmdLine;
-
 	while (lpszToken != NULL)
 	{
 		// skip leading spaces and double-quote (if present)
