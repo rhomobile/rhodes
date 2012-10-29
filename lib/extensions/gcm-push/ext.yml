@@ -1,5 +1,6 @@
 entry: Init_GCMPushClient
 android:
+  exttype: rakefile
   manifest_changes: 
   - ext/android/AndroidManifest.rb
   - ext/android/ApplicationManifestAdds.erb
