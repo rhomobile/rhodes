@@ -224,7 +224,7 @@ public class GoogleMapView extends MapActivity {
 		
 		MapController controller = view.getController();
 		String type = extras.getString(SETTINGS_PREFIX + "region");
-		if (type.equals("square")) {
+		if ("square".equals(type)) {
 			String latitude = extras.getString(SETTINGS_PREFIX + "region.latitude");
 			String longitude = extras.getString(SETTINGS_PREFIX + "region.longitude");
 			if (latitude != null && longitude != null) {
@@ -253,7 +253,7 @@ public class GoogleMapView extends MapActivity {
 				}
 			}
 		}
-		else if (type.equals("circle")) {
+		else if ("circle".equals(type)) {
 			String center = extras.getString(SETTINGS_PREFIX + "region.center");
 			String radius = extras.getString(SETTINGS_PREFIX + "region.radius");
 			if (center != null && radius != null) {
