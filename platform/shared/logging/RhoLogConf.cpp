@@ -541,6 +541,10 @@ void rho_log_resetup_http_url(const char* http_log_url) {
     LOGCONF().reinitRemoteLog();
 }
 
+void rho_log_resetup_log_path(const char* log_file_path) {
+	LOGCONF().setLogFilePath(log_file_path);
+}
+
 
 #endif //RHO_NO_RUBY
 
