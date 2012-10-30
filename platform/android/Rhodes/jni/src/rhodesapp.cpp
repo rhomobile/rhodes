@@ -342,8 +342,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_resetFileLogging
 (JNIEnv *env, jobject, jstring jId)
 {
     std::string path = rho_cast<std::string>(env, jId);
-	android_set_log_path(path);
-    rho_log_resetup_log_path(path.c_str());
+    LOGCONF().setLogFilePath(path);
 }
 
 RHO_GLOBAL char *rho_timezone()

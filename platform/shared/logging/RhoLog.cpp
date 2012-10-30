@@ -39,13 +39,13 @@ const char*const LogSeverityNames[L_NUM_SEVERITIES] = {
 namespace rho {
 
 LogMessage::LogMessage(const char* file, int line, LogSeverity severity, LogSettings& oSettings, const LogCategory& category) : 
-    m_severity(severity), m_category(category), m_oLogConf(oSettings), m_bForceEnable(false){
+    m_severity(severity), m_category(category), m_bForceEnable(false), m_oLogConf(oSettings){
     if ( getLogConf().isLogPrefix() && isEnabled() )
         addPrefix( file, line );
 }
 
 LogMessage::LogMessage(const char* file, int line, LogSeverity severity, LogSettings& oSettings, const LogCategory& category, boolean bForceEnable) : 
-    m_severity(severity), m_category(category), m_oLogConf(oSettings), m_bForceEnable(bForceEnable){
+    m_severity(severity), m_category(category), m_bForceEnable(bForceEnable), m_oLogConf(oSettings){
     if ( getLogConf().isLogPrefix() && isEnabled() )
         addPrefix( file, line );
 }
@@ -109,10 +109,10 @@ void LogMessage::applyExcludeFilter(String& strMsg)
     if ( arSecure.size() == 0 )
         return;
 
-    for ( int i = 0; i < strMsg.length(); i++ )
+    for ( String::size_type i = 0; i < strMsg.length(); i++ )
     {
         rho::boolean bFound = false;
-        for ( int j = 0; j < arSecure.size(); j++ )
+        for ( Vector<String>::size_type j = 0; j < arSecure.size(); j++ )
         {
             const String& strExclude = arSecure.elementAt(j);
             if ( strncmp(strMsg.c_str() + i, strExclude.c_str(), strExclude.length()) == 0 )
@@ -133,7 +133,7 @@ void LogMessage::applyExcludeFilter(String& strMsg)
                 else
                     break;
 
-                int nFill = nRemoveStart;
+                String::size_type nFill = nRemoveStart;
                 for ( ; nFill < strMsg.length(); nFill++ )
                 {
                     if ( bSlash && strMsg[nFill] == '\\' ) 
