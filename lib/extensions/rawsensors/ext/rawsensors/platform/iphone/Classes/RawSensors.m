@@ -140,7 +140,7 @@ static RhoRawSensors* ourRhoSensors = nil;
         }
     }
     if ([RAW_SENSORS_CALLBACK_URL compare:property_name options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        if ((value != nil) && ([value length] > 0)) {
+        if ((value != nil) /*&& ([value length] > 0)*/) {
             callbackURL = value;
         }
     }
