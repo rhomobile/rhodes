@@ -43,7 +43,7 @@ common::CMutex LogSettings::m_CatLock;
 
 
 LogSettings::MemoryInfoCollectorThread::MemoryInfoCollectorThread( LogSettings& logSettings ) :
-    m_pCollector(0), m_logSettings(logSettings), m_collectMemoryIntervalMilliseconds(0)
+                 m_collectMemoryIntervalMilliseconds(0), m_pCollector(0), m_logSettings(logSettings)
 {
     
 }
@@ -237,12 +237,11 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
 	}
 }
 
-void LogSettings::setLogFilePath(const char* szLogFilePath){ 
-    if ( m_strLogFilePath.compare(szLogFilePath) != 0 ){
+void LogSettings::setLogFilePath(const String& logFilePath){
+    if ( m_strLogFilePath.compare(logFilePath) != 0 ){
         common::CMutexLock oLock(m_FlushLock);
 
-        m_strLogFilePath = szLogFilePath; 
-
+        m_strLogFilePath = logFilePath;
         if ( m_pFileSink ){
             delete m_pFileSink;
             m_pFileSink = new CLogFileSink(*this);
@@ -540,11 +539,6 @@ void rho_log_resetup_http_url(const char* http_log_url) {
     LOGCONF().setLogURL(http_log_url);
     LOGCONF().reinitRemoteLog();
 }
-
-void rho_log_resetup_log_path(const char* log_file_path) {
-	LOGCONF().setLogFilePath(log_file_path);
-}
-
 
 #endif //RHO_NO_RUBY
 
