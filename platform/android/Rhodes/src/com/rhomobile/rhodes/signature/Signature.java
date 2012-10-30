@@ -175,10 +175,10 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 				ourInlineSignatureView = new SignatureView(ContextFactory.getUiContext(), null);
 				
 				{
-					if ((getSharedInstance().mProperties.bgColor & 0xFF000000) != 0xFF000000) {
+					//if ((getSharedInstance().mProperties.bgColor & 0xFF000000) != 0xFF000000) {
 						//ourInlineSignatureView.setVisibility(View.INVISIBLE);
 						ourInlineSignatureView.isTransparency = true;
-					}
+					//}
 					ourInlineSignatureView.setupView(	getSharedInstance().mProperties.penColor, 
 							getSharedInstance().mProperties.penWidth, 
 							getSharedInstance().mProperties.bgColor);
