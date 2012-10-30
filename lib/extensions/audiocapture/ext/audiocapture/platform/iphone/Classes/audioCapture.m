@@ -16,6 +16,14 @@ static RhoAudioCapture* ourRhoAudioCapture = nil;
     if (ourRhoAudioCapture == nil) {
         ourRhoAudioCapture = [[RhoAudioCapture alloc] init];
         ourRhoAudioCapture.duration = 20000;
+        
+        NSString *folder = [NSString stringWithUTF8String:rho_rhodesapp_getblobsdirpath()];
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        if (![fileManager fileExistsAtPath:folder])
+            [fileManager createDirectoryAtPath:folder attributes:nil];
+        
+        ourRhoAudioCapture.destination = [folder stringByAppendingPathComponent:@"audiocapture.wav"];
     }
     return ourRhoAudioCapture;
 }
