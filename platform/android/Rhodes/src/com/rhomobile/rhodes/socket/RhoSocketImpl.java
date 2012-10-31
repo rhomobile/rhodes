@@ -60,7 +60,7 @@ public class RhoSocketImpl extends SocketImpl {
 	public RhoSocketImpl(int s, RhoSockAddr rem) {
 		Logger.D(TAG, "New socket wrapper. fd: " + s + ", host: " + rem.host + ", port: " + rem.port);
 		
-		soTimeout = RhoConf.getInt("net_timeout");
+		soTimeout = RhoConf.getInt("net_timeout") * 1000;
 		if ( 0 == soTimeout ) {
 			soTimeout = DEFAULT_TIMEOUT;
 		}
