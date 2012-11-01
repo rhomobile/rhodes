@@ -24,7 +24,8 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-if Object.const_defined?('RhoElementsExt')
+if (((System.get_property('platform') != 'ANDROID') and Object.const_defined?('RhoElementsExt')) or
+   ((System.get_property('platform') == 'ANDROID') and System.get_property('is_motorola_device')))
 
 =begin
 if System.get_property('platform') != 'ANDROID'
