@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import android.R.bool;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -16,7 +17,7 @@ public class ExtAudioRecorder
 {
 	private final static int[] sampleRates = {22050, 11025, 8000};
 	
-	public static ExtAudioRecorder getInstanse(Boolean recordingCompressed)
+	public static ExtAudioRecorder getInstanse(Boolean recordingCompressed, int duration)
 	{
 		ExtAudioRecorder result = null;
 		
@@ -26,7 +27,8 @@ public class ExtAudioRecorder
 											AudioSource.MIC, 
 											sampleRates[2], 
 											AudioFormat.CHANNEL_CONFIGURATION_MONO,
-											AudioFormat.ENCODING_PCM_16BIT);
+											AudioFormat.ENCODING_PCM_16BIT, 
+											duration);
 		}
 		else
 		{
@@ -37,7 +39,8 @@ public class ExtAudioRecorder
 												AudioSource.MIC, 
 												sampleRates[i], 
 												AudioFormat.CHANNEL_CONFIGURATION_MONO,
-												AudioFormat.ENCODING_PCM_16BIT);
+												AudioFormat.ENCODING_PCM_16BIT,
+												duration);
 				
 			} while((++i<sampleRates.length) & !(result.getState() == ExtAudioRecorder.State.INITIALIZING));
 		}
@@ -77,6 +80,8 @@ public class ExtAudioRecorder
 	
 	// Recorder state; see State
 	private State          	state;
+	
+	private int 			mDuration = 0;
 	
 	// File writer (only in uncompressed mode)
 	private RandomAccessFile randomAccessWriter;
@@ -120,30 +125,48 @@ public class ExtAudioRecorder
 	{
 		public void onPeriodicNotification(AudioRecord recorder)
 		{
+			boolean isDurationLimit = false;
+			
 			audioRecorder.read(buffer, 0, buffer.length); // Fill buffer
 			try
 			{ 
-				randomAccessWriter.write(buffer); // Write buffer to file
-				payloadSize += buffer.length;
-				if (bSamples == 16)
-				{
-					for (int i=0; i<buffer.length/2; i++)
-					{ // 16bit sample size
-						short curSample = getShort(buffer[i*2], buffer[i*2+1]);
-						if (curSample > cAmplitude)
-						{ // Check amplitude
-							cAmplitude = curSample;
+				// check size
+				int count = buffer.length;
+				
+				int expectedPayloadSize = (int)((long)((long)bSamples/8)*(long)nChannels*(long)sRate*(long)mDuration/(long)1000);
+				
+				if ((payloadSize + count) >= expectedPayloadSize) {
+					isDurationLimit = true;
+					count = expectedPayloadSize - payloadSize;
+				}
+				
+				if (count > 0) {
+					//randomAccessWriter.write(buffer); // Write buffer to file
+					randomAccessWriter.write(buffer, 0, count);
+					payloadSize += count;
+					if (bSamples == 16)
+					{
+						for (int i=0; i<count/2; i++)
+						{ // 16bit sample size
+							short curSample = getShort(buffer[i*2], buffer[i*2+1]);
+							if (curSample > cAmplitude)
+							{ // Check amplitude
+								cAmplitude = curSample;
+							}
 						}
 					}
-				}
-				else	
-				{ // 8bit sample size
-					for (int i=0; i<buffer.length; i++)
-					{
-						if (buffer[i] > cAmplitude)
-						{ // Check amplitude
-							cAmplitude = buffer[i];
+					else	
+					{ // 8bit sample size
+						for (int i=0; i<count; i++)
+						{
+							if (buffer[i] > cAmplitude)
+							{ // Check amplitude
+								cAmplitude = buffer[i];
+							}
 						}
+					}
+					if (isDurationLimit) {
+						Audiocapture.onAudioRecorderFinishedByDuration();
 					}
 				}
 			}
@@ -168,10 +191,11 @@ public class ExtAudioRecorder
 	 * In case of errors, no exception is thrown, but the state is set to ERROR
 	 * 
 	 */ 
-	public ExtAudioRecorder(boolean uncompressed, int audioSource, int sampleRate, int channelConfig, int audioFormat)
+	public ExtAudioRecorder(boolean uncompressed, int audioSource, int sampleRate, int channelConfig, int audioFormat, int duration)
 	{
 		try
 		{
+			mDuration = duration;
 			rUncompressed = uncompressed;
 			if (rUncompressed)
 			{ // RECORDING_UNCOMPRESSED

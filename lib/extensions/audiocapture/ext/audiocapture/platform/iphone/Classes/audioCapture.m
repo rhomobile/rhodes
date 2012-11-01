@@ -149,7 +149,7 @@ static RhoAudioCapture* ourRhoAudioCapture = nil;
     }
     
     // start recording
-    [recorder recordForDuration:(NSTimeInterval) (duration/1000)];
+    [recorder recordForDuration:(NSTimeInterval) ((double)duration/1000.0)];
     
     isSaveFile = YES;
     
