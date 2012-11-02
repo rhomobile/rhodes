@@ -113,7 +113,7 @@ SignatureDelegate* ourSD = nil;
     NSString *fullname;
     NSData *pngImage;
     
-    if (imageFormat == @"png") {
+    if ([@"png" compare:imageFormat options:NSCaseInsensitiveSearch] == NSOrderedSame) {
 	
         filename = [NSString stringWithFormat:@"Image_%@.png", now]; 	
         fullname = [folder stringByAppendingPathComponent:filename];
