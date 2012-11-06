@@ -129,10 +129,14 @@ public class Rawsensors {
 		if (RAWSENSORS_SERVICE_ALL.equals(property_name) ) {
 			need_resetup_thread = true;
 			if (false_string.equalsIgnoreCase(value) || disabled_string.equalsIgnoreCase(value)) {
-				getInstance().mEnableAll = false;
+				//getInstance().mEnableAll = false;
+				getInstance().mEnableAccelerometer = false;
+				getInstance().mEnableMagnetometer = false;
 			}
 			else {
-				getInstance().mEnableAll = true;
+				//getInstance().mEnableAll = true;
+				getInstance().mEnableAccelerometer = true;
+				getInstance().mEnableMagnetometer = true;
 			}
 		}
 		if (RAWSENSORS_CALLBACK_URL.equals(property_name) ) {
@@ -187,7 +191,7 @@ public class Rawsensors {
 			return getInstance().mUpdatePeriod;
 		}
 		if (RAWSENSORS_SERVICE_ALL.equals(property_name) ) {
-			if (getInstance().mEnableAll) {
+			if (getInstance().mEnableAccelerometer && getInstance().mEnableMagnetometer) {
 				return 1;
 			}
 			return 0;
