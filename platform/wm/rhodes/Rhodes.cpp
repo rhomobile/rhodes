@@ -168,6 +168,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     CMainWindow m_appWindow;
     rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath, m_strAppName;//, m_strDebugHost, m_strDebugPort;*/
 	int m_nRestarting;
+	bool m_isRhoConnectPush;
 #ifndef RHODES_EMULATOR
 	HANDLE m_hMutex;
 #endif
@@ -224,6 +225,7 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
     getRhoRootPath();
 
 	m_logPort = "";
+	m_isRhoConnectPush = false;
 
 	while (lpszToken != NULL)
 	{
@@ -254,6 +256,10 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 		if (isCmdLineOpt) {
 			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
 				m_nRestarting = 10;
+			}
+
+			if (WordCmpI(lpszToken, _T("rhoconnectpush"))==0) {
+				m_isRhoConnectPush = true;
 			}
 
 			else if (wcsncmp(lpszToken, _T("log"), 3)==0) 
@@ -565,6 +571,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #else
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
+
+	//if( m_isRhoConnectPush )
+	//	m_appWindow.ShowWindow(SW_MINIMIZE);
 
     if (NULL == m_appWindow.m_hWnd)
     {

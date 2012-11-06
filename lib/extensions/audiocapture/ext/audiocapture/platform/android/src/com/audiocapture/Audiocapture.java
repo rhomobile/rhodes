@@ -1,10 +1,12 @@
 package com.audiocapture;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import com.rhomobile.rhodes.RhodesAppOptions;
+import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.media.MediaRecorder;
@@ -20,10 +22,20 @@ public class Audiocapture {
 		return ourInstance;
 	}
 	
+	public Audiocapture() {
+		mCallbackURL = "";
+		mDuration = 20000;
+		mName = "audiocapture.wav";
+		String dir = RhodesAppOptions.getBlobPath();
+		mDestination = dir + "/" +mName;
+	}
+	
 	public final static String AUDIOCAPTURE_CALLBACK = "audioSaveEvent";
 	public final static String AUDIOCAPTURE_DESTINATION = "destination";
 	public final static String AUDIOCAPTURE_DURATION = "duration";
 	public final static String AUDIOCAPTURE_NAME = "name";
+
+	public final static String AUDIOCAPTURE_TMP_NAME_ADDON = "_tmp";
 	
 	private String mCallbackURL = null;
 	private String mDestination = null;
@@ -111,10 +123,10 @@ public class Audiocapture {
 	}
 	
 	public void startCommand() {
-	    mRecorder = ExtAudioRecorder.getInstanse(false);
+	    mRecorder = ExtAudioRecorder.getInstanse(false, mDuration);
         //mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         //mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mDestination);
+        mRecorder.setOutputFile(mDestination+AUDIOCAPTURE_TMP_NAME_ADDON);
         //mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         mRecorder.prepare();
@@ -126,8 +138,8 @@ public class Audiocapture {
 			mTimer.cancel();
 			mTimer = null;
 		}
-        mTimer = new Timer();
-        mTimer.schedule( new MyTimerTask (mDuration), (long)mDuration);
+        //mTimer = new Timer();
+        //mTimer.schedule( new MyTimerTask (mDuration), (long)mDuration);
         
 	}
 	
@@ -142,9 +154,25 @@ public class Audiocapture {
 	        mRecorder = null;
 	        
 	        if (mIsSaveFile) {
+	        	// kill if exist
+	        	File dst_file = new File(mDestination);
+	        	if (dst_file.exists()) {
+	        		dst_file.delete();
+	        	}
+	        	
+	        	// rename tmp to dst
+	        	File tmp_file = new File(mDestination+AUDIOCAPTURE_TMP_NAME_ADDON);
+	        	if (tmp_file.exists()) {
+	        		tmp_file.renameTo(new File(mDestination));
+	        	}
 	        	fireCallback("OK", "filename", mDestination);
 	        }
 	        else {
+	        	// kill tmp file
+	        	File file = new File(mDestination + AUDIOCAPTURE_TMP_NAME_ADDON);
+	        	if (file.exists()) {
+	        		file.delete();
+	        	}
 	        	fireCallback("CANCEL", null, null);
 	        }
 		}
@@ -159,6 +187,9 @@ public class Audiocapture {
 	}
 	
 	
+	public static void onAudioRecorderFinishedByDuration() {
+		getInstance().stopCommand();
+	}
 	
 	
 	public static void start() {
