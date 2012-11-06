@@ -11,7 +11,7 @@ module Alert
   end  
   def self.vibrate(rest)
   end  
-  def self.play_file(rest)
+  def self.play_file(path, media_type)
   end  
   def self.show_status(rest)
   end  

@@ -151,6 +151,16 @@ class File
 
   FNM_SYSCASE = 8
 
+  def self.binread(fileName)
+  end
+  def self.new(fileName)
+  end
+  def self.open(fileName)
+  end
+  def self.write(content)
+  end
+  def self.close
+  end
   def self.directory?(req)
   end  
   def self.exist?(req)
@@ -259,7 +269,7 @@ class File
   end  
   def self.split(req)
   end  
-  def self.join(rest)
+  def self.join(string1, string2)
   end  
   def self.fnmatch(rest)
   end  
