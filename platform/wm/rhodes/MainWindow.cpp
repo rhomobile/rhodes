@@ -1163,11 +1163,11 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         m_SyncStatusDlg.setTitle( convertToStringW(params->m_title).c_str() );
         if ( !m_SyncStatusDlg.m_hWnd )
             m_SyncStatusDlg.Create(m_hWnd, 0);
-        else
-        {
-            m_SyncStatusDlg.ShowWindow(SW_SHOW);
-            m_SyncStatusDlg.BringWindowToTop();
-        }
+        //else
+        //{
+        m_SyncStatusDlg.ShowWindow(SW_SHOW);
+        m_SyncStatusDlg.BringWindowToTop();
+        //}
     }else if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
 		MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
         RHODESAPP().callPopupCallback(params->m_callback, "ok", "ok");
