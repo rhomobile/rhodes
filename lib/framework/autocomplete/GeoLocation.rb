@@ -15,9 +15,9 @@ module GeoLocation
   end  
   def self.set_view_notification(rest)
   end  
-  def self.set_notification(rest)
+  def self.set_notification(callback, callback_params, ping_gpssystem_interval)
   end  
-  def self.haversine_distance(rest)
+  def self.haversine_distance(latitude1, longitude1, latitude2, longitude2)
   end  
   def self.turnoff(rest)
   end  

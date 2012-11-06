@@ -5,6 +5,8 @@
 #
  
 module Barcode
+  def self.barcode_recognize(image_file_full_path)
+  end
   def self.take_barcode(callback,hashParams)
   end  
   def self.enable(callback,hashParams)

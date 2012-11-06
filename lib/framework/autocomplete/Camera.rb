@@ -5,7 +5,7 @@
 #
  
 module Camera
-  def self.take_picture(rest)
+  def self.take_picture(callback_url, settings)
   end  
   def self.choose_picture(rest)
   end  
