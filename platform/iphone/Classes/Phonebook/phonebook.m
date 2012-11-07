@@ -37,6 +37,11 @@
 
 #define logging_enable NO
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
+
+
+
 static int _getProperty(char* property);
 static CFStringRef getAddressPartValue(ABRecordRef record, const char* property) ;
 
@@ -54,18 +59,20 @@ void* openPhonebook() {
     __block BOOL accessGranted = YES;
 
 #if defined(__IPHONE_6_0)
-    if (ABAddressBookRequestAccessWithCompletion != NULL) { // we're on iOS 6
-        accessGranted = NO;
-        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-        ABAddressBookRequestAccessWithCompletion(phonebook->_ab, ^(bool granted, CFErrorRef error) {
-            accessGranted = granted;
-            dispatch_semaphore_signal(sema);
-        });
-        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-        dispatch_release(sema);
-    }
-    else { // we're on iOS 5 or older
-        accessGranted = YES;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0")) {
+        if (ABAddressBookRequestAccessWithCompletion != NULL) { // we're on iOS 6
+            accessGranted = NO;
+            dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+            ABAddressBookRequestAccessWithCompletion(phonebook->_ab, ^(bool granted, CFErrorRef error) {
+                accessGranted = granted;
+                dispatch_semaphore_signal(sema);
+            });
+            dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+            dispatch_release(sema);
+        }
+        else { // we're on iOS 5 or older
+            accessGranted = YES;
+        }
     }
 #endif
     if (accessGranted) {
@@ -83,22 +90,24 @@ void* openPhonebook() {
 const char* phonebook_get_authorization_status() {
     const char* result = AUTHORIZATION_STATUS_AUTHORIZED;
 #if defined(__IPHONE_6_0)
-    if (ABAddressBookGetAuthorizationStatus != NULL) {
-        ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
-        if ( status == kABAuthorizationStatusNotDetermined ) {
-            result = AUTHORIZATION_STATUS_NOT_DETERMINED;
-        }
-        else if ( status == kABAuthorizationStatusDenied ) {
-            result = AUTHORIZATION_STATUS_DENIED;
-        }
-        else if ( status == kABAuthorizationStatusAuthorized ) {
-            result = AUTHORIZATION_STATUS_AUTHORIZED;
-        }
-        else if ( status == kABAuthorizationStatusRestricted ) {
-            result = AUTHORIZATION_STATUS_RESTRICTED;
-        }
-        else {
-            result = AUTHORIZATION_STATUS_NOT_DETERMINED;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0")) {
+        if (ABAddressBookGetAuthorizationStatus != NULL) {
+            ABAuthorizationStatus status = ABAddressBookGetAuthorizationStatus();
+            if ( status == kABAuthorizationStatusNotDetermined ) {
+                result = AUTHORIZATION_STATUS_NOT_DETERMINED;
+            }
+            else if ( status == kABAuthorizationStatusDenied ) {
+                result = AUTHORIZATION_STATUS_DENIED;
+            }
+            else if ( status == kABAuthorizationStatusAuthorized ) {
+                result = AUTHORIZATION_STATUS_AUTHORIZED;
+            }
+            else if ( status == kABAuthorizationStatusRestricted ) {
+                result = AUTHORIZATION_STATUS_RESTRICTED;
+            }
+            else {
+                result = AUTHORIZATION_STATUS_NOT_DETERMINED;
+            }
         }
     }
 #endif
