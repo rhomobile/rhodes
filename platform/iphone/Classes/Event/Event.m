@@ -20,6 +20,10 @@
 #define DEFAULT_LOGCATEGORY "Event"
 
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
+
+
 BOOL is_rho_calendar_supported() {
 	BOOL res = YES;
 #if defined(__IPHONE_4_0)
@@ -51,18 +55,20 @@ static void calendar_check()
     else {
 
 #if defined(__IPHONE_6_0)
-        __block BOOL accessGranted = NO;
-        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-        [[[Rhodes sharedInstance] getEventStore] requestAccessToEntityType:EKEntityTypeEvent completion:
-         ^(BOOL granted, NSError* error) {
-             accessGranted = granted;
-             dispatch_semaphore_signal(sema);
-         }
-         ];
-        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-        dispatch_release(sema);
-        
-        if (accessGranted) {
+        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0")) {
+            __block BOOL accessGranted = NO;
+            dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+            [[[Rhodes sharedInstance] getEventStore] requestAccessToEntityType:EKEntityTypeEvent completion:
+             ^(BOOL granted, NSError* error) {
+                 accessGranted = granted;
+                 dispatch_semaphore_signal(sema);
+             }
+             ];
+            dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+            dispatch_release(sema);
+            
+            if (accessGranted) {
+            }
         }
 #endif
         
@@ -74,7 +80,8 @@ const char* calendar_get_authorization_status(void) {
     calendar_check();
     const char* result = CALENDAR_AUTHORIZATION_STATUS_AUTHORIZED;
 #if defined(__IPHONE_6_0)
-    ABAuthorizationStatus status = [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent];
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0")) {
+        ABAuthorizationStatus status = [EKEventStore authorizationStatusForEntityType:EKEntityTypeEvent];
         if ( status == kABAuthorizationStatusNotDetermined ) {
             result = CALENDAR_AUTHORIZATION_STATUS_NOT_DETERMINED;
         }
@@ -90,7 +97,7 @@ const char* calendar_get_authorization_status(void) {
         else {
             result = CALENDAR_AUTHORIZATION_STATUS_NOT_DETERMINED;
         }
-
+    }
 #endif
     return result;
     
