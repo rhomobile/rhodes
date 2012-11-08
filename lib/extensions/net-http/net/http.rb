@@ -629,8 +629,11 @@ module Net   #:nodoc:
         SSL_ATTRIBUTES.each do |name|
           ivname = "@#{name}".intern
           if iv_list.include?(ivname)
-	   
-            ssl_parameters[name] = value if value = instance_variable_get(ivname)
+            value = instance_variable_get(ivname)
+
+            if value
+              ssl_parameters[name] = value
+            end
           end
         end
         if platform != 'Blackberry'
