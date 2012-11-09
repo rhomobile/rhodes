@@ -78,9 +78,11 @@ end
 	  item.save
 							
 	  File.exists?(file_name).should == true
-							
-	  model.sync( "/app/Settings/sync_notify")
-							
+						
+	  res = ::Rho::RhoSupport::parse_query_parameters model.sync( "/app/Settings/sync_notify")
+	  res['status'].should == 'ok'
+	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+						
 	  if (File.exists?(file_name))
 		File.delete(file_name)
 	  end
