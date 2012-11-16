@@ -58,7 +58,7 @@ To enable JavaScript and/or CSS code obfuscation at `public` folder of Rhodes ap
 
 If JavaScript or CSS code obfuscation is not required, then just omit `js` or `css` line accordingly.
 
-NOTE: The `jqmobile`, `jqtouch`, and `jquery` folders <b>must</b> be excluded when obfuscation is enabled, because the obfuscated versions of these libraries are there already.
+**NOTE: The `jqmobile`, `jqtouch`, and `jquery` folders <b>must</b> be excluded when obfuscation is enabled, because the obfuscated versions of these libraries are there already.
 
 ## Run time configuration
 Each Rhodes application contains a configuration file called "rhoconfig.txt".  A typical rhoconfig.txt will look like the following when an app is generated:
@@ -66,6 +66,8 @@ Each Rhodes application contains a configuration file called "rhoconfig.txt".  A
 Startup page for your application
 
 	start_path = '/app'
+
+NOTE: If you set your start path to a location not ending in .erb, then the ruby code in application.rb will not execute (ex. if you are trying to change the default menu, etc)	
 
 Path to the options page (in this case handled by javascript)
 
