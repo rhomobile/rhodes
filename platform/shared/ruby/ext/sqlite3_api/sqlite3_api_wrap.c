@@ -307,7 +307,7 @@ static VALUE db_execute(int argc, VALUE *argv, VALUE self)
             rb_raise(rb_eArgError, "could not prepare statement: %d; Message: %s",nRes, (szErrMsg?szErrMsg:""));
         }
 
-        if ( argc > 2 )
+        if ( (argc > 2) && (TYPE(argv[2]) == T_ARRAY) )
         {
             int i = 0;
             VALUE args = argv[2];

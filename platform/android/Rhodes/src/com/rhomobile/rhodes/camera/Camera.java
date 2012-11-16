@@ -171,8 +171,25 @@ public class Camera {
 		execute_callback(callbackUrl, fp, "", fp.length() == 0, w, h, format);
 		
 	}
+
+	public static void doCancelCallback(String callbackUrl) {
+		execute_callback(callbackUrl, null, null, true, 0, 0, null);
+		
+	}
+	
+	public static void doErrorCallback(String callbackUrl, String errorMsg) {
+		execute_callback(callbackUrl, null, errorMsg, false, 0, 0, null);
+		
+	}
+	
 	
 	public static void execute_callback(String callbackUrl, String filePath, String error, boolean cancelled, int w, int h, String format) {
+		if (callbackUrl == null) {
+			return;
+		}
+		if (callbackUrl.length() <= 0) {
+			return;
+		}
 		StringBuffer body = new StringBuffer();
 		body.append("&rho_callback=1");
 		if (cancelled || ((error != null) && (error.length() > 0))) {
