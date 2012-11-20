@@ -2,30 +2,19 @@ Connecting Directly to Web Services with Rhodes
 ===
 Rhodes provides another utility for connecting to backend services besides the [`SyncEngine`](/rhodes/synchronization) called `AsyncHttp`.  Your application can use the `AsyncHttp` library to interact with web services, pull remote images, etc.
 
-## AsyncHttp API
-Below is the list of available `AsyncHttp` methods you can use to asynchronously make calls to http(s) services:
+## AsyncHttp Method Examples
 
-### Common Parameters
-* `:url` - URL of the request.
-* `:headers` - Hash of headers to send with the request.
-* `:callback` - Callback action to execute when the request is done. This must be a controller action.
-* `:callback_param` - (optional) Parameters to send to the callback. Parameters values should be url encoded:
+Refer to the [AsyncHttp API](/rhodesapi/asynchttp-api) methods to asynchronously make calls to http(s) services.
 
-        :callback_param => "action=text&title=#{Rho::RhoSupport.url_encode(@params['page_title'])}"
-        #values will be decoded automatically in callback
+ * [cancel](/rhodesapi/asynchttp-api#cancel) - Cancel the current AsyncHttp call.
+ * [download_file](/rhodesapi/asynchttp-api#downloadfile) - Download a file to the specified filename.
+ * [get](/rhodesapi/asynchttp-api#get) - Perform an HTTP GET request to the specified URL.
+ * [post](/rhodesapi/asynchttp-api#post) - Perform HTTP POST request to the specified URL.
+ * [upload_file](/rhodesapi/asynchttp-api#uploadfile) - Upload the specified file using HTTP POST.
 
-* `:authentication` - (optional) Send Basic Auth header with request.  This takes the form:
+### Get Example
 
-		:authentication => {
-		  :type => :basic,
-		  :username => "john",
-		  :password => "secret"
-		}
-
-* `:ssl_verify_peer` - (optional) Verify SSL certificates, `true` by default.
-
-### `get(:url, :headers, :callback, :callback_param)`
-Perform HTTP GET request to the specified <code>:url</code>.  You can also provide an optional hash of <code>:headers</code> and <code>:callback_param</code>.<a id="asynchttp-get-ex" />
+You can perform an HTTP GET request to the specified <code>:url</code>. You can also provide an optional hash of <code>:headers</code> and <code>:callback_param</code>.<a id="asynchttp-get-ex" />
 
 	:::ruby
 	Rho::AsyncHttp.get(
@@ -58,9 +47,9 @@ Example of synchronous call:
 
 **NOTE: WARNING! Do NOT use synchronous calls unless you know what you are doing.  This is a blocking call and will cause your UI to freeze.**
 
+### Post Example
 
-### `post(:url, :headers, :body, :callback, :callback_param)`
-Perform HTTP POST request to the specified <code>:url</code>.  As with get, you can specify optional arguments.<a id="asynchttp-post-ex" />
+You can perform an HTTP POST request to the specified <code>:url</code>.  As with get, you can specify optional arguments.<a id="asynchttp-post-ex" />
 
 	:::ruby
 	# :post				HTTP POST body to send with request.
@@ -74,8 +63,9 @@ Perform HTTP POST request to the specified <code>:url</code>.  As with get, you 
 	  :callback_param => "post=complete"
 	)
 
-### `download_file(:url, :headers, :filename, :callback, :callback_param)`
-Download a file to the specified filename.<a id="asynchttp-download_file-ex" />
+### Download Example
+
+You can download a file to the specified filename.<a id="asynchttp-download_file-ex" />
 
 	:::ruby
 	file_name = File.join(Rho::RhoApplication::get_base_app_path, "test.jpg")
@@ -88,7 +78,8 @@ Download a file to the specified filename.<a id="asynchttp-download_file-ex" />
 	  :callback => url_for(:action => :httpdownload_callback),
 	)
 
-### `upload_file(:url, :headers, :filename, :body, :callback, :callback_param)`
+### Upload Example
+
 Upload the specified file using HTTP POST:<a id="asynchttp-upload_file-ex" />
 
 	:::ruby
@@ -138,28 +129,10 @@ You can also send multiple files in a single `upload_file` request:
       ]
     )
 
-### `cancel(cancel_callback = "*")`
-Cancel the current `AsyncHttp` call.  Defaults to "*", which cancels all requests.
-
-	:::ruby
-	AsyncHttp.cancel
-
 ## AsyncHttp Callback
-As you noticed with each of the code samples above, we specified a `:callback` action.  This will execute with the `AsyncHttp` request is completed.
+As you noticed with each of the code samples above, we specified a `:callback` action.  This callback will execute when the `AsyncHttp` request is completed.
 
-### Callback Parameters
-The following parameters are available in an `AsyncHttp` callback:
-
-* `@params["body"]` - The body of the HTTP response.
-
-**NOTE: In the case of a JSON response (Content-Type="application/json"), the `@params["body"] will be parsed automatically and contain a ruby data structure.  Otherwise, `@params["body"]` contains the raw response body.**
-
-**NOTE: In the case of an XML response (Content-Type="application/xml"), Rhodes can automatically parse the `@params["body"]` as well if you enable the ["rexml extension"](/rhodes/extensions#rhodes-extensions) in your application.**
-
-
-* `@params["headers"]` - A hash containing the response headers.
-* `@params["cookies"]` - A the server cookies parsed and usable for subsequent requests.
-* `@params["http_error"]` - HTTP error code if response code was not 200.
+Refer to [AsyncHttp API](/asynchttp-api#callback-parameters) for a discussion of the callback parameters.
 
 ## AsyncHttp and Animated Transitions
 
