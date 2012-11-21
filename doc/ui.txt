@@ -171,8 +171,8 @@ In case you have jQueryMobile rendering broken on Windows Phone 7.0 you need to 
 It should fix jQueryMobile rendering problems on Windows Phone 7.0 platform.
 
 #### White page flickering while transition
-It may happen if controller action method doesn't return any rendered value but performs [WebView.navigate(someUrl)](#control-webview-from-controller-actions) call instead.
-It is important to avoid using [WebView.navigate](#control-webview-from-controller-actions) in action methods because it is intended to be used in callback methods asynchronously.
+
+See the note in [WebView.navigate](/rhodesapi/webview-api#navigate) to help avoid this issue.
 
 #### How to make an AJAX call and update page elements
 When one need to update some information on the page without any transition an AJAX call may be performed this way:
@@ -204,21 +204,14 @@ When one need to update some information on the page without any transition an A
 
 To handle AJAX request a controller action method can return JSON object this way:
 
-    ::::ruby
+    :::ruby
     def get_json
       render :string => '{"a": 1, "b": 2, "c": 3}'
     end
 
-**NOTE: It is very important to don't use [WebView.execute_js](#control-webview-from-controller-actions) method to update some page elements.
-See next section for details.
-
 #### Improper using of WebView.execute_js method
-At the moment for most of mobile platforms it has been implemented via redirection to URL with 'javascript:' schema.
 
-In case it used in some AJAX call handler method in the controller it may lead to the situation where *success* javascript handler will never be executed.
-
-It may happen because at the moment of *success* handler should be executed an URL of the page already has been changed. It means no any handlers anymore from the previous page which are still valid.
-
+Do not use WebView.execute_js to update some page elements. Refer to the documentation for [WebView.execute_js](/rhodesapi/webview-api#executejs) for details.
 
 ## Loading screen
 
@@ -304,68 +297,40 @@ Load from 'partials' folder:
 	
 ## Control WebView from controller actions
 It is possible to call on the WebView (browser) directly from your controllers. This API is recommended for use from callbacks, such as sync callback or camera callbacks.
-**NOTE: WebView do not support opening internet URLs required authentification. Use AsyncHTTP/AsyncHTTPS API for access to URL required authentification..
 
+**NOTE: WebView does not support opening internet URLs required authentification. Use the [AsyncHTTP/AsyncHTTPS API](/rhodesapi/asynchttp-api) for access to URL required authentification.**
 
-Force WebView refresh current page
-	:::ruby
-	WebView.refresh
-	
-Force WebView refresh current page on tab with specified index. If no tab bar present, index ignored	 
-	:::ruby
-	WebView.refresh(index) 
+You can use the following [WebView API methods](/rhodesapi/webview-api).
 
-Force WebView to navigate to provided location (url)
-	:::ruby
-	WebView.navigate(url) 
-	
-WebView.navigate supports an optional index parameter (defaults to 0, useful for tabbed applications)
-	:::ruby
-	WebView.navigate(url, index)
+ * [refresh](/rhodesapi/webview-api#refresh) - Force WebView to refresh the current page.
+ * [navigate](/rhodesapi/webview-api#navigate) - Force WebView to navigate to a URL.
+  * [navigate_back](/rhodesapi/webview-api#navigateback) - Force WebView to navigate to the previous page using Browser back.
+ * [current_location](/rhodesapi/webview-api#currentlocation) - Returns the url (location) of the current page.
+ * [execute_js](/rhodesapi/webview-api#executejs) - Execute JavaScript on the current page from your controller.
+ * [active_tab](/rhodesapi/webview-api#activetab) - Returns an index of @tab array for the currently selected tab.
+ * [full_screen_mode](/rhodesapi/webview-api#fullscreenmode) - Switch to/from full screen mode.
+ * [set_cookie](/rhodesapi/webview-api#setcookie) - When WebView loads the specified url, it will add this cookie to the HTTP request.
+ * [get_current_url](/rhodesapi/webview-api#getcurrenturl) - Returns the actual URL in WebView. This works the same as the JavaScript `window.location.href`.
 
-**NOTE: See [Important notes](#javascript-frameworks) section for details on possible issues with improper use of this method.
-
-Force WebView to navigate to previous page using Browser back
-	:::ruby
-	WebView.navigate_back
-
-Get location (url) of the currently displayed page
-	:::ruby
-	WebView.current_location 
-
-The same as above, but for specified tab (if tab bar is present)	
-	:::ruby
-	WebView.current_location(index) 
-
-Execute javascript string in the context of the currently displayed page. Supported on iPhone, Android, Windows Mobile and Blackberry 5.0 in full browser mode.
-Suppose that current page has the Javascript method:
+Suppose that the current page has the following JavaScript method:
 	:::html
 	function test() {
 	    alert("Test");
 	}
-Then to call test() function from controller, do this:	
+
+To call this JavaScript test() function from your controller, do this:
+
 	:::ruby
 	#call method test on the current page
 	WebView.execute_js("test();") 
 
-The same as above but for specified tab (if tab bar present)	
+To call the test() function from your controller but for specified tab (if tab bar present), do this:
+
 	:::ruby
 	#call method test on the tab page 
 	WebView.execute_js("test();", index) 
 
-**NOTE: See [Important notes](#javascript-frameworks) section for details on possible issues with improper use of this method.
-
-Returns index of @tabs array for the currently selected tab
-	:::ruby
-	WebView.active_tab 
-
-Switch to/from full screen mode
-	:::ruby
-	WebView.full_screen_mode(enable)
-
-Set cookie is to be used by WebView to load a specified url. Each time WebView loads specified url (either by selecting link or as a result of calling WebView.navigate), it will add this cookie to the HTTP request. The cookie should be in format "NAME=VALUE, with multiple name/value pairs allowed. If more than one is set, they need to be split by semicolon: "NAME1=VALUE1; NAME2=VALUE2".
-	:::ruby
-	WebView.set_cookie(url, cookie)
+**NOTE: See [WebView.execute_js](/rhodesapi/webview-api#executejs) for details on possible issues with improper use of the execute_js method.**
 
 ### Sample
 See controller and view in the /app/Image folder of the [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Image/controller.rb#L30) for some of the examples of how to use WebView in the callbacks.
@@ -804,29 +769,11 @@ __:right__ can be omitted. __:left__ and __:right__ described in [user defined m
 
 ## Date/Time picker
 
-The Date/Time picker API allows the user to choose date or time:
+Refer to the [Date/Time picker API](/rhodesapi/datetimepicker-api) for methods that allow the user to choose date or time.
 
-* DateTimePicker.choose(callback, title, initial_time, fmt)
-* DateTimePicker.choose(callback, title, initial_time, fmt, opaque)
-* DateTimePicker.choose_with_range(callback, title, initial_time, fmt, user_data, mindatetime, maxdatetime)
-* DateTimePicker.set_change_value_callback(callback)   - set callback for listen "on change" event. If you want set this callback, you should do it before each call of "choose" methods.
-
-The "fmt" parameter can have the following values (any other value throws an exception):
-
-* 0 - full date and time input field
-* 1 - date only input field
-* 2 - time only input field
-
-The "user_data" parameter is an optional string. It is non-interpreted and will be returned in the callback, unmodified.
-
-Once user chooses a date/time and presses OK or Cancel, the callback URL you specified will be called. The callback is a POST message; the body of the message contains 'status', 'result' and, 'user_data' if provided.
-
-* 'status' can be 'ok' or 'cancel' or 'change' (for change value callback only)
-* 'result' is a string representation of the selected date, as the number of seconds since Epoch. Ruby time can be created from it using the Time::at method.
-* There is no 'result' if status is 'cancel'
-* 'user_data' - if it exists, 'user_data' will be the same string that was passed into the choose method.
-* mindatetime - minimum datetime for setup range. Setup to Time.at(0) for no limit. 
-* maxdatetime - maximum datetime for setup range. Setup to Time.at(0) for no limit. 
+ * [choose](/rhodesapi/datetimepicker-api#choose) - Opens a window where the user can choose date and time.
+ * [choose_with_range](/rhodesapi/datetimepicker-api#choosewithrange) - Opens a window where the user can choose date and time from a range.
+ * [set_change_value_callback](/rhodesapi/datetimepicker-api#setchangevaluecallback) - set callback for listen "on change" event. If you want to set this callback, you should do it before each call of "choose" methods.
 
 Data/Time Picker also can executed via AJAX call for set date/time without leaving the page.
 **NOTE: Currently implemented for Android, iPhone and Blackberry **
@@ -834,7 +781,7 @@ Data/Time Picker also can executed via AJAX call for set date/time without leavi
 ### Sample 
 See controller.rb and index.erb view in the /app/DateTime folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/DateTime) for more information.  This example demonstrates each of the three date/time picker types.
 
-See controller.rb and index.erb view in the /app/DateTimeAJ folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/DateTimeAJ) for more information about execute Date/Time Picker via AJAX call.  This example demonstrates set date/time without leave the page.
+See controller.rb and index.erb view in the /app/DateTimeAJ folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/DateTimeAJ) for more information about execute Date/Time Picker via AJAX call. This example demonstrates setting date/time without leaving the page.
 
 ## Animated transitions for Webkit platforms
 
