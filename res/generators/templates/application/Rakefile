@@ -10,8 +10,8 @@ $app_config = YAML::load_file("build.yml")
 $app_path = File.expand_path(File.dirname(__FILE__))
 
 if ENV["RHO_HOME"].nil?
-  if $app_config["sdk"] 
-    rakefilepath = "#{$app_config["sdk"]}/Rakefile"
+  if $app_config["sdk"]
+    rakefilepath = File.join(File.expand_path($app_config['sdk']), 'Rakefile')
   else
     begin
       rakefilepath = `get-rhodes-info --rhodes-path`.chomp
