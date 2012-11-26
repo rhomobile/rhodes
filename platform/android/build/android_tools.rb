@@ -208,7 +208,7 @@ module_function :is_device_running
 def  run_emulator(options = {})
   system("\"#{$adb}\" start-server")
 
-  rm_f $applog_path if !$applog_path.nil?
+  FileUtils.rm_f $applog_path if !$applog_path.nil?
   logcat_process()
   
   unless is_emulator_running
