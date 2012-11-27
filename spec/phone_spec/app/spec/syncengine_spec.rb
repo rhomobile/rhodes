@@ -118,12 +118,15 @@ describe "SyncEngine_test" do
     Rho::RhoConfig.bulksync_state='1'    
     Rho::RhoConfig.sources[getProduct_str]['full_update'] = false
   end
-	
+
   it "should not connect to self signed SSL with enabled peer check" do
 	  SyncEngine.set_syncserver('https://www.pcwebshop.co.uk/application')
 	  SyncEngine.set_ssl_verify_peer(true)
 	  res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('lars', 'larspass', "/app/Settings/login_callback")
-	  res['error_code'].to_i.should == ::Rho::RhoError::ERR_NETWORK
+	  code = res['error_code'].to_i
+	  have_error = (code == ::Rho::RhoError::ERR_NETWORK) || (code == ::Rho::RhoError::ERR_REMOTESERVER )
+	  have_error.should == true
+	  #res['error_code'].to_i.should == ::Rho::RhoError::ERR_NETWORK
   end
 	
   it "should connect and get error from non-rhoconnect SSL server with disabled peer check" do
@@ -135,7 +138,7 @@ describe "SyncEngine_test" do
 
 if !defined?(RHO_WP7)
   it "should database_full_reset_ex raise an exception" do  
-    exc = false
+    exc = false	
     begin
        Rhom::Rhom.database_full_reset_ex( :models => [getProduct_str], :reset_client_info => true )    
     rescue => e
