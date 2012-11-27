@@ -287,16 +287,36 @@ If you want to remove all local data when upgrading to new application version: 
 This scenario will work for Property Bag and Fixed Schema models.
 
 ## Rhom API
-Below is the full list of methods available to Rhom models:
+Below is the full list of links to the [Rhom API methods] available to Rhom models.
 
-### `clear_notification`
-Used to clear the notification for the object, see the [sync notification section](/rhodes/synchronization#notifications) for more details.
+ * [client_id](/rhodesapi/rhom-api#clientid) - Returns the current sync client id.
+ * [clear_notification](/rhodesapi/rhom-api#clearnotification) - Clear notification for the object.
+ * [database_export](/rhodesapi/rhom-api#databaseexport) - Creates a zip archive of a local database partition with all its blob objects, and returns a path to that zip archive.
+ * [database_import](/rhodesapi/rhom-api#databaseimport) - Imports the database and blob objects from a zip archive created with `database_export`.
+ * [delete_all](/rhodesapi/rhom-api#deleteall) - Delete all Rhodes model objects for a source, filtering by conditions.
+ * [destroy](/rhodesapi/rhom-api#destroy) - Destroy a Rhodes model object.
+ * [find](/rhodesapi/rhom-api#find) - Find Rhodes model objects.
+ * [find_all](/rhodesapi/rhom-api#findall) - Alias for modelname.find(:all, argument list).
+ * [find_by_sql](/rhodesapi/rhom-api#findbysql) - Returns Rhodes model object(s) based on sql_query. This method works only for schema models.
+ * [new](/rhodesapi/rhom-api#new) - Create a new Rhodes model object.
+ * [create](/rhodesapi/rhom-api#create) - Create a new Rhodes model object and save it to the database.
+ * [paginate](/rhodesapi/rhom-api#paginate) - Call `find` with a limit on the number of records.
+ * [sync](/rhodesapi/rhom-api#sync) - Start the sync process for a Rhodes model.
+ * [can_modify](/rhodesapi/rhom-api#canmodify) - Returns true if the Rhodes model object is not currently being synced (if it is being synced, you should disable editing of the object).
+ * [changed?](/rhodesapi/rhom-api#changed) - Returns true if a Rhodes model object has local database changes that need to be synchronized, false otherwise.
+ * [save](/rhodesapi/rhom-api#save) - Saves the current Rhodes model object to the database.
+ * [set_notification](/rhodesapi/rhom-api#setnotification) - Set a notification to be called when the sync is complete for this model.
+ * [update_attributes](/rhodesapi/rhom-api#updateattributes) - Updates the current Rho model object attributes and saves it to the database.
+ * [database_fullclient_reset_and_logout](/rhodesapi/rhom-api#databasefullclientresetandlogout) - Reset the Rhodes model database and logout.
+ * [database_full_reset](/rhodesapi/rhom-api#databasefullreset) - Deletes all records from the property bag and model tables.
+ * [database_full_reset_and_logout](/rhodesapi/rhom-api#databasefullresetandlogout) - Perform a full reset, then logout the RhoConnect client.
+ * [database_local_reset](/rhodesapi/rhom-api#databaselocalreset) - Reset only local (non-sync-enabled) models.
+ * [metadata](/rhodesapi/rhom-api#metadata) - Returns the metadata definition for a given model as a hash.
+ * [metadata=(metadata_def)](/rhodesapi/rhom-api#metadatametadatadef) - Assigns the JSON metadata definition for a given model.
 
-### `client_id`
-Returns the current sync client id.
+### Rhom Delete Method Examples
 
-### `delete_all(conditions)`
-Deletes all rhom objects for a source, optionally filtering by conditions:
+Deletes all rhom objects for a source, optionally filtering by conditions:<a id="rhom-delete-example" />
 
 	:::ruby
 	# :conditions 	Delete only objects matching these criteria. 
@@ -304,42 +324,17 @@ Deletes all rhom objects for a source, optionally filtering by conditions:
 	# :op  			See advanced find syntax
 	Account.delete_all(:conditions => {'industry'=>'electronics'})
 
-### `destroy`
 Delete a rhom object.
 
 	:::ruby
 	@account = Account.find(:all).first
 	@account.destroy
 
-### `find(*args)`
-Returns rhom object(s) based on the following arguments:
+### Rhom Find Method Examples
+
+Find Rhom objects.<a id="rhom-find-example" />
 
 	:::ruby
-	# :all 			returns all objects w/ optional conditions
-	#
-	# :first		returns first object matching conditions
-	#
-	# :count 		returns number of objects matching conditions
-	#
-	# :conditions 	(optional) hash of attribute/values to match
-	# 				supports sql fragment(i.e. "name like 'rhomobile') 
-	#				or sql fragment with binding (you have to define :select with sql queries)
-	#				(i.e. ["name like ?", "'#{company#}'"])
-	# 				Note: use single comma around string values 
-	#
-	# :order 		(optional) attribute(s) to order the list
-	#
-	# :orderdir 	(optional) order direction('ASC' (default), 'DESC' )
-	#
-	# :select 		(optional) array of string attributes to return 
-	#				with the object.  This is useful if your model 
-	#				has a lot of attributes but your query only needs 
-	#				a few of them.
-	#
-	# :per_page 	(optional) maximum number of items return 
-	#
-	# :offset 		(optional) offset from beginning of the list
-
 	acct = Account.find "3560c0a0-ef58-2f40-68a5-48f39f63741b"
 	
 	acct.name 
@@ -353,10 +348,10 @@ Returns rhom object(s) based on the following arguments:
 	accts[0].telephone 
 	  #=> nil
 
-**NOTE: Use SQL fragments with caution.  They are considerably slower than advanced queries [described below](/rhodes/rhom#advanced-queries). You also have to specify :select parameter.**
+**NOTE: Use SQL fragments with caution. They are considerably slower than advanced queries [described below](/rhodes/rhom#advanced-queries). You also have to specify :select parameter.**
 
 #### Order Examples
-The `:order` argument accepts several forms:
+The `:order` argument for `find` accepts several forms.
 
 * `:order` by one attribute:
 
@@ -390,17 +385,14 @@ The `:order` argument accepts several forms:
 	      :orderdir => ['ASC', 'DESC']
  		)
 
-### `find_all(*args)`
-Alias for find(:all,*args).
-
-### `find_by_sql(sql_query)`
-Returns rhom object(s) based on sql_query. This method works only for schema models:
+`find_by_sql(sql_query)` returns rhom object(s) based on sql_query. This method works only for schema models.<a id="rhom-findsql-example" />
 
     :::ruby
     @accts = Account.find_by_sql("SELECT * FROM Account")
 
-### `new(attributes = nil)`
-Creates a new rhom object and assigns given attributes, or initializes an empty rhom object.
+### Rhom New and Create Method Examples
+
+Create a new rhom object and assign given attributes.<a id="rhom-new-example" />
 
 	:::ruby
 	@account = Account.new(
@@ -409,30 +401,16 @@ Creates a new rhom object and assigns given attributes, or initializes an empty 
 	@account.name 
 	  #=> "ABC Inc."
 
-### `create(attributes)`
-Creates a new rhom object and saves to the database. 
-
-**NOTE: This is the fastest way to insert a single item into the database.**
+Create a new rhom object and save to the database.<a id="rhom-create-example" />
 
 	:::ruby
 	@account = Account.create(
 	  {"name" => "some new record", "industry" => "electronics"}
 	)
 
-### `paginate(*args)`
-Calls `find` with a limit on the # of records.  This emulates rails' classic pagination syntax. Default page size is 10.
+### Rhom Paginate Method Example
 
-	:::ruby
-	# :page 		which page to return, used as offset 
-	#				in combination with :per_page
-	#				
-	# :per_page 	number of records to return (used as limit)
-	#
-	# :conditions 	same as find with :conditions
-	#
-	# :order 		same as find with :order
-	#
-	# :select 		same as find with :select
+Paginate calls `find` with a limit on the # of records. This emulates rails' classic pagination syntax. Default page size is 10.<a id="rhom-paginate-example" />
 	
 	Account.paginate(:page => 0) 
 	  #=> returns first 10 records
@@ -444,21 +422,21 @@ Calls `find` with a limit on the # of records.  This emulates rails' classic pag
 	  :order => 'name'
 	) #=> you can have :conditions and :order as well
 
-### `sync(callback, callback_data, show_status_popup, query_params)`
-Start the sync process for a model. If the callback is set, `SyncEngine.set_notification` is called before `SyncEngine.dosync`.
-query_params (this is optional) will pass to sync server. The query_params value must be URL encoded. In this example, the value for @params["sku"] -- the value of the sku -- must be URL encoded.
+### Rhom Sync and set_notification Method Example
+
+Start the sync process for a model. In this example, the value for @params["sku"] -- the value of the sku -- must be URL encoded.<a id="rhom-sync-example" />
 	
 	:::ruby
 	Product.sync( url_for(:action => :sync_callback), "", false, "query=#{@params["sku"]}" )
 
-### `set_notification(url, params = nil)`
-Set a notification to be called when the sync is complete for this model.  This is useful for example if you want to refresh the current list page or display an alert when new data is synchronized. See the [sync notification docs](/rhodes/synchronization#notifications) for more information.
+Set a notification to be called when the sync is complete for this model. This is useful for example if you want to refresh the current list page or display an alert when new data is synchronized. See the [sync notification docs](/rhodes/synchronization#notifications) for more information.
 
 	:::ruby
 	Account.set_notification( url_for(:action => :sync_notify) )
 
-### `update_attributes(attributes)`
-Updates the current rhom object's attributes and saves it to the database
+### Rhom update_attributes Method Example
+
+Update the current rhom object's attributes and saves it to the database.<a id="rhom-update-example" />
 
 **NOTE: This is the fastest way to add or update item attributes.**
 
@@ -473,8 +451,7 @@ Updates the current rhom object's attributes and saves it to the database
 	@account.industry   
 	  #=> "Technology"
 
-### `save`
-Saves the current rhom object to the database.
+Saves the current rhom object to the database.<a id="rhom-save-example" />
 
 	:::ruby
 	@account = Account.new(
@@ -482,8 +459,9 @@ Saves the current rhom object to the database.
 	)
 	@account.save
 
-### `can_modify`
-Before displaying an edit page for an object, your application can check if the object is currently being accessed by the sync process.  If it is, you should disable editing of the object.  `can_modify` could return true, for example, on a new local record that was created and sent to the RhoConnect application, but no response has been received yet.
+### Rhom can_modify Method Example
+
+Before displaying an edit page for an object, your application can check if the object is currently being accessed by the sync process.  If it is, you should disable editing of the object.  `can_modify` could return true, for example, on a new local record that was created and sent to the RhoConnect application, but no response has been received yet.<a id="rhom-canmodify-example" />
 
 	:::ruby
   	def edit
@@ -495,8 +473,8 @@ Before displaying an edit page for an object, your application can check if the 
 	  end
 	end
 
-### `changed?`
-Determine if a rhom model has local database changes that need to be synchronized.
+### Rhom changed? Method Example
+Determine if a rhom model has local database changes that need to be synchronized.<a id="rhom-changed-example" />
 
     :::ruby
     def should_sync_product_object
@@ -505,15 +483,13 @@ Determine if a rhom model has local database changes that need to be synchronize
       end
     end
 
-### `metadata`
+### Rhom metadata Method Examples
 
-Returns the [metadata](/rhoconnect/metadata) for a given model.
+Returns the [metadata](/rhoconnect/metadata) for a given model.<a id="rhom-metadata-example" />
 
 	:::ruby
 	Product.metadata
 	#=> {'foo' => 'bar'}
-
-### `metadata=(metadata_def)`
 
 Assigns the [metadata](/rhoconnect/metadata) for a given model.
 
@@ -597,10 +573,8 @@ For such models if you try to add not listed property - you will get ArgumentErr
     obj = Customer.new
     obj.update_attributes(:wrong_address => 'test') #will raise ArgumentError exception
 
-
 **NOTE: FixedSchema models are 'freezed' by default.**
 
-    
 ## Accessing Sync Info with RhomSource
 Rhom exposes sync information as a `RhomSource` object.  You can use this information for alerts, status pages, etc.  
 
@@ -611,22 +585,19 @@ To access a RhomSource, load it by name:
 
 Here are the available statistics:
 
-### `source_id`
-Returns the id of a source.
+`source_id` returns the id of a source.
 
 	:::ruby
 	@source.source_id
 	  #=> 1
 
-### `name`
-Name of the source.
+`name` gets the name of the source.
 
 	:::ruby
 	@source.name
 	  #=> "Product"
 	
-### `last_updated`
-Last time the source was successfully synchronized (in `Time.at` format).
+`last_updated` returns the last time the source was successfully synchronized (in `Time.at` format).
 
 	:::ruby
 	@source.last_updated.to_s
@@ -640,35 +611,31 @@ For example, to show the formatted time for the `Product` model:
     ).last_updated.strftime("%m/%d/%Y, %I:%M%p")
       #=> "01/19/2011, 06:40PM"
 
-### `last_inserted_size`
-Number of records inserted on last sync.
+`last_inserted_size` returns the number of records inserted on last sync.
 	
 	:::ruby
 	@source.last_inserted_size 
 	  #=> 3
 
-### `last_deleted_size`
-Number of records deleted on last sync.
+`last_deleted_size` returns the number of records deleted on last sync.
 
 	:::ruby
 	@source.last_deleted_size
 	  #=> 1
 
-### `last_sync_duration`
-This returns the duration in milliseconds of the last sync for this source.
+`last_sync_duration` returns the duration in milliseconds of the last sync for this source.
 	
 	:::ruby
 	@source.last_sync_duration
 	  #=> 7
-### `last_sync_success`
-Returns 1 if last sync was successful, 0 if it failed.
+
+`last_sync_success` returns 1 if last sync was successful, 0 if it failed.
 
 	:::ruby
 	@source.last_sync_success 
 	  #=> 1
 
-### `distinct_objects`
-Number of records for this source.
+`distinct_objects` returns the number of records for this source.
 
 	:::ruby
 	@source.distinct_objects
@@ -727,18 +694,7 @@ Deletes all records from the property bag and model tables, if models are set th
 	Rhom::Rhom.database_full_reset_ex(:models => ['Product', 'Customer'])
 
 ## Seeding the Database
-If your application requires seeding some initial data, you can use the following function:
-
-### `Rho::RhoUtils.load_offline_data(table_array, seed_prefix_directory)`
-
-	:::ruby
-	# table_array			 Array containing table names 
-	#						 corresponding to pipe-delimited files.
-	#
-	# seed_prefix_directory  Relative path to directory containing 
-	#						 a 'fixtures' directory of files.
-	Rho::RhoUtils.load_offline_data(table_array, seed_prefix_directory)
-
+If your application requires seeding some initial data, you can use [RhoUtils.load_offline_data](/rhodesapi/rhoutils-api#loadofflinedata).
 
 For example, in the rhodes/spec/framework_spec, we use `load_offline_data` to seed the device database for each test:
 	
@@ -768,21 +724,12 @@ Case|priority|4900dc4c072c|High|
 **NOTE: The column names are always the first line of the file.**
 
 ## Importing and exporting the database
-You can export local database partition with all its blob objects to zip archive. Also you can import previously exported partition:
 
-### `Rhom::Rhom.database_export(partition)`
+You can export local database partition with all its blob objects to zip archive. Also you can import previously exported partition.
 
-	:::ruby
-	@path_to_zip_file = Rhom::Rhom.database_export('partition_name')
+[Rhom.database_export](/rhodesapi/rhom-api#databaseexport) returns a local path to created archive with database and blob objects.
 
-Call to database_export will return local path to created archive with database and blob objects.
-
-### 'Rhom::Rhom.database_import(partition,zip)'
-
-	:::ruby
-	Rhom::Rhom.database_import('partition_name',@path_to_zip_file) 
-
-This will import database and blob objects from zip archive, created with 'database_export' call. If imported archive is inconsistent, or other failure will occur during import process, original database will be restored.
+[Rhom.database_import](/rhodesapi/rhom-api#databaseimport) imports database and blob objects from zip archive, created with `database_export` call. If imported archive is inconsistent, or other failure will occur during import process, original database will be restored.
 
 
 ## Advanced Queries

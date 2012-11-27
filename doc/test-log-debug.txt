@@ -87,6 +87,11 @@ Call app_info and app_error from a method in your controller:
 
 There also is a logging Ruby class called RhoLog. This class has methods info and error which take 2 strings. The first string is the category, the second string is the message.
 
+The [RhoLog API](/rhodesapi/rholog-api) has methods to print error messages. Click the links below for detailed information about the methods.
+
+ * [info](/rhodesapi/rholog-api#info) - Print an information message in the rholog.txt file.
+ * [error](/rhodesapi/rholog-api#error) - Print an error message in the rholog.txt file. The message will have an “ERROR” prefix.
+
 Call the RhoLog error or info methods from a method in your Rhodes app:
 
 	:::ruby
@@ -235,20 +240,18 @@ To Enable Ruby Garbage collector logging modify rhoconfig.txt(set log level to T
 
 There are two Profiler API available: Ruby and Native(C/C++).
 
-### RhoProfiler Ruby module.
+### RhoProfiler Ruby API Examples
 
-RhoProfiler Ruby module will contain the following static methods:
+The [RhoProfiler Ruby API](/rhodesapi/rhoprofiler-api) contains the following static methods.
 
-* create_counter(name) # Create Global counter
-* destroy_counter(name) #  Destroy Global counter
-* start_counter(name) # Start Local or Global counter. If Global counter with this name exist , this global counter will started. If no global counter exists, local counter will be created and started.
+* [create_counter](/rhodesapi/rhoprofiler-api#createcounter) creates a Global counter.
+* [destroy_counter](/rhodesapi/rhoprofiler-api#destroycounter) destroys a Global counter.
+* [start_counter](/rhodesapi/rhoprofiler-api#startcounter) starts a Local or Global counter. If a Global counter with this name exists, this global counter will be started. If no global counter exists, a local counter will be created and started.
+* [stop_counter](/rhodesapi/rhoprofiler-api#stopcounter) stops a Global or local counter.
+* [flush_counter](/rhodesapi/rhoprofiler-api#flushcounter) logs information from a counter (Local or Global). Counter does not stop or start.
+* [start_created_counter](/rhodesapi/rhoprofiler-api#startcreatedcounter) - The counter will start only if it is already created previously (Global counter).
 
-* stop_counter(name) # Stop Global or local counter.
-* flush_counter(name, message) # Log information from counter(Local or Global). Counter does not stopped or started.
-
-* start_created_counter(name) # Counter will start only if it is already created previously(Global counter)
-
-Example of custom counter:
+Example of custom counter:<a id="rhomsource-examples"></a>
 
 	:::ruby
 	def index
