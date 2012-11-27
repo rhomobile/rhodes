@@ -67,7 +67,7 @@ Startup page for your application
 
 	start_path = '/app'
 
-NOTE: If you set your start path to a location not ending in .erb, then the ruby code in application.rb will not execute (ex. if you are trying to change the default menu, etc)	
+NOTE: If you set your start path to a location not ending in .erb, then the ruby code in application.rb will not execute (ex. if you are trying to change the default menu, etc.).
 
 Path to the options page (in this case handled by javascript)
 
@@ -216,9 +216,14 @@ To save/restore last visited page use WebView.current_location in on_ui_created/
 If you want the next version of your application to start from a clean database, set app_db_version in rhoconfig.txt.
 When a Rhodes app starts, it compares the current db version with app_db_version cleans the db if they do not match.
 
-### Ruby API
+### RhoConfig API Examples
 
-Each of the configuration options shown above are available through the RhoConfig Ruby API. To access configuration properties from application code use Rho::RhoConfig class:
+Each of the configuration options shown above are available through the [RhoConfig Ruby API](/rhodesapi/rhoconfig-api).
+
+ * [configuration property methods](/rhodesapi/rhoconfig-api#configuration-property-methods) - The properties in the rhoconfig.txt file for a Rhodes application are available through the RhoConfig API. To access the property, use the name of the property as the method name.
+ * [exists?](/rhodesapi/rhoconfig-api#exists) - Checks to see if a configuration property exists for this Rhodes application.
+
+To access configuration properties from application code use the Rho::RhoConfig class.<a id="rhoconfig-api-ex"></a>
 
 	:::ruby
 	Rho::RhoConfig.full_screen
