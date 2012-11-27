@@ -287,30 +287,42 @@ public class ContactAccessorNew implements ContactAccessor {
 
             boolean hasData = dataCursor != null && dataCursor.moveToFirst();
             
-            if (contactCursor.moveToFirst()) do {
-                long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
-                Logger.I(TAG, "Processing contact id: " + curId + ", position: " + pos);
-
-                String key = contactCursor.getString(contactCursor.getColumnIndex(Contacts.LOOKUP_KEY));
-                String displayName = contactCursor.getString(contactCursor.getColumnIndex(Contacts.DISPLAY_NAME));
-
-                if (contact == null)
-                    contact = new Contact(this, key, displayName);
-                else
-                    contact.reset(key, displayName);
-
-                if (hasData)
-                    hasData = fillData(contact, curId, dataCursor, select);
-
-                if (contact.checkConditions(conditions)) {
-                    if (!manualOffset || pos >= offset) {
-                        count++;
-                        if (max_results > 0 && count >= max_results)
+            if (contactCursor.moveToFirst()){
+                if (hasData) {
+                    // sync dataCursor to contactCursor
+                    long firstContactId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
+                    do {
+                        long dataId = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID));
+                        if (firstContactId == dataId) {
                             break;
-                    }
-                    pos++;
+                        }
+                    } while (dataCursor.moveToNext());
                 }
-            } while (contactCursor.moveToNext());
+                do {
+                    long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
+                    Logger.I(TAG, "Processing contact id: " + curId + ", position: " + pos);
+
+                    String key = contactCursor.getString(contactCursor.getColumnIndex(Contacts.LOOKUP_KEY));
+                    String displayName = contactCursor.getString(contactCursor.getColumnIndex(Contacts.DISPLAY_NAME));
+
+                    if (contact == null)
+                        contact = new Contact(this, key, displayName);
+                    else
+                        contact.reset(key, displayName);
+
+                    if (hasData)
+                        hasData = fillData(contact, curId, dataCursor, select);
+
+                    if (contact.checkConditions(conditions)) {
+                        if (!manualOffset || pos >= offset) {
+                            count++;
+                            if (max_results > 0 && count >= max_results)
+                                break;
+                        }
+                        pos++;
+                    }
+                } while (contactCursor.moveToNext());
+            }
 
         }
         finally {
@@ -486,32 +498,43 @@ public class ContactAccessorNew implements ContactAccessor {
             Logger.I(TAG, "Contacts' data records: " + ((dataCursor != null) ? dataCursor.getCount() : 0));
 
             boolean hasData = dataCursor != null && dataCursor.moveToFirst();
-            if (contactCursor.moveToFirst()) do {
-                long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
-                Logger.I(TAG, "Processing contact id: " + curId + ", position: " + pos);
-
-                String key = contactCursor.getString(contactCursor.getColumnIndex(Contacts.LOOKUP_KEY));
-                String displayName = contactCursor.getString(contactCursor.getColumnIndex(Contacts.DISPLAY_NAME));
-
-                if (contact == null)
-                    contact = new Contact(this, key, displayName);
-                else
-                    contact.reset(key, displayName);
-
-                if (hasData)
-                    hasData = fillData(contact, curId, dataCursor, select);
-
-                if (contact.checkConditions(conditions)) {
-                    if (!manualOffset || pos >= offset) {
-                        contacts.put(contact.id(), contact);
-                        if (max_results > 0 && contacts.size() >= max_results)
+            if (contactCursor.moveToFirst()){
+                if (hasData) {
+                    // sync dataCursor to contactCursor
+                    long firstContactId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
+                    do {
+                        long dataId = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID));
+                        if (firstContactId == dataId) {
                             break;
-                        contact = null;
-                    }
-                    pos++;
+                        }
+                    } while (dataCursor.moveToNext());
                 }
-            } while (contactCursor.moveToNext());
+                do {
+                    long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
+                    Logger.I(TAG, "Processing contact id: " + curId + ", position: " + pos);
 
+                    String key = contactCursor.getString(contactCursor.getColumnIndex(Contacts.LOOKUP_KEY));
+                    String displayName = contactCursor.getString(contactCursor.getColumnIndex(Contacts.DISPLAY_NAME));
+
+                    if (contact == null)
+                        contact = new Contact(this, key, displayName);
+                    else
+                        contact.reset(key, displayName);
+
+                    if (hasData)
+                        hasData = fillData(contact, curId, dataCursor, select);
+
+                    if (contact.checkConditions(conditions)) {
+                        if (!manualOffset || pos >= offset) {
+                            contacts.put(contact.id(), contact);
+                            if (max_results > 0 && contacts.size() >= max_results)
+                                break;
+                            contact = null;
+                        }
+                        pos++;
+                    }
+                } while (contactCursor.moveToNext());
+            }
         }
         finally {
             contactCursor.close();
