@@ -105,7 +105,6 @@ CMainWindow::CMainWindow()
     m_menuBarHeight = 0;
 
     m_alertDialog = 0;
-	m_isMinimized = 0;
 }
 
 CMainWindow::~CMainWindow()
@@ -275,8 +274,6 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 #endif //OS_WINCE
 
 	rho_rhodesapp_callUiCreatedCallback();
-
-	RHODESAPP().setNetworkStatusMonitor(&m_networkStatusMonitor);
 
     return 0;
 }
@@ -582,46 +579,20 @@ LRESULT CMainWindow::OnAuthenticationRequest (UINT /*uMsg*/, WPARAM wParam, LPAR
 
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
-LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-{
-    ProcessActivate( FALSE, MAKEWPARAM(0,1), 0 );
-
-	SetForegroundWindow(m_hWnd);
-
-	::ShowWindow( m_hWnd, SW_MINIMIZE );
-
-	m_isMinimized = true;
-
-    return 0;
-}
-
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
-
-	LOG(INFO) + "ACTIVATE: " + fActive;
-
-	if(m_isMinimized)
-	{
-		m_isMinimized = false;
-		SendMessage( m_hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
-	}
+    LOG(INFO) + "ACTIVATE: " + fActive;
 
     if (lParam) //We get activate from some internal window
     {
 #if defined(_WIN32_WCE) 
-        if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
-	        RhoSetFullScreen(true);
+	if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
+		RhoSetFullScreen(true);
 #endif
         return 0;
     }
 
-    ProcessActivate( fActive, wParam, lParam );    
-    return 0;
-}
-
-void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
-{
 #if defined(_WIN32_WCE) 
 	if (m_bFullScreen)
 		RhoSetFullScreen(fActive!=0);
@@ -631,10 +602,24 @@ void CMainWindow::ProcessActivate( BOOL fActive, WPARAM wParam, LPARAM lParam )
 #if defined(_WIN32_WCE)  && !defined (OS_PLATFORM_MOTCE)
     // Notify shell of our WM_ACTIVATE message
     SHHandleWMActivate(m_hWnd, wParam, lParam, &m_sai, 0);
+
+    //pause_sync(!fActive);
+/* TBD: Commented this out because it was called before http server started 
+        We need to fix this properly
+    if ( fActive )
+        CHttpServer::Instance()->ResumeThread();
+    else
+        CHttpServer::Instance()->FreezeThread();
+*/
+    //activate calls after javascript alerts, so we have viciouse cycle if alert is display in home page
+    //if ( rho::common::CRhodesApp::getInstance() != null )
+    //    RHODESAPP().callAppActiveCallback(fActive!=0);
+
 #endif
 
     if (!fActive)
         rho_geoimpl_turngpsoff();
+    return 0;
 }
 
 LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
@@ -878,57 +863,26 @@ LRESULT CMainWindow::OnHotKey (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
     return 1;
 }
-extern "C" HWND getMainWnd();
-BOOL EnumChildProc(HWND hwnd,LPARAM lParam)
-{
-    if ( getMainWnd() != ::GetParent(hwnd) )
-        return TRUE;
-
-    wchar_t szBuf[200];
-    GetWindowText(hwnd, szBuf, 199);
-    if (!*szBuf)
-        return TRUE;
-
-    DWORD dwStyles = GetWindowLong(hwnd, GWL_STYLE);    
-    //LOG(INFO) + "Child: " + szBuf + "Styles: " + LOGFMT("0x%X") + dwStyles + "Popup: " + (((dwStyles&WS_POPUP) != 0) ? "1" : "0");
-
-	if ( *((HWND*)lParam) != hwnd && (dwStyles&WS_POPUP) != 0 )
-	{
-		HWND* pWnd = (HWND*)lParam;
-		*pWnd = hwnd;
-		return FALSE;
-	}
-
-	return TRUE;
-}
 
 LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    HWND hWndLostFocus = (HWND)wParam;
-	WCHAR wWindowName[30];
-	if (hWndLostFocus && GetClassName(hWndLostFocus, wWindowName, 30))
-	{
-		//  Allow the following windows to remain having focus, avoids
-		//  the bug where we're unable to select anything from a combo 
-		//  box
-		if (wcscmp(wWindowName, L"PopupWindowClass") == 0)
-	        return 0;
-	}
-
-    //Look for popup window
-    HWND hChildPopUp = hWndLostFocus;
-    EnumWindows( EnumChildProc, (LPARAM)&hChildPopUp);
-    if ( hChildPopUp && hChildPopUp != hWndLostFocus)
-    {
-        ::SetFocus(hChildPopUp);
-        return 0;
-    }
-
     HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND() : NULL;
-    if (hBrowserWnd && ::IsWindowVisible(m_hWnd) ) //!::IsIconic(m_hWnd))
+
+    if (hBrowserWnd && !::IsIconic(m_hWnd))
 	{
+		HWND hWndLostFocus = (HWND)wParam;
 		if (hWndLostFocus == hBrowserWnd)
 	        return 0;
+
+		WCHAR wWindowName[30];
+		if (hWndLostFocus && GetClassName(hWndLostFocus, wWindowName, 30))
+		{
+			//  Allow the following windows to remain having focus, avoids
+			//  the bug where we're unable to select anything from a combo 
+			//  box
+			if (wcscmp(wWindowName, L"PopupWindowClass") == 0)
+		        return 0;
+		}
         ::SetFocus(hBrowserWnd);
 	}
 
@@ -1040,9 +994,7 @@ LRESULT CMainWindow::OnStopNavigate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWn
 
 LRESULT CMainWindow::OnZoomPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    CRhoFloatData* pFloatData = (CRhoFloatData*)(hWndCtl);
-    float fZoom = pFloatData->m_fValue;
-    delete pFloatData;
+    float fZoom = (float)(long)(hWndCtl);
     if ( m_pBrowserEng )
         m_pBrowserEng->ZoomPageOnTab(fZoom, rho_webview_active_tab());
 
@@ -1107,7 +1059,6 @@ LRESULT CMainWindow::OnConnectionsNetworkCount(UINT /*uMsg*/, WPARAM wParam, LPA
 #if defined (_WIN32_WCE)
 
 	rho_sysimpl_sethas_network( wParam );
-	m_networkStatusMonitor.notifyReceiver( ((int)wParam!=0)?rho::common::networkStatusConnected:rho::common::networkStatusDisconnected );
 
 #endif
 	return 0;
@@ -1118,7 +1069,6 @@ LRESULT CMainWindow::OnConnectionsNetworkCell(UINT /*uMsg*/, WPARAM wParam, LPAR
 #if defined (_WIN32_WCE)
 
 	rho_sysimpl_sethas_cellnetwork( (int)wParam );
-	m_networkStatusMonitor.notifyReceiver( (wParam!=0)?rho::common::networkStatusConnected:rho::common::networkStatusDisconnected );
 
 #endif
 	return 0;
@@ -1174,12 +1124,12 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         m_SyncStatusDlg.setStatusText(convertToStringW(params->m_message).c_str());
         m_SyncStatusDlg.setTitle( convertToStringW(params->m_title).c_str() );
         if ( !m_SyncStatusDlg.m_hWnd )
-            m_SyncStatusDlg.Create(m_hWnd, 0); 
-        //else
-        //{
-        m_SyncStatusDlg.ShowWindow(SW_SHOW);
-        m_SyncStatusDlg.BringWindowToTop();
-        //}
+            m_SyncStatusDlg.Create(m_hWnd, 0);
+        else
+        {
+            m_SyncStatusDlg.ShowWindow(SW_SHOW);
+            m_SyncStatusDlg.BringWindowToTop();
+        }
     }else if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
 		MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
         RHODESAPP().callPopupCallback(params->m_callback, "ok", "ok");
@@ -1251,13 +1201,6 @@ LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 }	
 
 
-LRESULT CMainWindow::OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-{
-    ::MessageBoxW( m_hWnd, L"Please provide RhoElements license key.", L"Motorola License", MB_ICONERROR | MB_OK);
-
-    return 0;
-}
-
 LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LOG(INFO) + "OnLicenseScreen";
@@ -1272,12 +1215,6 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 		}*/
 	}
 #endif
-
-    //Fix issue with lost focus after License Screen hides
-    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND() : NULL;
-    if (hBrowserWnd && !::IsIconic(m_hWnd))
-        ::SetFocus(hBrowserWnd);
-
 	return 0;
 }	
 
