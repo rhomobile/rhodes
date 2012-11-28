@@ -31,6 +31,8 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#pragma warning(disable:4995)
+#pragma warning(disable:4005)
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some CString constructors will be explicit
 #define _CRT_SECURE_NO_WARNINGS
