@@ -348,6 +348,7 @@ private:
 
 private:
     bool mIsBrowserViewHided;
+	bool m_isMinimized;
 
     rho::IBrowserEngine* m_pBrowserEng;
 

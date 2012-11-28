@@ -105,6 +105,7 @@ CMainWindow::CMainWindow()
     m_menuBarHeight = 0;
 
     m_alertDialog = 0;
+	m_isMinimized = 0;
 }
 
 CMainWindow::~CMainWindow()
@@ -579,10 +580,28 @@ LRESULT CMainWindow::OnAuthenticationRequest (UINT /*uMsg*/, WPARAM wParam, LPAR
 
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
+LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    ProcessActivate( FALSE, MAKEWPARAM(0,1), 0 );
+
+	SetForegroundWindow(m_hWnd);
+
+	::ShowWindow( m_hWnd, SW_MINIMIZE );
+
+	m_isMinimized = true;
+
+    return 0;
+}
+
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
-    LOG(INFO) + "ACTIVATE: " + fActive;
+
+	if(m_isMinimized)
+	{
+		m_isMinimized = false;
+		SendMessage( m_hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
+	}
 
     if (lParam) //We get activate from some internal window
     {
@@ -1124,12 +1143,12 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         m_SyncStatusDlg.setStatusText(convertToStringW(params->m_message).c_str());
         m_SyncStatusDlg.setTitle( convertToStringW(params->m_title).c_str() );
         if ( !m_SyncStatusDlg.m_hWnd )
-            m_SyncStatusDlg.Create(m_hWnd, 0);
-        else
-        {
-            m_SyncStatusDlg.ShowWindow(SW_SHOW);
-            m_SyncStatusDlg.BringWindowToTop();
-        }
+            m_SyncStatusDlg.Create(m_hWnd, 0); 
+        //else
+        //{
+        m_SyncStatusDlg.ShowWindow(SW_SHOW);
+        m_SyncStatusDlg.BringWindowToTop();
+        //}
     }else if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
 		MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
         RHODESAPP().callPopupCallback(params->m_callback, "ok", "ok");
