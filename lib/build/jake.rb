@@ -641,8 +641,7 @@ class Jake
         puts "EXC: #{e}"
     end    
   
-    webrickrholog_rake = File.join(File.dirname(__FILE__), 'webrickrholog.rake')
-    system("rake -f #{webrickrholog_rake} run:webrickrhologserver[\"#{app_path}\"]")
+    system("START rake run:webrickrhologserver[\"#{app_path}\"]")
   end
     
 end
