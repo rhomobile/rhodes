@@ -189,7 +189,7 @@ end
       time.strftime('%^h').should == 'FEB'
       time.strftime('%^_5h').should == '  FEB'
       time.strftime('%0^5h').should == '00FEB'
-      time.strftime('%04H').should == '0004'
+      time.strftime('%04H').should == '0004' unless System.get_property('is_emulator') && System.get_property('platform') == 'APPLE'
       time.strftime('%0-^5h').should == 'FEB'
       time.strftime('%_-^5h').should == 'FEB'
       time.strftime('%^ha').should == 'FEBa'
