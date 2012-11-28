@@ -961,11 +961,10 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 				FindClose( hFind);
 
-				if (!findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+				if ((!new_copy) && (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))) {
 					_tprintf( TEXT("Error: target directory is file\n"));
 					goto stop_emu_deploy;
 				}
-				
 
 				TCHAR remote_bundle_path[MAX_PATH];
 
@@ -992,14 +991,16 @@ int _tmain(int argc, _TCHAR* argv[])
 					goto stop_emu_deploy;
 				}
 
-				if(!use_shared_runtime)
-					retval = copyLicenseDll(lcdll_path, app_dir);
-				if (retval != EXIT_SUCCESS) {
-					printf ("Failed to copy license dll\n");
-					if (retval == 32) {
-						printf ("Please, stop application on device and try again.\n");
+				if (lcdll_path) {
+					if(!use_shared_runtime)
+						retval = copyLicenseDll(lcdll_path, app_dir);
+					if (retval != EXIT_SUCCESS) {
+						printf ("Failed to copy license dll\n");
+						if (retval == 32) {
+							printf ("Please, stop application on device and try again.\n");
+						}
+						goto stop_emu_deploy;
 					}
-					goto stop_emu_deploy;
 				}
 
 				if (copyBundle(bundle_path, _T("/"), remote_bundle_path) == EXIT_FAILURE) {
@@ -1166,11 +1167,11 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 		FindClose( hFind);
 
-		if (!findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+		if ((!new_copy) && (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))) {
 			_tprintf( TEXT("Error: target directory is file\n"));
 			goto stop_emu_deploy;
 		}
-				
+
 
 		TCHAR remote_bundle_path[MAX_PATH];
 
@@ -1364,7 +1365,7 @@ int _tmain(int argc, _TCHAR* argv[])
         }
         FindClose( hFind);
 
-        if (!findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+        if ((!new_copy) && (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))) {
             _tprintf( TEXT("Error: target directory is file\n"));
             goto stop_emu_deploy;
         }
@@ -1424,7 +1425,7 @@ int _tmain(int argc, _TCHAR* argv[])
                 }
                 FindClose( hFind);
 
-                if (!findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+                if ((!new_copy) && (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))) {
                     _tprintf( TEXT("Error: target directory is file\n"));
                     goto stop_emu_deploy;
                 }
