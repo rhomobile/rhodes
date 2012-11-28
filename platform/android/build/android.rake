@@ -91,6 +91,18 @@ def add_motosol_sdk(manifest)
   end  
 end
 
+def set_app_icon_android
+  iconappname = File.join($app_path, "icon", "icon.png")
+
+  ['drawable', 'drawable-hdpi', 'drawable-mdpi', 'drawable-ldpi'].each do |dpi|
+    drawable = File.join($appres, dpi)
+    iconresname = File.join(drawable, "icon.png")
+    rm_f iconresname
+    cp iconappname, iconresname if File.exist? drawable
+  end
+
+end
+
 def set_app_name_android(newname)
   puts "set_app_name"
   $stdout.flush
@@ -98,10 +110,6 @@ def set_app_name_android(newname)
   rm_rf $appres
   cp_r $rhores, $appres
 
-  iconappname = File.join($app_path, "icon", "icon.png")
-  iconresname = File.join($appres, "drawable", "icon.png")
-  rm_f iconresname
-  cp iconappname, iconresname
 
   rhostrings = File.join($rhores, "values", "strings.xml")
   appstrings = File.join($appres, "values", "strings.xml")
@@ -1333,6 +1341,7 @@ namespace "build" do
     
     task :resources => [:rhobundle, :extensions] do
       set_app_name_android($appname)
+      set_app_icon_android
     end
 
     #desc "Build Rhodes for android"
@@ -1364,6 +1373,9 @@ namespace "build" do
             cp_r res, $tmpdir
           end
       end
+
+      #copy icon again in case an extension overwrites them (like rhoelementsext...)
+      set_app_icon_android
 
       if $config_xml
         puts "Copying custom config.xml"
