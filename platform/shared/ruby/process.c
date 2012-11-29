@@ -16,6 +16,14 @@
 #include "ruby/util.h"
 #include "vm_core.h"
 
+
+#if defined(__APPLE__) && !defined(RHODES_EMULATOR)
+#import <Availability.h>
+#ifdef __IPHONE_6_0
+#include <grp.h>
+#endif
+#endif
+
 #include <stdio.h>
 #include <errno.h>
 #include <signal.h>

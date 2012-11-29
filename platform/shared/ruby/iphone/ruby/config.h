@@ -213,11 +213,11 @@
 
 #if defined(__APPLE__) && !defined(RHODES_EMULATOR)
 #import <Availability.h>
-#ifndef __IPHONE_6_0
+//#ifndef __IPHONE_6_0
 #define HAVE_INITGROUPS 1
 #define HAVE_GETGROUPS 1
 #define HAVE_SETGROUPS 1
-#endif
+//#endif
 #else
 #define HAVE_INITGROUPS 1
 #define HAVE_GETGROUPS 1
