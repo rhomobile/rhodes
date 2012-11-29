@@ -275,7 +275,12 @@ class Jake
     finish = Time.now
   
     FileUtils.rm_rf $app_path + "/faillog.txt"
-    File.open($app_path + "/faillog.txt", "w") { |io| $faillog.each {|x| io << x }  } if $failed.to_i > 0
+    if $failed.to_i > 0
+      puts "************************"
+      puts "\n\n"
+      $faillog.each {|x| puts x }
+      File.open($app_path + "/faillog.txt", "w") { |io| $faillog.each {|x| io << x }  }
+    end
     
     puts "************************"
     puts "\n\n"
