@@ -29,6 +29,7 @@
 //#import "RhoViewController.h"
 //#import "ZBarSDK/Headers/ZBarSDK/ZBarSDK.h"
 #import "ZBarSDK.h"
+#import <AudioToolbox/AudioToolbox.h>
 
 
 @interface BarcodeViewController : UIViewController <ZBarReaderViewDelegate> {
@@ -41,6 +42,7 @@
     
     NSString* callback_url;
     
+    SystemSoundID mBeep;
 }
 
 @property (nonatomic, retain) ZBarReaderView *readerView;
@@ -55,5 +57,7 @@
 - (void)loadView;
 
 +(UIView*) getCurrentView;
+
++ (NSString*) getBeepFilePath;
 
 @end
