@@ -43,13 +43,13 @@ if !defined?(RHO_WP7)
         File.exists?(file_name).should == false
 
         res = Rho::AsyncHttp.download_file(
-          :url => 'http://www.rhomobile.com/wp-content/themes/rhomobile_theme/images/misc/ruby_app.jpg',
+          :url => 'http://www.google.com/images/icons/product/chrome-48.png',
           :filename => file_name )
         puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should ==  14451
-        res['headers']['content-type'].should == 'image/jpeg'
+        res['headers']['content-length'].to_i.should ==  1834
+        res['headers']['content-type'].should == 'image/png'
 
         File.exists?(file_name).should == true
         orig_len = File.size(file_name)
@@ -57,21 +57,21 @@ if !defined?(RHO_WP7)
 
         #check that in case of one more download, files keeps the same        
         res = Rho::AsyncHttp.download_file(
-          :url => 'http://www.rhomobile.com/wp-content/themes/rhomobile_theme/images/misc/ruby_app.jpg',
+          :url => 'http://www.google.com/images/icons/product/chrome-48.png',
           :filename => file_name )
         puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        #res['headers']['content-length'].to_i.should == 12562
+        #res['headers']['content-length'].to_i.should == 1834
         res['http_error'].should == '206'
-        #res['headers']['content-type'].should == 'image/jpeg'
+        #res['headers']['content-type'].should == 'image/png'
 
         File.exists?(file_name).should == true
         File.size(file_name).should == orig_len
 
         #check that in case of network error, files keeps the same        
         res = Rho::AsyncHttp.download_file(
-          :url => 'http://www.rhomobile.com/wp-content/themes/rhomobile_theme/images/misc/ruby_app_BAD.jpg',
+          :url => 'http://www.google.com/images/icons/product/chrome-48_BAD.png',
           :filename => file_name )
         puts "res : #{res}"  
         res['status'].should == 'error'
