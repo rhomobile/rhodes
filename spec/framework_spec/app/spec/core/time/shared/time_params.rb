@@ -178,14 +178,15 @@ describe :time_params, :shared => true do
       Time.send(@method, 59, 1, 2, 3, 4, 2008, 0, 0, 0)
     }.should raise_error(ArgumentError) # 9 go boom
 
+    # 23 hour is changed to 22 to avoid problems with Daylight Savings Time (DST) on iphone emulator
     # please stop using should_not raise_error... it is implied
     Time.send(@method, 2008).wday.should == 2
     Time.send(@method, 2008, 12).wday.should == 1
     Time.send(@method, 2008, 12, 31).wday.should == 3
-    Time.send(@method, 2008, 12, 31, 23).wday.should == 3
-    Time.send(@method, 2008, 12, 31, 23, 59).wday.should == 3
-    Time.send(@method, 2008, 12, 31, 23, 59, 59).wday.should == 3
-    Time.send(@method, 2008, 12, 31, 23, 59, 59, 0).wday.should == 3
+    Time.send(@method, 2008, 12, 31, 22).wday.should == 3
+    Time.send(@method, 2008, 12, 31, 22, 59).wday.should == 3
+    Time.send(@method, 2008, 12, 31, 22, 59, 59).wday.should == 3
+    Time.send(@method, 2008, 12, 31, 22, 59, 59, 0).wday.should == 3
     Time.send(@method, 59, 1, 2, 3, 4, 2008, :x, :x, :x, :x).wday.should == 4
   end
 
