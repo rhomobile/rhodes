@@ -119,11 +119,11 @@ Add the lines to `rhoconfig.txt`:
 	logserver = 'http://rhologs.heroku.com'
 	logname='helloworld'
 
-Then call RhoConfig.send_log:
+Then call RhoConf.send_log:
 
 	:::ruby
 	def index
-		Rho::RhoConfig.send_log()
+		Rho::RhoConf.send_log()
 	end
 
 

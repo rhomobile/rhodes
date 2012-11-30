@@ -283,12 +283,12 @@ OR set in rhoconfig.txt:
 To show the application log on the device with log and log-related menu items, like clear, send and log options:
 
 	:::ruby
-	Rho::RhoConfig.show_log
+	Rho::RhoConf.show_log
 
 To send the log to the log server url, defined in rhoconfig.txt:
 
 	:::ruby
-	Rho::RhoConfig.send_log = "http://example.com/client_log?client_id=123&device_pin=345&log_name=mylog"
+	Rho::RhoConf.send_log = "http://example.com/client_log?client_id=123&device_pin=345&log_name=mylog"
 
 Url format: \<logserver\>/client_log?client_id=\<client_id\>&device_pin=\<device_pin\>&log_name=\<logname\>
 
