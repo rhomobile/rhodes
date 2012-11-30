@@ -7,154 +7,34 @@ Rhodes provide access to device specific capabilities such as GPS, PIM, camera, 
 
 **NOTE: As of Rhodes version 3.3.3, the [Barcode](/rhodes/device-caps#barcode), [NFC](/rhodes/device-caps#nfc), and [Inline Signature Capture](/rhodes/device-caps#signature-capture) APIs, as well as [Rhom data encryption](/rhodes/rhom#database-encryption) are removed from Rhodes. These features are only supported in Motorola RhoMobile Suite. If you wish to use these features, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements']( /rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
 
-## System class
+## System Class
+
 The System Ruby class provides access to the system specific information.
 
-To get value of a named system property:
-	:::ruby
-	System.get_property(property)
-
-Properties:
-
-* platform - APPLE, Blackberry, WINDOWS, ANDROID, WINDOWS_DESKTOP, SYMBIAN
-* has_camera - is camera available on the device
-* screen_width - screen width in logical pixels (used for set coordinates)
-* screen_height - screen height in logical pixels (used for set coordinates)
-* real_screen_width - screen width in real pixels
-* real_screen_height - screen height in real pixels
-* screen_orientation - screen orientation 'portrait', 'landscape'
-* ppi_x - horizontal PPI (Pixels Per Inch)
-* ppi_y - vertical PPI (Pixels Per Inch)
-* has_network - is device connected to the network
-* has_cell_network - is device connected to the cell network
-* has_wifi_network - is device connected to the wifi network
-* phone_number - device phone number
-* device_owner_email - primary email of phone owner (works only on Android)
-* device_owner_device_owner_name - name(account name) of phone owner (works only on Android)
-* device_id - returns device ID which may be used to receive push messages. This is not phone device id, this is PUSH device id - you should register you phone for PUSH before get this parameter. Read [Push Notification documentation](device-caps#push-notifications) about it. On iPhone it may be empty right after application started while Rhodes registers to receive PUSH notifications; you should wait till it become non-empty.
-* phone_id - returns hardware based id. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.
-* full_browser -  is full browser in the WebView control on Blackberry (see [here](#blackberry-browser-support) for more details)
-* device_name - name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android)
-* os_version - version of OS of device. Examples: '4.6.0.192' (BB), '3.0' (iPhone), '1.6' (Android)
-* locale - current language like 'en', 'ru' etc.
-* country - country abbreviation
-* is_emulator - return true if application is running on emulator
-* has_calendar - return true if calendar support is available 
-
-Get notifications on screen rotation:
-	:::ruby
-	System.set_screen_rotation_notification(callback_url, params)
-* callback_url will be called when screen rotate; callback parameters will contain params you passed while setting up notification as well as `width`, `height`, and `degrees`
-
-Exit application
-	:::ruby
-	System.exit
-
-Enable\disable phone sleep by timeout, return previous state
-	:::ruby
-	System.set_sleeping
-
-Open application associated with url; behavior may be different on different platforms and depend on installed software. 
-	:::ruby
-	System.open_url(url)
-**NOTE: On iPhone, if you post path of local file, then the specific iOS control (UIDocumentInteractionController) where file will previewed and user will be able open this file by selected application wich supported this filetype.**
-
-Run specified application. Note: 
-	:::ruby
-	System.run_app(appname, params)
-	
-appname is platform dependent:
-
-* iPhone: appname is the same with registered application URL scheme. Params just string. Example : 
-
-    System.run_app('myapp', 'someparams'). 
-        
-  Also this the same with : 
-  
-    System.open_url('myapp:someparams')
-    
-* Android: appname is package name : com.<vendor>.<app_name> . For example:
-
-    System.run_app('com.rhomobile.store', 'someparams')
-
-* Windows Mobile, Windows CE: appname is path in registry: <vendor> <app_name>/<app_name>.exe . For example:
-
-    System.run_app('rhomobile store/store.exe', 'someparams')
-
-* Windows Desktop: appname is path in registry: <vendor>/<app_name>/<app_name>.exe . For example:
-
-    System.run_app('rhomobile/store/store.exe', 'someparams')
-
-* Blackberry: appname is <app_name> . For example:
-
-    System.run_app('store', 'someparams')
-        
-Install application from specified url
-	:::ruby
-	System.app_install(url) 
-
-Is specified application installed on device?
-
-	:::ruby
-	System.app_installed?(appname)
-
-**NOTE: see System.run_app for appname information **
-
-	
-Uninstall specified application	
-	:::ruby
-	System.app_uninstall(appname)
-
-**NOTE: see System.run_app for appname information **
-
-Zip one file to specified zip
-	:::ruby
-	System.zip_file(local_path_to_zip, local_path_to_file, password)
-
-Zip several files to specified zip
-	:::ruby
-	System.zip_files(local_path_to_zip, base_path, array_of_files_to_be_zipped, password)
-
-Unzip file to the same folder where zip file is	
-	:::ruby
-	System.unzip_file(local_path_to_zip)
-
-Return command line parameters as a string. Worked only on iPhone now. Resetting when application go to background. If your URLBundle is "myapp" and you open application by url: "myapp:/app/page1", then start params will "/app/page1". 
-	:::ruby
-	System.get_start_params() 
-
-Set application icon badge (number) - only for iPhone. set badge to 0 (zero) for remove badge.
-	:::ruby
-	System.set_application_icon_badge(badge_number)
-
-Switch application locale at runtime:
-	:::ruby
-    System::set_locale('es') #set current locale to Spanish
-    
-This call does not change OS Locale, it will change only LocalizationSimplified locale used in helper methods. See [Localization](/device-caps#localization) for more information.
-
-To get current application Locale:
-	:::ruby
-    LocalizationSimplified::get_cur_locale #get current application locale
-
-To use client with the HTTP proxy you should pass its URL as the first command line argument `-http_proxy_url=http://<login>:<passwod>@<host>:<port>` (Windows Desktop only), add it to rhoconfig.txt, or call the setter method from Ruby code:
-    :::ruby
-    System.set_http_proxy_url(url)
-
-To stop using HTTP proxy (that was set by the command line, rhoconfig.txt or Ruby code) call:
-    :::ruby
-    System.unset_http_proxy()
-
-**NOTE: `System.set_http_proxy_url(url)` and `System.unset_http_proxy()` are implemented only for Windows Mobile, WinCE and Windows Desktop  **
-
-To modify application window position and size:
-    :::ruby
-    System.set_window_frame(x,y,width,height) #change application window position and size
-    System.set_window_position(x,y) #change application window position
-    System.set_window_size(width,height) #change application window size
-    System.lock_window_size(locked) #lock/unlock window size change by user
-
-**NOTE: These methods implemented only for Windows Desktop  **
+ * [get_property](/rhodesapi/system-api#getproperty) - Get the value of a system property. [The get_property API documentation](/rhodesapi/system-api#getproperty) has a complete list of properties.
+ * [app_install](/rhodesapi/system-api#appinstall) - Install an application.
+ * [app_installed?](/rhodesapi/system-api#appinstalled) - Returns true if the specified application is installed on the device.
+ * [app_uninstall](/rhodesapi/system-api#appuninstall) - Uninstall an application.
+ * [exit](/rhodesapi/system-api#exit) - Exit the application.
+ * [get_start_params](/rhodesapi/system-api#getstartparams) - Return the command line parameters as a string (iPhone only).
+ * [open_url](/rhodesapi/system-api#openurl) - Open the application associated with the URL. Used to prepare for printing.
+ * [run_app](/rhodesapi/system-api#runapp) - Run an application.
+ * [set_application_icon_badge](/rhodesapi/system-api#setapplicationiconbadge) - Set application icon badge to a number. iPhone only.
+ * [set_locale](/rhodesapi/system-api#setlocale) - Switch application locale at runtime.
+ * [set_http_proxy_url](/rhodesapi/system-api#sethttpproxyurl) - To use client with the HTTP proxy, you can set its URL with this method.
+ * [unset_http_proxy](/rhodesapi/system-api#unsethttpproxy) - Stop using HTTP proxy that was set by `set_http_proxy_url`.
+ * [set_network_status_notify](/rhodesapi/system-api#setnetworkstatusnotify) - Set a network status notification for a callback which receives notifications when the network goes up or down.
+ * [clear_network_status_notify](/rhodesapi/system-api#clearnetworkstatusnotify) - Clear network status callback from `set_network_status_notify` so notifications will not be fired.
+ * [set_screen_rotation_notification](/rhodesapi/system-api#setscreenrotationnotification) - Notify (call a callback method) when the screen rotates.
+ * [set_sleeping](/rhodesapi/system-api#setsleeping) - Enable/disable phone sleeping; return to the previous state.
+ * [set_push_notification](/rhodesapi/system-api#setpushnotification) - Register push callback, the method to call upon receiving a push message.
+ * [set_window_frame](/rhodesapi/system-api#setwindowframe) - Change application window position and size. Implemented only for Windows desktop.
+ * [set_window_position](/rhodesapi/system-api#setwindowposition) - Change application window position. Implemented only for Windows desktop.
+ * [set_window_size](/rhodesapi/system-api#setwindowsize) - Change application window size. Implemented only for Windows desktop.
+ * [lock_window_size](/rhodesapi/system-api#lockwindowsize) - Lock/unlock the window size change by the user. Implemented only for Windows desktop.
+ * [unzip_file](/rhodesapi/system-api#unzipfile) - Unzip a file.
+ * [zip_file](/rhodesapi/system-api#zipfile) - Zip one file to a specified zip.
+ * [zip_files](/rhodesapi/system-api#zipfiles) - Zip several files to a specified zip.
 
 ### Sample
 See layout.erb of [System API Sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/layout.erb)  for some of the examples of how to use System class. There is also [system test](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/SystemTest/controller.rb) which demonstrate System class usage.
@@ -192,11 +72,12 @@ And use this string in the view:
 To switch locale at runtime use:
 	:::ruby
     System::set_locale('es') #set current locale to Spanish
+
 ### Details:
 
-All non-ascii symbols should be utf-8 encoded
+All non-ascii symbols should be utf-8 encoded.
 
-To get current locale on the phone use System.get_locale method. It returns 'en', 'de' etc locale id's
+To get current locale on the phone use System.get_locale method. It returns 'en', 'de', etc. locale id's.
 
 To show localized Date and Time:
 	:::ruby
@@ -248,7 +129,7 @@ The Rhodes framework provides a simple HTML tag for accessing Geolocation inform
 * For Windows Mobile: `/public/js/rhogeolocation-wm.js`
 * For BlackBerry: Unsupported. The BlackBerry webview control doesn't support Ajax. 
 
-Then add one of the following tags in the appropriate location in your HTML: <geolocation/>, <geolatitude/> or <geolongitude/>. The included javascript will query a predefined URL and fill these tags with location information.
+Then add one of the following tags in the appropriate location in your HTML: `<geolocation/>`, `<geolatitude/>` or `<geolongitude/>`. The included javascript will query a predefined URL and fill these tags with location information.
 
 `<geolocation/>` - returns a string in the form `[formatted position];[latitude];[longitude]`. 
 
@@ -257,61 +138,22 @@ For example: 37.3317° North, 122.0307° West;37.331689;-122.030731
 `<geolatitude/>` - returns just the latitude <br/>
 `<geolongitude/>` - returns just the longitude
 
-### GeoLocation Ruby class
+### GeoLocation API
 
-Get current latitude: 
-	:::ruby
-	GeoLocation.latitude
+Refer to the [GeoLocation API](/rhodesapi/geolocation-api) for the methods to access geolocation information from your device.
 
-Get current longitude:
-	:::ruby
-	GeoLocation.longitude
-	
-Test if the location system is up and acquired position:
-	:::ruby
-	GeoLocation.known_position?
-	
-Set callback to track location changes.
-
-	:::ruby
-	GeoLocation.set_notification(
-		callback, callback_param="", ping_gpssystem_interval=0)
-
-* callback - url for the notification callback; after the callback has been called once, it will automatically be called repeatedly with the current location coordinates passed to the callback in the @params variable. (You need not reset the callback within the callback.)
-* callback_param: this string will be added to the body of the callback url. You can use it to identity who is setting up the callback, such as "my_tag=55". In general you do not set callback_param (leave it blank as in "").
-* ping_gpssystem_interval – Optional. If 0, the system interval is used; the callback is executed when the GPS system processes a location update (dependent on the mobile platform). If set to a number (such as 3), the callback is executed at an interval of this number of seconds (such as every three seconds).
-
-When the GeoLocation.set_notification callback is called, it will receive a variable called @params, just like a normal Rhodes controller action. Here are the parameters included in the @params variable.
-
-* known_position - 1 or 0
-* latitude
-* longitude
-* available - 1 or 0. This is the availability of GeoLocation: not only does the hardware exist, but also the user can turn GPS off in phone settings, or not allow GPS activity on iPhone, etc.
-* status - 'error' or 'ok'
-* error_code - from RhoError.
-* accuracy - horizontal radius in meters; iOS and Android.
-
-**NOTE: You only need to call GeoLocation.set_notification once. The current behavior of the callback is that it will be called forever until it is stopped; you need to call `GeoLocation.turnoff` to stop it. The previous behavior was that the callback was called once and needed to be reset.**
-
-**NOTE: We do not have a timeout parameter to automatically turn off the GPS system. If you want to turn off the GPS system, call GeoLocation.turnoff.**
-
-Turn off GeoLocation. 
-
-	:::ruby
-	GeoLocation.turnoff
-
-**NOTE: When you call GeoLocation.turnoff, after the GPS is switched off, you might still receive a few callbacks (this depends on the platform; iOS and Android does not receive callbacks after turnoff).**
-
-Get the distance between two points in miles.
-	:::ruby
-	GeoLocation.haversine_distance(
-		latitude1, longitude1, latitude2, longitude2) 
+ * [latitude](/rhodesapi/geolocation-api#latitude) - Returns current latitude in degrees.
+ * [longitude](/rhodesapi/geolocation-api#longitude) - Returns current longitude in degrees.
+ * [known_position?, is_known_position](/rhodesapi/geolocation-api#knownposition-isknownposition) - Returns true if the location system is up and running, false otherwise, null if this feature is not supported on the device platform.
+ * [set_notification}(/rhodesapi/geolocation-api#setnotification) - Set callback to track location changes.
+ * [haversine_distance](/rhodesapi/geolocation-api#haversinedistance) - Returns the distance between two points in miles.
+ * [turnoff](/rhodesapi/geolocation-api#turnoff) - Turn off GeoLocation.
 
 GeoCoding: You can use any free web service for direct and reverse geocoding. See our complete example of using Google geocoding web service in [Rhodes-System-Api-Samples example](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoCoding).
 
 **NOTE: On iOS and Android, real GPS starts working after the first access to the GeoLocation module. Real GPS hardware is switched off after a call to GeoLocation.turnoff. But keep in mind - any call to GeoLocation, such as getting latitude, starts the hardware GPS again!**
 
-#### Testing GeoLocation
+### Testing GeoLocation
 
 While developing your application on Windows Mobile emulator, you may find the [FakeGPS](http://msdn.microsoft.com/en-us/library/bb158722.aspx) utility useful.
 
@@ -319,9 +161,11 @@ Before testing on BB simulator, select menu Simulate/GPS Location and set your p
 
 To provide Mock Location Data on Android, see [here](http://developer.android.com/guide/topics/location/index.html)
 
-#### Samples
+### Samples
 
-##### Tracking location all the time
+Here are some examples of GeoLocation Ruby code.<a id="geolocation-setnotification-ex" />
+
+#### Tracking location all the time
 You may decide to keep track of your position right after application starts. To do that, add following to your application.rb:
 
 	:::ruby
@@ -343,8 +187,7 @@ Callback points to the `geo_callback` in the Settings controller.rb:
       end
     end
 
-
-##### Requiring location only on a specific view
+#### Requiring location only on a specific view
 
 	:::ruby
     def show_location
@@ -368,7 +211,7 @@ Callback points to the `geo_callback` in the Settings controller.rb:
 	  end
     end
 
-##### Turning off GeoLocation as soon as the app goes off the device front page
+#### Turning off GeoLocation as soon as the app goes off the device front page
 
 In this code sample, /GeoLocation/ has to be replaced with an appropriate regular expression to detect the controller. This code is called from geo_callback. This decision allows you to switch off GeoLocation from a single code point in case geo_callback is set.
 
@@ -388,7 +231,7 @@ If the app does not need location updates, and GeoLocation should still remain a
 	:::ruby
 	GeoLocation.set_notification "", "", 30
 
-#### Code Sample
+### Code Sample
 
 See controller and view in the /app/GeoLocation folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoLocation/controller.rb) for more information.
 
@@ -538,7 +381,13 @@ The following conditions are currently supported:
 For examples on how to use the API provided by this class, see the view and controller in the /app/Contacts folder in the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Contacts/controller.rb).
 
 ## PIM Calendar/Events
-Rhodes provides access to the device's local calendar and stored events via the Ruby class RhoEvent.
+Rhodes provides access to the device's local calendar and stored events via the [Ruby class RhoEvent](/rhodesapi/rhoevent-api). Click the links below for detailed information about the methods.
+
+ * [find](/rhodesapi/rhoevent-api#find) - Returns the events in the device calendar.
+ * [create!](/rhodesapi/rhoevent-api#create) - Creates a new event in the calendar. Returns a hash of the properties in the event.
+ * [update_attributes](/rhodesapi/rhoevent-api#updateattributes) - Update the properties for this event and save the event in the calendar.
+ * [destroy](/rhodesapi/rhoevent-api#destroy) - Remove this event from the calendar.
+ * [Event hash properties](/rhodesapi/rhoevent-api#event-hash-properties) - A listing of the propeties storied in a calendar event hash, which is returned by the find method.
 
 To allow read/modify calendar information enable the calendar capability. This is done by adding the following lines to build.yml:
 
@@ -550,85 +399,32 @@ Check if the device has a calendar:
 	:::ruby
 	System::get_property('has_calendar')
 
-The following methods are available in the RhoEvent class:
-
-Return hash of hashes of all events stored in the calendar (index):
+Example of returning a hash of hashes of all the events stored in the calendar (index):
 	:::ruby
 	Rho::RhoEvent.find(:all) 
 
-Return hash of all properties of the event identified by the provided id (show):
+Example of returning a hash of all the properties of the event identified by the provided id (show):
 	:::ruby
 	Rho::RhoEvent.find(@params['id'])
 
-Return hash of all properties of the events found by specified parameters (index):
+Example of returning a hash of all properties of the events found by specified parameters (index):
 	:::ruby
-	Rho::RhoEvent.find(:all, :start_date=>start, 
-		:end_date => endtime, :find_type=>'starting', :include_repeating => true )
-		
-* start_date, end_date - define range where at least one of the Event's occurrences falls, inclusive. 
-* find_type - determines the criteria for matching an event occurrence; 
-	* 'starting' searches for events starting between start_date and end_date, 
-	* 'ending'  searches for events ending between start_date and end_date, 
-	* 'occurring' searches for events that have any part of the event occurring during the period specified by start_date and end_date. 
-* include_repeating -  if false then only search based on an Event's START and END values and do not calculate repeating occurrences of the event; if true then repeating occurrences of an Event are included during the search. 
+	start = Time.utc(2010, 'jan', 1, 0, 0, 0)
+    finish = Time.utc(2012, 'dec', 31, 23, 59, 59)
+    @@events = Rho::RhoEvent.find(:all, :start_date => start, 
+    	:end_date => finish, :find_type => 'starting', 
+        :include_repeating => true)
  
-Create new event in the calendar, set properties of the event(excluding 'id', which is generated) from passed as parameter hash, and save created calendar event (create), also return hash of all properties of the created event (include 'id' property):
+Create new event in the calendar:
 	:::ruby
 	created_event = Rho::RhoEvent.create!(@params['event'])
 
-Find event in the calendar, update record properties from the has passed as parameter and save updated event. Event id passed in the hash (update):
+Update event in the calendar:
 	:::ruby
 	Rho::RhoEvent.update_attributes(@params['event'])
 
-Rho::RhoEvent.destroy(@params['id']) #=> remove event identified by the provided id from the calendar. (delete)
-</source>
-
-On all devices, properties currently supported are: "id","title","location","notes","start_date","end_date"
-
-On Blackberry and Windows mobile additional contact properties are supported. These are: 
-"reminder"(in minutes), "privacy"('public', 'private', 'confidential')
-
-Recurrence properties:
-"recurrence", "frequency"('daily', 'weekly', 'monthly', 'yearly'), "interval", "end_date" , "days"(array of 7 items, 1 - means event is triggered - Mon-Sun), "months" ( array of 12 items, Jan-Dec), "weeks"(array of 5 items, first-fifth ), "count"(how many occurrences),
-"day_of_month"(1..31)
-
-On iPhone and Android additional event properties are supported. These are: 
-"canceled", "organizer", "attendees", "last_modified", 
-
-Recurrence properties:
-"recurrence", "frequency"('daily', 'weekly', 'monthly', 'yearly'), "interval", "count", "end_date"
-"count" and "end" recurrence properties are mutual exclusive. "end" is date/time beyond last event occurrence but within same day.
-
-### Recurrence properties
-Recurrence properties are grouped in separate hash stored as single event property (event[Rho::RhoEvent::RECURRENCE]).
-
-### Names of properties
-There are helper constants defined in Rho::RhoEvent which can be used to address event values and as predefined set of values (for frequency).
-
- * ID
- * TITLE
- * CANCELED
- * ORGANIZER
- * START_DATE
- * END_DATE
- * LAST_MODIFIED
- * LOCATION
- * NOTES
- * PRIVACY
- * REMINDER
- * RECURRENCE
- * RECURRENCE_FREQUENCY
- * RECURRENCE_FREQUENCY_DAILY
- * RECURRENCE_FREQUENCY_WEEKLY
- * RECURRENCE_FREQUENCY_MONTHLY
- * RECURRENCE_FREQUENCY_YEARLY
- * RECURRENCE_INTERVAL
- * RECURRENCE_COUNT
- * RECURRENCE_END
- * RECURRENCE_DAYOFMONTH
- * RECURRENCE_MONTHS
- * RECURRENCE_DAYS
-
+Delete event from the calendar:
+	Rho::RhoEvent.destroy(@params['id']))
 
 ### Sample
 For examples on how to use the API provided by this class, see the view and controller in the /app/Calendar folder in the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Calendar/controller.rb).
@@ -641,93 +437,47 @@ You need to enable the Camera capability. This is done by adding the following l
 	capabilities:
 	  - camera
 
-### Main API
-
 Check if the device has a camera:
 	:::ruby
 	System::get_property('has_camera')
-	
-The Camera API provides the following functionality:
 
-Take a picture:
-	:::ruby
-	Camera::take_picture('/app/model/camera_callback')
-	
-Choose a picture from an album:
-	:::ruby
-	Camera::choose_picture('/app/model/camera_callback')
+### Camera API
 
-Once the user has taken/chosen a picture, the callback URL you specified will be called. The callback is a POST message; the body of the message contains the return status and image_uri.
+Refer to the [Camera API](/rhodesapi/camera-api) methods to perform the following functionality.
 
-* Status is 'ok', 'cancel', or 'error'
-* image_uri points to the taken/chosen image stored in the /public/db-files folder; the image file will have auto-generated name.
+ * [get_camera_info](/rhodesapi/camera-api#getcamerainfo) - Get camera information.
+ * [choose_picture](/rhodesapi/camera-api#choosepicture) - Choose a picture from an album.
+ * [take_picture](/rhodesapi/camera-api#takepicture) - Take a picture.
 
-### Extended API (only on iOS and Android)
-
-Take a picture:
-	:::ruby
-	Camera::take_picture('/app/model/camera_callback', options_hash)
-
-Choose a picture from Image Gallery (currently supported only on iPhone):
-	:::ruby
-	Camera::choose_picture('/app/model/camera_callback', options_hash)
-
-
-options_hash - hash contain additional parameters :
-
-* "camera_type" - "default"(is the same with "main"), "main", "front". Default value = "default"
-* "desired_width" - number, desired width in pixels. Default value = max camera width
-* "desired_height" - number, desired height in pixels. Default value = max camera height
-* "color_model" "RGB", "Grayscale". Default value = "RGB"
-* "format" "jpg", "png". Default value = "jpg" If you do not define this property when use choose_picture, then on iOS type of image in Gallery will recognize and use the same (JPG or PNG) for save image to applications data.
-* "enable_editing" - boolean, enable post photo capture image customize (supported only on iPhone !). Default value = true. If you enable this, image will captured reduced to screen size (not full size)!
-* "flash_mode" - string, supported only on Android ! Values : "off", "on", "auto", "red-eye", "torch".
-* "save_to_shared_gallery" - boolean, supported for iOS. if true, picture you take will be added to the camera roll. Default value = false.
-
-Additional parameters in camera callback :
-
-* "status" - "ok", "cancel", "error"
-* "message" - if status == error, then in this value contain message about error
-* "image_uri" - uri of saved image file
-* "image_width" - image width
-* "image_height" - image height
-* "image_format" - "png", "jpg"
-
-Get camera info:
-	:::ruby
-	Camera::get_camera_info(camera_type)
-
-camera_type - "default"(is the same with "main"), "main", "front"
-return Hash with camera info for selected camera type or NIL if this type is not supported.
-In returned hash:
-
- * "max_resolution" - hash with "width" and "height" numeric values.
-
-### Extended API for Motorola devices (RhoElements applications)
-
-Take a picture:
-	:::ruby
-	Camera::take_picture('/app/model/camera_callback', options_hash)
-
-options_hash - hash contain additional parameters :
-
-* "left" - number, camera left position in pixels. Default value = 0
-* "top" - number, camera top position in pixels. Default value = 0
-* "desired_width" - number, desired width in pixels. Default value = max camera width
-* "desired_height" - number, desired height in pixels. Default value = max camera height
+You can set [extended options for take_picture on iOS and Android, for choose_picture on iPhone](/rhodesapi/camera-api#optionshashforiosandandroiddevices), and for [RhoElements Motorola devices](/rhodesapi/camera-api#optionshashforrhoelementsmotoroladevices).
 
 ### Sample
+
 See controller and view in the /app/Image folder of the [ System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Image/controller.rb) for more information.
+
+Here is an example call from the System API Samples application.
+
+	:::ruby
+	settings = { :camera_type => @params['camera_type'], 
+	  :color_model => @params['color_model'], :enable_editing => en_ed, 
+	  :desired_width => width, :desired_height => height, :flash_mode => 'auto' }
+    Camera::take_picture(url_for(:action => :camera_callback), settings)
 
 ## Barcode
 
 **NOTE: As of Rhodes version 3.3.3, the [Barcode](/rhodes/device-caps#barcode) API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
 
-The Barcode API allows to try recognize barcode on an image:
-	:::ruby
-	Barcode.barcode_recognize(image_file_full_path)
+You can use the [Barcode API](/rhodesapi/barcode-api) methods to recognize barcodes.
 
-Barcode recognition functionality realized as Rhode Native extension. You should add "Barcode" to extension list in build.yml located in your application folder. `Barcode.barcode_recognize(image_file_full_path)` return string with recognized code or empty string if not any recognized barcodes on the image. You can combine Camera for get picture with Barcode recognition for process barcode data - see sample below.
+ * [barcode_recognize](/rhodesapi/barcode-api#barcoderecognize) - Recognizes a barcode on an image.
+ * [take_barcode](/rhodesapi/barcode-api#takebarcode) - iPhone and Android only. Open a user interface for real-time barcode recognition from the device camera.
+ * [enumerate](/rhodesapi/barcode-api#enumerate) - Get a list of scanners present on the device.
+ * [enable](/rhodesapi/barcode-api#enable) - Enables the scanner.
+ * [disable](/rhodesapi/barcode-api#disable)- Disables the currently enabled scanner.
+ * [start](/rhodesapi/barcode-api#start) - Performs a soft trigger start.
+ * [stop](/rhodesapi/barcode-api#stop) - Performs a soft trigger stop.
+
+Barcode recognition functionality is realized as Rhode Native extension. You should add "Barcode" to extension list in build.yml, which is located in your application folder. `Barcode.barcode_recognize(image_file_full_path)` returns a string with recognized code, or an empty string if there are no recognized barcodes on the image. You can combine Camera for get picture with Barcode recognition for process barcode data - see sample below.
 
 For barcode recognition we use Zbar library (iPhone, and Windows Mobile platforms) and ZXing library (Android and BlackBerry platforms). In this case we support next barcode types :
 
@@ -737,94 +487,48 @@ For barcode recognition we use Zbar library (iPhone, and Windows Mobile platform
 
 **NOTE: We are very sorry, but we are removed ZBar source code from our project by ZBar license requirements. For build Barcode extension for WM, you should download ZBar sources from http://zbar.sourceforge.net/ and copy to [rhodes root]/lib/extensions/barcode/ext/barcode/shared/zbar/zbar/ folder "include" and "zbar" folders from ZBar sources. Also you should fix ZBar sources for building by Microsoft Visual Studio (move define of inner function variables to begin of functions, etc.). See detailed instructions in your Rhodes installation at /lib/extensions/barcode/ext/barcode/shared/zbar/zbar/README.TXT**
 
-On Android and iOS (not supported on iPhone 2G and iPhone 3G !) real-time barcode recognition is supported (second parameter is hash with options):
-	:::ruby
-	Barcode.take_barcode(url_for(:action => :take_callback), {})
-
-On Android also you can use front camera for take_barcode :
-	:::ruby
-	Barcode.take_barcode(url_for(:action => :take_callback), {:camera => 'front'})
-
-This code open special UI for real-time barcode recognizing from camera. If any barcode found, recognizing stopped and user can select - confirm recognizing barcode or continue recognizing. If user confirmed or cancelled the callback will be called.
-In callback are these parameters.
- 
- * "status" - "ok" or "cancel"
- * "barcode" - recognized barcode string
-
 ### Sample
 See controller and view in the /app/BarcodeRecognizer folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BarcodeRecognizer/controller.rb) for more information.
 
 ## Signature Capture
 
-The Signature Capture API allow take a signature and save it as an image:
-	:::ruby
-	Rho::SignatureCapture.take(callback_url, params)
+The [Signature Capture API](/rhodesapi/signaturecapture-api) allows your device to take a signature and save it as an image.
 
-Signature Capture open window for hand writing, where user draw his signature. Signature saved to an image file. You can choice 'jpg' or 'png' format for image.
-
- * callback_url - callback url
- * params - hash with params
+Click [here for information about the SignatureCapture.take method](/rhodesapi/signaturecapture-api#take). This method opens a window for hand writing, where the user draws his signature. Signature is saved to an image file.
 
 Example:
 	:::ruby
 	Rho::SignatureCapture.take(url_for( :action => :signature_callback), { :imageFormat => "jpg", :penColor => 0xff0000, :penWidth=>3, :bgColor => 0x00ff00 })
 
-The following parameters are in the hash.
+**NOTE: To take signature on Blackberry devices, press the Menu button, then select 'Capture'.**
 
- * imageFormat - "jpg", "png" or "bmp"
- * penColor - color of pen used for drawing signature
- * penWidth - wide of pen
- * bgColor - color of background
+### Inline Signature Capture
+**NOTE: As of Rhodes version 3.3.3, the Inline Signature API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
 
-**NOTE: On Windows Mobile and Windows CE devices only "bmp" is supported as 'imageFormat'.**
+Windows Mobile and Windows CE devices support signature capture started in window, which you can show over the current page (scrolling is not supported in this case). 
 
-**NOTE: On Blackberry devices only "png" is supported as 'imageFormat'.**
+Refer to the [Inline Signature API](/rhodesapi/signaturecapture-api#inline-signature-api) for the inline signature capture methods.
 
-After user entered signature (or canceled) provided callback url will be called. Callback parameters will be the following.
+* [visible](/rhodesapi/signaturecapture-api#visible) - Display a window for hand writing, where the user draws his signature.
+* [capture](/rhodesapi/signaturecapture-api#capture) - Save the signature to an image file and call a callback.
+* [clear](/rhodesapi/signaturecapture-api#clear) - Clear the signature in the window.
 
- * status - 'ok' or 'cancel'
- * signature_uri - path to the image with signature   
+Example of visible method:<a id="inline-signature-ex" />
 
-**NOTE: To take signature on Blackberry devices press Menu button then select 'Capture'.**
-
-### Inline signature capture
-**NOTE: As of Rhodes version 3.3.3, the Inline Signature Capture API is removed from Rhodes. This feature is only supported in Motorola RhoMobile Suite. If you wish to use this feature, you will need to [upgrade to RhoMobile Suite](/rhomobile-install). Your application's build.yml will also need to be modified to [indicate the application type is 'Rhoelements'](/rhoelements/rhoelements2-native#enabling-motorola-device-capabilities). Additionally, a [RhoElements license](/rhoelements/licensing) is required.**
-
-Windows Mobile and Windows CE devices support signature capture started in window, which you can show over current page(scrolling is not supported in this case).
-
-To display window hand writing, where user draw his signature call:
-	:::ruby
-	Rho::SignatureCapture.visible(visibility, params)
-
-* visibility - true or false
-* params - hash with params, same as for 'take'
-
-Example :
 	:::ruby
 	Rho::SignatureCapture.visible(true, { :imageFormat => "jpg", :penColor => 0xff0000, :penWidth=>3, :bgColor => 0x00ff00 })
-
-`visible` uses the same hash parameters as `take`, with the following additional parameters.
-
-* left - Sets the top left horizontal position of the rectangular capture area in pixels
-* top - Sets the top left vertical position of the rectangular capture area in pixels
-* width - Sets the width of the rectangular capture area in pixels
-* height - Sets the height of the rectangular capture area in pixels
 
 To save Signature to an image file and call callback:
 	:::ruby
 	Rho::SignatureCapture.capture(callback_url)
 
-* callback_url - callback url
+Example of capture method:
 
-Example :
 	:::ruby
 	Rho::SignatureCapture.capture(url_for( :action => :signature_callback))
 
-To clear Signature in the window:
-	:::ruby
-	Rho::SignatureCapture.clear()
+Example of clear method:
 
-Example :
 	:::ruby
 	Rho::SignatureCapture.clear()
 
@@ -841,15 +545,15 @@ To allow Bluetooth enable the bluetooth capability. This is done by adding the f
 	capabilities:
 	  - bluetooth
 
-Currently Bluetooth support have following limitations:
+Currently Bluetooth support has the following limitations:
 
-* on Apple device (iPhone, iPad etc.) you can connect only to another Apple device
-* on Blackberry if you want to make client connection to any device, you should pair devices only when on another device running server service, because it need for add paired device to list of devices with support serial port profile - only that devices you can see in the list of devices to connect
-* on any platform, except iPhone, you should pair you devices before make connection
-* you can change local device name for display on another device only on iOS and Android platform - for WM and BB use system settings for change local device name
-* you can not see another device name, when you using server connection on BlackBerry
-* only one connection session can created and using on any device in this time. You should close current session before make another session.
-* one-to-few peers connection scheme is unsupported now.
+* On Apple device (iPhone, iPad etc.), you can connect only to another Apple device.
+* On Blackberry, if you want to make client connection to any device, you should pair devices only when on another device is running server service, because it needs to add paired device to list of devices with support serial port profile - only the devices you can see in the list of devices to connect.
+* On any platform, except iPhone, you should pair your devices before making connection.
+* You can change local device name for display on another device only on iOS and Android platform - for WM and BB use system settings for change local device name.
+* You can not see another device name when you are using server connection on BlackBerry.
+* Only one connection session can be created and used on any device. You should close your current session before making another session.
+* One-to-few peers connection scheme is unsupported.
 
 There are two steps to make connection and start using of Bluetooth :
 
@@ -861,109 +565,27 @@ There are two steps to make connection and start using of Bluetooth :
 
 ### Bluetooth API
 
-#### BluetoothManager
+You can use the [BluetoothManager API](/rhodesapi/bluetoothmanager-api) to make a connection between your Bluetooth-equipped device and another Bluetooth-equipped device.
 
-Get availability of Bluetooth on the device. Return true/false:
-	:::ruby
-	Rho::BluetoothManager.is_bluetooth_available
+ * [is_bluetooth_available](/rhodesapi/bluetoothmanager-api#isbluetoothavailable) - Returns true if Bluetooth is available on the device, false otherwise.
+ * [off_bluetooth](/rhodesapi/bluetoothmanager-api#offbluetooth) - Turn Bluetooth off.
+ * [set_device_name](/rhodesapi/bluetoothmanager-api#setdevicename) - Change the local device name.
+ * [get_device_name](/rhodesapi/bluetoothmanager-api#getdevicename) - Get local device name for current device.
+ * [get_last_error](/rhodesapi/bluetoothmanager-api#getlasterror) - Returns the last error: OK or ERROR or CANCEL.
+ * [create_session](/rhodesapi/bluetoothmanager-api#createsession) - Creates a Bluetooth session.
+ * [create_server_and_wait_for_connection](/rhodesapi/bluetoothmanager-api#createserverandwaitforconnection) - Connect without a user interface. Makes the current device discoverable for another device, and waits for the client connection from the other device.
+ * [create_client_connection_to_device](/rhodesapi/bluetoothmanager-api#createclientconnectiontodevice) - Connect without user interface. Make the client connection to another device.
+ * [stop_current_connection_process](/rhodesapi/bluetoothmanager-api#stopcurrentconnectionprocess) - When connecting without user interface (`create_server_and_wait_for_connection`), cancel the current connection.
 
-Switch Bluetooth off:
-	:::ruby
-	Rho::BluetoothManager.off_bluetooth
+You can use the [BluetoothSession API](/rhodesapi/bluetoothsession-api) to manage a connection session between your Bluetooth-equipped device and another Bluetooth-equipped device.
 
-
-Change local device name:
-	:::ruby
-	Rho::BluetoothManager.set_device_name(name)
-
-Get local device name for current device (this name displayed on another device)
-	:::ruby
-	Rho::BluetoothManager.get_device_name
-
-Get last error. Returns OK/ERROR/CANCEL
-	:::ruby
-	Rho::BluetoothManager.get_last_error
-
-
-Creates Bluetooth session. Return OK/ERROR:
-	:::ruby
-	Rho::BluetoothManager.create_session(role, callback_url)
-
-* role - may be ROLE_SERVER or ROLE_CLIENT
-* callback_url - this url will be called after session was created or canceled. Parameters received in the callback:
-	* status - OK / ERROR / CANCEL
-	* connected_device_name - name of the connected device
-
-Connect without UI: make current device discoverable for other,  wait for client connection from other device
-	:::ruby
-	Rho::BluetoothManager.create_server_and_wait_for_connection(callback_url)
-
-* callback_url - this url will be called after session was created or canceled. Parameters received in the callback:
-	* status - OK / ERROR / CANCEL
-	* connected_device_name - name of the connected device
-
-Connect without UI: make client connection to device:
-	:::ruby
-	Rho::BluetoothManager.create_client_connection_to_device(server_name, callback_url)
-
-* server_name - name of other device. If you make connect with UI, you receive that name as connected_device_name
-* callback_url - this url will be called after session was created or canceled. Parameters received in the callback:
-	* status - OK / ERROR / CANCEL
-	* connected_device_name - name of the connected device
-
-Connect without UI: cancel current connection:
-	:::ruby
-	Rho::BluetoothManager.stop_current_connection_process
-
-
-#### BluetoothSession
-
-Set Bluetooth session callback
-	:::ruby
-	Rho::BluetoothSession.set_callback(
-		connected_device_name, session_callback_url)
-* connected_device_name - name of the connected device	
-* return OK/ERROR
-* parameters in callback:
-	* 'connected_device_name' - name of connected device
-    * 'event_type' - SESSION_INPUT_DATA_RECEIVED / ERROR / SESSION_DISCONNECT
-
-Disconnect from the device
-	:::ruby
-	Rho::BluetoothSession.disconnect(connected_device_name)
-* connected_device_name - name of the connected device	
-* return OK/ERROR
-
-Get session status
-	:::ruby
-	Rho::BluetoothSession.get_status(connected_device_name)
-* return received but not read data size; -1 if error, 0 if empty(not actually received data)
-
-Read data
-	:::ruby
-	Rho::BluetoothSession.read(connected_device_name)
-* connected_device_name - name of the connected device	
-* return array of bytes
-
-Write data  
-	:::ruby
-	Rho::BluetoothSession.write(connected_device_name, data)
-* connected_device_name - name of the connected device	
-* data must be array of byte/fixnum
-
-Read string
-	:::ruby
-	Rho::BluetoothSession.read_string(connected_device_name)
-* connected_device_name - name of the connected device	
-* return string
-
-Write string  
-	:::ruby
-	Rho::BluetoothSession.write_string(connected_device_name, data)
-* connected_device_name - name of the connected device	
-* data must be a string
-* return OK/ERROR
-
+ * [set_callback](/rhodesapi/bluetoothsession-api#setcallback) - Set the Bluetooth session callback.
+ * [disconnect](/rhodesapi/bluetoothsession-api#disconnect) - Disconnect from the device.
+ * [get_status](/rhodesapi/bluetoothsession-api#getstatus) - Get the session status.
+ * [read](/rhodesapi/bluetoothsession-api#read) - Read data from the connected device.
+ * [write](/rhodesapi/bluetoothsession-api#write) - Write data to the connected device.
+ * [read_string](/rhodesapi/bluetoothsession-api#readstring) - Read string from the connected device.
+ * [write_string](/rhodesapi/bluetoothsession-api#writestring) - Write string to the connected device.
 
 ### Example of Controller with using Bluetooth API
 
@@ -1019,7 +641,7 @@ This is not a complete example (for a link to a complete example, see the link b
 
 ### Example of chat application using Bluetooth connection
 
-You can find complete example of using Bluetooth API in [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples). See Bluetooth Chat Demo page - [BluetoothChat](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BluetoothChat/). In this example you can see how to exchange text messages between two different devices. You also can use this example for connect to external Bluetooth device (external GPS device for example) or PC or Mac (use terminal to see and send messages).
+You can find a complete example of using Bluetooth API in [Rhodes-System-Api-Samples](http://github.com/rhomobile/rhodes-system-api-samples). See Bluetooth Chat Demo page - [BluetoothChat](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/BluetoothChat/). In this example you can see how to exchange text messages between two different devices. You also can use this example for connect to external Bluetooth device (external GPS device for example) or PC or Mac (use terminal to see and send messages).
 
 
 ## NFC
@@ -1031,29 +653,16 @@ NFC API implemented in native extension. You should add "nfc" to extension list 
 
 ## Ringtone manager
 
-The Ringtone manager API provides access to view/play the user's installed ringtones.
+The [Ringtone manager API](/rhodesapi/ringtonemanager-api) provides access to view/play the user's installed ringtones.
 
-Get all available ringtones
-	:::ruby
-	@ringtones = RingtoneManager::get_all_ringtones
-* The variable returned by get_all_ringtones will be a hash containing key/value pairs, where the key is the user-friendly name of ringtone, and the value is its full file name.
-
-Play a given ringtone
-	:::ruby
-	RingtoneManager::play @ringtones['My Ringtone']	
-
-**NOTE: If 'play' is called while another ringtone is playing, it will stop the old ringtone and start the new one.**
-
-Halt playing of a ringtone
-	:::ruby
-	RingtoneManager::stop
-* Can safely be called even if no ringtone is playing
+ * [get_all_ringtones](/rhodesapi/ringtonemanager-api#getallringtones) - Get all available ringtones.
+ * [play](/rhodesapi/ringtonemanager-api#play) - Play a given ringtone.
+ * [stop](/rhodesapi/ringtonemanager-api#stop) - Halt playing of a ringtone.
 
 **NOTE: Currently implemented for Android, Blackberry and Windows mobile. On Blackberry, only the user installed ringtones are accessible. System preinstalled ringtones are not accessible due to Blackberry limitations.**
 
 ### Sample
 See controller and view in the /app/Ringtones folder of the [System API Samples application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/Ringtones/controller.rb) for more information.
-
 
 ## Printing
 
@@ -1088,13 +697,18 @@ Push notification support is currently available for Android, BlackBerry, iOS, a
 
 ## Alerts
 
-In your controller, you may call on system alert methods to show popup, vibrate, or play audio file.
+In your controller, you may call on the [Alert API](/rhodesapi/alert-api) to show popup, vibrate, or play audio file.
 
-** show_popup ** - bring app upfront and show specified message
-	:::ruby
-	Alert.show_popup "Some message"
+The methods you can use are:
 
-You can also customize popup window's title, icon, buttons and specify callback to be called on button click:
+ * [show_popup](/rhodesapi/alert-api#showpopup) - Bring the application up fromt and show a message.
+ * [hide_popup](/rhodesapi/alert-api#hidepopup) - Close the current opened popup window.
+ * [vibrate](/rhodesapi/alert-api#vibrate) - Vibrate the device.
+ * [play_file](/rhodesapi/alert-api#playfile) - Play specified media type.
+ * [show_status](/rhodesapi/alert-api#showstatus) - Show a status message.
+
+You can customize the popup window's title, icon, buttons and specify callback to be called on button click:
+
 	:::ruby
 	Alert.show_popup( {
 		:message => 'Some message', 
@@ -1104,18 +718,7 @@ You can also customize popup window's title, icon, buttons and specify callback 
 			{:id => 'cancel', :title => 'Cancel all'}],
 	    :callback => url_for(:action => :on_dismiss_popup) } )
 
-Popup window always close after clicking on any button.
-
-* :message - text to be displayed in popup window
-* :title - title of the popup window
-* :icon - image to be displayed in popup window. It's value can be one of predefined values or path to image file. Predefined values:
-	* :alert - '!' icon
-	* :question - '?' icon
-	* :info - informational icon
-* :buttons - array of buttons for popup window. Each button defined by its id and title. Button can be specified by Hash with :id and :title keys or just String - in this case both id and title will be set to this value.
-* :callback - url to be called when any of the button will be clicked. This callback will be called with @params hash containing three keys: button_id, button_title, and button_index.
-
-Example:
+Callback Example:
 	:::ruby
 	def on_dismiss_popup
 	  id = @params['button_id']
@@ -1130,30 +733,7 @@ Example:
 	  end
 	end
 
-
-** hide_popup ** - close current opened popup
-	:::ruby
-	Alert.hide_popup
-
-** vibrate ** - vibrate for the specified number of milliseconds, up to 25500; if 0 or no duration is specified, it will vibrate for 2500 millisecond.
-	:::ruby
-	Alert.vibrate(duration_in_milliseconds)
-
-
-** play_file ** - play specified file if media type supported by the phone. File should be included to the application. For example, if file is in public folder, file name will be `/apps/public/test-file.mp3` Media type should be either specified explicitly or may be recognized from file extension. Known file extensions are: .mp3 - audio/mpeg; .wav - audio/x-wav
-	:::ruby
-	Alert.play_file(file_name.ext, media_type)
-
-** show_status ** - show status messages
-	:::ruby
-	Alert.show_status(title, status_text, hide_button_label)
-
-Status window will close after clicking on hide button.
-
-* status_text - text to be displayed in status window
-* hide_button_label - label of hide button
-
-For example you can use Alert.show_status in sync notification callback:<a id="alert-show-status-ex" />
+You can use Alert.show_status in a sync notification callback:
 	:::ruby
 	def sync_notify
 	  status = @params['status'] ? @params['status'] : ""
@@ -1165,19 +745,15 @@ For example you can use Alert.show_status in sync notification callback:<a id="a
 
 ## Timer
 
-In your controller, you may start timer using Rho::Timer class:
+In your controller, you may start timer using the [Rho::Timer API](/rhodesapi/timer-api).
 
-** start ** - start timer and call callback after some interval
-	:::ruby
-	Rho::Timer.start(interval_milliseconds, callback_url, callback_data)
+ * [start](/rhodesapi/timer-api#start) - Start the timer and call a callback after the timer completes.
+ * [stop](/rhodesapi/timer-api#stop) - Stop the timer by callback.
 
 For example:
+
     :::ruby
 	Rho::Timer.start(5000, (url_for :action => :timer_callback), "test")
-	
-** stop ** - stop timer by callback
-	:::ruby
-	Rho::Timer.stop(callback_url)
 		
 ## Screen rotation
 When user rotate device, Rhodes update view corresponding to new orientation. To get notification about rotation use callback:
@@ -1271,35 +847,17 @@ For execute you rhodes based application from another rhodes based application u
 	:::ruby
 	System.open_url('myapp:string_with_params')
 
-
-
-
 ## MapView
-MapView class provides an embeddable map interface, similar to the one provided by the Maps application. The following code would go into your controller and the map appears on a whole page.
 
-	:::ruby
-	map_params = {
-	     :provider => 'Google',
-	     :settings => {:map_type => "hybrid",:region => [@params['latitude'], @params['longitude'], 0.2, 0.2],
-	                   :zoom_enabled => true,:scroll_enabled => true,:shows_user_location => false,
-	                   :api_key => 'Google Maps API Key'},
-	     :annotations => [{:latitude => @params['latitude'], :longitude => @params['longitude'], :title => "Current location", :subtitle => ""},
-	                      {:street_address => "Cupertino, CA 95014", :title => "Cupertino", :subtitle => "zip: 95014", 
-	                       :url => "/app/GeoLocation/show?city=Cupertino"},
-	                      {:street_address => "Santa Clara, CA 95051", :title => "Santa Clara", :subtitle => "zip: 95051", 
-	                       :url => "/app/GeoLocation/show?city=Santa%20Clara", :pass_location => true}]
-	}
-	MapView.create map_params
+The MapView class provides an embeddable map interface, similar to the one provided by the Maps application. Click the links below for detailed information about the [MapView API methods](/rhodesapi/mapview-api).
 
+ * [create](/rhodesapi/mapview-api#create) - Create a map on your device.
+ * [set_file_caching_enable](/rhodesapi/mapview-api#setfilecachingenable) - Enable file caching for map tiles. The file cache can be used for offline map browsing.
+ * [preload_map_tiles](/rhodesapi/mapview-api#preloadmaptiles) - Preload a map tiles for a region defined by a zoom level range.
 
-Provider:
+### MapView Settings
 
-The supported providers are 'Google', 'ESRI', "RhoGoogle" and "OSM". 
-
-* 'Google' supported on iPhone, Android and BB. 
-* 'ESRI' supported on iPhone, Android, BB and WM. 
-* 'RhoGoogle' own GoogleMap provider based on Google Static Map API. Has additional features (offline caching for example). Supported on Android and WM.
-* 'OSM' - Open Street Map, supports only 'roadmap' map type. Supported on Android and WM.
+The supported providers are 'Google', 'ESRI', "RhoGoogle" and "OSM".<a id="mapview-settings"></a>
 
 To use ESRI maps in your projects on iPhone:
 
@@ -1321,41 +879,54 @@ To use native Google map view on Android:
         capabilities:
             - network_state
 
-Map settings:
-
-* map_type - widget may display maps of three types: standard, satellite, and hybrid
-* region - two types allowed:
-	* [latitude,longitude,latitudeDelta,longitudeDelta]. The area currently displayed by the map view. The region encompasses both the latitude and longitude point on which the map is centered and the span of coordinates to display. The span values provide an implicit zoom value for the map. The larger the displayed area, the lower the amount of zoom. Similarly, the smaller the displayed area, the greater the amount of zoom. 
-		* latitude,longitude - map coordinate of the region center
-		* latitudeDelta - the amount of north-to-south distance (measured in degrees) to display on the map. Unlike longitudinal distances, which vary based on the latitude, one degree of latitude is always approximately 111 kilometers (69 miles).
-		* longitudeDelta - the amount of east-to-west distance (measured in degrees) to display for the map region. The number of kilometers spanned by a longitude range varies based on the current latitude. For example, one degree of longitude spans a distance of approximately 111 kilometers (69 miles) at the equator but shrinks to 0 kilometers at the poles.
-	* {:center => center, :radius => radius}. Another way to define area displayed by the map view.
-		* center - string describing center of area. Can be any string allowed by google geocoding service. Examples: "1 infinite loop, cupertino, ca 95014", "California, USA", "37.365519,-121.982918"
-		* radius - radius of displayed area measured in degrees
-* zoom_enabled - true if zoom of the map is enabled
-* scroll_enabled - true if scroll of the map is enabled
-* shows_user_location - true if current user location is displayed on the map 
-* api_key - Maps JavaScript API Key ([sign up for it here](http://code.google.com/apis/maps/signup.html)). Note that this parameter is ignored on Android! For Android you should get another key and specify it in the app's build.yml as described [here](build#build-for-android)
-
-Annotations - array of map annotation objects (list of pins on the map). Annotation:
-
-* latitude,longitude - map coordinate of the annotation 
-* street_address - if map coordinate is not specified, framework will attempt to obtain it using provided street address from google geo-coding service 
-* title - title of the annotation callout
-* subtitle - subtitle of the annotation callout
-* url - url to follow when user click on the callout button
-* image - image file name
-* image_x_offset - int horizontal coordinate of image anchor (ancor point placed to annotation point on map) . Set to image width/2 for center
-* image_y_offset - int vertical coordinate of image anchor (ancor point placed to annotation point on map). Set image height/2 for center
-* pass_location  - then true, location coordinates added to url in the format: latitude=xx.xxx&longitude=xx.xxx
-
 Map settings in rhoconfig.txt :
 
 * ESRI_map_url_roadmap - URL of ESRI roadmap tile map server (example:  'http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/')
 * ESRI_map_url_satellite - URL of ESRI satellite tile map server (example:  'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/')
 * OSM_map_url_roadmap - URL of OSM tile map server (example:  'http://tile.openstreetmap.org/')
 
-Enable file caching for map tiles - file cache can use for offline map browsing:
+### MapView Examples
+
+The following code in your controller has the map appear on a whole page.<a id="mapview-example-create"></a>
+
+Ruby example:
+
+	:::ruby
+	map_params = {
+	     :provider => 'Google',
+	     :settings => {:map_type => "hybrid",:region => [@params['latitude'], @params['longitude'], 0.2, 0.2],
+	                   :zoom_enabled => true,:scroll_enabled => true,:shows_user_location => false,
+	                   :api_key => 'Google Maps API Key'},
+	     :annotations => [{:latitude => @params['latitude'], :longitude => @params['longitude'], :title => "Current location", :subtitle => ""},
+	                      {:street_address => "Cupertino, CA 95014", :title => "Cupertino", :subtitle => "zip: 95014", 
+	                       :url => "/app/GeoLocation/show?city=Cupertino"},
+	                      {:street_address => "Santa Clara, CA 95051", :title => "Santa Clara", :subtitle => "zip: 95051", 
+	                       :url => "/app/GeoLocation/show?city=Santa%20Clara", :pass_location => true}]
+	}
+	MapView.create map_params
+
+JavaScript example:
+
+	var map_params = {
+	  provider: 'Google',
+	  settings: {
+	    map_type: 'hybrid',
+	    region: [@params['latitude'], @params['longitude'], 0.2, 0.2],
+	    zoom_enabled: true,
+	    scroll_enabled: true,
+	    shows_user_location: false,
+	    api_key: 'Google Maps API Key'
+	    }, 
+	  annotations: [
+	    {latitude: @params['latitude'], longitude: @params['longitude'], title: "Current location", subtitle: ""},
+	    {street_address: "Cupertino, CA 95014", title: "Cupertino", subtitle: "zip: 95014", url: "/app/GeoLocation/show?city=Cupertino"},
+	    {street_address: "Santa Clara, CA 95051", title: "Santa Clara", subtitle: "zip: 95051", url: "/app/GeoLocation/show?city=Santa%20Clara"}
+	    ]
+	  };
+	Rho.MapView.create(map_params);
+
+You can enable file caching for map tiles - file cache can use for offline map browsing.<a id="mapview-example-preload"></a>
+
 	:::ruby
 	MapView.set_file_caching_enable(1)
 
@@ -1379,11 +950,21 @@ Preload map tiles for region (0<=zoom<=18):
 	      redirect :action => :index
 	  end
 
-
 ### Sample
 See GeoLocation/controller.rb of [system API sample application](http://github.com/rhomobile/rhodes-system-api-samples/tree/master/app/GeoLocation/controller.rb) for some of the examples of how to use MapView class.
 
 ## File system access
+
+You can use the RhoApplication API to access your Rhodes application. Click the links below for detailed information about the [RhoApplication API methods](/rhodesapi/rhoapplication-api).
+
+ * [get_base_app_path](/rhodesapi/rhoapplication-api#getbaseapppath) - Returns a string that contains the absolute path to the application.
+ * [get_app_path](/rhodesapi/rhoapplication-api#getapppath) - Returns a string that contains the absolute path path to the given relative path in the application.
+ * [get_model_path](/rhodesapi/rhoapplication-api#getmodelpath) - Returns a string that contains the absolute path to a model folder in the application.
+ * [get_blob_path](/rhodesapi/rhoapplication-api#getblobpath) - Returns the real path to a blob (such as a digital photo). You need to use this method to have the correct path to a blob attribute.
+ * [get_blob_folder](/rhodesapi/rhoapplication-api#getblobfolder) - Returns the absolute path to the folder where blobs, such as digital photos, are created in this application.
+ * [get_user_path](/rhodesapi/rhoapplication-api#getuserpath) - Returns the path to the user folder. iOS only.
+
+You can use the Rhodes subset of the Ruby File API to access the Rhodes file structure. [Click here for those File API methods in both Ruby and JavaScript](/rhodesapi/file-api).
 
 ### Rhodes client file system structure
 	<rhodes root>  #system-dependent path
