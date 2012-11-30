@@ -687,6 +687,13 @@ DWORD WINAPI RhoBluetoothManager::runThreadReadData(LPVOID voidArg) {
 				return WSAGetLastError();
 			}
 			else
+			if (cbBytesRecd == 0) {
+				// connection closed !
+				LOG(INFO)  + "RhoBluetoothManager::runThreadReadData() exit with connection closed message";
+				functionInfo->fireSessionCallBack(functionInfo->mConnectedDeviceName, RHO_BT_SESSION_DISCONNECT);
+				return 0;
+			}
+			else
 			{
 				// something was received, then copy the contents in szMessage
 				if(cbBytesRecd>0)
