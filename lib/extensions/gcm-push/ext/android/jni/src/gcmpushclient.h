@@ -41,10 +41,14 @@ class GcmPushClient: public IRhoPushClient
 {
     class SyncLoginListener;
 private:
+    static const char* const s_GCM_FACADE_CLASS;
     static const String s_Type;
     String m_strCallbackUrl;
     String m_strCallbackParam;
+
 public:
+    DEFINE_LOGCLASS;
+
     GcmPushClient();
     virtual ~GcmPushClient() {}
 
@@ -54,6 +58,8 @@ public:
     virtual void setNotificationUrl(const String& callBackUrl, const String& urlParams);
     virtual bool callNotification(const String& json, const String& data);
 
+    static void GcmPushRegister();
+    static void GcmPushUnregister();
 };
 
 
