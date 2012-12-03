@@ -21,7 +21,7 @@ end
     end
 
     it "test navigate external http" do
-        WebView.navigate "http://www.google.com/images/icons/product/chrome-48.png?rho_open_target=_blanck"
+        WebView.navigate "http://www.google.com/images/icons/product/chrome-48.png?rho_open_target=_blank"
     end
 
     it "test navigate local file" do
@@ -50,7 +50,7 @@ end
     end
 
     it "test open external http" do
-        WebView.navigate "http://www.google.com/images/icons/product/chrome-48.png?rho_open_target=_blanck"
+        WebView.navigate "http://www.google.com/images/icons/product/chrome-48.png?rho_open_target=_blank"
     end
 
     it "test open local file" do
