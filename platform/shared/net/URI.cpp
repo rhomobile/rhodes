@@ -203,12 +203,12 @@ String URI::urlEncode(const String& fullPath)
             }
 
 		    strRes += '%';
-		    if (c > 15) { // is it a non-control char, ie. >x0F so 2 chars
+		    if (((unsigned char)c) > 15) { // is it a non-control char, ie. >x0F so 2 chars
 			    //sb.append(Integer.toHexString((int)c)); // just add % and the string
-                toHexString(c, strRes, 16);
+                toHexString((unsigned char)c, strRes, 16);
 		    } else {
                 strRes += '0';
-                toHexString(c, strRes, 16);
+                toHexString((unsigned char)c, strRes, 16);
 			    //sb.append("0" + Integer.toHexString((int)c));
 			    // otherwise need to add a leading 0
 		    }
