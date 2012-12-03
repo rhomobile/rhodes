@@ -36,6 +36,8 @@ See Rhodes [App Structure](application) for more details.
 
 You may generate a Rhodes application using the [rhodes](generator) utility.
 
+Rhodes built-in the following Ruby version: 1.9.2-p290. Rhodes application may use all functionality of the built-in Ruby version.
+
 ## Contributing
 Do you want to add features to Rhodes? Have you found a bug that you want report or fix? Read on.
 
