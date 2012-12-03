@@ -898,7 +898,7 @@ end
     prod_name.should_not be_nil
     obj_id  = prod.object
     
-    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"update-rollback\": {\"#{obj_id}\": {\"name\": \"OLD_NAME\"}},\"update-error\":{\"#{obj_id}\":{\"name\":\"wrongname\",\"an_attribute\":\"error update\"},\"#{obj_id}-error\":{\"message\":\"error update\"}}}]"
+    err_resp = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":0},{\"total_count\":0},{\"update-rollback\": {\"#{obj_id}\": {\"name\": \"OLD_NAME\",\"brand\": \"Planifi\xc3\xa9\"}},\"update-error\":{\"#{obj_id}\":{\"name\":\"wrongname\",\"brand\":\"wrongbrand\",\"an_attribute\":\"error update\"},\"#{obj_id}-error\":{\"message\":\"error update\"}}}]"
     
     SyncEngine.set_source_property(getProduct().get_source_id.to_i(), "rho_server_response", err_resp )    
     res = ::Rho::RhoSupport::parse_query_parameters getProduct.sync( "/app/Settings/sync_notify")
@@ -908,11 +908,13 @@ end
     res['server_errors']['update-error'].should_not be_nil
     res['server_errors']['update-error'][obj_id].should_not be_nil    
     res['server_errors']['update-error'][obj_id]['message'].should == "error update"
-    res['server_errors']['update-error'][obj_id]['attributes']['name'].should == "wrongname"    
+    res['server_errors']['update-error'][obj_id]['attributes']['name'].should == "wrongname"
+    res['server_errors']['update-error'][obj_id]['attributes']['brand'].should == "wrongbrand"
 
     res['server_errors']['update-rollback'].should_not be_nil
     res['server_errors']['update-rollback'][obj_id].should_not be_nil    
     res['server_errors']['update-rollback'][obj_id]['attributes']['name'].should == "OLD_NAME"
+    res['server_errors']['update-rollback'][obj_id]['attributes']['brand'].should == "Planifi\u00e9"
 
     records = getTestDB().select_from_table('changed_values','*', 'update_type' => 'update')
     records.length.should == 0
@@ -929,6 +931,7 @@ end
     prod = getProduct.find(obj_id)
     prod.should_not be_nil
     prod.name.should == "OLD_NAME"
+    prod.brand.should == "Planifi\xc3\xa9"
 
   end
 
