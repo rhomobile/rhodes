@@ -1540,8 +1540,9 @@ void CRhodesApp::initPushClients()
 
 void CRhodesApp::setPushNotification(const String& strUrl, const String& strParams, const String& strType )
 {
-    if(strType == "legacy")
+    if(strType == "legacy" || strType == "default")
     {
+        LOG(TRACE) + "Set notification for legacy push: " + strUrl;
         synchronized(m_mxPushCallback)
         {
             m_strPushCallback = strUrl;
@@ -1551,13 +1552,16 @@ void CRhodesApp::setPushNotification(const String& strUrl, const String& strPara
             m_strPushCallbackParams = strParams;
         }
     }
-    else
+
+    if(strType != "legacy")
     {
+        LOG(TRACE) + "Set Push Manager notification for " + strType + " push: " + strUrl;
+
         String canonicalUrl;
         if (strUrl.length())
             canonicalUrl = canonicalizeRhoUrl(strUrl);
 
-        if(strType.length())
+        if(strType != "default")
             m_appPushMgr.setNotificationUrl(strType, canonicalUrl, strParams);
         else
             m_appPushMgr.setNotificationUrl(canonicalUrl, strParams);
@@ -1589,7 +1593,7 @@ boolean CRhodesApp::callPushCallback(const String& strData) const
     return false;
 }
 
-boolean CRhodesApp::callPushCallbackWithJsonBody(const String& strUrl, const String& strData, const String& strParams)
+boolean CRhodesApp::callPushCallbackWithJsonBody(const String& strUrl, const String& strJson, const String& strParams)
 {
     synchronized(m_mxPushCallback)
     {
@@ -1598,10 +1602,13 @@ boolean CRhodesApp::callPushCallbackWithJsonBody(const String& strUrl, const Str
 
         String strCanonicalUrl = canonicalizeRhoUrl(strUrl);
 
-        String strBody = addCallbackObject( new CJsonResponse( strData ), "__rho_inline" ) + "&rho_callback=1";
+        String strBody = strJson.length() ? (addCallbackObject( new CJsonResponse( strJson ), "__rho_inline" ) + "&rho_callback=1") : strJson;
         if (strParams.length() > 0)
         {
-            strBody += "&";
+            if (strBody.length())
+            {
+                strBody += "&";
+            }
             strBody += strParams;
         }
 
@@ -2184,7 +2191,7 @@ int rho_is_motorola_licence_checked(const char* szMotorolaLicence, const char* s
     int res_check = 1;
 #if defined( OS_ANDROID ) || defined( OS_MACOSX )
     //res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
-    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence, szAppName);
+    //res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence, szAppName);
 #endif
     
     return res_check;

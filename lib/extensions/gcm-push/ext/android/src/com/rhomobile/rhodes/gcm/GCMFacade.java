@@ -29,6 +29,7 @@ package com.rhomobile.rhodes.gcm;
 import com.google.android.gcm.GCMRegistrar;
 import com.rhomobile.rhodes.Push;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.PushContract;
 import com.rhomobile.rhodes.util.ContextFactory;
 
 public final class GCMFacade {
@@ -40,10 +41,13 @@ public final class GCMFacade {
         Logger.T(TAG, "Send GCM push register req");
         if (GCMRegistrar.isRegistered(ContextFactory.getContext())) {
             Logger.T(TAG, "Already has GCM push registeration");
+            PushContract.handleRegistration(ContextFactory.getContext(),
+                                            GCMRegistrar.getRegistrationId(ContextFactory.getContext()),
+                                            GCMFacade.GCM_PUSH_CLIENT);
         }
         else {
             Logger.T(TAG, "Send GCM push register req");
-            GCMRegistrar.register(ContextFactory.getContext(), Push.SENDER/*RhodesService.getBuildConfig("gcm_push_sender")*/);
+            GCMRegistrar.register(ContextFactory.getContext(), Push.SENDER);
         }
     }
 

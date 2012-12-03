@@ -70,11 +70,11 @@ void PushManager::setNotificationUrl(const String& pushType, const String& url, 
     if(pClient)
     {
         pClient->setNotificationUrl(url, urlParams);
-        LOG(INFO) + "Push notification URL is set for: client \'"+pushType+"\'";
+        LOG(INFO) + "Push notification URL is set for: \'"+pushType+"\'";
     }
     else
     {
-        LOG(WARNING) + "Cannot set push notification: client \'"+pushType+"\' does not exist";
+        LOG(WARNING) + "Cannot set push notification:  \'"+pushType+"\' does not exist";
     }
 }
 
@@ -84,7 +84,7 @@ void PushManager::setNotificationUrl(const String& url, const String& urlParams)
     for(Vector<IRhoPushClient*>::iterator I = m_Clients.begin(); I != m_Clients.end(); ++I)
     {
         (*I)->setNotificationUrl(url, urlParams);
-        LOG(INFO) + "Push notification URL is set for: client \'"+(*I)->getType()+"\'";
+        LOG(INFO) + "Push notification URL is set: \'"+(*I)->getType()+"\'";
     }
 }
 
@@ -93,6 +93,7 @@ bool PushManager::callNotification(const String& type, const String& json, const
 {
     if(type.length() > 0)
     {
+        LOG(INFO) + "Push message: " + type;
         IRhoPushClient* pClient = getClient(type);
         if(pClient)
         {
@@ -104,6 +105,7 @@ bool PushManager::callNotification(const String& type, const String& json, const
         }
     } else
     {
+        LOG(INFO) + "Push message: legacy";
         return m_rhoApp.callPushCallback(data);
     }
 }

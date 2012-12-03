@@ -35,34 +35,25 @@
 #include "gcmpushclient.h"
 #include "com_rhomobile_rhodes_gcm_GCMRhoListener.h"
 
-#undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "GcmPushJNI"
-
 //----------------------------------------------------------------------------------------------------------------------
 extern "C" void Init_GCMPushClient()
 {
     // create GCM push client
     RHODESAPP().addPushClient(new rho::gcm::GcmPushClient());
+
+    rho::sync::CClientRegister::Get()->setDevicehPin("");
+    rho::gcm::GcmPushClient::GcmPushRegister();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_gcm_GCMRhoListener_nativeAddGCMPushClient (JNIEnv *, jclass)
-{
-
-    // create GCM push client
-    RHODESAPP().addPushClient(new rho::gcm::GcmPushClient());
-}
-
 
 namespace rho { namespace gcm {
+
+IMPLEMENT_LOGCLASS(GcmPushClient, "GcmPushClient");
 
 //----------------------------------------------------------------------------------------------------------------------
 class GcmPushClient::SyncLoginListener : public sync::ILoginListener
 {
-    static const char* const s_GCM_FACADE_CLASS;
-
-    static void GcmPushRegister();
-    static void GcmPushUnregister();
 public:
     virtual ~SyncLoginListener() {}
     virtual void onLogin(const String& user, const String& pass, const String& session) const;
@@ -70,10 +61,10 @@ public:
 };
 //----------------------------------------------------------------------------------------------------------------------
 
-const char* const GcmPushClient::SyncLoginListener::s_GCM_FACADE_CLASS = "com.rhomobile.rhodes.gcm.GCMFacade";
+const char* const GcmPushClient::s_GCM_FACADE_CLASS = "com.rhomobile.rhodes.gcm.GCMFacade";
 
 //----------------------------------------------------------------------------------------------------------------------
-void GcmPushClient::SyncLoginListener::GcmPushRegister()
+void GcmPushClient::GcmPushRegister()
 {
     LOG(TRACE) + "GcmPushRegister()";
 
@@ -95,7 +86,7 @@ void GcmPushClient::SyncLoginListener::GcmPushRegister()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void GcmPushClient::SyncLoginListener::GcmPushUnregister()
+void GcmPushClient::GcmPushUnregister()
 {
     LOG(TRACE) + "GcmPushUnregister()";
 
@@ -118,14 +109,14 @@ void GcmPushClient::SyncLoginListener::GcmPushUnregister()
 //----------------------------------------------------------------------------------------------------------------------
 void GcmPushClient::SyncLoginListener::onLogin(const String& user, const String& pass, const String& session) const
 {
-    sync::CClientRegister::Get()->setDevicehPin("");
-    GcmPushRegister();
+//    sync::CClientRegister::Get()->setDevicehPin("");
+//    GcmPushRegister();
 }
 //----------------------------------------------------------------------------------------------------------------------
 void GcmPushClient::SyncLoginListener::onLogout(const String& session) const
 {
-    sync::CClientRegister::Get()->setDevicehPin("");
-    GcmPushUnregister();
+//    sync::CClientRegister::Get()->setDevicehPin("");
+//    GcmPushUnregister();
 }
 //----------------------------------------------------------------------------------------------------------------------
 const String GcmPushClient::s_Type = "gcm";
@@ -147,6 +138,7 @@ void GcmPushClient::init()
 //----------------------------------------------------------------------------------------------------------------------
 void GcmPushClient::setNotificationUrl(const String& callbackUrl, const String& callbackParam)
 {
+    LOG(TRACE) + "Set GCM push notification URL: " + callbackUrl;
     m_strCallbackUrl = callbackUrl;
     m_strCallbackParam = callbackParam;
 }
@@ -154,6 +146,8 @@ void GcmPushClient::setNotificationUrl(const String& callbackUrl, const String& 
 //----------------------------------------------------------------------------------------------------------------------
 bool GcmPushClient::callNotification(const String& json, const String& data)
 {
+    LOG(TRACE) + "GCM notification";
+
     String finalData = m_strCallbackParam;
     if(data.length() > 0)
     {
@@ -163,7 +157,11 @@ bool GcmPushClient::callNotification(const String& json, const String& data)
     }
     if(m_strCallbackUrl.length() > 0)
     {
+        LOG(TRACE) + "Calling GCM callback: " + m_strCallbackUrl;
         return RHODESAPP().callPushCallbackWithJsonBody(m_strCallbackUrl, json, finalData);
+    } else
+    {
+        LOG(TRACE) + "No GCM callback URL";
     }
 
     return false;
