@@ -345,7 +345,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
   while count < 20
     theoutput = ""
     begin
-      status = Timeout::timeout(30) do
+      status = Timeout::timeout(300) do
         puts "CMD: #{cmd}"
         IO.popen(argv) do |pipe|
           child = pipe.pid
