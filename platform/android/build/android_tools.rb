@@ -417,6 +417,7 @@ def kill_adb_and_emulator
   else
     `killall -9 adb`
     `killall -9 emulator-arm`
+    `killall -9 emulator64-arm`
     `killall -9 emulator`
   end
 end
