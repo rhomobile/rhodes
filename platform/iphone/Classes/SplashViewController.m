@@ -107,11 +107,22 @@
 
             if (width_k >= height_k) {
                 rect.size.width = appFrame.size.width;
-                rect.size.height = (((float)image_height) / scales) * width_k;
+                if ((orientation == UIInterfaceOrientationPortrait) || (orientation == UIInterfaceOrientationPortraitUpsideDown)) {
+                    rect.size.height = (((float)image_height) / scales) * width_k;                    
+                }else{
+                    rect.size.height = (((float)image_height) / scales) * height_k;
+                }
+
+
             }
             else {
                 rect.size.height = appFrame.size.height;
-                rect.size.width = (((float)image_width) / scales) * height_k;
+                if ((orientation == UIInterfaceOrientationPortrait) || (orientation == UIInterfaceOrientationPortraitUpsideDown)) {
+                    rect.size.width = (((float)image_width) / scales) * height_k;
+                }else{
+                     rect.size.width = (((float)image_width) / scales) * width_k;
+                }
+               
             }
             
             
