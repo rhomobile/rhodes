@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#if !defined( OS_PLATFORM_MOTCE )
 #include <wininet.h>
 #include "IEBrowserEngine.h"
 #include "common/RhoConf.h"
@@ -251,3 +253,5 @@ void CIEBrowserEngine::setBrowserGesturing(bool bEnableGesturing)
 void CIEBrowserEngine::NotifyEngineOfSipPosition()
 {
 }
+
+#endif //!defined( OS_PLATFORM_MOTCE )

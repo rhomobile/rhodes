@@ -51,7 +51,7 @@
 #pragma warning(disable:4189)
 #endif
 
-#if defined(OS_PLATFORM_CE)
+#if defined(OS_PLATFORM_MOTCE)
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -64,8 +64,8 @@ time_t mktime(struct tm *);
 
 _CRTIMP extern char * tzname[2];
 
-extern int _daylight;
-#define daylight _daylight
+//extern int _daylight;
+//#define daylight _daylight
 
 extern long _timezone;
 #ifdef __cplusplus

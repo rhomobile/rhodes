@@ -15,6 +15,8 @@
 #include <time.h>
 #include "wince.h"
 
+struct tm * __cdecl localtime(const time_t *);
+
 /* globals */
 const __int64 _onesec_in100ns = (__int64)10000000;
 //int   _timezone, altzone;
@@ -160,12 +162,12 @@ time_t time( time_t *timer )
 	  *timer = t;
 	return *timer;
 }
-#ifdef OS_PLATFORM_CE
+#ifdef OS_PLATFORM_MOTCE
 struct tm *__cdecl localtime_s(const time_t *t)
 {
     return localtime_s(t);
 }
-#endif //OS_PLATFORM_CE
+#endif //OS_PLATFORM_MOTCE
 
 /*
 struct tm *localtime( const time_t *timer )

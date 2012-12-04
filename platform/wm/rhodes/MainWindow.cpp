@@ -27,7 +27,11 @@
 #include "stdafx.h"
 
 #if defined(_WIN32_WCE)
+
+#if !defined( OS_PLATFORM_MOTCE )
 #include <webvw.h>
+#endif
+
 //#include <soundfile.h>
 //#include <nled.h>
 #endif

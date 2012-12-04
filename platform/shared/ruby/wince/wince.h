@@ -248,7 +248,7 @@ int __cdecl _getdrive (void);
 
 #define BUFSIZ  512
 
-#if defined(OS_PLATFORM_CE)
+#if defined(OS_PLATFORM_MOTCE)
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -260,8 +260,8 @@ struct tm * gmtime(const time_t *);
 extern char * tzname[2];
 time_t mktime(struct tm *);
 
-extern int _daylight;
-#define daylight _daylight
+//extern int _daylight;
+//#define daylight _daylight
 
 extern long _timezone;
 #ifdef __cplusplus

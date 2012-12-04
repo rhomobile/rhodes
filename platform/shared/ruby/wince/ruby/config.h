@@ -136,7 +136,7 @@
 #define HAVE_SINH 1
 #define HAVE_TANH 1
 #define HAVE_SIGNBIT 1
-#define HAVE_TZNAME 1
+//#define HAVE_TZNAME 1
 #define HAVE_DAYLIGHT 1
 #define SETPGRP_VOID 1
 #define RSHIFT(x,y) ((x)>>(int)y)

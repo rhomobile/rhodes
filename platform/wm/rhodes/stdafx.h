@@ -35,7 +35,7 @@
 #define _CRT_NONSTDC_NO_WARNINGS 1
 #endif //_CRT_NONSTDC_NO_WARNINGS
 
-#if defined( _X86_) || defined(OS_PLATFORM_CE) 
+#if defined( _X86_) || defined(OS_PLATFORM_MOTCE) 
     #pragma comment(linker, "/nodefaultlib:libc.lib")
     #pragma comment(linker, "/nodefaultlib:libcd.lib")
     #pragma comment(linker, "/nodefaultlib:oldnames.lib")
@@ -141,7 +141,7 @@
 //---   ---
 #endif
 
-//#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_CE )
+//#if defined (_WIN32_WCE) && !defined( OS_PLATFORM_MOTCE )
 //#include <pvdispid.h>
 //#include <piedocvw.h>
 //#endif
