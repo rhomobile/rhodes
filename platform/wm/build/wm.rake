@@ -558,6 +558,7 @@ namespace "device" do
       build_platform = 'wm6'
       build_platform = 'wm653' if $sdk == "Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
       build_platform = 'ce5' if $sdk == "MC3000c50b (ARMV4I)"
+      build_platform = 'ce7' if $sdk == "WT41N0c70PSDK (ARMV4I)"
 
       icon_dest = $srcdir + '/icon'
       rm_rf icon_dest

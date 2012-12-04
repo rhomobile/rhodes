@@ -8,6 +8,7 @@
 #include "wince.h"
 
 time_t wce_FILETIME2time_t(const FILETIME* f);
+extern long _timezone;
 
 int ftime(struct timeb *tp)
 {

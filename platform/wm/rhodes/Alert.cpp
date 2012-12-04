@@ -355,7 +355,7 @@ void CAlert::showPopup(CAlertDialog::Params *params)
 	::PostMessage(main_wnd, WM_ALERT_SHOW_POPUP, 0, (LPARAM ) params);
 }
 
-#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_MOTCE )
 void CAlert::vibrate(int duration_ms)
 {
     CVibrate::getCVibrate().toggle(duration_ms);
@@ -486,13 +486,13 @@ extern "C" void alert_show_popup(rho_param *p)
 }
 
 extern "C" void alert_vibrate(int duration_ms) {
-#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_MOTCE )
     CAlert::vibrate(duration_ms);
 #endif
 }
 
 extern "C" void alert_play_file(char* file_name, char* media_type) {
-#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_CE )
+#if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_MOTCE )
     CAlert::playFile(file_name);
 #endif
 }
