@@ -68,14 +68,38 @@ module MSpec
 
     shuffle files if randomize?
     files.each do |file|
-      @env = Object.new
-      @env.extend MSpec
+#RHO
+	  puts "MSpec processing file: #{file}"
+				
+	  if file.is_a?(Array)
+		  settings=file[1]
+		  settings.each do |setting|
+			  run_spec(file[0],setting)
+		  end
+	  else
+		  run_spec(file,nil)
+	  end
+#RHO
+		#      @env = Object.new
+		#      @env.extend MSpec
 
-      store :file, file
-      actions :load
-      protect("loading #{file}") { Kernel.load file }
-      actions :unload
+		#      store :file, file
+		#      actions :load
+		#      protect("loading #{file}") { Kernel.load file }
+		#      actions :unload
     end
+  end
+
+  def self.run_spec(file,settings)
+	@env = Object.new
+	@env.extend MSpec
+
+	$spec_settings = settings
+
+	store :file, file
+	actions :load
+	protect("loading #{file}") { Kernel.load file }
+	actions :unload
   end
 
   def self.actions(action, *args)
