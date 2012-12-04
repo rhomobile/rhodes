@@ -517,20 +517,6 @@ namespace "config" do
         $application_build_configs["motorola_license"] = '123' if !$application_build_configs["motorola_license"]
         $application_build_configs["motorola_license_company"] = 'WRONG' if !$application_build_configs["motorola_license_company"]
     end
-    
-    puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
-    puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
-
-    
-    if $current_platform == "bb"  
-      make_application_build_config_java_file()
-      update_rhoprofiler_java_file()
-    elsif $current_platform == "wp"  
-    else
-      make_application_build_config_header_file    
-      make_application_build_capabilities_header_file
-      update_rhodefs_header_file
-    end
 
     $rhologhostport = $config["log_host_port"] 
     $rhologhostport = 52363 unless $rhologhostport
@@ -544,6 +530,23 @@ namespace "config" do
     $obfuscate_css = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["css"].nil?) ? nil : 1 )
     $obfuscate_exclude = ($app_config["obfuscate"].nil? ? nil : $app_config["obfuscate"]["exclude_dirs"] )
     $obfuscator = 'res/build-tools/yuicompressor-2.4.7.jar'
+
+    platform_task = "config:#{$current_platform}:app_config"
+    Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
+    
+    puts "$app_config['extensions'] : #{$app_config['extensions'].inspect}"   
+    puts "$app_config['capabilities'] : #{$app_config['capabilities'].inspect}"   
+
+    if $current_platform == "bb"  
+      make_application_build_config_java_file()
+      update_rhoprofiler_java_file()
+    elsif $current_platform == "wp"  
+    else
+      make_application_build_config_header_file    
+      make_application_build_capabilities_header_file
+      update_rhodefs_header_file
+    end
+
   end
 
   task :qt do

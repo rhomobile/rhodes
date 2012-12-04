@@ -32,7 +32,7 @@ require 'tempfile'
 
 
 USE_OWN_STLPORT = false
-#USE_TRACES = # see androidcommon.h
+#USE_TRACES = # see androidcommon.rb
 
 def get_market_version(apilevel)
   AndroidTools.get_market_version(apilevel)
@@ -62,7 +62,7 @@ ANDROID_PERMISSIONS = {
   'bluetooth' => ['BLUETOOTH_ADMIN', 'BLUETOOTH'],
   'calendar' => ['READ_CALENDAR', 'WRITE_CALENDAR'],
   'sdcard' => 'WRITE_EXTERNAL_STORAGE',
-  'push' => proc do add_gcm_push end,
+  'push' => nil,
   'motorola' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
   'motoroladev' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
   'webkit_browser' => nil,
@@ -71,10 +71,6 @@ ANDROID_PERMISSIONS = {
 }
 
 ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
-
-def add_gcm_push
-  $app_config["extensions"] << 'gcm-push' unless $app_config["extensions"].index('gcm-push')
-end
 
 def add_motosol_sdk(manifest)
   uses_scanner = REXML::Element.new 'uses-library'
@@ -436,6 +432,15 @@ namespace "config" do
   end #task 'config:android'
   
   namespace 'android' do
+
+    # 'config:android:app_config' task is invoked directly by common Rakefile
+    # just after build config has been read and before processing extensions
+    task :app_config do
+      if $app_config['capabilities'].index('push')
+        $app_config['extensions'] << 'gcm-push' unless $app_config['extensions'].index('gcm-push')
+      end
+    end
+  
     task :extensions => ['config:android', 'build:bundle:noxruby'] do
     
       $ext_android_rhodes_activity_listener = []
