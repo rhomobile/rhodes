@@ -18,10 +18,10 @@
 			Name="MC3000c50b (ARMV4I)"
 		/>
 		<Platform
-			Name="Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+			Name="WT41N0c70PSDK (ARMv4I)"
 		/>
 		<Platform
-			Name="WT41N0c70PSDK (ARMv4I)"
+			Name="Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 		/>
 	</Platforms>
 	<ToolFiles>
@@ -250,85 +250,6 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
-			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
-			ConfigurationType="4"
-			CharacterSet="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="1"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				ExecutionBucket="7"
-				Optimization="0"
-				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\lib\extensions\openssl.so\ext\sources\include"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLibrarianTool"
-				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/openssl.lib"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCCodeSignTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-			<DeploymentTool
-				ForceDirty="-1"
-				RemoteDirectory=""
-				RegisterOutput="0"
-				AdditionalFiles=""
-			/>
-			<DebuggerTool
-			/>
-		</Configuration>
-		<Configuration
 			Name="Debug|WT41N0c70PSDK (ARMv4I)"
 			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
@@ -355,7 +276,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\lib\extensions\openssl.so\ext\sources\include"
+				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\lib\extensions\openssl.so\ext\sources\include;&quot;$(RHO_ROOT)/../Motorola-Extensions/res/wince7_includes&quot;"
 				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -627,7 +548,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+			Name="Release|WT41N0c70PSDK (ARMv4I)"
 			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
@@ -653,7 +574,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\lib\extensions\openssl.so\ext\sources\include"
+				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\lib\extensions\openssl.so\ext\sources\include;&quot;$(RHO_ROOT)/../Motorola-Extensions/res/wince7_includes&quot;"
 				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -705,7 +626,86 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|WT41N0c70PSDK (ARMv4I)"
+			Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
+			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="$(RHO_ROOT)\platform\shared\ruby\wince;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\lib\extensions\openssl.so\ext\sources\include"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /subsystem:windowsce,5.02"
+				OutputFile="$(OutDir)/openssl.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
 			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
