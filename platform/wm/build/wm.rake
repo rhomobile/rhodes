@@ -271,7 +271,7 @@ namespace "build" do
     end
 
     #    desc "Build wm rhobundle"
-    task :rhobundle => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
+    task :rhobundle, [:exclude_dirs] => ["config:wm", "build:bundle:noxruby", "build:wm:extensions"] do
 	    Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
 
@@ -537,7 +537,7 @@ namespace "device" do
 
   namespace "wm" do
     desc "Build production for device or emulator"
-    task :production => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
+    task :production, [:exclude_dirs] => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
 
       wm_icon = $app_path + '/icon/icon.ico'
       if $use_shared_runtime.nil? then
@@ -890,7 +890,7 @@ namespace "run" do
       end
     end
 
-    task :spec => ["device:wm:production"] do
+    task :spec, [:exclude_dirs] => ["device:wm:production"] do
         # kill all running detool
         kill_detool
 
@@ -966,14 +966,16 @@ namespace "run" do
         chdir $startdir
     end
 
-    task :phone_spec do
-      Jake.run_spec_app('wm','phone_spec')
+    task :phone_spec, :exclude_dirs do |t, args|
+      args.with_defaults(:exclude_dirs => '')
+      Jake.run_spec_app('wm','phone_spec',args[:exclude_dirs])
       exit 1 if $total.to_i==0
       exit $failed.to_i
     end
 
-    task :framework_spec do
-      Jake.run_spec_app('wm','framework_spec')
+    task :framework_spec, :exclude_dirs do |t, args|
+      args.with_defaults(:exclude_dirs => '')
+      Jake.run_spec_app('wm','framework_spec',args[:exclude_dirs])
       exit 1 if $total.to_i==0
       exit $failed.to_i
     end
