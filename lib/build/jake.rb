@@ -192,7 +192,7 @@ class Jake
 	end        
   end
 
-  def self.run_spec_app(platform,appname)
+  def self.run_spec_app(platform,appname,exclude_dirs='')
     reset_spec_server(platform) if appname =~ /phone_spec/
 	reset_bulk_server
 
@@ -218,7 +218,7 @@ class Jake
     
     begin
       Rake::Task.tasks.each { |t| t.reenable }
-      Rake::Task['run:' + platform + ':spec'].invoke
+      Rake::Task['run:' + platform + ':spec'].invoke(exclude_dirs)
     ensure
     
       if appname =~ /phone_spec/

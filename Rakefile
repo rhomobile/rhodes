@@ -962,8 +962,8 @@ def create_manifest
     File.open( File.join($srcdir,'apps/app_manifest.txt'), "w"){|file| file.write(content)}    
 end
 
-def process_exclude_folders
-  excl = []
+def process_exclude_folders(excluded_dirs=[])
+  excl = excluded_dirs
 
   exclude_platform = $config['platform']
   exclude_platform = "bb6" if $bb6
@@ -1112,7 +1112,13 @@ namespace "build" do
       Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
     end
     
-    task :noxruby do
+    task :noxruby, :exclude_dirs do |t, args|
+      exclude_dirs = args[:exclude_dirs]
+      excluded_dirs = []
+      if (!exclude_dirs.nil?) && (exclude_dirs !~ /^\s*$/)
+        excluded_dirs = exclude_dirs.split(':')
+      end
+
       app = $app_path
       rhodeslib = File.dirname(__FILE__) + "/lib/framework"
       compileERB = "lib/build/compileERB/default.rb"
@@ -1121,7 +1127,7 @@ namespace "build" do
       dest = $srcdir + "/lib"      
 
       common_bundle_start(startdir,dest)
-      process_exclude_folders
+      process_exclude_folders(excluded_dirs)
       chdir startdir
       
       create_manifest
