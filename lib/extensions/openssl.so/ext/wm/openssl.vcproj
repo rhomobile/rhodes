@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="openssl"
 	ProjectGUID="{F54DDB85-E16B-49D1-9199-099BEDE0FA3F}"
 	Keyword="Win32Proj"
@@ -13,6 +13,9 @@
 		/>
 		<Platform
 			Name="MC3000c50b (ARMV4I)"
+		/>
+		<Platform
+			Name="WT41N0c70PSDK (ARMv4I)"
 		/>
 	</Platforms>
 	<ToolFiles>
@@ -45,6 +48,164 @@
 				ExecutionBucket="7"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\sources\;..\sources\include;..\sources\crypto;..\sources\engines;..\sources\ssl;..\sources\crypto\asn1;..\sources\crypto\evp;..\sources\crypto\rsa;..\sources\crypto\modes;..\sources\crypto\dsa;..\sources\engines\ccgost;..\sources\include\wcecompat"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;OPENSSL_SYSNAME_WINCE;WIN32_LEAN_AND_MEAN;L_ENDIAN;DSO_WIN32;NO_CHMOD;OPENSSL_SMALL_FOOTPRINT;WCE_PLATFORM_WINDOWS_MOBILE_6_PROFESSIONAL_SDK_(ARMV4I);ARM;_ARM_;ARMV4I;OPENSSL_NO_RC5;OPENSSL_NO_MD2;OPENSSL_NO_KRB5;OPENSSL_NO_JPAKE;OPENSSL_NO_DYNAMIC_ENGINE;MONOLITH;MK1MF_BUILD;MK1MF_PLATFORM_VC_CE;OPENSSL_UNISTD=&lt;windows.h&gt;;NO_SYS_TYPES_H"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /subsystem:windowsce,5.02"
+				OutputFile="$(OutDir)/libopenssld.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|MC3000c50b (ARMV4I)"
+			OutputDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
+			IntermediateDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\sources\;..\sources\include;..\sources\crypto;..\sources\engines;..\sources\ssl;..\sources\crypto\asn1;..\sources\crypto\evp;..\sources\crypto\rsa;..\sources\crypto\modes;..\sources\crypto\dsa;..\sources\engines\ccgost"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;OPENSSL_SYSNAME_WINCE;WIN32_LEAN_AND_MEAN;L_ENDIAN;DSO_WIN32;NO_CHMOD;OPENSSL_SMALL_FOOTPRINT;WCE_PLATFORM_WINDOWS_MOBILE_6_PROFESSIONAL_SDK_(ARMV4I);ARM;_ARM_;ARMV4I;OPENSSL_NO_RC5;OPENSSL_NO_MD2;OPENSSL_NO_KRB5;OPENSSL_NO_JPAKE;OPENSSL_NO_DYNAMIC_ENGINE;MONOLITH;MK1MF_BUILD;MK1MF_PLATFORM_VC_CE;OPENSSL_UNISTD=&lt;windows.h&gt;;NO_SYS_TYPES_H"
+				MinimalRebuild="true"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				Culture="1033"
+				AdditionalIncludeDirectories="$(IntDir)"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalOptions=" /subsystem:windowsce,5.02"
+				OutputFile="$(OutDir)/libopenssld.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCCodeSignTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+			<DeploymentTool
+				ForceDirty="-1"
+				RemoteDirectory=""
+				RegisterOutput="0"
+				AdditionalFiles=""
+			/>
+			<DebuggerTool
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|WT41N0c70PSDK (ARMv4I)"
+			OutputDirectory="lib"
+			IntermediateDirectory="tmp\$(PlatformName)\$(ConfigurationName)"
+			ConfigurationType="4"
+			CharacterSet="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="1"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				ExecutionBucket="7"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\sources\;..\sources\include;..\sources\crypto;..\sources\engines;..\sources\ssl;..\sources\crypto\asn1;..\sources\crypto\evp;..\sources\crypto\rsa;..\sources\crypto\modes;..\sources\crypto\dsa;..\sources\engines\ccgost"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;OPENSSL_SYSNAME_WINCE;WIN32_LEAN_AND_MEAN;L_ENDIAN;DSO_WIN32;NO_CHMOD;OPENSSL_SMALL_FOOTPRINT;WCE_PLATFORM_WINDOWS_MOBILE_6_PROFESSIONAL_SDK_(ARMV4I);ARM;_ARM_;ARMV4I;OPENSSL_NO_RC5;OPENSSL_NO_MD2;OPENSSL_NO_KRB5;OPENSSL_NO_JPAKE;OPENSSL_NO_DYNAMIC_ENGINE;MONOLITH;MK1MF_BUILD;MK1MF_PLATFORM_VC_CE;OPENSSL_UNISTD=&lt;windows.h&gt;;NO_SYS_TYPES_H"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -174,9 +335,9 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|MC3000c50b (ARMV4I)"
-			OutputDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
-			IntermediateDirectory="MC3000c50b (ARMV4I)\$(ConfigurationName)"
+			Name="Release|MC3000c50b (ARMV4I)"
+			OutputDirectory="lib"
+			IntermediateDirectory="tmp\$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -199,21 +360,20 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
-				Optimization="0"
+				Optimization="2"
 				AdditionalIncludeDirectories="..\sources\;..\sources\include;..\sources\crypto;..\sources\engines;..\sources\ssl;..\sources\crypto\asn1;..\sources\crypto\evp;..\sources\crypto\rsa;..\sources\crypto\modes;..\sources\crypto\dsa;..\sources\engines\ccgost"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;DEBUG;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;OPENSSL_SYSNAME_WINCE;WIN32_LEAN_AND_MEAN;L_ENDIAN;DSO_WIN32;NO_CHMOD;OPENSSL_SMALL_FOOTPRINT;WCE_PLATFORM_WINDOWS_MOBILE_6_PROFESSIONAL_SDK_(ARMV4I);ARM;_ARM_;ARMV4I;OPENSSL_NO_RC5;OPENSSL_NO_MD2;OPENSSL_NO_KRB5;OPENSSL_NO_JPAKE;OPENSSL_NO_DYNAMIC_ENGINE;MONOLITH;MK1MF_BUILD;MK1MF_PLATFORM_VC_CE;OPENSSL_UNISTD=&lt;windows.h&gt;;NO_SYS_TYPES_H"
-				MinimalRebuild="true"
-				RuntimeLibrary="1"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_LIB;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE;OPENSSL_SYSNAME_WINCE;WIN32_LEAN_AND_MEAN;L_ENDIAN;DSO_WIN32;NO_CHMOD;OPENSSL_SMALL_FOOTPRINT;WCE_PLATFORM_WINDOWS_MOBILE_6_PROFESSIONAL_SDK_(ARMV4I);ARM;_ARM_;ARMV4I;OPENSSL_NO_RC5;OPENSSL_NO_MD2;OPENSSL_NO_KRB5;OPENSSL_NO_JPAKE;OPENSSL_NO_DYNAMIC_ENGINE;MONOLITH;MK1MF_BUILD;MK1MF_PLATFORM_VC_CE;OPENSSL_UNISTD=&lt;windows.h&gt;;NO_SYS_TYPES_H"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
+				PreprocessorDefinitions="NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES)"
 				Culture="1033"
 				AdditionalIncludeDirectories="$(IntDir)"
 			/>
@@ -223,7 +383,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
-				OutputFile="$(OutDir)/libopenssld.lib"
+				OutputFile="$(OutDir)/libopenssl.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -253,7 +413,7 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|MC3000c50b (ARMV4I)"
+			Name="Release|WT41N0c70PSDK (ARMv4I)"
 			OutputDirectory="lib"
 			IntermediateDirectory="tmp\$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
