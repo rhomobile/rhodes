@@ -1,0 +1,24 @@
+--- 
+name: rhoconnect_spec
+bbver: 6.0
+sdk: ../../
+#applog: rholog.txt
+version: 1.0.0
+vendor: rhomobile
+sdkversion: 3.4
+wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
+iphone: 
+  sdk: iphonesimulator6.0
+  entitlements: ""
+  codesignidentity: ""
+  configuration: Release
+  extensions: ["barcode"]
+     
+extensions: ["json", "mspec", "fileutils"]  
+
+wp:
+  productid: 'fd55c4d0-51fa-012e-7844-6caec51bd50e'
+
+android:
+  apikey: "0tLch9tZSX1G7PQRWwmqvINECUGtJ8ReArpPJxw"
+  version: 2.3.3

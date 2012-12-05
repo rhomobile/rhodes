@@ -1,0 +1,29 @@
+--- sencha-touch-debug.js	Wed Apr  6 21:27:33 2011
++++ sencha-touch-bb_os6_notouch.js	Thu Apr  7 11:09:13 2011
+@@ -4760,7 +4760,7 @@
+     
+     
+     
+-    Touch: ('ontouchstart' in window) && (!Ext.is.Desktop),
++    Touch: ('ontouchstart' in window) && (!Ext.is.Desktop && !Ext.is.Blackberry),
+ 
+     tests: [
+         
+@@ -13961,7 +13961,7 @@
+             window.addEventListener('resize', Ext.createDelegate(me.onResize, me), false);
+         }
+ 
+-        if (!Ext.desktop) {
++        if (!Ext.desktop && !Ext.Blackberry) {
+             document.addEventListener('touchstart', Ext.createDelegate(me.onTouchStartCapturing, me), true);
+         }
+     },
+@@ -18214,7 +18214,7 @@
+             return;
+         }
+ 
+-        if (Ext.is.Desktop) {
++        if (Ext.is.Desktop || Ext.is.Blackberry) {
+             e.target = this.startEvent.target;
+         }
+ 
