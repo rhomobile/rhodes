@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--<meta http-equiv="Content-Type" content="text/html; charset=utf-8">-->
+        <title>Rhosync.js demo</title>
+
+        <link href="sencha/sencha-touch.css" rel="stylesheet" type="text/css" />
+        <link href="application.css" rel="stylesheet" type="text/css" />
+
+        <script type="text/javascript" language="javascript" src="../../external/jquery/jquery-1.5.2.js"></script>
+        <script type="text/javascript" language="javascript" src="../../external/jquery/json.js"></script>
+        <script type="text/javascript" language="javascript" src="../../external/jquery/jquery.base64.js"></script>
+        <script type="text/javascript" language="javascript" src="sencha/sencha-touch-bb_os6_notouch.js"></script>
+        <script type="text/javascript" language="javascript" src="sencha/cardHistoryLayout.js"></script>
+
+        <script type="text/javascript">
+            var syncUrl = window.location.protocol +'//' +window.location.host +'/application';
+            RhoConfig = {
+                syncServer: syncUrl,
+                logLevel: 'trace'
+            };
+        </script>
+
+        <script type="text/javascript" language="javascript" src="../../js/rhosync.js"></script>
+        <script type="text/javascript" language="javascript" src="../../js/rhosync.common.js"></script>
+        <script type="text/javascript" language="javascript" src="../../js/rhosync.protocol.js"></script>
+        <script type="text/javascript" language="javascript" src="../../js/rhosync.domain.js"></script>
+        <script type="text/javascript" language="javascript" src="../../js/rhosync.storage.js"></script>
+        <script type="text/javascript" language="javascript" src="../../js/rhosync.engine.js"></script>
+        <script type="text/javascript" language="javascript" src="../../js/rhosync.notify.js"></script>
+        <script type="text/javascript" language="javascript" src="../../js/rhosync.ext.js"></script>
+
+<!--
+        <script type="text/javascript" src="../../rhosync-1_0-alpha.min.js"></script>
+-->
+
+        <script type="text/javascript" language="javascript" src="../../js/rhosync.ext.js"></script>
+        <script type="text/javascript" language="javascript" src="application.js"></script>
+    </head>
+    <body></body>
+</html>

@@ -1038,6 +1038,11 @@ namespace "run" do
     task :framework_spec do
       Jake.run_spec_app('iphone','framework_spec')
     end
+		
+	task :rhoconnect_spec do
+	  Jake.run_rhoconnect_spec('iphone')
+	end
+		
 
     task :allspecs do
       rm_rf basedir + "/faillog.txt"
