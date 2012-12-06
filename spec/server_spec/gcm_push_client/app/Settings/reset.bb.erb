@@ -1,0 +1,16 @@
+<div data-role="page">
+
+  <div data-role="header" data-position="inline">
+    <%= link_to "Cancel", Rho::RhoConfig.options_path %>
+    <h1>Reset Database</h1>
+    <%= link_to "Confirm", :action => :do_reset %>
+  </div>
+
+  <div data-role="content">
+    <div class="warning">
+        <h2>Are you sure?</h2>
+        <p> Resetting removes all objects from your device.</p>
+    </div>
+  </div>
+
+</div>
