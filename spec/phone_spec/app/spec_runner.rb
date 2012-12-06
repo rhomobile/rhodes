@@ -4,7 +4,7 @@ class SpecRunner < MSpecScript
   def initialize
     config[:files] = []
 
-	config[:files] << "spec/string/end_with_spec"
+    config[:files] << "spec/string/end_with_spec"
     config[:files] << "spec/string/start_with_spec"
     config[:files] << "spec/string/replace_spec"
     config[:files] << "spec/string/split_spec"
@@ -23,7 +23,7 @@ end
     config[:files] << "spec/json_spec"    
     config[:files] << "spec/xml_spec"    
     config[:files] << "spec/rhofile_spec"
-	config[:files] << "spec/asynchttp_spec"
+    config[:files] << "spec/asynchttp_spec"
     config[:files] << "spec/date_spec"
     config[:files] << "spec/bsearch_spec"
 
@@ -50,21 +50,21 @@ end
 
     config[:files] << "spec/xruby_spec" if defined? RHO_ME
 
-    config[:files] << [ "spec/syncengine_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]
+    config[:files] << [ "spec/syncengine_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ] unless System.get_property('platform') == 'WINDOWS' && System.get_property('is_emulator')
 
-    config[:files] << [ "spec/blobsync_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ]	  
+    config[:files] << [ "spec/blobsync_spec", [ {:schema_model=>true }, {:schema_model=>false } ] ] unless System.get_property('platform') == 'WINDOWS' && System.get_property('is_emulator')
 
 if !defined?(RHO_WP7)
-    config[:files] << "spec/bulksync_spec"
+    config[:files] << "spec/bulksync_spec" unless System.get_property('platform') == 'WINDOWS' && System.get_property('is_emulator')
 end
-	config[:files] << "spec/blob_bulksync_spec"
+    config[:files] << "spec/blob_bulksync_spec" unless System.get_property('platform') == 'WINDOWS' && System.get_property('is_emulator')
 
 if !defined?(RHO_WP7) && !(System.get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/))
     config[:files] << "spec/uri_spec"
 end
 
 if !defined?(RHO_WP7) && !defined?( RHO_ME )
-	config[:files] << "spec/database_spec"
+    config[:files] << "spec/database_spec" unless System.get_property('platform') == 'WINDOWS' && System.get_property('is_emulator')
 end
 
   end
