@@ -199,6 +199,61 @@ public class ContactAccessorNew implements ContactAccessor {
 		}
 	}
 
+
+    private boolean fillData(Contact contact, long contactId, Cursor dataCursor, List<String> select)
+    {
+        do {
+            long curId = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID));
+            if (curId != contactId) return true;
+            
+            String mime = dataCursor.getString(dataCursor.getColumnIndex(Data.MIMETYPE));
+            if ((select == null || select.contains(Phonebook.PB_FIRST_NAME) || select.contains(Phonebook.PB_LAST_NAME))
+                && mime.equals(StructuredName.CONTENT_ITEM_TYPE)) {
+
+                String firstName = dataCursor.getString(dataCursor.getColumnIndex(StructuredName.GIVEN_NAME));
+                String lastName = dataCursor.getString(dataCursor.getColumnIndex(StructuredName.FAMILY_NAME));
+
+                if (firstName != null)
+                        contact.setField(Phonebook.PB_FIRST_NAME, firstName);
+                if (lastName != null)
+                        contact.setField(Phonebook.PB_LAST_NAME, lastName);
+            }
+
+            if (mime.equals(Phone.CONTENT_ITEM_TYPE)) {
+                int type = dataCursor.getInt(dataCursor.getColumnIndex(Phone.TYPE));
+                switch (type) {
+                case Phone.TYPE_HOME:
+                    if (select == null || select.contains(Phonebook.PB_HOME_NUMBER))
+                        contact.setField(Phonebook.PB_HOME_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
+                    break;
+                case Phone.TYPE_WORK:
+                    if (select == null || select.contains(Phonebook.PB_BUSINESS_NUMBER))
+                        contact.setField(Phonebook.PB_BUSINESS_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
+                    break;
+                case Phone.TYPE_MOBILE:
+                    if (select == null || select.contains(Phonebook.PB_MOBILE_NUMBER))
+                        contact.setField(Phonebook.PB_MOBILE_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
+                    break;
+                }
+            }
+
+            if (mime.equals(Email.CONTENT_ITEM_TYPE) && (select == null || select.contains(Phonebook.PB_EMAIL_ADDRESS))) {
+                if (contact.getField(Phonebook.PB_EMAIL_ADDRESS) == null) {
+                    contact.setField(Phonebook.PB_EMAIL_ADDRESS, dataCursor.getString(dataCursor.getColumnIndex(Email.DATA)));
+                }
+            }
+
+            if (mime.equals(Organization.COMPANY) && (select == null || select.contains(Phonebook.PB_COMPANY_NAME))) {
+                String company = dataCursor.getString(dataCursor.getColumnIndex(Organization.COMPANY));
+                if (company != null)
+                    contact.setField(Phonebook.PB_COMPANY_NAME, company);
+            }
+        } while(dataCursor.moveToNext());
+
+        return false;
+    }
+
+
     @Override
     public int getCount(int offset, int max_results, Map<String, Object> conditions) {
         int count = 0;
@@ -333,60 +388,6 @@ public class ContactAccessorNew implements ContactAccessor {
         
         return count;
 	}
-
-
-    private boolean fillData(Contact contact, long contactId, Cursor dataCursor, List<String> select)
-    {
-        do {
-            long curId = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID));
-            if (curId != contactId) return true;
-            
-            String mime = dataCursor.getString(dataCursor.getColumnIndex(Data.MIMETYPE));
-            if ((select == null || select.contains(Phonebook.PB_FIRST_NAME) || select.contains(Phonebook.PB_LAST_NAME))
-                && mime.equals(StructuredName.CONTENT_ITEM_TYPE)) {
-
-                String firstName = dataCursor.getString(dataCursor.getColumnIndex(StructuredName.GIVEN_NAME));
-                String lastName = dataCursor.getString(dataCursor.getColumnIndex(StructuredName.FAMILY_NAME));
-
-                if (firstName != null)
-                        contact.setField(Phonebook.PB_FIRST_NAME, firstName);
-                if (lastName != null)
-                        contact.setField(Phonebook.PB_LAST_NAME, lastName);
-            }
-
-            if (mime.equals(Phone.CONTENT_ITEM_TYPE)) {
-                int type = dataCursor.getInt(dataCursor.getColumnIndex(Phone.TYPE));
-                switch (type) {
-                case Phone.TYPE_HOME:
-                    if (select == null || select.contains(Phonebook.PB_HOME_NUMBER))
-                        contact.setField(Phonebook.PB_HOME_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
-                    break;
-                case Phone.TYPE_WORK:
-                    if (select == null || select.contains(Phonebook.PB_BUSINESS_NUMBER))
-                        contact.setField(Phonebook.PB_BUSINESS_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
-                    break;
-                case Phone.TYPE_MOBILE:
-                    if (select == null || select.contains(Phonebook.PB_MOBILE_NUMBER))
-                        contact.setField(Phonebook.PB_MOBILE_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
-                    break;
-                }
-            }
-
-            if (mime.equals(Email.CONTENT_ITEM_TYPE) && (select == null || select.contains(Phonebook.PB_EMAIL_ADDRESS))) {
-                if (contact.getField(Phonebook.PB_EMAIL_ADDRESS) == null) {
-                    contact.setField(Phonebook.PB_EMAIL_ADDRESS, dataCursor.getString(dataCursor.getColumnIndex(Email.DATA)));
-                }
-            }
-
-            if (mime.equals(Organization.COMPANY) && (select == null || select.contains(Phonebook.PB_COMPANY_NAME))) {
-                String company = dataCursor.getString(dataCursor.getColumnIndex(Organization.COMPANY));
-                if (company != null)
-                    contact.setField(Phonebook.PB_COMPANY_NAME, company);
-            }
-        } while(dataCursor.moveToNext());
-
-        return false;
-    }
 
 
     @Override
