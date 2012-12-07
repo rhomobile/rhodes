@@ -47,6 +47,9 @@
     <Filter Include="wp8\win32">
       <UniqueIdentifier>{b267f9aa-d6c9-4fa7-8510-9e6d211ae46d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="wp8\ruby">
+      <UniqueIdentifier>{ab00ba15-db64-4ceb-a15a-4bcd6e3f8522}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ruby\debug.h" />
@@ -72,49 +75,13 @@
     <ClInclude Include="..\..\shared\ruby\win32\ruby\config.h">
       <Filter>win32\ruby</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\assert.h">
-      <Filter>wp8</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\errno.h">
-      <Filter>wp8</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\fcntl.h">
-      <Filter>wp8</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\io.h">
-      <Filter>wp8</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\process.h">
-      <Filter>wp8</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\signal.h">
-      <Filter>wp8</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\varargs.h">
-      <Filter>wp8</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\wincon.h">
-      <Filter>wp8</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\wp8.h">
-      <Filter>wp8</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\sys\stat.h">
-      <Filter>wp8\sys</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\sys\timeb.h">
-      <Filter>wp8\sys</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\sys\types.h">
-      <Filter>wp8\sys</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\sys\utime.h">
-      <Filter>wp8\sys</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\ruby\ext\rho\rhoruby.h">
       <Filter>ext\rho</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\ruby\wp8\winsock_wp8.h">
+    <ClInclude Include="..\..\shared\ruby\wp8\ruby\config.h">
+      <Filter>wp8\ruby</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\ruby\wp8\wp8.h">
       <Filter>wp8</Filter>
     </ClInclude>
   </ItemGroup>
@@ -129,15 +96,12 @@
     <ClCompile Include="..\..\shared\ruby\debug.c" />
     <ClCompile Include="..\..\shared\ruby\dln.c" />
     <ClCompile Include="..\..\shared\ruby\dln_find.c" />
-    <ClCompile Include="..\..\shared\ruby\dmydln.c" />
     <ClCompile Include="..\..\shared\ruby\dmyencoding.c" />
     <ClCompile Include="..\..\shared\ruby\dmyext.c" />
-    <ClCompile Include="..\..\shared\ruby\encoding.c" />
     <ClCompile Include="..\..\shared\ruby\enum.c" />
     <ClCompile Include="..\..\shared\ruby\enumerator.c" />
     <ClCompile Include="..\..\shared\ruby\error.c" />
     <ClCompile Include="..\..\shared\ruby\eval.c" />
-    <ClCompile Include="..\..\shared\ruby\eval_jump.c" />
     <ClCompile Include="..\..\shared\ruby\gc.c" />
     <ClCompile Include="..\..\shared\ruby\hash.c" />
     <ClCompile Include="..\..\shared\ruby\inits.c" />
@@ -210,9 +174,6 @@
     <ClCompile Include="..\..\shared\ruby\missing\crypt.c">
       <Filter>missing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\missing\dup2.c">
-      <Filter>missing</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\missing\erf.c">
       <Filter>missing</Filter>
     </ClCompile>
@@ -237,36 +198,6 @@
     <ClCompile Include="..\..\shared\ruby\win32\newline.c">
       <Filter>win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\assert.c">
-      <Filter>wp8</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\errno.c">
-      <Filter>wp8</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\signal_wp8.c">
-      <Filter>wp8</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\stdio.c">
-      <Filter>wp8</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\stdlib.c">
-      <Filter>wp8</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\wp8.c">
-      <Filter>wp8</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\wp8main.c">
-      <Filter>wp8</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\sys\stat.c">
-      <Filter>wp8\sys</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\sys\timeb.c">
-      <Filter>wp8\sys</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\sys\utime.c">
-      <Filter>wp8\sys</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\rhoconf\rhoconf_wrap.c">
       <Filter>ext\rhoconf</Filter>
     </ClCompile>
@@ -289,19 +220,16 @@
     <ClCompile Include="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c">
       <Filter>ext\geo</Filter>
     </ClCompile>
-    <ClCompile Include="file.c" />
-    <ClCompile Include="..\..\shared\ruby\wp8\win32\win32.c">
-      <Filter>wp8\win32</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\dir.c" />
-    <ClCompile Include="..\..\shared\ruby\wp8\winsock_wp8.c">
-      <Filter>wp8</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\wp8\time_wp8.c">
-      <Filter>wp8</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\missing\langinfo.c">
       <Filter>missing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\file.c" />
+    <ClCompile Include="..\..\shared\ruby\wp8\wp8.c">
+      <Filter>wp8</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\wp8\win32\win32.c">
+      <Filter>wp8\win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
