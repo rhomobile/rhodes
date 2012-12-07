@@ -451,12 +451,19 @@ module_function :kill_adb_and_emulator
 def logcat(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
     cmd_re = Regexp.new "\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>>\s+\"?#{log_path}\"?"
-    log_pids = Jake.get_process_list.select do |proc|
+    log_pids = Jake.get_process_list
+    
+    log_pids.select! do |proc|
       proc[:cmd] =~ cmd_re
     end
+    
+    #log_pids.each do |proc|
+    #  puts proc.inspect
+    #end
+    
     if log_pids.empty?
       rm_rf log_path if File.exist?(log_path)
-      puts 'Starting new logcat process'
+      puts 'Starting new logcat'
       Thread.new { Jake.run($adb, [device_flag, 'logcat', '>>', log_path], nil, true) }
     end
   end
@@ -465,13 +472,20 @@ module_function :logcat
 
 def logcat_process(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
-    cmd_re = Regexp.new "\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>>\s+\"?#{log_path}\"?"
-    log_pids = Jake.get_process_list.select do |proc|
+    cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>>\s+\"?#{log_path}\"?\"?"
+    log_pids = Jake.get_process_list
+    
+    log_pids.select! do |proc|
       proc[:cmd] =~ cmd_re
     end
+    
+    #log_pids.each do |proc|
+    #  puts proc.inspect
+    #end
+    
     if log_pids.empty?
       puts 'Starting new logcat process'
-      Thread.new { system("\"#{$adb}\" #{device_flag} logcat >> \"#{log_path}\" ") }
+      Thread.new { system("\"#{$adb}\" #{device_flag} logcat >> \"#{log_path}\"") }
     end
   end
 end

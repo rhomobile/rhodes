@@ -665,8 +665,10 @@ class Jake
     output = run2 cmd, args, {:hide_output=>true}
     
     output.each_line do |line|
+      #puts "[[#{line}]]"
       if RUBY_PLATFORM =~ /(win|w)32$/
-        /^(?<cmd>.*)\s+(?<pid>\d+)$/ =~ line
+        /^(?<cmd>.*)\s+(?<pid>\d+)\s*$/ =~ line
+        proc_list << {:pid=>pid, :cmd=>cmd} if pid
       else
         /(?<pid>\d+)\s+(?<cmd>.*)/ =~ line
         proc_list << {:pid=>pid, :cmd=>cmd}
