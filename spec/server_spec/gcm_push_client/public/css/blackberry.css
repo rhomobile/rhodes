@@ -1,0 +1,146 @@
+/* bb main containers */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica;
+    font-size:16px;
+	background: white;
+    color: black;
+    overflow-x: hidden;
+}
+
+div[data-role="header"] {
+	background: black;
+    width: auto;
+}
+
+div[data-role="header"] h1 {
+	margin: 0;
+	padding: 4px;
+    width: auto;
+    font-size: 16px;
+    max-height: 16px;
+    font-weight: normal;
+    text-align: left;
+    white-space: nowrap;
+    color: white;
+    font-weight: bold;
+}
+
+/*toolbar */
+div[data-role="header"] {
+	border-bottom:1px solid lightgray;
+	height: 25px;
+	line-height: 25px;
+	padding-left: 4px;
+	width:100%;
+}
+
+div[data-role="header"] .noButton {
+    display:hidden;
+}
+
+/*content div styling*/
+div[data-role="content"] h2 {
+	font-size:15px;
+	display:block;
+	margin:4px;
+}
+
+div[data-role="content"] h2.groupTitle{
+	background:black;
+	height:14px;
+	font-size:10px;
+	padding:5px;
+	border-bottom:1px solid lightgray;
+}
+
+div[data-role="content"] div.alert{
+	color:red;
+}
+
+div[data-role="content"] div.warning{
+	margin-left:4px;
+}
+
+div[data-role="content"] p{
+	font-size:14px;
+}
+
+/* bb table styles */
+
+div[data-role="content"] table {
+    display:block;
+	border:none;
+	border-spacing:0;
+    font-size: 80%;
+    width:100%;
+}
+
+div[data-role="content"] table th {
+	width:100%;
+	display: block;
+	border-bottom:1px solid #BBBBBB;
+}
+
+div[data-role="content"] table tr {
+    width:100%;
+}
+div[data-role="content"] table tr td {
+	margin:0;
+    border-bottom:1px solid lightgray;
+	height: 25px;
+	line-height:25px;
+}
+
+div[data-role="content"] table tr td a {
+	text-decoration: none;
+	font-weight:bold;
+	color:black;
+	display:block;
+	overflow: hidden;
+}
+
+div[data-role="content"] table tr td.recordLabel {
+    width:100%;
+    padding: 5px;
+}
+
+div[data-role="content"] table tr td.itemLabel {
+    width:50%;
+    font-weight:bold;
+}
+
+div[data-role="content"] table tr td.itemValue {
+    width:50%;
+}
+
+div.itemLabel {
+    font-weight: bold;
+}
+div.itemValue {
+    font-weight: normal;
+}
+
+@media all and (min-width: 320px){
+    .ui-content ul li div.itemLabel {
+        display: inline-block;
+        width: 50%;
+        overflow: hidden;
+    }
+
+    .ui-content ul li div.itemValue {
+        display: inline-block;
+        overflow: hidden;
+    }
+}
+
+.errorMessage {
+    color: red;
+    text-align: center
+}
+
+.ui-page {
+-webkit-transform-style: flat;
+-webkit-backface-visibility: hidden;
+-webkit-perspective: 800;
+}

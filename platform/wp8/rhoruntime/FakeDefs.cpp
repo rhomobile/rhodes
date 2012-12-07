@@ -81,6 +81,11 @@ RHO_GLOBAL const char* rho_native_rhopath()
     return "";//rho_root_path().c_str();
 }
 
+extern "C" const char* rho_native_get_appname()
+{
+    return "Rhodes";
+}
+
 extern "C" void rho_webview_navigate(const char* url, int index)
 { 
 }

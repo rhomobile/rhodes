@@ -194,7 +194,7 @@ RhoMobile Profiler use performance counters to calculate execution time of speci
 ### Profiler log.
 When Counter stopped (Local counters) or destroyed(Global counters) information from counter will be logged in the following format:
 
-(log prefix) PRFILER| (counter name)( (counter time) ): START/STOP
+(log prefix) PRFILER| (counter name)( (counter time Minutes:Seconds:Milliseconds) ): START/STOP
 
 For example:
 
