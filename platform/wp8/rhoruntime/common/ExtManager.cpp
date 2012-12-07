@@ -118,12 +118,12 @@ void CExtManager::close()
 
 void CExtManager::executeRubyCallback( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse)
 {
-    RHODESAPP().callCallbackWithData(szCallback, szCallbackBody, szCallbackData, bWaitForResponse );
+    //RHODESAPP().callCallbackWithData(szCallback, szCallbackBody, szCallbackData, bWaitForResponse );
 }
 
 void CExtManager::executeRubyCallbackWithJsonBody( const char* szCallback, const char* szCallbackBody, const char* szCallbackData, bool bWaitForResponse)
 {
-    RHODESAPP().callCallbackWithJsonBody(szCallback, szCallbackBody, szCallbackData, bWaitForResponse );
+    //RHODESAPP().callCallbackWithJsonBody(szCallback, szCallbackBody, szCallbackData, bWaitForResponse );
 }
 
 //extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
@@ -271,8 +271,8 @@ extern "C" int  rho_ruby_is_started();
 
 void CExtManager::requireRubyFile( const char* szFilePath )
 {
-    if( rho_ruby_is_started() )
-        rb_require(szFilePath);
+    //if( rho_ruby_is_started() )
+        //rb_require(szFilePath);
 }
 
 extern "C" int rho_wmimpl_is_loglevel_enabled(int nLogLevel);
@@ -310,7 +310,7 @@ void CExtManager::rhoLog(ELogExtLevels eLogLevel, const char* szModule, const ch
 	    break;
     }
 
-    rhoPlainLog(szFile, nLine, nSeverity, szModule, szMsg);
+    //rhoPlainLog(szFile, nLine, nSeverity, szModule, szMsg);
     
 }
 

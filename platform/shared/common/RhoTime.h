@@ -117,9 +117,9 @@ public:
     String toString(){
         char timeBuf[22];
 
-        int nMin = m_nativeTime/(60*1000);
-        int nSec = (m_nativeTime - nMin*(60*1000))/1000;
-        int mSec = m_nativeTime - nSec*1000 - nMin*(60*1000);
+        int nMin = (int)(m_nativeTime/(60*1000));
+        int nSec = (int)((m_nativeTime - nMin*(60*1000))/1000);
+        int mSec = (int)(m_nativeTime - nSec*1000 - nMin*(60*1000));
 
         int nSize = sprintf(timeBuf, "%d:%02d:%03d", nMin, nSec, mSec );
         timeBuf[nSize] = 0;
@@ -128,7 +128,7 @@ public:
 
     unsigned long toULong()
     {
-        return m_nativeTime;
+        return (unsigned long)m_nativeTime;
     }
 
     CTimeInterval minus(const CTimeInterval& time)const{
@@ -168,7 +168,11 @@ public:
     bool isEmpty()const{ return m_nativeTime == 0 ; }
     
 private:
+#if defined( OS_WP8 )
+	ULONGLONG m_nativeTime;
+#else
 	unsigned long m_nativeTime;
+#endif
 };
 
 inline CTimeInterval operator-(const CTimeInterval& time1, const CTimeInterval& time2){
