@@ -119,12 +119,14 @@ describe "RhoConfig" do
     Rho::RhoConfig.options_path = '/app/Settings'
   end
   
+unless System.get_property('platform') == 'WINDOWS' && System.get_property('is_emulator')
   it "should populate configuration in sources table" do
     sources = ::Rho::RHO.get_user_db().select_from_table('sources','*')
     sources.size.should == 0
     
     Rho::RhoConfig.sources().size.should > 0
   end
+end
   
   it "should have start_path" do
     Rho::RhoConfig.start_path.should == '/app'

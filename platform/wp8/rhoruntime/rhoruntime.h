@@ -78,7 +78,7 @@ namespace rhoruntime
 		//void executeCommand(RhoNativeViewRunnable*);
 		//void executeRunnable(rho::common::IRhoRunnable* pTask);
 		//void takeSignature(void*); //TODO: Signature::Params*
-		void fullscreenCommand(int);
+		void fullscreenCommand(int fullScreen);
 		void setCookie(::Platform::String^ url, ::Platform::String^ cookie);
 
 		// misc
@@ -94,13 +94,13 @@ namespace rhoruntime
 		void Execute();
 
 		// callbacks from MainPage object
-		virtual void updateSizeProperties(int width, int height);
-		virtual void onActivate(int active);
-		virtual void logEvent(::Platform::String^ message);
-		virtual void createCustomMenu(void);
-		virtual void onCustomMenuItemCommand(int nItemPos);
-		virtual void onWindowClose(void);
-		virtual void onWebViewUrlChanged(::Platform::String^ url);
+		 void updateSizeProperties(int width, int height);
+		 void onActivate(int active);
+		 void logEvent(::Platform::String^ message);
+		 void createCustomMenu(void);
+		 void onCustomMenuItemCommand(int nItemPos);
+		 void onWindowClose(void);
+		 void onWebViewUrlChanged(::Platform::String^ url);
 
 		// public methods:
 		bool Initialize(::Platform::String^ title);

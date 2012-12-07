@@ -1,0 +1,25 @@
+<div data-role="page" data-add-back-btn="true">
+
+  <div data-role="header" data-position="inline">
+    <h1>Login</h1>
+  </div>
+
+  <div data-role="content">
+    <form method="POST" action="<%= url_for :action => :do_login %>">
+      <% if @msg %>
+          <div class="error-message"><%= @msg %></div>
+      <% end %>
+
+      <div data-role="fieldcontain">
+        <label for="login" class="itemLabel">Login</label>
+        <input type="text" id="login" name="login" class="itemValue" <%= placeholder("Login") %> />
+      </div>
+      <div data-role="fieldcontain">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" class="itemValue" <%= placeholder("Password") %> />
+      </div>
+      <input type="submit" value="Login"/>
+    </form>
+  </div>
+
+</div>

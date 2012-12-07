@@ -35,11 +35,14 @@
 #include <stdlib.h>
 #include <string.h>
 #if defined _WIN32 || defined __CYGWIN__
-#include <windows.h>
-#if defined _WIN32
-#define strncasecmp strnicmp
+//#include <windows.h>
+//#if defined _WIN32
+//#define strncasecmp strnicmp
+//#endif
 #endif
-#endif
+//RHO
+#include "ruby/ruby.h"
+//RHO
 #ifdef HAVE_LANGINFO_H
 #include "langinfo.h"
 #endif

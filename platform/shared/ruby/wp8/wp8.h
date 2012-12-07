@@ -7,6 +7,8 @@
 //#include "tcmalloc/rhomem.h"
 #include <wchar.h>
 
+#include "common/RhoPort.h"
+
 #ifndef _OFF_T_DEFINED
 
 typedef long _off_t;                    /* file offset value */
@@ -45,9 +47,9 @@ typedef long off_t;
 #define STARTF_USESTDHANDLES    0x00000100
 /* #define STARTF_USEHOTKEY        0x00000200 */
 
-#define STD_INPUT_HANDLE    (DWORD)-10
-#define STD_OUTPUT_HANDLE   (DWORD)-11
-#define STD_ERROR_HANDLE    (DWORD)-12
+//#define STD_INPUT_HANDLE    (DWORD)-10
+//#define STD_OUTPUT_HANDLE   (DWORD)-11
+//#define STD_ERROR_HANDLE    (DWORD)-12
 
 #define NORMAL_PRIORITY_CLASS       0x00000020
 #define IDLE_PRIORITY_CLASS         0x00000040
@@ -120,22 +122,22 @@ extern "C" {
 //#define FindNextFile FindNextFileA
 //
 /* stdio.c */
-FILE *freopen(const char *filename, const char *mode, FILE *file);
-FILE *fdopen( int handle, const char *mode );
+//FILE *freopen(const char *filename, const char *mode, FILE *file);
+//FILE *fdopen( int handle, const char *mode );
 
 //#define fdopen _fdopen
 
 /* stdlib.c */
 char *getenv(const char *charstuff);
-char *_fullpath(char *absPath, const char *relPath, size_t maxLength);
+//char *_fullpath(char *absPath, const char *relPath, size_t maxLength);
 
 /* string.c */
-char *strdup(const char * str);
+//char *strdup(const char * str);
 /* char *strerror(int errno); */
-int strnicmp( const char *s1, const char *s2, size_t count );
+//int strnicmp( const char *s1, const char *s2, size_t count );
 
 //#define strnicmp _strnicmp
-#define stricmp _stricmp
+//#define stricmp _stricmp
 
 /* for win32.c */
 FARPROC GetProcAddressX(HMODULE hModule, LPCSTR lpProcName);
@@ -255,20 +257,144 @@ extern "C"{
 #endif
 time_t time(time_t *);
 struct tm * __cdecl localtime(const time_t *);
-size_t strftime(char *, size_t, const char *,
-	const struct tm *);
+//size_t strftime(char *, size_t, const char *,
+//	const struct tm *);
 struct tm * gmtime(const time_t *);
-extern char * tzname[2];
+//extern char * tzname[2];
 time_t mktime(struct tm *);
 
-extern int _daylight;
-#define daylight _daylight
+//extern int _daylight;
+//#define daylight _daylight
 
-extern long _timezone;
+//extern long _timezone;
+
+typedef struct _STARTUPINFOA {
+    DWORD   cb;
+    LPSTR   lpReserved;
+    LPSTR   lpDesktop;
+    LPSTR   lpTitle;
+    DWORD   dwX;
+    DWORD   dwY;
+    DWORD   dwXSize;
+    DWORD   dwYSize;
+    DWORD   dwXCountChars;
+    DWORD   dwYCountChars;
+    DWORD   dwFillAttribute;
+    DWORD   dwFlags;
+    WORD    wShowWindow;
+    WORD    cbReserved2;
+    LPBYTE  lpReserved2;
+    HANDLE  hStdInput;
+    HANDLE  hStdOutput;
+    HANDLE  hStdError;
+} STARTUPINFOA, *LPSTARTUPINFOA;
+typedef struct _STARTUPINFOW {
+    DWORD   cb;
+    LPWSTR  lpReserved;
+    LPWSTR  lpDesktop;
+    LPWSTR  lpTitle;
+    DWORD   dwX;
+    DWORD   dwY;
+    DWORD   dwXSize;
+    DWORD   dwYSize;
+    DWORD   dwXCountChars;
+    DWORD   dwYCountChars;
+    DWORD   dwFillAttribute;
+    DWORD   dwFlags;
+    WORD    wShowWindow;
+    WORD    cbReserved2;
+    LPBYTE  lpReserved2;
+    HANDLE  hStdInput;
+    HANDLE  hStdOutput;
+    HANDLE  hStdError;
+} STARTUPINFOW, *LPSTARTUPINFOW;
+#ifdef UNICODE
+typedef STARTUPINFOW STARTUPINFO;
+typedef LPSTARTUPINFOW LPSTARTUPINFO;
+#else
+typedef STARTUPINFOA STARTUPINFO;
+typedef LPSTARTUPINFOA LPSTARTUPINFO;
+#endif // UNICODE
+
+typedef struct _PROCESS_INFORMATION {
+    HANDLE hProcess;
+    HANDLE hThread;
+    DWORD dwProcessId;
+    DWORD dwThreadId;
+} PROCESS_INFORMATION, *PPROCESS_INFORMATION, *LPPROCESS_INFORMATION;
+
+typedef struct _BY_HANDLE_FILE_INFORMATION {
+    DWORD dwFileAttributes;
+    FILETIME ftCreationTime;
+    FILETIME ftLastAccessTime;
+    FILETIME ftLastWriteTime;
+    DWORD dwVolumeSerialNumber;
+    DWORD nFileSizeHigh;
+    DWORD nFileSizeLow;
+    DWORD nNumberOfLinks;
+    DWORD nFileIndexHigh;
+    DWORD nFileIndexLow;
+} BY_HANDLE_FILE_INFORMATION, *PBY_HANDLE_FILE_INFORMATION, *LPBY_HANDLE_FILE_INFORMATION;
+
+RHO_GLOBAL HANDLE CreateFileW(
+    _In_ LPCWSTR lpFileName,
+    _In_ DWORD dwDesiredAccess,
+    _In_ DWORD dwShareMode,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+    _In_ DWORD dwCreationDisposition,
+    _In_ DWORD dwFlagsAndAttributes,
+    _In_opt_ HANDLE hTemplateFile);
+
+RHO_GLOBAL HANDLE FindFirstFileW(LPCWSTR path, WIN32_FIND_DATAW *data);
+RHO_GLOBAL HANDLE FindFirstFileA(LPCSTR path, WIN32_FIND_DATAA *data);
+
+#ifdef UNICODE
+#define FindFirstFile FindFirstFileW
+#else
+#define FindFirstFile FindFirstFileA
+#endif
+
+RHO_GLOBAL LPVOID TlsGetValue(_In_ DWORD dwTlsIndex);
+RHO_GLOBAL HANDLE CreateEventA(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+    _In_ BOOL bManualReset,
+    _In_ BOOL bInitialState,
+    _In_opt_ LPCSTR lpName);
+RHO_GLOBAL HANDLE CreateEventW(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+    _In_ BOOL bManualReset,
+    _In_ BOOL bInitialState,
+    _In_opt_ LPCWSTR lpName);
+
+#ifdef UNICODE
+#define CreateEvent CreateEventW
+#else
+#define CreateEvent CreateEventA
+#endif
+
+WINBASEAPI
+_Ret_maybenull_
+HMODULE
+WINAPI
+LoadLibraryA(
+    _In_ LPCSTR lpLibFileName
+    );
+WINBASEAPI
+_Ret_maybenull_
+HMODULE
+WINAPI
+LoadLibraryW(
+    _In_ LPCWSTR lpLibFileName
+    );
+#ifdef UNICODE
+#define LoadLibrary  LoadLibraryW
+#else
+#define LoadLibrary  LoadLibraryA
+#endif // !UNICODE
+
 #ifdef __cplusplus
 };
 #endif
 
-//#endif
 
-#endif /* _EXT_CE_ */
+#endif //_EXT_WP8_
