@@ -40,6 +40,7 @@ public interface IRhoListener {
     void onStop(RhodesActivity activity);
     void onDestroy(RhodesActivity activity);
     void onNewIntent(RhodesActivity activity, Intent intent);
+    void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent);
     Dialog onCreateDialog(RhodesActivity activity, int id/*, Bundle args*/);
 
     void onCreateApplication(IRhoExtManager extManager);
