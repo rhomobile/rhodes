@@ -44,7 +44,11 @@
 #if defined(WINDOWS_PLATFORM)
     extern "C" int _mkdir(const char * dir);
     extern "C" int _rmdir(const char * dir);
+
+#if !defined(OS_WP8)
     extern "C" int  _unlink(const char *path);
+#endif
+
 #endif
 
 #if defined(OS_WINCE)
