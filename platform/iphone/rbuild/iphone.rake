@@ -1038,9 +1038,11 @@ namespace "run" do
     task :framework_spec do
       Jake.run_spec_app('iphone','framework_spec')
     end
+
+	require File.dirname(__FILE__) + "/../../../lib/build/run_rhoconnect_spec.rb"
 		
 	task :rhoconnect_spec do
-	  Jake.run_rhoconnect_spec('iphone')
+	  run_rhoconnect_spec('iphone')
 	end
 		
 
