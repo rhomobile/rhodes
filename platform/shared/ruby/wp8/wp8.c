@@ -10,13 +10,14 @@
 
 #include <windows.h>
 #include <tchar.h>
+
+#include "../../common/RhoDefs.h"
+
 #include "wp8.h"
 #include "ruby\config.h"
 #include <errno.h>
 #include <process.h>
-#include "missing_wp8.h"
-
-#include "../../common/RhoDefs.h"
+//#include "missing_wp8.h"
 
 /* global for GetCommandLineA */
 char *_commandLine;
@@ -231,7 +232,7 @@ RHO_GLOBAL DWORD GetModuleFileNameA(
     _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPSTR lpFilename,
     _In_ DWORD nSize)
 {
-	return (HMODULE)0;
+	return (DWORD)0;
 }
 
 RHO_GLOBAL DWORD GetModuleFileName(
@@ -239,7 +240,7 @@ RHO_GLOBAL DWORD GetModuleFileName(
     _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPSTR lpFilename,
     _In_ DWORD nSize)
 {
-	return (HMODULE)0;
+	return (DWORD)0;
 }
 
 RHO_GLOBAL HMODULE GetModuleHandle(_In_opt_ LPCWSTR lpModuleName)
@@ -433,7 +434,7 @@ RHO_GLOBAL BOOL SetFileTime(_In_ HANDLE hFile,
 
 /* --------------  file find functions. ------------------- */
 
-RHO_GLOBAL HANDLE FindFirstFile(LPCWSTR path, WIN32_FIND_DATAA *data)
+RHO_GLOBAL HANDLE FindFirstFileA(LPCSTR path, WIN32_FIND_DATAA *data)
 {
 	return INVALID_HANDLE_VALUE;
 }

@@ -591,6 +591,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             listener.onNewIntent(activity, intent);
         }
     }
+    public void onActivityResult(RhodesActivity activity, int reqCode, int resCode, Intent intent) {
+        for (IRhoListener listener: mListeners) {
+            listener.onActivityResult(activity, reqCode, resCode, intent);
+        }
+    }
     public Dialog onCreateDialog(RhodesActivity activity, int id/*, Bundle args*/) {
         Dialog res = null;
         for (IRhoListener listener: mListeners) {

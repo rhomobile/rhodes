@@ -211,18 +211,29 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        Logger.D(TAG, "onNewIntent");
+        Logger.T(TAG, "onNewIntent");
 
         handleStartParams(intent);
 
         RhoExtManager.getImplementationInstance().onNewIntent(this, intent);
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Logger.T(TAG, "onActivityResult");
+
+        RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
+
+        RhoExtManager.getImplementationInstance().onActivityResult(this, requestCode, resultCode, data);
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        Logger.D(TAG, "onStart");
+        Logger.T(TAG, "onStart");
         mIsInsideStartStop = true;
 
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityStarted);
@@ -231,7 +242,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     @Override
     public void onResume() {
-        Logger.D(TAG, "onResume");
+        Logger.T(TAG, "onResume");
         mIsForeground = true;
         pauseWebViews(false);
         super.onResume();
@@ -248,7 +259,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         RhoExtManager.getImplementationInstance().onPauseActivity(this);
 
         super.onPause();
-        Logger.D(TAG, "onPause");
+        Logger.T(TAG, "onPause");
 
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityPaused);
     }
@@ -281,7 +292,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public void onStop() 
     {
         super.onStop();
-        Logger.D(TAG, "onStop");
+        Logger.T(TAG, "onStop");
 
         RhoExtManager.getImplementationInstance().onStopActivity(this);
 
@@ -290,7 +301,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     @Override
     public void onDestroy() {
-        Logger.D(TAG, "onDestroy");
+        Logger.T(TAG, "onDestroy");
 
         RhoExtManager.getImplementationInstance().onDestroyActivity(this);
 
@@ -484,11 +495,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		if (ra == null)
 			throw new IllegalStateException("No rhodes activity instance at this moment");
 		return ra;
-	}
-	
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
 	}
 	
 }

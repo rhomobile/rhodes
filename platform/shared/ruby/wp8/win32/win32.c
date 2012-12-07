@@ -9,7 +9,7 @@
  *  Some of this code was derived from the MSDOS port(s) and the OS/2 port.
  *
  */
-
+//#if 0
 #include "ruby/ruby.h"
 #include "ruby/encoding.h"
 #include "common/RhoDefs.h"
@@ -29,7 +29,7 @@
 #include <wincon.h>
 #include <processthreadsapi.h>
 #include <wtypesbase.h>
-#include "missing_wp8.h"
+//#include "missing_wp8.h"
 #endif
 
 #ifndef _WIN32_WCE
@@ -5781,3 +5781,4 @@ signbit(double x)
     return *ip < 0;
 }
 #endif
+//#endif
