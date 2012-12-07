@@ -35,7 +35,7 @@ using namespace Platform;
 CRhoRuntime::CRhoRuntime(IMainPage^ mainPage):
 	m_MainPage(mainPage)
 {
-	sqlite3_initialize();
+	//sqlite3_initialize();
 }
 
 // rhodes executed in a separate thread

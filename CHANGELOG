@@ -1,3 +1,15 @@
+## 3.5.1
+* Add Network status notification callback(System.set_network_status_notify) for iPhone and Android
+* Fix several iOS 6.x issues
+* Support net/https
+* Support Flash elements in Android view
+* RhoConnect client: add methods to synchronize only modified models
+* RhoConnect client: support synchronize in background for iPhone
+* RhoConnect client: support Android GCM Push (Beta)
+* Support customizable Android manifest
+* Support Camera.save_image_to_device_gallery on iPhone to save image to gallery
+* Fix several Blackberry issues with database, geolocation. Better 7.x support
+
 ## 3.4.2
 * iPhone: support iOS 6 and XCode 4.5
 * Fix several Windows Phone 7 issues

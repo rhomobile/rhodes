@@ -199,6 +199,111 @@ public class ContactAccessorNew implements ContactAccessor {
 		}
 	}
 
+    // dataCursor content should be sorted with primary key DISPLAY_NAME and secondary CONTACT_ID
+    private boolean binarySearchContact(String contactDisplayName, long contactId, Cursor dataCursor) {
+        int l = -1;
+        int u = dataCursor.getCount();
+        int m;
+
+        while (l+1 != u) {
+            m = (l + u) / 2;
+            dataCursor.moveToPosition( m );
+
+            long diff = dataCursor.getString(dataCursor.getColumnIndex(Data.DISPLAY_NAME)).compareTo(contactDisplayName);
+
+            if (diff == 0) {
+                diff = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID)) - contactId;
+            }
+
+            if (diff < 0)
+                l = m;
+            else
+                u = m;
+        }
+        if (u < dataCursor.getCount())
+        {
+            dataCursor.moveToPosition( u );
+            return dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID)) == contactId;
+        }
+        return false;
+    }
+
+    private boolean fillData(Contact contact, long contactId, String contactDisplayName, Cursor dataCursor, List<String> select)
+    {
+        // sync dataCursor to contactCursor
+        do {
+            // trivial case
+            long dataId = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID));
+            if (contactId == dataId) {
+                break;
+            }
+            // compare displaynames to get picture of data ordering
+            String dataContactName = dataCursor.getString(dataCursor.getColumnIndex(Data.DISPLAY_NAME));
+            int nameDiff = contactDisplayName.compareTo(dataContactName);
+
+            // exit if display name is less than current one
+            if (nameDiff < 0) {
+                Logger.W(TAG, "fillData: did not found " + contactDisplayName + " current data contact name " + dataContactName );
+                return true;
+            }
+            if (DEBUG)
+                Logger.D(TAG, "skipping(dataId="+dataId+")");
+        } while (dataCursor.moveToNext());
+
+        // read contact data
+        do {
+            // this line is used to for second iteration over contact with this id
+            long curId = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID));
+            if (curId != contactId) return true;
+
+            String mime = dataCursor.getString(dataCursor.getColumnIndex(Data.MIMETYPE));
+            if ((select == null || select.contains(Phonebook.PB_FIRST_NAME) || select.contains(Phonebook.PB_LAST_NAME))
+                && mime.equals(StructuredName.CONTENT_ITEM_TYPE)) {
+
+                String firstName = dataCursor.getString(dataCursor.getColumnIndex(StructuredName.GIVEN_NAME));
+                String lastName = dataCursor.getString(dataCursor.getColumnIndex(StructuredName.FAMILY_NAME));
+
+                if (firstName != null)
+                        contact.setField(Phonebook.PB_FIRST_NAME, firstName);
+                if (lastName != null)
+                        contact.setField(Phonebook.PB_LAST_NAME, lastName);
+            }
+
+            if (mime.equals(Phone.CONTENT_ITEM_TYPE)) {
+                int type = dataCursor.getInt(dataCursor.getColumnIndex(Phone.TYPE));
+                switch (type) {
+                case Phone.TYPE_HOME:
+                    if (select == null || select.contains(Phonebook.PB_HOME_NUMBER))
+                        contact.setField(Phonebook.PB_HOME_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
+                    break;
+                case Phone.TYPE_WORK:
+                    if (select == null || select.contains(Phonebook.PB_BUSINESS_NUMBER))
+                        contact.setField(Phonebook.PB_BUSINESS_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
+                    break;
+                case Phone.TYPE_MOBILE:
+                    if (select == null || select.contains(Phonebook.PB_MOBILE_NUMBER))
+                        contact.setField(Phonebook.PB_MOBILE_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
+                    break;
+                }
+            }
+
+            if (mime.equals(Email.CONTENT_ITEM_TYPE) && (select == null || select.contains(Phonebook.PB_EMAIL_ADDRESS))) {
+                if (contact.getField(Phonebook.PB_EMAIL_ADDRESS) == null) {
+                    contact.setField(Phonebook.PB_EMAIL_ADDRESS, dataCursor.getString(dataCursor.getColumnIndex(Email.DATA)));
+                }
+            }
+
+            if (mime.equals(Organization.COMPANY) && (select == null || select.contains(Phonebook.PB_COMPANY_NAME))) {
+                String company = dataCursor.getString(dataCursor.getColumnIndex(Organization.COMPANY));
+                if (company != null)
+                    contact.setField(Phonebook.PB_COMPANY_NAME, company);
+            }
+        } while(dataCursor.moveToNext());
+
+        return false;
+    }
+
+
     @Override
     public int getCount(int offset, int max_results, Map<String, Object> conditions) {
         int count = 0;
@@ -288,15 +393,13 @@ public class ContactAccessorNew implements ContactAccessor {
             boolean hasData = dataCursor != null && dataCursor.moveToFirst();
             
             if (contactCursor.moveToFirst()){
-                if (hasData) {
-                    // sync dataCursor to contactCursor
-                    long firstContactId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
-                    do {
-                        long dataId = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID));
-                        if (firstContactId == dataId) {
-                            break;
-                        }
-                    } while (dataCursor.moveToNext());
+                // sync data offset
+                if (hasData && (!manualOffset && offset > 0)) {
+                    long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
+                    String displayName = contactCursor.getString(contactCursor.getColumnIndex(Contacts.DISPLAY_NAME));
+                    if (!binarySearchContact(displayName, curId, dataCursor)) {
+                        Logger.W(TAG, "No contact found in bsearch: " + displayName);
+                    }
                 }
                 do {
                     long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
@@ -310,8 +413,9 @@ public class ContactAccessorNew implements ContactAccessor {
                     else
                         contact.reset(key, displayName);
 
-                    if (hasData)
-                        hasData = fillData(contact, curId, dataCursor, select);
+                    if (hasData) {
+                        hasData = fillData(contact, curId, displayName, dataCursor, select);
+                    }
 
                     if (contact.checkConditions(conditions)) {
                         if (!manualOffset || pos >= offset) {
@@ -332,60 +436,6 @@ public class ContactAccessorNew implements ContactAccessor {
         }
         
         return count;
-	}
-
-
-    private boolean fillData(Contact contact, long contactId, Cursor dataCursor, List<String> select)
-    {
-        do {
-            long curId = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID));
-            if (curId != contactId) return true;
-            
-            String mime = dataCursor.getString(dataCursor.getColumnIndex(Data.MIMETYPE));
-            if ((select == null || select.contains(Phonebook.PB_FIRST_NAME) || select.contains(Phonebook.PB_LAST_NAME))
-                && mime.equals(StructuredName.CONTENT_ITEM_TYPE)) {
-
-                String firstName = dataCursor.getString(dataCursor.getColumnIndex(StructuredName.GIVEN_NAME));
-                String lastName = dataCursor.getString(dataCursor.getColumnIndex(StructuredName.FAMILY_NAME));
-
-                if (firstName != null)
-                        contact.setField(Phonebook.PB_FIRST_NAME, firstName);
-                if (lastName != null)
-                        contact.setField(Phonebook.PB_LAST_NAME, lastName);
-            }
-
-            if (mime.equals(Phone.CONTENT_ITEM_TYPE)) {
-                int type = dataCursor.getInt(dataCursor.getColumnIndex(Phone.TYPE));
-                switch (type) {
-                case Phone.TYPE_HOME:
-                    if (select == null || select.contains(Phonebook.PB_HOME_NUMBER))
-                        contact.setField(Phonebook.PB_HOME_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
-                    break;
-                case Phone.TYPE_WORK:
-                    if (select == null || select.contains(Phonebook.PB_BUSINESS_NUMBER))
-                        contact.setField(Phonebook.PB_BUSINESS_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
-                    break;
-                case Phone.TYPE_MOBILE:
-                    if (select == null || select.contains(Phonebook.PB_MOBILE_NUMBER))
-                        contact.setField(Phonebook.PB_MOBILE_NUMBER, dataCursor.getString(dataCursor.getColumnIndex(Phone.NUMBER)));
-                    break;
-                }
-            }
-
-            if (mime.equals(Email.CONTENT_ITEM_TYPE) && (select == null || select.contains(Phonebook.PB_EMAIL_ADDRESS))) {
-                if (contact.getField(Phonebook.PB_EMAIL_ADDRESS) == null) {
-                    contact.setField(Phonebook.PB_EMAIL_ADDRESS, dataCursor.getString(dataCursor.getColumnIndex(Email.DATA)));
-                }
-            }
-
-            if (mime.equals(Organization.COMPANY) && (select == null || select.contains(Phonebook.PB_COMPANY_NAME))) {
-                String company = dataCursor.getString(dataCursor.getColumnIndex(Organization.COMPANY));
-                if (company != null)
-                    contact.setField(Phonebook.PB_COMPANY_NAME, company);
-            }
-        } while(dataCursor.moveToNext());
-
-        return false;
     }
 
 
@@ -499,16 +549,15 @@ public class ContactAccessorNew implements ContactAccessor {
 
             boolean hasData = dataCursor != null && dataCursor.moveToFirst();
             if (contactCursor.moveToFirst()){
-                if (hasData) {
-                    // sync dataCursor to contactCursor
-                    long firstContactId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
-                    do {
-                        long dataId = dataCursor.getLong(dataCursor.getColumnIndex(Data.CONTACT_ID));
-                        if (firstContactId == dataId) {
-                            break;
-                        }
-                    } while (dataCursor.moveToNext());
+                // sync data offset
+                if (hasData && (!manualOffset && offset > 0)) {
+                    long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
+                    String displayName = contactCursor.getString(contactCursor.getColumnIndex(Contacts.DISPLAY_NAME));
+                    if (!binarySearchContact(displayName, curId, dataCursor)) {
+                        Logger.W(TAG, "No contact found in bsearch: " + displayName);
+                    }
                 }
+
                 do {
                     long curId = contactCursor.getLong(contactCursor.getColumnIndex(Contacts._ID));
                     Logger.I(TAG, "Processing contact id: " + curId + ", position: " + pos);
@@ -521,8 +570,9 @@ public class ContactAccessorNew implements ContactAccessor {
                     else
                         contact.reset(key, displayName);
 
-                    if (hasData)
-                        hasData = fillData(contact, curId, dataCursor, select);
+                    if (hasData) {
+                        hasData = fillData(contact, curId, displayName, dataCursor, select);
+                    }
 
                     if (contact.checkConditions(conditions)) {
                         if (!manualOffset || pos >= offset) {

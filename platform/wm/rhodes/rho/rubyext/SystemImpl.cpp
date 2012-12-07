@@ -583,7 +583,9 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 #ifdef OS_WINDOWS_DESKTOP
         bEmulator = true;
 #else
-
+		TCHAR buf[255];
+		SystemParametersInfo(SPI_GETOEMINFO, 255, &buf, NULL);
+		bEmulator = (wcsnicmp(buf, _T("Microsoft DeviceEmulator"), 24)==0);
 #endif
         *resValue = rho_ruby_create_boolean(bEmulator?1:0);
         return 1;

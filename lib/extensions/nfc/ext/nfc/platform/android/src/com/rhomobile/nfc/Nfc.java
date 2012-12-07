@@ -34,11 +34,12 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
+import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
-public class Nfc implements IRhoListener {
+public class Nfc extends AbstractRhoListener implements IRhoListener {
 
 	private static final String TAG = Nfc.class.getSimpleName();
 	
@@ -182,7 +183,7 @@ public class Nfc implements IRhoListener {
 	
 	@Override
 	public void onCreate(RhodesActivity activity, Intent intent) {
-		getInstance().onNewIntent(activity, intent, true);
+		onNewIntent(activity, intent, true);
 	}
 	
 	@Override
@@ -220,15 +221,6 @@ public class Nfc implements IRhoListener {
 			}
 		}
 	}
-
-	@Override
-	public void onStart(RhodesActivity activity) {}
-	
-	@Override
-	public void onStop(RhodesActivity activity) {}
-	
-	@Override
-	public void onDestroy(RhodesActivity activity) {}
 	
 	public void onNewIntent(RhodesActivity activity, Intent intent, boolean postpone) {
 		String action = intent.getAction();
@@ -1144,9 +1136,5 @@ public class Nfc implements IRhoListener {
 		}
 		return result;
 	}
-
-    public Dialog onCreateDialog(RhodesActivity activity, int id) {
-        return null;
-    }
 
 }

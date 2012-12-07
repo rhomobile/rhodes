@@ -29,6 +29,9 @@ public abstract class AbstractRhoListener implements IRhoListener {
     public void onNewIntent(RhodesActivity activity, Intent intent) { }
 
     @Override
+    public void onActivityResult(RhodesActivity activity, int reqCode, int resCode, Intent intent) { }
+
+    @Override
     public Dialog onCreateDialog(RhodesActivity activity, int id) { return null; }
 
 }

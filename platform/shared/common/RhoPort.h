@@ -173,6 +173,7 @@ RHO_GLOBAL int vswnprintf(wchar_t *, size_t, const wchar_t *, void *);
 
 #if defined( OS_WP8 )
 #  include <stdlib.h>
+#  include <errno.h>
 #endif
 
 //#include "tcmalloc/rhomem.h"
