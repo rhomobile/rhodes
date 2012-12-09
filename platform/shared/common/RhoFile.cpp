@@ -390,11 +390,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     WIN32_FIND_DATAW FindFileData;
     HANDLE hFind = INVALID_HANDLE_VALUE;
 
-#if defined(OS_WP8)
-	hFind = FindFirstFileExW(wFolderMask.c_str(), FindExInfoStandard,  &FindFileData, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE);
-#else
     hFind = FindFirstFileW(wFolderMask.c_str(), &FindFileData);
-#endif
 
     if (hFind == INVALID_HANDLE_VALUE) 
         return;
@@ -556,11 +552,7 @@ static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boo
     WIN32_FIND_DATAW FindFileData = {0};
     HANDLE hFind = INVALID_HANDLE_VALUE;
 
-#if defined(OS_WP8)
-	hFind = FindFirstFileExW(wFolderMask.c_str(), FindExInfoStandard,  &FindFileData, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE);
-#else
     hFind = FindFirstFileW(wFolderMask.c_str(), &FindFileData);
-#endif
 
     if (hFind == INVALID_HANDLE_VALUE) 
         return GetLastError();

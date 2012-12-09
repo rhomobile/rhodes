@@ -69,14 +69,28 @@ Init_native_thread(void)
 static void
 w32_error(const char *func)
 {
+#if defined(OS_WP8)
+    LPVOID lpMsgBuf = malloc( 1001 );
+    int nError = GetLastError();
+
+	DWORD flFormat = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
+
+    FormatMessage(flFormat,
+		  NULL,
+		  nError,
+		  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		  (LPTSTR) & lpMsgBuf, 1000, NULL);
+    if ( lpMsgBuf )
+        rb_bug("%s;Error code: %d; Func: %s", (char*)lpMsgBuf, nError, func);
+    else
+        rb_bug("Error code: %d; Func: %s", nError, func);
+
+	free(lpMsgBuf);
+#else
     LPVOID lpMsgBuf = 0;
     int nError = GetLastError();
 
-#if defined(_WP8_LIB)
-	DWORD flFormat = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-#else
 	DWORD flFormat = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-#endif
 
     FormatMessage(flFormat,
 		  NULL,
@@ -87,6 +101,7 @@ w32_error(const char *func)
         rb_bug("%s;Error code: %d; Func: %s", (char*)lpMsgBuf, nError, func);
     else
         rb_bug("Error code: %d; Func: %s", nError, func);
+#endif
 }
 
 static void
