@@ -82,7 +82,7 @@
       <PrecompiledHeaderFile>pch_rhoruntime.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
-      <AdditionalIncludeDirectories>../../shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../shared;../../shared/ruby/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -100,6 +100,7 @@
       <PrecompiledHeaderFile>pch_rhoruntime.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>../../shared;../../shared/ruby/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -117,6 +118,7 @@
       <PrecompiledHeaderFile>pch_rhoruntime.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>../../shared;../../shared/ruby/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -134,6 +136,7 @@
       <PrecompiledHeaderFile>pch_rhoruntime.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
+      <AdditionalIncludeDirectories>../../shared;../../shared/ruby/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,22 +154,36 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.h" />
     <ClInclude Include="common\RhoClassFactory.h" />
     <ClInclude Include="common\RhoCryptImpl.h" />
-    <ClInclude Include="common\RhoThreadImpl.h" />
     <ClInclude Include="rhoruntime.h" />
     <ClInclude Include=".\pch_rhoruntime.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.cpp" />
     <ClCompile Include="common\ExtManager.cpp" />
     <ClCompile Include="common\RhoClassFactory.cpp" />
     <ClCompile Include="common\RhoCryptImpl.cpp" />
-    <ClCompile Include="common\RhoThreadImpl.cpp" />
     <ClCompile Include="FakeDefs.cpp" />
     <ClCompile Include="rhoruntime.cpp" />
     <ClCompile Include=".\pch_rhoruntime.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\rholib\rholib.vcxproj">
+      <Project>{ddcdeb35-e294-4421-bb60-7249a7ce5150}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\rubylib\rubylib.vcxproj">
+      <Project>{22caf76e-a7a2-4363-913e-b840306545f3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\sqlite3\sqlite3.vcxproj">
+      <Project>{a0746642-f215-4587-8b81-9d432fd4e468}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\syncengine\syncengine.vcxproj">
+      <Project>{51a2a712-4d2e-47cc-8aa4-44170232d128}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

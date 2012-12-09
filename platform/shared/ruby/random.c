@@ -81,7 +81,7 @@ The original copyright notice follows.
 #  undef __WINCRYPT_H__
 # endif
 
-#if !defined(_WP8_LIB)
+#if !defined(OS_WP8)
 #include <wincrypt.h>
 #endif
 
@@ -481,7 +481,7 @@ fill_random_seed(unsigned int seed[DEFAULT_SEED_CNT])
 #if USE_DEV_URANDOM
     int fd;
     struct stat statbuf;
-#elif defined(_WIN32) && !defined(_WP8_LIB)
+#elif defined(_WIN32) && !defined(OS_WP8)
     HCRYPTPROV prov;
 #endif
 
@@ -501,7 +501,7 @@ fill_random_seed(unsigned int seed[DEFAULT_SEED_CNT])
         }
         close(fd);
     }
-#elif defined(_WIN32) && !defined(_WP8_LIB)
+#elif defined(_WIN32) && !defined(OS_WP8)
 //RHO
     if (CryptAcquireContextW(&prov, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT)) {
 //RHO

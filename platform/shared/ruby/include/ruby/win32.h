@@ -1,6 +1,14 @@
 #ifndef RUBY_WIN32_H
 #define RUBY_WIN32_H 1
 
+#include "common/RhoDefs.h"
+
+//RHO
+#ifdef OS_WP8
+#include "wp8.h"
+#endif
+//RHO
+
 #if defined(__cplusplus)
 extern "C" {
 #if 0
@@ -719,9 +727,7 @@ uintptr_t rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self, int argc
 #endif
 
 //RHO
-#if defined(_WP8_LIB)// || defined(_WINRT_DLL)
-#include "wp8/wp8.h"
-#elif _WIN32_WCE
+#ifdef _WIN32_WCE
 #include "wince.h"
 #endif
 //RHO

@@ -209,7 +209,6 @@
     <ClCompile Include="..\..\shared\ruby\missing\cbrt.c" />
     <ClCompile Include="..\..\shared\ruby\missing\crypt.c" />
     <ClCompile Include="..\..\shared\ruby\missing\erf.c" />
-    <ClCompile Include="..\..\shared\ruby\missing\hypot.c" />
     <ClCompile Include="..\..\shared\ruby\missing\langinfo.c" />
     <ClCompile Include="..\..\shared\ruby\missing\lgamma_r.c" />
     <ClCompile Include="..\..\shared\ruby\missing\strlcat.c" />

@@ -30,6 +30,9 @@
 #include <processthreadsapi.h>
 #include <wtypesbase.h>
 //#include "missing_wp8.h"
+
+#define rb_w32_wopen _wopen
+
 #endif
 
 #ifndef _WIN32_WCE
@@ -42,7 +45,8 @@
 #ifdef __MINGW32__
 #include <mswsock.h>
 #endif
-#include "ruby/win32.h"
+//#include "ruby/win32.h"
+#include "wp8.h"
 #include "win32/dir.h"
 #define isdirsep(x) ((x) == '/' || (x) == '\\')
 
@@ -377,6 +381,7 @@ flock_win95(uintptr_t self, int argc, uintptr_t* argv)
 
 #undef LK_ERR
 
+#ifndef OS_WP8
 int
 flock(int fd, int oper)
 {
@@ -397,6 +402,15 @@ flock(int fd, int oper)
 			      (VALUE)_get_osfhandle(fd), oper, NULL,
 			      (DWORD)-1);
 }
+
+#else
+int
+flock(int fd, int operation)
+{
+    rb_notimplement();
+    return -1;
+}
+#endif
 
 static inline WCHAR *
 translate_wchar(WCHAR *p, int from, int to)
@@ -1057,7 +1071,7 @@ CreateChild(const char *cmd, const char *prog, SECURITY_ATTRIBUTES *psa,
 
     dwCreationFlags = (NORMAL_PRIORITY_CLASS);
 
-    if (lstrlenW(cmd) > 32767) {
+    if (lstrlen(cmd) > 32767) {
 	child->pid = 0;		/* release the slot */
 	errno = E2BIG;
 	return NULL;
@@ -2434,7 +2448,7 @@ is_pipe(SOCKET sock) /* DONT call this for SOCKET! it clains it is PIPE. */
 static int
 is_readable_pipe(SOCKET sock) /* call this for pipe only */
 {
-#ifdef _WIN32_WCE
+#if defined( _WIN32_WCE ) || defined( OS_WP8)
     return 0;
 #else
 
@@ -2457,7 +2471,7 @@ is_readable_pipe(SOCKET sock) /* call this for pipe only */
 static int
 is_console(SOCKET sock) /* DONT call this for SOCKET! */
 {
-#ifdef _WIN32_WCE
+#if defined( _WIN32_WCE ) || defined( OS_WP8)
     return 0;
 #else
     int ret;
@@ -2475,7 +2489,7 @@ is_console(SOCKET sock) /* DONT call this for SOCKET! */
 static int
 is_readable_console(SOCKET sock) /* call this for console only */
 {
-#ifdef _WIN32_WCE
+#if defined( _WIN32_WCE ) || defined( OS_WP8)
     return 0;
 #else
 
@@ -2688,7 +2702,7 @@ rb_w32_select(int nfds, fd_set *rd, fd_set *wr, fd_set *ex,
 int WSAAPI
 rb_w32_accept(int s, struct sockaddr *addr, int *addrlen)
 {
-#ifdef _WIN32_WCE
+#if defined( _WIN32_WCE ) || defined( OS_WP8)
     return 0;
 #else
     SOCKET r;
@@ -4124,7 +4138,7 @@ isUNCRoot(const WCHAR *path)
 	(dest).st_ctime = (src).st_ctime;	\
     } while (0)
 
-#if defined __BORLANDC__ || defined _WIN32_WCE
+#if defined __BORLANDC__ || defined _WIN32_WCE  || defined (OS_WP8)
 #undef fstat
 int
 rb_w32_fstat(int fd, struct stat *st)
@@ -4645,6 +4659,7 @@ call_asynchronous(PVOID argp)
     return ret;
 }
 
+#ifndef OS_WP8
 uintptr_t
 rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self,
 		    int argc, uintptr_t* argv, uintptr_t intrval)
@@ -4706,6 +4721,7 @@ rb_w32_asynchronize(asynchronous_func_t func, uintptr_t self,
 
     return val;
 }
+#endif
 
 char **
 rb_w32_get_environ(void)
@@ -4816,7 +4832,7 @@ rb_w32_uopen(const char *file, int oflag, ...)
     free(wfile);        
     return ret;
 }
-#ifndef _WIN32_WCE
+#if !defined( _WIN32_WCE ) && !defined (OS_WP8)
 int
 rb_w32_open(const char *file, int oflag, ...)
 {
@@ -5145,7 +5161,7 @@ rb_w32_close(int fd)
     return 0;
 }
 
-#ifndef _WIN32_WCE
+#if !defined( _WIN32_WCE ) && !defined(OS_WP8)
 #undef read
 size_t
 rb_w32_read(int fd, void *buf, size_t size)
@@ -5691,7 +5707,7 @@ rb_w32_uchmod(const char *path, int mode)
     return ret;
 }
 
-#if !defined(__BORLANDC__)&& !defined(_WIN32_WCE)
+#if !defined(__BORLANDC__)&& !defined(_WIN32_WCE) && !defined(OS_WP8)
 int
 rb_w32_isatty(int fd)
 {
