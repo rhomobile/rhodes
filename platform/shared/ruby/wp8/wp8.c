@@ -25,7 +25,7 @@ char *_commandLine;
 extern char _currentdir[];
 
 /* ---------------  files functions. ------------------- */
-
+/*
 DWORD
 WINAPI
 SetFilePointer(
@@ -56,7 +56,7 @@ MoveFileA(
 {
 	return FALSE;
 }
-
+*/
 BOOL
 WINAPI
 MoveFileW(
@@ -574,7 +574,7 @@ RHO_GLOBAL BOOL SetThreadPriority(_In_ HANDLE hThread, _In_ int nPriority)
 }
 */
 // --------------  file attributes functions. ------------------- 
-
+/*
 DWORD WINAPI GetFileAttributesA(
     _In_ LPCSTR lpFileName
     )
@@ -603,9 +603,9 @@ BOOL WINAPI SetFileTime(_In_ HANDLE hFile,
 {
 	return FALSE;
 }
-
+*/
 // --------------  file find functions. ------------------- 
-
+/*
 DWORD WINAPI GetLogicalDrives( VOID )
 {
 	return 0;
@@ -619,7 +619,7 @@ BOOL WINAPI LocalFileTimeToFileTime(
 { 
 	return FALSE;
 }
-
+*/
 /*
 RHO_GLOBAL BOOL GetOverlappedResult(_In_ HANDLE hFile,
 									_In_ LPOVERLAPPED lpOverlapped,
@@ -742,6 +742,7 @@ int wsprintfW( LPWSTR p1,  LPCWSTR p2,  ...)
 }
 
 //File access
+/*
 #include "common/RhoMutexLock.h"
 wchar_t* wce_mbtowc(const char* a);
 char* wce_wctomb(const wchar_t* w);
@@ -781,7 +782,7 @@ HANDLE get_OSHandleByFileNumber(int fNumber)
     res = g_arFileHandlers[fNumber-1];
     RHO_UNLOCK(FileHandlers);
     return res;
-}
+}*/
 
 int rb_w32_open( const char *file, int mode, ... )
 {
