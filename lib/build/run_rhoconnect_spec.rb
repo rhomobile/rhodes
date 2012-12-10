@@ -63,12 +63,12 @@ require File.join(File.dirname(__FILE__),'jake.rb')
 
 		puts "run redis"
 #		Kernel.spawn("rhoconnect","redis-start",:chdir => server_path, :out => redis_out )
-		Kernel.spawn("rhoconnect","redis-start",:chdir => server_path)
+		Kernel.spawn("rhoconnect","redis-startbg",:chdir => server_path)
 		sleep(10)
 
 		puts "run rhoconnect"
 #		server_pid = Kernel.spawn("rhoconnect","start",:chdir => server_path, :out => rc_out )
-		server_pid = Kernel.spawn("rhoconnect","start",:chdir => server_path)
+		server_pid = Kernel.spawn("rhoconnect","startbg",:chdir => server_path)
 		sleep(10)
 
 		puts "reset rhoconnect"
@@ -77,7 +77,7 @@ require File.join(File.dirname(__FILE__),'jake.rb')
 
 		puts "run resque"
 #		resque_pid = Kernel.spawn({ "QUEUE" => "1" }, "rake","resque:work",:chdir => server_path, :out => resque_out )
-		resque_pid = Kernel.spawn({ "QUEUE" => "1" }, "rake","resque:work",:chdir => server_path)
+		resque_pid = Kernel.spawn({ "QUEUE" => "*" }, "rake","resque:work",:chdir => server_path)
 		sleep(10)
 
 		puts "set server parameters, resque_pid = #{resque_pid}, pid = #{server_pid}. setting address = #{host.inspect}, port = #{port}"
