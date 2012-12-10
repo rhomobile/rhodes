@@ -27,7 +27,9 @@
 #include "pch_rhoruntime.h"
 #include "rhoruntime.h"
 
-#include "../../shared/sqlite/sqlite3.h"
+//#include "../../shared/sqlite/sqlite3.h"
+//#include "logging/RhoLogConf.h"
+#include "common/RhodesApp.h"
 
 using namespace rhoruntime;
 using namespace Platform;
@@ -41,7 +43,15 @@ CRhoRuntime::CRhoRuntime(IMainPage^ mainPage):
 // rhodes executed in a separate thread
 void CRhoRuntime::Execute()
 {
-	// ...
+	rho::String m_strRootPath, m_logPort, m_strRuntimePath;
+    rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
+
+    rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
+    //RHODESAPP().setExtManager( &m_oExtManager );
+
+	//Create Main window
+
+	RHODESAPP().startApp();
 
 	// wait for 3 seconds
 	m_MainPage->DoWait(3000);
