@@ -7,7 +7,11 @@
     :poll_interval: 0
   Product_s:
     :poll_interval: 0
-    
+  BlobTest:
+    :poll_interval: 0
+  BlobTest_s:
+    :poll_interval: 0
+
 :development:
   :licensefile: settings/license.key
   :iphonecertfile: settings/apple_push_cert.pem
