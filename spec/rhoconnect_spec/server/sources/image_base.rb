@@ -5,7 +5,7 @@ class ImageBase < SourceAdapter
   
   def query(params=nil)
     @result={}
-    Bucket.find(@bucket).objects.each do |entry|
+	Bucket.find(@bucket).objects.each do |entry|
       new_item = {
         'image_uri-rhoblob' => @baseurl+@bucket+'/'+File.basename(entry.key),
         'name' => entry.key
@@ -19,7 +19,8 @@ class ImageBase < SourceAdapter
   def create(name_value_list)
     puts "Creating: #{name_value_list.inspect}"
     name = name_value_list["image_uri"]
-    basename = name_value_list["filename"]
+	  #    basename = name_value_list["filename"]
+	basename = name_value_list["name"]
     S3Object.store(
       basename,
       open(name),
