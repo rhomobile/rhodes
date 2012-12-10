@@ -797,7 +797,7 @@ int rb_w32_open( const char *file, int mode, ... )
 
 int rb_w32_isatty(int fd)
 {
-    return _isatty(fd);
+    return 0;//_isatty(fd);
 }
 
 int rb_w32_pipe(int *phandles )//, unsigned int psize, int textmode)
