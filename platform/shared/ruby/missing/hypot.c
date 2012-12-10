@@ -2,8 +2,6 @@
 
 #include <math.h>
 
-#if !defined(_WP8_LIB)
-
 double hypot(double x, double y)
 {
     if (x < 0) x = -x;
@@ -16,5 +14,3 @@ double hypot(double x, double y)
     y /= x;
     return x * sqrt(1.0+y*y);
 }
-
-#endif

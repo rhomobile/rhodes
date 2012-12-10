@@ -21,10 +21,10 @@
     <ClCompile Include="common\RhoCryptImpl.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="common\RhoThreadImpl.cpp">
+    <ClCompile Include="FakeDefs.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="FakeDefs.cpp">
+    <ClCompile Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.cpp">
       <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -37,7 +37,7 @@
     <ClInclude Include="common\RhoCryptImpl.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="common\RhoThreadImpl.h">
+    <ClInclude Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

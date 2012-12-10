@@ -9,6 +9,7 @@
 
 #include "common/RhoPort.h"
 
+#if 0
 #ifndef _OFF_T_DEFINED
 
 typedef long _off_t;                    /* file offset value */
@@ -23,7 +24,7 @@ typedef long off_t;
 
 # define AreFileApisANSI() 1
 
-#define rb_w32_wopen _wopen
+//#define rb_w32_wopen _wopen
 
 /* unique difinition in wince platform. */
 
@@ -218,8 +219,8 @@ void wce_SetCurrentDir();
 #define FILE_TYPE_REMOTE    0x8000
 #define WNOHANG -1
 
-#undef stati64
-#define stati64 stat
+//#undef stati64
+//#define stati64 stat
 
 BOOL GetHandleInformation(
   HANDLE hObject,
@@ -267,134 +268,6 @@ time_t mktime(struct tm *);
 //#define daylight _daylight
 
 //extern long _timezone;
-
-typedef struct _STARTUPINFOA {
-    DWORD   cb;
-    LPSTR   lpReserved;
-    LPSTR   lpDesktop;
-    LPSTR   lpTitle;
-    DWORD   dwX;
-    DWORD   dwY;
-    DWORD   dwXSize;
-    DWORD   dwYSize;
-    DWORD   dwXCountChars;
-    DWORD   dwYCountChars;
-    DWORD   dwFillAttribute;
-    DWORD   dwFlags;
-    WORD    wShowWindow;
-    WORD    cbReserved2;
-    LPBYTE  lpReserved2;
-    HANDLE  hStdInput;
-    HANDLE  hStdOutput;
-    HANDLE  hStdError;
-} STARTUPINFOA, *LPSTARTUPINFOA;
-typedef struct _STARTUPINFOW {
-    DWORD   cb;
-    LPWSTR  lpReserved;
-    LPWSTR  lpDesktop;
-    LPWSTR  lpTitle;
-    DWORD   dwX;
-    DWORD   dwY;
-    DWORD   dwXSize;
-    DWORD   dwYSize;
-    DWORD   dwXCountChars;
-    DWORD   dwYCountChars;
-    DWORD   dwFillAttribute;
-    DWORD   dwFlags;
-    WORD    wShowWindow;
-    WORD    cbReserved2;
-    LPBYTE  lpReserved2;
-    HANDLE  hStdInput;
-    HANDLE  hStdOutput;
-    HANDLE  hStdError;
-} STARTUPINFOW, *LPSTARTUPINFOW;
-#ifdef UNICODE
-typedef STARTUPINFOW STARTUPINFO;
-typedef LPSTARTUPINFOW LPSTARTUPINFO;
-#else
-typedef STARTUPINFOA STARTUPINFO;
-typedef LPSTARTUPINFOA LPSTARTUPINFO;
-#endif // UNICODE
-
-typedef struct _PROCESS_INFORMATION {
-    HANDLE hProcess;
-    HANDLE hThread;
-    DWORD dwProcessId;
-    DWORD dwThreadId;
-} PROCESS_INFORMATION, *PPROCESS_INFORMATION, *LPPROCESS_INFORMATION;
-
-typedef struct _BY_HANDLE_FILE_INFORMATION {
-    DWORD dwFileAttributes;
-    FILETIME ftCreationTime;
-    FILETIME ftLastAccessTime;
-    FILETIME ftLastWriteTime;
-    DWORD dwVolumeSerialNumber;
-    DWORD nFileSizeHigh;
-    DWORD nFileSizeLow;
-    DWORD nNumberOfLinks;
-    DWORD nFileIndexHigh;
-    DWORD nFileIndexLow;
-} BY_HANDLE_FILE_INFORMATION, *PBY_HANDLE_FILE_INFORMATION, *LPBY_HANDLE_FILE_INFORMATION;
-
-RHO_GLOBAL HANDLE CreateFileW(
-    _In_ LPCWSTR lpFileName,
-    _In_ DWORD dwDesiredAccess,
-    _In_ DWORD dwShareMode,
-    _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-    _In_ DWORD dwCreationDisposition,
-    _In_ DWORD dwFlagsAndAttributes,
-    _In_opt_ HANDLE hTemplateFile);
-
-RHO_GLOBAL HANDLE FindFirstFileW(LPCWSTR path, WIN32_FIND_DATAW *data);
-RHO_GLOBAL HANDLE FindFirstFileA(LPCSTR path, WIN32_FIND_DATAA *data);
-
-#ifdef UNICODE
-#define FindFirstFile FindFirstFileW
-#else
-#define FindFirstFile FindFirstFileA
 #endif
-
-RHO_GLOBAL LPVOID TlsGetValue(_In_ DWORD dwTlsIndex);
-RHO_GLOBAL HANDLE CreateEventA(
-    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
-    _In_ BOOL bManualReset,
-    _In_ BOOL bInitialState,
-    _In_opt_ LPCSTR lpName);
-RHO_GLOBAL HANDLE CreateEventW(
-    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
-    _In_ BOOL bManualReset,
-    _In_ BOOL bInitialState,
-    _In_opt_ LPCWSTR lpName);
-
-#ifdef UNICODE
-#define CreateEvent CreateEventW
-#else
-#define CreateEvent CreateEventA
-#endif
-
-WINBASEAPI
-_Ret_maybenull_
-HMODULE
-WINAPI
-LoadLibraryA(
-    _In_ LPCSTR lpLibFileName
-    );
-WINBASEAPI
-_Ret_maybenull_
-HMODULE
-WINAPI
-LoadLibraryW(
-    _In_ LPCWSTR lpLibFileName
-    );
-#ifdef UNICODE
-#define LoadLibrary  LoadLibraryW
-#else
-#define LoadLibrary  LoadLibraryA
-#endif // !UNICODE
-
-#ifdef __cplusplus
-};
-#endif
-
 
 #endif //_EXT_WP8_

@@ -177,9 +177,6 @@
     <ClCompile Include="..\..\shared\ruby\missing\erf.c">
       <Filter>missing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\missing\hypot.c">
-      <Filter>missing</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\missing\lgamma_r.c">
       <Filter>missing</Filter>
     </ClCompile>

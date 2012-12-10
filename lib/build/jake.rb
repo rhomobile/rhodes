@@ -649,5 +649,33 @@ class Jake
   
     system("START rake run:webrickrhologserver[\"#{app_path}\"]")
   end
+
+  def self.get_process_list
+    cmd = nil
+    args = nil
+    proc_list = []
     
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      cmd = 'wmic'
+      args = ['path', 'win32_process', 'get', 'Processid,Commandline']
+    else
+      cmd = 'ps'
+      args = ['axww', '-o', 'pid', '-o', 'command']
+    end
+    
+    output = run2 cmd, args, {:hide_output=>true}
+    
+    output.each_line do |line|
+      #puts "[[#{line}]]"
+      if RUBY_PLATFORM =~ /(win|w)32$/
+        /^(?<cmd>.*)\s+(?<pid>\d+)\s*$/ =~ line
+        proc_list << {:pid=>pid, :cmd=>cmd} if pid
+      else
+        /(?<pid>\d+)\s+(?<cmd>.*)/ =~ line
+        proc_list << {:pid=>pid, :cmd=>cmd}
+      end
+    end
+    proc_list
+  end
+
 end

@@ -174,6 +174,719 @@ RHO_GLOBAL int vswnprintf(wchar_t *, size_t, const wchar_t *, void *);
 #if defined( OS_WP8 )
 #  include <stdlib.h>
 #  include <errno.h>
+
+#define stati64    _stat64
+#define stat64    _stat64
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int
+wsprintfA(
+    _Out_ LPSTR,
+    _In_ _Printf_format_string_ LPCSTR,
+    ...);
+
+int
+wsprintfW(
+    _Out_ LPWSTR,
+    _In_ _Printf_format_string_ LPCWSTR,
+    ...);
+
+#ifdef UNICODE
+#define wsprintf  wsprintfW
+#else
+#define wsprintf  wsprintfA
+#endif // !UNICODE
+
+# define AreFileApisANSI() 1
+
+#define FindFirstFileA(p1, p2) FindFirstFileExA(p1, FindExInfoStandard,  p2, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE)
+#define FindFirstFileW(p1, p2) FindFirstFileExW(p1, FindExInfoStandard,  p2, FindExSearchNameMatch, NULL, FIND_FIRST_EX_CASE_SENSITIVE)
+
+#ifdef UNICODE
+#define FindFirstFile FindFirstFileW
+#else
+#define FindFirstFile FindFirstFileA
+#endif
+
+#define STARTF_USESHOWWINDOW       0x00000001
+#define STARTF_USESIZE             0x00000002
+#define STARTF_USEPOSITION         0x00000004
+#define STARTF_USECOUNTCHARS       0x00000008
+#define STARTF_USEFILLATTRIBUTE    0x00000010
+#define STARTF_RUNFULLSCREEN       0x00000020  // ignored for non-x86 platforms
+#define STARTF_FORCEONFEEDBACK     0x00000040
+#define STARTF_FORCEOFFFEEDBACK    0x00000080
+#define STARTF_USESTDHANDLES       0x00000100
+
+
+HANDLE
+WINAPI
+GetStdHandle(
+    _In_ DWORD nStdHandle
+    );
+
+
+LPCH
+WINAPI
+GetEnvironmentStrings(
+    VOID
+    );
+
+
+_NullNull_terminated_
+LPWCH
+WINAPI
+GetEnvironmentStringsW(
+    VOID
+    );
+
+
+#ifdef UNICODE
+#define GetEnvironmentStrings  GetEnvironmentStringsW
+#else
+#define GetEnvironmentStringsA  GetEnvironmentStrings
+#endif // !UNICODE
+
+
+BOOL
+WINAPI
+SetEnvironmentStringsW(
+    _In_ _Pre_ _NullNull_terminated_ LPWCH NewEnvironment
+    );
+
+#ifdef UNICODE
+#define SetEnvironmentStrings  SetEnvironmentStringsW
+#endif
+
+
+BOOL
+WINAPI
+FreeEnvironmentStringsA(
+    _In_ _Pre_ _NullNull_terminated_ LPCH penv
+    );
+
+
+BOOL
+WINAPI
+FreeEnvironmentStringsW(
+    _In_ _Pre_ _NullNull_terminated_ LPWCH penv
+    );
+
+#ifdef UNICODE
+#define FreeEnvironmentStrings  FreeEnvironmentStringsW
+#else
+#define FreeEnvironmentStrings  FreeEnvironmentStringsA
+#endif // !UNICODE
+
+typedef struct _PROCESS_INFORMATION {
+    HANDLE hProcess;
+    HANDLE hThread;
+    DWORD dwProcessId;
+    DWORD dwThreadId;
+} PROCESS_INFORMATION, *PPROCESS_INFORMATION, *LPPROCESS_INFORMATION;
+
+typedef struct _STARTUPINFOA {
+    DWORD   cb;
+    LPSTR   lpReserved;
+    LPSTR   lpDesktop;
+    LPSTR   lpTitle;
+    DWORD   dwX;
+    DWORD   dwY;
+    DWORD   dwXSize;
+    DWORD   dwYSize;
+    DWORD   dwXCountChars;
+    DWORD   dwYCountChars;
+    DWORD   dwFillAttribute;
+    DWORD   dwFlags;
+    WORD    wShowWindow;
+    WORD    cbReserved2;
+    LPBYTE  lpReserved2;
+    HANDLE  hStdInput;
+    HANDLE  hStdOutput;
+    HANDLE  hStdError;
+} STARTUPINFOA, *LPSTARTUPINFOA;
+typedef struct _STARTUPINFOW {
+    DWORD   cb;
+    LPWSTR  lpReserved;
+    LPWSTR  lpDesktop;
+    LPWSTR  lpTitle;
+    DWORD   dwX;
+    DWORD   dwY;
+    DWORD   dwXSize;
+    DWORD   dwYSize;
+    DWORD   dwXCountChars;
+    DWORD   dwYCountChars;
+    DWORD   dwFillAttribute;
+    DWORD   dwFlags;
+    WORD    wShowWindow;
+    WORD    cbReserved2;
+    LPBYTE  lpReserved2;
+    HANDLE  hStdInput;
+    HANDLE  hStdOutput;
+    HANDLE  hStdError;
+} STARTUPINFOW, *LPSTARTUPINFOW;
+#ifdef UNICODE
+typedef STARTUPINFOW STARTUPINFO;
+typedef LPSTARTUPINFOW LPSTARTUPINFO;
+#else
+typedef STARTUPINFOA STARTUPINFO;
+typedef LPSTARTUPINFOA LPSTARTUPINFO;
+#endif // UNICODE
+
+
+
+HANDLE
+WINAPI
+CreateFileA(
+    _In_ LPCSTR lpFileName,
+    _In_ DWORD dwDesiredAccess,
+    _In_ DWORD dwShareMode,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+    _In_ DWORD dwCreationDisposition,
+    _In_ DWORD dwFlagsAndAttributes,
+    _In_opt_ HANDLE hTemplateFile
+    );
+
+
+HANDLE
+WINAPI
+CreateFileW(
+    _In_ LPCWSTR lpFileName,
+    _In_ DWORD dwDesiredAccess,
+    _In_ DWORD dwShareMode,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+    _In_ DWORD dwCreationDisposition,
+    _In_ DWORD dwFlagsAndAttributes,
+    _In_opt_ HANDLE hTemplateFile
+    );
+
+#ifdef UNICODE
+#define CreateFile  CreateFileW
+#else
+#define CreateFile  CreateFileA
+#endif // !UNICODE
+
+HANDLE WINAPI CreateEventA(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+    _In_ BOOL bManualReset,
+    _In_ BOOL bInitialState,
+    _In_opt_ LPCSTR lpName);
+
+HANDLE WINAPI CreateEventW(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+    _In_ BOOL bManualReset,
+    _In_ BOOL bInitialState,
+    _In_opt_ LPCWSTR lpName);
+
+#ifdef UNICODE
+#define CreateEvent CreateEventW
+#else
+#define CreateEvent CreateEventA
+#endif
+
+
+HMODULE
+WINAPI
+LoadLibraryA(
+    _In_ LPCSTR lpLibFileName
+    );
+
+HMODULE
+WINAPI
+LoadLibraryW(
+    _In_ LPCWSTR lpLibFileName
+    );
+#ifdef UNICODE
+#define LoadLibrary  LoadLibraryW
+#else
+#define LoadLibrary  LoadLibraryA
+#endif // !UNICODE
+
+
+LPSTR
+WINAPI
+CharNextA(
+    _In_ LPCSTR lpsz);
+
+LPWSTR
+WINAPI
+CharNextW(
+    _In_ LPCWSTR lpsz);
+#ifdef UNICODE
+#define CharNext  CharNextW
+#else
+#define CharNext  CharNextA
+#endif // !UNICODE
+
+
+HMODULE
+WINAPI
+GetModuleHandleA(
+    _In_opt_ LPCSTR lpModuleName
+    );
+
+
+HMODULE
+WINAPI
+GetModuleHandleW(
+    _In_opt_ LPCWSTR lpModuleName
+    );
+
+#ifndef GetModuleHandle
+#ifdef UNICODE
+#define GetModuleHandle  GetModuleHandleW
+#else
+#define GetModuleHandle  GetModuleHandleA
+#endif // !UNICODE
+#endif
+
+LPSTR
+WINAPI
+lstrcpyA(
+    _Out_writes_(_String_length_(lpString2) + 1) LPSTR lpString1, // deprecated: annotation is as good as it gets
+    _In_  LPCSTR lpString2
+    );
+
+LPWSTR
+WINAPI
+lstrcpyW(
+    _Out_writes_(_String_length_(lpString2) + 1) LPWSTR lpString1, // deprecated: annotation is as good as it gets
+    _In_  LPCWSTR lpString2
+    );
+#ifdef UNICODE
+#define lstrcpy  lstrcpyW
+#else
+#define lstrcpy  lstrcpyA
+#endif // !UNICODE
+
+
+LPSTR
+WINAPI
+CharPrevA(
+    _In_ LPCSTR lpszStart,
+    _In_ LPCSTR lpszCurrent);
+
+LPWSTR
+WINAPI
+CharPrevW(
+    _In_ LPCWSTR lpszStart,
+    _In_ LPCWSTR lpszCurrent);
+#ifdef UNICODE
+#define CharPrev  CharPrevW
+#else
+#define CharPrev  CharPrevA
+#endif // !UNICODE
+
+
+HANDLE
+WINAPI
+OpenProcess(
+    _In_ DWORD dwDesiredAccess,
+    _In_ BOOL bInheritHandle,
+    _In_ DWORD dwProcessId
+    );
+
+DWORD
+WINAPI
+SetFilePointer(
+    _In_ HANDLE hFile,
+    _In_ LONG lDistanceToMove,
+    _Inout_opt_ PLONG lpDistanceToMoveHigh,
+    _In_ DWORD dwMoveMethod
+    );
+
+
+DWORD
+WINAPI
+GetFileSize(
+    _In_ HANDLE hFile,
+    _Out_opt_ LPDWORD lpFileSizeHigh
+    );
+
+
+_Ret_maybenull_
+HANDLE
+WINAPI
+CreateThread(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    _In_ SIZE_T dwStackSize,
+    _In_ LPTHREAD_START_ROUTINE lpStartAddress,
+    _In_opt_ __drv_aliasesMem LPVOID lpParameter,
+    _In_ DWORD dwCreationFlags,
+    _Out_opt_ LPDWORD lpThreadId
+    );
+
+
+HANDLE
+WINAPI
+CreateNamedPipeW(
+    _In_ LPCWSTR lpName,
+    _In_ DWORD dwOpenMode,
+    _In_ DWORD dwPipeMode,
+    _In_ DWORD nMaxInstances,
+    _In_ DWORD nOutBufferSize,
+    _In_ DWORD nInBufferSize,
+    _In_ DWORD nDefaultTimeOut,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes
+    );
+
+
+HANDLE
+WINAPI
+CreateNamedPipeA(
+    _In_     LPCSTR lpName,
+    _In_     DWORD dwOpenMode,
+    _In_     DWORD dwPipeMode,
+    _In_     DWORD nMaxInstances,
+    _In_     DWORD nOutBufferSize,
+    _In_     DWORD nInBufferSize,
+    _In_     DWORD nDefaultTimeOut,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes
+    );
+
+#ifdef UNICODE
+#define CreateNamedPipe  CreateNamedPipeW
+#else
+#define CreateNamedPipe  CreateNamedPipeA
+#endif
+
+#define TLS_OUT_OF_INDEXES ((DWORD)0xFFFFFFFF)
+
+typedef struct _BY_HANDLE_FILE_INFORMATION {
+    DWORD dwFileAttributes;
+    FILETIME ftCreationTime;
+    FILETIME ftLastAccessTime;
+    FILETIME ftLastWriteTime;
+    DWORD dwVolumeSerialNumber;
+    DWORD nFileSizeHigh;
+    DWORD nFileSizeLow;
+    DWORD nNumberOfLinks;
+    DWORD nFileIndexHigh;
+    DWORD nFileIndexLow;
+} BY_HANDLE_FILE_INFORMATION, *PBY_HANDLE_FILE_INFORMATION, *LPBY_HANDLE_FILE_INFORMATION;
+
+
+BOOL
+WINAPI
+GetFileInformationByHandle(
+    _In_ HANDLE hFile,
+    _Out_ LPBY_HANDLE_FILE_INFORMATION lpFileInformation
+    );
+
+VOID
+WINAPI
+InitializeCriticalSection(
+    _Out_ LPCRITICAL_SECTION lpCriticalSection
+    );
+
+BOOL
+WINAPI
+GetProcessTimes(
+    _In_ HANDLE hProcess,
+    _Out_ LPFILETIME lpCreationTime,
+    _Out_ LPFILETIME lpExitTime,
+    _Out_ LPFILETIME lpKernelTime,
+    _Out_ LPFILETIME lpUserTime
+    );
+
+DWORD
+WINAPI
+TlsAlloc(
+    VOID
+    );
+
+LPVOID
+WINAPI
+TlsGetValue(
+    _In_ DWORD dwTlsIndex
+    );
+
+
+BOOL
+WINAPI
+TlsSetValue(
+    _In_ DWORD dwTlsIndex,
+    _In_opt_ LPVOID lpTlsValue
+    );
+
+
+BOOL
+WINAPI
+TlsFree(
+    _In_ DWORD dwTlsIndex
+    );
+
+DWORD
+WINAPI
+WaitForMultipleObjects(
+    _In_ DWORD nCount,
+    _In_reads_(nCount) CONST HANDLE *lpHandles,
+    _In_ BOOL bWaitAll,
+    _In_ DWORD dwMilliseconds
+    );
+
+BOOL
+WINAPI
+GetHandleInformation(
+    _In_ HANDLE hObject,
+    _Out_ LPDWORD lpdwFlags
+    );
+
+DWORD
+WINAPI
+ResumeThread(
+    _In_ HANDLE hThread
+    );
+
+DWORD
+WINAPI
+WaitForSingleObject(
+    _In_ HANDLE hHandle,
+    _In_ DWORD dwMilliseconds
+    );
+
+VOID
+WINAPI
+Sleep(
+    _In_ DWORD dwMilliseconds
+    );
+
+VOID
+WINAPI
+ExitThread(
+    _In_ DWORD dwExitCode
+    );
+
+
+BOOL
+WINAPI
+TerminateThread(
+    _In_ HANDLE hThread,
+    _In_ DWORD dwExitCode
+    );
+
+BOOL
+WINAPI
+SetThreadPriority(
+    _In_ HANDLE hThread,
+    _In_ int nPriority
+    );
+
+DWORD
+WINAPI
+GetModuleFileNameA(
+    _In_opt_ HMODULE hModule,
+    _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPSTR lpFilename,
+    _In_ DWORD nSize
+    );
+
+DWORD
+WINAPI
+GetModuleFileNameW(
+    _In_opt_ HMODULE hModule,
+    _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPWSTR lpFilename,
+    _In_ DWORD nSize
+    );
+
+#ifdef UNICODE
+#define GetModuleFileName  GetModuleFileNameW
+#else
+#define GetModuleFileName  GetModuleFileNameA
+#endif // !UNICODE
+
+BOOL
+WINAPI
+GetVersionExA(
+    _Inout_ LPOSVERSIONINFOA lpVersionInformation
+    );
+
+BOOL
+WINAPI
+GetVersionExW(
+    _Inout_ LPOSVERSIONINFOW lpVersionInformation
+    );
+
+#ifdef UNICODE
+#define GetVersionEx  GetVersionExW
+#else
+#define GetVersionEx  GetVersionExA
+#endif // !UNICODE
+
+BOOL
+WINAPI
+GetExitCodeProcess(
+    _In_ HANDLE hProcess,
+    _Out_ LPDWORD lpExitCode
+    );
+
+int
+WINAPI
+lstrlenA(
+    _In_ LPCSTR lpString
+    );
+
+int
+WINAPI
+lstrlenW(
+    _In_ LPCWSTR lpString
+    );
+
+#ifdef UNICODE
+#define lstrlen  lstrlenW
+#else
+#define lstrlen  lstrlenA
+#endif // !UNICODE
+
+LPSTR
+WINAPI
+lstrcatA(
+    _Inout_updates_z_(_String_length_(lpString1) + _String_length_(lpString2) + 1) LPSTR lpString1, // deprecated: annotation is as good as it gets
+    _In_    LPCSTR lpString2
+    );
+
+LPWSTR
+WINAPI
+lstrcatW(
+    _Inout_updates_z_(_String_length_(lpString1) + _String_length_(lpString2) + 1) LPWSTR lpString1, // deprecated: annotation is as good as it gets
+    _In_    LPCWSTR lpString2
+    );
+#ifdef UNICODE
+#define lstrcat  lstrcatW
+#else
+#define lstrcat  lstrcatA
+#endif // !UNICODE
+
+BOOL
+WINAPI
+CreateProcessA(
+    _In_opt_ LPCSTR lpApplicationName,
+    _Inout_opt_ LPSTR lpCommandLine,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    _In_ BOOL bInheritHandles,
+    _In_ DWORD dwCreationFlags,
+    _In_opt_ LPVOID lpEnvironment,
+    _In_opt_ LPCSTR lpCurrentDirectory,
+    _In_ LPSTARTUPINFOA lpStartupInfo,
+    _Out_ LPPROCESS_INFORMATION lpProcessInformation
+    );
+
+BOOL
+WINAPI
+CreateProcessW(
+    _In_opt_ LPCWSTR lpApplicationName,
+    _Inout_opt_ LPWSTR lpCommandLine,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    _In_opt_ LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    _In_ BOOL bInheritHandles,
+    _In_ DWORD dwCreationFlags,
+    _In_opt_ LPVOID lpEnvironment,
+    _In_opt_ LPCWSTR lpCurrentDirectory,
+    _In_ LPSTARTUPINFOW lpStartupInfo,
+    _Out_ LPPROCESS_INFORMATION lpProcessInformation
+    );
+
+#ifdef UNICODE
+#define CreateProcess  CreateProcessW
+#else
+#define CreateProcess  CreateProcessA
+#endif // !UNICODE
+
+DWORD
+WINAPI
+GetLogicalDrives(
+    VOID
+    );
+
+DWORD
+WINAPI
+GetFileType(
+    _In_ HANDLE hFile
+    );
+
+BOOL
+WINAPI
+GenerateConsoleCtrlEvent(
+    _In_ DWORD dwCtrlEvent,
+    _In_ DWORD dwProcessGroupId);
+
+BOOL
+WINAPI
+TerminateProcess(
+    _In_ HANDLE hProcess,
+    _In_ UINT uExitCode
+    );
+
+DWORD
+WINAPI
+GetFileAttributesA(
+    _In_ LPCSTR lpFileName
+    );
+
+DWORD
+WINAPI
+GetFileAttributesW(
+    _In_ LPCWSTR lpFileName
+    );
+
+#ifdef UNICODE
+#define GetFileAttributes  GetFileAttributesW
+#else
+#define GetFileAttributes  GetFileAttributesA
+#endif // !UNICODE
+
+BOOL
+WINAPI
+MoveFileA(
+    _In_ LPCSTR lpExistingFileName,
+    _In_ LPCSTR lpNewFileName
+    );
+
+BOOL
+WINAPI
+MoveFileW(
+    _In_ LPCWSTR lpExistingFileName,
+    _In_ LPCWSTR lpNewFileName
+    );
+#ifdef UNICODE
+#define MoveFile  MoveFileW
+#else
+#define MoveFile  MoveFileA
+#endif // !UNICODE
+
+BOOL
+WINAPI
+UnlockFile(
+    _In_ HANDLE hFile,
+    _In_ DWORD dwFileOffsetLow,
+    _In_ DWORD dwFileOffsetHigh,
+    _In_ DWORD nNumberOfBytesToUnlockLow,
+    _In_ DWORD nNumberOfBytesToUnlockHigh
+    );
+
+BOOL
+WINAPI
+LocalFileTimeToFileTime(
+    _In_ CONST FILETIME * lpLocalFileTime,
+    _Out_ LPFILETIME lpFileTime
+    );
+
+BOOL
+WINAPI
+SetFileTime(
+    _In_ HANDLE hFile,
+    _In_opt_ CONST FILETIME * lpCreationTime,
+    _In_opt_ CONST FILETIME * lpLastAccessTime,
+    _In_opt_ CONST FILETIME * lpLastWriteTime
+    );
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
 
 //#include "tcmalloc/rhomem.h"

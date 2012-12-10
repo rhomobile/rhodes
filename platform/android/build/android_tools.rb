@@ -393,18 +393,43 @@ end
 module_function :load_app_and_run
 
 def restart_adb
-  puts 'Killing adb server'
-  system("#{$adb} kill-server")
+  cmd_re = Regexp.new "\"?#{$adb}\"?\s+-\w\s+logcat\s+>>\s+\"?#{$applog_path}\"?"
+  log_pids = Jake.get_process_list.select do |proc|
+    proc[:cmd] =~ cmd_re
+  end
+  log_pids.each do |pid|
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      system "taskkill /PID #{pid}"
+    else
+      system "kill -TERM #{pid}"
+    end
+  end
+
+  sleep 1
+
+  log_pids1 = Jake.get_process_list.select do |proc|
+    proc[:cmd] =~ cmd_re
+  end
+  log_pids1.each do |pid|
+    if RUBY_PLATFORM =~ /(win|w)32$/
+      system "taskkill /F /PID #{pid}"
+    else
+      system "kill -KILL #{pid}"
+    end
+  end
+
+  #puts 'Killing adb server'
+  #system("#{$adb} kill-server")
   #if RUBY_PLATFORM =~ /(win|w)32$/
   #  # Windows
   #  system ('taskkill /F /IM adb.exe')
   #else
   #  system ('killall -9 adb')
   #end
-  sleep 3
-  puts 'Starting adb server again'
-  system("#{$adb} start-server")
-  sleep 3
+  #sleep 3
+  #puts 'Starting adb server again'
+  #system("#{$adb} start-server")
+  #sleep 3
 end
 module_function :restart_adb
 
@@ -425,15 +450,43 @@ module_function :kill_adb_and_emulator
 
 def logcat(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
-    rm_rf log_path if File.exist?(log_path)
-    Thread.new { Jake.run($adb, [device_flag, 'logcat', '>>', log_path], nil, true) }
+    cmd_re = Regexp.new "\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>>\s+\"?#{log_path}\"?"
+    log_pids = Jake.get_process_list
+    
+    log_pids.select! do |proc|
+      proc[:cmd] =~ cmd_re
+    end
+    
+    #log_pids.each do |proc|
+    #  puts proc.inspect
+    #end
+    
+    if log_pids.empty?
+      rm_rf log_path if File.exist?(log_path)
+      puts 'Starting new logcat'
+      Thread.new { Jake.run($adb, [device_flag, 'logcat', '>>', log_path], nil, true) }
+    end
   end
 end
 module_function :logcat
 
 def logcat_process(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
-    Thread.new { system("\"#{$adb}\" #{device_flag} logcat >> \"#{log_path}\" ") }  
+    cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>>\s+\"?#{log_path}\"?\"?"
+    log_pids = Jake.get_process_list
+    
+    log_pids.select! do |proc|
+      proc[:cmd] =~ cmd_re
+    end
+    
+    #log_pids.each do |proc|
+    #  puts proc.inspect
+    #end
+    
+    if log_pids.empty?
+      puts 'Starting new logcat process'
+      Thread.new { system("\"#{$adb}\" #{device_flag} logcat >> \"#{log_path}\"") }
+    end
   end
 end
 module_function :logcat_process
