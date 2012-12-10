@@ -405,7 +405,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
 	if (hWnd)
 	{
-		SetForegroundWindow( HWND( DWORD(hWnd) | 0x01 ) );
+        SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
+        SetForegroundWindow( hWnd );
 		return S_FALSE;
 	}
 
