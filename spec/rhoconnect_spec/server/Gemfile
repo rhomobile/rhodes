@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 gem 'rhoconnect', '3.4.2'
 gemfile_path = File.join(File.dirname(__FILE__), ".rcgemfile")
 
-gem 'aws', '>= 2.6.0'
+#gem 'aws', '>= 2.6.0'
 gem 'aws-s3', '>= 0.6.3'
 
 begin

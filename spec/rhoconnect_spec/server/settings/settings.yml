@@ -11,6 +11,11 @@
     :poll_interval: 0
   BlobTest_s:
     :poll_interval: 0
+  BlobBulkTest:
+    :poll_interval: 0
+  BlobBulkTest_s:
+    :poll_interval: 0
+
 
 :development:
   :licensefile: settings/license.key
@@ -22,6 +27,7 @@
   :mdsserverport: 8080
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/
+  :bulk_sync_poll_interval: 10
 :test: 
   :licensefile: settings/license.key
   :iphonecertfile: settings/apple_push_cert.pem
@@ -32,6 +38,7 @@
   :mdsserverport: 8080
   :redis: localhost:6379:2
   :syncserver: http://localhost:9292/application/
+  :bulk_sync_poll_interval: 10
 :production: 
   :licensefile: settings/license.key
   :iphonecertfile: settings/apple_push_cert.pem
@@ -42,3 +49,4 @@
   :mdsserverport: 8080
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/
+  :bulk_sync_poll_interval: 10

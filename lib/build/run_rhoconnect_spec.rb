@@ -1,3 +1,5 @@
+require 'fileutils'
+
 require File.join(File.dirname(__FILE__),'jake.rb')
 
 	def reset_rhoconnect_server(host,port)
@@ -12,7 +14,7 @@ require File.join(File.dirname(__FILE__),'jake.rb')
 			unless @bulk_srv_token
 				@bulk_srv_token = RestClient.post("#{exact_url}/rc/v1/system/login", { :login => "rhoadmin", :password => "" }.to_json, :content_type => :json)
 			end
-			RestClient.post("#{exact_url}/api/reset", {:api_token => @bulk_srv_token}.to_json, :content_type => :json)
+			RestClient.post("#{exact_url}/rc/v1/system/reset", {:api_token => @bulk_srv_token}.to_json, :content_type => :json)
 			puts "reset OK"
 			rescue Exception => e
 			puts "reset_spec_server failed: #{e}"
@@ -42,33 +44,35 @@ require File.join(File.dirname(__FILE__),'jake.rb')
 		rc_out = File.open( File.join($app_path, "rhoconnect.log" ), "w")
 		redis_out = File.open( File.join($app_path, "redis.log" ), "w")
 		resque_out = File.open( File.join($app_path, "resque.log" ), "w")
-
+		
+		
+		puts "update bundle"
+		Kernel.system("bundle","update",:chdir => server_path)
+		
 
 		puts "stop resque"
 		Process.kill('INT', resque_pid) if resque_pid
 		sleep(10)
 
 		puts "stop rhoconnect"
-#		Kernel.spawn("rhoconnect","stop",:chdir => server_path, :out => rc_out )
-		Kernel.spawn("rhoconnect","stop",:chdir => server_path)
+		Kernel.spawn("rhoconnect","stop",:chdir => server_path, :out => rc_out )
 		sleep(10)
 
 		puts "stop redis"
-#		Kernel.spawn("rhoconnect","redis-stop",:chdir => server_path, :out => redis_out )
-		Kernel.spawn("rhoconnect","redis-stop",:chdir => server_path)
+		Kernel.spawn("rhoconnect","redis-stop",:chdir => server_path, :out => redis_out )
 		sleep(10)
 
-
+		
+		puts "cleanup rhoconnect data"
+		FileUtils.rm_r(File.join(server_path,"data")) if File.directory?(File.join(server_path,"data"))
 
 
 		puts "run redis"
-#		Kernel.spawn("rhoconnect","redis-start",:chdir => server_path, :out => redis_out )
-		Kernel.spawn("rhoconnect","redis-startbg",:chdir => server_path)
+		Kernel.spawn("rhoconnect","redis-startbg",:chdir => server_path, :out => redis_out )
 		sleep(10)
 
 		puts "run rhoconnect"
-#		server_pid = Kernel.spawn("rhoconnect","start",:chdir => server_path, :out => rc_out )
-		server_pid = Kernel.spawn("rhoconnect","startbg",:chdir => server_path)
+		server_pid = Kernel.spawn("rhoconnect","startbg",:chdir => server_path, :out => rc_out )
 		sleep(10)
 
 		puts "reset rhoconnect"
@@ -76,8 +80,7 @@ require File.join(File.dirname(__FILE__),'jake.rb')
 		sleep(10)
 
 		puts "run resque"
-#		resque_pid = Kernel.spawn({ "QUEUE" => "1" }, "rake","resque:work",:chdir => server_path, :out => resque_out )
-		resque_pid = Kernel.spawn({ "QUEUE" => "*" }, "rake","resque:work",:chdir => server_path)
+		resque_pid = Kernel.spawn({ "QUEUE" => "*" }, "rake","resque:work",:chdir => server_path, :out => resque_out )
 		sleep(10)
 
 		puts "set server parameters, resque_pid = #{resque_pid}, pid = #{server_pid}. setting address = #{host.inspect}, port = #{port}"
