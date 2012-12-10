@@ -237,6 +237,7 @@ namespace "config" do
     $gapikey = nil if $gapikey.empty?
 
     $android_orientation = $app_config["android"]["orientation"] unless $app_config["android"].nil? 
+    $android_date_time_picker_dialog = $app_config["android"]["date_time_picker_dialog"] unless $app_config["android"].nil? || $app_config["android"]["date_time_picker_dialog"].nil?
 
     $use_geomapping = $app_config["android"]["mapping"] unless $app_config["android"].nil?
     $use_geomapping = $config["android"]["mapping"] if $use_geomapping.nil? and not $config["android"].nil?
@@ -1271,6 +1272,7 @@ namespace "build" do
       generator.minSdkVer = $min_sdk_level
       generator.maxSdkVer = $max_sdk_level
       generator.screenOrientation = $android_orientation unless $android_orientation.nil?
+      generator.dateTimePickerDialog = $android_date_time_picker_dialog unless $android_date_time_picker_dialog.nil?
 
       generator.usesLibraries['com.google.android.maps'] = true if $use_google_addon_api
       generator.addGooglePush(File.join($androidpath,'Rhodes','PushReceiver.erb')) if $app_config["capabilities"].index 'push'
