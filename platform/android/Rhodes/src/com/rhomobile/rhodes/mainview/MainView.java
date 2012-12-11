@@ -40,8 +40,10 @@ public interface MainView {
 
 	public void setWebView(IRhoWebView view, int tabIndex);
 	public IRhoWebView getWebView(int tabIndex);
+	public IRhoWebView getWebView(Object nativeWebView);
 	
 	public IRhoWebView detachWebView();
+	public void destroy();
 	
 	public void back(int index);
 	public void forward(int index);

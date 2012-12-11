@@ -44,8 +44,8 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
 import com.rhomobile.rhodes.extmanager.AbstractRhoExtension;
-import com.rhomobile.rhodes.extmanager.IRhoExtData;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 public class Signature extends AbstractRhoExtension implements IRhoExtension {
@@ -269,12 +269,12 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 	}
 	
 	@Override
-	public void onBeforeNavigate(IRhoExtManager extManager, String url, IRhoExtData data) {
+	public void onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView data) {
 		inlineSignatureHide(extManager);
 	}
 	
 	@Override
-	public void onSetProperty(IRhoExtManager extManager, String name, String value, IRhoExtData data) {
+	public void onSetProperty(IRhoExtManager extManager, String name, String value, IRhoWebView data) {
 		if ((name == null) || (value == null)) {
 			return;
 		}
