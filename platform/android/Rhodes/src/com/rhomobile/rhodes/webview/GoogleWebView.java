@@ -37,32 +37,8 @@ public class GoogleWebView implements IRhoWebView {
     }
 
     private static void initWebStuff(Activity activity) {
-        //String ccName;
-        //String wsName;
-        //int sdkVersion = Build.VERSION.SDK_INT;
-        //if (sdkVersion < Build.VERSION_CODES.ECLAIR_MR1) {
-        //    ccName = "ChromeClientOld";
-        //}
-        //else {
-        //    ccName = "ChromeClientNew";
-        //}
-        
-        try {
-            //String pkgname = ChromeClientOld.class.getPackage().getName();
-            //String fullName = pkgname + "." + ccName;
-            //Class<? extends WebChromeClient> ccClass =
-            //    Class.forName(fullName).asSubclass(WebChromeClient.class);
-            
-            //Constructor<? extends WebChromeClient> ctor = ccClass.getConstructor(RhodesActivity.class);
-            //mChromeClient = ctor.newInstance(activity);
-            
-            mWebViewClient = new RhoWebViewClient();
-            
-            mInitialized = true;
-        }
-        catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        mWebViewClient = new RhoWebViewClient();
+        mInitialized = true;
     }
     
     public void applyWebSettings() {
