@@ -182,12 +182,17 @@ public class GoogleWebView implements IRhoWebView {
 
     @Override
     public void onPause() {
-	AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,true);
+        AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,true);
     }
 
     @Override
     public void onResume() {
-	AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,false);
+        AndroidFunctionalityManager.getAndroidFunctionality().pauseWebView(mWebView,false);
+    }
+
+    @Override
+    public void destroy() {
+        mWebView.destroy();
     }
 
     @Override

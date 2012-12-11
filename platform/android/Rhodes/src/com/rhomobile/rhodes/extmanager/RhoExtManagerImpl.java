@@ -34,8 +34,8 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private boolean mLogDebug = false;
     private boolean mFirstNavigate = true;
 
-    private IRhoExtData makeDefExtData(View view) {
-        return new RhoExtDataImpl(view, RhodesActivity.safeGetInstance().getMainView().activeTab());
+    private IRhoWebView makeDefExtData(View view) {
+        return RhodesActivity.safeGetInstance().getMainView().getWebView(view);
     }
     
     private static native void nativeRequireRubyFile(String path);
@@ -82,9 +82,9 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     @Override
-	public View getWebView() {
+	public IRhoWebView getWebView() {
         MainView mainView = RhodesActivity.safeGetInstance().getMainView();
-        return mainView != null ? mainView.getWebView(mainView.activeTab()).getView() : null;
+        return mainView != null ? mainView.getWebView(mainView.activeTab()) : null;
     }
 
     @Override
@@ -94,7 +94,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     @Override
-    public void onUnhandledProperty(String extName, String name, String value, IRhoExtData extData) {
+    public void onUnhandledProperty(String extName, String name, String value, IRhoWebView extData) {
         IRhoExtension ext = null;
         synchronized (mExtensions) {
             ext = mExtensions.get(extName);

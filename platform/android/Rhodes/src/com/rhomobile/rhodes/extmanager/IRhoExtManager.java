@@ -21,7 +21,7 @@ public interface IRhoExtManager {
      * Web view getter. In case of Motorola WebKit is used it returns object which may be directly casted to NeonEkihView
      * @return Current web view instance from MainView
      */
-    View getWebView();
+    IRhoWebView getWebView();
     
     /**
      * RhodesActivity top level View getter
@@ -36,7 +36,7 @@ public interface IRhoExtManager {
      */
     String getBuildConfigItem(String name);
 
-    void onUnhandledProperty(String moduleName,String name,String value, IRhoExtData ext);
+    void onUnhandledProperty(String moduleName,String name,String value, IRhoWebView ext);
     void executeRubyCallback(String callback,String callbackBody,String callbackData, boolean waitForResponse);
     void executeRubyCallbackWithJsonBody(String szCallback, String callbackBody, String callbackData, boolean waitForResponse);
     void requireRubyFile(String szFilePath);

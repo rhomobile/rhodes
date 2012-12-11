@@ -353,7 +353,16 @@ public class TabbedMainView implements MainView {
 		TabData data = tabData.elementAt(index);
 		return data.view;
 	}
-	
+
+    private MainView getTabMainView(Object handle) throws IllegalArgumentException {
+        for(TabData tab: tabData) {
+            if (tab.view.getWebView(-1).getView() == handle) {
+                return tab.view;
+            }
+        }
+        throw new IllegalArgumentException("Wrong WebView handle: " + handle );
+    }
+
 	private void processTabHostColors(TabHost tabHost, int SelectedColor, boolean useSelectedColor) {
 		
 		for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) { 
@@ -861,11 +870,23 @@ public class TabbedMainView implements MainView {
         return getTabMainView(tab_index).getWebView(-1);
     }
 
-	@Override
-	public IRhoWebView detachWebView() {
-		return getTabMainView(activeTab()).detachWebView();
-	}
-	
+    @Override
+    public IRhoWebView getWebView(Object handle) {
+        return getTabMainView(handle).getWebView(-1);
+    }
+
+    @Override
+    public IRhoWebView detachWebView() {
+        return getTabMainView(activeTab()).detachWebView();
+    }
+
+    @Override
+    public void destroy() {
+        for(TabData tab: tabData) {
+            tab.view.destroy();
+        }
+    }
+
 	public void back(int index) {
 		getTabMainView(index).back(0);
 	}
