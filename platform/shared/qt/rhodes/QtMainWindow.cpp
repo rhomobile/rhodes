@@ -246,8 +246,7 @@ bool QtMainWindow::isStarted(void)
 
 void QtMainWindow::on_actionBack_triggered()
 {
-    if (ui->webView)
-        ui->webView->back();
+	RHODESAPP().navigateBack();
 }
 
 void QtMainWindow::on_actionRotateRight_triggered()
@@ -355,14 +354,14 @@ void QtMainWindow::on_webView_loadFinished(bool ok)
 
 }
 
-void QtMainWindow::timerEvent(QTimerEvent *event)
+void QtMainWindow::timerEvent(QTimerEvent *ev)
 {
-    if (event->timerId() == m_SplashTimer.timerId()) 
+    if (ev->timerId() == m_SplashTimer.timerId()) 
     {
         m_bFirstLoad = false;
         main_webView->show();
      } else {
-         QWidget::timerEvent(event);
+         QWidget::timerEvent(ev);
      }
 }
 
@@ -753,7 +752,7 @@ void QtMainWindow::exitCommand()
 
 void QtMainWindow::navigateBackCommand()
 {
-    this->GoBack();
+    RHODESAPP().navigateBack();
 }
 
 void QtMainWindow::navigateForwardCommand()
