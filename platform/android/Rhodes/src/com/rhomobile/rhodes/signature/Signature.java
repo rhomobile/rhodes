@@ -269,14 +269,15 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 	}
 	
 	@Override
-	public void onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView data) {
+	public boolean onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView data, boolean res) {
 		inlineSignatureHide(extManager);
+		return res;
 	}
 	
 	@Override
-	public void onSetProperty(IRhoExtManager extManager, String name, String value, IRhoWebView data) {
+	public boolean onSetProperty(IRhoExtManager extManager, String name, String value, IRhoWebView data, boolean res) {
 		if ((name == null) || (value == null)) {
-			return;
+			return res;
 		}
 		mProperties.setPropertyByName(name, value);
 		if ("Visibility".equalsIgnoreCase(name)) {
@@ -288,11 +289,14 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 				// hide;
 				inlineSignatureHide(extManager);
 			}
+			res = true;
 		}
 		else if ("Clear".equalsIgnoreCase(name)) {
 			// clear
 			inlineSignatureClear(extManager);
+			res = true;
 		}
+		return res;
 	}
 	
 	public static Signature getSharedInstance() {

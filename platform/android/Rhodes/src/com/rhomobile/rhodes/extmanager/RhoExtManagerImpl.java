@@ -100,7 +100,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             ext = mExtensions.get(extName);
         }
         if (ext != null) {
-            ext.onSetProperty(this, name, value, extData);
+            ext.onSetProperty(this, name, value, extData, false);
         }
     }
 
@@ -356,8 +356,9 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     
     public void onSetPropertiesData(View view,String propId, String data, int position, int total) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onSetPropertiesData(this, propId, data, position, total, makeDefExtData(view));
+                res = ext.onSetPropertiesData(this, propId, data, position, total, makeDefExtData(view), res);
             }
         }
     }
@@ -372,27 +373,30 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
 
     public void onBeforeNavigate(View view, String url) {
-	if (isFirstNavigate() ) {
-		if (getLicenseStatus() == LicenseStatus.LICENSE_MISSED) {
-			readLicenseCredentials();
-			if (checkLicence() == LicenseStatus.LICENSE_FAILED) {
-				showLicenseAlert();
-			}
-		}
-		firstNavigate();
-	}
-	
+        if (isFirstNavigate()) {
+            Logger.T(TAG, "onBeforeNavigate first time");
+            if (getLicenseStatus() == LicenseStatus.LICENSE_MISSED) {
+                readLicenseCredentials();
+                if (checkLicence() == LicenseStatus.LICENSE_FAILED) {
+                    showLicenseAlert();
+                }
+            }
+            firstNavigate();
+        }
+
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onBeforeNavigate(this, url, makeDefExtData(view));
+                res = ext.onBeforeNavigate(this, url, makeDefExtData(view), res);
             }
         }
     }
 
     public void onNavigateComplete(View view, String url) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onNavigateComplete(this, url, makeDefExtData(view));
+                res = ext.onNavigateComplete(this, url, makeDefExtData(view), res);
             }
         }
     }
@@ -408,73 +412,83 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     public void onAlert(View view, String msg) {
+        Logger.T(TAG, "onAlert");
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onAlert(this, msg, makeDefExtData(view));
+                res = ext.onAlert(this, msg, makeDefExtData(view), res);
             }
         }
     }
 
     public void onConfirm(View view, String msg) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onConfirm(this, msg, makeDefExtData(view));
+                res = ext.onConfirm(this, msg, makeDefExtData(view), res);
             }
         }
     }
 
     public void onConsole(View view, String msg) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onConsole(this, msg, makeDefExtData(view));
+                res = ext.onConsole(this, msg, makeDefExtData(view), res);
             }
         }
     }
 
     public void onInputMethod(View view, boolean enabled, String type, Rect area) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onInputMethod(this, enabled, type, area, makeDefExtData(view));
+                res = ext.onInputMethod(this, enabled, type, area, makeDefExtData(view), res);
             }
         }
     }
 
     public void onLoadEnd(View view, String url, long arg2, long arg3) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onNavigateComplete(this, url, makeDefExtData(view));
+                res = ext.onNavigateComplete(this, url, makeDefExtData(view), res);
             }
         }
     }
 
     public void onLoadError(View view, IRhoExtension.LoadErrorReason reason) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onNavigateError(this, "", reason, makeDefExtData(view));
+                res = ext.onNavigateError(this, "", reason, makeDefExtData(view), res);
             }
         }
     }
 
     public void onLoadProgress(View view, int val, int total) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onNavigateProgress(this, "", val, total, makeDefExtData(view));
+                res = ext.onNavigateProgress(this, "", val, total, makeDefExtData(view), res);
             }
         }
     }
 
     public void onMetaEnd(View view) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onSetPropertiesDataEnd(this, makeDefExtData(view));
+                res = ext.onSetPropertiesDataEnd(this, makeDefExtData(view), res);
             }
         }
     }
 
     public void onPrompt(View view, String prompt, String defaultResponse) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onPrompt(this, prompt, defaultResponse, makeDefExtData(view));
+                res = ext.onPrompt(this, prompt, defaultResponse, makeDefExtData(view), res);
             }
         }
     }
@@ -482,47 +496,53 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     public void onSelect(View view, String[] lines, int pos) {
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onSelect(this, lines, pos, makeDefExtData(view));
+                boolean res = false;
+                res = ext.onSelect(this, lines, pos, makeDefExtData(view), res);
             }
         }
     }
 
     public void onStatus(View view, String msg) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onStatus(this, msg, makeDefExtData(view));
+                res = ext.onStatus(this, msg, makeDefExtData(view), res);
             }
         }
     }
 
     public void onTitle(View view, String title) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onStatus(this, title, makeDefExtData(view));
+                res = ext.onStatus(this, title, makeDefExtData(view), res);
             }
         }
     }
     
     public void onAuthRequired(View view, String type, String url, String realm) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.onAuthRequired(this, type, url, realm, makeDefExtData(view));
+                res = ext.onAuthRequired(this, type, url, realm, makeDefExtData(view), res);
             }
         }
     }
 
     public void startLocationUpdates(View view, boolean val) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.startLocationUpdates(this, val, makeDefExtData(view));
+                res = ext.startLocationUpdates(this, val, makeDefExtData(view), res);
             }
         }
     }
 
     public void stopLocationUpdates(View view) {
         synchronized (mExtensions) {
+            boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                ext.stopLocationUpdates(this, makeDefExtData(view));
+                res = ext.stopLocationUpdates(this, makeDefExtData(view), res);
             }
         }
     }
