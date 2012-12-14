@@ -4,8 +4,8 @@ require 'rhoconnect/application/init'
 # secret is generated along with the app
 Rhoconnect::Server.set     :secret,      '1ad5ff6920081308bcc1425b3106e57d95dbbf31ae9068b7e603aacc6193afb47c665dc086c065eaebc8ba2c6ec3dd3ba286d482f0f47f3ae424be2251c1a2aa'
 
-ENV['AMAZON_ACCESS_KEY_ID'] = 'AKIAJWPYZ57GTB3NN6AQ'
-ENV['AMAZON_SECRET_ACCESS_KEY'] = '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'
+#ENV['AMAZON_ACCESS_KEY_ID'] = access key id should be set via environment variable
+#ENV['AMAZON_SECRET_ACCESS_KEY'] = secret access key sould be set via environment variable
 
 # !!! Add your custom initializers and overrides here !!!
 # For example, uncomment the following line to enable Stats
