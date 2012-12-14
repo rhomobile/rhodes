@@ -17,6 +17,7 @@ build:
   bbpath: platform/bb
   wmpath: platform/wm
   wppath: platform/wp7
+  wp8path: platform/wp8
   androidpath: platform/android
   iphonepath: platform/iphone
   symbianpath: platform/symbian
