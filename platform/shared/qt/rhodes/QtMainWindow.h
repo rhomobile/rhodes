@@ -61,7 +61,7 @@ public:
     virtual void showEvent(QShowEvent *);
     virtual void closeEvent(QCloseEvent *);
     virtual void paintEvent(QPaintEvent *);
-    virtual void timerEvent(QTimerEvent *event);
+    virtual void timerEvent(QTimerEvent *ev);
     void setCallback(IMainWindowCallback* callback);
     int getLogicalDpiX();
     int getLogicalDpiY();

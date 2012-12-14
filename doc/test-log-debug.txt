@@ -4,11 +4,11 @@
 
 ### Adding Unit Tests
 
-When you [generate a model](generator#add-new-model), you will now get an _spec.rb file generated along with your controller.
+When you [generate a model](generator#add-new-model), you get an _spec.rb file generated along with your controller. You would get the following for a model named "Person".
 
 	Generating with model generator:
 	....
-	[ADDED]  app/Person/person_spec.rb
+	[ADDED]  app/test/person_spec.rb
 
 This file contains tests for your controller and is in the mspec format: [rubyspec.org](http://rubyspec.org/) 
 
@@ -32,9 +32,10 @@ You will then see the mspec framework added to your application:
 
 	Generating with spec generator:
 	     [ADDED]  app/SpecRunner
-	     [ADDED]  app/spec
 	     [ADDED]  app/mspec.rb
 	     [ADDED]  app/spec_runner.rb
+
+**NOTE: You can also [create the mspec framework and run the test on applications within RhoStudio](/rhostudio.tutorial#running-a-unit-test-in rhostudio).**
 
 Finally, add the fileutils and mspec extensions to your build.yml:
 	

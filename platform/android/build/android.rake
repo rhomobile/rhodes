@@ -439,6 +439,9 @@ namespace "config" do
       if $app_config['capabilities'].index('push')
         $app_config['extensions'] << 'gcm-push' unless $app_config['extensions'].index('gcm-push')
       end
+      if $app_config['capabilities'].index('native_browser')
+        $app_config['extensions'].delete('rhoelements')
+      end
     end
   
     task :extensions => ['config:android', 'build:bundle:noxruby'] do

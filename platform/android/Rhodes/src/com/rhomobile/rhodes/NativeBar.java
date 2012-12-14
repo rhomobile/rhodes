@@ -89,6 +89,7 @@ public class NativeBar {
 				}
 				
 				if (v != null) {
+				    mainView.destroy();
 				    RhodesActivity.safeGetInstance().setMainView(v);
 					if (v instanceof TabbedMainView) {
 						// loading of default opened tab should be after TabView insert to real Views tree
