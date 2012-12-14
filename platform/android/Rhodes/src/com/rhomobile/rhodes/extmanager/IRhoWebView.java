@@ -27,6 +27,7 @@ public interface IRhoWebView {
     String getEngineId();
     void onPause();
     void onResume();
+    void destroy();
     
     void capture(CaptureFormat format, String path);
 }

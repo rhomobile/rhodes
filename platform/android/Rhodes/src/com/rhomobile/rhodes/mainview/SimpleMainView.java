@@ -166,6 +166,12 @@ public class SimpleMainView implements MainView {
 		return webView;
 	}
 
+    @Override
+    public IRhoWebView getWebView(Object nativeWebView)
+    {
+        return webView;
+    }
+
     public void setCustomView(IRhoCustomView customView) {
         restoreWebView();
         if (customView != null) {
@@ -296,7 +302,13 @@ public class SimpleMainView implements MainView {
 		}
 		return v;
 	}
-	
+
+    public void destroy() {
+        if (webView != null) {
+            webView.destroy();
+        }
+    }
+
 	private View createButton(Map<Object,Object> hash) {
 		Context ctx = RhodesActivity.getContext();
 		

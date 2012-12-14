@@ -167,15 +167,20 @@ public class SplashScreen implements MainView{
 		return mBackendView.getView();
 	}
 
-   @Override
+    @Override
     public void setWebView(IRhoWebView view, int index) {
-       mBackendView.setWebView(view, index);
+        mBackendView.setWebView(view, index);
     }
 
-	@Override
-	public IRhoWebView getWebView(int index) {
-		return mBackendView.getWebView(index);
-	}
+    @Override
+    public IRhoWebView getWebView(int index) {
+        return mBackendView.getWebView(index);
+    }
+
+    @Override
+    public IRhoWebView getWebView(Object hdl) {
+        return mBackendView.getWebView(hdl);
+    }
 	
 	@Override
 	public void goBack() {
@@ -232,6 +237,11 @@ public class SplashScreen implements MainView{
     @Override
     public IRhoWebView detachWebView() {
         return mBackendView.detachWebView();
+    }
+
+    @Override
+    public void destroy() {
+        mBackendView.destroy();
     }
 
     @Override

@@ -10,68 +10,84 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     }
 
     @Override
-    public void onSetPropertiesData(IRhoExtManager extManager, String propId,
-            String data, int pos, int total, IRhoExtData ext) {
+    public boolean onSetPropertiesData(IRhoExtManager extManager, String propId,
+            String data, int pos, int total, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onSetPropertiesDataEnd(IRhoExtManager extManager, IRhoExtData ext) {
+    public boolean onSetPropertiesDataEnd(IRhoExtManager extManager, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onSetProperty(IRhoExtManager extManager, String name, String value, IRhoExtData ext) {
+    public boolean onSetProperty(IRhoExtManager extManager, String name, String value, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onBeforeNavigate(IRhoExtManager extManager, String url, IRhoExtData ext) {
+    public boolean onBeforeNavigate(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onNavigateProgress(IRhoExtManager extManager, String url, int pos, int total, IRhoExtData ext) {
+    public boolean onNavigateProgress(IRhoExtManager extManager, String url, int pos, int total, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onNavigateComplete(IRhoExtManager extManager, String url, IRhoExtData ext) {
+    public boolean onNavigateComplete(IRhoExtManager extManager, String url, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onDocumentComplete(IRhoExtManager extManager, String urlOfDocument, IRhoExtData ext) {
+    public boolean onDocumentComplete(IRhoExtManager extManager, String urlOfDocument, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onAlert(IRhoExtManager extManager, String message, IRhoExtData ext) {
+    public boolean onAlert(IRhoExtManager extManager, String message, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onConfirm(IRhoExtManager extManager, String message, IRhoExtData ext) {
+    public boolean onConfirm(IRhoExtManager extManager, String message, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onPrompt(IRhoExtManager extManager, String message, String defaultResponse, IRhoExtData ext) {
+    public boolean onPrompt(IRhoExtManager extManager, String message, String defaultResponse, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onSelect(IRhoExtManager extManager, String[] items, int selected, IRhoExtData ext) {
+    public boolean onSelect(IRhoExtManager extManager, String[] items, int selected, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onStatus(IRhoExtManager extManager, String status, IRhoExtData ext) {
+    public boolean onStatus(IRhoExtManager extManager, String status, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onTitle(IRhoExtManager extManager, String title, IRhoExtData ext) {
+    public boolean onTitle(IRhoExtManager extManager, String title, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onConsole(IRhoExtManager extManager, String message, IRhoExtData ext) {
+    public boolean onConsole(IRhoExtManager extManager, String message, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onInputMethod(IRhoExtManager extManager, boolean enabled, String type, Rect rect, IRhoExtData ext) {
+    public boolean onInputMethod(IRhoExtManager extManager, boolean enabled, String type, Rect rect, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onNavigateError(IRhoExtManager extManager, String url, LoadErrorReason reason, IRhoExtData ext) {
+    public boolean onNavigateError(IRhoExtManager extManager, String url, LoadErrorReason reason, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
@@ -82,15 +98,18 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     //EkiohLocation getCachedLocation(IRhoExtManager extManager, IRhoExtData ext);
 
     @Override
-    public void startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoExtData ext) {
+    public boolean startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void stopLocationUpdates(IRhoExtManager extManager, IRhoExtData ext) {
+    public boolean stopLocationUpdates(IRhoExtManager extManager, IRhoWebView ext, boolean res) {
+        return res;
     }
 
     @Override
-    public void onAuthRequired(IRhoExtManager extManager, String type, String url, String realm, IRhoExtData ext) {
+    public boolean onAuthRequired(IRhoExtManager extManager, String type, String url, String realm, IRhoWebView ext, boolean res) {
+        return res;
     }
 
 }

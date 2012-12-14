@@ -373,12 +373,12 @@ void rho_geoimpl_do_geocoding(rho_param* p, const char* callback, int callback_t
                     adress_setted = true;
                 }
                 if (strcasecmp(name, "latitude") == 0) {
-                    latitude = strtod(value->v.string, NULL);
+                    latitude = (float)strtod(value->v.string, NULL);
                     latitude_setted = true;
                 }
                 if (strcasecmp(name, "longitude") == 0) {
                     longitude_setted = true;
-                    longitude = strtod(value->v.string, NULL);
+                    longitude = (float)strtod(value->v.string, NULL);
                 }
             }
         }

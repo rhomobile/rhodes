@@ -26,7 +26,7 @@ The System Ruby class provides access to the system specific information.
  * [set_network_status_notify](/rhodesapi/system-api#setnetworkstatusnotify) - Set a network status notification for a callback which receives notifications when the network goes up or down.
  * [clear_network_status_notify](/rhodesapi/system-api#clearnetworkstatusnotify) - Clear network status callback from `set_network_status_notify` so notifications will not be fired.
  * [set_screen_rotation_notification](/rhodesapi/system-api#setscreenrotationnotification) - Notify (call a callback method) when the screen rotates.
- * [set_sleeping](/rhodesapi/system-api#setsleeping) - Enable/disable phone sleeping; return to the previous state.
+ * [set_sleeping](/rhodesapi/system-api#setsleeping) - Enable/disable phone sleeping.
  * [set_push_notification](/rhodesapi/system-api#setpushnotification) - Register push callback, the method to call upon receiving a push message.
  * [set_window_frame](/rhodesapi/system-api#setwindowframe) - Change application window position and size. Implemented only for Windows desktop.
  * [set_window_position](/rhodesapi/system-api#setwindowposition) - Change application window position. Implemented only for Windows desktop.
