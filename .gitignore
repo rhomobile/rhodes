@@ -19,10 +19,14 @@ platform/iphone/tcmalloc/build/*
 platform/iphone/RhoLib/build/*
 platform/iphone/Tests/build/*
 platform/iphone/curl/build/*
+lib/extensions/audiocapture/ext/audiocapture/platform/iphone/build/*
 lib/extensions/barcode/ext/barcode/platform/iphone/build/*
+lib/extensions/digest-sha2/ext/iphone/build/*
 lib/extensions/esri/ext/esri/platform/iphone/build/*
-lib/extensions/zlib/ext/iphone/build/*
+lib/extensions/openssl/ext/iphone/build/*
 lib/extensions/openssl.so/wm/tmp/*
+lib/extensions/rawsensors/ext/rawsensors/platform/iphone/build/*
+lib/extensions/zlib/ext/iphone/build/*
 platform/shared/*/iphone/*/build/*
 platform/shared/*/iphone/build/*
 platform/iphone/bin/*
