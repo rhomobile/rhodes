@@ -88,9 +88,9 @@ end
 		end
 	
 		desc "Build WP8 rhobundle"
-		#task :rhobundle => ["config:wp", :extensions] do
-		task :rhobundle => ["config:wp8"] do
-			Rake::Task["build:bundle:noiseq"].execute
+		task :rhobundle => ["config:wp8", "build:bundle:noxruby"] do
+		    #Jake.build_file_map( File.join($srcdir, "apps"), "rhofilelist.txt" )
+			#Rake::Task["build:bundle:noiseq"].execute
 
 			#move public folder to root
 			cp_r $srcdir + "/apps/public", $srcdir + "/public"
@@ -98,6 +98,8 @@ end
 		end
 		
 		task :rhobundlemap => ["config:wp8"] do
+                        puts "rhobundlemap task started"
+
 			chdir $srcdir
 			file = File.open("RhoBundleMap.txt", "w+")
 			chdir $srcdir
@@ -111,6 +113,7 @@ end
 					#	stamp = File.mtime(f).to_i
 					#end
 				file.puts f + "|" + File.mtime(f).to_i.to_s
+				puts f + "|" + File.mtime(f).to_i.to_s
 			end
 			file.close
 			#file = File.open("timestamp.txt", "w+")
@@ -203,7 +206,7 @@ end
 			#doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
 			#chdir $srcdir
 			#Dir.glob(File.join("**", '*.*')).each do |f|
-			#	doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='" + f.gsub("/", "\\") + "'" 
+			#	doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'" 
 			#end
 			#File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
 			
@@ -214,11 +217,14 @@ end
 		end
 
 		task :devrhobundleDebug => [:rhobundle, :rhobundlemap, "device:wp8:addbundletoxapDebug"] do
+            puts 'devrhobundleDebug task started'
+
 			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
+            
 			doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
 			chdir $srcdir
 			Dir.glob(File.join("**", '*.*')).each do |f|
-				doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='" + f.gsub("/", "\\") + "'" 
+				doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'" 
 			end
 			File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
 			
