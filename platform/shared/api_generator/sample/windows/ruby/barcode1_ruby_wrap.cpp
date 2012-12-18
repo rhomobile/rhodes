@@ -17,6 +17,14 @@ static void rho_callObjInUIThread1( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE param
     pFunctor->runObject();
 }
 
+VALUE CMethodResult::toRuby()
+{
+    CHoldRubyValue valHash(rho_ruby_createHash());
+
+    return valHash;
+    //return rho_ruby_get_NIL();
+}
+
 extern "C"
 {
 
@@ -73,6 +81,11 @@ VALUE rb_barcode1_s_set_default(VALUE klass, VALUE valObj)
     return rho_ruby_get_NIL();
 }
 
+static void getStringArrayFromValue(VALUE val, rho::Vector<rho::String>& res)
+{
+    //TODO: getStringArrayFromValue
+}
+
 static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
 {
     //Sample how to call method in UI thread
@@ -82,17 +95,20 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
             ( pObj, &IBarcode1::getProps, "Test" );
     }
 */
+    CMethodResult oRes;
     if ( argc == 0 )
     {
-        rho::Hashtable<rho::String, rho::String>& res = pObj->getProps();
+        pObj->getProps(oRes);
     }else if ( argc == 1 )
     {
         if ( rho_ruby_is_string(argv[0]) )
         {
-            rho::String& res = pObj->getProps(getStringFromValue(argv[0]));
+            pObj->getProps(getStringFromValue(argv[0]), oRes);
         }else if ( rho_ruby_is_array(argv[0]) )
         {
-            //rho::Hashtable<rho::String, rho::String>& res =  pObj->getProps(getArrayFromValue(argv[0]));
+            rho::Vector<rho::String> ar;
+            getStringArrayFromValue(argv[0], ar);
+            pObj->getProps(ar, oRes );
         }else
         {
             rho_ruby_raise_argerror("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
@@ -105,11 +121,17 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
         //call with callback - no return value
         if ( rho_ruby_is_string(argv[0]) )
         {
-            pObj->getProps( getStringFromValue(argv[0]), new CCallback(getStringFromValue(argv[1])) );
+            oRes.setCallback( getStringFromValue(argv[1]) );
+            //TODO: run in UI thread or in thread queue
+            pObj->getProps( getStringFromValue(argv[0]), oRes );
 
         }else if ( rho_ruby_is_array(argv[0]) )
         {
-            //rho::Vector<String> res = getArrayFromValue(argv[0]);
+            oRes.setCallback( getStringFromValue(argv[1]) );
+            //TODO: run in UI thread or in thread queue
+            rho::Vector<rho::String> ar;
+            getStringArrayFromValue(argv[0], ar);
+            pObj->getProps( ar, oRes );
         }else
         {
             rho_ruby_raise_argerror("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
@@ -120,9 +142,7 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
         rho_ruby_raise_argerror("wrong # of arguments(%d for 2)", argc );
     }
 
-    CHoldRubyValue valHash(rho_ruby_createHash());
-    //TODO: fill the hash
-    return valHash;
+    return oRes.toRuby();
 }
 
 VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
