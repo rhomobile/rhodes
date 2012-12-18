@@ -113,6 +113,13 @@ static NSString* ourChangeValueCallback = nil;
     rho_http_free(norm_url);
 }
 
+// Set seconds to zero, Unix time does not counts leap seconds
+// http://stackoverflow.com/questions/1525825/set-seconds-to-zero-for-nsdate
+- (NSDate *)dateWithZeroSeconds:(NSDate *)date
+{
+    NSTimeInterval time = floor([date timeIntervalSinceReferenceDate] / 60.0) * 60.0;
+    return  [NSDate dateWithTimeIntervalSinceReferenceDate:time];
+}
 
 - (void)createPicker:(UIView*)parent
 {
@@ -145,9 +152,14 @@ static NSString* ourChangeValueCallback = nil;
                 self.pickerView.datePickerMode = UIDatePickerModeDateAndTime;
         }
         
+        // DateTime picker uses only hours and minutes, seconds should be set to zero
         if (self.dateTime.initialTime) {
-            self.pickerView.date = [NSDate dateWithTimeIntervalSince1970:self.dateTime.initialTime];
+            self.pickerView.date = [self dateWithZeroSeconds:[NSDate dateWithTimeIntervalSince1970:self.dateTime.initialTime]];
         }
+        else {
+            self.pickerView.date = [self dateWithZeroSeconds:self.pickerView.date];
+        }
+            
 		if (self.dateTime.minTime) {
             self.pickerView.minimumDate = [NSDate dateWithTimeIntervalSince1970:self.dateTime.minTime];
 		}
