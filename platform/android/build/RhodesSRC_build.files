@@ -100,6 +100,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/webview/RhoWebViewClient.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/webview/GoogleWebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/AbstractRhoListener.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoConfig.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtension.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoExtManager.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoListener.java
