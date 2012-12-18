@@ -194,7 +194,7 @@ void RhoRubyStart()
     //rb_funcall(rb_mGC, rb_intern("stress="), 1, Qtrue);
 
     ruby_init_loadpath(szRoot);
-#if defined(RHODES_EMULATOR) || defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(RHODES_EMULATOR) || defined(APP_BUILD_CAPABILITY_MOTOROLA) || defined(OS_WP8)
     {
         VALUE load_path = GET_VM()->load_path;
         char* app_path = malloc(strlen(szRoot)+100);
@@ -204,6 +204,8 @@ void RhoRubyStart()
         strcpy(app_path, szRoot);
 #if defined(RHODES_EMULATOR)
         strcat(app_path, "app");
+#elif defined(OS_WP8)
+		strcat(app_path, "/apps/app");
 #else
         strcat(app_path, "apps/app");
 #endif
@@ -212,6 +214,9 @@ void RhoRubyStart()
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
         strcpy(app_path, rho_native_reruntimepath());
         strcat(app_path, "lib");
+#elif defined(OS_WP8)
+		strcpy(app_path, szRoot);
+        strcat(app_path, "/lib");
 #else
         strcpy(app_path, rho_simconf_getRhodesPath());
         strcat(app_path, "/lib/framework");
