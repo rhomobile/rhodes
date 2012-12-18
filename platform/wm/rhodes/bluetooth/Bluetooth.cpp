@@ -300,6 +300,8 @@ const char* RhoBluetoothManager::rho_bluetooth_get_last_error() {
 
 const char* RhoBluetoothManager::rho_bluetooth_create_session(const char* role, const char* callback_url) {
 	LOG(INFO)  + "RhoBluetoothManager::rho_bluetooth_create_session( "+role+", "+callback_url+")";
+	freeAll();
+	init();
 	strcpy(mCreateSessionCallback,callback_url);
 	if (strcmp(role, RHO_BT_ROLE_CLIENT) == 0) 
 	{
@@ -686,6 +688,8 @@ DWORD WINAPI RhoBluetoothManager::runThreadReadData(LPVOID voidArg) {
 				// connection closed !
 				LOG(INFO)  + "RhoBluetoothManager::runThreadReadData() exit with connection closed message";
 				functionInfo->fireSessionCallBack(functionInfo->mConnectedDeviceName, RHO_BT_SESSION_DISCONNECT);
+				functionInfo->freeAll();
+				functionInfo->init();
 				return 0;
 			}
 			else
