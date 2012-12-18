@@ -185,5 +185,26 @@ private:
 
 };
 
+template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE>
+class CInstanceClassFunctor1 : public rho::common::IRhoRunnable
+{
+public:
+
+    CInstanceClassFunctor1( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE param ): m_obj(obj), m_pFunc(pFunc), m_param(param){}
+    virtual void runObject()
+    { 
+        (m_obj->*m_pFunc)(m_param); 
+    }
+
+    ~CInstanceClassFunctor1()
+    {
+    }
+
+private:
+    FUNCTYPE m_pFunc;
+    PARAMTYPE m_param;
+    OBJTYPE   m_obj;
+};
+
 }
 }
