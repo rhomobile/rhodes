@@ -1488,12 +1488,7 @@ namespace "build" do
         
         mkdir_p File.join($tmpdir, ext)
         
-        #puts '$$$$$$$$$$$$$$$$$$     START'
-        #currentdir = Dir.pwd()      
-        #Dir.chdir extpath 
         java_compile(File.join($tmpdir, ext), classpath, [srclist.path])
-        #Dir.chdir currentdir 
-        #puts '$$$$$$$$$$$$$$$$$$     FINISH'
 
         extjar = File.join $app_builddir,'extensions',ext,ext + '.jar'
         args = ["cf", extjar, '.']
@@ -1502,6 +1497,7 @@ namespace "build" do
           raise "Error creating #{extjar}"
         end
         $android_jars << extjar
+        classpath += $path_separator + extjar
       end
     end
 

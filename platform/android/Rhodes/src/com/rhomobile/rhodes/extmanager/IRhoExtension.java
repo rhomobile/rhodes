@@ -31,5 +31,7 @@ public interface IRhoExtension {
     boolean startLocationUpdates(IRhoExtManager extManager, boolean highAccuracy, IRhoWebView ext, boolean res); 
     boolean stopLocationUpdates(IRhoExtManager extManager, IRhoWebView ext, boolean res);
 
+    boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config, String name, boolean res);
+
 }
 
