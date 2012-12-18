@@ -3,6 +3,8 @@ package com.rhomobile.rhodes.extmanager;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -25,7 +27,8 @@ import com.rhomobile.rhodes.util.Utils;
 public class RhoExtManagerImpl implements IRhoExtManager {
     private static final String TAG = RhoExtManagerImpl.class.getSimpleName();
 
-    private Hashtable<String, IRhoExtension> mExtensions = new Hashtable<String, IRhoExtension>();
+    private LinkedHashMap <String, IRhoExtension> mExtensions = new LinkedHashMap<String, IRhoExtension>();
+    private Map<String, IRhoConfig> mConfigs = new LinkedHashMap<String, IRhoConfig>();
     private ArrayList<IRhoListener> mListeners = new ArrayList<IRhoListener>();
     private boolean mLogError = false;
     private boolean mLogWarning = false;
@@ -61,10 +64,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     public void registerExtension(String strName, IRhoExtension ext) {
         Logger.T(TAG, "Registering extension: " + strName);
         synchronized (mExtensions) {
-            if (mExtensions.containsKey(strName)) {
-                mExtensions.remove(strName);
-            }
-
             mExtensions.put(strName, ext);
         }
     }
@@ -75,7 +74,28 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             mListeners.add(listener);
         }
     }
-    
+
+    @Override
+    public void setConfig(String name, IRhoConfig config) {
+        Logger.T(TAG, "Adding new config: " + name);
+        synchronized(mExtensions) {
+            boolean res = false;
+            for(IRhoExtension ext: mExtensions.values()) {
+                ext.onNewConfig(this, config, name, res);
+            }
+        }
+        synchronized(mConfigs) {
+            mConfigs.put(name, config);
+        }
+    }
+
+    @Override
+    public IRhoConfig getConfig(String name) {
+        synchronized(mConfigs) {
+            return mConfigs.get(name);
+        }
+    }
+
     @Override
     public Context getContext() {
         return ContextFactory.getUiContext();
@@ -210,16 +230,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     @Override
     public boolean onStartNewConfig() {
         return Capabilities.SHARED_RUNTIME_ENABLED;
-    }
-
-    /**
-     * @param name - parameter name
-     * @param value - parameter value
-     * @return is parameter accepted by rhodes platform
-     */
-    @Override
-    public boolean onNewConfigValue(String name, String value) {
-        return false;
     }
 
     private String mLicenseToken;

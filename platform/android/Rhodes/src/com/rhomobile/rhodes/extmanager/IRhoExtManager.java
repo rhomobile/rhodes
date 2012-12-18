@@ -13,22 +13,23 @@ public interface IRhoExtManager {
     void addRhoListener(IRhoListener listener);
 
     /**
-     * 
+     * Handler to notify RhoExtManager about new configuration
+     * @param config - IRhoConfig implementation
+     * @param name - configuration name used to identify the config like 'rhoelements' od 'rhoconfig'
      */
+    void setConfig(String name, IRhoConfig config);
+    IRhoConfig getConfig(String name);
+
     Context getContext();
-    
-    /**
-     * Web view getter. In case of Motorola WebKit is used it returns object which may be directly casted to NeonEkihView
-     * @return Current web view instance from MainView
-     */
+
     IRhoWebView getWebView();
-    
+
     /**
      * RhodesActivity top level View getter
      * @return RhodesActivity top level View
      */
     View getTopView();
-    
+
     /**
      * 
      * @param name - build configuration item name
@@ -54,18 +55,9 @@ public interface IRhoExtManager {
     void setFullScreen(boolean fullScreen);
     void minimizeApp();
     void restoreApp();
-    //void resizeBrowserWindow(RECT rc);
     void zoomPage(float fZoom);
     void zoomText(int nZoom);
-    
-    /**
-     * Handler to notify RhoExtManager about new configuration value
-     * @param name - configuration parameter name
-     * @param value - configuration parameter value
-     * @return true if value is processed by RhoExtManager
-     */
-    boolean onNewConfigValue(String name, String value);
-    
+
     /**
      * Handler to notify RhoExtManager that new configuration is going to apply
      * @return true if it is allowed for extension to navigate start page itself
