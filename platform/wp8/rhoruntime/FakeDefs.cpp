@@ -1,5 +1,6 @@
 
 #include <windows.h>
+#include <string>
 //#include "../../shared/ruby/include/ruby.h"
 #include "../../shared/common/RhoDefs.h"
 
@@ -76,9 +77,9 @@ RHO_GLOBAL void rho_conf_show_log()
 {
 }
 
-RHO_GLOBAL const char* rho_native_rhopath()
+extern "C" const char* rho_native_rhopath()
 {
-    return "";//rho_root_path().c_str();
+    return "rho";
 }
 
 extern "C" const char* rho_native_get_appname()

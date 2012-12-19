@@ -312,6 +312,7 @@ static VALUE find_file(VALUE fname)
     else
 #endif
 
+#if !defined(OS_WP8)
     if ( strncmp(RSTRING_PTR(fname), rho_native_rhopath(), strlen(rho_native_rhopath())) == 0 ){
         res = rb_str_dup(fname);
         rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
@@ -321,6 +322,7 @@ static VALUE find_file(VALUE fname)
         rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
         //RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
     }else{
+#endif
         int i = 0;
         VALUE load_path = GET_VM()->load_path;
         //VALUE dir;
@@ -416,7 +418,9 @@ static VALUE find_file(VALUE fname)
                 rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
             }
         } */
+#if !defined(OS_WP8)
     }
+#endif
 
     //RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
     res = RhoPreparePath(res);
@@ -466,6 +470,7 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
 {
     VALUE path;
     char* szName1 = 0;
+	char* la = 0;
     VALUE retval = Qtrue;
     
     if (TYPE(fname) != T_STRING)
@@ -489,7 +494,7 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
     if ( !bLoad && isAlreadyLoaded(fname) == Qtrue )
         goto RCompExit;
 
-    path = find_file(fname);
+    path = find_file(fname);	
 
     if ( path != 0 )
     {
@@ -516,8 +521,6 @@ VALUE require_compiled(VALUE fname, VALUE* result, int bLoad)
 #else
         //rb_gc_disable();
         seq = loadISeqFromFile(path);
-        
-
         //*result = rb_funcall(seq, rb_intern("eval"), 0 );
         *result = rb_iseq_eval(seq);
         
