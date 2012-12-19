@@ -3507,7 +3507,7 @@ ruby_find_basename(const char *name, long *len, long *ext)
 #if defined DOSISH_DRIVE_LETTER || defined DOSISH_UNC
     const char *root;
 #endif
-    long f, n = -1;
+    long f = -1, n = -1;
 
     name = skipprefix(name);
 #if defined DOSISH_DRIVE_LETTER || defined DOSISH_UNC
