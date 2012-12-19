@@ -300,110 +300,89 @@ static VALUE check_app_file_exist(VALUE dir, VALUE fname1, const char* szPlatfor
     return eaccess(RSTRING_PTR(res), R_OK) == 0 ? res : 0;
 }
 
-static VALUE find_file(VALUE fname)
+static VALUE find_file_in_load_paths(VALUE fname)
 {
-    VALUE res = 0;
-    int nOK = 0;
+	int   i = 0;
+	VALUE res = 0;
+	VALUE load_path = GET_VM()->load_path;
+	VALUE fname1    = checkRhoBundleInPath(fname);
 
-    //RAWLOG_INFO1("find_file: fname: %s", RSTRING_PTR(fname));
-#ifdef RHODES_EMULATOR
-    if ( strncmp(RSTRING_PTR(fname), rho_simconf_getRhodesPath(), strlen(rho_simconf_getRhodesPath())) == 0 )
-        res = fname;
-    else
-#endif
-
-#if !defined(OS_WP8)
-    if ( strncmp(RSTRING_PTR(fname), rho_native_rhopath(), strlen(rho_native_rhopath())) == 0 ){
-        res = rb_str_dup(fname);
-        rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
-        //RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
-    } else if ( strncmp(RSTRING_PTR(fname), rho_native_reruntimepath(), strlen(rho_native_reruntimepath())) == 0 ){
-        res = rb_str_dup(fname);
-        rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
-        //RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
-    }else{
-#endif
-        int i = 0;
-        VALUE load_path = GET_VM()->load_path;
-        //VALUE dir;
-        VALUE fname1 = checkRhoBundleInPath(fname);
-        //RAWLOG_INFO1("find_file: fname after checkRhoBundleInPath: %s", RSTRING_PTR(fname));
-
-        //TODO: support document relative require in case of multiple apps
-        if (RARRAY_LEN(load_path)>1){
-            for( ; i < RARRAY_LEN(load_path); i++ ){
-                VALUE dir = RARRAY_PTR(load_path)[i];
+	//TODO: support document relative require in case of multiple apps
+	if (RARRAY_LEN(load_path)>1)
+	{
+		for(; i < RARRAY_LEN(load_path); i++ )
+		{
+			VALUE dir = RARRAY_PTR(load_path)[i];
 
 #ifdef RHODES_EMULATOR
-                res = check_app_file_exist(dir, fname1, rho_simconf_getString("platform"));
+            res = check_app_file_exist(dir, fname1, rho_simconf_getString("platform"));
 #endif
-                if ( !res )
-                    res = check_app_file_exist(dir, fname1, 0 );
+           if (!res)
+               res = check_app_file_exist(dir, fname1, 0);
+		   		   
+           if (res)
+           {
+               break;
+           }
+		}
 
-                if (res)
-                {
-                    nOK = 1;
-                    break;
-                }
-            }
-            if ( !nOK )
-            {
+		if ( !res )
+        {
 #ifdef RHODES_EMULATOR
-                //check for extensions
+            //check for extensions
 /*                res = rb_str_new2(rho_simconf_getRhodesPath() );
-                rb_str_cat2(res,"/lib/extensions/");
+            rb_str_cat2(res,"/lib/extensions/");
 
-                res = check_extension(res, fname, 1);
-                if ( !res )
-                {
-                    res = rb_str_new2(rho_native_rhopath() );
-                    rb_str_cat2(res,"/extensions/");
+            res = check_extension(res, fname, 1);
+            if ( !res )
+            {
+                res = rb_str_new2(rho_native_rhopath() );
+                rb_str_cat2(res,"/extensions/");
 
-                    res = check_extension(res, fname,1);
-                }
-
-                if ( !res )
-                {
-                    res = rb_str_new2( rho_simconf_getString("ext_path") );
-                    res = check_extension(res, fname, 0);
-                }
-*/
-                const char* szPaths = rho_simconf_getString("ext_path");
-                const char* szPath = szPaths;
-                const char* szSep = strchr(szPath, ';');
-                res = 0;
-                for( ; szSep; szSep = strchr(szPath, ';') )
-                {
-                    res = rb_str_new( szPath, szSep-szPath);
-                    rb_str_cat2(res,"/");
-                    rb_str_append(res,fname);
-                    rb_str_cat2(res,RHO_RB_EXT);
-
-                    if ( eaccess(RSTRING_PTR(res), R_OK) == 0 )
-                        break;
-
-                    res = rb_str_new( szPath, szSep-szPath);
-                    rb_str_cat2(res,"/app/");
-                    rb_str_append(res,fname);
-                    rb_str_cat2(res,RHO_RB_EXT);
-
-                    if ( eaccess(RSTRING_PTR(res), R_OK) == 0 )
-                        break;
-
-                    res = 0;
-                    szPath = szSep+1;
-                }
-
-                if( res )
-                    nOK = 1;
-                else
-                    return 0;
-#else
-                return 0;
-#endif
-                
+                res = check_extension(res, fname,1);
             }
-        } /*else {
+
+            if ( !res )
+            {
+                res = rb_str_new2( rho_simconf_getString("ext_path") );
+                res = check_extension(res, fname, 0);
+            }
+*/
+            const char* szPaths = rho_simconf_getString("ext_path");
+            const char* szPath = szPaths;
+            const char* szSep = strchr(szPath, ';');
+            res = 0;
+            for( ; szSep; szSep = strchr(szPath, ';') )
+            {
+                res = rb_str_new( szPath, szSep-szPath);
+                rb_str_cat2(res,"/");
+                rb_str_append(res,fname);
+                rb_str_cat2(res,RHO_RB_EXT);
+
+                if ( eaccess(RSTRING_PTR(res), R_OK) == 0 )
+                    break;
+
+                res = rb_str_new( szPath, szSep-szPath);
+                rb_str_cat2(res,"/app/");
+                rb_str_append(res,fname);
+                rb_str_cat2(res,RHO_RB_EXT);
+
+                if ( eaccess(RSTRING_PTR(res), R_OK) == 0 )
+                    break;
+
+                res = 0;
+                szPath = szSep+1;
+            }
+
+            if( res )
+                nOK = 1;
+            else
+                return 0;
+#else
+            return 0;
+#endif                
+		}	
+	} /*else {
             dir = RARRAY_PTR(load_path)[RARRAY_LEN(load_path)-1];
 
             res = rb_str_dup(dir);
@@ -417,10 +396,47 @@ static VALUE find_file(VALUE fname)
                 rb_str_cat(res,RSTRING_PTR(fname),RSTRING_LEN(fname));
                 rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
             }
-        } */
-#if !defined(OS_WP8)
-    }
+    } */
+
+	return res;
+}
+
+static VALUE find_file(VALUE fname)
+{
+    VALUE res = 0;
+    int nOK = 0;
+
+    //RAWLOG_INFO1("find_file: fname: %s", RSTRING_PTR(fname));
+
+#ifdef RHODES_EMULATOR
+    if ( strncmp(RSTRING_PTR(fname), rho_simconf_getRhodesPath(), strlen(rho_simconf_getRhodesPath())) == 0 )
+        res = fname;
+    else
 #endif
+
+#ifdef OS_WP8
+	res = find_file_in_load_paths(fname);
+
+	if (res)
+		return res;
+	else
+#endif
+    if ( strncmp(RSTRING_PTR(fname), rho_native_rhopath(), strlen(rho_native_rhopath())) == 0 ){
+        res = rb_str_dup(fname);
+        rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
+        //RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
+    } else if ( strncmp(RSTRING_PTR(fname), rho_native_reruntimepath(), strlen(rho_native_reruntimepath())) == 0 ){
+        res = rb_str_dup(fname);
+        rb_str_cat(res,RHO_RB_EXT,strlen(RHO_RB_EXT));
+        //RAWLOG_INFO1("find_file: res: %s", RSTRING_PTR(res));
+    } else {
+		res = find_file_in_load_paths(fname);
+
+        if (res)
+        {
+			nOK = 1;
+		}
+    }
 
     //RAWLOG_INFO1("find_file: RhoPreparePath: %s", RSTRING_PTR(res));
     res = RhoPreparePath(res);
