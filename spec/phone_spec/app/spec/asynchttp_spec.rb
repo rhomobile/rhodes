@@ -38,31 +38,42 @@ describe "AsyncHttp" do
 if !defined?(RHO_WP7)
     it "should http download" do
 
-        file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.jpg')
+        file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.png')
         File.delete(file_name) if File.exists?(file_name)
         File.exists?(file_name).should == false
 
+        reference_url = 'http://www.google.com/logos/2012/brasilia12-hp.png'
+        reference_size = 5940
+        part_size = 512
+
         res = Rho::AsyncHttp.download_file(
-          :url => 'http://www.google.com/images/icons/product/chrome-48.png',
+          :url => reference_url,
           :filename => file_name )
         puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should ==  1834
+        res['headers']['content-length'].to_i.should == reference_size
         res['headers']['content-type'].should == 'image/png'
 
         File.exists?(file_name).should == true
         orig_len = File.size(file_name)
         orig_len.should == res['headers']['content-length'].to_i
 
+        #if file was downloaded succesfully leave only part of it for a next test
+        if orig_len == File.size(file_name)
+          orig_part = open(file_name, "rb") {|io| io.read(part_size) }
+          open(file_name, "wb+") {|io| io.write(orig_part) }
+          File.size(file_name).should == part_size
+        end
+
         #check that in case of one more download, files keeps the same        
         res = Rho::AsyncHttp.download_file(
-          :url => 'http://www.google.com/images/icons/product/chrome-48.png',
+          :url => reference_url,
           :filename => file_name )
         puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        #res['headers']['content-length'].to_i.should == 1834
+        #res['headers']['content-length'].to_i.should == (reference_size - part_size)
         res['http_error'].should == '206'
         #res['headers']['content-type'].should == 'image/png'
 
