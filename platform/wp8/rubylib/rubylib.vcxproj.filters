@@ -50,6 +50,9 @@
     <Filter Include="wp8\ruby">
       <UniqueIdentifier>{ab00ba15-db64-4ceb-a15a-4bcd6e3f8522}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ext\strscan">
+      <UniqueIdentifier>{1522802b-31a3-4958-b421-d703a1a6df98}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ruby\debug.h" />
@@ -227,6 +230,9 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\wp8\win32\win32.c">
       <Filter>wp8\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\strscan\strscan.c">
+      <Filter>ext\strscan</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
