@@ -364,7 +364,9 @@ LoadLibraryW(
 
 LPSTR WINAPI CharNextA(LPCSTR a)
 {
-	return NULL;
+	CHAR* b = (CHAR*)(a);
+	b = b + 1; //HOT FIX - need to remove const_cast statement
+	return b;
 }
 
 LPWSTR WINAPI CharNextW(LPCWSTR a)
