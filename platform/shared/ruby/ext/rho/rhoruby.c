@@ -228,7 +228,7 @@ void RhoRubyStart()
 
 #if !defined(OS_WP8)
     
-	Init_strscan();
+	
 	Init_stringio();
     Init_sqlite3_api();
     Init_GeoLocation();
@@ -244,7 +244,7 @@ void RhoRubyStart()
     Init_SignatureCapture();
 #endif
 
-    Init_System();
+    Init_System(); // +
     Init_RhoBluetooth();	
 	Init_RhodesNativeViewManager();	
     Init_Camera();    
@@ -263,6 +263,7 @@ void RhoRubyStart()
 #endif //RHO_SYMBIAN
 #endif //OS_WP8
 
+	Init_strscan();
 	Init_RhoSupport();	
 	Init_RhoConf();
 
@@ -283,7 +284,11 @@ void RhoRubyStart()
     framework = rb_const_get(rb_cObject,rb_intern("RHO_FRAMEWORK"));
 #else
     {
-        VALUE res = rho_ruby_disable_gc();
+		VALUE res = rho_ruby_disable_gc();
+
+#if defined(OS_WP8) // temporary constant for wp8 development
+		rb_const_set(rb_cObject, rb_intern("RHO_WP8"), Qtrue);
+#endif // OS_WP8
         require_compiled(rb_str_new2("rhoframework"), &framework );
         rho_ruby_enable_gc(res);
     }
