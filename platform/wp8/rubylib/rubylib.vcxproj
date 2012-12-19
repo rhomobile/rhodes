@@ -197,6 +197,7 @@
     <ClCompile Include="..\..\shared\ruby\ext\rho\rhosupport.c" />
     <ClCompile Include="..\..\shared\ruby\ext\sqlite3_api\sqlite3_api_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\strscan\strscan.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\syncengine\syncengine_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\webview\webview_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\file.c" />
     <ClCompile Include="..\..\shared\ruby\gc.c" />
