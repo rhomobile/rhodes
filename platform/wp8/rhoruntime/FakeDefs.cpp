@@ -79,7 +79,7 @@ RHO_GLOBAL void rho_conf_show_log()
 
 extern "C" const char* rho_native_rhopath()
 {
-    return "rho";
+    return "rho/";
 }
 
 extern "C" const char* rho_native_get_appname()
@@ -97,7 +97,7 @@ RHO_GLOBAL void rho_webview_refresh(int index)
 
 RHO_GLOBAL const char* rho_native_reruntimepath()
 {
-    return "";//rho_root_path().c_str();
+    return "rho/";//rho_root_path().c_str();
 }
 
 RHO_GLOBAL HWND getMainWnd()
