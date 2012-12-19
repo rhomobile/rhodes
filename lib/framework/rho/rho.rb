@@ -1394,7 +1394,7 @@ module Kernel
     
 end    
 
-if !defined?(RHO_WP7) && !defined?( RHO_ME )
+if !defined?(RHO_WP7) && !defined?(RHO_WP8) && !defined?( RHO_ME )
 module WebView
 
     class << self
