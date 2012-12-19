@@ -241,6 +241,11 @@ class Jake
   def self.process_spec_output(line)
       puts line if line =~ /\| - it/ or line =~ /\| describe/ or line =~ /\|   - /
 
+      #strip android trace tag
+      if line =~ /^I\/APP\s+\(\s+[0-9]+\)\:\s+(.*)/
+        line = $1
+      end
+
       if $getdump
         if line =~ /^I/
           $getdump = false
