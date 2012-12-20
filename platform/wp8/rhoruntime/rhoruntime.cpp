@@ -37,13 +37,12 @@ using namespace Platform;
 CRhoRuntime::CRhoRuntime(IMainPage^ mainPage):
 	m_MainPage(mainPage)
 {
-	//sqlite3_initialize();
 }
 
 // rhodes executed in a separate thread
 void CRhoRuntime::Execute()
 {
-	rho::String m_strRootPath, m_logPort, m_strRuntimePath;
+	rho::String m_strRootPath = rho_native_rhopath(), m_logPort, m_strRuntimePath;
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
