@@ -1,0 +1,49 @@
+
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
+
+#include "ruby/ext/rho/rhoruby.h"
+
+
+#define VIDEO_CAPTURE_DURATION @"duration"
+#define VIDEO_CAPTURE_DESTINATION @"destination"
+#define VIDEO_CAPTURE_NAME @"name"
+#define VIDEO_CAPTURE_SAVE_EVENT @"videoSaveEvent"
+
+@interface RhoVideoCapture: NSObject <UIImagePickerControllerDelegate> {
+    
+    NSString* callbackURL;
+    int duration;
+    NSString* destination;
+    BOOL isSaveFile;
+    UIImagePickerController* moviePickerController;
+    
+    NSString* recorderFilePath;
+}
+
+@property (readwrite, copy) NSString *callbackURL;
+@property (readwrite, copy) NSString *destination;
+@property (readwrite, copy) NSString *recorderFilePath;
+@property (readwrite, assign) int duration;
+@property (readwrite, assign) UIImagePickerController* moviePickerController;
+
++ (RhoVideoCapture*) getInstance;
+
+- (VALUE) getProperty:(NSString*)property_name;
+
+- (void) setProperty:(NSString*)property_name value:(NSString*)value;
+
+- (void) start;
+
+- (void) stop;
+
+- (void) cancel;
+
+- (void) fireCallback:(NSString*)status param_name:(NSString*)param_name param_value:(NSString*)param_value;
+
+// UIImagePickerControllerDelegate
+- (void) imagePickerControllerDidCancel: (UIImagePickerController *) picker;
+- (void) imagePickerController: (UIImagePickerController *) picker didFinishPickingMediaWithInfo: (NSDictionary *) info;
+
+@end
