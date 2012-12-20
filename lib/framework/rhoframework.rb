@@ -139,12 +139,16 @@ module SignatureTool
 end
 
 begin
-	if defined? RHO_WP7
-		require 'rhosystem'
-	end
+    if defined? RHO_WP7
+        require 'rhosystem'
+    end
+
+    if defined? RHO_WP8
+        require 'rhosystem_wp8'
+    end
 
     if defined? RHO_ME
-	    require 'rationalME'
+        require 'rationalME'
     else	
         require 'rational'
     end

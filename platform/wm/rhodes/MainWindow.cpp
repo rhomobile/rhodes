@@ -1732,7 +1732,7 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 
 	    HGDIOBJ resObj = SelectObject(hdcMem, hbitmap);
 
-        int nLeft = rcClient.left, nTop=rcClient.top, nWidth = bmp.bmWidth, nHeight=bmp.bmHeight, Width = rcClient.right - rcClient.left, Height = rcClient.bottom - rcClient.top;
+        int nLeft = rcClient.left, nTop=rcClient.top, nWidth = GetSystemMetrics(SM_CXSCREEN), nHeight=GetSystemMetrics(SM_CYSCREEN), Width = rcClient.right - rcClient.left, Height = rcClient.bottom - rcClient.top;
         if (splash.isFlag(CSplashScreen::HCENTER) )
 		    nLeft = (Width-nWidth)/2;
 	    if (splash.isFlag(CSplashScreen::VCENTER) )
