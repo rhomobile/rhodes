@@ -2,41 +2,59 @@
 
 #include "common/RhoStd.h"
 
-class CCallback
+#ifndef RUBY_RUBY_H
+typedef unsigned long VALUE;
+#endif //!RUBY_RUBY_H
+
+class CMethodResult
 {
     rho::String m_strCallback;
+    rho::Hashtable<rho::String, rho::String> m_hashStrRes;
+    rho::String m_strRes;
+
+    enum ETypes{ eNone = 0, eString, eStringArray, eStringHash};
+    ETypes m_ResType;
 public:
-    CCallback(const rho::String& strCallback): m_strCallback(strCallback){}
+
+    void setCallback(const rho::String& strCallback){ m_strCallback = strCallback; }
+    void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; m_ResType = eStringHash; }
+    void set(const rho::String& res){ m_strRes = res;  m_ResType = eString; }
+
+    VALUE toRuby();
+    rho::String toJSON(){ return "{}";}
 };
 
 struct IBarcode1
 {
     virtual ~IBarcode1(){}
-    virtual rho::Hashtable<rho::String, rho::String> getProps(CCallback* pCallback = 0) = 0;
-    virtual rho::String getProps(const rho::String& strName, CCallback* pCallback = 0) = 0;
-    virtual rho::Hashtable<rho::String, rho::String> getProps(const rho::Vector<rho::String>& arNames, CCallback* pCallback = 0) = 0;
+    virtual void getProps(CMethodResult& oResult) = 0;
+    virtual void getProps(const rho::String& strName, CMethodResult& oResult) = 0;
+    virtual void getProps(const rho::Vector<rho::String>& arNames, CMethodResult& oResult) = 0;
 };
 
 class CBarcode1ImplBase: public IBarcode1
 {
     rho::String m_strID;
     rho::Hashtable<rho::String, rho::String> m_hashProps;
-    CCallback* m_pCallback;
 
 public:
-    CBarcode1ImplBase(const rho::String& strID) : m_pCallback(0)
+    CBarcode1ImplBase(const rho::String& strID)
     {
         m_strID = strID;
     }
 
-    virtual rho::Hashtable<rho::String, rho::String> getProps(CCallback* pCallback = 0){return m_hashProps;}
-    virtual rho::String getProps(const rho::String& strName, CCallback* pCallback = 0)
-    {
-        return m_hashProps[strName];
+    virtual void getProps(CMethodResult& oResult)
+    { 
+        oResult.set(m_hashProps);
     }
-    virtual rho::Hashtable<rho::String, rho::String> getProps(const rho::Vector<rho::String>& arNames, CCallback* pCallback = 0)
+
+    virtual void getProps(const rho::String& strName, CMethodResult& oResult)
     {
-        return m_hashProps;
+        oResult.set(m_hashProps[strName]);
+    }
+    virtual void getProps(const rho::Vector<rho::String>& arNames, CMethodResult& oResult)
+    {
+        oResult.set(m_hashProps);
     }
 
 };
