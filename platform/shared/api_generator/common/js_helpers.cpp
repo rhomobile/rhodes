@@ -41,7 +41,8 @@ rho::String js_entry_point(const char* szJSON)
         return "{Error}";
     }
 
-    pMethod( strObjID, oEntry.getEntry("Params") );
+    CJSONArrayIterator oParams(oEntry.getEntry("Params"));
+    pMethod( strObjID, oParams );
 
     return "{}";
 }
