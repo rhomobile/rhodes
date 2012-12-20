@@ -672,11 +672,11 @@ class Jake
     output.each_line do |line|
       #puts "[[#{line}]]"
       if RUBY_PLATFORM =~ /(win|w)32$/
-        /^(?<cmd>.*)\s+(?<pid>\d+)\s*$/ =~ line
-        proc_list << {:pid=>pid, :cmd=>cmd} if pid
+        match_data = /^(.*)\s+(\d+)\s*$/.match line
+        proc_list << {:pid=>match_data[2], :cmd=>match_data[1]} if match_data
       else
-        /(?<pid>\d+)\s+(?<cmd>.*)/ =~ line
-        proc_list << {:pid=>pid, :cmd=>cmd}
+        match_data = /(\d+)\s+(.*)/.match line
+        proc_list << {:pid=>match_data[1], :cmd=>match_data[2]} if match_data
       end
     end
     proc_list
