@@ -217,6 +217,30 @@ boolean CJSONEntry::isEmpty()
     return m_object == 0;
 }
 
+boolean CJSONEntry::isString()
+{
+    if ( isEmpty() )
+        return false;
+
+    return json_object_is_type(m_object, json_type_string) ? true : false;
+}
+
+boolean CJSONEntry::isArray()
+{
+    if ( isEmpty() )
+        return false;
+
+    return json_object_is_type(m_object, json_type_array) ? true : false;
+}
+
+boolean CJSONEntry::isObject()
+{
+    if ( isEmpty() )
+        return false;
+
+    return json_object_is_type(m_object, json_type_object) ? true : false;
+}
+
 boolean CJSONEntry::hasName(String name)
 {
 	return json_object_object_get(m_object,const_cast<char*>(name.c_str())) != null;

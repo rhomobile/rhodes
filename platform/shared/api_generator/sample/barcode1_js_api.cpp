@@ -4,8 +4,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Barcode1"
 
-rho::String js_barcode1_enumerate(const rho::String& strID, rho::json::CJSONEntry& oParams);
-rho::String js_barcode1_getProps(const rho::String& strID, rho::json::CJSONEntry& oParams);
+rho::String js_barcode1_enumerate(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
+rho::String js_barcode1_getProps(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
 
 extern "C" void Init_JSAPI_Barcode1(void)
 {
