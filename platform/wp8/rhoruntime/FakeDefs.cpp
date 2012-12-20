@@ -4,7 +4,7 @@
 //#include "../../shared/ruby/include/ruby.h"
 #include "../../shared/common/RhoDefs.h"
 
-
+#include <logging\RhoLog.h>
 
 extern "C" HINSTANCE rho_wmimpl_get_appinstance()
 {
@@ -89,6 +89,7 @@ extern "C" const char* rho_native_get_appname()
 
 extern "C" void rho_webview_navigate(const char* url, int index)
 { 
+	LOG(ERROR)+"Call rho_webview_navigate: " + url;
 }
 
 RHO_GLOBAL void rho_webview_refresh(int index)
@@ -97,7 +98,7 @@ RHO_GLOBAL void rho_webview_refresh(int index)
 
 RHO_GLOBAL const char* rho_native_reruntimepath()
 {
-    return "rho/";//rho_root_path().c_str();
+    return "rho/";
 }
 
 RHO_GLOBAL HWND getMainWnd()
