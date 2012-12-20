@@ -49,6 +49,9 @@ public:
 
     boolean isEmpty();
 	boolean hasName(String name);
+    boolean isString();
+    boolean isArray();
+    boolean isObject();
 
     int getInt(const char* name);
     uint64 getUInt64(const char* name);

@@ -11,14 +11,20 @@ class CMethodResult
     rho::String m_strCallback;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
     rho::String m_strRes;
+    rho::Vector<rho::String> m_arStrRes;
+    rho::String m_strError;
 
-    enum ETypes{ eNone = 0, eString, eStringArray, eStringHash};
+    enum ETypes{ eNone = 0, eString, eStringArray, eStringHash, eError};
     ETypes m_ResType;
 public:
 
     void setCallback(const rho::String& strCallback){ m_strCallback = strCallback; }
     void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; m_ResType = eStringHash; }
     void set(const rho::String& res){ m_strRes = res;  m_ResType = eString; }
+    void set(const rho::Vector<rho::String>& res){ m_arStrRes = res;  m_ResType = eStringArray; }
+    void setError(const rho::String& res){ m_strError = res; m_ResType = eError; }
+
+    rho::Vector<rho::String>& getStringArray(){ return m_arStrRes; }
 
     VALUE toRuby();
     rho::String toJSON(){ return "{}";}
@@ -62,12 +68,27 @@ public:
 class CBarcode1
 {
     static rho::String m_strDefaultID;
+    static rho::Hashtable<rho::String,IBarcode1*> m_hashBarcodes;
 public:
     static IBarcode1* create(const rho::String& strID);
-    static rho::String getDefaultID(){ return m_strDefaultID; }
+    static rho::Hashtable<rho::String,IBarcode1*>& getBarcodes(){ return m_hashBarcodes; }
+
+    static rho::String getDefaultID()
+    { 
+        if ( m_strDefaultID.length() == 0 )
+            CBarcode1::initDefaultID();
+
+        if ( !getBarcodes().containsKey(m_strDefaultID) )
+        {
+            IBarcode1* pObj = create(m_strDefaultID);
+            getBarcodes().put(m_strDefaultID, pObj );
+        }
+        return m_strDefaultID; 
+    }
+
     static void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
     static void CBarcode1::initDefaultID();
 
-    static rho::Vector<rho::String> enumerate();
+    static void enumerate(CMethodResult& oResult);
 
 };
