@@ -13,17 +13,21 @@ public:
     return new CBarcode1Impl(strID);
 }
 
-/*static*/ rho::Vector<rho::String> CBarcode1::enumerate()
+/*static*/ void CBarcode1::enumerate(CMethodResult& oResult)
 {
     rho::Vector<rho::String> arIDs;
     arIDs.addElement("SC1");
     arIDs.addElement("SC2");
 
-    return arIDs;
+    oResult.set(arIDs);
 }
 
 /*static*/ void CBarcode1::initDefaultID()
 {
-    rho::Vector<rho::String> arIDs = CBarcode1::enumerate();
+    CMethodResult oRes;
+    CBarcode1::enumerate(oRes);
+
+    rho::Vector<rho::String>& arIDs = oRes.getStringArray();
+        
     CBarcode1::setDefaultID(arIDs[0]);
 }

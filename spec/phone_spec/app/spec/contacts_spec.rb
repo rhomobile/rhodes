@@ -97,12 +97,14 @@ if System.get_property('platform') != 'Blackberry' || System.get_property('os_ve
     total = Rho::RhoContact.find(:count)
     per_page = 10
     usercount = 0
+    pages = (total.to_f / per_page).ceil
+    puts "Contacts total: #{total}, per page: #{per_page}, pages #{pages}"
+       
     start = Time.now
-    
-    (total / per_page).ceil.times do |i|
+    pages.times do |i|
       page_start = Time.now
       all_contacts = Rho::RhoContact.find(:all, :per_page => per_page, :offset => per_page * i, :select => ['id', 'display_name', 'first_name', 'last_name', 'mobile_number', 'home_number', 'business_number', 'email_address']).values
-        
+       
       all_contacts.each do |contact|
         if contact['last_name'] == @last_name_bulk
           puts contact.inspect.to_s

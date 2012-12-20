@@ -7,7 +7,7 @@
 
 #include "ext/rho/rhoruby.h"
 
-static rho::Hashtable<rho::String,IBarcode1*> g_hashBarcodes;
+rho::Hashtable<rho::String,IBarcode1*> CBarcode1::m_hashBarcodes;
 rho::String CBarcode1::m_strDefaultID;
 
 template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE>
@@ -19,10 +19,29 @@ static void rho_callObjInUIThread1( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE param
 
 VALUE CMethodResult::toRuby()
 {
-    CHoldRubyValue valHash(rho_ruby_createHash());
+    if ( m_ResType == eStringArray )
+    {
+        CHoldRubyValue valArray(rho_ruby_create_array());
 
-    return valHash;
-    //return rho_ruby_get_NIL();
+        for( int i = 0; i < m_arStrRes.size(); i++ )
+        {
+            VALUE valObj = rho_ruby_create_string( m_arStrRes[i].c_str() );
+            rho_ruby_add_to_array( valArray, valObj );
+        }
+        
+        return valArray;
+    }else if ( m_ResType == eString)
+    {
+        return rho_ruby_create_string(m_strRes.c_str());
+    }else if ( m_ResType == eStringHash)
+    {
+        CHoldRubyValue valHash(rho_ruby_createHash());
+
+
+        return valHash;
+    }
+
+    return rho_ruby_get_NIL();
 }
 
 extern "C"
@@ -30,15 +49,18 @@ extern "C"
 
 VALUE rb_barcode1_s_enumerate(VALUE klass)
 {
-    CHoldRubyValue valArray(rho_ruby_create_array());
+    CMethodResult oRes;
+    CBarcode1::enumerate(oRes);
 
-    rho::Vector<rho::String> arIDs = CBarcode1::enumerate();
+    rho::Vector<rho::String>& arIDs = oRes.getStringArray();
+
+    CHoldRubyValue valArray(rho_ruby_create_array());
     for( int i = 0; i < arIDs.size(); i++ )
     {
-        if ( !g_hashBarcodes.containsKey(arIDs[i]) )
+        if ( !CBarcode1::getBarcodes().containsKey(arIDs[i]) )
         {
             IBarcode1* pObj = CBarcode1::create(arIDs[i]);
-            g_hashBarcodes.put(arIDs[i], pObj );
+            CBarcode1::getBarcodes().put(arIDs[i], pObj );
         }
 
         VALUE valObj = rho_create_object_with_id( klass, arIDs[i].c_str() );
@@ -48,27 +70,9 @@ VALUE rb_barcode1_s_enumerate(VALUE klass)
     return valArray;
 }
 
-static rho::String get_default_id()
-{
-    rho::String strDefaultID = CBarcode1::getDefaultID();
-    if ( strDefaultID.length() == 0 )
-    {
-        CBarcode1::initDefaultID();
-        strDefaultID = CBarcode1::getDefaultID();
-    }
-
-    if ( !g_hashBarcodes.containsKey(strDefaultID) )
-    {
-        IBarcode1* pObj = CBarcode1::create(strDefaultID);
-        g_hashBarcodes.put(strDefaultID, pObj );
-    }
-
-    return strDefaultID;
-}
-
 VALUE rb_barcode1_s_default(VALUE klass)
 {
-    rho::String strDefaultID = get_default_id();
+    rho::String strDefaultID = CBarcode1::getDefaultID();
 
     return rho_create_object_with_id( klass, strDefaultID.c_str() );
 }
@@ -142,13 +146,17 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
         rho_ruby_raise_argerror("wrong # of arguments(%d for 2)", argc );
     }
 
-    return oRes.toRuby();
+    CHoldRubyValue valHash(rho_ruby_createHash());
+
+    return valHash;
+
+//    return oRes.toRuby();
 }
 
 VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 {
-    rho::String strDefaultID = get_default_id();
-    IBarcode1* pObj = g_hashBarcodes[strDefaultID];
+    rho::String strDefaultID = CBarcode1::getDefaultID();
+    IBarcode1* pObj = CBarcode1::getBarcodes()[strDefaultID];
 
     return barcode1_getprops(argc, argv, pObj);
 }
@@ -156,7 +164,7 @@ VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
 {
     const char* szID = rho_get_object_id( valObj );
-    IBarcode1* pObj = g_hashBarcodes[szID];
+    IBarcode1* pObj = CBarcode1::getBarcodes()[szID];
 
     return barcode1_getprops(argc, argv, pObj);
 }
