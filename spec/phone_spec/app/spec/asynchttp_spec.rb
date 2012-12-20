@@ -42,9 +42,8 @@ if !defined?(RHO_WP7)
         File.delete(file_name) if File.exists?(file_name)
         File.exists?(file_name).should == false
 
-        reference_url = 'http://www.google.com/logos/2012/brasilia12-hp.png'
-        reference_size = 5940
-        part_size = 512
+        reference_url = 'http://www.google.com/images/icons/product/chrome-48.png'
+        reference_size = 1834
 
         res = Rho::AsyncHttp.download_file(
           :url => reference_url,
@@ -59,12 +58,8 @@ if !defined?(RHO_WP7)
         orig_len = File.size(file_name)
         orig_len.should == res['headers']['content-length'].to_i
 
-        #if file was downloaded succesfully leave only part of it for a next test
-        if orig_len == File.size(file_name)
-          orig_part = open(file_name, "rb") {|io| io.read(part_size) }
-          open(file_name, "wb+") {|io| io.write(orig_part) }
-          File.size(file_name).should == part_size
-        end
+        #delete file for re-download
+        File.delete(file_name) if File.exists?(file_name)
 
         #check that in case of one more download, files keeps the same        
         res = Rho::AsyncHttp.download_file(
@@ -73,8 +68,8 @@ if !defined?(RHO_WP7)
         puts "res : #{res}"  
         
         res['status'].should == 'ok'
-        #res['headers']['content-length'].to_i.should == (reference_size - part_size)
-        res['http_error'].should == '206'
+        res['headers']['content-length'].to_i.should == reference_size
+        res['http_error'].should == '200'
         #res['headers']['content-type'].should == 'image/png'
 
         File.exists?(file_name).should == true
@@ -90,6 +85,56 @@ if !defined?(RHO_WP7)
 
         File.exists?(file_name).should == true
         File.size(file_name).should == orig_len
+    end
+
+    it "should http partial download" do
+        file_name_source = File.join(Rho::RhoApplication::get_base_app_path(), 'testA.png')
+        file_name_dest = File.join(Rho::RhoApplication::get_base_app_path(), 'testB.png')
+
+        File.delete(file_name_source) if File.exists?(file_name_source)
+        File.delete(file_name_dest) if File.exists?(file_name_dest)
+
+        reference_url = 'http://www.google.com/logos/2012/brasilia12-hp.png'
+        reference_size = 5940
+        part_size = 4096
+
+        res = Rho::AsyncHttp.download_file(
+          :url => reference_url,
+          :filename => file_name_source )
+        puts "res : #{res}"  
+        
+        res['status'].should == 'ok'
+        res['headers']['content-length'].to_i.should == reference_size
+        res['headers']['content-type'].should == 'image/png'
+
+        File.exists?(file_name_source).should == true
+        orig_len = File.size(file_name_source)
+        orig_len.should == res['headers']['content-length'].to_i
+
+        #if file was downloaded succesfully leave only part of it for a next test
+        if orig_len == File.size(file_name_source)
+          orig_part = open(file_name_source, "rb") {|io| io.read(part_size) }
+          open(file_name_dest, "wb+") {|io| io.write(orig_part) }
+          File.size(file_name_dest).should == part_size
+        end
+
+        #check that in case of re-download files are the same        
+        res = Rho::AsyncHttp.download_file(
+          :url => reference_url,
+          :filename => file_name_dest )
+        puts "res : #{res}"  
+        
+        res['status'].should == 'ok'
+        res['headers']['content-length'].to_i.should == (reference_size - part_size)
+        res['http_error'].should == '206'
+
+        File.exists?(file_name_dest).should == true
+        File.size(file_name_dest).should == orig_len
+
+        file_a = open(file_name_source, "rb") {|io| io.read() }
+        file_b = open(file_name_dest, "rb") {|io| io.read() }
+
+        (file_a <=> file_b).should == 0
     end
 end
     it "should http upload" do
