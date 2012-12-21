@@ -252,11 +252,6 @@ void RhoRubyStart()
     Init_NavBar();
     Init_RhoEvent();
     Init_Calendar();
-
-//TODO: RhoSimulator  - load extensions dll dynamically
-#if !defined(RHO_SYMBIAN)
-    Init_Extensions();
-#endif //RHO_SYMBIAN
 #endif //OS_WP8
 
 	Init_sqlite3_api();
@@ -264,6 +259,15 @@ void RhoRubyStart()
 	Init_RhoSupport();	
 	Init_RhoConf();
 	Init_SyncEngine();
+
+
+#if !defined(OS_WP8)
+//TODO: RhoSimulator  - load extensions dll dynamically
+#if !defined(RHO_SYMBIAN)
+    Init_Extensions();
+#endif //RHO_SYMBIAN
+#endif //OS_WP8
+
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     rb_require("rhomotoapi");
