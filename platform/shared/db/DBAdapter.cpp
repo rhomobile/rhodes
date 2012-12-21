@@ -25,8 +25,7 @@
 *------------------------------------------------------------------------*/
 
 #include "DBAdapter.h"
-#include "sync/SyncThread.h"
-#include "sync/SyncEngine.h"
+#include "sync/RhoconnectClientManager.h"
 
 #include "common/RhoFile.h"
 #include "common/RhoFilePath.h"
@@ -766,6 +765,7 @@ void CDBAdapter::copyChangedValues(CDBAdapter& db)
 
 void CDBAdapter::setBulkSyncDB(String fDataName, String strCryptKey)
 {
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
     CDBAdapter db(m_strDbPartition.c_str(), true);
     db.setCryptKey(strCryptKey);
     db.open( fDataName, m_strDbVer, true, false );
@@ -777,7 +777,8 @@ void CDBAdapter::setBulkSyncDB(String fDataName, String strCryptKey)
     copyChangedValues(db);
 
     getDBPartitions().put(m_strDbPartition.c_str(), &db);
-    sync::CSyncThread::getSyncEngine().applyChangedValues(db);
+//    sync::CSyncThread::getSyncEngine().applyChangedValues(db);
+	rho::sync::RhoconnectClientManager::syncEngineApplyChangedValues(db);
     getDBPartitions().put(m_strDbPartition.c_str(), this);
 
     db.endTransaction();
@@ -792,6 +793,7 @@ void CDBAdapter::setBulkSyncDB(String fDataName, String strCryptKey)
     CRhoFile::renameFile(fDataName.c_str(),dbOldName.c_str());
     setCryptKey(strCryptKey);
     open( dbOldName, m_strDbVer, false, false );
+	}
 }
 	
 	void CDBAdapter::setImportDB(String fDataName, String strCryptKey)

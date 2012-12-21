@@ -32,8 +32,7 @@
 #include <logging/RhoLogConf.h>
 #include <common/RhodesApp.h>
 #include <common/AutoPointer.h>
-#include <sync/SyncThread.h>
-#include <sync/ClientRegister.h>
+#include <sync/RhoconnectClientManager.h>
 
 #include <genconfig.h>
 
@@ -127,14 +126,20 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_stopRhodesAp
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncAllSources
   (JNIEnv *, jobject, jboolean show_status_popup)
 {
-    rho_sync_doSyncAllSources(show_status_popup, "", 0);
+    //rho_sync_doSyncAllSources(show_status_popup, "", 0);
+	if ( rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+		rho::sync::RhoconnectClientManager::doSyncAllSources(show_status_popup,"",0);
+	}
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doSyncSource
   (JNIEnv *env, jobject, jstring sourceObj)
 {
-    std::string source = rho_cast<std::string>(env, sourceObj);
-    rho_sync_doSyncSourceByName(source.c_str());
+	if ( rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+		std::string source = rho_cast<std::string>(env, sourceObj);
+//		rho_sync_doSyncSourceByName(source.c_str());
+		rho::sync::RhoconnectClientManager::doSyncSourceByName(source.c_str());
+	}
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesApplication_setStartParameters
@@ -310,14 +315,22 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callActivationCa
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrationId
   (JNIEnv *env, jobject, jstring jId)
 {
-    std::string deviceId = rho_cast<std::string>(env, jId);
-    rho::sync::CClientRegister::Create(deviceId);
+	if ( rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+		std::string deviceId = rho_cast<std::string>(env, jId);
+//		rho::sync::CClientRegister::Create(deviceId);
+		rho::sync::RhoconnectClientManager::clientRegisterCreate(deviceId.c_str());
+	}
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegistrationId
   (JNIEnv * env, jobject)
 {
-    return rho_cast<jhstring>(env, rho::sync::CClientRegister::Get()->getDevicePin()).release();
+	rho::String ret = "";
+	if ( rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+    //return rho_cast<jhstring>(env, rho::sync::CClientRegister::Get()->getDevicePin()).release();
+		ret = rho::sync::RhoconnectClientManager::clientRegisterGetDevicePin();
+	}
+	return rho_cast<jhstring>(env, ret).release();
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback

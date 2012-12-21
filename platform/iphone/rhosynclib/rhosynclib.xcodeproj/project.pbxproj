@@ -26,24 +26,15 @@
 		46E9214C0E9BF40A00F14AC8 /* printbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = 46E9213A0E9BF40A00F14AC8 /* printbuf.c */; };
 		46E9214D0E9BF40A00F14AC8 /* printbuf.h in Headers */ = {isa = PBXBuildFile; fileRef = 46E9213B0E9BF40A00F14AC8 /* printbuf.h */; };
 		5C329221112C748F00FD3F13 /* RJSONTokener.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C329220112C748F00FD3F13 /* RJSONTokener.c */; };
-		5C5335AC0FC2F3AB00F268F0 /* SyncThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C5335AA0FC2F3AB00F268F0 /* SyncThread.cpp */; };
-		5C5335AD0FC2F3AB00F268F0 /* SyncThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C5335AB0FC2F3AB00F268F0 /* SyncThread.h */; };
 		5C74058A1064AA4900163569 /* DBAttrManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7405881064AA4900163569 /* DBAttrManager.cpp */; };
 		5C74058B1064AA4900163569 /* DBAttrManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7405891064AA4900163569 /* DBAttrManager.h */; };
-		5C7405F2106CF7F400163569 /* SyncNotify.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C7405F0106CF7F400163569 /* SyncNotify.cpp */; };
-		5C7405F3106CF7F400163569 /* SyncNotify.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7405F1106CF7F400163569 /* SyncNotify.h */; };
 		5C9817230FBC4F20002597A5 /* JSONIterator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9817210FBC4F20002597A5 /* JSONIterator.cpp */; };
 		5C9817240FBC4F20002597A5 /* JSONIterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817220FBC4F20002597A5 /* JSONIterator.h */; };
-		5C98172A0FBC4F41002597A5 /* SyncEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9817260FBC4F41002597A5 /* SyncEngine.cpp */; };
-		5C98172B0FBC4F41002597A5 /* SyncEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817270FBC4F41002597A5 /* SyncEngine.h */; };
-		5C98172C0FBC4F41002597A5 /* SyncSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9817280FBC4F41002597A5 /* SyncSource.cpp */; };
-		5C98172D0FBC4F41002597A5 /* SyncSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817290FBC4F41002597A5 /* SyncSource.h */; };
 		5C9817330FBC4F70002597A5 /* DBAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C98172F0FBC4F70002597A5 /* DBAdapter.cpp */; };
 		5C9817340FBC4F70002597A5 /* DBAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817300FBC4F70002597A5 /* DBAdapter.h */; };
 		5C9817350FBC4F70002597A5 /* DBResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C9817310FBC4F70002597A5 /* DBResult.cpp */; };
 		5C9817360FBC4F70002597A5 /* DBResult.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817320FBC4F70002597A5 /* DBResult.h */; };
-		5CE2940B1009D8B7009A75F6 /* ClientRegister.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE294091009D8B7009A75F6 /* ClientRegister.cpp */; };
-		5CE2940C1009D8B7009A75F6 /* ClientRegister.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE2940A1009D8B7009A75F6 /* ClientRegister.h */; };
+		C503935916821F9C0025B96C /* RhoconnectClientManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C503935816821F9C0025B96C /* RhoconnectClientManager.cpp */; };
 		C522F0FC159B1FFF007FF96E /* DBImportTransaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C522F0F8159B1FFF007FF96E /* DBImportTransaction.cpp */; };
 		C522F0FD159B1FFF007FF96E /* DBImportTransaction.h in Headers */ = {isa = PBXBuildFile; fileRef = C522F0F9159B1FFF007FF96E /* DBImportTransaction.h */; };
 		C522F0FE159B1FFF007FF96E /* DBRequestHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C522F0FA159B1FFF007FF96E /* DBRequestHelper.cpp */; };
@@ -73,24 +64,16 @@
 		46E9213A0E9BF40A00F14AC8 /* printbuf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = printbuf.c; path = ../../shared/json/printbuf.c; sourceTree = SOURCE_ROOT; };
 		46E9213B0E9BF40A00F14AC8 /* printbuf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = printbuf.h; path = ../../shared/json/printbuf.h; sourceTree = SOURCE_ROOT; };
 		5C329220112C748F00FD3F13 /* RJSONTokener.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = RJSONTokener.c; sourceTree = "<group>"; };
-		5C5335AA0FC2F3AB00F268F0 /* SyncThread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncThread.cpp; path = ../../shared/sync/SyncThread.cpp; sourceTree = SOURCE_ROOT; };
-		5C5335AB0FC2F3AB00F268F0 /* SyncThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncThread.h; path = ../../shared/sync/SyncThread.h; sourceTree = SOURCE_ROOT; };
 		5C7405881064AA4900163569 /* DBAttrManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBAttrManager.cpp; path = ../../shared/db/DBAttrManager.cpp; sourceTree = SOURCE_ROOT; };
 		5C7405891064AA4900163569 /* DBAttrManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBAttrManager.h; path = ../../shared/db/DBAttrManager.h; sourceTree = SOURCE_ROOT; };
-		5C7405F0106CF7F400163569 /* SyncNotify.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncNotify.cpp; path = ../../shared/sync/SyncNotify.cpp; sourceTree = SOURCE_ROOT; };
-		5C7405F1106CF7F400163569 /* SyncNotify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncNotify.h; path = ../../shared/sync/SyncNotify.h; sourceTree = SOURCE_ROOT; };
 		5C9817210FBC4F20002597A5 /* JSONIterator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSONIterator.cpp; sourceTree = "<group>"; };
 		5C9817220FBC4F20002597A5 /* JSONIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONIterator.h; sourceTree = "<group>"; };
-		5C9817260FBC4F41002597A5 /* SyncEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncEngine.cpp; path = ../../shared/sync/SyncEngine.cpp; sourceTree = SOURCE_ROOT; };
-		5C9817270FBC4F41002597A5 /* SyncEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncEngine.h; path = ../../shared/sync/SyncEngine.h; sourceTree = SOURCE_ROOT; };
-		5C9817280FBC4F41002597A5 /* SyncSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncSource.cpp; path = ../../shared/sync/SyncSource.cpp; sourceTree = SOURCE_ROOT; };
-		5C9817290FBC4F41002597A5 /* SyncSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncSource.h; path = ../../shared/sync/SyncSource.h; sourceTree = SOURCE_ROOT; };
 		5C98172F0FBC4F70002597A5 /* DBAdapter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBAdapter.cpp; path = ../../shared/db/DBAdapter.cpp; sourceTree = SOURCE_ROOT; };
 		5C9817300FBC4F70002597A5 /* DBAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBAdapter.h; path = ../../shared/db/DBAdapter.h; sourceTree = SOURCE_ROOT; };
 		5C9817310FBC4F70002597A5 /* DBResult.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBResult.cpp; path = ../../shared/db/DBResult.cpp; sourceTree = SOURCE_ROOT; };
 		5C9817320FBC4F70002597A5 /* DBResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBResult.h; path = ../../shared/db/DBResult.h; sourceTree = SOURCE_ROOT; };
-		5CE294091009D8B7009A75F6 /* ClientRegister.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ClientRegister.cpp; path = ../../shared/sync/ClientRegister.cpp; sourceTree = SOURCE_ROOT; };
-		5CE2940A1009D8B7009A75F6 /* ClientRegister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ClientRegister.h; path = ../../shared/sync/ClientRegister.h; sourceTree = SOURCE_ROOT; };
+		C503935616821E340025B96C /* RhoconnectClientManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RhoconnectClientManager.h; path = ../../shared/sync/RhoconnectClientManager.h; sourceTree = "<group>"; };
+		C503935816821F9C0025B96C /* RhoconnectClientManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoconnectClientManager.cpp; path = ../../shared/sync/RhoconnectClientManager.cpp; sourceTree = "<group>"; };
 		C522F0F8159B1FFF007FF96E /* DBImportTransaction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBImportTransaction.cpp; path = ../../shared/db/DBImportTransaction.cpp; sourceTree = "<group>"; };
 		C522F0F9159B1FFF007FF96E /* DBImportTransaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBImportTransaction.h; path = ../../shared/db/DBImportTransaction.h; sourceTree = "<group>"; };
 		C522F0FA159B1FFF007FF96E /* DBRequestHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DBRequestHelper.cpp; path = ../../shared/db/DBRequestHelper.cpp; sourceTree = "<group>"; };
@@ -172,16 +155,8 @@
 		5C9817250FBC4F27002597A5 /* sync */ = {
 			isa = PBXGroup;
 			children = (
-				5C7405F0106CF7F400163569 /* SyncNotify.cpp */,
-				5C7405F1106CF7F400163569 /* SyncNotify.h */,
-				5CE294091009D8B7009A75F6 /* ClientRegister.cpp */,
-				5CE2940A1009D8B7009A75F6 /* ClientRegister.h */,
-				5C5335AA0FC2F3AB00F268F0 /* SyncThread.cpp */,
-				5C5335AB0FC2F3AB00F268F0 /* SyncThread.h */,
-				5C9817260FBC4F41002597A5 /* SyncEngine.cpp */,
-				5C9817270FBC4F41002597A5 /* SyncEngine.h */,
-				5C9817280FBC4F41002597A5 /* SyncSource.cpp */,
-				5C9817290FBC4F41002597A5 /* SyncSource.h */,
+				C503935616821E340025B96C /* RhoconnectClientManager.h */,
+				C503935816821F9C0025B96C /* RhoconnectClientManager.cpp */,
 			);
 			name = sync;
 			sourceTree = "<group>";
@@ -229,14 +204,9 @@
 				46E9214B0E9BF40A00F14AC8 /* linkhash.h in Headers */,
 				46E9214D0E9BF40A00F14AC8 /* printbuf.h in Headers */,
 				5C9817240FBC4F20002597A5 /* JSONIterator.h in Headers */,
-				5C98172B0FBC4F41002597A5 /* SyncEngine.h in Headers */,
-				5C98172D0FBC4F41002597A5 /* SyncSource.h in Headers */,
 				5C9817340FBC4F70002597A5 /* DBAdapter.h in Headers */,
 				5C9817360FBC4F70002597A5 /* DBResult.h in Headers */,
-				5C5335AD0FC2F3AB00F268F0 /* SyncThread.h in Headers */,
-				5CE2940C1009D8B7009A75F6 /* ClientRegister.h in Headers */,
 				5C74058B1064AA4900163569 /* DBAttrManager.h in Headers */,
-				5C7405F3106CF7F400163569 /* SyncNotify.h in Headers */,
 				C522F0FD159B1FFF007FF96E /* DBImportTransaction.h in Headers */,
 				C522F0FF159B1FFF007FF96E /* DBRequestHelper.h in Headers */,
 			);
@@ -296,17 +266,13 @@
 				46E9214A0E9BF40A00F14AC8 /* linkhash.c in Sources */,
 				46E9214C0E9BF40A00F14AC8 /* printbuf.c in Sources */,
 				5C9817230FBC4F20002597A5 /* JSONIterator.cpp in Sources */,
-				5C98172A0FBC4F41002597A5 /* SyncEngine.cpp in Sources */,
-				5C98172C0FBC4F41002597A5 /* SyncSource.cpp in Sources */,
 				5C9817330FBC4F70002597A5 /* DBAdapter.cpp in Sources */,
 				5C9817350FBC4F70002597A5 /* DBResult.cpp in Sources */,
-				5C5335AC0FC2F3AB00F268F0 /* SyncThread.cpp in Sources */,
-				5CE2940B1009D8B7009A75F6 /* ClientRegister.cpp in Sources */,
 				5C74058A1064AA4900163569 /* DBAttrManager.cpp in Sources */,
-				5C7405F2106CF7F400163569 /* SyncNotify.cpp in Sources */,
 				5C329221112C748F00FD3F13 /* RJSONTokener.c in Sources */,
 				C522F0FC159B1FFF007FF96E /* DBImportTransaction.cpp in Sources */,
 				C522F0FE159B1FFF007FF96E /* DBRequestHelper.cpp in Sources */,
+				C503935916821F9C0025B96C /* RhoconnectClientManager.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

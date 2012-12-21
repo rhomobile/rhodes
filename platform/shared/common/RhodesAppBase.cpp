@@ -28,9 +28,9 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "common/RhoConf.h"
-#include "sync/ClientRegister.h"
-#include "sync/SyncThread.h"
 #include "unzip/unzip.h"
+#include "sync/RhoconnectClientManager.h"
+#include "net/INetRequest.h"
 
 extern "C" void rho_net_request_with_data(const char *url, const char *str_body);
 
@@ -146,8 +146,13 @@ boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
     
 void rho_do_send_log(const String& strCallback)
 {
-    String strDevicePin = rho::sync::CClientRegister::Get()->getDevicePin();
-    String strClientID = rho::sync::CSyncThread::getSyncEngine().readClientID();
+	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+
+//	String strDevicePin = rho::sync::CClientRegister::Get()->getDevicePin();
+//    String strClientID = rho::sync::CSyncThread::getSyncEngine().readClientID();
+		
+	String strDevicePin = rho::sync::RhoconnectClientManager::clientRegisterGetDevicePin();
+	String strClientID = rho::sync::RhoconnectClientManager::syncEnineReadClientID();
     
     String strLogUrl = RHOCONF().getPath("logserver");
     if ( strLogUrl.length() == 0 )
@@ -165,7 +170,9 @@ void rho_do_send_log(const String& strCallback)
     NetRequest oNetRequest;
     oNetRequest.setSslVerifyPeer(false);
     
-    NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null );
+//    NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null );
+	NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, rho::sync::RhoconnectClientManager::getRhoSession(), null );
+
     LOGCONF().setLogToFile(bOldSaveToFile);
     
     boolean isOK = true;
@@ -183,7 +190,9 @@ void rho_do_send_log(const String& strCallback)
         rho_net_request_with_data(RHODESAPPBASE().canonicalizeRhoUrl(strCallback).c_str(), body);
     }
     
-    RHODESAPPBASE().setSendingLog(false);   
+    RHODESAPPBASE().setSendingLog(false);
+		
+	}
 }
 
 

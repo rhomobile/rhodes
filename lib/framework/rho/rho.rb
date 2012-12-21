@@ -1316,7 +1316,7 @@ end
     end
       
 end # Rho
-
+=begin
 module SyncEngine
     def self.get_user_name
         Rho::RhoConfig.rho_sync_user        
@@ -1366,10 +1366,33 @@ module SyncEngine
             args[:callback], callbackParams )
     end
 end
-
+=end
 #at_exit do
 	#::Rhom::RhomDbAdapter.close
 #end
+
+begin
+	puts "Looking for SyncEngine"
+	require 'syncengine.rb'
+	Module.const_get("SyncEngine")
+	puts "SyncEngine found. do nothing"
+rescue LoadError, NameError
+	puts "SyncEngine not found. Defining stub module"
+	
+	module SyncEngine
+		def self.respond_to?(method)
+			puts "SyncEngine won't respond to #{method}. Use 'rhoconnect-client' extension."
+			true
+		end
+
+		def self.method_missing(name, *args, &block)
+			puts "SyncEngine call #{name} not supported. Use 'rhoconnect-client' extension."
+		end
+	end
+
+end
+
+
 
 
 class Module
