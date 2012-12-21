@@ -99,6 +99,12 @@ namespace rhodes
             RhodesWebBrowser.Navigate(new Uri(url));
         }
 
+        public void executeScript(string script, int index)
+        {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { executeScript(script, index); }); return; }
+            RhodesWebBrowser.InvokeScript(script);
+        }
+
 		public void GoBack()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoBack(); }); return; }
@@ -124,6 +130,11 @@ namespace rhodes
         {
             // TODO: implement
             return true;
+        }
+
+        public string getCurrentURL(int index)
+        {
+            return RhodesWebBrowser.Source.AbsoluteUri.ToString();
         }
 
         

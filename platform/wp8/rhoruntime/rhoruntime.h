@@ -37,10 +37,12 @@ namespace rhoruntime
 
 		// webview
 		void navigate(::Platform::String^ url, int index);
+		void executeScript(::Platform::String^ script, int index);
 		void GoBack(void);
 		void GoForward(void);
 		void Refresh(int index);
 		bool isStarted(void);
+		::Platform::String^ getCurrentURL(int index);
 		// toolbar
 		void toolbarRemoveAllButtons(void);
 		void toolbarShow(void);
