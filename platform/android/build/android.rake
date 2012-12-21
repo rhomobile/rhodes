@@ -2088,7 +2088,6 @@ require File.dirname(__FILE__) + "/../../../lib/build/run_rhoconnect_spec.rb"
       AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
       #AndroidTools.run_application("-d", $app_package_name)
 
-      puts "Starting log process ..."
       AndroidTools.logcat_process("-d")
     end
   end

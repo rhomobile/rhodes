@@ -375,7 +375,7 @@ static VALUE find_file_in_load_paths(VALUE fname)
             }
 
             if( res )
-                nOK = 1;
+                return res;
             else
                 return 0;
 #else
