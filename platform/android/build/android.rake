@@ -2064,7 +2064,6 @@ namespace "run" do
       AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
       #AndroidTools.run_application("-d", $app_package_name)
 
-      puts "Starting log process ..."
       AndroidTools.logcat_process("-d")
     end
   end
