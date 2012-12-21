@@ -8,26 +8,35 @@ typedef unsigned long VALUE;
 
 class CMethodResult
 {
-    rho::String m_strCallback;
+    rho::String m_strCallback, m_strCallbackParam;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
     rho::String m_strRes;
     rho::Vector<rho::String> m_arStrRes;
     rho::String m_strError;
 
-    enum ETypes{ eNone = 0, eString, eStringArray, eStringHash, eError};
+    enum ETypes{ eNone = 0, eString, eStringArray, eStringHash, eError, eArgError};
     ETypes m_ResType;
 public:
 
     void setCallback(const rho::String& strCallback){ m_strCallback = strCallback; }
+    void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
     void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; m_ResType = eStringHash; }
     void set(const rho::String& res){ m_strRes = res;  m_ResType = eString; }
     void set(const rho::Vector<rho::String>& res){ m_arStrRes = res;  m_ResType = eStringArray; }
     void setError(const rho::String& res){ m_strError = res; m_ResType = eError; }
+    void setArgError(const char *fmt, ...)
+    {
+        //TODO: support sprintf
+        m_strError = fmt;
+        m_ResType = eArgError;
+    }
 
     rho::Vector<rho::String>& getStringArray(){ return m_arStrRes; }
 
     VALUE toRuby();
     rho::String toJSON(){ return "{}";}
+
+    void callCallback();
 };
 
 struct IBarcode1
