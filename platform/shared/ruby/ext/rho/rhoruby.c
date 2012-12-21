@@ -227,9 +227,13 @@ void RhoRubyStart()
 #endif
 
 #if !defined(OS_WP8)
-	Init_stringio();    
-    Init_GeoLocation();   
+
+    Init_strscan();
+    Init_sqlite3_api();
+    Init_GeoLocation();
+    Init_SyncEngine();
     Init_AsyncHttp();
+    Init_System();
     Init_Phonebook();
     Init_WebView();
     Init_RhoConf();
@@ -239,33 +243,32 @@ void RhoRubyStart()
 #else
     Init_SignatureCapture();
 #endif
-
-    Init_System(); // +
+    
     Init_RhoBluetooth();	
 	Init_RhodesNativeViewManager();	
-    Init_Camera();    
+    Init_Camera();
+    Init_stringio();
     Init_DateTimePicker();
-    Init_NativeBar();    
+    Init_NativeBar();
+    Init_RhoSupport();
     Init_MapView();
     Init_RingtoneManager();
     Init_socket();
     Init_NavBar();
     Init_RhoEvent();
     Init_Calendar();
-#endif //OS_WP8
 
+//TODO: RhoSimulator  - load extensions dll dynamically
+#if !defined(RHO_SYMBIAN)
+    Init_Extensions();
+#endif //RHO_SYMBIAN
+
+#else // OS_WP8 is set
 	Init_sqlite3_api();
 	Init_strscan();
 	Init_RhoSupport();	
 	Init_RhoConf();
 	Init_SyncEngine();
-
-
-#if !defined(OS_WP8)
-//TODO: RhoSimulator  - load extensions dll dynamically
-#if !defined(RHO_SYMBIAN)
-    Init_Extensions();
-#endif //RHO_SYMBIAN
 #endif //OS_WP8
 
 
