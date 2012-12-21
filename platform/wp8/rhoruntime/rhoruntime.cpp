@@ -34,9 +34,28 @@
 using namespace rhoruntime;
 using namespace Platform;
 
+CRhoRuntime^ CRhoRuntime::m_instance = nullptr;
+
 CRhoRuntime::CRhoRuntime(IMainPage^ mainPage):
 	m_MainPage(mainPage)
 {
+}
+
+CRhoRuntime^ CRhoRuntime::getInstance(IMainPage^ mainPage)
+{
+	if (m_instance == nullptr)
+		m_instance = ref new CRhoRuntime(mainPage);
+    return m_instance;
+}
+
+CRhoRuntime^ CRhoRuntime::getInstance()
+{
+    return m_instance;
+}
+
+IMainPage^ CRhoRuntime::getMainPage()
+{
+	return m_MainPage;
 }
 
 // rhodes executed in a separate thread
@@ -53,9 +72,9 @@ void CRhoRuntime::Execute()
 	RHODESAPP().startApp();
 
 	// wait for 3 seconds
-	m_MainPage->DoWait(3000);
+	//m_MainPage->DoWait(3000);
 	// exit application
-	m_MainPage->exitCommand();
+	//m_MainPage->exitCommand();
 }
 
 

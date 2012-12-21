@@ -63,7 +63,7 @@ namespace rhodes
             try
             {
                 // create rhodes runtime object
-                var rhoruntime = new CRhoRuntime(this);
+                var rhoruntime = CRhoRuntime.getInstance(this);
                 // create and start rhodes main thread
                 _rhoruntimeThread = new Thread(rhoruntime.Execute);
                 _rhoruntimeThread.Start();
