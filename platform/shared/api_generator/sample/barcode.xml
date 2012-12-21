@@ -22,7 +22,7 @@
 			<ACCESS>INSTANCE</ACCESS>
 			<PARAMS>
 				<PARAM>
-					<NAME>Parameters which should be returned</NAME>
+                    <DESC>Parameters which should be returned</DESC>
 					<POSSIBILITY>
 						<DESC>The one property that I want to know about</DESC>
 						<TYPE>String</TYPE>
@@ -41,8 +41,8 @@
 						<DEFAULT>TRUE</DEFAULT>
 					</POSSIBLITY>
 				</PARAM>
-				<PARAM>
-					<NAME>Callback to contain returned property values</NAME>
+				<PARAM name="callback">
+					<DESC>Callback to contain returned property values</DESC>
 					<POSSIBILITY>
 						<DESC>Function to receive property values</DESC>
 						<TYPE>
@@ -56,6 +56,17 @@
 					</POSSIBLITY>
 					<POSSIBILITY>
 						<DESC>URL</DESC>
+						<TYPE>String</TYPE>
+					</POSSIBLITY>
+					<POSSIBILITY>
+						<DESC>Synchronous Operation</DESC>
+						<TYPE>nil / undefined</TYPE>
+					</POSSIBLITY>
+				</PARAM>
+				<PARAM name="callback_param">
+					<DESC>Callback parameter</DESC>
+					<POSSIBILITY>
+						<DESC>Application specific parameter</DESC>
 						<TYPE>String</TYPE>
 					</POSSIBLITY>
 					<POSSIBILITY>

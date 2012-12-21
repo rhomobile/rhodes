@@ -451,15 +451,12 @@ module_function :kill_adb_and_emulator
 def logcat(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
     cmd_re = Regexp.new "\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>>\s+\"?#{log_path}\"?"
-    log_pids = Jake.get_process_list
+    pids = Jake.get_process_list
+    log_pids = []
     
-    log_pids.select! do |proc|
-      proc[:cmd] =~ cmd_re
+    pids.each do |proc|
+      log_pids << proc if proc[:cmd] =~ cmd_re
     end
-    
-    #log_pids.each do |proc|
-    #  puts proc.inspect
-    #end
     
     if log_pids.empty?
       rm_rf log_path if File.exist?(log_path)
@@ -473,15 +470,12 @@ module_function :logcat
 def logcat_process(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
     cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>>\s+\"?#{log_path}\"?\"?"
-    log_pids = Jake.get_process_list
+    pids = Jake.get_process_list
+    log_pids = []
     
-    log_pids.select! do |proc|
-      proc[:cmd] =~ cmd_re
+    pids.each do |proc|
+      log_pids << proc if proc[:cmd] =~ cmd_re
     end
-    
-    #log_pids.each do |proc|
-    #  puts proc.inspect
-    #end
     
     if log_pids.empty?
       puts 'Starting new logcat process'

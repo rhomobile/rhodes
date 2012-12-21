@@ -99,6 +99,7 @@
 		FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = FACC20C9123A60F40088A447 /* Bluetooth.m */; };
 		FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACC20FF123A759A0088A447 /* GameKit.framework */; };
 		FAD42C58152CE61A000F906A /* libMotorolaLicence.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD42C57152CE61A000F906A /* libMotorolaLicence.a */; };
+		FAE52DA11683D74300F9C13B /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAE52DA01683D74300F9C13B /* MobileCoreServices.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -317,6 +318,7 @@
 		FACC20C9123A60F40088A447 /* Bluetooth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Bluetooth.m; path = Bluetooth/Bluetooth.m; sourceTree = "<group>"; };
 		FACC20FF123A759A0088A447 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		FAD42C57152CE61A000F906A /* libMotorolaLicence.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMotorolaLicence.a; path = ../../res/libs/motorolalicence/iphone/libMotorolaLicence.a; sourceTree = "<group>"; };
+		FAE52DA01683D74300F9C13B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -324,6 +326,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FAE52DA11683D74300F9C13B /* MobileCoreServices.framework in Frameworks */,
 				FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */,
 				FA3C79E2136ED8BB002302E5 /* CoreMedia.framework in Frameworks */,
 				FA3C79AE136ED523002302E5 /* CoreVideo.framework in Frameworks */,
@@ -410,6 +413,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				FAE52DA01683D74300F9C13B /* MobileCoreServices.framework */,
 				FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */,
 				FA3C79AD136ED523002302E5 /* CoreVideo.framework */,
 				FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */,
