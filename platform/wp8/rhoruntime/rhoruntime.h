@@ -88,8 +88,12 @@ namespace rhoruntime
 
     public ref class CRhoRuntime sealed
     {
-    public:
+	private:
 		CRhoRuntime(IMainPage^ mainPage);
+    public:
+		static CRhoRuntime^ getInstance(IMainPage^ mainPage);
+		static CRhoRuntime^ getInstance();
+		IMainPage^ getMainPage();
 		// rhodes executed in a separate thread
 		void Execute();
 
@@ -110,5 +114,6 @@ namespace rhoruntime
 
 	private:
 		IMainPage^ m_MainPage;
+		static CRhoRuntime^ m_instance;
     };
 }
