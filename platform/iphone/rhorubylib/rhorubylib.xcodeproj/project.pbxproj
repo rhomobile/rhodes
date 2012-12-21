@@ -110,7 +110,6 @@
 		F5E360B80EB6A6B300226287 /* us_ascii.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360B40EB6A6B300226287 /* us_ascii.c */; };
 		F5E360B90EB6A6B300226287 /* utf_8.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360B50EB6A6B300226287 /* utf_8.c */; };
 		F5E360C20EB6A74D00226287 /* strscan.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360C10EB6A74D00226287 /* strscan.c */; };
-		F5E360C50EB6A77C00226287 /* syncengine_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360C40EB6A77C00226287 /* syncengine_wrap.c */; };
 		F5E360C80EB6A7AF00226287 /* parse.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360C70EB6A7AF00226287 /* parse.c */; };
 		F5E360D40EB6A84600226287 /* config.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E360D30EB6A84600226287 /* config.h */; };
 		F5E362410EB785C100226287 /* crt_externs.h in Headers */ = {isa = PBXBuildFile; fileRef = F5E362400EB785C100226287 /* crt_externs.h */; };
@@ -233,7 +232,6 @@
 		F5E360B40EB6A6B300226287 /* us_ascii.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = us_ascii.c; path = ../../shared/ruby/enc/us_ascii.c; sourceTree = SOURCE_ROOT; };
 		F5E360B50EB6A6B300226287 /* utf_8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = utf_8.c; path = ../../shared/ruby/enc/utf_8.c; sourceTree = SOURCE_ROOT; };
 		F5E360C10EB6A74D00226287 /* strscan.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = strscan.c; path = ../../shared/ruby/ext/strscan/strscan.c; sourceTree = SOURCE_ROOT; };
-		F5E360C40EB6A77C00226287 /* syncengine_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = syncengine_wrap.c; path = ../../shared/ruby/ext/syncengine/syncengine_wrap.c; sourceTree = SOURCE_ROOT; };
 		F5E360C70EB6A7AF00226287 /* parse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = parse.c; path = ../../shared/ruby/generated/parse.c; sourceTree = SOURCE_ROOT; };
 		F5E360D30EB6A84600226287 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../shared/ruby/iphone/ruby/config.h; sourceTree = SOURCE_ROOT; };
 		F5E362400EB785C100226287 /* crt_externs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = crt_externs.h; path = ../../shared/ruby/iphone/crt_externs.h; sourceTree = SOURCE_ROOT; };
@@ -579,7 +577,6 @@
 		F5E360C30EB6A76500226287 /* syncengine */ = {
 			isa = PBXGroup;
 			children = (
-				F5E360C40EB6A77C00226287 /* syncengine_wrap.c */,
 			);
 			name = syncengine;
 			sourceTree = "<group>";
@@ -792,7 +789,6 @@
 				F5E360B80EB6A6B300226287 /* us_ascii.c in Sources */,
 				F5E360B90EB6A6B300226287 /* utf_8.c in Sources */,
 				F5E360C20EB6A74D00226287 /* strscan.c in Sources */,
-				F5E360C50EB6A77C00226287 /* syncengine_wrap.c in Sources */,
 				F5E360C80EB6A7AF00226287 /* parse.c in Sources */,
 				F5E362980EB7927100226287 /* thread_pthread.c in Sources */,
 				F5E362FF0EB79F0200226287 /* miniprelude.c in Sources */,

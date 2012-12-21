@@ -31,6 +31,7 @@
 #include "net/URI.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/Tokenizer.h"
+#include "sync/RhoconnectClientManager.h"
 
 #include <algorithm>
 
@@ -72,7 +73,7 @@ typedef unsigned __int16 uint16_t;
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "HttpServer"
 
-extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
+//extern "C" void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject);
 
 namespace rho
 {
@@ -1229,8 +1230,12 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
         if (method == "GET")
             rho_rhodesapp_keeplastvisitedurl(uri.c_str());
 
-        if (!route.id.empty())
-            rho_sync_addobjectnotify_bysrcname(route.model.c_str(), route.id.c_str());
+		if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+
+			if (!route.id.empty()) {
+				sync::RhoconnectClientManager::rho_sync_addobjectnotify_bysrcname(route.model.c_str(), route.id.c_str());
+			}			
+		}
         
         return true;
     }

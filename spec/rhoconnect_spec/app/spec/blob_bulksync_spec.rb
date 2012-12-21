@@ -19,6 +19,7 @@
 #
 
 require 'rho/rho'
+require 'sync_server'
 
 describe "BlobBulkSync_test" do
 
@@ -27,10 +28,9 @@ describe "BlobBulkSync_test" do
   
     ::Rhom::Rhom.database_full_reset_and_logout
     
-	  SyncEngine.set_syncserver('http://store-bulk.rhohub.com/application')
-	  #SyncEngine.set_syncserver('http://192.168.0.102:9292/application')
+	SyncEngine.set_syncserver("http://#{SYNC_SERVER_HOST}:#{SYNC_SERVER_PORT}/application")
 	  
-	  Rho::RhoConfig.bulksync_state='1'
+	Rho::RhoConfig.bulksync_state='1'
   end
 	
   after(:all)  do
