@@ -9,39 +9,8 @@
 
 rho::Hashtable<rho::String,IBarcode1*> CBarcode1::m_hashBarcodes;
 rho::String CBarcode1::m_strDefaultID;
+rho::common::CAutoPtr<CGeneratorQueue> CBarcode1::m_pCommandQueue;
 
-extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
-
-template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2 >
-class CObjCallbackFunctor2 : public rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>
-{
-public:
-    CObjCallbackFunctor2( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2 ) : CInstanceClassFunctor2( obj, pFunc, param1, param2 ){}
-
-    virtual void runObject()
-    { 
-        rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>::runObject();
-
-        m_param2.callCallback();
-    }
-};
-
-template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE>
-static void rho_callObjInUIThread1( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE param )
-{
-    rho::common::IRhoRunnable* pFunctor = new CObjCallbackFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE>( obj, pFunc, param );
-    rho_wm_impl_performOnUiThread( pFunctor );
-    //pFunctor->runObject();
-}
-
-template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2>
-static void rho_callObjInUIThread2( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2  )
-{
-    rho::common::IRhoRunnable* pFunctor = new CObjCallbackFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>( obj, pFunc, param1, param2 );
-
-    rho_wm_impl_performOnUiThread( pFunctor );
-    //pFunctor->runObject();
-}
 
 VALUE CMethodResult::toRuby()
 {
@@ -86,6 +55,8 @@ void CMethodResult::callCallback()
 
         //TODO: call in async mode
         //getNetRequest().pushData( m_strCallback, m_strRes, null );
+
+        m_ResType = eNone;
     }
 }
 
@@ -137,17 +108,10 @@ static void getStringArrayFromValue(VALUE val, rho::Vector<rho::String>& res)
 
 static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
 {
-    //Sample how to call method in UI thread
-/*    if ( argc >= 1 )
-    {
-        rho_callObjInUIThread1<IBarcode1*, rho::String (IBarcode1::*)(const rho::String&), rho::String>
-            ( pObj, &IBarcode1::getProps, "Test" );
-    }
-*/
     //If method has call_in_ui_thread attribute, then call method in UI thread if no return value or callback present
     //If method has call_in_thread attribute, then call method in separate thread if no return value or callback present
     //If method calles with callback, then call method in separate thread
-    boolean bCallInUIThread = true;
+    boolean bCallInUIThread = false;
     boolean bCallInThread = false;
 
     CMethodResult oRes;
@@ -190,14 +154,13 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
 
         if ( rho_ruby_is_string(argv[0]) )
         {
+            rho::common::IRhoRunnable* pFunctor = new CObjCallbackFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
+                ( pObj, &IBarcode1::getProps, getStringFromValue(argv[0]), oRes );
+
             if ( bCallInUIThread )
-            {
-                rho_callObjInUIThread2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
-                    ( pObj, &IBarcode1::getProps, getStringFromValue(argv[0]), oRes );
-            }else //call in separate thread
-            {
-                pObj->getProps( getStringFromValue(argv[0]), oRes );
-            }
+                rho_wm_impl_performOnUiThread( pFunctor );
+            else //call in separate thread
+                CBarcode1::addCommandToQueue( pFunctor );
 
         }else if ( rho_ruby_is_array(argv[0]) )
         {

@@ -52,6 +52,7 @@ public:
         virtual boolean equals(const IQueueCommand& cmd) = 0;
         virtual String toString() = 0;
         virtual void cancel(){}
+        virtual void execute(){}
     };
 
 private:
@@ -90,7 +91,11 @@ public:
 	static unsigned int getLogThreadId() {return m_logThreadId;}
 protected:
     virtual int getLastPollInterval(){ return 0;}
-    virtual void processCommand(IQueueCommand* pCmd) = 0;
+    virtual void processCommand(IQueueCommand* pCmd)
+    {
+        if ( pCmd )
+            pCmd->execute();
+    }
     virtual boolean isSkipDuplicateCmd() { return false; }
     virtual void onTimeout(){}
 
