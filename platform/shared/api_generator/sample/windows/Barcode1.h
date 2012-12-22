@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/RhoStd.h"
+#include "common/ThreadQueue.h"
 
 #ifndef RUBY_RUBY_H
 typedef unsigned long VALUE;
@@ -39,6 +40,58 @@ public:
     void callCallback();
 };
 
+extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
+
+template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2 >
+class CObjCallbackFunctor2 : public rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>
+{
+public:
+    CObjCallbackFunctor2( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2 ) : CInstanceClassFunctor2( obj, pFunc, param1, param2 ){}
+
+    virtual void runObject()
+    { 
+        rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>::runObject();
+
+        m_param2.callCallback();
+    }
+};
+
+class CGeneratorQueue : public rho::common::CThreadQueue
+{
+public:
+
+    class CGeneratorQueueCommand: public rho::common::CThreadQueue::IQueueCommand
+    {
+        rho::common::IRhoRunnable* m_pFunctor;
+    public:
+        CGeneratorQueueCommand(rho::common::IRhoRunnable* pFunctor) : m_pFunctor(pFunctor){}
+        virtual ~CGeneratorQueueCommand(){};
+        virtual bool equals(const IQueueCommand& cmd)
+        {
+            return false;
+        }
+        virtual rho::String toString()
+        {
+            return "";
+        }
+        virtual void cancel(){}
+
+        virtual void execute()
+        {
+            m_pFunctor->runObject();
+        }
+    };
+
+    CGeneratorQueue() : CThreadQueue()
+    {
+        //TODO: use log category from CBarcode1
+        //CThreadQueue::setLogCategory(getLogCategory());
+
+        setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
+    }
+};
+
+///////////////////////////////////////////////////////////
 struct IBarcode1
 {
     virtual ~IBarcode1(){}
@@ -78,6 +131,8 @@ class CBarcode1
 {
     static rho::String m_strDefaultID;
     static rho::Hashtable<rho::String,IBarcode1*> m_hashBarcodes;
+    static rho::common::CAutoPtr<CGeneratorQueue> m_pCommandQueue;
+
 public:
     static IBarcode1* create(const rho::String& strID);
     static rho::Hashtable<rho::String,IBarcode1*>& getBarcodes(){ return m_hashBarcodes; }
@@ -100,4 +155,14 @@ public:
 
     static void enumerate(CMethodResult& oResult);
 
+    static void addCommandToQueue(rho::common::IRhoRunnable* pFunctor)
+    {
+        if ( !m_pCommandQueue )
+        {
+            m_pCommandQueue = new CGeneratorQueue();
+            m_pCommandQueue->start(rho::common::CThreadQueue::epLow);
+        }
+
+        m_pCommandQueue->addQueueCommand( new CGeneratorQueue::CGeneratorQueueCommand(pFunctor) );
+    }
 };
