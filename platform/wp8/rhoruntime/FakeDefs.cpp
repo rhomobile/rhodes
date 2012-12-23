@@ -1,7 +1,7 @@
 
 #include <windows.h>
 #include <string>
-//#include "../../shared/ruby/include/ruby.h"
+#include "../../shared/ruby/ext/rho/rhoruby.h"
 #include "../../shared/common/RhoDefs.h"
 #include <logging/RhoLog.h>
 
@@ -10,10 +10,14 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance()
     return 0;//_AtlModule.GetModuleInstance();
 }
 
-//void rho_webview_set_menu_items(VALUE valMenu) 
-//{
-//    //rho_rhodesapp_setViewMenu(valMenu); 
-//}
+extern "C" void rho_webview_set_menu_items(VALUE valMenu) 
+{
+    //rho_rhodesapp_setViewMenu(valMenu); 
+}
+
+extern "C" void rho_webview_save(const char* format, const char* path, int tab_index)
+{
+}
 
 RHO_GLOBAL void rho_map_location(char* query)
 {

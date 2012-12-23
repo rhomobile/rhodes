@@ -269,6 +269,7 @@ void RhoRubyStart()
 	Init_RhoSupport();	
 	Init_RhoConf();
 	Init_SyncEngine();
+	Init_WebView();
 #endif //OS_WP8
 
 
