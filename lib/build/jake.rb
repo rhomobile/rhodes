@@ -664,7 +664,7 @@ class Jake
       args = ['path', 'win32_process', 'get', 'Processid,Commandline']
     else
       cmd = 'ps'
-      args = ['axww', '-o', 'pid', '-o', 'command']
+      args = ['axww', '-o', 'pid', '-o', 'ppid', '-o', 'command']
     end
     
     output = run2 cmd, args, {:hide_output=>true}
@@ -675,8 +675,8 @@ class Jake
         match_data = /^(.*)\s+(\d+)\s*$/.match line
         proc_list << {:pid=>match_data[2], :cmd=>match_data[1]} if match_data
       else
-        match_data = /(\d+)\s+(.*)/.match line
-        proc_list << {:pid=>match_data[1], :cmd=>match_data[2]} if match_data
+        match_data = /(\d+)\s+(\d+)\s+(.*)/.match line
+        proc_list << {:pid=>match_data[1], :ppid=>match_data[2], :cmd=>match_data[3]} if match_data
       end
     end
     proc_list
