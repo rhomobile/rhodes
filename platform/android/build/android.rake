@@ -1990,6 +1990,8 @@ namespace "run" do
         
         apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
         AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
+        
+        AndroidTools.logcat_process('-e')
     end
 
     desc "Run application on RhoSimulator"    
@@ -2021,9 +2023,8 @@ namespace "run" do
 
       apkfile = File.join $targetdir, $appname + "-debug.apk"
       AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
-      #AndroidTools.run_application("-d", $app_package_name)
 
-      AndroidTools.logcat_process("-d")
+      AndroidTools.logcat_process('-d')
     end
   end
 

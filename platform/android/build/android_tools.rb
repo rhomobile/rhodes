@@ -207,9 +207,6 @@ module_function :is_device_running
 
 def  run_emulator(options = {})
   system("\"#{$adb}\" start-server")
-
-  FileUtils.rm_f $applog_path if !$applog_path.nil?
-  logcat_process()
   
   unless is_emulator_running
     puts "Need to start emulator" if USE_TRACES
@@ -473,7 +470,7 @@ def logcat(device_flag = '-e', log_path = $applog_path)
     if log_pids.empty?
       rm_rf log_path if File.exist?(log_path)
       puts 'Starting new logcat'
-      Thread.new { Jake.run($adb, [device_flag, 'logcat', '>>', log_path], nil, true) }
+      Thread.new { Jake.run($adb, [device_flag, 'logcat', '>', log_path], nil, true) }
     end
   end
 end
@@ -491,7 +488,7 @@ def logcat_process(device_flag = '-e', log_path = $applog_path)
     
     if log_pids.empty?
       puts 'Starting new logcat process'
-      Thread.new { system("\"#{$adb}\" #{device_flag} logcat >> \"#{log_path}\"") }
+      Thread.new { system("\"#{$adb}\" #{device_flag} logcat > \"#{log_path}\"") }
     end
   end
 end
