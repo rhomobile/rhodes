@@ -9,18 +9,31 @@ typedef unsigned long VALUE;
 
 class CMethodResult
 {
-    rho::String m_strCallback, m_strCallbackParam;
+    rho::String m_strRubyCallback, m_strCallbackParam, m_strStringParam;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
     rho::String m_strRes;
     rho::Vector<rho::String> m_arStrRes;
     rho::String m_strError;
+    boolean m_bCallInUIThread;
 
     enum ETypes{ eNone = 0, eString, eStringArray, eStringHash, eError, eArgError};
     ETypes m_ResType;
 public:
 
-    void setCallback(const rho::String& strCallback){ m_strCallback = strCallback; }
+    void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
+    void setCallInUIThread(boolean bUIThread){ m_bCallInUIThread = bUIThread; }
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
+    void setStringParam(const rho::String& strParam){m_strStringParam = strParam;}
+    void convertStringParamToHash()
+    {
+        if ( m_ResType == eString )
+        {
+            rho::Hashtable<rho::String, rho::String> resHash;
+            resHash.put( m_strStringParam, m_strRes);
+            set(resHash);
+        }
+    }
+
     void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; m_ResType = eStringHash; }
     void set(const rho::String& res){ m_strRes = res;  m_ResType = eString; }
     void set(const rho::Vector<rho::String>& res){ m_arStrRes = res;  m_ResType = eStringArray; }
@@ -40,8 +53,6 @@ public:
     void callCallback();
 };
 
-extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
-
 template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2 >
 class CObjCallbackFunctor2 : public rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>
 {
@@ -53,6 +64,20 @@ public:
         rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>::runObject();
 
         m_param2.callCallback();
+    }
+};
+
+template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE >
+class CObjCallbackFunctor1 : public rho::common::CInstanceClassFunctor1<OBJTYPE, FUNCTYPE, PARAMTYPE>
+{
+public:
+    CObjCallbackFunctor1( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE param ) : CInstanceClassFunctor1( obj, pFunc, param ){}
+
+    virtual void runObject()
+    { 
+        rho::common::CInstanceClassFunctor1<OBJTYPE, FUNCTYPE, PARAMTYPE>::runObject();
+
+        m_param.callCallback();
     }
 };
 
@@ -102,6 +127,8 @@ struct IBarcode1
 
 class CBarcode1ImplBase: public IBarcode1
 {
+protected:
+
     rho::String m_strID;
     rho::Hashtable<rho::String, rho::String> m_hashProps;
 

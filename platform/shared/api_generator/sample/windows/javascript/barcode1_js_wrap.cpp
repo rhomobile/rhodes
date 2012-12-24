@@ -70,6 +70,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
     }else
     {
         CJSONEntry& oParam2 = oParams.getCurItem();
+        //TODO: call with callback
     }
 
     return "{}";

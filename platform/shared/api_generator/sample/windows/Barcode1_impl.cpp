@@ -5,6 +5,8 @@ class CBarcode1Impl: public CBarcode1ImplBase
 public:
     CBarcode1Impl(const rho::String& strID): CBarcode1ImplBase(strID)
     {
+        m_hashProps.put( "display", "LCD");
+        m_hashProps.put( "sound", "Dolby");
     }
 };
 
