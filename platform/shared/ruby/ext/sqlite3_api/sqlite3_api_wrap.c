@@ -51,11 +51,17 @@ extern VALUE ruby_db_execute(int argc, VALUE *argv, VALUE self);
 extern VALUE rho_db_export( void* pDB );
 extern int rho_db_import( void* pDB, const char* zipName );
 
+static void
+db_obj_free(void *p)
+{
+    ruby_xfree(p);
+}
+
 static VALUE db_allocate(VALUE klass)
 {
 	//sqlite3 **db = malloc(sizeof(sqlite3 **));
-    void* pDB = malloc(sizeof(void*));
-	return Data_Wrap_Struct(klass, 0, 0, pDB);
+    void* pDB = ALLOC(void*);
+	return Data_Wrap_Struct(klass, 0, db_obj_free, pDB);
 }
 
 static VALUE db_init(int argc, VALUE *argv, VALUE self)
