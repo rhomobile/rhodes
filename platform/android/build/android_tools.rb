@@ -276,7 +276,7 @@ def  run_emulator(options = {})
             if (now - startedWaiting) > (180 * adbRestarts)
               # Restart the adb server every 60 seconds to prevent eternal waiting
               puts "Appears hung, restarting adb server"
-              restart_adb
+              kill_adb_logcat('-e')
               Jake.run($adb, ['start-server'], nil, true)
               adbRestarts += 1
 
@@ -392,11 +392,29 @@ def load_app_and_run(device_flag, apkfile, pkgname)
 end
 module_function :load_app_and_run
 
-def restart_adb
-  cmd_re = Regexp.new "\"?#{$adb}\"?\s+-\w\s+logcat\s+>>\s+\"?#{$applog_path}\"?"
-  log_pids = Jake.get_process_list.select do |proc|
-    proc[:cmd] =~ cmd_re
+def kill_adb_logcat(device_flag, log_path = $applog_path)
+  cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+(-[e|d])\s+logcat\s+>>\s+\"?#{log_path}\"?\"?"
+  processes = Jake.get_process_list
+  log_shell_pids = []
+    
+  processes.each do |proc|
+    match_data = cmd_re.match proc[:cmd]
+    if match_data
+      log_shell_pids << proc[:pid] unless match_data[1] == device_flag
+    end    
   end
+  
+  log_pids = []
+  processes.each do |proc|
+    log_shell_pids.each do |log_shell_pid|
+      if proc[:ppid]
+        log_pids << proc[:pid] if proc[:ppid] == log_shell_pid
+      end
+    end
+  end
+  
+  log_pids += log_shell_pids
+
   log_pids.each do |pid|
     if RUBY_PLATFORM =~ /(win|w)32$/
       system "taskkill /PID #{pid}"
@@ -407,9 +425,15 @@ def restart_adb
 
   sleep 1
 
-  log_pids1 = Jake.get_process_list.select do |proc|
-    proc[:cmd] =~ cmd_re
+  processes1 = Jake.get_process_list
+  log_pids1 = []
+  
+  processes1.each do |proc|
+    log_pids.each do |pid|
+      log_pids1 << proc[:pid] if pid == proc[:pid]
+    end
   end
+
   log_pids1.each do |pid|
     if RUBY_PLATFORM =~ /(win|w)32$/
       system "taskkill /F /PID #{pid}"
@@ -418,20 +442,8 @@ def restart_adb
     end
   end
 
-  #puts 'Killing adb server'
-  #system("#{$adb} kill-server")
-  #if RUBY_PLATFORM =~ /(win|w)32$/
-  #  # Windows
-  #  system ('taskkill /F /IM adb.exe')
-  #else
-  #  system ('killall -9 adb')
-  #end
-  #sleep 3
-  #puts 'Starting adb server again'
-  #system("#{$adb} start-server")
-  #sleep 3
 end
-module_function :restart_adb
+module_function :kill_adb_logcat
 
 def kill_adb_and_emulator
   if RUBY_PLATFORM =~ /windows|cygwin|mingw/
