@@ -1492,22 +1492,25 @@ void CRhodesApp::navigateToUrl( const String& strUrl)
 
 String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String strName)
 {
-    int nIndex = -1;
-    for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
+    synchronized(m_mxCallbackObjects)
     {
-        if ( m_arCallbackObjects.elementAt(i) == 0 )
-            nIndex = i;
+        int nIndex = -1;
+        for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
+        {
+            if ( m_arCallbackObjects.elementAt(i) == 0 )
+                nIndex = i;
+        }
+        if ( nIndex  == -1 )
+        {
+            m_arCallbackObjects.addElement(pCallbackObject);
+            nIndex = m_arCallbackObjects.size()-1;
+        }else
+            m_arCallbackObjects.setElementAt(pCallbackObject,nIndex);
+
+        String strRes = "__rho_object[" + strName + "]=" + convertToStringA(nIndex);
+
+        return strRes;
     }
-    if ( nIndex  == -1 )
-    {
-        m_arCallbackObjects.addElement(pCallbackObject);
-        nIndex = m_arCallbackObjects.size()-1;
-    }else
-        m_arCallbackObjects.setElementAt(pCallbackObject,nIndex);
-
-    String strRes = "__rho_object[" + strName + "]=" + convertToStringA(nIndex);
-
-    return strRes;
 }
 
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
