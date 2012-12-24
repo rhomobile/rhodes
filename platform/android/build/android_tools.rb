@@ -390,7 +390,9 @@ end
 module_function :load_app_and_run
 
 def kill_adb_logcat(device_flag, log_path = $applog_path)
-  cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+(-[e|d])\s+logcat\s+>>\s+\"?#{log_path}\"?\"?"
+  puts 'search for adb logcat to kill ========================================'
+	
+  cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+(-[e|d])\s+logcat\s+>\s+\"?#{log_path}\"?\"?"
   processes = Jake.get_process_list
   log_shell_pids = []
     
@@ -459,7 +461,7 @@ module_function :kill_adb_and_emulator
 
 def logcat(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
-    cmd_re = Regexp.new "\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>>\s+\"?#{log_path}\"?"
+    cmd_re = Regexp.new "\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>\s+\"?#{log_path}\"?"
     pids = Jake.get_process_list
     log_pids = []
     
@@ -478,7 +480,7 @@ module_function :logcat
 
 def logcat_process(device_flag = '-e', log_path = $applog_path)
   if !log_path.nil?
-    cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>>\s+\"?#{log_path}\"?\"?"
+    cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>\s+\"?#{log_path}\"?\"?"
     pids = Jake.get_process_list
     log_pids = []
     

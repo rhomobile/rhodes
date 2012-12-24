@@ -1985,9 +1985,9 @@ namespace "run" do
     end
 
     task :emulator=>['config:android:emulator', 'device:android:debug']  do
-        AndroidTools.run_emulator
         AndroidTools.kill_adb_logcat('-e')
-        
+        AndroidTools.run_emulator
+
         apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
         AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
         
