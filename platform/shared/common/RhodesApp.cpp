@@ -1515,20 +1515,23 @@ String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String st
 
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
 {
-    if ( nIndex < 0 || nIndex > (int)m_arCallbackObjects.size() )
-        return rho_ruby_get_NIL();
+    synchronized(m_mxCallbackObjects)
+    {
+        if ( nIndex < 0 || nIndex > (int)m_arCallbackObjects.size() )
+            return rho_ruby_get_NIL();
 
-    ICallbackObject* pCallbackObject = m_arCallbackObjects.elementAt(nIndex);
-    m_arCallbackObjects.setElementAt(0,nIndex);
+        ICallbackObject* pCallbackObject = m_arCallbackObjects.elementAt(nIndex);
+        m_arCallbackObjects.setElementAt(0,nIndex);
 
-    if ( !pCallbackObject )
-        return rho_ruby_get_NIL();
+        if ( !pCallbackObject )
+            return rho_ruby_get_NIL();
 
-    unsigned long valRes = pCallbackObject->getObjectValue();
+        unsigned long valRes = pCallbackObject->getObjectValue();
 
-    delete pCallbackObject;
+        delete pCallbackObject;
 
-    return valRes;
+        return valRes;
+    }
 }
 
 void CRhodesApp::initPushClients()
