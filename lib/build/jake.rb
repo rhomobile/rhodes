@@ -661,7 +661,7 @@ class Jake
     
     if RUBY_PLATFORM =~ /(win|w)32$/
       cmd = 'wmic'
-      args = ['path', 'win32_process', 'get', 'Processid,Commandline']
+      args = ['path', 'win32_process', 'get', 'Processid,Parentprocessid,Commandline']
     else
       cmd = 'ps'
       args = ['axww', '-o', 'pid', '-o', 'ppid', '-o', 'command']
@@ -672,8 +672,8 @@ class Jake
     output.each_line do |line|
       #puts "[[#{line}]]"
       if RUBY_PLATFORM =~ /(win|w)32$/
-        match_data = /^(.*)\s+(\d+)\s*$/.match line
-        proc_list << {:pid=>match_data[2], :cmd=>match_data[1]} if match_data
+        match_data = /^(.*)\s+(\d+)\s+(\d+)\s*$/.match line
+        proc_list << {:pid=>match_data[3], :ppid=>match_data[2], :cmd=>match_data[1]} if match_data
       else
         match_data = /(\d+)\s+(\d+)\s+(.*)/.match line
         proc_list << {:pid=>match_data[1], :ppid=>match_data[2], :cmd=>match_data[3]} if match_data
