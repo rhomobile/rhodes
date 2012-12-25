@@ -104,6 +104,8 @@ extern "C" {
 	int rho_rcclient_issyncing();
 	void rho_rcclient_doSyncSourceByName(const char* srcName);
 	void rho_rcclient_doSyncAllSources(int show_status_popup, const char* query_params, int sync_only_changed_sources);
+	void rho_clientregister_create(const char* szDevicePin);
+
 #ifdef __cplusplus
 }
 #endif
