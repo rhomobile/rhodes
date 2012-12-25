@@ -226,12 +226,12 @@ void RhoRubyStart()
 #endif
 
 #if !defined(OS_WP8)
-    
-	Init_strscan();
-	Init_stringio();
+
+    Init_strscan();
     Init_sqlite3_api();
     Init_GeoLocation();
     Init_AsyncHttp();
+    Init_System();
     Init_Phonebook();
     Init_WebView();
     Init_RhoConf();
@@ -241,30 +241,32 @@ void RhoRubyStart()
 #else
     Init_SignatureCapture();
 #endif
-
-    Init_System();
+    
     Init_RhoBluetooth();	
 	Init_RhodesNativeViewManager();	
-    Init_Camera();    
+    Init_Camera();
+    Init_stringio();
     Init_DateTimePicker();
-    Init_NativeBar();    
+    Init_NativeBar();
+    Init_RhoSupport();
     Init_MapView();
     Init_RingtoneManager();
     Init_socket();
     Init_NavBar();
     Init_RhoEvent();
     Init_Calendar();
-#endif //OS_WP8
 
-	Init_RhoSupport();	
-	Init_RhoConf();
-
-
-#if !defined(OS_WP8)
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)
     Init_Extensions();
 #endif //RHO_SYMBIAN
+
+#else // OS_WP8 is set
+	Init_sqlite3_api();
+	Init_strscan();
+	Init_RhoSupport();	
+	Init_RhoConf();
+	Init_WebView();
 #endif //OS_WP8
 
 
@@ -285,7 +287,11 @@ void RhoRubyStart()
     framework = rb_const_get(rb_cObject,rb_intern("RHO_FRAMEWORK"));
 #else
     {
-        VALUE res = rho_ruby_disable_gc();
+		VALUE res = rho_ruby_disable_gc();
+
+#if defined(OS_WP8) // temporary constant for wp8 development
+		rb_const_set(rb_cObject, rb_intern("RHO_WP8"), Qtrue);
+#endif // OS_WP8
         require_compiled(rb_str_new2("rhoframework"), &framework );
         rho_ruby_enable_gc(res);
     }

@@ -111,6 +111,7 @@ private:
 
     Vector<String> m_arAppBackUrl, m_arAppBackUrlOrig;
     Vector<ICallbackObject*> m_arCallbackObjects;
+    mutable common::CMutex m_mxCallbackObjects;
 
     mutable common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;

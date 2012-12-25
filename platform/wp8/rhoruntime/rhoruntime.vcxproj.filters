@@ -27,6 +27,12 @@
     <ClCompile Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="WebViewImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\ThreadEmulation.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />

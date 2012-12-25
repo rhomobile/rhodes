@@ -28,13 +28,14 @@
 
 #include "RhoThreadImpl.h"
 
+
 namespace rho{
 namespace common{
 IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThread");
 
 CRhoThreadImpl::CRhoThreadImpl() : m_hAwakeEvent(0), m_hThread(0)
 {
-    m_hAwakeEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_hAwakeEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
 CRhoThreadImpl::~CRhoThreadImpl()
