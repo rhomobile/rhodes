@@ -1848,7 +1848,7 @@ namespace "run" do
             if $device_flag == '-e'
                 AndroidTools.kill_adb_and_emulator
             else
-                AndroidTools.restart_adb
+                AndroidTools.kill_adb_logcat $device_flag, log_name
             end
         }
 
@@ -1909,11 +1909,11 @@ namespace "run" do
         Jake.process_spec_results(start)        
         
         # stop app
+        do_uninstall($device_flag)
         if $device_flag == '-e'
             AndroidTools.kill_adb_and_emulator
         else
-            do_uninstall($device_flag)
-            AndroidTools.restart_adb
+            AndroidTools.kill_adb_logcat($device_flag, log_name)
         end
 
         $stdout.flush
@@ -1985,11 +1985,13 @@ namespace "run" do
     end
 
     task :emulator=>['config:android:emulator', 'device:android:debug']  do
+        AndroidTools.kill_adb_logcat('-e')
         AndroidTools.run_emulator
-        AndroidTools.restart_adb
-        
+
         apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
         AndroidTools.load_app_and_run('-e', apkfile, $app_package_name)
+        
+        AndroidTools.logcat_process('-e')
     end
 
     desc "Run application on RhoSimulator"    
@@ -2014,57 +2016,15 @@ namespace "run" do
         
         Rake::Task["run:rhosimulator_debug"].invoke            
     end
-    
-#    task :get_info => "config:android" do
-#        $androidtargets.each do |level|
-#            puts "#{get_market_version(level[0])}"
-#        end
-#
-#        emu_version = $emuversion
-#        
-#        puts ""        
-#        cur_name = ""
-#        
-#        `"#{$androidbin}" list avd`.split(/\n/).each do |line|
-#            line.each_line do |item|
-#                ar = item.split(':')
-#                ar[0].strip!
-#                if ar[0] == "Name"
-#                    cur_name = ar[1].strip!
-#                    puts "#{cur_name}"
-#                end
-#                
-#                if $appavdname && cur_name == $appavdname && (ar[0] == "Target" || ar.length == 1)
-#                    
-#                    text = ar[0] == "Target" ? ar[1] : ar[0]
-#                    
-#                    nAnd = text.index("Android")
-#                    if nAnd
-#                        nAnd = text.index(" ", nAnd)
-#                        nAnd1 = text.index("-", nAnd+1)                    
-#                        nAnd1 = text.index(" ", nAnd+1) unless nAnd1
-#                        emu_version = text[nAnd+1, nAnd1-nAnd-1]
-#                    end    
-#                end
-#            end    
-#        end
-#
-#        puts ""
-#
-#        puts "#{emu_version}"
-#        puts "#{$appavdname}"
-#
-#    end
 
     desc "build and install on device"
     task :device => "device:android:debug" do
-      AndroidTools.restart_adb
+      AndroidTools.kill_adb_logcat('-d')
 
       apkfile = File.join $targetdir, $appname + "-debug.apk"
       AndroidTools.load_app_and_run('-d', apkfile, $app_package_name)
-      #AndroidTools.run_application("-d", $app_package_name)
 
-      AndroidTools.logcat_process("-d")
+      AndroidTools.logcat_process('-d')
     end
   end
 
