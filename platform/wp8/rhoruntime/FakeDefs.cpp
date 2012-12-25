@@ -1,59 +1,22 @@
 
 #include <windows.h>
 #include <string>
-//#include "../../shared/ruby/include/ruby.h"
+#include "../../shared/ruby/ext/rho/rhoruby.h"
 #include "../../shared/common/RhoDefs.h"
-
-#include <logging\RhoLog.h>
+#include <logging/RhoLog.h>
 
 extern "C" HINSTANCE rho_wmimpl_get_appinstance()
 {
     return 0;//_AtlModule.GetModuleInstance();
 }
 
-extern "C" int rho_webview_active_tab() 
+extern "C" void rho_webview_set_menu_items(VALUE valMenu) 
 {
-    return 0;// CMainWindow::getInstance()->tabbarGetCurrent();
+    //rho_rhodesapp_setViewMenu(valMenu); 
 }
 
-extern "C" void rho_webview_navigate_back()
+extern "C" void rho_webview_save(const char* format, const char* path, int tab_index)
 {
-    //CMainWindow::getInstance()->navigateBackCommand();
-}
-
-extern "C" void rho_webview_navigate_forward()
-{
-    //CMainWindow::getInstance()->navigateForwardCommand();
-}
-
-extern "C" const char* rho_webview_execute_js(const char* js, int index) 
-{
-    return "";
-}
-
-extern "C" const char* rho_webview_current_location(int index) 
-{
-    return "";//RHODESAPP().getCurrentUrl(index).c_str();
-}
-
-extern "C" const char* rho_webview_get_current_url(int index)
-{
-    return "";//RHODESAPP().getCurrentUrl(index).c_str();
-}
-
-//void rho_webview_set_menu_items(VALUE valMenu) 
-//{
-//    //rho_rhodesapp_setViewMenu(valMenu); 
-//}
-
-extern "C" void rho_webview_full_screen_mode(int enable)
-{
-    //CMainWindow::getInstance()->fullscreenCommand(enable);
-}
-
-extern "C" void rho_webview_set_cookie(const char *url, const char *cookie)
-{
-    //CMainWindow::getInstance()->setCookie(url, cookie);
 }
 
 RHO_GLOBAL void rho_map_location(char* query)
@@ -85,15 +48,6 @@ extern "C" const char* rho_native_rhopath()
 extern "C" const char* rho_native_get_appname()
 {
     return "Rhodes";
-}
-
-extern "C" void rho_webview_navigate(const char* url, int index)
-{ 
-	LOG(ERROR)+"Call rho_webview_navigate: " + url;
-}
-
-RHO_GLOBAL void rho_webview_refresh(int index)
-{
 }
 
 RHO_GLOBAL const char* rho_native_reruntimepath()

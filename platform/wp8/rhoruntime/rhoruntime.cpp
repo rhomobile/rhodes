@@ -30,13 +30,33 @@
 //#include "../../shared/sqlite/sqlite3.h"
 //#include "logging/RhoLogConf.h"
 #include "common/RhodesApp.h"
+#include "rubyext/WebView.h"
 
 using namespace rhoruntime;
 using namespace Platform;
 
+CRhoRuntime^ CRhoRuntime::m_instance = nullptr;
+
 CRhoRuntime::CRhoRuntime(IMainPage^ mainPage):
 	m_MainPage(mainPage)
 {
+}
+
+CRhoRuntime^ CRhoRuntime::getInstance(IMainPage^ mainPage)
+{
+	if (m_instance == nullptr)
+		m_instance = ref new CRhoRuntime(mainPage);
+    return m_instance;
+}
+
+CRhoRuntime^ CRhoRuntime::getInstance()
+{
+    return m_instance;
+}
+
+IMainPage^ CRhoRuntime::getMainPage()
+{
+	return m_MainPage;
 }
 
 // rhodes executed in a separate thread
@@ -51,9 +71,12 @@ void CRhoRuntime::Execute()
 	//Create Main window
 
 	RHODESAPP().startApp();
+	//rho_webview_navigate("http://www.apple.com/", 0);
+	//const char* url = rho_webview_get_current_url(0);
+	//rho_webview_execute_js("window.alert(\"OK\");", 0);
 
-	// wait for 3 seconds
-	m_MainPage->DoWait(3000);
+	// wait for 5 seconds
+	m_MainPage->DoWait(5000);
 	// exit application
 	m_MainPage->exitCommand();
 }

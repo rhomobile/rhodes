@@ -1596,40 +1596,46 @@ void CRhodesApp::navigateToUrl( const String& strUrl)
 
 String CRhodesApp::addCallbackObject(ICallbackObject* pCallbackObject, String strName)
 {
-    int nIndex = -1;
-    for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
+    synchronized(m_mxCallbackObjects)
     {
-        if ( m_arCallbackObjects.elementAt(i) == 0 )
-            nIndex = i;
+        int nIndex = -1;
+        for (int i = 0; i < (int)m_arCallbackObjects.size(); i++)
+        {
+            if ( m_arCallbackObjects.elementAt(i) == 0 )
+                nIndex = i;
+        }
+        if ( nIndex  == -1 )
+        {
+            m_arCallbackObjects.addElement(pCallbackObject);
+            nIndex = m_arCallbackObjects.size()-1;
+        }else
+            m_arCallbackObjects.setElementAt(pCallbackObject,nIndex);
+
+        String strRes = "__rho_object[" + strName + "]=" + convertToStringA(nIndex);
+
+        return strRes;
     }
-    if ( nIndex  == -1 )
-    {
-        m_arCallbackObjects.addElement(pCallbackObject);
-        nIndex = m_arCallbackObjects.size()-1;
-    }else
-        m_arCallbackObjects.setElementAt(pCallbackObject,nIndex);
-
-    String strRes = "__rho_object[" + strName + "]=" + convertToStringA(nIndex);
-
-    return strRes;
 }
 
 unsigned long CRhodesApp::getCallbackObject(int nIndex)
 {
-    if ( nIndex < 0 || nIndex > (int)m_arCallbackObjects.size() )
-        return rho_ruby_get_NIL();
+    synchronized(m_mxCallbackObjects)
+    {
+        if ( nIndex < 0 || nIndex > (int)m_arCallbackObjects.size() )
+            return rho_ruby_get_NIL();
 
-    ICallbackObject* pCallbackObject = m_arCallbackObjects.elementAt(nIndex);
-    m_arCallbackObjects.setElementAt(0,nIndex);
+        ICallbackObject* pCallbackObject = m_arCallbackObjects.elementAt(nIndex);
+        m_arCallbackObjects.setElementAt(0,nIndex);
 
-    if ( !pCallbackObject )
-        return rho_ruby_get_NIL();
+        if ( !pCallbackObject )
+            return rho_ruby_get_NIL();
 
-    unsigned long valRes = pCallbackObject->getObjectValue();
+        unsigned long valRes = pCallbackObject->getObjectValue();
 
-    delete pCallbackObject;
+        delete pCallbackObject;
 
-    return valRes;
+        return valRes;
+    }
 }
 
 void CRhodesApp::initPushClients()
