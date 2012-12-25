@@ -72,7 +72,7 @@ void CRhoRuntime::Execute()
 
 	RHODESAPP().startApp();
 	//rho_webview_navigate("http://www.apple.com/", 0);
-	//const char* url = rho_webview_get_current_url(0);
+	//const char* url = rho_webview_get_current_location(0);
 	//rho_webview_execute_js("window.alert(\"OK\");", 0);
 
 	// wait for 5 seconds

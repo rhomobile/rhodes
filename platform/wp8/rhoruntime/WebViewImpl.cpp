@@ -1,6 +1,7 @@
 #include "rhoruntime.h"
 #include "common/RhoStd.h"
 #include "common/StringConverter.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 using namespace rhoruntime;
 using namespace Platform;
@@ -29,15 +30,15 @@ extern "C" const char* rho_webview_execute_js(const char* js, int index)
     return "";
 }
 
-extern "C" const char* rho_webview_get_current_url(int index)
+extern "C" unsigned long rho_webview_get_current_url(int index)
 {
-	rho::String urlA = rho::common::convertToStringA(CRhoRuntime::getInstance()->getMainPage()->getCurrentURL(index)->Data());
-	return urlA.c_str();
+	return rho_ruby_create_string(rho_webview_get_current_url(index));
 }
 
 extern "C" const char* rho_webview_current_location(int index)
 {
-	return rho_webview_get_current_url(index);
+	rho::String urlA = rho::common::convertToStringA(CRhoRuntime::getInstance()->getMainPage()->getCurrentURL(index)->Data());
+	return urlA.c_str();
 }
 
 extern "C" void rho_webview_full_screen_mode(int enable)
