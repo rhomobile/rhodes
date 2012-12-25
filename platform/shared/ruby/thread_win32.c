@@ -14,7 +14,9 @@
 #include <process.h>
 
 #define WIN32_WAIT_TIMEOUT 10	/* 10 ms */
+#if !defined(OS_WP8)
 #undef Sleep
+#endif
 
 //RHO
 #define native_thread_yield() Sleep(10)
