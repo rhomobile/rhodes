@@ -42,7 +42,7 @@ const char* rho_webview_current_location(int index);
 int rho_webview_active_tab();
 void rho_webview_set_menu_items(unsigned long valMenu);
 void rho_webview_full_screen_mode(int enable);
-const char* rho_webview_get_current_url(int index);
+unsigned long rho_webview_get_current_url(int index);
 const char* rho_webview_current_location(int index);
 
 #ifdef __cplusplus

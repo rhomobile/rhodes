@@ -182,6 +182,19 @@ RHO_GLOBAL int vswnprintf(wchar_t *, size_t, const wchar_t *, void *);
 extern "C" {
 #endif
 
+HANDLE WINAPI CreateThreadWP8(_In_opt_ LPSECURITY_ATTRIBUTES unusedThreadAttributes, _In_ SIZE_T unusedStackSize, _In_ LPTHREAD_START_ROUTINE lpStartAddress, _In_opt_ LPVOID lpParameter, _In_ DWORD dwCreationFlags, _Out_opt_ LPDWORD unusedThreadId);
+DWORD WINAPI ResumeThreadWP8(_In_ HANDLE hThread);
+BOOL WINAPI SetThreadPriorityWP8(_In_ HANDLE hThread, _In_ int nPriority);
+
+DWORD WINAPI TlsAllocWP8();
+BOOL WINAPI TlsFreeWP8(_In_ DWORD dwTlsIndex);
+LPVOID WINAPI TlsGetValueWP8(_In_ DWORD dwTlsIndex);
+BOOL WINAPI TlsSetValueWP8(_In_ DWORD dwTlsIndex, _In_opt_ LPVOID lpTlsValue);
+
+void WINAPI TlsShutdownWP8();
+
+VOID WINAPI SleepWP8(_In_ DWORD dwMilliseconds);
+
 int
 wsprintfA(
     _Out_ LPSTR,
@@ -369,25 +382,6 @@ CreateFileW(
 #define CreateFile  CreateFileA
 #endif // !UNICODE
 
-HANDLE WINAPI CreateEventA(
-    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
-    _In_ BOOL bManualReset,
-    _In_ BOOL bInitialState,
-    _In_opt_ LPCSTR lpName);
-
-HANDLE WINAPI CreateEventW(
-    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
-    _In_ BOOL bManualReset,
-    _In_ BOOL bInitialState,
-    _In_opt_ LPCWSTR lpName);
-
-#ifdef UNICODE
-#define CreateEvent CreateEventW
-#else
-#define CreateEvent CreateEventA
-#endif
-
-
 HMODULE
 WINAPI
 LoadLibraryA(
@@ -506,18 +500,18 @@ GetFileSize(
     _Out_opt_ LPDWORD lpFileSizeHigh
     );
 
+#define CreateThread CreateThreadWP8
 
-_Ret_maybenull_
 HANDLE
 WINAPI
-CreateThread(
-    _In_opt_ LPSECURITY_ATTRIBUTES lpThreadAttributes,
-    _In_ SIZE_T dwStackSize,
-    _In_ LPTHREAD_START_ROUTINE lpStartAddress,
-    _In_opt_ __drv_aliasesMem LPVOID lpParameter,
-    _In_ DWORD dwCreationFlags,
-    _Out_opt_ LPDWORD lpThreadId
-    );
+CreateEventWP8(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+    _In_ BOOL bManualReset,
+    _In_ BOOL bInitialState,
+    _In_opt_ LPCWSTR lpName);
+
+#define CreateEventW CreateEventWP8
+#define CreateEvent CreateEventW
 
 
 HANDLE
@@ -619,6 +613,8 @@ TlsFree(
     _In_ DWORD dwTlsIndex
     );
 
+void WINAPI TlsShutdown();
+
 DWORD
 WINAPI
 WaitForMultipleObjects(
@@ -635,24 +631,23 @@ GetHandleInformation(
     _Out_ LPDWORD lpdwFlags
     );
 
-DWORD
-WINAPI
-ResumeThread(
-    _In_ HANDLE hThread
-    );
+#define ResumeThread ResumeThreadWP8
+#define TlsAlloc TlsAllocWP8
+#define TlsFree TlsFreeWP8
+#define TlsGetValue TlsGetValueWP8
+#define TlsSetValue TlsSetValueWP8
+#define TlsShutdown TlsShutdownWP8
 
 DWORD
 WINAPI
-WaitForSingleObject(
+WaitForSingleObjectWP8(
     _In_ HANDLE hHandle,
     _In_ DWORD dwMilliseconds
     );
 
-VOID
-WINAPI
-Sleep(
-    _In_ DWORD dwMilliseconds
-    );
+#define WaitForSingleObject WaitForSingleObjectWP8
+
+#define Sleep SleepWP8
 
 VOID
 WINAPI
@@ -668,12 +663,7 @@ TerminateThread(
     _In_ DWORD dwExitCode
     );
 
-BOOL
-WINAPI
-SetThreadPriority(
-    _In_ HANDLE hThread,
-    _In_ int nPriority
-    );
+#define SetThreadPriority SetThreadPriorityWP8
 
 DWORD
 WINAPI
