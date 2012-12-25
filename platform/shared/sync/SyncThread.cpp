@@ -407,17 +407,23 @@ void rho_sync_logout()
 
 void rho_sync_set_notification(int source_id, const char *url, char* params)
 {
+#if !defined(OS_WP8)
     CSyncThread::getSyncEngine().getNotify().setSyncNotification(source_id, new CSyncNotification(url, params ? params : "", source_id != -1) );
+#endif
 }
 
 void rho_sync_set_notification_c(int source_id, /*RHOC_CALLBACK*/void* callback, void* callback_data)
 {
+#if !defined(OS_WP8)
     CSyncThread::getSyncEngine().getNotify().setSyncNotification(source_id, new CSyncNotification((RHOC_CALLBACK)callback, callback_data, source_id != -1) );
+#endif
 }
 
 void rho_sync_clear_notification(int source_id)
 {
+#if !defined(OS_WP8)
     CSyncThread::getSyncEngine().getNotify().clearSyncNotification(source_id);
+#endif
 }
 
 #ifndef RHO_NO_RUBY

@@ -337,7 +337,11 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
     m_pExtManager = 0;
 	m_pNetworkStatusMonitor = 0;
 
-    m_appCallbacksQueue = new CAppCallbacksQueue();
+#if defined(OS_WP8)
+    m_appCallbacksQueue = 0;
+#else
+	m_appCallbacksQueue = new CAppCallbacksQueue();
+#endif
 
 #if defined(WINDOWS_PLATFORM)
     //initializing winsock
@@ -364,12 +368,17 @@ void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
     RhoRubyStart();
+
+#if !defined(OS_WP8)
     rubyext::CGeoLocation::Create();
+#endif
 
     //rho_db_init_attr_manager();
 
+#if !defined(OS_WP8)
     LOG(INFO) + "Starting sync engine...";
     sync::CSyncThread::Create();
+#endif
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
