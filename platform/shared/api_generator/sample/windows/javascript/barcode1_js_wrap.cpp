@@ -105,12 +105,12 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
         rho::common::IRhoRunnable* pFunctor = 0;
         if ( oParam1.isNull() )
         {
-            pFunctor = new CObjCallbackFunctor1<IBarcode1*, void (IBarcode1::*)(CMethodResult&), CMethodResult>
+            pFunctor = new rho::common::CInstanceClassFunctor1<IBarcode1*, void (IBarcode1::*)(CMethodResult&), CMethodResult>
                 ( pObj, &IBarcode1::getProps, oRes );
         }else if ( oParam1.isString() )
         {
             oRes.setStringParam( oParam1.getString() );
-            pFunctor = new CObjCallbackFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
+            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
                 ( pObj, &IBarcode1::getProps, oParam1.getString(), oRes );
 
         }else if ( oParam1.isArray() )
@@ -122,7 +122,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
                 ar.addElement( arParam.getCurItem().getString() );
             }
 
-            pFunctor = new CObjCallbackFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::String>&, CMethodResult&), rho::Vector<rho::String>, CMethodResult>
+            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::String>&, CMethodResult&), rho::Vector<rho::String>, CMethodResult>
                 ( pObj, &IBarcode1::getProps, ar, oRes );
         }else
         {
