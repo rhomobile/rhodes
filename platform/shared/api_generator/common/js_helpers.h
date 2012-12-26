@@ -6,5 +6,5 @@ typedef rho::String (*Func_JS)(const rho::String& strID, rho::json::CJSONArrayIt
 
 void js_define_method(const char* szMethodPath, Func_JS pFunc );
 rho::String js_entry_point(const char* szJSON);
-
+void js_register_http_entry_point();
 
