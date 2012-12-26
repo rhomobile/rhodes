@@ -2,7 +2,6 @@ package com.rhomobile.rhodes.extmanager;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -11,6 +10,7 @@ import android.content.DialogInterface;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -634,6 +634,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                 break;
         }
         return res;
+    }
+    public void onConfigurationChanged(RhodesActivity activity, Configuration newConfig) {
+        for (IRhoListener listener: mListeners) {
+            listener.onConfigurationChanged(activity, newConfig);
+        }
     }
 
 }
