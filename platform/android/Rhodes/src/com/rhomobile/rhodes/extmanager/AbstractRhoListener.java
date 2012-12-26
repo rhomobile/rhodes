@@ -2,6 +2,7 @@ package com.rhomobile.rhodes.extmanager;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 
 import com.rhomobile.rhodes.RhodesActivity;
 
@@ -33,5 +34,8 @@ public abstract class AbstractRhoListener implements IRhoListener {
 
     @Override
     public Dialog onCreateDialog(RhodesActivity activity, int id) { return null; }
+
+    @Override
+    public void onConfigurationChanged(RhodesActivity activity, Configuration newConfig) { }
 
 }

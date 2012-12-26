@@ -407,8 +407,11 @@ bool CHttpServer::run()
         return false;
     
     m_active = true;
+
+#if !defined(OS_WP8)
     RHODESAPP().notifyLocalServerStarted();
-    
+#endif
+
     for(;;) {
         RAWTRACE("Waiting for connections...");
         rho_ruby_start_threadidle();
@@ -531,7 +534,12 @@ bool CHttpServer::receive_request(ByteVector &request)
 			if (e == WSAEINTR)
 				continue;
 #endif
+
+#if defined(OS_WP8)
+            if (e == EAGAIN || e == WSAEWOULDBLOCK) {
+#else
             if (e == EAGAIN) {
+#endif
                 if (!r.empty())
                     break;
                 

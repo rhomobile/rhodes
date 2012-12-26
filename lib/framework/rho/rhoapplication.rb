@@ -125,13 +125,14 @@ module Rho
     def on_ui_created
         start_url = Rho::RhoConfig.start_path
         start_url = "" unless start_url
+
+        if !defined?( RHO_WP8 )
+          security_token_not_passed = System.get_property('security_token_not_passed')
+          security_token_not_passed = false if security_token_not_passed.nil?
+          invalid_security_token_start_path_exist = Rho::RhoConfig.exists? 'invalid_security_token_start_path'
+          invalid_security_token_start_path = Rho::RhoConfig.invalid_security_token_start_path
         
-        security_token_not_passed = System.get_property('security_token_not_passed')
-        security_token_not_passed = false if security_token_not_passed.nil?
-        invalid_security_token_start_path_exist = Rho::RhoConfig.exists? 'invalid_security_token_start_path'
-        invalid_security_token_start_path = Rho::RhoConfig.invalid_security_token_start_path
-        
-        if security_token_not_passed
+          if security_token_not_passed
             if invalid_security_token_start_path_exist
                 start_url = invalid_security_token_start_path
             else
@@ -139,6 +140,7 @@ module Rho
                 puts 'security_token is not passed - application will closed'
                 System.exit
             end
+          end
         end
 
         puts "on_ui_created.navigate to start url: '#{start_url}'"
