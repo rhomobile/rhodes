@@ -223,6 +223,7 @@ public:
     void clearNetworkStatusNotify();
     void setNetworkStatusMonitor(INetworkStatusMonitor* netMonitor);
 
+    void registerLocalServerUrl(const String& strUrl, rho::net::CHttpServer::callback_t const &callback);
 protected:
     virtual void run();
 

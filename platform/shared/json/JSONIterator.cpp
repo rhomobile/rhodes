@@ -225,6 +225,14 @@ boolean CJSONEntry::isString()
     return json_object_is_type(m_object, json_type_string) ? true : false;
 }
 
+boolean CJSONEntry::isNull()
+{
+    if ( isEmpty() )
+        return false;
+
+    return json_object_is_type(m_object, json_type_null) ? true : false;
+}
+
 boolean CJSONEntry::isArray()
 {
     if ( isEmpty() )

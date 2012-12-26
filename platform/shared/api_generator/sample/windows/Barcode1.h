@@ -10,6 +10,7 @@ typedef unsigned long VALUE;
 class CMethodResult
 {
     rho::String m_strRubyCallback, m_strCallbackParam, m_strStringParam;
+    rho::String m_strJSCallback;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
     rho::String m_strRes;
     rho::Vector<rho::String> m_arStrRes;
@@ -21,6 +22,7 @@ class CMethodResult
 public:
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
+    void setJSCallback(const rho::String& strCallback){ m_strJSCallback = strCallback; }
     void setCallInUIThread(boolean bUIThread){ m_bCallInUIThread = bUIThread; }
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
     void setStringParam(const rho::String& strParam){m_strStringParam = strParam;}
@@ -48,7 +50,7 @@ public:
     rho::Vector<rho::String>& getStringArray(){ return m_arStrRes; }
 
     VALUE toRuby();
-    rho::String toJSON(){ return "{}";}
+    rho::String toJSON();
 
     void callCallback();
 };

@@ -1,5 +1,6 @@
 #include "..\Barcode1.h"
 #include "..\..\..\common\ruby_helpers.h"
+#include "json/JSONIterator.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -8,10 +9,53 @@
 #include "ext/rho/rhoruby.h"
 #include "common/RhodesApp.h"
 
+using namespace rho::json;
+
 rho::Hashtable<rho::String,IBarcode1*> CBarcode1::m_hashBarcodes;
 rho::String CBarcode1::m_strDefaultID;
 rho::common::CAutoPtr<CGeneratorQueue> CBarcode1::m_pCommandQueue;
 
+rho::String CMethodResult::toJSON()
+{ 
+    rho::String strRes;
+    if ( m_ResType == eStringArray )
+    {
+        strRes = "[";
+        for( int i = 0; i < m_arStrRes.size(); i++ )
+        {
+            if ( i > 0 )
+                strRes += ",";
+
+            strRes += CJSONEntry::quoteValue(m_arStrRes[i]);
+        }
+        
+        strRes += "]";
+    }else if ( m_ResType == eStringHash )
+    {
+        strRes = "{";
+
+        for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
+        {
+            if ( it != m_hashStrRes.begin() )
+                strRes += ",";
+
+            strRes += CJSONEntry::quoteValue(it->first) + ":" + CJSONEntry::quoteValue(it->second);
+        }
+
+        strRes += "}";
+    }else if ( m_ResType == eString)
+    {
+        strRes = m_strRes;
+    }else if ( m_ResType == eArgError )
+    {
+        strRes = "{'_RhoArgError':" + CJSONEntry::quoteValue(m_strError) + "}";
+    }else if ( m_ResType == eError)
+    {
+        strRes = "{'_RhoRuntimeError':" + CJSONEntry::quoteValue(m_strError) + "}";
+    }
+
+    return strRes;
+}
 
 VALUE CMethodResult::toRuby()
 {
@@ -39,12 +83,6 @@ VALUE CMethodResult::toRuby()
     }else if ( m_ResType == eString)
     {
         return rho_ruby_create_string(m_strRes.c_str());
-    }else if ( m_ResType == eStringHash)
-    {
-        CHoldRubyValue valHash(rho_ruby_createHash());
-
-
-        return valHash;
     }else if ( m_ResType == eArgError)
     {
         rho_ruby_raise_argerror(m_strError.c_str());
@@ -52,7 +90,6 @@ VALUE CMethodResult::toRuby()
     {
         rho_ruby_raise_runtime(m_strError.c_str());
     }
-
 
     return rho_ruby_get_NIL();
 }
@@ -74,12 +111,15 @@ public:
 
 void CMethodResult::callCallback()
 {
-    //TODO: support Ruby and JSON callbacks
+    //TODO: support JSON callbacks
 
     if ( m_ResType != eNone && m_strRubyCallback.length() != 0 )
     {
-        //TODO: support callback param
-        rho::String strResBody = "rho_callback=1&" + RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
+        rho::String strResBody = "rho_callback=1";
+        if ( m_strCallbackParam.length() > 0 )
+            strResBody += "&" + m_strCallbackParam;
+
+        strResBody += "&" + RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
 
         //TODO: call in async mode
         getNetRequest().pushData( RHODESAPP().canonicalizeRhoUrl(m_strRubyCallback), strResBody, null );
@@ -155,7 +195,10 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
         pObj->getProps(oRes);
     }else if ( argc == 1 )
     {
-        if ( rho_ruby_is_string(argv[0]) )
+        if ( rho_ruby_is_NIL(argv[0]) )
+        {
+            pObj->getProps(oRes);
+        }else if ( rho_ruby_is_string(argv[0]) )
         {
             pObj->getProps(getStringFromValue(argv[0]), oRes);
         }else if ( rho_ruby_is_array(argv[0]) )
