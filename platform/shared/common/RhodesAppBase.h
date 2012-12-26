@@ -31,6 +31,7 @@
 #include "logging/RhoLog.h"
 #include "common/RhoThread.h"
 #include "common/IRhoClassFactory.h"
+#include "push/RhoPushManager.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -50,6 +51,10 @@ protected:
     String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath, m_strAppUserPath, m_strRuntimePath;//, m_strRhodesPath;
     String m_strHomeUrl, m_strHomeUrlLocalHost;
     boolean m_bSendingLog;
+	
+	mutable common::CMutex m_mxPushCallback;
+    String m_strPushCallback, m_strPushCallbackParams;
+    PushManager m_appPushMgr;
 
     CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
 public:
@@ -77,7 +82,9 @@ public:
     void setSendingLog(boolean bSending){m_bSendingLog = bSending; }
     boolean sendLog(const String& strCallbackUrl);
     boolean sendLogInSameThread();
-
+	
+	// Deprecated
+    boolean callPushCallback(const String& strData) const;
 
 protected:
     virtual void run(){}
@@ -147,6 +154,8 @@ int rho_base64_encode(const char *src, int srclen, char *dst);
 int rho_base64_decode(const char *src, int srclen, char *dst);	
     
 int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
+	
+void rho_net_request_with_data(const char *url, const char *str_body);
 
 	
 #ifdef __cplusplus

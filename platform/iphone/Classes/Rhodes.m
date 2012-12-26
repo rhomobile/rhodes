@@ -29,8 +29,7 @@
 #import "RhoAlert.h"
 #import "ParamsWrapper.h"
 
-#include "sync/ClientRegister.h"
-#include "sync/SyncThread.h"
+#include "sync/RhoconnectClientManager.h"
 #include "logging/RhoLogConf.h"
 #include "logging/RhoLog.h"
 #include "common/RhoConf.h"
@@ -704,6 +703,7 @@ static Rhodes *instance = NULL;
 #ifdef __IPHONE_3_0
 - (void)processDoSync:(NSDictionary *)userInfo
 {
+	if ( rho_rcclient_have_rhoconnect_client() ) {
 	NSArray *do_sync = [userInfo objectForKey:@"do_sync"];
 	if (do_sync) {
 		NSEnumerator *enumerator = [do_sync objectEnumerator];
@@ -718,13 +718,14 @@ static Rhodes *instance = NULL;
 			} else {
 				//do sync of individual source
 				NSString* srcUrl = [url stringByTrimmingCharactersInSet: [NSCharacterSet characterSetWithCharactersInString:@" \t\r\n"]];
-				rho_sync_doSyncSourceByName([srcUrl cStringUsingEncoding:[NSString defaultCStringEncoding]]);
+				rho_rcclient_doSyncSourceByName([srcUrl cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 			}
 		}
 		
 		if (sync_all) {
-			rho_sync_doSyncAllSources(TRUE,"",false);
+			rho_rcclient_doSyncAllSources(TRUE,"",false);
 		}
+	}
 	}
 }
 - (void)processPushMessage:(NSDictionary *)userInfo
@@ -1093,8 +1094,10 @@ static Rhodes *instance = NULL;
     rho_rhodesapp_callUiDestroyedCallback();
     rho_rhodesapp_canstartapp("", ", ");
 	
-	if (rho_conf_getBool("finish_sync_in_background")/* && (rho_sync_issyncing()==1)*/) {
-		if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) { 
+	if (rho_rcclient_have_rhoconnect_client()) {
+	
+	if (rho_conf_getBool("finish_sync_in_background")/* && (rho_rcclient_issyncing()==1)*/) {
+		if ([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) {
 			if ([[UIDevice currentDevice] isMultitaskingSupported]) { //Check if device supports mulitasking 
 
 				syncBackgroundTask = [application beginBackgroundTaskWithExpirationHandler: ^ { 
@@ -1113,7 +1116,7 @@ static Rhodes *instance = NULL;
 					{
 						NSLog(@"Check sync");
 						[NSThread sleepForTimeInterval:1];
-					}while (rho_sync_issyncing()==1);
+					}while (rho_rcclient_issyncing()==1);
 
 					NSLog(@"Sync is finished");
 					
@@ -1123,6 +1126,7 @@ static Rhodes *instance = NULL;
 				}); 
 			}
 		}
+	}
 	}
 }
 

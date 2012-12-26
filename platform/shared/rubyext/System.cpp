@@ -26,7 +26,7 @@
 
 #include "common/RhoPort.h"
 #include "ruby/ext/rho/rhoruby.h"
-#include "sync/ClientRegister.h"
+#include "sync/RhoconnectClientManager.h"
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
@@ -34,6 +34,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "unzip/zip.h"
+#include "sync/RhoconnectClientManager.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoSystem"
@@ -101,13 +102,16 @@ VALUE rho_sys_get_property(char* szPropName)
     
 	if (strcasecmp("real_screen_height",szPropName) == 0) 
         return rho_ruby_create_integer(rho_sys_get_screen_height());
-
-	if (strcasecmp("device_id",szPropName) == 0) 
-    {
-        rho::String strDeviceID = rho::sync::CClientRegister::Get()->getDevicePin();
-        return rho_ruby_create_string(strDeviceID.c_str());
-    }
-
+	
+	if ( rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+		if (strcasecmp("device_id",szPropName) == 0)
+		{
+//			rho::String strDeviceID = rho::sync::CClientRegister::Get()->getDevicePin();
+			rho::String strDeviceID = rho::sync::RhoconnectClientManager::clientRegisterGetDevicePin();
+			return rho_ruby_create_string(strDeviceID.c_str());
+		}
+	}
+	
     if (strcasecmp("phone_id", szPropName) == 0)
         return rho_ruby_create_string(""); 
 

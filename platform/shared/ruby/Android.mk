@@ -51,7 +51,6 @@ LOCAL_SRC_FILES := \
     ext/sqlite3_api/sqlite3_api_wrap.c \
     ext/stringio/stringio.c \
     ext/strscan/strscan.c \
-    ext/syncengine/syncengine_wrap.c \
     ext/system/system_wrap.c \
     ext/webview/webview_wrap.c \
     file.c \
