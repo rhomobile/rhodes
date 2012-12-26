@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+    <title>Jasmine Test Runner</title>
+    <link rel="stylesheet" type="text/css" href="../external/jasmine-1.0.1/jasmine.css">
+    <script type="text/javascript" src="../external/jasmine-1.0.1/jasmine.js"></script>
+    <script type="text/javascript" src="../external/jasmine-1.0.1/jasmine-html.js"></script>
+
+    <!-- include source files here... -->
+    <script type="text/javascript" language="javascript" src="../external/jquery/jquery-1.5.2.js"></script>
+    <script type="text/javascript" language="javascript" src="../external/jquery/json.js"></script>
+
+    <script type="text/javascript">
+        var syncUrl = window.location.protocol +'//' +window.location.host +'/application';
+        RhoConfig = {
+            syncServer: syncUrl,
+            logLevel: 'trace',
+            database: {
+                name: 'rhoSyncTestDb',
+                version: '1.0',
+                comment: 'RhoSync.js test database'
+            }
+        };
+    </script>
+
+    <script type="text/javascript" language="javascript" src="../js/rhosync.js"></script>
+    <script type="text/javascript" language="javascript" src="../js/rhosync.common.js"></script>
+    <script type="text/javascript" language="javascript" src="../js/rhosync.protocol.js"></script>
+    <script type="text/javascript" language="javascript" src="../js/rhosync.domain.js"></script>
+    <script type="text/javascript" language="javascript" src="../js/rhosync.storage.js"></script>
+    <script type="text/javascript" language="javascript" src="../js/rhosync.engine.js"></script>
+    <script type="text/javascript" language="javascript" src="../js/rhosync.notify.js"></script>
+
+    <!-- include spec files here... -->
+    <!--<script type="text/javascript" src="helpers/jasmine-fake-ajax.js"></script>-->
+    <script type="text/javascript" src="helpers/SpecHelper.js"></script>
+
+    <script type="text/javascript" src="spec.common.js"></script>
+    <script type="text/javascript" src="spec.internals.js"></script>
+    <!--<script type="text/javascript" src="spec.usecases.js"></script>-->
+
+
+</head>
+<body>
+
+<script type="text/javascript">
+	jQuery(window).load(function(){
+	  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+	  jasmine.getEnv().execute();
+	});
+</script>
+
+</body>
+</html>

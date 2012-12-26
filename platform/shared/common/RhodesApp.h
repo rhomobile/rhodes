@@ -38,7 +38,6 @@
 #include "SplashScreen.h"
 #include "AppMenu.h"
 #include "ExtManager.h"
-#include "push/RhoPushManager.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -112,10 +111,6 @@ private:
     Vector<String> m_arAppBackUrl, m_arAppBackUrlOrig;
     Vector<ICallbackObject*> m_arCallbackObjects;
     mutable common::CMutex m_mxCallbackObjects;
-
-    mutable common::CMutex m_mxPushCallback;
-    String m_strPushCallback, m_strPushCallbackParams;
-    PushManager m_appPushMgr;
 	
     common::CMutex m_mxScreenRotationCallback;
     String m_strScreenRotationCallback, m_strScreenRotationCallbackParams;
@@ -204,8 +199,6 @@ public:
     void setPushNotification(const String& strUrl, const String& strParams, const String& types);
     //void checkPushRegistration(const String& strUrl, const String& strParams, const String& type);
 
-    // Deprecated
-    boolean callPushCallback(const String& strData) const;
     boolean callPushCallbackWithJsonBody(const String& strUrl, const String& strData, const String& strParams);
 
     boolean callPushCallback(const String& strType, const String& strJson, const String& strData);
@@ -305,7 +298,6 @@ void rho_rhodesapp_callPopupCallback(const char *strCallbackUrl, const char *id,
 int rho_conf_send_log(const char* callback_url);
 
 void rho_net_request(const char *url);
-void rho_net_request_with_data(const char *url, const char *str_body);
 void rho_net_request_with_data_in_separated_thread(const char *url, const char *str_body);
 
 void rho_rhodesapp_load_url(const char *url);

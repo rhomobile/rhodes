@@ -36,7 +36,7 @@
 #include "rho/rubyext/GeoLocationImpl.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "net/NetRequestImpl.h"
-#include "sync/ClientRegister.h"
+#include "sync/RhoconnectClientManager.h"
 
 
 #include "MapViewManager.h"

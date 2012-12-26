@@ -28,8 +28,10 @@
 #include "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
+#include "sync/RhoconnectClientManager.h"
 
-extern "C" void rho_sync_doSyncAllSources(int show_status_popup, const char* query_params);
+//extern "C" void rho_sync_doSyncAllSources(int show_status_popup, const char* query_params);
+
 extern "C" void rho_conf_show_log();
 extern "C" void rho_sys_app_exit();
 
@@ -118,7 +120,9 @@ boolean CAppMenuItem::processCommand()
         rho_webview_refresh(0);
         break;
     case CAppMenuItem::emtSync:
-        rho_sync_doSyncAllSources(1, "");
+		if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+			sync::RhoconnectClientManager::doSyncAllSources(1, "", 0);
+		}
         break;
     case CAppMenuItem::emtLog:
         rho_conf_show_log();
