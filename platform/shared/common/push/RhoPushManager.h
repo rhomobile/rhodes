@@ -33,14 +33,14 @@
 
 namespace rho { namespace common {
 
-class CRhodesApp;
+class CRhodesAppBase;
 
 class PushManager {
 public:
     DEFINE_LOGCLASS;
 
 public:
-    PushManager(CRhodesApp& rhoApp) : m_rhoApp(rhoApp) {}
+    PushManager(CRhodesAppBase& rhoAppBase) : m_rhoAppBase(rhoAppBase) {}
 
     IRhoPushClient* getDefaultClient();
 
@@ -55,7 +55,7 @@ private:
     IRhoPushClient* getClient(const String& pushType);
 
 private:
-    CRhodesApp& m_rhoApp;
+    CRhodesAppBase& m_rhoAppBase;
     VectorPtr<IRhoPushClient*> m_Clients;
 };
 

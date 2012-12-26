@@ -1449,10 +1449,12 @@ CRubyMutex::~CRubyMutex()
 
 boolean CRubyMutex::isMainRubyThread()
 {
-    if ( !sync::CSyncThread::getInstance() )
+	if ( (!sync::RhoconnectClientManager::haveRhoconnectClientImpl()) || (!sync::RhoconnectClientManager::haveSyncThread()))
+//    if ( !sync::CSyncThread::getInstance() )
         return true;
 
-    return sync::CSyncThread::getInstance()->getThreadID() != CSystem::getThreadID();
+    //return sync::CSyncThread::getInstance()->getThreadID() != CSystem::getThreadID();
+	return sync::RhoconnectClientManager::syncThreadGetThreadID() != CSystem::getThreadID();
 }
 
 void CRubyMutex::Lock()
