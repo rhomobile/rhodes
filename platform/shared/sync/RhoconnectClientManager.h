@@ -26,6 +26,8 @@ public:
 	virtual void syncEngineApplyChangedValues(db::CDBAdapter& db) = 0;
 	virtual void syncThreadCreate() = 0;
 	virtual void syncThreadDestroy() = 0;
+	virtual bool haveSyncThread() = 0;
+	virtual unsigned int syncThreadGetThreadID() = 0;
 	virtual bool syncEngineNotifyIsReportingEnabled() = 0;
 	virtual int rho_sync_issyncing() = 0;
 	
@@ -66,6 +68,8 @@ public:
 	static String syncEnineReadClientID() { return m_pImpl->syncEnineReadClientID(); }
 	static net::IRhoSession* getRhoSession() { return m_pImpl->getRhoSession(); }
 	static void syncEngineApplyChangedValues(db::CDBAdapter& db) { m_pImpl->syncEngineApplyChangedValues(db); }
+	static bool haveSyncThread() { return m_pImpl->haveSyncThread(); }
+	static unsigned int syncThreadGetThreadID() { return m_pImpl->syncThreadGetThreadID(); }
 	static void syncThreadCreate() { m_pImpl->syncThreadCreate(); }
 	static void syncThreadDestroy() { m_pImpl->syncThreadDestroy(); }
 	static bool syncEngineNotifyIsReportingEnabled() { return m_pImpl->syncEngineNotifyIsReportingEnabled(); }

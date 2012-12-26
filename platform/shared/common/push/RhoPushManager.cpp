@@ -25,7 +25,7 @@
 *------------------------------------------------------------------------*/
 
 #include "common/RhoStd.h"
-#include "common/RhodesApp.h"
+#include "common/RhodesAppBase.h"
 #include "logging/RhoLog.h"
 
 #include "common/push/RhoPushManager.h"
@@ -106,7 +106,7 @@ bool PushManager::callNotification(const String& type, const String& json, const
     } else
     {
         LOG(INFO) + "Push message: legacy";
-        return m_rhoApp.callPushCallback(data);
+        return m_rhoAppBase.callPushCallback(data);
     }
 }
 
