@@ -1,135 +1,20 @@
 #include "..\Barcode1.h"
 #include "..\..\..\common\ruby_helpers.h"
-#include "json/JSONIterator.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Barcode1"
 
 #include "ext/rho/rhoruby.h"
-#include "common/RhodesApp.h"
-
-using namespace rho::json;
 
 rho::Hashtable<rho::String,IBarcode1*> CBarcode1::m_hashBarcodes;
 rho::String CBarcode1::m_strDefaultID;
-rho::common::CAutoPtr<CGeneratorQueue> CBarcode1::m_pCommandQueue;
-
-rho::String CMethodResult::toJSON()
-{ 
-    rho::String strRes;
-    if ( m_ResType == eStringArray )
-    {
-        strRes = "[";
-        for( int i = 0; i < m_arStrRes.size(); i++ )
-        {
-            if ( i > 0 )
-                strRes += ",";
-
-            strRes += CJSONEntry::quoteValue(m_arStrRes[i]);
-        }
-        
-        strRes += "]";
-    }else if ( m_ResType == eStringHash )
-    {
-        strRes = "{";
-
-        for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
-        {
-            if ( it != m_hashStrRes.begin() )
-                strRes += ",";
-
-            strRes += CJSONEntry::quoteValue(it->first) + ":" + CJSONEntry::quoteValue(it->second);
-        }
-
-        strRes += "}";
-    }else if ( m_ResType == eString)
-    {
-        strRes = m_strRes;
-    }else if ( m_ResType == eArgError )
-    {
-        strRes = "{'_RhoArgError':" + CJSONEntry::quoteValue(m_strError) + "}";
-    }else if ( m_ResType == eError)
-    {
-        strRes = "{'_RhoRuntimeError':" + CJSONEntry::quoteValue(m_strError) + "}";
-    }
-
-    return strRes;
-}
-
-VALUE CMethodResult::toRuby()
-{
-    if ( m_ResType == eStringArray )
-    {
-        CHoldRubyValue valArray(rho_ruby_create_array());
-
-        for( int i = 0; i < m_arStrRes.size(); i++ )
-        {
-            VALUE valObj = rho_ruby_create_string( m_arStrRes[i].c_str() );
-            rho_ruby_add_to_array( valArray, valObj );
-        }
-        
-        return valArray;
-    }else if ( m_ResType == eStringHash )
-    {
-        CHoldRubyValue valHash(rho_ruby_createHash());
-
-        for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
-        {
-            addStrToHash( valHash, it->first.c_str(), it->second.c_str() );
-        }
-
-        return valHash;
-    }else if ( m_ResType == eString)
-    {
-        return rho_ruby_create_string(m_strRes.c_str());
-    }else if ( m_ResType == eArgError)
-    {
-        rho_ruby_raise_argerror(m_strError.c_str());
-    }else if ( m_ResType == eError)
-    {
-        rho_ruby_raise_runtime(m_strError.c_str());
-    }
-
-    return rho_ruby_get_NIL();
-}
-
-class CRubyCallbackResult : public rho::ICallbackObject
-{
-    CMethodResult m_oResult;
-public:
-    CRubyCallbackResult(const CMethodResult& oResult) : m_oResult(oResult){}
-    ~CRubyCallbackResult(){}
-
-    virtual unsigned long getObjectValue()
-    {
-        m_oResult.convertStringParamToHash();
-        return m_oResult.toRuby();
-    }
-
-};
-
-void CMethodResult::callCallback()
-{
-    //TODO: support JSON callbacks
-
-    if ( m_ResType != eNone && m_strRubyCallback.length() != 0 )
-    {
-        rho::String strResBody = "rho_callback=1";
-        if ( m_strCallbackParam.length() > 0 )
-            strResBody += "&" + m_strCallbackParam;
-
-        strResBody += "&" + RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
-
-        //TODO: call in async mode
-        getNetRequest().pushData( RHODESAPP().canonicalizeRhoUrl(m_strRubyCallback), strResBody, null );
-
-        m_ResType = eNone;
-    }
-}
+rho::common::CAutoPtr<rho::common::CThreadQueue> CBarcode1::m_pCommandQueue;
 
 extern "C"
 {
+
+void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 
 VALUE rb_barcode1_s_enumerate(VALUE klass)
 {
@@ -234,12 +119,12 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
         rho::common::IRhoRunnable* pFunctor = 0;
         if ( rho_ruby_is_NIL(argv[0]) )
         {
-            pFunctor = new CObjCallbackFunctor1<IBarcode1*, void (IBarcode1::*)(CMethodResult&), CMethodResult>
+            pFunctor = new rho::common::CInstanceClassFunctor1<IBarcode1*, void (IBarcode1::*)(CMethodResult&), CMethodResult>
                 ( pObj, &IBarcode1::getProps, oRes );
         }else if ( rho_ruby_is_string(argv[0]) )
         {
             oRes.setStringParam(getStringFromValue(argv[0]));
-            pFunctor = new CObjCallbackFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
+            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
                 ( pObj, &IBarcode1::getProps, getStringFromValue(argv[0]), oRes );
 
         }else if ( rho_ruby_is_array(argv[0]) )
@@ -247,7 +132,7 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
             rho::Vector<rho::String> ar;
             getStringArrayFromValue(argv[0], ar);
 
-            pFunctor = new CObjCallbackFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::String>&, CMethodResult&), rho::Vector<rho::String>, CMethodResult>
+            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::String>&, CMethodResult&), rho::Vector<rho::String>, CMethodResult>
                 ( pObj, &IBarcode1::getProps, ar, oRes );
         }else
         {
