@@ -48,7 +48,6 @@
 extern void Init_strscan();
 extern void Init_sqlite3_api();
 extern void Init_GeoLocation(void);
-extern void Init_SyncEngine(void);
 extern void print_profile_report();
 extern void enable_gc_profile(void);
 extern void Init_System(void);
@@ -231,7 +230,6 @@ void RhoRubyStart()
     Init_strscan();
     Init_sqlite3_api();
     Init_GeoLocation();
-    Init_SyncEngine();
     Init_AsyncHttp();
     Init_System();
     Init_Phonebook();
@@ -268,7 +266,6 @@ void RhoRubyStart()
 	Init_strscan();
 	Init_RhoSupport();	
 	Init_RhoConf();
-	Init_SyncEngine();
 	Init_WebView();
 #endif //OS_WP8
 

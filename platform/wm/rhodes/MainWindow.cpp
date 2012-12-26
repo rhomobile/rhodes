@@ -51,7 +51,7 @@
 #include "ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
 #include "camera/Camera.h"
-#include "sync/SyncThread.h"
+#include "sync/RhoconnectClientManager.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"

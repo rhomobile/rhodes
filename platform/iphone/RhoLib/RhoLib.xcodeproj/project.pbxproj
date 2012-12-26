@@ -17,7 +17,6 @@
 		5C59BF4E115B4BC300E96ADE /* unzip.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C59BF4C115B4BC300E96ADE /* unzip.h */; };
 		5C663BEA11F3712C005F60AF /* RhodesAppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C663BE711F3712C005F60AF /* RhodesAppBase.cpp */; };
 		5C663BEB11F3712C005F60AF /* RhodesAppBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C663BE811F3712C005F60AF /* RhodesAppBase.h */; };
-		5C6855E910A02EAA008DA047 /* RhodesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6855E610A02EAA008DA047 /* RhodesApp.cpp */; };
 		5C6855EA10A02EAA008DA047 /* RhodesApp.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C6855E710A02EAA008DA047 /* RhodesApp.h */; };
 		5C6B448C0F946589003CB43A /* RhoConf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C6B448A0F946589003CB43A /* RhoConf.cpp */; };
 		5C6B448D0F946589003CB43A /* RhoConf.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C6B448B0F946589003CB43A /* RhoConf.h */; };
@@ -80,6 +79,7 @@
 		BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */ = {isa = PBXBuildFile; fileRef = BDD11ECC113664E700349BE3 /* rhoparams.h */; };
 		BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB13B112EE2B500AE3724 /* ssl.cpp */; };
 		BDFCB13E112EE2B500AE3724 /* ssl.h in Headers */ = {isa = PBXBuildFile; fileRef = BDFCB13C112EE2B500AE3724 /* ssl.h */; };
+		C56918CE168B9AB800F6013A /* RhodesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C56918CD168B9AB800F6013A /* RhodesApp.cpp */; };
 		C5D2784415A1F33A00A7EFC7 /* ZipFiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D2784315A1F33A00A7EFC7 /* ZipFiles.cpp */; };
 		C5D47762156A4ED000943A2D /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D47760156A4ED000943A2D /* zip.cpp */; };
 		C5D47763156A4ED000943A2D /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = C5D47761156A4ED000943A2D /* zip.h */; };
@@ -112,7 +112,6 @@
 		5C59BF4C115B4BC300E96ADE /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unzip.h; path = ../../shared/unzip/unzip.h; sourceTree = SOURCE_ROOT; };
 		5C663BE711F3712C005F60AF /* RhodesAppBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhodesAppBase.cpp; path = ../../shared/common/RhodesAppBase.cpp; sourceTree = SOURCE_ROOT; };
 		5C663BE811F3712C005F60AF /* RhodesAppBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhodesAppBase.h; path = ../../shared/common/RhodesAppBase.h; sourceTree = SOURCE_ROOT; };
-		5C6855E610A02EAA008DA047 /* RhodesApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhodesApp.cpp; path = ../../shared/common/RhodesApp.cpp; sourceTree = SOURCE_ROOT; };
 		5C6855E710A02EAA008DA047 /* RhodesApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhodesApp.h; path = ../../shared/common/RhodesApp.h; sourceTree = SOURCE_ROOT; };
 		5C6B448A0F946589003CB43A /* RhoConf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoConf.cpp; path = ../../shared/common/RhoConf.cpp; sourceTree = SOURCE_ROOT; };
 		5C6B448B0F946589003CB43A /* RhoConf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoConf.h; path = ../../shared/common/RhoConf.h; sourceTree = SOURCE_ROOT; };
@@ -175,6 +174,7 @@
 		BDD11ECC113664E700349BE3 /* rhoparams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoparams.h; path = ../../shared/common/rhoparams.h; sourceTree = SOURCE_ROOT; };
 		BDFCB13B112EE2B500AE3724 /* ssl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ssl.cpp; path = ../../shared/net/ssl.cpp; sourceTree = SOURCE_ROOT; };
 		BDFCB13C112EE2B500AE3724 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = ../../shared/net/ssl.h; sourceTree = SOURCE_ROOT; };
+		C56918CD168B9AB800F6013A /* RhodesApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhodesApp.cpp; path = ../../shared/common/RhodesApp.cpp; sourceTree = "<group>"; };
 		C5D2784315A1F33A00A7EFC7 /* ZipFiles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ZipFiles.cpp; path = ../../shared/rubyext/ZipFiles.cpp; sourceTree = "<group>"; };
 		C5D47760156A4ED000943A2D /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zip.cpp; path = ../../shared/unzip/zip.cpp; sourceTree = "<group>"; };
 		C5D47761156A4ED000943A2D /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = zip.h; path = ../../shared/unzip/zip.h; sourceTree = "<group>"; };
@@ -284,7 +284,7 @@
 				BDD11ECC113664E700349BE3 /* rhoparams.h */,
 				BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */,
 				BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */,
-				5C6855E610A02EAA008DA047 /* RhodesApp.cpp */,
+				C56918CD168B9AB800F6013A /* RhodesApp.cpp */,
 				5C6855E710A02EAA008DA047 /* RhodesApp.h */,
 				5C7405901064AF1600163569 /* Tokenizer.cpp */,
 				5C7405911064AF1600163569 /* Tokenizer.h */,
@@ -534,7 +534,6 @@
 				5C5335540FC2977600F268F0 /* RhoThread.cpp in Sources */,
 				5C7405921064AF1600163569 /* Tokenizer.cpp in Sources */,
 				5CBD462A1087399700107D0D /* URI.cpp in Sources */,
-				5C6855E910A02EAA008DA047 /* RhodesApp.cpp in Sources */,
 				BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */,
 				BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */,
 				BD4FC54B10BFE4D100D280D0 /* HttpServer.cpp in Sources */,
@@ -565,6 +564,7 @@
 				C5D47762156A4ED000943A2D /* zip.cpp in Sources */,
 				C5D2784415A1F33A00A7EFC7 /* ZipFiles.cpp in Sources */,
 				A2D0557E15A7500A002376EE /* RhoPushManager.cpp in Sources */,
+				C56918CE168B9AB800F6013A /* RhodesApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
