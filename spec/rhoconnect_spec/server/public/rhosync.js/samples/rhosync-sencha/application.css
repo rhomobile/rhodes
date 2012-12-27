@@ -1,0 +1,29 @@
+.x-list .x-list-item .x-list-item-body span.id {
+    font-size: 70%;
+}
+
+.progressBar, .progressDone, .progressTodo {
+    border: 1px solid black;
+}
+
+.progressDone, .progressTodo {
+    height: 10px;
+}
+
+.progressBar {
+    text-align: center;
+    margin: 20px;
+    padding: 4px;
+}
+
+.progressDone {
+    background-color: #00CC00;
+    left: 0;
+    width: 0;
+    float: left;
+}
+
+.progressTodo {
+    background-color: gray;
+    right: 0;
+}

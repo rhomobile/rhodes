@@ -13,7 +13,7 @@
 #include "common/RhoFilePath.h"
 #include "common/Tokenizer.h"
 #include "common/RhoAppAdapter.h"
-#include "sync/SyncThread.h"
+//#include "sync/SyncThread.h"
 
 using namespace rho::common;
 
@@ -46,10 +46,14 @@ namespace db {
 		//DBLock lock(_db);
 		
 		switch (_state) {
-			case txnNotStarted:			
+			case txnNotStarted:
+				LOG(INFO) + "CDBImportTransaction::commit - txnNotStarted";
+				
 				setTxnState(txnPrepareImportData);
 				//no break here is intentional
-			case txnPrepareImportData:				
+			case txnPrepareImportData:
+				LOG(INFO) + "CDBImportTransaction::commit - txnPrepareImportData";
+
 				if (!prepareImportData() ) {
 					LOG(ERROR) + "Error in prepare import data";
 					return false;
@@ -57,6 +61,8 @@ namespace db {
 				setTxnState(txnEnumerateOldBlobs);
 				//no break here is intentional
 			case txnEnumerateOldBlobs:
+				LOG(INFO) + "CDBImportTransaction::commit - txnEnumerateOldBlobs";
+
 				if (!enumerateOldBlobs()) {
 					LOG(ERROR) + "Can't enumerate old blobs";
 					return false;
@@ -64,6 +70,8 @@ namespace db {
 				setTxnState(txnBackupOldDb);
 				//no break here is intentional
 			case txnBackupOldDb:
+				LOG(INFO) + "CDBImportTransaction::commit - txnBackupOldDb";
+
 				if (!backupOldDb()) {
 					LOG(ERROR) + "Can't backup old DB";
 					return false;
@@ -71,6 +79,8 @@ namespace db {
 				setTxnState(txnBackupOldBlobs);
 				//no break here is intentional
 			case txnBackupOldBlobs:
+				LOG(INFO) + "CDBImportTransaction::commit - txnBackupOldBlobs";
+
 				if (!backupOldBlobs()) {
 					LOG(ERROR) + "Can't backup old blobs";
 					return false;
@@ -78,6 +88,8 @@ namespace db {
 				setTxnState(txnImportNewDb);
 				//no break here is intentional
 			case txnImportNewDb:
+				LOG(INFO) + "CDBImportTransaction::commit - txnImportNewDb";
+
 				if (!importNewDb()) {
 					LOG(ERROR) + "Can't import new DB";
 					return false;
@@ -85,6 +97,8 @@ namespace db {
 				setTxnState(txnImportNewBlobs);
 				//no break here is intentional
 			case txnImportNewBlobs:
+				LOG(INFO) + "CDBImportTransaction::commit - txnImportNewBlobs";
+
 				if (!importNewBlobs()) {
 					LOG(ERROR) + "Can't import new blobs";
 					return false;
@@ -92,6 +106,8 @@ namespace db {
 				setTxnState(txnCleanup);
 				//no break here is intentional
 			case txnCleanup:
+				LOG(INFO) + "CDBImportTransaction::commit - txnCleanup";
+
 				cleanup();
 				//if (!cleanup()) {
 				//	LOG(ERROR) + "Can't cleanup";
@@ -103,6 +119,8 @@ namespace db {
 				return false;
 		}
 		
+		LOG(INFO) + "CDBImportTransaction::commit - OK";
+
 		return true;
 	}
 	
@@ -165,20 +183,29 @@ namespace db {
 	extern "C" int rho_sys_unzip_file(const char* szZipPath, const char* psw);
 	
 	bool CDBImportTransaction::prepareImportData() {
+		LOG(INFO) + "CDBImportTransaction::prepareImportData";
+		
 		if (  (!CRhoFile::isDirectory(_importDirPath.c_str())) && (CRhoFile::createFolder(_importDirPath.c_str())!=0) ) {
 			LOG(ERROR) + "Can't create import data dir: " + _importDirPath;
 			return false;
 		}
+		
+		LOG(INFO) + "CDBImportTransaction::prepareImportData - import dir OK: " + _importDirPath;
+
 		
 		if ( CRhoFile::copyFile(_srcZipPath.c_str(), _importZipPath.c_str())!=0 ) {
 			LOG(ERROR) + "Can't copy import data file " + _srcZipPath + " to import dir: " + _importZipPath;
 			return false;
 		}
 		
+		LOG(INFO) + "CDBImportTransaction::prepareImportData - import DB successfully copied to " + _importZipPath;
+		
 		if ( rho_sys_unzip_file(_importZipPath.c_str(), 0)!=0 ) {
 			LOG(ERROR) + "Can't unzip import data";
 			return false;
 		}
+		
+		LOG(INFO) + "CDBImportTransaction::prepareImportData - unzip import data OK";
 		
 		return true;
 	}

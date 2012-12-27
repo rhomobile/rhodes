@@ -25,15 +25,16 @@
 *------------------------------------------------------------------------*/
 
 #include "common/RhoAppAdapter.h"
-#include "sync/SyncThread.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "sync/RhoconnectClientManager.h"
 
 namespace rho {
 const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 
 /*static*/ String _CRhoAppAdapter::getMessageText(const char* szName)
 {
-    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() || !sync::CSyncThread::getInstance()->getSyncEngine().getNotify().isReportingEnabled() )
+//    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() || !sync::CSyncThread::getInstance()->getSyncEngine().getNotify().isReportingEnabled() )
+	if ( (!sync::RhoconnectClientManager::haveRhoconnectClientImpl()) || (!sync::RhoconnectClientManager::syncEngineNotifyIsReportingEnabled()) )
         return String();
 
     return rho_ruby_getMessageText(szName);
@@ -41,7 +42,8 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 
 /*static*/ String _CRhoAppAdapter::getErrorText(int nError)
 {
-    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() || !sync::CSyncThread::getInstance()->getSyncEngine().getNotify().isReportingEnabled() )
+//    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() || !sync::CSyncThread::getInstance()->getSyncEngine().getNotify().isReportingEnabled() )
+	if ( (!sync::RhoconnectClientManager::haveRhoconnectClientImpl()) || (!sync::RhoconnectClientManager::syncEngineNotifyIsReportingEnabled()) )
         return String();
 
     return rho_ruby_getErrorText(nError);
