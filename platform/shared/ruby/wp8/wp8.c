@@ -872,7 +872,7 @@ HANDLE WINAPI CreateEventWP8(
 	if(bInitialState)
 		flags |= CREATE_EVENT_INITIAL_SET;
 
-	return CreateEventExW(lpEventAttributes, lpName, flags, SYNCHRONIZE);
+	return CreateEventExW(lpEventAttributes, lpName, flags, EVENT_ALL_ACCESS);
 }
 
 DWORD
