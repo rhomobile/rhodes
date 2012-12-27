@@ -336,11 +336,11 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
     m_pExtManager = 0;
 	m_pNetworkStatusMonitor = 0;
 
-#if defined(OS_WP8)
-	m_appCallbacksQueue = 0;
-#else
+//#if defined(OS_WP8)
+//	m_appCallbacksQueue = 0;
+//#else
 	m_appCallbacksQueue = new CAppCallbacksQueue();
-#endif
+//#endif
 	
 #if defined(WINDOWS_PLATFORM)
     //initializing winsock
