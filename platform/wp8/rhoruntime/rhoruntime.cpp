@@ -70,8 +70,8 @@ void CRhoRuntime::Execute()
 
 	//Create Main window
 
-	//RHODESAPP().startApp();
-	rho_webview_navigate("http://rho/apps/app/loading.png", 0);
+	RHODESAPP().startApp();
+	//rho_webview_navigate("http://rho/apps/app/loading.png", 0);
 	//const char* url = rho_webview_get_current_url(0);
 	//rho_webview_execute_js("window.alert(\"OK\");", 0);
 
@@ -90,6 +90,7 @@ void CRhoRuntime::updateSizeProperties(int width, int height)
 
 void CRhoRuntime::onActivate(int active)
 {
+	RHODESAPP().callUiCreatedCallback();
 }
 
 void CRhoRuntime::logEvent(::Platform::String^ message)
