@@ -152,14 +152,10 @@
     <ClInclude Include="..\..\shared\json\json_util.h" />
     <ClInclude Include="..\..\shared\json\linkhash.h" />
     <ClInclude Include="..\..\shared\json\printbuf.h" />
-    <ClInclude Include="..\..\shared\sync\ClientRegister.h" />
     <ClInclude Include="..\..\shared\sync\ILoginListener.h" />
     <ClInclude Include="..\..\shared\sync\ISyncProtocol.h" />
-    <ClInclude Include="..\..\shared\sync\SyncEngine.h" />
-    <ClInclude Include="..\..\shared\sync\SyncNotify.h" />
+    <ClInclude Include="..\..\shared\sync\RhoconnectClientManager.h" />
     <ClInclude Include="..\..\shared\sync\SyncProtocol_3.h" />
-    <ClInclude Include="..\..\shared\sync\SyncSource.h" />
-    <ClInclude Include="..\..\shared\sync\SyncThread.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
@@ -186,11 +182,7 @@
     <ClCompile Include="..\..\shared\json\linkhash.c" />
     <ClCompile Include="..\..\shared\json\printbuf.c" />
     <ClCompile Include="..\..\shared\json\RJSONTokener.c" />
-    <ClCompile Include="..\..\shared\sync\ClientRegister.cpp" />
-    <ClCompile Include="..\..\shared\sync\SyncEngine.cpp" />
-    <ClCompile Include="..\..\shared\sync\SyncNotify.cpp" />
-    <ClCompile Include="..\..\shared\sync\SyncSource.cpp" />
-    <ClCompile Include="..\..\shared\sync\SyncThread.cpp" />
+    <ClCompile Include="..\..\shared\sync\RhoconnectClientManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

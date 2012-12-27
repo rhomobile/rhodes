@@ -53,28 +53,13 @@
     <ClInclude Include="..\..\shared\json\printbuf.h">
       <Filter>json</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\sync\ClientRegister.h">
-      <Filter>sync</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\sync\ILoginListener.h">
       <Filter>sync</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\sync\ISyncProtocol.h">
       <Filter>sync</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\sync\SyncEngine.h">
-      <Filter>sync</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\sync\SyncNotify.h">
-      <Filter>sync</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\sync\SyncProtocol_3.h">
-      <Filter>sync</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\sync\SyncSource.h">
-      <Filter>sync</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\sync\SyncThread.h">
       <Filter>sync</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\db\DBAdapter.h">
@@ -91,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="..\..\shared\db\DBResult.h">
       <Filter>db</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\sync\RhoconnectClientManager.h">
+      <Filter>sync</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -121,21 +109,6 @@
     <ClCompile Include="..\..\shared\json\RJSONTokener.c">
       <Filter>json</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\sync\ClientRegister.cpp">
-      <Filter>sync</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\sync\SyncEngine.cpp">
-      <Filter>sync</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\sync\SyncNotify.cpp">
-      <Filter>sync</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\sync\SyncSource.cpp">
-      <Filter>sync</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\sync\SyncThread.cpp">
-      <Filter>sync</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\db\DBAdapter.cpp">
       <Filter>db</Filter>
     </ClCompile>
@@ -150,6 +123,9 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\db\DBResult.cpp">
       <Filter>db</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\sync\RhoconnectClientManager.cpp">
+      <Filter>sync</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
