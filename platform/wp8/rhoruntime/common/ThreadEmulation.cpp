@@ -6,7 +6,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 
 #include <windows.h>
-#include <assert.h>
+//#include <assert.h>
 #include <vector>
 #include <set>
 #include <map>
@@ -99,10 +99,10 @@ static void StartThreadWP8(LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParam
 extern "C" _Use_decl_annotations_ HANDLE WINAPI CreateThreadWP8(LPSECURITY_ATTRIBUTES unusedThreadAttributes, SIZE_T unusedStackSize, LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParameter, DWORD dwCreationFlags, LPDWORD unusedThreadId)
 {
 	// Validate parameters.
-	assert(unusedThreadAttributes == nullptr);
+	/*assert(unusedThreadAttributes == nullptr);
 	assert(unusedStackSize == 0);
 	assert((dwCreationFlags & ~CREATE_SUSPENDED) == 0);
-	assert(unusedThreadId == nullptr);
+	assert(unusedThreadId == nullptr);*/
 
 	// Create a handle that will be signalled when the thread has completed.
 	HANDLE threadHandle = CreateEventEx(nullptr, nullptr, CREATE_EVENT_MANUAL_RESET, EVENT_ALL_ACCESS);
@@ -166,7 +166,7 @@ extern "C" _Use_decl_annotations_ DWORD WINAPI ResumeThreadWP8(HANDLE hThread)
 	if (threadInfo == pendingThreads.end())
 	{
 		// Can only resume threads while they are in CREATE_SUSPENDED state.
-		assert(false);
+		//assert(false);
 		return (DWORD)-1;
 	}
 
@@ -199,7 +199,7 @@ extern "C" _Use_decl_annotations_ BOOL WINAPI SetThreadPriorityWP8(HANDLE hThrea
 	if (threadInfo == pendingThreads.end())
 	{
 		// Can only set priority on threads while they are in CREATE_SUSPENDED state.
-		assert(false);
+		//assert(false);
 		return false;
 	}
 
@@ -232,8 +232,8 @@ extern "C" _Use_decl_annotations_ BOOL WINAPI TlsFreeWP8(DWORD dwTlsIndex)
 {
 	lock_guard<mutex> lock(tlsAllocationLock);
 
-	assert(dwTlsIndex < nextTlsIndex);
-	assert(find(freeTlsIndices.begin(), freeTlsIndices.end(), dwTlsIndex) == freeTlsIndices.end());
+	//assert(dwTlsIndex < nextTlsIndex);
+	//assert(find(freeTlsIndices.begin(), freeTlsIndices.end(), dwTlsIndex) == freeTlsIndices.end());
 
 	// Store this slot for reuse by TlsAlloc.
 	try
