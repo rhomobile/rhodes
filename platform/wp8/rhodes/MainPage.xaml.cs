@@ -60,6 +60,7 @@ namespace rhodes
             _screenPhysicalWidth = ( _screenPhysicalHeight / _screenHeight ) * _screenWidth; // assuming square pixels
 
             InitializeComponent();
+
             try
             {
                 // create rhodes runtime object
@@ -67,6 +68,9 @@ namespace rhodes
                 // create and start rhodes main thread
                 _rhoruntimeThread = new Thread(rhoruntime.Execute);
                 _rhoruntimeThread.Start();
+
+                Thread.Sleep(5000);
+                rhoruntime.onActivate(0);
             }
             catch (Exception e)
             {
