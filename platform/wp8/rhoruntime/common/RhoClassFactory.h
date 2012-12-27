@@ -27,7 +27,7 @@
 #pragma once
 
 #include "common/IRhoClassFactory.h"
-//#include "../net/NetRequestImpl.h"
+#include "net/CURLNetRequest.h"
 #include "RhoThreadImpl.h"
 
 namespace rho {
@@ -39,7 +39,7 @@ public:
     virtual ~CRhoClassFactory(void){}
     virtual net::INetRequestImpl* createNetRequestImpl()
     {
-        return 0;//new net::CNetRequestImpl();
+        return new net::CURLNetRequest();
     }
 
     virtual IRhoThreadImpl* createThreadImpl()
