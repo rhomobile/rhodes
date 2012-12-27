@@ -30,7 +30,6 @@
 #include <common/RhoConf.h>
 #include <logging/RhoLogConf.h>
 #include <common/RhodesApp.h>
-#include <sync/SyncThread.h>
 
 #include <sys/stat.h>
 #include <sys/resource.h>

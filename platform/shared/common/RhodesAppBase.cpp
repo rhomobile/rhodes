@@ -28,9 +28,9 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "common/RhoConf.h"
-#include "sync/ClientRegister.h"
-#include "sync/SyncThread.h"
 #include "unzip/unzip.h"
+#include "sync/RhoconnectClientManager.h"
+#include "net/INetRequest.h"
 
 extern "C" void rho_net_request_with_data(const char *url, const char *str_body);
 
@@ -57,7 +57,7 @@ CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
     m_pInstance = 0;
 }
 
-CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath) : CRhoThread()
+CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath) : CRhoThread(), m_appPushMgr(*this)
 {
     m_strRhoRootPath = strRootPath;
     m_strAppUserPath = strUserPath;
@@ -146,8 +146,13 @@ boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
     
 void rho_do_send_log(const String& strCallback)
 {
-    String strDevicePin = rho::sync::CClientRegister::Get()->getDevicePin();
-    String strClientID = rho::sync::CSyncThread::getSyncEngine().readClientID();
+	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+
+//	String strDevicePin = rho::sync::CClientRegister::Get()->getDevicePin();
+//    String strClientID = rho::sync::CSyncThread::getSyncEngine().readClientID();
+		
+	String strDevicePin = rho::sync::RhoconnectClientManager::clientRegisterGetDevicePin();
+	String strClientID = rho::sync::RhoconnectClientManager::syncEnineReadClientID();
     
     String strLogUrl = RHOCONF().getPath("logserver");
     if ( strLogUrl.length() == 0 )
@@ -165,7 +170,9 @@ void rho_do_send_log(const String& strCallback)
     NetRequest oNetRequest;
     oNetRequest.setSslVerifyPeer(false);
     
-    NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null );
+//    NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null );
+	NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, rho::sync::RhoconnectClientManager::getRhoSession(), null );
+
     LOGCONF().setLogToFile(bOldSaveToFile);
     
     boolean isOK = true;
@@ -183,7 +190,9 @@ void rho_do_send_log(const String& strCallback)
         rho_net_request_with_data(RHODESAPPBASE().canonicalizeRhoUrl(strCallback).c_str(), body);
     }
     
-    RHODESAPPBASE().setSendingLog(false);   
+    RHODESAPPBASE().setSendingLog(false);
+		
+	}
 }
 
 
@@ -218,6 +227,32 @@ boolean CRhodesAppBase::sendLogInSameThread()
     rho_do_send_log("");
     return true;
 }
+	
+	// Deprecated
+	boolean CRhodesAppBase::callPushCallback(const String& strData) const
+	{
+		synchronized(m_mxPushCallback)
+		{
+			if ( m_strPushCallback.length() == 0 )
+				return false;
+			
+			String strBody = strData + "&rho_callback=1";
+			if ( m_strPushCallbackParams.length() > 0 )
+				strBody += "&" + m_strPushCallbackParams;
+			
+			NetResponse resp = getNetRequest().pushData( m_strPushCallback, strBody, null );
+			if (!resp.isOK())
+				LOG(ERROR) + "Push notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+			else
+			{
+				const char* szData = resp.getCharData();
+				return !(szData && strcmp(szData,"rho_push") == 0);
+			}
+		}
+		
+		return false;
+	}
+
 
 } //namespace common
 } //namespace rho
@@ -421,6 +456,12 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
     {
         return RHODESAPPBASE().sendLogInSameThread();
     }
+	
+	void rho_net_request_with_data(const char *url, const char *str_body)
+	{
+		rho::String strCallbackUrl = RHODESAPPBASE().canonicalizeRhoUrl(url);
+		getNetRequest().pushData(strCallbackUrl.c_str(), str_body, null);
+	}
 
 } //extern "C"
 

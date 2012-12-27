@@ -54,13 +54,8 @@ static DWORD WINAPI runProc(void* pv) throw()
 
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
-#if defined(OS_WP8)
-	pRunnable->runObject();
-#else
-    DWORD dwThreadID;
-    m_hThread = ::CreateThread(NULL, 0, runProc, pRunnable, 0, &dwThreadID);
+    m_hThread = ::CreateThread(NULL, 0, runProc, pRunnable, 0, NULL);
     setThreadPriority(ePriority);
-#endif
 }
 
 void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
