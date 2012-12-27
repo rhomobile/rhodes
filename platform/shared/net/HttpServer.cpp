@@ -408,9 +408,9 @@ bool CHttpServer::run()
     
     m_active = true;
 
-#if !defined(OS_WP8)
+//#if !defined(OS_WP8)
     RHODESAPP().notifyLocalServerStarted();
-#endif
+//#endif
 
     for(;;) {
         RAWTRACE("Waiting for connections...");
