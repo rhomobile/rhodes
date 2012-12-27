@@ -122,3 +122,18 @@ bool CRhoRuntime::Initialize(::Platform::String^ title)
 void CRhoRuntime::DestroyUi(void)
 {
 }
+
+#ifdef OS_WP8
+extern "C" void rho_net_impl_network_indicator(int active)
+{
+	 //TODO: rho_net_ping_network
+    RAWLOGC_INFO("rhoruntime.cpp", "rho_net_impl_network_indicator() has no implementation on WP8.");
+}
+
+extern "C" int rho_net_ping_network(const char* szHost)
+{
+    //TODO: rho_net_ping_network
+    RAWLOGC_INFO("rhoruntime.cpp", "rho_net_ping_network() has no implementation on WP8.");
+    return 1;
+}
+#endif
