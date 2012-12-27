@@ -65,8 +65,12 @@ module Rho
           else
             res = IO.read(filename)
           end
-          RhoController.start_objectnotify()
-          RhoController.start_geoview_notification()
+
+          if !defined?( RHO_WP8 )
+            RhoController.start_objectnotify()
+            RhoController.start_geoview_notification()
+          end
+
           res
       rescue Exception => exception
         if defined? RHO_WP7
