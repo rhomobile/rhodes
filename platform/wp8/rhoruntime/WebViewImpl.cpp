@@ -51,16 +51,21 @@ extern "C" void rho_webview_set_cookie(const char *url, const char *cookie)
 {
 	rho::StringW urlW;
 	rho::StringW cookieW;
-	rho::common::convertToStringW(url, urlW);
+
+	rho::String fullUrl = RHODESAPPBASE().canonicalizeRhoUrl(url);
+	rho::common::convertToStringW(fullUrl.c_str(), urlW);
 	rho::common::convertToStringW(cookie, cookieW);
+
 	CRhoRuntime::getInstance()->getMainPage()->setCookie(ref new String(urlW.c_str()), ref new String(cookieW.c_str()));
 }
 
 extern "C" void rho_webview_navigate(const char* url, int index)
 { 
 	rho::StringW urlW;
+	
 	rho::String fullUrl = RHODESAPPBASE().canonicalizeRhoUrl(url);
 	rho::common::convertToStringW(fullUrl.c_str(), urlW);
+
 	CRhoRuntime::getInstance()->getMainPage()->navigate(ref new String(urlW.c_str()), index);
 }
 
