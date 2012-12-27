@@ -87,8 +87,8 @@ void CRhoRuntime::updateSizeProperties(int width, int height)
 
 void CRhoRuntime::onActivate(int active)
 {
-	rho_webview_navigate("system/uicreated", 0); //HOTFIX, should remove after threadqueue fix  
-	//RHODESAPP().callUiCreatedCallback();
+	//rho_webview_navigate("system/uicreated", 0); //HOTFIX, should remove after threadqueue fix  
+	RHODESAPP().callUiCreatedCallback();
 }
 
 void CRhoRuntime::logEvent(::Platform::String^ message)
