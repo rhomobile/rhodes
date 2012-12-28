@@ -73,3 +73,17 @@ extern "C" void rho_webview_refresh(int index)
 {
 	CRhoRuntime::getInstance()->getMainPage()->Refresh(index);
 }
+
+extern "C" HINSTANCE rho_wmimpl_get_appinstance()
+{
+    return 0;//_AtlModule.GetModuleInstance();
+}
+
+extern "C" void rho_webview_set_menu_items(VALUE valMenu) 
+{
+    //rho_rhodesapp_setViewMenu(valMenu); 
+}
+
+extern "C" void rho_webview_save(const char* format, const char* path, int tab_index)
+{
+}
