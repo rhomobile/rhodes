@@ -27,8 +27,9 @@
 #include "rhodes/JNIRhodes.h"
 #include "common/RhoConf.h"
 #include "common/RhodesApp.h"
-#include "sync/ClientRegister.h"
+#include "sync/RhoconnectClientManager.h"
 #include "sync/ILoginListener.h"
+
 
 #include "logging/RhoLog.h"
 
@@ -41,7 +42,10 @@ extern "C" void Init_GCMPushClient()
     // create GCM push client
     RHODESAPP().addPushClient(new rho::gcm::GcmPushClient());
 
-    rho::sync::CClientRegister::Get()->setDevicehPin("");
+    if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+        rho::sync::RhoconnectClientManager::clientRegisterSetDevicePin("");
+    }
+    
     rho::gcm::GcmPushClient::GcmPushRegister();
 }
 
@@ -123,15 +127,16 @@ const String GcmPushClient::s_Type = "gcm";
 
 GcmPushClient::GcmPushClient()
 {
-    sync::CClientRegister::AddLoginListener(new SyncLoginListener());
+    if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+        sync::RhoconnectClientManager::clientRegisterAddLoginListener(new SyncLoginListener());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 void GcmPushClient::init()
 {
-    if(!sync::CClientRegister::getInstance())
-    {
-        sync::CClientRegister::Create();
+    if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() && (!sync::RhoconnectClientManager::clientRegisterHaveInstance())) {
+        sync::RhoconnectClientManager::clientRegisterCreate();
     }
 }
 

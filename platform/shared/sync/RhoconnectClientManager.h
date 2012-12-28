@@ -6,6 +6,7 @@
 #include "common/RhoStd.h"
 #include "net/INetRequest.h"
 #include "db/DBAdapter.h"
+#include "sync/ILoginListener.h"
 
 namespace  rho {
 	
@@ -17,10 +18,16 @@ public:
 	
 	virtual void doSyncSourceByName( const char* srcName ) = 0;
 	virtual void doSyncAllSources( int show_status_popup, const char* query_params, int sync_only_changed_sources ) = 0;
+
+        virtual bool clientRegisterHaveInstance() = 0;
 	virtual void clientRegisterCreate( const char* szDevicePin ) = 0;
+	virtual void clientRegisterCreate( ) = 0;
 	virtual void clientRegisterDestroy() = 0;
-	virtual void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject) = 0;
+	virtual void clientRegisterAddLoginListener( ILoginListener* listener ) = 0;
 	virtual const String& clientRegisterGetDevicePin() = 0;
+        virtual void clientRegisterSetDevicePin(const char* pin ) = 0;
+
+	virtual void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject) = 0;
 	virtual String syncEnineReadClientID() = 0;
 	virtual net::IRhoSession* getRhoSession() = 0;
 	virtual void syncEngineApplyChangedValues(db::CDBAdapter& db) = 0;
@@ -61,10 +68,17 @@ public:
 	
 	static void doSyncSourceByName(const char* srcName) { m_pImpl->doSyncSourceByName(srcName); }
 	static void doSyncAllSources( int show_status_popup, const char* query_params, int sync_only_changed_sources ) { m_pImpl->doSyncAllSources(show_status_popup, query_params, sync_only_changed_sources ); }
+
+        static bool clientRegisterHaveInstance() { return m_pImpl->clientRegisterHaveInstance(); }
 	static void clientRegisterCreate( const char* szDevicePin ) { m_pImpl->clientRegisterCreate(szDevicePin); }
+	static void clientRegisterCreate() { m_pImpl->clientRegisterCreate(); }
 	static void clientRegisterDestroy() { m_pImpl->clientRegisterDestroy(); }
-	static void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject) { m_pImpl->rho_sync_addobjectnotify_bysrcname(szSrcName, szObject); }
+	static void clientRegisterAddLoginListener( ILoginListener* listener ) { m_pImpl->clientRegisterAddLoginListener(listener); }
 	static const String& clientRegisterGetDevicePin() { return m_pImpl->clientRegisterGetDevicePin(); }
+	static void clientRegisterSetDevicePin(const char* pin ) { return m_pImpl->clientRegisterSetDevicePin(pin); }
+
+
+	static void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject) { m_pImpl->rho_sync_addobjectnotify_bysrcname(szSrcName, szObject); }
 	static String syncEnineReadClientID() { return m_pImpl->syncEnineReadClientID(); }
 	static net::IRhoSession* getRhoSession() { return m_pImpl->getRhoSession(); }
 	static void syncEngineApplyChangedValues(db::CDBAdapter& db) { m_pImpl->syncEngineApplyChangedValues(db); }
