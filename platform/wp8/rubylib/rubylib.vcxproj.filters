@@ -56,6 +56,9 @@
     <Filter Include="ext\syncengine">
       <UniqueIdentifier>{d87dcf91-c9af-4861-a1c2-229fc7817546}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ext\asynchttp">
+      <UniqueIdentifier>{71242694-8de9-4c24-a127-09f34da4e0ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ruby\debug.h" />
@@ -236,6 +239,9 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\strscan\strscan.c">
       <Filter>ext\strscan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\asynchttp\asynchttp_wrap.c">
+      <Filter>ext\asynchttp</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
