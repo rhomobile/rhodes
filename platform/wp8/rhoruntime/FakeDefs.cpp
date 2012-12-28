@@ -5,19 +5,6 @@
 #include "../../shared/common/RhoDefs.h"
 #include <logging/RhoLog.h>
 
-extern "C" HINSTANCE rho_wmimpl_get_appinstance()
-{
-    return 0;//_AtlModule.GetModuleInstance();
-}
-
-extern "C" void rho_webview_set_menu_items(VALUE valMenu) 
-{
-    //rho_rhodesapp_setViewMenu(valMenu); 
-}
-
-extern "C" void rho_webview_save(const char* format, const char* path, int tab_index)
-{
-}
 
 RHO_GLOBAL void rho_map_location(char* query)
 {
@@ -60,35 +47,7 @@ RHO_GLOBAL HWND getMainWnd()
 	return 0;
 }
 
-RHO_GLOBAL double rho_geo_latitude()
-{
-	return 0;
-}
 
-RHO_GLOBAL double rho_geo_longitude()
-{
-	return 0;
-}
-
-RHO_GLOBAL float rho_geo_accuracy()
-{
-	return 0;
-}
-
-RHO_GLOBAL int rho_geo_known_position()
-{
-	return 0;
-}
-
-RHO_GLOBAL void rho_geoimpl_settimeout(int nTimeoutSec)
-{
-	
-}
-
-RHO_GLOBAL int rho_geo_is_available()
-{
-	return 0;
-}
 
 RHO_GLOBAL void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
 {
