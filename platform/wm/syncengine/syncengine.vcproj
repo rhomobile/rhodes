@@ -3016,51 +3016,11 @@
 			Name="sync"
 			>
 			<File
-				RelativePath="..\..\shared\sync\ClientRegister.cpp"
+				RelativePath="..\..\shared\sync\RhoconnectClientManager.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\sync\ClientRegister.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\sync\ISyncProtocol.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\sync\SyncEngine.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\sync\SyncEngine.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\sync\SyncNotify.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\sync\SyncNotify.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\sync\SyncProtocol_3.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\sync\SyncSource.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\sync\SyncSource.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\sync\syncthread.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\sync\syncthread.h"
+				RelativePath="..\..\shared\sync\RhoconnectClientManager.h"
 				>
 			</File>
 		</Filter>
