@@ -412,6 +412,8 @@ void CRhodesApp::run()
 		sync::RhoconnectClientManager::syncThreadDestroy();
 	}
 
+	db::CDBAdapter::closeAll();
+
     net::CAsyncHttp::Destroy();
 
     RhoRubyStop();
