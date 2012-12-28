@@ -264,6 +264,8 @@ void RhoRubyStart()
 #else // OS_WP8 is set
 	Init_sqlite3_api();
 	Init_strscan();
+	Init_GeoLocation();
+	Init_AsyncHttp();
 	Init_RhoSupport();	
 	Init_RhoConf();
 	Init_WebView();
