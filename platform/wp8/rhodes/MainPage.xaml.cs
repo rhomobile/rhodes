@@ -25,26 +25,32 @@
 *------------------------------------------------------------------------*/
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 using Microsoft.Devices;
 using Microsoft.Phone.Controls;
 using rhodes.Resources;
 using rhoruntime;
+using Microsoft.Phone.Shell;
 
 namespace rhodes
 {
-    public partial class MainPage : PhoneApplicationPage, IMainPage
+    public partial class MainPage : PhoneApplicationPage
     {
         // saved id of the UI thread
         private int _uiThreadID = -1;
         // rhodes main thread
         private Thread _rhoruntimeThread;
         // internal variables
-        double _screenWidth;
-        double _screenHeight;
-        double _screenPhysicalWidth;
-        double _screenPhysicalHeight;
+        private double _screenWidth;
+        private double _screenHeight;
+        private double _screenPhysicalWidth;
+        private double _screenPhysicalHeight;
+        // menu items hash table
+        private Dictionary<string, int> menuItems = new Dictionary<string, int>();
+        // toolbar items hash table
+        private Dictionary<string, string> toolbarItems = new Dictionary<string, string>();
 
         private bool isUIThread
         {
@@ -60,17 +66,17 @@ namespace rhodes
             _screenPhysicalWidth = ( _screenPhysicalHeight / _screenHeight ) * _screenWidth; // assuming square pixels
 
             InitializeComponent();
-
+            ApplicationBar.IsVisible = false;
             try
             {
                 // create rhodes runtime object
-                var rhoruntime = CRhoRuntime.getInstance(this);
+                var _rhoruntime = CRhoRuntime.getInstance(new MainPageWrapper(this));
                 // create and start rhodes main thread
-                _rhoruntimeThread = new Thread(rhoruntime.Execute);
+                _rhoruntimeThread = new Thread(_rhoruntime.Execute);
                 _rhoruntimeThread.Start();
 
                 Thread.Sleep(5000);
-                rhoruntime.onActivate(0);
+                _rhoruntime.onActivate(0);
             }
             catch (Exception e)
             {
@@ -93,7 +99,22 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { bringToFront(); }); return; }
             this.bringToFront();
         }
-		
+
+        private void PhoneApplicationPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = CRhoRuntime.getInstance().onBackKeyPress();
+        }
+
+        private void PhoneApplicationPage_OrientationChanged(object sender, OrientationChangedEventArgs e)
+        {
+            // TODO: implement OrientationChanged handler
+        }
+
+        private void PhoneApplicationPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // TODO: implement application window size changed event hanlder ?
+        }
+
 
         // *** WEBVIEW ***
 
@@ -132,7 +153,7 @@ namespace rhodes
 
 		public bool isStarted()
         {
-            // TODO: implement
+            // TODO: implement WebView->isStarted
             return true;
         }
 
@@ -141,51 +162,100 @@ namespace rhodes
             return RhodesWebBrowser.Source.AbsoluteUri.ToString();
         }
 
-        
+        private void RhodesWebBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            CRhoRuntime.getInstance().onWebViewUrlChanged(RhodesWebBrowser.Source.AbsoluteUri.ToString());
+        }
+
+        private void RhodesWebBrowser_NavigationFailed(object sender, System.Windows.Navigation.NavigationFailedEventArgs e)
+        {
+            // TODO: WebView NavigationFailed - do we need this?
+        }
+
+        private void RhodesWebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
+        {
+            CRhoRuntime.getInstance().onWebViewUrlChanged(RhodesWebBrowser.Source.AbsoluteUri.ToString());
+        }
+
+        private void RhodesWebBrowser_Loaded(object sender, RoutedEventArgs e)
+        {
+            CRhoRuntime.getInstance().onWebViewUrlChanged(RhodesWebBrowser.Source.AbsoluteUri.ToString());
+        }
+
+        private void RhodesWebBrowser_Unloaded(object sender, RoutedEventArgs e)
+        {
+            CRhoRuntime.getInstance().onWebViewUrlChanged(RhodesWebBrowser.Source.AbsoluteUri.ToString());
+        }
+
+        private void RhodesWebBrowser_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // TODO: webview size changed event handler ?
+        }
+
+
         // *** TOOLBAR ***
 
 		public void toolbarRemoveAllButtons()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarRemoveAllButtons(); }); return; }
-            // TODO: implement
+            ApplicationBar.Buttons.Clear();
+            toolbarItems.Clear();
+            ApplicationBar.IsVisible = ApplicationBar.MenuItems.Count > 0;
         }
 
 		public void toolbarShow()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarShow(); }); return; }
-            // TODO: implement
+            ApplicationBar.IsVisible = true;
         }
 
 		public void toolbarHide()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarHide(); }); return; }
-            // TODO: implement
+            ApplicationBar.IsVisible = false; // ?? ApplicationBar.MenuItems.Count > 0
         }
 
 		public int toolbarGetHeight()
         {
-            // TODO: implement
-            return 0;
+            // TODO: implement toolbarGetHeight
+            return ApplicationBar.IsVisible ? 30 : 0;
         }
 
         public void toolbarAddAction(string text)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddAction(text); }); return; }
-            // TODO: implement
+            ApplicationBarIconButton toolbarButton = new ApplicationBarIconButton();
+            // TODO: icon
+            toolbarButton.IconUri = new Uri("/rho/public/images/cancel.png", UriKind.Relative);
+            toolbarButton.Text = text;
+            toolbarItems.Add(text, text);
+            ApplicationBar.Buttons.Add(toolbarButton);
+            toolbarButton.Click += new EventHandler(toolbarButton_Click);
+            ApplicationBar.IsVisible = true;
         }
 
-		//void toolbarAddAction(const Icon^ icon, const String^ text, const char* action, bool rightAlign /*= false*/) { }
+		public void toolbarAddAction(Icon icon, string text, string action, bool rightAlign)
+        {
+            // TODO: implement custom toolbar action
+            toolbarAddAction(text);
+            //toolbarItems.Add(text, action);
+        }
 
 		public void toolbarAddSeparator()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddSeparator(); }); return; }
-            // TODO: implement
+            CRhoRuntime.getInstance().logEvent("Toolbar separator is unimplemented on WP8");
         }
 
 		public void setToolbarStyle(bool border, string background)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setToolbarStyle(border, background); }); return; }
-            // TODO: implement
+            // TODO: implement setToolbarStyle
+        }
+
+        private void toolbarButton_Click(object sender, EventArgs e)
+        {
+            CRhoRuntime.getInstance().onToolbarAction(toolbarItems[(sender as ApplicationBarIconButton).Text]);
         }
 
 
@@ -194,19 +264,33 @@ namespace rhodes
 		public void menuClear()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuClear(); }); return; }
-            // TODO: implement
+            ApplicationBar.MenuItems.Clear();
+            menuItems.Clear();
+            ApplicationBar.IsVisible = ApplicationBar.Buttons.Count > 0;
+            ApplicationBar.IsMenuEnabled = false;
+
         }
 
 		public void menuAddAction(string text, int item)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuAddAction(text, item); }); return; }
-            // TODO: implement
+            ApplicationBarMenuItem menuItem = new ApplicationBarMenuItem(text);
+            ApplicationBar.MenuItems.Add(menuItem);
+            menuItems.Add(text, item);
+            menuItem.Click += new EventHandler(menuItem_Click);
+            ApplicationBar.IsVisible = true;
+            ApplicationBar.IsMenuEnabled = true;
         }
 
 		public void menuAddSeparator()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuAddSeparator(); }); return; }
-            // TODO: implement
+            CRhoRuntime.getInstance().logEvent("Menu separator is unimplemented on WP8");
+        }
+
+        private void menuItem_Click(object sender, EventArgs e)
+        {
+            CRhoRuntime.getInstance().onCustomMenuItemCommand(menuItems[(sender as ApplicationBarMenuItem).Text]);
         }
 
 
