@@ -352,6 +352,7 @@ namespace rhodes
         public void exitCommand()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke( delegate() { exitCommand(); } );  return; }
+            // TODO: App.Current.Terminate(); -- we may terminate all processes instead of crashing app via Exception ?
             App.Quit();
         }
 
@@ -412,7 +413,7 @@ namespace rhodes
 		public void fullscreenCommand(int fullScreen)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { fullscreenCommand(fullScreen); }); return; }
-            // TODO: implement
+            SystemTray.IsVisible = fullScreen == 0;
         }
 
 		public void setCookie(string url, string cookie)
