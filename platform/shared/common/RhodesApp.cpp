@@ -1235,7 +1235,11 @@ static void callback_is_blob_attr(void *arg, String const &strQuery)
     rho_http_sendresponse(arg,  "ok");
 }
 
-
+void CRhodesApp::registerLocalServerUrl(const String& strUrl, rho::net::CHttpServer::callback_t const &callback)
+{
+    if ( m_httpServer )
+        m_httpServer->register_uri(strUrl.c_str(), callback);    
+}
 
 void CRhodesApp::initHttpServer()
 {

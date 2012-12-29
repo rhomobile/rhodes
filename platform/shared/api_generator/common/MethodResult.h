@@ -55,7 +55,7 @@ public:
         {
             rho::Hashtable<rho::String, rho::String> resHash;
             resHash.put( m_strStringParam, m_strRes);
-            set(resHash);
+            m_hashStrRes = resHash; m_ResType = eStringHash;
         }
     }
 
