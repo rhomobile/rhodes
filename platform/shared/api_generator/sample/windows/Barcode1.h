@@ -42,15 +42,38 @@ public:
 
 };
 
-class CBarcode1
+class CBarcode1FactoryBase
 {
+protected:
     static rho::String m_strDefaultID;
     static rho::Hashtable<rho::String,IBarcode1*> m_hashBarcodes;
     static rho::common::CAutoPtr<rho::common::CThreadQueue> m_pCommandQueue;
 
 public:
-    static IBarcode1* create(const rho::String& strID);
     static rho::Hashtable<rho::String,IBarcode1*>& getBarcodes(){ return m_hashBarcodes; }
+
+    static void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
+
+    static void setCommandQueue( rho::common::CThreadQueue* pQueue){ m_pCommandQueue = pQueue; }
+    static void addCommandToQueue(rho::common::IRhoRunnable* pFunctor)
+    {
+        if ( !m_pCommandQueue )
+        {
+            m_pCommandQueue = new CGeneratorQueue();
+            m_pCommandQueue->start(rho::common::CThreadQueue::epLow);
+        }
+
+        m_pCommandQueue->addQueueCommand( new CGeneratorQueue::CGeneratorQueueCommand(pFunctor) );
+    }
+};
+
+class CBarcode1 : public CBarcode1FactoryBase
+{
+public:
+    static IBarcode1* create(const rho::String& strID);
+    static void initDefaultID();
+    static void enumerate(CMethodResult& oResult);
+
 
     static rho::String getDefaultID()
     { 
@@ -65,20 +88,4 @@ public:
         return m_strDefaultID; 
     }
 
-    static void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
-    static void initDefaultID();
-
-    static void enumerate(CMethodResult& oResult);
-
-    static void setCommandQueue( rho::common::CThreadQueue* pQueue){ m_pCommandQueue = pQueue; }
-    static void addCommandToQueue(rho::common::IRhoRunnable* pFunctor)
-    {
-        if ( !m_pCommandQueue )
-        {
-            m_pCommandQueue = new CGeneratorQueue();
-            m_pCommandQueue->start(rho::common::CThreadQueue::epLow);
-        }
-
-        m_pCommandQueue->addQueueCommand( new CGeneratorQueue::CGeneratorQueueCommand(pFunctor) );
-    }
 };

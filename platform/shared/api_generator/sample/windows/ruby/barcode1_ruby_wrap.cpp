@@ -7,10 +7,6 @@
 
 #include "ext/rho/rhoruby.h"
 
-rho::Hashtable<rho::String,IBarcode1*> CBarcode1::m_hashBarcodes;
-rho::String CBarcode1::m_strDefaultID;
-rho::common::CAutoPtr<rho::common::CThreadQueue> CBarcode1::m_pCommandQueue;
-
 extern "C"
 {
 
