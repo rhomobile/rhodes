@@ -115,6 +115,11 @@ namespace rhodes
             // TODO: implement application window size changed event hanlder ?
         }
 
+        private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            // TODO: put after-load app code here (e.g. switch to fullscreen if rhoconfig specifies that)
+        }
+
 
         // *** WEBVIEW ***
 
