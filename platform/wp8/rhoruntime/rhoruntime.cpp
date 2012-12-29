@@ -74,8 +74,10 @@ void CRhoRuntime::Execute()
 
 	RHODESAPP().startApp();
 
-	//// wait for 5 seconds
-	//m_MainPage->DoWait(5000);
+	// wait for 5 seconds
+	m_MainPage->DoWait(10000);
+	//m_MainPage->fullscreenCommand(1);
+	//m_MainPage->exitCommand();
 }
 
 
@@ -83,6 +85,7 @@ void CRhoRuntime::Execute()
 
 void CRhoRuntime::updateSizeProperties(int width, int height)
 {
+	// TODO: implement
 }
 
 void CRhoRuntime::onActivate(int active)
@@ -165,6 +168,7 @@ void CRhoRuntime::onToolbarAction(::Platform::String^ action)
 
 void CRhoRuntime::onWindowClose(void)
 {
+	// TODO: implement
 }
 
 void CRhoRuntime::onWebViewUrlChanged(::Platform::String^ url)
