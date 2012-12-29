@@ -596,7 +596,7 @@ end
     end
 
     def self.init_sync_source_properties(uniq_sources)
-
+if defined?(RHOCONNECT_CLIENT_PRESENT)
         uniq_sources.each do|src|
             ['pass_through', 'full_update'].each do |prop|
                 next unless src.has_key?(prop)
@@ -613,7 +613,7 @@ end
 				end
             end            
         end
-        
+end        
     end
     
     def self.processIndexes(index_param, src_name, is_unique)
@@ -707,8 +707,9 @@ end
           end
         
         end
-        
-        SyncEngine.update_blob_attribs(partition, -1 )
+	if defined?(RHOCONNECT_CLIENT_PRESENT)
+	        SyncEngine.update_blob_attribs(partition, -1 )
+	end
     end
 
     def self.make_createsql_script(name,schema_attr)
@@ -1381,12 +1382,12 @@ rescue LoadError, NameError
 	
 	module SyncEngine
 		def self.respond_to?(method)
-			puts "SyncEngine won't respond to #{method}. Use 'rhoconnect-client' extension."
+			#raise "SyncEngine won't respond to #{method}. Use 'rhoconnect-client' extension."
 			true
 		end
 
 		def self.method_missing(name, *args, &block)
-			puts "SyncEngine call #{name} not supported. Use 'rhoconnect-client' extension."
+			raise "SyncEngine call #{name} not supported. Use 'rhoconnect-client' extension."
 		end
 	end
 
