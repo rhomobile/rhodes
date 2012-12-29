@@ -43,6 +43,8 @@
 #include "common/RhoSimConf.h"
 #endif
 
+#include "sync/RhoconnectClientManager.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 extern void Init_strscan();
@@ -270,6 +272,11 @@ void RhoRubyStart()
 	Init_RhoConf();
 	Init_WebView();
 #endif //OS_WP8
+
+
+    if ( rho_rcclient_have_rhoconnect_client() ) {
+        rb_const_set(rb_cObject, rb_intern("RHOCONNECT_CLIENT_PRESENT"), Qtrue);
+    }
 
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)

@@ -54,8 +54,10 @@ module Rhom
 		#load all partitions
 		Rho::RHO.load_all_sources
 
-        old_interval = SyncEngine.set_pollinterval(0)
-        SyncEngine.stop_sync
+        if defined?(RHOCONNECT_CLIENT_PRESENT)
+            old_interval = SyncEngine.set_pollinterval(0)
+            SyncEngine.stop_sync
+        end
         
         params = ["", "", 0]
         ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET client_id=?, token=?, token_sent=?", params)
@@ -74,7 +76,9 @@ module Rhom
         hash_migrate = {}
         ::Rho::RHO.init_schema_sources(hash_migrate) 
         
-        SyncEngine.set_pollinterval(old_interval)
+        if defined?(RHOCONNECT_CLIENT_PRESENT)
+            SyncEngine.set_pollinterval(old_interval)
+        end
       end
 
       def database_local_reset()
@@ -112,8 +116,10 @@ module Rhom
 		#load all partitions
 		Rho::RHO.load_all_sources
 
-        old_interval = SyncEngine.set_pollinterval(0)
-        SyncEngine.stop_sync
+        if defined?(RHOCONNECT_CLIENT_PRESENT)
+            old_interval = SyncEngine.set_pollinterval(0)
+            SyncEngine.stop_sync
+        end
         
         ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET reset=1")
         
@@ -154,7 +160,9 @@ module Rhom
         #hash_migrate = {}
         #::Rho::RHO.init_schema_sources(hash_migrate) 
         
-        SyncEngine.set_pollinterval(old_interval)
+        if defined?(RHOCONNECT_CLIENT_PRESENT)
+            SyncEngine.set_pollinterval(old_interval)
+        end
                         
       end
       
@@ -164,8 +172,10 @@ module Rhom
 		#load all partitions
 		Rho::RHO.load_all_sources
 
-        old_interval = SyncEngine.set_pollinterval(0)
-        SyncEngine.stop_sync
+        if defined?(RHOCONNECT_CLIENT_PRESENT)
+            old_interval = SyncEngine.set_pollinterval(0)
+            SyncEngine.stop_sync
+        end
         
         ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET reset=1")
         if ( Rho::RhoConfig.exists?('bulksync_state') )
@@ -187,17 +197,23 @@ module Rhom
         hash_migrate = {}
         ::Rho::RHO.init_schema_sources(hash_migrate) 
         
-        SyncEngine.set_pollinterval(old_interval)
+        if defined?(RHOCONNECT_CLIENT_PRESENT)
+            SyncEngine.set_pollinterval(old_interval)
+        end
       end
       
       def database_full_reset_and_logout
         database_full_reset
-        SyncEngine.logout
+        if defined?(RHOCONNECT_CLIENT_PRESENT)
+            SyncEngine.logout
+        end
       end
 
       def database_fullclient_reset_and_logout
         database_full_reset(true)
-        SyncEngine.logout
+        if defined?(RHOCONNECT_CLIENT_PRESENT)
+            SyncEngine.logout
+        end
       end
 	  
 	  def database_export(partition)
@@ -216,6 +232,7 @@ module Rhom
 		  
 
         def search(args)
+if defined?(RHOCONNECT_CLIENT_PRESENT)
           searchParams = ""
           
           searchParams += '&offset=' + Rho::RhoSupport.url_encode(args[:offset]) if args[:offset]
@@ -242,6 +259,7 @@ module Rhom
           SyncEngine.dosearch_source(src_ar, args[:from] ? args[:from] : 'search',
             searchParams, args[:sync_changes] ? args[:sync_changes] : false, args[:progress_step] ? args[:progress_step] : -1,
             args[:callback], callbackParams )
+end
         end
 	  
 		def have_local_changes
