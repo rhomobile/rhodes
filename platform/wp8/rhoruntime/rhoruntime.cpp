@@ -29,7 +29,9 @@
 
 //#include "../../shared/sqlite/sqlite3.h"
 //#include "logging/RhoLogConf.h"
+#include "common/RhoStd.h"
 #include "common/RhodesApp.h"
+#include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
 
 using namespace rhoruntime;
@@ -74,8 +76,6 @@ void CRhoRuntime::Execute()
 
 	//// wait for 5 seconds
 	//m_MainPage->DoWait(5000);
-	//// exit application
-	//m_MainPage->exitCommand();
 }
 
 
@@ -89,19 +89,79 @@ void CRhoRuntime::onActivate(int active)
 {
 	//rho_webview_navigate("system/uicreated", 0); //HOTFIX, should remove after threadqueue fix  
 	RHODESAPP().callUiCreatedCallback();
+    //rho_rhodesapp_callAppActiveCallback(active);
+    //if (!active)
+    //    rho_geoimpl_turngpsoff();
 }
 
 void CRhoRuntime::logEvent(::Platform::String^ message)
 {
+	LOG(INFO) + rho::common::convertToStringW(message->Data());
 }
 
-void CRhoRuntime::createCustomMenu(void)
+void CRhoRuntime::createCustomMenu()
 {
+	IMainPage^ mainPage = CRhoRuntime::getInstance()->getMainPage();
+	rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
+    RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
+#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+	rho::String index = "index"RHO_ERB_EXT;
+    rho::String strIndexPage = rho::common::CFilePath::join(RHODESAPP().getStartUrl(), index);
+    if ( RHODESAPP().getCurrentUrl().compare(RHODESAPP().getStartUrl()) == 0 ||
+         RHODESAPP().getCurrentUrl().compare(strIndexPage) == 0 )
+        m_arAppMenuItems.addElement(rho::common::CAppMenuItem("Reload RhoBundle","reload_rhobundle"));
+#endif //ENABLE_DYNAMIC_RHOBUNDLE
+
+    //update UI with custom menu items
+	mainPage->menuClear();
+    for ( unsigned int i = 0; i < m_arAppMenuItems.size(); i++)
+    {
+        rho::common::CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
+        if (oItem.m_eType == rho::common::CAppMenuItem::emtSeparator) 
+            mainPage->menuAddSeparator();
+        else {
+			rho::StringW labelW;
+			rho::common::convertToStringW(oItem.m_strLabel.c_str(), labelW);
+			mainPage->menuAddAction((oItem.m_eType == rho::common::CAppMenuItem::emtClose ? "Exit" : ref new Platform::String(labelW.c_str())), i);
+        }
+    }
 }
 
 void CRhoRuntime::onCustomMenuItemCommand(int nItemPos)
 {
+	rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
+    RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
+
+	if ( nItemPos < 0 || nItemPos >= (int)m_arAppMenuItems.size() )
+        return;
+
+    rho::common::CAppMenuItem& oMenuItem = m_arAppMenuItems.elementAt(nItemPos);
+    if ( oMenuItem.m_eType == rho::common::CAppMenuItem::emtUrl )
+    {
+		// TODO: implement ReloadRhoBundle
+        if ( oMenuItem.m_strLink == "reload_rhobundle" )
+        {
+			#ifdef ENABLE_DYNAMIC_RHOBUNDLE
+            //if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
+            //    CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
+            //} else {
+            //    MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
+            //}
+			#endif
+			return;
+        }
+    }
+    oMenuItem.processCommand();
 }
+
+void CRhoRuntime::onToolbarAction(::Platform::String^ action)
+{
+	if ( action->Equals("forward") )
+		rho_webview_navigate_forward();
+	else
+		RHODESAPP().loadUrl(rho::common::convertToStringA(action->Data()));
+}
+
 
 void CRhoRuntime::onWindowClose(void)
 {
@@ -109,6 +169,14 @@ void CRhoRuntime::onWindowClose(void)
 
 void CRhoRuntime::onWebViewUrlChanged(::Platform::String^ url)
 {
+	RHODESAPP().keepLastVisitedUrl(rho::common::convertToStringA(url->Data()));
+}
+
+bool CRhoRuntime::onBackKeyPress()
+{
+	// TODO: implement check for history size (return false if there's no history)
+	RHODESAPP().navigateBack();
+	return true;
 }
 
 
@@ -121,6 +189,13 @@ bool CRhoRuntime::Initialize(::Platform::String^ title)
 
 void CRhoRuntime::DestroyUi(void)
 {
+	rho_rhodesapp_callUiDestroyedCallback();
+}
+
+extern "C" void rho_sys_app_exit()
+{
+	// exit application
+	CRhoRuntime::getInstance()->getMainPage()->exitCommand();
 }
 
 #ifdef OS_WP8

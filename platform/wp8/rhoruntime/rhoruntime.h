@@ -100,13 +100,15 @@ namespace rhoruntime
 		void Execute();
 
 		// callbacks from MainPage object
-		 void updateSizeProperties(int width, int height);
-		 void onActivate(int active);
-		 void logEvent(::Platform::String^ message);
-		 void createCustomMenu(void);
-		 void onCustomMenuItemCommand(int nItemPos);
-		 void onWindowClose(void);
-		 void onWebViewUrlChanged(::Platform::String^ url);
+		void updateSizeProperties(int width, int height);
+		void onActivate(int active);
+		void logEvent(::Platform::String^ message);
+		void createCustomMenu(void);
+		void onCustomMenuItemCommand(int nItemPos);
+		void onToolbarAction(::Platform::String^ action);
+		void onWindowClose(void);
+		void onWebViewUrlChanged(::Platform::String^ url);
+		bool onBackKeyPress(void);
 
 		// public methods:
 		bool Initialize(::Platform::String^ title);

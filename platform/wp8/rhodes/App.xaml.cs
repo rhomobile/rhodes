@@ -104,24 +104,31 @@ namespace rhodes
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+            // TODO: add app init code here ?
         }
 
         // Code to execute when the application is activated (brought to foreground)
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
+            // TODO: add onActivate call
+            //rhoruntime.CRhoRuntime.getInstance().onActivate(1);
         }
 
         // Code to execute when the application is deactivated (sent to background)
         // This code will not execute when the application is closing
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
+            // TODO: add onActivate call
+            //rhoruntime.CRhoRuntime.getInstance().onActivate(0);
         }
 
         // Code to execute when the application is closing (eg, user hit Back)
         // This code will not execute when the application is deactivated
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
+            // TODO: add onActivate call ?
+            //rhoruntime.CRhoRuntime.getInstance().onActivate(0);
         }
 
         // Code to execute if a navigation fails

@@ -1,7 +1,7 @@
 #include "rhoruntime.h"
 #include "common/RhoStd.h"
 #include "common/StringConverter.h"
-#include "common/RhodesAppBase.h"
+#include "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
 
 using namespace rhoruntime;
@@ -27,7 +27,7 @@ extern "C" const char* rho_webview_execute_js(const char* js, int index)
 	rho::StringW jsW;
 	rho::common::convertToStringW(js, jsW);
 	CRhoRuntime::getInstance()->getMainPage()->executeScript(ref new String(jsW.c_str()), index);
-	// TODO: implement return value
+	// TODO: implement return value of rho_webview_execute_js
     return "";
 }
 
@@ -81,7 +81,7 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance()
 
 extern "C" void rho_webview_set_menu_items(VALUE valMenu) 
 {
-    //rho_rhodesapp_setViewMenu(valMenu); 
+    rho_rhodesapp_setViewMenu(valMenu); 
 }
 
 extern "C" void rho_webview_save(const char* format, const char* path, int tab_index)

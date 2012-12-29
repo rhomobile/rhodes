@@ -11,11 +11,14 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="PortraitOrLandscape" Orientation="Portrait"
-    shell:SystemTray.IsVisible="True">
+    shell:SystemTray.IsVisible="True" BackKeyPress="PhoneApplicationPage_BackKeyPress" OrientationChanged="PhoneApplicationPage_OrientationChanged" SizeChanged="PhoneApplicationPage_SizeChanged">
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar/>
+    </phone:PhoneApplicationPage.ApplicationBar>
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <ScrollViewer x:Name="LayoutRoot" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-        <phone:WebBrowser x:Name="RhodesWebBrowser" Source="about:blank" Height="Auto" Width="Auto"/>
+        <phone:WebBrowser x:Name="RhodesWebBrowser" Source="about:blank" Height="Auto" Width="Auto" IsScriptEnabled="True" SizeChanged="RhodesWebBrowser_SizeChanged" Navigated="RhodesWebBrowser_Navigated" NavigationFailed="RhodesWebBrowser_NavigationFailed" LoadCompleted="RhodesWebBrowser_LoadCompleted" Loaded="RhodesWebBrowser_Loaded" Unloaded="RhodesWebBrowser_Unloaded"/>
     </ScrollViewer>
 
 </phone:PhoneApplicationPage>
