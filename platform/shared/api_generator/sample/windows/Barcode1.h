@@ -71,14 +71,14 @@ class CBarcode1 : public CBarcode1FactoryBase
 {
 public:
     static IBarcode1* create(const rho::String& strID);
-    static void initDefaultID();
+    static rho::String getDefaultID();
     static void enumerate(CMethodResult& oResult);
 
 
-    static rho::String getDefaultID()
+    static rho::String getDefaultIDEx()
     { 
         if ( m_strDefaultID.length() == 0 )
-            CBarcode1::initDefaultID();
+            setDefaultID(getDefaultID());
 
         if ( !getBarcodes().containsKey(m_strDefaultID) )
         {

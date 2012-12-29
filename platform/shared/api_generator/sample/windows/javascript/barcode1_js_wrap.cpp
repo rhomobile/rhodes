@@ -45,7 +45,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
 
     rho::String strObjID = strID;
     if ( strObjID.length() == 0 )
-        strObjID = CBarcode1::getDefaultID();
+        strObjID = CBarcode1::getDefaultIDEx();
 
     IBarcode1* pObj = CBarcode1::getBarcodes()[strObjID];
 

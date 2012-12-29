@@ -24,12 +24,12 @@ public:
     oResult.set(arIDs);
 }
 
-/*static*/ void CBarcode1::initDefaultID()
+/*static*/ rho::String CBarcode1::getDefaultID()
 {
     CMethodResult oRes;
     CBarcode1::enumerate(oRes);
 
     rho::Vector<rho::String>& arIDs = oRes.getStringArray();
         
-    CBarcode1::setDefaultID(arIDs[0]);
+    return arIDs[0];
 }
