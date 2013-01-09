@@ -59,6 +59,12 @@
     <Filter Include="ext\asynchttp">
       <UniqueIdentifier>{71242694-8de9-4c24-a127-09f34da4e0ad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ext\stringio">
+      <UniqueIdentifier>{5101662d-c68f-48cd-8ef9-f0c4f00038b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\sockets">
+      <UniqueIdentifier>{dd2081be-3580-4a5d-8b5d-788462bbb626}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ruby\debug.h" />
@@ -242,6 +248,12 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\asynchttp\asynchttp_wrap.c">
       <Filter>ext\asynchttp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\socket.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c">
+      <Filter>ext\stringio</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
