@@ -2,8 +2,8 @@
 #include <windows.h>
 #include <string>
 
-#include "../../shared/ruby/ext/rho/rhoruby.h"
-#include "../../shared/common/RhoDefs.h"
+#include <ruby/ext/rho/rhoruby.h>
+#include <common/RhoDefs.h>
 #include <logging/RhoLog.h>
 
 RHO_GLOBAL double rho_geo_latitude()
