@@ -227,14 +227,14 @@ void RhoRubyStart()
 
 #if !defined(OS_WP8)
 
-    Init_strscan();
-    Init_sqlite3_api();
-    Init_GeoLocation();
-    Init_AsyncHttp();
+    Init_strscan(); //+
+    Init_sqlite3_api(); //+
+    Init_GeoLocation(); //+
+    Init_AsyncHttp(); //+
     Init_System();
     Init_Phonebook();
-    Init_WebView();
-    Init_RhoConf();
+    Init_WebView(); //+
+    Init_RhoConf(); //+
     Init_Alert();
 #if defined(WINDOWS_PLATFORM)
     init_rhoext_Signature();
@@ -245,13 +245,13 @@ void RhoRubyStart()
     Init_RhoBluetooth();	
 	Init_RhodesNativeViewManager();	
     Init_Camera();
-    Init_stringio();
+    Init_stringio(); //+
     Init_DateTimePicker();
     Init_NativeBar();
-    Init_RhoSupport();
+    Init_RhoSupport(); //+
     Init_MapView();
     Init_RingtoneManager();
-    Init_socket();
+    Init_socket(); //+
     Init_NavBar();
     Init_RhoEvent();
     Init_Calendar();
@@ -269,6 +269,9 @@ void RhoRubyStart()
 	Init_RhoSupport();	
 	Init_RhoConf();
 	Init_WebView();
+
+	Init_socket();
+	Init_stringio();
 #endif //OS_WP8
 
 
