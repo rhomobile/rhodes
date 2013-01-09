@@ -1,4 +1,4 @@
-#include "..\Common\js_helpers.h"
+#include "../common/js_helpers.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY

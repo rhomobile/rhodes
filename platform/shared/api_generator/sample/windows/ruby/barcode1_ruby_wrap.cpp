@@ -7,10 +7,6 @@
 
 #include "ext/rho/rhoruby.h"
 
-rho::Hashtable<rho::String,IBarcode1*> CBarcode1::m_hashBarcodes;
-rho::String CBarcode1::m_strDefaultID;
-rho::common::CAutoPtr<rho::common::CThreadQueue> CBarcode1::m_pCommandQueue;
-
 extern "C"
 {
 
@@ -41,7 +37,7 @@ VALUE rb_barcode1_s_enumerate(VALUE klass)
 
 VALUE rb_barcode1_s_default(VALUE klass)
 {
-    rho::String strDefaultID = CBarcode1::getDefaultID();
+    rho::String strDefaultID = CBarcode1::getDefaultIDEx();
 
     return rho_create_object_with_id( klass, strDefaultID.c_str() );
 }
@@ -155,7 +151,7 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
 
 VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 {
-    rho::String strDefaultID = CBarcode1::getDefaultID();
+    rho::String strDefaultID = CBarcode1::getDefaultIDEx();
     IBarcode1* pObj = CBarcode1::getBarcodes()[strDefaultID];
 
     return barcode1_getprops(argc, argv, pObj);
