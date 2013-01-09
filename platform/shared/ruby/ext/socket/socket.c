@@ -73,6 +73,11 @@
 #ifndef HAVE_GETADDRINFO
 # include "addrinfo.h"
 #endif
+
+#ifdef _WP8_LIB
+#include <ws2tcpip.h>
+#endif
+
 #include "sockport.h"
 
 static int do_not_reverse_lookup = 0;
