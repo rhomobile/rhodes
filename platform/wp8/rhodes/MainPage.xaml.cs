@@ -69,6 +69,7 @@ namespace rhodes
                 _rhoruntimeThread = new Thread(rhoruntime.Execute);
                 _rhoruntimeThread.Start();
 
+                //temporary solutions, to do refactoring
                 Thread.Sleep(5000);
                 rhoruntime.onActivate(0);
             }
