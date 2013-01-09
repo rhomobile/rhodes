@@ -15,10 +15,6 @@ RHO_GLOBAL void rho_appmanager_load( void* /*httpContext*/, const char* /*szQuer
     // Nothing
 }
 
-RHO_GLOBAL void rho_sys_app_exit()
-{
-}
-
 RHO_GLOBAL void rho_sys_report_app_started()
 {
 }

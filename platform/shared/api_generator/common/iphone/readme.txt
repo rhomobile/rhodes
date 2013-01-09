@@ -1,0 +1,1 @@
+Contain iOS helpers and classes (used for implementation of API on iOS platform)
