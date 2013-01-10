@@ -25,10 +25,10 @@ rho::String js_barcode1_enumerate(const rho::String& strID, CJSONArrayIterator& 
 
     for( int i = 0; i < arIDs.size(); i++ )
     {
-        if ( !CBarcode1SingletonBase::getInstance()->getBarcodes().containsKey(arIDs[i]) )
+        if ( !CBarcode1SingletonBase::getInstance()->getModules().containsKey(arIDs[i]) )
         {
             IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->create(arIDs[i]);
-            CBarcode1SingletonBase::getInstance()->getBarcodes().put(arIDs[i], pObj );
+            CBarcode1SingletonBase::getInstance()->getModules().put(arIDs[i], pObj );
         }
     }
 
@@ -47,7 +47,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
     if ( strObjID.length() == 0 )
         strObjID = CBarcode1SingletonBase::getInstance()->getDefaultIDEx();
 
-    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->getBarcodes()[strObjID];
+    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->getModules()[strObjID];
 
     CMethodResult oRes;
     if ( oParams.isEnd() )

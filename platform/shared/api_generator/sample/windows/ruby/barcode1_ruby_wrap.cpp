@@ -22,10 +22,10 @@ VALUE rb_barcode1_s_enumerate(VALUE klass)
     CHoldRubyValue valArray(rho_ruby_create_array());
     for( int i = 0; i < arIDs.size(); i++ )
     {
-        if ( !CBarcode1SingletonBase::getInstance()->getBarcodes().containsKey(arIDs[i]) )
+        if ( !CBarcode1SingletonBase::getInstance()->getModules().containsKey(arIDs[i]) )
         {
             IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->create(arIDs[i]);
-            CBarcode1SingletonBase::getInstance()->getBarcodes().put(arIDs[i], pObj );
+            CBarcode1SingletonBase::getInstance()->getModules().put(arIDs[i], pObj );
         }
 
         VALUE valObj = rho_create_object_with_id( klass, arIDs[i].c_str() );
@@ -152,7 +152,7 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
 VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 {
     rho::String strDefaultID = CBarcode1SingletonBase::getInstance()->getDefaultIDEx();
-    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->getBarcodes()[strDefaultID];
+    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->getModules()[strDefaultID];
 
     return barcode1_getprops(argc, argv, pObj);
 }
@@ -160,7 +160,7 @@ VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
 {
     const char* szID = rho_get_object_id( valObj );
-    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->getBarcodes()[szID];
+    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->getModules()[szID];
 
     return barcode1_getprops(argc, argv, pObj);
 }

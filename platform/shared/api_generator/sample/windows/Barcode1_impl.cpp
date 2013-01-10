@@ -1,9 +1,9 @@
 #include "Barcode1.h"
 
-class CBarcode1Impl: public CBarcode1ImplBase
+class CBarcode1Impl: public CModuleBase<IBarcode1>
 {
 public:
-    CBarcode1Impl(const rho::String& strID): CBarcode1ImplBase(strID)
+    CBarcode1Impl(const rho::String& strID): CModuleBase<IBarcode1>(strID)
     {
         m_hashProps.put( "display", "LCD");
         m_hashProps.put( "sound", "Dolby");
