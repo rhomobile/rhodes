@@ -19,16 +19,16 @@ rho::String js_barcode1_enumerate(const rho::String& strID, CJSONArrayIterator& 
         return oRes.toJSON();
     }
 
-    CBarcode1::enumerate(oRes);
+    CBarcode1SingletonBase::getInstance()->enumerate(oRes);
 
     rho::Vector<rho::String>& arIDs = oRes.getStringArray();
 
     for( int i = 0; i < arIDs.size(); i++ )
     {
-        if ( !CBarcode1::getBarcodes().containsKey(arIDs[i]) )
+        if ( !CBarcode1SingletonBase::getInstance()->getModules().containsKey(arIDs[i]) )
         {
-            IBarcode1* pObj = CBarcode1::create(arIDs[i]);
-            CBarcode1::getBarcodes().put(arIDs[i], pObj );
+            IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->create(arIDs[i]);
+            CBarcode1SingletonBase::getInstance()->getModules().put(arIDs[i], pObj );
         }
     }
 
@@ -45,9 +45,9 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
 
     rho::String strObjID = strID;
     if ( strObjID.length() == 0 )
-        strObjID = CBarcode1::getDefaultIDEx();
+        strObjID = CBarcode1SingletonBase::getInstance()->getDefaultIDEx();
 
-    IBarcode1* pObj = CBarcode1::getBarcodes()[strObjID];
+    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->getModules()[strObjID];
 
     CMethodResult oRes;
     if ( oParams.isEnd() )
@@ -133,7 +133,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
         if ( bCallInUIThread )
             rho_wm_impl_performOnUiThread( pFunctor );
         else //call in separate thread
-            CBarcode1::addCommandToQueue( pFunctor );
+            CBarcode1SingletonBase::getInstance()->addCommandToQueue( pFunctor );
     }
 
     return oRes.toJSON();
