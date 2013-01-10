@@ -19,10 +19,14 @@ class CBarcode1Singleton: public CBarcode1SingletonBase
 };
 
 
-CBarcode1SingletonBase* barcode1_impl_createSingleton()
+extern "C" void Init_Barcode1()
 {
-    return new CBarcode1Singleton();
+    CBarcode1Singleton::setInstance(new CBarcode1Singleton());
+
+    Init_RubyAPI_Barcode1();
+    Init_JSAPI_Barcode1();
 }
+
 
 IBarcode1* CBarcode1Singleton::create(const rho::String& strID)
 {
