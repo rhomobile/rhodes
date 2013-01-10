@@ -42,20 +42,40 @@ public:
 
 };
 
-class CBarcode1FactoryBase
+struct IBarcode1Singleton
+{
+    virtual ~IBarcode1Singleton(){}
+    virtual IBarcode1* create(const rho::String& strID) = 0;
+    virtual rho::String getDefaultID() = 0;
+    virtual void enumerate(CMethodResult& oResult) = 0;
+};
+
+class CBarcode1SingletonBase;
+CBarcode1SingletonBase* barcode1_impl_createSingleton();
+
+class CBarcode1SingletonBase : public IBarcode1Singleton
 {
 protected:
-    static rho::String m_strDefaultID;
-    static rho::Hashtable<rho::String,IBarcode1*> m_hashBarcodes;
-    static rho::common::CAutoPtr<rho::common::CThreadQueue> m_pCommandQueue;
+    rho::String m_strDefaultID;
+    rho::Hashtable<rho::String,IBarcode1*> m_hashBarcodes;
+    rho::common::CAutoPtr<rho::common::CThreadQueue> m_pCommandQueue;
+    static rho::common::CAutoPtr<CBarcode1SingletonBase> m_pInstance;
 
 public:
-    static rho::Hashtable<rho::String,IBarcode1*>& getBarcodes(){ return m_hashBarcodes; }
+    static CBarcode1SingletonBase* getInstance()
+    {
+        if (!m_pInstance)
+            m_pInstance = barcode1_impl_createSingleton();
 
-    static void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
+        return m_pInstance;
+    }
 
-    static void setCommandQueue( rho::common::CThreadQueue* pQueue){ m_pCommandQueue = pQueue; }
-    static void addCommandToQueue(rho::common::IRhoRunnable* pFunctor)
+    rho::Hashtable<rho::String,IBarcode1*>& getBarcodes(){ return m_hashBarcodes; }
+
+    void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
+
+    void setCommandQueue( rho::common::CThreadQueue* pQueue){ m_pCommandQueue = pQueue; }
+    void addCommandToQueue(rho::common::IRhoRunnable* pFunctor)
     {
         if ( !m_pCommandQueue )
         {
@@ -65,17 +85,8 @@ public:
 
         m_pCommandQueue->addQueueCommand( new CGeneratorQueue::CGeneratorQueueCommand(pFunctor) );
     }
-};
 
-class CBarcode1 : public CBarcode1FactoryBase
-{
-public:
-    static IBarcode1* create(const rho::String& strID);
-    static rho::String getDefaultID();
-    static void enumerate(CMethodResult& oResult);
-
-
-    static rho::String getDefaultIDEx()
+    rho::String getDefaultIDEx()
     { 
         if ( m_strDefaultID.length() == 0 )
             setDefaultID(getDefaultID());
@@ -87,5 +98,5 @@ public:
         }
         return m_strDefaultID; 
     }
-
 };
+

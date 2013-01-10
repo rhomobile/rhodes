@@ -10,12 +10,26 @@ public:
     }
 };
 
-/*static*/ IBarcode1* CBarcode1::create(const rho::String& strID)
+class CBarcode1Singleton: public CBarcode1SingletonBase
+{
+    ~CBarcode1Singleton(){}
+    virtual IBarcode1* create(const rho::String& strID);
+    virtual rho::String getDefaultID();
+    virtual void enumerate(CMethodResult& oResult);
+};
+
+
+CBarcode1SingletonBase* barcode1_impl_createSingleton()
+{
+    return new CBarcode1Singleton();
+}
+
+IBarcode1* CBarcode1Singleton::create(const rho::String& strID)
 {
     return new CBarcode1Impl(strID);
 }
 
-/*static*/ void CBarcode1::enumerate(CMethodResult& oResult)
+void CBarcode1Singleton::enumerate(CMethodResult& oResult)
 {
     rho::Vector<rho::String> arIDs;
     arIDs.addElement("SC1");
@@ -24,10 +38,10 @@ public:
     oResult.set(arIDs);
 }
 
-/*static*/ rho::String CBarcode1::getDefaultID()
+rho::String CBarcode1Singleton::getDefaultID()
 {
     CMethodResult oRes;
-    CBarcode1::enumerate(oRes);
+    enumerate(oRes);
 
     rho::Vector<rho::String>& arIDs = oRes.getStringArray();
         
