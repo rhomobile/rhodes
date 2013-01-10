@@ -48,85 +48,46 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, jhobject jhObject)
     {
         barcode.getProps(result);
     }
-    result.toRuby();
-
-#if 0
-
-    CMethodResult oRes;
-    if ( argc == 0 )
+    else if(argc <= 1)
     {
-        pObj->getProps(oRes);
-    }else if ( argc == 1 )
-    {
-        if ( rho_ruby_is_string(argv[0]) )
+        if(argc >= 2)
         {
-            pObj->getProps(getStringFromValue(argv[0]), oRes);
-        }else if ( rho_ruby_is_array(argv[0]) )
-        {
-            rho::Vector<rho::String> ar;
-            getStringArrayFromValue(argv[0], ar);
-            pObj->getProps(ar, oRes );
-        }else
-        {
-            oRes.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
-        }
-    }else if ( argc >= 2 )
-    {
-        if ( !rho_ruby_is_string(argv[1]) )
-        {
-            oRes.setArgError("Type error: argument 2 should be String"); //see SWIG Ruby_Format_TypeError
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(bCallInUIThread);
-        oRes.setRubyCallback( getStringFromValue(argv[1]) );
-        if ( argc >= 3 )
-        {
-            if ( !rho_ruby_is_string(argv[2]) )
+            if(!rho_ruby_is_string(argv[1]))
             {
-                oRes.setArgError("Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
-                return oRes.toRuby();
+                result.setArgError("Type error: argument 2 should be String"); //see SWIG Ruby_Format_TypeError
+                return result.toRuby();
             }
 
-            oRes.setCallbackParam( getStringFromValue(argv[2]) );
+            if(argc >= 3)
+            {
+                if(!rho_ruby_is_string(argv[2]))
+                {
+                    result.setArgError("Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
+                    return result.toRuby();
+                }
+                result.setCallBack(rho_ruby_is_string(argv[1]), rho_ruby_is_string(argv[2]));
+            }
+            else
+            {
+                result.setCallBack(rho_ruby_is_string(argv[1]), 0);
+            }
         }
 
-        rho::common::IRhoRunnable* pFunctor = 0;
-        if ( rho_ruby_is_NIL(argv[0]) )
+        if(rho_ruby_is_string(argv[0]))
         {
-            pFunctor = new CObjCallbackFunctor1<IBarcode1*, void (IBarcode1::*)(CMethodResult&), CMethodResult>
-                ( pObj, &IBarcode1::getProps, oRes );
-        }else if ( rho_ruby_is_string(argv[0]) )
-        {
-            oRes.setStringParam(getStringFromValue(argv[0]));
-            pFunctor = new CObjCallbackFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
-                ( pObj, &IBarcode1::getProps, getStringFromValue(argv[0]), oRes );
-
-        }else if ( rho_ruby_is_array(argv[0]) )
-        {
-            rho::Vector<rho::String> ar;
-            getStringArrayFromValue(argv[0], ar);
-
-            pFunctor = new CObjCallbackFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::String>&, CMethodResult&), rho::Vector<rho::String>, CMethodResult>
-                ( pObj, &IBarcode1::getProps, ar, oRes );
-        }else
-        {
-            oRes.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
-            return oRes.toRuby();
+            const char* szName = getStringFromValue(argv[0]);
+            barcode.getProps(rho_cast<jhstring>(szName), result);
         }
-
-        if ( bCallInUIThread )
-            rho_wm_impl_performOnUiThread( pFunctor );
-        else //call in separate thread
-            CBarcode1::addCommandToQueue( pFunctor );
-
-    }else
-    {
-        oRes.setArgError("wrong # of arguments(%d for 2)", argc );
+        else if(rho_ruby_is_array(argv[0]))
+        {
+            barcode.getProps(rho_cast<jhobject>(argv[0]), result);
+        }
+        else
+        {
+            result.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
+        }
     }
-
-    return oRes.toRuby();
-#endif
+    result.toRuby();
 }
 
 VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)

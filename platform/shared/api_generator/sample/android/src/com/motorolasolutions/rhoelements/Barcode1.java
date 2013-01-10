@@ -43,4 +43,53 @@ class Barcode1 {
         res.set(getIds());
         return res;
     }
+
+    class GetPropsTask implements Runnable {
+        private IBarcode1 mBarcode;
+        private IMethodResult mResult;
+
+        public GetPropsTask(IBarcode1 barcode, IMethodResult result) {
+            mBarcode = barcode;
+            mResult = result;
+        }
+
+        @Override
+        public void run() {
+            mBarcode.getProps(mResult);
+        }
+    }
+
+    class GetProps1Task implements Runnable {
+        private IBarcode1 mBarcode;
+        private String mName;
+        private IMethodResult mResult;
+
+        public GetProps1Task(IBarcode1 barcode, String name, IMethodResult result) {
+            mBarcode = barcode;
+            mName = name;
+            mResult = result;
+        }
+
+        @Override
+        public void run() {
+            mBarcode.getProps(mName, mResult);
+        }
+    }
+
+    class GetProps2Task implements Runnable {
+        private IBarcode1 mBarcode;
+        private List<String> mNames;
+        private IMethodResult mResult;
+
+        public GetProps2Task(IBarcode1 barcode, List<String> names, IMethodResult result) {
+            mBarcode = barcode;
+            mNames = names;
+            mResult = result;
+        }
+
+        @Override
+        public void run() {
+            mBarcode.getProps(mNames, mResult);
+        }
+    }
 }
