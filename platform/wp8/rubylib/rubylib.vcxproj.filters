@@ -56,6 +56,15 @@
     <Filter Include="ext\syncengine">
       <UniqueIdentifier>{d87dcf91-c9af-4861-a1c2-229fc7817546}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ext\asynchttp">
+      <UniqueIdentifier>{71242694-8de9-4c24-a127-09f34da4e0ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\stringio">
+      <UniqueIdentifier>{5101662d-c68f-48cd-8ef9-f0c4f00038b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ext\sockets">
+      <UniqueIdentifier>{dd2081be-3580-4a5d-8b5d-788462bbb626}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ruby\debug.h" />
@@ -237,8 +246,14 @@
     <ClCompile Include="..\..\shared\ruby\ext\strscan\strscan.c">
       <Filter>ext\strscan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\syncengine\syncengine_wrap.c">
-      <Filter>ext\syncengine</Filter>
+    <ClCompile Include="..\..\shared\ruby\ext\asynchttp\asynchttp_wrap.c">
+      <Filter>ext\asynchttp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\socket\socket.c">
+      <Filter>ext\sockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c">
+      <Filter>ext\stringio</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

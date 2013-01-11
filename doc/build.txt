@@ -503,7 +503,7 @@ The signed APK will be located in `<rhodes-app-dir>/bin/target`. To install the 
 
 ### Building app in Eclipse
 
-On Macintosh and WIndows computers, you can create Rhodes apps within RhoStudio. However, on Linux installations, you can use Eclipse, since RhoStudio is not available for Linux.
+On Macintosh and Windows computers, you can create Rhodes apps within RhoStudio. However, on Linux installations, you can use Eclipse, since RhoStudio is not available for Linux.
 
 Please note: It is only Google API target (with Google mapping API) supported for Eclipse.
 
@@ -550,7 +550,7 @@ Blackberry SDK for Mac doesn't come with simulators so far. So for now we would 
 
 ### Prerequisites
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
-* Load and install Blackberry JDE version 4.6.0 or higher(5.0 or higher recommended for simulator usage) from [BlackBerry Java Development Environment](http://us.blackberry.com/developers/javaappdev/javadevenv.jsp). Registration may be required.
+* Load and install Blackberry JDE version 4.6.0 or higher (5.0 or higher recommended for simulator usage) from [BlackBerry Java Development Environment](https://developer.blackberry.com/java/download/previousjdeversions/). [Click here for the latest Blackberry JDE](https://developer.blackberry.com/java/download/jde/). Registration may be required.
 * Run 'rhodes-setup' to specify Blackberry JDE paths or edit <rhodes>/rhobuild.yml manually:
 
         env: 
@@ -562,8 +562,8 @@ Blackberry SDK for Mac doesn't come with simulators so far. So for now we would 
               sim_path: <jde_5.0>/components/simulator
               mds: <jde_5.0>/components/MDS
 
-* Read about Blackberry Browser limitations of CSS, HTML and JavaScript. Get relevant documentation from [here](http://na.blackberry.com/eng/support/docs/subcategories/?userType=21&category=BlackBerry+Browser).
-* You may need to install the MDS simulator; you can download it from [BlackBerry Java Application Tools and Development](http://us.blackberry.com/developers/javaappdev/devtools.jsp).
+* Read about Blackberry Browser limitations of CSS, HTML, and JavaScript. You can search relevant documentation from the [documentation for the current Blackberry Java SDK](https://developer.blackberry.com/java/documentation/) and the [previous Blackberry Java SDKs](http://docs.blackberry.com/en/developers/subcategories/?userType=21&category=Java+Development+Guides+and+API+Reference).
+* You may need to install the MDS simulator; you can download it from [BlackBerry Simulators](http://us.blackberry.com/sites/developers/resources/simulators.html).
 
 ### Build application using rhodes gem
 
@@ -572,7 +572,7 @@ Before you build edit build.yml from the application directory. Set the bbver to
 	bbver: 5.0
 
 #### To build and run using Blackberry simulator 5.0 and higher
-Starting from  Blackberry JDE 5.0, simulator supports loading application cod-files to simulator without restart. This feature greatly improve Blackberry development performance.
+Starting from Blackberry JDE 5.0, the Blackberry simulator supports loading application code-files to simulator without restart. This feature greatly improves Blackberry development performance.
 There are 2 possible scenarios available:
 
 * Load application cod-file manually using Simulator menu: 'File\Load Blackberry application or theme...':
@@ -605,7 +605,7 @@ Run in application root directory:
 	:::term
 	$ rake run:bb
 
-Launch application from the simulator's Downloads menu item for 4.6 or from Main menu screen on 4.3 and below. Do not close Simulator manually after you have done testing. Script will restart simulator for you.
+Launch application from the simulator's Downloads menu item for 4.6 or from Main menu screen on 4.3 and below. Do not close the Simulator manually after you are done testing. Script will restart simulator for you.
 
 Modify your application and run run rake script again:
 
@@ -634,12 +634,9 @@ Check your JAVA_HOME environment variable: it should NOT contain 'bin' at the en
 
 Do not use 'localhost' or '127.0.0.0' for sync server address if you host sync server on your machine. Use local computer name instead.
 
-
 #### To build application for the device
 
-You have to sign application before loading it to device. Go [here](http://na.blackberry.com/eng/developers/javaappdev/codekeys.jsp) to get Code Signing Keys.
-
-Once you have Code Signing Keys files (sigtool.csk and sigtool.db) you should put them in the 'bin' folder of your Blackberry jdk and sign your application.
+You have to sign your application before loading it to your device. To do so, go to [BlackBerry set up for signing smartphone apps](https://developer.blackberry.com/html5/documentation/signing_setup_smartphone_apps_1920010_11.html) for instructions to request and register code signing keys.
 
 If your target device is Blackberry JDK 4.3 and later, you can provide password in the rhobuild.yml file (located in the Rhodes SDK folder) in the 'build' section:
  
@@ -658,14 +655,14 @@ You may deploy it to the device now. To do that upload .jad and all .cod files t
 ##### Some known issues while building for BB device
 
 After you get your CSI-file from Blackberry, you have to register them. If after dbl-click you will see message "Already registered" see instructions here: 
-[Incorrect password error when attempting to register signature keys](http://www.blackberry.com/knowledgecenterpublic/livelink.exe/fetch/2000/348583/800989/Support_-_Incorrect_password_error_when_attempting_to_register_signature_keys.html?nodeid=1461314&vernum=0) 
+[Incorrect password error when attempting to register signature keys](http://supportforums.blackberry.com/t5/Testing-and-Deployment/Incorrect-password-error-when-attempting-to-register-signature/ta-p/445809).
 
 After press Yes in dialog 'Would you like to create a new key pair file' - nothing appear. No dialogs, no error messages, just nothing then this is a problem with Java SDK and Blackberry SDK versions. See more information here: 
 
-* [The signature key window disappears after receiving the private key prompt](http://www.blackberry.com/knowledgecenterpublic/livelink.exe/fetch/2000/348583/800738/800989/Support_-_The_signature_key_window_disappears_after_receiving_the_private_key_prompt.html?nodeid=1313681&vernum=0)
-* [Supported versions of Java for different BlackBerry JDE versions](http://www.blackberry.com/knowledgecenterpublic/livelink.exe/fetch/2000/348583/800738/800901/What_Is_-_Supported_versions_of_Java_for_different_BlackBerry_JDE_versions.html?nodeid=1313614&vernum=0)
+* [The signature key window disappears after receiving the private key prompt](http://supportforums.blackberry.com/t5/Testing-and-Deployment/The-signature-key-window-disappears-after-receiving-the-private/ta-p/445830)
+* [Supported versions of Java for different BlackBerry JDE versions](http://supportforums.blackberry.com/t5/Java-Development/Supported-versions-of-Java-for-different-BlackBerry-JDE-versions/ta-p/446034)
 
-If you still have a problems then [manually register CSI files](http://www.blackberry.com/knowledgecenterpublic/livelink.exe/fetch/2000/348583/800989/How_to_-_Manually_register_the_CSI_files.html?nodeid=800993&vernum=0)
+If you still have a problems then [manually register CSI files](http://supportforums.blackberry.com/t5/Testing-and-Deployment/Manually-register-CSI-files/ta-p/445787)
 
 Signature files can be only registered once per computer. If you register them for example in 4.6 Blackberry SDK , you can copy sigtool.csk and sigtool.db to bin directory of any other BB SDK
 
@@ -695,7 +692,7 @@ If your phone has Wifi connectivity Rhodes will use it without any additional ef
 
 #### Event log from device
 
-Read Blackberry article on [how to enable, access, and extract the event logs on a BlackBerry smartphone](http://www.blackberry.com/btsc/search.do?cmd=displayKC&docType=kc&externalId=KB05349).
+Read Blackberry article on [how to enable, access, and extract the event logs on a BlackBerry smartphone](http://btsc.webapps.blackberry.com/btsc/viewdocument.do?noCount=true&externalId=KB05349&sliceId=2&cmd=displayKC&docType=kc&ViewedDocsListHelper=com.kanisa.apps.common.BaseViewedDocsListHelperImpl).
 
 Now you should be able to extract a full copy of BlackBerry smartphone event logs to a text file using loader.exe on a computer. 
 

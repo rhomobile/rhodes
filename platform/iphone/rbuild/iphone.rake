@@ -1039,6 +1039,13 @@ namespace "run" do
       Jake.run_spec_app('iphone','framework_spec')
     end
 
+	require File.dirname(__FILE__) + "/../../../lib/build/run_rhoconnect_spec.rb"
+		
+	task :rhoconnect_spec do
+	  run_rhoconnect_spec('iphone')
+	end
+		
+
     task :allspecs do
       rm_rf basedir + "/faillog.txt"
       $dont_exit_on_failure = true

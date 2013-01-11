@@ -128,7 +128,10 @@ INetResponse *CURLNetRequest::makeResponse(String const &body, int nErrorCode)
 
 INetResponse *CURLNetRequest::makeResponse(Vector<char> const &body, int nErrorCode)
 {
-    return makeResponse(&body[0], body.size(), nErrorCode);
+    if(body.size() > 0)
+		return makeResponse(&body[0], body.size(), nErrorCode);
+	else
+		return makeResponse(0, 0, nErrorCode);
 }
 
 INetResponse *CURLNetRequest::makeResponse(char const *body, size_t bodysize, int nErrorCode)
@@ -204,7 +207,11 @@ INetResponse* CURLNetRequest::doRequest(const char *method, const String& strUrl
 CURLcode CURLNetRequest::doCURLPerform(const String& strUrl)
 {
 	CURLcode err = m_curl.perform();
+#if defined(OS_WP8)
+	if ( err !=  CURLE_OK && !RHODESAPP().isBaseUrl(strUrl.c_str()) && err != CURLE_NOT_BUILT_IN )
+#else
 	if ( err !=  CURLE_OK && !RHODESAPP().isBaseUrl(strUrl.c_str()) && err != CURLE_OBSOLETE4 )
+#endif
 	{
 		long statusCode = 0;
 		curl_easy_getinfo(m_curl.curl(), CURLINFO_RESPONSE_CODE, &statusCode);
@@ -393,7 +400,10 @@ int CURLNetRequest::getResponseCode(CURLcode err, String const &body, IRhoSessio
 
 int CURLNetRequest::getResponseCode(CURLcode err, Vector<char> const &body, IRhoSession* oSession)
 {
-    return getResponseCode(err, &body[0], body.size(), oSession);
+    if(body.size() > 0)
+		return getResponseCode(err, &body[0], body.size(), oSession);
+	else
+		return getResponseCode(err, 0, 0, oSession);
 }
 
 int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodysize, IRhoSession* oSession )	
@@ -686,8 +696,11 @@ CURLcode CURLNetRequest::CURLHolder::perform()
                 RAWLOG_INFO3("   CURLNetRequest: METHOD = [%s] URL = [%s] BODY = [%s]", mStrMethod.c_str(), mStrUrl.c_str(), mStrBody.c_str());
             else
                 RAWLOG_INFO1("   CURLNetRequest: METHOD = [%s]", mStrMethod.c_str());
-
-            return CURLE_OBSOLETE4;   
+#if defined(OS_WP8)
+	return CURLE_NOT_BUILT_IN;
+#else
+	return CURLE_OBSOLETE4; 
+#endif
         }
     
         int running;

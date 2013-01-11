@@ -65,8 +65,12 @@ module Rho
           else
             res = IO.read(filename)
           end
-          RhoController.start_objectnotify()
-          RhoController.start_geoview_notification()
+
+          if !defined?( RHO_WP8 )
+            RhoController.start_objectnotify()
+            RhoController.start_geoview_notification()
+          end
+
           res
       rescue Exception => exception
         if defined? RHO_WP7
@@ -348,12 +352,16 @@ module Rho
     end
 
     def self.start_objectnotify()
-      SyncEngine::clean_objectnotify()
+      if defined?(RHOCONNECT_CLIENT_PRESENT)
+          SyncEngine::clean_objectnotify()
+      end
 
       return unless @@m_arObjectNotify && @@m_arObjectNotify.length > 0 
 
-      0.upto(@@m_arObjectNotify.length()-1) do |i|
-        SyncEngine::add_objectnotify(@@m_arSrcIDNotify[i], @@m_arObjectNotify[i])
+      if defined?(RHOCONNECT_CLIENT_PRESENT)
+          0.upto(@@m_arObjectNotify.length()-1) do |i|
+            SyncEngine::add_objectnotify(@@m_arSrcIDNotify[i], @@m_arObjectNotify[i])
+          end
       end
       
       @@m_arObjectNotify = []

@@ -31,8 +31,6 @@
 
 #include <common/RhoConf.h>
 #include <logging/RhoLogConf.h>
-#include <sync/SyncThread.h>
-#include <sync/ClientRegister.h>
 
 #include <sys/stat.h>
 #include <sys/resource.h>

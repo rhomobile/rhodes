@@ -1,4 +1,4 @@
-#include "..\Common\js_helpers.h"
+#include "../common/js_helpers.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -9,12 +9,14 @@ rho::String js_barcode1_getProps(const rho::String& strID, rho::json::CJSONArray
 
 extern "C" void Init_JSAPI_Barcode1(void)
 {
+    js_register_http_entry_point();
+
     js_define_method("Barcode1:enumerate", js_barcode1_enumerate );
     js_define_method("Barcode1:getProps", js_barcode1_getProps );
 
     //tests
-    js_entry_point("{'Module':'Barcode1', 'Method':'enumerate'}");
-    js_entry_point("{'Module':'Barcode1', 'Method':'getProps', 'ObjID':'SC1'}");
+    //js_entry_point("{'Module':'Barcode1', 'Method':'enumerate'}");
+    //js_entry_point("{'Module':'Barcode1', 'Method':'getProps', 'ObjID':'SC1'}");
 
 /*    rb_mRho = rb_define_module("Rho");
 	rb_cBarcode1 = rb_define_class_under(rb_mRho, "Barcode1", rb_cObject);

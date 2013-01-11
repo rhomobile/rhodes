@@ -43,12 +43,13 @@
 #include "common/RhoSimConf.h"
 #endif
 
+#include "sync/RhoconnectClientManager.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhoRuby"
 extern void Init_strscan();
 extern void Init_sqlite3_api();
 extern void Init_GeoLocation(void);
-extern void Init_SyncEngine(void);
 extern void print_profile_report();
 extern void enable_gc_profile(void);
 extern void Init_System(void);
@@ -228,15 +229,14 @@ void RhoRubyStart()
 
 #if !defined(OS_WP8)
 
-    Init_strscan();
-    Init_sqlite3_api();
-    Init_GeoLocation();
-    Init_SyncEngine();
-    Init_AsyncHttp();
+    Init_strscan(); //+
+    Init_sqlite3_api(); //+
+    Init_GeoLocation(); //+
+    Init_AsyncHttp(); //+
     Init_System();
     Init_Phonebook();
-    Init_WebView();
-    Init_RhoConf();
+    Init_WebView(); //+
+    Init_RhoConf(); //+
     Init_Alert();
 #if defined(WINDOWS_PLATFORM)
     init_rhoext_Signature();
@@ -247,13 +247,13 @@ void RhoRubyStart()
     Init_RhoBluetooth();	
 	Init_RhodesNativeViewManager();	
     Init_Camera();
-    Init_stringio();
+    Init_stringio(); //+
     Init_DateTimePicker();
     Init_NativeBar();
-    Init_RhoSupport();
+    Init_RhoSupport(); //+
     Init_MapView();
     Init_RingtoneManager();
-    Init_socket();
+    Init_socket(); //+
     Init_NavBar();
     Init_RhoEvent();
     Init_Calendar();
@@ -266,11 +266,20 @@ void RhoRubyStart()
 #else // OS_WP8 is set
 	Init_sqlite3_api();
 	Init_strscan();
+	Init_GeoLocation();
+	Init_AsyncHttp();
 	Init_RhoSupport();	
 	Init_RhoConf();
-	Init_SyncEngine();
 	Init_WebView();
+
+	Init_socket();
+	Init_stringio();
 #endif //OS_WP8
+
+
+    if ( rho_rcclient_have_rhoconnect_client() ) {
+        rb_const_set(rb_cObject, rb_intern("RHOCONNECT_CLIENT_PRESENT"), Qtrue);
+    }
 
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)

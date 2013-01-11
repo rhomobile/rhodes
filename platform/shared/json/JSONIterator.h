@@ -52,6 +52,7 @@ public:
     boolean isString();
     boolean isArray();
     boolean isObject();
+    boolean isNull();
 
     int getInt(const char* name);
     uint64 getUInt64(const char* name);
