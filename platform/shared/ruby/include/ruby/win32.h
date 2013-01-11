@@ -149,7 +149,9 @@ extern DWORD rb_w32_osid(void);
 #define getpid()		rb_w32_getpid()
 #define getppid()		rb_w32_getppid()
 #define sleep(x)		rb_w32_Sleep((x)*1000)
+#if !defined(OS_WP8)
 #define Sleep(msec)		(void)rb_w32_Sleep(msec)
+#endif
 #ifdef __BORLANDC__
 #define creat(p, m)		_creat(p, m)
 #define eof()			_eof()

@@ -1,5 +1,0 @@
-../platform/shared/db/DBAdapter.cpp
-../platform/shared/db/DBAttrManager.cpp
-../platform/shared/db/DBResult.cpp
-../platform/shared/db/DBImportTransaction.cpp
-../platform/shared/db/DBRequestHelper.cpp

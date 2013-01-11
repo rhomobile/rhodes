@@ -32,8 +32,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoAppAdapter.h"
 #include "net/INetRequest.h"
-#include "sync/ClientRegister.h"
-#include "sync/SyncThread.h"
+#include "sync/RhoconnectClientManager.h"
 #include "net/URI.h"
 
 #include "net/HttpServer.h"
@@ -328,7 +327,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
 CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
     :CRhodesAppBase(strRootPath, strUserPath, strRuntimePath), 
-     m_appPushMgr(*this), m_networkStatusReceiver(m_mxNetworkStatus)
+	m_networkStatusReceiver(m_mxNetworkStatus)
 {
     m_bExit = false;
     m_bDeactivationMode = false;
@@ -337,8 +336,8 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
     m_pExtManager = 0;
 	m_pNetworkStatusMonitor = 0;
 
-    m_appCallbacksQueue = new CAppCallbacksQueue();
-
+	m_appCallbacksQueue = new CAppCallbacksQueue();
+	
 #if defined(WINDOWS_PLATFORM)
     //initializing winsock
     WSADATA WsaData;
@@ -364,12 +363,18 @@ void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
     RhoRubyStart();
+
     rubyext::CGeoLocation::Create();
 
     //rho_db_init_attr_manager();
-
-    LOG(INFO) + "Starting sync engine...";
-    sync::CSyncThread::Create();
+	
+#if !defined(OS_WP8)
+	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+		LOG(INFO) + "Starting sync engine...";
+//		sync::CSyncThread::Create();
+		sync::RhoconnectClientManager::syncThreadCreate();
+	}
+#endif
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
@@ -393,8 +398,15 @@ void CRhodesApp::run()
 
     getExtManager().close();
     rubyext::CGeoLocation::Destroy();
-    sync::CClientRegister::Destroy();
-    sync::CSyncThread::Destroy();
+	
+	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+//    sync::CClientRegister::Destroy();
+//    sync::CSyncThread::Destroy();
+		sync::RhoconnectClientManager::clientRegisterDestroy();
+		sync::RhoconnectClientManager::syncThreadDestroy();
+	}
+
+	db::CDBAdapter::closeAll();
 
     net::CAsyncHttp::Destroy();
 
@@ -746,28 +758,41 @@ void CRhodesApp::callPopupCallback(String strCallbackUrl, const String &id, cons
 
 static void callback_syncdb(void *arg, String const &/*query*/ )
 {
-    rho_sync_doSyncAllSources(1,"",false);
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+//    rho_sync_doSyncAllSources(1,"",false);
+		rho::sync::RhoconnectClientManager::doSyncAllSources(1,"",false);
+	}
     rho_http_sendresponse(arg, "");
 }
 
 static void callback_dosync(void *arg, String const &/*query*/ )
 {
-    rho_sync_doSyncAllSources(1,"",false);
-    rho_http_sendresponse(arg, "ok");
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+//    rho_sync_doSyncAllSources(1,"",false);
+		rho::sync::RhoconnectClientManager::doSyncAllSources(1,"",false);
+
+	}
+	rho_http_sendresponse(arg, "ok");
 }
 
 static void callback_dosync_source(void *arg, String const &strQuery )
 {
-    size_t nPos = strQuery.find("srcName=");
-    if ( nPos != String::npos )
-    {
-        String strSrcName = strQuery.substr(nPos+8);
-        LOG(INFO) + "srcName = '" + strSrcName + "'";
-        rho_sync_doSyncSourceByName(strSrcName.c_str());
-    } else {
-    	LOG(WARNING) + "Unable to find 'srcName' parameter";
-    }
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+	{
+		size_t nPos = strQuery.find("srcName=");
+		if ( nPos != String::npos )
+		{
+			String strSrcName = strQuery.substr(nPos+8);
+			LOG(INFO) + "srcName = '" + strSrcName + "'";
+//			rho_sync_doSyncSourceByName(strSrcName.c_str());
+			rho::sync::RhoconnectClientManager::doSyncSourceByName(strSrcName.c_str());
+		} else {
+			LOG(WARNING) + "Unable to find 'srcName' parameter";
+		}
+	}
+
     rho_http_sendresponse(arg, "ok");
+	 
 }
 
 static void callback_logger(void *arg, String const &query )
@@ -881,131 +906,189 @@ const String& CRhodesApp::getRhoMessage(int nError, const char* szName)
 
 static void callback_logged_in(void *arg, String const &strQuery)
 {
-    rho_http_sendresponse(arg, rho_sync_logged_in() ? "true" : "false");
+    //rho_http_sendresponse(arg, rho_sync_logged_in() ? "true" : "false");
+	bool haveclient = rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl();
+	rho_http_sendresponse(arg, (haveclient && rho::sync::RhoconnectClientManager::logged_in()) ? "true" : "false");
 }
 
 static void callback_logout(void *arg, String const &strQuery)
 {
-	rho_sync_logout();
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+		rho::sync::RhoconnectClientManager::logout();
+	//rho_sync_logout();
+	}
     rho_http_sendresponse(arg, "ok");
 }
 
 static void callback_stop_sync(void *arg, String const &strQuery)
 {
-	rho_sync_stop();
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+		rho::sync::RhoconnectClientManager::stop();
+	//rho_sync_stop();
+	}
     rho_http_sendresponse(arg, "ok");
 }
 
 static void callback_set_pollinterval(void *arg, String const &strQuery)
 {
-    int nInterval = 0;
+	int nInterval = 0;
 
-    size_t nPos = strQuery.find("interval=");
-    if ( nPos != String::npos )
-    {
-        String strInterval = strQuery.substr(nPos+9);
-        nInterval = atoi(strInterval.c_str());
-    } else {
-    	LOG(WARNING) + "Unable to find 'interval' parameter";
-    }
-    nInterval = rho_sync_set_pollinterval(nInterval);
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+
+
+		size_t nPos = strQuery.find("interval=");
+		if ( nPos != String::npos )
+		{
+			String strInterval = strQuery.substr(nPos+9);
+			nInterval = atoi(strInterval.c_str());
+		} else {
+			LOG(WARNING) + "Unable to find 'interval' parameter";
+		}
+		//    nInterval = rho_sync_set_pollinterval(nInterval);
+		nInterval = rho::sync::RhoconnectClientManager::set_pollinterval(nInterval);
+
+	}
 	rho_http_sendresponse(arg, convertToStringA(nInterval).c_str());
 }
 
 static void callback_get_pollinterval(void *arg, String const &strQuery)
 {
-	rho_http_sendresponse(arg, convertToStringA(rho_sync_get_pollinterval()).c_str());
+	String interval = "";
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+		interval = convertToStringA(rho::sync::RhoconnectClientManager::get_pollinterval());
+	}
+
+//	rho_http_sendresponse(arg, convertToStringA(rho_sync_get_pollinterval()).c_str());
+	rho_http_sendresponse(arg, interval.c_str());
 }
 
 static void callback_set_syncserver(void *arg, String const &strQuery)
 {
-    String strSyncserver = "";
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
 
-    size_t nPos = strQuery.find("syncserver=");
-    if ( nPos != String::npos )
-    {
-        strSyncserver = rho::net::URI::urlDecode(strQuery.substr(nPos+11));
-    } else {
-    	LOG(WARNING) + "Unable to find 'syncserver' parameter";
-    }
-	rho_sync_set_syncserver(strSyncserver.c_str());
+		String strSyncserver = "";
+
+		size_t nPos = strQuery.find("syncserver=");
+		if ( nPos != String::npos )
+		{
+			strSyncserver = rho::net::URI::urlDecode(strQuery.substr(nPos+11));
+		} else {
+			LOG(WARNING) + "Unable to find 'syncserver' parameter";
+		}
+		//	rho_sync_set_syncserver(strSyncserver.c_str());
+		rho::sync::RhoconnectClientManager::set_syncserver(strSyncserver.c_str());
+	}
 	rho_http_sendresponse(arg, "ok");
 }
 
 static void callback_set_pagesize(void *arg, String const &strQuery)
 {
     int nSize = 0;
+	int nOldSize = 0;
+	
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
 
-    size_t nPos = strQuery.find("pagesize=");
-    if ( nPos != String::npos )
-    {
-        String strSize = strQuery.substr(nPos+9);
-        nSize = atoi(strSize.c_str());
-    } else {
-    	LOG(WARNING) + "Unable to find 'pagesize' parameter";
-    }
-    int nOldSize = rho_sync_get_pagesize();
-    rho_sync_set_pagesize(nSize);
+		size_t nPos = strQuery.find("pagesize=");
+		if ( nPos != String::npos )
+		{
+			String strSize = strQuery.substr(nPos+9);
+			nSize = atoi(strSize.c_str());
+		} else {
+			LOG(WARNING) + "Unable to find 'pagesize' parameter";
+		}
+		
+		nOldSize = rho::sync::RhoconnectClientManager::get_pagesize();
+		rho::sync::RhoconnectClientManager::set_pagesize(nSize);
+		
+		//    int nOldSize = rho_sync_get_pagesize();
+		//    rho_sync_set_pagesize(nSize);
+
+	}
+
 	rho_http_sendresponse(arg, convertToStringA(nOldSize).c_str());
 }
 
 static void callback_get_pagesize(void *arg, String const &strQuery)
 {
-	rho_http_sendresponse(arg, convertToStringA(rho_sync_get_pagesize()).c_str());
+	int size = 0;
+	
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+		size = rho::sync::RhoconnectClientManager::get_pagesize();
+	}
+//	rho_http_sendresponse(arg, convertToStringA(rho_sync_get_pagesize()).c_str());
+	rho_http_sendresponse(arg, convertToStringA(size).c_str());
 }
 
 static void callback_get_lastsync_objectcount(void *arg, String const &strQuery)
 {
     int nSrcId = -1;
     int nCount = -1;
+	
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
 
-    size_t nPos = strQuery.find("srcName=");
-    if ( nPos != String::npos )
-    {
-        String strSrcId = strQuery.substr(nPos+8);
-        LOG(INFO) + "srcName = '" + strSrcId + "'";
-        nSrcId = atoi(strSrcId.c_str());
-        nCount = rho_sync_get_lastsync_objectcount(nSrcId);
-    } else {
-    	LOG(WARNING) + "Unable to find 'srcName' parameter";
-    }
+		size_t nPos = strQuery.find("srcName=");
+		if ( nPos != String::npos )
+		{
+			String strSrcId = strQuery.substr(nPos+8);
+			LOG(INFO) + "srcName = '" + strSrcId + "'";
+			nSrcId = atoi(strSrcId.c_str());
+			//        nCount = rho_sync_get_lastsync_objectcount(nSrcId);
+			nCount = rho::sync::RhoconnectClientManager::get_lastsync_objectcount(nSrcId);
+		} else {
+			LOG(WARNING) + "Unable to find 'srcName' parameter";
+		}
+	}
 	rho_http_sendresponse(arg, convertToStringA(nCount).c_str());
 }
 
 static void callback_is_syncing(void *arg, String const &strQuery)
 {
-    rho_http_sendresponse(arg, rho_sync_issyncing() ? "true" : "false");
+	bool haveclient = rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl();
+ //   rho_http_sendresponse(arg, rho_sync_issyncing() ? "true" : "false");
+	rho_http_sendresponse(arg, ( haveclient && rho::sync::RhoconnectClientManager::issyncing() ) ? "true" : "false");
 }
 
 static void callback_enable_status_popup(void *arg, String const &strQuery)
 {
-    size_t nPos = strQuery.find("enable=");
-    if ( nPos != String::npos )
-    {
-        String strEnable = strQuery.substr(nPos+7);
-        rho_sync_enable_status_popup(strEnable == "true" ? 2 : 0);
-    } else {
-    	LOG(WARNING) + "Unable to find 'enable' parameter";
-    }
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+
+		size_t nPos = strQuery.find("enable=");
+		if ( nPos != String::npos )
+		{
+			String strEnable = strQuery.substr(nPos+7);
+			//        rho_sync_enable_status_popup(strEnable == "true" ? 2 : 0);
+			rho::sync::RhoconnectClientManager::enable_status_popup(strEnable == "true" ? 2 : 0);
+		} else {
+			LOG(WARNING) + "Unable to find 'enable' parameter";
+		}		
+	}
 	rho_http_sendresponse(arg, "ok");
 }
 
 static void callback_set_threaded_mode(void *arg, String const &strQuery)
 {
-    size_t nPos = strQuery.find("threaded=");
-    if ( nPos != String::npos )
-    {
-        String strThreaded = strQuery.substr(nPos+9);
-        rho_sync_set_threaded_mode(strThreaded == "true" ? 2 : 0);
-    } else {
-    	LOG(WARNING) + "Unable to find 'threaded' parameter";
-    }
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+
+		size_t nPos = strQuery.find("threaded=");
+		if ( nPos != String::npos )
+		{
+			String strThreaded = strQuery.substr(nPos+9);
+			//        rho_sync_set_threaded_mode(strThreaded == "true" ? 2 : 0);
+			rho::sync::RhoconnectClientManager::set_threaded_mode(strThreaded == "true" ? 2 : 0);
+		} else {
+			LOG(WARNING) + "Unable to find 'threaded' parameter";
+		}
+	}
 	rho_http_sendresponse(arg, "ok");
 }
 
 static void callback_register_push(void *arg, String const &strQuery)
 {
-	rho_sync_register_push();
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+		//	rho_sync_register_push();
+		rho::sync::RhoconnectClientManager::register_push();
+
+	}
     rho_http_sendresponse(arg,  "ok");
 }
 
@@ -1017,14 +1100,18 @@ static void callback_set_source_property(void *arg, String const &strQuery)
 
 static void callback_set_ssl_verify_peer(void *arg, String const &strQuery)
 {
-    size_t nPos = strQuery.find("verify=");
-    if ( nPos != String::npos )
-    {
-        String strVerify = strQuery.substr(nPos+7);
-        rho_sync_set_ssl_verify_peer(strVerify == "true" ? 2 : 0);
-    } else {
-    	LOG(WARNING) + "Unable to find 'verify' parameter";
-    }
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+
+		size_t nPos = strQuery.find("verify=");
+		if ( nPos != String::npos )
+		{
+			String strVerify = strQuery.substr(nPos+7);
+			//        rho_sync_set_ssl_verify_peer(strVerify == "true" ? 2 : 0);
+			rho::sync::RhoconnectClientManager::set_ssl_verify_peer(strVerify == "true" ? 2 : 0);
+		} else {
+			LOG(WARNING) + "Unable to find 'verify' parameter";
+		}
+	}
 	rho_http_sendresponse(arg, "ok");
 }
 
@@ -1036,14 +1123,20 @@ static void callback_update_blob_attribs(void *arg, String const &strQuery)
 
 static void callback_set_objectnotify_url(void *arg, String const &strQuery)
 {
-    size_t nPos = strQuery.find("url=");
-    if ( nPos != String::npos )
-    {
-        String strUrl = strQuery.substr(nPos+4);
-        rho_sync_setobjectnotify_url(strUrl.c_str());
-    } else {
-    	LOG(WARNING) + "Unable to find 'url' parameter";
-    }
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+
+		size_t nPos = strQuery.find("url=");
+		if ( nPos != String::npos )
+		{
+			String strUrl = strQuery.substr(nPos+4);
+			//        rho_sync_setobjectnotify_url(strUrl.c_str());
+			rho::sync::RhoconnectClientManager::setobjectnotify_url(strUrl.c_str());
+		} else {
+			LOG(WARNING) + "Unable to find 'url' parameter";
+		}
+		
+	}
+	
 	rho_http_sendresponse(arg, "ok");
 }
 
@@ -1055,7 +1148,10 @@ static void callback_add_objectnotify(void *arg, String const &strQuery)
 
 static void callback_clean_objectnotify(void *arg, String const &strQuery)
 {
-	rho_sync_cleanobjectnotify();
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+		//	rho_sync_cleanobjectnotify();
+		rho::sync::RhoconnectClientManager::cleanobjectnotify();
+	}
     rho_http_sendresponse(arg,  "ok");
 }
 
@@ -1068,17 +1164,23 @@ static void callback_set_notification(void *arg, String const &strQuery)
 static void callback_clear_notification(void *arg, String const &strQuery)
 {
     int nSrcId = -1;
+	
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
 
-    size_t nPos = strQuery.find("srcName=");
-    if ( nPos != String::npos )
-    {
-        String strSrcId = strQuery.substr(nPos+8);
-        LOG(INFO) + "srcName = '" + strSrcId + "'";
-        nSrcId = atoi(strSrcId.c_str());
-        rho_sync_clear_notification(nSrcId);
-    } else {
-    	LOG(WARNING) + "Unable to find 'srcName' parameter";
-    }
+		size_t nPos = strQuery.find("srcName=");
+		if ( nPos != String::npos )
+		{
+			String strSrcId = strQuery.substr(nPos+8);
+			LOG(INFO) + "srcName = '" + strSrcId + "'";
+			nSrcId = atoi(strSrcId.c_str());
+			//        rho_sync_clear_notification(nSrcId);
+			rho::sync::RhoconnectClientManager::clear_notification(nSrcId);
+		} else {
+			LOG(WARNING) + "Unable to find 'srcName' parameter";
+		}
+		
+	}
+	
     rho_http_sendresponse(arg, "ok");
 }
 
@@ -1086,27 +1188,32 @@ static void callback_login(void *arg, String const &strQuery)
 {
     int nLevel = 0;
     String strLogin, strPassword, strCallback;
+	
+	if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
 
-    CTokenizer oTokenizer(strQuery, "&");
-    while (oTokenizer.hasMoreTokens())
-    {
-	    String tok = oTokenizer.nextToken();
-	    if (tok.length() == 0)
-		    continue;
+		CTokenizer oTokenizer(strQuery, "&");
+		while (oTokenizer.hasMoreTokens())
+		{
+			String tok = oTokenizer.nextToken();
+			if (tok.length() == 0)
+				continue;
 
-        if ( String_startsWith(tok, "login=") )
-        {
-            strLogin = tok.substr(6);
-        }else if ( String_startsWith( tok, "password=") )
-        {
-            strPassword = tok.substr(9);
-        }else if ( String_startsWith( tok, "callback=") )
-        {
-            strCallback = rho::net::URI::urlDecode(tok.substr(9));
-        }
-    }
+			if ( String_startsWith(tok, "login=") )
+			{
+				strLogin = tok.substr(6);
+			}else if ( String_startsWith( tok, "password=") )
+			{
+				strPassword = tok.substr(9);
+			}else if ( String_startsWith( tok, "callback=") )
+			{
+				strCallback = rho::net::URI::urlDecode(tok.substr(9));
+			}
+		}
 
-    rho_sync_login(strLogin.c_str(), strPassword.c_str(), strCallback.c_str());
+//    rho_sync_login(strLogin.c_str(), strPassword.c_str(), strCallback.c_str());
+		rho::sync::RhoconnectClientManager::login(strLogin.c_str(), strPassword.c_str(), strCallback.c_str());
+	}
+	
     rho_http_sendresponse(arg,  "ok");
 }
 
@@ -1128,7 +1235,11 @@ static void callback_is_blob_attr(void *arg, String const &strQuery)
     rho_http_sendresponse(arg,  "ok");
 }
 
-
+void CRhodesApp::registerLocalServerUrl(const String& strUrl, rho::net::CHttpServer::callback_t const &callback)
+{
+    if ( m_httpServer )
+        m_httpServer->register_uri(strUrl.c_str(), callback);    
+}
 
 void CRhodesApp::initHttpServer()
 {
@@ -1184,6 +1295,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/syncengine/dosearch", callback_dosearch);
     m_httpServer->register_uri("/system/syncengine/get_src_attrs", callback_get_src_attrs);
     m_httpServer->register_uri("/system/syncengine/is_blob_attr", callback_is_blob_attr);
+
 }
 
 const char* CRhodesApp::getFreeListeningPort()
@@ -1574,30 +1686,6 @@ void CRhodesApp::setPushNotification(const String& strUrl, const String& strPara
     }
 }
 
-// Deprecated
-boolean CRhodesApp::callPushCallback(const String& strData) const
-{
-    synchronized(m_mxPushCallback)
-    {
-        if ( m_strPushCallback.length() == 0 )
-            return false;
-
-        String strBody = strData + "&rho_callback=1";
-        if ( m_strPushCallbackParams.length() > 0 )
-            strBody += "&" + m_strPushCallbackParams;
-
-        NetResponse resp = getNetRequest().pushData( m_strPushCallback, strBody, null );
-        if (!resp.isOK())
-            LOG(ERROR) + "Push notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-        else
-        {
-            const char* szData = resp.getCharData();
-            return !(szData && strcmp(szData,"rho_push") == 0);
-        }
-    }
-
-    return false;
-}
 
 boolean CRhodesApp::callPushCallbackWithJsonBody(const String& strUrl, const String& strJson, const String& strParams)
 {
@@ -1714,7 +1802,11 @@ void CRhodesApp::loadUrl(String url)
         return;
     }else if ( strcasecmp(url.c_str(), "sync")==0 )
     {
-        rho_sync_doSyncAllSources(1,"",false);
+		if ( rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+			rho::sync::RhoconnectClientManager::doSyncAllSources(1,"",false);
+			
+		}
+//        rho_sync_doSyncAllSources(1,"",false);
         return;
     }
 
@@ -2067,7 +2159,7 @@ int rho_rhodesapp_callPushCallback(const char* szData)
     if ( !rho::common::CRhodesApp::getInstance() )
         return 1;
 
-    return RHODESAPP().callPushCallback(szData?szData:"") ? 1 : 0;
+    return RHODESAPPBASE().callPushCallback(szData?szData:"") ? 1 : 0;
 }
 
 //int rho_rhodesapp_callPushCallbackWithJsonBody(const char* szUrl, const char* szData, const char* szParam)
@@ -2105,12 +2197,6 @@ void rho_net_request(const char *url)
 {
     String strCallbackUrl = RHODESAPP().canonicalizeRhoUrl(url);
     getNetRequest().pullData(strCallbackUrl.c_str(), null);
-}
-    
-void rho_net_request_with_data(const char *url, const char *str_body)
-{
-    String strCallbackUrl = RHODESAPP().canonicalizeRhoUrl(url);
-    getNetRequest().pushData(strCallbackUrl.c_str(), str_body, null);
 }
     
 void rho_net_request_with_data_in_separated_thread(const char *url, const char *str_body) {
@@ -2242,3 +2328,13 @@ int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, cons
 
 
 } //extern "C"
+
+extern "C" void alert_show_status(const char* title, const char* message, const char* szHide);
+
+extern "C"
+{
+	void rho_alert_show_status(char* szTitle, char* szText, char* szHideLabel)
+	{
+		alert_show_status( szTitle ? szTitle : "", szText ? szText : "", szHideLabel ? szHideLabel : "");
+	}
+}

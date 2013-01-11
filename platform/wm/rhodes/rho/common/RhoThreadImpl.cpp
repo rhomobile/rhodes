@@ -28,13 +28,14 @@
 
 #include "RhoThreadImpl.h"
 
+
 namespace rho{
 namespace common{
 IMPLEMENT_LOGCLASS(CRhoThreadImpl,"RhoThread");
 
 CRhoThreadImpl::CRhoThreadImpl() : m_hAwakeEvent(0), m_hThread(0)
 {
-    m_hAwakeEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+	m_hAwakeEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
 }
 
 CRhoThreadImpl::~CRhoThreadImpl()
@@ -53,8 +54,7 @@ static DWORD WINAPI runProc(void* pv) throw()
 
 void CRhoThreadImpl::start(IRhoRunnable* pRunnable, IRhoRunnable::EPriority ePriority)
 {
-    DWORD dwThreadID;
-    m_hThread = ::CreateThread(NULL, 0, runProc, pRunnable, 0, &dwThreadID);
+    m_hThread = ::CreateThread(NULL, 0, runProc, pRunnable, 0, NULL);
     setThreadPriority(ePriority);
 }
 

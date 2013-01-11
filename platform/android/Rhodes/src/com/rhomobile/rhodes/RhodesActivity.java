@@ -45,6 +45,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -352,16 +353,23 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
     public void onSplashScreenNavigateBack() {
         moveTaskToBack(true);
     }
-    
+
     @Override
     protected Dialog onCreateDialog(int id/*, Bundle args*/) {
         return RhoExtManager.getImplementationInstance().onCreateDialog(this, id);
     }
 
-	@Deprecated
-	public static RhodesActivity getInstance() {
-		return sInstance;
-	}
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        Logger.T(TAG, "onConfigurationChanged");
+        super.onConfigurationChanged(newConfig);
+        RhoExtManager.getImplementationInstance().onConfigurationChanged(this, newConfig);
+    }
+
+    @Deprecated
+    public static RhodesActivity getInstance() {
+        return sInstance;
+    }
 
     public static RhodesActivity safeGetInstance() throws NullPointerException {
         if(sInstance != null)

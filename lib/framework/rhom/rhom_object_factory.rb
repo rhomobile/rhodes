@@ -1131,20 +1131,22 @@ module Rhom
                 end
                 
                 def search(args)
-                    args[:source_names] = [self.name.to_s]
-
-                    SyncEngine.search(args)
+                    if defined?(RHOCONNECT_CLIENT_PRESENT)
+                        args[:source_names] = [self.name.to_s]
+                        SyncEngine.search(args)
+                    end
                 end
 
                 def sync(callback=nil, callback_data="", show_status_popup=nil, query_params="")
-                  src_id = get_source_id.to_i()
-                  SyncEngine.set_notification(src_id, callback, callback_data) if callback
-                  if !show_status_popup.nil?
-                    SyncEngine.dosync_source(src_id, show_status_popup, query_params)
-                  else
-                    SyncEngine.dosync_source(src_id, 1, query_params)
-                  end
-                    
+                  if defined?(RHOCONNECT_CLIENT_PRESENT)
+                      src_id = get_source_id.to_i()
+                      SyncEngine.set_notification(src_id, callback, callback_data) if callback
+                      if !show_status_popup.nil?
+                        SyncEngine.dosync_source(src_id, show_status_popup, query_params)
+                      else
+                        SyncEngine.dosync_source(src_id, 1, query_params)
+                      end
+                  end                    
                 end
                 
                 # Alias for find
@@ -1163,14 +1165,19 @@ module Rhom
                 end
   
                 def set_notification(url,params)
-                  SyncEngine.set_notification(get_source_id.to_i,url,params)
+                  if defined?(RHOCONNECT_CLIENT_PRESENT)
+                      SyncEngine.set_notification(get_source_id.to_i,url,params)
+                  end
                 end
                 
                 def clear_notification
-                  SyncEngine.clear_notification(get_source_id.to_i)
+                  if defined?(RHOCONNECT_CLIENT_PRESENT)
+                      SyncEngine.clear_notification(get_source_id.to_i)
+                  end
                 end
 
                 def on_sync_delete_error( objects, action )
+if defined?(RHOCONNECT_CLIENT_PRESENT)
                     raise ArgumentError, 'on_sync_delete_error action should be :retry' unless action == :retry
                     return  unless is_sync_source()
 
@@ -1200,10 +1207,11 @@ module Rhom
 
                         raise    
                     end                    
-                    
+end                    
                 end
 
                 def on_sync_update_error( objects, action, rollback_data = nil )
+if defined?(RHOCONNECT_CLIENT_PRESENT)
                     raise ArgumentError, 'on_sync_update_error action should be :retry or :rollback' unless action == :retry || action == :rollback
                     return  unless is_sync_source()
 
@@ -1255,6 +1263,7 @@ module Rhom
 
                         raise    
                     end                        
+end
                 end
 
                 def push_changes()
@@ -1266,6 +1275,7 @@ module Rhom
                 end
                 
                 def on_sync_create_error( objects, action )
+if defined?(RHOCONNECT_CLIENT_PRESENT)
                     raise ArgumentError, 'on_sync_create_error action should be :delete or :recreate' unless action == :delete || action == :recreate
                     return  unless is_sync_source()
                     
@@ -1313,7 +1323,7 @@ module Rhom
 
                         raise    
                     end    
-
+end
                 end
                 
                 # deletes all records matching conditions (optionally nil)
@@ -1516,7 +1526,9 @@ module Rhom
               end
 		
 		      def is_blob_attrib(db_partition, nSrcID,attrib_name)  
-                SyncEngine.is_blob_attr(db_partition, nSrcID.to_i,attrib_name)
+                          if defined?(RHOCONNECT_CLIENT_PRESENT)
+                              SyncEngine.is_blob_attr(db_partition, nSrcID.to_i,attrib_name)
+                          end
 		        #return attrib_name == "image_uri"
 		      end
 

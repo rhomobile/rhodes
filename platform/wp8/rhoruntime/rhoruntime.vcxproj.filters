@@ -30,6 +30,15 @@
     <ClCompile Include="WebViewImpl.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="common\ThreadEmulation.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\net\CURLNetRequest.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="GeoLocationImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />
@@ -41,6 +50,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\net\CURLNetRequest.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

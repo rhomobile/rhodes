@@ -30,6 +30,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Configuration;
 
 public interface IRhoListener {
 
@@ -42,6 +43,7 @@ public interface IRhoListener {
     void onNewIntent(RhodesActivity activity, Intent intent);
     void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent);
     Dialog onCreateDialog(RhodesActivity activity, int id/*, Bundle args*/);
-
+    void onConfigurationChanged(RhodesActivity activity, Configuration newConfig);
+    
     void onCreateApplication(IRhoExtManager extManager);
 }

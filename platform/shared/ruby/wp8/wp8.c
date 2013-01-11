@@ -491,60 +491,9 @@ RHO_GLOBAL UINT GetConsoleCP(VOID)
 	return 0;
 }
 */
-/*
-DWORD
-WINAPI
-WaitForSingleObject(
-    _In_ HANDLE hHandle,
-    _In_ DWORD dwMilliseconds
-    )
-{
-	return 0;
-}*/
 
 
-DWORD WINAPI TlsAlloc(VOID)
-{
-	return 0;
-}
 
-LPVOID WINAPI TlsGetValue(_In_ DWORD dwTlsIndex)
-{
-	return 0;
-}
-
-
-BOOL WINAPI TlsSetValue(_In_ DWORD dwTlsIndex, _In_opt_ LPVOID lpTlsValue)
-{
-	return FALSE;
-}
-
-BOOL
-WINAPI
-TlsFree(
-    _In_ DWORD dwTlsIndex
-    )
-{
-	return FALSE;
-}
-
-HANDLE WINAPI CreateEventA(
-    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
-    _In_ BOOL bManualReset,
-    _In_ BOOL bInitialState,
-    _In_opt_ LPCSTR lpName)
-{
-	return INVALID_HANDLE_VALUE;
-}
-/*
-HANDLE WINAPI CreateEventW(
-    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
-    _In_ BOOL bManualReset,
-    _In_ BOOL bInitialState,
-    _In_opt_ LPCWSTR lpName)
-{
-	return INVALID_HANDLE_VALUE;
-}*/
 
 VOID WINAPI InitializeCriticalSection(_Out_ LPCRITICAL_SECTION lpCriticalSection)
 {
@@ -556,14 +505,6 @@ DWORD WINAPI WaitForMultipleObjects(
     _In_reads_(nCount) CONST HANDLE *lpHandles,
     _In_ BOOL bWaitAll,
     _In_ DWORD dwMilliseconds
-    )
-{
-	return 0;
-}
-
-
-DWORD WINAPI ResumeThread(
-    _In_ HANDLE hThread
     )
 {
 	return 0;
@@ -791,7 +732,7 @@ int rb_w32_open( const char *file, int mode, ... )
     int ret = 0;
     va_list ap;
     va_start(ap, mode);
-    ret = _open(file, mode, ap);
+    ret = _open(file, mode);
     va_end(ap);
 
     return ret;
@@ -850,7 +791,7 @@ size_t
 rb_w32_read(int fd, void *buf, size_t size)
 {
     if (rb_w32_is_socket(fd))
-    	return rb_w32_recv(fd, buf, size, 0);
+    	return rb_w32_recv(fd, (char*)buf, size, 0);
 
     return _read(fd,buf,size);
 }
@@ -883,7 +824,7 @@ size_t
 rb_w32_write(int fd, const void *buf, size_t size)
 {
     if (rb_w32_is_socket(fd))
-    	return rb_w32_send(fd, buf, size, 0);
+    	return rb_w32_send(fd, (char*)buf, size, 0);
 
     return _write(fd,buf,size);
 }
@@ -915,4 +856,31 @@ char* wce_wctomb(const wchar_t* w)
 		-1, pChar, charlength, NULL, NULL);
 
 	return pChar;
+}
+
+HANDLE WINAPI CreateEventWP8(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+    _In_ BOOL bManualReset,
+    _In_ BOOL bInitialState,
+    _In_opt_ LPCWSTR lpName)
+{
+	DWORD flags = 0;
+	
+	if(bManualReset) 
+		flags = CREATE_EVENT_MANUAL_RESET;
+	
+	if(bInitialState)
+		flags |= CREATE_EVENT_INITIAL_SET;
+
+	return CreateEventExW(lpEventAttributes, lpName, flags, EVENT_ALL_ACCESS);
+}
+
+DWORD
+WINAPI
+WaitForSingleObjectWP8(
+    _In_ HANDLE hHandle,
+    _In_ DWORD dwMilliseconds
+    )
+{
+	return WaitForSingleObjectEx(hHandle, dwMilliseconds, 0);
 }

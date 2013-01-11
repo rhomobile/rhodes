@@ -27,8 +27,8 @@
 //#include "stdafx.h"
 
 #include "RhoClassfactory.h"
-#include "sync/SyncThread.h"
-#include "sync/ClientRegister.h"
+//#include "sync/SyncThread.h"
+//#include "sync/ClientRegister.h"
 #include "RhoCryptImpl.h"
 
 static rho::common::CRhoClassFactory g_oRhoClassFactory;

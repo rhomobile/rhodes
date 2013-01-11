@@ -3505,10 +3505,6 @@
 				<Filter
 					Name="syncengine"
 					>
-					<File
-						RelativePath="..\..\shared\ruby\ext\syncengine\syncengine_wrap.c"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="geolocation"

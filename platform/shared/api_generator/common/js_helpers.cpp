@@ -1,5 +1,7 @@
 #include "js_helpers.h"
 
+#include "common/RhodesApp.h"
+
 using namespace rho::json;
 
 static rho::Hashtable<rho::String,Func_JS> g_hashJSMethods;
@@ -42,7 +44,16 @@ rho::String js_entry_point(const char* szJSON)
     }
 
     CJSONArrayIterator oParams(oEntry.getEntry("Params"));
-    pMethod( strObjID, oParams );
+    return pMethod( strObjID, oParams );
+}
 
-    return "{}";
+static void http_js_entry_point(void *arg, rho::String const &query )
+{
+    rho::String res = js_entry_point(query.c_str());
+    rho_http_sendresponse(arg, res.c_str());
+}
+
+void js_register_http_entry_point()
+{
+    RHODESAPP().registerLocalServerUrl( "/system/js_api_entrypoint", http_js_entry_point );
 }

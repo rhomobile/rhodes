@@ -2572,7 +2572,9 @@ compare(const struct timeval *t1, const struct timeval *t2)
     return 0;
 }
 
+#if !defined(OS_WP8)
 #undef Sleep
+#endif
 int WSAAPI
 rb_w32_select(int nfds, fd_set *rd, fd_set *wr, fd_set *ex,
 	      struct timeval *timeout)

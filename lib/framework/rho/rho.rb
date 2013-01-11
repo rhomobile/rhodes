@@ -596,7 +596,7 @@ end
     end
 
     def self.init_sync_source_properties(uniq_sources)
-
+if defined?(RHOCONNECT_CLIENT_PRESENT)
         uniq_sources.each do|src|
             ['pass_through', 'full_update'].each do |prop|
                 next unless src.has_key?(prop)
@@ -613,7 +613,7 @@ end
 				end
             end            
         end
-        
+end        
     end
     
     def self.processIndexes(index_param, src_name, is_unique)
@@ -707,8 +707,9 @@ end
           end
         
         end
-        
-        SyncEngine.update_blob_attribs(partition, -1 )
+	if defined?(RHOCONNECT_CLIENT_PRESENT)
+	        SyncEngine.update_blob_attribs(partition, -1 )
+	end
     end
 
     def self.make_createsql_script(name,schema_attr)
@@ -1316,7 +1317,7 @@ end
     end
       
 end # Rho
-
+=begin
 module SyncEngine
     def self.get_user_name
         Rho::RhoConfig.rho_sync_user        
@@ -1366,10 +1367,33 @@ module SyncEngine
             args[:callback], callbackParams )
     end
 end
-
+=end
 #at_exit do
 	#::Rhom::RhomDbAdapter.close
 #end
+
+begin
+	puts "Looking for SyncEngine"
+	require 'syncengine.rb'
+	Module.const_get("SyncEngine")
+	puts "SyncEngine found. do nothing"
+rescue LoadError, NameError
+	puts "SyncEngine not found. Defining stub module"
+	
+	module SyncEngine
+		def self.respond_to?(method)
+			#raise "SyncEngine won't respond to #{method}. Use 'rhoconnect-client' extension."
+			true
+		end
+
+		def self.method_missing(name, *args, &block)
+			raise "SyncEngine call #{name} not supported. Use 'rhoconnect-client' extension."
+		end
+	end
+
+end
+
+
 
 
 class Module
