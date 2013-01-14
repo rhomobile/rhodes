@@ -32,7 +32,7 @@
 #include "common/RhodesApp.h"
 #include "common/rhoparams.h"
 #include "common/StringConverter.h"
-#include "sync/ClientRegister.h"
+#include "sync/RhoconnectClientManager.h"
 #include "common/RhoFilePath.h"
 #undef null
 #include <QtGui/QApplication>
@@ -206,7 +206,8 @@ int main(int argc, char *argv[])
     // Navigate to the "loading..." page
     m_appWindow->navigate(L"about:blank", -1);
 
-    rho_clientregister_create("qt_client");
+    if (RHOCONF().getString("test_push_client").length() > 0 )
+        rho_clientregister_create(RHOCONF().getString("test_push_client").c_str());//"qt_client");
 
     // RunMessageLoop:
     m_appWindow->messageLoop();

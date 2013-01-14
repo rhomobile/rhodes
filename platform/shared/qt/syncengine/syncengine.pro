@@ -53,17 +53,14 @@ HEADERS += ../../json/arraylist.h\
 ../../json/json_util.h\
 ../../json/linkhash.h\
 ../../json/printbuf.h\
-../../sync/syncthread.h\
-../../sync/SyncNotify.h\
+../../sync/RhoconnectClientManager.h\
+../../sync/ILoginListener.h\
 ../../json/JSONIterator.h\
-../../sync/SyncEngine.h\
-../../sync/SyncSource.h\
 ../../db/DBAdapter.h\
 ../../db/DBAttrManager.h\
 ../../db/DBImportTransaction.h\
 ../../db/DBRequestHelper.h\
-../../db/DBResult.h\
-../../sync/ClientRegister.h
+../../db/DBResult.h
 
 SOURCES += ../../json/arraylist.c\
 ../../json/json_debug.c\
@@ -73,14 +70,10 @@ SOURCES += ../../json/arraylist.c\
 ../../json/linkhash.c\
 ../../json/printbuf.c\
 ../../json/RJSONTokener.c\
-../../sync/syncthread.cpp\
-../../sync/SyncNotify.cpp\
+../../sync/RhoconnectClientManager.cpp\
 ../../json/JSONIterator.cpp\
-../../sync/SyncEngine.cpp\
-../../sync/SyncSource.cpp\
 ../../db/DBAdapter.cpp\
 ../../db/DBAttrManager.cpp\
 ../../db/DBImportTransaction.cpp\
 ../../db/DBRequestHelper.cpp\
-../../db/DBResult.cpp\
-../../sync/ClientRegister.cpp
+../../db/DBResult.cpp
