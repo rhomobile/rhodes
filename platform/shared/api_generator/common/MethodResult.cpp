@@ -1,6 +1,6 @@
 #include "MethodResult.h"
 #include "json/JSONIterator.h"
-#include "ext/rho/rhoruby.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #include "common/RhodesApp.h"
 
