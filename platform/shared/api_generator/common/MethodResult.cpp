@@ -6,6 +6,9 @@
 
 using namespace rho::json;
 
+extern "C" const char* rho_webview_execute_js(const char* js, int index);
+extern "C" int rho_webview_active_tab();
+
 rho::String CMethodResult::toJSON()
 { 
     rho::String strRes;
@@ -102,19 +105,16 @@ public:
 
 void CMethodResult::callCallback()
 {
-    //TODO: support JSON callbacks
-
     if ( m_ResType != eNone && m_strRubyCallback.length() != 0 )
     {
-        rho::String strResBody = "rho_callback=1";
-        if ( m_strCallbackParam.length() > 0 )
-            strResBody += "&" + m_strCallbackParam;
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
 
-        strResBody += "&" + RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
+        RHODESAPP().callCallbackWithData( m_strRubyCallback, strResBody, m_strCallbackParam, false);
 
-        //TODO: call in async mode
-        getNetRequest().pushData( RHODESAPP().canonicalizeRhoUrl(m_strRubyCallback), strResBody, null );
-
+        m_ResType = eNone;
+    }else if ( m_ResType != eNone && m_strJSCallback.length() != 0 )
+    {
+        rho_webview_execute_js( m_strJSCallback.c_str(), rho_webview_active_tab() );
         m_ResType = eNone;
     }
 }
