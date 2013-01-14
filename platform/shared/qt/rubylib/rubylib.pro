@@ -177,7 +177,6 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/enc/us_ascii.c\
 ../../ruby/enc/utf_8.c\
 ../../ruby/ext/strscan/strscan.c\
-../../ruby/ext/syncengine/syncengine_wrap.c\
 ../../ruby/generated/parse.c\
 ../../ruby/missing/lgamma_r.c\
 ../../ruby/ext/mapview/mapview_wrap.c\
