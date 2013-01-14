@@ -3,6 +3,10 @@
 
 #include "rhodes/JNIRhodes.h"
 
+#include "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "MethodExecutorJNI"
+
 namespace rhoelements {
 
 const char const * MethodExecutorJni::METHOD_EXECUTOR_CLASS = "com/motorolasolutions/rhoelements/MethodExecutor";
@@ -88,7 +92,7 @@ void MethodExecutorJni::runWithUiThread(jhobject jhTask)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void MethodExecutorJni::run(jhobject jhTask, bool uiThread, MethodResultJni& result)
+void MethodExecutorJni::run(jhobject jhTask, MethodResultJni& result)
 {
     if(shouldRunWithUiThread())
     {
