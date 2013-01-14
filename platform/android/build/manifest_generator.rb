@@ -15,6 +15,7 @@ class ManifestGenerator
   attr_accessor :screenOrientation
   attr_accessor :debuggable
   attr_accessor :rhodesActivityIntentFilters
+  attr_accessor :hardwareAcceleration
   
   attr_accessor :manifestManifestAdds
   attr_accessor :applicationManifestAdds
@@ -37,6 +38,7 @@ class ManifestGenerator
     end
     @screenOrientation = 'unspecified'
     @debuggable = 'false'
+    @hardwareAcceleration = nil
     @manifestManifestAdds = []
     @applicationManifestAdds = []
   end
