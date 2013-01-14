@@ -38,7 +38,7 @@ class CMethodResult
     rho::String m_strRes;
     rho::Vector<rho::String> m_arStrRes;
     rho::String m_strError;
-    boolean m_bCallInUIThread;
+    rho::boolean m_bCallInUIThread;
 
     enum ETypes{ eNone = 0, eString, eStringArray, eStringHash, eError, eArgError};
     ETypes m_ResType;
@@ -46,7 +46,7 @@ public:
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     void setJSCallback(const rho::String& strCallback){ m_strJSCallback = strCallback; }
-    void setCallInUIThread(boolean bUIThread){ m_bCallInUIThread = bUIThread; }
+    void setCallInUIThread(rho::boolean bUIThread){ m_bCallInUIThread = bUIThread; }
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
     void setStringParam(const rho::String& strParam){m_strStringParam = strParam;}
     void convertStringParamToHash()
