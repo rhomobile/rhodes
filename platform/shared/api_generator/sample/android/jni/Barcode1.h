@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/RhoStd.h"
 #include "rhodes/JNIRhodes.h"
 #include "MethodExecutorJni.h"
 
@@ -19,26 +20,28 @@ class CBarcode1 : public MethodExecutorJni
     static jclass s_getPropsTaskClass;
     static jclass s_getProps1TaskClass;
     static jclass s_getProps2TaskClass;
+    static jmethodID s_midGetInstance;
     static jmethodID s_midEnumerate;
-    static jmethodID s_midGetDefault;
+    static jmethodID s_midGetDefaultID;
     static jmethodID s_midSetDefaultID;
-    static jmethodID s_midCreate;
+    static jmethodID s_midGetApiObject;
     static jmethodID s_midGetPropsTask;
     static jmethodID s_midGetProps1Task;
     static jmethodID s_midGetProps2Task;
 
     static JNIEnv* jniInit();
 
-    jhobject m_jhObject;
+    rho::String m_id;
+    //jhobject m_jhObject;
+    jhobject getObject(JNIEnv* env);
 
 public:
-    static jhobject enumerate();
-    static jhobject getDefault();
-    static void setDefaultID(jhstring jhId);
-    static jhobject create(jhstring jhId);
+    static void enumerate(MethodResultJni& result);
+    static rho::String getDefaultID();
+    static void setDefaultID(const rho::String& id);
 
-    CBarcode1(jhobject& jhObject, bool uiThread)
-        : MethodExecutorJni(false, uiThread), m_jhObject(jhObject)
+    CBarcode1(const rho::String& id)
+        : MethodExecutorJni(false, false), m_id(id)
         {}
     virtual ~CBarcode1() {}
 
