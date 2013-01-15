@@ -15,19 +15,13 @@ void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 VALUE rb_barcode1_s_enumerate(VALUE klass)
 {
     CMethodResult oRes;
-    CBarcode1SingletonBase::getInstance()->enumerate(oRes);
+    CBarcode1FactoryBase::getBarcode1SingletonS()->enumerate(oRes);
 
     rho::Vector<rho::String>& arIDs = oRes.getStringArray();
 
     CHoldRubyValue valArray(rho_ruby_create_array());
     for( int i = 0; i < arIDs.size(); i++ )
     {
-        if ( !CBarcode1SingletonBase::getInstance()->getModules().containsKey(arIDs[i]) )
-        {
-            IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->create(arIDs[i]);
-            CBarcode1SingletonBase::getInstance()->getModules().put(arIDs[i], pObj );
-        }
-
         VALUE valObj = rho_create_object_with_id( klass, arIDs[i].c_str() );
         rho_ruby_add_to_array( valArray, valObj );
     }
@@ -37,7 +31,7 @@ VALUE rb_barcode1_s_enumerate(VALUE klass)
 
 VALUE rb_barcode1_s_default(VALUE klass)
 {
-    rho::String strDefaultID = CBarcode1SingletonBase::getInstance()->getDefaultIDEx();
+    rho::String strDefaultID = CBarcode1FactoryBase::getBarcode1SingletonS()->getDefaultID();
 
     return rho_create_object_with_id( klass, strDefaultID.c_str() );
 }
@@ -45,7 +39,7 @@ VALUE rb_barcode1_s_default(VALUE klass)
 VALUE rb_barcode1_s_set_default(VALUE klass, VALUE valObj)
 {
     const char* szID = rho_get_object_id( valObj );
-    CBarcode1SingletonBase::getInstance()->setDefaultID(szID);
+    CBarcode1FactoryBase::getBarcode1SingletonS()->setDefaultID(szID);
 
     return rho_ruby_get_NIL();
 }
@@ -81,12 +75,12 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
             pObj->getProps(oRes);
         }else if ( rho_ruby_is_string(argv[0]) )
         {
-            pObj->getProps(getStringFromValue(argv[0]), oRes);
+            pObj->getPropsWithString(getStringFromValue(argv[0]), oRes);
         }else if ( rho_ruby_is_array(argv[0]) )
         {
             rho::Vector<rho::String> ar;
             getStringArrayFromValue(argv[0], ar);
-            pObj->getProps(ar, oRes );
+            pObj->getPropsWithArray(ar, oRes );
         }else
         {
             oRes.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
@@ -121,7 +115,7 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
         {
             oRes.setStringParam(getStringFromValue(argv[0]));
             pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
-                ( pObj, &IBarcode1::getProps, getStringFromValue(argv[0]), oRes );
+                ( pObj, &IBarcode1::getPropsWithString, getStringFromValue(argv[0]), oRes );
 
         }else if ( rho_ruby_is_array(argv[0]) )
         {
@@ -129,7 +123,7 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
             getStringArrayFromValue(argv[0], ar);
 
             pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::String>&, CMethodResult&), rho::Vector<rho::String>, CMethodResult>
-                ( pObj, &IBarcode1::getProps, ar, oRes );
+                ( pObj, &IBarcode1::getPropsWithArray, ar, oRes );
         }else
         {
             oRes.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
@@ -139,7 +133,7 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
         if ( bCallInUIThread )
             rho_wm_impl_performOnUiThread( pFunctor );
         else //call in separate thread
-            CBarcode1SingletonBase::getInstance()->addCommandToQueue( pFunctor );
+            CBarcode1FactoryBase::getBarcode1SingletonS()->addCommandToQueue( pFunctor );
 
     }else
     {
@@ -151,8 +145,8 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
 
 VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 {
-    rho::String strDefaultID = CBarcode1SingletonBase::getInstance()->getDefaultIDEx();
-    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->getModules()[strDefaultID];
+    rho::String strDefaultID = CBarcode1FactoryBase::getBarcode1SingletonS()->getDefaultID();
+    IBarcode1* pObj = CBarcode1FactoryBase::getInstance()->getModuleByID(strDefaultID);
 
     return barcode1_getprops(argc, argv, pObj);
 }
@@ -160,7 +154,7 @@ VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
 {
     const char* szID = rho_get_object_id( valObj );
-    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->getModules()[szID];
+    IBarcode1* pObj =  CBarcode1FactoryBase::getInstance()->getModuleByID(szID);
 
     return barcode1_getprops(argc, argv, pObj);
 }

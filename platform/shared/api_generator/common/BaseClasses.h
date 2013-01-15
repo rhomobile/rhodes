@@ -22,30 +22,25 @@ public:
         oResult.set(m_hashProps);
     }
 
-    virtual void getProps(const rho::String& strName, CMethodResult& oResult)
+    virtual void getPropsWithString(const rho::String& strName, CMethodResult& oResult)
     {
         oResult.set(m_hashProps[strName]);
     }
-    virtual void getProps(const rho::Vector<rho::String>& arNames, CMethodResult& oResult)
+    virtual void getPropsWithArray(const rho::Vector<rho::String>& arNames, CMethodResult& oResult)
     {
         oResult.set(m_hashProps);
     }
 
 };
 
-template<typename ModuleClass, typename BaseClass>
-class CModuleSingletonBase : public BaseClass
+template<typename ModuleClass>
+class CModuleSingletonBase : public ModuleClass
 {
 protected:
     rho::String m_strDefaultID;
-    rho::Hashtable<rho::String,ModuleClass*> m_hashModules;
     rho::common::CAutoPtr<rho::common::CThreadQueue> m_pCommandQueue;
     
 public:
-    
-    rho::Hashtable<rho::String,ModuleClass*>& getModules(){ return m_hashModules; }
-
-    void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
 
     void setCommandQueue( rho::common::CThreadQueue* pQueue){ m_pCommandQueue = pQueue; }
     void addCommandToQueue(rho::common::IRhoRunnable* pFunctor)
@@ -59,17 +54,46 @@ public:
         m_pCommandQueue->addQueueCommand( new CGeneratorQueue::CGeneratorQueueCommand(pFunctor) );
     }
 
-    rho::String getDefaultIDEx()
+    void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
+    rho::String getDefaultID()
     { 
         if ( m_strDefaultID.length() == 0 )
-            setDefaultID(getDefaultID());
-
-        if ( !getModules().containsKey(m_strDefaultID) )
-        {
-            ModuleClass* pObj = create(m_strDefaultID);
-            getModules().put(m_strDefaultID, pObj );
-        }
+            setDefaultID(getInitialDefaultID());
         return m_strDefaultID; 
     }
 };
 
+template<typename ModuleClass, typename SingletonClass, typename BaseClass>
+class CModuleFactoryBase : public BaseClass
+{
+protected:
+    rho::common::CAutoPtr<SingletonClass> m_pModuleSingleton;
+    rho::Hashtable<rho::String,ModuleClass*> m_hashModules;
+
+public:
+
+    virtual SingletonClass* getModuleSingleton()
+    {
+        if ( !m_pModuleSingleton )
+            m_pModuleSingleton = createModuleSingleton();
+
+        return m_pModuleSingleton;
+    }
+
+    virtual ModuleClass* getModuleByID(const rho::String& strID)
+    {
+        if ( !m_hashModules.containsKey(strID) )
+        {
+            ModuleClass* pObj = createModuleByID(strID);
+            m_hashModules.put(strID, pObj );
+
+            return pObj;
+        }
+
+        return m_hashModules[strID];
+    }
+    
+    virtual SingletonClass* createModuleSingleton() = 0;
+    virtual ModuleClass* createModuleByID(const rho::String& strID) = 0;
+
+};
