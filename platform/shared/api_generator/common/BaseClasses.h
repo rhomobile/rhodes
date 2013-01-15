@@ -39,11 +39,28 @@ class CModuleSingletonBase : public ModuleClass
 protected:
     rho::String m_strDefaultID;
     rho::common::CAutoPtr<rho::common::CThreadQueue> m_pCommandQueue;
-    
+
+    class CCallInThread : public rho::common::CRhoThread
+    {
+        rho::common::CAutoPtr<rho::common::IRhoRunnable> m_pFunctor;
+    public:
+        CCallInThread(rho::common::IRhoRunnable* pFunctor): CRhoThread(), m_pFunctor(pFunctor)
+        {
+            start(epNormal);
+        }
+        
+    private:
+        virtual void run(){ m_pFunctor->runObject();  }
+        virtual void runObject() {
+            rho::common::CRhoThread::runObject();
+            delete this;
+        }
+    };
+
 public:
 
     void setCommandQueue( rho::common::CThreadQueue* pQueue){ m_pCommandQueue = pQueue; }
-    void addCommandToQueue(rho::common::IRhoRunnable* pFunctor)
+    virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor)
     {
         if ( !m_pCommandQueue )
         {
@@ -54,8 +71,13 @@ public:
         m_pCommandQueue->addQueueCommand( new CGeneratorQueue::CGeneratorQueueCommand(pFunctor) );
     }
 
-    void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
-    rho::String getDefaultID()
+    virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor)
+    {
+        new CCallInThread(pFunctor);
+    }
+
+    virtual void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
+    virtual rho::String getDefaultID()
     { 
         if ( m_strDefaultID.length() == 0 )
             setDefaultID(getInitialDefaultID());
