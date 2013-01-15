@@ -99,6 +99,13 @@ extern void rho_sys_set_http_proxy_url(const char* url);
 #define unset_http_proxy rho_sys_unset_http_proxy
 extern void rho_sys_unset_http_proxy();
 
+extern VALUE rho_sys_is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);
+#define is_blob_attr rho_sys_is_blob_attr
+
+extern void rho_sys_update_blob_attribs(const char* szPartition, int source_id);
+#define update_blob_attribs rho_sys_update_blob_attribs
+
+
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -190,3 +197,5 @@ extern void set_network_status_notify(const char* url, int poll_interval);
 extern void clear_network_status_notify();
 extern void set_http_proxy_url(const char* url);
 extern void unset_http_proxy();
+extern VALUE is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);
+extern void  update_blob_attribs(const char* szPartition, int source_id);

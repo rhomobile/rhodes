@@ -154,6 +154,76 @@ end
     schemaItem.should_not be_nil
   end
 
+it "should export database after blob bulk sync" do
+	Rhom::Rhom.database_full_reset
+	SyncEngine.set_syncserver('http://store-bulk.rhohub.com/application')
+	login_name = System.get_property('platform') + System.get_property('device_name')
+	res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.login('login_name', '', "/app/Settings/login_callback")
+	res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	SyncEngine.logged_in.should == 1
+	
+	sleep(15)
+	
+	Rho::RhoConfig.bulksync_state='0'
+	res = ::Rho::RhoSupport::parse_query_parameters SyncEngine.dosync
+	
+	res['status'].should == 'complete'
+	res['error_code'].to_i.should == ::Rho::RhoError::ERR_NONE
+	
+	items = BlobBulkTest.find(:all)
+	items.size.should_not == 0
+	pbSize = items.size
+	items.each do |item|
+		path = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
+		puts "item = #{item.inspect}, path = #{path}"
+		File.exists?(path).should == true
+	end
+	items = BlobBulkTest_s.find(:all)
+	items.size.should_not == 0
+	shSize = items.size
+	items.each do |item|
+		path = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
+		puts "item = #{item.inspect}, path = #{path}"
+		File.exists?(path).should == true
+	end
+	
+	exportPath = ::Rhom::Rhom.database_export('user')
+	exportPath.should_not be_nil
+	File.exists?(exportPath).should == true
+	File.size(exportPath).should_not == 0
+	
+	Rhom::Rhom.database_full_reset
+	
+	items = BlobBulkTest_s.find(:all)
+	puts "BlobBulkTest_s = #{items}"
+	items.size.should == 0
+	
+	items = BlobBulkTest.find(:all)
+	puts "BlobBulkTest = #{items}"
+	items.size.should == 0
+	
+	::Rhom::Rhom.database_import('user',exportPath).should == true
+	
+	items = BlobBulkTest_s.find(:all)
+	items.size.should == shSize
+	items.each do |item|
+		path = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
+		puts "item = #{item.inspect}, path = #{path}"
+		File.exists?(path).should == true
+	end
+	
+	items = BlobBulkTest.find(:all)
+	items.size.should == pbSize
+	items.each do |item|
+		path = File.join(Rho::RhoApplication::get_blob_path(item.image_uri))
+		puts "item = #{item.inspect}, path = #{path}"
+		File.exists?(path).should == true
+	end
+	
+	File.delete(exportPath)
+	File.exists?(exportPath).should == false
+end
+
   it "should logout" do
     SyncEngine.logout()
   
