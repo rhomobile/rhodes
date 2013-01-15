@@ -1175,6 +1175,10 @@ module Rhom
                       SyncEngine.clear_notification(get_source_id.to_i)
                   end
                 end
+	  
+			def is_blob_attrib(db_partition, nSrcID,attrib_name)
+				System.is_blob_attr(db_partition, nSrcID.to_i,attrib_name)
+			end
 
                 def on_sync_delete_error( objects, action )
 if defined?(RHOCONNECT_CLIENT_PRESENT)
@@ -1195,7 +1199,7 @@ if defined?(RHOCONNECT_CLIENT_PRESENT)
                                 {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
                               next if resUpdateType && resUpdateType.length > 0 
                           
-                              attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
+                              attrib_type = is_blob_attrib(db_partition, nSrcID,attrib)  ? "blob.file" : ""
                               db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
                                 "value"=>value, "update_type"=>'delete', "attrib_type"=>attrib_type })
                           end      
@@ -1248,7 +1252,7 @@ if defined?(RHOCONNECT_CLIENT_PRESENT)
                                         {"object"=>obj, "source_id"=>nSrcID, "attrib"=>attrib, 'sent'=>0})
                                       next if resUpdateType && resUpdateType.length > 0 
                                   
-                                      attrib_type = SyncEngine.is_blob_attr(db_partition, nSrcID,attrib)  ? "blob.file" : ""
+                                      attrib_type = is_blob_attrib(db_partition, nSrcID,attrib)  ? "blob.file" : ""
                                       db.insert_into_table('changed_values', {"source_id"=>nSrcID, "object"=>obj, "attrib"=>attrib, 
                                         "value"=>value, "update_type"=>'update', "attrib_type"=>attrib_type })
                                   end      
@@ -1525,13 +1529,6 @@ end
                 true
               end
 		
-		      def is_blob_attrib(db_partition, nSrcID,attrib_name)  
-                          if defined?(RHOCONNECT_CLIENT_PRESENT)
-                              SyncEngine.is_blob_attr(db_partition, nSrcID.to_i,attrib_name)
-                          end
-		        #return attrib_name == "image_uri"
-		      end
-
               def create
                 nSrcID = self.get_inst_source_id
                 obj = self.object
