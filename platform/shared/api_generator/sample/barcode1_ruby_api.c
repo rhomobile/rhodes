@@ -7,6 +7,8 @@ static VALUE rb_cBarcode1;
 VALUE rb_barcode1_s_enumerate(VALUE klass);
 VALUE rb_barcode1_s_getprops(int argc, VALUE *argv);
 VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE obj);
+VALUE rb_barcode1_s_setprops(int argc, VALUE *argv);
+VALUE rb_barcode1_setprops(int argc, VALUE *argv, VALUE obj);
 VALUE rb_barcode1_s_default(VALUE klass);
 VALUE rb_barcode1_s_set_default(VALUE klass, VALUE obj);
 
@@ -27,5 +29,9 @@ void Init_RubyAPI_Barcode1(void)
 
     rb_define_singleton_method(rb_cBarcode1, "getProps", rb_barcode1_s_getprops, -1);
     rb_define_method(rb_cBarcode1, "getProps", rb_barcode1_getprops, -1);
+
+    rb_define_singleton_method(rb_cBarcode1, "setProps", rb_barcode1_s_setprops, -1);
+    rb_define_method(rb_cBarcode1, "setProps", rb_barcode1_setprops, -1);
+
 }
 

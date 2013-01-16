@@ -25,6 +25,7 @@
 *------------------------------------------------------------------------*/
 
 #include "JSONIterator.h"
+#include "common/StringConverter.h"
 
 #include "json/json.h"
 #ifndef RHO_NO_RUBY
@@ -315,6 +316,11 @@ CJSONEntry CJSONEntry::getEntry(const char* name)const
     struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
 
     return CJSONEntry(obj);
+}
+
+/*static*/ String CJSONEntry::quoteValue(const StringW& strValue)
+{
+    return quoteValue( rho::common::convertToStringA(strValue) );
 }
 
 /*static*/ String CJSONEntry::quoteValue(const String& strValue)
