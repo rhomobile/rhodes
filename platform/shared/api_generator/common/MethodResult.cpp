@@ -15,7 +15,7 @@ rho::String CMethodResult::toJSON()
     if ( m_ResType == eStringArray )
     {
         strRes = "[";
-        for( int i = 0; i < m_arStrRes.size(); i++ )
+        for( int i = 0; i < (int)m_arStrRes.size(); i++ )
         {
             if ( i > 0 )
                 strRes += ",";
@@ -57,7 +57,7 @@ VALUE CMethodResult::toRuby()
     {
         CHoldRubyValue valArray(rho_ruby_create_array());
 
-        for( int i = 0; i < m_arStrRes.size(); i++ )
+        for( int i = 0; i < (int)m_arStrRes.size(); i++ )
         {
             VALUE valObj = rho_ruby_create_string( m_arStrRes[i].c_str() );
             rho_ruby_add_to_array( valArray, valObj );
