@@ -121,6 +121,20 @@ inline StringW convertToStringW( const String& str )
     return res;
 }
 
+inline StringW convertToStringW( const char* szStr )
+{ 
+    StringW res;
+    convertToStringW(szStr, res);
+    return res;
+}
+
+inline StringW convertToStringW( char* szStr )
+{ 
+    StringW res;
+    convertToStringW(szStr, res);
+    return res;
+}
+
 /*template<>  inline void convertFromStringA<StringW>( const char* szValue, StringW& value ){ value = StringW(szValue); }
 template<>  inline String convertToStringA<StringW>( const StringW& value ){ return String(value); }
 */
