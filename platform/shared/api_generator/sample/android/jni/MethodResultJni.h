@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rhodes/JNIRhodes.h"
+#include "ext/rho/rhoruby.h"
 
 #include <string>
 
@@ -9,8 +10,8 @@ namespace rhoelements {
 
 class MethodResultJni
 {
-    static const char const * METHOD_RESULT_CLASS;
-    enum ErrType{ eNone = 0, eError, eArgError};
+    static const char * const METHOD_RESULT_CLASS;
+    enum ErrType { eNone = 0, eError, eArgError };
 
     static jclass s_methodResultClass;
     static jmethodID s_midMethodResult;
@@ -36,12 +37,12 @@ public:
     MethodResultJni();
 
     void setCallBack(const char* url, const char* data);
-    bool hasCallBackUrl() { return m_hasBackUrl != 0; }
+    bool hasCallBackUrl() const { return m_hasCallbackUrl; }
 
     operator jobject () { return m_jhResult.get(); }
-    operator bool () { return jobject(this) != 0; }
+    operator bool () const { return jobject(this) != 0; }
 
-    VALUE enumerateRubyObjects();
+    VALUE enumerateRubyObjects(VALUE klass);
     std::string enumerateJSObjects();
 
     VALUE toRuby();

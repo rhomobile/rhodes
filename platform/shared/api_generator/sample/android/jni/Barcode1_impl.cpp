@@ -2,7 +2,9 @@
 
 #define BARCODE1_SINGLETON_CLASS "com/motorolasolutions/rhoelements/barcode1/Barcode1Singleton"
 
-extern "C" void Init_Barcode1()
+extern "C" void Init_RubyAPI_Barcode1(void);
+
+extern "C" void Init_Barcode1(void)
 {
     JNIEnv *env = jnienv();
     if(env)
@@ -22,7 +24,7 @@ extern "C" void Init_Barcode1()
         env->CallStaticVoidMethod(barcode1SingletonClass, midInit);
 
         Init_RubyAPI_Barcode1();
-        Init_JSAPI_Barcode1();
+        //Init_JSAPI_Barcode1();
     }
     else
     {
