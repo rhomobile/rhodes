@@ -63,9 +63,13 @@ namespace rho.common
             {
                 String[] values = files[i].Split('|');
 
-                String strFile = values[0];
-                CRhoFile.recursiveCreateDir(strFile);
-                CRhoFile.writeDataToFile(strFile, CRhoFile.readResourceFile(strFile));
+                String strFile    = values[0];
+                String strDstFile = values[1];
+
+                System.Diagnostics.Debugger.Log(0, "", strDstFile + "\n");
+
+                CRhoFile.recursiveCreateDir(strDstFile);
+                CRhoFile.writeDataToFile(strDstFile, CRhoFile.readResourceFile(strFile));
             }
 
             CRhoFile.writeStringToFile("RhoBundleMap.txt", strMap);
@@ -86,7 +90,5 @@ namespace rho.common
                 copyMap(newMap);   
             }
         }
-
-
     }
 }
