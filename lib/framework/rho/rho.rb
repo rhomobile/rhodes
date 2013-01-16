@@ -707,9 +707,7 @@ end
           end
         
         end
-	if defined?(RHOCONNECT_CLIENT_PRESENT)
-	        SyncEngine.update_blob_attribs(partition, -1 )
-	end
+		System.update_blob_attribs(partition, -1 )
     end
 
     def self.make_createsql_script(name,schema_attr)

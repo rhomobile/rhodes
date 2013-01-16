@@ -8,13 +8,12 @@
 VALUE rb_barcode1_s_enumerate(VALUE klass)
 {
     
-    id<IBarcode1Factory> factory = [Barcode1Singletone getBarcode1Factory];
+    id<IBarcode1Factory> factory = [Barcode1FactorySingleton getBarcode1FactoryInstance];
+    id<IBarcode1Singleton> singleton = [factory getBarcode1Singleton];
     
     CMethodResult* mr = [[CMethodResult alloc] init];
     
-    Class classObject = [factory getBarcode1ImplementationClass];
-    
-    [classObject enumerate:mr];
+    [singleton enumerate:mr];
 
     
     NSObject* methodResultValue = [mr getResult];
@@ -44,9 +43,10 @@ VALUE rb_barcode1_s_enumerate(VALUE klass)
 
 VALUE rb_barcode1_s_default(VALUE klass)
 {
-    id<IBarcode1Factory> factory = [Barcode1Singletone getBarcode1Factory];
+    id<IBarcode1Factory> factory = [Barcode1FactorySingleton getBarcode1FactoryInstance];
+    id<IBarcode1Singleton> singleton = [factory getBarcode1Singleton];
 
-    NSString* defID = [factory getDefaultID];
+    NSString* defID = [singleton getDefaultID];
     
     return rho_create_object_with_id( klass, [defID UTF8String] );
 }
@@ -54,9 +54,10 @@ VALUE rb_barcode1_s_default(VALUE klass)
 VALUE rb_barcode1_s_set_default(VALUE klass, VALUE valObj)
 {
     const char* szID = rho_get_object_id( valObj );
-    id<IBarcode1Factory> factory = [Barcode1Singletone getBarcode1Factory];
+    id<IBarcode1Factory> factory = [Barcode1FactorySingleton getBarcode1FactoryInstance];
+    id<IBarcode1Singleton> singleton = [factory getBarcode1Singleton];
 
-    [factory setDefaultID:[NSString stringWithUTF8String:szID]];
+    [singleton setDefaultID:[NSString stringWithUTF8String:szID]];
     
     return rho_ruby_get_NIL();
 }
@@ -242,9 +243,10 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, id<IBarcode1> objItem) {
 
 VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 {
-    id<IBarcode1Factory> factory = [Barcode1Singletone getBarcode1Factory];
+    id<IBarcode1Factory> factory = [Barcode1FactorySingleton getBarcode1FactoryInstance];
+    id<IBarcode1Singleton> singleton = [factory getBarcode1Singleton];
     
-    NSString* defID = [factory getDefaultID];
+    NSString* defID = [singleton getDefaultID];
     
     id<IBarcode1> item = [factory getBarcode1ByID:defID];
     return barcode1_getprops(argc, argv, item);
@@ -253,7 +255,8 @@ VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
 {
     const char* szID = rho_get_object_id( valObj );
-    id<IBarcode1Factory> factory = [Barcode1Singletone getBarcode1Factory];
+    id<IBarcode1Factory> factory = [Barcode1FactorySingleton getBarcode1FactoryInstance];
+    id<IBarcode1Singleton> singleton = [factory getBarcode1Singleton];
     
     NSString* defID = [NSString stringWithUTF8String:szID];
     

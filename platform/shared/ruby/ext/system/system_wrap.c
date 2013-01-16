@@ -1914,6 +1914,13 @@ extern void rho_sys_set_http_proxy_url(const char* url);
 #define unset_http_proxy rho_sys_unset_http_proxy
 extern void rho_sys_unset_http_proxy();
 
+extern VALUE rho_sys_is_blob_attr(const char* szPartition, int source_id, const char* szAttrName);
+#define is_blob_attr rho_sys_is_blob_attr
+
+extern void rho_sys_update_blob_attribs(const char* szPartition, int source_id);
+#define update_blob_attribs rho_sys_update_blob_attribs
+
+
 	#if !defined(bool)
 	#define bool int
 	#define true  1
@@ -3069,6 +3076,83 @@ fail:
 }
 
 
+SWIGINTERN VALUE
+_wrap_is_blob_attr(int argc, VALUE *argv, VALUE self) {
+	char *arg1 = (char *) 0 ;
+	int arg2 ;
+	char *arg3 = (char *) 0 ;
+	int res1 ;
+	char *buf1 = 0 ;
+	int alloc1 = 0 ;
+	int val2 ;
+	int ecode2 = 0 ;
+	int res3 ;
+	char *buf3 = 0 ;
+	int alloc3 = 0 ;
+	VALUE result;
+	VALUE vresult = Qnil;
+	
+	if ((argc < 3) || (argc > 3)) {
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 3)",argc); SWIG_fail;
+	}
+	res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+	if (!SWIG_IsOK(res1)) {
+		SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","is_blob_attr", 1, argv[0] ));
+	}
+	arg1 = (char *)(buf1);
+	ecode2 = SWIG_AsVal_int(argv[1], &val2);
+	if (!SWIG_IsOK(ecode2)) {
+		SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","is_blob_attr", 2, argv[1] ));
+	}
+	arg2 = (int)(val2);
+	res3 = SWIG_AsCharPtrAndSize(argv[2], &buf3, NULL, &alloc3);
+	if (!SWIG_IsOK(res3)) {
+		SWIG_exception_fail(SWIG_ArgError(res3), Ruby_Format_TypeError( "", "char const *","is_blob_attr", 3, argv[2] ));
+	}
+	arg3 = (char *)(buf3);
+	result = (VALUE)is_blob_attr((char const *)arg1,arg2,(char const *)arg3);
+	vresult = result;
+	if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+	if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+	return vresult;
+fail:
+	if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+	if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+	return Qnil;
+}
+
+
+SWIGINTERN VALUE
+_wrap_update_blob_attribs(int argc, VALUE *argv, VALUE self) {
+	char *arg1 = (char *) 0 ;
+	int arg2 ;
+	int res1 ;
+	char *buf1 = 0 ;
+	int alloc1 = 0 ;
+	int val2 ;
+	int ecode2 = 0 ;
+	
+	if ((argc < 2) || (argc > 2)) {
+		rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
+	}
+	res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
+	if (!SWIG_IsOK(res1)) {
+		SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","update_blob_attribs", 1, argv[0] ));
+	}
+	arg1 = (char *)(buf1);
+	ecode2 = SWIG_AsVal_int(argv[1], &val2);
+	if (!SWIG_IsOK(ecode2)) {
+		SWIG_exception_fail(SWIG_ArgError(ecode2), Ruby_Format_TypeError( "", "int","update_blob_attribs", 2, argv[1] ));
+	}
+	arg2 = (int)(val2);
+	update_blob_attribs((char const *)arg1,arg2);
+	if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+	return Qnil;
+fail:
+	if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
+	return Qnil;
+}
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
@@ -3383,5 +3467,8 @@ SWIGEXPORT void Init_System(void) {
   rb_define_module_function(mSystem, "clear_network_status_notify", _wrap_clear_network_status_notify, -1);
   rb_define_module_function(mSystem, "set_http_proxy_url", _wrap_set_http_proxy_url, -1);
   rb_define_module_function(mSystem, "unset_http_proxy", _wrap_unset_http_proxy, -1);
+  rb_define_module_function(mSystem, "is_blob_attr", _wrap_is_blob_attr, -1);
+  rb_define_module_function(mSystem, "update_blob_attribs", _wrap_update_blob_attribs, -1);
+
 }
 

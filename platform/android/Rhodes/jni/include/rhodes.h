@@ -68,7 +68,8 @@ public:
         return *this;
     }
 
-    T get() const {return m_object;}
+    T get() { return m_object; }
+    const T get() const { return m_object; }
 
     T release()
     {
@@ -91,12 +92,15 @@ private:
 
 typedef jholder<jobject> jhobject;
 typedef jholder<jstring> jhstring;
+typedef jholder<jobjectArray> jharray;
 
 namespace rho {
     template <typename K, typename V> class Hashtable;
     template <typename T> class Vector;
 }
-typedef std::auto_ptr<rho::Hashtable<std::string, std::string> > hashtableholder;
+
+typedef std::auto_ptr<rho::Vector<std::string> > HStringVector;
+typedef std::auto_ptr<rho::Hashtable<std::string, std::string> > HStringMap;
 
 template <typename T, typename U> T rho_cast(JNIEnv *env, U u);
 template <typename T, typename U> T rho_cast(U u);
@@ -115,11 +119,11 @@ struct rho_cast_helper<std::string, jstring>
     std::string operator()(JNIEnv *env, jstring );
 };
 
-template <>
-struct rho_cast_helper<std::string, jhstring>
-{
-    std::string operator()(JNIEnv *env, jhstring s) {return rho_cast_helper<std::string, jstring>()(env, s.get());}
-};
+//template <>
+//struct rho_cast_helper<std::string, jhstring>
+//{
+//    std::string operator()(JNIEnv *env, jhstring& s) { return rho_cast_helper<std::string, jstring>()(env, s.get()); }
+//};
 
 template <>
 struct rho_cast_helper<jhstring, char const *>
@@ -130,19 +134,19 @@ struct rho_cast_helper<jhstring, char const *>
 template <>
 struct rho_cast_helper<jhstring, char *>
 {
-    jhstring operator()(JNIEnv *env, char *s) {return rho_cast_helper<jhstring, char const *>()(env, s);}
+    jhstring operator()(JNIEnv *env, char *s) { return rho_cast_helper<jhstring, char const *>()(env, s);}
 };
 
 template <int N>
 struct rho_cast_helper<jhstring, char [N]>
 {
-    jhstring operator()(JNIEnv *env, char (&s)[N]) {return rho_cast_helper<jhstring, char const *>()(env, &s[0]);}
+    jhstring operator()(JNIEnv *env, char (&s)[N]) { return rho_cast_helper<jhstring, char const *>()(env, &s[0]);}
 };
 
 template <>
 struct rho_cast_helper<jhstring, std::string>
 {
-    jhstring operator()(JNIEnv *env, std::string const &s) {return rho_cast_helper<jhstring, char const *>()(env, s.c_str());}
+    jhstring operator()(JNIEnv *env, std::string const &s) { return rho_cast_helper<jhstring, char const *>()(env, s.c_str());}
 };
 
 struct RhoMapConvertor
@@ -161,35 +165,52 @@ struct RhoMapConvertor
 };
 
 template <>
-struct rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string,std::string> >, jobject>: public RhoMapConvertor
+struct rho_cast_helper<HStringMap, jobject>: public RhoMapConvertor
 {
-    typedef rho::Hashtable<std::string,std::string> element_type;
-    typedef std::auto_ptr<element_type> value_type;
-
+    typedef HStringMap value_type;
     value_type operator()(JNIEnv *env, jobject jObj);
 };
 
-template <>
-struct rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string, std::string> >, jhobject>
-{
-    typedef std::auto_ptr<rho::Hashtable<std::string,std::string> > value_type;
-    value_type operator()(JNIEnv *env, jhobject h) { return rho_cast_helper<value_type, jobject>()(env, h.get()); }
-};
+//template <>
+//struct rho_cast_helper<HStringMap, jhobject>
+//{
+//    typedef HStringMap value_type;
+//    value_type operator()(JNIEnv *env, const jhobject& h) { return rho_cast_helper<value_type, jobject>()(env, h.get()); }
+//};
 
 template <>
-struct rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string,std::string> >, jobjectArray>
+struct rho_cast_helper<HStringMap, jobjectArray>
 {
-    typedef rho::Hashtable<std::string,std::string> element_type;
-    typedef std::auto_ptr<element_type> value_type;
+    typedef HStringMap value_type;
     value_type operator()(JNIEnv *env, jobjectArray jKeys, jobjectArray jVals);
 };
 
+//template <>
+//struct rho_cast_helper<HStringMap, jharray>
+//{
+//    typedef HStringMap value_type;
+//    value_type operator()(JNIEnv *env, const jharray& jhKeys, jharray& jhVals) { return rho_cast<value_type>(env, jhKeys.get(), jhVals.get()); }
+//};
+
 template <>
-struct rho_cast_helper<std::auto_ptr<rho::Vector<std::string> >, jobjectArray>
+struct rho_cast_helper<HStringVector, jobjectArray>
 {
-    typedef rho::Vector<std::string> element_type;
-    typedef std::auto_ptr<element_type> value_type;
+    typedef HStringVector value_type;
     value_type operator()(JNIEnv *env, jobjectArray jArr);
+};
+
+//template <>
+//struct rho_cast_helper<HStringVector, jharray>
+//{
+//    typedef HStringVector value_type;
+//    value_type operator()(JNIEnv *env, const jharray& jhArr) { return rho_cast<value_type>(env, jhArr.get()); }
+//};
+
+template <>
+struct rho_cast_helper<HStringVector, jobject>
+{
+    typedef HStringVector value_type;
+    value_type operator()(JNIEnv *env, jobject jList);
 };
 
 } // namespace details
@@ -216,6 +237,30 @@ template <typename T, typename U>
 T rho_cast(U keys, U vals)
 {
     return details::rho_cast_helper<T, U>()(jnienv(), keys, vals);
+}
+
+template <typename T, typename U>
+T rho_cast(JNIEnv *env, const jholder<U>& u)
+{
+    return details::rho_cast_helper<T, U>()(env, u.get());
+}
+
+template <typename T, typename U>
+T rho_cast(const jholder<U>& u)
+{
+    return details::rho_cast_helper<T, U>()(jnienv(), u.get());
+}
+
+template <typename T, typename U>
+T rho_cast(JNIEnv *env, const jholder<U>& keys, const jholder<U>& vals)
+{
+    return details::rho_cast_helper<T, U>()(env, keys.get(), vals.get());
+}
+
+template <typename T, typename U>
+T rho_cast(const jholder<U>& keys, const jholder<U>& vals)
+{
+    return details::rho_cast_helper<T, U>()(jnienv(), keys.get(), vals.get());
 }
 
 #endif // _RHODES_H_D9BFC7B4FD394BECAF7EC535453253CC

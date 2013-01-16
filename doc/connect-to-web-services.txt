@@ -132,7 +132,7 @@ You can also send multiple files in a single `upload_file` request:
 ## AsyncHttp Callback
 As you noticed with each of the code samples above, we specified a `:callback` action.  This callback will execute when the `AsyncHttp` request is completed.
 
-Refer to [AsyncHttp API](/asynchttp-api#callback-parameters) for a discussion of the callback parameters.
+Refer to [AsyncHttp API](/rhodesapi/asynchttp-api#callback-parameters) for a discussion of the callback parameters.
 
 ## AsyncHttp and Animated Transitions
 

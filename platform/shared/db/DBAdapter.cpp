@@ -1298,6 +1298,11 @@ int rho_db_import(void* pDB, const char* zipName)
 	rho::db::CDBAdapter& db = *((rho::db::CDBAdapter*)pDB);
 	return db.importDatabase(zipName)? 1 : 0;
 }
+	
+unsigned long rho_sys_is_blob_attr(const char* szPartition, int nSrcID, const char* szAttrName)
+{
+	return rho_ruby_create_boolean( CDBAdapter::getDB(szPartition).getAttrMgr().isBlobAttr(nSrcID, szAttrName) );
+}
 
 #endif //RHO_NO_RUBY
 
@@ -1348,7 +1353,7 @@ void rho_db_init_attr_manager()
     rho::db::CDBAdapter::initAttrManager();
 }
 
-void rho_sync_update_blob_attribs(const char* szPartition, int source_id)
+void rho_sys_update_blob_attribs(const char* szPartition, int source_id)
 {
     rho::db::CDBAdapter& db = rho::db::CDBAdapter::getDB(szPartition);
     db.getAttrMgr().loadBlobAttrs(db);

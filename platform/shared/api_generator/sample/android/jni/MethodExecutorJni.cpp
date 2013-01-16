@@ -1,13 +1,18 @@
 
 #include "MethodExecutorJni.h"
+#include "MethodResultJni.h"
 
 #include "rhodes/JNIRhodes.h"
 
+#include "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "MethodExecutorJNI"
+
 namespace rhoelements {
 
-const char const * MethodExecutorJni::METHOD_EXECUTOR_CLASS = "com/motorolasolutions/rhoelements/MethodExecutor";
+const char * const MethodExecutorJni::METHOD_EXECUTOR_CLASS = "com/motorolasolutions/rhoelements/MethodExecutor";
 
-jclass MethodExecutorJni::s_MethodExecutorClass = NULL;
+jclass MethodExecutorJni::s_MethodExecutorClass = 0;
 jmethodID MethodExecutorJni::s_midRun;
 jmethodID MethodExecutorJni::s_midRunWithSeparateThread;
 jmethodID MethodExecutorJni::s_midRunWithUiThread;
@@ -88,7 +93,7 @@ void MethodExecutorJni::runWithUiThread(jhobject jhTask)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void MethodExecutorJni::run(jhobject jhTask, bool uiThread, MethodResultJni& result)
+void MethodExecutorJni::run(jhobject jhTask, MethodResultJni& result)
 {
     if(shouldRunWithUiThread())
     {

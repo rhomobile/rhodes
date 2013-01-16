@@ -3,13 +3,10 @@
 
 @implementation Barcode1Base
 
-@synthesize ID;
 
-- (id) init:(NSString*)_ID {
+- (id) init {
     self = [super init];
-    self.ID = _ID;
     mProperties = [NSMutableDictionary dictionary];
-    [self setProperty:@"ID" value:self.ID];
     return self;
 }
 
@@ -25,9 +22,24 @@
     return [mProperties dictionaryWithValuesForKeys:[[mProperties keyEnumerator] allObjects]];
 }
 
--(NSDictionary*) getListOfProperties:(NSArray*)listOfPropertyNames {
+-(NSDictionary*) getPropertiesByList:(NSArray*)listOfPropertyNames {
     return [mProperties dictionaryWithValuesForKeys:listOfPropertyNames];
 }
+
+
+-(void) getProps:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[self getAllProperties]];
+}
+
+-(void) getPropsWithString:(NSString*)param1 methodResult:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[self getProperty:param1]];
+}
+
+-(void) getPropsWithArray:(NSArray*)param1 methodResult:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[self getPropertiesByList:param1]];
+}
+
+
 
 -(void) dealloc {
     [mProperties release];
