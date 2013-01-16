@@ -1,12 +1,18 @@
 #include "Barcode1.h"
 //#include "..\..\..\common\ruby_helpers.h"
 
+#include "MethodResultJni.h"
+
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Barcode1RUBY"
 
+#include "ruby_helpers.h"
 #include "ext/rho/rhoruby.h"
-#include "common/RhodesApp.h"
+#include "rhodes/JNIRhoRuby.h"
+//#include "common/RhodesApp.h"
+
+using namespace rhoelements;
 
 static VALUE barcode1_getprops(int argc, VALUE *argv, const rho::String& id)
 {
@@ -39,18 +45,17 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, const rho::String& id)
                     result.setArgError("Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
                     return result.toRuby();
                 }
-                result.setCallBack(rho_ruby_is_string(argv[1]), rho_ruby_is_string(argv[2]));
+                result.setCallBack(getStringFromValue(argv[1]), getStringFromValue(argv[2]));
             }
             else
             {
-                result.setCallBack(rho_ruby_is_string(argv[1]), 0);
+                result.setCallBack(getStringFromValue(argv[1]), 0);
             }
         }
 
         if(rho_ruby_is_string(argv[0]))
         {
-            const char* szName = getStringFromValue(argv[0]);
-            barcode.getProps(rho_cast<jhstring>(szName), result);
+            barcode.getProps(rho_cast<jhstring>(argv[0]), result);
         }
         else if(rho_ruby_is_array(argv[0]))
         {
@@ -71,7 +76,7 @@ VALUE rb_barcode1_s_enumerate(VALUE klass)
 {
     MethodResultJni result;
     CBarcode1::enumerate(result);
-    return result.enumerateRubyObjects();
+    return result.enumerateRubyObjects(klass);
 }
 
 VALUE rb_barcode1_s_default(VALUE klass)
@@ -97,6 +102,26 @@ VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
 {
     rho::String id = rho_get_object_id(valObj);
     return barcode1_getprops(argc, argv, id);
+}
+
+VALUE rb_barcode1_s_setprops(int argc, VALUE *argv)
+{
+    //TODO: implement
+//    rho::String strDefaultID = CBarcode1FactoryBase::getBarcode1SingletonS()->getDefaultID();
+//    IBarcode1* pObj = CBarcode1FactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+//    return barcode1_setprops(argc, argv, pObj);
+    return rho_ruby_get_NIL();
+}
+
+VALUE rb_barcode1_setprops(int argc, VALUE *argv, VALUE valObj)
+{
+    //TODO: implement
+//    const char* szID = rho_get_object_id( valObj );
+//    IBarcode1* pObj =  CBarcode1FactoryBase::getInstance()->getModuleByID(szID);
+
+//    return barcode1_setprops(argc, argv, pObj);
+    return rho_ruby_get_NIL();
 }
 
 }
