@@ -4,7 +4,4 @@
 
 @interface Barcode1 : Barcode1Base<IBarcode1> {
 }
-
--(id) init;
-
 @end

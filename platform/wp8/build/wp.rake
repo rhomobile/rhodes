@@ -201,39 +201,44 @@ namespace "build" do
 		task :rhobundle_production => [:rhobundle, :rhobundlemap] do
         end
         
-		task :devrhobundleRelease do #=> [:rhobundle, :rhobundlemap, "device:wp:addbundletoxapRelease"] do
-			#out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-			#doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
-			#chdir $srcdir
-			#Dir.glob(File.join("**", '*.*')).each do |f|
-			#	doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'" 
-			#end
-			#File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
-			
-			#chdir $startdir
+        task :devrhobundleRelease => [:rhobundle, :rhobundlemap, "device:wp:addbundletoxapRelease"] do
+          puts 'devrhobundleDebug task started'
 
-			#mkdir_p $config["build"]["wp8path"] + "/rhodes/obj/Release" if not File.exists? $config["build"]["wp8path"] + "/rhodes/obj/Release"
-			#cp out_dir + "XapCacheFile.xml", $config["build"]["wp8path"] + "/rhodes/obj/Release"
-		end
-
-		task :devrhobundleDebug => [:rhobundle, :rhobundlemap, "device:wp8:addbundletoxapDebug"] do
-            puts 'devrhobundleDebug task started'
-
-			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
+          out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
             
-			doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
-			chdir $srcdir
-			Dir.glob(File.join("**", '*.*')).each do |f|
-				doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'" 
-			end
-			File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
-			
-			chdir $startdir
+          doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
+          chdir $srcdir
+          Dir.glob(File.join("**", '*.*')).each do |f|
+            doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'" 
+          end
 
-			mkdir_p $config["build"]["wp8path"] + "/rhodes/obj/Debug" if not File.exists? $config["build"]["wp8path"] + "/rhodes/obj/Debug"
-			cp out_dir + "XapCacheFile.xml", $config["build"]["wp8path"] + "/rhodes/obj/Debug"
-		end
-	end
+          File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
+			
+          chdir $startdir
+
+          mkdir_p $config["build"]["wp8path"] + "/rhodes/obj/Release" if not File.exists? $config["build"]["wp8path"] + "/rhodes/obj/Release"
+          cp out_dir + "XapCacheFile.xml", $config["build"]["wp8path"] + "/rhodes/obj/Release"
+        end
+
+        task :devrhobundleDebug => [:rhobundle, :rhobundlemap, "device:wp8:addbundletoxapDebug"] do
+          puts 'devrhobundleDebug task started'
+
+          out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
+            
+          doc = REXML::Document.new(File.open(out_dir + "XapCacheFile.xml"))
+          chdir $srcdir
+          Dir.glob(File.join("**", '*.*')).each do |f|
+            doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'" 
+          end
+
+          File.open(out_dir + "XapCacheFile.xml", "w") { |f| doc.write f, 2; f.close }
+			
+          chdir $startdir
+
+          mkdir_p $config["build"]["wp8path"] + "/rhodes/obj/Debug" if not File.exists? $config["build"]["wp8path"] + "/rhodes/obj/Debug"
+          cp out_dir + "XapCacheFile.xml", $config["build"]["wp8path"] + "/rhodes/obj/Debug"
+        end
+  end
 end
 
 def get_app_log()
@@ -252,49 +257,50 @@ def run_rho_log_server()
     system("START rake run:wp:rhologserver[#{$app_path}]")
 end
  
- namespace "device" do
-	namespace "wp8" do
-		task :addbundletoxapDebug do
-			#mkdir_p $bindir + "/rho" if not File.exists? $bindir + "/rho"
-			#cp_r $srcdir + "/apps", $bindir + "/rho"
-			#cp_r $srcdir + "/db", $bindir + "/rho"
-			#cp_r $srcdir + "/lib", $bindir + "/rho"
-			#cp_r $srcdir + "/RhoBundleMap.txt", $bindir + "/rho"
-			#cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
+namespace "device" do
+  namespace "wp8" do
 
-			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
+    task :addbundletoxapDebug do
+      #mkdir_p $bindir + "/rho" if not File.exists? $bindir + "/rho"
+      #cp_r $srcdir + "/apps", $bindir + "/rho"
+      #cp_r $srcdir + "/db", $bindir + "/rho"
+      #cp_r $srcdir + "/lib", $bindir + "/rho"
+      #cp_r $srcdir + "/RhoBundleMap.txt", $bindir + "/rho"
+      #cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
+
+      out_dir = $startdir + "/" + $vcbindir + "/rhodes/Debug/"
 			
-			chdir $startdir
-			args = []
-			args << "a"
-			args << "-tzip"
-			args << out_dir + "rhodes.xap"
-			args << $srcdir + "/*"
-			puts Jake.run($zippath, args)
+      chdir $startdir
+      args = []
+      args << "a"
+      args << "-tzip"
+      args << out_dir + "rhodes.xap"
+      args << $srcdir + "/*"
+      puts Jake.run($zippath, args)
 
-			#rm_r $bindir + "/rho"
-		end
+      #rm_r $bindir + "/rho"
+    end
 
-		task :addbundletoxapRelease do
-			#mkdir_p $bindir + "/rho" if not File.exists? $bindir + "/rho"
-			#cp_r $srcdir + "/apps", $bindir + "/rho"
-			#cp_r $srcdir + "/db", $bindir + "/rho"
-			#cp_r $srcdir + "/lib", $bindir + "/rho"
-			#cp_r $srcdir + "/RhoBundleMap.txt", $bindir + "/rho"
-			#cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
+    task :addbundletoxapRelease do
+      #mkdir_p $bindir + "/rho" if not File.exists? $bindir + "/rho"
+      #cp_r $srcdir + "/apps", $bindir + "/rho"
+      #cp_r $srcdir + "/db", $bindir + "/rho"
+      #cp_r $srcdir + "/lib", $bindir + "/rho"
+      #cp_r $srcdir + "/RhoBundleMap.txt", $bindir + "/rho"
+      #cp_r $srcdir + "/timestamp.txt", $bindir + "/rho"
 
-			out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
+      out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
 			
-			chdir $startdir
-			args = []
-			args << "a"
-			args << "-tzip"
-			args << out_dir + "rhodes.xap"
-			args << $srcdir + "/*"
-			puts Jake.run($zippath, args)
+      chdir $startdir
+      args = []
+      args << "a"
+      args << "-tzip"
+      args << out_dir + "rhodes.xap"
+      args << $srcdir + "/*"
+      puts Jake.run($zippath, args)
 
-			#rm_r $bindir + "/rho"
-		end
+      #rm_r $bindir + "/rho"
+    end
 
 		desc "Build production for device or emulator"
 		task :production => ["build:wp8:rhobundle_production","build:wp8:rhodes", "device:wp8:addbundletoxapRelease"] do

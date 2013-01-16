@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rhodes.h"
+#include "rhodes/JNIRhodes.h"
 
 #include <string>
 
@@ -9,18 +9,37 @@ namespace rhoelements {
 
 class MethodResultJni
 {
-    jhobject m_obj;
+    static const char const * METHOD_RESULT_CLASS;
+    enum ErrType{ eNone = 0, eError, eArgError};
 
-    const char* m_callBackUrl;
-    const char* m_callBackData;
+    static jclass s_methodResultClass;
+    static jmethodID s_midMethodResult;
+    static jmethodID s_midSetCallBack;
+    static jfieldID s_fidString;
+    static jfieldID s_fidStringList;
+    static jfieldID s_fidStringMap;
+
+    static JNIEnv* jniInit();
+
+    jhobject m_jhResult;
+
+    bool m_hasCallbackUrl;
+
+    ErrType m_errType;
+    std::string m_errMsg;
+
+    jhstring getStringResult(JNIEnv*);
+    jhobject getListResult(JNIEnv*);
+    jhobject getMapResult(JNIEnv*);
 
 public:
-    MethodResultJni(jobject jObj) : m_callBackUrl(0), m_callBackData(0) {};
+    MethodResultJni();
 
-    void setCallBack(const char* url, const char* data) { m_callBackUrl = url; m_callBackData = data; }
-    bool hasCallBackUrl() { return m_callBackUrl != 0; }
+    void setCallBack(const char* url, const char* data);
+    bool hasCallBackUrl() { return m_hasBackUrl != 0; }
 
-    operator jobject();
+    operator jobject () { return m_jhResult.get(); }
+    operator bool () { return jobject(this) != 0; }
 
     VALUE enumerateRubyObjects();
     std::string enumerateJSObjects();
@@ -28,8 +47,14 @@ public:
     VALUE toRuby();
     std::string toJson();
 
-    void setError(const char* msg);
-    void setArgError(const char *fmt, ...);
+    void setError(const char* msg) {
+        m_errType = eError;
+        m_errMsg = msg;
+    }
+    void setArgError(const char *msg) {
+        m_errType = eArgError;
+        m_errMsg = msg;
+    }
 };
 
 }

@@ -67,7 +67,8 @@ ANDROID_PERMISSIONS = {
   'motoroladev' => ['SYSTEM_ALERT_WINDOW', 'BROADCAST_STICKY', proc do |manifest| add_motosol_sdk(manifest) end],
   'webkit_browser' => nil,
   'shared_runtime' => nil,
-  'motorola_browser' => nil
+  'motorola_browser' => nil,
+  'hardware_acceleration' => nil
 }
 
 ANDROID_CAPS_ALWAYS_ENABLED = ['network_state']
@@ -1246,6 +1247,7 @@ namespace "build" do
       generator.minSdkVer = $min_sdk_level
       generator.maxSdkVer = $max_sdk_level
       generator.screenOrientation = $android_orientation unless $android_orientation.nil?
+      generator.hardwareAcceleration = true if $app_config["capabilities"].index('hardware_acceleration')
 
       generator.usesLibraries['com.google.android.maps'] = true if $use_google_addon_api
 
