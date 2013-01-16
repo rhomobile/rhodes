@@ -8,11 +8,11 @@ class CModuleBase: public ModuleClass
 {
 protected:
 
-    rho::String m_strID;
-    rho::Hashtable<rho::String, rho::String> m_hashProps;
+    rho::StringW m_strID;
+    rho::Hashtable<rho::StringW, rho::StringW> m_hashProps;
 
 public:
-    CModuleBase(const rho::String& strID)
+    CModuleBase(const rho::StringW& strID)
     {
         m_strID = strID;
     }
@@ -22,11 +22,11 @@ public:
         oResult.set(m_hashProps);
     }
 
-    virtual void getPropsWithString(const rho::String& strName, CMethodResult& oResult)
+    virtual void getPropsWithString(const rho::StringW& strName, CMethodResult& oResult)
     {
         oResult.set(m_hashProps[strName]);
     }
-    virtual void getPropsWithArray(const rho::Vector<rho::String>& arNames, CMethodResult& oResult)
+    virtual void getPropsWithArray(const rho::Vector<rho::StringW>& arNames, CMethodResult& oResult)
     {
         oResult.set(m_hashProps);
     }
@@ -37,7 +37,7 @@ template<typename ModuleClass>
 class CModuleSingletonBase : public ModuleClass
 {
 protected:
-    rho::String m_strDefaultID;
+    rho::StringW m_strDefaultID;
     rho::common::CAutoPtr<rho::common::CThreadQueue> m_pCommandQueue;
 
     class CCallInThread : public rho::common::CRhoThread
@@ -76,8 +76,8 @@ public:
         new CCallInThread(pFunctor);
     }
 
-    virtual void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
-    virtual rho::String getDefaultID()
+    virtual void setDefaultID(const rho::StringW& strDefaultID){ m_strDefaultID = strDefaultID; }
+    virtual rho::StringW getDefaultID()
     { 
         if ( m_strDefaultID.length() == 0 )
             setDefaultID(getInitialDefaultID());
@@ -90,7 +90,7 @@ class CModuleFactoryBase : public BaseClass
 {
 protected:
     rho::common::CAutoPtr<SingletonClass> m_pModuleSingleton;
-    rho::Hashtable<rho::String,ModuleClass*> m_hashModules;
+    rho::Hashtable<rho::StringW,ModuleClass*> m_hashModules;
 
 public:
 
@@ -102,7 +102,7 @@ public:
         return m_pModuleSingleton;
     }
 
-    virtual ModuleClass* getModuleByID(const rho::String& strID)
+    virtual ModuleClass* getModuleByID(const rho::StringW& strID)
     {
         if ( !m_hashModules.containsKey(strID) )
         {
@@ -116,6 +116,6 @@ public:
     }
     
     virtual SingletonClass* createModuleSingleton() = 0;
-    virtual ModuleClass* createModuleByID(const rho::String& strID) = 0;
+    virtual ModuleClass* createModuleByID(const rho::StringW& strID) = 0;
 
 };

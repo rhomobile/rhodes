@@ -9,8 +9,8 @@ struct IBarcode1
 {
     virtual ~IBarcode1(){}
     virtual void getProps(CMethodResult& oResult) = 0;
-    virtual void getPropsWithString(const rho::String& strName, CMethodResult& oResult) = 0;
-    virtual void getPropsWithArray(const rho::Vector<rho::String>& arNames, CMethodResult& oResult) = 0;
+    virtual void getPropsWithString(const rho::StringW& strName, CMethodResult& oResult) = 0;
+    virtual void getPropsWithArray(const rho::Vector<rho::StringW>& arNames, CMethodResult& oResult) = 0;
 };
 
 struct IBarcode1Singleton
@@ -19,9 +19,9 @@ struct IBarcode1Singleton
 
     virtual void enumerate(CMethodResult& oResult) = 0;
 
-    virtual rho::String getDefaultID() = 0;
-    virtual rho::String getInitialDefaultID() = 0;
-    virtual void setDefaultID(const rho::String& strID) = 0;
+    virtual rho::StringW getDefaultID() = 0;
+    virtual rho::StringW getInitialDefaultID() = 0;
+    virtual void setDefaultID(const rho::StringW& strID) = 0;
 
     virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor) = 0;
     virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor) = 0;
@@ -32,7 +32,7 @@ struct IBarcode1Factory
     virtual ~IBarcode1Factory(){}
 
     virtual IBarcode1Singleton* getModuleSingleton() = 0;
-    virtual IBarcode1* getModuleByID(const rho::String& strID) = 0;
+    virtual IBarcode1* getModuleByID(const rho::StringW& strID) = 0;
 };
 
 class CBarcode1FactoryBase : public CModuleFactoryBase<IBarcode1, IBarcode1Singleton, IBarcode1Factory>

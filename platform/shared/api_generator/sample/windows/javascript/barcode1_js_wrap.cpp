@@ -5,10 +5,13 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Barcode1"
 
+#include "common/StringConverter.h"
+
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 
 using namespace rho;
 using namespace rho::json;
+using namespace rho::common;
 
 rho::String js_barcode1_enumerate(const rho::String& strID, CJSONArrayIterator& oParams)
 {
@@ -16,7 +19,7 @@ rho::String js_barcode1_enumerate(const rho::String& strID, CJSONArrayIterator& 
 
     if ( !oParams.isEnd() )
     {
-        oRes.setError("Barcode1::enumerate - wrong number of arguments");
+        oRes.setError(L"Barcode1::enumerate - wrong number of arguments");
         return oRes.toJSON();
     }
 
@@ -29,10 +32,10 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
     //If method has call_in_ui_thread attribute, then call method in UI thread if no return value or callback present
     //If method has call_in_thread attribute, then call method in separate thread if no return value or callback present
     //If method calles with callback, then call method in separate thread
-    boolean bCallInUIThread = false;
-    boolean bCallInThread = false;
+    bool bCallInUIThread = false;
+    bool bCallInThread = false;
 
-    rho::String strObjID = strID;
+    rho::StringW strObjID = convertToStringW(strID);
     if ( strObjID.length() == 0 )
         strObjID = CBarcode1FactoryBase::getBarcode1SingletonS()->getDefaultID();
 
@@ -55,20 +58,20 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
             pObj->getProps(oRes);
         }else if ( oParam1.isString() )
         {
-            pObj->getPropsWithString(oParam1.getString(), oRes);
+            pObj->getPropsWithString(convertToStringW(oParam1.getString()), oRes);
         }else if ( oParam1.isArray() )
         {
-            rho::Vector<rho::String> ar;
+            rho::Vector<rho::StringW> ar;
             CJSONArrayIterator arParam(oParam1);
             for( ; !arParam.isEnd(); arParam.next() )
             {
-                ar.addElement( arParam.getCurItem().getString() );
+                ar.addElement( convertToStringW(arParam.getCurItem().getString()) );
             }
 
             pObj->getPropsWithArray(ar, oRes );
         }else
         {
-            oRes.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
+            oRes.setArgError(L"Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
         }
     }else
     {
@@ -83,7 +86,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
             CJSONEntry oParam3 = oParams.getCurItem();
             if ( !oParam3.isString() )
             {
-                oRes.setArgError("Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
+                oRes.setArgError(L"Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
                 return oRes.toJSON();
             }
 
@@ -99,23 +102,23 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
         }else if ( oParam1.isString() )
         {
             oRes.setStringParam( oParam1.getString() );
-            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
-                ( pObj, &IBarcode1::getPropsWithString, oParam1.getString(), oRes );
+            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::StringW&, CMethodResult&), rho::StringW, CMethodResult>
+                ( pObj, &IBarcode1::getPropsWithString, convertToStringW(oParam1.getString()), oRes );
 
         }else if ( oParam1.isArray() )
         {
-            rho::Vector<rho::String> ar;
+            rho::Vector<rho::StringW> ar;
             CJSONArrayIterator arParam(oParam1);
             for( ; !arParam.isEnd(); arParam.next() )
             {
-                ar.addElement( arParam.getCurItem().getString() );
+                ar.addElement( convertToStringW(arParam.getCurItem().getString()) );
             }
 
-            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::String>&, CMethodResult&), rho::Vector<rho::String>, CMethodResult>
+            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::StringW>&, CMethodResult&), rho::Vector<rho::StringW>, CMethodResult>
                 ( pObj, &IBarcode1::getPropsWithArray, ar, oRes );
         }else
         {
-            oRes.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
+            oRes.setArgError(L"Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
             return oRes.toJSON();
         }
 
