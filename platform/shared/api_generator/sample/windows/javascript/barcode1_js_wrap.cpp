@@ -7,6 +7,7 @@
 
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 
+using namespace rho;
 using namespace rho::json;
 
 rho::String js_barcode1_enumerate(const rho::String& strID, CJSONArrayIterator& oParams)

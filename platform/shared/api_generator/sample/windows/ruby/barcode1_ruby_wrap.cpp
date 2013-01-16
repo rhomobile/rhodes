@@ -7,6 +7,7 @@
 
 #include "ext/rho/rhoruby.h"
 
+using namespace rho;
 extern "C"
 {
 
