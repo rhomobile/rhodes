@@ -19,19 +19,7 @@ rho::String js_barcode1_enumerate(const rho::String& strID, CJSONArrayIterator& 
         return oRes.toJSON();
     }
 
-    CBarcode1SingletonBase::getInstance()->enumerate(oRes);
-
-    rho::Vector<rho::String>& arIDs = oRes.getStringArray();
-
-    for( int i = 0; i < arIDs.size(); i++ )
-    {
-        if ( !CBarcode1SingletonBase::getInstance()->getModules().containsKey(arIDs[i]) )
-        {
-            IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->create(arIDs[i]);
-            CBarcode1SingletonBase::getInstance()->getModules().put(arIDs[i], pObj );
-        }
-    }
-
+    CBarcode1FactoryBase::getBarcode1SingletonS()->enumerate(oRes);
     return oRes.toJSON();
 }
 
@@ -45,9 +33,9 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
 
     rho::String strObjID = strID;
     if ( strObjID.length() == 0 )
-        strObjID = CBarcode1SingletonBase::getInstance()->getDefaultIDEx();
+        strObjID = CBarcode1FactoryBase::getBarcode1SingletonS()->getDefaultID();
 
-    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->getModules()[strObjID];
+    IBarcode1* pObj = CBarcode1FactoryBase::getInstance()->getModuleByID(strObjID);
 
     CMethodResult oRes;
     if ( oParams.isEnd() )
@@ -66,7 +54,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
             pObj->getProps(oRes);
         }else if ( oParam1.isString() )
         {
-            pObj->getProps(oParam1.getString(), oRes);
+            pObj->getPropsWithString(oParam1.getString(), oRes);
         }else if ( oParam1.isArray() )
         {
             rho::Vector<rho::String> ar;
@@ -76,7 +64,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
                 ar.addElement( arParam.getCurItem().getString() );
             }
 
-            pObj->getProps(ar, oRes );
+            pObj->getPropsWithArray(ar, oRes );
         }else
         {
             oRes.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
@@ -111,7 +99,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
         {
             oRes.setStringParam( oParam1.getString() );
             pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
-                ( pObj, &IBarcode1::getProps, oParam1.getString(), oRes );
+                ( pObj, &IBarcode1::getPropsWithString, oParam1.getString(), oRes );
 
         }else if ( oParam1.isArray() )
         {
@@ -123,7 +111,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
             }
 
             pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::String>&, CMethodResult&), rho::Vector<rho::String>, CMethodResult>
-                ( pObj, &IBarcode1::getProps, ar, oRes );
+                ( pObj, &IBarcode1::getPropsWithArray, ar, oRes );
         }else
         {
             oRes.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
@@ -133,7 +121,7 @@ rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& o
         if ( bCallInUIThread )
             rho_wm_impl_performOnUiThread( pFunctor );
         else //call in separate thread
-            CBarcode1SingletonBase::getInstance()->addCommandToQueue( pFunctor );
+            CBarcode1FactoryBase::getBarcode1SingletonS()->addCommandToQueue( pFunctor );
     }
 
     return oRes.toJSON();

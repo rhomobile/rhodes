@@ -3,47 +3,21 @@
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "Barcode1"
+#define DEFAULT_LOGCATEGORY "Barcode1RUBY"
 
 #include "ext/rho/rhoruby.h"
 #include "common/RhodesApp.h"
 
-
-extern "C"
+static VALUE barcode1_getprops(int argc, VALUE *argv, const rho::String& id)
 {
+    MethodResultJni result;
+    if(!result)
+    {
+        result.setError("JNI error: failed to initialize MethodResult java object");
+        return result.toRuby();
+    }
 
-VALUE rb_barcode1_s_enumerate(VALUE klass)
-{
-    MethodResultJni resJni = CBarcode1::enumerate();
-    return resJni.enumerateRubyObjects();
-}
-
-VALUE rb_barcode1_s_default(VALUE klass)
-{
-    rho::String strDefaultID = rho_cast<rho::String>(CBarcode1::getDefaultID());
-    return rho_create_object_with_id(klass, strDefaultID.c_str());
-}
-
-VALUE rb_barcode1_s_set_default(VALUE klass, VALUE valObj)
-{
-    const char* szID = rho_get_object_id(valObj);
-    CBarcode1::setDefaultID(rho_cast<jhstring>(szID));
-
-    return rho_ruby_get_NIL();
-}
-
-static VALUE barcode1_getprops(int argc, VALUE *argv, jhobject jhObject)
-{
-    //If method has call_in_ui_thread attribute, then call method in UI thread if no return value or callback present
-    //If method has call_in_thread attribute, then call method in separate thread if no return value or callback present
-    //If method calles with callback, then call method in separate thread
-    boolean bCallInUIThread = false;
-    boolean bCallInThread = false;
-
-    //TODO: Initialize the MethodResultJni instance
-    MethodResultJni result(0);
-
-    CBarcode1 barcode(jhObject, bCallInUIThread);
+    CBarcode1 barcode(id);
     if(argc == 0)
     {
         barcode.getProps(result);
@@ -90,17 +64,39 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, jhobject jhObject)
     result.toRuby();
 }
 
+extern "C"
+{
+
+VALUE rb_barcode1_s_enumerate(VALUE klass)
+{
+    MethodResultJni result;
+    CBarcode1::enumerate(result);
+    return result.enumerateRubyObjects();
+}
+
+VALUE rb_barcode1_s_default(VALUE klass)
+{
+    return rho_create_object_with_id(klass, CBarcode1::getDefaultID().c_str());
+}
+
+VALUE rb_barcode1_s_set_default(VALUE klass, VALUE valObj)
+{
+    const char* szID = rho_get_object_id(valObj);
+    CBarcode1::setDefaultID(szID);
+
+    return rho_ruby_get_NIL();
+}
+
 VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 {
-    jhobject jhBarcode = CBarcode1::getDefault();
-    return barcode1_getprops(argc, argv, jhBarcode);
+    rho::String id = CBarcode1::getDefaultID();
+    return barcode1_getprops(argc, argv, id);
 }
 
 VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
 {
-    const char* szID = rho_get_object_id(valObj);
-    jhobject jhBarcode = CBarcode1::create(rho_cast<jhstring>(szID));
-    return barcode1_getprops(argc, argv, jhBarcode);
+    rho::String id = rho_get_object_id(valObj);
+    return barcode1_getprops(argc, argv, id);
 }
 
 }
