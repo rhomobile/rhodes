@@ -143,9 +143,9 @@ begin
         require 'rhosystem'
     end
 
-    if defined? RHO_WP8
-        require 'rhosystem_wp8'
-    end
+    #if defined? RHO_WP8
+    #    require 'rhosystem_wp8'
+    #end
 
     if defined? RHO_ME
         require 'rationalME'

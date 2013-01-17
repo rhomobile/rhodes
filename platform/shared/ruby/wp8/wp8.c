@@ -237,14 +237,14 @@ GetVersionExA(
 	return FALSE;
 }
 
-BOOL
+/*BOOL
 WINAPI
 GetVersionExW(
     _Inout_ LPOSVERSIONINFOW lpVersionInformation
     )
 {
 	return FALSE;
-}
+}*/
 
 BOOL
 WINAPI

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+
+if [ "$RHO_PLATFORM" = "android" ]; then
+
+cd barcode1/platform/android
+rake --trace
+
+elif [ "$RHO_PLATFORM" = "iphone" ]; then
+
+cd barcode1/platform/iphone
+rake --trace
+
+fi
+
+
+

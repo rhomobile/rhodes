@@ -1,16 +1,19 @@
 #include "common/RhoStd.h"
 #include "rhodes/JNIRhodes.h"
+#include "rhodes/JNIRhoRuby.h"
 #include "com_motorolasolutions_rhoelements_MethodResult.h"
-#include "common/MethodResult.h"
+#include "MethodResult.h"
 #include "MethodResultJni.h"
+#include "ruby_helpers.h"
 
 #include "logging/RhoLog.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MethodResultJNI"
 
 namespace rhoelements {
 
-const char const * MethodResultJni::METHOD_RESULT_CLASS = "com/motorolasolutions/rhoelements/MethodResult";
+const char * const MethodResultJni::METHOD_RESULT_CLASS = "com/motorolasolutions/rhoelements/MethodResult";
 
 jclass MethodResultJni::s_methodResultClass = 0;
 jmethodID MethodResultJni::s_midMethodResult;
@@ -94,7 +97,7 @@ jhobject MethodResultJni::getMapResult(JNIEnv* env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni() : m_hasBackUrl(false), m_errtype(eNone)
+MethodResultJni::MethodResultJni() : m_jhResult(0), m_hasCallbackUrl(false), m_errType(eNone)
 {
     JNIEnv *env = jniInit();
     if (!env) {
@@ -108,8 +111,6 @@ MethodResultJni::MethodResultJni() : m_hasBackUrl(false), m_errtype(eNone)
 
 void MethodResultJni::setCallBack(const char* url, const char* data)
 {
-    m_hasBackUrl = true;
-
     JNIEnv* env = jniInit();
     if (!env) {
         RAWLOG_ERROR("JNI initialization failed");
@@ -119,10 +120,12 @@ void MethodResultJni::setCallBack(const char* url, const char* data)
     jhstring jhUrl = rho_cast<jhstring>(url);
     jhstring jhData = rho_cast<jhstring>(data);
     env->CallVoidMethod(m_jhResult.get(), s_midSetCallBack, jhUrl.get(), jhData.get());
+
+    m_hasCallbackUrl = true;
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-VALUE MethodResultJni::enumerateRubyObjects()
+VALUE MethodResultJni::enumerateRubyObjects(VALUE klass)
 {
     CHoldRubyValue valArray(rho_ruby_create_array());
 
@@ -133,9 +136,9 @@ VALUE MethodResultJni::enumerateRubyObjects()
         return rho_ruby_get_NIL();;
     }
 
-    rho::Vector<rho::String> arIDs = rho_cast<rho::Vector<rho::String> >(env, getListResult(env));
+    HStringVector pIDs = rho_cast<HStringVector>(env, getListResult(env));
 
-    for( int i = 0; i < arIDs.size(); i++ )
+    for(HStringVector::element_type::size_type i = 0; i < pIDs->size(); ++i)
     {
         //TODO: ASk Evgeny about this staff
         //if ( !CBarcode1SingletonBase::getInstance()->getModules().containsKey(arIDs[i]) )
@@ -144,8 +147,8 @@ VALUE MethodResultJni::enumerateRubyObjects()
         //    CBarcode1SingletonBase::getInstance()->getModules().put(arIDs[i], pObj );
         //}
 
-        VALUE valObj = rho_create_object_with_id( klass, arIDs[i].c_str() );
-        rho_ruby_add_to_array( valArray, valObj );
+        VALUE valObj = rho_create_object_with_id( klass, (*pIDs)[i].c_str() );
+        rho_ruby_add_to_array(valArray, valObj);
     }
 
     return valArray;
@@ -153,9 +156,9 @@ VALUE MethodResultJni::enumerateRubyObjects()
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-std::string MethodResultJni::enumerateJSObjects()
+rho::String MethodResultJni::enumerateJSObjects()
 {
-
+    return rho::String();
 }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -195,7 +198,7 @@ VALUE MethodResultJni::toRuby()
         }
         else
         {
-            res = rho_cast<VALUE>(env, jhStringRes);
+            res = rho_cast<VALUE>(env, jhStrResult);
         }
     }
     else if(m_errType == eArgError)
@@ -218,27 +221,27 @@ VALUE MethodResultJni::toRuby()
 std::string MethodResultJni::toJson()
 {
     std::string res;
-    if(m_errType == eArgError )
-    {
-        res = "{'_RhoArgError':" + CJSONEntry::quoteValue(m_errMsg) + "}";
-    }
-    else if(m_errType == eError)
-    {
-        res = "{'_RhoRuntimeError':" + CJSONEntry::quoteValue(m_errMsg) + "}";
-    }
-
+//    if(m_errType == eArgError )
+//    {
+//        res = "{'_RhoArgError':" + CJSONEntry::quoteValue(m_errMsg) + "}";
+//    }
+//    else if(m_errType == eError)
+//    {
+//        res = "{'_RhoRuntimeError':" + CJSONEntry::quoteValue(m_errMsg) + "}";
+//    }
+//
     return res;
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 RHO_GLOBAL void JNICALL Java_com_motorolasolutions_rhoelements_MethodResult_nativeSetString
-  (JNIEnv *, jclass, jstring jRes, jstring jUrl, jstring jUrlData)
+  (JNIEnv * env, jclass, jstring jRes, jstring jUrl, jstring jUrlData)
 {
-    rho::String res = rho_cast<rho::String>(jRes);
-    rho::String url = rho_cast<rho::String>(jUrl);
-    rho::String data = rho_cast<rho::String>(jUrlData);
+    rho::String res = rho_cast<rho::String>(env, jRes);
+    rho::String url = rho_cast<rho::String>(env, jUrl);
+    rho::String data = rho_cast<rho::String>(env, jUrlData);
 
-    MethodResult result;
+    CMethodResult result;
     result.setRubyCallback(url);
     result.setCallbackParam(data);
     result.set(res);
@@ -247,32 +250,30 @@ RHO_GLOBAL void JNICALL Java_com_motorolasolutions_rhoelements_MethodResult_nati
 //----------------------------------------------------------------------------------------------------------------------
 
 RHO_GLOBAL void JNICALL Java_com_motorolasolutions_rhoelements_MethodResult_nativeSetStringList
-  (JNIEnv *, jclass, jobject jRes, jstring jUrl, jstring jUrlData)
+  (JNIEnv * env, jclass, jobject jRes, jstring jUrl, jstring jUrlData)
 {
-    rho::Vector<rho::String> res = rho_cast<rho::Vector<rho::String> >(jRes);
-    rho::String url = rho_cast<rho::String>(jUrl);
-    rho::String data = rho_cast<rho::String>(jUrlData);
+    HStringVector pRes = rho_cast<HStringVector>(env, jRes);
+    rho::String url = rho_cast<rho::String>(env, jUrl);
+    rho::String data = rho_cast<rho::String>(env, jUrlData);
 
-    MethodResult result;
+    CMethodResult result;
     result.setRubyCallback(url);
     result.setCallbackParam(data);
-    result.set(res);
-
+    result.set(*pRes);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 RHO_GLOBAL void JNICALL Java_com_motorolasolutions_rhoelements_MethodResult_nativeSetStringMap
-  (JNIEnv *, jclass, jobject jRes, jstring jUrl, jstring jUrlData)
+  (JNIEnv * env, jclass, jobject jRes, jstring jUrl, jstring jUrlData)
 {
-    rho::Hashtable<rho::String, rho::String> res = rho_cast<rho::Hashtable<rho::String, rho::String> >(jRes);
-    rho::String url = rho_cast<rho::String>(jUrl);
-    rho::String data = rho_cast<rho::String>(jUrlData);
+    HStringMap pRes = rho_cast<HStringMap>(env, jRes);
+    rho::String url = rho_cast<rho::String>(env, jUrl);
+    rho::String data = rho_cast<rho::String>(env, jUrlData);
 
-    MethodResult result;
+    CMethodResult result;
     result.setRubyCallback(url);
     result.setCallbackParam(data);
-    result.set(res);
-
+    result.set(*pRes);
 }
 //----------------------------------------------------------------------------------------------------------------------
 

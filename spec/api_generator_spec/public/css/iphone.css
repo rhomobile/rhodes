@@ -1,0 +1,876 @@
+a {
+    text-decoration: none;
+}
+
+.content {
+    width: inherit;
+    height: 100%;
+}
+
+.toolbar .noButton {
+    display: none;
+}
+
+.content ul {
+    -webkit-padding-start: 0;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.content ul li {
+    overflow: hidden;
+    clear: both;
+}
+
+.content ul li span {
+    display: block;
+}
+
+.content ul.settings li div.itemLabel span.title {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    margin: 0;
+    font-family: Helvetica;
+}
+
+h1 {
+    font-size: 1.4em;
+}
+
+/* header */
+
+.pageTitle h1 {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto 0 auto;
+    line-height: 50px;
+    color: white;
+    text-shadow: 1px 1px 1px #000;
+}
+
+/* toolbar */
+
+.toolbar {
+    width: 100%;
+    height: 50px;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #aebbcb), color-stop(0.5, #8094ae), color-stop(1.0, #6e84a2));
+}
+
+.toolbar div {
+    position: absolute;
+    overflow: hidden;
+    text-align: center;
+}
+
+.toolbar .leftItem {
+    top: 10px;
+    left: 10px;
+    width: 50px;
+}
+
+.toolbar .centerItem {
+    bottom: 20px;
+    width: 100%;
+    margin-left: 10px;
+    height: 30px;
+}
+
+.toolbar .rightItem {
+    top: 10px;
+    right: 10px;
+    width: 50px;
+}
+
+.toolbar a {
+    color: white;
+    display: block;
+    line-height: 30px;
+}
+
+.toolbar .backButton {
+    -webkit-border-bottom-left-radius: 16px 16px;
+    -webkit-border-bottom-right-radius: 6px 6px;
+    -webkit-border-image: url(/public/images/backButton.png) 0 5 0 13 stretch stretch;
+    -webkit-border-top-left-radius: 16px 16px;
+    -webkit-border-top-right-radius: 6px 6px;
+    border-width: 0 5px 0 13px;
+    width: auto;
+    font-size: .9em;
+    z-index: 3;
+}
+
+.toolbar .deleteButton,
+.toolbar .regularButton,
+.toolbar .blueButton {
+    -webkit-border-radius: 5px;
+    overflow: hidden;
+    text-align: center;
+    width: auto;
+    height: 30px;
+    font-size: .9em;
+    border-left: #5e7088 1px solid;
+    border-right: #5e7088 1px solid;
+    border-top: #34404e 1px solid;
+    border-bottom: #34404e 1px solid;
+    padding: 0 2px 0 2px;
+}
+
+.toolbar .deleteButton {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #aebbcb), color-stop(0.5, #8094ae), color-stop(1.0, #6e84a2));
+}
+
+.toolbar .regularButton {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #92a4bc), color-stop(0.5, #476997), color-stop(1.0, #4e6c92));
+}
+
+.toolbar .blueButton {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #6f96e9), color-stop(0.5, #3366cc), color-stop(1.0, #3366cc));
+    border: #1a49b3 1px solid;
+}
+
+.content {
+    background: url('/public/images/pinstripes.png');
+    min-height: 480px;
+}
+
+.content form button.createButton {
+    position: absolute;
+    bottom: 20px;
+    height: 35px;
+}
+
+.content .standardButton {
+    -webkit-appearance: none;
+    -webkit-border-radius: 8px;
+    background: white;
+    color: #436395;
+    font-size: 15px;
+    font-weight: bold;
+    width: 100%;
+    height: 40px;
+    border: 1px solid black;
+    margin-top: 10px;
+}
+
+.content .standardButton a {
+    display: block;
+    width: 100%;
+    color: #436395;
+    text-align: center;
+    line-height: 40px;
+}
+
+/*  text styles  */
+
+.darkBlue {
+    color: #7287A4;
+}
+
+.content h2.groupTitle {
+    font-size: 16px;
+    margin: 8px;
+    color: #565E70;
+}
+
+/* lists */
+
+.content ul {
+    border-top: 1px solid #848284;
+    background-color: white;
+    margin-bottom: 50px;
+}
+
+.content ul li {
+    border-bottom: 1px solid #848284;
+    min-height: 40px;
+}
+
+.content ul li a {
+    display: block;
+    color: black;
+    font-size: 20px;
+    height: 100%;
+    width: 100%;
+    padding: 15px 0 15px 0;
+}
+
+.content ul li > span {
+    padding: 15px 0 15px 0;
+}
+
+.content ul li a:active {
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(5, 140, 245)), to(rgb(1, 95, 230)));
+}
+
+.content ul li span.title {
+    padding: 0 10px 0 10px;
+    font-size: 20px;
+    font-weight: bold;
+    display: inline;
+}
+
+.content ul li div.itemLabel {
+    float: left;
+    width: 45%;
+    padding: 15px 0 15px 10px;
+}
+
+.content ul li div.itemValue {
+    float: right;
+    width: 45%;
+    padding: 15px 10px 15px 0;
+}
+
+.content ul li a span.disclosure_indicator {
+    background: url('/public/images/iphone/disclosure.png') no-repeat center right;
+    height: 25px;
+    width: 35px;
+    float: right;
+    margin-right: 10px;
+    display: inline;
+}
+
+.content ul li a span.detail_disclosure {
+    background: url('/public/images/iphone/disclosure_detail.png') no-repeat center right;
+    height: 27px;
+    width: 34px;
+    float: right;
+    margin-right: 10px;
+    display: inline;
+}
+
+.content ul li a img {
+    float: left;
+    height: 100%;
+    max-width: 100px;
+}
+
+/* Forms */
+
+.content form {
+    padding: 5px 0 75px 0;
+    border: none;
+    width: 300px;
+    margin: 0 auto;
+    font-size: medium;
+}
+
+.content form ul {
+    -webkit-border-radius: 8px;
+    background-color: white;
+    border: 1px solid #878787;
+    display: block;
+    font-size: 16px;
+    list-style-type: none;
+    margin: 0 auto 15px auto;
+    overflow: hidden;
+    padding: 0;
+}
+
+.content form ul li {
+    display: block;
+    border-bottom: 1px solid #848284;
+    line-height: 40px;
+    min-height: 40px;
+    width: 300px;
+    overflow: hidden;
+}
+
+.content form ul li:last-child {
+    border: none;
+}
+
+.content form ul li label {
+    float: left;
+    display: block;
+    color: black;
+    line-height: 40px;
+    padding: 0;
+    margin: 0 20px 0 10px;
+    width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.content form ul li label.fieldLabel {
+    display: none;
+}
+
+.content form input {
+    -webkit-appearance: none;
+    width: 45%;
+    border: 0;
+}
+
+.content form input, .content form select {
+    height: 40px;
+    font-size: medium;
+    font-weight: bold;
+}
+
+.content form input[type="text"], .content form input[type="password"] {
+    width: 289px;
+    background: transparent;
+    padding: 0 5px 0 10px;
+}
+
+.content form input[type="checkbox"] {
+    background: url('/public/images/iphone/switch.png') no-repeat center;
+    background-position-y: -27px;
+    float: right;
+    display: block;
+    margin: 7px 10px 7px 10px;
+    line-height: 40px;
+    height: 27px;
+    width: 94px;
+}
+
+.content form input[type="checkbox"]:checked {
+    background-position-y: 0;
+}
+
+.content form input[type="radio"] {
+    position: relative;
+    display: block;
+    width: 290px;
+    height: 40px;
+    line-height: 40px;
+    margin: 0;
+    -webkit-border-radius: 8px;
+}
+
+.content form input[type="radio"]:checked {
+    background: url('/public/images/iphone/radiobutton.png') no-repeat;
+    background-position-x: 100%;
+    background-position-y: 50%;
+}
+
+.content form select {
+    background: url('/public/images/iphone/select.png') no-repeat right;
+    border: 0px;
+    width: 100%;
+}
+
+.content form textarea {
+    -webkit-appearance: none;
+    border: none;
+    font-size: medium;
+    width: 280px;
+    line-height: 20px;
+}
+
+/* Settings */
+
+.content ul.settings {
+    padding: 0;
+    margin: 0;
+}
+
+.content ul.settings li.alertMessage {
+    text-align: center;
+}
+
+.content ul.settings li span {
+    line-height: 40px;
+}
+
+.content ul.settings li.alertMessage span.message {
+    color: red;
+}
+
+.content ul.settings li span.clientID {
+    margin-left: 4px;
+    font-size: 10px;
+}
+
+.content ul.settings li div.itemLabel span.title {
+    padding: 0;
+    margin: 0;
+}
+
+.content .reset {
+    height: 100%;
+    width: 300px;
+    padding: 10px;
+}
+
+.content .reset h4 {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    margin: 0 8px;
+    color: #565E70;
+}
+
+
+
+/* Override some styles provided by iphone.css to make them match the real iPhone more closely. */
+
+.toolbar {
+	background: -webkit-gradient( linear, left top, left bottom, color-stop(0, rgb(176,188,205)), color-stop(0.5, rgb(136,155,179)), color-stop(0.51, rgb(129,149,175)), color-stop(1, rgb(109,132,162)));
+	border-top: 1px solid #CDD5Df;
+	border-bottom: 1px solid #2D3642;
+}
+
+.toolbar a { font-weight: bold; }
+
+.pageTitle { width: 50%; margin:0 auto; }
+
+.pageTitle h1 {
+	text-shadow: rgba(0,0,0,0.6) 0px -1px 0;
+	width: 50%;  /* Should match pageTitle's width. */
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space:nowrap;
+}
+
+/* --- Controls the switcher buttons, trying to emulate the native switcher control. --- */
+
+/* Use the following pattern in your HTML code to implement it:
+
+  <div class="switcher">
+	<div class="ls-button ls-pressed ls-left"><a href="#">Left Button</a></div>
+	<div class="ls-button ls-center"><a href="#">Center Button</a></div>
+	<div class="ls-button ls-right ls-disabled"><a href="#">Right Button</a></div>
+  </div>
+  
+  */
+
+/* Use on the div containing your button options. */
+.switcher {
+	text-align:center;
+	position:relative;
+	position:relative;
+	width:250px;
+	margin:0 auto;
+	padding-top:10px;
+	height:30px;
+}
+
+/* All button divs must contain an <a> tag with the button's label in it. */
+.switcher a {
+	color:#fff;
+	text-shadow: rgba(0,0,0,0.5) 0px -1px 0;
+	font-weight:bold;
+	font-size:smaller;
+}
+
+/* Include the .ls-button style on each button div. */
+.switcher .ls-button {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgb(171,185,202)), color-stop(0.5, rgb(130,151,175)), color-stop(0.51, rgb(118,139,167)), color-stop(1, rgb(120,141,169)));
+    width:80px;  /* NOTE: If you only want to use 2 buttons, increase width to something more like 125px, and change margin to 0 -3px. */
+    height:15px;
+    display:inline-block;
+    padding-bottom:8px;
+    margin:0 -2px;
+    border:1px solid #000;
+    text-align:center;
+}
+
+/* Indicates the currently active (pressed) button. */
+.switcher .ls-pressed {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgb(142,164,193)), color-stop(0.5, rgb(88,119,162)), color-stop(0.51, rgb(71,105,153)), color-stop(1, rgb(74,108,152)));
+}
+
+.switcher .ls-left {
+    -webkit-border-top-left-radius: 4px;
+    -webkit-border-bottom-left-radius: 4px;
+}
+
+.switcher .ls-center {
+    border-right:none;
+    border-left:none;
+}
+
+.switcher .ls-right {
+    -webkit-border-top-right-radius: 4px;
+    -webkit-border-bottom-right-radius: 4px;
+}
+
+/* If an option should not be available, you can use the .ls-disabled class to gray it out. */
+.switcher .ls-disabled {
+    background:-webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(158,158,158)), color-stop(0.95, rgb(204,204,204)))
+}
+
+/* However, even with disabled classes you must still include an <a> tag. Just have it go href="#" */
+.switcher .ls-disabled a {
+    color:#f0f0f0;
+}
+
+/* ---------- JQM theme customization ------------- */
+.ui-bar-a {
+	border: 1px solid 		#ccc;
+	background: 			#bbb;
+    color: white;
+    text-shadow: 1px 1px 1px #000;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #aebbcb), color-stop(0.5, #8094ae), color-stop(1.0, #6e84a2));
+/*
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#bbb));
+*/
+}
+.ui-bar-a,
+.ui-bar-a input,
+.ui-bar-a select,
+.ui-bar-a textarea,
+.ui-bar-a button {
+	font-family: Helvetica, Arial, sans-serif;
+}
+.ui-bar-a .ui-link-inherit {
+	color: 					#333;
+}
+.ui-bar-a .ui-link {
+	color: 					#2489CE;
+	font-weight: bold;
+}
+
+
+
+.ui-btn-up-a {
+
+/*
+    -webkit-border-radius: 5px;
+    overflow: hidden;
+    text-align: center;
+    width: auto;
+    height: 30px;
+    font-size: .9em;
+    border-left: #5e7088 1px solid;
+    border-right: #5e7088 1px solid;
+    border-top: #34404e 1px solid;
+    border-bottom: #34404e 1px solid;
+    padding: 0 2px 0 2px;
+*/
+
+
+	border: 1px solid 		#222;
+	background: 			#333333;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #92a4bc), color-stop(0.5, #476997), color-stop(1.0, #4e6c92));
+/*
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#777), to(#555));
+*/
+}
+.ui-btn-up-a a.ui-link-inherit {
+	color: 					#fff;
+}
+.ui-btn-hover-a {
+	border: 1px solid 		#000;
+	background: 			#444444;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#888), to(#666));
+}
+.ui-btn-hover-a a.ui-link-inherit {
+	color: 					#fff;
+}
+.ui-btn-down-a {
+	border: 1px solid 		#000;
+	background: 			#3d3d3d;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#555), to(#7a7a7a));
+}
+.ui-btn-down-a a.ui-link-inherit {
+	color: 					#fff;
+}
+.ui-btn-up-a,
+.ui-btn-hover-a,
+.ui-btn-down-a {
+	font-family: Helvetica, Arial, sans-serif;
+	text-decoration: none;
+}
+
+
+.ui-body-c {
+	border: 1px solid 		#B3B3B3;
+	color: 					#333333;
+	text-shadow: 0 1px 0 	#fff;
+	background: 			#f0f0f0;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#ddd));
+}
+.ui-body-c,
+.ui-body-c input,
+.ui-body-c select,
+.ui-body-c textarea,
+.ui-body-c button {
+	font-family: Helvetica, Arial, sans-serif;
+}
+.ui-body-c .ui-link-inherit {
+	color: 					#333333;
+}
+.ui-body-c .ui-link {
+	color: 					#2489CE;
+	font-weight: bold;
+}
+
+.ui-btn-up-c {
+	border: 1px solid 		#ccc;
+	background: 			#eee;
+	font-weight: bold;
+	color: 					#444;
+	text-shadow: 0 1px 1px #f6f6f6;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#fdfdfd), to(#eee));
+}
+.ui-btn-up-c a.ui-link-inherit {
+	color: 					#2F3E46;
+}
+
+.ui-btn-hover-c {
+	border: 1px solid 		#bbb;
+	background: 			#dadada;
+	font-weight: bold;
+	color: 					#101010;
+	text-shadow: 0 1px 1px 	#fff;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#dadada));
+}
+.ui-btn-hover-c a.ui-link-inherit {
+	color: 					#2F3E46;
+}
+.ui-btn-down-c {
+	border: 1px solid 		#808080;
+	background: 			#fdfdfd;
+	font-weight: bold;
+	color: 					#111111;
+	text-shadow: 0 1px 1px 	#ffffff;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#fdfdfd));
+}
+.ui-btn-down-c a.ui-link-inherit {
+	color: 					#2F3E46;
+}
+.ui-btn-up-c,
+.ui-btn-hover-c,
+.ui-btn-down-c {
+	font-family: Helvetica, Arial, sans-serif;
+	text-decoration: none;
+}
+
+
+.ui-corner-tl {
+	-moz-border-radius-topleft: 		4px;
+	-webkit-border-top-left-radius: 	4px;
+	border-top-left-radius: 			4px;
+}
+.ui-corner-tr {
+	-moz-border-radius-topright: 		4px;
+	-webkit-border-top-right-radius: 	4px;
+	border-top-right-radius: 			4px;
+}
+.ui-corner-bl {
+	-moz-border-radius-bottomleft: 		4px;
+	-webkit-border-bottom-left-radius: 	4px;
+	border-bottom-left-radius: 			4px;
+}
+.ui-corner-br {
+	-moz-border-radius-bottomright: 	4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 		4px;
+}
+.ui-corner-top {
+	-moz-border-radius-topleft: 		4px;
+	-webkit-border-top-left-radius: 	4px;
+	border-top-left-radius: 			4px;
+	-moz-border-radius-topright: 		4px;
+	-webkit-border-top-right-radius: 	4px;
+	border-top-right-radius: 			4px;
+}
+.ui-corner-bottom {
+	-moz-border-radius-bottomleft: 		4px;
+	-webkit-border-bottom-left-radius: 	4px;
+	border-bottom-left-radius: 			4px;
+	-moz-border-radius-bottomright: 	4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 		4px;
+	}
+.ui-corner-right {
+	-moz-border-radius-topright: 		4px;
+	-webkit-border-top-right-radius: 	4px;
+	border-top-right-radius: 			4px;
+	-moz-border-radius-bottomright: 	4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 		4px;
+}
+.ui-corner-left {
+	-moz-border-radius-topleft: 		4px;
+	-webkit-border-top-left-radius: 	4px;
+	border-top-left-radius: 			4px;
+	-moz-border-radius-bottomleft: 		4px;
+	-webkit-border-bottom-left-radius: 	4px;
+	border-bottom-left-radius: 			4px;
+}
+.ui-corner-all {
+	-moz-border-radius: 				4px;
+	-webkit-border-radius: 				4px;
+	border-radius: 						4px;
+}
+
+
+
+.ui-btn-corner-tl {
+	-moz-border-radius-topleft: 		7px;
+	-webkit-border-top-left-radius: 	7px;
+	border-top-left-radius: 			7px;
+}
+.ui-btn-corner-tr {
+	-moz-border-radius-topright: 		7px;
+	-webkit-border-top-right-radius: 	7px;
+	border-top-right-radius: 			7px;
+}
+.ui-btn-corner-bl {
+	-moz-border-radius-bottomleft: 		7px;
+	-webkit-border-bottom-left-radius: 	7px;
+	border-bottom-left-radius: 			7px;
+}
+.ui-btn-corner-br {
+	-moz-border-radius-bottomright: 	7px;
+	-webkit-border-bottom-right-radius: 7px;
+	border-bottom-right-radius: 		7px;
+}
+.ui-btn-corner-top {
+	-moz-border-radius-topleft: 		7px;
+	-webkit-border-top-left-radius: 	7px;
+	border-top-left-radius: 			7px;
+	-moz-border-radius-topright: 		7px;
+	-webkit-border-top-right-radius: 	7px;
+	border-top-right-radius: 			7px;
+}
+.ui-btn-corner-bottom {
+	-moz-border-radius-bottomleft: 		7px;
+	-webkit-border-bottom-left-radius: 	7px;
+	border-bottom-left-radius: 			7px;
+	-moz-border-radius-bottomright: 	7px;
+	-webkit-border-bottom-right-radius: 7px;
+	border-bottom-right-radius: 		7px;
+}
+.ui-btn-corner-right {
+	 -moz-border-radius-topright: 		7px;
+	-webkit-border-top-right-radius: 	7px;
+	border-top-right-radius: 			7px;
+	-moz-border-radius-bottomright: 	7px;
+	-webkit-border-bottom-right-radius: 7px;
+	border-bottom-right-radius: 		7px;
+}
+.ui-btn-corner-left {
+	-moz-border-radius-topleft: 		7px;
+	-webkit-border-top-left-radius: 	7px;
+	border-top-left-radius: 			7px;
+	-moz-border-radius-bottomleft: 		7px;
+	-webkit-border-bottom-left-radius: 	7px;
+	border-bottom-left-radius: 			7px;
+}
+.ui-btn-corner-all {
+	-moz-border-radius: 				7px;
+	-webkit-border-radius: 				7px;
+	border-radius: 						7px;
+}
+
+/* ---------- Custom fixes ------------- */
+
+.ui-btn-left[data-rel="back"] .ui-btn-inner,
+.ui-btn-left[data-icon="back"] .ui-btn-inner,
+.ui-btn-left[data-icon="arrow-l"] .ui-btn-inner {
+    border-radius: 0;
+    padding-left: 5px;
+}
+.ui-btn-left[data-rel="back"],
+.ui-btn-left[data-icon="back"],
+.ui-btn-left[data-icon="arrow-l"] {
+    margin-top: 2px;
+    -webkit-box-shadow: none;
+/*
+    -webkit-border-bottom-left-radius: 200px 50px;
+    -webkit-border-top-left-radius: 200px 50px;
+*/
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+
+    -webkit-border-bottom-right-radius: 7px 7px;
+    -webkit-border-top-right-radius: 7px 7px;
+    -webkit-border-image: url(../images/backButton.png) 2 7 2 13 stretch stretch;
+    border-width: 1px 5px 2px 13px;
+    width: auto;
+}
+
+a.ui-btn-left[data-rel="back"] .ui-icon,
+a.ui-btn-left[data-icon="back"] .ui-icon,
+a.ui-btn-left[data-icon="arrow-l"] .ui-icon {
+    display: none;
+}
+
+/*
+.ui-btn-left[data-icon="home"] .ui-btn-inner {
+    border-radius: 0;
+    padding-left: 5px;
+}
+.ui-btn-left[data-icon="home"] {
+    margin-top: 2px;
+    -webkit-box-shadow: none;
+    -webkit-border-bottom-left-radius: 16px 16px;
+    -webkit-border-bottom-right-radius: 6px 6px;
+    -webkit-border-image: url(../images/backButton.png) 0 5 0 13 stretch stretch;
+    -webkit-border-top-left-radius: 16px 16px;
+    -webkit-border-top-right-radius: 6px 6px;
+    border-width: 0 5px 0 13px;
+    width: auto;
+}
+a.ui-btn-left[data-icon="home"] {
+    display: none;
+}
+*/
+
+div.itemLabel {
+    font-weight: bold;
+    font-size: 16px;
+}
+div.itemValue {
+    font-weight: normal;
+    font-size: 16px;
+}
+
+.ui-content {
+    min-height: 480px;
+    background-image: url(../images/pinstripes.png);
+}
+
+.ui-header .ui-title {
+    font-size: 18px;
+}
+
+.ui-header .ui-btn {
+    margin-top: 2px;
+}
+
+@media all and (min-width: 320px){
+    .ui-content ul li div.itemLabel {
+        display: inline-block;
+        width: 50%;
+        overflow: hidden;
+    }
+
+    .ui-content ul li div.itemValue {
+        display: inline-block;
+        overflow: hidden;
+    }
+}
+
+.errorMessage {
+    color: red;
+    text-align: center
+}
+
+.ui-page {
+-webkit-transform-style: flat;
+-webkit-backface-visibility: hidden;
+-webkit-perspective: 800;
+}

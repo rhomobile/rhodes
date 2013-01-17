@@ -1426,7 +1426,7 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
         {
             JNIEnv *env = jnienv();
             jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
-            jholder<jobjectArray> jChildren = jholder<jobjectArray>((jobjectArray)env->CallStaticObjectMethod(clsFileApi, midGetChildren, relPathObj.get()));
+            jharray jChildren = jharray((jobjectArray)env->CallStaticObjectMethod(clsFileApi, midGetChildren, relPathObj.get()));
 
             if (!jChildren)
             {
