@@ -43,7 +43,8 @@ using namespace rho;
 using namespace rho::common;
 extern "C" HWND getMainWnd();
 extern "C" char* wce_wctomb(const wchar_t* w);
-
+extern "C"
+{
 VALUE phone_number()
 {
 	return rho_ruby_get_NIL();
@@ -248,9 +249,9 @@ VALUE rho_sys_has_network()
 	return rho_ruby_create_boolean( g_rho_has_cellnetwork != 0 || g_rho_has_network!=0);
 }
 
-void rho_sys_app_exit()
+/*void rho_sys_app_exit()
 {
-}
+}*/
 
 void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
 
@@ -329,4 +330,6 @@ void rho_sys_app_uninstall(const char *appname)
 
 void rho_sys_set_application_icon_badge(int badge_number) {
     //unsupported on WP8
+}
+
 }

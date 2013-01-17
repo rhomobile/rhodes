@@ -268,6 +268,7 @@ void RhoRubyStart()
 	Init_strscan();
 	Init_GeoLocation();
 	Init_AsyncHttp();
+	Init_System();
 	Init_RhoSupport();	
 	Init_RhoConf();
 	Init_WebView();
