@@ -55,17 +55,8 @@ RHO_GLOBAL void take_picture(char* callback_url, rho_param *options_hash )
         return;
     }
 
-    jobject paramsObj = NULL;
-    if (options_hash != NULL) { 
-         paramsObj = RhoValueConverter(env).createObject(options_hash);
-    }
-    
-    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(callback_url).get(), paramsObj);
-
-    if (options_hash != NULL) { 
-         env->DeleteLocalRef(paramsObj);
-    }
-
+    jhobject paramsObj = RhoValueConverter(env).createObject(options_hash);
+    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(callback_url).get(), paramsObj.get());
 }
 
 RHO_GLOBAL void choose_picture(char* callback_url, rho_param *options_hash)
