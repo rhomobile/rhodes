@@ -679,10 +679,15 @@ def init_extensions(startdir, dest)
     if extpath.nil?
       begin
         $rhodes_extensions = nil
+		$rhodes_join_ext_name = false
+		
         require extname
         if $rhodes_extensions
             extpath = $rhodes_extensions[0]
             $app_config["extpaths"] << extpath
+			if $rhodes_join_ext_name
+				extpath = File.join(extpath,extname)
+			end
         end    
       rescue Exception => e      
         puts "exception"  
