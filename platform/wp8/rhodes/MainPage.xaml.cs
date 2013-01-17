@@ -67,7 +67,6 @@ namespace rhodes
 
             InitializeComponent();
             ApplicationBar.IsVisible = false;
-            ApplicationBar.Opacity = 0.75;
             try
             {
                 // create rhodes runtime object
@@ -206,18 +205,21 @@ namespace rhodes
                 ApplicationBar.Mode = ApplicationBarMode.Default;
                 ApplicationBar.IsVisible = true;
                 ApplicationBar.IsMenuEnabled = ApplicationBar.MenuItems.Count > 0;
+                ApplicationBar.Opacity = 1.0;
             }
             else if (ApplicationBar.MenuItems.Count > 0)
             {
                 ApplicationBar.Mode = ApplicationBarMode.Minimized;
                 ApplicationBar.IsVisible = true;
                 ApplicationBar.IsMenuEnabled = true;
+                ApplicationBar.Opacity = 0.75;
             }
             else
             {
                 ApplicationBar.Mode = ApplicationBarMode.Default;
                 ApplicationBar.IsVisible = false;
                 ApplicationBar.IsMenuEnabled = false;
+                ApplicationBar.Opacity = 1.0;
             }
         }
 
