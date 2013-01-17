@@ -15,9 +15,9 @@ RHO_GLOBAL void rho_appmanager_load( void* /*httpContext*/, const char* /*szQuer
     // Nothing
 }
 
-RHO_GLOBAL void rho_sys_report_app_started()
+/*RHO_GLOBAL void rho_sys_report_app_started()
 {
-}
+}*/
 
 RHO_GLOBAL void rho_conf_show_log()
 {
@@ -46,5 +46,9 @@ RHO_GLOBAL HWND getMainWnd()
 
 
 RHO_GLOBAL void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
+{
+}
+
+RHO_GLOBAL void rho_platform_restart_application()
 {
 }
