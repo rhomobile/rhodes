@@ -166,19 +166,10 @@ RHO_GLOBAL VALUE getPhonebookRecords(void* pb, rho_param* params)
     jmethodID contactGetFieldMID = getJNIClassMethod(env, contactCls, "getField", "(Ljava/lang/String;)Ljava/lang/String;");
     if (!contactGetFieldMID) return Qnil;
 
-    jobject selectObj = NULL;
-    if (select_param) {
-        RAWLOG_INFO("Converting 'select_param'.");
-        selectObj = RhoValueConverter(env).createObject(select_param);
-    }
-    jobject conditionsObj = NULL;
-    if (conditions) {
-        RAWLOG_INFO("Converting 'conditions'.");
-        conditionsObj = RhoValueConverter(env).createObject(conditions);
-    }
-    env->CallVoidMethod(phonebookObj, queryMID, offset, max_results, selectObj, conditionsObj);
-    env->DeleteLocalRef(selectObj);
-    env->DeleteLocalRef(conditionsObj);
+    jhobject selectObj = RhoValueConverter(env).createObject(select_param);
+    jhobject conditionsObj = RhoValueConverter(env).createObject(conditions);
+
+    env->CallVoidMethod(phonebookObj, queryMID, offset, max_results, selectObj.get(), conditionsObj.get());
     env->CallVoidMethod(phonebookObj, phonebookMoveToBeginMID);
 
     VALUE valGc = rho_ruby_disable_gc();
@@ -239,13 +230,9 @@ RHO_GLOBAL int getPhonebookRecordCount(void* pb, rho_param* params)
     jmethodID queryMID = getJNIClassMethod(env, phonebookCls, "queryContactCount", "(IILjava/util/Map;)I");
     if (!queryMID) return 0;
 
-    jobject conditionsObj = NULL;
-    if (conditions) {
-        RAWLOG_INFO("Converting 'conditions'.");
-        conditionsObj = RhoValueConverter(env).createObject(conditions);
-    }
-    int contactCount =  env->CallIntMethod(phonebookObj, queryMID, offset, max_results, conditionsObj);
-    env->DeleteLocalRef(conditionsObj);
+    jhobject conditionsObj = RhoValueConverter(env).createObject(conditions);
+
+    int contactCount =  env->CallIntMethod(phonebookObj, queryMID, offset, max_results, conditionsObj.get());
 
     if (logging_enable) RAWLOG_INFO("getPhonebookRecordCount() FINISH");
     return contactCount;

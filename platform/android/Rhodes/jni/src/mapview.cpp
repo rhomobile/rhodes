@@ -803,7 +803,7 @@ RHO_GLOBAL void google_mapview_create(rho_param *p)
         return;
     }
 
-    jhobject paramsObj = jhobject(RhoValueConverter(env).createObject(p));
+    jhobject paramsObj = RhoValueConverter(env).createObject(p);
     jhstring keyObj = rho_cast<jhstring>(RHO_GOOGLE_API_KEY);
     env->CallStaticVoidMethod(clsMapView, midCreate, keyObj.get(), paramsObj.get());
 #else

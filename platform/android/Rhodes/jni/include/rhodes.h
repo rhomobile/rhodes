@@ -46,13 +46,14 @@ template <typename T>
 class jholder
 {
 public:
-    jholder(T obj) :m_object(obj) {}
+    jholder(T obj) : m_object(obj) {}
 
-    jholder(jholder const &c)
+    template <typename V>
+    jholder(jholder<V> const &c)
         : m_object(NULL)
     {
-        if (c.m_object)
-            m_object = static_cast<T>(jnienv()->NewLocalRef(c.m_object));
+        if (c.get())
+            m_object = static_cast<T>(jnienv()->NewLocalRef(c.get()));
     }
 
     ~jholder()
@@ -78,7 +79,7 @@ public:
         return ret;
     }
 
-    bool operator!() const {return !m_object;}
+    bool operator!() const { return !m_object; }
 
 private:
     void swap(jholder &c)
@@ -119,12 +120,6 @@ struct rho_cast_helper<std::string, jstring>
     std::string operator()(JNIEnv *env, jstring );
 };
 
-//template <>
-//struct rho_cast_helper<std::string, jhstring>
-//{
-//    std::string operator()(JNIEnv *env, jhstring& s) { return rho_cast_helper<std::string, jstring>()(env, s.get()); }
-//};
-
 template <>
 struct rho_cast_helper<jhstring, char const *>
 {
@@ -149,12 +144,14 @@ struct rho_cast_helper<jhstring, std::string>
     jhstring operator()(JNIEnv *env, std::string const &s) { return rho_cast_helper<jhstring, char const *>()(env, s.c_str());}
 };
 
-struct RhoMapConvertor
+struct RhoJniConvertor
 {
     static jclass clsString;
+    static jclass clsList;
     static jclass clsMap;
     static jclass clsSet;
     static jclass clsIterator;
+    static jmethodID midListIterator;
     static jmethodID midMapGet;
     static jmethodID midMapKeySet;
     static jmethodID midSetIterator;
@@ -165,18 +162,11 @@ struct RhoMapConvertor
 };
 
 template <>
-struct rho_cast_helper<HStringMap, jobject>: public RhoMapConvertor
+struct rho_cast_helper<HStringMap, jobject>: public RhoJniConvertor
 {
     typedef HStringMap value_type;
     value_type operator()(JNIEnv *env, jobject jObj);
 };
-
-//template <>
-//struct rho_cast_helper<HStringMap, jhobject>
-//{
-//    typedef HStringMap value_type;
-//    value_type operator()(JNIEnv *env, const jhobject& h) { return rho_cast_helper<value_type, jobject>()(env, h.get()); }
-//};
 
 template <>
 struct rho_cast_helper<HStringMap, jobjectArray>
@@ -185,13 +175,6 @@ struct rho_cast_helper<HStringMap, jobjectArray>
     value_type operator()(JNIEnv *env, jobjectArray jKeys, jobjectArray jVals);
 };
 
-//template <>
-//struct rho_cast_helper<HStringMap, jharray>
-//{
-//    typedef HStringMap value_type;
-//    value_type operator()(JNIEnv *env, const jharray& jhKeys, jharray& jhVals) { return rho_cast<value_type>(env, jhKeys.get(), jhVals.get()); }
-//};
-
 template <>
 struct rho_cast_helper<HStringVector, jobjectArray>
 {
@@ -199,15 +182,8 @@ struct rho_cast_helper<HStringVector, jobjectArray>
     value_type operator()(JNIEnv *env, jobjectArray jArr);
 };
 
-//template <>
-//struct rho_cast_helper<HStringVector, jharray>
-//{
-//    typedef HStringVector value_type;
-//    value_type operator()(JNIEnv *env, const jharray& jhArr) { return rho_cast<value_type>(env, jhArr.get()); }
-//};
-
 template <>
-struct rho_cast_helper<HStringVector, jobject>
+struct rho_cast_helper<HStringVector, jobject>: public RhoJniConvertor
 {
     typedef HStringVector value_type;
     value_type operator()(JNIEnv *env, jobject jList);
