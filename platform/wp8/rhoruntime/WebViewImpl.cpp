@@ -81,7 +81,10 @@ extern "C" HINSTANCE rho_wmimpl_get_appinstance()
 
 extern "C" void rho_webview_set_menu_items(VALUE valMenu) 
 {
-    rho_rhodesapp_setViewMenu(valMenu); 
+    rho_rhodesapp_setViewMenu(valMenu);
+	CRhoRuntime^ runtime = CRhoRuntime::getInstance();
+	if (runtime != nullptr)
+		runtime->createCustomMenu();
 }
 
 extern "C" void rho_webview_save(const char* format, const char* path, int tab_index)
