@@ -1,5 +1,5 @@
 # startup page for your application
-start_path = '/app'
+start_path = '/app/Barcode1Test'
 
 # path to the options page (in this case handled by javascript)
 options_path = '/app/Settings'
@@ -26,7 +26,7 @@ LogCategories = *
 ExcludeLogCategories = 
 
 # max log file size in Bytes, set 0 to unlimited size; when limit is reached, log wraps to beginning of file
-MaxLogFileSize=50000
+MaxLogFileSize=0
 
 # turn on local http server traces, off by default
 #net_trace = 0
