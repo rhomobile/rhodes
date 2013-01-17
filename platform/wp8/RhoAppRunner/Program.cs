@@ -45,6 +45,12 @@ namespace RhoAppRunner
             bool useEmulator = true;
             Device WP8Device = null;
 
+            if (args.Length < 4)
+            {
+                Console.WriteLine("Invalid parameters");
+                return;
+            }
+
             if (args[4] == "dev")
                 useEmulator = false;
 
@@ -78,7 +84,7 @@ namespace RhoAppRunner
                 Console.WriteLine("Launched sample app on Windows Phone 8 Emulator...");
 
                 return;
-            }
+            }            
 
             Console.WriteLine("Installing sample XAP to Windows Phone 8 Emulator/Device...");
 
@@ -94,6 +100,9 @@ namespace RhoAppRunner
             Console.WriteLine("Launching sample app on Windows Phone 8 Emulator...");
             app.Launch();
             Console.WriteLine("Launched sample app on Windows Phone 8 Emulator...");
+            app.TerminateRunningInstances();
+            Console.WriteLine("Relaunching sample app on Windows Phone 8 Emulator...");
+            app.Launch();
         }
     }
 }
