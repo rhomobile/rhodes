@@ -22,7 +22,7 @@ rho::String CMethodResult::toJSON()
             if ( i > 0 )
                 strRes += ",";
 
-            strRes += CJSONEntry::quoteValue(m_arStrRes[i]);
+            strRes += CJSONEntry::quoteValueW(m_arStrRes[i]);
         }
         
         strRes += "]";
@@ -35,7 +35,7 @@ rho::String CMethodResult::toJSON()
             if ( it != m_hashStrRes.begin() )
                 strRes += ",";
 
-            strRes += CJSONEntry::quoteValue(it->first) + ":" + CJSONEntry::quoteValue(it->second);
+            strRes += CJSONEntry::quoteValueW(it->first) + ":" + CJSONEntry::quoteValueW(it->second);
         }
 
         strRes += "}";
@@ -44,10 +44,10 @@ rho::String CMethodResult::toJSON()
         strRes = convertToStringA(m_strRes);
     }else if ( m_ResType == eArgError )
     {
-        strRes = "{'_RhoArgError':" + CJSONEntry::quoteValue(m_strError) + "}";
+        strRes = "{'_RhoArgError':" + CJSONEntry::quoteValueW(m_strError) + "}";
     }else if ( m_ResType == eError)
     {
-        strRes = "{'_RhoRuntimeError':" + CJSONEntry::quoteValue(m_strError) + "}";
+        strRes = "{'_RhoRuntimeError':" + CJSONEntry::quoteValueW(m_strError) + "}";
     }
 
     return strRes;

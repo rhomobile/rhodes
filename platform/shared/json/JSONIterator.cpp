@@ -318,7 +318,7 @@ CJSONEntry CJSONEntry::getEntry(const char* name)const
     return CJSONEntry(obj);
 }
 
-/*static*/ String CJSONEntry::quoteValue(const StringW& strValue)
+/*static*/ String CJSONEntry::quoteValueW(const StringW& strValue)
 {
     return quoteValue( rho::common::convertToStringA(strValue) );
 }
