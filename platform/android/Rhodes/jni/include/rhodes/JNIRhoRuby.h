@@ -61,10 +61,40 @@ struct rho_cast_helper<VALUE, jobject>
     VALUE operator()(JNIEnv *env, jobject obj);
 };
 
+//template <>
+//struct rho_cast_helper<VALUE, jhobject>
+//{
+//    VALUE operator()(JNIEnv *env, jhobject& obj) { return rho_cast<VALUE>(env, obj.get()); }
+//};
+
+template <>
+struct rho_cast_helper<VALUE, jstring>
+{
+    VALUE operator()(JNIEnv *env, jstring obj);
+};
+
 template <>
 struct rho_cast_helper<jobject, VALUE>
 {
     jobject operator()(JNIEnv *env, VALUE value);
+};
+
+template <>
+struct rho_cast_helper<jhobject, VALUE>
+{
+    jhobject operator()(JNIEnv *env, VALUE value) { return jhobject(rho_cast<jobject>(env, value)); }
+};
+
+template <>
+struct rho_cast_helper<jstring, VALUE>
+{
+    jstring operator()(JNIEnv *env, VALUE value);
+};
+
+template <>
+struct rho_cast_helper<jhstring, VALUE>
+{
+    jhstring operator()(JNIEnv *env, VALUE value) { return jhstring(rho_cast<jstring>(env, value)); }
 };
 
 }

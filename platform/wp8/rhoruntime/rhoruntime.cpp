@@ -71,11 +71,12 @@ void CRhoRuntime::Execute()
     //RHODESAPP().setExtManager( &m_oExtManager );
 
 	//Create Main window
+	createCustomMenu();
 
 	RHODESAPP().startApp();
 
 	// wait for 5 seconds
-	m_MainPage->DoWait(10000);
+	//m_MainPage->DoWait(10000);
 	//m_MainPage->fullscreenCommand(1);
 	//m_MainPage->exitCommand();
 }
@@ -117,14 +118,17 @@ void CRhoRuntime::createCustomMenu()
 
     //update UI with custom menu items
 	mainPage->menuClear();
+	RHODESAPP().setAppBackUrl("");
     for ( unsigned int i = 0; i < m_arAppMenuItems.size(); i++)
     {
         rho::common::CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
         if (oItem.m_eType == rho::common::CAppMenuItem::emtSeparator) 
             mainPage->menuAddSeparator();
         else {
-			rho::StringW labelW;
+ 			rho::StringW labelW;
 			rho::common::convertToStringW(oItem.m_strLabel.c_str(), labelW);
+			if ((oItem.m_eType == rho::common::CAppMenuItem::emtBack) && (oItem.m_strLink.compare("back") != 0))
+				RHODESAPP().setAppBackUrl(oItem.m_strLink);
 			mainPage->menuAddAction((oItem.m_eType == rho::common::CAppMenuItem::emtClose ? "Exit" : ref new Platform::String(labelW.c_str())), i);
         }
     }

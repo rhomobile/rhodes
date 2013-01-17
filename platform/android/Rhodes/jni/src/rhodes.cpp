@@ -238,10 +238,10 @@ bool RhoMapConvertor::initConvertor(JNIEnv *env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-std::auto_ptr<rho::Hashtable<std::string, std::string> >
-rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string, std::string> >, jobject>::operator()(JNIEnv *env, jobject jObj)
+HStringMap
+rho_cast_helper<HStringMap, jobject>::operator()(JNIEnv *env, jobject jObj)
 {
-        value_type result(new element_type);
+        value_type result(new value_type::element_type);
 
         if (!RhoMapConvertor::initConvertor(env)) return value_type(0);
         jobject jSet = env->CallObjectMethod(jObj, midMapKeySet);
@@ -263,12 +263,10 @@ rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string, std::string> >, jobjec
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-std::auto_ptr<rho::Hashtable<std::string,std::string> >
-rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string,std::string> >, jobjectArray>::operator()(JNIEnv *env,
-                                                                                         jobjectArray jKeys,
-                                                                                         jobjectArray jVals)
+HStringMap
+rho_cast_helper<HStringMap, jobjectArray>::operator()(JNIEnv *env, jobjectArray jKeys, jobjectArray jVals)
 {
-    value_type result(new element_type);
+    value_type result(new value_type::element_type);
 
     unsigned n = env->GetArrayLength(jKeys);
     for(unsigned i = 0; i < n; ++i)
@@ -285,10 +283,10 @@ rho_cast_helper<std::auto_ptr<rho::Hashtable<std::string,std::string> >, jobject
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-std::auto_ptr<rho::Vector<std::string> >
-rho_cast_helper<std::auto_ptr<rho::Vector<std::string> >, jobjectArray>::operator ()(JNIEnv *env, jobjectArray jArr)
+HStringVector
+rho_cast_helper<HStringVector, jobjectArray>::operator ()(JNIEnv *env, jobjectArray jArr)
 {
-    value_type result(new element_type);
+    value_type result(new value_type::element_type);
 
     unsigned n = env->GetArrayLength(jArr);
     result->reserve(n);

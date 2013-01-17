@@ -1,0 +1,29 @@
+<div data-role="page">
+
+  <div data-role="header" data-position="inline" data-add-back-btn="false">
+    <%=  link_to "Back", :action => :index %>
+    <h1>Login</h1>
+  </div>
+
+  <div data-role="content">
+    <form method="POST" action="<%= url_for :action => :do_login %>">
+      <% if @msg %>
+      <div class="error-message"><%= @msg %></div>
+      <% end %>
+
+      <table>
+        <tr>
+          <td width="125" class="fieldLabel">Login</td>
+          <td><input type="text" maxlength="100" name="login"/></td>
+        </tr>
+        <tr>
+          <td width="125" class="fieldLabel">Password</td>
+          <td><input type="password" maxlength="100" name="password"/></td>
+        </tr>
+      </table>
+
+      <input type="submit" class="standardButton" value="Login" />
+    </form>
+  </div>
+
+</div>

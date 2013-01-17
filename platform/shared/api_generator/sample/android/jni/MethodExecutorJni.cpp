@@ -1,5 +1,6 @@
 
 #include "MethodExecutorJni.h"
+#include "MethodResultJni.h"
 
 #include "rhodes/JNIRhodes.h"
 
@@ -9,9 +10,9 @@
 
 namespace rhoelements {
 
-const char const * MethodExecutorJni::METHOD_EXECUTOR_CLASS = "com/motorolasolutions/rhoelements/MethodExecutor";
+const char * const MethodExecutorJni::METHOD_EXECUTOR_CLASS = "com/motorolasolutions/rhoelements/MethodExecutor";
 
-jclass MethodExecutorJni::s_MethodExecutorClass = NULL;
+jclass MethodExecutorJni::s_MethodExecutorClass = 0;
 jmethodID MethodExecutorJni::s_midRun;
 jmethodID MethodExecutorJni::s_midRunWithSeparateThread;
 jmethodID MethodExecutorJni::s_midRunWithUiThread;

@@ -32,6 +32,10 @@ module System
 		"en"
 	end
 
+        def self.zip_file(file_name_zip, file_name)
+           puts 'System.zip_file(' + file_name_zip.to_s + "," + file_name + ")"
+        end
+
 	def self.get_property(name)
 		return "WP7" if name == "platform"
 		return "7.0" if name == "os_version"
@@ -46,4 +50,5 @@ module System
 	def self.app_installed?(app_name)
 		return false
 	end
+
 end

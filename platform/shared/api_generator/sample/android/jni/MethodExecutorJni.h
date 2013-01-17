@@ -4,11 +4,13 @@
 
 namespace rhoelements {
 
+class MethodResultJni;
+
 class MethodExecutorJni
 {
-    static const char const * METHOD_EXECUTOR_CLASS;
+    static const char * const METHOD_EXECUTOR_CLASS;
 
-    static jclass s_MethodExecutorClass = NULL;
+    static jclass s_MethodExecutorClass;
     static jmethodID s_midRun;
     static jmethodID s_midRunWithSeparateThread;
     static jmethodID s_midRunWithUiThread;

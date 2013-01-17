@@ -10,11 +10,11 @@ class MethodResultJni;
 
 class CBarcode1 : public MethodExecutorJni
 {
-    static const char const * SINGLETON_CLASS;
-    static const char const * INSTANCE_CLASS;
-    static const char const * GETPROPS_TASK_CLASS;
-    static const char const * GETPROPS1_TASK_CLASS;
-    static const char const * GETPROPS2_TASK_CLASS;
+    static const char* const SINGLETON_CLASS;
+    static const char* const INSTANCE_CLASS;
+    static const char* const GETPROPS_TASK_CLASS;
+    static const char* const GETPROPS1_TASK_CLASS;
+    static const char* const GETPROPS2_TASK_CLASS;
 
     static jclass s_singletonClass;
     static jclass s_getPropsTaskClass;

@@ -84,8 +84,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>..\bin\$(RootNamespace)\$(Configuration)\</OutDir>
-    <IntDir>..\bin\$(RootNamespace)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -227,6 +227,7 @@
     <ClCompile Include="common\ThreadEmulation.cpp" />
     <ClCompile Include="FakeDefs.cpp" />
     <ClCompile Include="GeoLocationImpl.cpp" />
+    <ClCompile Include="SystemImpl.cpp" />
     <ClCompile Include="WebViewImpl.cpp" />
     <ClCompile Include="rhoruntime.cpp" />
     <ClCompile Include=".\pch_rhoruntime.cpp">
