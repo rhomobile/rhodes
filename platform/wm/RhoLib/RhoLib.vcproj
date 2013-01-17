@@ -3332,6 +3332,34 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="api_generator"
+			>
+			<File
+				RelativePath="..\..\shared\api_generator\BaseClasses.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\api_generator\GeneratorQueue.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\api_generator\js_helpers.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\api_generator\js_helpers.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\api_generator\MethodResult.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\api_generator\MethodResult.h"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
