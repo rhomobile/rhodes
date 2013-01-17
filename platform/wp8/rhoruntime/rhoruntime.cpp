@@ -71,11 +71,12 @@ void CRhoRuntime::Execute()
     //RHODESAPP().setExtManager( &m_oExtManager );
 
 	//Create Main window
+	createCustomMenu();
 
 	RHODESAPP().startApp();
 
 	// wait for 5 seconds
-	m_MainPage->DoWait(10000);
+	//m_MainPage->DoWait(10000);
 	//m_MainPage->fullscreenCommand(1);
 	//m_MainPage->exitCommand();
 }
