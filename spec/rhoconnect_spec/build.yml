@@ -13,9 +13,6 @@ iphone:
   codesignidentity: ""
   configuration: Release
   extensions: ["barcode"]
-
-paths:
-  extensions: ../rhoconnect-client/ext
      
 extensions: ["json", "mspec", "fileutils","rhoconnect-client"]
 
