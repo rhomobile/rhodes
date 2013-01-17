@@ -65,6 +65,9 @@
     <Filter Include="ext\sockets">
       <UniqueIdentifier>{dd2081be-3580-4a5d-8b5d-788462bbb626}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ext\system">
+      <UniqueIdentifier>{e669e62d-e1ab-4e59-9121-7346cf2b506d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ruby\debug.h" />
@@ -254,6 +257,9 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c">
       <Filter>ext\stringio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\system\system_wrap.c">
+      <Filter>ext\system</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
