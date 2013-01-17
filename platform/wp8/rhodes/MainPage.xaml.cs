@@ -67,6 +67,7 @@ namespace rhodes
 
             InitializeComponent();
             ApplicationBar.IsVisible = false;
+            ApplicationBar.Opacity = 0.75;
             try
             {
                 // create rhodes runtime object
@@ -198,6 +199,27 @@ namespace rhodes
             // TODO: webview size changed event handler ?
         }
 
+        private void updateAppBarModeAndVisibility(bool autoToolbarVisibility = true)
+        {
+            if (autoToolbarVisibility && (ApplicationBar.Buttons.Count > 0))
+            {
+                ApplicationBar.Mode = ApplicationBarMode.Default;
+                ApplicationBar.IsVisible = true;
+                ApplicationBar.IsMenuEnabled = ApplicationBar.MenuItems.Count > 0;
+            }
+            else if (ApplicationBar.MenuItems.Count > 0)
+            {
+                ApplicationBar.Mode = ApplicationBarMode.Minimized;
+                ApplicationBar.IsVisible = true;
+                ApplicationBar.IsMenuEnabled = true;
+            }
+            else
+            {
+                ApplicationBar.Mode = ApplicationBarMode.Default;
+                ApplicationBar.IsVisible = false;
+                ApplicationBar.IsMenuEnabled = false;
+            }
+        }
 
         // *** TOOLBAR ***
 
@@ -206,25 +228,24 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarRemoveAllButtons(); }); return; }
             ApplicationBar.Buttons.Clear();
             toolbarItems.Clear();
-            ApplicationBar.IsVisible = ApplicationBar.MenuItems.Count > 0;
+            updateAppBarModeAndVisibility();
         }
 
 		public void toolbarShow()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarShow(); }); return; }
-            ApplicationBar.IsVisible = true;
+            updateAppBarModeAndVisibility();
         }
 
 		public void toolbarHide()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarHide(); }); return; }
-            ApplicationBar.IsVisible = false; // ?? ApplicationBar.MenuItems.Count > 0
+            updateAppBarModeAndVisibility(false);
         }
 
 		public int toolbarGetHeight()
         {
-            // TODO: implement toolbarGetHeight
-            return ApplicationBar.IsVisible ? 30 : 0;
+            return ApplicationBar.IsVisible ? (ApplicationBar.Mode == ApplicationBarMode.Default ? 72 : 30) : 0;
         }
 
         public void toolbarAddAction(string text)
@@ -237,7 +258,7 @@ namespace rhodes
             toolbarItems.Add(text, text);
             ApplicationBar.Buttons.Add(toolbarButton);
             toolbarButton.Click += new EventHandler(toolbarButton_Click);
-            ApplicationBar.IsVisible = true;
+            updateAppBarModeAndVisibility();
         }
 
 		public void toolbarAddAction(Icon icon, string text, string action, bool rightAlign)
@@ -272,9 +293,7 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuClear(); }); return; }
             ApplicationBar.MenuItems.Clear();
             menuItems.Clear();
-            ApplicationBar.IsVisible = ApplicationBar.Buttons.Count > 0;
-            ApplicationBar.IsMenuEnabled = false;
-
+            updateAppBarModeAndVisibility();
         }
 
 		public void menuAddAction(string text, int item)
@@ -284,8 +303,7 @@ namespace rhodes
             ApplicationBar.MenuItems.Add(menuItem);
             menuItems.Add(text, item);
             menuItem.Click += new EventHandler(menuItem_Click);
-            ApplicationBar.IsVisible = true;
-            ApplicationBar.IsMenuEnabled = true;
+            updateAppBarModeAndVisibility();
         }
 
 		public void menuAddSeparator()
