@@ -26,6 +26,9 @@
     <Filter Include="common\push">
       <UniqueIdentifier>{5aea6e7e-181a-4b00-918e-affafc9305c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="api_generator">
+      <UniqueIdentifier>{f8d479aa-3d3e-4d1c-8b95-802d236c7b84}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\common\app_build_capabilities.h">
@@ -184,6 +187,18 @@
     <ClInclude Include="..\..\shared\rubyext\GeoLocation.h">
       <Filter>rubyext</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\BaseClasses.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\GeneratorQueue.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\js_helpers.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\MethodResult.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\common\app_build_configs.c">
@@ -284,6 +299,12 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\unzip\zip.cpp">
       <Filter>unzip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\api_generator\js_helpers.cpp">
+      <Filter>api_generator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\api_generator\MethodResult.cpp">
+      <Filter>api_generator</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
