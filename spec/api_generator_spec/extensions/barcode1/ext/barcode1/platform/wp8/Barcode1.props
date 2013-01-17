@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets">
   </ImportGroup>
@@ -6,9 +6,6 @@
     <RHO_ROOT>c:/projects/rhodes</RHO_ROOT>
     <NEON_ROOT>C:\projects\MotoNeon2\vobs\NEON\Helium\HeliumForWindows\Implementation</NEON_ROOT>
     <TEMP_FILES_DIR>bin\$(Platform)\$(ProjectName)</TEMP_FILES_DIR>
-  </PropertyGroup>
-  <PropertyGroup>
-    <_ProjectFileVersion>11.0.51106.1</_ProjectFileVersion>
   </PropertyGroup>
   <ItemDefinitionGroup />
   <ItemGroup>
