@@ -94,12 +94,13 @@ if !defined?(RHO_WP7)
         File.delete(file_name_source) if File.exists?(file_name_source)
         File.delete(file_name_dest) if File.exists?(file_name_dest)
 
-        reference_url = 'http://yandex.st/jquery/hotkeys/1.0.0/jquery.hotkeys.min.js'
-        reference_size = 1486
-        part_size = 512
+        reference_url = 'http://yandex.st/jquery/cookie/1.0/jquery.cookie.min.js'
+        reference_size = 732
+        part_size = 366
 
         res = Rho::AsyncHttp.download_file(
           :url => reference_url,
+          :headers => {"Accept-Encoding"=>""}, #disable any compression
           :filename => file_name_source )
         puts "res : #{res}"  
         
@@ -121,6 +122,7 @@ if !defined?(RHO_WP7)
         #check that in case of re-download files are the same        
         res = Rho::AsyncHttp.download_file(
           :url => reference_url,
+          :headers => {"Accept-Encoding"=>""}, #disable any compression
           :filename => file_name_dest )
         puts "res : #{res}"  
         
