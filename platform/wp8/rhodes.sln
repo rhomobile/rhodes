@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows Phone
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rhodes", "rhodes\rhodes.csproj", "{B3A01AFB-4608-4598-9C5F-43A9D7F42589}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhoruntime", "rhoruntime\rhoruntime.vcxproj", "{19B2CB23-B0FC-44C0-BD59-3DA4F3113585}"
@@ -15,15 +15,18 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "sqlite3\sqlite3.vcxproj", "{A0746642-F215-4587-8B81-9D432FD4E468}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "syncengine", "syncengine\syncengine.vcxproj", "{51A2A712-4D2E-47CC-8AA4-44170232D128}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rubylib", "rubylib\rubylib.vcxproj", "{22CAF76E-A7A2-4363-913E-B840306545F3}"
 	ProjectSection(ProjectDependencies) = postProject
-		{DDCDEB35-E294-4421-BB60-7249A7CE5150} = {DDCDEB35-E294-4421-BB60-7249A7CE5150}
+		{A0746642-F215-4587-8B81-9D432FD4E468} = {A0746642-F215-4587-8B81-9D432FD4E468}
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588} = {87EE9DA4-DE1E-4448-8324-183C98DCA588}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rholib", "rholib\rholib.vcxproj", "{DDCDEB35-E294-4421-BB60-7249A7CE5150}"
+	ProjectSection(ProjectDependencies) = postProject
 		{A0746642-F215-4587-8B81-9D432FD4E468} = {A0746642-F215-4587-8B81-9D432FD4E468}
 		{22CAF76E-A7A2-4363-913E-B840306545F3} = {22CAF76E-A7A2-4363-913E-B840306545F3}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rubylib", "rubylib\rubylib.vcxproj", "{22CAF76E-A7A2-4363-913E-B840306545F3}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rholib", "rholib\rholib.vcxproj", "{DDCDEB35-E294-4421-BB60-7249A7CE5150}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3C29B599-DB6C-4153-AD86-183746E1E0F7}"
 EndProject
@@ -164,7 +167,8 @@ Global
 		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|x86.ActiveCfg = Release|Win32
 		{DDCDEB35-E294-4421-BB60-7249A7CE5150}.Release|x86.Build.0 = Release|Win32
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|ARM.ActiveCfg = Debug|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|ARM.ActiveCfg = Debug|ARM
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|ARM.Build.0 = Debug|ARM
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|Win32.ActiveCfg = Debug|Win32
@@ -172,7 +176,8 @@ Global
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|x86.ActiveCfg = Debug|Win32
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Debug|x86.Build.0 = Debug|Win32
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release|Any CPU.ActiveCfg = Release|Win32
-		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release|ARM.ActiveCfg = Release|Win32
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release|ARM.ActiveCfg = Release|ARM
+		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release|ARM.Build.0 = Release|ARM
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release|Mixed Platforms.ActiveCfg = Release|Win32
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{87EE9DA4-DE1E-4448-8324-183C98DCA588}.Release|Win32.ActiveCfg = Release|Win32
