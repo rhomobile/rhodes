@@ -66,7 +66,7 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, const rho::String& id)
             result.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
         }
     }
-    result.toRuby();
+    return result.toRuby();
 }
 
 extern "C"
