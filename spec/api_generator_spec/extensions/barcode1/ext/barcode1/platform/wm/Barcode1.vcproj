@@ -357,6 +357,10 @@
 				Name="generated"
 				>
 				<File
+					RelativePath="..\..\shared\generated\barcode1_api_init.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\shared\generated\barcode1_js_api.cpp"
 					>
 				</File>
