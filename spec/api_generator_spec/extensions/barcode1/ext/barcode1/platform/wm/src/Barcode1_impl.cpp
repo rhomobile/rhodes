@@ -27,9 +27,7 @@ class CBarcode1Factory: public CBarcode1FactoryBase
 extern "C" void Init_Barcode1()
 {
     CBarcode1Factory::setInstance( new CBarcode1Factory() );
-
-    Init_RubyAPI_Barcode1();
-    Init_JSAPI_Barcode1();
+    Init_Barcode1_API();
 }
 
 IBarcode1* CBarcode1Factory::createModuleByID(const rho::StringW& strID)
