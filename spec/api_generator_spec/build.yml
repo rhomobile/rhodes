@@ -1,0 +1,24 @@
+#sdk: "C:/Ruby193/lib/ruby/gems/1.9.1/gems/rhodes-3.3.2"
+sdkversion: 3.3.2
+name: api_generator_spec
+version: 1.0
+vendor: rhomobile
+build: debug
+bbver: 4.6
+applog: rholog.txt
+iphone:
+  configuration: Release
+  sdk: iphonesimulator5.0
+  provisionprofile:
+  codesignidentity:
+  entitlements:
+  BundleIdentifier: com.rhomobile.apigeneratorspec
+  BundleURLScheme: apigeneratorspec
+wp:
+  productid: 'b6479381-42a8-0130-78de-3caec51bd50e'
+symbian:
+  uid: '0xe1a1ef92'
+android:
+  version: 2.1
+
+extensions: ["json", "another-extension"]
