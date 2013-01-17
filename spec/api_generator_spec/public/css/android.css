@@ -1,0 +1,712 @@
+a {
+    text-decoration: none;
+}
+
+.content {
+    width: inherit;
+    height: 100%;
+}
+
+.toolbar .noButton {
+    display: none;
+}
+
+.content ul {
+    -webkit-padding-start: 0;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.content ul li {
+    overflow: hidden;
+    clear: both;
+}
+
+.content ul li span {
+    display: block;
+}
+
+.content ul.settings li div.itemLabel span.title {
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    width: inherit;
+    font-family: "Droid", sans-serif;
+    background: black;
+    color: white;
+}
+
+h1 {
+    font-size: 1em;
+}
+
+.content {
+    background-color: black;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+/* Toolbar */
+
+.toolbar {
+    height: 60px;
+    width: 100%;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B), color-stop(0.2, #585858), color-stop(1.0, #2B2B2B));
+    display: table;
+    text-align: center;
+    border-spacing: 10px;
+}
+
+.toolbar .leftItem,
+.toolbar .centerItem,
+.toolbar .rightItem {
+    display: table-cell;
+}
+
+.toolbar a {
+    line-height: 40px;
+    color: black;
+    display: block;
+}
+
+.toolbar .deleteButton,
+.toolbar .regularButton,
+.toolbar .blueButton,
+.toolbar .backButton {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white), color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
+    -webkit-border-radius: 5px;
+    font-size: .9em;
+    border: 1px solid white;
+}
+
+/* Header */
+
+.pageTitle {
+    height: 25px;
+    margin: 0;
+    width: 100%;
+    display: none;
+}
+
+.pageTitle h1 {
+    position: absolute;
+    top: 0;
+    text-align: left;
+    width: 100%;
+    margin: 0;
+    padding-left: 5px;
+    color: white;
+    text-shadow: 1px 1px 1px #000;
+    line-height: 25px;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #999), color-stop(0.5, #848684));
+}
+
+/* lists */
+
+.content ul {
+    background: black;
+}
+
+.content ul li {
+    border-bottom: 1px solid #666;
+    font-size: 20px;
+}
+
+.content ul li a {
+    display: block;
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+    height: 100%;
+    width: 100%;
+    padding: 15px 0 15px 0;
+    background: url("../images/android/disclosure.png") no-repeat center right;
+}
+
+.content ul li a:hover {
+    background-color: #3399cc;
+}
+
+.content ul li a img {
+    float: left;
+    height: 100%;
+    max-width: 100px;
+}
+
+.content ul li span.title {
+    padding: 0 50px 0 10px;
+}
+
+.content ul li span.disclosure_indicator {
+    display: none;
+}
+
+.content ul li div.itemLabel {
+    float: left;
+    width: 45%;
+    padding: 15px 0 15px 10px;
+}
+
+.content ul li div.itemValue {
+    float: right;
+    width: 45%;
+    padding: 15px 10px 15px 0;
+}
+
+/* Forms */
+
+.content form button {
+    -webkit-appearance: push-button;
+    width: 300px;
+    height: 40px;
+    margin-left: 10px;
+}
+
+.content form ul {
+    font-size: 20px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.content form ul li {
+    border-bottom: 1px solid #666;
+    display: block;
+    list-style-type: none;
+}
+
+.content form label {
+    float: left;
+    display: block;
+    color: white;
+    line-height: 64px;
+    padding: 0 10px 0 5px;
+    margin: 0;
+    width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.content h2 {
+    margin: 0;
+}
+
+.content h2.groupTitle {
+    width: inherit;
+    margin: 0;
+    padding: 8px 0 8px 8px;
+    font-size: 10px;
+    color: white;
+    background-color: #666;
+}
+
+.content form {
+    background-color: black;
+}
+
+.content form input[type="checkbox"] {
+    -webkit-appearance: none;
+    background: url(/public/images/android/btn_check_off.png) no-repeat;
+    float: right;
+    height: 31px;
+    width: 31px;
+    margin-top: 15px;
+    margin-right: 20px;
+}
+
+.content form input[type="checkbox"]:checked {
+    background: url(/public/images/android/btn_check_on.png) no-repeat;
+    float: right;
+    height: 31px;
+    width: 31px;
+    margin-top: 15px;
+    margin-right: 20px;
+}
+
+.content form input[type="radio"] {
+    background: url(/public/images/android/btn_radio_off.png) no-repeat;
+    -webkit-appearance: none;
+    -webkit-box-sizing: border-box;
+    border: none;
+    height: 32px;
+    margin: 0px;
+    width: 32px;
+    float: right;
+    margin-right: 20px;
+    margin-top: 15px;
+}
+
+.content form input[type="radio"]:checked {
+    background: url(/public/images/android/btn_radio_on.png) no-repeat;
+    margin-top: 15px;
+    margin-right: 20px;
+}
+
+.content form select {
+    -webkit-appearance: none;
+    border: 0px;
+    width: 100%;
+    padding-left: 20px;
+    height: 60px;
+    color: white;
+    background: url('/public/images/android/ic_menu_more.png') no-repeat center right;
+}
+
+.content form textarea {
+    -webkit-appearance: none;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
+    border: 1px solid #d6d7d6;
+    -webkit-border-radius: 4px;
+    margin: 10px 0 2px 10px;
+    font-size: 0.9em;
+    padding: 5px 0 2px 2px;
+    box-shadow: 0 -1px 3px #000000;
+}
+
+.content form input[type="text"],
+.content form input[type="number"],
+.content form input[type="password"] {
+    float: right;
+    height: 40px;
+    margin: 10px 10px 10px 0;
+    padding-left: 5px;
+    font-size: 26px;
+    width: 150px;
+    -webkit-appearance: none;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
+    border: 1px solid #d6d7d6;
+    -webkit-border-radius: 4px;
+    box-shadow: 0 -1px 3px #000000;
+}
+
+.content form input.standardButton {
+    height: 45px;
+    margin: 2px 0 2px 0;
+    -webkit-border: 2px;
+    width: 100%;
+}
+
+/* Settings */
+
+.content ul.settings {
+    padding: 0;
+    margin: 0;
+}
+
+.content .reset h4 {
+    margin: 20px;
+    color: white;
+}
+
+.content div.standardButton {
+    margin: 10px 10px 10px 10px;
+    height: 45px;
+    width: 284px;
+    line-height: 45px;
+    -webkit-appearance: push-button;
+}
+
+.content div.standardButton a {
+    display: block;
+    width: 100%;
+    color: black;
+    text-align: center;
+}
+
+.content ul.settings li.alertMessage {
+    text-align: center;
+    height: 45px;
+    line-height: 45px;
+}
+
+.content ul.settings li.alertMessage span.message {
+    color: red;
+}
+
+/* ---------- JQM theme customization ------------- */
+
+.ui-bar-a {
+	border: 1px solid 		#2A2A2A;
+	background: 			#111111;
+	color: 					#ffffff;
+	font-weight: bold;
+	text-shadow: 0 -1px 1px #000000;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B), color-stop(0.2, #585858), color-stop(1.0, #2B2B2B));
+}
+.ui-bar-a,
+.ui-bar-a input,
+.ui-bar-a select,
+.ui-bar-a textarea,
+.ui-bar-a button {
+    font-family: "Droid", sans-serif;
+/*
+	font-family: Helvetica, Arial, sans-serif;
+*/
+}
+.ui-bar-a .ui-link-inherit {
+	color: 					#fff;
+}
+.ui-bar-a .ui-link {
+	color: 					#7cc4e7;
+	font-weight: bold;
+}
+.ui-body-c {
+	border: 1px solid 		#2A2A2A;
+	background: 			#black;
+	color: 					#fff;
+	text-shadow: 0 1px 0 	#000;
+	font-weight: normal;
+/*
+	background: 			#222222;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#666), to(#222));
+*/
+}
+.ui-body-c,
+.ui-body-c input,
+.ui-body-c select,
+.ui-body-c textarea,
+.ui-body-c button {
+    font-family: "Droid", sans-serif;
+/*
+	font-family: Helvetica, Arial, sans-serif;
+*/
+}
+.ui-body-c .ui-link-inherit {
+	color: 					#fff;
+}
+.ui-body-c .ui-link {
+	color: 					#2489CE;
+	font-weight: bold;
+}
+.ui-br {
+	border-bottom: rgb(130,130,130);
+	border-bottom: rgba(130,130,130,.3);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+
+li.ui-btn-up-c {
+    border: 1px solid 		#222;
+    background: #000;
+    font-weight: bold;
+    color: 					#fff;
+    text-shadow: 0 -1px 1px #000;
+/*
+    background: 			#333333;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#555), to(#333));
+*/
+}
+
+
+.ui-btn-up-c {
+	border: 1px solid 		#222;
+	background: 			#333333;
+	font-weight: bold;
+	color: 					#000;
+	text-shadow: 0 -1px 1px #fff;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white), color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
+/*
+	border: 1px solid 		#222;
+	background: 			#333333;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#555), to(#333));
+*/
+}
+.ui-btn-up-c a.ui-link-inherit {
+	color: 					#fff;
+}
+.ui-btn-hover-c {
+    border: 1px solid 		#000;
+    background: 			#f73923;
+    font-weight: bold;
+    color: 					#000;
+    text-shadow: none;
+    /*text-shadow: 0 -1px 1px #fff;*/
+/*
+    background: 			#F76922;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F76922), to(#F73932));
+*/
+/*
+	border: 1px solid 		#000;
+	background: 			#444444;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#666), to(#444));
+*/
+}
+.ui-btn-hover-c a.ui-link-inherit {
+	color: 					#000;
+}
+.ui-btn-down-c {
+    border: 1px solid 		#000;
+    background: 			#f76933;
+    font-weight: bold;
+    color: 					#000;
+    text-shadow: none;
+    /*text-shadow: 0 -1px 1px #fff;*/
+/*
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F76922), to(#fadb4e));
+*/
+/*
+	border: 1px solid 		#000;
+	background: 			#3d3d3d;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#333), to(#5a5a5a));
+*/
+}
+.ui-slider-switch.ui-btn-down-c {
+	border: 1px solid 		#000;
+	background: 			#3d3d3d;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#333), to(#5a5a5a));
+}
+.ui-btn-down-c a.ui-link-inherit {
+	color: 					#000;
+}
+.ui-btn-up-c,
+.ui-btn-hover-c,
+.ui-btn-down-c {
+    font-family: "Droid", sans-serif;
+/*
+	font-family: Helvetica, Arial, sans-serif;
+*/
+	text-decoration: none;
+}
+
+.ui-field-contain {
+    border-bottom: 0;
+}
+
+
+
+
+.ui-field-contain input[type="text"],
+.ui-field-contain input[type="number"],
+.ui-field-contain input[type="password"],
+.ui-field-contain input[type="true"],
+.ui-field-contain textarea {
+    -webkit-appearance: none;
+    color: #000000;
+    text-shadow: none;
+    font-size: 0.9em;
+
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
+    border: 1px solid #d6d7d6;
+    box-shadow: 0 -1px 3px #000000;
+
+}
+
+.ui-input-search {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
+/*
+    background: #666 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#222));
+*/
+    background-image: url(../jqmobile/images/icon-search-black.png);
+    background-position: 8px 50%;
+    background-repeat: no-repeat;
+
+    border: 1px solid #666;
+    box-shadow: 0 -1px 3px #000000;
+}
+.ui-input-search .ui-input-clear {
+    margin: -12px 4px;
+}
+
+
+.ui-bar-a select,
+.ui-body-c select {
+    -webkit-appearance: none;
+    border: 0;
+    padding-left: 20px;
+/*
+    width: 100%;
+    height: 60px;
+*/
+    color: white;
+    background: url('/public/images/android/ic_menu_more.png') no-repeat center right;
+}
+
+
+.ui-li-static {
+    font-size: 16px;
+    /*font-size: 0.9em;*/
+    background: black;
+    /*color: white;*/
+    border-bottom: 1px solid #666;
+/*
+    color: #000000;
+    text-shadow: none;
+    font-size: 0.9em;
+
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
+    border: 1px solid #d6d7d6;
+    box-shadow: 0 -1px 3px #000000;
+*/
+}
+
+
+.ui-corner-tl {
+	-moz-border-radius-topleft: 		4px;
+	-webkit-border-top-left-radius: 	4px;
+	border-top-left-radius: 			4px;
+}
+.ui-corner-tr {
+	-moz-border-radius-topright: 		4px;
+	-webkit-border-top-right-radius: 	4px;
+	border-top-right-radius: 			4px;
+}
+.ui-corner-bl {
+	-moz-border-radius-bottomleft: 		4px;
+	-webkit-border-bottom-left-radius: 	4px;
+	border-bottom-left-radius: 			4px;
+}
+.ui-corner-br {
+	-moz-border-radius-bottomright: 	4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 		4px;
+}
+.ui-corner-top {
+	-moz-border-radius-topleft: 		4px;
+	-webkit-border-top-left-radius: 	4px;
+	border-top-left-radius: 			4px;
+	-moz-border-radius-topright: 		4px;
+	-webkit-border-top-right-radius: 	4px;
+	border-top-right-radius: 			4px;
+}
+.ui-corner-bottom {
+	-moz-border-radius-bottomleft: 		4px;
+	-webkit-border-bottom-left-radius: 	4px;
+	border-bottom-left-radius: 			4px;
+	-moz-border-radius-bottomright: 	4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 		4px;
+	}
+.ui-corner-right {
+	-moz-border-radius-topright: 		4px;
+	-webkit-border-top-right-radius: 	4px;
+	border-top-right-radius: 			4px;
+	-moz-border-radius-bottomright: 	4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 		4px;
+}
+.ui-corner-left {
+	-moz-border-radius-topleft: 		4px;
+	-webkit-border-top-left-radius: 	4px;
+	border-top-left-radius: 			4px;
+	-moz-border-radius-bottomleft: 		4px;
+	-webkit-border-bottom-left-radius: 	4px;
+	border-bottom-left-radius: 			4px;
+}
+.ui-corner-all {
+	-moz-border-radius: 				4px;
+	-webkit-border-radius: 				4px;
+	border-radius: 						4px;
+}
+
+
+
+.ui-btn-corner-tl {
+	-moz-border-radius-topleft: 		5px;
+	-webkit-border-top-left-radius: 	5px;
+	border-top-left-radius: 			5px;
+}
+.ui-btn-corner-tr {
+	-moz-border-radius-topright: 		5px;
+	-webkit-border-top-right-radius: 	5px;
+	border-top-right-radius: 			5px;
+}
+.ui-btn-corner-bl {
+	-moz-border-radius-bottomleft: 		5px;
+	-webkit-border-bottom-left-radius: 	5px;
+	border-bottom-left-radius: 			5px;
+}
+.ui-btn-corner-br {
+	-moz-border-radius-bottomright: 	5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-bottom-right-radius: 		5px;
+}
+.ui-btn-corner-top {
+	-moz-border-radius-topleft: 		5px;
+	-webkit-border-top-left-radius: 	5px;
+	border-top-left-radius: 			5px;
+	-moz-border-radius-topright: 		5px;
+	-webkit-border-top-right-radius: 	5px;
+	border-top-right-radius: 			5px;
+}
+.ui-btn-corner-bottom {
+	-moz-border-radius-bottomleft: 		5px;
+	-webkit-border-bottom-left-radius: 	5px;
+	border-bottom-left-radius: 			5px;
+	-moz-border-radius-bottomright: 	5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-bottom-right-radius: 		5px;
+}
+.ui-btn-corner-right {
+	 -moz-border-radius-topright: 		5px;
+	-webkit-border-top-right-radius: 	5px;
+	border-top-right-radius: 			5px;
+	-moz-border-radius-bottomright: 	5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-bottom-right-radius: 		5px;
+}
+.ui-btn-corner-left {
+	-moz-border-radius-topleft: 		5px;
+	-webkit-border-top-left-radius: 	5px;
+	border-top-left-radius: 			5px;
+	-moz-border-radius-bottomleft: 		5px;
+	-webkit-border-bottom-left-radius: 	5px;
+	border-bottom-left-radius: 			5px;
+}
+.ui-btn-corner-all {
+	-moz-border-radius: 				5px;
+	-webkit-border-radius: 				5px;
+	border-radius: 						5px;
+}
+
+/* ---------- Custom fixes ------------- */
+
+div.itemLabel {
+    font-weight: bold;
+}
+div.itemValue {
+    font-weight: normal;
+}
+
+@media all and (min-width: 320px){
+    .ui-content ul li div.itemLabel {
+        display: inline-block;
+        width: 50%;
+        overflow: hidden;
+    }
+
+    .ui-content ul li div.itemValue {
+        display: inline-block;
+        overflow: hidden;
+    }
+}
+
+.errorMessage {
+    color: red;
+    text-align: center
+}
+
+.ui-page {
+-webkit-transform-style: flat;
+-webkit-backface-visibility: hidden;
+-webkit-perspective: 800;
+}
