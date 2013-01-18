@@ -241,9 +241,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\spec\api_generator_spec\extensions\barcode1\ext\barcode1\platform\wp8\Barcode1.vcxproj">
-      <Project>{4aa0c77a-2f88-4fba-86ac-4717d9789790}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\curl\lib\libcurl.vcxproj">
       <Project>{87ee9da4-de1e-4448-8324-183c98dca588}</Project>
     </ProjectReference>

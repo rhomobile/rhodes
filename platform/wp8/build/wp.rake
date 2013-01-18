@@ -290,6 +290,39 @@ namespace "device" do
   end
 end
 
+namespace "emulator" do
+  namespace "wp8" do
+
+  	task :config_release do
+		$build_platform = 'Win32'
+		$build_config = 'Release'
+	end
+
+    desc "Build production for device or emulator"
+    task :production => [:config_release, "build:wp8:rhobundle_production", "build:wp8:rhodes", "build:wp8:addbundletoxapRelease"] do
+      #out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
+      cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
+
+      mkdir_p $bindir if not File.exists? $bindir
+      mkdir_p $targetdir if not File.exists? $targetdir
+      #mv out_dir + $appname + ".xap", $targetdir
+      mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
+
+    end
+
+    task :production_noxap => [:config_release, "build:wp8:rhobundle_production", "build:wp8:rhodes"] do
+      #out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
+      cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
+
+      mkdir_p $bindir if not File.exists? $bindir
+      mkdir_p $targetdir if not File.exists? $targetdir
+      #mv out_dir + $appname + ".xap", $targetdir
+      mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
+
+    end
+  end
+end
+
 namespace "clean" do
   desc "Clean wp"
   task :wp8 => "clean:wp8:all"
@@ -310,7 +343,7 @@ namespace "run" do
   end
 
   desc "Build, install .xap and run on WP8 emulator"
-  task :wp8 => ["device:wp8:production_noxap"] do
+  task :wp8 => ["emulator:wp8:production_noxap"] do
     if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 
       File.delete($app_path + "/started") if File.exists?($app_path + "/started")
