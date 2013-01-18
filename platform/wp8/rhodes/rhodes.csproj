@@ -194,6 +194,7 @@
   -->
   <ProjectExtensions />
   <PropertyGroup>
-    <PostBuildEvent>rake build:wp8:devrhobundle$(Configuration)</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

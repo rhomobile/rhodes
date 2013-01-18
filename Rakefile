@@ -690,7 +690,7 @@ def init_extensions(startdir, dest)
 			end
         end    
       rescue Exception => e      
-        puts "exception"  
+        puts "exception: #{e}"  
       end
     end
         
