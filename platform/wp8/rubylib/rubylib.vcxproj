@@ -79,33 +79,33 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IncludePath>..\..\shared\ruby\;..\..\shared\ruby\include;..\..\shared\ruby\wp8;..\..\shared\ruby\wp8\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared;$(IncludePath)</IncludePath>
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>..\..\shared\ruby\;..\..\shared\ruby\include;..\..\shared\ruby\wp8;..\..\shared\ruby\wp8\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared;$(IncludePath)</IncludePath>
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <IncludePath>..\..\shared\ruby\;..\..\shared\ruby\include;..\..\shared\ruby\wp8;..\..\shared\ruby\wp8\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared;$(IncludePath)</IncludePath>
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>..\..\shared\ruby\;..\..\shared\ruby\include;..\..\shared\ruby\wp8;..\..\shared\ruby\wp8\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared;$(IncludePath)</IncludePath>
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>..\..\shared\ruby\;..\..\shared\ruby\include;..\..\shared\ruby\wp8;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared;$(IncludePath)</IncludePath>
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>..\..\shared\ruby\;..\..\shared\ruby\include;..\..\shared\ruby\wp8;..\..\shared\ruby\wp8\sys;..\..\shared\ruby\win32;..\..\shared\ruby\generated;..\..\shared\ruby\rhoruby;..\..\shared;$(IncludePath)</IncludePath>
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

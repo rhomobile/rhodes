@@ -83,8 +83,8 @@
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -93,8 +93,8 @@
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -108,13 +108,13 @@
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -128,13 +128,13 @@
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
-    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

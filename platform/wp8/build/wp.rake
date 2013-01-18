@@ -227,7 +227,7 @@ namespace "build" do
     end 
 
     task :package => [:rhobundle, :rhodes] do
-	  addbundletoxap()
+	  #addbundletoxap()
 
       cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
 
@@ -247,12 +247,12 @@ namespace "build" do
       addbundletoxap()
     end
 
-    task :package_rhobundle_ARM_Debug => ["config:wp8_Win32_Debug", "build:wp8:rhobundle"] do
+    task :package_rhobundle_x86_Debug => ["config:wp8_Win32_Debug", "build:wp8:rhobundle"] do
       addRhobundleFilesToCacheFile()
       addbundletoxap()
     end
 
-    task :package_rhobundle_ARM_Debug => ["config:wp8_Win32_Release", "build:wp8:rhobundle"] do
+    task :package_rhobundle_x86_Release => ["config:wp8_Win32_Release", "build:wp8:rhobundle"] do
       addRhobundleFilesToCacheFile()
       addbundletoxap()
     end
