@@ -26,7 +26,7 @@
 
 namespace "config" do
   task :set_wp8_platform do
-    $current_platform = "wp" unless $current_platform
+    $current_platform = "wp8" unless $current_platform
   end
 
   task :wp8 => [:set_wp8_platform, "config:common"] do
@@ -95,8 +95,8 @@ namespace "build" do
           ENV['RHO_PLATFORM'] = 'wp8'
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $sdk, "rhodes", "Release")
-          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $sdk, "extensions", ext, "Release")
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $build_platform, "rhoruntime")
+          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $sdk, "extensions", ext)
           ENV['VCBUILD'] = $msbuild
           ENV['SDK'] = $sdk
       
