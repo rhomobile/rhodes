@@ -26,7 +26,7 @@
 
 namespace "config" do
   task :set_wp8_platform do
-    $current_platform = "wp" unless $current_platform
+    $current_platform = "wp8" unless $current_platform
   end
 
   task :wp8_ARM_Release do

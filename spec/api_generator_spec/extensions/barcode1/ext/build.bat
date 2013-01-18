@@ -27,6 +27,13 @@ rake --trace
 
 )
 
+if "%RHO_PLATFORM%" == "wp8" (
+
+cd barcode1\platform\wp8
+rake --trace
+
+)
+
 if "%RHO_PLATFORM%" == "bb" (
 
 cd barcode1\platform\bb
