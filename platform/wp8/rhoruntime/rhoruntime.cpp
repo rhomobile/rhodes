@@ -220,3 +220,8 @@ extern "C" int rho_net_ping_network(const char* szHost)
     return 1;
 }
 #endif
+
+extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
+{
+	//TODO: rho_wm_impl_performOnUiThread
+}

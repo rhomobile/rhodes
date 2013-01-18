@@ -83,8 +83,8 @@
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)bin\x86\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\x86\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
+    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -93,8 +93,8 @@
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)bin\x86\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\x86\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
+    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -108,13 +108,13 @@
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>$(SolutionDir)bin\ARM\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\ARM\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
+    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
+    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -128,13 +128,13 @@
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>$(SolutionDir)bin\ARM\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\ARM\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
+    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</OutDir>
+    <IntDir>..\bin\$(PlatformName)\$(ProjectName)\$(ConfigurationName)</IntDir>
     <IncludePath>../../shared/ruby;../../shared;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -220,6 +220,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\shared\api_generator\BaseClasses.h" />
+    <ClInclude Include="..\..\shared\api_generator\GeneratorQueue.h" />
+    <ClInclude Include="..\..\shared\api_generator\js_helpers.h" />
+    <ClInclude Include="..\..\shared\api_generator\MethodResult.h" />
     <ClInclude Include="..\..\shared\common\AppMenu.h" />
     <ClInclude Include="..\..\shared\common\app_build_capabilities.h" />
     <ClInclude Include="..\..\shared\common\app_build_configs.h" />
@@ -274,6 +278,8 @@
     <ClInclude Include="..\..\shared\unzip\zip.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\shared\api_generator\js_helpers.cpp" />
+    <ClCompile Include="..\..\shared\api_generator\MethodResult.cpp" />
     <ClCompile Include="..\..\shared\common\AppMenu.cpp" />
     <ClCompile Include="..\..\shared\common\app_build_configs.c" />
     <ClCompile Include="..\..\shared\common\BundleManager.cpp" />

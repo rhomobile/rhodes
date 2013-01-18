@@ -35,37 +35,33 @@
 class RhoValueConverter
 {
 private:
-    jclass clsHashMap;
-    jclass clsVector;
+    static jclass clsHashMap;
+    static jclass clsVector;
 
-    jmethodID midHashMapConstructor;
-    jmethodID midVectorConstructor;
-    jmethodID midPut;
-    jmethodID midAddElement;
+    static jmethodID midHashMapConstructor;
+    static jmethodID midVectorConstructor;
+    static jmethodID midPut;
+    static jmethodID midAddElement;
 
-    JNIEnv *env;
-    bool init;
+    static bool init;
+
+    JNIEnv* env;
 
 public:
     RhoValueConverter(JNIEnv *e);
 
-    jobject createObject(rho_param *p);
+    jhobject createObject(rho_param *p);
 };
 
 namespace details
 {
 
 template <>
-struct rho_cast_helper<VALUE, jobject>
+struct rho_cast_helper<VALUE, jobject>: public RhoJniConvertor
 {
     VALUE operator()(JNIEnv *env, jobject obj);
+    VALUE convertJavaMapToRubyHash(JNIEnv *env, jobject objMap);
 };
-
-//template <>
-//struct rho_cast_helper<VALUE, jhobject>
-//{
-//    VALUE operator()(JNIEnv *env, jhobject& obj) { return rho_cast<VALUE>(env, obj.get()); }
-//};
 
 template <>
 struct rho_cast_helper<VALUE, jstring>

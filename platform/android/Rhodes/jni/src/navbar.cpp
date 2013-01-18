@@ -40,9 +40,8 @@ RHO_GLOBAL void create_navbar(rho_param *p)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "create", "(Ljava/util/Map;)V");
     if (!mid) return;
 
-    jobject paramsObj = RhoValueConverter(env).createObject(p);
-    env->CallStaticVoidMethod(cls, mid, paramsObj);
-    env->DeleteLocalRef(paramsObj);
+    jhobject paramsObj = RhoValueConverter(env).createObject(p);
+    env->CallStaticVoidMethod(cls, mid, paramsObj.get());
 }
 
 RHO_GLOBAL void remove_navbar()

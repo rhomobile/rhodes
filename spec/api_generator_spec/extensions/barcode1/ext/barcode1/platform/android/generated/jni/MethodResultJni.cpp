@@ -164,7 +164,7 @@ rho::String MethodResultJni::enumerateJSObjects()
 
 VALUE MethodResultJni::toRuby()
 {
-    VALUE res;
+    VALUE res = rho_ruby_get_NIL();
 
     JNIEnv *env = jniInit();
     if (!env) {
