@@ -9,19 +9,7 @@ def build_extension(name, arch)
 
   mkdir_p $targetdir unless File.exist? $targetdir
 
-  if ENV['RHO_PLATFORM'] == 'wm'
-    args = []
-    args << "/M4"
-    args << name + ".sln"
-    args << "\"Release|#{$sdk}\""
-    cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
-    puts cmdline
-    puts `#{cmdline}`
-    exit unless $? == 0
-
-    cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
-
-  elsif ENV['RHO_PLATFORM'] == 'win32'
+  if ENV['RHO_PLATFORM'] == 'win32'
     args = []
     args << "/M4"
     args << name + ".sln"
@@ -34,14 +22,13 @@ def build_extension(name, arch)
     cp_r File.join($tempdir, "Debug", name + ".lib"), $targetdir
   elsif ENV['RHO_PLATFORM'] == 'wp8'
     args = []
-   #args << name + ".vcxproj"
-    args = [name + ".vcxproj", '/property:Configuration=Release', '/t:Rebuild']
+    args = [name + ".vcxproj", "/property:Configuration="+$build_config+" /property:Platform="+$build_platform, '/t:Rebuild']
     cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
     puts cmdline
     puts `#{cmdline}`
     exit unless $? == 0
 
-    cp_r File.join($tempdir,  "Release", name + ".lib"), $targetdir
+    cp_r File.join($tempdir, $build_config, name + ".lib"), $targetdir
   end
 end
 
@@ -58,6 +45,12 @@ namespace "build" do
       raise "VCBUILD is not set" if $vcbuild.nil?
       $sdk = ENV['SDK']
       raise "SDK is not set" if $sdk.nil?
+
+    $build_platform = ENV['RHO_BUILD_PLATFORM']
+	raise "RHO_BUILD_PLATFORM is not set" if $build_platform.nil?
+
+	$build_config = ENV['RHO_BUILD_CONFIG']
+    raise "RHO_BUILD_CONFIG is not set" if $build_config.nil?
 
   end
 

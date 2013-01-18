@@ -9,7 +9,7 @@ static const char* keys[] = { ""
 };
 
 static const char* values[] = { ""
-,"testwp8"
+,"api_generator_spec"
 };
 
 #define APP_BUILD_CONFIG_COUNT 2
