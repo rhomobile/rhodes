@@ -13,28 +13,27 @@ def build_extension(name, arch)
     args = []
     args << "/M4"
     args << name + ".sln"
-    args << "\"Release|#{$sdk}\""
+    args << "\"#{$build_config}|#{$sdk}\""
     cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
     puts cmdline
     puts `#{cmdline}`
     exit unless $? == 0
 
-    cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
+    cp_r File.join($tempdir, "#{$build_config}", name + ".lib"), $targetdir
 
   elsif ENV['RHO_PLATFORM'] == 'win32'
     args = []
     args << "/M4"
     args << name + ".sln"
-    args << "\"Debug|Win32\""
+    args << "\"#{$build_config}|Win32\""
     cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
     puts cmdline
     puts `#{cmdline}`
     exit unless $? == 0
 
-    cp_r File.join($tempdir, "Debug", name + ".lib"), $targetdir
+    cp_r File.join($tempdir, "#{$build_config}", name + ".lib"), $targetdir
   end
 
-    cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
 end
 
 namespace "build" do
@@ -51,6 +50,8 @@ namespace "build" do
       $sdk = ENV['SDK']
       raise "SDK is not set" if $sdk.nil?
 
+    $build_config = ENV['RHO_BUILD_CONFIG']
+    raise "RHO_BUILD_CONFIG is not set" if $build_config.nil?
   end
 
   task :all => :config do
