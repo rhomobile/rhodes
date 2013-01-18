@@ -4,7 +4,6 @@
 #include "com_motorolasolutions_rhoelements_MethodResult.h"
 #include "MethodResult.h"
 #include "MethodResultJni.h"
-#include "ruby_helpers.h"
 
 #include "logging/RhoLog.h"
 
@@ -147,7 +146,7 @@ VALUE MethodResultJni::enumerateRubyObjects(VALUE klass)
         //    CBarcode1SingletonBase::getInstance()->getModules().put(arIDs[i], pObj );
         //}
 
-        VALUE valObj = rho_create_object_with_id( klass, (*pIDs)[i].c_str() );
+        VALUE valObj = rho_ruby_create_object_with_id( klass, (*pIDs)[i].c_str() );
         rho_ruby_add_to_array(valArray, valObj);
     }
 

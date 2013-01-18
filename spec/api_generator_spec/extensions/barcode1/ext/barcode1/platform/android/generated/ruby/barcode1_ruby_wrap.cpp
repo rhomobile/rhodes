@@ -1,5 +1,4 @@
 #include "Barcode1.h"
-//#include "..\..\..\common\ruby_helpers.h"
 
 #include "MethodResultJni.h"
 
@@ -7,10 +6,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Barcode1RUBY"
 
-#include "ruby_helpers.h"
 #include "ext/rho/rhoruby.h"
 #include "rhodes/JNIRhoRuby.h"
-//#include "common/RhodesApp.h"
 
 using namespace rhoelements;
 
@@ -81,12 +78,12 @@ VALUE rb_barcode1_s_enumerate(VALUE klass)
 
 VALUE rb_barcode1_s_default(VALUE klass)
 {
-    return rho_create_object_with_id(klass, CBarcode1::getDefaultID().c_str());
+    return rho_ruby_create_object_with_id(klass, CBarcode1::getDefaultID().c_str());
 }
 
 VALUE rb_barcode1_s_set_default(VALUE klass, VALUE valObj)
 {
-    const char* szID = rho_get_object_id(valObj);
+    const char* szID = rho_ruby_get_object_id(valObj);
     CBarcode1::setDefaultID(szID);
 
     return rho_ruby_get_NIL();
@@ -100,7 +97,7 @@ VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
 
 VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
 {
-    rho::String id = rho_get_object_id(valObj);
+    rho::String id = rho_ruby_get_object_id(valObj);
     return barcode1_getprops(argc, argv, id);
 }
 
