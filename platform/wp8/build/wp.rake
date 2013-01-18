@@ -157,7 +157,7 @@ namespace "build" do
     end
 
     desc "Build WP8 rhobundle"
-    task :rhobundle => ["config:wp8", "build:bundle:noxruby", :rhobundlemap, "build:wp8:extensions"] do
+    task :rhobundle => ["config:wp8", "build:bundle:noxruby", :rhobundlemap] do
       #move public folder to root
       cp_r $srcdir + "/apps/public", $srcdir + "/public"
       rm_r $srcdir + "/apps/public"
@@ -198,7 +198,7 @@ namespace "build" do
     end
 
     # build native code
-    task :rhodes do
+    task :rhodes => ["config:wp8", "build:wp8:extensions"]do
       chdir $startdir
 
       out_dir = $startdir + "/"+ $config["build"]["wp8path"] +"/rhodes"
