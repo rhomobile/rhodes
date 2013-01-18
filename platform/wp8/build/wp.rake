@@ -92,12 +92,12 @@ namespace "build" do
           extpath = File.join(p, ext, 'ext')
           next unless File.exists? File.join(extpath, "build.bat")
 
-          ENV['RHO_PLATFORM'] = 'wp'
+          ENV['RHO_PLATFORM'] = 'wp8'
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
           ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $sdk, "rhodes", "Release")
-          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $sdk, "extensions", ext)
-          ENV['MSBUILD'] = $msbuild
+          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $sdk, "extensions", ext, "Release")
+          ENV['VCBUILD'] = $msbuild
           ENV['SDK'] = $sdk
       
           puts Jake.run("build.bat", [], extpath)
@@ -107,7 +107,7 @@ namespace "build" do
     end
 
     desc "Build WP8 rhobundle"
-    task :rhobundle => ["config:wp8", "build:bundle:noxruby"] do
+    task :rhobundle => ["config:wp8", "build:bundle:noxruby", "build:wp8:extensions"] do
       #move public folder to root
       cp_r $srcdir + "/apps/public", $srcdir + "/public"
       rm_r $srcdir + "/apps/public"
