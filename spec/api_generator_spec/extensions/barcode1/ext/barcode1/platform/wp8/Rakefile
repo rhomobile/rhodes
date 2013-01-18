@@ -32,9 +32,17 @@ def build_extension(name, arch)
     exit unless $? == 0
 
     cp_r File.join($tempdir, "Debug", name + ".lib"), $targetdir
-  end
+  elsif ENV['RHO_PLATFORM'] == 'wp8'
+    args = []
+   #args << name + ".vcxproj"
+    args = [name + ".vcxproj", '/property:Configuration=Release', '/t:Rebuild']
+    cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
+    puts cmdline
+    puts `#{cmdline}`
+    exit unless $? == 0
 
-    cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
+    cp_r File.join($tempdir,  "Release", name + ".lib"), $targetdir
+  end
 end
 
 namespace "build" do
