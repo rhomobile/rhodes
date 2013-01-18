@@ -100,9 +100,9 @@ namespace RhoAppRunner
             Console.WriteLine("Launching sample app on Windows Phone 8 Emulator...");
             app.Launch();
             Console.WriteLine("Launched sample app on Windows Phone 8 Emulator...");
-            app.TerminateRunningInstances();
-            Console.WriteLine("Relaunching sample app on Windows Phone 8 Emulator...");
-            app.Launch();
+            //app.TerminateRunningInstances();
+            //Console.WriteLine("Relaunching sample app on Windows Phone 8 Emulator...");
+            //app.Launch();
         }
     }
 }
