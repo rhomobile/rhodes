@@ -70,9 +70,8 @@ RHO_GLOBAL void alert_show_popup(rho_param *p)
         return;
     }
 
-    jobject paramsObj = RhoValueConverter(env).createObject(p);
-    env->CallStaticVoidMethod(cls, mid, paramsObj);
-    env->DeleteLocalRef(paramsObj);
+    jhobject paramsObj = RhoValueConverter(env).createObject(p);
+    env->CallStaticVoidMethod(cls, mid, paramsObj.get());
 }
 
 RHO_GLOBAL void alert_hide_popup()

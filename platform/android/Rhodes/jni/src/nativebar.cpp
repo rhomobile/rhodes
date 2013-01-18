@@ -50,9 +50,8 @@ RHO_GLOBAL void create_nativebar_inner(int bar_type, rho_param *p)
         bar_type = 1;
     }
 
-    jobject paramsObj = RhoValueConverter(env).createObject(p);
-    env->CallStaticVoidMethod(clsNativeBar, midCreate, bar_type, paramsObj);
-    env->DeleteLocalRef(paramsObj);
+    jhobject paramsObj = RhoValueConverter(env).createObject(p);
+    env->CallStaticVoidMethod(clsNativeBar, midCreate, bar_type, paramsObj.get());
 }
 
 RHO_GLOBAL void remove_nativebar_inner()

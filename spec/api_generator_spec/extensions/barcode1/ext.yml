@@ -1,4 +1,4 @@
 entry: Init_Barcode1	
 javaentry: com.barcode1.Barcode1
-android_additional_sources_list: ext/barcode1/platform/android/ext_build.files
+android_additional_sources_list: ext/barcode1/platform/android/ext_java.files
 libraries: ["Barcode1"]

@@ -48,5 +48,4 @@ public:
     static IBarcode1Singleton* getBarcode1SingletonS(){ return getInstance()->getModuleSingleton(); }
 };
 
-extern "C" void Init_RubyAPI_Barcode1();
-extern "C" void Init_JSAPI_Barcode1();
+void Init_Barcode1_API();

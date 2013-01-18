@@ -198,24 +198,35 @@ jhstring rho_cast_helper<jhstring, char const *>::operator()(JNIEnv *env, char c
     return jhstring(s ? env->NewStringUTF(s) : (jstring)0);
 }
 
-jclass RhoMapConvertor::clsString;
-jclass RhoMapConvertor::clsMap;
-jclass RhoMapConvertor::clsSet;
-jclass RhoMapConvertor::clsIterator;
-jmethodID RhoMapConvertor::midMapGet;
-jmethodID RhoMapConvertor::midMapKeySet;
-jmethodID RhoMapConvertor::midSetIterator;
-jmethodID RhoMapConvertor::midIteratorHasNext;
-jmethodID RhoMapConvertor::midIteratorNext;
+jclass RhoJniConvertor::clsString;
+jclass RhoJniConvertor::clsList;
+jclass RhoJniConvertor::clsMap;
+jclass RhoJniConvertor::clsSet;
+jclass RhoJniConvertor::clsIterator;
+jmethodID RhoJniConvertor::midListIterator;
+jmethodID RhoJniConvertor::midMapGet;
+jmethodID RhoJniConvertor::midMapKeySet;
+jmethodID RhoJniConvertor::midSetIterator;
+jmethodID RhoJniConvertor::midIteratorHasNext;
+jmethodID RhoJniConvertor::midIteratorNext;
 
-bool RhoMapConvertor::initConvertor(JNIEnv *env)
+bool RhoJniConvertor::initConvertor(JNIEnv *env)
 {
+    static rho::common::CMutex rho_cast_java_ruby_mtx;
     static bool initialized = false;
 
-    if (initialized) return initialized;
+    if (initialized)
+        return initialized;
+
+    rho::common::CMutexLock guard(rho_cast_java_ruby_mtx);
+
+    if (initialized)
+        return initialized;
 
     clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
     if (!clsString) return false;
+    clsList = getJNIClass(RHODES_JAVA_CLASS_LIST);
+    if (!clsList) return false;
     clsMap = getJNIClass(RHODES_JAVA_CLASS_MAP);
     if (!clsMap) return false;
     clsSet = getJNIClass(RHODES_JAVA_CLASS_SET);
@@ -223,6 +234,8 @@ bool RhoMapConvertor::initConvertor(JNIEnv *env)
     clsIterator = getJNIClass(RHODES_JAVA_CLASS_ITERATOR);
     if (!clsIterator) return false;
 
+    midListIterator = getJNIClassMethod(env, clsList, "iterator", "()Ljava/util/Iterator;");
+    if (!midListIterator) return false;
     midMapGet = getJNIClassMethod(env, clsMap, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
     if (!midMapGet) return false;
     midMapKeySet = getJNIClassMethod(env, clsMap, "keySet", "()Ljava/util/Set;");
@@ -243,15 +256,16 @@ rho_cast_helper<HStringMap, jobject>::operator()(JNIEnv *env, jobject jObj)
 {
         value_type result(new value_type::element_type);
 
-        if (!RhoMapConvertor::initConvertor(env)) return value_type(0);
-        jobject jSet = env->CallObjectMethod(jObj, midMapKeySet);
+        if (!initConvertor(env)) return value_type(0);
+
+        jhobject jSet = env->CallObjectMethod(jObj, midMapKeySet);
         if (!jSet) return value_type(0);
-        jobject jIterator = env->CallObjectMethod(jSet, midSetIterator);
+        jhobject jIterator = env->CallObjectMethod(jSet.get(), midSetIterator);
         if (!jIterator) return value_type(0);
 
-        while(env->CallBooleanMethod(jIterator, midIteratorHasNext))
+        while(env->CallBooleanMethod(jIterator.get(), midIteratorHasNext))
         {
-            jhstring jkey = static_cast<jstring>(env->CallObjectMethod(jIterator, midIteratorNext));
+            jhstring jkey = static_cast<jstring>(env->CallObjectMethod(jIterator.get(), midIteratorNext));
             jhstring jval = static_cast<jstring>(env->CallObjectMethod(jObj, midMapGet, jkey.get()));
 
             std::string key = rho_cast<std::string>(env, jkey);
@@ -295,6 +309,26 @@ rho_cast_helper<HStringVector, jobjectArray>::operator ()(JNIEnv *env, jobjectAr
     {
         jhstring jval = static_cast<jstring>(env->GetObjectArrayElement(jArr, i));
         std::string val = rho_cast<std::string>(env, jval);
+        result->push_back(val);
+    }
+    return result;
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+HStringVector
+rho_cast_helper<HStringVector, jobject>::operator ()(JNIEnv *env, jobject jList)
+{
+    value_type result(new value_type::element_type);
+
+    if (!initConvertor(env)) return value_type(0);
+
+    jhobject jhIterator = env->CallObjectMethod(jList, midListIterator);
+    if (!jhIterator) return value_type(0);
+
+    while(env->CallBooleanMethod(jhIterator.get(), midIteratorHasNext))
+    {
+        jhstring jhVal = static_cast<jstring>(env->CallObjectMethod(jhIterator.get(), midIteratorNext));
+        std::string val = rho_cast<std::string>(env, jhVal);
         result->push_back(val);
     }
     return result;
