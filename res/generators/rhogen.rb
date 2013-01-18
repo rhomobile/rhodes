@@ -32,6 +32,9 @@ module Rhogen
 
     desc <<-DESC
       Generates a new rhodes application.
+
+      Options:
+        --norhoconnect - don't include rhoconnect-client in application
       
       Required:
         name        - application name
@@ -42,6 +45,8 @@ module Rhogen
     DESC
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
+
+    option :norhoconnect, :desc=> '', :as => :boolean, :default => false
 
     first_argument :name, :required => true, :desc => "application name"
     second_argument :syncserver, :required => false, :desc => 'url to the source adapter (i.e. "" or "http://rhosync.rhohub.com/apps/myapp/sources/")'
@@ -63,6 +68,7 @@ module Rhogen
       generated_uuid = puuid.generate
       @productid = generated_uuid
       @uid = '0x'+(0xE0000000 + rand(0xFFFFFFF)).to_s(16)
+      @rhoconnectclient_ext = ', "rhoconnect-client"' unless norhoconnect
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end
