@@ -55,7 +55,7 @@ public:
     void set(const rho::StringW& res){ m_strRes = res;  m_ResType = eString; callCallback(); }
     void set(const rho::Vector<rho::StringW>& res){ m_arStrRes = res;  m_ResType = eStringArray; callCallback(); }
     void setError(const rho::StringW& res){ m_strError = res; m_ResType = eError; callCallback(); }
-    void setArgError(const wchar_t *fmt, ...)
+    void setArgError(const rho::StringW& fmt, ...)
     {
         //TODO: support sprintf
         m_strError = fmt;
