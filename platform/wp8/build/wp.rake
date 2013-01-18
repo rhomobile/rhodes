@@ -66,8 +66,8 @@ namespace "config" do
     $msbuild      = $config["env"]["paths"]["msbuild"]
     $msbuild      = "msbuild" if $msbuild.nil?
 
-    $sdk          = "Windows Phone 8 SDK"
-    $sdk          = $app_config["wpsdk"] unless $app_config["wpsdk"].nil?
+    #$sdk          = "Windows Phone 8 SDK"
+    #$sdk          = $app_config["wpsdk"] unless $app_config["wpsdk"].nil?
 
 	$rhodes_bin_dir = "#{$startdir}/#{$vcbindir}/#{$build_platform}/rhodes/#{$build_config}"
 
@@ -146,9 +146,9 @@ namespace "build" do
 		  ENV['RHO_BUILD_PLATFORM'] = $build_platform
 		  ENV['RHO_BUILD_CONFIG'] = $build_config
           ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $build_platform, "rhoruntime", $build_config)
-          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $sdk, "extensions", ext)
+          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $build_platform, "extensions", ext)
           ENV['VCBUILD'] = $msbuild
-          ENV['SDK'] = $sdk
+          #ENV['SDK'] = $sdk
       
           puts Jake.run("build.bat", [], extpath)
           break
