@@ -29,6 +29,26 @@ namespace "config" do
     $current_platform = "wp8" unless $current_platform
   end
 
+  task :wp8_ARM_Release do
+      $build_platform = 'ARM'
+	  $build_config = 'Release'
+  end
+
+  task :wp8_ARM_Debug do
+      $build_platform = 'ARM'
+	  $build_config = 'Debug'
+  end
+
+  task :wp8_Win32_Release do
+      $build_platform = 'Win32'
+	  $build_config = 'Release'
+  end
+
+  task :wp8_Win32_Debug do
+      $build_platform = 'Win32'
+	  $build_config = 'Debug'
+  end
+
   task :wp8 => [:set_wp8_platform, "config:common"] do
     $rubypath     = "res/build-tools/RhoRuby.exe"
     $zippath      = "res/build-tools/7za.exe"
@@ -65,8 +85,7 @@ namespace "config" do
 	end
 end
 
-def addRhobundleFilesToCacheFileCommon(cfgName)
-  #out_dir = $startdir + "/" + $vcbindir + "/rhodes/#{cfgName}/"
+def addRhobundleFilesToCacheFile()
   xml_path = File.join($rhodes_bin_dir, "XapCacheFile.xml")
   doc = REXML::Document.new(File.open(xml_path))
   chdir $srcdir
@@ -79,9 +98,38 @@ def addRhobundleFilesToCacheFileCommon(cfgName)
 
   chdir $startdir
 
-  #mkdir_p $config["build"]["wp8path"] + "/rhodes/obj/#{cfgName}" if not File.exists? $config["build"]["wp8path"] + "/rhodes/obj/#{cfgName}"
-  #cp xml_path, $config["build"]["wp8path"] + "/rhodes/obj/#{cfgName}"
+  mkdir_p $config["build"]["wp8path"] + "/rhodes/obj/#{$build_config}" if not File.exists? $config["build"]["wp8path"] + "/rhodes/obj/#{$build_config}"
+  cp xml_path, $config["build"]["wp8path"] + "/rhodes/obj/#{$build_config}"
 end
+
+def addbundletoxap()
+	tmp_dir = File.join($srcdir, "tmp")
+    rho_dir = File.join(tmp_dir, "rho")
+      
+    rm_rf tmp_dir
+    mkdir tmp_dir
+    mkdir File.join(tmp_dir, 'rho')
+    mkdir File.join(tmp_dir, 'rho', 'apps')
+
+    appsFiles = FileList.new 
+    appsFiles.include(File.join($srcdir, "apps", "*.*"))
+
+    cp_r File.join($srcdir, "public"), tmp_dir
+    cp   File.join($srcdir, "RhoBundleMap.txt"), tmp_dir
+    cp_r File.join($srcdir, "apps"), rho_dir
+    #cp_r appsFiles, File.join(rho_dir, 'apps')
+    cp_r File.join($srcdir, "lib"), rho_dir
+    cp_r File.join($srcdir, "db"), rho_dir
+
+    chdir $startdir
+    args = []
+    args << "a"
+    args << "-tzip"
+    args << File.join($rhodes_bin_dir, "rhodes.xap")
+    args << tmp_dir + "/*"
+    puts Jake.run($zippath, args)
+end
+
  
 namespace "build" do
   namespace "wp8" do
@@ -95,7 +143,9 @@ namespace "build" do
           ENV['RHO_PLATFORM'] = 'wp8'
           ENV['PWD'] = $startdir
           ENV['RHO_ROOT'] = ENV['PWD']
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $build_platform, "rhoruntime")
+		  ENV['RHO_BUILD_PLATFORM'] = $build_platform
+		  ENV['RHO_BUILD_CONFIG'] = $build_config
+          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $build_platform, "rhoruntime", $build_config)
           ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $sdk, "extensions", ext)
           ENV['VCBUILD'] = $msbuild
           ENV['SDK'] = $sdk
@@ -107,14 +157,14 @@ namespace "build" do
     end
 
     desc "Build WP8 rhobundle"
-    task :rhobundle => ["config:wp8", "build:bundle:noxruby", "build:wp8:extensions"] do
+    task :rhobundle => ["config:wp8", "build:bundle:noxruby", :rhobundlemap, "build:wp8:extensions"] do
       #move public folder to root
       cp_r $srcdir + "/apps/public", $srcdir + "/public"
       rm_r $srcdir + "/apps/public"
     end
 
     # create file with map of bundle files 
-    task :rhobundlemap => ["config:wp8"] do
+    task :rhobundlemap do
       puts "rhobundlemap task started"
 
       chdir $srcdir
@@ -148,7 +198,7 @@ namespace "build" do
     end
 
     # build native code
-    task :rhodes => ["config:wp8"] do
+    task :rhodes do
       chdir $startdir
 
       out_dir = $startdir + "/"+ $config["build"]["wp8path"] +"/rhodes"
@@ -164,7 +214,9 @@ namespace "build" do
 
       File.open($startdir + "/"+$config["build"]["wp8path"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
 
-      args = ['rhodes.sln', '/property:Configuration=Release', '/t:Rebuild']
+      #args = ['rhodes.sln', '/property:Configuration=Release', '/t:Rebuild']
+      #args = ['rhodes.sln', "/property:Configuration=#{$build_config};Platform=#{$build_platform}", '/t:Build']
+      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$build_platform}", '/t:Build']
 
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       Jake.run($msbuild, args)
@@ -176,67 +228,37 @@ namespace "build" do
       chdir $startdir
     end 
 
-    def addbundletoxapCommon(cfgName)
-      #out_dir = File.join($startdir, $vcbindir, "rhodes/#{cfgName}")
-	  tmp_dir = File.join($srcdir, "tmp")
-      rho_dir = File.join(tmp_dir, "rho")
-      
-      rm_rf tmp_dir
-      mkdir tmp_dir
-      mkdir File.join(tmp_dir, 'rho')
-      mkdir File.join(tmp_dir, 'rho', 'apps')
+    task :package => [:rhobundle, :rhodes] do
+	  #addbundletoxap()
 
-      appsFiles = FileList.new 
-      appsFiles.include(File.join($srcdir, "apps", "*.*"))
+      cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
 
-      cp_r File.join($srcdir, "public"), tmp_dir
-      cp   File.join($srcdir, "RhoBundleMap.txt"), tmp_dir
-      cp_r File.join($srcdir, "apps"), rho_dir
-      #cp_r appsFiles, File.join(rho_dir, 'apps')
-      cp_r File.join($srcdir, "lib"), rho_dir
-      cp_r File.join($srcdir, "db"), rho_dir
+      mkdir_p $bindir if not File.exists? $bindir
+      mkdir_p $targetdir if not File.exists? $targetdir
+      mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
 
-      chdir $startdir
-      args = []
-      args << "a"
-      args << "-tzip"
-      args << File.join($rhodes_bin_dir, "rhodes.xap")
-      args << tmp_dir + "/*"
-      puts Jake.run($zippath, args)
     end
 
-    task :addbundletoxapDebug do
-      addbundletoxapCommon('Debug')
+    task :package_rhobundle_ARM_Release => ["config:wp8_ARM_Release", "build:wp8:rhobundle"] do
+      addRhobundleFilesToCacheFile()
+      addbundletoxap()
     end
 
-    task :addbundletoxapRelease => "config:wp8" do
-      addbundletoxapCommon('Release')
+    task :package_rhobundle_ARM_Debug => ["config:wp8_ARM_Debug", "build:wp8:rhobundle"] do
+      addRhobundleFilesToCacheFile()
+      addbundletoxap()
     end
 
-    task :rhobundle_production => [:rhobundle, :rhobundlemap] do
+    task :package_rhobundle_x86_Debug => ["config:wp8_Win32_Debug", "build:wp8:rhobundle"] do
+      addRhobundleFilesToCacheFile()
+      addbundletoxap()
     end
 
-	task :devconfig_release do
-		$build_platform = 'Win32'
-		$build_config = 'Release'
-	end
-
-    task :devrhobundleRelease => [:devconfig_release, :rhobundle, :rhobundlemap] do
-      puts 'devrhobundleRelease task started'
-      addRhobundleFilesToCacheFileCommon('Release')
-      Rake::Task["build:wp8:addbundletoxapRelease"].invoke
+    task :package_rhobundle_x86_Release => ["config:wp8_Win32_Release", "build:wp8:rhobundle"] do
+      addRhobundleFilesToCacheFile()
+      addbundletoxap()
     end
 
-	task :devconfig_debug do
-		$build_platform = 'Win32'
-		$build_config = 'Debug'
-	end
-
-    task :devrhobundleDebug => [:devconfig_debug, :rhobundle, :rhobundlemap] do
-      puts 'devrhobundleDebug task started'
-      addRhobundleFilesToCacheFileCommon('Debug')
-      Rake::Task["build:wp8:addbundletoxapDebug"].invoke
-    end
   end
 end
 
@@ -260,78 +282,34 @@ end
 namespace "device" do
   namespace "wp8" do
 
-  	task :config_release do
-		$build_platform = 'ARM'
-		$build_config = 'Release'
-	end
-
-    desc "Build production for device or emulator"
-    task :production => [:config_release, "build:wp8:rhobundle_production", "build:wp8:rhodes", "build:wp8:addbundletoxapRelease"] do
-      #out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-      cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
-
-      mkdir_p $bindir if not File.exists? $bindir
-      mkdir_p $targetdir if not File.exists? $targetdir
-      #mv out_dir + $appname + ".xap", $targetdir
-      mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
-
+    desc "Build production for device"
+    task :production => ["config:wp8_ARM_Release", "build:wp8:package"] do
     end
 
-    task :production_noxap => [:config_release, "build:wp8:rhobundle_production", "build:wp8:rhodes"] do
-      #out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-      cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
-
-      mkdir_p $bindir if not File.exists? $bindir
-      mkdir_p $targetdir if not File.exists? $targetdir
-      #mv out_dir + $appname + ".xap", $targetdir
-      mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
-
-    end
   end
 end
 
 namespace "emulator" do
   namespace "wp8" do
 
-  	task :config_release do
-		$build_platform = 'Win32'
-		$build_config = 'Release'
-	end
-
-    desc "Build production for device or emulator"
-    task :production => [:config_release, "build:wp8:rhobundle_production", "build:wp8:rhodes", "build:wp8:addbundletoxapRelease"] do
-      #out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-      cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
-
-      mkdir_p $bindir if not File.exists? $bindir
-      mkdir_p $targetdir if not File.exists? $targetdir
-      #mv out_dir + $appname + ".xap", $targetdir
-      mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
-
+    desc "Build production for device"
+    task :production => ["config:wp8_Win32_Release", "build:wp8:package"] do
+	  addRhobundleFilesToCacheFile()
     end
 
-    task :production_noxap => [:config_release, "build:wp8:rhobundle_production", "build:wp8:rhodes"] do
-      #out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-      cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
-
-      mkdir_p $bindir if not File.exists? $bindir
-      mkdir_p $targetdir if not File.exists? $targetdir
-      #mv out_dir + $appname + ".xap", $targetdir
-      mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
-
-    end
   end
 end
 
 namespace "clean" do
   desc "Clean wp"
   task :wp8 => "clean:wp8:all"
+
   namespace "wp8" do
-    task :rhodes => ["config:wp"] do
+    task :rhodes => ["config:wp8"] do
       rm_rf $vcbindir
       rm_rf $targetdir
     end
-    task :all => "clean:wp:rhodes"
+    task :all => "clean:wp8:rhodes"
   end
 end
 
@@ -343,7 +321,8 @@ namespace "run" do
   end
 
   desc "Build, install .xap and run on WP8 emulator"
-  task :wp8 => ["emulator:wp8:production_noxap"] do
+  task :wp8 => ["emulator:wp8:production"] do
+
     if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 
       File.delete($app_path + "/started") if File.exists?($app_path + "/started")
@@ -356,10 +335,6 @@ namespace "run" do
         end
       end
 
-      Rake::Task["build:wp8:addbundletoxapRelease"].invoke
-
-      #out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-      #cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
 	  cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
       mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
 
@@ -463,7 +438,8 @@ namespace "run" do
     end
 
     desc "Build, install .xap and run on WP8 device"
-    task :device => ["device:wp8:production_noxap"] do
+    task :device => ["device:wp8:production"] do
+      addRhobundleFilesToCacheFile()
 
       if $app_config["wp"] && $app_config["wp"]["productid"] != nil
         #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
@@ -477,10 +453,6 @@ namespace "run" do
           end
         end
 
-        Rake::Task["device:wp8:addbundletoxapRelease"].invoke
-        #out_dir = $startdir + "/" + $vcbindir + "/rhodes/Release/"
-        #cp  out_dir + "rhodes.xap", out_dir + $appname + ".xap"
-        #mv out_dir + $appname + ".xap", $targetdir
         cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
         mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
 

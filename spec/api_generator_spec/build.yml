@@ -1,5 +1,5 @@
 #sdk: "C:/Ruby193/lib/ruby/gems/1.9.1/gems/rhodes-3.3.2"
-sdk: "c:/projects/rhodes"
+sdk: ../../
 sdkversion: 3.3.2
 name: api_generator_spec
 version: 1.0
