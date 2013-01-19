@@ -30,22 +30,22 @@ namespace "config" do
   end
 
   task :wp8_ARM_Release do
-      $build_platform = 'ARM'
+      $sdk = 'ARM'
 	  $build_config = 'Release'
   end
 
   task :wp8_ARM_Debug do
-      $build_platform = 'ARM'
+      $sdk = 'ARM'
 	  $build_config = 'Debug'
   end
 
   task :wp8_Win32_Release do
-      $build_platform = 'Win32'
+      $sdk = 'Win32'
 	  $build_config = 'Release'
   end
 
   task :wp8_Win32_Debug do
-      $build_platform = 'Win32'
+      $sdk = 'Win32'
 	  $build_config = 'Debug'
   end
 
@@ -69,7 +69,7 @@ namespace "config" do
     #$sdk          = "Windows Phone 8 SDK"
     #$sdk          = $app_config["wpsdk"] unless $app_config["wpsdk"].nil?
 
-	$rhodes_bin_dir = "#{$startdir}/#{$vcbindir}/#{$build_platform}/rhodes/#{$build_config}"
+	$rhodes_bin_dir = "#{$startdir}/#{$vcbindir}/#{$sdk}/rhodes/#{$build_config}"
 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
 
@@ -141,15 +141,13 @@ namespace "build" do
           next unless File.exists? File.join(extpath, "build.bat")
 
           ENV['RHO_PLATFORM'] = 'wp8'
-          ENV['PWD'] = $startdir
-          ENV['RHO_ROOT'] = ENV['PWD']
-		  ENV['RHO_BUILD_PLATFORM'] = $build_platform
+          ENV['RHO_ROOT'] = $startdir
+		  ENV['RHO_PROJECT_NAME'] = ext
+		  ENV['SDK'] = $sdk
 		  ENV['RHO_BUILD_CONFIG'] = $build_config
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $build_platform, "rhoruntime", $build_config)
-          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wp8", "bin", $build_platform, "extensions", ext)
+          ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", "wp8", "bin", $sdk, "extensions", $build_config)
           ENV['VCBUILD'] = $msbuild
-          #ENV['SDK'] = $sdk
-      
+
           puts Jake.run("build.bat", [], extpath)
           break
         end
@@ -157,7 +155,7 @@ namespace "build" do
     end
 
     desc "Build WP8 rhobundle"
-    task :rhobundle => ["config:wp8", "build:bundle:noxruby", :rhobundlemap] do
+    task :rhobundle_noext => ["config:wp8", "build:bundle:noxruby", :rhobundlemap] do
       #move public folder to root
       cp_r $srcdir + "/apps/public", $srcdir + "/public"
       rm_r $srcdir + "/apps/public"
@@ -198,7 +196,7 @@ namespace "build" do
     end
 
     # build native code
-    task :rhodes => ["config:wp8", "build:wp8:extensions"]do
+    task :rhodes => ["config:wp8"]do
       chdir $startdir
 
       out_dir = $startdir + "/"+ $config["build"]["wp8path"] +"/rhodes"
@@ -214,9 +212,7 @@ namespace "build" do
 
       File.open($startdir + "/"+$config["build"]["wp8path"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
 
-      #args = ['rhodes.sln', '/property:Configuration=Release', '/t:Rebuild']
-      #args = ['rhodes.sln', "/property:Configuration=#{$build_config};Platform=#{$build_platform}", '/t:Build']
-      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$build_platform}", '/t:Build']
+      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/t:Build']
 
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       Jake.run($msbuild, args)
@@ -228,7 +224,7 @@ namespace "build" do
       chdir $startdir
     end 
 
-    task :package => [:rhobundle, :rhodes] do
+    task :package => [:rhobundle_noext, :extensions, :rhodes] do
 	  #addbundletoxap()
 
       cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
@@ -239,24 +235,29 @@ namespace "build" do
 
     end
 
-    task :package_rhobundle_ARM_Release => ["config:wp8_ARM_Release", "build:wp8:rhobundle"] do
-      addRhobundleFilesToCacheFile()
-      addbundletoxap()
-    end
+	task :package_rhobundle, [:sdk, :configuration] do |t,args|
+	  throw "You must pass in sdk(x86, ARM)" if args.sdk.nil?
+	  throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
 
-    task :package_rhobundle_ARM_Debug => ["config:wp8_ARM_Debug", "build:wp8:rhobundle"] do
-      addRhobundleFilesToCacheFile()
-      addbundletoxap()
-    end
+      $sdk = args.sdk == 'x86' ? 'Win32' : args.sdk
+	  $build_config = args.configuration
 
-    task :package_rhobundle_x86_Debug => ["config:wp8_Win32_Debug", "build:wp8:rhobundle"] do
-      addRhobundleFilesToCacheFile()
-      addbundletoxap()
-    end
+	  Rake::Task["build:wp8:rhobundle_noext"].invoke
 
-    task :package_rhobundle_x86_Release => ["config:wp8_Win32_Release", "build:wp8:rhobundle"] do
       addRhobundleFilesToCacheFile()
       addbundletoxap()
+
+	end
+
+	task :rhobundle, [:sdk, :configuration] do |t,args|
+	  throw "You must pass in sdk(Win32, ARM)" if args.sdk.nil?
+	  throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
+
+      $sdk = args.sdk
+	  $build_config = args.configuration
+	  
+	  Rake::Task["build:wp8:rhobundle_noext"].invoke
+	  Rake::Task["build:wp8:extensions"].invoke
     end
 
   end
@@ -364,12 +365,12 @@ namespace "run" do
 
     desc "Run application on RhoSimulator"    
     task :rhosimulator => ["config:set_wp8_platform", "config:common"] do    
-      $rhosim_config = "platform='wp'\r\n"
+      $rhosim_config = "platform='wp8'\r\n"
       Rake::Task["run:rhosimulator"].invoke            
     end
 
     task :rhosimulator_debug => ["config:set_wp8_platform", "config:common"] do    
-      $rhosim_config = "platform='wp'\r\n"
+      $rhosim_config = "platform='wp8'\r\n"
       Rake::Task["run:rhosimulator_debug"].invoke            
     end
 
