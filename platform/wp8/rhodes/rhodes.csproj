@@ -194,6 +194,6 @@
   -->
   <ProjectExtensions />
   <PropertyGroup>
-    <PostBuildEvent>rake build:wp8:package_rhobundle_$(Platform)_$(Configuration)</PostBuildEvent>
+    <PostBuildEvent>rake build:wp8:package_rhobundle[$(Platform),$(Configuration)]</PostBuildEvent>
   </PropertyGroup>
 </Project>

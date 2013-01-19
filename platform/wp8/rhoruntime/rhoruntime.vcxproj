@@ -79,28 +79,28 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
-    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
-    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
-    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
-    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
-    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</OutDir>
-    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -116,7 +116,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\bin\$(Platform)\extensions\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -134,7 +134,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\bin\$(Platform)\extensions\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -152,7 +152,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\bin\$(Platform)\extensions\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -170,7 +170,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\bin\$(Platform)\extensions\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -188,7 +188,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\bin\$(Platform)\extensions\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -206,7 +206,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\bin\$(Platform)\extensions\$(Configuration)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

@@ -1,51 +1,47 @@
 require 'fileutils'
 
-USE_STLPORT = true
-
-
-def build_extension(name, arch)
+def build_extension()
   objects = []
-  mkdir_p $tempdir unless File.exists? $tempdir
-
-  mkdir_p $targetdir unless File.exist? $targetdir
 
   if ENV['RHO_PLATFORM'] == 'wp8'
     args = []
-    args = [name + ".vcxproj", "/property:Configuration="+$build_config+" /property:Platform="+$build_platform, '/t:Rebuild']
+    args = [$project_name + ".vcxproj", "/property:Configuration="+$build_config+" /property:Platform="+$sdk, '/t:Build']
     cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
     puts cmdline
     puts `#{cmdline}`
     exit unless $? == 0
 
-    cp_r File.join($tempdir, $build_config, name + ".lib"), $targetdir
   end
 end
 
 namespace "build" do
   task :config do
-    $targetdir = ENV['TARGET_TEMP_DIR']
-    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    #$targetdir = ENV['TARGET_TEMP_DIR']
+    #raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+
     $tempdir = ENV['TEMP_FILES_DIR']
     raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+
     $rootdir = ENV['RHO_ROOT']
     raise "RHO_ROOT is not set" if $rootdir.nil?
 
-      $vcbuild = ENV['VCBUILD']
-      raise "VCBUILD is not set" if $vcbuild.nil?
-      #$sdk = ENV['SDK']
-      #raise "SDK is not set" if $sdk.nil?
+    $vcbuild = ENV['VCBUILD']
+    raise "VCBUILD is not set" if $vcbuild.nil?
 
-    $build_platform = ENV['RHO_BUILD_PLATFORM']
-	raise "RHO_BUILD_PLATFORM is not set" if $build_platform.nil?
-
+    $sdk = ENV['SDK']
+	raise "SDK is not set" if $sdk.nil?
+	
 	$build_config = ENV['RHO_BUILD_CONFIG']
     raise "RHO_BUILD_CONFIG is not set" if $build_config.nil?
+
+	$project_name = ENV['RHO_PROJECT_NAME']
+    raise "RHO_PROJECT_NAME is not set" if $project_name.nil?
 
   end
 
   task :all => :config do
 
-    build_extension('Barcode1', $arch)
+    build_extension()
   end
 end
 

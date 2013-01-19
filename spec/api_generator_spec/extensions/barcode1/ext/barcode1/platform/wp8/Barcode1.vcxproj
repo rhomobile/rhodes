@@ -68,20 +68,20 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(TEMP_FILES_DIR)\$(Configuration)</OutDir>
-    <IntDir>$(TEMP_FILES_DIR)\$(Configuration)</IntDir>
+    <OutDir>$(TEMP_FILES_DIR)\$(ProjectName)\</OutDir>
+    <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(TEMP_FILES_DIR)\$(Configuration)</OutDir>
-    <IntDir>$(TEMP_FILES_DIR)\$(Configuration)</IntDir>
+    <OutDir>$(TEMP_FILES_DIR)\$(ProjectName)\</OutDir>
+    <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>$(TEMP_FILES_DIR)\$(Configuration)</OutDir>
-    <IntDir>$(TEMP_FILES_DIR)\$(Configuration)</IntDir>
+    <OutDir>$(TEMP_FILES_DIR)\$(ProjectName)\</OutDir>
+    <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>$(TEMP_FILES_DIR)\$(Configuration)</OutDir>
-    <IntDir>$(TEMP_FILES_DIR)\$(Configuration)</IntDir>
+    <OutDir>$(TEMP_FILES_DIR)\$(ProjectName)\</OutDir>
+    <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -113,7 +113,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
       <PreprocessorDefinitions>_LIB;_WP8_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common</AdditionalIncludeDirectories>
@@ -126,7 +126,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
       <PreprocessorDefinitions>_LIB;_WP8_LIB;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <AdditionalIncludeDirectories>$(RHO_ROOT)\platform\shared\ruby\wp8;$(RHO_ROOT)\platform\shared\ruby\include;$(RHO_ROOT)\platform\shared;$(RHO_ROOT)\platform\shared\common</AdditionalIncludeDirectories>
