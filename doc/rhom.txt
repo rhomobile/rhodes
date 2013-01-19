@@ -287,7 +287,7 @@ If you want to remove all local data when upgrading to new application version: 
 This scenario will work for Property Bag and Fixed Schema models.
 
 ## Rhom API
-Below is the full list of links to the [Rhom API methods] available to Rhom models.
+Below is the full list of links to the [Rhom API methods](/rhodesapi/rhom-api) available to Rhom models.
 
  * [client_id](/rhodesapi/rhom-api#clientid) - Returns the current sync client id.
  * [clear_notification](/rhodesapi/rhom-api#clearnotification) - Clear notification for the object.
@@ -304,6 +304,7 @@ Below is the full list of links to the [Rhom API methods] available to Rhom mode
  * [sync](/rhodesapi/rhom-api#sync) - Start the sync process for a Rhodes model.
  * [can_modify](/rhodesapi/rhom-api#canmodify) - Returns true if the Rhodes model object is not currently being synced (if it is being synced, you should disable editing of the object).
  * [changed?](/rhodesapi/rhom-api#changed) - Returns true if a Rhodes model object has local database changes that need to be synchronized, false otherwise.
+ * [have_local_changes?](/rhodesapi/rhom-api#havelocalchanges) - Returns true if any of the Rhodes model objects have local database changes that need to be synchronized, false otherwise.
  * [save](/rhodesapi/rhom-api#save) - Saves the current Rhodes model object to the database.
  * [set_notification](/rhodesapi/rhom-api#setnotification) - Set a notification to be called when the sync is complete for this model.
  * [update_attributes](/rhodesapi/rhom-api#updateattributes) - Updates the current Rho model object attributes and saves it to the database.
@@ -353,7 +354,7 @@ Find Rhom objects.<a id="rhom-find-example" />
 #### Order Examples
 The `:order` argument for `find` accepts several forms.
 
-* `:order` by one attribute:
+`:order` by one attribute.
 
   		:::ruby
 		@accts = Account.find(
@@ -362,21 +363,21 @@ The `:order` argument for `find` accepts several forms.
 		  :orderdir => 'DESC'
 		)
 
-* `:order` by one attribute with a block:
+`:order` by one attribute with a block.
 
     	:::ruby
 		@accts = Account.find(:all, :order => 'name') do |x,y|
 	      y <=> x    
 	    end
 
-* `:order` with a block:
+`:order` with a block.
 
     	:::ruby
 		@accts = Account.find(:all) do |item1,item2|
 	      item2.name <=> item1.name
 	    end
 
-* `:order` by multiple attributes:
+`:order` by multiple attributes.
 
     	:::ruby
 		@accts = Account.find(
@@ -583,63 +584,31 @@ To access a RhomSource, load it by name:
 	:::ruby
 	@source = RhomSource.find('source_name')
 
-Here are the available statistics:
-
-`source_id` returns the id of a source.
-
-	:::ruby
-	@source.source_id
-	  #=> 1
-
-`name` gets the name of the source.
+Then you can get statistics and information about the source, such as the name.
 
 	:::ruby
 	@source.name
 	  #=> "Product"
-	
-`last_updated` returns the last time the source was successfully synchronized (in `Time.at` format).
 
-	:::ruby
-	@source.last_updated.to_s
-	  #=> "Wed Jan 19 18:35:05 -0800 2011"
+Here are the available statistics, from the [rhomsource API](/rhodesapi/rhomsource-api).
+
+ * [find](/rhodesapi/rhomsource-api#find) - Returns a RhomSource object.
+ * [source-id](/rhodesapi/rhomsource-api#sourceid) - Returns the id number of a source.
+ * [name](/rhodesapi/rhomsource-api#name) - Returns the name of the source.
+ * [last_updated](/rhodesapi/rhomsource-api#lastupdated) - returns the last time the source was successfully synchronized (in `Time.at` format).
+ * [last_inserted_size](/rhodesapi/rhomsource-api#lastinsertedsize) - returns the number of records inserted on last sync.
+ * [last_deleted_size](/rhodesapi/rhomsource-api#lastdeletedsize) - returns the number of records deleted on the last sync.
+ * [last_sync_duration](/rhodesapi/rhomsource-api#lastsyncduration) - returns the duration in milliseconds of the last sync for this source.
+ * [last_sync_success](/rhodesapi/rhomsource-api#lastsyncsuccess) - returns 1 if last sync was successful, 0 if it failed.
+ * [distinct_objects](/rhodesapi/rhomsource-api#distinctobjects) - returns the number of records for this source.
 	
-For example, to show the formatted time for the `Product` model:
+This example shows the formatted time for the `Product` model.
 
 	:::ruby
 	RhomSource.find(
       Product.get_source_name
     ).last_updated.strftime("%m/%d/%Y, %I:%M%p")
       #=> "01/19/2011, 06:40PM"
-
-`last_inserted_size` returns the number of records inserted on last sync.
-	
-	:::ruby
-	@source.last_inserted_size 
-	  #=> 3
-
-`last_deleted_size` returns the number of records deleted on last sync.
-
-	:::ruby
-	@source.last_deleted_size
-	  #=> 1
-
-`last_sync_duration` returns the duration in milliseconds of the last sync for this source.
-	
-	:::ruby
-	@source.last_sync_duration
-	  #=> 7
-
-`last_sync_success` returns 1 if last sync was successful, 0 if it failed.
-
-	:::ruby
-	@source.last_sync_success 
-	  #=> 1
-
-`distinct_objects` returns the number of records for this source.
-
-	:::ruby
-	@source.distinct_objects
-	  #=> 837
 
 ## Resetting the Database
 Rhodes provides the following functions for recovering the database from a bad or corrupt state, or if the RhoConnect server returns errors.
@@ -898,9 +867,9 @@ If your application requires that the local database is encrypted on the filesys
          db.rollback
         end
 
-*NOTE: If ::Rho::RHO.get_src_db('Model') return nil, it means that you never call this models methods before(models are loaded by demand). To fix it call 'require_source': *
+*NOTE: If ::Rho::RHO.get_src_db('Model') returns nil, it means that you never called this model's methods before (models are loaded by demand). To fix it, call 'require_source'.
 
 	:::ruby
     require_source 'Model'  
 
-*NOTE see more tips here: [How can I create a lot of objects in controller action](/faq#how-can-i-create-a-lot-of-objects-in-controller-action)
+*NOTE: see more tips here: [How can I create a lot of objects in controller action](/faq#how-can-i-create-a-lot-of-objects-in-controller-action).

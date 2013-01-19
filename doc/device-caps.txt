@@ -245,121 +245,35 @@ To allow read/modify personal information and contacts enable the pim capability
 	capabilities:
 	  - pim
 
-The following methods are available in the RhoContact class:
+### PIM Contacts API
 
-Return hash of hashes of contacts stored in the phonebook (index):
+Refer to the [PIM Contacts API](/rhodesapi/rhocontact-api) methods to perform the following functionality.
+
+ * [find](/rhodesapi/rhocontact-api#find) - Returns the contacts in the device phone book.
+ * [create!](/rhodesapi/rhocontact-api#create) - Create a new contact in the phonebook.
+ * [destroy](/rhodesapi/rhocontact-api#destroy) - Delete this contact from the phonebook.
+ * [update_attributes](/rhodesapi/rhocontact-api#updateattributes) - Find a contact in the phonebook and update its properties.
+
+The [Contact Properties](/rhodesapi/rhocontact-api#contact-properties) lists the contact properties that are supported for all platforms, and additional contact properties supported on Android and iOS.
+
+Example of returning a hash of hashes of all the contacts stored in the phonebook (index):
+
 	:::ruby
 	Rho::RhoContact.find(:all)
 
-On some platforms an extended Rho::RhoContact.find routine is implemented
+Example for Android and iOS of finding the number of contacts in the phonebook:
+
 	:::ruby
-	Rho::RhoContact.find(:all, params)
-	Rho::RhoContact.find(:first, params)
-	Rho::RhoContact.find(:count, params)
-
-Currently the extended functionality is available at Android and iOS
-
-* :all - get all contacts as usual 
-* :first - find first contact from list
-* :count - returns count of contacts
-
-For these selectors an additional params hash may be used. The next keys and values are recognized in additional params:
-
-* :per_page - max count if contacts returned by find
-* :offset - offset from begin of contacts' list
-These two parameters are used to paginate contacts list. If used with :count exact number of returned contacts can be determined (for example for last page).
-
-:max_results - used with :count. maximum number of contacts to be returned.
-
-The next parameters are available at Android only.
-
- * :select - list of contact properties have to be selected from phonebook (Use it to enhance query performance)
- * :conditions - hash of conditions to query contacts. Look for more details below.
+	Rho::RhoContact.find(:first)
 
 **NOTE: It is allowed to pass additional params hash at all platforms. Platforms that has no extended functionality will just skip these**
 
-Return hash of all properties of the contact identified by the provided id (show):
+Example of returning a hash of all properties of the contact identified by the provided id (show):
+
 	:::ruby
 	Rho::RhoContact.find(@params['id'])
 
-Create new contact in the phonebook, set properties of the contact passed as parameter hash, and save created phonebook record (create). Return the new contact as a hash.
-	:::ruby
-	created_contact = Rho::RhoContact.create!(@params['contact'])
-
-Find contact record in the phonebook, update record properties from the hash passed as parameter, and save updated record. Contact id passed in the hash (update):
-	:::ruby
-	Rho::RhoContact.update_attributes(@params['contact'])
-
-Remove contact identified by the provided id from the phonebook. (delete)
-	:::ruby
-	Rho::RhoContact.destroy(@params['id'])
-
-On all devices, properties currently supported are: "id","first_name","last_name","mobile_number","home_number","business_number","email_address","company_name"
-
-### iPhone
-
-On iPhone, additional contact properties are supported. 
-
-General: 
-"prefix", "first_name", "middle_name", "last_name", "suffix", "nickname",
-"birthday", "anniversary", "created", "updated",
-"company_name", "job_title", "assistant_name", "assistant_number",
-"spouse_name", "person_note"
-
-**NOTE: "birthday", "anniversary", "created", "updated" properties expect a date formatted as YYYY-MM-DD**
-
-Addresses: 
-"street_address_1", "city_1", "state_1", "zip_1", "country_1" 
-"street_address_2", "city_2", "state_2", "zip_2", "country_2" 
-"street_address_3", "city_3", "state_3", "zip_3", "country_3" 
-
-**NOTE: Address 1 is mapped to "work," 2 is to "home," 3 is to "other."**
-
-Email addresses:
-"email_address", "home_email_address", "other_email_address"
-**NOTE: "email_address" is mapped to "work" **
-
-Phone numbers: 
-"business_number", "home_number", "mobile_number", "main_number", "pager_number", "home_fax", "work_fax"
-
-Home pages: 
-"home_page"
-
-### Android
-
-**NOTE: In most cases the result of RhoContact::find query may return more contact properties then defined in :select**
-
-On Android the next contact properties are supported (every of them may be used in :select list):
-
-General:
-"id", "display_name", "first_name", "last_name"
-The "display_name" is always filled by Android even if "first_name" and "last_name" are both empty. In this case email or phone number may be used.
-
-Phone numbers:
-"mobile_number", "home_number", "business_number"
-
-E-mails:
-"email_address"
-
-Company:
-"company_name"
-
-#### Conditions
-
-:conditions parameter is a hash of conditions. Keys of the hash are contact property selectors (condition to be applied to) and values are conditions itself.
-The next property selectors are defined:
-- :phone
-- :email
-A property selector has no one-to-one relation to a single contact property like mobile_phone or email_address. Selectors are mapped to whole property group like all phones or all emails (support for several emails may be implemented in future).
-Condition like
-	:::ruby
-	{:phone => 'not_nil'}
-will select all contacts which has at least one phone.
-The following conditions are currently supported:
-- 'not_nil'
-- 'is_nil'
-
-**NOTE: It may be useful to sort received contacts (especially if paginated). Contacts is ordered by 'display_name' column and then split for pages. Unfortunately the order inside page is lost while passing the list to ruby**
+Example of finding with conditions:
 
 	:::ruby
 	@count = Rho::RhoContact.find(:count, :conditions => {:phone => 'not_nil'})
