@@ -137,19 +137,37 @@ namespace "build" do
     task :extensions => "config:wp8" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
-          extpath = File.join(p, ext, 'ext')
-          next unless File.exists? File.join(extpath, "build.bat")
 
-          ENV['RHO_PLATFORM'] = 'wp8'
-          ENV['RHO_ROOT'] = $startdir
-		  ENV['RHO_PROJECT_NAME'] = ext
-		  ENV['SDK'] = $sdk
-		  ENV['RHO_BUILD_CONFIG'] = $build_config
-          ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", "wp8", "bin", $sdk, "extensions", $build_config)
-          ENV['VCBUILD'] = $msbuild
+			project_path = nil
+		    extpath = File.join(p, ext)
+			extyml = File.join(extpath, "ext.yml")
+			if File.file? extyml
+			  extconf = Jake.config(File.open(extyml))
+			  project_paths = extconf["project_paths"]
+			  project_path = project_paths[$current_platform] if (project_paths && project_paths[$current_platform])
+		    end
 
-          puts Jake.run("build.bat", [], extpath)
-          break
+            ENV['RHO_PLATFORM'] = $current_platform
+            ENV['RHO_ROOT'] = $startdir
+		    ENV['SDK'] = $sdk
+		    ENV['RHO_BUILD_CONFIG'] = $build_config
+            ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", $build_config)
+            ENV['VCBUILD'] = $msbuild
+
+			if ( project_path )
+	          ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
+
+			  puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
+			  break
+			else
+			  extpath = File.join(p, ext, 'ext')
+			  next unless File.exists? File.join(extpath, "build.bat")
+
+			  puts Jake.run("build.bat", [], extpath)
+			  break
+
+			end
+
         end
       end
     end

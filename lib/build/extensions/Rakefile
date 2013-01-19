@@ -5,7 +5,7 @@ def build_extension()
 
   if ENV['RHO_PLATFORM'] == 'wp8'
     args = []
-    args = [$project_name + ".vcxproj", "/property:Configuration="+$build_config+" /property:Platform="+$sdk, '/t:Build']
+    args = [$project_path, "/property:Configuration="+$build_config+" /property:Platform="+$sdk, '/t:Build']
     cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
     puts cmdline
     puts `#{cmdline}`
@@ -34,8 +34,8 @@ namespace "build" do
 	$build_config = ENV['RHO_BUILD_CONFIG']
     raise "RHO_BUILD_CONFIG is not set" if $build_config.nil?
 
-	$project_name = ENV['RHO_PROJECT_NAME']
-    raise "RHO_PROJECT_NAME is not set" if $project_name.nil?
+	$project_path = ENV['RHO_PROJECT_PATH']
+    raise "RHO_PROJECT_PATH is not set" if $project_path.nil?
 
   end
 

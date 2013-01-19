@@ -3,3 +3,6 @@ javaentry: com.barcode1.Barcode1
 libraries: ["Barcode1"]
 android:
   source_list: ext/barcode1/platform/android/ext_java.files
+
+project_paths:
+  wp8: ext/barcode1/platform/wp8/Barcode1.vcxproj
