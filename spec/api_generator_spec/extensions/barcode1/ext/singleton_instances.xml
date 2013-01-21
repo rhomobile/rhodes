@@ -3,7 +3,7 @@
 
 <SINGLETON_INSTANCES>
 	<METHODS>
-		<METHOD name="enumerate">
+		<METHOD name="enumerate" has_callback="true">
 			<DESC>This is documentation</DESC>
             <RETURN>
                 <DESC>All possible instances</DESC>
