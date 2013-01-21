@@ -14,19 +14,26 @@
     <PROPERTIES>
         <!-- list of properties supported by property bag methods getPops(), setProps() -->
         <DESC>object supports this properties bla bla bla :</DESC>
-        <PROPERTY name="code128" type="STRING">
+        <PROPERTY name="illuminationMode" type="STRING">
             <DESC>Whether or not the Code128 symbology is used.</DESC>
-            <VALUES>Enable;Disable</VALUES>
-            <DEFAULT>System Defined</DEFAULT>
+            <VALUES>
+                <VALUE name ="auto">
+                    <DESC>(not available on Enterprise Tablet) Auto-exposure algorithms will decide whether illumination is required or not. </DESC>
+                </VALUE>
+                <VALUE name ="alwaysOn">
+                    <DESC>External illumination is always on</DESC>
+                </VALUE>
+            </VALUES>
+            <DEFAULT>Device specific</DEFAULT>
         </PROPERTY>
     </PROPERTIES>
 
     <METHODS>
-        <METHOD name="enable" has_callback="true">
+        <METHOD name="enable" has_callback="mandatory">
             <DESC>This is documentation</DESC>
         </METHOD>
 
-        <METHOD name="start">
+        <METHOD name="start" run_in_thread="true">
             <DESC>This is documentation</DESC>
         </METHOD>
         <METHOD name="stop">
@@ -36,26 +43,19 @@
             <DESC>This is documentation</DESC>
         </METHOD>
 
-        <METHOD name="take" has_callback="true">
+        <METHOD name="take" has_callback="mandatory">
             <DESC>Enable and start automatically</DESC>
             <PARAMS>
                 <PARAM name="propertyMap">
                     <DESC>Map of properties I want to set</DESC>
                     <TYPE>Map of strings</TYPE>
+                    
+                    <CAN_BE_NIL>
+                        <DESC>Use already setted properties</DESC>
+                    </CAN_BE_NIL>
                 </PARAM>
+
             </PARAMS>
-        </METHOD>
-
-        <METHOD name="take" has_callback="true">
-            <DESC>Enable and start automatically</DESC>
-
-            <PARAMS>
-                <PARAM>
-                    <DESC>Use already setted properties</DESC>
-                    <TYPE>nil</TYPE>
-                </PARAM>
-            </PARAMS>
-
         </METHOD>
 
     </METHODS>
