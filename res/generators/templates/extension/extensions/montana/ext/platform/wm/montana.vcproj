@@ -25,7 +25,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
+			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
@@ -101,7 +101,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
+			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
@@ -167,7 +167,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
-			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
+			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
@@ -242,7 +242,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
+			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
@@ -307,7 +307,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|MC3000c50b (ARMV4I)"
-			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
+			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
@@ -384,7 +384,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|MC3000c50b (ARMV4I)"
-			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
+			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
@@ -460,7 +460,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
+			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
@@ -537,7 +537,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-			OutputDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
+			OutputDirectory="$(RHO_ROOT)\Platform\wm\Bin\$(PlatformName)\Rhodes\$(ConfigurationName)"
 			IntermediateDirectory="$(TEMP_FILES_DIR)\$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets=".\<%= name.camel_case() %>.vsprops"
