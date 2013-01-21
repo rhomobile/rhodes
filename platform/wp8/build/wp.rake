@@ -29,6 +29,10 @@ namespace "config" do
     $current_platform = "wp8" unless $current_platform
   end
 
+  task :set_wp8_app_path do
+	ENV['RHO_APP_PATH'] = $app_path
+  end
+
   task :wp8_ARM_Release do
       $sdk = 'ARM'
 	  $build_config = 'Release'
@@ -50,6 +54,11 @@ namespace "config" do
   end
 
   task :wp8 => [:set_wp8_platform, "config:common"] do
+  	
+	if ENV['RHO_APP_PATH'] != nil
+		$app_path = ENV['RHO_APP_PATH']
+	end
+
     $rubypath     = "res/build-tools/RhoRuby.exe"
     $zippath      = "res/build-tools/7za.exe"
     $wp7runner    = "res/build-tools/RhoAppRunnerWP8.exe"
@@ -341,7 +350,7 @@ namespace "run" do
   end
 
   desc "Build, install .xap and run on WP8 emulator"
-  task :wp8 => ["emulator:wp8:production"] do
+  task :wp8 => ["config:set_wp8_app_path", "emulator:wp8:production"] do
 
     if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 
