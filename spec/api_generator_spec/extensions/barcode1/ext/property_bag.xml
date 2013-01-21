@@ -70,5 +70,9 @@
             </PARAMS>
         </METHOD>
 
+        <METHOD name="clearProps">
+            <DESC>This is documentation</DESC>
+        </METHOD>
+
     </METHODS>
 </PROPERTY_BAG>
