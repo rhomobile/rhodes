@@ -194,14 +194,15 @@ class Jake
 
   def self.run_spec_app(platform,appname)
 
-    reset_spec_server(platform) if appname =~ /phone_spec/
-	reset_bulk_server
+#    reset_spec_server(platform) if appname =~ /phone_spec/
+#	reset_bulk_server
 
     rhobuildyml = File.join(basedir,'rhobuild.yml')
     #rhobuild = YAML::load_file(rhobuildyml)
     #rhobuild['env']['app'] = app_expanded_path(appname)
     #File.open(rhobuildyml,'w') {|f| f.write rhobuild.to_yaml}
     $app_path = File.expand_path(File.join(basedir,'spec',appname))
+
     $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
     $config = Jake.config(File.open(rhobuildyml,'r'))
 
