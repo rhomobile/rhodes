@@ -20,7 +20,7 @@
 				</POSSIBLITY>
 				<POSSIBILITY>
 					<DESC>Synchronous Operation</DESC>
-					<TYPE>nil / undefined</TYPE>
+					<TYPE>nil</TYPE>
 				</POSSIBLITY>
 			</PARAM>
             
@@ -32,7 +32,7 @@
 				</POSSIBLITY>
 				<POSSIBILITY>
 					<DESC>Synchronous Operation</DESC>
-					<TYPE>nil / undefined</TYPE>
+					<TYPE>nil</TYPE>
 				</POSSIBLITY>
 			</PARAM>
 		</METHOD>
