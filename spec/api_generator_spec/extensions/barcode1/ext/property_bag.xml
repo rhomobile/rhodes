@@ -6,7 +6,7 @@
 		<METHOD name="getProps" has_callback="true">
 			<DESC>This is documentation</DESC>
 			<PARAMS>
-				<PARAM>
+				<PARAM name="propertyName">
 					<DESC>The one property that I want to know about</DESC>
 					<TYPE>String</TYPE>
                 </PARAM>
@@ -21,7 +21,7 @@
         <METHOD name="getProps" has_callback="true">
             <DESC>This is documentation</DESC>
             <PARAMS>
-                <PARAM>
+                <PARAM name="arrayofNames">
                     <DESC>List of properties I want to know about</DESC>
                     <TYPE>Array of strings</TYPE>
                 </PARAM>
