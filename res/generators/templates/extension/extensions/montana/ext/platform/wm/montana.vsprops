@@ -10,6 +10,6 @@
 	/>
 	<UserMacro
 		Name="TEMP_FILES_DIR_DEMO"
-		Value="$(RHO_ROOT)\platform\wm\bin\$(PlatformName)\rhodes"
+		Value="$(RHO_ROOT)\platform\wm\bin\$(PlatformName)\extensions\$(ProjectName)"
 	/>
 </VisualStudioPropertySheet>
