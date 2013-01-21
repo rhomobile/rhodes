@@ -1,0 +1,39 @@
+<CALLBACK>
+	<METHODS>
+		<METHOD>
+			<PARAM name="callback">
+				<DESC>Callback to contain returned property values</DESC>
+				<POSSIBILITY>
+					<DESC>Function to receive property values</DESC>
+					<TYPE>
+						<FUNCTION>
+							<FUNC_PARAM>
+								<DESC>Mapping of property names to Values</DESC>
+								<TYPE>Map of Strings</TYPE>
+							</FUNC_PARAM>
+						</FUNCTION>	
+					</TYPE>
+				</POSSIBLITY>
+				<POSSIBILITY>
+					<DESC>URL</DESC>
+					<TYPE>String</TYPE>
+				</POSSIBLITY>
+				<POSSIBILITY>
+					<DESC>Synchronous Operation</DESC>
+					<TYPE>nil / undefined</TYPE>
+				</POSSIBLITY>
+			</PARAM>
+			<PARAM name="callback_param">
+				<DESC>Callback parameter</DESC>
+				<POSSIBILITY>
+					<DESC>Application specific parameter</DESC>
+					<TYPE>String</TYPE>
+				</POSSIBLITY>
+				<POSSIBILITY>
+					<DESC>Synchronous Operation</DESC>
+					<TYPE>nil / undefined</TYPE>
+				</POSSIBLITY>
+			</PARAM>
+		</METHOD>
+	</METHODS>
+</API>
