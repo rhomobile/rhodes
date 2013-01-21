@@ -68,19 +68,19 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(TEMP_FILES_DIR)\$(ProjectName)\</OutDir>
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(TEMP_FILES_DIR)\$(ProjectName)\</OutDir>
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>$(TEMP_FILES_DIR)\$(ProjectName)\</OutDir>
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>$(TEMP_FILES_DIR)\$(ProjectName)\</OutDir>
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

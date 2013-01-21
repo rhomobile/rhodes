@@ -721,10 +721,8 @@ def init_extensions(startdir, dest)
             if (!extconf[$config["platform"]].nil?) && (extconf[$config["platform"]]["libraries"].is_a? Array)
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
-            if $config["platform"] == "wm" || $config["platform"] == "win32"
+            if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
               libs.map! { |lib| lib + ".lib" }
-            elsif $config["platform"] == "wp8"
-              libs.map! { |lib| lib + "/" + lib + ".lib" }
             else
               libs.map! { |lib| "lib" + lib + ".a" }
             end
