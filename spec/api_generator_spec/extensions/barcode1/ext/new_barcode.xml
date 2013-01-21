@@ -48,6 +48,14 @@
 
         <METHOD name="take" has_callback="true">
             <DESC>Enable and start automatically</DESC>
+
+            <PARAMS>
+                <PARAM>
+                    <DESC>Use already setted properties</DESC>
+                    <TYPE>nil</TYPE>
+                </PARAM>
+            </PARAMS>
+
         </METHOD>
 
     </METHODS>
