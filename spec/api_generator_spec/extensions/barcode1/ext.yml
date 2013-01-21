@@ -6,3 +6,5 @@ android:
 
 project_paths:
   wp8: ext/barcode1/platform/wp8/Barcode1.vcxproj
+  wm: ext/barcode1/platform/wm/Barcode1.sln
+  win32: ext/barcode1/platform/wm/Barcode1.sln

@@ -1,17 +1,30 @@
 require 'fileutils'
 
 def build_extension()
-  objects = []
+  args = []
 
-  if ENV['RHO_PLATFORM'] == 'wp8'
-    args = []
+  cd File.dirname($project_path)
+  $project_path = File.basename($project_path)
+  
+  if ENV['RHO_PLATFORM'] == 'wm' || ENV['RHO_PLATFORM'] == 'win32'
+
+    args = ["/M4", "\"#{$project_path}\"", "\"#{$build_config}|#{$sdk}\"" ]
+
+  elsif ENV['RHO_PLATFORM'] == 'wp8'
+  
     args = [$project_path, "/property:Configuration="+$build_config+" /property:Platform="+$sdk, '/t:Build']
-    cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
-    puts cmdline
-    puts `#{cmdline}`
-    exit unless $? == 0
-
+    
+  else
+    puts "This rakefile support only Windows platforms(WM, CE, Desktop and WP8)"
+    exit
   end
+
+  cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
+  puts cmdline
+  puts `#{cmdline}`
+  
+  exit unless $? == 0
+
 end
 
 namespace "build" do

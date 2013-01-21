@@ -5,18 +5,18 @@
 	Name="Barcode1"
 	>
 	<UserMacro
-		Name="RHO_ROOT"
+		Name="_RHO_ROOT"
 		Value="c:/projects/rhodes"
 	/>
 	<UserMacro
-		Name="NEON_ROOT"
+		Name="_NEON_ROOT"
 		Value="C:\projects\MotoNeon2\vobs\NEON\Helium\HeliumForWindows\Implementation"
 		PerformEnvironmentSet="true"
 	/>
 
 	<UserMacro
-		Name="TEMP_FILES_DIR"
-		Value="bin\$(PlatformName)\$(ProjectName)"
+		Name="_TEMP_FILES_DIR"
+		Value="$(RHO_ROOT)\platform\wm\bin\$(PlatformName)\extensions\$(ProjectName)"
 	/>
 
 </VisualStudioPropertySheet>

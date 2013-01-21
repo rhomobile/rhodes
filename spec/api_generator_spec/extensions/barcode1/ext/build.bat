@@ -13,20 +13,6 @@ rake --trace
 
 )
 
-if "%RHO_PLATFORM%" == "wm" (
-
-cd barcode1\platform\wm
-rake --trace
-
-)
-
-if "%RHO_PLATFORM%" == "win32" (
-
-cd barcode1\platform\wm
-rake --trace
-
-)
-
 if "%RHO_PLATFORM%" == "bb" (
 
 cd barcode1\platform\bb
