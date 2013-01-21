@@ -1,0 +1,41 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<PROPERTY_BAG>
+	<METHODS>
+		<METHOD>
+			<NAME>getProps</NAME>
+			<DESC>This is documentation</DESC>
+			<ACCESS>INSTANCE</ACCESS>
+			<PARAMS>
+				<PARAM>
+                    <DESC>Parameters which should be returned</DESC>
+					<POSSIBILITY>
+						<DESC>The one property that I want to know about</DESC>
+						<TYPE>String</TYPE>
+					</POSSIBLITY>
+					<POSSIBILITY>
+						<DESC>List of properties I want to know about</DESC>
+						<TYPE>Array of strings</TYPE>
+					</POSSIBLITY>
+					<POSSIBILITY>
+						<DESC>Set of properties I want to know about</DESC>
+						<TYPE>Map of strings</TYPE>
+					</POSSIBLITY>
+					<POSSIBLITY>
+						<DESC>All properties</DESC>
+						<TYPE>nil</TYPE>
+						<DEFAULT>TRUE</DEFAULT>
+					</POSSIBLITY>
+				</PARAM>
+             </PARAMS>
+            
+             <RETURN>
+                <DOCUMENTATION>
+                    Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
+                </DOCUMENTION>
+            </RETURN>
+
+        </METHOD>
+	</METHODS>
+</PROPERTY_BAG>
