@@ -45,5 +45,30 @@
                 <TYPE>Map of strings</TYPE>
             </RETURN>
         </METHOD>
-	</METHODS>
+
+        <METHOD name="setProps">
+            <DESC>This is documentation</DESC>
+            <PARAMS>
+                <PARAM name="propertyName">
+                    <DESC>The one property name that I want to set</DESC>
+                    <TYPE>String</TYPE>
+                </PARAM>
+                <PARAM name="propertyValue">
+                    <DESC>The one property value that I want to set</DESC>
+                    <TYPE>String</TYPE>
+                </PARAM>
+            </PARAMS>
+        </METHOD>
+
+        <METHOD name="setProps">
+            <DESC>This is documentation</DESC>
+            <PARAMS>
+                <PARAM name="propertyMap">
+                    <DESC>Map of properties I want to set</DESC>
+                    <TYPE>Map of strings</TYPE>
+                </PARAM>
+            </PARAMS>
+        </METHOD>
+
+    </METHODS>
 </PROPERTY_BAG>
