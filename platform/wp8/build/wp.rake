@@ -151,8 +151,9 @@ namespace "build" do
             ENV['RHO_ROOT'] = $startdir
 		    ENV['SDK'] = $sdk
 		    ENV['RHO_BUILD_CONFIG'] = $build_config
-            ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", $build_config)
+            ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext)
             ENV['VCBUILD'] = $msbuild
+			ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
 
 			if ( project_path )
 	          ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
