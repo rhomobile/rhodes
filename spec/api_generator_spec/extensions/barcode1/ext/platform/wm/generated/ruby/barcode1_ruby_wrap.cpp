@@ -14,22 +14,52 @@ extern "C"
 {
 
 void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
+VALUE getRuby_Barcode1_Module();
 
-VALUE rb_barcode1_s_enumerate(VALUE klass)
+VALUE rb_barcode1_s_enumerate(int argc, VALUE *argv)
 {
+    bool bCallInUIThread = false;
+    bool bCallInSeparateThread = true;
+
     CMethodResult oRes;
-    CBarcode1FactoryBase::getBarcode1SingletonS()->enumerate(oRes);
+    oRes.setRubyObjectClass(getRuby_Barcode1_Module());
 
-    rho::Vector<rho::StringW>& arIDs = oRes.getStringArray();
-
-    CHoldRubyValue valArray(rho_ruby_create_array());
-    for( int i = 0; i < (int)arIDs.size(); i++ )
+    if ( argc == 0 )
     {
-        VALUE valObj = rho_ruby_create_object_with_id( klass, convertToStringA(arIDs[i]).c_str() );
-        rho_ruby_add_to_array( valArray, valObj );
+        CBarcode1FactoryBase::getBarcode1SingletonS()->enumerate(oRes);
+    }else 
+    {
+        if ( !rho_ruby_is_string(argv[1]) )
+        {
+            oRes.setArgError(L"Type error: argument 2 should be String"); //see SWIG Ruby_Format_TypeError
+            return oRes.toRuby();
+        }
+
+        oRes.setCallInUIThread(bCallInUIThread);
+        oRes.setRubyCallback( getStringFromValue(argv[1]) );
+        if ( argc >= 2 )
+        {
+            if ( !rho_ruby_is_string(argv[1]) )
+            {
+                oRes.setArgError(L"Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
+                return oRes.toRuby();
+            }
+
+            oRes.setCallbackParam( getStringFromValue(argv[1]) );
+        }
+
+        rho::common::IRhoRunnable* pFunctor = new rho::common::CInstanceClassFunctor1<IBarcode1Singleton*, void (IBarcode1Singleton::*)(CMethodResult&), CMethodResult>
+                ( CBarcode1FactoryBase::getBarcode1SingletonS(), &IBarcode1Singleton::enumerate, oRes );
+
+        if ( bCallInUIThread )
+            rho_wm_impl_performOnUiThread( pFunctor );
+        else if ( bCallInSeparateThread )
+            CBarcode1FactoryBase::getBarcode1SingletonS()->callCommandInThread( pFunctor );
+        else
+            CBarcode1FactoryBase::getBarcode1SingletonS()->addCommandToQueue( pFunctor );
     }
 
-    return valArray;
+    return oRes.toRuby();
 }
 
 VALUE rb_barcode1_s_default(VALUE klass)

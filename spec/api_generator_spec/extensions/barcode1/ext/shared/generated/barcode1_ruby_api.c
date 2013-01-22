@@ -12,6 +12,8 @@ VALUE rb_barcode1_setprops(int argc, VALUE *argv, VALUE obj);
 VALUE rb_barcode1_s_default(VALUE klass);
 VALUE rb_barcode1_s_set_default(VALUE klass, VALUE obj);
 
+VALUE getRuby_Barcode1_Module(){ return rb_cBarcode1; }
+
 void Init_RubyAPI_Barcode1(void)
 {
     rb_mRho = rb_define_module("Rho");
@@ -22,7 +24,7 @@ void Init_RubyAPI_Barcode1(void)
     rb_undef_alloc_func(rb_cBarcode1);
 
     //Class fabric
-    rb_define_singleton_method(rb_cBarcode1, "enumerate", rb_barcode1_s_enumerate, 0);
+    rb_define_singleton_method(rb_cBarcode1, "enumerate", rb_barcode1_s_enumerate, -1);
 
     rb_define_singleton_method(rb_cBarcode1, "default", rb_barcode1_s_default, 0);
     rb_define_singleton_method(rb_cBarcode1, "set_default", rb_barcode1_s_set_default, 1);
