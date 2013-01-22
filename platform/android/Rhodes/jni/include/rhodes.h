@@ -45,16 +45,9 @@ std::string rho_cur_path();
 template <typename T>
 class jholder
 {
+    jholder<T>& operator=(const jholder<T>& );
 public:
     jholder(T obj) : m_object(obj) {}
-
-    template <typename V>
-    jholder(jholder<V> const &c)
-        : m_object(NULL)
-    {
-        if (c.get())
-            m_object = static_cast<T>(jnienv()->NewLocalRef(c.get()));
-    }
 
     ~jholder()
     {
@@ -62,10 +55,9 @@ public:
             jnienv()->DeleteLocalRef(m_object);
     }
 
-    jholder &operator=(jholder const &rhs)
+    jholder& operator=(T obj)
     {
-        jholder copy(rhs);
-        swap(copy);
+        m_object = obj;
         return *this;
     }
 
@@ -79,13 +71,8 @@ public:
         return ret;
     }
 
+    operator bool () const { return m_object != 0; }
     bool operator!() const { return !m_object; }
-
-private:
-    void swap(jholder &c)
-    {
-        std::swap(m_object, c.m_object);
-    }
 
 private:
     T m_object;
