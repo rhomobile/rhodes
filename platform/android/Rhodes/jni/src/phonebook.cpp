@@ -95,8 +95,8 @@ static VALUE createHashFromContact(jobject contactObj)
     // contact.moveToBegin();
 
     for (unsigned i = 0; i < PB_FIELDS_COUNT; ++i) {
-        jhstring jhFieldName = rho_cast<jhstring>(env, field_names[i]);
-        jhstring jhField(static_cast<jstring>(env->CallObjectMethod(contactObj, contactGetFieldMID, jhFieldName.get())));
+        jhstring jhFieldName = rho_cast<jstring>(env, field_names[i]);
+        jhstring jhField = static_cast<jstring>(env->CallObjectMethod(contactObj, contactGetFieldMID, jhFieldName.get()));
         if (jhField.get() != 0) {
             rho::String field = rho_cast<rho::String>(env, jhField);
             if(i == 0) {// add braces {id}
@@ -262,16 +262,16 @@ RHO_GLOBAL void* openPhonebookRecord(void* pb, char* id)
     if (logging_enable) RAWLOG_INFO1("Opening contact, id: %s", id);
 
     std::string rawId(id+1, strlen(id)-2);
-    jhstring jhId = rho_cast<jhstring>(env, rawId.c_str());
-//    jhstring jhId = rho_cast<jhstring>(env, id);
-    jhobject recordObj = jhobject(env->CallObjectMethod(obj, mid, jhId.get()));
+    jhstring jhId = rho_cast<jstring>(env, rawId);
+//    jhstring jhId = rho_cast<jstring>(env, id);
+    jhobject recordObj = env->CallObjectMethod(obj, mid, jhId.get());
     if (!recordObj) return NULL;
-    jhobject retval = jhobject(env->NewGlobalRef(recordObj.get()));
+    jobject retval = env->NewGlobalRef(recordObj.get());
 
     if (logging_enable) RAWLOG_INFO("openPhonebookRecord() FINISH");
 
     if (!retval) return NULL;
-    return retval.release();
+    return retval;
 }
 
 RHO_GLOBAL VALUE getPhonebookRecord(void* pb, char* id)
@@ -279,7 +279,7 @@ RHO_GLOBAL VALUE getPhonebookRecord(void* pb, char* id)
     if (logging_enable) RAWLOG_INFO("getPhonebookRecord() START");
     jobject recordObj = (jobject)openPhonebookRecord(pb, id);
     if (!recordObj) {
-	if (logging_enable) RAWLOG_INFO("getPhonebookRecord() FINISH return NIL");
+        if (logging_enable) RAWLOG_INFO("getPhonebookRecord() FINISH return NIL");
         return Qnil;
     }
     VALUE retval = createHashFromContact(recordObj);
@@ -351,8 +351,8 @@ RHO_GLOBAL int setRecordValue(void* record, char* property, char* value)
 
     if (logging_enable) RAWLOG_INFO2("setRecordValue(%s, %s)", property, value);
 
-    jhstring jhName = rho_cast<jhstring>(env, property);
-    jhstring jhValue = rho_cast<jhstring>(env, value);
+    jhstring jhName = rho_cast<jstring>(env, property);
+    jhstring jhValue = rho_cast<jstring>(env, value);
 
     env->CallVoidMethod(contactObj, mid, jhName.get(), jhValue.get());
 

@@ -35,13 +35,16 @@ JNIEnv* CBarcode1::jniInit()
     JNIEnv *env = MethodExecutorJni::jniInit();
     if(env && !s_singletonClass)
     {
-        s_singletonClass = rho_find_class(env, SINGLETON_CLASS);
-        if(!s_singletonClass)
+        jclass cls = rho_find_class(env, SINGLETON_CLASS);
+        if(!cls)
         {
             RAWLOG_ERROR1("Failed to find java class: %s", SINGLETON_CLASS);
             s_singletonClass = 0;
             return NULL;
         }
+        s_singletonClass = static_cast<jclass>(env->NewGlobalRef(cls));
+        env->DeleteLocalRef(cls);
+
         s_midGetInstance = env->GetStaticMethodID(s_singletonClass, "getInstance", "(V)Lcom/motorolasolutions/rhoelements/barcode1/Barcode1Singleton;");
         if(!s_midGetInstance)
         {
@@ -78,13 +81,16 @@ JNIEnv* CBarcode1::jniInit()
             return NULL;
         }
 
-        s_getPropsTaskClass = rho_find_class(env, GETPROPS_TASK_CLASS);
-        if(!s_getPropsTaskClass)
+        jclass clsTask = rho_find_class(env, GETPROPS_TASK_CLASS);
+        if(!clsTask)
         {
             RAWLOG_ERROR1("Failed to find java class: %s", GETPROPS_TASK_CLASS);
             s_singletonClass = 0;
             return NULL;
         }
+        s_getPropsTaskClass = static_cast<jclass>(env->NewGlobalRef(clsTask));
+        env->DeleteLocalRef(clsTask);
+
         s_midGetPropsTask = env->GetMethodID(s_getPropsTaskClass, "<init>",
                         "(Lcom/rhomobile/rhoelements/IBarcode1;Lcom/rhomobile/rhoelements/IMethodResult;)V");
         if(!s_midGetPropsTask)
@@ -94,13 +100,16 @@ JNIEnv* CBarcode1::jniInit()
             return NULL;
         }
 
-        s_getProps1TaskClass = rho_find_class(env, GETPROPS1_TASK_CLASS);
-        if(!s_getProps1TaskClass)
+        jclass clsTask1 = rho_find_class(env, GETPROPS1_TASK_CLASS);
+        if(!clsTask1)
         {
             RAWLOG_ERROR1("Failed to find java class: %s", GETPROPS1_TASK_CLASS);
             s_singletonClass = 0;
             return NULL;
         }
+        s_getProps1TaskClass = static_cast<jclass>(env->NewGlobalRef(clsTask1));
+        env->DeleteLocalRef(clsTask1);
+
         s_midGetProps1Task = env->GetMethodID(s_getProps1TaskClass, "<init>",
                         "(Lcom/rhomobile/rhoelements/IBarcode1;Ljava/util/String;Lcom/rhomobile/rhoelements/IMethodResult;)V");
         if(!s_midGetProps1Task)
@@ -110,13 +119,16 @@ JNIEnv* CBarcode1::jniInit()
             return NULL;
         }
 
-        s_getProps2TaskClass = rho_find_class(env, GETPROPS2_TASK_CLASS);
-        if(!s_getProps2TaskClass)
+        jclass clsTask2 = rho_find_class(env, GETPROPS2_TASK_CLASS);
+        if(!clsTask2)
         {
             RAWLOG_ERROR1("Failed to find java class: %s", GETPROPS2_TASK_CLASS);
             s_singletonClass = 0;
             return NULL;
         }
+        s_getProps2TaskClass = static_cast<jclass>(env->NewGlobalRef(clsTask2));
+        env->DeleteLocalRef(clsTask2);
+
         s_midGetProps2Task = env->GetMethodID(s_getProps2TaskClass, "<init>",
                         "(Lcom/rhomobile/rhoelements/IBarcode1;Ljava/util/List;Lcom/rhomobile/rhoelements/IMethodResult;)V");
         if(!s_midGetProps2Task)
@@ -165,13 +177,14 @@ void CBarcode1::setDefaultID(const rho::String& id)
     }
 
     jhobject instance = env->CallStaticObjectMethod(s_singletonClass, s_midGetInstance);
-    env->CallVoidMethod(instance.get(), s_midSetDefaultID, rho_cast<jhstring>(env, id).get());
+    jhstring jhId = rho_cast<jstring>(env, id);
+    env->CallVoidMethod(instance.get(), s_midSetDefaultID, jhId.get());
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 jhobject CBarcode1::getObject(JNIEnv* env)
 {
-    jhstring jhId = rho_cast<jhstring>(env, m_id);
+    jhstring jhId = rho_cast<jstring>(env, m_id);
     jhobject instance = env->CallStaticObjectMethod(s_singletonClass, s_midGetInstance);
     jhobject res = env->CallObjectMethod(instance.get(), s_midGetApiObject, jhId.get());
     return res;
