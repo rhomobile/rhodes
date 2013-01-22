@@ -12,7 +12,7 @@
 
 namespace rhoelements {
 
-const char * const MethodResultJni::METHOD_RESULT_CLASS = "com/motorolasolutions/rhoelements/MethodResult";
+const char * const MethodResultJni::METHOD_RESULT_CLASS = "com.motorolasolutions.rhoelements.MethodResult";
 
 jclass MethodResultJni::s_methodResultClass = 0;
 jmethodID MethodResultJni::s_midMethodResult;
@@ -51,7 +51,7 @@ JNIEnv* MethodResultJni::jniInit()
             s_methodResultClass = 0;
             return NULL;
         }
-        s_fidString = env->GetFieldID(s_methodResultClass, "mSrtResult", "Ljava/lang/String;");
+        s_fidString = env->GetFieldID(s_methodResultClass, "mStrResult", "Ljava/lang/String;");
         if(!s_fidString)
         {
             RAWLOG_ERROR1("Failed to get 'mStrResult' field for java class %s", METHOD_RESULT_CLASS);
@@ -78,24 +78,21 @@ JNIEnv* MethodResultJni::jniInit()
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jhstring MethodResultJni::getStringResult(JNIEnv* env)
+jstring MethodResultJni::getStringResult(JNIEnv* env)
 {
-    jhstring jhRes = static_cast<jstring>(env->GetObjectField(m_jhResult.get(), s_fidString));
-    return jhRes;
+    return static_cast<jstring>(env->GetObjectField(m_jhResult.get(), s_fidString));
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jhobject MethodResultJni::getListResult(JNIEnv* env)
+jobject MethodResultJni::getListResult(JNIEnv* env)
 {
-    jhobject jhRes = env->GetObjectField(m_jhResult.get(), s_fidStringList);
-    return jhRes;
+    return env->GetObjectField(m_jhResult.get(), s_fidStringList);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jhobject MethodResultJni::getMapResult(JNIEnv* env)
+jobject MethodResultJni::getMapResult(JNIEnv* env)
 {
-    jhobject jhRes = env->GetObjectField(m_jhResult.get(), s_fidStringMap);
-    return jhRes;
+    return env->GetObjectField(m_jhResult.get(), s_fidStringMap);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -103,7 +100,7 @@ MethodResultJni::MethodResultJni() : m_jhResult(0), m_hasCallbackUrl(false), m_e
 {
     JNIEnv *env = jniInit();
     if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
+        RAWLOG_ERROR("ctor - JNI initialization failed");
         return;
     }
 
@@ -113,6 +110,8 @@ MethodResultJni::MethodResultJni() : m_jhResult(0), m_hasCallbackUrl(false), m_e
 
 void MethodResultJni::setCallBack(const char* url, const char* data)
 {
+    RAWTRACE1("setCallBack(url=%s)", url);
+
     JNIEnv* env = jniInit();
     if (!env) {
         RAWLOG_ERROR("JNI initialization failed");
@@ -124,11 +123,14 @@ void MethodResultJni::setCallBack(const char* url, const char* data)
     env->CallVoidMethod(m_jhResult.get(), s_midSetCallBack, jhUrl.get(), jhData.get());
 
     m_hasCallbackUrl = true;
+
+    RAWTRACE("Callback has set");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 VALUE MethodResultJni::enumerateRubyObjects(VALUE klass)
 {
+    RAWTRACE("enumerateRubyObjects");
     CHoldRubyValue valArray(rho_ruby_create_array());
 
     JNIEnv *env = jniInit();
@@ -153,6 +155,7 @@ VALUE MethodResultJni::enumerateRubyObjects(VALUE klass)
         rho_ruby_add_to_array(valArray, valObj);
     }
 
+    RAWTRACE("has enumerated");
     return valArray;
 
 }
@@ -166,6 +169,8 @@ rho::String MethodResultJni::enumerateJSObjects()
 
 VALUE MethodResultJni::toRuby()
 {
+    RAWTRACE("toRuby");
+
     VALUE res = rho_ruby_get_NIL();
 
     JNIEnv *env = jniInit();

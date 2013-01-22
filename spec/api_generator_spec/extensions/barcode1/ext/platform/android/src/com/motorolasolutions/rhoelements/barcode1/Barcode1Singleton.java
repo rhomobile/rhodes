@@ -16,7 +16,7 @@ class Barcode1Singleton extends Barcode1SingletonBase {
     public static void init() { setInstance(new Barcode1Singleton()); }
 
     @Override
-    public IBarcode1 getApiObject(final String id) {
+    public IBarcode1 getApiObject(String id) {
         IBarcode1 res = sActiveBarcodes.get(id);
         if (res == null) {
             res = new Barcode1(id);

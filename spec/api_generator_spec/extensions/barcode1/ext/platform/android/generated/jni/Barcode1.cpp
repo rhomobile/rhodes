@@ -4,12 +4,14 @@
 
 namespace rhoelements {
 
-const char* const CBarcode1::SINGLETON_CLASS = "com/motorolasolutions/rhoelements/barcode1/Barcode1Sigleton";
-const char* const CBarcode1::INSTANCE_CLASS = "com/motorolasolutions/rhoelements/IBarcode1";
-const char* const CBarcode1::GETPROPS_TASK_CLASS = "com/motorolasolutions/rhoelements/Barcode1SingletonBase.GetPropsTask";
-const char* const CBarcode1::GETPROPS1_TASK_CLASS = "com/motorolasolutions/rhoelements/Barcode1SingletonBase.GetProps1Task";
-const char* const CBarcode1::GETPROPS2_TASK_CLASS = "com/motorolasolutions/rhoelements/Barcode1SingletonBase.GetProps1Task";
+const char* const CBarcode1::SINGLETON_BASE_CLASS = "com.motorolasolutions.rhoelements.Barcode1SingletonBase";
+const char* const CBarcode1::SINGLETON_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Singleton";
+const char* const CBarcode1::INSTANCE_CLASS = "com.motorolasolutions.rhoelements.IBarcode1";
+const char* const CBarcode1::GETPROPS_TASK_CLASS = "com.motorolasolutions.rhoelements.Barcode1SingletonBase$GetPropsTask";
+const char* const CBarcode1::GETPROPS1_TASK_CLASS = "com.motorolasolutions.rhoelements.Barcode1SingletonBase$GetProps1Task";
+const char* const CBarcode1::GETPROPS2_TASK_CLASS = "com.motorolasolutions.rhoelements.Barcode1SingletonBase$GetProps2Task";
 
+jclass CBarcode1::s_singletonBaseClass = 0;
 jclass CBarcode1::s_singletonClass = 0;
 jclass CBarcode1::s_getPropsTaskClass = 0;
 jclass CBarcode1::s_getProps1TaskClass = 0;
@@ -35,6 +37,16 @@ JNIEnv* CBarcode1::jniInit()
     JNIEnv *env = MethodExecutorJni::jniInit();
     if(env && !s_singletonClass)
     {
+        jclass clsBase = rho_find_class(env, SINGLETON_BASE_CLASS);
+        if(!clsBase)
+        {
+            RAWLOG_ERROR1("Failed to find java class: %s", SINGLETON_BASE_CLASS);
+            s_singletonClass = 0;
+            return NULL;
+        }
+        s_singletonBaseClass = static_cast<jclass>(env->NewGlobalRef(clsBase));
+        env->DeleteLocalRef(clsBase);
+
         jclass cls = rho_find_class(env, SINGLETON_CLASS);
         if(!cls)
         {
@@ -45,10 +57,10 @@ JNIEnv* CBarcode1::jniInit()
         s_singletonClass = static_cast<jclass>(env->NewGlobalRef(cls));
         env->DeleteLocalRef(cls);
 
-        s_midGetInstance = env->GetStaticMethodID(s_singletonClass, "getInstance", "(V)Lcom/motorolasolutions/rhoelements/barcode1/Barcode1Singleton;");
+        s_midGetInstance = env->GetStaticMethodID(s_singletonBaseClass, "getInstance", "()Lcom/motorolasolutions/rhoelements/Barcode1SingletonBase;");
         if(!s_midGetInstance)
         {
-            RAWLOG_ERROR1("Failed to get method 'getInstance' for java class %s", SINGLETON_CLASS);
+            RAWLOG_ERROR1("Failed to get method 'getInstance' for java class %s", SINGLETON_BASE_CLASS);
             s_singletonClass = 0;
             return NULL;
         }
@@ -73,7 +85,7 @@ JNIEnv* CBarcode1::jniInit()
             s_singletonClass = 0;
             return NULL;
         }
-        s_midGetApiObject = env->GetMethodID(s_singletonClass, "getApiObject", "(Ljava/lang/String;)Lcom/rhomobile/rhoelements/IBarcode1;");
+        s_midGetApiObject = env->GetMethodID(s_singletonClass, "getApiObject", "(Ljava/lang/String;)Lcom/motorolasolutions/rhoelements/IBarcode1;");
         if(!s_midGetApiObject)
         {
             RAWLOG_ERROR1("Failed to get method 'getApiObject' for java class %s", SINGLETON_CLASS);
@@ -92,7 +104,7 @@ JNIEnv* CBarcode1::jniInit()
         env->DeleteLocalRef(clsTask);
 
         s_midGetPropsTask = env->GetMethodID(s_getPropsTaskClass, "<init>",
-                        "(Lcom/rhomobile/rhoelements/IBarcode1;Lcom/rhomobile/rhoelements/IMethodResult;)V");
+                        "(Lcom/motorolasolutions/rhoelements/IBarcode1;Lcom/motorolasolutions/rhoelements/IMethodResult;)V");
         if(!s_midGetPropsTask)
         {
             RAWLOG_ERROR1("Failed to get constructor for java class %s", GETPROPS_TASK_CLASS);
@@ -111,7 +123,7 @@ JNIEnv* CBarcode1::jniInit()
         env->DeleteLocalRef(clsTask1);
 
         s_midGetProps1Task = env->GetMethodID(s_getProps1TaskClass, "<init>",
-                        "(Lcom/rhomobile/rhoelements/IBarcode1;Ljava/util/String;Lcom/rhomobile/rhoelements/IMethodResult;)V");
+                        "(Lcom/motorolasolutions/rhoelements/IBarcode1;Ljava/lang/String;Lcom/motorolasolutions/rhoelements/IMethodResult;)V");
         if(!s_midGetProps1Task)
         {
             RAWLOG_ERROR1("Failed to get constructor for java class %s", GETPROPS1_TASK_CLASS);
@@ -130,7 +142,7 @@ JNIEnv* CBarcode1::jniInit()
         env->DeleteLocalRef(clsTask2);
 
         s_midGetProps2Task = env->GetMethodID(s_getProps2TaskClass, "<init>",
-                        "(Lcom/rhomobile/rhoelements/IBarcode1;Ljava/util/List;Lcom/rhomobile/rhoelements/IMethodResult;)V");
+                        "(Lcom/motorolasolutions/rhoelements/IBarcode1;Ljava/util/List;Lcom/motorolasolutions/rhoelements/IMethodResult;)V");
         if(!s_midGetProps2Task)
         {
             RAWLOG_ERROR1("Failed to get constructor for java class %s", GETPROPS2_TASK_CLASS);
@@ -144,32 +156,39 @@ JNIEnv* CBarcode1::jniInit()
 
 void CBarcode1::enumerate(MethodResultJni& res)
 {
+    RAWTRACE("enumerate");
+
     JNIEnv *env = jniInit();
     if (!env) {
         RAWLOG_ERROR("JNI initialization failed");
         return;
     }
 
-    jhobject instance = env->CallStaticObjectMethod(s_singletonClass, s_midGetInstance);
-    env->CallVoidMethod(instance.get(), s_midEnumerate, static_cast<jobject>(res));
+    jhobject jhSingleton(env->CallStaticObjectMethod(s_singletonBaseClass, s_midGetInstance));
+    env->CallVoidMethod(jhSingleton.get(), s_midEnumerate, static_cast<jobject>(res));
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 rho::String CBarcode1::getDefaultID()
 {
+    RAWTRACE("getDefaultID");
+
     JNIEnv *env = jniInit();
     if (!env) {
         RAWLOG_ERROR("JNI initialization failed");
         return rho::String();
     }
 
-    jhstring res = static_cast<jstring>(env->CallStaticObjectMethod(s_singletonClass, s_midGetDefaultID));
+    jhobject jhSingleton = env->CallStaticObjectMethod(s_singletonClass, s_midGetInstance);
+    jhstring res = static_cast<jstring>(env->CallObjectMethod(jhSingleton.get(), s_midGetDefaultID));
     return rho_cast<rho::String>(env, res);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CBarcode1::setDefaultID(const rho::String& id)
 {
+    RAWTRACE1("setDefaultID(id = \"%s\")", id.c_str());
+
     JNIEnv *env = jniInit();
     if (!env) {
         RAWLOG_ERROR("JNI initialization failed");
@@ -182,54 +201,63 @@ void CBarcode1::setDefaultID(const rho::String& id)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jhobject CBarcode1::getObject(JNIEnv* env)
+jobject CBarcode1::getObject(JNIEnv* env)
 {
     jhstring jhId = rho_cast<jstring>(env, m_id);
     jhobject instance = env->CallStaticObjectMethod(s_singletonClass, s_midGetInstance);
-    jhobject res = env->CallObjectMethod(instance.get(), s_midGetApiObject, jhId.get());
+    jobject res = env->CallObjectMethod(instance.get(), s_midGetApiObject, jhId.get());
     return res;
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CBarcode1::getProps(MethodResultJni& result)
 {
+    RAWTRACE("getProps(result)");
+
     JNIEnv *env = jniInit();
     if (!env) {
         RAWLOG_ERROR("JNI initialization failed");
         return;
     }
 
+    jhobject jhObject = getObject(env);
     jhobject jhGetPropsTask = env->NewObject(s_getPropsTaskClass, s_midGetPropsTask,
-                    getObject(env).get(), static_cast<jobject>(result));
-    run(jhGetPropsTask, result);
+                    jhObject.get(), static_cast<jobject>(result));
+    run(env, jhGetPropsTask.get(), result);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void CBarcode1::getProps(jhstring name, MethodResultJni& result)
+void CBarcode1::getProps(jstring name, MethodResultJni& result)
 {
+    RAWTRACE("getProps(name, result)");
+
     JNIEnv *env = jniInit();
     if (!env) {
         RAWLOG_ERROR("JNI initialization failed");
         return;
     }
 
+    jhobject jhObject = getObject(env);
     jhobject jhGetPropsTask = env->NewObject(s_getProps1TaskClass, s_midGetProps1Task,
-                    getObject(env).get(), name.get(), static_cast<jobject>(result));
-    run(jhGetPropsTask, result);
+                    jhObject.get(), name, static_cast<jobject>(result));
+    run(env, jhGetPropsTask.get(), result);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void CBarcode1::getProps(jhobject names, MethodResultJni& result)
+void CBarcode1::getProps(jobject names, MethodResultJni& result)
 {
+    RAWTRACE("getProps(nameList, result)");
+
     JNIEnv *env = jniInit();
     if (!env) {
         RAWLOG_ERROR("JNI initialization failed");
         return;
     }
 
+    jhobject jhObject = getObject(env);
     jhobject jhGetPropsTask = env->NewObject(s_getProps2TaskClass, s_midGetProps2Task,
-                    getObject(env).get(), names.get(), static_cast<jobject>(result));
-    run(jhGetPropsTask, result);
+                    jhObject.get(), names, static_cast<jobject>(result));
+    run(env, jhGetPropsTask.get(), result);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
