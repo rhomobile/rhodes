@@ -42,13 +42,18 @@ class CMethodResult
 
     enum ETypes{ eNone = 0, eString, eStringArray, eStringHash, eError, eArgError};
     ETypes m_ResType;
+
+    unsigned long m_oRubyObjectClass;
 public:
+
+    CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     void setJSCallback(const rho::String& strCallback){ m_strJSCallback = strCallback; }
     void setCallInUIThread(rho::boolean bUIThread){ m_bCallInUIThread = bUIThread; }
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
     void setStringParam(const rho::String& strParam){m_strStringParam = strParam;}
+    void setRubyObjectClass(unsigned long val){ m_oRubyObjectClass = val; }
     void convertStringParamToHash();
 
     void set(const rho::Hashtable<rho::StringW, rho::StringW>& res){ m_hashStrRes = res; m_ResType = eStringHash; callCallback(); }
