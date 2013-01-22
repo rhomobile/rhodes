@@ -1,36 +1,46 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 
-<MODULE name="Rho::Barcode" >
+<MODULE name="Rho::AudioCapture" run_in_thread="UI" access="STATIC">
     <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
     <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
 
     <TEMPLATES>
-        <SINGLETON_INSTANCES/>   <!-- produce enumerate() fabric method, all instances is singletones by ID, add ID property -->
-        <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
         <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
     </TEMPLATES>
 
     <PROPERTIES>
         <!-- list of properties supported by property bag methods getPops(), setProps() -->
         <DESC>object supports this properties bla bla bla :</DESC>
-        <PROPERTY name="illuminationMode" type="STRING">
-            <DESC>Whether or not the Code128 symbology is used.</DESC>
+        <PROPERTY name="duration" type="Integer">
+            <DESC>Specifies the number of milliseconds of audio to capture.</DESC>
+            <DEFAULT>20000</DEFAULT>
+        </PROPERTY>
+        <PROPERTY name="name" type="STRING">
+            <DESC>with Windows Naming restrictions 	When the audio capture completes a file is saved in the root directory of the device (package directory in case of Android). This parameter is used to specify the filename when storing the file locally.</DESC>
+            <DEFAULT>AudioCapture</DEFAULT>
+        </PROPERTY>
+        <PROPERTY name="codec" type="STRING">
+            <DESC>The Audio Encoder can be specified through this attribute. NOTE: This is only on Android.</DESC>
             <VALUES>
-                <VALUE name ="auto">
-                    <DESC>(not available on Enterprise Tablet) Auto-exposure algorithms will decide whether illumination is required or not. </DESC>
+                <VALUE name ="AAC">
+                    <DESC>AAC</DESC>
                 </VALUE>
-                <VALUE name ="alwaysOn">
-                    <DESC>External illumination is always on</DESC>
+                <VALUE name ="AMR_NB">
+                    <DESC>AMR_NB</DESC>
+                </VALUE>
+                <VALUE name ="AMR_WB">
+                    <DESC>AMR_WB</DESC>
                 </VALUE>
             </VALUES>
-            <DEFAULT>Device specific</DEFAULT>
+            <DEFAULT>AAC</DEFAULT>
         </PROPERTY>
+
     </PROPERTIES>
 
     <METHODS>
-        <METHOD name="enable" has_callback="mandatory">
-            <DESC>This is documentation</DESC>
+        <METHOD name="start" has_callback="mandatory">
+            <DESC>Starts capturing audio until either 'stop' is received, or 'duration' is reached (i.e. until the buffer is full).</DESC>
 
             <PARAMS>
                 <PARAM name="propertyMap">
@@ -45,28 +55,11 @@
 
         </METHOD>
 
-        <METHOD name="start" run_in_thread="true">
-            <DESC>This is documentation</DESC>
-        </METHOD>
         <METHOD name="stop">
-            <DESC>This is documentation</DESC>
+            <DESC>Stops capturing audio and either saves the file locally, or transfers it to a remote server</DESC>
         </METHOD>
-        <METHOD name="disable">
-            <DESC>This is documentation</DESC>
-        </METHOD>
-
-        <METHOD name="take" has_callback="mandatory">
-            <DESC>Enable and start automatically</DESC>
-            <PARAMS>
-                <PARAM name="propertyMap">
-                    <DESC>Map of properties I want to set</DESC>
-                    <TYPE>Map of strings</TYPE>
-                    
-                    <CAN_BE_NIL>
-                        <DESC>Use already set properties</DESC>
-                    </CAN_BE_NIL>
-                </PARAM>
-            </PARAMS>
+        <METHOD name="cancel">
+            <DESC>Stops capturing audio and discards any captured audio data</DESC>
         </METHOD>
 
     </METHODS>
