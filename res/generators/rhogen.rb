@@ -561,7 +561,7 @@ module Rhogen
       @type = TYPE_BASE_OBJECT
     end
 
-    class ClassMethod
+    class ModuleMethod
       @name = ''
       @arguments = [] # array of MethodArgument
       @is_separated_thread = false
@@ -571,8 +571,16 @@ module Rhogen
       @android_platform_specific_method_define_line = nil
     end
 
+    class ModuleItem
+      @name = ''
+      @parent = ''
+      @methods = []
+      @is_template_singletone_id = false
+      @is_template_default_instance = false
+      @is_template_propertybag = false
+    end
 
-    $methods = nil
+    $modules = []
 
 
     def setup_xml
@@ -672,31 +680,3 @@ module Rhogen
 
 end
 
-
-
-# Stub this method to force 1.8 compatibility (come on templater!)
-class Encoding
-  def find
-    "utf-8"
-  end
-
-  def dummy?
-    false
-  end
-end
-
-class String
-  def force_encoding(enc)
-    return self
-  end
-  def encoding
-    if RUBY_VERSION =~ /1\.8/ and Encoding.responds_to?('new')
-      Encoding.new
-    else
-      Encoding.default_external
-    end
-  end
-end
-
-
-Rhogen.run_cli(Dir.pwd, 'rhodes', Rhodes::VERSION, ARGV)
