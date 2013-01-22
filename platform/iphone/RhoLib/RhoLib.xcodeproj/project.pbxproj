@@ -99,6 +99,21 @@
 		FAC6EE66143B1FC800B8E352 /* OSMMapEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE5A143B1FC800B8E352 /* OSMMapEngine.h */; };
 		FAC6EE69143B20B600B8E352 /* RhoMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE67143B20B600B8E352 /* RhoMath.cpp */; };
 		FAC6EE6A143B20B600B8E352 /* RhoMath.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE68143B20B600B8E352 /* RhoMath.h */; };
+		FAEF1DCA16AED9D200E22B05 /* BaseClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DB916AED9D200E22B05 /* BaseClasses.h */; };
+		FAEF1DCB16AED9D200E22B05 /* GeneratorQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DBA16AED9D200E22B05 /* GeneratorQueue.h */; };
+		FAEF1DCC16AED9D200E22B05 /* CJSConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DBC16AED9D200E22B05 /* CJSConverter.h */; };
+		FAEF1DCD16AED9D200E22B05 /* CJSConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1DBD16AED9D200E22B05 /* CJSConverter.m */; };
+		FAEF1DCE16AED9D200E22B05 /* CMethodResult.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DBE16AED9D200E22B05 /* CMethodResult.h */; };
+		FAEF1DCF16AED9D200E22B05 /* CMethodResult.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1DBF16AED9D200E22B05 /* CMethodResult.m */; };
+		FAEF1DD016AED9D200E22B05 /* CRubyConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DC016AED9D200E22B05 /* CRubyConverter.h */; };
+		FAEF1DD116AED9D200E22B05 /* CRubyConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1DC116AED9D200E22B05 /* CRubyConverter.m */; };
+		FAEF1DD216AED9D200E22B05 /* IMethodResult.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DC216AED9D200E22B05 /* IMethodResult.h */; };
+		FAEF1DD316AED9D200E22B05 /* RubyCallbackHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DC416AED9D200E22B05 /* RubyCallbackHelper.h */; };
+		FAEF1DD416AED9D200E22B05 /* RubyCallbackHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1DC516AED9D200E22B05 /* RubyCallbackHelper.mm */; };
+		FAEF1DD516AED9D200E22B05 /* js_helpers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1DC616AED9D200E22B05 /* js_helpers.cpp */; };
+		FAEF1DD616AED9D200E22B05 /* js_helpers.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DC716AED9D200E22B05 /* js_helpers.h */; };
+		FAEF1DD716AED9D200E22B05 /* MethodResult.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1DC816AED9D200E22B05 /* MethodResult.cpp */; };
+		FAEF1DD816AED9D200E22B05 /* MethodResult.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DC916AED9D200E22B05 /* MethodResult.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -196,6 +211,22 @@
 		FAC6EE5A143B1FC800B8E352 /* OSMMapEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OSMMapEngine.h; path = ../../shared/common/map/OSMMapEngine.h; sourceTree = "<group>"; };
 		FAC6EE67143B20B600B8E352 /* RhoMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoMath.cpp; path = ../../shared/common/RhoMath.cpp; sourceTree = "<group>"; };
 		FAC6EE68143B20B600B8E352 /* RhoMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMath.h; path = ../../shared/common/RhoMath.h; sourceTree = "<group>"; };
+		FAEF1DB916AED9D200E22B05 /* BaseClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseClasses.h; path = ../../shared/api_generator/BaseClasses.h; sourceTree = "<group>"; };
+		FAEF1DBA16AED9D200E22B05 /* GeneratorQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeneratorQueue.h; path = ../../shared/api_generator/GeneratorQueue.h; sourceTree = "<group>"; };
+		FAEF1DBC16AED9D200E22B05 /* CJSConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJSConverter.h; sourceTree = "<group>"; };
+		FAEF1DBD16AED9D200E22B05 /* CJSConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CJSConverter.m; sourceTree = "<group>"; };
+		FAEF1DBE16AED9D200E22B05 /* CMethodResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMethodResult.h; sourceTree = "<group>"; };
+		FAEF1DBF16AED9D200E22B05 /* CMethodResult.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CMethodResult.m; sourceTree = "<group>"; };
+		FAEF1DC016AED9D200E22B05 /* CRubyConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRubyConverter.h; sourceTree = "<group>"; };
+		FAEF1DC116AED9D200E22B05 /* CRubyConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRubyConverter.m; sourceTree = "<group>"; };
+		FAEF1DC216AED9D200E22B05 /* IMethodResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMethodResult.h; sourceTree = "<group>"; };
+		FAEF1DC316AED9D200E22B05 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		FAEF1DC416AED9D200E22B05 /* RubyCallbackHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RubyCallbackHelper.h; sourceTree = "<group>"; };
+		FAEF1DC516AED9D200E22B05 /* RubyCallbackHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RubyCallbackHelper.mm; sourceTree = "<group>"; };
+		FAEF1DC616AED9D200E22B05 /* js_helpers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = js_helpers.cpp; path = ../../shared/api_generator/js_helpers.cpp; sourceTree = "<group>"; };
+		FAEF1DC716AED9D200E22B05 /* js_helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = js_helpers.h; path = ../../shared/api_generator/js_helpers.h; sourceTree = "<group>"; };
+		FAEF1DC816AED9D200E22B05 /* MethodResult.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MethodResult.cpp; path = ../../shared/api_generator/MethodResult.cpp; sourceTree = "<group>"; };
+		FAEF1DC916AED9D200E22B05 /* MethodResult.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MethodResult.h; path = ../../shared/api_generator/MethodResult.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -222,6 +253,7 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				FAEF1DB716AED9B700E22B05 /* api_generator */,
 				5CE03CC912DB7E670058B474 /* sqlite */,
 				5C59BF4A115B4BA300E96ADE /* unzip */,
 				5C798931113BD10C005F8736 /* rubyext */,
@@ -414,6 +446,38 @@
 			name = map;
 			sourceTree = "<group>";
 		};
+		FAEF1DB716AED9B700E22B05 /* api_generator */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1DB916AED9D200E22B05 /* BaseClasses.h */,
+				FAEF1DBA16AED9D200E22B05 /* GeneratorQueue.h */,
+				FAEF1DBB16AED9D200E22B05 /* iphone */,
+				FAEF1DC616AED9D200E22B05 /* js_helpers.cpp */,
+				FAEF1DC716AED9D200E22B05 /* js_helpers.h */,
+				FAEF1DC816AED9D200E22B05 /* MethodResult.cpp */,
+				FAEF1DC916AED9D200E22B05 /* MethodResult.h */,
+			);
+			name = api_generator;
+			sourceTree = "<group>";
+		};
+		FAEF1DBB16AED9D200E22B05 /* iphone */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1DBC16AED9D200E22B05 /* CJSConverter.h */,
+				FAEF1DBD16AED9D200E22B05 /* CJSConverter.m */,
+				FAEF1DBE16AED9D200E22B05 /* CMethodResult.h */,
+				FAEF1DBF16AED9D200E22B05 /* CMethodResult.m */,
+				FAEF1DC016AED9D200E22B05 /* CRubyConverter.h */,
+				FAEF1DC116AED9D200E22B05 /* CRubyConverter.m */,
+				FAEF1DC216AED9D200E22B05 /* IMethodResult.h */,
+				FAEF1DC316AED9D200E22B05 /* readme.txt */,
+				FAEF1DC416AED9D200E22B05 /* RubyCallbackHelper.h */,
+				FAEF1DC516AED9D200E22B05 /* RubyCallbackHelper.mm */,
+			);
+			name = iphone;
+			path = ../../shared/api_generator/iphone;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -472,6 +536,15 @@
 				C5D47763156A4ED000943A2D /* zip.h in Headers */,
 				A2D0557D15A7500A002376EE /* IRhoPushClient.h in Headers */,
 				A2D0557F15A7500A002376EE /* RhoPushManager.h in Headers */,
+				FAEF1DCA16AED9D200E22B05 /* BaseClasses.h in Headers */,
+				FAEF1DCB16AED9D200E22B05 /* GeneratorQueue.h in Headers */,
+				FAEF1DCC16AED9D200E22B05 /* CJSConverter.h in Headers */,
+				FAEF1DCE16AED9D200E22B05 /* CMethodResult.h in Headers */,
+				FAEF1DD016AED9D200E22B05 /* CRubyConverter.h in Headers */,
+				FAEF1DD216AED9D200E22B05 /* IMethodResult.h in Headers */,
+				FAEF1DD316AED9D200E22B05 /* RubyCallbackHelper.h in Headers */,
+				FAEF1DD616AED9D200E22B05 /* js_helpers.h in Headers */,
+				FAEF1DD816AED9D200E22B05 /* MethodResult.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -565,6 +638,12 @@
 				C5D2784415A1F33A00A7EFC7 /* ZipFiles.cpp in Sources */,
 				A2D0557E15A7500A002376EE /* RhoPushManager.cpp in Sources */,
 				C56918CE168B9AB800F6013A /* RhodesApp.cpp in Sources */,
+				FAEF1DCD16AED9D200E22B05 /* CJSConverter.m in Sources */,
+				FAEF1DCF16AED9D200E22B05 /* CMethodResult.m in Sources */,
+				FAEF1DD116AED9D200E22B05 /* CRubyConverter.m in Sources */,
+				FAEF1DD416AED9D200E22B05 /* RubyCallbackHelper.mm in Sources */,
+				FAEF1DD516AED9D200E22B05 /* js_helpers.cpp in Sources */,
+				FAEF1DD716AED9D200E22B05 /* MethodResult.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -581,6 +660,13 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				HEADER_SEARCH_PATHS = (
+					../../shared,
+					../../shared/ruby,
+					../../shared/ruby/include,
+					../../shared/ruby/iphone,
+					../../shared/ruby/generated,
+				);
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
@@ -605,6 +691,13 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					../../shared,
+					../../shared/ruby,
+					../../shared/ruby/include,
+					../../shared/ruby/iphone,
+					../../shared/ruby/generated,
+				);
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
@@ -670,6 +763,13 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
+				HEADER_SEARCH_PATHS = (
+					../../shared,
+					../../shared/ruby,
+					../../shared/ruby/include,
+					../../shared/ruby/iphone,
+					../../shared/ruby/generated,
+				);
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";

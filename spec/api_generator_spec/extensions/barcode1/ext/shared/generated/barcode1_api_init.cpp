@@ -3,7 +3,7 @@
 extern "C" void Init_RubyAPI_Barcode1();
 extern "C" void Init_JSAPI_Barcode1();
 
-void Init_Barcode1_API()
+extern "C" void Init_Barcode1_API()
 {
 #ifndef RHO_NO_RUBY_API
     Init_RubyAPI_Barcode1();
