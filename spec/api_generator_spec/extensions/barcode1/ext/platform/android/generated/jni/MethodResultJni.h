@@ -29,9 +29,9 @@ class MethodResultJni
     ErrType m_errType;
     std::string m_errMsg;
 
-    jhstring getStringResult(JNIEnv*);
-    jhobject getListResult(JNIEnv*);
-    jhobject getMapResult(JNIEnv*);
+    jstring getStringResult(JNIEnv*);
+    jobject getListResult(JNIEnv*);
+    jobject getMapResult(JNIEnv*);
 
 public:
     MethodResultJni();

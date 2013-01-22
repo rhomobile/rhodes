@@ -6,11 +6,11 @@ import com.rhomobile.rhodes.util.PerformOnUiThread;
 public class MethodExecutor {
     private static final String TAG = MethodExecutor.class.getSimpleName();
     
-    public void run(Runnable task) {
+    public static void run(Runnable task) {
         task.run();
     }
 
-    public void runWithSeparateThread(Runnable task) {
+    public static void runWithSeparateThread(Runnable task) {
         //try {
             Thread thr = new Thread(task);
             thr.start();
@@ -20,7 +20,7 @@ public class MethodExecutor {
         //}
     }
 
-    public void runWithUiThread(Runnable task) {
+    public static void runWithUiThread(Runnable task) {
         PerformOnUiThread.exec(task);
     }
 }

@@ -10,7 +10,7 @@
 
 namespace rhoelements {
 
-const char * const MethodExecutorJni::METHOD_EXECUTOR_CLASS = "com/motorolasolutions/rhoelements/MethodExecutor";
+const char * const MethodExecutorJni::METHOD_EXECUTOR_CLASS = "com.motorolasolutions.rhoelements.MethodExecutor";
 
 jclass MethodExecutorJni::s_MethodExecutorClass = 0;
 jmethodID MethodExecutorJni::s_midRun;
@@ -59,55 +59,19 @@ JNIEnv* MethodExecutorJni::jniInit()
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void MethodExecutorJni::run(jhobject jhTask)
-{
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        return;
-    }
-
-    env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRun, jhTask.get());
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-void MethodExecutorJni::runWithSeparateThread(jhobject jhTask)
-{
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        return;
-    }
-
-    env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithSeparateThread, jhTask.get());
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-void MethodExecutorJni::runWithUiThread(jhobject jhTask)
-{
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        return;
-    }
-
-    env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithUiThread, jhTask.get());
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-void MethodExecutorJni::run(jhobject jhTask, MethodResultJni& result)
+void MethodExecutorJni::run(JNIEnv* env, jobject jTask, MethodResultJni& result)
 {
     if(shouldRunWithUiThread())
     {
-        runWithUiThread(jhTask);
+        env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithUiThread, jTask);
     }
     else if(result.hasCallBackUrl() || shouldRunWithThread())
     {
-        runWithSeparateThread(jhTask);
+        env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithSeparateThread, jTask);
     }
     else
     {
-        run(jhTask);
+        env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRun, jTask);
     }
 }
 //----------------------------------------------------------------------------------------------------------------------

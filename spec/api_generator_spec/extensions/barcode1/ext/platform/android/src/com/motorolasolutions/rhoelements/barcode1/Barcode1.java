@@ -15,8 +15,8 @@ public class Barcode1 extends RhoApiObject implements IBarcode1 {
     
     public Barcode1(String id) {
         super(id);
-        mProps.put( "display", "LCD");
-        mProps.put( "sound", "Dolby");
+        mProps.put("display", "LCD");
+        mProps.put("sound", "Dolby");
     }
 
     @Override
