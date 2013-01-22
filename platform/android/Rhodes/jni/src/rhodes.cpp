@@ -180,6 +180,8 @@ namespace details
 
 std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstring s)
 {
+    RAWTRACE("rho_cast<string, jstring>");
+
     if(env->IsSameObject(s, NULL) == JNI_TRUE)
     {
         //Avoid crash in case of null java reference
@@ -193,31 +195,43 @@ std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstri
     }
 }
 
-jhstring rho_cast_helper<jhstring, char const *>::operator()(JNIEnv *env, char const *s)
+jstring rho_cast_helper<jstring, char const *>::operator()(JNIEnv *env, char const *s)
 {
-    return jhstring(s ? env->NewStringUTF(s) : (jstring)0);
+    RAWTRACE("rho_cast<jstring, string>");
+
+    return s ? env->NewStringUTF(s) : (jstring)0;
 }
 
 jclass RhoJniConvertor::clsString;
-jclass RhoJniConvertor::clsList;
+jclass RhoJniConvertor::clsCollection;
 jclass RhoJniConvertor::clsMap;
 jclass RhoJniConvertor::clsSet;
+jclass RhoJniConvertor::clsHashMap;
+jclass RhoJniConvertor::clsArrayList;
 jclass RhoJniConvertor::clsIterator;
-jmethodID RhoJniConvertor::midListIterator;
+jmethodID RhoJniConvertor::midCollectionIterator;
 jmethodID RhoJniConvertor::midMapGet;
 jmethodID RhoJniConvertor::midMapKeySet;
+jmethodID RhoJniConvertor::midArrayList;
+jmethodID RhoJniConvertor::midArrayListAdd;
+jmethodID RhoJniConvertor::midHashMap;
+jmethodID RhoJniConvertor::midHashMapPut;
 jmethodID RhoJniConvertor::midSetIterator;
 jmethodID RhoJniConvertor::midIteratorHasNext;
 jmethodID RhoJniConvertor::midIteratorNext;
 
 bool RhoJniConvertor::initConvertor(JNIEnv *env)
 {
-    static rho::common::CMutex rho_cast_java_ruby_mtx;
+    RAWTRACE("RhoJniConvertor::initConvertor");
+
+    m_env = env;
+
     static bool initialized = false;
 
     if (initialized)
         return initialized;
 
+    static rho::common::CMutex rho_cast_java_ruby_mtx;
     rho::common::CMutexLock guard(rho_cast_java_ruby_mtx);
 
     if (initialized)
@@ -225,21 +239,33 @@ bool RhoJniConvertor::initConvertor(JNIEnv *env)
 
     clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
     if (!clsString) return false;
-    clsList = getJNIClass(RHODES_JAVA_CLASS_LIST);
-    if (!clsList) return false;
+    clsCollection = getJNIClass(RHODES_JAVA_CLASS_COLLECTION);
+    if (!clsCollection) return false;
     clsMap = getJNIClass(RHODES_JAVA_CLASS_MAP);
     if (!clsMap) return false;
     clsSet = getJNIClass(RHODES_JAVA_CLASS_SET);
     if (!clsSet) return false;
+    clsArrayList = getJNIClass(RHODES_JAVA_CLASS_ARRAYLIST);
+    if (!clsArrayList) return false;
+    clsHashMap = getJNIClass(RHODES_JAVA_CLASS_HASHMAP);
+    if (!clsHashMap) return false;
     clsIterator = getJNIClass(RHODES_JAVA_CLASS_ITERATOR);
     if (!clsIterator) return false;
 
-    midListIterator = getJNIClassMethod(env, clsList, "iterator", "()Ljava/util/Iterator;");
-    if (!midListIterator) return false;
+    midCollectionIterator = getJNIClassMethod(env, clsCollection, "iterator", "()Ljava/util/Iterator;");
+    if (!midCollectionIterator) return false;
     midMapGet = getJNIClassMethod(env, clsMap, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
     if (!midMapGet) return false;
     midMapKeySet = getJNIClassMethod(env, clsMap, "keySet", "()Ljava/util/Set;");
     if (!midMapKeySet) return false;
+    midArrayList = getJNIClassMethod(env, clsArrayList, "<init>", "()V");
+    if (!midArrayList) return false;
+    midArrayListAdd = getJNIClassMethod(env, clsArrayList, "add", "(Ljava/lang/Object;)Z");
+    if (!midArrayListAdd) return false;
+    midHashMap = getJNIClassMethod(env, clsHashMap, "<init>", "()V");
+    if (!midHashMap) return false;
+    midHashMapPut = getJNIClassMethod(env, clsHashMap, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    if (!midHashMapPut) return false;
     midSetIterator = getJNIClassMethod(env, clsSet, "iterator", "()Ljava/util/Iterator;");
     if (!midSetIterator) return false;
     midIteratorHasNext = getJNIClassMethod(env, clsIterator, "hasNext", "()Z");
@@ -254,17 +280,19 @@ bool RhoJniConvertor::initConvertor(JNIEnv *env)
 HStringMap
 rho_cast_helper<HStringMap, jobject>::operator()(JNIEnv *env, jobject jObj)
 {
-        value_type result(new value_type::element_type);
+    RAWTRACE("rho_cast<HStringMap, jobject>");
 
-        if (!initConvertor(env)) return value_type(0);
+    value_type result(new value_type::element_type);
 
-        jhobject jSet = env->CallObjectMethod(jObj, midMapKeySet);
-        if (!jSet) return value_type(0);
-        jhobject jIterator = env->CallObjectMethod(jSet.get(), midSetIterator);
-        if (!jIterator) return value_type(0);
+    if (!initConvertor(env)) return value_type(0);
 
-        while(env->CallBooleanMethod(jIterator.get(), midIteratorHasNext))
-        {
+    jhobject jSet = env->CallObjectMethod(jObj, midMapKeySet);
+    if (!jSet) return value_type(0);
+    jhobject jIterator = env->CallObjectMethod(jSet.get(), midSetIterator);
+    if (!jIterator) return value_type(0);
+
+    while(env->CallBooleanMethod(jIterator.get(), midIteratorHasNext))
+    {
             jhstring jkey = static_cast<jstring>(env->CallObjectMethod(jIterator.get(), midIteratorNext));
             jhstring jval = static_cast<jstring>(env->CallObjectMethod(jObj, midMapGet, jkey.get()));
 
@@ -272,14 +300,16 @@ rho_cast_helper<HStringMap, jobject>::operator()(JNIEnv *env, jobject jObj)
             std::string val = rho_cast<std::string>(env, jval);
 
             result->put(key, val);
-        }
-        return result;
+    }
+    return result;
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 HStringMap
 rho_cast_helper<HStringMap, jobjectArray>::operator()(JNIEnv *env, jobjectArray jKeys, jobjectArray jVals)
 {
+    RAWTRACE("rho_cast<HStringMap, jobjectArray>");
+
     value_type result(new value_type::element_type);
 
     unsigned n = env->GetArrayLength(jKeys);
@@ -300,6 +330,8 @@ rho_cast_helper<HStringMap, jobjectArray>::operator()(JNIEnv *env, jobjectArray 
 HStringVector
 rho_cast_helper<HStringVector, jobjectArray>::operator ()(JNIEnv *env, jobjectArray jArr)
 {
+    RAWTRACE("rho_cast<HStringVector, jobjectArray>");
+
     value_type result(new value_type::element_type);
 
     unsigned n = env->GetArrayLength(jArr);
@@ -318,11 +350,13 @@ rho_cast_helper<HStringVector, jobjectArray>::operator ()(JNIEnv *env, jobjectAr
 HStringVector
 rho_cast_helper<HStringVector, jobject>::operator ()(JNIEnv *env, jobject jList)
 {
+    RAWTRACE("rho_cast<HStringVector, jobject>");
+
     value_type result(new value_type::element_type);
 
     if (!initConvertor(env)) return value_type(0);
 
-    jhobject jhIterator = env->CallObjectMethod(jList, midListIterator);
+    jhobject jhIterator = env->CallObjectMethod(jList, midCollectionIterator);
     if (!jhIterator) return value_type(0);
 
     while(env->CallBooleanMethod(jhIterator.get(), midIteratorHasNext))

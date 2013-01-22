@@ -72,11 +72,11 @@ RHO_GLOBAL jobject JNICALL Java_com_rhomobile_rhodes_socket_SSLImpl_getRemoteSoc
     arr[0] = (jbyte)(addr & 0xFF);
     env->ReleaseByteArrayElements(array.get(), arr, 0);
 
-    jhstring ipaddrObj = rho_cast<jhstring>(::inet_ntoa(sa.sin_addr));
-    jhobject inetaddrObj = jhobject(env->NewObject(clsInetAddr, midInetAddr, array.get(), ipaddrObj.get()));
+    jhstring ipaddrObj = rho_cast<jstring>(env, ::inet_ntoa(sa.sin_addr));
+    jhobject inetaddrObj = env->NewObject(clsInetAddr, midInetAddr, array.get(), ipaddrObj.get());
     if (!inetaddrObj) return NULL;
 
-    jhobject sockaddrObj = jhobject(env->NewObject(clsSockAddr, midSockAddr));
+    jhobject sockaddrObj = env->NewObject(clsSockAddr, midSockAddr);
     if (!sockaddrObj) return NULL;
 
     env->SetObjectField(sockaddrObj.get(), fidInetAddr, inetaddrObj.get());
@@ -142,6 +142,9 @@ CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify
 void SSLImpl::shutdown(void *storage)
 {
     if (!storage) return;
+
+    RAWTRACE("shutdown");
+
     jobject obj = (jobject)storage;
     jnienv()->CallVoidMethod(obj, midShutdown);
 }
@@ -171,10 +174,17 @@ ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
 
     jobject obj = (jobject)storage;
     JNIEnv *env = jnienv();
-    jclass cls = getJNIObjectClass(env, obj);
-    if (!cls) return -1;
-    jfieldID fid = getJNIClassField(env, cls, "sockfd", "I");
-    env->DeleteLocalRef(cls);
+
+    static jfieldID fid = 0;
+    if(!fid)
+    {
+        jclass clsSock = getJNIObjectClass(env, obj);
+        if (!clsSock) return -1;
+
+        fid = getJNIClassField(env, clsSock, "sockfd", "I");
+
+        env->DeleteLocalRef(clsSock);
+    }
     if (!fid) return -1;
 
     jint sock = env->GetIntField(obj, fid);
@@ -191,7 +201,7 @@ ssize_t SSLImpl::recv(char *buf, size_t size, int *wouldblock, void *storage)
         return -1;
     }
 
-    jholder<jbyteArray> array = jholder<jbyteArray>(env->NewByteArray(size));
+    jholder<jbyteArray> array = env->NewByteArray(size);
     jint result = env->CallIntMethod(obj, midRecv, array.get());
 
     if (result > 0) {

@@ -24,13 +24,15 @@ JNIEnv* MethodExecutorJni::jniInit()
     JNIEnv *env = jnienv();
     if(env && !s_MethodExecutorClass)
     {
-        s_MethodExecutorClass = rho_find_class(env, METHOD_EXECUTOR_CLASS);
-        if(!s_MethodExecutorClass)
+        jclass cls = rho_find_class(env, METHOD_EXECUTOR_CLASS);
+        if(!cls)
         {
             RAWLOG_ERROR1("Failed to find java class: %s", METHOD_EXECUTOR_CLASS);
-            s_MethodExecutorClass = 0;
             return NULL;
         }
+        s_MethodExecutorClass = static_cast<jclass>(env->NewGlobalRef(cls));
+        env->DeleteLocalRef(cls);
+
         s_midRun = env->GetStaticMethodID(s_MethodExecutorClass, "run", "(Ljava/lang/Runnable;)V");
         if(!s_midRun)
         {

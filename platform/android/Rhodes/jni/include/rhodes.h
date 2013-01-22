@@ -121,44 +121,53 @@ struct rho_cast_helper<std::string, jstring>
 };
 
 template <>
-struct rho_cast_helper<jhstring, char const *>
+struct rho_cast_helper<jstring, char const *>
 {
-    jhstring operator()(JNIEnv *env, char const *);
+    jstring operator()(JNIEnv *env, char const *);
 };
 
 template <>
-struct rho_cast_helper<jhstring, char *>
+struct rho_cast_helper<jstring, char *>
 {
-    jhstring operator()(JNIEnv *env, char *s) { return rho_cast_helper<jhstring, char const *>()(env, s);}
+    jstring operator()(JNIEnv *env, char *s) { return rho_cast_helper<jstring, char const *>()(env, s);}
 };
 
 template <int N>
-struct rho_cast_helper<jhstring, char [N]>
+struct rho_cast_helper<jstring, char [N]>
 {
-    jhstring operator()(JNIEnv *env, char (&s)[N]) { return rho_cast_helper<jhstring, char const *>()(env, &s[0]);}
+    jstring operator()(JNIEnv *env, char (&s)[N]) { return rho_cast_helper<jstring, char const *>()(env, &s[0]);}
 };
 
 template <>
-struct rho_cast_helper<jhstring, std::string>
+struct rho_cast_helper<jstring, std::string>
 {
-    jhstring operator()(JNIEnv *env, std::string const &s) { return rho_cast_helper<jhstring, char const *>()(env, s.c_str());}
+    jstring operator()(JNIEnv *env, std::string const &s) { return rho_cast_helper<jstring, char const *>()(env, s.c_str());}
 };
 
 struct RhoJniConvertor
 {
     static jclass clsString;
-    static jclass clsList;
+    static jclass clsCollection;
     static jclass clsMap;
     static jclass clsSet;
+    static jclass clsHashMap;
+    static jclass clsArrayList;
     static jclass clsIterator;
-    static jmethodID midListIterator;
+    static jmethodID midCollectionIterator;
     static jmethodID midMapGet;
     static jmethodID midMapKeySet;
+    static jmethodID midArrayList;
+    static jmethodID midArrayListAdd;
+    static jmethodID midHashMap;
+    static jmethodID midHashMapPut;
     static jmethodID midSetIterator;
     static jmethodID midIteratorHasNext;
     static jmethodID midIteratorNext;
 
-    static bool initConvertor(JNIEnv *env);
+    RhoJniConvertor() : m_env(0) {}
+    bool initConvertor(JNIEnv *env);
+
+    JNIEnv* m_env;
 };
 
 template <>

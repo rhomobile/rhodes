@@ -52,17 +52,75 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, const rho::String& id)
 
         if(rho_ruby_is_string(argv[0]))
         {
-            barcode.getProps(rho_cast<jhstring>(argv[0]), result);
+            jhstring jhName = rho_cast<jstring>(argv[0]);
+            barcode.getProps(jhName, result);
         }
         else if(rho_ruby_is_array(argv[0]))
         {
-            barcode.getProps(rho_cast<jhobject>(argv[0]), result);
+            jhobject jhNames = rho_cast<jobject>(argv[0]);
+            barcode.getProps(jhNames, result);
         }
         else
         {
             result.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
         }
     }
+    return result.toRuby();
+}
+
+static VALUE barcode1_setprops(int argc, VALUE* argv, const rho::String& id)
+{
+    MethodResultJni result;
+    if(!result)
+    {
+        result.setError("JNI error: failed to initialize MethodResult java object");
+        return result.toRuby();
+    }
+
+    CBarcode1 barcode(id);
+//    if(argc == 0)
+//    {
+//        barcode.getProps(result);
+//    }
+//    else if(argc <= 1)
+//    {
+//        if(argc >= 2)
+//        {
+//            if(!rho_ruby_is_string(argv[1]))
+//            {
+//                result.setArgError("Type error: argument 2 should be String"); //see SWIG Ruby_Format_TypeError
+//                return result.toRuby();
+//            }
+//
+//            if(argc >= 3)
+//            {
+//                if(!rho_ruby_is_string(argv[2]))
+//                {
+//                    result.setArgError("Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
+//                    return result.toRuby();
+//                }
+//                result.setCallBack(getStringFromValue(argv[1]), getStringFromValue(argv[2]));
+//            }
+//            else
+//            {
+//                result.setCallBack(getStringFromValue(argv[1]), 0);
+//            }
+//        }
+//
+//        if(rho_ruby_is_string(argv[0]))
+//        {
+//            barcode.getProps(rho_cast<jhstring>(argv[0]), result);
+//        }
+//        else if(rho_ruby_is_array(argv[0]))
+//        {
+//            barcode.getProps(rho_cast<jhobject>(argv[0]), result);
+//        }
+//        else
+//        {
+//            result.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
+//        }
+//    }
+
     return result.toRuby();
 }
 
@@ -103,22 +161,14 @@ VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
 
 VALUE rb_barcode1_s_setprops(int argc, VALUE *argv)
 {
-    //TODO: implement
-//    rho::String strDefaultID = CBarcode1FactoryBase::getBarcode1SingletonS()->getDefaultID();
-//    IBarcode1* pObj = CBarcode1FactoryBase::getInstance()->getModuleByID(strDefaultID);
-
-//    return barcode1_setprops(argc, argv, pObj);
-    return rho_ruby_get_NIL();
+    rho::String id = CBarcode1::getDefaultID();
+    return barcode1_setprops(argc, argv, id);
 }
 
 VALUE rb_barcode1_setprops(int argc, VALUE *argv, VALUE valObj)
 {
-    //TODO: implement
-//    const char* szID = rho_get_object_id( valObj );
-//    IBarcode1* pObj =  CBarcode1FactoryBase::getInstance()->getModuleByID(szID);
-
-//    return barcode1_setprops(argc, argv, pObj);
-    return rho_ruby_get_NIL();
+    rho::String id = rho_ruby_get_object_id(valObj);
+    return barcode1_setprops(argc, argv, id);
 }
 
 }

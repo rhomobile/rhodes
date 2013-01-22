@@ -70,8 +70,8 @@ int CRhoCryptImpl::db_decrypt( const char* szPartition, int size, unsigned char*
 {
     //LOG(INFO) + "C:db_decrypt";
     JNIEnv *env = jnienv();
-    jhobject dataInObj = jhobject(env->NewDirectByteBuffer(data, size)); 
-    jhstring objPartition = rho_cast<jhstring>(szPartition);
+    jhobject dataInObj = env->NewDirectByteBuffer(data, size);
+    jhstring objPartition = rho_cast<jstring>(env, szPartition);
 
     jhobject dataOutObj = jhobject(env->NewDirectByteBuffer(m_dataOut, size));
     jboolean result = env->CallBooleanMethod(m_obj, midDBDecrypt, objPartition.get(), dataInObj.get(), dataOutObj.get());
@@ -88,9 +88,9 @@ int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char*
 {
     //LOG(INFO) + "C:db_encrypt";
     JNIEnv *env = jnienv();
-    jhobject dataInObj = jhobject(env->NewDirectByteBuffer(data, size)); 
-    jhobject dataOutObj = jhobject(env->NewDirectByteBuffer(dataOut, size)); 
-    jhstring objPartition = rho_cast<jhstring>(szPartition);
+    jhobject dataInObj = env->NewDirectByteBuffer(data, size);
+    jhobject dataOutObj = env->NewDirectByteBuffer(dataOut, size);
+    jhstring objPartition = rho_cast<jstring>(env, szPartition);
     jboolean result = env->CallBooleanMethod(m_obj, midDBEncrypt, objPartition.get(), dataInObj.get(), dataOutObj.get());
 
     //LOG(INFO) + "C:db_encrypt END";
@@ -102,8 +102,8 @@ int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char*
 int CRhoCryptImpl::set_db_CryptKey( const char* szPartition, const char* szKey, bool bPersistent )
 {
     JNIEnv *env = jnienv();
-    jhstring objPartition = rho_cast<jhstring>(szPartition);
-    jhstring objKey = rho_cast<jhstring>(szKey);
+    jhstring objPartition = rho_cast<jstring>(env, szPartition);
+    jhstring objKey = rho_cast<jstring>(env, szKey);
     jboolean result = env->CallBooleanMethod(m_obj, midSetDBCryptKey, objPartition.get(), objKey.get(), (jboolean)bPersistent);
 
     return result ? 1 : 0;

@@ -216,7 +216,9 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
     RHO_TRACE("eventFromRuby (3)");
     jmethodID mid = getJNIClassMethod(env, clsEvent, "<init>", "(Ljava/lang/String;)V");
     if (!mid) return NULL;
-    jobject jEvent = env->NewObject(clsEvent, mid, rho_cast<jhstring>(RSTRING_PTR(rId)).get());
+
+    jhstring jhId = rho_cast<jstring>(env, rId);
+    jobject jEvent = env->NewObject(clsEvent, mid, jhId.get());
     if (!jEvent) return NULL;
 
     RHO_TRACE("eventFromRuby (4)");
@@ -224,7 +226,8 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
     if (!NIL_P(rTitle))
     {
         Check_Type(rTitle, T_STRING);
-        env->SetObjectField(jEvent, fidTitle, rho_cast<jhstring>(RSTRING_PTR(rTitle)).get());
+        jhstring jhTitle = rho_cast<jstring>(env, rTitle);
+        env->SetObjectField(jEvent, fidTitle, jhTitle.get());
     }
 
     RHO_TRACE("eventFromRuby (5)");
@@ -247,7 +250,8 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
     if (!NIL_P(rLocation))
     {
         Check_Type(rLocation, T_STRING);
-        env->SetObjectField(jEvent, fidLocation, rho_cast<jhstring>(RSTRING_PTR(rLocation)).get());
+        jhstring jhLocation = rho_cast<jstring>(env, rLocation);
+        env->SetObjectField(jEvent, fidLocation, jhLocation.get());
     }
 
     RHO_TRACE("eventFromRuby (9)");
@@ -255,7 +259,8 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
     if (!NIL_P(rNotes))
     {
         Check_Type(rNotes, T_STRING);
-        env->SetObjectField(jEvent, fidNotes, rho_cast<jhstring>(RSTRING_PTR(rNotes)).get());
+        jhstring jhNotes = rho_cast<jstring>(env, rNotes);
+        env->SetObjectField(jEvent, fidNotes, jhNotes.get());
     }
 
     RHO_TRACE("eventFromRuby privacy");
@@ -263,7 +268,8 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
     if (!NIL_P(rPrivacy))
     {
         Check_Type(rPrivacy, T_STRING);
-        env->SetObjectField(jEvent, fidPrivacy, rho_cast<jhstring>(RSTRING_PTR(rPrivacy)).get());
+        jhstring jhPrivacy = rho_cast<jstring>(env, rPrivacy);
+        env->SetObjectField(jEvent, fidPrivacy, jhPrivacy.get());
     }
 
     RHO_TRACE("eventFromRuby recurrence");
@@ -281,7 +287,8 @@ jobject event_cast<jobject, VALUE>(VALUE rEvent)
         {
         	rb_raise(rb_eArgError, "Wrong recurrence frequency: %s", frequency);
         }
-        env->SetObjectField(jEvent, fidFrequency, rho_cast<jhstring>(RSTRING_PTR(rFrequency)).get());
+        jhstring jhFreq = rho_cast<jstring>(env, rFrequency);
+        env->SetObjectField(jEvent, fidFrequency, jhFreq.get());
 
         VALUE rInterval = rb_hash_aref(rRecurrence, rb_str_new2(RUBY_EV_RECURRENCE_INTERVAL));
         rInterval = rb_funcall(rInterval, rb_intern("to_i"), 0);
@@ -499,9 +506,9 @@ RHO_GLOBAL VALUE event_fetch_by_id(const char *id)
     if (!clsString) return Qnil;
 
     RHO_TRACE("event_fetch_by_id (1)");
-    jhstring jId = rho_cast<jhstring>(env, id);
+    jhstring jId = rho_cast<jstring>(env, id);
     RHO_TRACE("event_fetch_by_id (2)");
-    jhobject jRet = jhobject(env->CallStaticObjectMethod(cls, mid, jId.get()));
+    jhobject jRet = env->CallStaticObjectMethod(cls, mid, jId.get());
     RHO_TRACE("event_fetch_by_id (3)");
     if (env->IsInstanceOf(jRet.get(), clsString))
     {
@@ -552,8 +559,8 @@ RHO_GLOBAL void event_delete(const char *id)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "delete", "(Ljava/lang/String;)Ljava/lang/String;");
     if (!mid) return;
 
-    jhstring jId = rho_cast<jhstring>(env, id);
-    jhstring jError = jhstring((jstring)env->CallStaticObjectMethod(cls, mid, jId.get()));
+    jhstring jId = rho_cast<jstring>(env, id);
+    jhstring jError = static_cast<jstring>(env->CallStaticObjectMethod(cls, mid, jId.get()));
 
     if (!!jError)
     {

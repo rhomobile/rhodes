@@ -61,102 +61,179 @@ RhoValueConverter::RhoValueConverter(JNIEnv *e) : env(e)
     }
 }
 
-jhobject RhoValueConverter::createObject(rho_param *p)
+jobject RhoValueConverter::createObject(rho_param *p)
 {
     if (!init || !p)
-        return jhobject(0);
+        return 0;
 
     switch (p->type) {
     case RHO_PARAM_STRING:
-        return rho_cast<jhstring>(env, p->v.string);
+        return rho_cast<jstring>(env, p->v.string);
         break;
     case RHO_PARAM_ARRAY:
         {
-            jhobject v = env->NewObject(clsVector, midVectorConstructor);
+            jobject v = env->NewObject(clsVector, midVectorConstructor);
             if (!v) return NULL;
 
             for (int i = 0, lim = p->v.array->size; i < lim; ++i) {
-                jhobject value = jhobject(createObject(p->v.array->value[i]));
-                env->CallVoidMethod(v.get(), midAddElement, value.get());
+                jhobject value = createObject(p->v.array->value[i]);
+                env->CallVoidMethod(v, midAddElement, value.get());
             }
             return v;
         }
         break;
     case RHO_PARAM_HASH:
         {
-            jhobject v = env->NewObject(clsHashMap, midHashMapConstructor);
+            jobject v = env->NewObject(clsHashMap, midHashMapConstructor);
             if (!v) return NULL;
 
             for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
-                jhstring key = rho_cast<jhstring>(p->v.hash->name[i]);
-                jhobject value = jhobject(createObject(p->v.hash->value[i]));
-                env->CallObjectMethod(v.get(), midPut, key.get(), value.get());
+                jhstring key = rho_cast<jstring>(p->v.hash->name[i]);
+                jhobject value = createObject(p->v.hash->value[i]);
+                env->CallObjectMethod(v, midPut, key.get(), value.get());
             }
             return v;
         }
         break;
     default:
-        return NULL;
+        return 0;
     }
 }
 
 namespace details {
 
-VALUE rho_cast_helper<VALUE, jobject>::convertJavaMapToRubyHash(JNIEnv *env, jobject objMap)
+VALUE rho_cast_helper<VALUE, jobject>::convertJavaMapToRubyHash(jobject objMap)
 {
-    jhobject objSet = env->CallObjectMethod(objMap, midMapKeySet);
+    jhobject objSet = m_env->CallObjectMethod(objMap, midMapKeySet);
     if (!objSet) return Qnil;
-    jhobject objIterator = env->CallObjectMethod(objSet.get(), midSetIterator);
+    jhobject objIterator = m_env->CallObjectMethod(objSet.get(), midSetIterator);
     if (!objIterator) return Qnil;
                                   
     CHoldRubyValue retval(rho_ruby_createHash());
-    while(env->CallBooleanMethod(objIterator.get(), midIteratorHasNext))
+    while(m_env->CallBooleanMethod(objIterator.get(), midIteratorHasNext))
     {
-        jhstring objKey = (jstring)env->CallObjectMethod(objIterator.get(), midIteratorNext);
-        if (!objKey) return Qnil;
-        jhstring objValue = (jstring)env->CallObjectMethod(objMap, midMapGet, objKey.get());
-        if (!objValue) return Qnil;
+        jhobject jhKey = m_env->CallObjectMethod(objIterator.get(), midIteratorNext);
+        if (!jhKey) return Qnil;
+        jhobject jhVal = m_env->CallObjectMethod(objMap, midMapGet, jhKey.get());
+        if (!jhVal) return Qnil;
 
-        std::string const &strKey = rho_cast<std::string>(objKey);
-        std::string const &strValue = rho_cast<std::string>(objValue);
-        addStrToHash(retval, strKey.c_str(), strValue.c_str());
+        CHoldRubyValue key(rho_cast<VALUE>(m_env, jhKey));
+        CHoldRubyValue val(rho_cast<VALUE>(m_env, jhVal));
+
+        rho_ruby_add_to_hash(retval, key, val);
     }
     return retval;
 }
 
+VALUE rho_cast_helper<VALUE, jobject>::convertJavaCollectionToRubyArray(jobject jList)
+{
+    jhobject jhIterator = m_env->CallObjectMethod(jList, midCollectionIterator);
+    if (!jhIterator) return Qnil;
+
+    CHoldRubyValue retval(rho_ruby_create_array());
+    while(m_env->CallBooleanMethod(jhIterator.get(), midIteratorHasNext))
+    {
+        jhobject jhVal = m_env->CallObjectMethod(jhIterator.get(), midIteratorNext);
+        if (!jhVal) return Qnil;
+
+        CHoldRubyValue val(rho_cast<VALUE>(m_env, jhVal));
+        rho_ruby_add_to_array(retval, val);
+    }
+    return retval;
+}
+
+extern "C"
+{
+
+static void ruby_array_each(const char* val, void* param)
+{
+    rho_cast_helper<jobject, VALUE>* pThis = reinterpret_cast<rho_cast_helper<jobject, VALUE>* >(param);
+    jhstring jhVal = rho_cast<jstring>(pThis->m_env, val);
+
+    pThis->m_env->CallBooleanMethod(pThis->m_jObject, RhoJniConvertor::midArrayListAdd, jhVal.get());
+}
+
+static void ruby_hash_each(const char* key, const char* val, void* param)
+{
+    rho_cast_helper<jobject, VALUE>* pThis = reinterpret_cast<rho_cast_helper<jobject, VALUE>* >(param);
+    jhstring jhKey = rho_cast<jstring>(pThis->m_env, key);
+    jhstring jhVal = rho_cast<jstring>(pThis->m_env, val);
+
+    jhobject jhPrev = pThis->m_env->CallObjectMethod(pThis->m_jObject, RhoJniConvertor::midHashMapPut, jhKey.get(), jhVal.get());
+}
+}
+
+jobject rho_cast_helper<jobject, VALUE>::convertRubyArrayToJavaCollection(VALUE array)
+{
+    m_jObject = m_env->NewObject(clsArrayList, midArrayList);
+    if (!m_jObject) return m_jObject;
+
+    rho_ruby_enum_strary(array, ruby_array_each, this);
+
+    return m_jObject;
+}
+
+jobject rho_cast_helper<jobject, VALUE>::convertRubyHashToJavaMap(VALUE hash)
+{
+    m_jObject = m_env->NewObject(clsHashMap, midHashMap);
+    if (!m_jObject) return m_jObject;
+
+    rho_ruby_enum_strhash(hash, ruby_hash_each, this);
+
+    return m_jObject;
+}
+
+
 jobject rho_cast_helper<jobject, VALUE>::operator()(JNIEnv *env, VALUE value)
 {
+    RAWTRACE("rho_cast<jobject, VALUE>");
+
     if (NIL_P(value))
-        return NULL;
+        return 0;
 
-    if (TYPE(value) == T_STRING)
+    if (!initConvertor(env))
+        return 0;
+
+    switch(TYPE(value))
+    {
+    case T_STRING:
         return env->NewStringUTF(RSTRING_PTR(value));
+    case T_ARRAY:
+        return convertRubyArrayToJavaCollection(value);
+    case T_HASH:
+        return convertRubyHashToJavaMap(value);
+    }
 
-    RAWLOG_ERROR("rho_cast<jobject, VALUE>: unknown type of value");
-    return NULL;
+    RAWLOG_ERROR("rho_cast<jobject, VALUE>: wrong type of VALUE");
+    return 0;
 }
 
 VALUE rho_cast_helper<VALUE, jobject>::operator()(JNIEnv *env, jobject obj)
 {
-    if (env->IsSameObject(obj, NULL) == JNI_TRUE)
+    RAWTRACE("rho_cast<VALUE, jobject>");
+
+    if(env->IsSameObject(obj, NULL) == JNI_TRUE)
         return Qnil;
 
-    if (!initConvertor(env))
+    if(!initConvertor(env))
     {
         env->ThrowNew(getJNIClass(RHODES_JAVA_CLASS_RUNTIME_EXCEPTION), "Java <=> Ruby conversion initialization failed");
         return Qnil;
     }
 
-    if (env->IsInstanceOf(obj, clsString))
+    if(env->IsInstanceOf(obj, clsString))
     {
         const char *str = env->GetStringUTFChars(static_cast<jstring>(obj), JNI_FALSE);
         VALUE res = rho_ruby_create_string(str);
         env->ReleaseStringUTFChars(static_cast<jstring>(obj), str);
         return res;
     }
-
-    if (env->IsInstanceOf(obj, clsMap))
-        return convertJavaMapToRubyHash(env, obj);
+    else
+    if(env->IsInstanceOf(obj, clsCollection))
+        return convertJavaCollectionToRubyArray(obj);
+    else
+    if(env->IsInstanceOf(obj, clsMap))
+        return convertJavaMapToRubyHash(obj);
 
     RAWLOG_ERROR("rho_cast<VALUE, jobject>: unknown type of value");
     return Qnil;
@@ -164,6 +241,8 @@ VALUE rho_cast_helper<VALUE, jobject>::operator()(JNIEnv *env, jobject obj)
 
 VALUE rho_cast_helper<VALUE, jstring>::operator()(JNIEnv *env, jstring jStr)
 {
+    RAWTRACE("rho_cast<VALUE, jstring>");
+
     if(env->IsSameObject(jStr, NULL) == JNI_TRUE)
         return Qnil;
 
@@ -176,10 +255,28 @@ VALUE rho_cast_helper<VALUE, jstring>::operator()(JNIEnv *env, jstring jStr)
 
 jstring rho_cast_helper<jstring, VALUE>::operator()(JNIEnv *env, VALUE value)
 {
+    RAWTRACE("rho_cast<jstring, VALUE>");
+
     if (NIL_P(value))
-        return NULL;
+        return 0;
 
     return env->NewStringUTF(RSTRING_PTR(value));
+}
+
+jobjectArray rho_cast_helper<jobjectArray, VALUE>::operator()(JNIEnv *env, VALUE value)
+{
+    RAWTRACE("rho_cast<jobjectArray, VALUE>");
+
+    if (NIL_P(value))
+        return 0;
+
+    if(TYPE(value) == T_ARRAY)
+    {
+        //TODO: implement cast
+    }
+
+    RAWLOG_ERROR("rho_cast<jobjectArray, VALUE>: wrong type of VALUE");
+    return 0;
 }
 
 }

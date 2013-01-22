@@ -42,7 +42,7 @@ namespace "build" do
     args << "-I#{$rootdir}/platform/shared/ruby/generated"
 
     
-    cd '../../../..'
+    cd '../../..'
     puts "pwd: #{pwd} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
  
     cc_build File.join($curdir, 'ext_native.files'), $tempdir, args

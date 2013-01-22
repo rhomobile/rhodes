@@ -47,7 +47,7 @@ RHO_GLOBAL void rho_webview_navigate(const char* url, int index)
     }
 
     std::string normUrl = RHODESAPP().canonicalizeRhoUrl(url);
-    jhstring objNormUrl = rho_cast<jhstring>(env, normUrl);
+    jhstring objNormUrl = rho_cast<jstring>(env, normUrl);
     env->CallStaticVoidMethod(cls, mid, objNormUrl.get(), index);
 }
 
@@ -100,7 +100,7 @@ RHO_GLOBAL const char* rho_webview_execute_js(const char* js, int index)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "executeJs", "(Ljava/lang/String;I)V");
     if (!mid) return NULL;
 
-    jhstring objJs = rho_cast<jhstring>(env, js);
+    jhstring objJs = rho_cast<jstring>(env, js);
     env->CallStaticVoidMethod(cls, mid, objJs.get(), index);
     return "";
 }
@@ -123,8 +123,8 @@ RHO_GLOBAL void rho_webview_set_cookie(const char *url, const char *cookie)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "setCookie", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
 
-    jhstring urlObj = rho_cast<jhstring>(url);
-    jhstring cookieObj = rho_cast<jhstring>(cookie);
+    jhstring urlObj = rho_cast<jstring>(env, url);
+    jhstring cookieObj = rho_cast<jstring>(env, cookie);
     env->CallStaticVoidMethod(cls, mid, urlObj.get(), cookieObj.get());
 }
 
@@ -136,8 +136,8 @@ RHO_GLOBAL void rho_webview_save(const char* format, const char* path, int index
     static jmethodID mid = getJNIClassStaticMethod(env, cls, "saveCurrentPage", "(Ljava/lang/String;Ljava/lang/String;I)V");
     if (!mid) return;
 
-    jhstring jhFormat = rho_cast<jhstring>(format);
-    jhstring jhPath   = rho_cast<jhstring>(path);
+    jhstring jhFormat = rho_cast<jstring>(env, format);
+    jhstring jhPath   = rho_cast<jstring>(env, path);
 
     env->CallStaticVoidMethod(cls, mid, jhFormat.get(), jhPath.get(), index);
 }
@@ -149,10 +149,9 @@ RHO_GLOBAL VALUE rho_webview_get_current_url(int tab_index) {
     jmethodID mid = getJNIClassStaticMethod(env, cls, "get_current_url", "(I)Ljava/lang/String;");
     if (!mid) return rho_ruby_create_string("");
 
-    jstring jurl = (jstring)env->CallStaticObjectMethod(cls, mid, tab_index);
+    jstring jhUrl = static_cast<jstring>(env->CallStaticObjectMethod(cls, mid, tab_index));
 
-    std::string msg = rho_cast<std::string>(env, jurl);
-    return rho_ruby_create_string(msg.c_str());
+    return rho_cast<VALUE>(env, jhUrl);
 
 }
 

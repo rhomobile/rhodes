@@ -27,13 +27,16 @@ JNIEnv* MethodResultJni::jniInit()
     JNIEnv *env = jnienv();
     if(env && !s_methodResultClass)
     {
-        s_methodResultClass = rho_find_class(env, METHOD_RESULT_CLASS);
-        if(!s_methodResultClass)
+        jclass cls = rho_find_class(env, METHOD_RESULT_CLASS);
+        if(!cls)
         {
             RAWLOG_ERROR1("Failed to find java class: %s", METHOD_RESULT_CLASS);
             s_methodResultClass = 0;
             return NULL;
         }
+        s_methodResultClass = static_cast<jclass>(env->NewGlobalRef(cls));
+        env->DeleteLocalRef(cls);
+
         s_midMethodResult = env->GetMethodID(s_methodResultClass, "<init>", "()V");
         if(!s_midMethodResult)
         {
@@ -116,8 +119,8 @@ void MethodResultJni::setCallBack(const char* url, const char* data)
         return;
     }
 
-    jhstring jhUrl = rho_cast<jhstring>(url);
-    jhstring jhData = rho_cast<jhstring>(data);
+    jhstring jhUrl = rho_cast<jstring>(env, url);
+    jhstring jhData = rho_cast<jstring>(env, data);
     env->CallVoidMethod(m_jhResult.get(), s_midSetCallBack, jhUrl.get(), jhData.get());
 
     m_hasCallbackUrl = true;

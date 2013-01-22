@@ -50,7 +50,7 @@ private:
 public:
     RhoValueConverter(JNIEnv *e);
 
-    jhobject createObject(rho_param *p);
+    jobject createObject(rho_param *p);
 };
 
 namespace details
@@ -60,7 +60,14 @@ template <>
 struct rho_cast_helper<VALUE, jobject>: public RhoJniConvertor
 {
     VALUE operator()(JNIEnv *env, jobject obj);
-    VALUE convertJavaMapToRubyHash(JNIEnv *env, jobject objMap);
+    VALUE convertJavaMapToRubyHash(jobject jMap);
+    VALUE convertJavaCollectionToRubyArray(jobject jList);
+};
+
+template <>
+struct rho_cast_helper<VALUE, jobjectArray>: public RhoJniConvertor
+{
+    VALUE operator()(JNIEnv *env, jobjectArray jArr);
 };
 
 template <>
@@ -70,15 +77,12 @@ struct rho_cast_helper<VALUE, jstring>
 };
 
 template <>
-struct rho_cast_helper<jobject, VALUE>
+struct rho_cast_helper<jobject, VALUE>: public RhoJniConvertor
 {
+    jobject m_jObject;
     jobject operator()(JNIEnv *env, VALUE value);
-};
-
-template <>
-struct rho_cast_helper<jhobject, VALUE>
-{
-    jhobject operator()(JNIEnv *env, VALUE value) { return jhobject(rho_cast<jobject>(env, value)); }
+    jobject convertRubyArrayToJavaCollection(VALUE array);
+    jobject convertRubyHashToJavaMap(VALUE array);
 };
 
 template <>
@@ -88,9 +92,9 @@ struct rho_cast_helper<jstring, VALUE>
 };
 
 template <>
-struct rho_cast_helper<jhstring, VALUE>
+struct rho_cast_helper<jobjectArray, VALUE>
 {
-    jhstring operator()(JNIEnv *env, VALUE value) { return jhstring(rho_cast<jstring>(env, value)); }
+    jobjectArray operator()(JNIEnv *env, VALUE value);
 };
 
 }
