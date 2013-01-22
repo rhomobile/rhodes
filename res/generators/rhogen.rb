@@ -5,6 +5,9 @@ require 'thread'
 gem "activesupport", "~> 2.3.5"
 require 'active_support'
 require 'uuid'
+require 'yaml'
+require 'rexml/document'
+
 require File.dirname(__FILE__) + '/../../lib/rhodes'
 
 
@@ -523,11 +526,177 @@ module Rhogen
   end
 
 
+  class ApiGenerator < BaseGenerator
+
+    def self.source_root
+      File.join(File.dirname(__FILE__), 'templates', 'api')
+    end
+
+    desc <<-DESC
+      Generate API sources from XML API file
+    DESC
+
+    #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
+
+    first_argument :xmlpath, :required => true, :desc => "path to XML with API description"
+
+
+    $xml = nil
+    $name = nil
+    $xml_class = nil
+    $xml_class_attributes_singletone_id = false
+    $xml_class_attributes_default_instance = false
+    $xml_class_attributes_propertybag = false
+
+    # array of arrays
+
+    class MethodArgument
+
+      TYPE_STRING = "STRING"
+      TYPE_ARRAY = "ARRAY"
+      TYPE_HASH = "HASH"
+      TYPE_BASE_OBJECT = "OBJECT" #if argument can be a different types - in this case we use base class and developer should recognize class byself
+
+      @name = ''
+      @type = TYPE_BASE_OBJECT
+    end
+
+    class ClassMethod
+      @name = ''
+      @arguments = [] # array of MethodArgument
+      @is_separated_thread = false
+      @is_fabric_method = false
+      @is_run_in_ui_thread = false
+      @iphone_platform_specific_method_define_line = nil
+      @android_platform_specific_method_define_line = nil
+    end
+
+
+    $methods = nil
+
+
+    def setup_xml
+      if $xml != nil
+        return
+      end
+      # force changes in generated files !
+      @options[:force] = true
+
+      xml_filepath = xmlpath
+      xml_f = File.new(xml_filepath)
+      $xml = REXML::Document.new(xml_f)
+      xml_f.close
+      $xml_class = $xml.elements["API/CLASS"]
+      $name = $xml_class.attribute('name').to_s
+
+      #enumerate attributes
+      $xml.elements.each("*/CLASS/ATTRIBUTES/ATTRIBUTE") do |e|
+        name = e.attribute("name").to_s
+        if name == "SINGLETON_INSTANCES"
+          if e.attribute("value") != nil
+            if e.attribute("value").to_s.downcase != "false"
+              $xml_class_attributes_singletone_id = true
+            end
+          end
+        end
+        if name == "DEFAULT_INSTANCE"
+          if e.attribute("value") != nil
+            if e.attribute("value").to_s.downcase != "false"
+              $xml_class_attributes_default_instance = true
+            end
+          end
+        end
+        if name == "PROPERTY_BAG"
+          if e.attribute("value") != nil
+            if e.attribute("value").to_s.downcase != "false"
+              $xml_class_attributes_propertybag = true
+            end
+          end
+        end
+      end
+
+      #analyze methods
+    end
+
+
+    def namefixed
+        setup_xml
+        return $name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
+    end
+
+    template :shared_01 do |template|
+      template.source = 'montana/shared/generated/montana_api_init.cpp'
+      template.destination = "#{namefixed.downcase}/shared/generated/#{namefixed.downcase}_api_init.cpp"
+    end
+
+    template :shared_02 do |template|
+      template.source = 'montana/shared/generated/montana_ruby_api.c'
+      template.destination = "#{namefixed.downcase}/shared/generated/#{namefixed.downcase}_ruby_api.c"
+    end
+
+    template :iphone_api do |template|
+      template.source = 'montana/platform/iphone/Classes/api/IMontana.h'
+      template.destination = "#{namefixed.downcase}/platform/iphone/Classes/api/I#{$name}.h"
+    end
+
+    template :iphone_api_readme do |template|
+      template.source = 'montana/platform/iphone/Classes/api/readme.txt'
+      template.destination = "#{namefixed.downcase}/platform/iphone/Classes/api/readme.txt"
+    end
+
+    template :iphone_ruby_wrapper do |template|
+      template.source = 'montana/platform/iphone/Classes/ruby_wrapper/montana_ruby_wrap.m'
+      template.destination = "#{namefixed.downcase}/platform/iphone/Classes/ruby_wrapper/#{namefixed.downcase}_ruby_wrap.m"
+    end
+
+    template :iphone_ruby_wrapper_readme do |template|
+      template.source = 'montana/platform/iphone/Classes/ruby_wrapper/readme.txt'
+      template.destination = "#{namefixed.downcase}/platform/iphone/Classes/ruby_wrapper/readme.txt"
+    end
+
+
+
+    def attributes?
+      self.attributes && !self.attributes.empty?
+    end
+
+  end
+
 
 
   add :app, AppGenerator
   add :model, ModelGenerator
   add :spec, SpecGenerator
   add :extension, ExtensionGenerator
+  add :api, ApiGenerator
 
 end
+
+
+
+# Stub this method to force 1.8 compatibility (come on templater!)
+class Encoding
+  def find
+    "utf-8"
+  end
+
+  def dummy?
+    false
+  end
+end
+
+class String
+  def force_encoding(enc)
+    return self
+  end
+  def encoding
+    if RUBY_VERSION =~ /1\.8/ and Encoding.responds_to?('new')
+      Encoding.new
+    else
+      Encoding.default_external
+    end
+  end
+end
+
+
+Rhogen.run_cli(Dir.pwd, 'rhodes', Rhodes::VERSION, ARGV)
