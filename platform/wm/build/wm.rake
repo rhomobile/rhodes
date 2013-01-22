@@ -192,6 +192,7 @@ end
 
 namespace "build" do
 
+    namespace "windows" do
     task :devrhobundle, [:sdk, :configuration] do |t,args|
 	  throw "You must pass in sdk(Win32, WM, WinCE)" if args.sdk.nil?
 	  throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
@@ -214,7 +215,7 @@ namespace "build" do
       Rake::Task["config:win32:application"].invoke() if $current_platform == "win32"
       Rake::Task["build:win32:after_bundle"].invoke  
     end
-    
+    end
   namespace "wm" do
     
     task :extensions => "config:wm" do
