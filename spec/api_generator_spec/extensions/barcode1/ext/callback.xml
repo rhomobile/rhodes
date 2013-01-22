@@ -9,7 +9,7 @@
 						<FUNCTION>
 							<FUNC_PARAM>
 								<DESC>Mapping of property names to Values</DESC>
-								<TYPE>Map of Strings</TYPE>
+								<TYPE>Map of String to Object</TYPE>
 							</FUNC_PARAM>
 						</FUNCTION>	
 					</TYPE>
