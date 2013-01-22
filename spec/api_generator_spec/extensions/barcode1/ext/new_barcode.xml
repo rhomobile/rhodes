@@ -31,6 +31,18 @@
     <METHODS>
         <METHOD name="enable" has_callback="mandatory">
             <DESC>This is documentation</DESC>
+
+            <PARAMS>
+                <PARAM name="propertyMap">
+                    <DESC>Map of properties I want to set</DESC>
+                    <TYPE>Map of strings</TYPE>
+
+                    <CAN_BE_NIL>
+                        <DESC>Use already setted properties</DESC>
+                    </CAN_BE_NIL>
+                </PARAM>
+            </PARAMS>
+
         </METHOD>
 
         <METHOD name="start" run_in_thread="true">
@@ -54,7 +66,6 @@
                         <DESC>Use already setted properties</DESC>
                     </CAN_BE_NIL>
                 </PARAM>
-
             </PARAMS>
         </METHOD>
 

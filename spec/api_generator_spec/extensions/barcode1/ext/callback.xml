@@ -24,17 +24,14 @@
 				</POSSIBLITY>
 			</PARAM>
             
-			<PARAM name="callback_param">
-				<DESC>Callback parameter</DESC>
-				<POSSIBILITY>
-					<DESC>Application specific parameter</DESC>
-					<TYPE>String</TYPE>
-				</POSSIBLITY>
-				<POSSIBILITY>
-					<DESC>Synchronous Operation</DESC>
-					<TYPE>nil</TYPE>
-				</POSSIBLITY>
-			</PARAM>
+			<PARAM name="callbackParam">
+				<DESC>Application specific parameter</DESC>
+                <TYPE>String</TYPE>
+
+                <CAN_BE_NIL>
+                    <DESC>Can be missed</DESC>
+                </CAN_BE_NIL>
+            </PARAM>
 		</METHOD>
 	</METHODS>
 </CALLBACK>
