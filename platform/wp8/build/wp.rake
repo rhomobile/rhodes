@@ -277,7 +277,7 @@ namespace "build" do
 
 	end
 
-	task :rhobundle, [:sdk, :configuration] do |t,args|
+	task :devrhobundle, [:sdk, :configuration] do |t,args|
 	  throw "You must pass in sdk(Win32, ARM)" if args.sdk.nil?
 	  throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
 
