@@ -48,4 +48,4 @@ public:
     static IBarcode1Singleton* getBarcode1SingletonS(){ return getInstance()->getModuleSingleton(); }
 };
 
-void Init_Barcode1_API();
+extern "C" void Init_Barcode1_API();
