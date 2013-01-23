@@ -83,7 +83,7 @@ RHO_GLOBAL void rho_bluetooth_set_device_name(const char* device_name) {
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "set_device_name", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jhstring objDeviceName = rho_cast<jhstring>(env, device_name);
+    jhstring objDeviceName = rho_cast<jstring>(env, device_name);
     env->CallStaticVoidMethod(cls, mid, objDeviceName.get());
 }
 
@@ -126,8 +126,8 @@ RHO_GLOBAL const char* rho_bluetooth_create_session(const char* role, const char
     if (!cls) return BTC_ERROR;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "create_session", "(Ljava/lang/String;Ljava/lang/String;)I");
     if (!mid) return BTC_ERROR;
-    jhstring objStr1 = rho_cast<jhstring>(env, role);
-    jhstring objStr2 = rho_cast<jhstring>(env, callback_url);
+    jhstring objStr1 = rho_cast<jstring>(env, role);
+    jhstring objStr2 = rho_cast<jstring>(env, callback_url);
     jint res = env->CallStaticIntMethod(cls, mid, objStr1.get(), objStr2.get());
     switch(res)
     {
@@ -149,8 +149,8 @@ RHO_GLOBAL const char* rho_bluetooth_create_custom_server_session(const char* cl
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "create_custom_server_session", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return 0;
-    jhstring objStr1 = rho_cast<jhstring>(env, client_name);
-    jhstring objStr2 = rho_cast<jhstring>(env, callback_url);
+    jhstring objStr1 = rho_cast<jstring>(env, client_name);
+    jhstring objStr2 = rho_cast<jstring>(env, callback_url);
     env->CallStaticObjectMethod(cls, mid, objStr1.get(), objStr2.get());
     return "OK";
 }
@@ -161,8 +161,8 @@ RHO_GLOBAL const char* rho_bluetooth_create_custom_client_session(const char* se
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "create_custom_client_session", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return 0;
-    jhstring objStr1 = rho_cast<jhstring>(env, server_name);
-    jhstring objStr2 = rho_cast<jhstring>(env, callback_url);
+    jhstring objStr1 = rho_cast<jstring>(env, server_name);
+    jhstring objStr2 = rho_cast<jstring>(env, callback_url);
     env->CallStaticObjectMethod(cls, mid, objStr1.get(), objStr2.get());
     return "OK";
 }
@@ -185,8 +185,8 @@ RHO_GLOBAL void rho_bluetooth_session_set_callback(const char* connected_device_
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_set_callback", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
-    jhstring objStr1 = rho_cast<jhstring>(env, connected_device_name);
-    jhstring objStr2 = rho_cast<jhstring>(env, callback_url);
+    jhstring objStr1 = rho_cast<jstring>(env, connected_device_name);
+    jhstring objStr2 = rho_cast<jstring>(env, callback_url);
     env->CallStaticVoidMethod(cls, mid, objStr1.get(), objStr2.get());
 }
 
@@ -196,7 +196,7 @@ RHO_GLOBAL void rho_bluetooth_session_disconnect(const char* connected_device_na
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_disconnect", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jhstring objStr1 = rho_cast<jhstring>(env, connected_device_name);
+    jhstring objStr1 = rho_cast<jstring>(env, connected_device_name);
     env->CallStaticVoidMethod(cls, mid, objStr1.get());
 }
 
@@ -206,7 +206,7 @@ RHO_GLOBAL int rho_bluetooth_session_get_status(const char* connected_device_nam
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_get_status", "(Ljava/lang/String;)I");
     if (!mid) return 0;
-    jhstring objStr1 = rho_cast<jhstring>(env, connected_device_name);
+    jhstring objStr1 = rho_cast<jstring>(env, connected_device_name);
     return env->CallStaticIntMethod(cls, mid, objStr1.get());
 }
 
@@ -216,8 +216,8 @@ RHO_GLOBAL VALUE rho_bluetooth_session_read_string(const char* connected_device_
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_read_string", "(Ljava/lang/String;)Ljava/lang/String;");
     if (!mid) return 0;
-    jhstring objStr1 = rho_cast<jhstring>(env, connected_device_name);
-    jstring res = (jstring)env->CallStaticObjectMethod(cls, mid, objStr1.get());
+    jhstring objStr1 = rho_cast<jstring>(env, connected_device_name);
+    jhstring res = static_cast<jstring>(env->CallStaticObjectMethod(cls, mid, objStr1.get()));
     std::string msg = rho_cast<std::string>(env, res);
     return rho_ruby_create_string(msg.c_str());
 }
@@ -228,8 +228,8 @@ RHO_GLOBAL void rho_bluetooth_session_write_string(const char* connected_device_
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_write_string", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
-    jhstring objStr1 = rho_cast<jhstring>(env, connected_device_name);
-    jhstring objStr2 = rho_cast<jhstring>(env, str);
+    jhstring objStr1 = rho_cast<jstring>(env, connected_device_name);
+    jhstring objStr2 = rho_cast<jstring>(env, str);
     env->CallStaticVoidMethod(cls, mid, objStr1.get(), objStr2.get());
 }
 
@@ -239,7 +239,7 @@ RHO_GLOBAL VALUE rho_bluetooth_session_read_data(const char* connected_device_na
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_read_data", "(Ljava/lang/String;[BI)I");
     if (!mid) return 0;
-    jhstring objStr1 = rho_cast<jhstring>(env, connected_device_name);
+    jhstring objStr1 = rho_cast<jstring>(env, connected_device_name);
 
     int buf_size = env->CallStaticIntMethod(cls, mid, objStr1.get(), 0, 0);
 
@@ -275,7 +275,7 @@ RHO_GLOBAL void rho_bluetooth_session_write_data(const char* connected_device_na
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "session_write_data", "(Ljava/lang/String;[BI)V");
     if (!mid) return;
-    jhstring objStr1 = rho_cast<jhstring>(env, connected_device_name);
+    jhstring objStr1 = rho_cast<jstring>(env, connected_device_name);
 
     jholder<jbyteArray> buf_j = jholder<jbyteArray>(env->NewByteArray(size));
     jbyte* buf_p = env->GetByteArrayElements(buf_j.get(), 0);

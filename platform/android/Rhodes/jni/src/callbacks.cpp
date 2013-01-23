@@ -66,7 +66,7 @@ RHO_GLOBAL void rho_file_impl_delete_files_in_folder(const char *szFolderPath)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "deleteFilesInFolder", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jhstring objFolderPath = rho_cast<jhstring>(szFolderPath);
+    jhstring objFolderPath = rho_cast<jstring>(env, szFolderPath);
     env->CallStaticVoidMethod(cls, mid, objFolderPath.get());
 }
 
@@ -93,7 +93,9 @@ RHO_GLOBAL int rho_net_ping_network(const char* szHost)
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "pingHost", "(Ljava/lang/String;)Z");
     if (!mid) return 0;
-	return (int)env->CallStaticBooleanMethod(cls, mid, rho_cast<jhstring>(szHost).get());
+
+    jhstring jhHost = rho_cast<jstring>(env, szHost);
+    return (int)env->CallStaticBooleanMethod(cls, mid, jhHost.get());
 }
 
 rho::String rho_sysimpl_get_phone_id()
@@ -101,16 +103,14 @@ rho::String rho_sysimpl_get_phone_id()
     JNIEnv *env = jnienv();
 
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
-    if (!cls) return 0;
+    if (!cls) return rho::String();
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
-    if (!mid) return 0;
+    if (!mid) return rho::String();
 
-    jhstring propNameObj = rho_cast<jhstring>("phone_id");
-    jhobject result = jhobject(env->CallStaticObjectMethod(cls, mid, propNameObj.get()));
-    if (!result) return 0;
+    jhstring propNameObj = rho_cast<jstring>(env, "phone_id");
+    jhstring result = static_cast<jstring>(env->CallStaticObjectMethod(cls, mid, propNameObj.get()));
 
-    jstring resStrObj = (jstring)result.get();
-    return rho_cast<std::string>(resStrObj);
+    return rho_cast<std::string>(env, result);
 }
 
 RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
@@ -122,8 +122,8 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
     if (!mid) return 0;
 
-    jhstring propNameObj = rho_cast<jhstring>(szPropName);
-    jhobject result = jhobject(env->CallStaticObjectMethod(cls, mid, propNameObj.get()));
+    jhstring propNameObj = rho_cast<jstring>(env, szPropName);
+    jhobject result = env->CallStaticObjectMethod(cls, mid, propNameObj.get());
     if (!result) return 0;
 
     jclass clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
@@ -154,7 +154,7 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     }
     else if (env->IsInstanceOf(result.get(), clsString)) {
         jstring resStrObj = (jstring)result.get();
-        *resValue = rho_ruby_create_string(rho_cast<std::string>(resStrObj).c_str());
+        *resValue = rho_cast<VALUE>(env, resStrObj);
         return 1;
     }
 
@@ -215,8 +215,9 @@ RHO_GLOBAL void rho_sys_run_app(const char *appname, VALUE params)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "runApplication", "(Ljava/lang/String;Ljava/lang/Object;)V");
     if (!mid) return;
+    jhstring jhName = rho_cast<jstring>(env, appname);
     jhobject jhParams = rho_cast<jobject>(env, params);
-    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(env, appname).get(), jhParams.get());
+    env->CallStaticVoidMethod(cls, mid, jhName.get(), jhParams.get());
 }
 
 RHO_GLOBAL void rho_sys_bring_to_front()
@@ -248,7 +249,9 @@ RHO_GLOBAL void rho_sys_open_url(const char *url)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "openExternalUrl", "(Ljava/lang/String;)V");
     if (!mid) return;
-    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(url).get());
+
+    jhstring jhUrl = rho_cast<jstring>(env, url);
+    env->CallStaticVoidMethod(cls, mid, jhUrl.get());
 }
 
 RHO_GLOBAL int rho_sys_is_app_installed(const char *appname)
@@ -258,7 +261,9 @@ RHO_GLOBAL int rho_sys_is_app_installed(const char *appname)
     if (!cls) return 0;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "isAppInstalled", "(Ljava/lang/String;)Z");
     if (!mid) return 0;
-    return (int)env->CallStaticBooleanMethod(cls, mid, rho_cast<jhstring>(appname).get());
+
+    jhstring jhAppName = rho_cast<jstring>(env, appname);
+    return (int)env->CallStaticBooleanMethod(cls, mid, jhAppName.get());
 }
 
 RHO_GLOBAL void rho_sys_app_install(const char *url)
@@ -268,7 +273,9 @@ RHO_GLOBAL void rho_sys_app_install(const char *url)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "installApplication", "(Ljava/lang/String;)V");
     if (!mid) return;
-    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(url).get());
+
+    jhstring jhUrl = rho_cast<jstring>(env, url);
+    env->CallStaticVoidMethod(cls, mid, jhUrl.get());
 }
 
 RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
@@ -278,7 +285,9 @@ RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "uninstallApplication", "(Ljava/lang/String;)V");
     if (!mid) return;
-    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(appname).get());
+
+    jhstring jhAppName = rho_cast<jstring>(env, appname);
+    env->CallStaticVoidMethod(cls, mid, jhAppName.get());
 }
 
 RHO_GLOBAL void rho_sys_set_application_icon_badge(int badge_number) {

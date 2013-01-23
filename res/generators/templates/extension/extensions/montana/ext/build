@@ -3,12 +3,12 @@
 
 if [ "$RHO_PLATFORM" = "android" ]; then
 
-cd <%= name.downcase %>/platform/android
+cd platform/android
 rake --trace
 
 elif [ "$RHO_PLATFORM" = "iphone" ]; then
 
-cd <%= name.downcase %>/platform/iphone
+cd platform/iphone
 rake --trace
 
 fi

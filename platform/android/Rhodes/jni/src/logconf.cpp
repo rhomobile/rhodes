@@ -33,7 +33,7 @@
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getEnabledCategories
   (JNIEnv *env, jclass)
 {
-    return rho_cast<jhstring>(env, LOGCONF().getEnabledCategories().c_str()).release();
+    return rho_cast<jstring>(env, LOGCONF().getEnabledCategories().c_str());
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategories
@@ -47,7 +47,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setEnabledCategorie
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getDisabledCategories
   (JNIEnv *env, jclass)
 {
-    return rho_cast<jhstring>(env, LOGCONF().getDisabledCategories().c_str()).release();
+    return rho_cast<jstring>(env, LOGCONF().getDisabledCategories().c_str());
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhoLogConf_setDisabledCategories
@@ -87,7 +87,7 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogText
 {
     rho::String logText;
     LOGCONF().getLogText(logText);
-    return rho_cast<jhstring>(env, logText.c_str()).release();
+    return rho_cast<jstring>(env, logText.c_str());
 }
 
 RHO_GLOBAL jint JNICALL Java_com_rhomobile_rhodes_RhoLogConf_getLogTextPos

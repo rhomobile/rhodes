@@ -79,22 +79,28 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)bin\x86\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\x86\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)bin\x86\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\x86\$(Configuration)\</IntDir>
+    <OutDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -110,8 +116,8 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>$(SolutionDir)bin\x86\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libcurl.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -128,8 +134,8 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>$(SolutionDir)bin\x86\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libcurl.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -146,8 +152,8 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>$(SolutionDir)bin\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libcurl.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -164,8 +170,8 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\bin\$(RootNamespace)\$(Configuration)\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libcurl.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -182,7 +188,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\bin\$(RootNamespace)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -200,7 +206,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <IgnoreSpecificDefaultLibraries>ole32.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <GenerateWindowsMetadata>true</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\bin\$(RootNamespace)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir)\</AdditionalLibraryDirectories>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -235,6 +241,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\curl\lib\libcurl.vcxproj">
+      <Project>{87ee9da4-de1e-4448-8324-183c98dca588}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\rholib\rholib.vcxproj">
       <Project>{ddcdeb35-e294-4421-bb60-7249a7ce5150}</Project>
     </ProjectReference>

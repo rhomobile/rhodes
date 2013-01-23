@@ -275,6 +275,8 @@ void RhoRubyStart()
 
 	Init_socket();
 	Init_stringio();
+
+	Init_Extensions();
 #endif //OS_WP8
 
 

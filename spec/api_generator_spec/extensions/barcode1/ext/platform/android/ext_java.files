@@ -1,0 +1,10 @@
+ext/platform/android/generated/src/com/motorolasolutions/rhoelements/ApiSingletonBase.java
+ext/platform/android/generated/src/com/motorolasolutions/rhoelements/Barcode1SingletonBase.java
+ext/platform/android/generated/src/com/motorolasolutions/rhoelements/IBarcode1.java
+ext/platform/android/generated/src/com/motorolasolutions/rhoelements/IMethodResult.java
+ext/platform/android/generated/src/com/motorolasolutions/rhoelements/IRhoApiObject.java
+ext/platform/android/generated/src/com/motorolasolutions/rhoelements/MethodExecutor.java
+ext/platform/android/generated/src/com/motorolasolutions/rhoelements/MethodResult.java
+ext/platform/android/generated/src/com/motorolasolutions/rhoelements/RhoApiObject.java
+ext/platform/android/src/com/motorolasolutions/rhoelements/barcode1/Barcode1.java
+ext/platform/android/src/com/motorolasolutions/rhoelements/barcode1/Barcode1Singleton.java

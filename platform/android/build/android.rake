@@ -779,11 +779,12 @@ namespace "build" do
       srcdir = File.join($shareddir, "sqlite")
       objdir = $objdir["sqlite"]
       libname = $libname["sqlite"]
+      sourcelist = File.join($builddir, 'libsqlite_build.files')
       
       mkdir_p objdir
       mkdir_p File.dirname(libname)
 
-      cc_build 'libsqlite', objdir, ["-I\"#{srcdir}\"", "-I\"#{$shareddir}\""] or exit 1
+      cc_build sourcelist, objdir, ["-I\"#{srcdir}\"", "-I\"#{$shareddir}\""] or exit 1
       cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
     end
 
@@ -799,6 +800,7 @@ namespace "build" do
       srcdir = File.join $shareddir, "curl", "lib"
       objdir = $objdir["curl"]
       libname = $libname["curl"]
+      sourcelist = File.join($builddir, 'libcurl_build.files')
 
       mkdir_p objdir
       mkdir_p File.dirname(libname)
@@ -809,7 +811,7 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{$shareddir}\""      
 
-      cc_build 'libcurl', objdir, args or exit 1
+      cc_build sourcelist, objdir, args or exit 1
       cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
     end
 
@@ -817,6 +819,7 @@ namespace "build" do
       srcdir = File.join $shareddir, "ruby"
       objdir = $objdir["ruby"]
       libname = $libname["ruby"]
+      sourcelist = File.join($builddir, 'libruby_build.files')
 
       mkdir_p objdir
       mkdir_p File.dirname(libname)
@@ -834,7 +837,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build 'libruby', objdir, args or exit 1
+      cc_build sourcelist, objdir, args or exit 1
       cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
     end
 
@@ -842,6 +845,7 @@ namespace "build" do
       srcdir = File.join $shareddir, "json"
       objdir = $objdir["json"]
       libname = $libname["json"]
+      sourcelist = File.join($builddir, 'libjson_build.files')
 
       mkdir_p objdir
       mkdir_p File.dirname(libname)
@@ -853,7 +857,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build 'libjson', objdir, args or exit 1
+      cc_build sourcelist, objdir, args or exit 1
       cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
     end
 
@@ -861,7 +865,8 @@ namespace "build" do
       if USE_OWN_STLPORT
         objdir = $objdir["stlport"]
         libname = $libname["stlport"]
-
+        sourcelist = File.join($builddir, 'libstlport_build.files')
+      
         mkdir_p objdir
         mkdir_p File.dirname(libname)
 
@@ -878,7 +883,7 @@ namespace "build" do
         args << "-fno-rtti"
         args << "-fno-exceptions"
 
-        cc_build 'libstlport', objdir, args or exit 1
+        cc_build sourcelist, objdir, args or exit 1
         cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
       end
     end
@@ -887,6 +892,7 @@ namespace "build" do
       srcdir = File.join $shareddir, "logging"
       objdir = $objdir["rholog"]
       libname = $libname["rholog"]
+      sourcelist = File.join($builddir, 'librholog_build.files')
 
       mkdir_p objdir
       mkdir_p File.dirname(libname)
@@ -897,7 +903,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build 'librholog', objdir, args or exit 1
+      cc_build sourcelist, objdir, args or exit 1
       cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
     end
 
@@ -905,6 +911,7 @@ namespace "build" do
       srcdir = $shareddir
       objdir = $objdir["rhomain"]
       libname = $libname["rhomain"]
+      sourcelist = File.join($builddir, 'librhomain_build.files')
 
       mkdir_p objdir
       mkdir_p File.dirname(libname)
@@ -915,13 +922,14 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build 'librhomain', objdir, args or exit 1
+      cc_build sourcelist, objdir, args or exit 1
       cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
     end
 
     task :librhocommon => "config:android" do
       objdir = $objdir["rhocommon"]
       libname = $libname["rhocommon"]
+      sourcelist = File.join($builddir, 'librhocommon_build.files')
 
       mkdir_p objdir
       mkdir_p File.dirname(libname)
@@ -935,7 +943,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build 'librhocommon', objdir, args or exit 1
+      cc_build sourcelist, objdir, args or exit 1
       cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
     end
 
@@ -943,6 +951,7 @@ namespace "build" do
       srcdir = File.join $shareddir, "db"
       objdir = $objdir["rhodb"]
       libname = $libname["rhodb"]
+      sourcelist = File.join($builddir, 'librhodb_build.files')
 
       mkdir_p objdir
       mkdir_p File.dirname(libname)
@@ -955,7 +964,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build 'librhodb', objdir, args or exit 1
+      cc_build sourcelist, objdir, args or exit 1
       cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
     end
 
@@ -963,6 +972,7 @@ namespace "build" do
       srcdir = File.join $shareddir, "sync"
       objdir = $objdir["rhosync"]
       libname = $libname["rhosync"]
+      sourcelist = File.join($builddir, 'librhosync_build.files')
 
       mkdir_p objdir
       mkdir_p File.dirname(libname)
@@ -975,7 +985,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build 'librhosync', objdir, args or exit 1
+      cc_build sourcelist, objdir, args or exit 1
       cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
     end
 
@@ -1123,6 +1133,7 @@ namespace "build" do
       libdir = File.join $app_builddir,'librhodes','lib','armeabi'
       objdir = File.join $tmpdir,'librhodes' 
       libname = File.join libdir,'librhodes.so'
+      sourcelist = File.join($builddir, 'librhodes_build.files')
 
       mkdir_p libdir
       mkdir_p objdir
@@ -1148,7 +1159,7 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build 'librhodes', objdir, args or exit 1
+      cc_build sourcelist, objdir, args or exit 1
 
       deps = []
       $libname.each do |k,v|
@@ -1925,8 +1936,6 @@ namespace "run" do
 
     task :framework_spec => "framework_spec:emulator"
 
-    task :rhoconnect_spec => "rhoconnect_spec:emulator"
-
     namespace "phone_spec" do
       task :device do
         $device_flag = '-d'
@@ -1960,28 +1969,6 @@ namespace "run" do
       task :emulator do
         $device_flag = '-e'
         Jake.run_spec_app('android','framework_spec')
-        unless $dont_exit_on_failure
-          exit 1 if $total.to_i==0
-          exit $failed.to_i 
-        end
-      end
-    end
-
-require File.dirname(__FILE__) + "/../../../lib/build/run_rhoconnect_spec.rb"
-
-    namespace "rhoconnect_spec" do
-      task :device do
-        $device_flag = '-d'
-        run_rhoconnect_spec('android')
-        unless $dont_exit_on_failure
-          exit 1 if $total.to_i==0
-          exit $failed.to_i 
-        end
-      end
-
-      task :emulator do
-        $device_flag = '-e'
-        run_rhoconnect_spec('android')
         unless $dont_exit_on_failure
           exit 1 if $total.to_i==0
           exit $failed.to_i 

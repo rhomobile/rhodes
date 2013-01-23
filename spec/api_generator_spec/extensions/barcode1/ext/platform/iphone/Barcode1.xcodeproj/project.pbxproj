@@ -1,0 +1,399 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FAC155E7145855CF0016F3BD /* Barcode1_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Barcode1_Prefix.pch */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+		FAEF1D9C16AED7BC00E22B05 /* IBarcode1.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1D7E16AED7BB00E22B05 /* IBarcode1.h */; };
+		FAEF1D9D16AED7BC00E22B05 /* Barcode1Base.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1D8116AED7BB00E22B05 /* Barcode1Base.h */; };
+		FAEF1D9E16AED7BC00E22B05 /* Barcode1Base.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1D8216AED7BB00E22B05 /* Barcode1Base.m */; };
+		FAEF1D9F16AED7BC00E22B05 /* Barcode1FactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1D8316AED7BB00E22B05 /* Barcode1FactoryBase.h */; };
+		FAEF1DA016AED7BC00E22B05 /* Barcode1FactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1D8416AED7BB00E22B05 /* Barcode1FactoryBase.m */; };
+		FAEF1DA116AED7BC00E22B05 /* Barcode1SingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1D8516AED7BB00E22B05 /* Barcode1SingletonBase.h */; };
+		FAEF1DA216AED7BC00E22B05 /* Barcode1SingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1D8616AED7BB00E22B05 /* Barcode1SingletonBase.m */; };
+		FAEF1DA316AED7BC00E22B05 /* Barcode1.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1D8916AED7BB00E22B05 /* Barcode1.h */; };
+		FAEF1DA416AED7BC00E22B05 /* Barcode1.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1D8A16AED7BB00E22B05 /* Barcode1.m */; };
+		FAEF1DA516AED7BC00E22B05 /* Barcode1FactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1D8B16AED7BB00E22B05 /* Barcode1FactorySingleton.m */; };
+		FAEF1DA616AED7BC00E22B05 /* Barcode1Singleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1D8C16AED7BB00E22B05 /* Barcode1Singleton.h */; };
+		FAEF1DA716AED7BC00E22B05 /* Barcode1Singleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1D8D16AED7BB00E22B05 /* Barcode1Singleton.m */; };
+		FAEF1DA816AED7BC00E22B05 /* barcode1_js_wrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1D9016AED7BB00E22B05 /* barcode1_js_wrapper.mm */; };
+		FAEF1DA916AED7BC00E22B05 /* barcode1_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1D9316AED7BB00E22B05 /* barcode1_ruby_wrap.m */; };
+		FAEF1DB216AED85100E22B05 /* barcode1_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1DB016AED85100E22B05 /* barcode1_api_init.cpp */; };
+		FAEF1DB316AED85100E22B05 /* barcode1_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1DB116AED85100E22B05 /* barcode1_ruby_api.c */; };
+		FAEF1DE016AEDE3B00E22B05 /* Barcode1.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEF1DDF16AEDE3B00E22B05 /* Barcode1.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FAC155F3145855CF0016F3BD /* libBarcode1.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBarcode1.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* Barcode1_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Barcode1_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		FAEF1D7E16AED7BB00E22B05 /* IBarcode1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IBarcode1.h; sourceTree = "<group>"; };
+		FAEF1D7F16AED7BB00E22B05 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		FAEF1D8116AED7BB00E22B05 /* Barcode1Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Barcode1Base.h; sourceTree = "<group>"; };
+		FAEF1D8216AED7BB00E22B05 /* Barcode1Base.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Barcode1Base.m; sourceTree = "<group>"; };
+		FAEF1D8316AED7BB00E22B05 /* Barcode1FactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Barcode1FactoryBase.h; sourceTree = "<group>"; };
+		FAEF1D8416AED7BB00E22B05 /* Barcode1FactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Barcode1FactoryBase.m; sourceTree = "<group>"; };
+		FAEF1D8516AED7BB00E22B05 /* Barcode1SingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Barcode1SingletonBase.h; sourceTree = "<group>"; };
+		FAEF1D8616AED7BB00E22B05 /* Barcode1SingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Barcode1SingletonBase.m; sourceTree = "<group>"; };
+		FAEF1D8716AED7BB00E22B05 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		FAEF1D8916AED7BB00E22B05 /* Barcode1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Barcode1.h; sourceTree = "<group>"; };
+		FAEF1D8A16AED7BB00E22B05 /* Barcode1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Barcode1.m; sourceTree = "<group>"; };
+		FAEF1D8B16AED7BB00E22B05 /* Barcode1FactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Barcode1FactorySingleton.m; sourceTree = "<group>"; };
+		FAEF1D8C16AED7BB00E22B05 /* Barcode1Singleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Barcode1Singleton.h; sourceTree = "<group>"; };
+		FAEF1D8D16AED7BB00E22B05 /* Barcode1Singleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Barcode1Singleton.m; sourceTree = "<group>"; };
+		FAEF1D8E16AED7BB00E22B05 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		FAEF1D9016AED7BB00E22B05 /* barcode1_js_wrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = barcode1_js_wrapper.mm; sourceTree = "<group>"; };
+		FAEF1D9116AED7BB00E22B05 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		FAEF1D9316AED7BB00E22B05 /* barcode1_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = barcode1_ruby_wrap.m; sourceTree = "<group>"; };
+		FAEF1D9416AED7BB00E22B05 /* readme.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.txt; sourceTree = "<group>"; };
+		FAEF1DB016AED85100E22B05 /* barcode1_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = barcode1_api_init.cpp; path = ../../shared/generated/barcode1_api_init.cpp; sourceTree = "<group>"; };
+		FAEF1DB116AED85100E22B05 /* barcode1_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = barcode1_ruby_api.c; path = ../../shared/generated/barcode1_ruby_api.c; sourceTree = "<group>"; };
+		FAEF1DDF16AEDE3B00E22B05 /* Barcode1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Barcode1.m; path = Classes/Barcode1.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libBarcode1.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Barcode */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1DDD16AEDE2B00E22B05 /* Initialization */,
+				FAEF1DAF16AED7CD00E22B05 /* Shared */,
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Barcode;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1D7D16AED7BB00E22B05 /* api */,
+				FAEF1D8016AED7BB00E22B05 /* base_impl */,
+				FAEF1D8816AED7BB00E22B05 /* impl */,
+				FAEF1D8F16AED7BB00E22B05 /* javascript_wrapper */,
+				FAEF1D9216AED7BB00E22B05 /* ruby_wrapper */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* Barcode1_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		FAEF1D7D16AED7BB00E22B05 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1D7E16AED7BB00E22B05 /* IBarcode1.h */,
+				FAEF1D7F16AED7BB00E22B05 /* readme.txt */,
+			);
+			name = api;
+			path = Classes/api;
+			sourceTree = "<group>";
+		};
+		FAEF1D8016AED7BB00E22B05 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1D8116AED7BB00E22B05 /* Barcode1Base.h */,
+				FAEF1D8216AED7BB00E22B05 /* Barcode1Base.m */,
+				FAEF1D8316AED7BB00E22B05 /* Barcode1FactoryBase.h */,
+				FAEF1D8416AED7BB00E22B05 /* Barcode1FactoryBase.m */,
+				FAEF1D8516AED7BB00E22B05 /* Barcode1SingletonBase.h */,
+				FAEF1D8616AED7BB00E22B05 /* Barcode1SingletonBase.m */,
+				FAEF1D8716AED7BB00E22B05 /* readme.txt */,
+			);
+			name = base_impl;
+			path = Classes/base_impl;
+			sourceTree = "<group>";
+		};
+		FAEF1D8816AED7BB00E22B05 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1D8916AED7BB00E22B05 /* Barcode1.h */,
+				FAEF1D8A16AED7BB00E22B05 /* Barcode1.m */,
+				FAEF1D8B16AED7BB00E22B05 /* Barcode1FactorySingleton.m */,
+				FAEF1D8C16AED7BB00E22B05 /* Barcode1Singleton.h */,
+				FAEF1D8D16AED7BB00E22B05 /* Barcode1Singleton.m */,
+				FAEF1D8E16AED7BB00E22B05 /* readme.txt */,
+			);
+			name = impl;
+			path = Classes/impl;
+			sourceTree = "<group>";
+		};
+		FAEF1D8F16AED7BB00E22B05 /* javascript_wrapper */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1D9016AED7BB00E22B05 /* barcode1_js_wrapper.mm */,
+				FAEF1D9116AED7BB00E22B05 /* readme.txt */,
+			);
+			name = javascript_wrapper;
+			path = Classes/javascript_wrapper;
+			sourceTree = "<group>";
+		};
+		FAEF1D9216AED7BB00E22B05 /* ruby_wrapper */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1D9316AED7BB00E22B05 /* barcode1_ruby_wrap.m */,
+				FAEF1D9416AED7BB00E22B05 /* readme.txt */,
+			);
+			name = ruby_wrapper;
+			path = Classes/ruby_wrapper;
+			sourceTree = "<group>";
+		};
+		FAEF1DAF16AED7CD00E22B05 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1DB016AED85100E22B05 /* barcode1_api_init.cpp */,
+				FAEF1DB116AED85100E22B05 /* barcode1_ruby_api.c */,
+			);
+			name = Shared;
+			sourceTree = "<group>";
+		};
+		FAEF1DDD16AEDE2B00E22B05 /* Initialization */ = {
+			isa = PBXGroup;
+			children = (
+				FAEF1DDF16AEDE3B00E22B05 /* Barcode1.m */,
+			);
+			name = Initialization;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155E7145855CF0016F3BD /* Barcode1_Prefix.pch in Headers */,
+				FAEF1D9C16AED7BC00E22B05 /* IBarcode1.h in Headers */,
+				FAEF1D9D16AED7BC00E22B05 /* Barcode1Base.h in Headers */,
+				FAEF1D9F16AED7BC00E22B05 /* Barcode1FactoryBase.h in Headers */,
+				FAEF1DA116AED7BC00E22B05 /* Barcode1SingletonBase.h in Headers */,
+				FAEF1DA316AED7BC00E22B05 /* Barcode1.h in Headers */,
+				FAEF1DA616AED7BC00E22B05 /* Barcode1Singleton.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* Barcode1 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Barcode1" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Barcode1;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libBarcode1.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Barcode1" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Barcode */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* Barcode1 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAEF1D9E16AED7BC00E22B05 /* Barcode1Base.m in Sources */,
+				FAEF1DA016AED7BC00E22B05 /* Barcode1FactoryBase.m in Sources */,
+				FAEF1DA216AED7BC00E22B05 /* Barcode1SingletonBase.m in Sources */,
+				FAEF1DA416AED7BC00E22B05 /* Barcode1.m in Sources */,
+				FAEF1DA516AED7BC00E22B05 /* Barcode1FactorySingleton.m in Sources */,
+				FAEF1DA716AED7BC00E22B05 /* Barcode1Singleton.m in Sources */,
+				FAEF1DA816AED7BC00E22B05 /* barcode1_js_wrapper.mm in Sources */,
+				FAEF1DA916AED7BC00E22B05 /* barcode1_ruby_wrap.m in Sources */,
+				FAEF1DB216AED85100E22B05 /* barcode1_api_init.cpp in Sources */,
+				FAEF1DB316AED85100E22B05 /* barcode1_ruby_api.c in Sources */,
+				FAEF1DE016AEDE3B00E22B05 /* Barcode1.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					armv7,
+					armv6,
+				);
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/Barcode1.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Barcode1_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = RHO_NO_JS_API;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Barcode1;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386 armv6 armv7";
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					armv7,
+					armv6,
+				);
+				DSTROOT = /tmp/Barcode1.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Barcode1_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = RHO_NO_JS_API;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Barcode1;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386 armv6 armv7";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Barcode1" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Barcode1" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

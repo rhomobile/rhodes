@@ -1,4 +1,9 @@
 entry: Init_<%= name.camel_case %>_extension	
 javaentry: com.<%= name.downcase %>.<%= name.camel_case %>
-android_additional_sources_list: ext/<%= name.downcase %>/platform/android/ext_build.files
+android_additional_sources_list: ext/platform/android/ext_build.files
 libraries: ["<%= name.camel_case %>"]
+
+project_paths:
+  wp8: ext/platform/wp8/<%= name.camel_case %>.vcxproj
+  wm: ext/platform/wm/<%= name.camel_case %>.sln
+  win32: ext/platform/wm/<%= name.camel_case %>.sln

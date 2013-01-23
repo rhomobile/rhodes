@@ -191,6 +191,31 @@ namespace "config" do
 end
 
 namespace "build" do
+
+    namespace "windows" do
+    task :devrhobundle, [:sdk, :configuration] do |t,args|
+	  throw "You must pass in sdk(Win32, WM, WinCE)" if args.sdk.nil?
+	  throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
+
+      if ( args.sdk == 'Win32' ) 
+        $current_platform = "win32"
+        $sdk = "Win32"
+      elsif ( args.sdk == 'WM' )
+        $current_platform = "wm"
+      elsif ( args.sdk == 'WinCE' ) 
+        $current_platform = "wm"
+        $sdk = "MC3000c50b (ARMV4I)"
+      else
+        throw "You must pass in sdk(Win32, WM, WinCE)"
+      end
+
+	  $buildcfg = args.configuration
+      
+      Rake::Task["build:wm:rhobundle"].invoke  
+      Rake::Task["config:win32:application"].invoke() if $current_platform == "win32"
+      Rake::Task["build:win32:after_bundle"].invoke  
+    end
+    end
   namespace "wm" do
     
     task :extensions => "config:wm" do
@@ -219,6 +244,8 @@ namespace "build" do
           is_prebuilt = ext_config && ext_config['wm'] && ext_config['wm']['exttype'] && ext_config['wm']['exttype'] == 'prebuilt'
           next unless (File.exists?( File.join(extpath, "build.bat") ) || is_prebuilt )
 
+		  project_path = ext_config["project_paths"][$current_platform] if (ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
+
           puts "extpath - " + commin_ext_path.to_s
           chdir commin_ext_path 
           if ext_config != nil && ext_config["files"] != nil
@@ -234,36 +261,53 @@ namespace "build" do
               end
           end
           puts 'end read reg key'
-          chdir $startdir
 
-          ENV['RHO_PLATFORM'] = $current_platform
-          ENV['RHO_BUILD_CONFIG'] = 'Release'
-          ENV['PWD'] = $startdir
-          ENV['RHO_ROOT'] = ENV['PWD']
+          if (project_path)
+          
+                ENV['RHO_PLATFORM'] = $current_platform
+                ENV['RHO_ROOT'] = $startdir
+                ENV['SDK'] = $sdk
+                ENV['RHO_BUILD_CONFIG'] = $buildcfg
+                ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
+                ENV['VCBUILD'] = $vcbuild
+                ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
+				ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
 
-          if ENV["TARGET_EXT_DIR"]
-            ENV['TARGET_TEMP_DIR'] = File.join(ENV["TARGET_EXT_DIR"], ext)
+                puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
+          
           else
-           ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", 'wm', "bin", $sdk, "rhodes", $current_platform == 'wm' ? "Release" : $buildcfg)
-          end
+              chdir $startdir
+          
+              ENV['RHO_PLATFORM'] = $current_platform
+              ENV['RHO_BUILD_CONFIG'] = 'Release'
+              ENV['PWD'] = $startdir
+              ENV['RHO_ROOT'] = ENV['PWD']
 
-          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
-          ENV['VCBUILD'] = $vcbuild
-          ENV['SDK'] = $sdk
+              if ENV["TARGET_EXT_DIR"]
+                ENV['TARGET_TEMP_DIR'] = File.join(ENV["TARGET_EXT_DIR"], ext)
+              else
+                ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", 'wm', "bin", $sdk, "rhodes", $current_platform == 'wm' ? "Release" : $buildcfg)
+              end
 
-          if File.exists? File.join(extpath,'build.bat')
-            chdir extpath
-            puts `build.bat`
-            chdir $startdir
-          elsif is_prebuilt
-            file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
-            puts "PREBUILD: #{file_mask}"
-            
-            mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
-            Dir.glob( file_mask ).each do |lib|
-              cp_r lib, ENV['TARGET_TEMP_DIR']
-            end
+              ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
+              ENV['VCBUILD'] = $vcbuild
+              ENV['SDK'] = $sdk
+
+              if File.exists? File.join(extpath,'build.bat')
+                chdir extpath
+                puts `build.bat`
+              elsif is_prebuilt
+                file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
+                puts "PREBUILD: #{file_mask}"
+                
+                mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
+                Dir.glob( file_mask ).each do |lib|
+                  cp_r lib, ENV['TARGET_TEMP_DIR']
+                end
+              end
           end
+          
+          chdir $startdir
           
           break
         end

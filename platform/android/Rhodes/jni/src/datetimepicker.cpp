@@ -53,8 +53,8 @@ RHO_GLOBAL void choose_datetime_with_range(char* callback, char* title, long ini
     jholder<jbyteArray> opaqueObj = jholder<jbyteArray>(env->NewByteArray(data_size));
     if (!opaqueObj) return;
     env->SetByteArrayRegion(opaqueObj.get(), 0, data_size, (const jbyte *)data);
-    jhstring objCallback = rho_cast<jhstring>(callback);
-    jhstring objTitle = rho_cast<jhstring>(title);
+    jhstring objCallback = rho_cast<jstring>(callback);
+    jhstring objTitle = rho_cast<jstring>(title);
     env->CallStaticVoidMethod(cls, mid, objCallback.get(), objTitle.get(),
         (jlong)initial_time, format, opaqueObj.get(), (jlong)min_time, (jlong)max_time);
 }

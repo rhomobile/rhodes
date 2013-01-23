@@ -98,23 +98,29 @@
     <_ProjectFileVersion>11.0.50727.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)bin\x86\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\x86\$(Configuration)\</IntDir>
+    <OutDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>$(SolutionDir)bin\ARM\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\ARM\$(Configuration)\</IntDir>
+    <OutDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)bin\x86\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\x86\$(Configuration)\</IntDir>
+    <OutDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>$(SolutionDir)bin\ARM\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)bin\ARM\$(Configuration)\</IntDir>
+    <OutDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>..\..\bin\$(Platform)\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
