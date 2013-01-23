@@ -3,9 +3,9 @@
 
 #import "api_generator/iphone/IMethodResult.h"
 
-@protocol I<%= $name %> <NSObject>
+@protocol I<%= $cur_module.name %> <NSObject>
 
-<% if $xml_class_attributes_propertybag %>
+<% if $cur_module. %>
 -(void) getProps:(id<IMethodResult>)methodResult;
 -(void) getPropsWithString:(NSString*)param1 methodResult:(id<IMethodResult>)methodResult;
 -(void) getPropsWithArray:(NSArray*)param1 methodResult:(id<IMethodResult>)methodResult;

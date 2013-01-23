@@ -3,7 +3,7 @@
 
 <DEFAULT_INSTANCE>
 	<METHODS>
-		<METHOD name="default">
+		<METHOD name="default" access="STATIC">
 			<DESC>This is documentation</DESC>
             <RETURN>
                 <DESC>Default instance of the module</DESC>
@@ -11,7 +11,7 @@
             </RETURN>
         </METHOD>
 
-        <METHOD name="setDefault">
+        <METHOD name="setDefault" access="STATIC">
             <DESC>This is documentation</DESC>
             <PARAMS>
                 <PARAM name="defaultInstance">
