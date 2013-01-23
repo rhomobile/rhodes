@@ -36,4 +36,12 @@ describe Rhogen::AppGenerator do
     pending "need to figure out how to validate erb"
   end
 
+  it "should include rhoconnect-client by default"
+    pending "TODO"
+  end
+
+  it "should not include rhoconnect-client if specified"
+    pending "TODO"
+  end
+
 end

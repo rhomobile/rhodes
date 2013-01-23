@@ -1,9 +1,10 @@
 
+#import "RubyCallbackHelper.h"
+
 #import "rubyext/WebView.h"
 #import "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include <string.h>
-#import "RubyCallbackHelper.h"
 
 class BarcodeRhoCallbackResultContainer : public rho::ICallbackObject
 {

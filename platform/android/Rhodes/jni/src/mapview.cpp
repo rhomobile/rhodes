@@ -267,12 +267,12 @@ void AndroidDrawingContext::drawText(int x, int y, int width, int height, String
     jmethodID mid = getJNIClassMethod(env, cls, "drawText", "(Landroid/graphics/Canvas;IIIILjava/lang/String;I)V");
     if (!mid) return;
 
+    jhstring jhText = rho_cast<jstring>(env, text);
     env->CallVoidMethod(m_device, mid, m_canvas, x, y, width, height,
-        rho_cast<jhstring>(text).get(), color);
+        jhText.get(), color);
 
     /////
     env->DeleteLocalRef(cls);
-    
     
     RHO_MAP_TRACE("drawText done");
 }
@@ -456,7 +456,8 @@ IDrawingImage *AndroidMapDevice::createImage(String const &path, bool useAlpha)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "(Ljava/lang/String;)I");
     if (!mid) return NULL;
 
-    int bitmap = env->CallStaticIntMethod(cls, mid, rho_cast<jhstring>(path).get());
+    jhstring jhPath = rho_cast<jstring>(env, path);
+    int bitmap = env->CallStaticIntMethod(cls, mid, jhPath.get());
     if (bitmap == 0) {
         return NULL;
     }
@@ -476,7 +477,7 @@ IDrawingImage *AndroidMapDevice::createImage(void const *p, size_t size, bool us
     jmethodID mid = getJNIClassStaticMethod(env, cls, "createImage", "([B)I");
     if (!mid) return NULL;
 
-    jholder<jbyteArray> data = jholder<jbyteArray>(env->NewByteArray(size));
+    jholder<jbyteArray> data = env->NewByteArray(size);
     if (!data) return NULL;
     env->SetByteArrayRegion(data.get(), 0, size, (jbyte const *)p);
 
@@ -495,42 +496,45 @@ IDrawingImage* AndroidMapDevice::createCalloutImage(String const &title, String 
     jmethodID mid = getJNIClassStaticMethod(env, cls, "makeCallout", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/rhomobile/rhodes/mapview/Callout;");
     if (!mid) return NULL;
     
-    jobject jo_callout = env->CallStaticObjectMethod(cls, mid, rho_cast<jhstring>(title).get(), rho_cast<jhstring>(subtitle).get(), rho_cast<jhstring>(url).get());
+    jhstring jhTitle = rho_cast<jstring>(env, title);
+    jhstring jhSubTitle = rho_cast<jstring>(env, subtitle);
+    jhstring jhUrl = rho_cast<jstring>(env, url);
+    jhobject jo_callout = env->CallStaticObjectMethod(cls, mid, jhTitle.get(), jhSubTitle.get(), jhUrl.get());
     
     jmethodID mid_bitmap = env->GetMethodID( cls, "getResultBitmapID", "()I");
     jmethodID mid_x_off = env->GetMethodID( cls, "getXOffset", "()I");
     jmethodID mid_y_off = env->GetMethodID( cls, "getYOffset", "()I");
     
-    int bitmap = env->CallIntMethod(jo_callout, mid_bitmap);
+    int bitmap = env->CallIntMethod(jo_callout.get(), mid_bitmap);
     IDrawingImage *image = new AndroidImage(bitmap);
     
-    *x_offset = env->CallIntMethod(jo_callout, mid_x_off);
-    *y_offset = env->CallIntMethod(jo_callout, mid_y_off);
+    *x_offset = env->CallIntMethod(jo_callout.get(), mid_x_off);
+    *y_offset = env->CallIntMethod(jo_callout.get(), mid_y_off);
     
     return image;
 }
     
 
-    IDrawingImage *AndroidMapDevice::createImageEx(void const *p, size_t size, int x, int y, int w, int h, bool useAlpha) {
-        RHO_MAP_TRACE2("createImageEx: p=%p, size=%llu", p, (unsigned long long)size);
-        
-        JNIEnv *env = jnienv();
-        jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
-        if (!cls) return NULL;
-        jmethodID mid = getJNIClassStaticMethod(env, cls, "createImageEx", "([BIIII)I");
-        if (!mid) return NULL;
-        
-        jholder<jbyteArray> data = jholder<jbyteArray>(env->NewByteArray(size));
-        if (!data) return NULL;
-        env->SetByteArrayRegion(data.get(), 0, size, (jbyte const *)p);
-        
-        int bitmap = env->CallStaticIntMethod(cls, mid, data.get(), x, y, w, h);
-        IDrawingImage *image = new AndroidImage(bitmap);
-        
-        RHO_MAP_TRACE1("createImage: return image=%p", image);
-        return image;
-    }
-    
+IDrawingImage *AndroidMapDevice::createImageEx(void const *p, size_t size, int x, int y, int w, int h, bool useAlpha) {
+    RHO_MAP_TRACE2("createImageEx: p=%p, size=%llu", p, (unsigned long long)size);
+
+    JNIEnv *env = jnienv();
+    jclass& cls = getJNIClass(RHODES_JAVA_CLASS_MAPVIEW);
+    if (!cls) return NULL;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "createImageEx", "([BIIII)I");
+    if (!mid) return NULL;
+
+    jholder<jbyteArray> data = jholder<jbyteArray>(env->NewByteArray(size));
+    if (!data) return NULL;
+    env->SetByteArrayRegion(data.get(), 0, size, (jbyte const *)p);
+
+    int bitmap = env->CallStaticIntMethod(cls, mid, data.get(), x, y, w, h);
+    IDrawingImage *image = new AndroidImage(bitmap);
+
+    RHO_MAP_TRACE1("createImage: return image=%p", image);
+    return image;
+}
+
 IDrawingImage *AndroidMapDevice::cloneImage(IDrawingImage *image)
 {
     RHO_MAP_TRACE1("cloneImage: image=%p", image);
@@ -803,8 +807,8 @@ RHO_GLOBAL void google_mapview_create(rho_param *p)
         return;
     }
 
-    jhobject paramsObj = jhobject(RhoValueConverter(env).createObject(p));
-    jhstring keyObj = rho_cast<jhstring>(RHO_GOOGLE_API_KEY);
+    jhobject paramsObj = RhoValueConverter(env).createObject(p);
+    jhstring keyObj = rho_cast<jstring>(env, RHO_GOOGLE_API_KEY);
     env->CallStaticVoidMethod(clsMapView, midCreate, keyObj.get(), paramsObj.get());
 #else
     RAWLOG_ERROR("MapView disabled at build time");
@@ -1015,9 +1019,8 @@ RHO_GLOBAL int  mapengine_request_data(int request_id, const char* url, void** d
 		return 0;
 	}
 
-    jstring objUrl = env->NewStringUTF(url);//rho_cast<jstring>(command);
-	int size = env->CallStaticIntMethod(cls, mid, request_id, objUrl);
-    env->DeleteLocalRef(objUrl);
+    jhstring jhUrl = rho_cast<jstring>(env, url);
+    int size = env->CallStaticIntMethod(cls, mid, request_id, jhUrl.get());
 
     if (size == 0) {
     	env->DeleteLocalRef(cls);
@@ -1030,15 +1033,15 @@ RHO_GLOBAL int  mapengine_request_data(int request_id, const char* url, void** d
 		return 0;
 	}
 
-	jbyteArray jbytear = (jbyteArray)env->CallStaticObjectMethod(cls, mid2, request_id);
+	jholder<jbyteArray> jbytear = static_cast<jbyteArray>(env->CallStaticObjectMethod(cls, mid2, request_id));
 
-	if (jbytear == NULL) {
+	if (!jbytear) {
 		env->DeleteLocalRef(cls);
 		RAWLOG_ERROR("mapengine_request : byte array is NULL");
 		return 0;
 	}
 
-	jbyte* buf_p = env->GetByteArrayElements(jbytear, 0);
+	jbyte* buf_p = env->GetByteArrayElements(jbytear.get(), 0);
 
 	if (buf_p == null) {
 		env->DeleteLocalRef(cls);
@@ -1053,7 +1056,7 @@ RHO_GLOBAL int  mapengine_request_data(int request_id, const char* url, void** d
 	}
 	*datasize = size;
 	memcpy(*data, buf_p, size);
-	env->ReleaseByteArrayElements(jbytear, buf_p, 0);
+	env->ReleaseByteArrayElements(jbytear.get(), buf_p, 0);
 	env->DeleteLocalRef(cls);
 	//RAWLOG_ERROR(ANDROID_LOG_INFO, "mapengine_request", "finish OK");
 	return size;

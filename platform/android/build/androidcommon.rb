@@ -61,8 +61,8 @@ def num_cpus
   num
 end
 
-def get_sources(name)
-    File.read(File.join($builddir, name + '_build.files')).split("\n")
+def get_sources(sourcelist)
+    File.read(sourcelist).split("\n")
 end
 
 def setup_ndk(ndkpath,apilevel)

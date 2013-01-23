@@ -60,7 +60,7 @@ RHO_GLOBAL void rho_ringtone_manager_play(char* file_name)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "play", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jhstring objFileName = rho_cast<jhstring>(file_name);
+    jhstring objFileName = rho_cast<jstring>(env, file_name);
     env->CallStaticVoidMethod(cls, mid, objFileName.get());
 }
 

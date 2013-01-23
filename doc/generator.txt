@@ -110,6 +110,8 @@ You can pass your application name to the rhodes app command as a parameter. The
 	Usage: rhodes app name [options] [args]
 
 	Generate a new rhodes application.
+	Options:
+	 --norhoconnect - don't include rhoconnect-client in application
 
 	Required:
 	  name        - application name

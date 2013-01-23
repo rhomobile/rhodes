@@ -55,17 +55,9 @@ RHO_GLOBAL void take_picture(char* callback_url, rho_param *options_hash )
         return;
     }
 
-    jobject paramsObj = NULL;
-    if (options_hash != NULL) { 
-         paramsObj = RhoValueConverter(env).createObject(options_hash);
-    }
-    
-    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(callback_url).get(), paramsObj);
-
-    if (options_hash != NULL) { 
-         env->DeleteLocalRef(paramsObj);
-    }
-
+    jhobject paramsObj = RhoValueConverter(env).createObject(options_hash);
+    jhstring jhUrl = rho_cast<jstring>(env, callback_url);
+    env->CallStaticVoidMethod(cls, mid, jhUrl.get(), paramsObj.get());
 }
 
 RHO_GLOBAL void choose_picture(char* callback_url, rho_param *options_hash)
@@ -75,7 +67,9 @@ RHO_GLOBAL void choose_picture(char* callback_url, rho_param *options_hash)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "choosePicture", "(Ljava/lang/String;)V");
     if (!mid) return;
-    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(callback_url).get());
+
+    jhstring jhUrl = rho_cast<jstring>(env, callback_url);
+    env->CallStaticVoidMethod(cls, mid, jhUrl.get());
 }
 
 RHO_GLOBAL VALUE get_camera_info(const char* camera_type) {
@@ -86,9 +80,11 @@ RHO_GLOBAL VALUE get_camera_info(const char* camera_type) {
     jmethodID mid_w = getJNIClassStaticMethod(env, cls, "getMaxCameraWidth", "(Ljava/lang/String;)I");
     jmethodID mid_h = getJNIClassStaticMethod(env, cls, "getMaxCameraHeight", "(Ljava/lang/String;)I");
     if ((!mid_w) || (!mid_h)) return rho_ruby_get_NIL();
-    int w = env->CallStaticIntMethod(cls, mid_w, rho_cast<jhstring>(camera_type).get());
-    int h = env->CallStaticIntMethod(cls, mid_h, rho_cast<jhstring>(camera_type).get());
     
+    jhstring jhType = rho_cast<jstring>(env, camera_type);
+    int w = env->CallStaticIntMethod(cls, mid_w, jhType.get());
+    int h = env->CallStaticIntMethod(cls, mid_h, jhType.get());
+
     if ((w <= 0) || (h <= 0)) {
         return rho_ruby_get_NIL();
     }

@@ -61,7 +61,12 @@ VALUE CMethodResult::toRuby()
 
         for( int i = 0; i < (int)m_arStrRes.size(); i++ )
         {
-            VALUE valObj = rho_ruby_create_string( convertToStringA(m_arStrRes[i]).c_str() );
+            VALUE valObj = 0;
+            if ( m_oRubyObjectClass )
+                valObj = rho_ruby_create_object_with_id( m_oRubyObjectClass, convertToStringA(m_arStrRes[i]).c_str() );
+            else
+                valObj = rho_ruby_create_string( convertToStringA(m_arStrRes[i]).c_str() );
+            
             rho_ruby_add_to_array( valArray, valObj );
         }
         

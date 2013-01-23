@@ -1,0 +1,8 @@
+ext/platform/android/generated/jni/MethodExecutorJni.cpp
+ext/platform/android/generated/jni/MethodResultJni.cpp
+ext/platform/android/generated/jni/Barcode1.cpp
+ext/platform/android/generated/ruby/barcode1_ruby_wrap.cpp
+ext/platform/android/jni/Barcode1_impl.cpp
+ext/shared/generated/barcode1_api_init.cpp
+ext/shared/generated/barcode1_js_api.cpp
+ext/shared/generated/barcode1_ruby_api.c

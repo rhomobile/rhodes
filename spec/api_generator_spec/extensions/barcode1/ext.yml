@@ -1,4 +1,10 @@
 entry: Init_Barcode1	
 javaentry: com.barcode1.Barcode1
-android_additional_sources_list: ext/barcode1/platform/android/ext_build.files
 libraries: ["Barcode1"]
+android:
+  source_list: ext/platform/android/ext_java.files
+
+project_paths:
+  wp8: ext/platform/wp8/Barcode1.vcxproj
+  wm: ext/platform/wm/Barcode1.sln
+  win32: ext/platform/wm/Barcode1.sln

@@ -1,7 +1,7 @@
 
 #import "CRubyConverter.h"
 #import "ruby/ext/rho/rhoruby.h"
-#import "ruby.h"
+#import "ruby/include/ruby.h"
 
 @implementation CRubyConverter
 

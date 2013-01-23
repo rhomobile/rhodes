@@ -560,9 +560,12 @@ To disable the toolbar entirely:
 
 ### Native Toolbar runtime API
 
-As mentioned above, with recent versions of Rhodes you can create/remove toolbars/tabbars in runtime.
+As mentioned above, with recent versions of Rhodes you can create/remove toolbars/tabbars in runtime, using the [Native Toolbar API](/rhodesapi/nativetoolbar-api).
 
-Toolbar elements :
+ * [create](/rhodesapi/nativetoolbar-api#create) - creates a toolbar.
+ * [remove](/rhodesapi/nativetoolbar-api#remove) - removes a toolbar.
+
+Toolbar elements:
 
 * :background_color=>system_color - define custom background color
 
@@ -682,11 +685,21 @@ To disable the tabbar entirely:
 	  end
 	end
 
-### Native Tabbar runtime API
+### NativeTabbar runtime API
 
 You need to require rhotabbar in your controller to use the native tabbar.
 	:::ruby
 	require 'rho/rhotabbar'
+
+You can create/remove toolbars/tabbars in runtime, using the [Native Tabbar API](/rhodesapi/nativetabbar-api).
+
+ * [create](/rhodesapi/nativetabbar-api#create) - removes the current tabbar and replaces it with this one.
+ * [create_vertical](/rhodesapi/nativetabbar-api#createvertical) - creates a vertical tabbar on the iPad, a regular tabbar on other platforms.
+ * [get_current_tab](/rhodesapi/nativetabbar-api#getcurrenttab) - returns the current tab index.
+ * [remove](/rhodesapi/nativetabbar-api#remove) - removes the current tabbar.
+ * [set_tab_badge](/rhodesapi/nativetabbar-api#settabbadge) - set the iPhone badge to tab (only for iOS devices).
+ * [switch_tab](/rhodesapi/nativetabbar-api#switchtab) - switch active tab to second.
+ * [Tab Elements](/rhodesapi/nativetabbar-api#tab-elements) - Several of the NativeTabbar methods use a tabs parameter, which is a list of name/value pairs.
 
 Removes existing tabbar (if it exists) and create a new one.
 	:::ruby

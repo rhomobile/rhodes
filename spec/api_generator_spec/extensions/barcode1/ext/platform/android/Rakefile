@@ -1,0 +1,53 @@
+require 'fileutils'
+
+
+namespace "build" do
+  task :config do
+    $curdir = pwd
+    $barcode1dir = $curdir.gsub('/ext/barcode1/platform/android','');
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rootdir.nil?
+    $appincdir = ENV["RHO_INC"]
+    raise "RHO_INC is not set" if $appincdir.nil?
+
+    require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+
+    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+
+  end
+
+  task :all => :config do
+    objects = []
+    mkdir_p $tempdir unless File.exists? $tempdir
+    mkdir_p $targetdir unless File.exist? $targetdir
+
+    $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
+
+    args = []
+    args << "-I#{$curdir}/generated/jni"
+    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
+    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details"
+    args << "-I#{$rootdir}/platform/shared/ruby/include"
+    args << "-I#{$rootdir}/platform/shared"
+    args << "-I#{$rootdir}/platform/shared/common"
+    args << "-I#{$rootdir}/platform/shared/api_generator"
+    args << "-I#{$appincdir}"
+    args << "-I#{$std_includes}"
+    args << "-I#{$rootdir}/platform/shared/ruby"
+    args << "-I#{$rootdir}/platform/shared/ruby/android"
+    args << "-I#{$rootdir}/platform/shared/ruby/generated"
+
+    
+    cd '../../..'
+    puts "pwd: #{pwd} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+ 
+    cc_build File.join($curdir, 'ext_native.files'), $tempdir, args
+    cc_ar(File.join($targetdir, 'libbarcode1.a'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'}) or exit 1
+  end
+end
+
+task :default => "build:all"

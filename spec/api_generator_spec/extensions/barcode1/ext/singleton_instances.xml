@@ -1,0 +1,14 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<SINGLETON_INSTANCES>
+	<METHODS>
+		<METHOD name="enumerate" has_callback="optional" fabric="true">
+			<DESC>This is documentation</DESC>
+            <RETURN>
+                <DESC>All possible instances</DESC>
+                <TYPE>Array of SelfInstance</TYPE>
+            </RETURN>
+        </METHOD>
+    </METHODS>
+</SINGLETON_INSTANCES>

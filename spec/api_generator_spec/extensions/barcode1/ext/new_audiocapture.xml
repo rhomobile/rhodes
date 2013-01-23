@@ -1,0 +1,110 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+
+<MODULE name="Rho::AudioCapture" run_in_thread="UI" access="STATIC">
+    <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
+    <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
+
+    <TEMPLATES>
+        <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
+    </TEMPLATES>
+
+    <PROPERTIES>
+        <!-- list of properties supported by property bag methods getPops(), setProps() -->
+        <DESC>object supports this properties bla bla bla :</DESC>
+        <PROPERTY name="duration" type="Integer">
+            <DESC>Specifies the number of milliseconds of audio to capture.</DESC>
+            <DEFAULT>20000</DEFAULT>
+        </PROPERTY>
+        <PROPERTY name="name" type="STRING">
+            <DESC>with Windows Naming restrictions 	When the audio capture completes a file is saved in the root directory of the device (package directory in case of Android). This parameter is used to specify the filename when storing the file locally.</DESC>
+            <DEFAULT>AudioCapture</DEFAULT>
+        </PROPERTY>
+        <PROPERTY name="codec" type="STRING">
+            <DESC>The Audio Encoder can be specified through this attribute. NOTE: This is only on Android.</DESC>
+            <VALUES>
+                <VALUE name ="AAC">
+                    <DESC>AAC</DESC>
+                </VALUE>
+                <VALUE name ="AMR_NB">
+                    <DESC>AMR_NB</DESC>
+                </VALUE>
+                <VALUE name ="AMR_WB">
+                    <DESC>AMR_WB</DESC>
+                </VALUE>
+            </VALUES>
+            <DEFAULT>AAC</DEFAULT>
+        </PROPERTY>
+
+    </PROPERTIES>
+
+    <METHODS>
+        <METHOD name="start" has_callback="mandatory">
+            <DESC>Starts capturing audio until either 'stop' is received, or 'duration' is reached (i.e. until the buffer is full).</DESC>
+
+            <PARAMS>
+                <PARAM name="propertyMap">
+                    <DESC>Map of properties I want to set</DESC>
+                    <TYPE>Map of strings</TYPE>
+
+                    <CAN_BE_NIL>
+                        <DESC>Use already set properties</DESC>
+                    </CAN_BE_NIL>
+                </PARAM>
+            </PARAMS>
+
+        </METHOD>
+
+        <METHOD name="stop">
+            <DESC>Stops capturing audio and either saves the file locally, or transfers it to a remote server</DESC>
+        </METHOD>
+        <METHOD name="cancel">
+            <DESC>Stops capturing audio and discards any captured audio data</DESC>
+        </METHOD>
+
+    </METHODS>
+    
+    <USER_OVERVIEW>
+        <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+        <![CDATA[
+	The following example sets up the card reader to call a javascript function upon successful decoding. The javascript
+					function will be called 3 times, once with the raw card data, once with just the pan data extracted
+					from the raw card data, and once with the encrypted pan data if the pin has been supplied by the
+					user within 10s.:</DESC>
+				<html><head>
+
+				<script language="javascript" type="text/javascript">
+					function doTransaction(data, mode)
+					{
+						switch(mode) {
+						case 'CR':
+							alert('Card: '+data);
+							break;
+						case 'ENCDATA':
+							alert('Encoded data: '+data);
+							break;
+						case 'MESSAGE':
+							alert('Error: '+data);
+							break;
+						case 'PAN':
+							alert('PAN data: '+data);
+							alert('Please turn the unit over and enter the PIN');
+							break;
+						}
+					}
+				</script>
+				</head>
+				<body>
+				</body>
+				</html>
+
+				You must have the appropriate drivers installed on your device to use the CardReader.  You will see which drivers are installed in the RhoElements log file after you attempt to use any of the card reader functions in RhoElements.  All necessary drivers should be included as part of the platform for supported devices.
+
+				]]>
+
+    </USER_OVERVIEW>
+    <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+    <PLATFORM>
+        <!--  This section is used for the supported platform images at the top -->
+    </PLATFORM>
+</MODULE>

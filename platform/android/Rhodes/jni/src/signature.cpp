@@ -54,11 +54,10 @@ RHO_GLOBAL void rho_signature_take(char* callback_url, rho_param* p)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "takeSignature", "(Ljava/lang/String;Ljava/lang/Object;)V");
     if (!mid) return;
-    jhstring objCallback = rho_cast<jhstring>(callback_url);
+    jhstring objCallback = rho_cast<jstring>(callback_url);
 
-    jobject paramsObj = RhoValueConverter(env).createObject(p);
-    env->CallStaticVoidMethod(cls, mid, objCallback.get(), paramsObj);
-    env->DeleteLocalRef(paramsObj);
+    jhobject paramsObj = RhoValueConverter(env).createObject(p);
+    env->CallStaticVoidMethod(cls, mid, objCallback.get(), paramsObj.get());
 }
 
 RHO_GLOBAL void rho_signature_visible(bool visible, rho_param* p)
@@ -74,9 +73,8 @@ RHO_GLOBAL void rho_signature_visible(bool visible, rho_param* p)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "inline_signature_visible", "(ILjava/lang/Object;)V");
     if (!mid) return;
 
-    jobject paramsObj = RhoValueConverter(env).createObject(p);
-    env->CallStaticVoidMethod(cls, mid, visible, paramsObj);
-    env->DeleteLocalRef(paramsObj);
+    jhobject paramsObj = RhoValueConverter(env).createObject(p);
+    env->CallStaticVoidMethod(cls, mid, visible, paramsObj.get());
 }
 
 RHO_GLOBAL void rho_signature_capture(const char* callback_url) 
@@ -91,7 +89,7 @@ RHO_GLOBAL void rho_signature_capture(const char* callback_url)
     if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "inline_signature_capture", "(Ljava/lang/String;)V");
     if (!mid) return;
-    jhstring objCallback = rho_cast<jhstring>(callback_url);
+    jhstring objCallback = rho_cast<jstring>(env, callback_url);
     
     env->CallStaticVoidMethod(cls, mid, objCallback.get());
 }

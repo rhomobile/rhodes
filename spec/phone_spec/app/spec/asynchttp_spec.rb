@@ -88,24 +88,25 @@ if !defined?(RHO_WP7)
     end
 
     it "should http partial download" do
-        file_name_source = File.join(Rho::RhoApplication::get_base_app_path(), 'testA.png')
-        file_name_dest = File.join(Rho::RhoApplication::get_base_app_path(), 'testB.png')
+        file_name_source = File.join(Rho::RhoApplication::get_base_app_path(), 'testA')
+        file_name_dest = File.join(Rho::RhoApplication::get_base_app_path(), 'testB')
 
         File.delete(file_name_source) if File.exists?(file_name_source)
         File.delete(file_name_dest) if File.exists?(file_name_dest)
 
-        reference_url = 'http://www.google.com/logos/2012/brasilia12-hp.png'
-        reference_size = 5940
-        part_size = 4096
+        reference_url = 'http://yandex.st/jquery/cookie/1.0/jquery.cookie.min.js'
+        reference_size = 732
+        part_size = 366
 
         res = Rho::AsyncHttp.download_file(
           :url => reference_url,
+          :headers => {"Accept-Encoding"=>""}, #disable any compression
           :filename => file_name_source )
         puts "res : #{res}"  
         
         res['status'].should == 'ok'
         res['headers']['content-length'].to_i.should == reference_size
-        res['headers']['content-type'].should == 'image/png'
+        res['headers']['content-type'].should == 'application/x-javascript'
 
         File.exists?(file_name_source).should == true
         orig_len = File.size(file_name_source)
@@ -121,6 +122,7 @@ if !defined?(RHO_WP7)
         #check that in case of re-download files are the same        
         res = Rho::AsyncHttp.download_file(
           :url => reference_url,
+          :headers => {"Accept-Encoding"=>""}, #disable any compression
           :filename => file_name_dest )
         puts "res : #{res}"  
         

@@ -419,7 +419,7 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_normalizePa
   (JNIEnv *env, jclass, jstring pathObj)
 {
     std::string path = normalize_path(rho_cast<std::string>(env, pathObj));
-    return rho_cast<jhstring>(env, path).release();
+    return rho_cast<jstring>(env, path);
 }
 
 static std::string make_full_path(const char *path)
@@ -452,14 +452,14 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_makeRelativ
   (JNIEnv *env, jclass, jstring pathObj)
 {
     std::string path = rho_cast<std::string>(env, pathObj);
-    return rho_cast<jhstring>(env, make_rel_path(make_full_path(path))).release();
+    return rho_cast<jstring>(env, make_rel_path(make_full_path(path)));
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_file_RhoFileApi_absolutePath
   (JNIEnv *env, jclass, jstring pathObj)
 {
     std::string path = rho_cast<std::string>(env, pathObj);
-    return rho_cast<jhstring>(env, make_full_path(path)).release();
+    return rho_cast<jstring>(env, make_full_path(path));
 }
 
 static rho_stat_t *rho_stat(const char *path)
@@ -599,7 +599,7 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
     {
         RHO_LOG("open: %s: copy from Android package", path);
         JNIEnv *env = jnienv();
-        jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
+        jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath));
         env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
         if (has_pending_exception())
         {
@@ -617,8 +617,8 @@ RHO_GLOBAL int open(const char *path, int oflag, ...)
     {
         RHO_LOG("open: %s: emulate", path);
         JNIEnv *env = jnienv();
-        jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
-        jhobject is = jhobject(env->CallStaticObjectMethod(clsFileApi, midOpen, relPathObj.get()));
+        jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath));
+        jhobject is = env->CallStaticObjectMethod(clsFileApi, midOpen, relPathObj.get());
 
         if (!is)
         {
@@ -934,7 +934,7 @@ RHO_GLOBAL int link(const char *src, const char *dst)
     {
         RHO_LOG("link: %s: copy from Android package", src);
         JNIEnv *env = jnienv();
-        jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fsrc).c_str());
+        jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fsrc));
         env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
         if (has_pending_exception())
         {
@@ -961,7 +961,7 @@ RHO_GLOBAL int symlink(const char *src, const char *dst)
     {
         RHO_LOG("symlink: %s: copy from Android package", src);
         JNIEnv *env = jnienv();
-        jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fsrc).c_str());
+        jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fsrc));
         env->CallStaticBooleanMethod(clsFileApi, midCopy, relPathObj.get());
         if (has_pending_exception())
         {
@@ -1425,8 +1425,8 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
         children.push_back("..");
         {
             JNIEnv *env = jnienv();
-            jhstring relPathObj = rho_cast<jhstring>(env, make_rel_path(fpath).c_str());
-            jharray jChildren = jharray((jobjectArray)env->CallStaticObjectMethod(clsFileApi, midGetChildren, relPathObj.get()));
+            jhstring relPathObj = rho_cast<jstring>(env, make_rel_path(fpath));
+            jharray jChildren = static_cast<jobjectArray>(env->CallStaticObjectMethod(clsFileApi, midGetChildren, relPathObj.get()));
 
             if (!jChildren)
             {
@@ -1436,7 +1436,7 @@ RHO_GLOBAL DIR *opendir(const char *dirpath)
 
             for (jsize i = 0, lim = env->GetArrayLength(jChildren.get()); i != lim; ++i)
             {
-                jhstring jc = jhstring((jstring)env->GetObjectArrayElement(jChildren.get(), i));
+                jhstring jc = static_cast<jstring>(env->GetObjectArrayElement(jChildren.get(), i));
                 std::string const &ch = rho_cast<std::string>(env, jc);
                 RHO_LOG("opendir: next children: %s", ch.c_str());
                 children.push_back(ch);
@@ -1716,7 +1716,7 @@ RHO_GLOBAL void rho_file_patch_stat_table(const rho::String& path)
     JNIEnv* env = jnienv();
     static jmethodID mid = getJNIClassStaticMethod(env, clsFileApi, "patchStatTable", "(Ljava/lang/String;)Z");
 
-    jhstring jhPath = rho_cast<jhstring>(env, path);
+    jhstring jhPath = rho_cast<jstring>(env, path);
 
     env->CallStaticVoidMethod(clsFileApi, mid, jhPath.get());
 }

@@ -154,66 +154,66 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getOptions
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getOptionsUrl().c_str();
-    return rho_cast<jhstring>(env, s).release();
+    return rho_cast<jstring>(env, s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getStartUrl
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getStartUrl().c_str();
-    return rho_cast<jhstring>(env, s).release();
+    return rho_cast<jstring>(env, s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getCurrentUrl
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getCurrentUrl(0).c_str();
-    return rho_cast<jhstring>(env, s).release();
+    return rho_cast<jstring>(env, s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getAppBackUrl
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getAppBackUrl().c_str();
-    return rho_cast<jhstring>(env, s).release();
+    return rho_cast<jstring>(env, s);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesAppOptions_getBlobPath
   (JNIEnv *env, jclass)
 {
     const char *s = RHODESAPP().getBlobsDirPath().c_str();
-    return rho_cast<jhstring>(env, s).release();
+    return rho_cast<jstring>(env, s);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequest
   (JNIEnv *env, jclass, jstring strUrl)
 {
-    std::string url = rho_cast<std::string>(strUrl);
+    std::string url = rho_cast<std::string>(env, strUrl);
     rho_net_request(url.c_str());
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestAsync
   (JNIEnv *env, jclass, jstring strUrl)
 {
-    std::string url = rho_cast<std::string>(strUrl);
+    std::string url = rho_cast<std::string>(env, strUrl);
     RHODESAPP().runCallbackInThread(url, "");
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestEx
   (JNIEnv *env, jclass, jstring jUrl, jstring jBody, jstring jData, jboolean waitForResponse)
 {
-    std::string url = rho_cast<std::string>(jUrl);
-    std::string body = rho_cast<std::string>(jBody);
-    std::string data = rho_cast<std::string>(jData);
+    std::string url = rho_cast<std::string>(env, jUrl);
+    std::string body = rho_cast<std::string>(env, jBody);
+    std::string data = rho_cast<std::string>(env, jData);
     RHODESAPP().callCallbackWithData(url, body, data, waitForResponse);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestJson
   (JNIEnv *env, jclass, jstring jUrl, jstring jBody, jstring jData, jboolean waitForResponse)
 {
-    std::string url = rho_cast<std::string>(jUrl);
-    std::string body = rho_cast<std::string>(jBody);
-    std::string data = rho_cast<std::string>(jData);
+    std::string url = rho_cast<std::string>(env, jUrl);
+    std::string body = rho_cast<std::string>(env, jBody);
+    std::string data = rho_cast<std::string>(env, jData);
 
     RHODESAPP().callCallbackWithJsonBody(url.c_str(), body.c_str(), data.c_str(), waitForResponse);
 }
@@ -221,17 +221,17 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_doRequestJson
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_normalizeUrl
   (JNIEnv *env, jobject, jstring strUrl)
 {
-    std::string const &s = rho_cast<std::string>(strUrl);
+    std::string const &s = rho_cast<std::string>(env, strUrl);
     std::string const &cs = RHODESAPP().canonicalizeRhoUrl(s);
-    return rho_cast<jhstring>(env, cs).release();
+    return rho_cast<jstring>(env, cs);
 }
 
 RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfig
   (JNIEnv *env, jclass, jstring key)
 {
-    std::string const &s = rho_cast<std::string>(key);
+    std::string const &s = rho_cast<std::string>(env, key);
     const char* cs = get_app_build_config_item(s.c_str());
-    return rho_cast<jhstring>(env, cs).release();
+    return rho_cast<jstring>(env, cs);
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPage
@@ -266,10 +266,10 @@ RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnabl
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesApplication_canStartApp
-  (JNIEnv *, jclass, jstring cmdLine, jstring sep)
+  (JNIEnv *env, jclass, jstring cmdLine, jstring sep)
 {
-    std::string const &strCmdLine = rho_cast<std::string>(cmdLine);
-    std::string const &strSep = rho_cast<std::string>(sep);
+    std::string const &strCmdLine = rho_cast<std::string>(env, cmdLine);
+    std::string const &strSep = rho_cast<std::string>(env, sep);
 
     int nRes = rho_rhodesapp_canstartapp(strCmdLine.c_str(), strSep.c_str());
     return (jboolean)(nRes ? true : false);
@@ -327,10 +327,10 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegist
 {
 	rho::String ret = "";
 	if ( rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
-    //return rho_cast<jhstring>(env, rho::sync::CClientRegister::Get()->getDevicePin()).release();
+    //return rho_cast<jstring>(env, rho::sync::CClientRegister::Get()->getDevicePin());
 		ret = rho::sync::RhoconnectClientManager::clientRegisterGetDevicePin();
 	}
-	return rho_cast<jhstring>(env, ret).release();
+	return rho_cast<jstring>(env, ret);
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
@@ -386,19 +386,18 @@ RHO_GLOBAL void rho_conf_show_log()
     env->CallStaticVoidMethod(cls, mid);
 }
 
-	RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_notifyNetworkStatusChanged(JNIEnv *env, jobject, int status)
-	{
-		RAWLOG_ERROR("nativeNotify");
-		rho::common::enNetworkStatus s = rho::common::networkStatusUnknown;
-		switch(status)
-		{
-			case 1:
-				s = rho::common::networkStatusConnected;
-				break;
-			case 2:
-				s = rho::common::networkStatusDisconnected;
-				break;
-		}
-		
-		s_network_status_monitor->notifyReceiver(s);
-	}
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_notifyNetworkStatusChanged(JNIEnv *env, jobject, int status)
+{
+    RAWLOG_ERROR("nativeNotify");
+    rho::common::enNetworkStatus s = rho::common::networkStatusUnknown;
+    switch(status)
+    {
+    case 1:
+        s = rho::common::networkStatusConnected;
+        break;
+    case 2:
+        s = rho::common::networkStatusDisconnected;
+        break;
+    }
+    s_network_status_monitor->notifyReceiver(s);
+}

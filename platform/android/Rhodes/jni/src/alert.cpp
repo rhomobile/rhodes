@@ -53,8 +53,11 @@ RHO_GLOBAL void alert_show_status(const char* szTitle, const char* szMessage, co
 
     RAWLOG_INFO("alert_show_status");
 
-    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(szTitle).get(),
-        rho_cast<jhstring>(szMessage).get(), rho_cast<jhstring>(szHide).get());
+    jhstring jhTitle   = rho_cast<jstring>(env, szTitle);
+    jhstring jhMessage = rho_cast<jstring>(env, szMessage);
+    jhstring jhHide    = rho_cast<jstring>(env, szHide);
+    env->CallStaticVoidMethod(cls, mid, jhTitle.get(),
+        jhMessage.get(), jhHide.get());
 }
 
 RHO_GLOBAL void alert_show_popup(rho_param *p)
@@ -70,9 +73,8 @@ RHO_GLOBAL void alert_show_popup(rho_param *p)
         return;
     }
 
-    jobject paramsObj = RhoValueConverter(env).createObject(p);
-    env->CallStaticVoidMethod(cls, mid, paramsObj);
-    env->DeleteLocalRef(paramsObj);
+    jhobject paramsObj = RhoValueConverter(env).createObject(p);
+    env->CallStaticVoidMethod(cls, mid, paramsObj.get());
 }
 
 RHO_GLOBAL void alert_hide_popup()
@@ -104,6 +106,8 @@ RHO_GLOBAL void alert_play_file(char* file_name, char *media_type)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "playFile", "(Ljava/lang/String;Ljava/lang/String;)V");
     if (!mid) return;
 
-    env->CallStaticVoidMethod(cls, mid, rho_cast<jhstring>(file_name).get(), rho_cast<jhstring>(media_type).get());
+    jhstring jhFileName = rho_cast<jstring>(env, file_name);
+    jhstring jhMedia    = rho_cast<jstring>(env, media_type);
+    env->CallStaticVoidMethod(cls, mid, jhFileName.get(), jhMedia.get());
 }
 
