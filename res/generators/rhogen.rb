@@ -11,7 +11,6 @@ require 'rexml/document'
 require File.dirname(__FILE__) + '/../../lib/rhodes'
 
 
-
 module Rhogen
   extend Templater::Manifold
 
@@ -528,6 +527,44 @@ module Rhogen
 
   class ApiGenerator < BaseGenerator
 
+    Templater::CLI::Generator.class_eval do
+
+      def old_step_through_templates
+        @generator.all_actions.each do |action|
+          if @options[:delete]
+            action.revoke! unless @options[:pretend]
+            say_status('deleted', action, :red)
+          else
+            if action.identical?
+              say_status('identical', action, :blue)
+            elsif action.exists?
+              if @options[:force]
+                action.invoke! unless @options[:pretend]
+                say_status('forced', action, :yellow)
+              elsif @options[:skip]
+                say_status('skipped', action, :yellow)
+              else
+                say_status('conflict', action, :red)
+                conflict_menu(action)
+              end
+            else
+              action.invoke! unless @options[:pretend]
+              say_status('added', action, :green)
+            end
+          end
+        end
+      end
+
+      def step_through_templates
+        @generator.setup_xml
+
+        $modules.each do |module_item|
+           $cur_module = module_item
+           old_step_through_templates
+        end
+      end
+    end
+
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'api')
     end
@@ -542,46 +579,91 @@ module Rhogen
 
 
     $xml = nil
-    $name = nil
-    $xml_class = nil
-    $xml_class_attributes_singletone_id = false
-    $xml_class_attributes_default_instance = false
-    $xml_class_attributes_propertybag = false
 
     # array of arrays
 
-    class MethodArgument
+    class MethodParam
 
       TYPE_STRING = "STRING"
       TYPE_ARRAY = "ARRAY"
       TYPE_HASH = "HASH"
-      TYPE_BASE_OBJECT = "OBJECT" #if argument can be a different types - in this case we use base class and developer should recognize class byself
+      TYPE_SELF = 'SELF'
 
-      @name = ''
-      @type = TYPE_BASE_OBJECT
+      def initialize
+        @name = ''
+        @type = ''
+        @can_be_nil = false
+      end
+
+      attr_accessor :name
+      attr_accessor :type
+      attr_accessor :can_be_nil
+
+
     end
 
     class ModuleMethod
-      @name = ''
-      @arguments = [] # array of MethodArgument
-      @is_separated_thread = false
-      @is_fabric_method = false
-      @is_run_in_ui_thread = false
-      @iphone_platform_specific_method_define_line = nil
-      @android_platform_specific_method_define_line = nil
+
+      ACCESS_STATIC = "STATIC"
+      ACCESS_INSTANCE = "INSTANCE"
+
+      CALLBACK_MANDATORY = "MANDATORY"
+      CALLBACK_OPTIONAL = "OPTIONAL"
+      CALLBACK_NONE = "NONE"
+
+
+      def initialize
+        @name = ''
+        @params = [] # array of MethodArgument
+        @is_run_in_thread = false
+        @is_fabric_method = false
+        @is_run_in_ui_thread = false
+        @access = ACCESS_INSTANCE
+        @has_callback = CALLBACK_NONE
+      end
+
+      attr_accessor :name
+      attr_accessor :params
+      attr_accessor :is_run_in_thread
+      attr_accessor :is_fabric_method
+      attr_accessor :is_run_in_ui_thread
+      attr_accessor :access
+      attr_accessor :has_callback
     end
 
     class ModuleItem
-      @name = ''
-      @parent = ''
-      @methods = []
-      @is_template_singletone_id = false
-      @is_template_default_instance = false
-      @is_template_propertybag = false
+      def initialize
+        @name = ''
+        @parent = ''
+        @methods = []
+        @is_template_singletone_id = false
+        @is_template_default_instance = false
+        @is_template_propertybag = false
+      end
+
+      attr_accessor :name
+      attr_accessor :parent
+      attr_accessor :methods
+      attr_accessor :is_template_singletone_id
+      attr_accessor :is_template_default_instance
+      attr_accessor :is_template_propertybag
     end
 
     $modules = []
 
+    $cur_module = nil
+
+    def apply_templates_to_module(xml_module_item, template_name)
+      xml_f = File.new(File.join(File.dirname(__FILE__), 'templates', 'api', "xml_templates", template_name+".xml"))
+      template_xml = REXML::Document.new(xml_f)
+      xml_f.close
+
+      methods_item = template_xml.elements["*/METHODS"]
+      if methods_item != nil
+         xml_module_item.add_element methods_item
+      end
+
+    end
 
     def setup_xml
       if $xml != nil
@@ -594,73 +676,125 @@ module Rhogen
       xml_f = File.new(xml_filepath)
       $xml = REXML::Document.new(xml_f)
       xml_f.close
-      $xml_class = $xml.elements["API/CLASS"]
-      $name = $xml_class.attribute('name').to_s
+      xml_api_root = $xml.elements["API"]
 
-      #enumerate attributes
-      $xml.elements.each("*/CLASS/ATTRIBUTES/ATTRIBUTE") do |e|
-        name = e.attribute("name").to_s
-        if name == "SINGLETON_INSTANCES"
-          if e.attribute("value") != nil
-            if e.attribute("value").to_s.downcase != "false"
-              $xml_class_attributes_singletone_id = true
+
+      xml_api_root.elements.each("MODULE") do |xml_module_item|
+         module_item = ModuleItem.new()
+
+         module_item.name = xml_module_item.attribute("name").to_s
+         if xml_module_item.attribute("parent") != nil
+            module_item.parent = xml_module_item.attribute("parent").to_s
+         end
+
+         module_item.is_template_default_instance = (xml_module_item.elements["TEMPLATES/DEFAULT_INSTANCE"] != nil)
+         module_item.is_template_singletone_id = (xml_module_item.elements["TEMPLATES/SINGLETON_INSTANCES"] != nil)
+         module_item.is_template_propertybag = (xml_module_item.elements["TEMPLATES/PROPERTY_BAG"] != nil)
+
+         if module_item.is_template_propertybag
+             apply_templates_to_module(xml_module_item, "property_bag")
+         end
+         if module_item.is_template_singletone_id
+             apply_templates_to_module(xml_module_item, "singleton_instances")
+         end
+         if module_item.is_template_default_instance
+             apply_templates_to_module(xml_module_item, "default_instance")
+         end
+
+
+         #methods
+         xml_module_item.elements.each("METHODS/METHOD") do |xml_module_method|
+            module_method = ModuleMethod.new()
+
+            module_method.name = xml_module_method.attribute("name").to_s
+            if xml_module_method.attribute("access") != nil
+               if xml_module_method.attribute("access").to_s.downcase == "static"
+                   module_method.access = ModuleMethod::ACCESS_STATIC
+               end
             end
-          end
-        end
-        if name == "DEFAULT_INSTANCE"
-          if e.attribute("value") != nil
-            if e.attribute("value").to_s.downcase != "false"
-              $xml_class_attributes_default_instance = true
+            if xml_module_method.attribute("fabric") != nil
+               if xml_module_method.attribute("fabric").to_s.downcase != "false"
+                   module_method.is_fabric_method = true
+               end
             end
-          end
-        end
-        if name == "PROPERTY_BAG"
-          if e.attribute("value") != nil
-            if e.attribute("value").to_s.downcase != "false"
-              $xml_class_attributes_propertybag = true
+            if xml_module_method.attribute("run_in_thread") != nil
+               if xml_module_method.attribute("run_in_thread").to_s.downcase != "false"
+                   module_method.is_run_in_thread = true
+               end
             end
-          end
-        end
+            if xml_module_method.attribute("run_in_ui_thread") != nil
+               if xml_module_method.attribute("run_in_ui_thread").to_s.downcase != "false"
+                   module_method.is_run_in_ui_thread = true
+               end
+            end
+            if xml_module_method.attribute("has_callback") != nil
+               if xml_module_method.attribute("has_callback").to_s.downcase == "mandatory"
+                   module_method.has_callback = ModuleMethod::CALLBACK_MANDATORY
+               end
+               if xml_module_method.attribute("has_callback").to_s.downcase == "optional"
+                   module_method.has_callback = ModuleMethod::CALLBACK_OPTIONAL
+               end
+            end
+
+            xml_module_method.elements.each("PARAMS/PARAM") do |xml_method_param|
+               method_param = MethodParam.new()
+
+               method_param.name = xml_method_param.attribute("name").to_s
+
+               method_param.type = xml_method_param.attribute("type").to_s
+
+               method_param.can_be_nil = (xml_method_param.elements["CAN_BE_NIL"] != nil)
+
+               module_method.params << method_param
+            end
+
+
+            module_item.methods << module_method
+         end
+
+
+
+         $modules << module_item
       end
 
-      #analyze methods
+      $cur_module = $modules[0]
+
     end
 
 
-    def namefixed
-        setup_xml
-        return $name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
+    def namefixed(name)
+        return name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
     end
 
     template :shared_01 do |template|
-      template.source = 'montana/shared/generated/montana_api_init.cpp'
-      template.destination = "#{namefixed.downcase}/shared/generated/#{namefixed.downcase}_api_init.cpp"
+      template.source = 'shared/generated/montana_api_init.cpp'
+      template.destination = "shared/generated/#{namefixed($cur_module.name)}_api_init.cpp"
     end
 
     template :shared_02 do |template|
-      template.source = 'montana/shared/generated/montana_ruby_api.c'
-      template.destination = "#{namefixed.downcase}/shared/generated/#{namefixed.downcase}_ruby_api.c"
+      template.source = 'shared/generated/montana_ruby_api.c'
+      template.destination = "shared/generated/#{namefixed($cur_module.name)}_ruby_api.c"
     end
 
-    template :iphone_api do |template|
-      template.source = 'montana/platform/iphone/Classes/api/IMontana.h'
-      template.destination = "#{namefixed.downcase}/platform/iphone/Classes/api/I#{$name}.h"
-    end
+    #template :iphone_api do |template|
+    #  template.source = 'platform/iphone/Classes/api/IMontana.h'
+    #  template.destination = "platform/iphone/Classes/api/I#{$cur_module.name}.h"
+    #end
 
-    template :iphone_api_readme do |template|
-      template.source = 'montana/platform/iphone/Classes/api/readme.txt'
-      template.destination = "#{namefixed.downcase}/platform/iphone/Classes/api/readme.txt"
-    end
+    #template :iphone_api_readme do |template|
+    #  template.source = 'platform/iphone/Classes/api/readme.txt'
+    #  template.destination = "platform/iphone/Classes/api/readme.txt"
+    #end
 
-    template :iphone_ruby_wrapper do |template|
-      template.source = 'montana/platform/iphone/Classes/ruby_wrapper/montana_ruby_wrap.m'
-      template.destination = "#{namefixed.downcase}/platform/iphone/Classes/ruby_wrapper/#{namefixed.downcase}_ruby_wrap.m"
-    end
+    #template :iphone_ruby_wrapper do |template|
+    #  template.source = 'platform/iphone/Classes/ruby_wrapper/montana_ruby_wrap.m'
+    #  template.destination = "platform/iphone/Classes/ruby_wrapper/#{namefixed($cur_module.name)}_ruby_wrap.m"
+    #end
 
-    template :iphone_ruby_wrapper_readme do |template|
-      template.source = 'montana/platform/iphone/Classes/ruby_wrapper/readme.txt'
-      template.destination = "#{namefixed.downcase}/platform/iphone/Classes/ruby_wrapper/readme.txt"
-    end
+    #template :iphone_ruby_wrapper_readme do |template|
+    #  template.source = 'platform/iphone/Classes/ruby_wrapper/readme.txt'
+    #  template.destination = "platform/iphone/Classes/ruby_wrapper/readme.txt"
+    #end
 
 
 
@@ -680,3 +814,33 @@ module Rhogen
 
 end
 
+
+=begin
+
+# Stub this method to force 1.8 compatibility (come on templater!)
+class Encoding
+  def find
+    "utf-8"
+  end
+
+  def dummy?
+    false
+  end
+end
+
+class String
+  def force_encoding(enc)
+    return self
+  end
+  def encoding
+    if RUBY_VERSION =~ /1\.8/ and Encoding.responds_to?('new')
+      Encoding.new
+    else
+      Encoding.default_external
+    end
+  end
+end
+
+
+Rhogen.run_cli(Dir.pwd, 'rhodes', Rhodes::VERSION, ARGV)
+=end
