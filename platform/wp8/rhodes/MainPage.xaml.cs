@@ -47,6 +47,7 @@ namespace rhodes
         private double _screenHeight;
         private double _screenPhysicalWidth;
         private double _screenPhysicalHeight;
+        private PageOrientation _screenOrientation = PageOrientation.None;
         // menu items hash table
         private Dictionary<string, int> menuItems = new Dictionary<string, int>();
         // toolbar items hash table
@@ -60,11 +61,7 @@ namespace rhodes
         public MainPage()
         {
             _uiThreadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
-            _screenWidth = Application.Current.Host.Content.ActualWidth;
-            _screenHeight = Application.Current.Host.Content.ActualHeight;
-            _screenPhysicalHeight = 4; // assuming 4 inches
-            _screenPhysicalWidth = ( _screenPhysicalHeight / _screenHeight ) * _screenWidth; // assuming square pixels
-
+            updateScreenSize();
             InitializeComponent();
             ApplicationBar.IsVisible = false;
             try
@@ -94,7 +91,19 @@ namespace rhodes
         {
             return (int)(_screenHeight / _screenPhysicalHeight);
         }
-		
+
+        public int getScreenWidth()
+        {
+            // TODO: consider rotation
+            return (int)_screenWidth;
+        }
+
+        public int getScreenHeight()
+        {
+            // TODO: consider rotation
+            return (int)_screenHeight;
+        }
+
         public void bringToFront()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { bringToFront(); }); return; }
@@ -106,14 +115,39 @@ namespace rhodes
             e.Cancel = CRhoRuntime.getInstance().onBackKeyPress();
         }
 
+        private void updateOrientation(PageOrientation orientation)
+        {
+            _screenOrientation = orientation;
+            updateScreenSize();
+        }
+
+        private void updateScreenSize()
+        {
+            _screenWidth = Application.Current.Host.Content.ActualWidth;
+            _screenHeight = Application.Current.Host.Content.ActualHeight;
+            _screenPhysicalHeight = 4; // assuming 4 inches
+            _screenPhysicalWidth = (_screenPhysicalHeight / _screenHeight) * _screenWidth; // assuming square pixels
+            if ((_screenOrientation == PageOrientation.Landscape) || (_screenOrientation == PageOrientation.LandscapeLeft) || (_screenOrientation == PageOrientation.LandscapeRight))
+            {
+                double w = _screenWidth;
+                _screenWidth = _screenHeight;
+                _screenHeight = w;
+                w = _screenPhysicalWidth;
+                _screenPhysicalWidth = _screenPhysicalHeight;
+                _screenPhysicalHeight = w;
+            }
+        }
+
         private void PhoneApplicationPage_OrientationChanged(object sender, OrientationChangedEventArgs e)
         {
             // TODO: implement OrientationChanged handler
+            updateOrientation(e.Orientation);
         }
 
         private void PhoneApplicationPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // TODO: implement application window size changed event hanlder ?
+            updateScreenSize();
         }
 
         private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
@@ -167,9 +201,9 @@ namespace rhodes
         {
             try
             {
-                return RhodesWebBrowser.Source.AbsoluteUri.ToString();
+                return RhodesWebBrowser.Source.ToString();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return "";
             }
