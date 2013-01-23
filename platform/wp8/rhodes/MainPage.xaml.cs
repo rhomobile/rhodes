@@ -165,7 +165,14 @@ namespace rhodes
 
         public string getCurrentURL(int index)
         {
-            return RhodesWebBrowser.Source.AbsoluteUri.ToString();
+            try
+            {
+                return RhodesWebBrowser.Source.AbsoluteUri.ToString();
+            }
+            catch (Exception e)
+            {
+                return "";
+            }
         }
 
         private void RhodesWebBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
