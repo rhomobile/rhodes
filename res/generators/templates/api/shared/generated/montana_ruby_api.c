@@ -37,7 +37,7 @@ static VALUE rb_c<%= $cur_module.name %>;
       %>VALUE <%= method_name%>(<%= params%>);
 <% end %>
 
-
+VALUE getRuby_<%= $cur_module.name %>_Module(){ return rb_c<%= $cur_module.name %>; }
 
 void Init_RubyAPI_<%= $cur_module.name %>(void)
 {
