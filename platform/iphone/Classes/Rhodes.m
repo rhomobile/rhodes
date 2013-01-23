@@ -61,6 +61,8 @@ extern OSMemoryNotificationLevel OSMemoryNotificationCurrentLevel(void);
 extern int rho_sys_check_rollback_bundle(const char* szRhoPath);
 void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg);
 
+extern int rho_extensions_are_loaded();
+
 
 
 
@@ -1046,9 +1048,29 @@ static Rhodes *instance = NULL;
 	
 	char* szpin = strdup([stringBuffer cStringUsingEncoding:[NSString defaultCStringEncoding]]);
 	RAWLOG_INFO1("device pin: %s\n", szpin);
-
-	rho_clientregister_create(szpin);
-	free(szpin);
+	
+	if (([[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)]) && ([[UIDevice currentDevice] isMultitaskingSupported]))
+	{
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+				
+			NSLog(@"Waiting for extensions to load");
+				
+			while (rho_extensions_are_loaded()!=1) {
+				[NSThread sleepForTimeInterval:0.01];
+			}
+				
+			NSLog(@"Extensions loaded");
+			
+			rho_clientregister_create(szpin);
+			free(szpin);
+				
+		});
+	}
+	else
+	{
+		rho_clientregister_create(szpin);
+		free(szpin);
+	}
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
