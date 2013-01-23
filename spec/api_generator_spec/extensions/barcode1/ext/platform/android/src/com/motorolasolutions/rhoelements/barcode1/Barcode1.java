@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.motorolasolutions.rhoelements.IBarcode1;
 import com.motorolasolutions.rhoelements.IMethodResult;
 import com.motorolasolutions.rhoelements.RhoApiObject;
 
@@ -37,4 +36,10 @@ public class Barcode1 extends RhoApiObject implements IBarcode1 {
         }
         result.set(props);
     }
+
+    @Override
+    public void takeBarcode(IMethodResult result) {
+        result.set("0123456789");
+    }
+
 }
