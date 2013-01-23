@@ -33,6 +33,9 @@ namespace rhoruntime
 	public:
 		int getLogicalDpiX();
 		int getLogicalDpiY();
+        int getScreenWidth();
+        int getScreenHeight();
+
 		void bringToFront();
 
 		// webview

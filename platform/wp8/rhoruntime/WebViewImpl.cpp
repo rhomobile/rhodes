@@ -28,13 +28,14 @@ extern "C" const char* rho_webview_execute_js(const char* js, int index)
 	rho::common::convertToStringW(js, jsW);
 	CRhoRuntime::getInstance()->getMainPage()->executeScript(ref new String(jsW.c_str()), index);
 	// TODO: implement return value of rho_webview_execute_js
+	// return strdup(...);
     return "";
 }
 
 extern "C" const char* rho_webview_current_location(int index)
 {
 	rho::String urlA = rho::common::convertToStringA(CRhoRuntime::getInstance()->getMainPage()->getCurrentURL(index)->Data());
-	return urlA.c_str();
+	return strdup(urlA.c_str());
 }
 
 extern "C" unsigned long rho_webview_get_current_url(int index)
