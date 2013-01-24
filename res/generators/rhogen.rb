@@ -591,7 +591,7 @@ module Rhogen
       TYPE_STRING = "STRING"
       TYPE_ARRAY = "ARRAY"
       TYPE_HASH = "HASH"
-      TYPE_SELF = 'SELF'
+      TYPE_SELF = 'SELF_INSTANCE'
 
       def initialize
         @name = ''
@@ -740,15 +740,26 @@ module Rhogen
                end
             end
 
+            param_index = 1
+
             xml_module_method.elements.each("PARAMS/PARAM") do |xml_method_param|
                method_param = MethodParam.new()
 
-               method_param.name = xml_method_param.attribute("name").to_s
+               if xml_method_param.attribute("name") != nil
+                  method_param.name = xml_method_param.attribute("name").to_s
+               else
+                  method_param.name = 'param'+ param_index.to_s
+               end
 
-               method_param.type = xml_method_param.attribute("type").to_s
+               if xml_method_param.attribute("type") != nil
+                  method_param.type = xml_method_param.attribute("type").to_s.upcase
+               else
+                  raise "parameter in method must have specified type !. Module[#{$module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
+               end
 
                method_param.can_be_nil = (xml_method_param.elements["CAN_BE_NIL"] != nil)
 
+               param_index = param_index + 1
                module_method.params << method_param
             end
 
