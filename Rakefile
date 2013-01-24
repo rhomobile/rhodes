@@ -1456,7 +1456,11 @@ task :gem do
   out = ""
   Dir.glob("**/*") do |fname| 
     # TODO: create exclusion list
-    out << fname + "\n" if File.file? fname and not fname =~ /rhoconnect-client/
+    next unless File.file? fname
+    next if fname =~ /rhoconnect-client/
+    next if fname =~ /^spec\/api_generator_spec/
+
+    out << fname + "\n"
   end
   File.open("Manifest.txt",'w') {|f| f.write(out)}
 
