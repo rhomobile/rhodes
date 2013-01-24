@@ -6,55 +6,45 @@
 		<METHOD name="getProperty" has_callback="optional">
 			<DESC>This is documentation</DESC>
 			<PARAMS>
-				<PARAM name="propertyName">
+				<PARAM name="propertyName" type="STRING">
 					<DESC>The one property that I want to know about</DESC>
-					<TYPE>String</TYPE>
                 </PARAM>
             </PARAMS>
             <RETURN>
                 <DESC>The one property that I want to know about</DESC>
-                <TYPE>String</TYPE>
+                <TYPE>STRING</TYPE>
             </RETURN>
         </METHOD>
 
         <METHOD name="getProperties" has_callback="optional">
             <DESC>This is documentation</DESC>
             <PARAMS>
-                <PARAM name="arrayofNames">
+                <PARAM name="arrayofNames" type="ARRAY">
                     <DESC>List of properties I want to know about</DESC>
-                    <TYPE>Array of strings</TYPE>
                 </PARAM>
             </PARAMS>
             <RETURN>
                 <DESC>Map of properties I want to know about</DESC>
-                <TYPE>Map of strings</TYPE>
+                <TYPE>HASH</TYPE>
             </RETURN>
         </METHOD>
 
         <METHOD name="getAllProperties" has_callback="optional">
             <DESC>This is documentation</DESC>
-            <PARAMS>
-                <PARAM>
-                    <DESC>All properties</DESC>
-                    <TYPE>nil</TYPE>
-                </PARAM>
-            </PARAMS>
             <RETURN>
                 <DESC>Map of properties I want to know about</DESC>
-                <TYPE>Map of strings</TYPE>
+                <TYPE>HASH</TYPE>
             </RETURN>
         </METHOD>
 
         <METHOD name="setProperty">
             <DESC>This is documentation</DESC>
             <PARAMS>
-                <PARAM name="propertyName">
+                <PARAM name="propertyName" type="STRING">
                     <DESC>The one property name that I want to set</DESC>
-                    <TYPE>String</TYPE>
                 </PARAM>
-                <PARAM name="propertyValue">
+                <PARAM name="propertyValue" type="STRING">
                     <DESC>The one property value that I want to set</DESC>
-                    <TYPE>String</TYPE>
                 </PARAM>
             </PARAMS>
         </METHOD>
@@ -62,9 +52,8 @@
         <METHOD name="setProperties">
             <DESC>This is documentation</DESC>
             <PARAMS>
-                <PARAM name="propertyMap">
+                <PARAM name="propertyMap" type="HASH">
                     <DESC>Map of properties I want to set</DESC>
-                    <TYPE>Map of strings</TYPE>
                 </PARAM>
             </PARAMS>
         </METHOD>
