@@ -185,6 +185,10 @@ namespace "build" do
     desc "Build WP8 rhobundle"
     task :rhobundle_noext => ["config:wp8", "build:bundle:noxruby", :rhobundlemap] do
       #move public folder to root
+	  confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+	  confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
+	  File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+
       cp_r $srcdir + "/apps/public", $srcdir + "/public"
       rm_r $srcdir + "/apps/public"
     end
