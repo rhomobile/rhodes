@@ -33,6 +33,7 @@
 #include "common/RhoFilePath.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/app_build_capabilities.h"
+#include "rhoruntime.h"
 
 using namespace Windows::Graphics::Display;
 using namespace Windows::Devices::Input;
@@ -83,14 +84,12 @@ int rho_wmsys_has_touchscreen()
 
 int rho_sys_get_screen_width()
 {
-	Rect rc = CoreWindow::GetForCurrentThread()->Bounds;
-	return rc.Width;
+	return rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getScreenWidth();
 }
 
 int rho_sys_get_screen_height()
 {
-	Rect rc = CoreWindow::GetForCurrentThread()->Bounds;
-	return rc.Height;
+	return rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getScreenHeight();
 }
 
 static void toHexString(int i, String& strRes, int radix)
@@ -166,9 +165,9 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 
 	if (strcasecmp("device_name",szPropName) == 0)
 	{
-		HKEY hKey;
-        int nRes = 0;
-		return nRes;
+		// TODO: get real device name
+		*resValue = rho_ruby_create_string("Windows Phone 8 Emulator");
+		return 1;
 	}
 
 	if (strcasecmp("os_version",szPropName) == 0)
@@ -187,7 +186,9 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 
 	if (strcasecmp("is_emulator",szPropName) == 0)
     {
-        bool bEmulator = true;
+		// TODO: distinguish emulator from device
+        //bool bEmulator = true;
+		*resValue = rho_ruby_create_boolean(1);
         return 1;
     }
 
@@ -213,6 +214,13 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 	    }                                                          
         return 1;
     }
+
+    if (strcasecmp("device_id",szPropName) == 0) 
+    {
+		// TODO: get real device id (maybe just remove it from here to allow platform-independent implementation to handle it through rho::sync::RhoconnectClientManager
+		*resValue = rho_ruby_create_string("WP8_EMULATOR");
+		return 1;
+	}
 
 	if (strcasecmp("has_cell_network",szPropName) == 0) 
     {

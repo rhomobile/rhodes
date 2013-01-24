@@ -102,6 +102,8 @@ static char* rb_type_to_s(VALUE obj);
 //extern void Init_native_thread2(rb_thread_t *th);
 extern int rho_conf_getBool(const char* szName);
 
+static int extensions_loaded = 0;
+
 #if defined(WIN32)
 extern void rb_w32_sysinit(int *argc, char ***argv);
 #endif
@@ -278,6 +280,8 @@ void RhoRubyStart()
 
 	Init_Extensions();
 #endif //OS_WP8
+		
+	extensions_loaded = 1;
 
 
     if ( rho_rcclient_have_rhoconnect_client() ) {
@@ -353,6 +357,11 @@ void RhoRubyStart()
 int  rho_ruby_is_started()
 {
     return rb_mKernel != 0 ? 1 : 0;
+}
+
+int  rho_extensions_are_loaded()
+{
+	return extensions_loaded;
 }
 
 int rho_ruby_is_enabled_eval()
