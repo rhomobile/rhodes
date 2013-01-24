@@ -13,6 +13,9 @@ namespace rhodes
 
         public int getLogicalDpiX() { return _mainPage.getLogicalDpiX(); }
         public int getLogicalDpiY() { return _mainPage.getLogicalDpiY(); }
+        public int getScreenWidth() { return _mainPage.getScreenWidth();  }
+        public int getScreenHeight() { return _mainPage.getScreenHeight();  }
+
         public void bringToFront() { _mainPage.bringToFront(); }
 
 		// webview

@@ -20,7 +20,7 @@ platform/iphone/RhoLib/build/*
 platform/iphone/Tests/build/*
 platform/iphone/curl/build/*
 lib/extensions/audiocapture/ext/audiocapture/platform/iphone/build/*
-lib/extensions/videocapture/ext/audiocapture/platform/iphone/build/*
+lib/extensions/videocapture/ext/videocapture/platform/iphone/build/*
 lib/extensions/barcode/ext/barcode/platform/iphone/build/*
 lib/extensions/digest-sha2/ext/iphone/build/*
 lib/extensions/esri/ext/esri/platform/iphone/build/*

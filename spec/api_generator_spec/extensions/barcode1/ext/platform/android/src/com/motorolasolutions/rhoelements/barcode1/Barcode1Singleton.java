@@ -1,43 +1,30 @@
 package com.motorolasolutions.rhoelements.barcode1;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-import com.motorolasolutions.rhoelements.Barcode1SingletonBase;
-import com.motorolasolutions.rhoelements.IBarcode1;
 import com.motorolasolutions.rhoelements.IMethodResult;
+import com.motorolasolutions.rhoelements.IRhoApiSingleton;
 
-class Barcode1Singleton extends Barcode1SingletonBase {
-
-    private Map<String, IBarcode1> sActiveBarcodes = new LinkedHashMap<String, IBarcode1>();
-    
-    public static void init() { setInstance(new Barcode1Singleton()); }
-
-    @Override
-    public IBarcode1 getApiObject(String id) {
-        IBarcode1 res = sActiveBarcodes.get(id);
-        if (res == null) {
-            res = new Barcode1(id);
-            sActiveBarcodes.put(id, res);
-        }
-        return res;
+class Barcode1Singleton extends Barcode1SingletonBase implements IRhoApiSingleton {
+    public Barcode1Singleton(Barcode1Factory factory) {
+        super(factory);
     }
 
-    List<String> getIds() {
+    List<String> getIDs() {
         List<String> ids = new LinkedList<String>();
         ids.add("SCN1");
         ids.add("SCN2");
         return ids;
     }
     
-    protected String createDefaultId() {
-        return getIds().get(0);
+    @Override
+    protected String getInitialDefaultID() {
+        return getIDs().get(0);
     }
 
     @Override
     public void enumerate(IMethodResult res) {
-        res.set(getIds());
+        res.set(getIDs());
     }
 }

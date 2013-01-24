@@ -556,11 +556,15 @@ module Rhogen
       end
 
       def step_through_templates
-        @generator.setup_xml
+        if @generator.respond_to? :setup_xml
+          @generator.setup_xml
 
-        $modules.each do |module_item|
-           $cur_module = module_item
-           old_step_through_templates
+          $modules.each do |module_item|
+             $cur_module = module_item
+             old_step_through_templates
+          end
+        else
+          old_step_through_templates
         end
       end
     end
