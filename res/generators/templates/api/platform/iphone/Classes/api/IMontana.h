@@ -3,48 +3,97 @@
 
 #import "api_generator/iphone/IMethodResult.h"
 
+<% $iphone_types = {}
+$iphone_types["STRING"] = 'NSString*'
+$iphone_types["ARRAY"] = 'NSArray*'
+$iphone_types["HASH"] = 'NSDictionary*'
+$iphone_types["SELF_INSTANCE"] = 'id<'+$cur_module.name+'>' %>
+
 @protocol I<%= $cur_module.name %> <NSObject>
 
-<% if $cur_module. %>
--(void) getProps:(id<IMethodResult>)methodResult;
--(void) getPropsWithString:(NSString*)param1 methodResult:(id<IMethodResult>)methodResult;
--(void) getPropsWithArray:(NSArray*)param1 methodResult:(id<IMethodResult>)methodResult;
-<% end %>
-/*
--(void) setProps:(NSDictionary*)props;
--(void) setProperty:(NSString*)propertyName propertyValue:(NSObject*)propertyValue;
-*/
+<% $cur_module.methods.each do |module_method|
+  if module_method.access != ModuleMethod::ACCESS_STATIC
+     method_line = '-(void) '
+     method_line = method_line + module_method.name
+
+     if module_method.params.size == 0
+        if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value || module_method.is_factory_method)
+           method_line = method_line + ':(id<IMethodResult>)methodResult'
+        end
+     else
+        param_index = 0
+        module_method.params.each do |method_param|
+           if param_index != 0
+               method_line = method_line + ' ' + method_param.name
+           end
+           method_line = method_line + ':'
+           method_line = method_line + '(' + $iphone_types[method_param.type] + ')'
+           method_line = method_line + method_param.name
+           param_index = param_index + 1
+        end
+         if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
+            method_line = method_line + ' methodResult:(id<IMethodResult>)methodResult'
+         end
+     end
+     method_line = method_line + ';';
+%><%= method_line %>
+<% end
+end %>
 
 // NOTE: if you want to hold methodResult(for periodically call callback for example) you should release it buself when you stop using it !
 
 @end
 
 
-@protocol I<%= $name %>Singleton <NSObject>
+@protocol I<%= $cur_module.name %>Singleton <NSObject>
 
-<% if $xml_class_attributes_singletone_id %>
--(void) enumerate:(id<IMethodResult>)methodResult;
-<% end %>
-
-
-<% if $xml_class_attributes_default_instance %>
+<% if $cur_module.is_template_default_instance %>
 -(NSString*) getDefaultID;
 -(void) setDefaultID:(NSString*)defaultID;
 -(NSString*)getInitialDefaultID;
 <% end %>
+
+<% $cur_module.methods.each do |module_method|
+  if module_method.access == ModuleMethod::ACCESS_STATIC
+     method_line = '-(void) '
+     method_line = method_line + module_method.name
+
+     if module_method.params.size == 0
+        if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value || module_method.is_factory_method)
+           method_line = method_line + ':(id<IMethodResult>)methodResult'
+        end
+     else
+        param_index = 0
+        module_method.params.each do |method_param|
+           if param_index != 0
+               method_line = method_line + ' ' + method_param.name
+           end
+           method_line = method_line + ':'
+           method_line = method_line + '(' + $iphone_types[method_param.type] + ')'
+           method_line = method_line + method_param.name
+           param_index = param_index + 1
+        end
+         if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
+            method_line = method_line + ' methodResult:(id<IMethodResult>)methodResult'
+         end
+     end
+     method_line = method_line + ';';
+%><%= method_line %>
+<% end
+end %>
+
 @end
 
 
-@protocol I<%= $name %>Factory <NSObject>
--(id<I<%= $name %>Singleton>) get<%= $name %>Singleton;
--(id<I<%= $name %>>) get<%= $name %>ByID:(NSString*)ID;
+@protocol I<%= $cur_module.name %>Factory <NSObject>
+-(id<I<%= $cur_module.name %>Singleton>) get<%= $name %>Singleton;
+-(id<I<%= $cur_module.name %>>) get<%= $cur_module.name %>ByID:(NSString*)ID;
 @end
 
 
-
-@interface <%= $name %>FactorySingleton : NSObject {
+@interface <%= $cur_module.name %>FactorySingleton : NSObject {
 }
-+(id<I<%= $name %>Factory>) get<%= $name %>FactoryInstance;
++(id<I<%= $cur_module.name %>Factory>) get<%= $cur_module.name %>FactoryInstance;
 @end
 
 

@@ -13,6 +13,7 @@
     mRubyCallbackURL = nil;
     mJSCallbackUID = nil;
     mCallbackParam = nil;
+    mRubyFactory = nil;
     return self;
 }
 
@@ -27,6 +28,9 @@
 
 
 -(VALUE) toRuby {
+    if (mRubyFactory != nil) {
+        return [mRubyFactory makeRubyValue:mValue];
+    }
     return [CRubyConverter convertToRuby:mValue];
 }
 
@@ -50,6 +54,11 @@
 -(void) callRubyCallback:(NSString*)url {
     RubyCallbackHelper_callCallback(mRubyCallbackURL, self, mCallbackParam);
 }
+
+-(void) setRubyFactory:(id<IMethodResult_RubyObjectFactory>)factory {
+    mRubyFactory = factory;
+}
+
 
 -(void) callJSCallback:(NSString*)uid {
     //TODO:
