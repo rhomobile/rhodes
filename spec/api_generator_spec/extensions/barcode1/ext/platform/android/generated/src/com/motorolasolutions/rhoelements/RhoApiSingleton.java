@@ -1,12 +1,12 @@
 package com.motorolasolutions.rhoelements;
 
-public abstract class RhoApiSingletonBase<IApi extends IRhoApiObject, IFactory extends IRhoApiFactory<IApi> >
+public abstract class RhoApiSingleton<IApi extends IRhoApiObject, IFactory extends IRhoApiFactory<IApi> >
     implements IRhoApiSingleton {
 
     private IFactory mFactory;
     private IApi mDefault;
     
-    public RhoApiSingletonBase(IFactory factory) {
+    public RhoApiSingleton(IFactory factory) {
         mFactory = factory;
     }
 

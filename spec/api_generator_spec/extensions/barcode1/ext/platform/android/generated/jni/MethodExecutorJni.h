@@ -19,7 +19,9 @@ class MethodExecutorJni
     bool m_uiThread;
 
 protected:
+    static JNIEnv* jniInit(JNIEnv* env);
     static JNIEnv* jniInit();
+    static jclass loadClass(JNIEnv* env, const char* const name);
 
 public:
     MethodExecutorJni(bool separateThread, bool uiThread) : m_separateThread(separateThread), m_uiThread(uiThread) {}

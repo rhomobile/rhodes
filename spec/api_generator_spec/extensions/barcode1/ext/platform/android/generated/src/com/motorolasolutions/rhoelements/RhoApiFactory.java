@@ -3,11 +3,11 @@ package com.motorolasolutions.rhoelements;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class RhoApiFactoryBase <IApi extends IRhoApiObject, IApiSingleton> {
+public abstract class RhoApiFactory <IApi extends IRhoApiObject, IApiSingleton> {
     IApiSingleton mApiSingleton;
     Map<String, IApi> mApiObjects;
     
-    public RhoApiFactoryBase() {
+    public RhoApiFactory() {
         mApiObjects = new HashMap<String, IApi>();
     }
 
