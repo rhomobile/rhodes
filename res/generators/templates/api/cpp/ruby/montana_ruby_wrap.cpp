@@ -154,7 +154,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
 
         oRes.setCallInUIThread(<%= module_method.is_run_in_ui_thread ? "true" : "false" %>);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
