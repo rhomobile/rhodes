@@ -8,7 +8,7 @@ class BarcodeTestController < Rho::RhoController
   include ApplicationHelper
   
   def index
-  
+
     res = Rho::Barcode.getProperty("display")
     puts "res: #{res}"
     
@@ -21,7 +21,10 @@ class BarcodeTestController < Rho::RhoController
     arBarcodes[1].getProperty("sound", "/app/BarcodeTest/test_callback")
     
     arBarcodes[1].getAllProperties( "/app/BarcodeTest/test_callback", "param1=123")
-    
+
+    #hash = { name: "David", age: 49 }
+    Rho::Barcode.setProperties(  Barcode128: 'enabled' )
+  
     render :back => '/app'
   end
 

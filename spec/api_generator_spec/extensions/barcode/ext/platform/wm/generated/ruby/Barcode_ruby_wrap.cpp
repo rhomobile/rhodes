@@ -112,7 +112,7 @@ static VALUE _api_generator_Barcode_enable(int argc, VALUE *argv, IBarcode* pObj
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -197,7 +197,7 @@ static VALUE _api_generator_Barcode_start(int argc, VALUE *argv, IBarcode* pObj)
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -271,7 +271,7 @@ static VALUE _api_generator_Barcode_stop(int argc, VALUE *argv, IBarcode* pObj)
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -356,7 +356,7 @@ static VALUE _api_generator_Barcode_disable(int argc, VALUE *argv, IBarcode* pOb
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -464,7 +464,7 @@ static VALUE _api_generator_Barcode_take(int argc, VALUE *argv, IBarcode* pObj)
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -583,7 +583,7 @@ static VALUE _api_generator_Barcode_getProperty(int argc, VALUE *argv, IBarcode*
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -697,7 +697,7 @@ static VALUE _api_generator_Barcode_getProperties(int argc, VALUE *argv, IBarcod
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -779,7 +779,7 @@ static VALUE _api_generator_Barcode_getAllProperties(int argc, VALUE *argv, IBar
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -936,7 +936,7 @@ static VALUE _api_generator_Barcode_setProperty(int argc, VALUE *argv, IBarcode*
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -1053,7 +1053,7 @@ static VALUE _api_generator_Barcode_setProperties(int argc, VALUE *argv, IBarcod
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -1138,7 +1138,7 @@ static VALUE _api_generator_Barcode_clearProps(int argc, VALUE *argv, IBarcode* 
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
@@ -1222,7 +1222,7 @@ VALUE rb_s_Barcode_enumerate(int argc, VALUE *argv)
 
         oRes.setCallInUIThread(false);
         oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        if ( argc >= nCallbackArg + 1 )
+        if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
