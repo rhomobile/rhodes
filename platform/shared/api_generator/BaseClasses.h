@@ -17,18 +17,34 @@ public:
         m_strID = strID;
     }
 
-    virtual void getProps(CMethodResult& oResult)
-    { 
+    virtual void getProperty( const rho::StringW& propertyName, CMethodResult& oResult)
+    {
+        oResult.set(m_hashProps[propertyName]);
+    }
+
+    virtual void getProperties( const rho::Vector<rho::StringW>& arrayofNames, CMethodResult& oResult)
+    {
         oResult.set(m_hashProps);
     }
 
-    virtual void getPropsWithString(const rho::StringW& strName, CMethodResult& oResult)
-    {
-        oResult.set(m_hashProps[strName]);
-    }
-    virtual void getPropsWithArray(const rho::Vector<rho::StringW>& arNames, CMethodResult& oResult)
+    virtual void getAllProperties(CMethodResult& oResult)
     {
         oResult.set(m_hashProps);
+    }
+
+    virtual void setProperty( const rho::StringW& propertyName,  const rho::StringW& propertyValue, CMethodResult& oResult)
+    {
+        m_hashProps.put(propertyName, propertyValue);
+    }
+
+    virtual void setProperties( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult)
+    {
+        //TODO:setProperties
+    }
+
+    virtual void clearProps(CMethodResult& oResult)
+    {
+        m_hashProps.clear();
     }
 
 };
