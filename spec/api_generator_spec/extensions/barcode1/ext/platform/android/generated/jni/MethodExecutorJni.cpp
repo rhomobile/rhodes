@@ -22,16 +22,21 @@ jmethodID MethodExecutorJni::s_midRunWithUiThread;
 JNIEnv* MethodExecutorJni::jniInit()
 {
     JNIEnv *env = jnienv();
-    if(env && !s_MethodExecutorClass)
+    if (!env) {
+        RAWLOG_ERROR("JNI init failed: JNIEnv is null");
+        return 0;
+    }
+    return jniInit(env);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+JNIEnv* MethodExecutorJni::jniInit(JNIEnv* env)
+{
+    if(!s_MethodExecutorClass)
     {
-        jclass cls = rho_find_class(env, METHOD_EXECUTOR_CLASS);
-        if(!cls)
-        {
-            RAWLOG_ERROR1("Failed to find java class: %s", METHOD_EXECUTOR_CLASS);
-            return NULL;
-        }
-        s_MethodExecutorClass = static_cast<jclass>(env->NewGlobalRef(cls));
-        env->DeleteLocalRef(cls);
+        s_MethodExecutorClass = loadClass(env, METHOD_EXECUTOR_CLASS);
+        if (!s_MethodExecutorClass)
+            return 0;
 
         s_midRun = env->GetStaticMethodID(s_MethodExecutorClass, "run", "(Ljava/lang/Runnable;)V");
         if(!s_midRun)
@@ -54,11 +59,26 @@ JNIEnv* MethodExecutorJni::jniInit()
             s_MethodExecutorClass = 0;
             return NULL;
         }
+        RAWTRACE("MethodExecutorJni JNI init succeeded");
     }
     return env;
 }
 //----------------------------------------------------------------------------------------------------------------------
 
+jclass MethodExecutorJni::loadClass(JNIEnv* env, const char* const name)
+{
+    jclass res = 0;
+    jclass cls = rho_find_class(env, name);
+    if(!cls)
+    {
+        RAWLOG_ERROR1("Failed to find java class: %s", name);
+        return 0;
+    }
+    res = static_cast<jclass>(env->NewGlobalRef(cls));
+    env->DeleteLocalRef(cls);
+    return res;
+}
+//----------------------------------------------------------------------------------------------------------------------
 void MethodExecutorJni::run(JNIEnv* env, jobject jTask, MethodResultJni& result)
 {
     if(shouldRunWithUiThread())
