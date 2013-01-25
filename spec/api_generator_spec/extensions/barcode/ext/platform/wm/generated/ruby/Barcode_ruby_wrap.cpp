@@ -135,7 +135,7 @@ static VALUE _api_generator_Barcode_enable(int argc, VALUE *argv, IBarcode* pObj
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         pObj->enable( arg0,  oRes );
@@ -294,7 +294,7 @@ static VALUE _api_generator_Barcode_stop(int argc, VALUE *argv, IBarcode* pObj)
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         pObj->stop(  oRes );
@@ -379,7 +379,7 @@ static VALUE _api_generator_Barcode_disable(int argc, VALUE *argv, IBarcode* pOb
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         pObj->disable(  oRes );
@@ -487,7 +487,7 @@ static VALUE _api_generator_Barcode_take(int argc, VALUE *argv, IBarcode* pObj)
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         pObj->take( arg0,  oRes );
@@ -606,7 +606,7 @@ static VALUE _api_generator_Barcode_getProperty(int argc, VALUE *argv, IBarcode*
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         pObj->getProperty( arg0,  oRes );
@@ -720,7 +720,7 @@ static VALUE _api_generator_Barcode_getProperties(int argc, VALUE *argv, IBarcod
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         pObj->getProperties( arg0,  oRes );
@@ -802,7 +802,7 @@ static VALUE _api_generator_Barcode_getAllProperties(int argc, VALUE *argv, IBar
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         pObj->getAllProperties(  oRes );
@@ -959,7 +959,7 @@ static VALUE _api_generator_Barcode_setProperty(int argc, VALUE *argv, IBarcode*
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         pObj->setProperty( arg0, arg1,  oRes );
@@ -1076,7 +1076,7 @@ static VALUE _api_generator_Barcode_setProperties(int argc, VALUE *argv, IBarcod
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         pObj->setProperties( arg0,  oRes );
@@ -1161,7 +1161,7 @@ static VALUE _api_generator_Barcode_clearProps(int argc, VALUE *argv, IBarcode* 
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         pObj->clearProps(  oRes );
@@ -1245,7 +1245,7 @@ VALUE rb_s_Barcode_enumerate(int argc, VALUE *argv)
         CBarcodeFactoryBase::getBarcodeSingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 
         CBarcodeFactoryBase::getBarcodeSingletonS()->enumerate(  oRes );
