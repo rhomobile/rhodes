@@ -16,10 +16,12 @@ static VALUE rb_c<%= $cur_module.name %>;
 VALUE getRuby_<%= $cur_module.name %>_Module(){ return rb_c<%= $cur_module.name %>; }
 
 <% 
-def api_generator_MakeRubyMethodDef(module_name, module_method, is_static)
+def api_generator_MakeRubyMethodDef(module_name, module_method, is_static, method_suffix)
     method_name = 'rb_'
     method_name += 's_' if is_static
-    method_name += module_name + "_" + module_method.name
+    method_name += module_name + "_" 
+    method_name += method_suffix + "_" if method_suffix.length() > 0
+    method_name += module_method.name
 
     "rb_define_#{(module_method.access == ModuleMethod::ACCESS_STATIC) ? 'singleton_':''}method(rb_c#{module_name}, \"#{module_method.name}\", #{method_name}, -1);"
 end
@@ -35,10 +37,10 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
     rb_undef_alloc_func(rb_c<%= $cur_module.name %>);
 
 <% $cur_module.methods.each do |module_method|%>
-<%= api_generator_MakeRubyMethodDef($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC ) %>
+<%= api_generator_MakeRubyMethodDef($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC, "" ) %>
 
 <% if $cur_module.is_template_default_instance && module_method.access == ModuleMethod::ACCESS_INSTANCE%>
-<%= api_generator_MakeRubyMethodDef($cur_module.name + "_def", module_method, true)%>;
+<%= api_generator_MakeRubyMethodDef($cur_module.name, module_method, true, "def")%>;
 <% end %>
 
 <% end %>
