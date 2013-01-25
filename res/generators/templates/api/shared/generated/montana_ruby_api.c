@@ -23,7 +23,7 @@ def api_generator_MakeRubyMethodDef(module_name, module_method, is_static, metho
     method_name += method_suffix + "_" if method_suffix.length() > 0
     method_name += module_method.name
 
-    "rb_define_#{(module_method.access == ModuleMethod::ACCESS_STATIC) ? 'singleton_':''}method(rb_c#{module_name}, \"#{module_method.name}\", #{method_name}, -1);"
+    "rb_define_#{(is_static) ? 'singleton_':''}method(rb_c#{module_name}, \"#{module_method.name}\", #{method_name}, -1);"
 end
 
 %>
@@ -40,7 +40,7 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
 <%= api_generator_MakeRubyMethodDef($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC, "" ) %>
 
 <% if $cur_module.is_template_default_instance && module_method.access == ModuleMethod::ACCESS_INSTANCE%>
-<%= api_generator_MakeRubyMethodDef($cur_module.name, module_method, true, "def")%>;
+<%= api_generator_MakeRubyMethodDef($cur_module.name, module_method, true, "def")%>
 <% end %>
 
 <% end %>

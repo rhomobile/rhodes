@@ -6,6 +6,7 @@
 
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/StringConverter.h"
+#include "common/AutoPointer.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -71,7 +72,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
 <% end %>
 
     rho::common::IRhoRunnable* pFunctor = 0;
-    boolean bUseCallback = false;
+    bool bUseCallback = false;
     int nCallbackArg = 0;
 
 <% functor_params = ""; first_arg = 0; %>
@@ -92,10 +93,15 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
-            arg<%= first_arg %> = getStringFromValue(argv[<%= first_arg %>])
+        {
+            arg<%= first_arg %> = convertToStringW(getStringFromValue(argv[<%= first_arg %>]));
+<% if first_arg == 0 %>
+            oRes.setStringParam(getStringFromValue(argv[<%= first_arg %>]));
+<% end %>
+        }
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
-            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " + L<%= "\"#{param.type.downcase}\"" %> );
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
             return oRes.toRuby();
         }
     }
@@ -106,10 +112,10 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_array(argv[<%= first_arg %>]) )
-            getStringArrayFromValue(argv[<%= first_arg %>], arg<%= first_arg %>)
+            getStringArrayFromValue(argv[<%= first_arg %>], arg<%= first_arg %>);
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
-            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " + L<%= "\"#{param.type.downcase}\"" %> );
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
             return oRes.toRuby();
         }
     }
@@ -120,24 +126,17 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_hash(argv[<%= first_arg %>]) )
-            getStringHashFromValue(argv[<%= first_arg %>], arg<%= first_arg %>)
+            getStringHashFromValue(argv[<%= first_arg %>], arg<%= first_arg %>);
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
-            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " + L<%= "\"#{param.type.downcase}\"" %> );
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
             return oRes.toRuby();
         }
     }
 <% end %>
         
-        <% functor_params += "arg#{first_arg}, " %>
-    }
+<% functor_params += "arg#{first_arg}, " %>
 <% first_arg = first_arg+1 %>
-<% end %>
-
-<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
-    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &I<%= $cur_module.name %>::<%= module_method.name %>, <%= functor_params %> oRes );
-<% else %>
-    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.name %>, <%= functor_params %> oRes );
 <% end %>
 
     if ( argc > nCallbackArg )
@@ -168,12 +167,32 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
         
     }
 
-    if ( module_method.is_run_in_ui_thread )
-        rho_wm_impl_performOnUiThread( pFunctor );
-    else if ( bUseCallback || module_method.is_run_in_thread)
+<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &I<%= $cur_module.name %>::<%= module_method.name %>, <%= functor_params %> oRes );
+<% else %>
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.name %>, <%= functor_params %> oRes );
+<% end %>
+
+<% if module_method.is_run_in_ui_thread %>
+    rho_wm_impl_performOnUiThread( pFunctor );
+<% elsif module_method.is_run_in_thread %>
+    C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
+<% else %>
+
+    if ( bUseCallback )
         C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
     else
-        pFunctor->run();
+    {
+        //pFunctor->runObject();
+
+<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
+        pObj-><%= module_method.name %>( <%= functor_params %> oRes );
+<% else %>
+        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.name %>( <%= functor_params %> oRes );
+<% end %>
+
+    }
+<% end %>
 
     return oRes.toRuby();
 }
