@@ -3,7 +3,7 @@
 
 <DEFAULT_INSTANCE>
 	<METHODS>
-		<METHOD name="default" access="STATIC" fabric="true">
+	    <METHOD name="default" access="STATIC" factory="true">
 			<DESC>This is documentation</DESC>
         </METHOD>
 

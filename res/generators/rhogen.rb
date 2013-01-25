@@ -620,8 +620,9 @@ module Rhogen
         @name = ''
         @params = [] # array of MethodArgument
         @is_run_in_thread = false
-        @is_fabric_method = false
+        @is_factory_method = false
         @is_run_in_ui_thread = false
+        @is_return_value = false
         @access = ACCESS_INSTANCE
         @has_callback = CALLBACK_NONE
       end
@@ -629,8 +630,9 @@ module Rhogen
       attr_accessor :name
       attr_accessor :params
       attr_accessor :is_run_in_thread
-      attr_accessor :is_fabric_method
+      attr_accessor :is_factory_method
       attr_accessor :is_run_in_ui_thread
+      attr_accessor :is_return_value
       attr_accessor :access
       attr_accessor :has_callback
     end
@@ -643,6 +645,8 @@ module Rhogen
         @is_template_singletone_id = false
         @is_template_default_instance = false
         @is_template_propertybag = false
+        @has_instance_methods = false
+        @has_factory_methods = false
       end
 
       attr_accessor :name
@@ -651,6 +655,8 @@ module Rhogen
       attr_accessor :is_template_singletone_id
       attr_accessor :is_template_default_instance
       attr_accessor :is_template_propertybag
+      attr_accessor :has_instance_methods
+      attr_accessor :has_factory_methods
     end
 
     $modules = []
@@ -702,7 +708,7 @@ module Rhogen
              apply_templates_to_module(xml_module_item, "singleton_instances")
          end
          if module_item.is_template_default_instance
-             apply_templates_to_module(xml_module_item, "default_instance")
+             #apply_templates_to_module(xml_module_item, "default_instance")
          end
 
 
@@ -714,11 +720,14 @@ module Rhogen
             if xml_module_method.attribute("access") != nil
                if xml_module_method.attribute("access").to_s.downcase == "static"
                    module_method.access = ModuleMethod::ACCESS_STATIC
+               else
+                   module_item.has_instance_methods = true
                end
             end
-            if xml_module_method.attribute("fabric") != nil
-               if xml_module_method.attribute("fabric").to_s.downcase != "false"
-                   module_method.is_fabric_method = true
+            if xml_module_method.attribute("factory") != nil
+               if xml_module_method.attribute("factory").to_s.downcase != "false"
+                   module_method.is_factory_method = true
+                   module_item.has_factory_methods = true
                end
             end
             if xml_module_method.attribute("run_in_thread") != nil
@@ -740,6 +749,10 @@ module Rhogen
                end
             end
 
+            if xml_module_method.elements["RETURN"] != nil
+                module_method.is_return_value = true
+            end
+
             param_index = 1
 
             xml_module_method.elements.each("PARAMS/PARAM") do |xml_method_param|
@@ -754,7 +767,7 @@ module Rhogen
                if xml_method_param.attribute("type") != nil
                   method_param.type = xml_method_param.attribute("type").to_s.upcase
                else
-                  raise "parameter in method must have specified type !. Module[#{$module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
+                  raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
                end
 
                method_param.can_be_nil = (xml_method_param.elements["CAN_BE_NIL"] != nil)
@@ -767,7 +780,9 @@ module Rhogen
             module_item.methods << module_method
          end
 
-
+         if module_item.has_instance_methods && (!module_item.has_factory_methods && !module_item.is_template_default_instance)
+             raise "If module has instance methods, then module should have factory methods for produce instances ! Module[#{module_item.name}]"
+         end
 
          $modules << module_item
       end
@@ -791,10 +806,10 @@ module Rhogen
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_ruby_api.c"
     end
 
-    #template :iphone_api do |template|
-    #  template.source = 'platform/iphone/Classes/api/IMontana.h'
-    #  template.destination = "platform/iphone/Classes/api/I#{$cur_module.name}.h"
-    #end
+    template :iphone_api do |template|
+      template.source = 'platform/iphone/Classes/api/IMontana.h'
+      template.destination = "platform/iphone/Classes/api/I#{$cur_module.name}.h"
+    end
 
     #template :iphone_api_readme do |template|
     #  template.source = 'platform/iphone/Classes/api/readme.txt'
