@@ -183,7 +183,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
         C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
     else
     {
-        //pFunctor->runObject();
+        delete pFunctor;
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
         pObj-><%= module_method.name %>( <%= functor_params %> oRes );
