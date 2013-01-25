@@ -4,22 +4,6 @@
 #include "api_generator/MethodResult.h"
 #include "api_generator/BaseClasses.h"
 
-<%
-def makeNativeType(gen_type)
-    
-    if gen_type == MethodParam::TYPE_STRING
-        res = "const rho::StringW&"
-    elsif gen_type == MethodParam::TYPE_ARRAY
-        res = "const rho::Vector<rho::StringW>&"
-    elsif gen_type == MethodParam::TYPE_HASH
-        res = "const rho::Hashtable<rho::StringW, rho::StringW>&"
-    else
-        raise "Unknown parameter type: #{gen_type}"     
-    end
-    
-    res
-end
-%>
 ///////////////////////////////////////////////////////////
 struct I<%= $cur_module.name %>
 {
@@ -30,7 +14,7 @@ struct I<%= $cur_module.name %>
 
     params = ''
     module_method.params.each do |param|
-        params += " #{makeNativeType(param.type)} #{param.name}, "
+        params += " const #{api_generator_cpp_makeNativeType(param.type)}& #{param.name}, "
     end
 
     params += 'CMethodResult& oResult'
@@ -48,7 +32,7 @@ struct I<%= $cur_module.name %>Singleton
 
     params = ''
     module_method.params.each do |param|
-        params += " #{makeNativeType(param.type)} #{param.name}, "
+        params += " const #{api_generator_cpp_makeNativeType(param.type)}& #{param.name}, "
     end
 
     params += 'CMethodResult& oResult'

@@ -150,6 +150,7 @@ VALUE rho_ruby_create_object_with_id( VALUE klass, const char* szID );
 const char* rho_ruby_get_object_id( VALUE valObj );
 int rho_ruby_is_string(VALUE val);
 int rho_ruby_is_array(VALUE val);
+int rho_ruby_is_hash(VALUE val);
 
 #define RHO_PARAM_UNKNWON 0
 #define RHO_PARAM_STRING 1

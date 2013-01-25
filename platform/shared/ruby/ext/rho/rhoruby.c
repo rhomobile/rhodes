@@ -1010,6 +1010,11 @@ int rho_ruby_is_array(VALUE val)
     return (TYPE(val) == T_ARRAY) ? 1 : 0;
 }
 
+int rho_ruby_is_hash(VALUE val)
+{
+    return (TYPE(val) == T_HASH) ? 1 : 0;
+}
+
 const char* rho_ruby_get_object_id( VALUE valObj )
 {
     const char ** ppString = NULL;
