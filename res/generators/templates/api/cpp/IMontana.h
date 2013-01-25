@@ -4,6 +4,22 @@
 #include "api_generator/MethodResult.h"
 #include "api_generator/BaseClasses.h"
 
+<%
+def makeNativeType(gen_type)
+    
+    if gen_type == MethodParam::TYPE_STRING
+        res = "const rho::StringW&"
+    elsif gen_type == MethodParam::TYPE_ARRAY
+        res = "const rho::Vector<rho::StringW>&"
+    elsif gen_type == MethodParam::TYPE_HASH
+        res = "const rho::Hashtable<rho::StringW, rho::StringW>&"
+    else
+        raise "Unknown parameter type: #{gen_type}"     
+    end
+    
+    res
+end
+%>
 ///////////////////////////////////////////////////////////
 struct I<%= $cur_module.name %>
 {
@@ -12,29 +28,16 @@ struct I<%= $cur_module.name %>
 <% $cur_module.methods.each do |module_method|
     next if module_method.access == ModuleMethod::ACCESS_STATIC
 
-    #puts "module_method.params : #{module_method.params}"
     params = ''
     module_method.params.each do |param|
-        if param.type == MethodParam::TYPE_STRING
-            params += "const rho::StringW&"
-        elsif param.type == MethodParam::TYPE_ARRAY
-            params += "const rho::Vector<rho::StringW>&"
-        elsif param.type == MethodParam::TYPE_HASH
-            params += "const rho::Hashtable<rho::StringW, rho::StringW>&"
-        end
-
-        params += " #{param.name}, "
+        params += " #{makeNativeType(param.type)} #{param.name}, "
     end
 
     params += 'CMethodResult& oResult'
 
-    %>    virtual void <%= module_method.name%>(<%= params%>) = 0;
+%>    virtual void <%= module_method.name%>(<%= params%>) = 0;
 <% end %>
 };
-
-//    virtual void getProps(CMethodResult& oResult) = 0;
-//    virtual void getPropsWithString(const rho::StringW& strName, CMethodResult& oResult) = 0;
-//    virtual void getPropsWithArray(const rho::Vector<rho::StringW>& arNames, CMethodResult& oResult) = 0;
 
 struct I<%= $cur_module.name %>Singleton
 {
@@ -43,24 +46,14 @@ struct I<%= $cur_module.name %>Singleton
 <% $cur_module.methods.each do |module_method|
     next if module_method.access != ModuleMethod::ACCESS_STATIC
 
-    #puts "module_method.params : #{module_method.params}"
     params = ''
     module_method.params.each do |param|
-        if param.type == MethodParam::TYPE_STRING
-            params += "const rho::StringW&"
-        elsif param.type == MethodParam::TYPE_ARRAY
-            params += "const rho::Vector<rho::StringW>&"
-        elsif param.type == MethodParam::TYPE_HASH
-            params += "const rho::Hashtable<rho::StringW, rho::StringW>&"
-        end
-
-        params += " #{param.name},"
+        params += " #{makeNativeType(param.type)} #{param.name}, "
     end
 
     params += 'CMethodResult& oResult'
 
-    %>
-    virtual void <%= module_method.name%>(<%= params%>) = 0;
+%>    virtual void <%= module_method.name%>(<%= params%>) = 0;
 <% end %>
 <% if $cur_module.is_template_default_instance %>
     virtual rho::StringW getDefaultID() = 0;
@@ -71,18 +64,15 @@ struct I<%= $cur_module.name %>Singleton
     virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor) = 0;
 };
 
-//    virtual void enumerate(CMethodResult& oResult) = 0;
-
-//    virtual rho::StringW getDefaultID() = 0;
-//    virtual rho::StringW getInitialDefaultID() = 0;
-//    virtual void setDefaultID(const rho::StringW& strID) = 0;
-
 struct I<%= $cur_module.name %>Factory
 {
     virtual ~I<%= $cur_module.name %>Factory(){}
 
     virtual I<%= $cur_module.name %>Singleton* getModuleSingleton() = 0;
+
+<% if $cur_module.is_template_default_instance %>
     virtual I<%= $cur_module.name %>* getModuleByID(const rho::StringW& strID) = 0;
+<% end %>
 };
 
 class C<%= $cur_module.name %>FactoryBase : public CModuleFactoryBase<I<%= $cur_module.name %>, I<%= $cur_module.name %>Singleton, I<%= $cur_module.name %>Factory>

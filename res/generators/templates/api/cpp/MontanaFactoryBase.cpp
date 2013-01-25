@@ -1,3 +1,3 @@
-#include "Barcode1.h"
+#include "I<%= $cur_module.name %>.h"
 
-rho::common::CAutoPtr<CBarcode1FactoryBase> CBarcode1FactoryBase::m_pInstance;
+rho::common::CAutoPtr<C<%= $cur_module.name %>FactoryBase> C<%= $cur_module.name %>FactoryBase::m_pInstance;

@@ -676,6 +676,9 @@ module Rhogen
     end
 
     def setup_xml
+    
+      require File.dirname(__FILE__) + '/templates/api/helpers/api_helper'
+    
       if $xml != nil
         return
       end
@@ -814,6 +817,16 @@ module Rhogen
     template :wm_api do |template|
       template.source = 'cpp/IMontana.h'
       template.destination = "platform/wm/generated/I#{$cur_module.name}.h"
+    end
+
+    template :wm_api1 do |template|
+      template.source = 'cpp/MontanaFactoryBase.cpp'
+      template.destination = "platform/wm/generated/#{$cur_module.name}FactoryBase.cpp"
+    end
+
+    template :wm_api2 do |template|
+      template.source = 'cpp/ruby/montana_ruby_wrap.cpp'
+      template.destination = "platform/wm/generated/ruby/#{$cur_module.name}_ruby_wrap.cpp"
     end
 
     #template :iphone_api_readme do |template|
