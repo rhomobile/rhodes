@@ -328,6 +328,9 @@ const char* rho_rhodesapp_getplatform()
     if ( strPlatform.compare("wp") == 0 )
         return "WP7";
 
+    if ( strPlatform.compare("wp8") == 0 )
+        return "WP8";
+
     if ( strPlatform.compare("android") == 0 )
         return "ANDROID";
 
@@ -348,7 +351,11 @@ const char* rho_rhodesapp_getplatform()
 #elif defined(OS_WINDOWS_DESKTOP)
 	return "WINDOWS_DESKTOP";
 #elif defined(WINDOWS_PLATFORM)
+#if defined(OS_WP8)
+	return "WP8";
+#else
 	return "WINDOWS";
+#endif
 #elif defined(OS_SYMBIAN)
 	return "SYMBIAN";
 #elif defined(OS_ANDROID)
