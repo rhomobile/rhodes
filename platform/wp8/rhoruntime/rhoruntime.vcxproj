@@ -230,6 +230,7 @@
     <ClCompile Include="common\ExtManager.cpp" />
     <ClCompile Include="common\RhoClassFactory.cpp" />
     <ClCompile Include="common\RhoCryptImpl.cpp" />
+    <ClCompile Include="TabbarImpl.cpp" />
     <ClCompile Include="common\ThreadEmulation.cpp" />
     <ClCompile Include="FakeDefs.cpp" />
     <ClCompile Include="GeoLocationImpl.cpp" />

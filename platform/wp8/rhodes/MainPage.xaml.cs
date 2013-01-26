@@ -33,6 +33,7 @@ using Microsoft.Phone.Controls;
 using rhodes.Resources;
 using rhoruntime;
 using Microsoft.Phone.Shell;
+using System.Windows.Media;
 
 namespace rhodes
 {
@@ -161,34 +162,60 @@ namespace rhodes
 		public void navigate(string url, int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigate(url, index); }); return; }
-            RhodesWebBrowser.Navigate(new Uri(url));
+            if (isDefaultBrowser())
+                RhodesWebBrowser.Navigate(new Uri(url));
+            else
+                ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url));
         }
 
         public void executeScript(string script, int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { executeScript(script, index); }); return; }
-            RhodesWebBrowser.InvokeScript(script);
+            if (isDefaultBrowser())
+                RhodesWebBrowser.InvokeScript(script);
+            else
+                ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript(script);
         }
 
 		public void GoBack()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoBack(); }); return; }
-            if (RhodesWebBrowser.CanGoBack)
-                RhodesWebBrowser.GoBack();
+            if (isDefaultBrowser())
+            {
+                if (RhodesWebBrowser.CanGoBack)
+                    RhodesWebBrowser.GoBack();
+            }
+            else
+            {
+                if (((WebBrowser)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Content).CanGoBack)
+                    ((WebBrowser)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Content).GoBack();
+            }
         }
 
 		public void GoForward()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoForward(); }); return; }
-            if (RhodesWebBrowser.CanGoForward)
-                RhodesWebBrowser.GoForward();
+            if (isDefaultBrowser())
+            {
+                if (RhodesWebBrowser.CanGoForward)
+                    RhodesWebBrowser.GoForward();
+            }
+            else
+            {
+                if (((WebBrowser)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Content).CanGoForward)
+                    ((WebBrowser)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Content).GoForward();
+            }
         }
 
 		public void Refresh(int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { Refresh(index); }); return; }
-            RhodesWebBrowser.Navigate(new Uri(RhodesWebBrowser.Source.AbsoluteUri, UriKind.Absolute));
-            // another possible implementation: RhodesWebBrowser.InvokeScript("eval", "history.go()");
+            if (isDefaultBrowser())
+                RhodesWebBrowser.Navigate(new Uri(RhodesWebBrowser.Source.AbsoluteUri, UriKind.Absolute));
+                // another possible implementation: RhodesWebBrowser.InvokeScript("eval", "history.go()");
+            else
+                ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(
+                    new Uri(((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Source.AbsoluteUri, UriKind.Absolute));
         }
 
 		public bool isStarted()
@@ -197,11 +224,19 @@ namespace rhodes
             return true;
         }
 
-        public string getCurrentURL(int index)
+        private int getValidTabbarIndex(int index)
+        {
+            return (index < 0) || (index >= TabbarPivot.Items.Count) ? TabbarPivot.SelectedIndex : index;
+        }
+
+        private string getCurrentURLFunc(int index)
         {
             try
             {
-                return RhodesWebBrowser.Source.ToString();
+                if (isDefaultBrowser())
+                    return RhodesWebBrowser.Source.ToString();
+                else
+                    return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Source.ToString();
             }
             catch (Exception)
             {
@@ -209,9 +244,19 @@ namespace rhodes
             }
         }
 
+        public string getCurrentURL()
+        {
+            return StringValueByIntReturnAgent(getCurrentURLFunc, -1);
+        }
+
+        public string getCurrentURL(int index)
+        {
+            return StringValueByIntReturnAgent(getCurrentURLFunc, index);
+        }
+
         private void RhodesWebBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(RhodesWebBrowser.Source.AbsoluteUri.ToString());
+            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
         }
 
         private void RhodesWebBrowser_NavigationFailed(object sender, System.Windows.Navigation.NavigationFailedEventArgs e)
@@ -221,17 +266,17 @@ namespace rhodes
 
         private void RhodesWebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(RhodesWebBrowser.Source.AbsoluteUri.ToString());
+            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
         }
 
         private void RhodesWebBrowser_Loaded(object sender, RoutedEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(RhodesWebBrowser.Source.AbsoluteUri.ToString());
+            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
         }
 
         private void RhodesWebBrowser_Unloaded(object sender, RoutedEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(RhodesWebBrowser.Source.AbsoluteUri.ToString());
+            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
         }
 
         private void RhodesWebBrowser_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -362,50 +407,128 @@ namespace rhodes
 
 
         // *** TABBAR ***
-		public void tabbarInitialize()
+       
+        public void tabbarInitialize()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarInitialize(); }); return; }
-            // TODO: implement
+            tabbarRemoveAllTabs(false);
+            // TODO: clear style of tabBar!
         }
 
 		public void tabbarRemoveAllTabs(bool restore)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarRemoveAllTabs(restore); }); return; }
-            // TODO: implement
+            TabbarPivot.Items.Clear();
         }
 
 		public void tabbarShow()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarShow(); }); return; }
-            // TODO: implement
+            LayoutRoot.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
+            LayoutRoot.RowDefinitions[1].Height = new GridLength(0, GridUnitType.Pixel);
+            // not needed: TabbarPanel.Visibility = System.Windows.Visibility.Visible;
+            // TODO: m_started = true;
         }
 
 		public void tabbarHide()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarHide(); }); return; }
-            // TODO: implement
+            LayoutRoot.RowDefinitions[0].Height = new GridLength(0, GridUnitType.Pixel);
+            LayoutRoot.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
+            tabbarRemoveAllTabs(true);
+            // not needed: TabbarPanel.Visibility = System.Windows.Visibility.Collapsed;
         }
 
-		public int tabbarGetHeight()
+		private int tabbarGetHeightFunc()
         {
-            // TODO: implement
-            return 0;
+            return TabbarPivot.Items.Count > 0 ? (int)(TabbarPivot.ActualHeight - ((WebBrowser)TabbarPivot.SelectedItem).ActualHeight) : 0;
+        }
+
+        public int tabbarGetHeight()
+        {
+            return IntValueReturnAgent(tabbarGetHeightFunc);
         }
 
 		public void tabbarSwitch(int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSwitch(index); }); return; }
-            // TODO: implement
+            if ((index >= 0) && (index < TabbarPivot.Items.Count))
+                TabbarPivot.SelectedIndex = index;
+        }
+
+        private int tabbarGetCurrentFunc()
+        {
+            return TabbarPivot.Items.Count > 0 ? TabbarPivot.SelectedIndex : 0;
         }
 
 		public int tabbarGetCurrent()
         {
-            // TODO: implement
-            return 0;
+            return IntValueReturnAgent(tabbarGetCurrentFunc);
         }
 
-		//public int tabbarAddTab(const String^ label, const char* icon, bool disabled, const Color^ web_bkg_color, QTabBarRuntimeParams& tbri) { return 0; }
-		
+        // TODO: in create support: place_tabs_bottom, background_color, on_change_tab_callback
+
+        private static Color getColorFromString(string strColor)
+        {
+            if (strColor == null || strColor == "")
+                return Color.FromArgb(255, 0, 0, 0);
+
+            int c = Convert.ToInt32(strColor);
+
+            int cR = (c & 0xFF0000) >> 16;
+            int cG = (c & 0xFF00) >> 8;
+            int cB = (c & 0xFF);
+
+            return Color.FromArgb(255, Convert.ToByte(cR), Convert.ToByte(cG), Convert.ToByte(cB));
+        }
+
+        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab)
+        {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab); }); return; }
+            PivotItem tab = new PivotItem();
+            if ((icon==null) || (icon.Length == 0))
+                tab.Header =  label;
+            else
+                tab.Header =  new RhoTabHeader(label, icon);
+            if (use_current_view_for_tab)
+                tab.Content = RhodesWebBrowser;
+            else
+            {
+                WebBrowser wv = new WebBrowser();
+                wv.Height = double.NaN;
+                wv.Width = double.NaN;
+                wv.IsScriptEnabled = true;
+                wv.SizeChanged += RhodesWebBrowser_SizeChanged;
+                wv.Navigated += RhodesWebBrowser_Navigated;
+                wv.NavigationFailed += RhodesWebBrowser_NavigationFailed;
+                wv.LoadCompleted += RhodesWebBrowser_LoadCompleted;
+                wv.Loaded += RhodesWebBrowser_Loaded;
+                wv.Unloaded += RhodesWebBrowser_Unloaded;
+                // TODO: reload
+                // TODO: web_bkg_color
+                tab.Content = wv;
+            }
+            if ((selected_color != null) && (selected_color.Length > 0))
+                tab.Background = new SolidColorBrush(getColorFromString(selected_color));
+            tab.IsEnabled = !disabled;
+            tab.Tag = action;
+
+            TabbarPivot.Items.Add(tab);
+
+            //return TabbarPivot.Items.Count-1; 
+        }
+
+        private bool isDefaultBrowser()
+        {
+            return (TabbarPivot.Items.Count == 0) || (TabbarPivot.SelectedIndex < 0) || (TabbarPivot.SelectedIndex >= TabbarPivot.Items.Count);
+        }
+
+        private void TabbarPivot_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count))
+                CRhoRuntime.getInstance().onTabbarCurrentChanged(TabbarPivot.SelectedIndex, ((string)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Tag));
+        }
+
         public void tabbarSetBadge(int index, string badge)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSetBadge(index, badge); }); return; }
@@ -501,6 +624,58 @@ namespace rhodes
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { DisplayMessage(msg); }); return; }
             RhodesWebBrowser.NavigateToString("<html><head><title>Message</title></head><body>" + msg + "</body></html>");
+        }
+
+        private int IntValueReturnAgent(Func<int> func)
+        {
+             if (isUIThread)
+                 return func();
+
+            Exception exception = null;
+            var waitEvent = new System.Threading.ManualResetEvent(false);
+            int return_value = 0;
+            Dispatcher.BeginInvoke(() =>
+            {
+                try
+                {
+                    return_value = func();
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+                waitEvent.Set();
+            });
+            waitEvent.WaitOne();
+            if (exception != null)
+                throw exception;
+            return return_value;
+        }
+
+        private string StringValueByIntReturnAgent(Func<int, string> func, int index)
+        {
+             if (isUIThread)
+                 return func(index);
+
+            Exception exception = null;
+            var waitEvent = new System.Threading.ManualResetEvent(false);
+            string return_value = "";
+            Dispatcher.BeginInvoke(() =>
+            {
+                try
+                {
+                    return_value = func(index);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+                waitEvent.Set();
+            });
+            waitEvent.WaitOne();
+            if (exception != null)
+                throw exception;
+            return return_value;
         }
     }
 }

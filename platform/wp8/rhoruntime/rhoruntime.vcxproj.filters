@@ -42,6 +42,9 @@
     <ClCompile Include="SystemImpl.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="TabbarImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />
