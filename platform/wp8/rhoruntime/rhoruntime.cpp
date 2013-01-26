@@ -77,6 +77,13 @@ void CRhoRuntime::Execute()
 
 	// wait for 5 seconds
 	//m_MainPage->DoWait(10000);
+	
+	//m_MainPage->tabbarInitialize();
+	//m_MainPage->tabbarAddTab(ref new String(L"Tab 1"), ref new String(L""), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
+	//m_MainPage->tabbarAddTab(ref new String(L"Tab 2"), ref new String(L""), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
+	//m_MainPage->tabbarAddTab(ref new String(L"Tab 3"), ref new String(L""), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
+	//m_MainPage->tabbarShow();
+
 	//m_MainPage->fullscreenCommand(1);
 	//m_MainPage->exitCommand();
 }
@@ -167,6 +174,23 @@ void CRhoRuntime::onToolbarAction(::Platform::String^ action)
 		rho_webview_navigate_forward();
 	else
 		RHODESAPP().loadUrl(rho::common::convertToStringA(action->Data()));
+}
+
+void CRhoRuntime::onTabbarCurrentChanged(int index, ::Platform::String^ action)
+{
+	// TODO: complete implementation
+
+	//if (tbrp["on_change_tab_callback"].toString().length() > 0) {
+	//	QString body = QString("&rho_callback=1&tab_index=") + QVariant(index).toString();
+	//	rho::String* cbStr = new rho::String(tbrp["on_change_tab_callback"].toString().toStdString());
+	//	rho::String* bStr = new rho::String(body.toStdString());
+	//	const char* b = bStr->c_str();
+	//	rho_net_request_with_data(RHODESAPP().canonicalizeRhoUrl(*cbStr).c_str(), b);
+	//}
+
+    //if (tbrp["reload"].toBool() || (ui->webView && (ui->webView->history()->count()==0))) {
+	RHODESAPP().loadUrl(rho::common::convertToStringA(action->Data()));
+    //}
 }
 
 
