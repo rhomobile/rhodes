@@ -808,6 +808,12 @@ module Rhogen
       template.source = 'shared/generated/montana_ruby_api.c'
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_ruby_api.c"
     end
+    
+    template :shared_03 do |template|
+      template.source = 'shared/generated/montana_js_api.cpp'
+      template.destination = "shared/generated/#{namefixed($cur_module.name)}_js_api.cpp"
+    end
+    
 =begin
     template :iphone_api do |template|
       template.source = 'platform/iphone/Classes/api/IMontana.h'
