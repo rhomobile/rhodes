@@ -270,7 +270,7 @@ class RhomDbAdapter
   def insert_into_table(table=nil,values=nil, excludes=nil)
     raise ArgumentError if !table
     cols,quests,vals = make_insert_params(values, excludes)
-    query = "insert into #{table} (#{cols}) values (#{quests})"
+    query = "INSERT INTO \"#{table}\" (#{cols}) VALUES (#{quests})"
     execute_sql query, vals
   end
 
