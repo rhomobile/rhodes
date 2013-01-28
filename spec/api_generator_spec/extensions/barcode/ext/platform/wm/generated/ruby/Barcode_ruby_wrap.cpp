@@ -102,15 +102,20 @@ static VALUE _api_generator_Barcode_enable(int argc, VALUE *argv, IBarcode* pObj
     if ( argc > nCallbackArg )
     {
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -122,6 +127,7 @@ static VALUE _api_generator_Barcode_enable(int argc, VALUE *argv, IBarcode* pObj
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -187,15 +193,20 @@ static VALUE _api_generator_Barcode_start(int argc, VALUE *argv, IBarcode* pObj)
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -207,6 +218,7 @@ static VALUE _api_generator_Barcode_start(int argc, VALUE *argv, IBarcode* pObj)
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -261,15 +273,20 @@ static VALUE _api_generator_Barcode_stop(int argc, VALUE *argv, IBarcode* pObj)
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -281,6 +298,7 @@ static VALUE _api_generator_Barcode_stop(int argc, VALUE *argv, IBarcode* pObj)
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -346,15 +364,20 @@ static VALUE _api_generator_Barcode_disable(int argc, VALUE *argv, IBarcode* pOb
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -366,6 +389,7 @@ static VALUE _api_generator_Barcode_disable(int argc, VALUE *argv, IBarcode* pOb
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -454,15 +478,20 @@ static VALUE _api_generator_Barcode_take(int argc, VALUE *argv, IBarcode* pObj)
     if ( argc > nCallbackArg )
     {
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -474,6 +503,7 @@ static VALUE _api_generator_Barcode_take(int argc, VALUE *argv, IBarcode* pObj)
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -573,15 +603,20 @@ static VALUE _api_generator_Barcode_getProperty(int argc, VALUE *argv, IBarcode*
     if ( argc > nCallbackArg )
     {
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -593,6 +628,7 @@ static VALUE _api_generator_Barcode_getProperty(int argc, VALUE *argv, IBarcode*
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -687,15 +723,20 @@ static VALUE _api_generator_Barcode_getProperties(int argc, VALUE *argv, IBarcod
     if ( argc > nCallbackArg )
     {
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -707,6 +748,7 @@ static VALUE _api_generator_Barcode_getProperties(int argc, VALUE *argv, IBarcod
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -769,15 +811,20 @@ static VALUE _api_generator_Barcode_getAllProperties(int argc, VALUE *argv, IBar
     if ( argc > nCallbackArg )
     {
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -789,6 +836,7 @@ static VALUE _api_generator_Barcode_getAllProperties(int argc, VALUE *argv, IBar
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -926,15 +974,20 @@ static VALUE _api_generator_Barcode_setProperty(int argc, VALUE *argv, IBarcode*
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
         return oRes.toRuby();
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -946,6 +999,7 @@ static VALUE _api_generator_Barcode_setProperty(int argc, VALUE *argv, IBarcode*
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -1043,15 +1097,20 @@ static VALUE _api_generator_Barcode_setProperties(int argc, VALUE *argv, IBarcod
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -1063,6 +1122,7 @@ static VALUE _api_generator_Barcode_setProperties(int argc, VALUE *argv, IBarcod
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -1128,15 +1188,20 @@ static VALUE _api_generator_Barcode_clearProps(int argc, VALUE *argv, IBarcode* 
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -1148,6 +1213,7 @@ static VALUE _api_generator_Barcode_clearProps(int argc, VALUE *argv, IBarcode* 
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 
@@ -1212,15 +1278,20 @@ VALUE rb_s_Barcode_enumerate(int argc, VALUE *argv)
     if ( argc > nCallbackArg )
     {
 
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -1232,6 +1303,7 @@ VALUE rb_s_Barcode_enumerate(int argc, VALUE *argv)
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 

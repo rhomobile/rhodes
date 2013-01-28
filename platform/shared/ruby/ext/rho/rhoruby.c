@@ -1023,3 +1023,8 @@ const char* rho_ruby_get_object_id( VALUE valObj )
 
     return *ppString;
 }
+
+int rho_ruby_is_proc(VALUE val)
+{
+    return CLASS_OF(val) == rb_cProc ? 1 : 0;
+}
