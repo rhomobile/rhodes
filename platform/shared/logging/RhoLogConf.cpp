@@ -37,6 +37,8 @@
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
 
+extern "C" rho::String GetLocalFolderFullPath();
+
 namespace rho{
 common::CMutex LogSettings::m_FlushLock;
 common::CMutex LogSettings::m_CatLock;
@@ -403,7 +405,11 @@ void rho_logconf_Init_with_separate_user_path(const char* szLogPath, const char*
 
     LOGCONF().setLogPrefix(true);
 
-    rho::String logPath = oLogPath.makeFullPath("rholog.txt");
+#ifdef OS_WP8
+    rho::String logPath = GetLocalFolderFullPath() + "\\rholog.txt";
+#else
+	rho::String logPath = oLogPath.makeFullPath("rholog.txt");
+#endif
     LOGCONF().setLogToFile(true);
     LOGCONF().setLogFilePath( logPath.c_str() );
     LOGCONF().setMaxLogFileSize(1024*50);
