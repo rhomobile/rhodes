@@ -5,18 +5,18 @@
 #define DEFAULT_LOGCATEGORY "Barcode"
 
 
-rho::String js_Barcode_enable(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_start(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_stop(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_disable(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_take(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_getProperty(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_getProperties(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_getAllProperties(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_setProperty(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_setProperties(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_clearProps(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
-rho::String js_Barcode_enumerate(const rho::String& strID, rho::json::CJSONArrayIterator& oParams);
+rho::String js_Barcode_enable(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_start(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_stop(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_disable(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_take(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_getProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_getAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_setProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_setProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_clearProps(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_enumerate(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 extern "C" void Init_JSAPI_Barcode(void)
 {

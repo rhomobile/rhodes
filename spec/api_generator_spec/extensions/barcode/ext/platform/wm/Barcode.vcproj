@@ -649,6 +649,10 @@
 				<Filter
 					Name="javascript"
 					>
+					<File
+						RelativePath=".\generated\javascript\Barcode_js_wrap.cpp"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="ruby"
@@ -668,6 +672,10 @@
 				>
 				<File
 					RelativePath="..\..\shared\generated\barcode_api_init.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\generated\barcode_js_api.cpp"
 					>
 				</File>
 				<File

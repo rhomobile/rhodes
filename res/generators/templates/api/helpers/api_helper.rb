@@ -34,7 +34,7 @@ def api_generator_MakeJSMethodDecl(module_name, module_method)
     method_name = 'js_'
     method_name += module_name + "_" + module_method.name
 
-    params = 'const rho::String& strID, rho::json::CJSONArrayIterator& oParams'
+    params = 'rho::json::CJSONArray& argv, const rho::String& strObjID'
     
     "rho::String #{method_name}(#{params})"
 end

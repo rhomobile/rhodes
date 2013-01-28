@@ -66,7 +66,7 @@ rho::StringW CBarcodeSingleton::getInitialDefaultID()
     return arIDs[0];
 }
 
-
+/*
 extern "C" void Init_JSAPI_Barcode()
 {
-}
+}*/

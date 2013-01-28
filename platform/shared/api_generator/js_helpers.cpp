@@ -43,8 +43,8 @@ rho::String js_entry_point(const char* szJSON)
         return "{Error}";
     }
 
-    CJSONArrayIterator oParams(oEntry.getEntry("Params"));
-    return pMethod( strObjID, oParams );
+    CJSONArray oParams(oEntry.getEntry("Params"));
+    return pMethod( oParams, strObjID );
 }
 
 static void http_js_entry_point(void *arg, rho::String const &query )

@@ -928,6 +928,11 @@ module Rhogen
       template.destination = "platform/wm/generated/ruby/#{$cur_module.name}_ruby_wrap.cpp"
     end
 
+    template :wm_api3 do |template|
+      template.source = 'cpp/javascript/montana_js_wrap.cpp'
+      template.destination = "platform/wm/generated/javascript/#{$cur_module.name}_js_wrap.cpp"
+    end
+
 
     def attributes?
       self.attributes && !self.attributes.empty?
