@@ -1036,9 +1036,9 @@ module Rhom
                                 sql.chomp!
                                 sql.chop!
                                 sql << " FROM object_values ov \n"
-                                sql << "where " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
-                                sql << "group by object\n"
-                                sql << "order by " + make_sql_order(args[1]) if !block_given? && order_attr
+                                sql << "WHERE " + ::Rhom::RhomDbAdapter.where_str(where_cond) + "\n" if where_cond and where_cond.length > 0
+                                sql << "GROUP BY object\n"
+                                sql << "ORDER BY " + make_sql_order(args[1]) if !block_given? && order_attr
                                 #sql << ") WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                                 sql << ") WHERE " + condition_str if condition_str
                                 sql << strLimit if strLimit
