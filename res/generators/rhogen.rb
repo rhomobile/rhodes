@@ -940,15 +940,44 @@ module Rhogen
 
   end
 
+class ApiMegatestGenerator < BaseGenerator
 
 
-  add :app, AppGenerator
-  add :model, ModelGenerator
-  add :spec, SpecGenerator
-  add :extension, ExtensionGenerator
-  add :api, ApiGenerator
+   def self.source_root
+     File.join(File.dirname(__FILE__), 'templates', 'api_test')
+   end
 
-end
+   desc <<-DESC
+     Generate megatest XML for API generator
+   DESC
+
+   #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
+
+   #first_argument :xmlpath, :required => true, :desc => "path to XML with API description"
+
+
+   template :megatest_01 do |template|
+     template.source = 'taho.xml'
+     template.destination = "Megatest.xml"
+   end
+
+
+   def attributes?
+     self.attributes && !self.attributes.empty?
+   end
+
+ end
+
+
+
+ add :app, AppGenerator
+ add :model, ModelGenerator
+ add :spec, SpecGenerator
+ add :extension, ExtensionGenerator
+ add :api, ApiGenerator
+ add :api_test, ApiMegatestGenerator
+
+ end
 
 
 
