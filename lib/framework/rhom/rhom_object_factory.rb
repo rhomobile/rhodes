@@ -1580,9 +1580,9 @@ end
                 begin
                     db.lock_db()
                     if isSchemaSrc
-                        existing_attribs = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? LIMIT 1 OFFSET 0",obj)
+                        existing_attribs = db.execute_sql("SELECT object FROM \"#{tableName}\" WHERE object=? LIMIT 1 OFFSET 0",obj)
                     else
-                        existing_attribs = db.execute_sql("SELECT object FROM #{tableName} WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
+                        existing_attribs = db.execute_sql("SELECT object FROM \"#{tableName}\" WHERE object=? AND source_id=? LIMIT 1 OFFSET 0",obj,nSrcID)
                     end
                     
                     unless existing_attribs && existing_attribs.length > 0                     
