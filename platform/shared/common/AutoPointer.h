@@ -269,5 +269,66 @@ rho::common::IRhoRunnable* rho_makeInstanceClassFunctor3( OBJTYPE obj,FUNCTYPE p
     return new rho::common::CInstanceClassFunctor3<OBJTYPE, FUNCTYPE,PARAMTYPE1, PARAMTYPE2, PARAMTYPE3>(obj, pFunc, param1, param2, param3);
 }
 
+template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2, typename PARAMTYPE3, typename PARAMTYPE4 >
+class CInstanceClassFunctor4 : public rho::common::IRhoRunnable
+{
+public:
+
+    CInstanceClassFunctor4( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2, PARAMTYPE3 param3, PARAMTYPE4 param4 ): m_obj(obj), m_pFunc(pFunc), m_param1(param1), m_param2(param2), m_param3(param3), m_param4(param4){}
+    virtual void runObject()
+    { 
+        (m_obj->*m_pFunc)(m_param1, m_param2, m_param3, m_param4); 
+    }
+
+    ~CInstanceClassFunctor4()
+    {
+    }
+
+protected:
+    FUNCTYPE m_pFunc;
+    PARAMTYPE1 m_param1;
+    PARAMTYPE2 m_param2;
+    PARAMTYPE3 m_param3;
+    PARAMTYPE4 m_param4;
+    OBJTYPE   m_obj;
+};
+
+template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2, typename PARAMTYPE3, typename PARAMTYPE4>
+rho::common::IRhoRunnable* rho_makeInstanceClassFunctor4( OBJTYPE obj,FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2, PARAMTYPE3 param3, PARAMTYPE4 param4 )
+{
+    return new rho::common::CInstanceClassFunctor4<OBJTYPE, FUNCTYPE,PARAMTYPE1, PARAMTYPE2, PARAMTYPE3, PARAMTYPE4>(obj, pFunc, param1, param2, param3, param4);
+}
+
+template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2, typename PARAMTYPE3, typename PARAMTYPE4, typename PARAMTYPE5 >
+class CInstanceClassFunctor5 : public rho::common::IRhoRunnable
+{
+public:
+
+    CInstanceClassFunctor5( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2, PARAMTYPE3 param3, PARAMTYPE4 param4, PARAMTYPE5 param5 ): m_obj(obj), m_pFunc(pFunc), m_param1(param1), m_param2(param2), m_param3(param3), m_param4(param4), m_param5(param5){}
+    virtual void runObject()
+    { 
+        (m_obj->*m_pFunc)(m_param1, m_param2, m_param3, m_param4, m_param5); 
+    }
+
+    ~CInstanceClassFunctor5()
+    {
+    }
+
+protected:
+    FUNCTYPE m_pFunc;
+    PARAMTYPE1 m_param1;
+    PARAMTYPE2 m_param2;
+    PARAMTYPE3 m_param3;
+    PARAMTYPE4 m_param4;
+    PARAMTYPE5 m_param5;
+    OBJTYPE   m_obj;
+};
+
+template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2, typename PARAMTYPE3, typename PARAMTYPE4, typename PARAMTYPE5>
+rho::common::IRhoRunnable* rho_makeInstanceClassFunctor5( OBJTYPE obj,FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2, PARAMTYPE3 param3, PARAMTYPE4 param4, PARAMTYPE5 param5  )
+{
+    return new rho::common::CInstanceClassFunctor5<OBJTYPE, FUNCTYPE,PARAMTYPE1, PARAMTYPE2, PARAMTYPE3, PARAMTYPE4, PARAMTYPE5>(obj, pFunc, param1, param2, param3, param4, param5);
+}
+
 }
 }
