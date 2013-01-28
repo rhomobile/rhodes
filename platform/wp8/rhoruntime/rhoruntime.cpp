@@ -249,3 +249,9 @@ extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
 	//TODO: rho_wm_impl_performOnUiThread
 }
+
+
+extern "C" rho::String GetLocalFolderFullPath()
+{
+	return  rho::common::convertToStringA(Windows::Storage::ApplicationData::Current->LocalFolder->Path->Data());
+}
