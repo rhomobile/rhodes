@@ -206,7 +206,7 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	RECT rcMainWindow = { 0,0,320,470 };
 
 #if defined(OS_WINDOWS_DESKTOP)    
-
+//TODO: remove Desktop code from this file. QT window used instead.
 	LOGCONF().setLogView(&m_logView);
 
 	rcMainWindow.left = getIniInt(_T("main_view_left"),0);
