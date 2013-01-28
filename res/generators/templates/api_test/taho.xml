@@ -184,8 +184,8 @@
           <METHOD name="<%= method_name %>_paramset_05" <%= method_attributes %> >
               <DESC><%= method_name %> method help</DESC>
               <PARAMS>
-                  <PARAM name="param1" type="SELF_INSTANCE">
-                          <DESC>string param</DESC>
+                  <PARAM name="param1" type="ARRAY">
+                          <DESC>array param</DESC>
                   </PARAM>
                   <PARAM name="param2" type="STRING">
                           <DESC>hash param</DESC>
@@ -216,8 +216,7 @@
                   <PARAM name="param3" type="HASH">
                           <DESC>hash param</DESC>
                   </PARAM>
-                  <PARAM name="param4" type="SELF_INSTANCE">
-                          <DESC>self param</DESC>
+                  <PARAM name="param4" type="HASH">
                     <CAN_BE_NIL>
                         <DESC>can be nil</DESC>
                     </CAN_BE_NIL>
