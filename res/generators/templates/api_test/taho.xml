@@ -19,137 +19,230 @@
 			</PROPERTY>
 		</PROPERTIES>	
 		<METHODS>
-         <%
-          is_factory = ["false", "true"]
+          <% is_factory = ["false", "true"]
           has_callback = ["none", "optional", "mandatory"]
           run_in_thread = ["false", "true"]
           run_in_ui_thread = ["false", "true"]
           has_return = [false, true]
           access = ["instance", "static"]
 
-          access.each.do |method_access|
-             has_return.each.do |method_has_return|
-                run_in_ui_thread.each.do |method_run_in_ui_thread|
-                   run_in_thread.each.do |method_run_in_thread|
-                      has_callback.each.do |method_has_callback|
-                         is_factory.each.do |method_is_factory|
+          access.each do |method_access|
+             has_return.each do |method_has_return|
+                run_in_ui_thread.each do |method_run_in_ui_thread|
+                   run_in_thread.each do |method_run_in_thread|
+                      has_callback.each do |method_has_callback|
+                         is_factory.each do |method_is_factory|
                             method_name = method_access
                             method_attributes = ''
                             if method_access != access[0]
-                               method_attributes = method_attributes + ' access="#{method_access}"'
+                               method_attributes = method_attributes + ' access="'+method_access+'"'
                             end
                             if method_run_in_ui_thread != run_in_ui_thread[0]
                                method_attributes = method_attributes + ' run_in_ui_thread="true"'
-                            end
-                            if method_run_in_thread != run_in_thread[0]
-                               method_attributes = method_attributes + ' run_in_thread="true"'
-                            end
-                            if method_run_in_thread != run_in_thread[0]
-                               method_attributes = method_attributes + ' run_in_thread="true"'
-                            end
-
-
-
-
-                            if method_has_return
-                               method_name = method_name+"_hasReturn"
+                               method_name = method_name+"_runInUIThread"
                             else
-                               method_name = method_name+"_noReturn"
+                               method_name = method_name+"_notRunInUIThread"
                             end
 
+                            if method_run_in_thread != run_in_thread[0]
+                               method_attributes = method_attributes + ' run_in_thread="true"'
+                                method_name = method_name+"_runInThread"
+                            else
+                                method_name = method_name+"_notRunInThread"
+                            end
 
+                            if method_has_callback != has_callback[0]
+                               method_attributes = method_attributes + ' has_callback="'+method_has_callback+'"'
+                                method_name = method_name+"_hasCallback"+ method_has_callback
+                            else
+                                method_name = method_name+"_notHasCallback"
+                            end
 
+                            if method_is_factory != is_factory[0]
+                               method_attributes = method_attributes + ' factory="true"'
+                               method_name = method_name+"_isFactory"
+                            else
+                               method_name = method_name+"_notFactory"
+                            end
 
+                            #if !method_is_factory
+                              if method_has_return
+                                 method_name = method_name+"_hasReturn"
+                              else
+                                 method_name = method_name+"_noReturn"
+                              end
+                            #end
+          %>
 
+          <METHOD name="<%= method_name %>_paramset_01" <%= method_attributes %> >
+              <DESC><%= method_name %> method help</DESC>
+              <PARAMS>
+                  <PARAM name="param1" type="STRING">
+                          <DESC>string param</DESC>
+                  </PARAM>
+              </PARAMS>
 
-                         end
+          <%
+              if method_is_factory
+              else
+                 if method_has_return
+              %>
+              <RETURN type="STRING">
+                  <DESC>
+                      Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
+                  </DESC>
+               </RETURN>
+          <% end
+         end %>
+        </METHOD>
+
+          <METHOD name="<%= method_name %>_paramset_02" <%= method_attributes %> >
+              <DESC><%= method_name %> method help</DESC>
+              <PARAMS>
+                  <PARAM name="param1" type="STRING">
+                          <DESC>string param</DESC>
+                  </PARAM>
+                  <PARAM name="param2" type="ARRAY">
+                          <DESC>array param</DESC>
+                  </PARAM>
+              </PARAMS>
+
+          <%
+              if method_is_factory
+              else
+                 if method_has_return
+              %>
+              <RETURN>
+                  <DESC>
+                      Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
+                  </DESC>
+                  <POSSIBILITY type="STRING">
+                      <DESC>string result</DESC>
+                  </POSSIBILITY>
+                  <POSSIBILITY type="NIL">
+                      <DESC>if not any codes was recognized on image</DESC>
+                  </POSSIBILITY>
+              </RETURN>
+              <% end
+             end %>
+
+          </METHOD>
+          <METHOD name="<%= method_name %>_paramset_03" <%= method_attributes %> >
+              <DESC><%= method_name %> method help</DESC>
+              <PARAMS>
+                  <PARAM name="param1" type="STRING">
+                          <DESC>string param</DESC>
+                  </PARAM>
+                  <PARAM name="param2" type="HASH">
+                          <DESC>hash param</DESC>
+                  </PARAM>
+              </PARAMS>
+
+          <%
+              if method_is_factory
+              else
+                 if method_has_return
+              %>
+              <RETURN>
+                  <DESC>
+                      Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
+                  </DESC>
+                  <POSSIBILITY type="HASH">
+                      <DESC>string result</DESC>
+                  </POSSIBILITY>
+                  <POSSIBILITY type="NIL">
+                      <DESC>if not any codes was recognized on image</DESC>
+                  </POSSIBILITY>
+              </RETURN>
+              <% end
+             end %>
+          </METHOD>
+
+          <METHOD name="<%= method_name %>_paramset_04" <%= method_attributes %> >
+              <DESC><%= method_name %> method help</DESC>
+
+          <%
+              if method_is_factory
+              else
+                 if method_has_return
+              %>
+              <RETURN>
+                  <DESC>
+                      Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
+                  </DESC>
+                  <POSSIBILITY type="ARRAY">
+                      <DESC>string result</DESC>
+                  </POSSIBILITY>
+                  <POSSIBILITY type="NIL">
+                      <DESC>if not any codes was recognized on image</DESC>
+                  </POSSIBILITY>
+              </RETURN>
+              <% end
+               end %>
+          </METHOD>
+
+          <METHOD name="<%= method_name %>_paramset_05" <%= method_attributes %> >
+              <DESC><%= method_name %> method help</DESC>
+              <PARAMS>
+                  <PARAM name="param1" type="SELF_INSTANCE">
+                          <DESC>string param</DESC>
+                  </PARAM>
+                  <PARAM name="param2" type="STRING">
+                          <DESC>hash param</DESC>
+                  </PARAM>
+              </PARAMS>
+          <%
+              if method_is_factory
+              else
+                 if method_has_return
+              %>
+              <RETURN>
+                  <DESC type="STRING">
+                      Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
+                  </DESC>
+              </RETURN>
+               <% end
+              end %>
+          </METHOD>
+          <METHOD name="<%= method_name %>_paramset_06" <%= method_attributes %> >
+              <DESC><%= method_name %> method help</DESC>
+              <PARAMS>
+                  <PARAM name="param1" type="STRING">
+                          <DESC>string param</DESC>
+                  </PARAM>
+                  <PARAM name="param2" type="ARRAY">
+                          <DESC>array param</DESC>
+                  </PARAM>
+                  <PARAM name="param3" type="HASH">
+                          <DESC>hash param</DESC>
+                  </PARAM>
+                  <PARAM name="param4" type="SELF_INSTANCE">
+                          <DESC>self param</DESC>
+                    <CAN_BE_NIL>
+                        <DESC>can be nil</DESC>
+                    </CAN_BE_NIL>
+                  </PARAM>
+              </PARAMS>
+          <%
+              if method_is_factory
+              else
+                 if method_has_return
+              %>
+              <RETURN>
+                  <DESC type="STRING">
+                      Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
+                  </DESC>
+              </RETURN>
+               <% end
+              end %>
+          </METHOD>
+
+                       <% end
                       end
                    end
                 end
              end
-          end
-          %>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			<METHOD name="recognizeBarcodeOnImage">
-				<DESC>recognize barcode in image file or in images pixels array - just example of method</DESC>
-				<PARAMS>
-					<PARAM name="filepath" type="STRING">
-							<DESC>filepath to image</DESC>
-					</PARAM>
-				</PARAMS>
-				<RETURN>
-					<DESC>
-						Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
-					</DESC>
-					<POSSIBILITY type="STRING">
-						<DESC>recognized code</DESC>
-					</POSSIBILITY>	
-					<POSSIBILITY type="NIL">
-						<DESC>if not any codes was recognized on image</DESC>
-					</POSSIBILITY>	
-				</RETURN>
-			</METHOD>
-			<METHOD name="getReccommendedDeviceForCodeType" access="STATIC" factory="true">
-				<DESC>example of static and fabric method - return Barcode1 object</DESC>
-				<PARAMS>
-					<PARAM name="codetype" type="STRING">
-						<DESC>string name of codetype: EPC, EAN, UPC etc.</DESC>
-					</PARAM>
-				</PARAMS>
-				<RETURN>
-					<DESC>
-						Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
-					</DESC>
-					<POSSIBILITY type="SELF">
-						<DESC>recognizer object recommended for recognize</DESC>
-					</POSSIBILITY>	
-					<POSSIBILITY type="NIL">
-						<DESC>if not any devices can recognized that codetype</DESC>
-					</POSSIBILITY>	
-				</RETURN>
-			</METHOD>	
-			<METHOD name="scanBarcode" access="INSTANCE" run_in_thread="true" has_callback="mandatory">
-				<DESC>start scanning barcode - callback when recognize process was finished, also example of UI_THREAD attribute</DESC>
-				<PARAMS>
-					<PARAM  name ="settings" type="HASH">
-							<DESC>hash of additional settings for scan</DESC>
-						<CAN_BE_NIL>
-							<DESC>Use already set properties</DESC>
-						</CAN_BE_NIL>
-					</PARAM>
-				</PARAMS>
-			</METHOD>
-			<METHOD name="scanBarcodeInUI" access="INSTANCE" run_in_ui_thread="true" has_callback="mandatory">
-				<DESC>start scanning barcode - callback when recognize process was finished, also example of UI_THREAD attribute</DESC>
-				<PARAMS>
-					<PARAM  name ="settings" type="HASH">
-						<DESC>hash of additional settings for scan</DESC>
-						<CAN_BE_NIL>
-							<DESC>Use already set properties</DESC>
-						</CAN_BE_NIL>
-					</PARAM>
-				</PARAMS>
-			</METHOD>
+           end %>
 		</METHODS>
 		<USER_OVERVIEW> <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
 			<![CDATA[

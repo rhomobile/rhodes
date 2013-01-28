@@ -7,7 +7,7 @@
 $iphone_types["STRING"] = 'NSString*'
 $iphone_types["ARRAY"] = 'NSArray*'
 $iphone_types["HASH"] = 'NSDictionary*'
-$iphone_types["SELF_INSTANCE"] = 'id<'+$cur_module.name+'>' %>
+$iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
 
 @protocol I<%= $cur_module.name %> <NSObject>
 
