@@ -351,11 +351,11 @@ class RhomDbAdapter
     if condition
         quests_set, vals_set = make_set_params(values)
         quests_where,vals_where = RhomDbAdapter.make_where_params(condition,'AND') 
-        query = "update #{table} set #{quests_set} where #{quests_where}"
+        query = "UPDATE \"#{table}\" SET #{quests_set} WHERE #{quests_where}"
         vals = vals_set + vals_where
     else
         quests, vals = make_set_params(values)
-        query = "update #{table} set #{quests}"
+        query = "UPDATE \"#{table}\" SET #{quests}"
     end
     
     execute_sql query, vals
