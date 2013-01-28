@@ -147,7 +147,7 @@ module Rhom
                   
                   if is_schema_source()
                     #res = db.select_from_table(get_schema_table_name(),'object').length
-                    db_res =  db.execute_sql("SELECT COUNT(*) FROM " + get_schema_table_name())
+                    db_res =  db.execute_sql("SELECT COUNT(*) FROM \"#{get_schema_table_name}\"")
                     #puts "db_res : #{db_res}"
                     if db_res && db_res.length() > 0 
                         res = db_res[0].values[0] 
