@@ -1052,7 +1052,7 @@ module Rhom
                     else #schema source
                        attribs = attribs.join(',') if attribs.is_a?(Array)
                        
-                       sql << "SELECT #{attribs} FROM #{get_schema_table_name}"
+                       sql << "SELECT #{attribs} FROM \"#{get_schema_table_name}\""
                        vals = []
                        if where_cond and where_cond.length > 0
                            sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(where_cond)
