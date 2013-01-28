@@ -88,7 +88,7 @@ end %>
 
 
 @protocol I<%= $cur_module.name %>Factory <NSObject>
--(id<I<%= $cur_module.name %>Singleton>) get<%= $name %>Singleton;
+-(id<I<%= $cur_module.name %>Singleton>) get<%= $cur_module.name %>Singleton;
 -(id<I<%= $cur_module.name %>>) get<%= $cur_module.name %>ByID:(NSString*)ID;
 @end
 

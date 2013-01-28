@@ -32,9 +32,13 @@ end
 
 void Init_RubyAPI_<%= $cur_module.name %>(void)
 {
+<% if $cur_module.parent.size > 0 %>
     rb_mParent = rb_define_module("<%= $cur_module.parent %>");
 	rb_c<%= $cur_module.name %> = rb_define_class_under(rb_mParent, "<%= $cur_module.name %>", rb_cObject);
-	
+<% else %>
+    rb_mParent = rho_ruby_get_NIL();
+	rb_c<%= $cur_module.name %> = rb_define_class("<%= $cur_module.name %>", rb_cObject);
+<% end %>
     //Constructor should be not available
 	//rb_define_alloc_func(rb_cBarcode1, rb_barcode1_allocate);
     rb_undef_alloc_func(rb_c<%= $cur_module.name %>);
