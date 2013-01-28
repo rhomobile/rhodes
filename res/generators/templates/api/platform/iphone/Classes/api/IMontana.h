@@ -35,6 +35,7 @@ $iphone_types["SELF_INSTANCE"] = 'id<'+$cur_module.name+'>' %>
             method_line = method_line + ' methodResult:(id<IMethodResult>)methodResult'
          end
      end
+     module_method.cached_data["iphone_line"] = method_line
      method_line = method_line + ';';
 %><%= method_line %>
 <% end
@@ -77,6 +78,7 @@ end %>
             method_line = method_line + ' methodResult:(id<IMethodResult>)methodResult'
          end
      end
+     module_method.cached_data["iphone_line"] = method_line
      method_line = method_line + ';';
 %><%= method_line %>
 <% end

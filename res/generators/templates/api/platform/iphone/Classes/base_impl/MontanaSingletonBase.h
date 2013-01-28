@@ -1,8 +1,8 @@
 
 
-#import "../api/IBarcode1.h"
+#import "../api/I<%= $cur_module.name %>.h"
 
-@interface Barcode1SingletonBase : NSObject {
+@interface <%= $cur_module.name %>SingletonBase : NSObject {
     NSString* mDefaultID;
 }
 

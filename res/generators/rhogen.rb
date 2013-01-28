@@ -625,6 +625,7 @@ module Rhogen
         @is_return_value = false
         @access = ACCESS_INSTANCE
         @has_callback = CALLBACK_NONE
+        @cached_data = {}
       end
 
       attr_accessor :name
@@ -635,6 +636,7 @@ module Rhogen
       attr_accessor :is_return_value
       attr_accessor :access
       attr_accessor :has_callback
+      attr_accessor :cached_data
     end
 
     class ModuleItem
@@ -814,12 +816,103 @@ module Rhogen
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_js_api.cpp"
     end
     
-=begin
     template :iphone_api do |template|
       template.source = 'platform/iphone/Classes/api/IMontana.h'
       template.destination = "platform/iphone/Classes/api/I#{$cur_module.name}.h"
     end
-=end
+
+    template :iphone_api_readme do |template|
+      template.source = 'platform/iphone/Classes/api/readme.txt'
+      template.destination = "platform/iphone/Classes/api/readme.txt"
+    end
+
+    template :iphone_ruby_wrapper do |template|
+      template.source = 'platform/iphone/Classes/ruby_wrapper/montana_ruby_wrap.m'
+      template.destination = "platform/iphone/Classes/ruby_wrapper/#{namefixed($cur_module.name)}_ruby_wrap.m"
+    end
+
+    template :iphone_ruby_wrapper_readme do |template|
+      template.source = 'platform/iphone/Classes/ruby_wrapper/readme.txt'
+      template.destination = "platform/iphone/Classes/ruby_wrapper/readme.txt"
+    end
+
+    template :iphone_impl_readme do |template|
+      template.source = 'platform/iphone/Classes/impl/readme.txt'
+      template.destination = "platform/iphone/Classes/impl/readme.txt"
+    end
+
+    template :iphone_base_impl_01 do |template|
+      template.source = 'platform/iphone/Classes/base_impl/MontanaBase.h'
+      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}Base.h"
+    end
+
+    template :iphone_base_impl_02 do |template|
+      template.source = 'platform/iphone/Classes/base_impl/MontanaBase.m'
+      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}Base.m"
+    end
+
+    template :iphone_base_impl_03 do |template|
+      template.source = 'platform/iphone/Classes/base_impl/MontanaFactoryBase.h'
+      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}FactoryBase.h"
+    end
+
+    template :iphone_base_impl_04 do |template|
+      template.source = 'platform/iphone/Classes/base_impl/MontanaFactoryBase.m'
+      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}FactoryBase.m"
+    end
+
+    template :iphone_base_impl_05 do |template|
+      template.source = 'platform/iphone/Classes/base_impl/MontanaSingletonBase.h'
+      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}SingletonBase.h"
+    end
+
+    template :iphone_base_impl_06 do |template|
+      template.source = 'platform/iphone/Classes/base_impl/MontanaSingletonBase.m'
+      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}SingletonBase.m"
+    end
+
+    template :iphone_base_impl_readme do |template|
+      template.source = 'platform/iphone/Classes/base_impl/readme.txt'
+      template.destination = "platform/iphone/Classes/base_impl/readme.txt"
+    end
+
+    template :iphone_stub_impl_01 do |template|
+      template.source = 'platform/iphone/Classes/stub_impl/Montana.h'
+      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}.h"
+    end
+
+    template :iphone_stub_impl_02 do |template|
+      template.source = 'platform/iphone/Classes/stub_impl/Montana.m'
+      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}.m"
+    end
+
+    template :iphone_stub_impl_03 do |template|
+      template.source = 'platform/iphone/Classes/stub_impl/MontanaFactorySingleton.m'
+      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}FactorySingleton.m"
+    end
+
+    template :iphone_stub_impl_04 do |template|
+      template.source = 'platform/iphone/Classes/stub_impl/MontanaSetup.m'
+      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}Setup.m"
+    end
+
+    template :iphone_stub_impl_05 do |template|
+      template.source = 'platform/iphone/Classes/stub_impl/MontanaSingleton.h'
+      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}Singleton.h"
+    end
+
+    template :iphone_stub_impl_06 do |template|
+      template.source = 'platform/iphone/Classes/stub_impl/MontanaSingleton.m'
+      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}Singleton.m"
+    end
+
+    template :iphone_stub_impl_readme do |template|
+      template.source = 'platform/iphone/Classes/stub_impl/readme.txt'
+      template.destination = "platform/iphone/Classes/stub_impl/readme.txt"
+    end
+
+
+
     template :wm_api do |template|
       template.source = 'cpp/IMontana.h'
       template.destination = "platform/wm/generated/I#{$cur_module.name}.h"
@@ -834,22 +927,6 @@ module Rhogen
       template.source = 'cpp/ruby/montana_ruby_wrap.cpp'
       template.destination = "platform/wm/generated/ruby/#{$cur_module.name}_ruby_wrap.cpp"
     end
-
-    #template :iphone_api_readme do |template|
-    #  template.source = 'platform/iphone/Classes/api/readme.txt'
-    #  template.destination = "platform/iphone/Classes/api/readme.txt"
-    #end
-
-    #template :iphone_ruby_wrapper do |template|
-    #  template.source = 'platform/iphone/Classes/ruby_wrapper/montana_ruby_wrap.m'
-    #  template.destination = "platform/iphone/Classes/ruby_wrapper/#{namefixed($cur_module.name)}_ruby_wrap.m"
-    #end
-
-    #template :iphone_ruby_wrapper_readme do |template|
-    #  template.source = 'platform/iphone/Classes/ruby_wrapper/readme.txt'
-    #  template.destination = "platform/iphone/Classes/ruby_wrapper/readme.txt"
-    #end
-
 
 
     def attributes?
@@ -869,8 +946,8 @@ module Rhogen
 end
 
 
-=begin
 
+=begin
 # Stub this method to force 1.8 compatibility (come on templater!)
 class Encoding
   def find
@@ -898,3 +975,4 @@ end
 
 Rhogen.run_cli(Dir.pwd, 'rhodes', Rhodes::VERSION, ARGV)
 =end
+
