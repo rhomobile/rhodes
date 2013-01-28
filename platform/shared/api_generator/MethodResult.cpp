@@ -119,6 +119,13 @@ void CMethodResult::callCallback()
         RHODESAPP().callCallbackWithData( m_strRubyCallback, strResBody, m_strCallbackParam, false);
 
         m_ResType = eNone;
+    }else if ( m_ResType != eNone && m_oRubyCallbackProc )
+    {
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
+
+        RHODESAPP().callCallbackProcWithData( m_oRubyCallbackProc, strResBody, m_strCallbackParam, false);
+
+        m_ResType = eNone;
     }else if ( m_ResType != eNone && m_strJSCallback.length() != 0 )
     {
         rho_webview_execute_js( m_strJSCallback.c_str(), rho_webview_active_tab() );

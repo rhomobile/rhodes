@@ -44,6 +44,7 @@
 #include "common/app_build_capabilities.h"
 #include "unzip/unzip.h"
 #include "common/Tokenizer.h"
+#include "api_generator/js_helpers.h"
 
 #include <algorithm>
 
@@ -63,8 +64,6 @@
 using rho::net::HttpHeader;
 using rho::net::HttpHeaderList;
 using rho::net::CHttpServer;
-
-void js_register_http_entry_point();
 
 extern "C" {
 void rho_map_location(char* query);
@@ -665,7 +664,10 @@ void CRhodesApp::callCallbackProcWithData(unsigned long oRubyCallbackProc, Strin
         strBody += strCallbackData;
     }
 
-    String strCallbackUrl = "";
+    String strCallbackUrl = "/system/call_ruby_proc_callback?proc=";
+    strCallbackUrl += convertToStringA(oRubyCallbackProc);
+    strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
+
     if (bWaitForResponse)
         getNetRequest().pushData( strCallbackUrl, strBody, null );
     else
@@ -1278,7 +1280,9 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/map", callback_map);
     m_httpServer->register_uri("/system/shared", callback_shared);
 
-    js_register_http_entry_point();
+#ifndef RHO_NO_JS_API
+    m_httpServer->register_uri( "/system/js_api_entrypoint", rho_http_js_entry_point );
+#endif
 
     m_httpServer->register_uri("/AppManager/loader/load", callback_AppManager_load);
     m_httpServer->register_uri("/system/getrhomessage", callback_getrhomessage);

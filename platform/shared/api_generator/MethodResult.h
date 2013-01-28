@@ -44,11 +44,13 @@ class CMethodResult
     ETypes m_ResType;
 
     unsigned long m_oRubyObjectClass;
+    unsigned long m_oRubyCallbackProc;
 public:
 
-    CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false){}
+    CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_oRubyCallbackProc(0), m_bCallInUIThread(false){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
+    void setRubyCallbackProc(unsigned long oRubyCallbackProc){ m_oRubyCallbackProc = oRubyCallbackProc; }
     void setJSCallback(const rho::String& strCallback){ m_strJSCallback = strCallback; }
     void setCallInUIThread(rho::boolean bUIThread){ m_bCallInUIThread = bUIThread; }
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }

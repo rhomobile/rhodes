@@ -144,15 +144,20 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(<%= module_method.params.size() %>) );
         return oRes.toRuby();
 <% end %>
-        
-        if ( !rho_ruby_is_string(argv[nCallbackArg]) )
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
         {
             oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
         oRes.setCallInUIThread(<%= module_method.is_run_in_ui_thread ? "true" : "false" %>);
-        oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -164,6 +169,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
             oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
         
+        bUseCallback = true;
     }
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
