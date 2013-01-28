@@ -317,7 +317,7 @@ class RhomDbAdapter
 
   # deletes all rows from a given table
   def delete_all_from_table(table)
-    execute_sql "delete from #{table}"
+    execute_sql "DELETE FROM \"#{table}\""
   end
 
   def table_exist?(table_name)
