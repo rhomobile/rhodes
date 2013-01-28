@@ -64,6 +64,8 @@ using rho::net::HttpHeader;
 using rho::net::HttpHeaderList;
 using rho::net::CHttpServer;
 
+void js_register_http_entry_point();
+
 extern "C" {
 void rho_map_location(char* query);
 void rho_appmanager_load( void* httpContext, const char* szQuery);
@@ -645,6 +647,25 @@ void CRhodesApp::callCallbackWithData(String strCallbackUrl, String strBody, con
         strBody += strCallbackData;
     }
 
+    if (bWaitForResponse)
+        getNetRequest().pushData( strCallbackUrl, strBody, null );
+    else
+        runCallbackInThread(strCallbackUrl, strBody);
+}
+
+void CRhodesApp::callCallbackProcWithData(unsigned long oRubyCallbackProc, String strBody, const String& strCallbackData, bool bWaitForResponse) 
+{
+    strBody += "&rho_callback=1";
+
+    if (strCallbackData.length() > 0 )
+    {
+        if ( !String_startsWith( strCallbackData, "&" ) )
+            strBody += "&";
+
+        strBody += strCallbackData;
+    }
+
+    String strCallbackUrl = "";
     if (bWaitForResponse)
         getNetRequest().pushData( strCallbackUrl, strBody, null );
     else
@@ -1256,6 +1277,9 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/redirect_to", callback_redirect_to);
     m_httpServer->register_uri("/system/map", callback_map);
     m_httpServer->register_uri("/system/shared", callback_shared);
+
+    js_register_http_entry_point();
+
     m_httpServer->register_uri("/AppManager/loader/load", callback_AppManager_load);
     m_httpServer->register_uri("/system/getrhomessage", callback_getrhomessage);
     m_httpServer->register_uri("/system/activateapp", callback_activateapp);
