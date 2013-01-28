@@ -325,7 +325,7 @@ class RhomDbAdapter
   end
 
   def delete_table(table)
-    execute_sql "DROP TABLE IF EXISTS #{table}"
+    execute_sql "DROP TABLE IF EXISTS \"#{table}\""
   end
   
   #destroy one table  
