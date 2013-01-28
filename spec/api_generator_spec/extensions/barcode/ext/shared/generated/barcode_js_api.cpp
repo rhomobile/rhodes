@@ -18,6 +18,12 @@ rho::String js_Barcode_setProperties(rho::json::CJSONArray& argv, const rho::Str
 rho::String js_Barcode_clearProps(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_Barcode_enumerate(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
+
+rho::String js_Barcode_getDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Barcode_setDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+
+
 extern "C" void Init_JSAPI_Barcode(void)
 {
 
@@ -33,5 +39,10 @@ extern "C" void Init_JSAPI_Barcode(void)
     js_define_method("Rho:Barcode:setProperties", js_Barcode_setProperties);
     js_define_method("Rho:Barcode:clearProps", js_Barcode_clearProps);
     js_define_method("Rho:Barcode:enumerate", js_Barcode_enumerate);
+
+
+    js_define_method("Rho:Barcode:getDefaultID", js_Barcode_getDefaultID);
+    js_define_method("Rho:Barcode:setDefaultID", js_Barcode_setDefaultID);
+
 }
 
