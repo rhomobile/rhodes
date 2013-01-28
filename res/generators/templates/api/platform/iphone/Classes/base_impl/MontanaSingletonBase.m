@@ -1,7 +1,7 @@
 
-#import "Barcode1SingletonBase.h"
+#import "<%= $cur_module.name %>SingletonBase.h"
 
-@implementation Barcode1SingletonBase
+@implementation <%= $cur_module.name %>SingletonBase
 
 -(id)init {
     self = [super init];

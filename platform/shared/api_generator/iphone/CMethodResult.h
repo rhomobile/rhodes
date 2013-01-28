@@ -6,7 +6,7 @@
 
 @protocol IMethodResult_RubyObjectFactory <NSObject>
 
-+ (VALUE) makeRubyValue:(NSObject*)obj;
+- (VALUE) makeRubyValue:(NSObject*)obj;
 
 @end
 
