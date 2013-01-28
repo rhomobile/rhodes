@@ -1067,7 +1067,7 @@ module Rhom
                            sql << " WHERE " + sqlCond if sqlCond.length() > 0
                        end
                            
-                       sql << " order by " + make_sql_order(args[1]) if !block_given? && order_attr
+                       sql << " ORDER BY " + make_sql_order(args[1]) if !block_given? && order_attr
                        sql << strLimit if strLimit
                        
                        #puts "Database query start" #: #{sql}"
