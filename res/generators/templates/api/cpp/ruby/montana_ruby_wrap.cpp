@@ -25,7 +25,7 @@ VALUE rb_<%= $cur_module.name %>_s_default(VALUE klass)
     return rho_ruby_create_object_with_id( klass, convertToStringA(strDefaultID).c_str() );
 }
 
-VALUE rb_<%= $cur_module.name %>_s_set_default(VALUE klass, VALUE valObj)
+VALUE rb_<%= $cur_module.name %>_s_setDefault(VALUE klass, VALUE valObj)
 {
     const char* szID = rho_ruby_get_object_id( valObj );
     C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(convertToStringW(szID));
