@@ -1348,7 +1348,7 @@ end
                         convertConditionToStatement(conditions, op, sqlCond, vals)
                       
                         if is_sync_source()
-                            sql = "SELECT object FROM #{tableName}"
+                            sql = "SELECT object FROM \"#{tableName}\""
                             #sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                             #sql << " WHERE " + condition_str if condition_str
                             sql << " WHERE " + sqlCond if sqlCond.length() > 0
@@ -1368,14 +1368,14 @@ end
                                         "update_type"=>'delete'})
                                 end        
                                 
-                                sql = "DELETE FROM #{tableName} WHERE object=?"
+                                sql = "DELETE FROM \"#{tableName}\" WHERE object=?"
                                 values = [ item['object'] ]
                                 
                                 db.execute_sql(sql,values)
                             end
                             
                         else #just delete objects
-                            sql = "DELETE FROM #{tableName}"
+                            sql = "DELETE FROM \"#{tableName}\""
                             #sql << " WHERE " + ::Rhom::RhomDbAdapter.where_str(condition_hash) if condition_hash
                             #sql << " WHERE " + condition_str if condition_str
                             sql << " WHERE " + sqlCond if sqlCond.length() > 0
@@ -1386,7 +1386,7 @@ end
                         
                         if !conditions
                             if is_sync_source()                        
-                                listObjs = db.execute_sql("SELECT DISTINCT(object) FROM #{tableName} WHERE source_id=?", get_source_id() )
+                                listObjs = db.execute_sql("SELECT DISTINCT(object) FROM \"#{tableName}\" WHERE source_id=?", get_source_id() )
                             else
                                 db.delete_from_table(tableName, {"source_id"=>get_source_id()} )
                             end    
