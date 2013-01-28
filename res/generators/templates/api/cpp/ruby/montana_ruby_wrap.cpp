@@ -57,7 +57,6 @@ static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::StringW, rho::
     rho_ruby_enum_strhash(val, hash_eachstr, &res);
 }
 
-//Module instance methods
 <% $cur_module.methods.each do |module_method| %>
 <% if module_method.access == ModuleMethod::ACCESS_STATIC %>
 <%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, true)%>

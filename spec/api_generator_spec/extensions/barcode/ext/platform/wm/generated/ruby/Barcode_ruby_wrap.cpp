@@ -25,7 +25,7 @@ VALUE rb_Barcode_s_default(VALUE klass)
     return rho_ruby_create_object_with_id( klass, convertToStringA(strDefaultID).c_str() );
 }
 
-VALUE rb_Barcode_s_set_default(VALUE klass, VALUE valObj)
+VALUE rb_Barcode_s_setDefault(VALUE klass, VALUE valObj)
 {
     const char* szID = rho_ruby_get_object_id( valObj );
     CBarcodeFactoryBase::getBarcodeSingletonS()->setDefaultID(convertToStringW(szID));
@@ -57,7 +57,6 @@ static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::StringW, rho::
     rho_ruby_enum_strhash(val, hash_eachstr, &res);
 }
 
-//Module instance methods
 
 
 static VALUE _api_generator_Barcode_enable(int argc, VALUE *argv, IBarcode* pObj)

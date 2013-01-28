@@ -1,9 +1,9 @@
-#include "..\Barcode1.h"
+#include "..\I<%= $cur_module.name %>.h"
 #include "api_generator\js_helpers.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "Barcode1"
+#define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>"
 
 #include "common/StringConverter.h"
 
@@ -13,120 +13,153 @@ using namespace rho;
 using namespace rho::json;
 using namespace rho::common;
 
-rho::String js_barcode1_enumerate(const rho::String& strID, CJSONArrayIterator& oParams)
+<% $cur_module.methods.each do |module_method| %>
+<%= api_generator_MakeJSMethodDecl($cur_module.name, module_method)%>
 {
     CMethodResult oRes;
 
-    if ( !oParams.isEnd() )
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int argc = argv.getSize();
+    int nCallbackArg = 0;
+<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
+    I<%= $cur_module.name %>* pObj = C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(convertToStringW(strObjID));
+<%end%>
+
+<% functor_params = ""; first_arg = 0; 
+   module_method.params.each do |param| %>
+    nCallbackArg = <%= first_arg + 1 %>;
+
+    <% if !param.can_be_nil %>
+    if ( argc == <%= first_arg %> )
     {
-        oRes.setError(L"Barcode1::enumerate - wrong number of arguments");
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(<%= module_method.params.size() %>) );
         return oRes.toJSON();
     }
+    <% end %>
 
-    CBarcode1FactoryBase::getBarcode1SingletonS()->enumerate(oRes);
-    return oRes.toJSON();
-}
-
-rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& oParams)
-{
-    //If method has call_in_ui_thread attribute, then call method in UI thread if no return value or callback present
-    //If method has call_in_thread attribute, then call method in separate thread if no return value or callback present
-    //If method calles with callback, then call method in separate thread
-    bool bCallInUIThread = false;
-    bool bCallInThread = false;
-
-    rho::StringW strObjID = convertToStringW(strID);
-    if ( strObjID.length() == 0 )
-        strObjID = CBarcode1FactoryBase::getBarcode1SingletonS()->getDefaultID();
-
-    IBarcode1* pObj = CBarcode1FactoryBase::getInstance()->getModuleByID(strObjID);
-
-    CMethodResult oRes;
-    if ( oParams.isEnd() )
+<% if param.type == MethodParam::TYPE_STRING %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
     {
-        pObj->getProps(oRes);
-        return oRes.toJSON();
+        if ( argv[<%= first_arg %>].isString() )
+        {
+            arg<%= first_arg %> = convertToStringW(argv[<%= first_arg %>].getString());
+<% if first_arg == 0 %>
+            oRes.setStringParam(argv[<%= first_arg %>].getString());
+<% end %>
+        }
+        else if (!argv[<%= first_arg %>].isNull())
+        {
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toJSON();
+        }
     }
+<% end %>
 
-    CJSONEntry oParam1 = oParams.getCurItem();
-    oParams.next();
-
-    if ( oParams.isEnd() )
+<% if param.type == MethodParam::TYPE_ARRAY %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
     {
-        if ( oParam1.isNull() )
+        if ( argv[<%= first_arg %>].isArray() )
         {
-            pObj->getProps(oRes);
-        }else if ( oParam1.isString() )
-        {
-            pObj->getPropsWithString(convertToStringW(oParam1.getString()), oRes);
-        }else if ( oParam1.isArray() )
-        {
-            rho::Vector<rho::StringW> ar;
-            CJSONArrayIterator arParam(oParam1);
-            for( ; !arParam.isEnd(); arParam.next() )
+            CJSONArray arParam(argv[<%= first_arg %>]);
+            for( int i = 0; i < arParam.getSize(); i++ )
             {
-                ar.addElement( convertToStringW(arParam.getCurItem().getString()) );
+                arg<%= first_arg %>.addElement( convertToStringW(arParam[i].getString()) );
             }
-
-            pObj->getPropsWithArray(ar, oRes );
-        }else
-        {
-            oRes.setArgError(L"Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
         }
-    }else
+        else if (!argv[<%= first_arg %>].isNull())
+        {
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toJSON();
+        }
+    }
+<% end %>
+
+<% if param.type == MethodParam::TYPE_HASH %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
     {
-        CJSONEntry oParam2 = oParams.getCurItem();
-
-        oRes.setCallInUIThread(bCallInUIThread);
-        oRes.setJSCallback( oParam2.getString() );
-
-        oParams.next();
-        if ( !oParams.isEnd() )
+        if ( argv[<%= first_arg %>].isObject() )
         {
-            CJSONEntry oParam3 = oParams.getCurItem();
-            if ( !oParam3.isString() )
+            CJSONStructIterator objIter(argv[<%= first_arg %>]);
+
+            for( ; !objIter.isEnd(); objIter.next() )
             {
-                oRes.setArgError(L"Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
-                return oRes.toJSON();
+                arg<%= first_arg %>[convertToStringW(objIter.getCurKey())] = convertToStringW(objIter.getCurString());
             }
-
-            oRes.setCallbackParam( oParam3.getString() );
-
         }
+        else if (!argv[<%= first_arg %>].isNull())
+        {
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toJSON();
+        }
+    }
+<% end %>
+        
+<% functor_params += "arg#{first_arg}, " %>
+<% first_arg = first_arg+1 %>
+<% end %>
 
-        rho::common::IRhoRunnable* pFunctor = 0;
-        if ( oParam1.isNull() )
+    if ( argc > nCallbackArg )
+    {
+<% if module_method.has_callback == ModuleMethod::CALLBACK_NONE %>
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(<%= module_method.params.size() %>) );
+        return oRes.toJSON();
+<% end %>
+        
+        if ( !argv[nCallbackArg].isString() )
         {
-            pFunctor = new rho::common::CInstanceClassFunctor1<IBarcode1*, void (IBarcode1::*)(CMethodResult&), CMethodResult>
-                ( pObj, &IBarcode1::getProps, oRes );
-        }else if ( oParam1.isString() )
-        {
-            oRes.setStringParam( oParam1.getString() );
-            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::StringW&, CMethodResult&), rho::StringW, CMethodResult>
-                ( pObj, &IBarcode1::getPropsWithString, convertToStringW(oParam1.getString()), oRes );
-
-        }else if ( oParam1.isArray() )
-        {
-            rho::Vector<rho::StringW> ar;
-            CJSONArrayIterator arParam(oParam1);
-            for( ; !arParam.isEnd(); arParam.next() )
-            {
-                ar.addElement( convertToStringW(arParam.getCurItem().getString()) );
-            }
-
-            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::StringW>&, CMethodResult&), rho::Vector<rho::StringW>, CMethodResult>
-                ( pObj, &IBarcode1::getPropsWithArray, ar, oRes );
-        }else
-        {
-            oRes.setArgError(L"Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
+            oRes.setArgError(L"Type error: callback should be String");
             return oRes.toJSON();
         }
 
-        if ( bCallInUIThread )
-            rho_wm_impl_performOnUiThread( pFunctor );
-        else //call in separate thread
-            CBarcode1FactoryBase::getBarcode1SingletonS()->addCommandToQueue( pFunctor );
+        oRes.setCallInUIThread(<%= module_method.is_run_in_ui_thread ? "true" : "false" %>);
+        oRes.setRubyCallback( argv[nCallbackArg].getString() );
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !argv[nCallbackArg + 1].isString() )
+            {
+                oRes.setArgError(L"Type error: callback parameter should be String");
+                return oRes.toJSON();
+            }
+
+            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
+        }
+        
     }
 
+<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &I<%= $cur_module.name %>::<%= module_method.name %>, <%= functor_params %> oRes );
+<% else %>
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.name %>, <%= functor_params %> oRes );
+<% end %>
+
+<% if module_method.is_run_in_ui_thread %>
+    rho_wm_impl_performOnUiThread( pFunctor );
+<% elsif module_method.is_run_in_thread %>
+    C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
+<% else %>
+
+    if ( bUseCallback )
+        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
+        pObj-><%= module_method.name %>( <%= functor_params %> oRes );
+<% else %>
+        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.name %>( <%= functor_params %> oRes );
+<% end %>
+
+    }
+<% end %>
+
     return oRes.toJSON();
+
 }
+
+<% end %>
+
