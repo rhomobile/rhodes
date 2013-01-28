@@ -1021,3 +1021,22 @@ rho::String js_Barcode_enumerate(rho::json::CJSONArray& argv, const rho::String&
 
 
 
+
+rho::String js_Barcode_getDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    CMethodResult oRes;
+    rho::StringW strDefaultID = CBarcodeFactoryBase::getBarcodeSingletonS()->getDefaultID();
+    oRes.set(strDefaultID);
+
+    return oRes.toJSON();
+}
+
+rho::String js_Barcode_setDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    CMethodResult oRes;
+    CBarcodeFactoryBase::getBarcodeSingletonS()->setDefaultID(convertToStringW(strObjID));
+
+    return oRes.toJSON();
+}
+
+

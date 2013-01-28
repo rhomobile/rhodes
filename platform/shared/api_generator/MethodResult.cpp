@@ -13,7 +13,7 @@ extern "C" int rho_webview_active_tab();
 
 rho::String CMethodResult::toJSON()
 { 
-    rho::String strRes;
+    rho::String strRes = "{}";
     if ( m_ResType == eStringArray )
     {
         strRes = "[";
@@ -41,7 +41,7 @@ rho::String CMethodResult::toJSON()
         strRes += "}";
     }else if ( m_ResType == eString)
     {
-        strRes = convertToStringA(m_strRes);
+        strRes = "{'_RhoValue':" + convertToStringA(m_strRes) + "}";
     }else if ( m_ResType == eArgError )
     {
         strRes = "{'_RhoArgError':" + CJSONEntry::quoteValueW(m_strError) + "}";

@@ -29,10 +29,10 @@ def api_generator_cpp_makeNativeType(gen_type)
     res
 end
 
-def api_generator_MakeJSMethodDecl(module_name, module_method)
+def api_generator_MakeJSMethodDecl(module_name, module_method_name)
 
     method_name = 'js_'
-    method_name += module_name + "_" + module_method.name
+    method_name += module_name + "_" + module_method_name
 
     params = 'rho::json::CJSONArray& argv, const rho::String& strObjID'
     
