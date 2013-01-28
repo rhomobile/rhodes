@@ -67,6 +67,10 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByRubyObject(VA
 
 
 <% $cur_module.methods.each do |module_method|
+     interface_name = "I#{$cur_module.name}"
+     if module_method.access == ModuleMethod::ACCESS_STATIC
+         interface_name = "I#{$cur_module.name}Singleton"
+     end
 
 %>
 
@@ -75,10 +79,10 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByRubyObject(VA
 @interface <%= $cur_module.name %>_<%= module_method.name %>_caller_params : NSObject
 
 @property (assign) NSArray* params;
-@property (assign) id<I<%= $cur_module.name %>> item;
+@property (assign) id<<%= interface_name %>> item;
 @property (assign) CMethodResult* methodResult;
 
-+(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<I<%= $cur_module.name %>>)_item _methodResult:(CMethodResult*)_methodResult;
++(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<<%= interface_name %>>)_item _methodResult:(CMethodResult*)_methodResult;
 
 @end
 
@@ -86,7 +90,7 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByRubyObject(VA
 
 @synthesize params,item,methodResult;
 
-+(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<I<%= $cur_module.name %>>)_item _methodResult:(CMethodResult*)_methodResult {
++(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<<%= interface_name %>>)_item _methodResult:(CMethodResult*)_methodResult {
     <%= $cur_module.name %>_<%= module_method.name %>_caller_params* par = [[<%= $cur_module.name %>_<%= module_method.name %>_caller_params alloc] init];
     par.params = _params;
     par.item = _item;
@@ -120,7 +124,7 @@ static <%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur_mo
 
 -(void) command_<%= module_method.name %>:(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
     NSArray* params = caller_params.params;
-    id<I<%= $cur_module.name %>> objItem = caller_params.item;
+    id<<%= interface_name %>> objItem = caller_params.item;
     CMethodResult* methodResult = caller_params.methodResult;
 
     <%
@@ -140,7 +144,7 @@ static <%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur_mo
 }
 
 +(void) <%= module_method.name %>:(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
-    [[<%= $cur_module.name %>_<%= module_method.name %>_caller getSharedInstance] command_getProps:caller_params];
+    [[<%= $cur_module.name %>_<%= module_method.name %>_caller getSharedInstance] command_<%= module_method.name %>:caller_params];
 }
 
 +(void) <%= module_method.name %>_in_thread:(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
@@ -155,7 +159,7 @@ static <%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur_mo
 @end
 
 
-<%= "VALUE rb_"+$cur_module.name+"_"+module_method.name+"_Obj(int argc, VALUE *argv, id<I#{$cur_module.name}>objItem) {" %>
+<%= "VALUE rb_"+$cur_module.name+"_"+module_method.name+"_Obj(int argc, VALUE *argv, id<#{interface_name}>objItem) {" %>
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
@@ -260,8 +264,7 @@ static <%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur_mo
 <% if module_method.access == ModuleMethod::ACCESS_STATIC %>
     id<I<%= $cur_module.name %>Factory> factory = [<%= $cur_module.name %>FactorySingleton get<%= $cur_module.name %>FactoryInstance];
     id<I<%= $cur_module.name %>Singleton> singleton = [factory get<%= $cur_module.name %>Singleton];
-
-    //TODO: call static method
+    return <%= "rb_"+$cur_module.name+"_"+module_method.name %>_Obj(argc, argv, singleton);
 <% else %>
     id<I<%= $cur_module.name %>> item = <%= $cur_module.name %>_makeInstanceByRubyObject(obj);
     return <%= "rb_"+$cur_module.name+"_"+module_method.name %>_Obj(argc, argv, item);
