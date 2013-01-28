@@ -11,7 +11,7 @@ extern VALUE getRuby_<%= $cur_module.name %>_Module();
 $iphone_types["STRING"] = 'NSString*'
 $iphone_types["ARRAY"] = 'NSArray*'
 $iphone_types["HASH"] = 'NSDictionary*'
-$iphone_types["SELF_INSTANCE"] = 'id<'+$cur_module.name+'>' %>
+$iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
 
 @interface <%= $cur_module.name %>_RubyValueFactory : NSObject<IMethodResult_RubyObjectFactory> {
 }
