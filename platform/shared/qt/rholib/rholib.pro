@@ -99,7 +99,11 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../common/map/MapEngine.h\
 ../../unzip/zip.h\
 ../../common/push/IRhoPushClient.h\
-../../common/push/RhoPushManager.h
+../../common/push/RhoPushManager.h\
+../../api_generator/BaseClasses.h\
+../../api_generator/GeneratorQueue.h\
+../../api_generator/MethodResult.h\
+../../api_generator/js_helpers.h
 
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
@@ -137,4 +141,6 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../common/BundleManager.cpp\
 ../../unzip/zip.cpp\
 ../../rubyext/ZipFiles.cpp\
-../../common/push/RhoPushManager.cpp
+../../common/push/RhoPushManager.cpp\
+../../api_generator/js_helpers.cpp\
+../../api_generator/MethodResult.cpp
