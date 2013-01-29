@@ -139,7 +139,8 @@ private:
     bool send_response_impl(String const &data, bool continuation);
     
     callback_t registered(String const &uri);
-    
+    void call_ruby_proc( rho::String const &query, String const &body );
+
 private:
     bool m_active;
     int m_port;
@@ -149,6 +150,8 @@ private:
     std::map<String, callback_t> m_registered;
     bool verbose;
 };
+
+void rho_http_ruby_proc_callback(void *arg, rho::String const &query );
 
 } // namespace net
 } // namespace rho

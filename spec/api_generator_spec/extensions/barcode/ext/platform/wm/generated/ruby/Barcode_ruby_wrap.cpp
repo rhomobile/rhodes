@@ -103,7 +103,7 @@ static VALUE _api_generator_Barcode_enable(int argc, VALUE *argv, IBarcode* pObj
     {
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -194,7 +194,7 @@ static VALUE _api_generator_Barcode_start(int argc, VALUE *argv, IBarcode* pObj)
         return oRes.toRuby();
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -274,7 +274,7 @@ static VALUE _api_generator_Barcode_stop(int argc, VALUE *argv, IBarcode* pObj)
         return oRes.toRuby();
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -365,7 +365,7 @@ static VALUE _api_generator_Barcode_disable(int argc, VALUE *argv, IBarcode* pOb
         return oRes.toRuby();
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -479,7 +479,7 @@ static VALUE _api_generator_Barcode_take(int argc, VALUE *argv, IBarcode* pObj)
     {
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -604,7 +604,7 @@ static VALUE _api_generator_Barcode_getProperty(int argc, VALUE *argv, IBarcode*
     {
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -724,7 +724,7 @@ static VALUE _api_generator_Barcode_getProperties(int argc, VALUE *argv, IBarcod
     {
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -812,7 +812,7 @@ static VALUE _api_generator_Barcode_getAllProperties(int argc, VALUE *argv, IBar
     {
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -975,7 +975,7 @@ static VALUE _api_generator_Barcode_setProperty(int argc, VALUE *argv, IBarcode*
         return oRes.toRuby();
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -1098,7 +1098,7 @@ static VALUE _api_generator_Barcode_setProperties(int argc, VALUE *argv, IBarcod
         return oRes.toRuby();
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -1189,7 +1189,7 @@ static VALUE _api_generator_Barcode_clearProps(int argc, VALUE *argv, IBarcode* 
         return oRes.toRuby();
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
@@ -1279,7 +1279,7 @@ VALUE rb_s_Barcode_enumerate(int argc, VALUE *argv)
     {
 
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )

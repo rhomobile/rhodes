@@ -1028,3 +1028,15 @@ int rho_ruby_is_proc(VALUE val)
 {
     return CLASS_OF(val) == rb_cProc ? 1 : 0;
 }
+
+int rho_ruby_is_method(VALUE val)
+{
+    return CLASS_OF(val) == rb_cMethod ? 1 : 0;
+}
+
+VALUE rho_ruby_getProcBinding(VALUE proc)
+{
+    static ID binding_mid;
+    CONST_ID(binding_mid, "binding");
+    return rb_funcall(proc, binding_mid, 0);
+}
