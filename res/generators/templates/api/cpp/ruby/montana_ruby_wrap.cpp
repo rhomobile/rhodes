@@ -145,7 +145,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
         return oRes.toRuby();
 <% end %>
 
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) )
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
             oRes.setRubyCallbackProc( argv[nCallbackArg] );
         }else if ( rho_ruby_is_string(argv[nCallbackArg]) )

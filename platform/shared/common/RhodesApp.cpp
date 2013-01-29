@@ -664,7 +664,7 @@ void CRhodesApp::callCallbackProcWithData(unsigned long oRubyCallbackProc, Strin
         strBody += strCallbackData;
     }
 
-    String strCallbackUrl = "/system/call_ruby_proc_callback?proc=";
+    String strCallbackUrl = "/system/call_ruby_proc_callback?";
     strCallbackUrl += convertToStringA(oRubyCallbackProc);
     strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
 
@@ -1283,6 +1283,8 @@ void CRhodesApp::initHttpServer()
 #ifndef RHO_NO_JS_API
     m_httpServer->register_uri( "/system/js_api_entrypoint", rho_http_js_entry_point );
 #endif
+
+    m_httpServer->register_uri("/system/call_ruby_proc_callback", rho::net::rho_http_ruby_proc_callback );
 
     m_httpServer->register_uri("/AppManager/loader/load", callback_AppManager_load);
     m_httpServer->register_uri("/system/getrhomessage", callback_getrhomessage);

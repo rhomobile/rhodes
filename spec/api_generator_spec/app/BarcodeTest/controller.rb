@@ -7,10 +7,20 @@ class BarcodeTestController < Rho::RhoController
   include BrowserHelper
   include ApplicationHelper
   
+  def test_proc(arg)
+    puts "test_proc : #{arg}"
+  end
+  
+  #@@test_proc = lambda{|args| puts "lamda: #{args}"}
   def index
 
-    res = Rho::Barcode.getProperty("display")
-    puts "res: #{res}"
+    my_test = "123"
+    Rho::Barcode.getProperty("display", lambda{|args| puts "lamda: #{args} #{my_test}"} )
+    Rho::Barcode.getProperty("display", method(:test_proc) )
+    Rho::Barcode.getProperty("display", Proc.new{|args| puts "proc: #{args}"} )
+    
+#=begin
+    Rho::Barcode.getProperty("display", "/app/BarcodeTest/test_callback")
     
     Rho::Barcode.getProperty("display", "/app/BarcodeTest/test_callback")
     
@@ -24,7 +34,7 @@ class BarcodeTestController < Rho::RhoController
 
     #hash = { name: "David", age: 49 }
     Rho::Barcode.setProperties(  Barcode128: 'enabled' )
-  
+#=end  
     render :back => '/app'
   end
 

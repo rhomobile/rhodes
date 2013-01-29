@@ -152,6 +152,8 @@ int rho_ruby_is_string(VALUE val);
 int rho_ruby_is_array(VALUE val);
 int rho_ruby_is_hash(VALUE val);
 int rho_ruby_is_proc(VALUE val);
+int rho_ruby_is_method(VALUE val);
+VALUE rho_ruby_getProcBinding(VALUE proc);
 
 #define RHO_PARAM_UNKNWON 0
 #define RHO_PARAM_STRING 1
