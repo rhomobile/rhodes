@@ -33,6 +33,8 @@
 -(void) setCallbackParam:(NSString*)param;
 -(void) setRubyFactory:(id<IMethodResult_RubyObjectFactory>)factory;
 
++ (NSObject*) getObjectiveCNULL;
+
 -(void) callCallback;
 
 -(void) dealloc;

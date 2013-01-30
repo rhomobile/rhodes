@@ -836,6 +836,16 @@ module Rhogen
       template.destination = "platform/iphone/Classes/ruby_wrapper/readme.txt"
     end
 
+    template :iphone_js_wrapper do |template|
+      template.source = 'platform/iphone/Classes/js_wrapper/montana_js_wrap.mm'
+      template.destination = "platform/iphone/Classes/js_wrapper/#{namefixed($cur_module.name)}_js_wrap.mm"
+    end
+
+    template :iphone_js_wrapper_readme do |template|
+      template.source = 'platform/iphone/Classes/js_wrapper/readme.txt'
+      template.destination = "platform/iphone/Classes/js_wrapper/readme.txt"
+    end
+
     template :iphone_impl_readme do |template|
       template.source = 'platform/iphone/Classes/impl/readme.txt'
       template.destination = "platform/iphone/Classes/impl/readme.txt"

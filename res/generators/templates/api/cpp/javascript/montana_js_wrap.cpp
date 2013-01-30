@@ -14,7 +14,7 @@ using namespace rho::json;
 using namespace rho::common;
 
 <% $cur_module.methods.each do |module_method| %>
-<%= api_generator_MakeJSMethodDecl($cur_module.name, module_method.name)%>
+<%= api_generator_MakeJSMethodDecl($cur_module.name, module_method.name, module_method.access == ModuleMethod::ACCESS_STATIC)%>
 {
     CMethodResult oRes;
 
@@ -164,7 +164,7 @@ using namespace rho::common;
 <% end %>
 
 <% if $cur_module.is_template_default_instance %>
-<%= api_generator_MakeJSMethodDecl($cur_module.name, "getDefaultID")%>
+<%= api_generator_MakeJSMethodDecl($cur_module.name, "getDefaultID", true)%>
 {
     CMethodResult oRes;
     rho::StringW strDefaultID = C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
@@ -173,7 +173,7 @@ using namespace rho::common;
     return oRes.toJSON();
 }
 
-<%= api_generator_MakeJSMethodDecl($cur_module.name, "setDefaultID")%>
+<%= api_generator_MakeJSMethodDecl($cur_module.name, "setDefaultID", true)%>
 {
     CMethodResult oRes;
     C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(convertToStringW(strObjID));

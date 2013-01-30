@@ -73,7 +73,9 @@
     }
 }
 
-
++ (NSObject*) getObjectiveCNULL {
+    return [NSNull null];
+}
 
 
 -(void) dealloc {
