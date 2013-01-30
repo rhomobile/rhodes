@@ -61,7 +61,7 @@ public:
 
 class RhoconnectClientManager {
 	class DummyRhoconnectClientImpl : public IRhoconnectClient {
-		const String m_devicePin;
+		/* const */ String m_devicePin;
 	public:
 		virtual ~DummyRhoconnectClientImpl() {}
 		
