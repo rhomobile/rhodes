@@ -3,20 +3,15 @@
 
 <DEFAULT_INSTANCE>
 	<METHODS>
-		<METHOD name="default" access="STATIC">
+	    <METHOD name="default" access="STATIC" factory="true">
 			<DESC>This is documentation</DESC>
-            <RETURN>
-                <DESC>Default instance of the module</DESC>
-                <TYPE>SelfInstance</TYPE>
-            </RETURN>
         </METHOD>
 
         <METHOD name="setDefault" access="STATIC">
             <DESC>This is documentation</DESC>
             <PARAMS>
-                <PARAM name="defaultInstance">
+                <PARAM name="defaultInstance" type="SELF_INSTANCE">
                     <DESC>Default instance I want to set</DESC>
-                    <TYPE>SelfInstance</TYPE>
                 </PARAM>
             </PARAMS>
         </METHOD>

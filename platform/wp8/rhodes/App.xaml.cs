@@ -155,6 +155,7 @@ namespace rhodes
             }
         }
 
+
         #region Phone application initialization
 
         // Avoid double-initialization
@@ -177,7 +178,7 @@ namespace rhodes
             // Ensure we don't initialize again
             phoneApplicationInitialized = true;
 
-            CRhoResourceMap.deployContent();//we have to create rho folder before
+            //CRhoResourceMap.deployContent();//we have to create rho folder before
         }
 
         // Do not add any additional code to this method

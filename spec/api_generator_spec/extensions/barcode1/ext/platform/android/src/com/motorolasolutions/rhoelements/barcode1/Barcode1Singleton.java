@@ -4,9 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.motorolasolutions.rhoelements.IMethodResult;
-import com.motorolasolutions.rhoelements.IRhoApiSingleton;
 
-class Barcode1Singleton extends Barcode1SingletonBase implements IRhoApiSingleton {
+class Barcode1Singleton extends Barcode1SingletonBase implements IBarcode1Singleton {
     public Barcode1Singleton(Barcode1Factory factory) {
         super(factory);
     }

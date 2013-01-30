@@ -5,72 +5,55 @@ static VALUE rb_mParent;
 static VALUE rb_c<%= $cur_module.name %>;
 
 <% $cur_module.methods.each do |module_method|
-         method_name = 'rb_'
-         if module_method.access == ModuleMethod::ACCESS_STATIC
-            method_name = method_name + 's_'
-         end
+%><%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC)%>;
+<% if $cur_module.is_template_default_instance && module_method.access == ModuleMethod::ACCESS_INSTANCE
+%><%= api_generator_MakeRubyMethodDecl($cur_module.name + "_def", module_method, true)%>;
+<% end
+   end %>
 
-         method_name = method_name + module_method.name
-
-         params = ''
-         if module_method.params.size == 0
-            if module_method.access == ModuleMethod::ACCESS_STATIC
-               params = 'VALUE klass'
-            else
-               params = 'VALUE instance'
-            end
-         else
-             if (module_method.params.size == 1) && (!module_method.params[0].can_be_nil)
-                if module_method.access == ModuleMethod::ACCESS_STATIC
-                   params = 'VALUE klass, VALUE obj'
-                else
-                   params = 'VALUE instance, VALUE obj'
-                end
-             else
-                if module_method.access == ModuleMethod::ACCESS_STATIC
-                   params = 'int argc, VALUE *argv, VALUE klass'
-                else
-                   params = 'int argc, VALUE *argv, VALUE instance'
-                end
-             end
-         end
-      %>VALUE <%= method_name%>(<%= params%>);
+<% if $cur_module.is_template_default_instance %>
+VALUE rb_<%= $cur_module.name %>_s_default(VALUE klass);
+VALUE rb_<%= $cur_module.name %>_s_setDefault(VALUE klass, VALUE obj);
 <% end %>
 
 VALUE getRuby_<%= $cur_module.name %>_Module(){ return rb_c<%= $cur_module.name %>; }
 
+<%
+def api_generator_MakeRubyMethodDef(module_name, module_method, is_static, method_suffix)
+    method_name = 'rb_'
+    method_name += 's_' if is_static
+    method_name += module_name + "_"
+    method_name += method_suffix + "_" if method_suffix.length() > 0
+    method_name += module_method.name
+
+    "rb_define_#{(is_static) ? 'singleton_':''}method(rb_c#{module_name}, \"#{module_method.name}\", #{method_name}, -1);"
+end
+%>
+
 void Init_RubyAPI_<%= $cur_module.name %>(void)
 {
+<% if $cur_module.parent.size > 0 %>
     rb_mParent = rb_define_module("<%= $cur_module.parent %>");
 	rb_c<%= $cur_module.name %> = rb_define_class_under(rb_mParent, "<%= $cur_module.name %>", rb_cObject);
-	
+<% else %>
+    rb_mParent = rho_ruby_get_NIL();
+	rb_c<%= $cur_module.name %> = rb_define_class("<%= $cur_module.name %>", rb_cObject);
+<% end %>
     //Constructor should be not available
 	//rb_define_alloc_func(rb_cBarcode1, rb_barcode1_allocate);
     rb_undef_alloc_func(rb_c<%= $cur_module.name %>);
 
 <% $cur_module.methods.each do |module_method|
-         method_name = 'rb_'
-         if module_method.access == ModuleMethod::ACCESS_STATIC
-            method_name = method_name + 's_'
-         end
-
-         method_name = method_name + module_method.name
-
-         params = '-1'
-         if module_method.params.size == 0
-            params = '0'
-         else
-             if (module_method.params.size == 1) && (!module_method.params[0].can_be_nil)
-                params = '1'
-             end
-         end
-      if module_method.access == ModuleMethod::ACCESS_STATIC
-%>    rb_define_singleton_method(rb_c<%= $cur_module.name %>, "<%= module_method.name %>", <%= method_name %>, <%= params %>);
-<% else
-%>    rb_define_method(rb_c<%= $cur_module.name %>, "<%= module_method.name %>", <%= method_name %>, <%= params %>);
+%><%= api_generator_MakeRubyMethodDef($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC, "" ) %>
+<% if $cur_module.is_template_default_instance && module_method.access == ModuleMethod::ACCESS_INSTANCE
+%><%= api_generator_MakeRubyMethodDef($cur_module.name, module_method, true, "def")%>
 <% end
-end %>
+   end %>
 
+<% if $cur_module.is_template_default_instance %>
+    rb_define_singleton_method(rb_c<%= $cur_module.name %>, "default", rb_<%= $cur_module.name %>_s_default, 0);
+    rb_define_singleton_method(rb_c<%= $cur_module.name %>, "setDefault", rb_<%= $cur_module.name %>_s_setDefault, 1);
+<% end %>
 
 
 }

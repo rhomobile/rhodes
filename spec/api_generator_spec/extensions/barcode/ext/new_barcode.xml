@@ -33,9 +33,8 @@
                 <DESC>This is documentation</DESC>
     
                 <PARAMS>
-                    <PARAM name="propertyMap">
+                    <PARAM name="propertyMap" type="HASH">
                         <DESC>Map of properties I want to set</DESC>
-                        <TYPE>Map of strings</TYPE>
     
                         <CAN_BE_NIL>
                             <DESC>Use already set properties</DESC>
@@ -58,9 +57,8 @@
             <METHOD name="take" has_callback="mandatory">
                 <DESC>Enable and start automatically</DESC>
                 <PARAMS>
-                    <PARAM name="propertyMap">
+                    <PARAM name="propertyMap" type="HASH">
                         <DESC>Map of properties I want to set</DESC>
-                        <TYPE>Map of strings</TYPE>
                         
                         <CAN_BE_NIL>
                             <DESC>Use already set properties</DESC>

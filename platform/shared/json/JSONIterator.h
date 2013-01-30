@@ -70,6 +70,7 @@ public:
 
 class CJSONArrayIterator
 {
+protected:
     struct json_object* m_rootObject;
     struct array_list*  m_array;
     int                 m_nCurItem;
@@ -86,6 +87,19 @@ public:
     int     getCurPos(){ return m_nCurItem; }
 
     CJSONEntry getCurItem();
+
+    int getSize();
+};
+
+class CJSONArray : public CJSONArrayIterator
+{
+public:
+    CJSONArray(const char* szData):CJSONArrayIterator(szData){}
+    CJSONArray(const CJSONEntry& oEntry, const char* strName):CJSONArrayIterator(oEntry, strName){}
+    CJSONArray(const CJSONEntry& oEntry):CJSONArrayIterator(oEntry){}
+
+    CJSONEntry getItem(int nPos);
+    CJSONEntry operator[](int nPos){return getItem(nPos);}
 };
 
 class CJSONStructIterator

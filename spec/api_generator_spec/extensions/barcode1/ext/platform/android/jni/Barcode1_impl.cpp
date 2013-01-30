@@ -1,30 +1,47 @@
-#include "rhodes/JNIRhodes.h"
+#include "rhodes.h"
+#include "Barcode1.h"
 
-#define BARCODE1_SINGLETON_CLASS "com.motorolasolutions.rhoelements.barcode1.Barcode1Singleton"
+#include "logging/RhoLog.h"
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "Barcode1_impl"
 
-extern "C" void Init_RubyAPI_Barcode1(void);
+#define BARCODE1_FACTORY_CLASS "com.motorolasolutions.rhoelements.barcode1.Barcode1Factory"
+
+extern "C" void Init_Barcode1_API(void);
 
 extern "C" void Init_Barcode1(void)
 {
+    RAWTRACE("Init_Barcode1");
+
     JNIEnv *env = jnienv();
     if(env)
     {
-        jclass barcode1SingletonClass = rho_find_class(env, BARCODE1_SINGLETON_CLASS);
-        if(!barcode1SingletonClass)
+        jclass cls = rho_find_class(env, BARCODE1_FACTORY_CLASS);
+        if(!cls)
         {
-            RAWLOG_ERROR1("Failed to find java class: %s", BARCODE1_SINGLETON_CLASS);
+            RAWLOG_ERROR1("Failed to find java class: %s", BARCODE1_FACTORY_CLASS);
             return;
         }
-        jmethodID midInit = env->GetStaticMethodID(barcode1SingletonClass, "init", "()V");
-        if(!midInit)
+        jmethodID midFactory = env->GetMethodID(cls, "<init>", "()V");
+        if(!midFactory)
         {
-            RAWLOG_ERROR1("Failed to get method 'init' for java class %s", BARCODE1_SINGLETON_CLASS);
+            RAWLOG_ERROR1("Failed to get constructor for java class %s", BARCODE1_FACTORY_CLASS);
             return;
         }
-        env->CallStaticVoidMethod(barcode1SingletonClass, midInit);
+        jobject jFactory = env->NewObject(cls, midFactory);
+        if(env->IsSameObject(jFactory, NULL))
+        {
+            RAWLOG_ERROR1("Failed to create %s instance", BARCODE1_FACTORY_CLASS);
+            return;
+        }
 
-        Init_RubyAPI_Barcode1();
-        //Init_JSAPI_Barcode1();
+        rhoelements::CBarcode1::setJavaFactory(env, jFactory);
+
+        env->DeleteLocalRef(jFactory);
+
+        Init_Barcode1_API();
+
+        RAWTRACE("Init_Barcode1 succeeded");
     }
     else
     {

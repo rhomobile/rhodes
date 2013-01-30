@@ -37,10 +37,10 @@
 						Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
 					</DESC>
 					<POSSIBILITY type="STRING">
-						<DESC>recognized code</DESC>>
+						<DESC>recognized code</DESC>
 					</POSSIBILITY>	
 					<POSSIBILITY type="NIL">
-						<DESC>if not any codes was recognized on image</DESC>>
+						<DESC>if not any codes was recognized on image</DESC>
 					</POSSIBILITY>	
 				</RETURN>
 			</METHOD>

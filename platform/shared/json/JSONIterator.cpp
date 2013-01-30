@@ -111,6 +111,21 @@ CJSONEntry CJSONArrayIterator::getCurItem()
         ( struct json_object *) array_list_get_idx(m_array, m_nCurItem) );
 }
 
+int CJSONArrayIterator::getSize()
+{
+    return m_array == 0 ? 0 : array_list_length(m_array);
+}
+
+/////////////////////////////////////////////////////////////////////
+//CJSONArray
+
+
+CJSONEntry CJSONArray::getItem(int nPos)
+{
+    return CJSONEntry( nPos >= getSize() ? 0 :
+        ( struct json_object *) array_list_get_idx(m_array, nPos) );
+}
+
 /////////////////////////////////////////////////////////////////////
 //CJSONStructIterator
 

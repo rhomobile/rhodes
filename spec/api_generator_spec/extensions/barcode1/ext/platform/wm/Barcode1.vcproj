@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="Barcode1"
-	ProjectGUID="{93453E28-E84A-40C4-BD6A-51A8373D7044}"
+	ProjectGUID="{39AF7E02-5BA3-4856-8739-1B6492306D27}"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="0"
 	>

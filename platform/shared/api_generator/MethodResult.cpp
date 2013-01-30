@@ -13,7 +13,7 @@ extern "C" int rho_webview_active_tab();
 
 rho::String CMethodResult::toJSON()
 { 
-    rho::String strRes;
+    rho::String strRes = "{}";
     if ( m_ResType == eStringArray )
     {
         strRes = "[";
@@ -41,7 +41,7 @@ rho::String CMethodResult::toJSON()
         strRes += "}";
     }else if ( m_ResType == eString)
     {
-        strRes = convertToStringA(m_strRes);
+        strRes = "{'_RhoValue':" + convertToStringA(m_strRes) + "}";
     }else if ( m_ResType == eArgError )
     {
         strRes = "{'_RhoArgError':" + CJSONEntry::quoteValueW(m_strError) + "}";
@@ -83,7 +83,13 @@ VALUE CMethodResult::toRuby()
         return valHash;
     }else if ( m_ResType == eString)
     {
-        return rho_ruby_create_string( convertToStringA(m_strRes).c_str());
+        VALUE valObj = 0;
+        if ( m_oRubyObjectClass )
+            valObj = rho_ruby_create_object_with_id( m_oRubyObjectClass, convertToStringA(m_strRes).c_str() );
+        else
+            valObj = rho_ruby_create_string( convertToStringA(m_strRes).c_str() );
+
+        return valObj;
     }else if ( m_ResType == eArgError)
     {
         rho_ruby_raise_argerror( convertToStringA(m_strError).c_str());
@@ -100,7 +106,10 @@ class CRubyCallbackResult : public rho::ICallbackObject
     CMethodResult m_oResult;
 public:
     CRubyCallbackResult(const CMethodResult& oResult) : m_oResult(oResult){}
-    ~CRubyCallbackResult(){}
+    ~CRubyCallbackResult()
+    {
+        int i = 0;
+    }
 
     virtual unsigned long getObjectValue()
     {
@@ -116,7 +125,15 @@ void CMethodResult::callCallback()
     {
         rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
 
-        RHODESAPP().callCallbackWithData( m_strRubyCallback, strResBody, m_strCallbackParam, false);
+        RHODESAPP().callCallbackWithData( m_strRubyCallback, strResBody, m_strCallbackParam, true);
+
+        m_ResType = eNone;
+    }else if ( m_ResType != eNone && m_pRubyCallbackProc)
+    {
+        VALUE oProc = m_pRubyCallbackProc->getValue();
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
+
+        RHODESAPP().callCallbackProcWithData( oProc, strResBody, m_strCallbackParam, true);
 
         m_ResType = eNone;
     }else if ( m_ResType != eNone && m_strJSCallback.length() != 0 )
@@ -134,4 +151,19 @@ void CMethodResult::convertStringParamToHash()
         resHash.put( convertToStringW(m_strStringParam), m_strRes);
         m_hashStrRes = resHash; m_ResType = eStringHash;
     }
+}
+
+CMethodResult::CMethodRubyValue::CMethodRubyValue(unsigned long val) : m_value(val)
+{ 
+    rho_ruby_holdValue(m_value); 
+}
+
+CMethodResult::CMethodRubyValue::~CMethodRubyValue()
+{ 
+    rho_ruby_releaseValue(m_value); 
+}
+
+void CMethodResult::setRubyCallbackProc(unsigned long oRubyCallbackProc)
+{ 
+    m_pRubyCallbackProc = new CMethodRubyValue(oRubyCallbackProc);
 }

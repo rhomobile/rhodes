@@ -1,0 +1,7 @@
+contains files with module API Implementation.
+
+Developer should create it - after first generation this folder is empty and this folder do not changed with next generation processes !!!.
+
+Developer should make at least <%= $cur_module.name %>FactorySingleton.m with acees to <%= $cur_module.name %>Factory interface!
+All other files include base_impl can be removed from project if it wants by developer.
+Default stub generated code placed in stub_impl folder - you can just copy all files from stub_impl to this folder and implement unemplemented methods.

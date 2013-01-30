@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/RhoStd.h"
+#include "common/AutoPointer.h"
 /*
 template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2 >
 class CObjCallbackFunctor2 : public rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>
@@ -44,11 +45,24 @@ class CMethodResult
     ETypes m_ResType;
 
     unsigned long m_oRubyObjectClass;
+
+    struct CMethodRubyValue
+    {
+        unsigned long m_value;
+        CMethodRubyValue(unsigned long val);
+        ~CMethodRubyValue();
+
+        unsigned long getValue(){return m_value;}
+        operator unsigned long() {return m_value;}
+    };
+
+    rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
 public:
 
     CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
+    void setRubyCallbackProc(unsigned long oRubyCallbackProc);
     void setJSCallback(const rho::String& strCallback){ m_strJSCallback = strCallback; }
     void setCallInUIThread(rho::boolean bUIThread){ m_bCallInUIThread = bUIThread; }
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }

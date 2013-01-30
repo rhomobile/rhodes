@@ -44,6 +44,7 @@
 #include "common/app_build_capabilities.h"
 #include "unzip/unzip.h"
 #include "common/Tokenizer.h"
+#include "api_generator/js_helpers.h"
 
 #include <algorithm>
 
@@ -644,6 +645,28 @@ void CRhodesApp::callCallbackWithData(String strCallbackUrl, String strBody, con
 
         strBody += strCallbackData;
     }
+
+    if (bWaitForResponse)
+        getNetRequest().pushData( strCallbackUrl, strBody, null );
+    else
+        runCallbackInThread(strCallbackUrl, strBody);
+}
+
+void CRhodesApp::callCallbackProcWithData(unsigned long oRubyCallbackProc, String strBody, const String& strCallbackData, bool bWaitForResponse) 
+{
+    strBody += "&rho_callback=1";
+
+    if (strCallbackData.length() > 0 )
+    {
+        if ( !String_startsWith( strCallbackData, "&" ) )
+            strBody += "&";
+
+        strBody += strCallbackData;
+    }
+
+    String strCallbackUrl = "/system/call_ruby_proc_callback?";
+    strCallbackUrl += convertToStringA(oRubyCallbackProc);
+    strCallbackUrl = canonicalizeRhoUrl(strCallbackUrl);
 
     if (bWaitForResponse)
         getNetRequest().pushData( strCallbackUrl, strBody, null );
@@ -1256,6 +1279,13 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/redirect_to", callback_redirect_to);
     m_httpServer->register_uri("/system/map", callback_map);
     m_httpServer->register_uri("/system/shared", callback_shared);
+
+#ifndef RHO_NO_JS_API
+    m_httpServer->register_uri( "/system/js_api_entrypoint", rho_http_js_entry_point );
+#endif
+
+    m_httpServer->register_uri("/system/call_ruby_proc_callback", rho::net::rho_http_ruby_proc_callback );
+
     m_httpServer->register_uri("/AppManager/loader/load", callback_AppManager_load);
     m_httpServer->register_uri("/system/getrhomessage", callback_getrhomessage);
     m_httpServer->register_uri("/system/activateapp", callback_activateapp);

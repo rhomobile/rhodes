@@ -1,11 +1,12 @@
-#include "..\Barcode1.h"
+#include "..\I<%= $cur_module.name %>.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "Barcode1"
+#define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>"
 
 #include "ruby/ext/rho/rhoruby.h"
 #include "common/StringConverter.h"
+#include "common/AutoPointer.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -14,68 +15,24 @@ extern "C"
 {
 
 void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
-VALUE getRuby_Barcode1_Module();
+VALUE getRuby_<%= $cur_module.name %>_Module();
 
-VALUE rb_barcode1_s_enumerate(int argc, VALUE *argv)
+<% if $cur_module.is_template_default_instance %>
+VALUE rb_<%= $cur_module.name %>_s_default(VALUE klass)
 {
-    bool bCallInUIThread = false;
-    bool bCallInSeparateThread = true;
-
-    CMethodResult oRes;
-    oRes.setRubyObjectClass(getRuby_Barcode1_Module());
-
-    if ( argc == 0 )
-    {
-        CBarcode1FactoryBase::getBarcode1SingletonS()->enumerate(oRes);
-    }else 
-    {
-        if ( !rho_ruby_is_string(argv[1]) )
-        {
-            oRes.setArgError(L"Type error: argument 2 should be String"); //see SWIG Ruby_Format_TypeError
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(bCallInUIThread);
-        oRes.setRubyCallback( getStringFromValue(argv[1]) );
-        if ( argc >= 2 )
-        {
-            if ( !rho_ruby_is_string(argv[1]) )
-            {
-                oRes.setArgError(L"Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[1]) );
-        }
-
-        rho::common::IRhoRunnable* pFunctor = new rho::common::CInstanceClassFunctor1<IBarcode1Singleton*, void (IBarcode1Singleton::*)(CMethodResult&), CMethodResult>
-                ( CBarcode1FactoryBase::getBarcode1SingletonS(), &IBarcode1Singleton::enumerate, oRes );
-
-        if ( bCallInUIThread )
-            rho_wm_impl_performOnUiThread( pFunctor );
-        else if ( bCallInSeparateThread )
-            CBarcode1FactoryBase::getBarcode1SingletonS()->callCommandInThread( pFunctor );
-        else
-            CBarcode1FactoryBase::getBarcode1SingletonS()->addCommandToQueue( pFunctor );
-    }
-
-    return oRes.toRuby();
-}
-
-VALUE rb_barcode1_s_default(VALUE klass)
-{
-    rho::StringW strDefaultID = CBarcode1FactoryBase::getBarcode1SingletonS()->getDefaultID();
+    rho::StringW strDefaultID = C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
 
     return rho_ruby_create_object_with_id( klass, convertToStringA(strDefaultID).c_str() );
 }
 
-VALUE rb_barcode1_s_set_default(VALUE klass, VALUE valObj)
+VALUE rb_<%= $cur_module.name %>_s_setDefault(VALUE klass, VALUE valObj)
 {
     const char* szID = rho_ruby_get_object_id( valObj );
-    CBarcode1FactoryBase::getBarcode1SingletonS()->setDefaultID(convertToStringW(szID));
+    C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(convertToStringW(szID));
 
     return rho_ruby_get_NIL();
 }
+<% end %>
 
 extern "C" static void
 string_iter(const char* szVal, void* par)
@@ -89,215 +46,181 @@ static void getStringArrayFromValue(VALUE val, rho::Vector<rho::StringW>& res)
     rho_ruby_enum_strary(val, string_iter, &res);
 }
 
-static VALUE barcode1_getprops(int argc, VALUE *argv, IBarcode1* pObj)
+extern "C" static void hash_eachstr(const char* szName, const char* szVal, void* par)
 {
-    //If method has call_in_ui_thread attribute, then call method in UI thread if no return value or callback present
-    //If method has call_in_thread attribute, then call method in separate thread if no return value or callback present
-    //If method calles with callback, then call method in separate thread
-    bool bCallInUIThread = false;
-    bool bCallInSeparateThread = true;
+    rho::Hashtable<rho::StringW, rho::StringW>& hash = *((rho::Hashtable<rho::StringW, rho::StringW>*)(par));
+    hash.put( convertToStringW(szName), convertToStringW(szVal) );
+}
 
+static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::StringW, rho::StringW>& res)
+{
+    rho_ruby_enum_strhash(val, hash_eachstr, &res);
+}
+
+<% $cur_module.methods.each do |module_method| %>
+<% if module_method.access == ModuleMethod::ACCESS_STATIC %>
+<%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, true)%>
+<% else %>
+static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(int argc, VALUE *argv, I<%= $cur_module.name %>* pObj)
+<% end %>
+{
     CMethodResult oRes;
-    if ( argc == 0 )
+
+<% if module_method.is_factory_method %>
+    oRes.setRubyObjectClass(getRuby_<%= $cur_module.name %>_Module());
+<% end %>
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+<% functor_params = ""; first_arg = 0; %>
+<% module_method.params.each do |param| %>
+
+    nCallbackArg = <%= first_arg + 1 %>;
+
+    <% if !param.can_be_nil %>
+    if ( argc == <%= first_arg %> )
     {
-        pObj->getProps(oRes);
-    }else if ( argc == 1 )
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(<%= module_method.params.size() %>) );
+        return oRes.toRuby();
+    }
+    <% end %>
+
+<% if param.type == MethodParam::TYPE_STRING %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
     {
-        if ( rho_ruby_is_NIL(argv[0]) )
+        if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
         {
-            pObj->getProps(oRes);
-        }else if ( rho_ruby_is_string(argv[0]) )
+            arg<%= first_arg %> = convertToStringW(getStringFromValue(argv[<%= first_arg %>]));
+<% if first_arg == 0 %>
+            oRes.setStringParam(getStringFromValue(argv[<%= first_arg %>]));
+<% end %>
+        }
+        else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
-            pObj->getPropsWithString( convertToStringW(getStringFromValue(argv[0])), oRes);
-        }else if ( rho_ruby_is_array(argv[0]) )
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toRuby();
+        }
+    }
+<% end %>
+
+<% if param.type == MethodParam::TYPE_ARRAY %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
+    {
+        if ( rho_ruby_is_array(argv[<%= first_arg %>]) )
+            getStringArrayFromValue(argv[<%= first_arg %>], arg<%= first_arg %>);
+        else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
-            rho::Vector<rho::StringW> ar;
-            getStringArrayFromValue(argv[0], ar);
-            pObj->getPropsWithArray(ar, oRes );
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toRuby();
+        }
+    }
+<% end %>
+
+<% if param.type == MethodParam::TYPE_HASH %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
+    {
+        if ( rho_ruby_is_hash(argv[<%= first_arg %>]) )
+            getStringHashFromValue(argv[<%= first_arg %>], arg<%= first_arg %>);
+        else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
+        {
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toRuby();
+        }
+    }
+<% end %>
+        
+<% functor_params += "arg#{first_arg}, " %>
+<% first_arg = first_arg+1 %>
+<% end %>
+
+    if ( argc > nCallbackArg )
+    {
+<% if module_method.has_callback == ModuleMethod::CALLBACK_NONE %>
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(<%= module_method.params.size() %>) );
+        return oRes.toRuby();
+<% end %>
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
         }else
         {
-            oRes.setArgError(L"Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
-        }
-    }else if ( argc >= 2 )
-    {
-        if ( !rho_ruby_is_string(argv[1]) )
-        {
-            oRes.setArgError(L"Type error: argument 2 should be String"); //see SWIG Ruby_Format_TypeError
+            oRes.setArgError(L"Type error: callback should be String");
             return oRes.toRuby();
         }
 
-        oRes.setCallInUIThread(bCallInUIThread);
-        oRes.setRubyCallback( getStringFromValue(argv[1]) );
-        if ( argc >= 3 )
+        oRes.setCallInUIThread(<%= module_method.is_run_in_ui_thread ? "true" : "false" %>);
+        if ( argc > nCallbackArg + 1 )
         {
-            if ( !rho_ruby_is_string(argv[2]) )
+            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
             {
-                oRes.setArgError(L"Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
+                oRes.setArgError(L"Type error: callback parameter should be String");
                 return oRes.toRuby();
             }
 
-            oRes.setCallbackParam( getStringFromValue(argv[2]) );
+            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
         }
-
-        rho::common::IRhoRunnable* pFunctor = 0;
-        if ( rho_ruby_is_NIL(argv[0]) )
-        {
-            pFunctor = new rho::common::CInstanceClassFunctor1<IBarcode1*, void (IBarcode1::*)(CMethodResult&), CMethodResult>
-                ( pObj, &IBarcode1::getProps, oRes );
-        }else if ( rho_ruby_is_string(argv[0]) )
-        {
-            oRes.setStringParam(getStringFromValue(argv[0]));
-            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::StringW&, CMethodResult&), rho::StringW, CMethodResult>
-                ( pObj, &IBarcode1::getPropsWithString, convertToStringW(getStringFromValue(argv[0])), oRes );
-
-        }else if ( rho_ruby_is_array(argv[0]) )
-        {
-            rho::Vector<rho::StringW> ar;
-            getStringArrayFromValue(argv[0], ar);
-
-            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::StringW>&, CMethodResult&), rho::Vector<rho::StringW>, CMethodResult>
-                ( pObj, &IBarcode1::getPropsWithArray, ar, oRes );
-        }else
-        {
-            oRes.setArgError(L"Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
-            return oRes.toRuby();
-        }
-
-        if ( bCallInUIThread )
-            rho_wm_impl_performOnUiThread( pFunctor );
-        else if ( bCallInSeparateThread )
-            CBarcode1FactoryBase::getBarcode1SingletonS()->callCommandInThread( pFunctor );
-        else
-            CBarcode1FactoryBase::getBarcode1SingletonS()->addCommandToQueue( pFunctor );
-
-
-    }else
-    {
-        oRes.setArgError(L"wrong # of arguments(%d for 2)", argc );
+        
+        bUseCallback = true;
     }
+
+<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &I<%= $cur_module.name %>::<%= module_method.name %>, <%= functor_params %> oRes );
+<% else %>
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.name %>, <%= functor_params %> oRes );
+<% end %>
+
+<% if module_method.is_run_in_ui_thread %>
+    rho_wm_impl_performOnUiThread( pFunctor );
+<% elsif module_method.is_run_in_thread %>
+    C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
+<% else %>
+
+    if ( bUseCallback )
+        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
+        pObj-><%= module_method.name %>( <%= functor_params %> oRes );
+<% else %>
+        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.name %>( <%= functor_params %> oRes );
+<% end %>
+
+    }
+<% end %>
 
     return oRes.toRuby();
 }
 
-VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
+<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
+<%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC)%>
 {
-    rho::StringW strDefaultID = CBarcode1FactoryBase::getBarcode1SingletonS()->getDefaultID();
-    IBarcode1* pObj = CBarcode1FactoryBase::getInstance()->getModuleByID(strDefaultID);
+    const char* szID = rho_ruby_get_object_id( obj );
+    I<%= $cur_module.name %>* pObj =  C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
 
-    return barcode1_getprops(argc, argv, pObj);
+    return _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(argc, argv, pObj);
 }
+<% end %>
 
-static VALUE barcode1_setprops(int argc, VALUE *argv, IBarcode1* pObj)
+<% if $cur_module.is_template_default_instance && module_method.access == ModuleMethod::ACCESS_INSTANCE%>
+<%= api_generator_MakeRubyMethodDecl($cur_module.name + "_def", module_method, true)%>
 {
-    //If method has call_in_ui_thread attribute, then call method in UI thread if no return value or callback present
-    //If method has call_in_thread attribute, then call method in separate thread if no return value or callback present
-    //If method calles with callback, then call method in separate thread
-    bool bCallInUIThread = false;
-    bool bCallInThread = false;
-    //TODO:barcode1_setprops
+    rho::StringW strDefaultID = C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
+    I<%= $cur_module.name %>* pObj = C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(strDefaultID);
 
-    CMethodResult oRes;
-/*
-    if ( argc == 0 )
-    {
-        pObj->getProps(oRes);
-    }else if ( argc == 1 )
-    {
-        if ( rho_ruby_is_NIL(argv[0]) )
-        {
-            pObj->getProps(oRes);
-        }else if ( rho_ruby_is_string(argv[0]) )
-        {
-            pObj->getPropsWithString(getStringFromValue(argv[0]), oRes);
-        }else if ( rho_ruby_is_array(argv[0]) )
-        {
-            rho::Vector<rho::String> ar;
-            getStringArrayFromValue(argv[0], ar);
-            pObj->getPropsWithArray(ar, oRes );
-        }else
-        {
-            oRes.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
-        }
-    }else if ( argc >= 2 )
-    {
-        if ( !rho_ruby_is_string(argv[1]) )
-        {
-            oRes.setArgError("Type error: argument 2 should be String"); //see SWIG Ruby_Format_TypeError
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(bCallInUIThread);
-        oRes.setRubyCallback( getStringFromValue(argv[1]) );
-        if ( argc >= 3 )
-        {
-            if ( !rho_ruby_is_string(argv[2]) )
-            {
-                oRes.setArgError("Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[2]) );
-        }
-
-        rho::common::IRhoRunnable* pFunctor = 0;
-        if ( rho_ruby_is_NIL(argv[0]) )
-        {
-            pFunctor = new rho::common::CInstanceClassFunctor1<IBarcode1*, void (IBarcode1::*)(CMethodResult&), CMethodResult>
-                ( pObj, &IBarcode1::getProps, oRes );
-        }else if ( rho_ruby_is_string(argv[0]) )
-        {
-            oRes.setStringParam(getStringFromValue(argv[0]));
-            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::String&, CMethodResult&), rho::String, CMethodResult>
-                ( pObj, &IBarcode1::getPropsWithString, getStringFromValue(argv[0]), oRes );
-
-        }else if ( rho_ruby_is_array(argv[0]) )
-        {
-            rho::Vector<rho::String> ar;
-            getStringArrayFromValue(argv[0], ar);
-
-            pFunctor = new rho::common::CInstanceClassFunctor2<IBarcode1*, void (IBarcode1::*)(const rho::Vector<rho::String>&, CMethodResult&), rho::Vector<rho::String>, CMethodResult>
-                ( pObj, &IBarcode1::getPropsWithArray, ar, oRes );
-        }else
-        {
-            oRes.setArgError("Type error: argument 1 should be String or Array"); //see SWIG Ruby_Format_TypeError
-            return oRes.toRuby();
-        }
-
-        if ( bCallInUIThread )
-            rho_wm_impl_performOnUiThread( pFunctor );
-        else //call in separate thread
-            CBarcode1FactoryBase::getBarcode1SingletonS()->addCommandToQueue( pFunctor );
-
-    }else
-    {
-        oRes.setArgError("wrong # of arguments(%d for 2)", argc );
-    }
-*/
-    return oRes.toRuby();
+    return _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(argc, argv, pObj);
 }
-
-VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
-{
-    const char* szID = rho_ruby_get_object_id( valObj );
-    IBarcode1* pObj =  CBarcode1FactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
-
-    return barcode1_getprops(argc, argv, pObj);
-}
-
-VALUE rb_barcode1_s_setprops(int argc, VALUE *argv)
-{
-    rho::StringW strDefaultID = CBarcode1FactoryBase::getBarcode1SingletonS()->getDefaultID();
-    IBarcode1* pObj = CBarcode1FactoryBase::getInstance()->getModuleByID(strDefaultID);
-
-    return barcode1_setprops(argc, argv, pObj);
-}
-
-VALUE rb_barcode1_setprops(int argc, VALUE *argv, VALUE valObj)
-{
-    const char* szID = rho_ruby_get_object_id( valObj );
-    IBarcode1* pObj =  CBarcode1FactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
-
-    return barcode1_setprops(argc, argv, pObj);
-}
+<% end %>
+<% end %>
 
 }

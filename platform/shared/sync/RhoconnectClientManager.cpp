@@ -3,9 +3,9 @@
 namespace rho {
 
 namespace sync {
+	RhoconnectClientManager::DummyRhoconnectClientImpl RhoconnectClientManager::s_dummyRhoconnectClientImpl;
 	
-	IRhoconnectClient* RhoconnectClientManager::m_pImpl = 0;
-	
+	IRhoconnectClient* RhoconnectClientManager::m_pImpl = &RhoconnectClientManager::s_dummyRhoconnectClientImpl;
 }
 	
 }
