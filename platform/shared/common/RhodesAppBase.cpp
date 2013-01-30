@@ -76,7 +76,11 @@ void CRhodesAppBase::initAppUrls()
     m_strBlobsDirPath = db_dir + "db/db-files";
 	m_strDBDirPath = db_dir + "db";
 
+#ifndef OS_WP8
     m_strAppRootPath = getRhoRootPath() + "apps";
+#else
+    m_strAppRootPath = getRhoRootPath();
+#endif
     //m_strRhodesPath = "";
 #else
     m_strBlobsDirPath = getRhoUserPath() + RHO_EMULATOR_DIR"/db/db-files";
