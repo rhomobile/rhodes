@@ -52,7 +52,7 @@ namespace rhoruntime
 		void toolbarHide(void);
 		int toolbarGetHeight(void);
 		void toolbarAddAction(::Platform::String^ text);
-		//void toolbarAddAction(Icon^ icon, String^ text, char* action, bool rightAlign /= false/);
+		void toolbarAddAction(::Platform::String^ icon, ::Platform::String^ text, ::Platform::String^ action);
 		void toolbarAddSeparator(void);
 		void setToolbarStyle(bool border, ::Platform::String^ background);
 		// menu

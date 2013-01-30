@@ -75,14 +75,42 @@ void CRhoRuntime::Execute()
 
 	RHODESAPP().startApp();
 
-	// wait for 5 seconds
-	//m_MainPage->DoWait(10000);
+	// wait for 8 seconds
+	//m_MainPage->DoWait(8000);
 	
-	//m_MainPage->tabbarInitialize();
-	//m_MainPage->tabbarAddTab(ref new String(L"Tab 1"), ref new String(L""), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
-	//m_MainPage->tabbarAddTab(ref new String(L"Tab 2"), ref new String(L""), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
-	//m_MainPage->tabbarAddTab(ref new String(L"Tab 3"), ref new String(L""), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
-	//m_MainPage->tabbarShow();
+	/* Toolbar test
+	rho::String strImagePath;
+	rho::StringW iconW;
+	m_MainPage->toolbarRemoveAllButtons();
+	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "/public/images/bar/back_btn.png");
+	iconW = rho::common::convertToStringW(strImagePath);
+	m_MainPage->toolbarAddAction(ref new String(iconW.c_str()), ref new String(L"Back"), ref new String(L"back"));
+	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "public/images/bar/forward_btn.png");
+	iconW = rho::common::convertToStringW(strImagePath);
+	m_MainPage->toolbarAddAction(ref new String(iconW.c_str()), ref new String(L"Forward"), ref new String(L"forward"));
+	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "/public/images/bar/home_btn.png");
+	iconW = rho::common::convertToStringW(strImagePath);
+	m_MainPage->toolbarAddAction(ref new String(iconW.c_str()), ref new String(L"Home"), ref new String(L"home"));
+	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "public/images/bar/gears.png");
+	iconW = rho::common::convertToStringW(strImagePath);
+	m_MainPage->toolbarAddAction(ref new String(iconW.c_str()), ref new String(L"Options"), ref new String(L"options"));
+	m_MainPage->toolbarAddAction(nullptr, ref new String(L"Refresh"), ref new String(L"refresh"));
+	m_MainPage->toolbarShow();
+	*/
+
+	/* Tabbar test
+	m_MainPage->tabbarInitialize();
+	rho::String strIconPath1 = rho::common::CFilePath::join( RHODESAPP().getAppRootPath(), "/public/images/bar/gears.png");
+	rho::StringW icon1 = rho::common::convertToStringW(strIconPath1);
+	rho::String strIconPath2 = rho::common::CFilePath::join( RHODESAPP().getAppRootPath(), "public/images/bar/forward_btn.png");
+	rho::StringW icon2 = rho::common::convertToStringW(strIconPath2);
+	rho::String strIconPath3 = rho::common::CFilePath::join( RHODESAPP().getAppRootPath(), "/public/images/bar/home_btn.png");
+	rho::StringW icon3 = rho::common::convertToStringW(strIconPath3);
+	m_MainPage->tabbarAddTab(ref new String(L"Tab 1"), ref new String(icon1.c_str()), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
+	m_MainPage->tabbarAddTab(ref new String(L"Tab 2"), ref new String(icon2.c_str()), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
+	m_MainPage->tabbarAddTab(ref new String(L"Tab 3"), ref new String(icon3.c_str()), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
+	m_MainPage->tabbarShow();
+	*/
 
 	//m_MainPage->fullscreenCommand(1);
 	//m_MainPage->exitCommand();

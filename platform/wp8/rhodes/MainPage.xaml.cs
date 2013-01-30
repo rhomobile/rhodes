@@ -156,6 +156,10 @@ namespace rhodes
             // TODO: put after-load app code here (e.g. switch to fullscreen if rhoconfig specifies that)
         }
 
+        private string prependWithSlash(string url)
+        {
+            return url.StartsWith("/") ? url : "/" + url;
+        }
 
         // *** WEBVIEW ***
 
@@ -338,22 +342,28 @@ namespace rhodes
 
         public void toolbarAddAction(string text)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddAction(text); }); return; }
-            ApplicationBarIconButton toolbarButton = new ApplicationBarIconButton();
-            // TODO: icon
-            toolbarButton.IconUri = new Uri("/rho/public/images/cancel.png", UriKind.Relative);
-            toolbarButton.Text = text;
-            toolbarItems.Add(text, text);
-            ApplicationBar.Buttons.Add(toolbarButton);
-            toolbarButton.Click += new EventHandler(toolbarButton_Click);
-            updateAppBarModeAndVisibility();
+            toolbarAddAction(null, text, text);
         }
 
-		public void toolbarAddAction(Icon icon, string text, string action, bool rightAlign)
+		public void toolbarAddAction(string icon, string text, string action)
         {
-            // TODO: implement custom toolbar action
-            toolbarAddAction(text);
-            //toolbarItems.Add(text, action);
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddAction(icon, text, action); }); return; }
+            if (ApplicationBar.Buttons.Count < 4)
+            {
+                ApplicationBarIconButton toolbarButton = new ApplicationBarIconButton();
+                toolbarButton.IconUri = new Uri((icon != null) && (icon.Length > 0) ? prependWithSlash(icon) : "/rho/public/images/cancel.png", UriKind.Relative);
+                toolbarButton.Text = text;
+                ApplicationBar.Buttons.Add(toolbarButton);
+                toolbarButton.Click += new EventHandler(toolbarButton_Click);
+            }
+            else
+            {
+                ApplicationBarMenuItem menuItem = new ApplicationBarMenuItem(text);
+                ApplicationBar.MenuItems.Add(menuItem);
+                menuItem.Click += new EventHandler(toolbarMenuItem_Click);
+            }
+            toolbarItems.Add(text, action);
+            updateAppBarModeAndVisibility();
         }
 
 		public void toolbarAddSeparator()
@@ -371,6 +381,11 @@ namespace rhodes
         private void toolbarButton_Click(object sender, EventArgs e)
         {
             CRhoRuntime.getInstance().onToolbarAction(toolbarItems[(sender as ApplicationBarIconButton).Text]);
+        }
+
+        private void toolbarMenuItem_Click(object sender, EventArgs e)
+        {
+            CRhoRuntime.getInstance().onToolbarAction(toolbarItems[(sender as ApplicationBarMenuItem).Text]);
         }
 
 
@@ -486,10 +501,11 @@ namespace rhodes
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab); }); return; }
             PivotItem tab = new PivotItem();
-            if ((icon==null) || (icon.Length == 0))
-                tab.Header =  label;
-            else
-                tab.Header =  new RhoTabHeader(label, icon);
+            // TODO: implement icons
+            //if ((icon==null) || (icon.Length == 0))
+            tab.Header =  label;
+            //else
+            //    tab.Header =  new RhoTabHeader(label, prependWithSlash(icon));
             if (use_current_view_for_tab)
                 tab.Content = RhodesWebBrowser;
             else
