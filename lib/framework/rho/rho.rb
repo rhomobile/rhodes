@@ -876,15 +876,26 @@ end
     def serve(req)
       begin
         RhoProfiler.start_counter('CTRL_ACTION')            
-      
-        puts "RHO serve: " + (req ? "#{req['request-uri']}" : '')
+
         res = init_response
-        get_app(req['application']).send :serve, req, res
+      
+        if (req['proc'])
         
-        init_nativebar
-        Rho::RhoController.clean_cached_metadata()
-        Rho::RhoConfig.clean_cached_changed
+            @params = RhoSupport::query_params req
+            RhoController.process_rho_object(@params)
+            req['proc'].call( @params['body'] )
+                
+        else
+            puts "RHO serve: " + (req ? "#{req['request-uri']}" : '')
+            get_app(req['application']).send :serve, req, res
+            
+            init_nativebar
+            Rho::RhoController.clean_cached_metadata()
+            Rho::RhoConfig.clean_cached_changed
+        end
+
         ret = send_response(res)
+            
         RhoProfiler.stop_counter('CTRL_ACTION') 
         return ret
       rescue Exception => e

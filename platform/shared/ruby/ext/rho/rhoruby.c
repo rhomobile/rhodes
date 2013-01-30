@@ -1010,6 +1010,11 @@ int rho_ruby_is_array(VALUE val)
     return (TYPE(val) == T_ARRAY) ? 1 : 0;
 }
 
+int rho_ruby_is_hash(VALUE val)
+{
+    return (TYPE(val) == T_HASH) ? 1 : 0;
+}
+
 const char* rho_ruby_get_object_id( VALUE valObj )
 {
     const char ** ppString = NULL;
@@ -1017,4 +1022,21 @@ const char* rho_ruby_get_object_id( VALUE valObj )
     Data_Get_Struct(valObj, void *, ppString);
 
     return *ppString;
+}
+
+int rho_ruby_is_proc(VALUE val)
+{
+    return CLASS_OF(val) == rb_cProc ? 1 : 0;
+}
+
+int rho_ruby_is_method(VALUE val)
+{
+    return CLASS_OF(val) == rb_cMethod ? 1 : 0;
+}
+
+VALUE rho_ruby_getProcBinding(VALUE proc)
+{
+    static ID binding_mid;
+    CONST_ID(binding_mid, "binding");
+    return rb_funcall(proc, binding_mid, 0);
 }

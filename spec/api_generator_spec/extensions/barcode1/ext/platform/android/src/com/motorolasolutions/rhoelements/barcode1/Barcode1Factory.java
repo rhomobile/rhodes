@@ -1,13 +1,10 @@
 package com.motorolasolutions.rhoelements.barcode1;
 
-import com.motorolasolutions.rhoelements.RhoApiFactoryBase;
-import com.motorolasolutions.rhoelements.IRhoApiFactory;
-import com.motorolasolutions.rhoelements.IRhoApiSingleton;
-import com.motorolasolutions.rhoelements.IRhoApiSingletonFactory;
+import com.motorolasolutions.rhoelements.RhoApiFactory;
 
 public class Barcode1Factory
-        extends RhoApiFactoryBase<Barcode1, Barcode1Singleton>
-        implements IRhoApiFactory<IBarcode1>, IRhoApiSingletonFactory<IRhoApiSingleton> {
+        extends RhoApiFactory<Barcode1, Barcode1Singleton>
+        implements IBarcode1Factory {
 
     @Override
     protected Barcode1Singleton createSingleton() {

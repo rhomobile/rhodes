@@ -47,7 +47,8 @@ namespace rhodes
         public int tabbarGetHeight() { return _mainPage.tabbarGetHeight(); }
         public void tabbarSwitch(int index) { _mainPage.tabbarSwitch(index); }
         public int tabbarGetCurrent() { return _mainPage.tabbarGetCurrent(); }
-        //public int tabbarAddTab(String^ label, char* icon, bool disabled, Color^ web_bkg_color, QTabBarRuntimeParams& tbri);
+        public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab)
+            { _mainPage.tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab); }
         public void tabbarSetBadge(int index, string badge) { _mainPage.tabbarSetBadge(index, badge); }
         public void exitCommand() { _mainPage.exitCommand(); }
         public void navigateBackCommand() { _mainPage.navigateBackCommand(); }

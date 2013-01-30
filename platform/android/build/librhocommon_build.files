@@ -32,3 +32,5 @@ platform/shared/rubyext/ZipFiles.cpp
 platform/shared/statistic/RhoProfiler.cpp
 platform/shared/unzip/unzip.cpp
 platform/shared/unzip/zip.cpp
+platform/shared/api_generator/js_helpers.cpp
+platform/shared/api_generator/MethodResult.cpp

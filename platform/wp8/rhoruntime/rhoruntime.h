@@ -67,7 +67,7 @@ namespace rhoruntime
 		int tabbarGetHeight(void);
 		void tabbarSwitch(int index);
 		int tabbarGetCurrent();
-		//int tabbarAddTab(String^ label, char* icon, bool disabled, Color^ web_bkg_color, QTabBarRuntimeParams& tbri);
+		void tabbarAddTab(::Platform::String^ label, ::Platform::String^ icon, ::Platform::String^ action, bool disabled, ::Platform::String^ web_bkg_color, ::Platform::String^ selected_color, bool reload, bool use_current_view_for_tab);
 		void tabbarSetBadge(int index, ::Platform::String^ badge);
 		void exitCommand(void);
 		void navigateBackCommand(void);
@@ -109,6 +109,7 @@ namespace rhoruntime
 		void createCustomMenu(void);
 		void onCustomMenuItemCommand(int nItemPos);
 		void onToolbarAction(::Platform::String^ action);
+		void onTabbarCurrentChanged(int index, ::Platform::String^ action);
 		void onWindowClose(void);
 		void onWebViewUrlChanged(::Platform::String^ url);
 		bool onBackKeyPress(void);

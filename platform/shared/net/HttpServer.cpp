@@ -1193,6 +1193,28 @@ bool CHttpServer::call_ruby_method(String const &uri, String const &body, String
     return true;
 }
 
+void rho_http_ruby_proc_callback(void *arg, rho::String const &query )
+{
+    //Should never be called. See CHttpServer::call_ruby_proc instead
+}
+
+void CHttpServer::call_ruby_proc( rho::String const &query, String const &body )
+{
+    unsigned long valProc = 0;
+    convertFromStringA( query.c_str(), valProc );
+
+    HeaderList headers;
+    headers.addElement(HttpHeader("Content-Type","application/x-www-form-urlencoded"));
+    VALUE req = create_request_hash("", "", "", "", "POST", "", String(), headers, body);
+    addHashToHash(req,"proc",valProc);
+
+    VALUE data = callFramework(req);
+    String strReply = String(getStringFromValue(data), getStringLenFromValue(data));
+    rho_ruby_releaseValue(data);
+
+    send_response(strReply);
+}
+
 bool CHttpServer::decide(String const &method, String const &arg_uri, String const &query,
                          HeaderList const &headers, String const &body)
 {
@@ -1200,7 +1222,12 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
     callback_t callback = registered(arg_uri);
     if (callback) {
         RAWTRACE1("Uri %s is registered callback, so handle it appropriately", arg_uri.c_str());
-        callback(this, query.length() ? query : body);
+
+        if ( callback == rho_http_ruby_proc_callback )
+            call_ruby_proc( query, body );
+        else
+            callback(this, query.length() ? query : body);
+
         return false;
     }
 

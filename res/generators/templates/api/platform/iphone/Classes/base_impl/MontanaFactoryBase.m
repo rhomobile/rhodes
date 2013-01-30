@@ -1,42 +1,42 @@
 
-#import "Barcode1FactoryBase.h"
-#import "../impl/Barcode1.h"
-#import "../impl/Barcode1Singleton.h"
+#import "<%= $cur_module.name %>FactoryBase.h"
+#import "../impl/<%= $cur_module.name %>.h"
+#import "../impl/<%= $cur_module.name %>Singleton.h"
 
-@implementation Barcode1FactoryBase
+@implementation <%= $cur_module.name %>FactoryBase
 
 -(id)init {
     self = [super init];
-    mBarcode1Instances = [NSMutableDictionary dictionary];
-    mBarcode1Singleton = nil;
+    m<%= $cur_module.name %>Instances = [NSMutableDictionary dictionary];
+    m<%= $cur_module.name %>Singleton = nil;
     return self;
 }
 
--(id<IBarcode1>) getBarcode1ByID:(NSString*)ID {
-    Barcode1* obj = [mBarcode1Instances objectForKey:ID];
+-(id<I<%= $cur_module.name %>>) get<%= $cur_module.name %>ByID:(NSString*)ID {
+    <%= $cur_module.name %>* obj = [m<%= $cur_module.name %>Instances objectForKey:ID];
     if (obj == nil) {
-        obj = [self createBarcode1ByID:ID];
-        [mBarcode1Instances setObject:obj forKey:ID];
+        obj = [self create<%= $cur_module.name %>ByID:ID];
+        [m<%= $cur_module.name %>Instances setObject:obj forKey:ID];
     }
     return obj;
 }
 
--(id<IBarcode1>)createBarcode1ByID:(NSString*)ID {
-    Barcode1* obj = [[Barcode1 alloc] init];
+-(id<I<%= $cur_module.name %>>)create<%= $cur_module.name %>ByID:(NSString*)ID {
+    <%= $cur_module.name %>* obj = [[<%= $cur_module.name %> alloc] init];
     [obj setProperty:@"ID" value:ID];
     return obj;
 }
 
 
--(id<IBarcode1Singleton>) getBarcode1Singleton {
-    if (mBarcode1Singleton == nil) {
-        mBarcode1Singleton = [[Barcode1Singleton alloc] init];
+-(id<I<%= $cur_module.name %>Singleton>) get<%= $cur_module.name %>Singleton {
+    if (m<%= $cur_module.name %>Singleton == nil) {
+        m<%= $cur_module.name %>Singleton = [[<%= $cur_module.name %>Singleton alloc] init];
     }
-    return mBarcode1Singleton;
+    return m<%= $cur_module.name %>Singleton;
 }
 
 -(void)dealloc {
-    [mBarcode1Instances release];
+    [m<%= $cur_module.name %>Instances release];
     [super dealloc];
 }
 

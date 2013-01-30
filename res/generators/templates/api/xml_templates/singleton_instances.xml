@@ -3,12 +3,8 @@
 
 <SINGLETON_INSTANCES>
 	<METHODS>
-		<METHOD name="enumerate" access="STATIC" has_callback="optional" fabric="true">
+	    <METHOD name="enumerate" access="STATIC" has_callback="optional" factory="true">
 			<DESC>This is documentation</DESC>
-            <RETURN>
-                <DESC>All possible instances</DESC>
-                <TYPE>Array of SelfInstance</TYPE>
-            </RETURN>
         </METHOD>
     </METHODS>
 </SINGLETON_INSTANCES>

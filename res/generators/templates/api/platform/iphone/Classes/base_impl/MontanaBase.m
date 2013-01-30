@@ -1,7 +1,7 @@
 
-#import "Barcode1Base.h"
+#import "<%= $cur_module.name %>Base.h"
 
-@implementation Barcode1Base
+@implementation <%= $cur_module.name %>Base
 
 
 - (id) init {
@@ -26,19 +26,13 @@
     return [mProperties dictionaryWithValuesForKeys:listOfPropertyNames];
 }
 
-
--(void) getProps:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[self getAllProperties]];
+-(void) setPropertiesByDictionary:(NSDictionary*)dict {
+    [mProperties addEntriesFromDictionary:dict];
 }
 
--(void) getPropsWithString:(NSString*)param1 methodResult:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[self getProperty:param1]];
+-(void) clearAllProps {
+    [mProperties removeAllObjects];
 }
-
--(void) getPropsWithArray:(NSArray*)param1 methodResult:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[self getPropertiesByList:param1]];
-}
-
 
 
 -(void) dealloc {

@@ -43,17 +43,12 @@ rho::String js_entry_point(const char* szJSON)
         return "{Error}";
     }
 
-    CJSONArrayIterator oParams(oEntry.getEntry("Params"));
-    return pMethod( strObjID, oParams );
+    CJSONArray oParams(oEntry.getEntry("Params"));
+    return pMethod( oParams, strObjID );
 }
 
-static void http_js_entry_point(void *arg, rho::String const &query )
+void rho_http_js_entry_point(void *arg, rho::String const &query )
 {
     rho::String res = js_entry_point(query.c_str());
     rho_http_sendresponse(arg, res.c_str());
-}
-
-void js_register_http_entry_point()
-{
-    RHODESAPP().registerLocalServerUrl( "/system/js_api_entrypoint", http_js_entry_point );
 }

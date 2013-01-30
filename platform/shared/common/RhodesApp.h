@@ -217,6 +217,8 @@ public:
     void setNetworkStatusMonitor(INetworkStatusMonitor* netMonitor);
 
     void registerLocalServerUrl(const String& strUrl, rho::net::CHttpServer::callback_t const &callback);
+
+    void callCallbackProcWithData(unsigned long oRubyCallbackProc, String strBody, const String& strCallbackData, bool bWaitForResponse);
 protected:
     virtual void run();
 
