@@ -282,7 +282,12 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 {
     m_root = CFilePath::normalizePath(root);
     m_strRhoRoot = m_root.substr(0, m_root.length()-5);
-    m_strRuntimeRoot = runtime_root.substr(0, runtime_root.length()-5) + "/rho/apps";
+    m_strRuntimeRoot = runtime_root.substr(0, runtime_root.length()-5) +
+#ifdef OS_WP8
+         "rho";
+#else
+         "/rho/apps";
+#endif
     m_userroot = CFilePath::normalizePath(user_root);
     m_strRhoUserRoot = m_userroot;
 }
@@ -291,7 +296,12 @@ CHttpServer::CHttpServer(int port, String const &root)
     :m_active(false), m_port(port), verbose(true)
 {
     m_root = CFilePath::normalizePath(root);
-    m_strRuntimeRoot = (m_strRhoRoot = m_root.substr(0, m_root.length()-5)) + "/rho/apps";
+    m_strRuntimeRoot = (m_strRhoRoot = m_root.substr(0, m_root.length()-5)) +
+#ifdef OS_WP8
+         "rho";
+#else
+         "/rho/apps";
+#endif
     m_userroot = CFilePath::normalizePath(root);
     m_strRhoUserRoot = m_root.substr(0, m_root.length()-5);
 }
