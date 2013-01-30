@@ -76,22 +76,22 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByRubyObject(VA
 
 <% is_callback_possible = module_method.is_run_in_thread || module_method.is_run_in_ui_thread || (module_method.has_callback != ModuleMethod::CALLBACK_NONE) %>
 
-@interface <%= $cur_module.name %>_<%= module_method.name %>_caller_params : NSObject
+@interface rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params : NSObject
 
 @property (assign) NSArray* params;
 @property (assign) id<<%= interface_name %>> item;
 @property (assign) CMethodResult* methodResult;
 
-+(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<<%= interface_name %>>)_item _methodResult:(CMethodResult*)_methodResult;
++(<%= "rb_"+$cur_module.name %>_<%= module_method.name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<<%= interface_name %>>)_item _methodResult:(CMethodResult*)_methodResult;
 
 @end
 
-@implementation <%= $cur_module.name %>_<%= module_method.name %>_caller_params
+@implementation rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params
 
 @synthesize params,item,methodResult;
 
-+(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<<%= interface_name %>>)_item _methodResult:(CMethodResult*)_methodResult {
-    <%= $cur_module.name %>_<%= module_method.name %>_caller_params* par = [[<%= $cur_module.name %>_<%= module_method.name %>_caller_params alloc] init];
++(<%= "rb_"+$cur_module.name %>_<%= module_method.name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<<%= interface_name %>>)_item _methodResult:(CMethodResult*)_methodResult {
+    rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params* par = [[rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params alloc] init];
     par.params = _params;
     par.item = _item;
     par.methodResult = _methodResult;
@@ -101,28 +101,28 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByRubyObject(VA
 @end
 
 
-@interface <%= $cur_module.name %>_<%= module_method.name %>_caller : NSObject {
+@interface rb_<%= $cur_module.name %>_<%= module_method.name %>_caller : NSObject {
 
 }
-+(<%= $cur_module.name %>_<%= module_method.name %>_caller*) getSharedInstance;
-+(void) <%= module_method.name %>:(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params;
-+(void) <%= module_method.name %>_in_thread:(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params;
-+(void) <%= module_method.name %>_in_UI_thread:(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params;
++(rb_<%= $cur_module.name %>_<%= module_method.name %>_caller*) getSharedInstance;
++(void) <%= module_method.name %>:(rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params;
++(void) <%= module_method.name %>_in_thread:(rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params;
++(void) <%= module_method.name %>_in_UI_thread:(rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params;
 
 @end
 
-static <%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur_module.name %>_<%= module_method.name %>_caller = nil;
+static rb_<%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur_module.name %>_<%= module_method.name %>_caller = nil;
 
-@implementation <%= $cur_module.name %>_<%= module_method.name %>_caller
+@implementation rb_<%= $cur_module.name %>_<%= module_method.name %>_caller
 
-+(<%= $cur_module.name %>_<%= module_method.name %>_caller*) getSharedInstance {
++(rb_<%= $cur_module.name %>_<%= module_method.name %>_caller*) getSharedInstance {
     if (our_<%= $cur_module.name %>_<%= module_method.name %>_caller == nil) {
-        our_<%= $cur_module.name %>_<%= module_method.name %>_caller = [[<%= $cur_module.name %>_<%= module_method.name %>_caller alloc] init];
+        our_<%= $cur_module.name %>_<%= module_method.name %>_caller = [[rb_<%= $cur_module.name %>_<%= module_method.name %>_caller alloc] init];
     }
     return our_<%= $cur_module.name %>_<%= module_method.name %>_caller;
 }
 
--(void) command_<%= module_method.name %>:(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
+-(void) command_<%= module_method.name %>:(rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
     NSArray* params = caller_params.params;
     id<<%= interface_name %>> objItem = caller_params.item;
     CMethodResult* methodResult = caller_params.methodResult;
@@ -143,16 +143,16 @@ static <%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur_mo
     <%= method_line %>
 }
 
-+(void) <%= module_method.name %>:(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
-    [[<%= $cur_module.name %>_<%= module_method.name %>_caller getSharedInstance] command_<%= module_method.name %>:caller_params];
++(void) <%= module_method.name %>:(rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
+    [[rb_<%= $cur_module.name %>_<%= module_method.name %>_caller getSharedInstance] command_<%= module_method.name %>:caller_params];
 }
 
-+(void) <%= module_method.name %>_in_thread:(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
-    [[<%= $cur_module.name %>_<%= module_method.name %>_caller getSharedInstance] performSelectorInBackground:@selector(command_<%= module_method.name %>:) withObject:caller_params];
++(void) <%= module_method.name %>_in_thread:(rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
+    [[rb_<%= $cur_module.name %>_<%= module_method.name %>_caller getSharedInstance] performSelectorInBackground:@selector(command_<%= module_method.name %>:) withObject:caller_params];
 }
 
-+(void) <%= module_method.name %>_in_UI_thread:(<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
-    [[<%= $cur_module.name %>_<%= module_method.name %>_caller getSharedInstance] performSelectorOnMainThread:@selector(command_<%= module_method.name %>:) withObject:caller_params waitUntilDone:NO];
++(void) <%= module_method.name %>_in_UI_thread:(rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params*)caller_params {
+    [[rb_<%= $cur_module.name %>_<%= module_method.name %>_caller getSharedInstance] performSelectorOnMainThread:@selector(command_<%= module_method.name %>:) withObject:caller_params waitUntilDone:NO];
 }
 
 
@@ -233,22 +233,22 @@ static <%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur_mo
             [methodResult setCallbackParam:callbackParam];
         }
         <% if module_method.is_run_in_ui_thread %>
-        [<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_UI_thread:[<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        [rb_<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_UI_thread:[rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         <% else %>
-        [<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_thread:[<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        [rb_<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_thread:[rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         <% end %>
     }
     else {
         // we do not have callback
         <% if module_method.is_run_in_ui_thread %>
-        [<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_UI_thread:[<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        [rb_<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_UI_thread:[rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         method_return_result = NO;
         <% else
              if module_method.is_run_in_thread %>
-        [<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_thread:[<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        [rb_<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_thread:[rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         method_return_result = NO;
              <% else %>
-        [<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>:[<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        [rb_<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>:[rb_<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         <% end
         end%>
     }
