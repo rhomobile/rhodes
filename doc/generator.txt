@@ -28,22 +28,16 @@ The generated application has the following directory structure and files.
 		rhoconfig.txt
 	./app:
 		application.rb
-		index.bb.erb
 		index.erb
 		layout.erb
 		loading.html
 		loading.png
 	./app/Settings:
 		controller.rb	
-		home.bb.erb	
 		home.erb	
-		index.bb.erb	
 		index.erb	
-		login.bb.erb	
 		login.erb	
-		reset.bb.erb	
 		reset.erb	
-		wait.bb.erb
 		wait.erb
 	./app/helpers:
 		application_helper.rb
@@ -88,10 +82,6 @@ This will generate the following files in the folder app/Account:
 * app/Product/edit.erb - the html view template to edit an object
 * app/Product/new.erb - the html view template to supply values to create a new object
 * app/Product/show.erb - the html view template to displays the selected object
-* app/Product/index.bb.erb - the html view template to display the list of objects on Blackberry
-* app/Product/edit.bb.erb - the html view template to edit an object on Blackberry
-* app/Product/new.bb.erb - the html view template to supply values to create a new object on Blackberry
-* app/Product/show.bb.erb - the html view template to displays the selected object on Blackberry
 * app/Product/product_controller.rb - contains the the business logic for the model, the basic CRUD actions: index, new, create, edit, update and delete.
 * app/Product/product.rb - contains the Product model definition. Since we are using the default PropertyBag definition, we don't need to modify this file any further.
 

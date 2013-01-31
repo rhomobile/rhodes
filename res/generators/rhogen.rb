@@ -89,11 +89,12 @@ module Rhogen
       template.source = 'app/index.erb'
       template.destination = "#{name}/app/index.erb"
     end
-
+=begin
     template :bb_index do |template|
       template.source = 'app/index.bb.erb'
       template.destination = "#{name}/app/index.bb.erb"
     end   
+=end
 
     template :layout do |template|
       template.source = 'app/layout.erb'
@@ -225,7 +226,7 @@ module Rhogen
       template.source = 'show.erb'
       template.destination = "app/#{name.camel_case}/show.erb"
     end
-    
+=begin    
     template :bb_index do |template|
       template.source = 'index.bb.erb'
       template.destination = "app/#{name.camel_case}/index.bb.erb"
@@ -245,6 +246,7 @@ module Rhogen
       template.source = 'show.bb.erb'
       template.destination = "app/#{name.camel_case}/show.bb.erb"
     end
+=end
 
     template :controller do |template|
       underscore_name = name.camel_case.split(/(?=[A-Z])/).map{|w| w.downcase}.join("_")
