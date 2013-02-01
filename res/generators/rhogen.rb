@@ -7,8 +7,10 @@ require 'active_support'
 require 'uuid'
 require 'yaml'
 require 'rexml/document'
+require File.join(File.dirname(__FILE__),'/../../lib/build/jake.rb')
 
 require File.dirname(__FILE__) + '/../../lib/rhodes'
+
 
 
 module Rhogen
@@ -326,7 +328,6 @@ module Rhogen
 
 
   class ExtensionGenerator < BaseGenerator
-
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'extension')
     end
@@ -359,6 +360,11 @@ module Rhogen
     def callback_after_make_build(template)
         # change atribbutes in build script file to executable
         File.chmod(0755, $build_script_full_path) 
+		Dir.chdir("extensions/#{namefixed.downcase}/ext")
+		args = []
+		args << "api"
+		args << source_root+"/extensions/montana/ext/montana.xml"
+		puts Jake.run(source_root+"/../../../../bin/rhogen", args)
     end    
 
     template :build do |template|
@@ -371,21 +377,6 @@ module Rhogen
     template :build_bat do |template|
       template.source = 'extensions/montana/ext/build.bat'
       template.destination = "extensions/#{namefixed.downcase}/ext/build.bat"
-    end
-
-    template :extension_i do |template|
-      template.source = 'extensions/montana/ext/shared/ruby/montana.i'
-      template.destination = "extensions/#{namefixed.downcase}/ext/shared/ruby/#{namefixed.downcase}.i"
-    end
-
-    template :extension_wrap do |template|
-      template.source = 'extensions/montana/ext/shared/ruby/montana_wrap.c'
-      template.destination = "extensions/#{namefixed.downcase}/ext/shared/ruby/#{namefixed.downcase}_wrap.c"
-    end
-
-    template :extension_c do |template|
-      template.source = 'extensions/montana/ext/shared/src/montana.c'
-      template.destination = "extensions/#{namefixed.downcase}/ext/shared/src/#{namefixed.downcase}.c"
     end
 
     template :extension_iphone_rakefile do |template|
@@ -977,6 +968,26 @@ module Rhogen
     template :wm_api3 do |template|
       template.source = 'cpp/javascript/montana_js_wrap.cpp'
       template.destination = "platform/wm/generated/javascript/#{$cur_module.name}_js_wrap.cpp"
+    end
+
+	template :wp8_api do |template|
+      template.source = 'cpp/IMontana.h'
+      template.destination = "platform/wp8/generated/I#{$cur_module.name}.h"
+    end
+
+    template :wp8_api1 do |template|
+      template.source = 'cpp/MontanaFactoryBase.cpp'
+      template.destination = "platform/wp8/generated/#{$cur_module.name}FactoryBase.cpp"
+    end
+
+    template :wp8_api2 do |template|
+      template.source = 'cpp/ruby/montana_ruby_wrap.cpp'
+      template.destination = "platform/wp8/generated/ruby/#{$cur_module.name}_ruby_wrap.cpp"
+    end
+
+    template :wp8_api3 do |template|
+      template.source = 'cpp/javascript/montana_js_wrap.cpp'
+      template.destination = "platform/wp8/generated/javascript/#{$cur_module.name}_js_wrap.cpp"
     end
 
 
