@@ -25,30 +25,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\generted\<%= name.camel_case() %>_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp">
       <Filter>shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generted\"<%= name.camel_case() %>_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_js_api.cpp">
       <Filter>shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generted\"<%= name.camel_case() %>_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c">
       <Filter>shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="generted\"<%= name.camel_case() %>_js_wrap.cpp" />
+    <ClCompile Include="generated\<%= name.downcase() %>_js_wrap.cpp">
       <Filter>wp8\generated\javascript</Filter>
     </ClCompile>
-    <ClCompile Include="generted\"<%= name.camel_case() %>_ruby_wrap.cpp" />
+    <ClCompile Include="generated\<%= name.downcase() %>_ruby_wrap.cpp">
       <Filter>wp8\generated\ruby</Filter>
     </ClCompile>
-    <ClCompile Include="generted\"<%= name.camel_case() %>FactoryBase.cpp" />
+    <ClCompile Include="generated\<%= name.camel_case() %>FactoryBase.cpp">
       <Filter>wp8\generated</Filter>
     </ClCompile>
-    <ClCompile Include="generted\"<%= name.camel_case() %>_impl.cpp" />
+    <ClCompile Include="src\<%= name.camel_case() %>_impl.cpp">
       <Filter>wp8</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\"<%= name.camel_case() %>.h"" />
+    <ClInclude Include="generated\<%= name.camel_case() %>.h">
       <Filter>wp8\generated</Filter>
     </ClInclude>
   </ItemGroup>
