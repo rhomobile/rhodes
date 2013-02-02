@@ -363,9 +363,14 @@ module Rhogen
 		Dir.chdir("extensions/#{namefixed.downcase}/ext")
 		args = []
 		args << "api"
-		args << source_root+"/extensions/montana/ext/montana.xml"
+		args << Dir.pwd+"/#{namefixed.downcase}.xml"
 		puts Jake.run(source_root+"/../../../../bin/rhogen", args)
     end    
+
+	template :extension_apigen_xml do |template|
+        template.source = 'extensions/montana/ext/montana.xml'
+        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}.xml"
+    end
 
     template :build do |template|
       template.source = 'extensions/montana/ext/build'
@@ -445,24 +450,14 @@ module Rhogen
         template.destination = "extensions/#{namefixed.downcase}/ext/platform/wm/#{namefixed.camel_case}.vsprops"
     end
 
-    template :extension_wm_h do |template|
-        template.source = 'extensions/montana/ext/platform/wm/src/montana_wm.h'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wm/src/#{namefixed.downcase}_wm.h"
-    end
-
-    template :extension_wm_cpp do |template|
-        template.source = 'extensions/montana/ext/platform/wm/src/montana_wm.cpp'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wm/src/#{namefixed.downcase}_wm.cpp"
+    template :extension_wm_impl_cpp do |template|
+        template.source = 'extensions/montana/ext/platform/wm/src/montana_impl.cpp'
+        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wm/src/#{namefixed.camel_case}_impl.cpp"
     end
 
 	template :extension_wp8_vcproject do |template|
         template.source = 'extensions/montana/ext/platform/wp8/Montana.vcxproj'
         template.destination = "extensions/#{namefixed.downcase}/ext/platform/wp8/#{namefixed.camel_case}.vcxproj"
-    end
-
-	template :extension_wp8_xml do |template|
-        template.source = 'extensions/montana/ext/montana.xml'
-        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}.xml"
     end
 
     template :extension_wp8_vcprojectprops do |template|
@@ -473,16 +468,6 @@ module Rhogen
 	template :extension_wp8_vcprojectfilters do |template|
         template.source = 'extensions/montana/ext/platform/wp8/montana.vcxproj.filters'
         template.destination = "extensions/#{namefixed.downcase}/ext/platform/wp8/#{namefixed.camel_case}.vcxproj.filters"
-    end
-
-    template :extension_wp8_h do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/src/montana_wp8.h'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wp8/src/#{namefixed.downcase}_wp8.h"
-    end
-
-    template :extension_wp8_cpp do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/src/montana_wp8.cpp'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wp8/src/#{namefixed.downcase}_wp8.cpp"
     end
 
 	template :extension_wp8_impl_cpp do |template|
