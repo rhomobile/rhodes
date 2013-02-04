@@ -378,7 +378,9 @@ module Rhogen
 
 	def callback_after_delete_testapp(template)
 		if @@noapp == true
-			FileUtils.rm_rf "../../../app/#{namefixed.camel_case}Test"
+			FileUtils.rm_rf "../../../app"
+			FileUtils.cp_r("../../../extensions/#{namefixed.downcase}", "../../..")
+			FileUtils.rm_rf "../../../extensions"
 		end
 	end
 
@@ -404,9 +406,9 @@ module Rhogen
       template.destination = "extensions/#{namefixed.downcase}/ext/platform/iphone/Rakefile"
     end
 
-    file :extension_iphone_pch do |file|
-      file.source = 'extensions/montana/ext/platform/iphone/Montana_Prefix.pch'
-      file.destination = "extensions/#{namefixed.downcase}/ext/platform/iphone/#{namefixed.camel_case}_Prefix.pch"
+    template :extension_iphone_pch do |template|
+      template.source = 'extensions/montana/ext/platform/iphone/Montana_Prefix.pch'
+      template.destination = "extensions/#{namefixed.downcase}/ext/platform/iphone/#{namefixed.camel_case}_Prefix.pch"
     end
 
     template :extension_iphone_project do |template|
