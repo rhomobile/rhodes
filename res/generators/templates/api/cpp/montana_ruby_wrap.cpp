@@ -1,4 +1,4 @@
-#include "..\I<%= $cur_module.name %>.h"
+#include "I<%= $cur_module.name %>.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
