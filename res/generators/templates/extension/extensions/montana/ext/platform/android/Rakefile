@@ -62,9 +62,9 @@ namespace "build" do
 
     src_files = []
 
-    src_files << $<%= name.downcase %>dir + '/ext/<%= name.downcase %>/platform/android/jni/src/<%= name.downcase %>.cpp'
-    src_files << $<%= name.downcase %>dir + '/ext/<%= name.downcase %>/shared/ruby/<%= name.downcase %>_wrap.c'
-    src_files << $<%= name.downcase %>dir + '/ext/<%= name.downcase %>/shared/src/<%= name.downcase %>.c'
+    src_files << $<%= name.downcase %>dir + '/ext/platform/android/jni/src/<%= name.downcase %>.cpp'
+    src_files << $<%= name.downcase %>dir + '/ext/shared/ruby/<%= name.downcase %>_wrap.c'
+    src_files << $<%= name.downcase %>dir + '/ext/shared/src/<%= name.downcase %>.c'
 
     # build native part
     build_extension('<%= name.camel_case %>', $arch, src_files)
