@@ -7,6 +7,7 @@ require 'active_support'
 require 'uuid'
 require 'yaml'
 require 'rexml/document'
+require 'fileutils'
 require File.join(File.dirname(__FILE__),'/../../lib/build/jake.rb')
 
 require File.dirname(__FILE__) + '/../../lib/rhodes'
@@ -328,6 +329,9 @@ module Rhogen
 
 
   class ExtensionGenerator < BaseGenerator
+
+	@@noapp = false
+
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates', 'extension')
     end
@@ -337,7 +341,6 @@ module Rhogen
     DESC
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
-
 	option :noapp, :desc=> '', :as => :boolean, :default => false
 
     first_argument :name, :required => true, :desc => "extension name"
@@ -353,6 +356,7 @@ module Rhogen
 	  puuid = UUID.new
       generated_uuid = puuid.generate
       @productid = generated_uuid
+	  @@noapp = noapp
     end
 
     template :extension_ruby do |template|
@@ -371,6 +375,12 @@ module Rhogen
 		args << Dir.pwd+"/#{namefixed.downcase}.xml"
 		puts Jake.run(source_root+"/../../../../bin/rhogen", args)
     end    
+
+	def callback_after_delete_testapp(template)
+		if @@noapp == true
+			FileUtils.rm_rf "../../../app/#{namefixed.camel_case}Test"
+		end
+	end
 
 	template :extension_apigen_xml do |template|
         template.source = 'extensions/montana/ext/montana.xml'
@@ -508,6 +518,7 @@ module Rhogen
     template :extension_test_index do |template|
       template.source = 'app/MontanaTest/index.erb'
       template.destination = "app/#{namefixed.camel_case}Test/index.erb"
+	  template.options = { :after => :callback_after_delete_testapp}  
 	end
 
 
