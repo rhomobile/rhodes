@@ -949,13 +949,13 @@ module Rhogen
     end
 
     template :wm_api2 do |template|
-      template.source = 'cpp/ruby/montana_ruby_wrap.cpp'
-      template.destination = "platform/wm/generated/ruby/#{$cur_module.name}_ruby_wrap.cpp"
+      template.source = 'cpp/montana_ruby_wrap.cpp'
+      template.destination = "platform/wm/generated/#{$cur_module.name}_ruby_wrap.cpp"
     end
 
     template :wm_api3 do |template|
-      template.source = 'cpp/javascript/montana_js_wrap.cpp'
-      template.destination = "platform/wm/generated/javascript/#{$cur_module.name}_js_wrap.cpp"
+      template.source = 'cpp/montana_js_wrap.cpp'
+      template.destination = "platform/wm/generated/#{$cur_module.name}_js_wrap.cpp"
     end
 
 	template :wp8_api do |template|
@@ -969,13 +969,13 @@ module Rhogen
     end
 
     template :wp8_api2 do |template|
-      template.source = 'cpp/ruby/montana_ruby_wrap.cpp'
-      template.destination = "platform/wp8/generated/ruby/#{$cur_module.name}_ruby_wrap.cpp"
+      template.source = 'cpp/montana_ruby_wrap.cpp'
+      template.destination = "platform/wp8/generated/#{$cur_module.name}_ruby_wrap.cpp"
     end
 
     template :wp8_api3 do |template|
-      template.source = 'cpp/javascript/montana_js_wrap.cpp'
-      template.destination = "platform/wp8/generated/javascript/#{$cur_module.name}_js_wrap.cpp"
+      template.source = 'cpp/montana_js_wrap.cpp'
+      template.destination = "platform/wp8/generated/#{$cur_module.name}_js_wrap.cpp"
     end
 
 
