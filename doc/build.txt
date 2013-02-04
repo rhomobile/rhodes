@@ -355,6 +355,7 @@ You can also edit the build.yml file directly with a text editor. Here is a list
   	calendar
   	sdcard
   	push
+  	hardware_acceleration
 
 ### Set up minimal Android SDK API level
 
