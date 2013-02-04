@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="<%= name.camel_case() %>"
-	ProjectGUID="{93453E28-E84A-40C4-BD6A-51A8373D7044}"
+	ProjectGUID="{<%=@productid%>}"
 	Keyword="Win32Proj"
 	>
 	<Platforms>

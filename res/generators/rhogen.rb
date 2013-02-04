@@ -348,6 +348,9 @@ module Rhogen
     template :ext do |template|
       template.source = 'extensions/montana/ext.yml'
       template.destination = "extensions/#{namefixed.downcase}/ext.yml"
+	  puuid = UUID.new
+      generated_uuid = puuid.generate
+      @productid = generated_uuid
     end
 
     template :extension_ruby do |template|

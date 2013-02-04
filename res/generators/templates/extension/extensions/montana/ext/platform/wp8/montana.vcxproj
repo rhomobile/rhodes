@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{93453E28-E84A-40C4-BD6A-51A8373D7044}</ProjectGuid>
+    <ProjectGuid>{<%=@productid%>}</ProjectGuid>
     <RootNamespace><%= name.camel_case() %></RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
