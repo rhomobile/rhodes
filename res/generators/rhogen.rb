@@ -338,6 +338,8 @@ module Rhogen
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
 
+	option :noapp, :desc=> '', :as => :boolean, :default => false
+
     first_argument :name, :required => true, :desc => "extension name"
 
 
@@ -497,19 +499,16 @@ module Rhogen
         template.source = 'extensions/montana/ext/platform/bb/src/com/montana/Montana.java'
         template.destination = "extensions/#{namefixed.downcase}/ext/platform/bb/src/com/#{namefixed.downcase}/#{namefixed.camel_case}.java"
     end
-
-
-
+  
     template :extension_test_controller do |template|
-      template.source = 'app/MontanaTest/controller.rb'
+	  template.source = 'app/MontanaTest/controller.rb'
       template.destination = "app/#{namefixed.camel_case}Test/controller.rb"
     end
 
     template :extension_test_index do |template|
       template.source = 'app/MontanaTest/index.erb'
       template.destination = "app/#{namefixed.camel_case}Test/index.erb"
-    end
-
+	end
 
 
 
