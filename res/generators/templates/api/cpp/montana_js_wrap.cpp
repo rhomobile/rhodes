@@ -115,7 +115,7 @@ using namespace rho::common;
             return oRes.toJSON();
         }
 
-        oRes.setCallInUIThread(<%= module_method.is_run_in_ui_thread ? "true" : "false" %>);
+        oRes.setCallInUIThread(<%= (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) ? "true" : "false" %>);
         oRes.setRubyCallback( argv[nCallbackArg].getString() );
         if ( argc > nCallbackArg + 1 )
         {
@@ -136,9 +136,9 @@ using namespace rho::common;
     pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.name %>, <%= functor_params %> oRes );
 <% end %>
 
-<% if module_method.is_run_in_ui_thread %>
+<% if (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) %>
     rho_wm_impl_performOnUiThread( pFunctor );
-<% elsif module_method.is_run_in_thread %>
+<% elsif (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE) || (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED) %>
     C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
 <% else %>
 

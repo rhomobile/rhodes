@@ -618,17 +618,62 @@ module Rhogen
       TYPE_STRING = "STRING"
       TYPE_ARRAY = "ARRAY"
       TYPE_HASH = "HASH"
+      TYPE_INT = "INTEGER"
+      TYPE_BOOL = "BOOLEAN"
+      TYPE_DOUBLE = "FLOAT"
       TYPE_SELF = 'SELF_INSTANCE'
 
       def initialize
         @name = ''
-        @type = ''
+        @type = TYPE_STRING
         @can_be_nil = false
       end
 
       attr_accessor :name
       attr_accessor :type
       attr_accessor :can_be_nil
+
+
+    end
+
+    class ModuleConstant
+      def initialize
+        @name = ''
+        @type = MethodParam::TYPE_STRING
+        @value = ''
+      end
+
+      attr_accessor :name
+      attr_accessor :type
+      attr_accessor :value
+
+    end
+
+    class ModuleProperty
+
+      USE_PROPERTY_BAG_MODE_NONE = "NONE"
+      USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS = "PROPERTY_BAG_VIA_ACCESSORS"
+      USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG = "ACCESSORS_VIA_PROPERTY_BAG"
+
+      ACCESS_MODE_FULL = "FULL"
+      ACCESS_MODE_READONLY = "READONLY"
+      ACCESS_MODE_WRITEONLY = "WRITEONLY"
+
+      def initialize
+        @name = ''
+        @type = MethodParam::TYPE_STRING
+        @native_name = ''
+        @access_mode = ACCESS_MODE_FULL
+        @generate_accessors = true
+        @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
+      end
+
+      attr_accessor :name
+      attr_accessor :type
+      attr_accessor :native_name
+      attr_accessor :access_mode
+      attr_accessor :generate_accessors
+      attr_accessor :use_property_bag_mode
 
 
     end
@@ -642,13 +687,18 @@ module Rhogen
       CALLBACK_OPTIONAL = "OPTIONAL"
       CALLBACK_NONE = "NONE"
 
+      RUN_IN_THREAD_NONE = "NONE"
+      RUN_IN_THREAD_MODULE = "MODULE"
+      RUN_IN_THREAD_SEPARATED = "SEPARATED"
+      RUN_IN_THREAD_UI = "UI"
+
 
       def initialize
         @name = ''
+        @native_name = ''
         @params = [] # array of MethodArgument
-        @is_run_in_thread = false
+        @run_in_thread = RUN_IN_THREAD_NONE
         @is_factory_method = false
-        @is_run_in_ui_thread = false
         @is_return_value = false
         @access = ACCESS_INSTANCE
         @has_callback = CALLBACK_NONE
@@ -656,10 +706,10 @@ module Rhogen
       end
 
       attr_accessor :name
+      attr_accessor :native_name
       attr_accessor :params
-      attr_accessor :is_run_in_thread
+      attr_accessor :run_in_thread
       attr_accessor :is_factory_method
-      attr_accessor :is_run_in_ui_thread
       attr_accessor :is_return_value
       attr_accessor :access
       attr_accessor :has_callback
@@ -671,26 +721,37 @@ module Rhogen
         @name = ''
         @parent = ''
         @methods = []
+        @properties = []
+        @constants = []
         @is_template_singletone_id = false
         @is_template_default_instance = false
         @is_template_propertybag = false
         @has_instance_methods = false
         @has_factory_methods = false
+        @is_property_bag_limit_to_only_declared_properties = false
       end
 
       attr_accessor :name
       attr_accessor :parent
       attr_accessor :methods
+      attr_accessor :properties
+      attr_accessor :constants
       attr_accessor :is_template_singletone_id
       attr_accessor :is_template_default_instance
       attr_accessor :is_template_propertybag
       attr_accessor :has_instance_methods
       attr_accessor :has_factory_methods
+      attr_accessor :is_property_bag_limit_to_only_declared_properties
     end
 
     $modules = []
 
     $cur_module = nil
+
+    def namefixed(name)
+        return name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
+    end
+
 
     def apply_templates_to_module(xml_module_item, template_name)
       xml_f = File.new(File.join(File.dirname(__FILE__), 'templates', 'api', "xml_templates", template_name+".xml"))
@@ -744,11 +805,76 @@ module Rhogen
          end
 
 
+         #constants in module
+         xml_module_item.elements.each("CONSTANTS/CONSTANT") do |xml_constant|
+            module_constant = ModuleConstant.new()
+            module_constant.name = xml_constant.attribute("name").to_s
+            module_constant.value = xml_constant.attribute("value").to_s
+            if xml_constant.attribute("type") != nil
+               module_constant.type = xml_constant.attribute("type").to_s.upcase
+            end
+            module_item.constants << module_constant
+         end
+
+         #constants in properties
+         xml_module_item.elements.each("PROPERTIES/PROPERTY/VALUES/VALUE") do |xml_property_value|
+            module_constant = ModuleConstant.new()
+            module_constant.name = xml_property_value.attribute("const_name").to_s
+            module_constant.value = xml_property_value.attribute("value").to_s
+            if xml_property_value.attribute("type") != nil
+               module_constant.type = xml_property_value.attribute("type").to_s.upcase
+            end
+            module_item.constants << module_constant
+         end
+
+
+         #properties
+         xml_properties = xml_module_item.elements["PROPERTIES"]
+         if xml_properties != nil
+            if xml_properties.attribute("limitPropertyBag") != nil
+              module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute("limitPropertyBag").to_s != "false"
+            end
+         end
+         xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_module_property|
+            module_property = ModuleProperty.new()
+            module_property.name = xml_module_property.attribute("name").to_s
+            module_property.native_name = module_property.name.split(/[^a-zA-Z0-9\_]/).map{|w| w}.join("")
+            if xml_module_property.attribute("generateAccessors") != nil
+               module_property.generate_accessors =  xml_module_property.attribute("generateAccessors").to_s != "false"
+            end
+            if xml_module_property.attribute("type") != nil
+               module_property.type = xml_module_property.attribute("type").to_s.upcase
+            end
+            if xml_module_property.attribute("usePropertyBag") != nil
+               if xml_module_property.attribute("usePropertyBag").to_s.downcase == "none".downcase
+                  module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_NONE
+               end
+               if xml_module_property.attribute("usePropertyBag").to_s.downcase == "accessorsViaPropertyBag".downcase
+                  module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
+               end
+               if xml_module_property.attribute("usePropertyBag").to_s.downcase == "PropertyBagViaAccessors".downcase
+                  module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
+               end
+            end
+
+            module_item.properties << module_property
+
+         end
+
+
          #methods
          xml_module_item.elements.each("METHODS/METHOD") do |xml_module_method|
             module_method = ModuleMethod.new()
 
             module_method.name = xml_module_method.attribute("name").to_s
+
+            module_method.native_name = module_method.name.split(/[^a-zA-Z0-9\_]/).map{|w| w}.join("")
+
+            if xml_module_method.attribute("nativeName") != nil
+               module_method.native_name = xml_module_method.attribute("nativeName").to_s
+
+            end
+
             if xml_module_method.attribute("access") != nil
                if xml_module_method.attribute("access").to_s.downcase == "static"
                    module_method.access = ModuleMethod::ACCESS_STATIC
@@ -763,20 +889,27 @@ module Rhogen
                end
             end
             if xml_module_method.attribute("run_in_thread") != nil
-               if xml_module_method.attribute("run_in_thread").to_s.downcase != "false"
-                   module_method.is_run_in_thread = true
+               if xml_module_method.attribute("run_in_thread").to_s.downcase == "none".downcase
+                   module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
                end
-            end
-            if xml_module_method.attribute("run_in_ui_thread") != nil
-               if xml_module_method.attribute("run_in_ui_thread").to_s.downcase != "false"
-                   module_method.is_run_in_ui_thread = true
+               if xml_module_method.attribute("run_in_thread").to_s.downcase == "module".downcase
+                   module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_MODULE
+               end
+               if xml_module_method.attribute("run_in_thread").to_s.downcase == "separate".downcase
+                   module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_SEPARATED
+               end
+               if xml_module_method.attribute("run_in_thread").to_s.downcase == "ui".downcase
+                   module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
                end
             end
             if xml_module_method.attribute("has_callback") != nil
-               if xml_module_method.attribute("has_callback").to_s.downcase == "mandatory"
+              if xml_module_method.attribute("has_callback").to_s.downcase == "none".downcase
+                  module_method.has_callback = ModuleMethod::CALLBACK_NONE
+              end
+               if xml_module_method.attribute("has_callback").to_s.downcase == "mandatory".downcase
                    module_method.has_callback = ModuleMethod::CALLBACK_MANDATORY
                end
-               if xml_module_method.attribute("has_callback").to_s.downcase == "optional"
+               if xml_module_method.attribute("has_callback").to_s.downcase == "optional".downcase
                    module_method.has_callback = ModuleMethod::CALLBACK_OPTIONAL
                end
             end
@@ -824,9 +957,7 @@ module Rhogen
     end
 
 
-    def namefixed(name)
-        return name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
-    end
+
 
     template :shared_01 do |template|
       template.source = 'shared/generated/montana_api_init.cpp'

@@ -157,7 +157,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
             return oRes.toRuby();
         }
 
-        oRes.setCallInUIThread(<%= module_method.is_run_in_ui_thread ? "true" : "false" %>);
+        oRes.setCallInUIThread(<%= (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) ? "true" : "false" %>);
         if ( argc > nCallbackArg + 1 )
         {
             if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
@@ -178,9 +178,9 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
     pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.name %>, <%= functor_params %> oRes );
 <% end %>
 
-<% if module_method.is_run_in_ui_thread %>
+<% if module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI %>
     rho_wm_impl_performOnUiThread( pFunctor );
-<% elsif module_method.is_run_in_thread %>
+<% elsif (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE) || (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED) %>
     C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
 <% else %>
 
