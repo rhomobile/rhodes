@@ -255,13 +255,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
 
     private LicenseStatus checkLicence() {
-        //if (!onStartNewConfig()) {
-        //    Logger.I(TAG, "");
-        //    mLicenseToken = getBuildConfigItem("motorola_license");
-        //    mLicenseCompany = getBuildConfigItem("motorola_license_company");
-        //    mAppName = getBuildConfigItem("name");
-        //}
-        
         if (mLicenseToken == null || mLicenseToken.length() == 0) {
             return LicenseStatus.LICENSE_MISSED;
         }
@@ -272,31 +265,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             return LicenseStatus.LICENSE_FAILED;
         }
     }
-
-    void readLicenseCredentials() {
-        Logger.T(TAG, "Reading Motorola license credentials from build config");
-        setLicenseCredentials(
-                getBuildConfigItem("motorola_license"),
-                getBuildConfigItem("motorola_license_company"),
-                getBuildConfigItem("name"));
-    }
-
-    void showLicenseAlert() {
-                Logger.E(TAG, "##########################################");
-                Logger.E(TAG, "#                                        #");
-                Logger.E(TAG, "# ERROR: RhoElements License is INVALID! #");
-                Logger.E(TAG, "#                                        #");
-                Logger.E(TAG, "##########################################");
-                AlertDialog.Builder b = new AlertDialog.Builder(ContextFactory.getUiContext());
-                b.setNeutralButton("OK", new DialogInterface.OnClickListener(){
-                      public void onClick(DialogInterface arg0, int arg1) {}
-                });
-                b.setMessage("Please, provide correct RhoElements license.");    
-
-                AlertDialog securityAlert = b.create();
-                securityAlert.show();
-    }
-
 
     //-----------------------------------------------------------------------------------------------------------------
     // Rhodes implementation related methods are below
@@ -385,12 +353,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     public void onBeforeNavigate(View view, String url) {
         if (isFirstNavigate()) {
             Logger.T(TAG, "onBeforeNavigate first time");
-            if (getLicenseStatus() == LicenseStatus.LICENSE_MISSED) {
-                readLicenseCredentials();
-                if (checkLicence() == LicenseStatus.LICENSE_FAILED) {
-                    showLicenseAlert();
-                }
-            }
             firstNavigate();
         }
 
