@@ -2313,7 +2313,7 @@ int rho_is_motorola_licence_checked(const char* szMotorolaLicence, const char* s
     int res_check = 1;
 #if defined( OS_ANDROID ) || defined( OS_MACOSX )
     //res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
-    //res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence, szAppName);
+    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence, szAppName);
 #endif
     
     return res_check;
