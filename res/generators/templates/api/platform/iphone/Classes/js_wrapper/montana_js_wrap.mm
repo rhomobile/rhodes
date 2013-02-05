@@ -34,7 +34,7 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByJSObject(rho:
 
 %>
 
-<% is_callback_possible = module_method.is_run_in_thread || module_method.is_run_in_ui_thread || (module_method.has_callback != ModuleMethod::CALLBACK_NONE) %>
+<% is_callback_possible = (module_method.run_in_thread != ModuleMethod::RUN_IN_THREAD_NONE) || (module_method.has_callback != ModuleMethod::CALLBACK_NONE) %>
 
 @interface <%= $cur_module.name %>_<%= module_method.name %>_caller_params : NSObject
 
@@ -191,7 +191,7 @@ static <%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur_mo
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
-        <% if module_method.is_run_in_ui_thread %>
+        <% if module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI %>
         [<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_UI_thread:[<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         <% else %>
         [<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_thread:[<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
@@ -199,11 +199,11 @@ static <%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur_mo
     }
     else {
         // we do not have callback
-        <% if module_method.is_run_in_ui_thread %>
+        <% if module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI %>
         [<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_UI_thread:[<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         method_return_result = NO;
         <% else
-             if module_method.is_run_in_thread %>
+             if (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE) || (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED) %>
         [<%= $cur_module.name %>_<%= module_method.name %>_caller <%= module_method.name %>_in_thread:[<%= $cur_module.name %>_<%= module_method.name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         method_return_result = NO;
              <% else %>
