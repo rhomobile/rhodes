@@ -1,0 +1,18 @@
+<div data-role="page">
+
+  <div data-role="header" data-position="inline">
+    <h1>Home</h1>
+    <% if SyncEngine::logged_in > 0 %>
+        <%=  link_to "Logout", :action => :logout %>
+    <% else %>
+        <%=  link_to "Login", :action => :login %>
+    <% end %>
+  </div>
+
+  <div data-role="content">
+    <ul data-role="listview">
+      <li><a href="#">Add Links Here...</a></li>
+    </ul>
+  </div>
+
+</div>

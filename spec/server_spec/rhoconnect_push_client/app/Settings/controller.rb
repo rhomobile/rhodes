@@ -10,10 +10,14 @@ class SettingsController < Rho::RhoController
   def index
     @msg = @params['msg']
     
-	unless $push_check_started
-      check_registration
-      $push_check_started = true
-    end
+    puts "Logged in: #{SyncEngine.logged_in}"
+	SyncEngine.set_syncserver("http://#{SYNC_SERVER_HOST}:#{SYNC_SERVER_PORT}/application")
+	SyncEngine.login('pushclient', 'pushclient', '/app/Settings/login_callback' ) unless SyncEngine.logged_in > 0
+    
+	  #unless $push_check_started
+      #check_registration
+      #$push_check_started = true
+	  #end
     
     render
   end
@@ -27,7 +31,7 @@ class SettingsController < Rho::RhoController
     errCode = @params['error_code'].to_i
     if errCode == 0
       # run sync if we were successful
-		#WebView.navigate Rho::RhoConfig.options_path
+      WebView.navigate Rho::RhoConfig.options_path
       #SyncEngine.dosync
     else
       if errCode == Rho::RhoError::ERR_CUSTOMSYNCSERVER
@@ -41,12 +45,11 @@ class SettingsController < Rho::RhoController
       WebView.navigate ( url_for :action => :login, :query => {:msg => @msg} )      
     end
 
-	#host = SPEC_LOCAL_SERVER_HOST
-    #port = SPEC_LOCAL_SERVER_PORT
-    
-    #Rho::AsyncHttp.get :url => "http://#{host}:#{port}?error=#{errCode}"
-    check_registration
-    
+    host = SPEC_LOCAL_SERVER_HOST
+    port = SPEC_LOCAL_SERVER_PORT
+	Rho::AsyncHttp.get :url => "http://#{host}:#{port}?error=#{errCode}"
+	  
+	  #check_registration
   end
   
   def check_registration
@@ -57,7 +60,7 @@ class SettingsController < Rho::RhoController
 
     if(Rho::RhoConfig.exist?('push_pin') && Rho::RhoConfig.push_pin != '')
       puts "Sending device_id: #{Rho::RhoConfig.push_pin}"
-	  Rho::AsyncHttp.get :url => "http://#{host}:#{port}?device_id=#{Rho::RhoConfig.push_pin}"
+      Rho::AsyncHttp.get :url => "http://#{host}:#{port}?device_id=#{Rho::RhoConfig.push_pin}"
     else
       Rho::Timer.start(5000, url_for(:action=>'check_registration'), '')
     end
@@ -83,7 +86,7 @@ class SettingsController < Rho::RhoController
     System.exit if exit
     
   end
-=begin
+
   def do_login
     if @params['login'] and @params['password']
       begin
@@ -122,9 +125,7 @@ class SettingsController < Rho::RhoController
     @msg =  "Sync has been triggered."
     redirect :action => :index, :query => {:msg => @msg}
   end
-=end
-	
-=begin
+  
   def sync_notify
   	status = @params['status'] ? @params['status'] : ""
   	
@@ -165,5 +166,4 @@ class SettingsController < Rho::RhoController
       end    
 	end
   end  
-=end
 end

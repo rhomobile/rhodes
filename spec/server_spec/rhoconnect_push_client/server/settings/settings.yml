@@ -1,0 +1,52 @@
+:sources:
+  Customer:
+    :poll_interval: 0
+  Product:
+    :poll_interval: 0
+  Customer_s:
+    :poll_interval: 0
+  Product_s:
+    :poll_interval: 0
+  BlobTest:
+    :poll_interval: 0
+  BlobTest_s:
+    :poll_interval: 0
+  BlobBulkTest:
+    :poll_interval: 0
+  BlobBulkTest_s:
+    :poll_interval: 0
+
+
+:development:
+  :licensefile: settings/license.key
+  :iphonecertfile: settings/apple_push_cert.pem
+  :iphonepassphrase: 123456
+  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneport: 2195
+  :mdsserver: 127.0.0.1
+  :mdsserverport: 8080
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/application/
+  :bulk_sync_poll_interval: 10
+:test: 
+  :licensefile: settings/license.key
+  :iphonecertfile: settings/apple_push_cert.pem
+  :iphonepassphrase: 123456
+  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneport: 2195
+  :mdsserver: 127.0.0.1
+  :mdsserverport: 8080
+  :redis: localhost:6379:2
+  :syncserver: http://localhost:9292/application/
+  :bulk_sync_poll_interval: 10
+:production: 
+  :licensefile: settings/license.key
+  :iphonecertfile: settings/apple_push_cert.pem
+  :iphonepassphrase: 123456
+  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneport: 2195
+  :mdsserver: 127.0.0.1
+  :mdsserverport: 8080
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/application/
+  :bulk_sync_poll_interval: 10
