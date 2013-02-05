@@ -1676,8 +1676,16 @@ namespace "run" do
             if extpath.nil?
                 begin
                     $rhodes_extensions = nil
+                    $rhodes_join_ext_name = false
                     require extname
-                    extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
+                    
+                    if $rhodes_extensions
+                        extpath = $rhodes_extensions[0]
+          			    if $rhodes_join_ext_name
+        				    extpath = File.join(extpath,extname)
+		        	    end
+                    end
+                    
                     config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0 
                 rescue Exception => e
                 end
