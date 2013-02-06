@@ -94,21 +94,11 @@ describe 'Rhoconnect push spec' do
 	  expect_request('error').should == "0"
   end
 
-=begin
   it 'should register' do
     puts 'Waiting message with Rhoconnect registaration...'
-
-	$mutex.synchronize do
-      $signal.wait($mutex)
-    
-      $requests.count.should == 1
-    
-      $device_id = $requests.first.query['device_id']
-      $device_id.should_not be_nil
-      $device_id.should_not == ''
-
-      $requests.clear
-    end
+	$device_id = expect_request('device_id')
+	$device_id.should_not be_nil
+	$device_id.should_not == ''
   end
 	
 =begin
