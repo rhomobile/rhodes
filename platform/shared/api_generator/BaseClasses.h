@@ -42,7 +42,7 @@ public:
         //TODO:setProperties
     }
 
-    virtual void clearProps(CMethodResult& oResult)
+    virtual void clearAllProperties(CMethodResult& oResult)
     {
         m_hashProps.clear();
     }

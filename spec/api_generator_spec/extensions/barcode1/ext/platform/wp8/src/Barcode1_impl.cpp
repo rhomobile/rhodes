@@ -1,13 +1,51 @@
-#include "../generated/Barcode1.h"
+#include "../generated/IBarcode1.h"
+#include "../generated/MethodResultImpl.h"
+
+using namespace Barcode1Runtime;
 
 class CBarcode1Impl: public CModuleBase<IBarcode1>
 {
+	IBarcode1Impl^ _runtime;
 public:
     CBarcode1Impl(const rho::StringW& strID): CModuleBase<IBarcode1>(strID)
     {
         m_hashProps.put( L"display", L"LCD");
         m_hashProps.put( L"sound", L"Dolby");
     }
+
+    virtual void enable( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult)
+	{
+		// _runtime->enable(..., ref new CMethodResultImpl((int64)&oResult));
+	}
+    
+	virtual void start(CMethodResult& oResult)
+	{
+		_runtime->start(ref new CMethodResultImpl((int64)&oResult));
+	}
+
+    virtual void stop(CMethodResult& oResult)
+	{
+		_runtime->stop(ref new CMethodResultImpl((int64)&oResult));
+	}
+
+    virtual void disable(CMethodResult& oResult)
+	{
+		_runtime->disable(ref new CMethodResultImpl((int64)&oResult));
+	}
+
+    virtual void take( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult)
+	{
+		// _runtime->take(..., ref new CMethodResultImpl((int64)&oResult));
+	}
+
+	virtual void clearProps(CMethodResult& oResult)
+	{
+	}
+
+	virtual void registerRuntime(IBarcode1Impl^ runtime)
+	{
+		_runtime = runtime;
+	}
 };
 
 class CBarcode1Singleton: public CModuleSingletonBase<IBarcode1Singleton>
@@ -24,10 +62,9 @@ class CBarcode1Factory: public CBarcode1FactoryBase
     virtual IBarcode1* createModuleByID(const rho::StringW& strID);
 };
 
-extern "C" void Init_Barcode1()
+extern "C" void Init_Barcode1_extension()
 {
     CBarcode1Factory::setInstance( new CBarcode1Factory() );
-
     Init_Barcode1_API();
 }
 

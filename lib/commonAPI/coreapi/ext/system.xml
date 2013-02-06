@@ -1,0 +1,226 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="System" parent="Rho" generateUndescoreRubyNames="true">
+        <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
+        <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
+    
+        <TEMPLATES>
+            <DEFAULT_INSTANCE/>
+            <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
+        </TEMPLATES>
+
+        <PROPERTIES usePropertyBag="mapNamesToAccessors"  noAccessors="false">
+            <!-- list of properties supported by property bag methods getPops(), setProps() -->
+            <DESC>object supports this properties bla bla bla :</DESC>
+            <PROPERTY name="platform" type="STRING">
+                <DESC>Platform where application is running.</DESC>
+                <VALUES>
+                    <VALUE const_name="PLATFORM_WM_CE" value ="WINDOWS">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE const_name="PLATFORM_ANDROID" value ="ANDROID">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE const_name="PLATFORM_IOS" value ="APPLE">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE const_name="PLATFORM_WP8" value ="WP8">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE const_name="PLATFORM_WINDOWS_DESKTOP" value ="WINDOWS_DESKTOP">
+                        <DESC></DESC>
+                    </VALUE>
+
+                </VALUES>
+            </PROPERTY>
+        </PROPERTIES>
+    
+        <METHODS>
+            <ALIASES>
+                <ALIAS new="get_property" existing="getProperty" deprecated="true">
+                    <DESC>Use property names methods instead.</DESC>
+                </ALIAS>
+
+                <ALIAS new="app_install" existing="applicationInstall" deprecated="true"/>
+            </ALIASES>
+
+            <METHOD name="applicationInstall">
+                <DESC>Install an application.</DESC>
+                <PARAMS>
+                    <PARAM name="applicationUrl" type="STRING">
+                        <DESC>The url of an application to install on the device.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="isApplicationInstalled">
+                <DESC>Is application installed on the device?</DESC>
+                <PARAMS>
+                    <PARAM name="applicationName" type="STRING">
+                        <DESC>The name of the application.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="BOOLEAN"/>
+
+            </METHOD>
+
+            <METHOD name="applicationUninstall">
+                <DESC>Uninstall the application.</DESC>
+                <PARAMS>
+                    <PARAM name="applicationName" type="STRING">
+                        <DESC>The name of the application.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="openUrl">
+                <DESC>Open the application associated with the URL.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>Open the application at this url; behavior may be different on different platforms and depend on installed software.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="runApplication">
+                <DESC>Run an application.</DESC>
+                <PARAMS>
+                    <PARAM name="appName" type="STRING">
+                        <DESC>The name of the application on the device to run.</DESC>
+                    </PARAM>
+                    <PARAM name="params" type="STRING">
+                        <DESC>The name of the application on the device to run.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                    <PARAM name="blockingCall" type="BOOLEAN">
+                        <DESC>The name of the application on the device to run.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>False by default</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="INTEGER">
+                    <DESC>Handle of created process.</DESC>                    
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="unzipFile">
+                <DESC>Unzip file.</DESC>
+                <PARAMS>
+                    <PARAM name="localPathToZip" type="STRING">
+                        <DESC>The path to the file to be unzipped.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="zipFile">
+                <DESC>Zip one file.</DESC>
+                <PARAMS>
+                    <PARAM name="localPathToZip" type="STRING">
+                        <DESC>The path to the specified zip.</DESC>
+                    </PARAM>
+                    <PARAM name="localPathToFile" type="STRING">
+                        <DESC>The path to the file to be zipped.</DESC>
+                    </PARAM>
+                    <PARAM name="password" type="STRING">
+                        <DESC>Password for the zip.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="zipFiles">
+                <DESC>Zip list of files.</DESC>
+                <PARAMS>
+                    <PARAM name="localPathToZip" type="STRING">
+                        <DESC>The path to the specified zip.</DESC>
+                    </PARAM>
+                    <PARAM name="basePath" type="STRING">
+                        <DESC>Base path to the files to be zipped.</DESC>
+                    </PARAM>
+                    <PARAM name="filePathsToZip" type="ARRAY">
+                        <DESC>List of file paths to be zipped.</DESC>
+                    </PARAM>
+                    <PARAM name="password" type="STRING">
+                        <DESC>Password for the zip.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setRegistrySetting">
+                <DESC>setRegistrySetting</DESC>
+                <PARAMS>
+                    <PARAM name="keyPath" type="STRING">
+                        <DESC>Path to key in registry</DESC>
+                    </PARAM>
+                    <PARAM name="keyValue" type="STRING">
+                        <DESC>Value of the key</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="getRegistrySetting">
+                <DESC>getRegistrySetting</DESC>
+                <PARAMS>
+                    <PARAM name="keyPath" type="STRING">
+                        <DESC>Path to key in registry</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="STRING">
+                    <DESC>Regsitry value of the key.</DESC>
+                </RETURN>
+
+            </METHOD>
+
+        </METHODS>
+        
+        <USER_OVERVIEW>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+            <![CDATA[
+    	The following example sets up the card reader to call a javascript function upon successful decoding. The javascript
+    					function will be called 3 times, once with the raw card data, once with just the pan data extracted
+    					from the raw card data, and once with the encrypted pan data if the pin has been supplied by the
+    					user within 10s.:</DESC>
+    				<html><head>
+    
+    				<script language="javascript" type="text/javascript">
+    					function doTransaction(data, mode)
+    					{
+    						switch(mode) {
+    						case 'CR':
+    							alert('Card: '+data);
+    							break;
+    						case 'ENCDATA':
+    							alert('Encoded data: '+data);
+    							break;
+    						case 'MESSAGE':
+    							alert('Error: '+data);
+    							break;
+    						case 'PAN':
+    							alert('PAN data: '+data);
+    							alert('Please turn the unit over and enter the PIN');
+    							break;
+    						}
+    					}
+    				</script>
+    				</head>
+    				<body>
+    				</body>
+    				</html>
+    
+    				You must have the appropriate drivers installed on your device to use the CardReader.  You will see which drivers are installed in the RhoElements log file after you attempt to use any of the card reader functions in RhoElements.  All necessary drivers should be included as part of the platform for supported devices.
+    
+    				]]>
+    
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+    </MODULE>
+</API>    

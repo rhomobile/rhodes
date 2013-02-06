@@ -46,10 +46,16 @@
     <ClCompile Include="src\Barcode1_impl.cpp">
       <Filter>wp8</Filter>
     </ClCompile>
+    <ClCompile Include="generated\MethodResultImpl.cpp">
+      <Filter>wp8</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\Barcode1.h">
+    <ClInclude Include="generated\IBarcode1.h">
       <Filter>wp8\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="generated\MethodResultImpl.h">
+      <Filter>wp8</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -10,20 +10,25 @@
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
-    
-        <PROPERTIES>
+
+        <!-- <PROPERTIES usePropertyBag="mapNamesToAccessors"> -->
+        <PROPERTIES usePropertyBag="mapAccessorsToNames" noAccessors="false">
             <!-- list of properties supported by property bag methods getPops(), setProps() -->
             <DESC>object supports this properties bla bla bla :</DESC>
             <PROPERTY name="illuminationMode" type="STRING">
                 <DESC>Whether or not the Code128 symbology is used.</DESC>
-                <VALUES>
-                    <VALUE name ="auto">
+                <CONSTANTS>
+                    <CONSTANT name="MODE_AUTO" value ="auto">
                         <DESC>(not available on Enterprise Tablet) Auto-exposure algorithms will decide whether illumination is required or not. </DESC>
-                    </VALUE>
-                    <VALUE name ="alwaysOn">
+                    </CONSTANT>
+                    <CONSTANT name="MODE_ALWAYSE_ON" value ="alwaysOn">
                         <DESC>External illumination is always on</DESC>
-                    </VALUE>
-                </VALUES>
+                    </CONSTANT>
+                    <CONSTANT name="MODE_ALWAYSE_OFF" value ="alwaysOff">
+                        <DESC>External illumination is always off</DESC>
+                    </CONSTANT>
+
+                </CONSTANTS>
                 <DEFAULT>Device specific</DEFAULT>
             </PROPERTY>
         </PROPERTIES>

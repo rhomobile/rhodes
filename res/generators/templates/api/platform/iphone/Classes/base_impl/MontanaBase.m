@@ -6,37 +6,70 @@
 
 - (id) init {
     self = [super init];
+<% if $cur_module.is_template_propertybag %>
     mProperties = [NSMutableDictionary dictionary];
+<% end %>
     return self;
 }
 
--(NSString*)getProperty:(NSString*)property_name {
-    return [mProperties objectForKey:property_name];
+<% if $cur_module.is_template_propertybag %>
+
+-(void) getProperty:(NSString*)propertyName methodResult:(id<IMethodResult>)methodResult {
+     [methodResult setResult:[mProperties objectForKey:propertyName]];
 }
 
--(void) setProperty:(NSString*)property_name value:(NSObject*)value {
-    [mProperties setObject:value forKey:property_name];
+-(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult {
+     [methodResult setResult:[mProperties dictionaryWithValuesForKeys:arrayofNames]];
 }
 
--(NSDictionary*) getAllProperties {
-    return [mProperties dictionaryWithValuesForKeys:[[mProperties keyEnumerator] allObjects]];
+-(void) getAllProperties:(id<IMethodResult>)methodResult {
+     [methodResult setResult:[mProperties dictionaryWithValuesForKeys:[[mProperties keyEnumerator] allObjects]]];
 }
 
--(NSDictionary*) getPropertiesByList:(NSArray*)listOfPropertyNames {
-    return [mProperties dictionaryWithValuesForKeys:listOfPropertyNames];
+-(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue {
+    [mProperties setObject:propertyValue forKey:propertyName];
 }
 
--(void) setPropertiesByDictionary:(NSDictionary*)dict {
+-(void) setProperties:(NSDictionary*)propertyMap {
     [mProperties addEntriesFromDictionary:dict];
 }
 
--(void) clearAllProps {
+-(void) clearAllProperties {
     [mProperties removeAllObjects];
 }
 
+<% end %>
+
+
+<% $cur_module.methods.each do |module_method|
+  add_method = true
+  add_method = add_method && (module_method.access != ModuleMethod::ACCESS_STATIC)
+  add_method = add_method && $cur_module.is_template_propertybag
+  if (module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER) || (module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER)
+     if module_method.linked_property.use_property_bag_mode != ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
+        add_method = false
+     end
+  else
+     add_method = false
+  end
+  if add_method
+%><%= module_method.cached_data["iphone_line"] %>; {
+<% if module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
+    [self getProperty:@"<%= module_method.linked_property.native_name %>" methodResult:methodResult]
+<% end
+ if module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER %>
+    [self setProperty::@"<%= module_method.linked_property.native_name %>" propertyValue:value]
+<% end %>
+}
+
+<% end
+end %>
+
 
 -(void) dealloc {
+<% if $cur_module.is_template_propertybag %>
     [mProperties release];
+<% end %>
     [super dealloc];
 }
 
