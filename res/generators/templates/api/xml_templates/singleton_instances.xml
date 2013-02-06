@@ -5,6 +5,10 @@
 	<METHODS>
 	    <METHOD name="enumerate" access="STATIC" has_callback="optional" factory="true">
 			<DESC>This is documentation</DESC>
+
+            <RETURN type="ARRAY">
+                <DESC>Array of objects.</DESC>                
+            </RETURN>
         </METHOD>
     </METHODS>
 </SINGLETON_INSTANCES>

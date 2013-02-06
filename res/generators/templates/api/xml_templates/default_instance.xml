@@ -5,6 +5,10 @@
 	<METHODS>
 	    <METHOD name="default" access="STATIC" factory="true" nativeName="getDefaultID">
 			<DESC>This is documentation</DESC>
+            <RETURN type="SELF_INSTANCE">
+                <DESC>Default object of Module.</DESC>
+            </RETURN>
+
         </METHOD>
 
         <METHOD name="setDefault" access="STATIC" nativeName="setDefaultID">

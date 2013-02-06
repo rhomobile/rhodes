@@ -6,7 +6,7 @@
 	>
 	<UserMacro
 		Name="RHO_ROOT"
-		Value="c:\projects\rhodes"
+		Value="..\..\..\..\..\..\..\rhodes"
 	/>
 	<UserMacro
 		Name="TEMP_FILES_DIR"
