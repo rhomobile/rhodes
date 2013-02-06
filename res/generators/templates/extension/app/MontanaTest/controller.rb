@@ -12,8 +12,8 @@ class <%= name.camel_case %>TestController < Rho::RhoController
   end
 
   def run_test
-    sum = <%= name.camel_case %>.calc_summ(3,7) 
-    Alert.show_popup <%= name.camel_case %>::<%= name.camel_case %>StringHelper::process_string('test')+sum.to_s
+    res = Rho::<%= name.camel_case %>.enumerate 
+    Alert.show_popup "Rho::<%= name.camel_case %>.enumerate return : #{res}"
     render :action => :index, :back => '/app'
   end
   
