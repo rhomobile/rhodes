@@ -6,26 +6,28 @@
 
   <div data-role="content">
     <ul data-role="listview">
-      <% if @msg %>
-          <li class="error-message"><%= @msg %></li>
-      <% end %>
+      <%% if @msg %>
+          <li class="error-message"><%%= @msg %></li>
+      <%% end %>
 
+<% if @rhoconnectclient_ext %>                  
       <li>
         <div class="itemLabel">
           <span class="title">Client ID:</span>
         </div>
         <div class="itemValue">
-          <span class="clientID"><%= Rhom::Rhom::client_id %></span>
+          <span class="clientID"><%%= Rhom::Rhom::client_id %></span>
         </div>
       </li>
 
-      <li><a href="<%= url_for :action => :reset %>">Reset Database</a></li>
-      <li><a href="<%= url_for :action => :do_sync %>">Perform Sync</a></li>
-      <% if SyncEngine::logged_in > 0 %>
-          <li><a href="<%= url_for :action => :logout %>">Logout</a></li>
-      <% else %>
-          <li><a href="<%= url_for :action => :login %>">Login</a></li>
-      <% end %>
+      <li><a href="<%%= url_for :action => :reset %>">Reset Database</a></li>
+      <li><a href="<%%= url_for :action => :do_sync %>">Perform Sync</a></li>
+      <%% if SyncEngine::logged_in > 0 %>
+          <li><a href="<%%= url_for :action => :logout %>">Logout</a></li>
+      <%% else %>
+          <li><a href="<%%= url_for :action => :login %>">Login</a></li>
+      <%% end %>
+ <% end %>          
     </ul>
   </div>
 </div>

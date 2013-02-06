@@ -160,12 +160,41 @@ module Rhogen
       directory.destination = "#{name}/icon"
     end
 
+    template :settings1 do |template|
+      template.source = 'app/Settings/controller.rb'
+      template.destination = "#{name}/app/Settings/controller.rb"
+    end
+    template :settings2 do |template|
+      template.source = 'app/Settings/err_sync.erb'
+      template.destination = "#{name}/app/Settings/err_sync.erb"
+    end
+    template :settings3 do |template|
+      template.source = 'app/Settings/home.erb'
+      template.destination = "#{name}/app/Settings/home.erb"
+    end
+    template :settings4 do |template|
+      template.source = 'app/Settings/index.erb'
+      template.destination = "#{name}/app/Settings/index.erb"
+    end
+    template :settings5 do |template|
+      template.source = 'app/Settings/login.erb'
+      template.destination = "#{name}/app/Settings/login.erb"
+    end
+    template :settings6 do |template|
+      template.source = 'app/Settings/reset.erb'
+      template.destination = "#{name}/app/Settings/reset.erb"
+    end
+    template :settings7 do |template|
+      template.source = 'app/Settings/wait.erb'
+      template.destination = "#{name}/app/Settings/wait.erb"
+    end
     
+=begin    
     directory :settings do |directory|
       directory.source = 'app/Settings'
       directory.destination = "#{name}/app/Settings/"
     end
-
+=end
     directory :public do |directory|
       directory.source = 'public'
       directory.destination = "#{name}/public/"
