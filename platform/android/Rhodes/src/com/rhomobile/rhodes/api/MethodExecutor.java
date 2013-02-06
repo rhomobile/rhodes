@@ -1,4 +1,4 @@
-package com.motorolasolutions.rhoelements;
+package com.rhomobile.rhodes.api;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
