@@ -925,7 +925,7 @@ module Rhogen
            if module_property.generate_accessors
               getter_method = ModuleMethod.new()
 
-              getter_method.name = 'get'+module_property.native_name
+              getter_method.name = 'get' + module_property.native_name[0].upcase() + module_property.native_name[1..module_property.native_name.length-1]
 
               getter_method.native_name = getter_method.name
 
@@ -942,7 +942,7 @@ module Rhogen
 
               setter_method = ModuleMethod.new()
 
-              setter_method.name = 'set'+module_property.native_name
+              setter_method.name = 'set' + module_property.native_name[0].upcase() + module_property.native_name[1..module_property.native_name.length-1]
 
               setter_method.native_name = setter_method.name
 
