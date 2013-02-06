@@ -48,8 +48,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\<%= name.camel_case() %>.h">
+    <ClInclude Include="generated\I<%= name.camel_case() %>.h">
       <Filter>wp8\generated</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\<%= name.camel_case() %>.xml">
+      <Filter>wp8</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
