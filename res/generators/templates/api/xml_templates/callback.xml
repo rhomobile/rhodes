@@ -9,19 +9,19 @@
 						<FUNCTION>
 							<FUNC_PARAM>
 								<DESC>Mapping of property names to Values</DESC>
-								<TYPE>Map of String to Object</TYPE>
+								<TYPE>HASH</TYPE>
 							</FUNC_PARAM>
 						</FUNCTION>	
 					</TYPE>
-				</POSSIBLITY>
+				</POSSIBILITY>
 				<POSSIBILITY>
 					<DESC>URL</DESC>
 					<TYPE>String</TYPE>
-				</POSSIBLITY>
+				</POSSIBILITY>
 				<POSSIBILITY>
 					<DESC>Synchronous Operation</DESC>
 					<TYPE>nil</TYPE>
-				</POSSIBLITY>
+				</POSSIBILITY>
 			</PARAM>
             
 			<PARAM name="callbackParam">

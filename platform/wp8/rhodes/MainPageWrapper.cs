@@ -32,7 +32,7 @@ namespace rhodes
         public void toolbarHide() { _mainPage.toolbarHide(); }
         public int toolbarGetHeight() { return _mainPage.toolbarGetHeight(); }
         public void toolbarAddAction(string text) { _mainPage.toolbarAddAction(text); }
-        //public void toolbarAddAction(Icon^ icon, String^ text, char* action, bool rightAlign /= false/);
+        public void toolbarAddAction(string icon, string text, string action) { _mainPage.toolbarAddAction(icon, text, action); }
         public void toolbarAddSeparator() { _mainPage.toolbarAddSeparator(); }
         public void setToolbarStyle(bool border, string background) { _mainPage.setToolbarStyle(border, background); }
 		// menu

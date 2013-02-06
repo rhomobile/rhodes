@@ -3,11 +3,15 @@
 
 <DEFAULT_INSTANCE>
 	<METHODS>
-	    <METHOD name="default" access="STATIC" factory="true">
+	    <METHOD name="default" access="STATIC" factory="true" nativeName="getDefaultID">
 			<DESC>This is documentation</DESC>
+            <RETURN type="SELF_INSTANCE">
+                <DESC>Default object of Module.</DESC>
+            </RETURN>
+
         </METHOD>
 
-        <METHOD name="setDefault" access="STATIC">
+        <METHOD name="setDefault" access="STATIC" nativeName="setDefaultID">
             <DESC>This is documentation</DESC>
             <PARAMS>
                 <PARAM name="defaultInstance" type="SELF_INSTANCE">

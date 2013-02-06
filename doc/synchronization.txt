@@ -2,6 +2,8 @@ Synchronization with Rhodes
 ===
 As we've shown in the [Rhom section](/rhodes/rhom), adding synchronized data via [RhoConnect](/rhoconnect/introduction) to your Rhodes application is as simple as generating a model and enabling a `:sync` flag.  This triggers the internal Rhodes sync system called the **`SyncEngine`** to synchronize data for the model and transparently handle bi-directional updates between the Rhodes application and the RhoConnect server.
 
+Since version 4.0 SyncEngine API is available through 'rhoconnect-client' extension, which is bundled as part of RhoMobileSuite in 'rhoconnect-client' gem. All new-generated Rhodes applications will include rhoconnect-client extension by default. For existing applications that use SyncEngine API you should add 'rhoconnect-client' to the extensions section of build.yml.
+
 This section covers in detail how the `SyncEngine` works in Rhodes and how you can use its flexible APIs to build data-rich native applications.
 
 ## Sync Workflow

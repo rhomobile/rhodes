@@ -58,7 +58,7 @@
             </PARAMS>
         </METHOD>
 
-        <METHOD name="clearProps">
+        <METHOD name="clearAllProperties">
             <DESC>This is documentation</DESC>
         </METHOD>
 

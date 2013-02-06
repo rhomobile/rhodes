@@ -46,7 +46,7 @@ namespace rhodes
             InitializeComponent();
         }
 
-        public RhoTabHeader(String label, String image)
+        public RhoTabHeader(string label, string image)
         {
             InitializeComponent();
             lbl.Text = label;

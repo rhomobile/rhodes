@@ -1,0 +1,8 @@
+# path to local rhodes workspace
+rhodes: "../.."
+
+# path to local rhoconnect workspace
+rhoconnect: "../../../rhoconnect"
+
+# path to rhoelements
+rhoelements: "../../../Motorola-Extensions"

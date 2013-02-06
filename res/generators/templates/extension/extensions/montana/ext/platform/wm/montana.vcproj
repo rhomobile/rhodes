@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="<%= name.camel_case() %>"
-	ProjectGUID="{93453E28-E84A-40C4-BD6A-51A8373D7044}"
+	ProjectGUID="{<%=@productid%>}"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -621,15 +621,31 @@
 			UniqueIdentifier="{9FC737FA-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\shared\src\<%= name.camel_case() %>.c"
+				RelativePath="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\<%= name.camel_case() %>_wm.cpp"
+				RelativePath="..\..\shared\generated\<%= name.downcase() %>_js_api.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\ruby\<%= name.camel_case() %>_wrap.c"
+				RelativePath="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c"
+				>
+			</File>
+			<File
+				RelativePath=".\generated\<%= name.camel_case() %>FactoryBase.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\generated\<%= name.downcase() %>_js_wrap.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\generated\<%= name.downcase() %>_ruby_wrap.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\<%= name.camel_case() %>_impl.cpp"
 				>
 			</File>
 		</Filter>
@@ -637,7 +653,7 @@
 			Name="Headers"
 			>
 			<File
-				RelativePath=".\src\<%= name.camel_case() %>.h"
+				RelativePath=".\generated\<%= name.camel_case() %>.h"
 				>
 			</File>
 		</Filter>

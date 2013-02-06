@@ -1195,3 +1195,13 @@ Solution:
 		</a>
 	</form>
 
+## Android Hardware Accelerated Activity
+
+Support android:hardwareAccelerated attribute at AndroidManifest.xml for main Rhodes activity.
+
+To set android:hardwareAccelerated='true' at Androidmanifest.xml for RhodesActivity enable the hardware_acceleration capability. This is done by adding the following lines to build.yml:
+
+	:::yaml
+	android:
+	  capabilities:
+	    - hardware_acceleration

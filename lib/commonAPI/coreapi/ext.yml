@@ -1,0 +1,9 @@
+entry: Init_CoreAPI_extension	
+javaentry: com.coreapi.CoreAPI
+android_additional_sources_list: ext/platform/android/ext_build.files
+libraries: ["CoreAPI"]
+
+project_paths:
+  wp8: ext/platform/wp8/CoreAPI.vcxproj
+  wm: ext/platform/wm/CoreAPI.sln
+  win32: ext/platform/wm/CoreAPI.sln

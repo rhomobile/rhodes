@@ -4,7 +4,7 @@ name: <%=@app_name%>
 version: 1.0
 vendor: rhomobile
 build: debug
-bbver: 4.6
+bbver: 6.0
 applog: rholog.txt
 iphone:
   configuration: Release

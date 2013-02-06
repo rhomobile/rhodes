@@ -82,41 +82,71 @@
 		
 		int scrnWidth = 0;
 		int scrnHeight = 0;
+        
+        int app_width = 0;
+        int app_height = 0;
+
 
 		if ((orientation == UIInterfaceOrientationPortrait) || (orientation == UIInterfaceOrientationPortraitUpsideDown)) {
 			scrnWidth = (int)(srcrnBounds.size.width*scales+0.5);
 			scrnHeight = (int)(srcrnBounds.size.height*scales+0.5);
+            app_width = (int)(appFrame.size.width+0.5);
+            app_height = (int)(appFrame.size.height+0.5);
 		}
 		else {
 			scrnWidth = (int)(srcrnBounds.size.height*scales+0.5);
 			scrnHeight = (int)(srcrnBounds.size.width*scales+0.5);
-		}
+            app_width = (int)(appFrame.size.height+0.5);
+            app_height = (int)(appFrame.size.width+0.5);
+        }
 		
 	
 		if ((image_width != scrnWidth) || (image_height != scrnHeight) || (img_scale != scales)) 
         {
-			// scale to app frame
-			self.frame = appFrame;
-            CGRect rect;
-            
-            rect.origin.x = appFrame.origin.x;
-            rect.origin.y = appFrame.origin.y;
-            
-            float width_k = (appFrame.size.width * scales) / (float)image_width;
-            float height_k = (appFrame.size.height * scales) / (float)image_height;
+            if ((((int)[img size].width) != app_width) || (((int)[img size].height) != app_height)) {
+                // scale to app frame
+                self.frame = appFrame;
+                CGRect rect;
+                
+                rect.origin.x = appFrame.origin.x;
+                rect.origin.y = appFrame.origin.y;
 
-            if (width_k >= height_k) {
-                rect.size.width = appFrame.size.width;
-                rect.size.height = (((float)image_height) / scales) * width_k;
-            }
-            else {
-                rect.size.height = appFrame.size.height;
-                rect.size.width = (((float)image_width) / scales) * height_k;
-            }
-            
-            
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {    
-                self.frame = rect;
+                float res_w = 0;
+                float res_h = 0;
+                
+                float width_k = (app_width * scales) / (float)image_width;
+                float height_k = (app_height * scales) / (float)image_height;
+                
+                if (width_k >= height_k) {
+                    res_w = app_width;
+                    res_h = (((float)image_height) / scales) * width_k;
+                }
+                else {
+                    res_h = app_height;
+                    res_w = (((float)image_width) / scales) * height_k;
+                }
+                
+                if ((orientation == UIInterfaceOrientationPortrait) || (orientation == UIInterfaceOrientationPortraitUpsideDown)) {
+                    if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
+                        rect.origin.x -= (res_w - app_width);
+                    }
+                    rect.size.width = res_w;
+                    rect.size.height = res_h;
+                }
+                else {
+                    if (orientation == UIInterfaceOrientationLandscapeLeft) {
+                        //rect.origin.x -= (res_h - app_height);
+                    }
+                    else {
+                        rect.origin.x -= (res_h - app_height);
+                    }
+                    rect.size.width = res_h;
+                    rect.size.height = res_w;
+                }
+                
+                if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                    self.frame = rect;
+                }
             }
             
 		}
