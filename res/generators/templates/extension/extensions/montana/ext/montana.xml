@@ -11,11 +11,11 @@
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 
-        <!-- <PROPERTIES usePropertyBag="mapNamesToAccessors"> -->
-        <PROPERTIES usePropertyBag="mapAccessorsToNames" noAccessors="false">
-            <!-- list of properties supported by property bag methods getPops(), setProps() -->
+        <!-- <PROPERTIES usePropertyBag="accessorsViaPropertyBag"> -->
+        <!-- <PROPERTIES usePropertyBag="PropertyBagViaAccessors"> -->
+        <PROPERTIES >
             <DESC>object supports this properties bla bla bla :</DESC>
-            <PROPERTY name="illuminationMode" type="STRING">
+            <PROPERTY name="illuminationMode" type="STRING" generateAccessors="false">
                 <DESC>Whether or not the Code128 symbology is used.</DESC>
                 <CONSTANTS>
                     <CONSTANT name="MODE_AUTO" value ="auto">
@@ -32,7 +32,7 @@
                 <DEFAULT>Device specific</DEFAULT>
             </PROPERTY>
         </PROPERTIES>
-    
+
         <METHODS>
             <METHOD name="enable" has_callback="mandatory">
                 <DESC>This is documentation</DESC>
