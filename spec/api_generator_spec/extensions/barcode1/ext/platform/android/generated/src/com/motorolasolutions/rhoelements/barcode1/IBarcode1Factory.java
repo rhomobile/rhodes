@@ -1,7 +1,7 @@
 package com.motorolasolutions.rhoelements.barcode1;
 
-import com.motorolasolutions.rhoelements.IRhoApiFactory;
-import com.motorolasolutions.rhoelements.IRhoApiSingletonFactory;
+import com.rhomobile.rhodes.api.IRhoApiFactory;
+import com.rhomobile.rhodes.api.IRhoApiSingletonFactory;
 
 public interface IBarcode1Factory
     extends IRhoApiFactory<IBarcode1>,
