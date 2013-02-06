@@ -65,6 +65,9 @@ load File.join($rho_root,'platform','android','build','android.rake')
 
 		$source_path = File.expand_path(File.join($app_path,'server'))
 		$tmp_path = File.join(File.dirname(__FILE__),'tmp')
+		
+		cleanup_apps
+		
 		FileUtils.mkdir_p File.expand_path($tmp_path)
 		$server_path = File.expand_path(File.join($tmp_path,'testapp'))
 		
