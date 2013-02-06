@@ -1,4 +1,4 @@
-package com.motorolasolutions.rhoelements;
+package com.rhomobile.rhodes.api;
 
 import java.util.HashMap;
 import java.util.Map;
