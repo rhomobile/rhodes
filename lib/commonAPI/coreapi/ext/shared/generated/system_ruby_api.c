@@ -4,6 +4,20 @@
 static VALUE rb_mParent;
 static VALUE rb_cSystem;
 
+VALUE rb_System_getplatform(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_System_def_getplatform(int argc, VALUE *argv);
+VALUE rb_System_setplatform(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_System_def_setplatform(int argc, VALUE *argv);
+VALUE rb_System_applicationInstall(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_System_def_applicationInstall(int argc, VALUE *argv);
+VALUE rb_System_isApplicationInstalled(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_System_def_isApplicationInstalled(int argc, VALUE *argv);
+VALUE rb_System_applicationUninstall(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_System_def_applicationUninstall(int argc, VALUE *argv);
+VALUE rb_System_getStartParams(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_System_def_getStartParams(int argc, VALUE *argv);
+VALUE rb_System_openUrl(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_System_def_openUrl(int argc, VALUE *argv);
 VALUE rb_System_getProperty(int argc, VALUE *argv, VALUE obj);
 VALUE rb_s_System_def_getProperty(int argc, VALUE *argv);
 VALUE rb_System_getProperties(int argc, VALUE *argv, VALUE obj);
@@ -37,6 +51,20 @@ void Init_RubyAPI_System(void)
 	//rb_define_alloc_func(rb_cBarcode1, rb_barcode1_allocate);
     rb_undef_alloc_func(rb_cSystem);
 
+rb_define_method(rb_cSystem, "getplatform", rb_System_getplatform, -1);
+rb_define_singleton_method(rb_cSystem, "getplatform", rb_s_System_def_getplatform, -1);
+rb_define_method(rb_cSystem, "setplatform", rb_System_setplatform, -1);
+rb_define_singleton_method(rb_cSystem, "setplatform", rb_s_System_def_setplatform, -1);
+rb_define_method(rb_cSystem, "applicationInstall", rb_System_applicationInstall, -1);
+rb_define_singleton_method(rb_cSystem, "applicationInstall", rb_s_System_def_applicationInstall, -1);
+rb_define_method(rb_cSystem, "isApplicationInstalled", rb_System_isApplicationInstalled, -1);
+rb_define_singleton_method(rb_cSystem, "isApplicationInstalled", rb_s_System_def_isApplicationInstalled, -1);
+rb_define_method(rb_cSystem, "applicationUninstall", rb_System_applicationUninstall, -1);
+rb_define_singleton_method(rb_cSystem, "applicationUninstall", rb_s_System_def_applicationUninstall, -1);
+rb_define_method(rb_cSystem, "getStartParams", rb_System_getStartParams, -1);
+rb_define_singleton_method(rb_cSystem, "getStartParams", rb_s_System_def_getStartParams, -1);
+rb_define_method(rb_cSystem, "openUrl", rb_System_openUrl, -1);
+rb_define_singleton_method(rb_cSystem, "openUrl", rb_s_System_def_openUrl, -1);
 rb_define_method(rb_cSystem, "getProperty", rb_System_getProperty, -1);
 rb_define_singleton_method(rb_cSystem, "getProperty", rb_s_System_def_getProperty, -1);
 rb_define_method(rb_cSystem, "getProperties", rb_System_getProperties, -1);

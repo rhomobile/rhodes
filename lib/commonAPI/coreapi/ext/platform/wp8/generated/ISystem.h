@@ -9,6 +9,13 @@ struct ISystem
 {
     virtual ~ISystem(){}
 
+    virtual void getplatform(CMethodResult& oResult) = 0;
+    virtual void setplatform( const rho::StringW& value, CMethodResult& oResult) = 0;
+    virtual void applicationInstall( const rho::StringW& applicationUrl, CMethodResult& oResult) = 0;
+    virtual void isApplicationInstalled( const rho::StringW& applicationName, CMethodResult& oResult) = 0;
+    virtual void applicationUninstall( const rho::StringW& applicationName, CMethodResult& oResult) = 0;
+    virtual void getStartParams(CMethodResult& oResult) = 0;
+    virtual void openUrl( const rho::StringW& url, CMethodResult& oResult) = 0;
     virtual void getProperty( const rho::StringW& propertyName, CMethodResult& oResult) = 0;
     virtual void getProperties( const rho::Vector<rho::StringW>& arrayofNames, CMethodResult& oResult) = 0;
     virtual void getAllProperties(CMethodResult& oResult) = 0;
