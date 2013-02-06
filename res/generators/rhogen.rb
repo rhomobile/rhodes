@@ -666,6 +666,10 @@ module Rhogen
         @access_mode = ACCESS_MODE_FULL
         @generate_accessors = true
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
+
+        #used if getter and setter are present - this used with generation of property bag function implementation
+        @getter = nil
+        @setter = nil
       end
 
       attr_accessor :name
@@ -674,6 +678,9 @@ module Rhogen
       attr_accessor :access_mode
       attr_accessor :generate_accessors
       attr_accessor :use_property_bag_mode
+      attr_accessor :getter
+      attr_accessor :setter
+
 
 
     end
@@ -692,6 +699,9 @@ module Rhogen
       RUN_IN_THREAD_SEPARATED = "SEPARATED"
       RUN_IN_THREAD_UI = "UI"
 
+      SPECIAL_BEHAVIOUR_NONE = "NONE"
+      SPECIAL_BEHAVIOUR_GETTER = "GETTER"
+      SPECIAL_BEHAVIOUR_SETTER = "SETTER"
 
       def initialize
         @name = ''
@@ -702,6 +712,15 @@ module Rhogen
         @is_return_value = false
         @access = ACCESS_INSTANCE
         @has_callback = CALLBACK_NONE
+
+        # name of template produced this method if applicable
+        @generated_by_template = ''
+
+        @linked_property = nil # use only if method is setter or getter
+        #if this property is not NONE then generator should prepare special function code. For example setter or getter have already prepared code
+        @special_behaviour = SPECIAL_BEHAVIOUR_NONE
+
+        #use for store any data by string key. For example I save to this bag a prepared iOS full function signature for do not rebuild it everytime
         @cached_data = {}
       end
 
@@ -713,6 +732,9 @@ module Rhogen
       attr_accessor :is_return_value
       attr_accessor :access
       attr_accessor :has_callback
+      attr_accessor :generated_by_template
+      attr_accessor :linked_property
+      attr_accessor :special_behaviour
       attr_accessor :cached_data
     end
 
@@ -744,6 +766,10 @@ module Rhogen
       attr_accessor :is_property_bag_limit_to_only_declared_properties
     end
 
+    TEMPLATE_NAME = "TEMPLATE_NAME"
+    TEMPLATE_PROPERTY_BAG = "property_bag"
+    TEMPLATE_SINGLETONE_INSTANCES = "singleton_instances"
+
     $modules = []
 
     $cur_module = nil
@@ -760,6 +786,9 @@ module Rhogen
 
       methods_item = template_xml.elements["*/METHODS"]
       if methods_item != nil
+         methods_item.elements.each("METHOD") do |method|
+            method.add_attribute TEMPLATE_NAME, template_name
+         end
          xml_module_item.add_element methods_item
       end
 
@@ -795,10 +824,10 @@ module Rhogen
          module_item.is_template_propertybag = (xml_module_item.elements["TEMPLATES/PROPERTY_BAG"] != nil)
 
          if module_item.is_template_propertybag
-             apply_templates_to_module(xml_module_item, "property_bag")
+             apply_templates_to_module(xml_module_item, TEMPLATE_PROPERTY_BAG)
          end
          if module_item.is_template_singletone_id
-             apply_templates_to_module(xml_module_item, "singleton_instances")
+             apply_templates_to_module(xml_module_item, TEMPLATE_SINGLETONE_INSTANCES)
          end
          if module_item.is_template_default_instance
              #apply_templates_to_module(xml_module_item, "default_instance")
@@ -861,6 +890,51 @@ module Rhogen
 
          end
 
+         #prepare getters and setters for property
+        module_item.properties.each do |module_property|
+           if module_property.generate_accessors
+              getter_method = ModuleMethod.new()
+
+              getter_method.name = 'get'+module_property.native_name
+
+              getter_method.native_name = getter_method.name
+
+              getter_method.params = []
+              getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+              getter_method.is_factory_method = false
+              getter_method.is_return_value = true
+              getter_method.access = ModuleMethod::ACCESS_INSTANCE
+              getter_method.has_callback = ModuleMethod::CALLBACK_NONE
+              getter_method.linked_property = module_property
+              getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
+              module_property.getter = getter_method
+              module_item.methods << getter_method
+
+              setter_method = ModuleMethod.new()
+
+              setter_method.name = 'set'+module_property.native_name
+
+              setter_method.native_name = setter_method.name
+
+              param = MethodParam.new()
+              param.name = "value"
+              param.can_be_nil = false
+              param.type = module_property.type
+              setter_method.params = [param]
+              setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+              setter_method.is_factory_method = false
+              setter_method.is_return_value = false
+              setter_method.access = ModuleMethod::ACCESS_INSTANCE
+              setter_method.has_callback = ModuleMethod::CALLBACK_NONE
+              setter_method.linked_property = module_property
+              setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
+              module_property.setter = setter_method
+
+              module_item.methods << setter_method
+
+           end
+        end
+
 
          #methods
          xml_module_item.elements.each("METHODS/METHOD") do |xml_module_method|
@@ -872,7 +946,10 @@ module Rhogen
 
             if xml_module_method.attribute("nativeName") != nil
                module_method.native_name = xml_module_method.attribute("nativeName").to_s
+            end
 
+            if xml_module_method.attribute(TEMPLATE_NAME) != nil
+               module_method.generated_by_template = xml_module_method.attribute(TEMPLATE_NAME).to_s
             end
 
             if xml_module_method.attribute("access") != nil
@@ -1166,6 +1243,7 @@ class ApiMegatestGenerator < BaseGenerator
  add :api_test, ApiMegatestGenerator
 
  end
+
 
 
 
