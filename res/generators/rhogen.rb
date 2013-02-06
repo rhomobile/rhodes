@@ -378,9 +378,10 @@ module Rhogen
 
 	def callback_after_delete_testapp(template)
 		if @@noapp == true
-			FileUtils.rm_rf "../../../app"
-			FileUtils.cp_r("../../../extensions/#{namefixed.downcase}", "../../..")
-			FileUtils.rm_rf "../../../extensions"
+			Dir.chdir("../../../")
+			FileUtils.rm_rf "app"
+			FileUtils.cp_r("extensions/#{namefixed.downcase}", Dir.pwd)
+			FileUtils.rm_rf "extensions"
 		end
 	end
 
