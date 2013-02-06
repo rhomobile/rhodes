@@ -155,7 +155,8 @@
     <ClCompile Include="src\<%= name.camel_case() %>_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\<%= name.camel_case() %>.h" />
+    <ClInclude Include="generated\I<%= name.camel_case() %>.h" />
+    <ClInclude Include="..\..\<%= name.camel_case() %>.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />
