@@ -147,7 +147,7 @@ load File.join($rho_root,'platform','android','build','android.rake')
 		puts "exception caught: #{e.inspect}"
 		puts e.backtrace
 
-		stop_rhoconnect_server
+		stop_apps
 	ensure
 
 		puts "run_spec_app(#{$platform},#{$appname}) done"
