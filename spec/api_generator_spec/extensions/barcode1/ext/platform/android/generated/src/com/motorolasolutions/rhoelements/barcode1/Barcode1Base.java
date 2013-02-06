@@ -2,7 +2,8 @@ package com.motorolasolutions.rhoelements.barcode1;
 
 import java.util.List;
 
-import com.motorolasolutions.rhoelements.IMethodResult;
+import com.rhomobile.rhodes.api.IMethodResult;
+
 
 public class Barcode1Base {
 

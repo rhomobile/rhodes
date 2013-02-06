@@ -1,7 +1,7 @@
 #include "common/RhoStd.h"
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/JNIRhoRuby.h"
-#include "com_motorolasolutions_rhoelements_MethodResult.h"
+#include "rhodes/jni/com_rhomobile_rhodes_api_MethodResult.h"
 #include "MethodResult.h"
 #include "MethodResultJni.h"
 
@@ -12,7 +12,7 @@
 
 namespace rhoelements {
 
-const char * const MethodResultJni::METHOD_RESULT_CLASS = "com.motorolasolutions.rhoelements.MethodResult";
+const char * const MethodResultJni::METHOD_RESULT_CLASS = "com.rhomobile.rhodes.api.MethodResult";
 
 jclass MethodResultJni::s_methodResultClass = 0;
 jmethodID MethodResultJni::s_midMethodResult;
@@ -136,8 +136,8 @@ VALUE MethodResultJni::enumerateRubyObjects(VALUE klass)
     JNIEnv *env = jniInit();
     if (!env) {
         RAWLOG_ERROR("JNI initialization failed");
-        rho_ruby_raise_runtime("JNI initialization failed");
-        return rho_ruby_get_NIL();;
+        rb_raise(rb_eRuntimeError,"JNI initialization failed");
+        return Qnil;;
     }
 
     HStringVector pIDs = rho_cast<HStringVector>(env, getListResult(env));
@@ -171,13 +171,13 @@ VALUE MethodResultJni::toRuby()
 {
     RAWTRACE("toRuby");
 
-    VALUE res = rho_ruby_get_NIL();
+    VALUE res = Qnil;
 
     JNIEnv *env = jniInit();
     if (!env) {
         RAWLOG_ERROR("JNI initialization failed");
-        rho_ruby_raise_runtime("JNI initialization failed");
-        return rho_ruby_get_NIL();
+        rb_raise(rb_eRuntimeError,"JNI initialization failed");
+        return Qnil;
     }
 
     if(m_errType == eNone)
@@ -191,7 +191,7 @@ VALUE MethodResultJni::toRuby()
                 jhobject jhMapResult = getMapResult(env);
                 if(!jhMapResult)
                 {
-                    res = rho_ruby_get_NIL();
+                    res = Qnil;
                 }
                 else
                 {
@@ -214,11 +214,11 @@ VALUE MethodResultJni::toRuby()
     }
     else if(m_errType == eError)
     {
-        rho_ruby_raise_runtime(m_errMsg.c_str());
+        rb_raise(rb_eRuntimeError,m_errMsg.c_str());
     }
     else
     {
-        rho_ruby_raise_runtime("Unknown runtime error in MethodResultJni class");
+        rb_raise(rb_eRuntimeError,"Unknown runtime error in MethodResultJni class");
     }
 
     return res;
@@ -241,7 +241,7 @@ std::string MethodResultJni::toJson()
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-RHO_GLOBAL void JNICALL Java_com_motorolasolutions_rhoelements_MethodResult_nativeSetString
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetString
   (JNIEnv * env, jclass, jstring jRes, jstring jUrl, jstring jUrlData)
 {
     rho::String res = rho_cast<rho::String>(env, jRes);
@@ -256,7 +256,7 @@ RHO_GLOBAL void JNICALL Java_com_motorolasolutions_rhoelements_MethodResult_nati
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-RHO_GLOBAL void JNICALL Java_com_motorolasolutions_rhoelements_MethodResult_nativeSetStringList
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStringList
   (JNIEnv * env, jclass, jobject jRes, jstring jUrl, jstring jUrlData)
 {
     HStringVector pRes = rho_cast<HStringVector>(env, jRes);
@@ -270,7 +270,7 @@ RHO_GLOBAL void JNICALL Java_com_motorolasolutions_rhoelements_MethodResult_nati
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-RHO_GLOBAL void JNICALL Java_com_motorolasolutions_rhoelements_MethodResult_nativeSetStringMap
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStringMap
   (JNIEnv * env, jclass, jobject jRes, jstring jUrl, jstring jUrlData)
 {
     HStringMap pRes = rho_cast<HStringMap>(env, jRes);

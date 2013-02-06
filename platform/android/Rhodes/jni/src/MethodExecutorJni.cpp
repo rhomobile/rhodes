@@ -10,7 +10,7 @@
 
 namespace rhoelements {
 
-const char * const MethodExecutorJni::METHOD_EXECUTOR_CLASS = "com.motorolasolutions.rhoelements.MethodExecutor";
+const char * const MethodExecutorJni::METHOD_EXECUTOR_CLASS = "com.rhomobile.rhodes.api.MethodExecutor";
 
 jclass MethodExecutorJni::s_MethodExecutorClass = 0;
 jmethodID MethodExecutorJni::s_midRun;

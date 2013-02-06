@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rhodes/JNIRhodes.h"
-#include "ext/rho/rhoruby.h"
+#include "ruby.h"
 
 #include <string>
 

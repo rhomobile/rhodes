@@ -16,7 +16,17 @@ using namespace rho::json;
 using namespace rho::common;
 using namespace rhoelements;
 
-rho::String js_barcode1_enumerate(const rho::String& strID, CJSONArrayIterator& oParams)
+rho::String js_Barcode1_getDefaultID(CJSONArray& oParams, const rho::String& )
+{
+    return rho::String();
+}
+
+rho::String js_Barcode1_setDefaultID(CJSONArray& oParams, const rho::String& )
+{
+    return rho::String();
+}
+
+rho::String js_Barcode1_enumerate(const rho::String& strID, CJSONArray& oParams)
 {
     RAWTRACE("js_barcode1_enumerate");
 
@@ -25,7 +35,7 @@ rho::String js_barcode1_enumerate(const rho::String& strID, CJSONArrayIterator& 
     return result.enumerateJSObjects();
 }
 
-rho::String js_barcode1_getProps(const rho::String& strID, CJSONArrayIterator& oParams)
+rho::String js_Barcode1_getProps(const rho::String& strID, CJSONArray& oParams)
 {
     rho::String id = strID;
     if (id.length() == 0)

@@ -1,6 +1,6 @@
 package com.motorolasolutions.rhoelements.barcode1;
 
-import com.motorolasolutions.rhoelements.RhoApiFactory;
+import com.rhomobile.rhodes.api.RhoApiFactory;
 
 public class Barcode1Factory
         extends RhoApiFactory<Barcode1, Barcode1Singleton>

@@ -145,7 +145,7 @@ static VALUE barcode1_setprops(int argc, VALUE* argv, const rho::String& id)
 extern "C"
 {
 
-VALUE rb_barcode1_s_enumerate(VALUE klass)
+VALUE rb_Barcode1_s_enumerate(VALUE klass)
 {
     RAWTRACE("rb_barcode1_s_enumerate");
 
@@ -154,13 +154,13 @@ VALUE rb_barcode1_s_enumerate(VALUE klass)
     return result.enumerateRubyObjects(klass);
 }
 
-VALUE rb_barcode1_s_default(VALUE klass)
+VALUE rb_Barcode1_s_default(VALUE klass)
 {
     RAWTRACE("rb_barcode1_s_default");
     return rho_ruby_create_object_with_id(klass, CBarcode1::getDefaultID().c_str());
 }
 
-VALUE rb_barcode1_s_set_default(VALUE klass, VALUE valObj)
+VALUE rb_Barcode1_s_setDefault(VALUE klass, VALUE valObj)
 {
     RAWTRACE("rb_barcode1_s_set_default");
 
@@ -170,7 +170,7 @@ VALUE rb_barcode1_s_set_default(VALUE klass, VALUE valObj)
     return rho_ruby_get_NIL();
 }
 
-VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
+VALUE rb_Barcode1_s_getprops(int argc, VALUE *argv)
 {
     RAWTRACE("rb_barcode1_s_getprops");
 
@@ -178,7 +178,7 @@ VALUE rb_barcode1_s_getprops(int argc, VALUE *argv)
     return barcode1_getprops(argc, argv, id);
 }
 
-VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
+VALUE rb_Barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
 {
     RAWTRACE("rb_barcode1_getprops");
 
@@ -186,7 +186,7 @@ VALUE rb_barcode1_getprops(int argc, VALUE *argv, VALUE valObj)
     return barcode1_getprops(argc, argv, id);
 }
 
-VALUE rb_barcode1_s_setprops(int argc, VALUE *argv)
+VALUE rb_Barcode1_s_setprops(int argc, VALUE *argv)
 {
     RAWTRACE("rb_barcode1_s_setprops");
 
@@ -194,7 +194,7 @@ VALUE rb_barcode1_s_setprops(int argc, VALUE *argv)
     return barcode1_setprops(argc, argv, id);
 }
 
-VALUE rb_barcode1_setprops(int argc, VALUE *argv, VALUE valObj)
+VALUE rb_Barcode1_setprops(int argc, VALUE *argv, VALUE valObj)
 {
     RAWTRACE("rb_barcode1_s_setprops");
 

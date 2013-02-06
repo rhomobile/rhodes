@@ -1,4 +1,4 @@
-package com.motorolasolutions.rhoelements;
+package com.rhomobile.rhodes.api;
 
 public abstract class RhoApiObject implements IRhoApiObject {
 
