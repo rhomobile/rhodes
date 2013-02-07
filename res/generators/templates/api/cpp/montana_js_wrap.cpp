@@ -14,7 +14,7 @@ using namespace rho::json;
 using namespace rho::common;
 
 <% $cur_module.methods.each do |module_method| %>
-<%= api_generator_MakeJSMethodDecl($cur_module.name, module_method.name, module_method.access == ModuleMethod::ACCESS_STATIC)%>
+<%= api_generator_MakeJSMethodDecl($cur_module.name, module_method.native_name, module_method.access == ModuleMethod::ACCESS_STATIC)%>
 {
     CMethodResult oRes;
 
@@ -49,6 +49,48 @@ using namespace rho::common;
             oRes.setStringParam(argv[<%= first_arg %>].getString());
 <% end %>
         }
+        else if (!argv[<%= first_arg %>].isNull())
+        {
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toJSON();
+        }
+    }
+<% end %>
+
+<% if param.type == MethodParam::TYPE_INT %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
+    {
+        if ( argv[<%= first_arg %>].isString() )
+            arg<%= first_arg %> = argv[<%= first_arg %>].getInt();
+        else if (!argv[<%= first_arg %>].isNull())
+        {
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toJSON();
+        }
+    }
+<% end %>
+
+<% if param.type == MethodParam::TYPE_BOOL %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
+    {
+        if ( argv[<%= first_arg %>].isString() )
+            arg<%= first_arg %> = argv[<%= first_arg %>].getInt() ? true : false;
+        else if (!argv[<%= first_arg %>].isNull())
+        {
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toJSON();
+        }
+    }
+<% end %>
+
+<% if param.type == MethodParam::TYPE_DOUBLE %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
+    {
+        if ( argv[<%= first_arg %>].isString() )
+            arg<%= first_arg %> = argv[<%= first_arg %>].getDouble();
         else if (!argv[<%= first_arg %>].isNull())
         {
             oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
@@ -131,9 +173,9 @@ using namespace rho::common;
     }
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
-    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &I<%= $cur_module.name %>::<%= module_method.name %>, <%= functor_params %> oRes );
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &I<%= $cur_module.name %>::<%= module_method.native_name %>, <%= functor_params %> oRes );
 <% else %>
-    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.name %>, <%= functor_params %> oRes );
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.native_name %>, <%= functor_params %> oRes );
 <% end %>
 
 <% if (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) %>
@@ -149,9 +191,9 @@ using namespace rho::common;
         delete pFunctor;
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
-        pObj-><%= module_method.name %>( <%= functor_params %> oRes );
+        pObj-><%= module_method.native_name %>( <%= functor_params %> oRes );
 <% else %>
-        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.name %>( <%= functor_params %> oRes );
+        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.native_name %>( <%= functor_params %> oRes );
 <% end %>
 
     }

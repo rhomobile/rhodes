@@ -97,6 +97,7 @@ VALUE rho_ruby_get_NIL();
 int rho_ruby_is_NIL(VALUE val);
 int rho_ruby_get_bool(VALUE val);
 long rho_ruby_get_int(VALUE val);
+double rho_ruby_get_double(VALUE val);
 VALUE rho_ruby_create_array();
 VALUE rho_ruby_create_string(const char* szVal);
 VALUE rho_ruby_create_string_withlen(int len);

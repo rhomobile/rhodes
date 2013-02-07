@@ -24,7 +24,7 @@ def api_generator_MakeRubyMethodDef(module_name, module_method, is_static, metho
     method_name += 's_' if is_static
     method_name += module_name + "_"
     method_name += method_suffix + "_" if method_suffix.length() > 0
-    method_name += module_method.name
+    method_name += module_method.native_name
 
     "rb_define_#{(is_static) ? 'singleton_':''}method(rb_c#{module_name}, \"#{module_method.name}\", #{method_name}, -1);"
 end
@@ -33,7 +33,7 @@ end
 void Init_RubyAPI_<%= $cur_module.name %>(void)
 {
 <% if $cur_module.parents.size > 0 %>
-    VALUE tmpParent = rho_ruby_get_NIL();
+    VALUE tmpParent = Qnil;
     rb_mParent = rb_define_module("<%= $cur_module.parents[0] %>");
     <% for i in 1..($cur_module.parents.size-1) %>
     tmpParent = rb_mParent;
@@ -61,6 +61,8 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
     rb_define_singleton_method(rb_c<%= $cur_module.name %>, "setDefault", rb_<%= $cur_module.name %>_s_setDefault, 1);
 <% end %>
 
-
+<% $cur_module.constants.each do |module_constant| %>
+    rb_const_set(rb_c<%= $cur_module.name %>, rb_intern("<%= module_constant.name %>"), <%= api_generator_CreateSimpleRubyType(module_constant.type, module_constant.value) %> );<%
+end %>
 }
 

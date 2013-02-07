@@ -903,8 +903,8 @@ module Rhogen
             if xml_module_property.attribute("type") != nil
                module_property.type = xml_module_property.attribute("type").to_s.upcase
             end
-            if xml_module_property.attribute("readonly") != nil
-               module_property.readonly = xml_module_property.attribute("readonly").to_s.downcase != "false"
+            if xml_module_property.attribute("readOnly") != nil
+               module_property.readonly = xml_module_property.attribute("readOnly").to_s.downcase != "false"
             end
             if xml_module_property.attribute("usePropertyBag") != nil
                if xml_module_property.attribute("usePropertyBag").to_s.downcase == "none".downcase
