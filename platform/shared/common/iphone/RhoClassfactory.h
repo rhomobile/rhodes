@@ -26,11 +26,15 @@
 
 #pragma once
 
+#include <assert.h>
+
 #include "common/IRhoClassFactory.h"
 #include "net/CURLNetRequest.h"
 #include "common/PosixThreadImpl.h"
 #include "net/iphone/sslimpl.h"
 #include "RhoCryptImpl.h"
+#include "scriptvm/ScriptVM.h"
+#include "CRhoJavaScriptVMImpl.h"
 
 #include <common/RhoMutexLock.h>
 #include <common/AutoPointer.h>
@@ -65,10 +69,36 @@ public:
         return m_pSsl;
     }
     
+    IRhoScriptVM* createScriptVM( int vmId )
+    {
+        assert( vmId >=0 && vmId < NUM_VIRTUAL_MACHINES );
+        
+        if (!m_vm[vmId])
+        {
+            CMutexLock lock(m_scriptMutex);
+            
+            IRhoScriptVM* vm = m_vm[vmId];
+            if (!vm)
+            {
+                switch(vmId)
+                {
+                    case VM_JAVASCRIPT:
+                        vm = new CRhoJavaScriptVMImpl();
+                        break;
+                    default:
+                        assert(false);
+                }
+            }
+            m_vm[vmId] = vm;
+        }
+        return m_vm[vmId];
+    }
     
 private:    
     CMutex m_sslMutex;
-    common::CAutoPtr<net::ISSL> m_pSsl;    
+    CMutex m_scriptMutex;
+    common::CAutoPtr<net::ISSL> m_pSsl;
+    common::CAutoPtr<IRhoScriptVM> m_vm[NUM_VIRTUAL_MACHINES];
 };
 
 }
