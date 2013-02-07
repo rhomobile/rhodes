@@ -35,7 +35,7 @@ struct ISystem
     virtual void getOemInfo(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getUuid(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getApplicationIconBadge(rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setApplicationIconBadge( int value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setApplicationIconBadge( __int64 value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getHttpProxyURI(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setHttpProxyURI( const rho::StringW& value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getLockWindowSize(rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -45,7 +45,7 @@ struct ISystem
     virtual void getFullScreen(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setFullScreen( bool value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getLocalServerPort(rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setLocalServerPort( int value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setLocalServerPort( __int64 value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getScreenAutoRotate(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setScreenAutoRotate( bool value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void applicationInstall( const rho::StringW& applicationUrl, rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -58,8 +58,8 @@ struct ISystem
     virtual void zipFiles( const rho::StringW& localPathToZip,  const rho::StringW& basePath,  const rho::Vector<rho::StringW>& filePathsToZip,  const rho::StringW& password, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setRegistrySetting( const rho::StringW& keyPath,  const rho::StringW& keyValue, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getRegistrySetting( const rho::StringW& keyPath, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setWindowFrame( int x,  int y,  int width,  int height, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setWindowPosition( int x,  int y, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setWindowPosition( __int64 x,  __int64 y, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getProperty( const rho::StringW& propertyName, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getProperties( const rho::Vector<rho::StringW>& arrayofNames, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getAllProperties(rho::apiGenerator::CMethodResult& oResult) = 0;
