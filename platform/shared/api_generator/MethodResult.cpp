@@ -47,6 +47,15 @@ rho::String CMethodResult::toJSON()
     }else if ( m_ResType == eString)
     {
         strRes = "{'_RhoValue':" + convertToStringA(m_strRes) + "}";
+    }else if ( m_ResType == eBool)
+    {
+        strRes = "{'_RhoValue':" + convertToStringA(m_bRes?1:0) + "}";
+    }else if ( m_ResType == eInt)
+    {
+        strRes = "{'_RhoValue':" + convertToStringA(m_nRes) + "}";
+    }else if ( m_ResType == eDouble)
+    {
+        strRes = "{'_RhoValue':" + convertToStringA(m_dRes) + "}";
     }else if ( m_ResType == eArgError )
     {
         strRes = "{'_RhoArgError':" + CJSONEntry::quoteValueW(m_strError) + "}";
@@ -95,6 +104,15 @@ VALUE CMethodResult::toRuby()
             valObj = rho_ruby_create_string( convertToStringA(m_strRes).c_str() );
 
         return valObj;
+    }else if ( m_ResType == eBool)
+    {
+        return rho_ruby_create_boolean(m_bRes ? 1 : 0);
+    }else if ( m_ResType == eInt)
+    {
+        return rho_ruby_create_integer(m_nRes ? 1 : 0);
+    }else if ( m_ResType == eDouble)
+    {
+        return rho_ruby_create_double(m_dRes ? 1 : 0);
     }else if ( m_ResType == eArgError)
     {
         rho_ruby_raise_argerror( convertToStringA(m_strError).c_str());

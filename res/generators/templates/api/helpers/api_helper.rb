@@ -44,7 +44,7 @@ def api_generator_cpp_makeNativeTypeArg(gen_type)
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
         res = "const rho::Hashtable<rho::StringW, rho::StringW>&"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
-        res = "int"
+        res = "__int64"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
         res = "bool"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
