@@ -21,7 +21,12 @@ def api_generator_MakeJSMethodDef(module_method_name, is_static)
     method_name = 'js_'
     method_name += 's_' if is_static
     method_name += $cur_module.name + "_" + module_method_name
-    "    js_define_method(\"#{$cur_module.parent}:#{$cur_module.name}:#{module_method_name}\", #{method_name});"
+
+    parent = ''
+    $cur_module.parents.each do |p|
+        parent = parent + p + ":"
+    end
+    "    js_define_method(\"#{parent}#{$cur_module.name}:#{module_method_name}\", #{method_name});"
 end
 
 %>

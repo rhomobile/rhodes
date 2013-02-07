@@ -32,8 +32,14 @@ end
 
 void Init_RubyAPI_<%= $cur_module.name %>(void)
 {
-<% if $cur_module.parent.size > 0 %>
-    rb_mParent = rb_define_module("<%= $cur_module.parent %>");
+<% if $cur_module.parents.size > 0 %>
+    VALUE tmpParent = rho_ruby_get_NIL();
+    rb_mParent = rb_define_module("<%= $cur_module.parents[0] %>");
+    <% for i in 1..($cur_module.parents.size-1) %>
+    tmpParent = rb_mParent;
+    rb_mParent = rb_define_module_under(tmpParent, "<%= $cur_module.parents[i] %>");
+    <% end %>
+
 	rb_c<%= $cur_module.name %> = rb_define_class_under(rb_mParent, "<%= $cur_module.name %>", rb_cObject);
 <% else %>
     rb_mParent = rho_ruby_get_NIL();

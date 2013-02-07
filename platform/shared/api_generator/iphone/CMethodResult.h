@@ -39,4 +39,8 @@
 
 -(void) dealloc;
 
++ (BOOL)isBoolInsideNumber:(NSNumber*)number;
++ (BOOL)isFloatInsideNumber:(NSNumber*)number;
++ (BOOL)isIntInsideNumber:(NSNumber*)number;
+
 @end

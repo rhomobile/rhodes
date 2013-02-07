@@ -78,6 +78,21 @@
 }
 
 
++ (BOOL)isBoolInsideNumber:(NSNumber*)number {
+    return [number objCType][0] == 'c';
+}
+
++ (BOOL)isFloatInsideNumber:(NSNumber*)number {
+    return ([number objCType][0] == 'f') || ([number objCType][0] == 'd');
+}
+
++ (BOOL)isIntInsideNumber:(NSNumber*)number {
+    return [number objCType][0] == 'i';
+}
+
+
+
+
 -(void) dealloc {
     [mRubyCallbackURL release];
     [mJSCallbackUID release];

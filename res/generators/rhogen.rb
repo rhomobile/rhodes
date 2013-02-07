@@ -685,15 +685,11 @@ module Rhogen
       USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS = "PROPERTY_BAG_VIA_ACCESSORS"
       USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG = "ACCESSORS_VIA_PROPERTY_BAG"
 
-      ACCESS_MODE_FULL = "FULL"
-      ACCESS_MODE_READONLY = "READONLY"
-      ACCESS_MODE_WRITEONLY = "WRITEONLY"
-
       def initialize
         @name = ''
         @type = MethodParam::TYPE_STRING
         @native_name = ''
-        @access_mode = ACCESS_MODE_FULL
+        @readonly = false
         @generate_accessors = true
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
 
@@ -705,7 +701,7 @@ module Rhogen
       attr_accessor :name
       attr_accessor :type
       attr_accessor :native_name
-      attr_accessor :access_mode
+      attr_accessor :readonly
       attr_accessor :generate_accessors
       attr_accessor :use_property_bag_mode
       attr_accessor :getter
@@ -771,7 +767,9 @@ module Rhogen
     class ModuleItem
       def initialize
         @name = ''
-        @parent = ''
+
+        # array of parents from top to lowest
+        @parents = []
         @methods = []
         @properties = []
         @constants = []
@@ -784,7 +782,7 @@ module Rhogen
       end
 
       attr_accessor :name
-      attr_accessor :parent
+      attr_accessor :parents
       attr_accessor :methods
       attr_accessor :properties
       attr_accessor :constants
@@ -846,7 +844,8 @@ module Rhogen
 
          module_item.name = xml_module_item.attribute("name").to_s
          if xml_module_item.attribute("parent") != nil
-            module_item.parent = xml_module_item.attribute("parent").to_s
+            parents = xml_module_item.attribute("parent").to_s.split('.')
+            module_item.parents = parents
          end
 
          module_item.is_template_default_instance = (xml_module_item.elements["TEMPLATES/DEFAULT_INSTANCE"] != nil)
@@ -904,6 +903,9 @@ module Rhogen
             if xml_module_property.attribute("type") != nil
                module_property.type = xml_module_property.attribute("type").to_s.upcase
             end
+            if xml_module_property.attribute("readonly") != nil
+               module_property.readonly = xml_module_property.attribute("readonly").to_s.downcase != "false"
+            end
             if xml_module_property.attribute("usePropertyBag") != nil
                if xml_module_property.attribute("usePropertyBag").to_s.downcase == "none".downcase
                   module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_NONE
@@ -940,28 +942,29 @@ module Rhogen
               module_property.getter = getter_method
               module_item.methods << getter_method
 
-              setter_method = ModuleMethod.new()
+              if !module_property.readonly
+                setter_method = ModuleMethod.new()
 
-              setter_method.name = 'set' + module_property.native_name[0].upcase() + module_property.native_name[1..module_property.native_name.length-1]
+                setter_method.name = 'set' + module_property.native_name[0].upcase() + module_property.native_name[1..module_property.native_name.length-1]
 
-              setter_method.native_name = setter_method.name
+                setter_method.native_name = setter_method.name
 
-              param = MethodParam.new()
-              param.name = "value"
-              param.can_be_nil = false
-              param.type = module_property.type
-              setter_method.params = [param]
-              setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
-              setter_method.is_factory_method = false
-              setter_method.is_return_value = false
-              setter_method.access = ModuleMethod::ACCESS_INSTANCE
-              setter_method.has_callback = ModuleMethod::CALLBACK_NONE
-              setter_method.linked_property = module_property
-              setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
-              module_property.setter = setter_method
+                param = MethodParam.new()
+                param.name = "value"
+                param.can_be_nil = false
+                param.type = module_property.type
+                setter_method.params = [param]
+                setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+                setter_method.is_factory_method = false
+                setter_method.is_return_value = false
+                setter_method.access = ModuleMethod::ACCESS_INSTANCE
+                setter_method.has_callback = ModuleMethod::CALLBACK_NONE
+                setter_method.linked_property = module_property
+                setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
+                module_property.setter = setter_method
 
-              module_item.methods << setter_method
-
+                module_item.methods << setter_method
+              end
            end
         end
 
