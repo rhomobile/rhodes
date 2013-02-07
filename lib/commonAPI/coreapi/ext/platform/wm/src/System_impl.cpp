@@ -1,5 +1,9 @@
 #include "../generated/ISystem.h"
 
+namespace rho {
+
+using namespace apiGenerator;
+
 class CSystemImpl: public CModuleBase<ISystem>
 {
 public:
@@ -38,6 +42,13 @@ public:
     virtual void setLockWindowSize( bool value, CMethodResult& oResult){}
     virtual void getShowKeyboard(CMethodResult& oResult){}
     virtual void setShowKeyboard( bool value, CMethodResult& oResult){}
+    virtual void getFullScreen(CMethodResult& oResult){}
+    virtual void setFullScreen( bool value, CMethodResult& oResult){}
+    virtual void getLocalServerPort(CMethodResult& oResult){}
+    virtual void setLocalServerPort( int value, CMethodResult& oResult){}
+    virtual void getScreenAutoRotate(CMethodResult& oResult){}
+    virtual void setScreenAutoRotate( bool value, CMethodResult& oResult){}
+
     virtual void applicationInstall( const rho::StringW& applicationUrl, CMethodResult& oResult){}
     virtual void isApplicationInstalled( const rho::StringW& applicationName, CMethodResult& oResult){}
     virtual void applicationUninstall( const rho::StringW& applicationName, CMethodResult& oResult){}
@@ -88,3 +99,4 @@ rho::StringW CSystemSingleton::getInitialDefaultID()
     return L"1";
 }
 
+}

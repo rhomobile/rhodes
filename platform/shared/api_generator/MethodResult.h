@@ -31,6 +31,11 @@ public:
     }
 };*/
 
+namespace rho
+{
+namespace apiGenerator
+{
+
 class CMethodResult
 {
     rho::String m_strRubyCallback, m_strCallbackParam, m_strStringParam;
@@ -89,3 +94,6 @@ public:
 
     void callCallback();
 };
+
+}
+}
