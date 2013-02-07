@@ -56,6 +56,36 @@ def api_generator_cpp_makeNativeTypeArg(gen_type)
     res
 end
 
+def api_generator_jni_makeNativeType(gen_type)
+    
+    if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
+        res = "rho::String"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
+        res = "rho::Vector<rho::String>"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
+        res = "rho::Hashtable<rho::String, rho::String>"
+    else
+        raise "Unknown parameter type: #{gen_type}"     
+    end
+    
+    res
+end
+
+def api_generator_java_makeNativeType(gen_type)
+    
+    if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
+        res = "String"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
+        res = "List<String>"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
+        res = "Map<String, String>"
+    else
+        raise "Unknown parameter type: #{gen_type}"     
+    end
+    
+    res
+end
+
 def api_generator_MakeJSMethodDecl(module_name, module_method_name, is_static)
 
     method_name = 'js_'
