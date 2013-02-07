@@ -1281,7 +1281,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/shared", callback_shared);
 
 #ifndef RHO_NO_JS_API
-    m_httpServer->register_uri( "/system/js_api_entrypoint", rho_http_js_entry_point );
+    m_httpServer->register_uri( "/system/js_api_entrypoint", rho::apiGenerator::rho_http_js_entry_point );
 #endif
 
     m_httpServer->register_uri("/system/call_ruby_proc_callback", rho::net::rho_http_ruby_proc_callback );
