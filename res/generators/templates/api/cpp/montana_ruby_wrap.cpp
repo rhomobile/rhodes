@@ -61,7 +61,7 @@ static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::StringW, rho::
 <% if module_method.access == ModuleMethod::ACCESS_STATIC %>
 <%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, true)%>
 <% else %>
-static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(int argc, VALUE *argv, I<%= $cur_module.name %>* pObj)
+static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(int argc, VALUE *argv, I<%= $cur_module.name %>* pObj)
 <% end %>
 {
     CMethodResult oRes;
@@ -98,6 +98,48 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
             oRes.setStringParam(getStringFromValue(argv[<%= first_arg %>]));
 <% end %>
         }
+        else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
+        {
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toRuby();
+        }
+    }
+<% end %>
+
+<% if param.type == MethodParam::TYPE_INT %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
+    {
+        if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
+            arg<%= first_arg %> = rho_ruby_get_int(argv[<%= first_arg %>]);
+        else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
+        {
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toRuby();
+        }
+    }
+<% end %>
+
+<% if param.type == MethodParam::TYPE_BOOL %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
+    {
+        if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
+            arg<%= first_arg %> = rho_ruby_get_bool(argv[<%= first_arg %>]) ? true : false;
+        else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
+        {
+            oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
+            return oRes.toRuby();
+        }
+    }
+<% end %>
+
+<% if param.type == MethodParam::TYPE_DOUBLE %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
+    {
+        if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
+            arg<%= first_arg %> = rho_ruby_get_double(argv[<%= first_arg %>]);
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
             oRes.setArgError(L"Type error: argument " L<%= "\"#{first_arg}\"" %> L" should be " L<%= "\"#{param.type.downcase}\"" %> );
@@ -173,9 +215,9 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
     }
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
-    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &I<%= $cur_module.name %>::<%= module_method.name %>, <%= functor_params %> oRes );
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &I<%= $cur_module.name %>::<%= module_method.native_name %>, <%= functor_params %> oRes );
 <% else %>
-    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.name %>, <%= functor_params %> oRes );
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.native_name %>, <%= functor_params %> oRes );
 <% end %>
 
 <% if module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI %>
@@ -191,9 +233,9 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
         delete pFunctor;
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
-        pObj-><%= module_method.name %>( <%= functor_params %> oRes );
+        pObj-><%= module_method.native_name %>( <%= functor_params %> oRes );
 <% else %>
-        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.name %>( <%= functor_params %> oRes );
+        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.native_name %>( <%= functor_params %> oRes );
 <% end %>
 
     }
@@ -208,7 +250,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
     const char* szID = rho_ruby_get_object_id( obj );
     I<%= $cur_module.name %>* pObj =  C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
 
-    return _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(argc, argv, pObj);
+    return _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);
 }
 <% end %>
 
@@ -218,7 +260,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(in
     rho::StringW strDefaultID = C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
     I<%= $cur_module.name %>* pObj = C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(strDefaultID);
 
-    return _api_generator_<%= $cur_module.name %>_<%= module_method.name %>(argc, argv, pObj);
+    return _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);
 }
 <% end %>
 <% end %>

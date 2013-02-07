@@ -14,12 +14,12 @@ struct I<%= $cur_module.name %>
 
     params = ''
     module_method.params.each do |param|
-        params += " const #{api_generator_cpp_makeNativeType(param.type)}& #{param.name}, "
+        params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
     end
 
     params += 'CMethodResult& oResult'
 
-%>    virtual void <%= module_method.name%>(<%= params%>) = 0;
+%>    virtual void <%= module_method.native_name%>(<%= params%>) = 0;
 <% end %>
 };
 
@@ -32,12 +32,12 @@ struct I<%= $cur_module.name %>Singleton
 
     params = ''
     module_method.params.each do |param|
-        params += " const #{api_generator_cpp_makeNativeType(param.type)}& #{param.name}, "
+        params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
     end
 
     params += 'CMethodResult& oResult'
 
-%>    virtual void <%= module_method.name%>(<%= params%>) = 0;
+%>    virtual void <%= module_method.native_name%>(<%= params%>) = 0;
 <% end %>
 <% if $cur_module.is_template_default_instance %>
     virtual rho::StringW getDefaultID() = 0;

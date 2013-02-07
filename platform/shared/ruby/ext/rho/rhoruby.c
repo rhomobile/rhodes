@@ -527,6 +527,11 @@ long rho_ruby_get_int(VALUE val)
     return NUM2LONG(val);
 }
 
+double rho_ruby_get_double(VALUE val)
+{
+    return RFLOAT_VALUE(val);
+}
+
 VALUE rho_ruby_get_time(VALUE rDate)
 {
     VALUE res, cDate;

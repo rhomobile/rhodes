@@ -34,7 +34,7 @@
 
                 </VALUES>
             </PROPERTY>
- <!--
+            
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
                 <DESC>Is camera available on the device.</DESC>
             </PROPERTY>
@@ -125,7 +125,7 @@
             <PROPERTY name="showKeyboard" type="BOOLEAN">
                 <DESC>Display\hide software keyboard.</DESC>
             </PROPERTY>
--->
+
         </PROPERTIES>
     
         <METHODS>
@@ -175,7 +175,7 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-<!--
+
             <METHOD name="runApplication">
                 <DESC>Run an application.</DESC>
                 <PARAMS>
@@ -198,8 +198,8 @@
                     <DESC>Handle of created process.</DESC>                    
                 </RETURN>
             </METHOD>
--->
-            <METHOD name="unzipFile">
+
+            <METHOD name="unzipFile?">
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
@@ -268,7 +268,6 @@
                 </RETURN>
 
             </METHOD>
- <!--
             <METHOD name="setWindowFrame">
                 <DESC>Change application window position and size. Implemented only for Windows desktop.</DESC>
                 <PARAMS>
@@ -299,7 +298,7 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
- -->
+ 
         </METHODS>
         
         <USER_OVERVIEW>

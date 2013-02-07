@@ -680,6 +680,14 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="System.Process"
+			>
+			<File
+				RelativePath="..\..\process.xml"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
