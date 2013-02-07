@@ -1,7 +1,6 @@
 package com.rhomobile.rhodes.api;
 
-public interface IRhoApiSingleton {
+public interface IRhoApiDefaultId {
     String getDefaultID();
     void setDefaultID(String id);
-    void enumerate(IMethodResult res);
 }

@@ -1,12 +1,12 @@
 package com.rhomobile.rhodes.api;
 
-public abstract class RhoApiSingleton<IApi extends IRhoApiObject, IFactory extends IRhoApiFactory<IApi> >
-    implements IRhoApiSingleton {
+public abstract class RhoApiDefaultId<IApi extends IRhoApiObject, IFactory extends IRhoApiFactory<IApi> >
+    implements IRhoApiDefaultId {
 
     private IFactory mFactory;
     private IApi mDefault;
     
-    public RhoApiSingleton(IFactory factory) {
+    public RhoApiDefaultId(IFactory factory) {
         mFactory = factory;
     }
 
@@ -22,6 +22,5 @@ public abstract class RhoApiSingleton<IApi extends IRhoApiObject, IFactory exten
     }
 
     protected abstract String getInitialDefaultID();
-    public abstract void enumerate(IMethodResult res);
 
 }

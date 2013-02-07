@@ -1232,6 +1232,39 @@ module Rhogen
     end
 
 
+
+    template :android_java_obj_interface do |template|
+      template.source = 'platform/android/gen/src/IMontana.java'
+      template.destination = "platform/android/generated/src/com/#{$cur_module.parent.downcase}/#{$cur_module.name.downcase}/I#{$cur_module.name}.java"
+    end
+
+    template :android_java_factory_interface do |template|
+      template.source = 'platform/android/gen/src/IMontanaFactory.java'
+      template.destination = "platform/android/generated/src/com/#{$cur_module.parent.downcase}/#{$cur_module.name.downcase}/I#{$cur_module.name}Factory.java"
+    end
+
+    template :android_java_singleton_interface do |template|
+      template.source = 'platform/android/gen/src/IMontanaSingleton.java'
+      template.destination = "platform/android/generated/src/com/#{$cur_module.parent.downcase}/#{$cur_module.name.downcase}/I#{$cur_module.name}Singleton.java"
+    end
+
+    template :android_java_obj_base do |template|
+      template.source = 'platform/android/gen/src/MontanaBase.java'
+      template.destination = "platform/android/generated/src/com/#{$cur_module.parent.downcase}/#{$cur_module.name.downcase}/#{$cur_module.name}Base.java"
+    end
+
+    template :android_java_singleton_base do |template|
+      template.source = 'platform/android/gen/src/MontanaSingletonBase.java'
+      template.destination = "platform/android/generated/src/com/#{$cur_module.parent.downcase}/#{$cur_module.name.downcase}/#{$cur_module.name}SingletonBase.java"
+    end
+
+    template :android_java_factory_singleton do |template|
+      template.source = 'platform/android/gen/src/MontanaFactorySingleton.java'
+      template.destination = "platform/android/generated/src/com/#{$cur_module.parent.downcase}/#{$cur_module.name.downcase}/#{$cur_module.name}FactorySingleton.java"
+    end
+
+
+
     def attributes?
       self.attributes && !self.attributes.empty?
     end
