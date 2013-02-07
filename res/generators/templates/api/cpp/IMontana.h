@@ -4,6 +4,9 @@
 #include "api_generator/MethodResult.h"
 #include "api_generator/BaseClasses.h"
 
+<% $cur_module.parents.each do |parent| %>
+namespace <%= parent.downcase() %> {<%
+end %>
 ///////////////////////////////////////////////////////////
 struct I<%= $cur_module.name %>
 {
@@ -17,7 +20,7 @@ struct I<%= $cur_module.name %>
         params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
     end
 
-    params += 'CMethodResult& oResult'
+    params += 'rho::apiGenerator::CMethodResult& oResult'
 
 %>    virtual void <%= module_method.native_name%>(<%= params%>) = 0;
 <% end %>
@@ -35,7 +38,7 @@ struct I<%= $cur_module.name %>Singleton
         params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
     end
 
-    params += 'CMethodResult& oResult'
+    params += 'rho::apiGenerator::CMethodResult& oResult'
 
 %>    virtual void <%= module_method.native_name%>(<%= params%>) = 0;
 <% end %>
@@ -59,7 +62,7 @@ struct I<%= $cur_module.name %>Factory
 <% end %>
 };
 
-class C<%= $cur_module.name %>FactoryBase : public CModuleFactoryBase<I<%= $cur_module.name %>, I<%= $cur_module.name %>Singleton, I<%= $cur_module.name %>Factory>
+class C<%= $cur_module.name %>FactoryBase : public rho::apiGenerator::CModuleFactoryBase<I<%= $cur_module.name %>, I<%= $cur_module.name %>Singleton, I<%= $cur_module.name %>Factory>
 {
 protected:
     static rho::common::CAutoPtr<C<%= $cur_module.name %>FactoryBase> m_pInstance;
@@ -73,3 +76,7 @@ public:
 };
 
 extern "C" void Init_<%= $cur_module.name %>_API();
+
+<% $cur_module.parents.each do |parent| %>
+}<%
+end %>

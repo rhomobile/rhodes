@@ -1,5 +1,9 @@
 #include "../generated/I<%= name.camel_case %>.h"
 
+namespace rho {
+
+using namespace apiGenerator;
+
 class C<%= name.camel_case %>Impl: public CModuleBase<I<%= name.camel_case %>>
 {
 public:
@@ -66,7 +70,4 @@ rho::StringW C<%= name.camel_case %>Singleton::getInitialDefaultID()
     return arIDs[0];
 }
 
-/*
-extern "C" void Init_JSAPI_<%= name.camel_case %>()
-{
-}*/
+}

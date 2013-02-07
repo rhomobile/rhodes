@@ -3,6 +3,11 @@
 #include "common/RhoStd.h"
 #include "GeneratorQueue.h"
 
+namespace rho
+{
+namespace apiGenerator
+{
+
 template<typename ModuleClass>
 class CModuleBase: public ModuleClass
 {
@@ -135,3 +140,5 @@ public:
     virtual ModuleClass* createModuleByID(const rho::StringW& strID) = 0;
 
 };
+}
+}

@@ -20,7 +20,7 @@ VALUE getRuby_<%= $cur_module.name %>_Module();
 <% if $cur_module.is_template_default_instance %>
 VALUE rb_<%= $cur_module.name %>_s_default(VALUE klass)
 {
-    rho::StringW strDefaultID = C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
+    rho::StringW strDefaultID = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
 
     return rho_ruby_create_object_with_id( klass, convertToStringA(strDefaultID).c_str() );
 }
@@ -28,7 +28,7 @@ VALUE rb_<%= $cur_module.name %>_s_default(VALUE klass)
 VALUE rb_<%= $cur_module.name %>_s_setDefault(VALUE klass, VALUE valObj)
 {
     const char* szID = rho_ruby_get_object_id( valObj );
-    C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(convertToStringW(szID));
+    <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(convertToStringW(szID));
 
     return rho_ruby_get_NIL();
 }
@@ -61,10 +61,10 @@ static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::StringW, rho::
 <% if module_method.access == ModuleMethod::ACCESS_STATIC %>
 <%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, true)%>
 <% else %>
-static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(int argc, VALUE *argv, I<%= $cur_module.name %>* pObj)
+static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(int argc, VALUE *argv, <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>* pObj)
 <% end %>
 {
-    CMethodResult oRes;
+    rho::apiGenerator::CMethodResult oRes;
 
 <% if module_method.is_factory_method %>
     oRes.setRubyObjectClass(getRuby_<%= $cur_module.name %>_Module());
@@ -110,7 +110,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
     <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
-        if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
+        if ( rho_ruby_is_integer(argv[<%= first_arg %>]) )
             arg<%= first_arg %> = rho_ruby_get_int(argv[<%= first_arg %>]);
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
@@ -124,7 +124,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
     <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
-        if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
+        if ( rho_ruby_is_boolean(argv[<%= first_arg %>]) )
             arg<%= first_arg %> = rho_ruby_get_bool(argv[<%= first_arg %>]) ? true : false;
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
@@ -138,7 +138,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
     <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
     if ( argc > <%= first_arg %> )
     {
-        if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
+        if ( rho_ruby_is_double(argv[<%= first_arg %>]) )
             arg<%= first_arg %> = rho_ruby_get_double(argv[<%= first_arg %>]);
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
         {
@@ -215,19 +215,19 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
     }
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
-    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &I<%= $cur_module.name %>::<%= module_method.native_name %>, <%= functor_params %> oRes );
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &<%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>::<%= module_method.native_name %>, <%= functor_params %> oRes );
 <% else %>
-    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &I<%= $cur_module.name %>Singleton::<%= module_method.native_name %>, <%= functor_params %> oRes );
+    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &<%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>Singleton::<%= module_method.native_name %>, <%= functor_params %> oRes );
 <% end %>
 
 <% if module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI %>
     rho_wm_impl_performOnUiThread( pFunctor );
 <% elsif (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE) || (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED) %>
-    C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
+    <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
 <% else %>
 
     if ( bUseCallback )
-        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
+        <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
     else
     {
         delete pFunctor;
@@ -235,7 +235,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
         pObj-><%= module_method.native_name %>( <%= functor_params %> oRes );
 <% else %>
-        C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.native_name %>( <%= functor_params %> oRes );
+        <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.native_name %>( <%= functor_params %> oRes );
 <% end %>
 
     }
@@ -248,7 +248,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
 <%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC)%>
 {
     const char* szID = rho_ruby_get_object_id( obj );
-    I<%= $cur_module.name %>* pObj =  C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+    <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>* pObj =  <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
 
     return _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);
 }
@@ -257,8 +257,8 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
 <% if $cur_module.is_template_default_instance && module_method.access == ModuleMethod::ACCESS_INSTANCE%>
 <%= api_generator_MakeRubyMethodDecl($cur_module.name + "_def", module_method, true)%>
 {
-    rho::StringW strDefaultID = C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
-    I<%= $cur_module.name %>* pObj = C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(strDefaultID);
+    rho::StringW strDefaultID = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
+    <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>* pObj = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(strDefaultID);
 
     return _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);
 }

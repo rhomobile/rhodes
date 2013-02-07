@@ -38,10 +38,10 @@
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
                 <DESC>Is camera available on the device.</DESC>
             </PROPERTY>
-            <PROPERTY name="screenWidth" type="INTEGER" readOnly="true">
+            <PROPERTY name="screenWidth" type="INTEGER" readOnly="true" default="800">
                 <DESC>Screen width in logical pixels (used for set coordinates).</DESC>
             </PROPERTY>
-            <PROPERTY name="screenHeight" type="INTEGER" readOnly="true">
+            <PROPERTY name="screenHeight" type="INTEGER" readOnly="true" deafult="600">
                 <DESC>Screen height in logical pixels (used for set coordinates).</DESC>
             </PROPERTY>
             <PROPERTY name="realScreenWidth" type="INTEGER" readOnly="true">
@@ -119,11 +119,20 @@
             <PROPERTY name="httpProxyURI" type="STRING">
                 <DESC>Client HTTP proxy.</DESC>
             </PROPERTY>
-            <PROPERTY name="lockWindowSize" type="BOOLEAN">
+            <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
                 <DESC>Lock/unlock the window size change by the user. Implemented only for Windows desktop.</DESC>
             </PROPERTY>
             <PROPERTY name="showKeyboard" type="BOOLEAN">
                 <DESC>Display\hide software keyboard.</DESC>
+            </PROPERTY>
+            <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
+                <DESC>Use full screen mode.</DESC>
+            </PROPERTY>
+            <PROPERTY name="localServerPort" type="INTEGER" default="8080">
+                <DESC>Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.</DESC>
+            </PROPERTY>
+            <PROPERTY name="screenAutoRotate" type="BOOLEAN" default="true">
+                <DESC>Screen auto rotate.</DESC>
             </PROPERTY>
 
         </PROPERTIES>
@@ -199,7 +208,7 @@
                 </RETURN>
             </METHOD>
 
-            <METHOD name="unzipFile?">
+            <METHOD name="unzipFile">
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">

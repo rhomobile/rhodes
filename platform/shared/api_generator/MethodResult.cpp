@@ -5,6 +5,11 @@
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
 
+namespace rho
+{
+namespace apiGenerator
+{
+
 using namespace rho::json;
 using namespace rho::common;
 
@@ -166,4 +171,7 @@ CMethodResult::CMethodRubyValue::~CMethodRubyValue()
 void CMethodResult::setRubyCallbackProc(unsigned long oRubyCallbackProc)
 { 
     m_pRubyCallbackProc = new CMethodRubyValue(oRubyCallbackProc);
+}
+
+}
 }

@@ -84,3 +84,12 @@ def api_generator_CreateSimpleRubyType(gen_type, value)
     
     res
 end
+
+def api_generator_cpp_MakeNamespace(parents)
+    namespace = ""
+    parents.each do |parent|
+        namespace += parent.downcase() + "::"
+    end
+    
+    namespace
+end

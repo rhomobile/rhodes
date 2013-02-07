@@ -687,6 +687,46 @@
 				RelativePath="..\..\process.xml"
 				>
 			</File>
+			<Filter
+				Name="generated"
+				>
+				<File
+					RelativePath=".\generated\IProcess.h"
+					>
+				</File>
+				<File
+					RelativePath=".\generated\Process_js_wrap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generated\Process_ruby_wrap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generated\ProcessFactoryBase.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="shared"
+				>
+				<Filter
+					Name="generated"
+					>
+					<File
+						RelativePath="..\..\shared\generated\process_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\process_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\process_ruby_api.c"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>
