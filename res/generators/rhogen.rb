@@ -1232,7 +1232,7 @@ module Rhogen
     end
 
 
-
+=begin
     template :android_java_obj_interface do |template|
       template.source = 'platform/android/gen/src/IMontana.java'
       template.destination = "platform/android/generated/src/com/#{$cur_module.parent.downcase}/#{$cur_module.name.downcase}/I#{$cur_module.name}.java"
@@ -1262,7 +1262,7 @@ module Rhogen
       template.source = 'platform/android/gen/src/MontanaFactorySingleton.java'
       template.destination = "platform/android/generated/src/com/#{$cur_module.parent.downcase}/#{$cur_module.name.downcase}/#{$cur_module.name}FactorySingleton.java"
     end
-
+=end
 
 
     def attributes?
