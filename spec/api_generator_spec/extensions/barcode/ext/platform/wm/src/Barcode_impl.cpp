@@ -1,5 +1,9 @@
 #include "../generated/IBarcode.h"
 
+namespace rho {
+
+using namespace apiGenerator;
+
 class CBarcodeImpl: public CModuleBase<IBarcode>
 {
 public:
@@ -66,7 +70,4 @@ rho::StringW CBarcodeSingleton::getInitialDefaultID()
     return arIDs[0];
 }
 
-/*
-extern "C" void Init_JSAPI_Barcode()
-{
-}*/
+}
