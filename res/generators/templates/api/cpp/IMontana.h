@@ -30,7 +30,7 @@ end; end %>
     end
 
     params += 'rho::apiGenerator::CMethodResult& oResult'
-
+    module_method.cached_data["cpp_params"] = params
 %>    virtual void <%= module_method.native_name%>(<%= params%>) = 0;
 <% end %>
 };

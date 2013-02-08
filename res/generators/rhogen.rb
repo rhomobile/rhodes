@@ -787,6 +787,7 @@ module Rhogen
         @has_instance_methods = false
         @has_factory_methods = false
         @is_property_bag_limit_to_only_declared_properties = false
+        @use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
       end
 
       attr_accessor :name
@@ -800,6 +801,7 @@ module Rhogen
       attr_accessor :has_instance_methods
       attr_accessor :has_factory_methods
       attr_accessor :is_property_bag_limit_to_only_declared_properties
+      attr_accessor :use_property_bag_mode
     end
 
     TEMPLATE_NAME = "TEMPLATE_NAME"
@@ -932,6 +934,7 @@ module Rhogen
                end
                if xml_module_property.attribute("usePropertyBag").to_s.downcase == "PropertyBagViaAccessors".downcase
                   module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
+                  module_item.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
                end
             else
               if xml_properties.attribute("usePropertyBag") != nil
@@ -943,6 +946,7 @@ module Rhogen
                  end
                  if xml_properties.attribute("usePropertyBag").to_s.downcase == "PropertyBagViaAccessors".downcase
                     module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
+                    module_item.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
                  end
               end
             end

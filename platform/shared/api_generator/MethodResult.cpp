@@ -67,16 +67,16 @@ rho::String CMethodResult::toJSON()
     return strRes;
 }
 
-rho::StringW CMethodResult::toString()
+rho::StringW CMethodResult::toStringW()
 {
     if ( m_ResType == eString)
         return m_strRes;
     else if ( m_ResType == eBool)
         return convertToStringW(m_bRes?1:0);
     else if ( m_ResType == eInt)
-        return convertToStringW((m_nRes);
+        return convertToStringW(m_nRes);
     else if ( m_ResType == eDouble)
-        return convertToStringW((m_dRes);
+        return convertToStringW(m_dRes);
 
     return L"";
 }

@@ -1,26 +1,27 @@
 #include "ISystem.h"
+#include "common/StringConverter.h"
 
 
 namespace rho {
 
-using namespace ::rho::apiGenerator;
+using namespace rho::apiGenerator;
 class CSystemBase: public ISystem
 {
 protected:
 
-    ::rho::Hashtable<::rho::StringW, ::rho::StringW> m_hashProps;
+    rho::Hashtable<::rho::StringW, ::rho::StringW> m_hashProps;
 
 public:
     CSystemBase(){}
 
 
-    virtual void getProperty( const ::rho::StringW& propertyName, CMethodResult& oResult)
+    virtual void getProperty( const rho::StringW& propertyName, CMethodResult& oResult)
     {
         oResult.set(m_hashProps[propertyName]);
     }
-    virtual void getProperties( const ::rho::Vector<::rho::StringW>& arrayofNames, CMethodResult& oResult)
+    virtual void getProperties( const rho::Vector<::rho::StringW>& arrayofNames, CMethodResult& oResult)
     {
-        ::rho::Hashtable<::rho::StringW, ::rho::StringW> res;
+        rho::Hashtable<::rho::StringW, rho::StringW> res;
         oResult.setCollectionMode(true);
         for ( int i = 0; i < (int)arrayofNames.size(); i++ )
         {
@@ -29,7 +30,7 @@ public:
             if ( oResult.isError() )
                 break;
 
-            res[arrayofNames[i]] = oResult.toString();
+            res[arrayofNames[i]] = oResult.toStringW();
         }
 
         oResult.setCollectionMode(false);
@@ -42,13 +43,57 @@ public:
     {
         oResult.set(m_hashProps);
     }
-    virtual void setProperty( const ::rho::StringW& propertyName,  const ::rho::StringW& propertyValue, CMethodResult& /*oResult*/)
+    virtual void setProperty( const rho::StringW& propertyName,  const rho::StringW& propertyValue, CMethodResult& oResult)
     {
-        m_hashProps.put(propertyName, propertyValue);
+
+        if (false){}
+
+
+        else if (_wcsicmp(L"applicationIconBadge",propertyName.c_str()) == 0){
+
+            //setApplicationIconBadge(propertyValue, oResult);
+
+        }
+
+        else if (_wcsicmp(L"httpProxyURI",propertyName.c_str()) == 0){
+
+            //setHttpProxyURI(propertyValue, oResult);
+
+        }
+
+        else if (_wcsicmp(L"lockWindowSize",propertyName.c_str()) == 0){
+
+            //setLockWindowSize(propertyValue, oResult);
+
+        }
+
+        else if (_wcsicmp(L"showKeyboard",propertyName.c_str()) == 0){
+
+            //setShowKeyboard(propertyValue, oResult);
+
+        }
+
+        else if (_wcsicmp(L"fullScreen",propertyName.c_str()) == 0){
+
+            //setFullScreen(propertyValue, oResult);
+
+        }
+
+        else if (_wcsicmp(L"localServerPort",propertyName.c_str()) == 0){
+
+            //setLocalServerPort(propertyValue, oResult);
+
+        }
+
+        else if (_wcsicmp(L"screenAutoRotate",propertyName.c_str()) == 0){
+
+            //setScreenAutoRotate(propertyValue, oResult);
+
+        }
     }
-    virtual void setProperties( const ::rho::Hashtable<::rho::StringW, ::rho::StringW>& propertyMap, CMethodResult& oResult)
+    virtual void setProperties( const rho::Hashtable<::rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult)
     {
-        for ( ::rho::Hashtable<::rho::StringW, ::rho::StringW>::const_iterator it = propertyMap.begin();  it != propertyMap.end(); ++it )
+        for ( rho::Hashtable<rho::StringW, rho::StringW>::const_iterator it = propertyMap.begin();  it != propertyMap.end(); ++it )
         {
             setProperty( it->first, it->second, oResult );
             if ( oResult.isError() )
@@ -60,12 +105,15 @@ public:
         m_hashProps.clear();
     }
 
+
+
+
 };
 
-class CSystemFactoryBase : public ::rho::apiGenerator::CModuleFactoryBase<ISystem, ISystemSingleton, ISystemFactory>
+class CSystemFactoryBase : public CModuleFactoryBase<ISystem, ISystemSingleton, ISystemFactory>
 {
 protected:
-    static ::rho::common::CAutoPtr<CSystemFactoryBase> m_pInstance;
+    static rho::common::CAutoPtr<CSystemFactoryBase> m_pInstance;
 
 public:
 
