@@ -27,6 +27,8 @@
 #ifndef rhorunner_WebViewCInterface_h
 #define rhorunner_WebViewCInterface_h
 
+#include "ruby/ext/rho/rhoruby.h"
+
 class WebViewCInterface
 {
 public:
@@ -34,6 +36,8 @@ public:
     ~WebViewCInterface( void );
     
     bool init( void );
+    
+    VALUE performAction( const char* actionName, const char* params);
     
 private:
     void * self;

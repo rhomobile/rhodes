@@ -24,6 +24,7 @@
 		5CF8DBC710B1D45C00247AB4 /* constants.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF8DBC110B1D45C00247AB4 /* constants.h */; };
 		5CF8DBCA10B1D45C00247AB4 /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CF8DBC410B1D45C00247AB4 /* socket.c */; };
 		5CF8DBCB10B1D45C00247AB4 /* sockport.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CF8DBC510B1D45C00247AB4 /* sockport.h */; };
+		AEC6427016C535F50012C269 /* scriptvm_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = AEC6426F16C535F50012C269 /* scriptvm_wrap.c */; };
 		BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD28516011608C9A003DE4E9 /* ringtones_wrap.c */; };
 		BD807BB01259E25A00A4E4B2 /* calendar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD807BAF1259E25A00A4E4B2 /* calendar_wrap.c */; };
 		BD807BC31259E37900A4E4B2 /* event_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = BD807BC11259E37900A4E4B2 /* event_wrap.c */; };
@@ -145,6 +146,7 @@
 		5CF8DBC110B1D45C00247AB4 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = ext/socket/constants.h; sourceTree = "<group>"; };
 		5CF8DBC410B1D45C00247AB4 /* socket.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = socket.c; path = ext/socket/socket.c; sourceTree = "<group>"; };
 		5CF8DBC510B1D45C00247AB4 /* sockport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sockport.h; path = ext/socket/sockport.h; sourceTree = "<group>"; };
+		AEC6426F16C535F50012C269 /* scriptvm_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = scriptvm_wrap.c; path = ext/scriptvm/scriptvm_wrap.c; sourceTree = "<group>"; };
 		BD28516011608C9A003DE4E9 /* ringtones_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ringtones_wrap.c; path = ext/ringtones/ringtones_wrap.c; sourceTree = "<group>"; };
 		BD807BAF1259E25A00A4E4B2 /* calendar_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = calendar_wrap.c; path = ext/calendar/calendar_wrap.c; sourceTree = "<group>"; };
 		BD807BC11259E37900A4E4B2 /* event_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = event_wrap.c; path = ext/calendar/event_wrap.c; sourceTree = "<group>"; };
@@ -343,6 +345,14 @@
 			name = socket;
 			sourceTree = "<group>";
 		};
+		AEC6427116C535FF0012C269 /* scriptvm */ = {
+			isa = PBXGroup;
+			children = (
+				AEC6426F16C535F50012C269 /* scriptvm_wrap.c */,
+			);
+			name = scriptvm;
+			sourceTree = "<group>";
+		};
 		BD28515B11608C73003DE4E9 /* ringtones */ = {
 			isa = PBXGroup;
 			children = (
@@ -509,29 +519,30 @@
 		F5E360B00EB6A63B00226287 /* ext */ = {
 			isa = PBXGroup;
 			children = (
-				FA522E4F12DEA20200AB55CC /* nativeview */,
+				F516687C0FFD399C0079F023 /* alert */,
+				5C8EE86311220EBB0005C20D /* asynchttp */,
 				FACC2097123A5F0B0088A447 /* bluetooth */,
 				BDB09B76124FB14C004B628C /* calendar */,
-				FA291E8011FF2A5F0096AC39 /* signature */,
-				5C8EE86311220EBB0005C20D /* asynchttp */,
-				5CF8DBBE10B1D40400247AB4 /* socket */,
+				F5B8FACD0F44E8F900C9AF85 /* camera */,
+				46056D131031DC7E00C21967 /* datetimepicker */,
+				F5E360BA0EB6A6C400226287 /* geolocation */,
 				F5FD0A3910619E5300B7B8ED /* mapview */,
 				46AF502B103DE480006E02E1 /* nativebar */,
+				FA522E4F12DEA20200AB55CC /* nativeview */,
 				BD9E5E0E1186B4270053049C /* navbar */,
-				46056D131031DC7E00C21967 /* datetimepicker */,
-				46A4ABBC101A25DD00AF74C7 /* rhoconf */,
-				F516687C0FFD399C0079F023 /* alert */,
-				5C7652810FD3E3C500CB43FD /* stringio */,
-				F5B8FACD0F44E8F900C9AF85 /* camera */,
-				F5C61CA60F3CFE5700207621 /* webview */,
 				F58E7FE50F008A8500E46829 /* phonebook */,
-				BD28515B11608C73003DE4E9 /* ringtones */,
 				5C043EB60EF7B7CF0014E5C6 /* rho */,
-				F5177F150EE5B5D9000EA1A0 /* system */,
-				F5E360C30EB6A76500226287 /* syncengine */,
-				F5E360C00EB6A71100226287 /* strscan */,
+				46A4ABBC101A25DD00AF74C7 /* rhoconf */,
+				BD28515B11608C73003DE4E9 /* ringtones */,
+				AEC6427116C535FF0012C269 /* scriptvm */,
+				FA291E8011FF2A5F0096AC39 /* signature */,
+				5CF8DBBE10B1D40400247AB4 /* socket */,
 				F5E360BD0EB6A6F000226287 /* sqlite3 */,
-				F5E360BA0EB6A6C400226287 /* geolocation */,
+				5C7652810FD3E3C500CB43FD /* stringio */,
+				F5E360C00EB6A71100226287 /* strscan */,
+				F5E360C30EB6A76500226287 /* syncengine */,
+				F5177F150EE5B5D9000EA1A0 /* system */,
+				F5C61CA60F3CFE5700207621 /* webview */,
 			);
 			name = ext;
 			sourceTree = "<group>";
@@ -823,6 +834,7 @@
 				FA5AC04E14681D5900B147A2 /* encdb.c in Sources */,
 				FA5AC04F14681D5900B147A2 /* iso_8859_9.c in Sources */,
 				FA5AC05014681D5900B147A2 /* iso_8859_1.c in Sources */,
+				AEC6427016C535F50012C269 /* scriptvm_wrap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
