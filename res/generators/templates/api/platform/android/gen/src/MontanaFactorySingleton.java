@@ -1,4 +1,4 @@
-package com.<%= $cur_module.parent.downcase %>.<%= $cur_module.name.downcase %>;
+package <%= api_generator_java_makePackageName($cur_module) %>;
 
 public class <%= $cur_module.name %>FactorySingleton {
     private static I<%= $cur_module.name %>Factory mFactory;
