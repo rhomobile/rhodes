@@ -907,12 +907,21 @@ module Rhogen
             module_property.native_name = module_property.name.split(/[^a-zA-Z0-9\_]/).map{|w| w}.join("")
             if xml_module_property.attribute("generateAccessors") != nil
                module_property.generate_accessors =  xml_module_property.attribute("generateAccessors").to_s != "false"
+            else
+                if xml_properties.attribute("generateAccessors") != nil
+                   module_property.generate_accessors =  xml_properties.attribute("generateAccessors").to_s != "false"
+                end
             end
+
             if xml_module_property.attribute("type") != nil
                module_property.type = xml_module_property.attribute("type").to_s.upcase
             end
             if xml_module_property.attribute("readOnly") != nil
-               module_property.readonly = xml_module_property.attribute("readOnly").to_s.downcase != "false"
+              module_property.readonly = xml_module_property.attribute("readOnly").to_s.downcase != "false"
+            else
+              if xml_properties.attribute("readOnly") != nil
+                 module_property.readonly = xml_properties.attribute("readOnly").to_s.downcase != "false"
+              end
             end
             if xml_module_property.attribute("usePropertyBag") != nil
                if xml_module_property.attribute("usePropertyBag").to_s.downcase == "none".downcase
@@ -924,6 +933,18 @@ module Rhogen
                if xml_module_property.attribute("usePropertyBag").to_s.downcase == "PropertyBagViaAccessors".downcase
                   module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
                end
+            else
+              if xml_properties.attribute("usePropertyBag") != nil
+                 if xml_properties.attribute("usePropertyBag").to_s.downcase == "none".downcase
+                    module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_NONE
+                 end
+                 if xml_properties.attribute("usePropertyBag").to_s.downcase == "accessorsViaPropertyBag".downcase
+                    module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
+                 end
+                 if xml_properties.attribute("usePropertyBag").to_s.downcase == "PropertyBagViaAccessors".downcase
+                    module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
+                 end
+              end
             end
 
             module_item.properties << module_property
@@ -978,6 +999,7 @@ module Rhogen
 
 
          #methods
+         xml_methods_item = xml_module_item.elements["METHODS"]
          xml_module_item.elements.each("METHODS/METHOD") do |xml_module_method|
             module_method = ModuleMethod.new()
 
@@ -999,7 +1021,16 @@ module Rhogen
                else
                    module_item.has_instance_methods = true
                end
+            else
+               if xml_methods_item.attribute("access") != nil
+                 if xml_methods_item.attribute("access").to_s.downcase == "static"
+                     module_method.access = ModuleMethod::ACCESS_STATIC
+                 else
+                     module_item.has_instance_methods = true
+                 end
+               end
             end
+
             if xml_module_method.attribute("factory") != nil
                if xml_module_method.attribute("factory").to_s.downcase != "false"
                    module_method.is_factory_method = true
@@ -1019,17 +1050,46 @@ module Rhogen
                if xml_module_method.attribute("run_in_thread").to_s.downcase == "ui".downcase
                    module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
                end
+            else
+              if xml_methods_item.attribute("run_in_thread") != nil
+                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "none".downcase
+                     module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+                 end
+                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "module".downcase
+                     module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_MODULE
+                 end
+                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "separate".downcase
+                     module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_SEPARATED
+                 end
+                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "ui".downcase
+                     module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
+                 end
+               end
             end
+
+
             if xml_module_method.attribute("has_callback") != nil
               if xml_module_method.attribute("has_callback").to_s.downcase == "none".downcase
-                  module_method.has_callback = ModuleMethod::CALLBACK_NONE
+                 module_method.has_callback = ModuleMethod::CALLBACK_NONE
               end
-               if xml_module_method.attribute("has_callback").to_s.downcase == "mandatory".downcase
+              if xml_module_method.attribute("has_callback").to_s.downcase == "mandatory".downcase
+                 module_method.has_callback = ModuleMethod::CALLBACK_MANDATORY
+              end
+              if xml_module_method.attribute("has_callback").to_s.downcase == "optional".downcase
+                 module_method.has_callback = ModuleMethod::CALLBACK_OPTIONAL
+              end
+            else
+              if xml_methods_item.attribute("has_callback") != nil
+                if xml_methods_item.attribute("has_callback").to_s.downcase == "none".downcase
+                   module_method.has_callback = ModuleMethod::CALLBACK_NONE
+                end
+                if xml_methods_item.attribute("has_callback").to_s.downcase == "mandatory".downcase
                    module_method.has_callback = ModuleMethod::CALLBACK_MANDATORY
-               end
-               if xml_module_method.attribute("has_callback").to_s.downcase == "optional".downcase
+                end
+                if xml_methods_item.attribute("has_callback").to_s.downcase == "optional".downcase
                    module_method.has_callback = ModuleMethod::CALLBACK_OPTIONAL
-               end
+                end
+              end
             end
 
             if xml_module_method.elements["RETURN"] != nil
