@@ -68,6 +68,22 @@
   <PropertyGroup>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\extensions\barcode1\$(Configuration)\</OutDir>
+    <IntDir>$(TEMP_FILES_DIR)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\extensions\barcode1\$(Configuration)\</OutDir>
+    <IntDir>$(TEMP_FILES_DIR)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\extensions\barcode1\$(Configuration)\</OutDir>
+    <IntDir>$(TEMP_FILES_DIR)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\extensions\barcode1\$(Configuration)\</OutDir>
+    <IntDir>$(TEMP_FILES_DIR)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
