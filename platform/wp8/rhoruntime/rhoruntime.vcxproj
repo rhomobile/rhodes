@@ -243,7 +243,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\curl\lib\libcurl.vcxproj">
+    <ProjectReference Include="..\..\shared\curl\lib\libcurl.vcxproj">
       <Project>{87ee9da4-de1e-4448-8324-183c98dca588}</Project>
     </ProjectReference>
     <ProjectReference Include="..\rholib\rholib.vcxproj">
