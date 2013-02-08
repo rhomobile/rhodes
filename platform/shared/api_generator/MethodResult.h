@@ -81,7 +81,7 @@ public:
 
     void set(const rho::Hashtable<rho::StringW, rho::StringW>& res){ m_hashStrRes = res; m_ResType = eStringHash; callCallback(); }
     void set(const rho::StringW& res){ m_strRes = res;  m_ResType = eString; callCallback(); }
-    void set(const wchar_t* res){ m_strRes = res;  m_ResType = eString; callCallback(); }
+    void set(rho::StringW::const_pointer res){ m_strRes = res;  m_ResType = eString; callCallback(); }
     void set(const rho::Vector<rho::StringW>& res){ m_arStrRes = res;  m_ResType = eStringArray; callCallback(); }
     void set(bool res){ m_bRes = res;  m_ResType = eBool; callCallback(); }
     void set(int64 res){ m_nRes = res;  m_ResType = eInt; callCallback(); }
