@@ -67,6 +67,20 @@ rho::String CMethodResult::toJSON()
     return strRes;
 }
 
+rho::StringW CMethodResult::toString()
+{
+    if ( m_ResType == eString)
+        return m_strRes;
+    else if ( m_ResType == eBool)
+        return convertToStringW(m_bRes?1:0);
+    else if ( m_ResType == eInt)
+        return convertToStringW((m_nRes);
+    else if ( m_ResType == eDouble)
+        return convertToStringW((m_dRes);
+
+    return L"";
+}
+
 VALUE CMethodResult::toRuby()
 {
     if ( m_ResType == eStringArray )
@@ -144,6 +158,9 @@ public:
 
 void CMethodResult::callCallback()
 {
+    if ( m_bCollectionMode )
+        return;
+
     if ( m_ResType != eNone && m_strRubyCallback.length() != 0 )
     {
         rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");

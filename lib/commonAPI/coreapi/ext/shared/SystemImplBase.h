@@ -1,15 +1,13 @@
-#include "../platform/wm/generated/ISystem.h"
+#include "../platform/wm/generated/SystemBase.h"
 
 namespace rho {
 
 using namespace apiGenerator;
 
-class CSystemImplBase: public CModuleBase<ISystem>
+class CSystemImplBase: public CSystemBase
 {
 public:
-    CSystemImplBase(const rho::StringW& strID): CModuleBase<ISystem>(strID)
-    {
-    }
+    CSystemImplBase(): CSystemBase(){}
     static CSystemImplBase* getInstance();
 
     virtual void getPlatform(CMethodResult& oResult);

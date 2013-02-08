@@ -1,4 +1,4 @@
-#include "ISystem.h"
+#include "SystemBase.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY

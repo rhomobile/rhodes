@@ -1,13 +1,13 @@
-#include "../generated/I<%= name.camel_case %>.h"
+#include "../generated/<%= name.camel_case %>Base.h"
 
 namespace rho {
 
 using namespace apiGenerator;
 
-class C<%= name.camel_case %>Impl: public CModuleBase<I<%= name.camel_case %>>
+class C<%= name.camel_case %>Impl: public C<%= name.camel_case %>Base
 {
 public:
-    C<%= name.camel_case %>Impl(const rho::StringW& strID): CModuleBase<I<%= name.camel_case %>>(strID)
+    C<%= name.camel_case %>Impl(const rho::StringW& strID): C<%= name.camel_case %>Base()
     {
         m_hashProps.put( L"display", L"LCD");
         m_hashProps.put( L"sound", L"Dolby");

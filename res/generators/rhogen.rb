@@ -1265,8 +1265,13 @@ module Rhogen
     end
 
     template :wm_api1 do |template|
-      template.source = 'cpp/MontanaFactoryBase.cpp'
-      template.destination = "platform/wm/generated/#{$cur_module.name}FactoryBase.cpp"
+      template.source = 'cpp/MontanaBase.h'
+      template.destination = "platform/wm/generated/#{$cur_module.name}Base.h"
+    end
+
+    template :wm_api4 do |template|
+      template.source = 'cpp/MontanaBase.cpp'
+      template.destination = "platform/wm/generated/#{$cur_module.name}Base.cpp"
     end
 
     template :wm_api2 do |template|
@@ -1285,8 +1290,13 @@ module Rhogen
     end
 
     template :wp8_api1 do |template|
-      template.source = 'cpp/MontanaFactoryBase.cpp'
-      template.destination = "platform/wp8/generated/#{$cur_module.name}FactoryBase.cpp"
+      template.source = 'cpp/MontanaBase.h'
+      template.destination = "platform/wp8/generated/#{$cur_module.name}Base.h"
+    end
+
+    template :wp8_api4 do |template|
+      template.source = 'cpp/MontanaBase.cpp'
+      template.destination = "platform/wp8/generated/#{$cur_module.name}Base.cpp"
     end
 
     template :wp8_api2 do |template|

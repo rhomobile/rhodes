@@ -1,4 +1,4 @@
-#include "ISystem.h"
+#include "SystemBase.h"
 #include "api_generator\js_helpers.h"
 
 #include "logging/RhoLog.h"

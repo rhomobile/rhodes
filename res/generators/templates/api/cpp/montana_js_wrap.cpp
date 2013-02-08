@@ -1,4 +1,4 @@
-#include "I<%= $cur_module.name %>.h"
+#include "<%= $cur_module.name %>Base.h"
 #include "api_generator\js_helpers.h"
 
 #include "logging/RhoLog.h"

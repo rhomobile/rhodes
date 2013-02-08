@@ -105,20 +105,5 @@ struct ISystemFactory
 
 };
 
-class CSystemFactoryBase : public rho::apiGenerator::CModuleFactoryBase<ISystem, ISystemSingleton, ISystemFactory>
-{
-protected:
-    static rho::common::CAutoPtr<CSystemFactoryBase> m_pInstance;
-
-public:
-
-    static void setInstance(CSystemFactoryBase* pInstance){ m_pInstance = pInstance; }
-    static CSystemFactoryBase* getInstance(){ return m_pInstance; }
-
-    static ISystemSingleton* getSystemSingletonS(){ return getInstance()->getModuleSingleton(); }
-};
-
-extern "C" void Init_System_API();
-
 
 }

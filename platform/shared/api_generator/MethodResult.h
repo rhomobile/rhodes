@@ -54,6 +54,7 @@ class CMethodResult
     ETypes m_ResType;
 
     unsigned long m_oRubyObjectClass;
+    bool m_bCollectionMode;
 
     struct CMethodRubyValue
     {
@@ -68,7 +69,7 @@ class CMethodResult
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
 public:
 
-    CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false){}
+    CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(false){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     void setRubyCallbackProc(unsigned long oRubyCallbackProc);
@@ -96,7 +97,12 @@ public:
         callCallback();
     }
 
+    bool isError(){ return m_ResType == eError || m_ResType == eArgError; }
+
     rho::Vector<rho::StringW>& getStringArray(){ return m_arStrRes; }
+
+    rho::StringW toString();
+    void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}
 
     unsigned long toRuby();
     rho::String toJSON();
