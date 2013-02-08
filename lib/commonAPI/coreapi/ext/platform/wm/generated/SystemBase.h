@@ -51,43 +51,57 @@ public:
 
         else if (_wcsicmp(L"applicationIconBadge",propertyName.c_str()) == 0){
 
-            //setApplicationIconBadge(propertyValue, oResult);
+            int64 arg;
+            rho::common::convertFromStringW(propertyValue.c_str(), arg);
+            setApplicationIconBadge( arg, oResult);
 
         }
 
         else if (_wcsicmp(L"httpProxyURI",propertyName.c_str()) == 0){
 
-            //setHttpProxyURI(propertyValue, oResult);
+            rho::StringW arg;
+            rho::common::convertFromStringW(propertyValue.c_str(), arg);
+            setHttpProxyURI( arg, oResult);
 
         }
 
         else if (_wcsicmp(L"lockWindowSize",propertyName.c_str()) == 0){
 
-            //setLockWindowSize(propertyValue, oResult);
+            bool arg;
+            rho::common::convertFromStringW(propertyValue.c_str(), arg);
+            setLockWindowSize( arg, oResult);
 
         }
 
         else if (_wcsicmp(L"showKeyboard",propertyName.c_str()) == 0){
 
-            //setShowKeyboard(propertyValue, oResult);
+            bool arg;
+            rho::common::convertFromStringW(propertyValue.c_str(), arg);
+            setShowKeyboard( arg, oResult);
 
         }
 
         else if (_wcsicmp(L"fullScreen",propertyName.c_str()) == 0){
 
-            //setFullScreen(propertyValue, oResult);
+            bool arg;
+            rho::common::convertFromStringW(propertyValue.c_str(), arg);
+            setFullScreen( arg, oResult);
 
         }
 
         else if (_wcsicmp(L"localServerPort",propertyName.c_str()) == 0){
 
-            //setLocalServerPort(propertyValue, oResult);
+            int64 arg;
+            rho::common::convertFromStringW(propertyValue.c_str(), arg);
+            setLocalServerPort( arg, oResult);
 
         }
 
         else if (_wcsicmp(L"screenAutoRotate",propertyName.c_str()) == 0){
 
-            //setScreenAutoRotate(propertyValue, oResult);
+            bool arg;
+            rho::common::convertFromStringW(propertyValue.c_str(), arg);
+            setScreenAutoRotate( arg, oResult);
 
         }
     }
