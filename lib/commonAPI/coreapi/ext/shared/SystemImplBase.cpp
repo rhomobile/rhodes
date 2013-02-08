@@ -42,19 +42,19 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
 #else //!RHODES_EMULATOR
 
 #if defined(OS_MACOSX)
-	oResult.set( L"APPLE" );
+	oResult.set( PLATFORM_IOS );
 #elif defined(OS_WINDOWS_DESKTOP)
-	oResult.set( L"WINDOWS_DESKTOP" );
+	oResult.set( PLATFORM_WINDOWS_DESKTOP );
 #elif defined(WINDOWS_PLATFORM)
 #if defined(OS_WP8)
-	oResult.set( L"WP8" );
+	oResult.set( PLATFORM_WP8 );
 #else
-	oResult.set( L"WINDOWS" );
+	oResult.set( PLATFORM_WM_CE );
 #endif
 #elif defined(OS_SYMBIAN)
 	oResult.set( L"SYMBIAN" );
 #elif defined(OS_ANDROID)
-    oResult.set( L"ANDROID" );
+    oResult.set( PLATFORM_ANDROID );
 #elif defined(OS_LINUX)
     oResult.set( L"LINUX" );
 #else
