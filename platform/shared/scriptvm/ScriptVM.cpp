@@ -33,21 +33,22 @@ extern "C" {
 
 #define GETVM(id) rho_get_RhoClassFactory()->createScriptVM(id)
     
-bool rho_scriptvm_load_script(int vmId, const rho::String& buffer, const rho::String& tag)
+bool rho_javascriptvm_load_script(const char* buffer, const char* tag)
 {
     RAWTRACEC("rho_scriptvm", "rho_scriptvm_load_script");
-    return GETVM(vmId)->loadScript(buffer, tag);
-}
-bool rho_scriptvm_unload_script(int vmId, const rho::String& tag)
-{
-    RAWTRACEC("rho_scriptvm", "rho_scriptvm_unload_script");
-    return GETVM(vmId)->unloadScript( tag);
+    return GETVM(rho::common::VM_JAVASCRIPT)->loadScript(buffer, tag);
 }
     
-void rho_scriptvm_perform_action(int vmId, const rho::String& actionName, const rho::String& params, rho::String& result)
+bool rho_javascriptvm_unload_script(const char* tag)
+{
+    RAWTRACEC("rho_scriptvm", "rho_scriptvm_unload_script");
+    return GETVM(rho::common::VM_JAVASCRIPT)->unloadScript( tag);
+}
+    
+void rho_javascriptvm_perform_action(const char* actionName, const char* params)
 {
     RAWTRACEC("rho_scriptvm", "rho_scriptvm_perform_action");
-    result = GETVM(vmId)->performAction(actionName, params);
+    GETVM(rho::common::VM_JAVASCRIPT)->performAction(actionName, params);
 }
 
 }

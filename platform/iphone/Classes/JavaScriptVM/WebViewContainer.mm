@@ -45,12 +45,20 @@ bool WebViewCInterface::init( void )
     return (self);
 }
 
+VALUE WebViewCInterface::performAction( const char* actionName, const char* params) {
+    assert(self);
+    
+    NSString* s = [(id)self executeJS:[NSString stringWithUTF8String:actionName] parameter:[NSString stringWithUTF8String:params]];
+    
+    return rho_ruby_create_string([s UTF8String]);
+}
+
 @synthesize javascriptBridge = _bridge;
 
 - (id) init {
     self = [super init];
     if (self != nil) {
-        UIWebView* webView = [UIWebView alloc];
+        UIWebView* webView = [[UIWebView alloc] initWithFrame:CGRectZero];
         
         [WebViewJavascriptBridge enableLogging];
         
@@ -79,9 +87,12 @@ bool WebViewCInterface::init( void )
     [super dealloc];
 }
 
-/*- (void)executeJS:(NSString*)function parameter:(NSString*)parameter {
-    
-}*/
+- (NSString*)executeJS:(NSString*)function parameter:(NSString*)parameter
+{
+    NSString* s =@"<#string#>";
+    [_bridge callHandler:function ];
+	return s;
+}
 
 - (void)sendMessage:(id)sender {
     [_bridge send:@"A string sent from ObjC to JS" responseCallback:^(id response) {

@@ -53,8 +53,7 @@ struct IRhoScriptVM
 }
 
 extern "C" {
-    
-    bool rho_scriptvm_load_script(int vmId, const rho::String& buffer, const rho::String& tag);
-    bool rho_scriptvm_unload_script(int vmId, const rho::String& tag);
-    void rho_scriptvm_perform_action(int vmId, const rho::String& actionName, const rho::String& params, rho::String& result);
+    bool rho_javascriptvm_load_script(const char* buffer, const char* tag);
+    bool rho_javascriptvm_unload_script(const char* tag);
+    void rho_javascriptvm_perform_action(const char* actionName, const char* params);
 }

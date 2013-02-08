@@ -35,6 +35,6 @@
 
 @property (strong, nonatomic) WebViewJavascriptBridge *javascriptBridge;
 
-//- (void)executeJS:(NSString*)function parameter:(NSString*)parameter;
+- (NSString*)executeJS:(NSString*)function parameter:(NSString*)parameter;
 
 @end
