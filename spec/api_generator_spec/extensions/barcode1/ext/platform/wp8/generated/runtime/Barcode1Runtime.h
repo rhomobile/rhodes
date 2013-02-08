@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-//#include "api_generator/MethodResult.h"
-#include "../generated/IBarcode1.h"
+#include "../IBarcode1.h"
 
 namespace Barcode1Runtime
 {
@@ -25,9 +24,9 @@ namespace Barcode1Runtime
 	};
 
 	public ref class Barcode1RuntimeComponent sealed: public IBarcode1Impl
-    {
-    public:
-        Barcode1RuntimeComponent(IBarcode1Impl^ impl);
+	{
+	public:
+		Barcode1RuntimeComponent(IBarcode1Impl^ impl);
 
 		virtual void enable(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ propertyMap, IMethodResult^ oResult);
 		virtual void start(IMethodResult^ oResult);
@@ -37,5 +36,5 @@ namespace Barcode1Runtime
 
 	private:
 		IBarcode1Impl^ _impl;
-    };
+	};
 }

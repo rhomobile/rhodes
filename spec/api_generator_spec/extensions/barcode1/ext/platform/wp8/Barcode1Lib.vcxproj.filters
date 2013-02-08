@@ -11,17 +11,17 @@
     <Filter Include="wp8">
       <UniqueIdentifier>{c5e11966-bbc5-4200-bd1d-963ecd33c58c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="wp8\generated">
-      <UniqueIdentifier>{6190c737-81f8-4307-9473-dab43bcb081b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="wp8\generated\javascript">
-      <UniqueIdentifier>{34d3e0a0-8b16-4778-ae36-12bbb2122368}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="wp8\generated\ruby">
-      <UniqueIdentifier>{4cb44028-11a8-4bc1-a372-bfab217ebf07}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shared\generated">
       <UniqueIdentifier>{e385e312-d9a0-4097-8630-ed93f91838f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wp8\javascript">
+      <UniqueIdentifier>{34d3e0a0-8b16-4778-ae36-12bbb2122368}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wp8\lib">
+      <UniqueIdentifier>{505150d6-e3d2-4e7e-bc95-b3214d69ac36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wp8\ruby">
+      <UniqueIdentifier>{4cb44028-11a8-4bc1-a372-bfab217ebf07}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -35,26 +35,26 @@
       <Filter>shared\generated</Filter>
     </ClCompile>
     <ClCompile Include="generated\javascript\barcode1_js_wrap.cpp">
-      <Filter>wp8\generated\javascript</Filter>
+      <Filter>wp8\javascript</Filter>
     </ClCompile>
     <ClCompile Include="generated\ruby\barcode1_ruby_wrap.cpp">
-      <Filter>wp8\generated\ruby</Filter>
+      <Filter>wp8\ruby</Filter>
     </ClCompile>
-    <ClCompile Include="generated\Barcode1FactoryBase.cpp">
-      <Filter>wp8\generated</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Barcode1_impl.cpp">
+    <ClCompile Include="generated\lib\Barcode1_impl.cpp">
       <Filter>wp8</Filter>
     </ClCompile>
-    <ClCompile Include="generated\MethodResultImpl.cpp">
+    <ClCompile Include="generated\lib\Barcode1FactoryBase.cpp">
+      <Filter>wp8</Filter>
+    </ClCompile>
+    <ClCompile Include="generated\lib\MethodResultImpl.cpp">
       <Filter>wp8</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="generated\IBarcode1.h">
-      <Filter>wp8\generated</Filter>
+      <Filter>wp8</Filter>
     </ClInclude>
-    <ClInclude Include="generated\MethodResultImpl.h">
+    <ClInclude Include="generated\lib\MethodResultImpl.h">
       <Filter>wp8</Filter>
     </ClInclude>
   </ItemGroup>

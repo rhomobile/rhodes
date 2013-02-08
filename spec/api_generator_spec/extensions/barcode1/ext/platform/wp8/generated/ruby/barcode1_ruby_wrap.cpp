@@ -10,6 +10,7 @@
 
 using namespace rho;
 using namespace rho::common;
+using namespace rho::apiGenerator;
 
 extern "C"
 {

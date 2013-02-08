@@ -83,11 +83,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Barcode1.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Barcode1_impl.cs" />
+    <Compile Include="src\Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Barcode1Runtime\Barcode1Runtime.vcxproj">
+    <ProjectReference Include="Barcode1Runtime.vcxproj">
       <Project>{381501A9-792A-4ED3-A06D-B069D2836AC8}</Project>
       <Name>Barcode1Runtime</Name>
     </ProjectReference>

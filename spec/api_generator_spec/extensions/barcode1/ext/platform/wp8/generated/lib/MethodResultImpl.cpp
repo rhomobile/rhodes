@@ -3,7 +3,7 @@
 using namespace Barcode1Runtime;
 
 CMethodResultImpl::CMethodResultImpl(int64 native):
-	oResult((CMethodResult*)native)
+	oResult((rho::apiGenerator::CMethodResult*)native)
 {
 }
 
