@@ -639,6 +639,14 @@
 				Name="generated"
 				>
 				<File
+					RelativePath=".\generated\Barcode_js_wrap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generated\Barcode_ruby_wrap.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\generated\BarcodeFactoryBase.cpp"
 					>
 				</File>
@@ -646,22 +654,6 @@
 					RelativePath=".\generated\IBarcode.h"
 					>
 				</File>
-				<Filter
-					Name="javascript"
-					>
-					<File
-						RelativePath=".\generated\javascript\Barcode_js_wrap.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="ruby"
-					>
-					<File
-						RelativePath=".\generated\ruby\Barcode_ruby_wrap.cpp"
-						>
-					</File>
-				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
