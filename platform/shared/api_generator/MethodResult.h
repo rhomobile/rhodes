@@ -101,7 +101,7 @@ public:
 
     rho::Vector<rho::StringW>& getStringArray(){ return m_arStrRes; }
 
-    rho::StringW toString();
+    rho::StringW toStringW();
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}
 
     unsigned long toRuby();

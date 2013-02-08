@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="Coreapi"
 	ProjectGUID="{E0343F80-50EA-0130-78EC-3CAEC51BD50E}"
+	RootNamespace="Coreapi"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -1097,7 +1098,7 @@
 							Name="VCCustomBuildTool"
 							Description="Generate API"
 							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
-							Outputs="generated"
+							Outputs="$(InputDir)shared/generated"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1107,7 +1108,8 @@
 							Name="VCCustomBuildTool"
 							Description="Generate API"
 							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
-							Outputs="generated"
+							AdditionalDependencies=""
+							Outputs="$(InputDir)shared/generated"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -1117,7 +1119,7 @@
 							Name="VCCustomBuildTool"
 							Description="Generate API"
 							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
-							Outputs="generated"
+							Outputs="$(InputDir)shared/generated"
 						/>
 					</FileConfiguration>
 				</File>

@@ -10,7 +10,7 @@
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 
-        <PROPERTIES usePropertyBag="mapNamesToAccessors">
+        <PROPERTIES usePropertyBag="PropertyBagViaAccessors"> <!-- accessorsViaPropertyBag -->
             <!-- list of properties supported by property bag methods getPops(), setProps() -->
             <DESC>object supports this properties bla bla bla :</DESC>
             <PROPERTY name="platform" type="STRING" readOnly="true">
