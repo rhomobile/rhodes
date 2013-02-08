@@ -64,6 +64,8 @@ class SettingsController < Rho::RhoController
     port = SPEC_LOCAL_SERVER_PORT
 
     if(Rho::RhoConfig.exist?('push_pin') && Rho::RhoConfig.push_pin != '')
+	  puts "RhoConfig: #{Rho::RhoConfig}"
+		
       puts "Sending device_id: #{Rho::RhoConfig.push_pin}"
       Rho::AsyncHttp.get :url => "http://#{host}:#{port}?device_id=#{Rho::RhoConfig.push_pin}"
     else
