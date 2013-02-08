@@ -128,27 +128,4 @@ void CSystemImplBase::getRegistrySetting( const rho::StringW& keyPath, CMethodRe
 void CSystemImplBase::setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, CMethodResult& oResult){}
 void CSystemImplBase::setWindowPosition( __int64 x,  __int64 y, CMethodResult& oResult){}
 
-////////////////////////////////////////////////////////////////////////
-class CSystemSingleton: public CModuleSingletonBase<ISystemSingleton>
-{
-public:
-    ~CSystemSingleton(){}
-    rho::StringW getInitialDefaultID(){return L"1";}
-};
-
-class CSystemFactory: public CSystemFactoryBase
-{
-public:
-    ~CSystemFactory(){}
-
-    ISystemSingleton* createModuleSingleton(){ return new CSystemSingleton(); }
-    ISystem* createModuleByID(const rho::StringW& strID){ return new CSystemImplBase(strID); }
-};
-
-extern "C" void Init_System_extension()
-{
-    CSystemFactory::setInstance( new CSystemFactory() );
-    Init_System_API();
-}
-
 }
