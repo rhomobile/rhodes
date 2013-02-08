@@ -631,7 +631,11 @@ module Rhogen
     end
 
     def destination_root
-        File.dirname(@@xml_filepath).gsub("\\", "/")        
+        if File.dirname(@@xml_filepath)!= '.'
+            File.dirname(@@xml_filepath).gsub("\\", "/")
+        else
+            self.class.superclass.instance_method(:destination_root).bind(self).call
+        end
     end
 
     desc <<-DESC

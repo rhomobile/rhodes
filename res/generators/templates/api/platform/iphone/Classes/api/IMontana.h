@@ -74,7 +74,7 @@ end %>
 -(NSString*) getDefaultID;
 -(void) setDefaultID:(NSString*)defaultID;
 -(NSString*)getInitialDefaultID;
-<% end %>
+    <% end %>
 
 <% $cur_module.methods.each do |module_method|
   if module_method.access == ModuleMethod::ACCESS_STATIC

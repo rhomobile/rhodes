@@ -7,11 +7,34 @@
 
 extern VALUE getRuby_<%= $cur_module.name %>_Module();
 
-<% $iphone_types = {}
+<%
+$iphone_types = {}
+$iphone_types["BOOLEAN"] = 'BOOL'
+$iphone_types["INTEGER"] = 'int'
+$iphone_types["FLOAT"] = 'float'
 $iphone_types["STRING"] = 'NSString*'
 $iphone_types["ARRAY"] = 'NSArray*'
 $iphone_types["HASH"] = 'NSDictionary*'
-$iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
+$iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>'
+
+$iphone_extract_param_prefix = {}
+$iphone_extract_param_prefix["BOOLEAN"] = '[((NSNumber*)'
+$iphone_extract_param_prefix["INTEGER"] = '[((NSNumber*)'
+$iphone_extract_param_prefix["FLOAT"] = '[((NSNumber*)'
+$iphone_extract_param_prefix["STRING"] = ''
+$iphone_extract_param_prefix["ARRAY"] = ''
+$iphone_extract_param_prefix["HASH"] = ''
+$iphone_extract_param_prefix["SELF_INSTANCE"] = ''
+
+$iphone_extract_param_suffix = {}
+$iphone_extract_param_suffix["BOOLEAN"] = ') boolValue]'
+$iphone_extract_param_suffix["INTEGER"] = ') intValue]'
+$iphone_extract_param_suffix["FLOAT"] = ') floatValue]'
+$iphone_extract_param_suffix["STRING"] = ''
+$iphone_extract_param_suffix["ARRAY"] = ''
+$iphone_extract_param_suffix["HASH"] = ''
+$iphone_extract_param_suffix["SELF_INSTANCE"] = ''
+%>
 
 @interface <%= $cur_module.name %>_RubyValueFactory : NSObject<IMethodResult_RubyObjectFactory> {
 }
@@ -130,13 +153,17 @@ static rb_<%= $cur_module.name %>_<%= module_method.name %>_caller* our_<%= $cur
     <%
     method_line = "[objItem "+module_method.name
     if module_method.params.size > 0
-        method_line = method_line + ":(#{$iphone_types[module_method.params[0].type]})params[0] "
+        method_line = method_line + ":(#{$iphone_types[module_method.params[0].type]})#{$iphone_extract_param_prefix[module_method.params[0].type]}params[0]#{$iphone_extract_param_suffix[module_method.params[0].type]} "
         for i in 1..(module_method.params.size-1)
-            method_line = method_line + "#{module_method.params[i].name}:(#{$iphone_types[module_method.params[i].type]})params[#{i}] "
+            method_line = method_line + "#{module_method.params[i].name}:(#{$iphone_types[module_method.params[i].type]})#{$iphone_extract_param_prefix[module_method.params[i].type]}params[#{i}]#{$iphone_extract_param_suffix[module_method.params[i].type]} "
         end
-        method_line = method_line + "methodResult:methodResult "
+        if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
+            method_line = method_line + "methodResult:methodResult "
+        end
     else
-        method_line = method_line + ":methodResult "
+        if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
+            method_line = method_line + ":methodResult "
+        end
     end
     method_line = method_line + "];"
     %>

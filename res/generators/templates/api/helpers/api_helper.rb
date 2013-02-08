@@ -65,7 +65,7 @@ def api_generator_jni_makeNativeType(gen_type)
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
         res = "rho::Hashtable<rho::String, rho::String>"
     else
-        raise "Unknown parameter type: #{gen_type}"     
+        #raise "Unknown parameter type: #{gen_type}"
     end
     
     res
@@ -80,7 +80,7 @@ def api_generator_java_makeNativeType(gen_type)
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
         res = "Map<String, String>"
     else
-        raise "Unknown parameter type: #{gen_type}"     
+        #raise "Unknown parameter type: #{gen_type}"
     end
     
     res
