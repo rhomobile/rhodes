@@ -10,6 +10,15 @@ end %>
 ///////////////////////////////////////////////////////////
 struct I<%= $cur_module.name %>
 {
+//constants
+<% $cur_module.constants.each do |module_constant|
+    if module_constant.type == MethodParam::TYPE_STRING %>
+    static const wchar_t <%= module_constant.name %>[];// L"<%= module_constant.value %>" <%
+else %>
+    static const <%= api_generator_cpp_makeNativeType(module_constant.type) %> <%= module_constant.name %> = <%= module_constant.value %>; <%
+end; end %>
+
+//methods
     virtual ~I<%= $cur_module.name %>(){}
 
 <% $cur_module.methods.each do |module_method|
