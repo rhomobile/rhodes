@@ -679,6 +679,36 @@
 		<File
 			RelativePath="..\..\new_barcode.xml"
 			>
+			<FileConfiguration
+				Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="API Generator"
+					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+					Outputs="generated"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="API Generator"
+					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+					Outputs="generated"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|MC3000c50b (ARMV4I)"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="API Generator"
+					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+					Outputs="generated"
+				/>
+			</FileConfiguration>
 		</File>
 	</Files>
 	<Globals>
