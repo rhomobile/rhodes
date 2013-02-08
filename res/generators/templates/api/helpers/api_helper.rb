@@ -123,3 +123,23 @@ def api_generator_cpp_MakeNamespace(parents)
     
     namespace
 end
+
+def api_generator_java_makePackageName(cur_module)
+    res = "com."
+    cur_module.parents.each do |parent|
+        res += parent.downcase() + "."
+    end
+    res += cur_module.name.downcase
+    
+    res
+end
+
+def api_generator_java_makePackagePath(cur_module)
+    res = "com/"
+    cur_module.parents.each do |parent|
+        res += parent.downcase() + "/"
+    end
+    res += cur_module.name.downcase
+    
+    res
+end

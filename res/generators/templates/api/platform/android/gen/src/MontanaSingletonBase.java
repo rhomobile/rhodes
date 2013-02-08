@@ -1,4 +1,4 @@
-package com.<%= $cur_module.parent.downcase %>.<%= $cur_module.name.downcase %>;
+package <%= api_generator_java_makePackageName($cur_module) %>;
 
 <% if $cur_module.is_template_default_instance %>
 import com.rhomobile.rhodes.api.RhoApiDefaultId;

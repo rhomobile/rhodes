@@ -248,7 +248,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStri
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
 
-    CMethodResult result;
+    rho::apiGenerator::CMethodResult result;
     result.setRubyCallback(url);
     result.setCallbackParam(data);
     result.set(res);
@@ -263,7 +263,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStri
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
 
-    CMethodResult result;
+    rho::apiGenerator::CMethodResult result;
     result.setRubyCallback(url);
     result.setCallbackParam(data);
     result.set(*pRes);
@@ -277,7 +277,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStri
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
 
-    CMethodResult result;
+    rho::apiGenerator::CMethodResult result;
     result.setRubyCallback(url);
     result.setCallbackParam(data);
     result.set(*pRes);
