@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Barcode1", "Barcode1.vcxproj", "{93453E28-E84A-40C4-BD6A-51A8373D7044}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Barcode1Lib", "Barcode1Lib.vcxproj", "{93453E28-E84A-40C4-BD6A-51A8373D7044}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Barcode1Impl", "Barcode1Impl\Barcode1Impl.csproj", "{58F9EAE5-A858-4450-AD69-5484BA24EDE2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Barcode1Impl", "Barcode1Impl.csproj", "{58F9EAE5-A858-4450-AD69-5484BA24EDE2}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Barcode1Runtime", "Barcode1Runtime\Barcode1Runtime.vcxproj", "{381501A9-792A-4ED3-A06D-B069D2836AC8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Barcode1Runtime", "Barcode1Runtime.vcxproj", "{381501A9-792A-4ED3-A06D-B069D2836AC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

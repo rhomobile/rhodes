@@ -22,8 +22,8 @@ android:
   version: 2.3.3
   capabilities:
   - push
-  push:
-    notifications: none
-    sender: 888725080924
+#  push:
+#    notifications: none
+#    sender: 888725080924
 
-extensions: ["json", "rhoconnect-client"]
+extensions: ["json", "rhoconnect-client", "rhoconnect-push"]

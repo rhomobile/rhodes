@@ -314,6 +314,7 @@ int rho_sys_unzip_file(const char* szZipPath, const char* psw)
     return res;
 }
 
+//TODO_REMOVE : rho_rhodesapp_getplatform
 #ifdef RHODES_EMULATOR
 
 const char* rho_rhodesapp_getplatform()
@@ -347,7 +348,6 @@ const char* rho_rhodesapp_getplatform()
     return "UNKNOWN";
 }    
 #else
-
 const char* rho_rhodesapp_getplatform()
 {
 #if defined(OS_MACOSX)

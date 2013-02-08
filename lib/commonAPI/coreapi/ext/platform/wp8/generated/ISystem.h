@@ -4,60 +4,79 @@
 #include "api_generator/MethodResult.h"
 #include "api_generator/BaseClasses.h"
 
+
+namespace rho {
 ///////////////////////////////////////////////////////////
 struct ISystem
 {
+//constants
+
+    static const wchar_t PLATFORM_WM_CE[];// L"WINDOWS" 
+    static const wchar_t PLATFORM_ANDROID[];// L"ANDROID" 
+    static const wchar_t PLATFORM_IOS[];// L"APPLE" 
+    static const wchar_t PLATFORM_WP8[];// L"WP8" 
+    static const wchar_t PLATFORM_WINDOWS_DESKTOP[];// L"WINDOWS_DESKTOP" 
+    static const wchar_t SCREEN_PORTRAIT[];// L"portrait" 
+    static const wchar_t SCREEN_LANDSCAPE[];// L"landscape" 
+
+//methods
     virtual ~ISystem(){}
 
-    virtual void getPlatform(CMethodResult& oResult) = 0;
-    virtual void getHasCamera(CMethodResult& oResult) = 0;
-    virtual void getScreenWidth(CMethodResult& oResult) = 0;
-    virtual void getScreenHeight(CMethodResult& oResult) = 0;
-    virtual void getRealScreenWidth(CMethodResult& oResult) = 0;
-    virtual void getRealScreenHeight(CMethodResult& oResult) = 0;
-    virtual void getScreenOrientation(CMethodResult& oResult) = 0;
-    virtual void getPpiX(CMethodResult& oResult) = 0;
-    virtual void getPpiY(CMethodResult& oResult) = 0;
-    virtual void getPhoneNumber(CMethodResult& oResult) = 0;
-    virtual void getDeviceOwnerEmail(CMethodResult& oResult) = 0;
-    virtual void getDeviceOwnerName(CMethodResult& oResult) = 0;
-    virtual void getDeviceId(CMethodResult& oResult) = 0;
-    virtual void getPhoneId(CMethodResult& oResult) = 0;
-    virtual void getDeviceName(CMethodResult& oResult) = 0;
-    virtual void getOsVersion(CMethodResult& oResult) = 0;
-    virtual void getLocale(CMethodResult& oResult) = 0;
-    virtual void getCountry(CMethodResult& oResult) = 0;
-    virtual void getIsEmulator(CMethodResult& oResult) = 0;
-    virtual void getHasCalendar(CMethodResult& oResult) = 0;
-    virtual void getIsMotorolaDevice(CMethodResult& oResult) = 0;
-    virtual void getOemInfo(CMethodResult& oResult) = 0;
-    virtual void getUuid(CMethodResult& oResult) = 0;
-    virtual void getApplicationIconBadge(CMethodResult& oResult) = 0;
-    virtual void setApplicationIconBadge( int value, CMethodResult& oResult) = 0;
-    virtual void getHttpProxyURI(CMethodResult& oResult) = 0;
-    virtual void setHttpProxyURI( const rho::StringW& value, CMethodResult& oResult) = 0;
-    virtual void getLockWindowSize(CMethodResult& oResult) = 0;
-    virtual void setLockWindowSize( bool value, CMethodResult& oResult) = 0;
-    virtual void getShowKeyboard(CMethodResult& oResult) = 0;
-    virtual void setShowKeyboard( bool value, CMethodResult& oResult) = 0;
-    virtual void applicationInstall( const rho::StringW& applicationUrl, CMethodResult& oResult) = 0;
-    virtual void isApplicationInstalled( const rho::StringW& applicationName, CMethodResult& oResult) = 0;
-    virtual void applicationUninstall( const rho::StringW& applicationName, CMethodResult& oResult) = 0;
-    virtual void openUrl( const rho::StringW& url, CMethodResult& oResult) = 0;
-    virtual void runApplication( const rho::StringW& appName,  const rho::StringW& params,  bool blockingCall, CMethodResult& oResult) = 0;
-    virtual void unzipFile( const rho::StringW& localPathToZip, CMethodResult& oResult) = 0;
-    virtual void zipFile( const rho::StringW& localPathToZip,  const rho::StringW& localPathToFile,  const rho::StringW& password, CMethodResult& oResult) = 0;
-    virtual void zipFiles( const rho::StringW& localPathToZip,  const rho::StringW& basePath,  const rho::Vector<rho::StringW>& filePathsToZip,  const rho::StringW& password, CMethodResult& oResult) = 0;
-    virtual void setRegistrySetting( const rho::StringW& keyPath,  const rho::StringW& keyValue, CMethodResult& oResult) = 0;
-    virtual void getRegistrySetting( const rho::StringW& keyPath, CMethodResult& oResult) = 0;
-    virtual void setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult) = 0;
-    virtual void setWindowPosition( int x,  int y, CMethodResult& oResult) = 0;
-    virtual void getProperty( const rho::StringW& propertyName, CMethodResult& oResult) = 0;
-    virtual void getProperties( const rho::Vector<rho::StringW>& arrayofNames, CMethodResult& oResult) = 0;
-    virtual void getAllProperties(CMethodResult& oResult) = 0;
-    virtual void setProperty( const rho::StringW& propertyName,  const rho::StringW& propertyValue, CMethodResult& oResult) = 0;
-    virtual void setProperties( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult) = 0;
-    virtual void clearAllProperties(CMethodResult& oResult) = 0;
+    virtual void getPlatform(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getHasCamera(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getScreenWidth(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getScreenHeight(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getRealScreenWidth(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getRealScreenHeight(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getScreenOrientation(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getPpiX(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getPpiY(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getPhoneNumber(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getDeviceOwnerEmail(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getDeviceOwnerName(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getDeviceId(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getPhoneId(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getDeviceName(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getOsVersion(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getLocale(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getCountry(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getIsEmulator(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getHasCalendar(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getIsMotorolaDevice(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getOemInfo(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getUuid(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getApplicationIconBadge(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setApplicationIconBadge( int64 value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getHttpProxyURI(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setHttpProxyURI( const rho::StringW& value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getLockWindowSize(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setLockWindowSize( bool value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getShowKeyboard(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setShowKeyboard( bool value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getFullScreen(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setFullScreen( bool value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getLocalServerPort(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setLocalServerPort( int64 value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getScreenAutoRotate(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setScreenAutoRotate( bool value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void applicationInstall( const rho::StringW& applicationUrl, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void isApplicationInstalled( const rho::StringW& applicationName, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void applicationUninstall( const rho::StringW& applicationName, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void openUrl( const rho::StringW& url, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void runApplication( const rho::StringW& appName,  const rho::StringW& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void unzipFile( const rho::StringW& localPathToZip, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void zipFile( const rho::StringW& localPathToZip,  const rho::StringW& localPathToFile,  const rho::StringW& password, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void zipFiles( const rho::StringW& localPathToZip,  const rho::StringW& basePath,  const rho::Vector<rho::StringW>& filePathsToZip,  const rho::StringW& password, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setRegistrySetting( const rho::StringW& keyPath,  const rho::StringW& keyValue, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getRegistrySetting( const rho::StringW& keyPath, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setWindowFrame( int64 x,  int64 y,  int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setWindowPosition( int64 x,  int64 y, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getProperty( const rho::StringW& propertyName, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getProperties( const rho::Vector<rho::StringW>& arrayofNames, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getAllProperties(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setProperty( const rho::StringW& propertyName,  const rho::StringW& propertyValue, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setProperties( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void clearAllProperties(rho::apiGenerator::CMethodResult& oResult) = 0;
 
 };
 
@@ -86,7 +105,7 @@ struct ISystemFactory
 
 };
 
-class CSystemFactoryBase : public CModuleFactoryBase<ISystem, ISystemSingleton, ISystemFactory>
+class CSystemFactoryBase : public rho::apiGenerator::CModuleFactoryBase<ISystem, ISystemSingleton, ISystemFactory>
 {
 protected:
     static rho::common::CAutoPtr<CSystemFactoryBase> m_pInstance;
@@ -100,3 +119,6 @@ public:
 };
 
 extern "C" void Init_System_API();
+
+
+}
