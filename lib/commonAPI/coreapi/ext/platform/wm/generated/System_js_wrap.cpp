@@ -1624,7 +1624,7 @@ rho::String js_System_setApplicationIconBadge(rho::json::CJSONArray& argv, const
 
 
 
-    int arg0;
+    int64 arg0;
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
@@ -2474,7 +2474,7 @@ rho::String js_System_setLocalServerPort(rho::json::CJSONArray& argv, const rho:
 
 
 
-    int arg0;
+    int64 arg0;
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
@@ -4122,7 +4122,7 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-    int arg0;
+    int64 arg0;
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
@@ -4159,7 +4159,7 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-    int arg1;
+    int64 arg1;
     if ( argc > 1 )
     {
         if ( argv[1].isString() )
@@ -4196,7 +4196,7 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-    int arg2;
+    int64 arg2;
     if ( argc > 2 )
     {
         if ( argv[2].isString() )
@@ -4233,7 +4233,7 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-    int arg3;
+    int64 arg3;
     if ( argc > 3 )
     {
         if ( argv[3].isString() )
@@ -4336,7 +4336,7 @@ rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::
 
 
 
-    int arg0;
+    int64 arg0;
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
@@ -4373,7 +4373,7 @@ rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::
 
 
 
-    int arg1;
+    int64 arg1;
     if ( argc > 1 )
     {
         if ( argv[1].isString() )

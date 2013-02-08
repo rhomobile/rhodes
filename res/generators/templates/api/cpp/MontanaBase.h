@@ -54,7 +54,9 @@ public:
 
         else if (_wcsicmp(L"<%= module_method.linked_property.native_name %>",propertyName.c_str()) == 0){
 <%if module_method.linked_property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS %>
-            //<%= module_method.native_name%>(propertyValue, oResult);
+            <%= api_generator_cpp_makeNativeType(module_method.linked_property.type) %> arg;
+            rho::common::convertFromStringW(propertyValue.c_str(), arg);
+            <%= module_method.native_name%>( arg, oResult);
 <%else%>
             m_hashProps.put(propertyName, propertyValue);<%
 end;%>
