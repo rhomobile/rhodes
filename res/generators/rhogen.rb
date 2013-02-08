@@ -630,6 +630,10 @@ module Rhogen
       File.join(File.dirname(__FILE__), 'templates', 'api')
     end
 
+    def destination_root
+        File.dirname(@@xml_filepath).gsub("\\", "/")        
+    end
+
     desc <<-DESC
       Generate API sources from XML API file
     DESC
