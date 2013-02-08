@@ -1,6 +1,7 @@
 require 'thread'
 require 'mspec'
 #require '../../lib/build/jake'
+require 'restclient'
 
 require 'yaml'
 
@@ -41,38 +42,47 @@ $server = nil
 $requests = []
 $signal = ConditionVariable.new
 $mutex = Mutex.new
+$rhoconnect_use_redis = true
 
+require File.join($rho_root,'lib','build','rhoconnect_helper.rb')
 require './run_rhoconnect_spec'
+
+def rhoconnect_request(request,params)
+	RestClient.post("#{SYNC_SERVER_HOST}:#{SYNC_SERVER_PORT}/rc/v1/#{request}",params.to_json, :content_type => :json)
+end
 
 describe 'Rhoconnect push spec' do
   before(:all) do
-	  puts "Starting local server"
-	  $server, addr, port = Jake.run_local_server
-	  File.open(File.join($spec_path, 'rhoconnect_push_client', 'app', 'local_server.rb'), 'w') do |f|
-		  f.puts "SPEC_LOCAL_SERVER_HOST = '#{addr}'"
-		  f.puts "SPEC_LOCAL_SERVER_PORT = #{port}"
-	  end
+	puts "Starting local server"
+	$server, addr, port = Jake.run_local_server
+	File.open(File.join($spec_path, 'rhoconnect_push_client', 'app', 'local_server.rb'), 'w') do |f|
+	  f.puts "SPEC_LOCAL_SERVER_HOST = '#{addr}'"
+	  f.puts "SPEC_LOCAL_SERVER_PORT = #{port}"
+	end
 	  
-	  $server.mount_proc('/', nil) do |req, res|
-		  puts "Request headers: #{req.header.inspect}"
+	$server.mount_proc('/', nil) do |req, res|
+	  puts "Request headers: #{req.header.inspect}"
 		  
-		  query = req.query
-		  puts "Request query:   #{query.inspect}"
+	  query = req.query
+	  puts "Request query:   #{query.inspect}"
 		  
-		  res.status = 200
+	  res.status = 200
 		  
-		  $mutex.synchronize do
-			  $requests << req
-			  $signal.signal
-		  end
+	  $mutex.synchronize do
+		$requests << req
+		$signal.signal
 	  end
+	end
 
 	run_apps($platform)
+	  
+	@api_token = RhoconnectHelper.api_post('system/login', { :login => 'rhoadmin', :password => '' })
+	puts "API token: #{@api_token}"
   end
 	
   after(:all) do
-	  stop_apps
-	  cleanup_apps
+	stop_apps
+	cleanup_apps
   end
 	
   def expect_request(name)
@@ -100,31 +110,21 @@ describe 'Rhoconnect push spec' do
 	$device_id.should_not be_nil
 	$device_id.should_not == ''
   end
-	
-=begin
+
   it 'should proceed push message at foreground' do
     sleep 5
   
     puts 'Sending push message...'
   
     message = 'magic1'
-    params = { 'device_pin'=>$device_id, 'alert'=>message }
-    RhoPush::Gcm.send_ping_to_device($gcm_api_key, params)
+	params = { :user_id=>['pushclient'], 'alert'=>message }
+	RhoconnectHelper.api_post('users/ping',params,@api_token)
 
     puts 'Waiting message with push content...'
-    $mutex.synchronize do
-      $signal.wait($mutex)
-      
-      $requests.count.should == 1
-
-      alert = $requests.first.query['alert']
-      
-      alert.should_not be_nil
-      alert.should == message
-      $requests.clear
-    end
+	expect_request('alert').should == message
   end
 
+=begin
   it 'should proceed push message with exit comand' do
     puts 'Sending push message with exit command...'
   

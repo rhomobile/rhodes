@@ -28,6 +28,7 @@
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/
   :bulk_sync_poll_interval: 10
+  :gcm_api_key: AIzaSyANZO6psbeXLHvU88InbDnR6Zd_vZMWUZ8
 :test: 
   :licensefile: settings/license.key
   :iphonecertfile: settings/apple_push_cert.pem
@@ -39,6 +40,7 @@
   :redis: localhost:6379:2
   :syncserver: http://localhost:9292/application/
   :bulk_sync_poll_interval: 10
+  :gcm_api_key: AIzaSyANZO6psbeXLHvU88InbDnR6Zd_vZMWUZ8
 :production: 
   :licensefile: settings/license.key
   :iphonecertfile: settings/apple_push_cert.pem
@@ -50,3 +52,4 @@
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/
   :bulk_sync_poll_interval: 10
+  :gcm_api_key: AIzaSyANZO6psbeXLHvU88InbDnR6Zd_vZMWUZ8
