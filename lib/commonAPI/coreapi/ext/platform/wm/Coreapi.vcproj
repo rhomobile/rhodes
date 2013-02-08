@@ -1090,6 +1090,36 @@
 				<File
 					RelativePath="..\..\system.xml"
 					>
+					<FileConfiguration
+						Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Generate API"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							Outputs="generated"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Generate API"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							Outputs="generated"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|MC3000c50b (ARMV4I)"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Generate API"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							Outputs="generated"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\shared\SystemImplBase.cpp"

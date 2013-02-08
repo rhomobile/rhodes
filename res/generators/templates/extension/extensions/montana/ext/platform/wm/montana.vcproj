@@ -634,6 +634,51 @@
 					>
 				</File>
 			</Filter>
+			<File
+				RelativePath="..\..\<%= name.camel_case() %>.xml"
+				>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="generated"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="generated"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|MC3000c50b (ARMV4I)"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="generated"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="generated"
+					/>
+				</FileConfiguration>
+			</File>
+		    
 	    </Filter>
 		<Filter
 			Name="generated"
@@ -655,10 +700,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\..\<%= name.camel_case() %>.xml"
-			>
-		</File>
 		<File
 			RelativePath=".\src\<%= name.camel_case() %>_impl.cpp"
 			>
