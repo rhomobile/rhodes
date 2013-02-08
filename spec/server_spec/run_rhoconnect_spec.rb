@@ -96,8 +96,6 @@ rescue Exception => e
 	puts e.backtrace
 	
 ensure
-	stop_apps
-	cleanup_apps
 	puts "run_spec_app(#{$platform},#{$appname}) done"
 end
 
