@@ -7,11 +7,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Barcode1Runtime.cpp" />
-    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="generated\runtime\Barcode1Runtime.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Barcode1Runtime.h" />
-    <ClInclude Include="pch.h" />
+    <ClInclude Include="generated\runtime\Barcode1Runtime.h" />
   </ItemGroup>
 </Project>

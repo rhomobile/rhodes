@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../Barcode1Runtime/Barcode1Runtime.h"
+#include "../runtime/Barcode1Runtime.h"
 
 namespace Barcode1Runtime
 {
 
-	public ref class CMethodResultImpl sealed: public Barcode1Runtime::IMethodResult
+	public ref class CMethodResultImpl sealed: public IMethodResult
 	{
-		CMethodResult* oResult;
+		rho::apiGenerator::CMethodResult* oResult;
 	public:
 		CMethodResultImpl(int64 native);
 

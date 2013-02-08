@@ -1,7 +1,8 @@
-#include "../generated/IBarcode1.h"
-#include "../generated/MethodResultImpl.h"
+#include "..\IBarcode1.h"
+#include "MethodResultImpl.h"
 
 using namespace Barcode1Runtime;
+using namespace rho::apiGenerator;
 
 class CBarcode1Impl: public CModuleBase<IBarcode1>
 {

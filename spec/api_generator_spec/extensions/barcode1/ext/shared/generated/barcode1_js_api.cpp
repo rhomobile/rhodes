@@ -41,8 +41,8 @@ extern "C" void Init_JSAPI_Barcode1(void)
 //    js_define_method("Rho:Barcode1:enumerate", js_Barcode1_enumerate);
 
 
-    js_define_method("Rho:Barcode1:getDefaultID", js_Barcode1_getDefaultID);
-    js_define_method("Rho:Barcode1:setDefaultID", js_Barcode1_setDefaultID);
+//    js_define_method("Rho:Barcode1:getDefaultID", js_Barcode1_getDefaultID);
+//    js_define_method("Rho:Barcode1:setDefaultID", js_Barcode1_setDefaultID);
 
 }
 

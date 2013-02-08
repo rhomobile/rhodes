@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{93453E28-E84A-40C4-BD6A-51A8373D7044}</ProjectGuid>
-    <RootNamespace>Barcode1</RootNamespace>
+    <RootNamespace>Barcode1Lib</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <WinMDAssembly>true</WinMDAssembly>
@@ -53,16 +53,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="Barcode1.props" />
+    <Import Project="Barcode1Lib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <Import Project="Barcode1.props" />
+    <Import Project="Barcode1Lib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="Barcode1.props" />
+    <Import Project="Barcode1Lib.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <Import Project="Barcode1.props" />
+    <Import Project="Barcode1Lib.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -147,13 +147,13 @@
     <ClCompile Include="..\..\shared\generated\barcode1_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\barcode1_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\barcode1_ruby_api.c" />
-    <ClCompile Include="generated\MethodResultImpl.cpp">
+    <ClCompile Include="generated\lib\MethodResultImpl.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="generated\Barcode1FactoryBase.cpp">
+    <ClCompile Include="generated\lib\Barcode1FactoryBase.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</CompileAsWinRT>
@@ -171,7 +171,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="src\Barcode1_impl.cpp">
+    <ClCompile Include="generated\lib\Barcode1_impl.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</CompileAsWinRT>
@@ -179,7 +179,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\MethodResultImpl.h" />
+    <ClInclude Include="generated\lib\MethodResultImpl.h" />
     <ClInclude Include="generated\IBarcode1.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,9 +1,9 @@
 ﻿// Barcode1Runtime.cpp
-#include "pch.h"
 #include "Barcode1Runtime.h"
 
 using namespace Barcode1Runtime;
 using namespace Platform;
+using namespace rho::apiGenerator;
 
 Barcode1RuntimeComponent::Barcode1RuntimeComponent(IBarcode1Impl^ impl):
 	_impl(impl)
@@ -36,4 +36,3 @@ void Barcode1RuntimeComponent::take(Windows::Foundation::Collections::IMapView<P
 {
 	_impl->take(propertyMap, oResult);
 }
-
