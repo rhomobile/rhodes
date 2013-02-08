@@ -1,9 +1,13 @@
-#include "../generated/IBarcode.h"
+#include "../generated/BarcodeBase.h"
 
-class CBarcodeImpl: public CModuleBase<IBarcode>
+namespace rho {
+
+using namespace apiGenerator;
+
+class CBarcodeImpl: public CBarcodeBase
 {
 public:
-    CBarcodeImpl(const rho::StringW& strID): CModuleBase<IBarcode>(strID)
+    CBarcodeImpl(const rho::StringW& strID): CBarcodeBase()
     {
         m_hashProps.put( L"display", L"LCD");
         m_hashProps.put( L"sound", L"Dolby");
@@ -66,7 +70,4 @@ rho::StringW CBarcodeSingleton::getInitialDefaultID()
     return arIDs[0];
 }
 
-/*
-extern "C" void Init_JSAPI_Barcode()
-{
-}*/
+}

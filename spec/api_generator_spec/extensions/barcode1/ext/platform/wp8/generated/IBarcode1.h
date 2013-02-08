@@ -13,17 +13,17 @@ struct IBarcode1
 {
     virtual ~IBarcode1(){}
 
-    virtual void enable( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult) = 0;
-    virtual void start(CMethodResult& oResult) = 0;
-    virtual void stop(CMethodResult& oResult) = 0;
-    virtual void disable(CMethodResult& oResult) = 0;
-    virtual void take( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult) = 0;
-    virtual void getProperty( const rho::StringW& propertyName, CMethodResult& oResult) = 0;
-    virtual void getProperties( const rho::Vector<rho::StringW>& arrayofNames, CMethodResult& oResult) = 0;
-    virtual void getAllProperties(CMethodResult& oResult) = 0;
-    virtual void setProperty( const rho::StringW& propertyName,  const rho::StringW& propertyValue, CMethodResult& oResult) = 0;
-    virtual void setProperties( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult) = 0;
-    virtual void clearProps(CMethodResult& oResult) = 0;
+    virtual void enable( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;
+	virtual void start(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void stop(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void disable(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void take( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getProperty( const rho::StringW& propertyName, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getProperties( const rho::Vector<rho::StringW>& arrayofNames, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getAllProperties(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setProperty( const rho::StringW& propertyName,  const rho::StringW& propertyValue, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setProperties( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void clearProps(rho::apiGenerator::CMethodResult& oResult) = 0;
 
 	// WP8 specific method
 	virtual void registerRuntime(Barcode1Runtime::IBarcode1Impl^ runtime) = 0;
@@ -33,7 +33,7 @@ struct IBarcode1Singleton
 {
     virtual ~IBarcode1Singleton(){}
 
-    virtual void enumerate(CMethodResult& oResult) = 0;
+    virtual void enumerate(rho::apiGenerator::CMethodResult& oResult) = 0;
 
 
     virtual rho::StringW getDefaultID() = 0;
@@ -55,7 +55,7 @@ struct IBarcode1Factory
 
 };
 
-class CBarcode1FactoryBase : public CModuleFactoryBase<IBarcode1, IBarcode1Singleton, IBarcode1Factory>
+class CBarcode1FactoryBase : public rho::apiGenerator::CModuleFactoryBase<IBarcode1, IBarcode1Singleton, IBarcode1Factory>
 {
 protected:
     static rho::common::CAutoPtr<CBarcode1FactoryBase> m_pInstance;

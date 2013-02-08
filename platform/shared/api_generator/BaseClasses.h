@@ -3,6 +3,11 @@
 #include "common/RhoStd.h"
 #include "GeneratorQueue.h"
 
+namespace rho
+{
+namespace apiGenerator
+{
+/*
 template<typename ModuleClass>
 class CModuleBase: public ModuleClass
 {
@@ -24,7 +29,23 @@ public:
 
     virtual void getProperties( const rho::Vector<rho::StringW>& arrayofNames, CMethodResult& oResult)
     {
-        oResult.set(m_hashProps);
+        rho::Hashtable<rho::StringW, rho::StringW> res;
+        oResult.setCollectionMode(true);
+        for ( int i = 0; i < (int)arrayofNames.size(); i++ )
+        {
+            getProperty(arrayofNames[i], oResult);
+
+            if ( oResult.isError() )
+                break;
+
+            res[arrayofNames[i]] = oResult.toString();
+        }
+
+        oResult.setCollectionMode(false);
+        if ( oResult.isError() )
+            oResult.callCallback();
+        else
+            oResult.set(res);
     }
 
     virtual void getAllProperties(CMethodResult& oResult)
@@ -39,7 +60,12 @@ public:
 
     virtual void setProperties( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult)
     {
-        //TODO:setProperties
+        for ( rho::Hashtable<rho::StringW, rho::StringW>::const_iterator it = propertyMap.begin();  it != propertyMap.end(); ++it )
+        {
+            setProperty( it->first, it->second, oResult );
+            if ( oResult.isError() )
+                break;
+        }
     }
 
     virtual void clearAllProperties(CMethodResult& oResult)
@@ -47,7 +73,7 @@ public:
         m_hashProps.clear();
     }
 
-};
+};*/
 
 template<typename ModuleClass>
 class CModuleSingletonBase : public ModuleClass
@@ -105,8 +131,8 @@ template<typename ModuleClass, typename SingletonClass, typename BaseClass>
 class CModuleFactoryBase : public BaseClass
 {
 protected:
-    rho::common::CAutoPtr<SingletonClass> m_pModuleSingleton;
-    rho::Hashtable<rho::StringW,ModuleClass*> m_hashModules;
+    common::CAutoPtr<SingletonClass> m_pModuleSingleton;
+    Hashtable<StringW,ModuleClass*> m_hashModules;
 
 public:
 
@@ -118,7 +144,7 @@ public:
         return m_pModuleSingleton;
     }
 
-    virtual ModuleClass* getModuleByID(const rho::StringW& strID)
+    virtual ModuleClass* getModuleByID(const StringW& strID)
     {
         if ( !m_hashModules.containsKey(strID) )
         {
@@ -132,6 +158,8 @@ public:
     }
     
     virtual SingletonClass* createModuleSingleton() = 0;
-    virtual ModuleClass* createModuleByID(const rho::StringW& strID) = 0;
+    virtual ModuleClass* createModuleByID(const StringW& strID) = 0;
 
 };
+}
+}

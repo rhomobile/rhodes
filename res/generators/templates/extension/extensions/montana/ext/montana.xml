@@ -17,24 +17,23 @@
             <DESC>object supports this properties bla bla bla :</DESC>
             <PROPERTY name="illuminationMode" type="STRING" generateAccessors="false">
                 <DESC>Whether or not the Code128 symbology is used.</DESC>
-                <CONSTANTS>
-                    <CONSTANT name="MODE_AUTO" value ="auto">
+                <VALUES>
+                    <VALUE const_name="MODE_AUTO" value ="auto">
                         <DESC>(not available on Enterprise Tablet) Auto-exposure algorithms will decide whether illumination is required or not. </DESC>
-                    </CONSTANT>
-                    <CONSTANT name="MODE_ALWAYSE_ON" value ="alwaysOn">
+                    </VALUE>
+                    <VALUE const_name="MODE_ALWAYSE_ON" value ="alwaysOn">
                         <DESC>External illumination is always on</DESC>
-                    </CONSTANT>
-                    <CONSTANT name="MODE_ALWAYSE_OFF" value ="alwaysOff">
+                    </VALUE>
+                    <VALUE const_name="MODE_ALWAYSE_OFF" value ="alwaysOff">
                         <DESC>External illumination is always off</DESC>
-                    </CONSTANT>
+                    </VALUE>
 
-                </CONSTANTS>
-                <DEFAULT>Device specific</DEFAULT>
+                </VALUES>
             </PROPERTY>
         </PROPERTIES>
 
         <METHODS>
-            <METHOD name="enable" has_callback="mandatory">
+            <METHOD name="enable" hasCallback="mandatory">
                 <DESC>This is documentation</DESC>
     
                 <PARAMS>
@@ -49,7 +48,7 @@
     
             </METHOD>
     
-            <METHOD name="start" run_in_thread="true">
+            <METHOD name="start" runInThread="module">
                 <DESC>This is documentation</DESC>
             </METHOD>
             <METHOD name="stop">
@@ -59,7 +58,7 @@
                 <DESC>This is documentation</DESC>
             </METHOD>
     
-            <METHOD name="take" has_callback="mandatory">
+            <METHOD name="take" hasCallback="mandatory">
                 <DESC>Enable and start automatically</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH">

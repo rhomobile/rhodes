@@ -639,29 +639,25 @@
 				Name="generated"
 				>
 				<File
-					RelativePath=".\generated\BarcodeFactoryBase.cpp"
+					RelativePath=".\generated\Barcode_js_wrap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generated\Barcode_ruby_wrap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generated\BarcodeBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generated\BarcodeBase.h"
 					>
 				</File>
 				<File
 					RelativePath=".\generated\IBarcode.h"
 					>
 				</File>
-				<Filter
-					Name="javascript"
-					>
-					<File
-						RelativePath=".\generated\javascript\Barcode_js_wrap.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="ruby"
-					>
-					<File
-						RelativePath=".\generated\ruby\Barcode_ruby_wrap.cpp"
-						>
-					</File>
-				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -687,6 +683,36 @@
 		<File
 			RelativePath="..\..\new_barcode.xml"
 			>
+			<FileConfiguration
+				Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="API Generator"
+					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+					Outputs="generated"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="API Generator"
+					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+					Outputs="generated"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|MC3000c50b (ARMV4I)"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="API Generator"
+					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+					Outputs="generated"
+				/>
+			</FileConfiguration>
 		</File>
 	</Files>
 	<Globals>
