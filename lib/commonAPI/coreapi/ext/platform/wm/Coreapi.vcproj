@@ -1081,12 +1081,16 @@
 			Name="System"
 			>
 			<File
-				RelativePath="..\..\system.xml"
+				RelativePath=".\src\SystemImpl.cpp"
 				>
 			</File>
 			<Filter
 				Name="shared"
 				>
+				<File
+					RelativePath="..\..\system.xml"
+					>
+				</File>
 				<File
 					RelativePath="..\..\shared\SystemImplBase.cpp"
 					>
