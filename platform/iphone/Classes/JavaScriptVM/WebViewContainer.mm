@@ -26,6 +26,7 @@
 
 #import "WebViewContainer.h"
 #include "WebViewCInterface.h"
+#include "logging/RhoLog.h"
 
 @implementation WebViewContainer
 
@@ -58,29 +59,46 @@ VALUE WebViewCInterface::performAction( const char* actionName, const char* para
 - (id) init {
     self = [super init];
     if (self != nil) {
-        UIWebView* webView = [[UIWebView alloc] initWithFrame:CGRectZero];
-        
-        [WebViewJavascriptBridge enableLogging];
-        
-        _bridge = [WebViewJavascriptBridge bridgeForWebView:webView handler:^(id data, WVJBResponseCallback responseCallback) {
-            NSLog(@"ObjC received message from JS: %@", data);
-            responseCallback(@"Response for message from ObjC");
-        }];
-        
-        [_bridge registerHandler:@"testObjcCallback" handler:^(id data, WVJBResponseCallback responseCallback) {
-            NSLog(@"testObjcCallback called: %@", data);
-            responseCallback(@"Response from testObjcCallback");
-        }];
-        
-        [_bridge send:@"A string sent from ObjC before Webview has loaded." responseCallback:^(id responseData) {
-            NSLog(@"objc got response! %@", responseData);
-        }];
-        
-        [_bridge callHandler:@"testJavascriptHandler" data:[NSDictionary dictionaryWithObject:@"before ready" forKey:@"foo"]];
-        
-        [_bridge send:@"A string sent from ObjC after Webview has loaded."];
+        [self performSelectorOnMainThread:@selector(perfromInit)
+                               withObject:nil
+                            waitUntilDone:YES];
     }
     return self;
+}
+
+- (void) perfromInit {
+    UIWebView* webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+    
+    [WebViewJavascriptBridge enableLogging];
+    
+    _bridge = [WebViewJavascriptBridge bridgeForWebView:webView handler:^(id data, WVJBResponseCallback responseCallback) {
+        RAWLOG_INFO("GOT MESSAGE");
+        NSLog(@"ObjC received message from JS: %@", data);
+        responseCallback(@"Response for message from ObjC");
+    }];
+    
+    [_bridge registerHandler:@"testObjcCallback" handler:^(id data, WVJBResponseCallback responseCallback) {
+        RAWLOG_INFO("GOT testObjcCallback");
+        NSLog(@"testObjcCallback called: %@", data);
+        responseCallback(@"Response from testObjcCallback");
+    }];
+    
+    [_bridge send:@"A string sent from ObjC before Webview has loaded." responseCallback:^(id responseData) {
+        RAWLOG_INFO("GOT string Webview");
+        NSLog(@"objc got response! %@", responseData);
+    }];
+    
+    [_bridge callHandler:@"testJavascriptHandler" data:[NSDictionary dictionaryWithObject:@"before ready" forKey:@"foo"]];
+    
+    [self loadExamplePage:webView];
+    
+    [_bridge send:@"A string sent from ObjC after Webview has loaded."];
+}
+
+- (void)loadExamplePage:(UIWebView*)webView {
+    NSString* htmlPath = [[NSBundle mainBundle] pathForResource:@"ExampleApp" ofType:@"html"];
+    NSString* appHtml = [NSString stringWithContentsOfFile:htmlPath encoding:NSUTF8StringEncoding error:nil];
+    [webView loadHTMLString:appHtml baseURL:nil];
 }
 
 - (void) dealloc {
