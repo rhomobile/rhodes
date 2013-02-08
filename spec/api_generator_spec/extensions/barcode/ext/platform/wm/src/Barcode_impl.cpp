@@ -1,13 +1,13 @@
-#include "../generated/IBarcode.h"
+#include "../generated/BarcodeBase.h"
 
 namespace rho {
 
 using namespace apiGenerator;
 
-class CBarcodeImpl: public CModuleBase<IBarcode>
+class CBarcodeImpl: public CBarcodeBase
 {
 public:
-    CBarcodeImpl(const rho::StringW& strID): CModuleBase<IBarcode>(strID)
+    CBarcodeImpl(const rho::StringW& strID): CBarcodeBase()
     {
         m_hashProps.put( L"display", L"LCD");
         m_hashProps.put( L"sound", L"Dolby");

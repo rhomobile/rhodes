@@ -1,4 +1,4 @@
-#include "ISystem.h"
+#include "SystemBase.h"
 
 rho::common::CAutoPtr< rho::CSystemFactoryBase> rho::CSystemFactoryBase::m_pInstance;
 

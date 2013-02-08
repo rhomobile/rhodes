@@ -71,21 +71,6 @@ struct I<%= $cur_module.name %>Factory
 <% end %>
 };
 
-class C<%= $cur_module.name %>FactoryBase : public rho::apiGenerator::CModuleFactoryBase<I<%= $cur_module.name %>, I<%= $cur_module.name %>Singleton, I<%= $cur_module.name %>Factory>
-{
-protected:
-    static rho::common::CAutoPtr<C<%= $cur_module.name %>FactoryBase> m_pInstance;
-
-public:
-
-    static void setInstance(C<%= $cur_module.name %>FactoryBase* pInstance){ m_pInstance = pInstance; }
-    static C<%= $cur_module.name %>FactoryBase* getInstance(){ return m_pInstance; }
-
-    static I<%= $cur_module.name %>Singleton* get<%= $cur_module.name %>SingletonS(){ return getInstance()->getModuleSingleton(); }
-};
-
-extern "C" void Init_<%= $cur_module.name %>_API();
-
 <% $cur_module.parents.each do |parent| %>
 }<%
 end %>

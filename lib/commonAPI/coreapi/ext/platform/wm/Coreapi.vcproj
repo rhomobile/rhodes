@@ -1162,7 +1162,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\generated\SystemFactoryBase.cpp"
+					RelativePath=".\generated\SystemBase.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\generated\SystemBase.h"
 					>
 				</File>
 			</Filter>

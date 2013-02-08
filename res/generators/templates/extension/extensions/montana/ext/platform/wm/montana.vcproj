@@ -696,7 +696,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\generated\<%= name.camel_case() %>FactoryBase.cpp"
+				RelativePath=".\generated\<%= name.camel_case() %>Base.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\generated\<%= name.camel_case() %>Base.h"
 				>
 			</File>
 		</Filter>

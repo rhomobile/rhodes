@@ -15,7 +15,7 @@ using namespace apiGenerator;
 class CSystemImpl: public CSystemImplBase
 {
 public:
-    CSystemImpl(const rho::StringW& strID): CSystemImplBase(strID){}
+    CSystemImpl(): CSystemImplBase(){}
 
     void getOsVersion(CMethodResult& oResult);
     void getIsEmulator(CMethodResult& oResult);
@@ -79,7 +79,7 @@ public:
     ~CSystemFactory(){}
 
     ISystemSingleton* createModuleSingleton(){ return new CSystemSingleton(); }
-    ISystem* createModuleByID(const rho::StringW& strID){ return new CSystemImpl(strID); }
+    ISystem* createModuleByID(const rho::StringW& strID){ return new CSystemImpl(); }
 };
 
 extern "C" void Init_System_extension()
