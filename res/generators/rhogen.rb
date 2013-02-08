@@ -836,8 +836,8 @@ module Rhogen
       # force changes in generated files !
       @options[:force] = true
 
-      xml_filepath = xmlpath
-      xml_f = File.new(xml_filepath)
+      @@xml_filepath = xmlpath
+      xml_f = File.new(@@xml_filepath)
       $xml = REXML::Document.new(xml_f)
       xml_f.close
       xml_api_root = $xml.elements["API"]
