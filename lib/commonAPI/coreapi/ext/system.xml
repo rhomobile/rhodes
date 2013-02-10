@@ -13,6 +13,13 @@
         <PROPERTIES usePropertyBag="PropertyBagViaAccessors"> <!-- accessorsViaPropertyBag -->
             <!-- list of properties supported by property bag methods getPops(), setProps() -->
             <DESC>object supports this properties bla bla bla :</DESC>
+
+            <ALIASES>
+                <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
+                <ALIAS new="disable_screen_rotation" existing="screenAutoRotate" deprecated="true" reverse_logic="true"/>
+
+            </ALIASES>
+
             <PROPERTY name="platform" type="STRING" readOnly="true">
                 <DESC>Platform where application is running.</DESC>
                 <VALUES>
@@ -144,6 +151,9 @@
                 </ALIAS>
 
                 <ALIAS new="app_install" existing="applicationInstall" deprecated="true"/>
+                <ALIAS new="app_installed?" existing="isApplicationInstalled" deprecated="true"/>
+                <ALIAS new="app_uninstall" existing="applicationUninstall" deprecated="true"/>
+
             </ALIASES>
 
             <METHOD name="applicationInstall">
