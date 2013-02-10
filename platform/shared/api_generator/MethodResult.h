@@ -86,6 +86,8 @@ public:
     void set(const rho::Vector<rho::StringW>& res){ m_arStrRes = res;  m_ResType = eStringArray; callCallback(); }
     void set(bool res){ m_bRes = res;  m_ResType = eBool; callCallback(); }
     void set(int64 res){ m_nRes = res;  m_ResType = eInt; callCallback(); }
+    void set(int res){ m_nRes = res;  m_ResType = eInt; callCallback(); }
+    void set(unsigned long res){ m_nRes = res;  m_ResType = eInt; callCallback(); }
     void set(double res){ m_dRes = res;  m_ResType = eDouble; callCallback(); }
 
     void setError(const rho::StringW& res){ m_strError = res; m_ResType = eError; callCallback(); }

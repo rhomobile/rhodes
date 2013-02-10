@@ -78,7 +78,7 @@ rho::StringW CMethodResult::toStringW()
     else if ( m_ResType == eDouble)
         return convertToStringW(m_dRes);
 
-    return L"";
+    return rho::StringW();
 }
 
 VALUE CMethodResult::toRuby()

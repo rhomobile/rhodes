@@ -70,9 +70,9 @@ void CSystemBase::getProperty( const rho::StringW& propertyName, CMethodResult& 
 
         getDeviceOwnerName( oResult );
     }
-    else if (_wcsicmp(L"deviceId",propertyName.c_str()) == 0){
+    else if (_wcsicmp(L"devicePushId",propertyName.c_str()) == 0){
 
-        getDeviceId( oResult );
+        getDevicePushId( oResult );
     }
     else if (_wcsicmp(L"phoneId",propertyName.c_str()) == 0){
 
@@ -138,9 +138,21 @@ void CSystemBase::getProperty( const rho::StringW& propertyName, CMethodResult& 
 
         getLocalServerPort( oResult );
     }
+    else if (_wcsicmp(L"freeServerPort",propertyName.c_str()) == 0){
+
+        getFreeServerPort( oResult );
+    }
     else if (_wcsicmp(L"screenAutoRotate",propertyName.c_str()) == 0){
 
         getScreenAutoRotate( oResult );
+    }
+    else if (_wcsicmp(L"hasTouchscreen",propertyName.c_str()) == 0){
+
+        getHasTouchscreen( oResult );
+    }
+    else if (_wcsicmp(L"securityTokenNotPassed",propertyName.c_str()) == 0){
+
+        getSecurityTokenNotPassed( oResult );
     }
 }
 

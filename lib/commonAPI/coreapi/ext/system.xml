@@ -17,7 +17,7 @@
             <ALIASES>
                 <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
                 <ALIAS new="disable_screen_rotation" existing="screenAutoRotate" deprecated="true" reverse_logic="true"/>
-
+                <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
             </ALIASES>
 
             <PROPERTY name="platform" type="STRING" readOnly="true">
@@ -87,7 +87,7 @@
             <PROPERTY name="deviceOwnerName" type="STRING" readOnly="true">
                 <DESC>Name(account name) of phone owner (works only on Android).</DESC>
             </PROPERTY>
-            <PROPERTY name="deviceId" type="STRING" readOnly="true">
+            <PROPERTY name="devicePushId" type="STRING" readOnly="true">
                 <DESC>Push notifications device ID which may be used to receive push messages.</DESC>
             </PROPERTY>
             <PROPERTY name="phoneId" type="STRING" readOnly="true">
@@ -138,8 +138,17 @@
             <PROPERTY name="localServerPort" type="INTEGER" default="8080">
                 <DESC>Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.</DESC>
             </PROPERTY>
+            <PROPERTY name="freeServerPort" type="INTEGER" readOnly="true">
+                <DESC>Get free local server port, available for binding.</DESC>
+            </PROPERTY>
             <PROPERTY name="screenAutoRotate" type="BOOLEAN" default="true">
                 <DESC>Screen auto rotate.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasTouchscreen" type="BOOLEAN" readOnly="true">
+                <DESC>Is device has touch screen.</DESC>
+            </PROPERTY>
+            <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
+                <DESC>Is the security token check was failed.</DESC>
             </PROPERTY>
 
         </PROPERTIES>
@@ -186,6 +195,11 @@
                 </PARAMS>
             </METHOD>
 
+            <METHOD name="getStartParams">
+                <DESC>Return the command line parameters.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+
             <METHOD name="openUrl">
                 <DESC>Open the application associated with the URL.</DESC>
                 <PARAMS>
@@ -223,6 +237,10 @@
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
                         <DESC>The path to the file to be unzipped.</DESC>
+                    </PARAM>
+                    <PARAM name="password" type="STRING">
+                        <DESC>Password for the zip.</DESC>
+                        <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
             </METHOD>

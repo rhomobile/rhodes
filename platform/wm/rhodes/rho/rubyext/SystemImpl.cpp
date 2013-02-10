@@ -614,6 +614,7 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
         return 1;
     }
 
+//TODO: this is phoneId not deviceId, deviceId is push regsitrtaion ID, getting from RhoConnect server
 #if defined( OS_WINCE )&& !defined( OS_PLATFORM_MOTCE )
     if (strcasecmp("device_id",szPropName) == 0) 
     {

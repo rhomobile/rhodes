@@ -41,8 +41,8 @@ rho::String js_s_System_def_getDeviceOwnerEmail(rho::json::CJSONArray& argv, con
 rho::String js_System_getDeviceOwnerName(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_getDeviceOwnerName(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
-rho::String js_System_getDeviceId(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_System_def_getDeviceId(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_System_getDevicePushId(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getDevicePushId(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 rho::String js_System_getPhoneId(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_getPhoneId(rho::json::CJSONArray& argv, const rho::String& strObjID);
@@ -110,11 +110,20 @@ rho::String js_s_System_def_getLocalServerPort(rho::json::CJSONArray& argv, cons
 rho::String js_System_setLocalServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_setLocalServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
+rho::String js_System_getFreeServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getFreeServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
 rho::String js_System_getScreenAutoRotate(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_getScreenAutoRotate(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 rho::String js_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_setScreenAutoRotate(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_getHasTouchscreen(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getHasTouchscreen(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 rho::String js_System_applicationInstall(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_applicationInstall(rho::json::CJSONArray& argv, const rho::String& strObjID);
@@ -124,6 +133,9 @@ rho::String js_s_System_def_isApplicationInstalled(rho::json::CJSONArray& argv, 
 
 rho::String js_System_applicationUninstall(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_applicationUninstall(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_getStartParams(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getStartParams(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 rho::String js_System_openUrl(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_openUrl(rho::json::CJSONArray& argv, const rho::String& strObjID);
@@ -216,8 +228,8 @@ extern "C" void Init_JSAPI_System(void)
     rho::apiGenerator::js_define_method("Rho:System:getDeviceOwnerName", js_System_getDeviceOwnerName);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getDeviceOwnerName", js_s_System_def_getDeviceOwnerName);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getDeviceId", js_System_getDeviceId);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getDeviceId", js_s_System_def_getDeviceId);;
+    rho::apiGenerator::js_define_method("Rho:System:getDevicePushId", js_System_getDevicePushId);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getDevicePushId", js_s_System_def_getDevicePushId);;
 
     rho::apiGenerator::js_define_method("Rho:System:getPhoneId", js_System_getPhoneId);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getPhoneId", js_s_System_def_getPhoneId);;
@@ -285,11 +297,20 @@ extern "C" void Init_JSAPI_System(void)
     rho::apiGenerator::js_define_method("Rho:System:setLocalServerPort", js_System_setLocalServerPort);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setLocalServerPort", js_s_System_def_setLocalServerPort);;
 
+    rho::apiGenerator::js_define_method("Rho:System:getFreeServerPort", js_System_getFreeServerPort);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getFreeServerPort", js_s_System_def_getFreeServerPort);;
+
     rho::apiGenerator::js_define_method("Rho:System:getScreenAutoRotate", js_System_getScreenAutoRotate);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getScreenAutoRotate", js_s_System_def_getScreenAutoRotate);;
 
     rho::apiGenerator::js_define_method("Rho:System:setScreenAutoRotate", js_System_setScreenAutoRotate);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setScreenAutoRotate", js_s_System_def_setScreenAutoRotate);;
+
+    rho::apiGenerator::js_define_method("Rho:System:getHasTouchscreen", js_System_getHasTouchscreen);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getHasTouchscreen", js_s_System_def_getHasTouchscreen);;
+
+    rho::apiGenerator::js_define_method("Rho:System:getSecurityTokenNotPassed", js_System_getSecurityTokenNotPassed);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getSecurityTokenNotPassed", js_s_System_def_getSecurityTokenNotPassed);;
 
     rho::apiGenerator::js_define_method("Rho:System:applicationInstall", js_System_applicationInstall);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_applicationInstall", js_s_System_def_applicationInstall);;
@@ -299,6 +320,9 @@ extern "C" void Init_JSAPI_System(void)
 
     rho::apiGenerator::js_define_method("Rho:System:applicationUninstall", js_System_applicationUninstall);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_applicationUninstall", js_s_System_def_applicationUninstall);;
+
+    rho::apiGenerator::js_define_method("Rho:System:getStartParams", js_System_getStartParams);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getStartParams", js_s_System_def_getStartParams);;
 
     rho::apiGenerator::js_define_method("Rho:System:openUrl", js_System_openUrl);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_openUrl", js_s_System_def_openUrl);;

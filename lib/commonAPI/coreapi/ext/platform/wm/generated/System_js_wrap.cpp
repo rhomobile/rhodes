@@ -806,7 +806,7 @@ rho::String js_System_getDeviceOwnerName(rho::json::CJSONArray& argv, const rho:
 }
 
 
-rho::String js_System_getDeviceId(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_System_getDevicePushId(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -849,7 +849,7 @@ rho::String js_System_getDeviceId(rho::json::CJSONArray& argv, const rho::String
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getDeviceId,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getDevicePushId,  oRes );
 
 
 
@@ -861,7 +861,7 @@ rho::String js_System_getDeviceId(rho::json::CJSONArray& argv, const rho::String
         delete pFunctor;
 
 
-        pObj->getDeviceId(  oRes );
+        pObj->getDevicePushId(  oRes );
 
 
     }
@@ -2551,6 +2551,72 @@ rho::String js_System_setLocalServerPort(rho::json::CJSONArray& argv, const rho:
 }
 
 
+rho::String js_System_getFreeServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int argc = argv.getSize();
+    int nCallbackArg = 0;
+
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(strObjID));
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toJSON();
+
+        
+        if ( !argv[nCallbackArg].isString() )
+        {
+            oRes.setArgError(L"Type error: callback should be String");
+            return oRes.toJSON();
+        }
+
+        oRes.setCallInUIThread(false);
+        oRes.setRubyCallback( argv[nCallbackArg].getString() );
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !argv[nCallbackArg + 1].isString() )
+            {
+                oRes.setArgError(L"Type error: callback parameter should be String");
+                return oRes.toJSON();
+            }
+
+            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
+        }
+        
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getFreeServerPort,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->getFreeServerPort(  oRes );
+
+
+    }
+
+
+    return oRes.toJSON();
+
+}
+
+
 rho::String js_System_getScreenAutoRotate(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -2710,6 +2776,138 @@ rho::String js_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const rho
 
 
         pObj->setScreenAutoRotate( arg0,  oRes );
+
+
+    }
+
+
+    return oRes.toJSON();
+
+}
+
+
+rho::String js_System_getHasTouchscreen(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int argc = argv.getSize();
+    int nCallbackArg = 0;
+
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(strObjID));
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toJSON();
+
+        
+        if ( !argv[nCallbackArg].isString() )
+        {
+            oRes.setArgError(L"Type error: callback should be String");
+            return oRes.toJSON();
+        }
+
+        oRes.setCallInUIThread(false);
+        oRes.setRubyCallback( argv[nCallbackArg].getString() );
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !argv[nCallbackArg + 1].isString() )
+            {
+                oRes.setArgError(L"Type error: callback parameter should be String");
+                return oRes.toJSON();
+            }
+
+            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
+        }
+        
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getHasTouchscreen,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->getHasTouchscreen(  oRes );
+
+
+    }
+
+
+    return oRes.toJSON();
+
+}
+
+
+rho::String js_System_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int argc = argv.getSize();
+    int nCallbackArg = 0;
+
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(strObjID));
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toJSON();
+
+        
+        if ( !argv[nCallbackArg].isString() )
+        {
+            oRes.setArgError(L"Type error: callback should be String");
+            return oRes.toJSON();
+        }
+
+        oRes.setCallInUIThread(false);
+        oRes.setRubyCallback( argv[nCallbackArg].getString() );
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !argv[nCallbackArg + 1].isString() )
+            {
+                oRes.setArgError(L"Type error: callback parameter should be String");
+                return oRes.toJSON();
+            }
+
+            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
+        }
+        
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getSecurityTokenNotPassed,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->getSecurityTokenNotPassed(  oRes );
 
 
     }
@@ -3044,6 +3242,72 @@ rho::String js_System_applicationUninstall(rho::json::CJSONArray& argv, const rh
 }
 
 
+rho::String js_System_getStartParams(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int argc = argv.getSize();
+    int nCallbackArg = 0;
+
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(strObjID));
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toJSON();
+
+        
+        if ( !argv[nCallbackArg].isString() )
+        {
+            oRes.setArgError(L"Type error: callback should be String");
+            return oRes.toJSON();
+        }
+
+        oRes.setCallInUIThread(false);
+        oRes.setRubyCallback( argv[nCallbackArg].getString() );
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !argv[nCallbackArg + 1].isString() )
+            {
+                oRes.setArgError(L"Type error: callback parameter should be String");
+                return oRes.toJSON();
+            }
+
+            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
+        }
+        
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getStartParams,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->getStartParams(  oRes );
+
+
+    }
+
+
+    return oRes.toJSON();
+
+}
+
+
 rho::String js_System_openUrl(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -3343,7 +3607,7 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
     
     if ( argc == 0 )
     {
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
         return oRes.toJSON();
     }
     
@@ -3380,11 +3644,45 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
 
 
 
+    nCallbackArg = 2;
+
+    
+
+
+    rho::StringW arg1;
+    if ( argc > 1 )
+    {
+        if ( argv[1].isString() )
+        {
+            arg1 = convertToStringW(argv[1].getString());
+
+        }
+        else if (!argv[1].isNull())
+        {
+            oRes.setArgError(L"Type error: argument " L"1" L" should be " L"string" );
+            return oRes.toJSON();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
 
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
         return oRes.toJSON();
 
         
@@ -3410,7 +3708,7 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::unzipFile, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::unzipFile, arg0, arg1,  oRes );
 
 
 
@@ -3422,7 +3720,7 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
         delete pFunctor;
 
 
-        pObj->unzipFile( arg0,  oRes );
+        pObj->unzipFile( arg0, arg1,  oRes );
 
 
     }

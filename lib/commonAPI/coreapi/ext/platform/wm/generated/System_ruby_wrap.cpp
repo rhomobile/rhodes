@@ -1151,7 +1151,7 @@ VALUE rb_s_System_def_getDeviceOwnerName(int argc, VALUE *argv)
 
 
 
-static VALUE _api_generator_System_getDeviceId(int argc, VALUE *argv, rho::ISystem* pObj)
+static VALUE _api_generator_System_getDevicePushId(int argc, VALUE *argv, rho::ISystem* pObj)
 
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -1200,7 +1200,7 @@ static VALUE _api_generator_System_getDeviceId(int argc, VALUE *argv, rho::ISyst
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getDeviceId,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getDevicePushId,  oRes );
 
 
 
@@ -1212,7 +1212,7 @@ static VALUE _api_generator_System_getDeviceId(int argc, VALUE *argv, rho::ISyst
         delete pFunctor;
 
 
-        pObj->getDeviceId(  oRes );
+        pObj->getDevicePushId(  oRes );
 
 
     }
@@ -1222,22 +1222,22 @@ static VALUE _api_generator_System_getDeviceId(int argc, VALUE *argv, rho::ISyst
 }
 
 
-VALUE rb_System_getDeviceId(int argc, VALUE *argv, VALUE obj)
+VALUE rb_System_getDevicePushId(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
     rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
 
-    return _api_generator_System_getDeviceId(argc, argv, pObj);
+    return _api_generator_System_getDevicePushId(argc, argv, pObj);
 }
 
 
 
-VALUE rb_s_System_def_getDeviceId(int argc, VALUE *argv)
+VALUE rb_s_System_def_getDevicePushId(int argc, VALUE *argv)
 {
     rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
     rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
 
-    return _api_generator_System_getDeviceId(argc, argv, pObj);
+    return _api_generator_System_getDevicePushId(argc, argv, pObj);
 }
 
 
@@ -3477,6 +3477,97 @@ VALUE rb_s_System_def_setLocalServerPort(int argc, VALUE *argv)
 
 
 
+static VALUE _api_generator_System_getFreeServerPort(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toRuby();
+
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
+        {
+            oRes.setArgError(L"Type error: callback should be String");
+            return oRes.toRuby();
+        }
+
+        oRes.setCallInUIThread(false);
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
+            {
+                oRes.setArgError(L"Type error: callback parameter should be String");
+                return oRes.toRuby();
+            }
+
+            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
+        }
+        
+        bUseCallback = true;
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getFreeServerPort,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->getFreeServerPort(  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_getFreeServerPort(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_getFreeServerPort(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_getFreeServerPort(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_getFreeServerPort(argc, argv, pObj);
+}
+
+
+
 static VALUE _api_generator_System_getScreenAutoRotate(int argc, VALUE *argv, rho::ISystem* pObj)
 
 {
@@ -3693,6 +3784,188 @@ VALUE rb_s_System_def_setScreenAutoRotate(int argc, VALUE *argv)
     rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
 
     return _api_generator_System_setScreenAutoRotate(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_getHasTouchscreen(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toRuby();
+
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
+        {
+            oRes.setArgError(L"Type error: callback should be String");
+            return oRes.toRuby();
+        }
+
+        oRes.setCallInUIThread(false);
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
+            {
+                oRes.setArgError(L"Type error: callback parameter should be String");
+                return oRes.toRuby();
+            }
+
+            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
+        }
+        
+        bUseCallback = true;
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getHasTouchscreen,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->getHasTouchscreen(  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_getHasTouchscreen(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_getHasTouchscreen(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_getHasTouchscreen(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_getHasTouchscreen(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_getSecurityTokenNotPassed(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toRuby();
+
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
+        {
+            oRes.setArgError(L"Type error: callback should be String");
+            return oRes.toRuby();
+        }
+
+        oRes.setCallInUIThread(false);
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
+            {
+                oRes.setArgError(L"Type error: callback parameter should be String");
+                return oRes.toRuby();
+            }
+
+            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
+        }
+        
+        bUseCallback = true;
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getSecurityTokenNotPassed,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->getSecurityTokenNotPassed(  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_getSecurityTokenNotPassed(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_getSecurityTokenNotPassed(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_getSecurityTokenNotPassed(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_getSecurityTokenNotPassed(argc, argv, pObj);
 }
 
 
@@ -4099,6 +4372,97 @@ VALUE rb_s_System_def_applicationUninstall(int argc, VALUE *argv)
 
 
 
+static VALUE _api_generator_System_getStartParams(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toRuby();
+
+
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
+        {
+            oRes.setArgError(L"Type error: callback should be String");
+            return oRes.toRuby();
+        }
+
+        oRes.setCallInUIThread(false);
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
+            {
+                oRes.setArgError(L"Type error: callback parameter should be String");
+                return oRes.toRuby();
+            }
+
+            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
+        }
+        
+        bUseCallback = true;
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getStartParams,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->getStartParams(  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_getStartParams(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_getStartParams(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_getStartParams(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_getStartParams(argc, argv, pObj);
+}
+
+
+
 static VALUE _api_generator_System_openUrl(int argc, VALUE *argv, rho::ISystem* pObj)
 
 {
@@ -4453,7 +4817,7 @@ static VALUE _api_generator_System_unzipFile(int argc, VALUE *argv, rho::ISystem
     
     if ( argc == 0 )
     {
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
         return oRes.toRuby();
     }
     
@@ -4491,10 +4855,45 @@ static VALUE _api_generator_System_unzipFile(int argc, VALUE *argv, rho::ISystem
 
 
 
+    nCallbackArg = 2;
+
+    
+
+
+    rho::StringW arg1;
+    if ( argc > 1 )
+    {
+        if ( rho_ruby_is_string(argv[1]) )
+        {
+            arg1 = convertToStringW(getStringFromValue(argv[1]));
+
+        }
+        else if (!rho_ruby_is_NIL(argv[1]))
+        {
+            oRes.setArgError(L"Type error: argument " L"1" L" should be " L"string" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
         return oRes.toRuby();
 
 
@@ -4526,7 +4925,7 @@ static VALUE _api_generator_System_unzipFile(int argc, VALUE *argv, rho::ISystem
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::unzipFile, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::unzipFile, arg0, arg1,  oRes );
 
 
 
@@ -4538,7 +4937,7 @@ static VALUE _api_generator_System_unzipFile(int argc, VALUE *argv, rho::ISystem
         delete pFunctor;
 
 
-        pObj->unzipFile( arg0,  oRes );
+        pObj->unzipFile( arg0, arg1,  oRes );
 
 
     }
