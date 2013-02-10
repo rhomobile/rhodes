@@ -1097,7 +1097,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Generate API"
-							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
 							Outputs="$(InputDir)shared/generated"
 						/>
 					</FileConfiguration>
@@ -1107,7 +1107,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Generate API"
-							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
 							AdditionalDependencies=""
 							Outputs="$(InputDir)shared/generated"
 						/>
@@ -1118,7 +1118,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Generate API"
-							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
 							Outputs="$(InputDir)shared/generated"
 						/>
 					</FileConfiguration>
@@ -1144,6 +1144,26 @@
 					</File>
 					<File
 						RelativePath="..\..\shared\generated\system_ruby_api.c"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="unzip"
+					>
+					<File
+						RelativePath="..\..\..\..\..\..\platform\shared\unzip\unzip.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\..\..\platform\shared\unzip\unzip.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\..\..\platform\shared\unzip\zip.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\..\..\..\platform\shared\unzip\zip.h"
 						>
 					</File>
 				</Filter>

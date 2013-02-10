@@ -2,6 +2,11 @@
 
 #include "common/RhoConf.h"
 #include "logging/RhoLog.h"
+#include "common/RhodesApp.h"
+#include "sync/RhoconnectClientManager.h"
+#include "common/RhoFilePath.h"
+#include "common/RhoFile.h"
+#include "unzip/zip.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
@@ -9,11 +14,7 @@
 namespace rho {
 
 using namespace apiGenerator;
-
-/*static*/ CSystemImplBase* getInstance()
-{
-    return static_cast<CSystemImplBase*>(CSystemFactoryBase::getInstance()->getModuleByID(CSystemFactoryBase::getSystemSingletonS()->getDefaultID()));
-}
+using namespace common;
 
 void CSystemImplBase::getPlatform(CMethodResult& oResult)
 {
@@ -64,20 +65,19 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
 #endif
 }
 
-void CSystemImplBase::getHasCamera(CMethodResult& oResult){}
-void CSystemImplBase::getScreenWidth(CMethodResult& oResult){}
-void CSystemImplBase::getScreenHeight(CMethodResult& oResult){}
-void CSystemImplBase::getRealScreenWidth(CMethodResult& oResult){}
-void CSystemImplBase::getRealScreenHeight(CMethodResult& oResult){}
-void CSystemImplBase::getScreenOrientation(CMethodResult& oResult){}
-void CSystemImplBase::getPpiX(CMethodResult& oResult){}
-void CSystemImplBase::getPpiY(CMethodResult& oResult){}
-void CSystemImplBase::getPhoneNumber(CMethodResult& oResult){}
-void CSystemImplBase::getDeviceOwnerEmail(CMethodResult& oResult){}
-void CSystemImplBase::getDeviceOwnerName(CMethodResult& oResult){}
-void CSystemImplBase::getDeviceId(CMethodResult& oResult){}
-void CSystemImplBase::getPhoneId(CMethodResult& oResult){}
-void CSystemImplBase::getDeviceName(CMethodResult& oResult){}
+void CSystemImplBase::getHasCamera(CMethodResult& oResult)
+{
+    oResult.set(true);
+}
+
+void CSystemImplBase::getDevicePushId(CMethodResult& oResult)
+{
+    rho::String strDeviceID;
+	if ( rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) 
+		strDeviceID = rho::sync::RhoconnectClientManager::clientRegisterGetDevicePin();
+
+    oResult.set( convertToStringW(strDeviceID) );
+}
 
 void CSystemImplBase::getOsVersion(CMethodResult& oResult)
 {
@@ -86,46 +86,125 @@ void CSystemImplBase::getOsVersion(CMethodResult& oResult)
 #endif
 }
 
-void CSystemImplBase::getLocale(CMethodResult& oResult){}
-void CSystemImplBase::getCountry(CMethodResult& oResult){}
-
-void CSystemImplBase::getIsEmulator(CMethodResult& oResult)
+void CSystemImplBase::getIsMotorolaDevice(CMethodResult& oResult)
 {
-#ifdef RHODES_EMULATOR
-    oResult.set( true );
-#endif
+    oResult.set(false);
 }
 
-void CSystemImplBase::getHasCalendar(CMethodResult& oResult){}
-void CSystemImplBase::getIsMotorolaDevice(CMethodResult& oResult){}
-void CSystemImplBase::getOemInfo(CMethodResult& oResult){}
-void CSystemImplBase::getUuid(CMethodResult& oResult){}
-void CSystemImplBase::getApplicationIconBadge(CMethodResult& oResult){}
-void CSystemImplBase::setApplicationIconBadge( __int64 value, CMethodResult& oResult){}
-void CSystemImplBase::getHttpProxyURI(CMethodResult& oResult){}
-void CSystemImplBase::setHttpProxyURI( const rho::StringW& value, CMethodResult& oResult){}
-void CSystemImplBase::getLockWindowSize(CMethodResult& oResult){}
-void CSystemImplBase::setLockWindowSize( bool value, CMethodResult& oResult){}
-void CSystemImplBase::getShowKeyboard(CMethodResult& oResult){}
-void CSystemImplBase::setShowKeyboard( bool value, CMethodResult& oResult){}
-void CSystemImplBase::getFullScreen(CMethodResult& oResult){}
-void CSystemImplBase::setFullScreen( bool value, CMethodResult& oResult){}
-void CSystemImplBase::getLocalServerPort(CMethodResult& oResult){}
-void CSystemImplBase::setLocalServerPort( __int64 value, CMethodResult& oResult){}
-void CSystemImplBase::getScreenAutoRotate(CMethodResult& oResult){}
-void CSystemImplBase::setScreenAutoRotate( bool value, CMethodResult& oResult){}
+void CSystemImplBase::getLocalServerPort(CMethodResult& oResult)
+{
+    oResult.set( (int64)atoi(RHODESAPP().getFreeListeningPort()) );
+}
 
-void CSystemImplBase::applicationInstall( const rho::StringW& applicationUrl, CMethodResult& oResult){}
-void CSystemImplBase::isApplicationInstalled( const rho::StringW& applicationName, CMethodResult& oResult){}
-void CSystemImplBase::applicationUninstall( const rho::StringW& applicationName, CMethodResult& oResult){}
-void CSystemImplBase::openUrl( const rho::StringW& url, CMethodResult& oResult){}
-void CSystemImplBase::runApplication( const rho::StringW& appName,  const rho::StringW& params,  bool blockingCall, CMethodResult& oResult){}
-void CSystemImplBase::unzipFile( const rho::StringW& localPathToZip, CMethodResult& oResult){}
-void CSystemImplBase::zipFile( const rho::StringW& localPathToZip,  const rho::StringW& localPathToFile,  const rho::StringW& password, CMethodResult& oResult){}
-void CSystemImplBase::zipFiles( const rho::StringW& localPathToZip,  const rho::StringW& basePath,  const rho::Vector<rho::StringW>& filePathsToZip,  const rho::StringW& password, CMethodResult& oResult){}
-void CSystemImplBase::setRegistrySetting( const rho::StringW& keyPath,  const rho::StringW& keyValue, CMethodResult& oResult){}
-void CSystemImplBase::getRegistrySetting( const rho::StringW& keyPath, CMethodResult& oResult){}
-void CSystemImplBase::setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, CMethodResult& oResult){}
-void CSystemImplBase::setWindowPosition( __int64 x,  __int64 y, CMethodResult& oResult){}
+void CSystemImplBase::setLocalServerPort( __int64 value, CMethodResult& oResult)
+{
+    //Local port can be set only in confuguration file
+}
+
+void CSystemImplBase::getFreeServerPort(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set( (int64)RHODESAPP().determineFreeListeningPort() );
+}
+
+void CSystemImplBase::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set(true);
+}
+
+void CSystemImplBase::getSecurityTokenNotPassed(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set( RHODESAPP().isSecurityTokenNotPassed() );
+}
+
+void CSystemImplBase::getStartParams(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set( convertToStringW(RHODESAPP().getStartParameters()) );
+}
+
+//TODO: move rho_sys_unzip_file here
+int rho_sys_unzip_file(const char* szZipPath, const char* psw);
+void CSystemImplBase::unzipFile( const rho::StringW& localPathToZip, const rho::StringW& password, rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set( rho_sys_unzip_file( convertToStringA(localPathToZip).c_str(), convertToStringA(password).c_str()) );
+}
+
+void CSystemImplBase::zipFile( const rho::StringW& localPathToZip,  const rho::StringW& localPathToFile,  const rho::StringW& password, CMethodResult& oResult)
+{
+    ZRESULT res = -1;
+    CFilePath oPath( convertToStringA(localPathToFile));
+
+#if defined(UNICODE) || defined(_UNICODE)
+    StringW strFileNameW;
+    convertToStringW(oPath.getBaseName(), strFileNameW);
+
+    HZIP hz = CreateZip(localPathToZip.c_str(), convertToStringA(password).c_str());
+    if ( hz )
+    {
+        res = ZipAdd( hz, strFileNameW.c_str(), localPathToFile.c_str() );
+        res = CloseZip(hz);
+    }
+#else
+    HZIP hz = CreateZip( convertToStringA(localPathToZip).c_str(), convertToStringA(password).c_str());
+    if ( hz )
+    {
+        res = ZipAdd( hz, oPath.getBaseName(), convertToStringA(localPathToFile).c_str() );
+        res = CloseZip(hz);
+    }
+#endif
+    oResult.set(res);
+}
+
+int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, void* ptrFilesArray, const char* psw)
+{
+	ZRESULT res;
+	HZIP hz = 0;
+	
+#if defined(UNICODE) || defined(_UNICODE)
+	hz = CreateZip( convertToStringW(String(szZipFilePath)).c_str(), psw);
+#else
+	hz = CreateZip(szZipFilePath, psw);
+#endif
+	
+	if ( !hz )
+		return -1;
+	
+	rho::Vector<rho::String>& arFiles = *reinterpret_cast<rho::Vector<rho::String>*>(ptrFilesArray);
+	
+	for ( int i = 0; i < (int)arFiles.size(); i++ )
+	{
+		rho::String filePath = arFiles.elementAt(i);
+		bool isDir = CRhoFile::isDirectory(filePath.c_str());
+		rho::String zipPath = base_path ? filePath.substr(strlen(base_path)) : filePath;
+		
+#if defined(UNICODE) || defined(_UNICODE)
+		if ( isDir )
+			res = ZipAddFolder( hz, convertToStringW(zipPath).c_str(), convertToStringW(filePath).c_str() );
+		else
+			res = ZipAdd( hz, convertToStringW(zipPath).c_str(), convertToStringW(filePath).c_str() );
+#else
+		if ( isDir )
+			res = ZipAddFolder( hz, zipPath.c_str(), filePath.c_str() );
+		else
+			res = ZipAdd( hz, zipPath.c_str(), filePath.c_str() );
+#endif
+		
+		if (res != 0)
+			LOG(ERROR) + "Zip file failed: " + res + "; " + filePath;
+	}
+	
+	res = CloseZip(hz);
+	
+	return res;
+}
+
+void CSystemImplBase::zipFiles( const rho::StringW& localPathToZip,  const rho::StringW& basePath,  const rho::Vector<rho::StringW>& filePathsToZip,  const rho::StringW& password, CMethodResult& oResult)
+{
+	rho::Vector<rho::String> arFiles;
+    for( int i = 0; i < (int)filePathsToZip.size(); i++)
+        arFiles.addElement( convertToStringA(filePathsToZip[i]) );
+
+    int nRes = rho_sys_zip_files_with_path_array_ptr( convertToStringA(localPathToZip).c_str(), convertToStringA(basePath).c_str(), &arFiles, convertToStringA(password).c_str() );
+	oResult.set( nRes );
+}
 
 }

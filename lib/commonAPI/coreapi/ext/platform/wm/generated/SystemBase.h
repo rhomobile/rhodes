@@ -5,6 +5,21 @@
 namespace rho {
 
 using namespace rho::apiGenerator;
+
+class CSystemFactoryBase : public CModuleFactoryBase<ISystem, ISystemSingleton, ISystemFactory>
+{
+protected:
+    static rho::common::CAutoPtr<CSystemFactoryBase> m_pInstance;
+
+public:
+
+    static void setInstance(CSystemFactoryBase* pInstance){ m_pInstance = pInstance; }
+    static CSystemFactoryBase* getInstance(){ return m_pInstance; }
+
+    static ISystemSingleton* getSystemSingletonS(){ return getInstance()->getModuleSingleton(); }
+};
+
+
 class CSystemBase: public ISystem
 {
 protected:
@@ -23,20 +38,9 @@ public:
     virtual void clearAllProperties(CMethodResult& oResult);
 
 
+    static CSystemBase* getInstance(){ return static_cast< CSystemBase* >(CSystemFactoryBase::getInstance()->getModuleByID(CSystemFactoryBase::getSystemSingletonS()->getDefaultID())); }
+ 
 
-};
-
-class CSystemFactoryBase : public CModuleFactoryBase<ISystem, ISystemSingleton, ISystemFactory>
-{
-protected:
-    static rho::common::CAutoPtr<CSystemFactoryBase> m_pInstance;
-
-public:
-
-    static void setInstance(CSystemFactoryBase* pInstance){ m_pInstance = pInstance; }
-    static CSystemFactoryBase* getInstance(){ return m_pInstance; }
-
-    static ISystemSingleton* getSystemSingletonS(){ return getInstance()->getModuleSingleton(); }
 };
 
 extern "C" void Init_System_API();
