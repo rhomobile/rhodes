@@ -1263,56 +1263,30 @@ module Rhogen
 
 
 
-    template :wm_api do |template|
+    template :cpp_api do |template|
       template.source = 'cpp/IMontana.h'
-      template.destination = "platform/wm/generated/I#{$cur_module.name}.h"
+      template.destination = "shared/generated/cpp/I#{$cur_module.name}.h"
     end
 
-    template :wm_api1 do |template|
+    template :cpp_api1 do |template|
       template.source = 'cpp/MontanaBase.h'
-      template.destination = "platform/wm/generated/#{$cur_module.name}Base.h"
+      template.destination = "shared/generated/cpp/#{$cur_module.name}Base.h"
     end
 
-    template :wm_api4 do |template|
+    template :cpp_api2 do |template|
       template.source = 'cpp/MontanaBase.cpp'
-      template.destination = "platform/wm/generated/#{$cur_module.name}Base.cpp"
+      template.destination = "shared/generated/cpp/#{$cur_module.name}Base.cpp"
     end
 
-    template :wm_api2 do |template|
+    template :cpp_api3 do |template|
       template.source = 'cpp/montana_ruby_wrap.cpp'
-      template.destination = "platform/wm/generated/#{$cur_module.name}_ruby_wrap.cpp"
+      template.destination = "shared/generated/cpp/#{$cur_module.name}_ruby_wrap.cpp"
     end
 
-    template :wm_api3 do |template|
+    template :cpp_api4 do |template|
       template.source = 'cpp/montana_js_wrap.cpp'
-      template.destination = "platform/wm/generated/#{$cur_module.name}_js_wrap.cpp"
+      template.destination = "shared/generated/cpp/#{$cur_module.name}_js_wrap.cpp"
     end
-
-	template :wp8_api do |template|
-      template.source = 'cpp/IMontana.h'
-      template.destination = "platform/wp8/generated/I#{$cur_module.name}.h"
-    end
-
-    template :wp8_api1 do |template|
-      template.source = 'cpp/MontanaBase.h'
-      template.destination = "platform/wp8/generated/#{$cur_module.name}Base.h"
-    end
-
-    template :wp8_api4 do |template|
-      template.source = 'cpp/MontanaBase.cpp'
-      template.destination = "platform/wp8/generated/#{$cur_module.name}Base.cpp"
-    end
-
-    template :wp8_api2 do |template|
-      template.source = 'cpp/montana_ruby_wrap.cpp'
-      template.destination = "platform/wp8/generated/#{$cur_module.name}_ruby_wrap.cpp"
-    end
-
-    template :wp8_api3 do |template|
-      template.source = 'cpp/montana_js_wrap.cpp'
-      template.destination = "platform/wp8/generated/#{$cur_module.name}_js_wrap.cpp"
-    end
-
 
     template :android_java_obj_interface do |template|
       template.source = 'platform/android/gen/src/IMontana.java'

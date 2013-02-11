@@ -1,4 +1,4 @@
-#include "../generated/<%= name.camel_case %>Base.h"
+#include "../../../shared/generated/cpp/<%= name.camel_case %>Base.h"
 
 namespace rho {
 

@@ -621,6 +621,30 @@
 			<Filter
 				Name="generated"
 				>
+		        <Filter
+			        Name="cpp"
+			        >
+			        <File
+				        RelativePath=".\generated\I<%= name.camel_case() %>.h"
+				        >
+			        </File>
+			        <File
+				        RelativePath=".\generated\<%= name.camel_case() %>_js_wrap.cpp"
+				        >
+			        </File>
+			        <File
+				        RelativePath=".\generated\<%= name.camel_case() %>_ruby_wrap.cpp"
+				        >
+			        </File>
+			        <File
+				        RelativePath=".\generated\<%= name.camel_case() %>Base.cpp"
+				        >
+			        </File>
+			        <File
+				        RelativePath=".\generated\<%= name.camel_case() %>Base.h"
+				        >
+			        </File>
+		        </Filter>
 				<File
 					RelativePath="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp"
 					>
@@ -680,30 +704,6 @@
 			</File>
 		    
 	    </Filter>
-		<Filter
-			Name="generated"
-			>
-			<File
-				RelativePath=".\generated\I<%= name.camel_case() %>.h"
-				>
-			</File>
-			<File
-				RelativePath=".\generated\<%= name.camel_case() %>_js_wrap.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\generated\<%= name.camel_case() %>_ruby_wrap.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\generated\<%= name.camel_case() %>Base.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\generated\<%= name.camel_case() %>Base.h"
-				>
-			</File>
-		</Filter>
 		<File
 			RelativePath=".\src\<%= name.camel_case() %>_impl.cpp"
 			>

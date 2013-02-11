@@ -1,4 +1,4 @@
-#include "../platform/wm/generated/SystemBase.h"
+#include "generated/cpp/SystemBase.h"
 
 namespace rho {
 

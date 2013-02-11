@@ -14,6 +14,9 @@
     <Filter Include="shared\generated">
       <UniqueIdentifier>{e385e312-d9a0-4097-8630-ed93f91838f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shared\generated\cpp">
+      <UniqueIdentifier>{e385e312-d9a0-4097-8630-ad93f91838f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp">
@@ -28,20 +31,20 @@
     <ClInclude Include="..\..\<%= name.camel_case() %>.xml">
       <Filter>shared</Filter>
     </ClInclude>
-    <ClCompile Include="generated\<%= name.downcase() %>_js_wrap.cpp">
-      <Filter>generated</Filter>
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_js_wrap.cpp">
+      <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="generated\<%= name.downcase() %>_ruby_wrap.cpp">
-      <Filter>generated</Filter>
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_ruby_wrap.cpp">
+      <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="generated\<%= name.camel_case() %>Base.cpp">
-      <Filter>generated</Filter>
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.cpp">
+      <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClInclude Include="generated\I<%= name.camel_case() %>.h">
-      <Filter>generated</Filter>
+    <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h">
+      <Filter>shared\generated\cpp</Filter>
     </ClInclude>
-    <ClInclude Include="generated\<%= name.camel_case() %>Base.h">
-      <Filter>generated</Filter>
+    <ClInclude Include="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.h">
+      <Filter>shared\generated\cpp</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
