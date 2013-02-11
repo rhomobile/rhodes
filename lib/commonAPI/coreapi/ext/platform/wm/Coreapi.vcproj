@@ -1146,6 +1146,30 @@
 						RelativePath="..\..\shared\generated\system_ruby_api.c"
 						>
 					</File>
+					<Filter
+						Name="cpp"
+						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\ISystem.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\System_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\System_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\SystemBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\SystemBase.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 				<Filter
 					Name="unzip"
@@ -1168,30 +1192,6 @@
 					</File>
 				</Filter>
 			</Filter>
-			<Filter
-				Name="generated"
-				>
-				<File
-					RelativePath=".\generated\ISystem.h"
-					>
-				</File>
-				<File
-					RelativePath=".\generated\System_js_wrap.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\generated\System_ruby_wrap.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\generated\SystemBase.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\generated\SystemBase.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="System.Process"
@@ -1199,27 +1199,37 @@
 			<File
 				RelativePath="..\..\process.xml"
 				>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="$(InputDir)shared/generated"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="$(InputDir)shared/generated"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|MC3000c50b (ARMV4I)"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="$(InputDir)shared/generated"
+					/>
+				</FileConfiguration>
 			</File>
-			<Filter
-				Name="generated"
-				>
-				<File
-					RelativePath=".\generated\IProcess.h"
-					>
-				</File>
-				<File
-					RelativePath=".\generated\Process_js_wrap.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\generated\Process_ruby_wrap.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\generated\ProcessFactoryBase.cpp"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="shared"
 				>
@@ -1238,6 +1248,30 @@
 						RelativePath="..\..\shared\generated\process_ruby_api.c"
 						>
 					</File>
+					<Filter
+						Name="cpp"
+						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\IProcess.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Process_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Process_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\ProcessBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\ProcessBase.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 		</Filter>
