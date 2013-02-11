@@ -10,6 +10,10 @@ namespace system {
 ///////////////////////////////////////////////////////////
 struct IProcess
 {
+//constants
+
+
+//methods
     virtual ~IProcess(){}
 
     virtual void waitForApplication(rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -37,21 +41,6 @@ struct IProcessFactory
 
 
 };
-
-class CProcessFactoryBase : public rho::apiGenerator::CModuleFactoryBase<IProcess, IProcessSingleton, IProcessFactory>
-{
-protected:
-    static rho::common::CAutoPtr<CProcessFactoryBase> m_pInstance;
-
-public:
-
-    static void setInstance(CProcessFactoryBase* pInstance){ m_pInstance = pInstance; }
-    static CProcessFactoryBase* getInstance(){ return m_pInstance; }
-
-    static IProcessSingleton* getProcessSingletonS(){ return getInstance()->getModuleSingleton(); }
-};
-
-extern "C" void Init_Process_API();
 
 
 }

@@ -45,7 +45,7 @@ void C<%= $cur_module.name %>Base::getProperties( const rho::Vector<::rho::Strin
         if ( oResult.isError() )
             break;
 
-        res[arrayofNames[i]] = oResult.toStringW();
+        res[arrayofNames[i]] = common::convertToStringW(oResult.toString());
     }
 
     oResult.setCollectionMode(false);

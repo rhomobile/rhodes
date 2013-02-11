@@ -67,18 +67,18 @@ rho::String CMethodResult::toJSON()
     return strRes;
 }
 
-rho::StringW CMethodResult::toStringW()
+rho::String CMethodResult::toString()
 {
     if ( m_ResType == eString)
-        return m_strRes;
+        return convertToStringA(m_strRes);
     else if ( m_ResType == eBool)
-        return convertToStringW(m_bRes?1:0);
+        return convertToStringA(m_bRes?1:0);
     else if ( m_ResType == eInt)
-        return convertToStringW(m_nRes);
+        return convertToStringA(m_nRes);
     else if ( m_ResType == eDouble)
-        return convertToStringW(m_dRes);
+        return convertToStringA(m_dRes);
 
-    return rho::StringW();
+    return rho::String();
 }
 
 VALUE CMethodResult::toRuby()
