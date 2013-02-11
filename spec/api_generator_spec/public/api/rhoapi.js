@@ -1,13 +1,3 @@
-/*
-    + 1) delete hardcoded namespace
-    + 2) constants in module
-    + 3) modules loading defined in html, not api file
-    + 4) /public resources in extensions? YES!
-    ~ 5) erb template in /public/api
-    - 6) generation
-    - 7) document
- */
-
 var Rho = Rho || (function ($) {
     'use strict';
 
