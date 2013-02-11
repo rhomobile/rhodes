@@ -78,6 +78,15 @@ def run_apps(platform)
 		f.puts "SYNC_SERVER_PORT = #{RhoconnectHelper.port}"
 	end
 	
+	File.open(File.join($app_path, 'app', 'push_server.rb'), 'w') do |f|
+		f.puts "PUSH_SERVER_HOST = '#{RhoconnectHelper.push_host}'"
+		f.puts "PUSH_SERVER_PORT = #{RhoconnectHelper.push_port}"
+	end
+	cfgfile = File.join($app_path, 'rhoconfig.txt')
+	cfg = File.read(cfgfile)
+	cfg.gsub!(/(rhoconnect_push_server.*)/, "rhoconnect_push_server = 'http://#{RhoconnectHelper.push_host}:#{RhoconnectHelper.push_port}'")
+	File.open(cfgfile, 'w') {|f| f.write cfg}
+	
 	puts "configure android"
 	Rake::Task["config:android:emulator"].invoke
 	AndroidTools.run_emulator

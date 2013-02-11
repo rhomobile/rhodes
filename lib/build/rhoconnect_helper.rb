@@ -10,7 +10,7 @@ module RhoconnectHelper
 	@@enable_redis = true
 	@@enable_resque = true
 	@@enable_push = true
-	@@enable_rails = true
+	#	@@enable_rails = true
 	
 	def self.set_enable_redis(b)
 		@@enable_redis = b
@@ -25,7 +25,7 @@ module RhoconnectHelper
 	end
 
 	def self.set_enable_rails(b)
-		@@enable_rails = b
+#		@@enable_rails = b
 	end
 
 
@@ -71,6 +71,16 @@ module RhoconnectHelper
 	def self.set_rc_push_out(rc_push_out)
 		@@rc_push_out = rc_push_out
 	end
+
+	@@push_host = nil
+	def self.push_host
+		@@push_host
+	end
+
+	@@push_port = nil
+	def self.push_port
+		@@push_port
+	end
 	
 	@@server_path = nil
 	
@@ -91,6 +101,10 @@ module RhoconnectHelper
 
 	def self.stop_server
 		execute_rhoconnect(@@server_path,"stop")
+		@@server_pid = nil
+		@@server_path = nil
+		@@host = nil
+		@@port = nil
 	end
 
 	def self.start_redis
@@ -157,13 +171,13 @@ module RhoconnectHelper
 		puts "run rhoconnect"
 		start_server(dir)
 		sleep(10)
-
+=begin
 		if @@enable_rails
 			puts "run rails"
 			start_rails
 			sleep 10
 		end
-		
+=end		
 		if reset
 			puts "reset rhoconnect"
 			reset_server
@@ -184,12 +198,12 @@ module RhoconnectHelper
 		
 		puts "stop rhoconnect"
 		stop_server
-
+=begin
 		if @@enable_rails
 			puts "stop rails"
 			stop_rails
 		end
-
+=end
 		if @@enable_push
 			puts "stop rhoconnect push"
 			stop_rhoconnect_push
@@ -208,11 +222,16 @@ module RhoconnectHelper
 
 	def self.start_rhoconnect_push
 		@@rhoconnect_push_pid = Kernel.spawn("rhoconnect-push start -d 3", :out => @@rc_push_out)
+		@@push_host = Jake.localip
+		@@push_port = 8675
+
 	end
 
 	def self.stop_rhoconnect_push
 		Process.kill('INT', @@rhoconnect_push_pid) if @@rhoconnect_push_pid
 		@@rhoconnect_push_pid = nil
+		@@push_host = nil
+		@@push_port = nil
 	end
 
 	def self.start_rails
