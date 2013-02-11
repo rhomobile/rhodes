@@ -387,6 +387,7 @@
     <ClCompile Include="progress.c" />
     <ClCompile Include="qssl.c" />
     <ClCompile Include="rawstr.c" />
+    <ClCompile Include="rhossl.c" />
     <ClCompile Include="security.c" />
     <ClCompile Include="select.c" />
     <ClCompile Include="sendf.c" />

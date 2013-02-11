@@ -221,6 +221,7 @@
     <ClInclude Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.h" />
     <ClInclude Include="common\RhoClassFactory.h" />
     <ClInclude Include="common\RhoCryptImpl.h" />
+    <ClInclude Include="common\SSLImpl.h" />
     <ClInclude Include="rhoruntime.h" />
     <ClInclude Include=".\pch_rhoruntime.h" />
   </ItemGroup>
@@ -230,6 +231,7 @@
     <ClCompile Include="common\ExtManager.cpp" />
     <ClCompile Include="common\RhoClassFactory.cpp" />
     <ClCompile Include="common\RhoCryptImpl.cpp" />
+    <ClCompile Include="common\SSLImpl.cpp" />
     <ClCompile Include="TabbarImpl.cpp" />
     <ClCompile Include="common\ThreadEmulation.cpp" />
     <ClCompile Include="FakeDefs.cpp" />
