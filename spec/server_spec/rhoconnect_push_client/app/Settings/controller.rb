@@ -4,6 +4,7 @@ require 'rho/rhoerror'
 require 'helpers/browser_helper'
 require 'sync_server'
 require 'local_server'
+require 'push_server'
 
 
 class SettingsController < Rho::RhoController
@@ -14,6 +15,9 @@ class SettingsController < Rho::RhoController
     
     puts "Logged in: #{SyncEngine.logged_in}"
 	SyncEngine.set_syncserver("http://#{SYNC_SERVER_HOST}:#{SYNC_SERVER_PORT}/application")
+	RhoConf.set_property_by_name('rhoconnect_push_server',"http://#{PUSH_SERVER_HOST}:#{PUSH_SERVER_PORT}")
+	puts "push server is #{RhoConf.get_property_by_name('rhoconnect_push_server')}"
+	  
 	SyncEngine.logout
 	SyncEngine.login('pushclient', 'pushclient', '/app/Settings/login_callback' )
 	  #unless $push_check_started
@@ -72,8 +76,10 @@ class SettingsController < Rho::RhoController
       Rho::Timer.start(5000, url_for(:action=>'check_registration'), '')
     end
   end
-  
+
   def push_callback
+	puts "======> PUSH CALLBACK params #{@params.inspect}"
+	  
     host = SPEC_LOCAL_SERVER_HOST
     port = SPEC_LOCAL_SERVER_PORT
     exit = nil
@@ -86,13 +92,14 @@ class SettingsController < Rho::RhoController
       end
     end
     
-    puts "sending response: http://#{host}:#{port}?alert=#{@params['alert']} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+	url = "http://#{host}:#{port}?alert=#{@params['alert']}&error=#{@params['error']}"
+    puts "sending response: #{url} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
     
-    Rho::AsyncHttp.get :url => "http://#{host}:#{port}?alert=#{@params['alert']}"
+    Rho::AsyncHttp.get :url => url
     
     System.exit if exit
-    
   end
+ 
 =begin
   def do_login
     if @params['login'] and @params['password']
