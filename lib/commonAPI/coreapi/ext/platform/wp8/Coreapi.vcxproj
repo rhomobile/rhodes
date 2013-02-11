@@ -146,20 +146,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\shared\generated\cpp\SystemBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\System_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\System_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\system_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\system_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\system_ruby_api.c" />
-    <ClCompile Include="generated\SystemBase.cpp" />
-    <ClCompile Include="generated\System_js_wrap.cpp" />
-    <ClCompile Include="generated\System_ruby_wrap.cpp" />
     <ClCompile Include="src\SystemImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\ISystem.h" />
-    <ClInclude Include="generated\SystemBase.h" />
+    <Xml Include="..\..\system.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\..\system.xml" />
+    <ClInclude Include="..\..\shared\generated\cpp\ISystem.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

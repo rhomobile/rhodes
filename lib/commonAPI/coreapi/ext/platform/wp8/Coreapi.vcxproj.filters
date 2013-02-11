@@ -8,14 +8,14 @@
     <Filter Include="System">
       <UniqueIdentifier>{80352120-70d6-42bb-98e3-1c361e52bcc9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="System\generated">
-      <UniqueIdentifier>{6190c737-81f8-4307-9473-dab43bcb081b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="System\shared">
       <UniqueIdentifier>{60f58091-37ba-4e88-a355-14f7fd6cb57e}</UniqueIdentifier>
     </Filter>
     <Filter Include="System\shared\generated">
       <UniqueIdentifier>{e385e312-d9a0-4097-8630-ed93f91838f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\shared\generated\cpp">
+      <UniqueIdentifier>{dd423364-566a-4ce9-9775-2e900845a2df}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -28,30 +28,30 @@
     <ClCompile Include="..\..\shared\generated\system_ruby_api.c">
       <Filter>System\shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="generated\System_js_wrap.cpp">
-      <Filter>System\generated</Filter>
-    </ClCompile>
-    <ClCompile Include="generated\System_ruby_wrap.cpp">
-      <Filter>System\generated</Filter>
-    </ClCompile>
-    <ClCompile Include="generated\SystemBase.cpp">
-      <Filter>System\generated</Filter>
-    </ClCompile>
     <ClCompile Include="src\SystemImpl.cpp">
       <Filter>System</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="generated\ISystem.h">
-      <Filter>System\generated</Filter>
-    </ClInclude>
-    <ClInclude Include="generated\SystemBase.h">
-      <Filter>System\generated</Filter>
-    </ClInclude>
+    <ClCompile Include="..\..\shared\generated\cpp\System_js_wrap.cpp">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\System_ruby_wrap.cpp">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\SystemBase.cpp">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\system.xml">
       <Filter>System\shared</Filter>
     </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
