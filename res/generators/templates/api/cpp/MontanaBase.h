@@ -11,6 +11,7 @@ class C<%= $cur_module.name %>FactoryBase : public CModuleFactoryBase<I<%= $cur_
 {
 protected:
     static rho::common::CAutoPtr<C<%= $cur_module.name %>FactoryBase> m_pInstance;
+    Hashtable<rho::StringW,I<%= $cur_module.name %>*> m_hashModules;
 
 public:
 
@@ -18,8 +19,42 @@ public:
     static C<%= $cur_module.name %>FactoryBase* getInstance(){ return m_pInstance; }
 
     static I<%= $cur_module.name %>Singleton* get<%= $cur_module.name %>SingletonS(){ return getInstance()->getModuleSingleton(); }
+
+    virtual I<%= $cur_module.name %>* getModuleByID(const rho::StringW& strID)
+    {
+        if ( !m_hashModules.containsKey(strID) )
+        {
+            I<%= $cur_module.name %>* pObj = createModuleByID(strID);
+            m_hashModules.put(strID, pObj );
+
+            return pObj;
+        }
+
+        return m_hashModules[strID];
+    }
+
+    virtual I<%= $cur_module.name %>* createModuleByID(const rho::StringW& strID){ return (I<%= $cur_module.name %>*)0; };
+
 };
 
+class C<%= $cur_module.name %>SingletonBase : public CModuleSingletonBase< I<%= $cur_module.name %>Singleton >
+{
+protected:
+<% if $cur_module.is_template_default_instance %>
+    rho::StringW m_strDefaultID;
+<% end %>
+public:
+
+<% if $cur_module.is_template_default_instance %>
+    virtual void setDefaultID(const rho::StringW& strDefaultID){ m_strDefaultID = strDefaultID; }
+    virtual rho::StringW getDefaultID()
+    { 
+        if ( m_strDefaultID.length() == 0 )
+            setDefaultID(getInitialDefaultID());
+        return m_strDefaultID; 
+    }
+<% end %>
+};
 
 class C<%= $cur_module.name %>Base: public I<%= $cur_module.name %>
 {

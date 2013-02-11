@@ -157,7 +157,7 @@ void CSystemImpl::setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int6
 void CSystemImpl::setWindowPosition( __int64 x,  __int64 y, CMethodResult& oResult){}
 
 ////////////////////////////////////////////////////////////////////////
-class CSystemSingleton: public CModuleSingletonBase<ISystemSingleton>
+class CSystemSingleton: public CSystemSingletonBase
 {
 public:
     ~CSystemSingleton(){}

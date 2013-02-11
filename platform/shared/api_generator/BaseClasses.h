@@ -79,7 +79,6 @@ template<typename ModuleClass>
 class CModuleSingletonBase : public ModuleClass
 {
 protected:
-    rho::StringW m_strDefaultID;
     rho::common::CAutoPtr<rho::common::CThreadQueue> m_pCommandQueue;
 
     class CCallInThread : public rho::common::CRhoThread
@@ -117,14 +116,6 @@ public:
     {
         new CCallInThread(pFunctor);
     }
-
-    virtual void setDefaultID(const rho::StringW& strDefaultID){ m_strDefaultID = strDefaultID; }
-    virtual rho::StringW getDefaultID()
-    { 
-        if ( m_strDefaultID.length() == 0 )
-            setDefaultID(getInitialDefaultID());
-        return m_strDefaultID; 
-    }
 };
 
 template<typename ModuleClass, typename SingletonClass, typename BaseClass>
@@ -132,7 +123,6 @@ class CModuleFactoryBase : public BaseClass
 {
 protected:
     common::CAutoPtr<SingletonClass> m_pModuleSingleton;
-    Hashtable<StringW,ModuleClass*> m_hashModules;
 
 public:
 
@@ -144,21 +134,7 @@ public:
         return m_pModuleSingleton;
     }
 
-    virtual ModuleClass* getModuleByID(const StringW& strID)
-    {
-        if ( !m_hashModules.containsKey(strID) )
-        {
-            ModuleClass* pObj = createModuleByID(strID);
-            m_hashModules.put(strID, pObj );
-
-            return pObj;
-        }
-
-        return m_hashModules[strID];
-    }
-    
     virtual SingletonClass* createModuleSingleton() = 0;
-    virtual ModuleClass* createModuleByID(const StringW& strID) = 0;
 
 };
 }
