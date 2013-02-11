@@ -24,36 +24,15 @@
  * http://rhomobile.com
  *------------------------------------------------------------------------*/
 
+// This file is used to link rho_javascriptvm_call_js_function for RhoJavaScript
+
 #pragma once
 
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
 
-namespace rho {
-namespace common {
-    
-enum eVM {
-    VM_JAVASCRIPT = 0,
-    NUM_VIRTUAL_MACHINES
-};
-
-struct IRhoScriptVM
-{
-    virtual ~IRhoScriptVM(void){}
-    
-    virtual int getVMId() = 0;
-    
-    virtual bool loadScript(const rho::String& buffer, const rho::String& tag) = 0;
-    virtual bool unloadScript(const rho::String& tag) = 0;
-    
-    virtual rho::String performAction(const rho::String& actionName, const rho::String& params) = 0;
-};
-    
-}
-}
+#include "ruby/ext/rho/rhoruby.h"
 
 extern "C" {
-    bool rho_javascriptvm_load_script(const char* buffer, const char* tag);
-    bool rho_javascriptvm_unload_script(const char* tag);
-    void rho_javascriptvm_perform_action(const char* actionName, const char* params);
+    VALUE rho_javascriptvm_call_js_function(const char* function);
 }

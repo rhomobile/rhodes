@@ -1816,19 +1816,9 @@ static VALUE mRhoScriptVM;
 
 #include "ruby/ext/rho/rhoruby.h"
 
-#if !defined(bool)
-#define bool int
-#define true  1
-#define false 0
-#endif
+extern VALUE rho_javascriptvm_call_js_function(const char* function);
 
-extern bool rho_javascriptvm_load_script(const char* buffer, const char* tag);
-extern bool rho_javascriptvm_unload_script(const char* tag);
-extern void rho_javascriptvm_perform_action(const char* actionName, const char* params);
-
-#define load_script rho_javascriptvm_load_script
-#define unload_script rho_javascriptvm_unload_script
-#define perform_action rho_javascriptvm_perform_action
+#define call_js_function rho_javascriptvm_call_js_function
 
 
 SWIGINTERN swig_type_info*
@@ -1880,58 +1870,13 @@ SWIG_AsCharPtrAndSize(VALUE obj, char** cptr, size_t* psize, int *alloc)
 
 
 
-
-SWIGINTERNINLINE VALUE
-SWIG_From_bool  (bool value)
-{
-  return value ? Qtrue : Qfalse;
-}
-
 SWIGINTERN VALUE
-_wrap_load_script(int argc, VALUE *argv, VALUE self) {
-  char *arg1 = (char *) 0 ;
-  char *arg2 = (char *) 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  bool result;
-  VALUE vresult = Qnil;
-  
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
-  }
-  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","load_script", 1, argv[0] ));
-  }
-  arg1 = (char *)(buf1);
-  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","load_script", 2, argv[1] ));
-  }
-  arg2 = (char *)(buf2);
-  result = (bool)load_script((char const *)arg1,(char const *)arg2);
-  vresult = SWIG_From_bool((bool)(result));
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return vresult;
-fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_unload_script(int argc, VALUE *argv, VALUE self) {
+_wrap_call_js_function(int argc, VALUE *argv, VALUE self) {
   char *arg1 = (char *) 0 ;
   int res1 ;
   char *buf1 = 0 ;
   int alloc1 = 0 ;
-  bool result;
+  VALUE result;
   VALUE vresult = Qnil;
   
   if ((argc < 1) || (argc > 1)) {
@@ -1939,50 +1884,15 @@ _wrap_unload_script(int argc, VALUE *argv, VALUE self) {
   }
   res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","unload_script", 1, argv[0] ));
+    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","call_js_function", 1, argv[0] ));
   }
   arg1 = (char *)(buf1);
-  result = (bool)unload_script((char const *)arg1);
-  vresult = SWIG_From_bool((bool)(result));
+  result = (VALUE)call_js_function((char const *)arg1);
+  vresult = result;
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
   return vresult;
 fail:
   if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  return Qnil;
-}
-
-
-SWIGINTERN VALUE
-_wrap_perform_action(int argc, VALUE *argv, VALUE self) {
-  char *arg1 = (char *) 0 ;
-  char *arg2 = (char *) 0 ;
-  int res1 ;
-  char *buf1 = 0 ;
-  int alloc1 = 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  
-  if ((argc < 2) || (argc > 2)) {
-    rb_raise(rb_eArgError, "wrong # of arguments(%d for 2)",argc); SWIG_fail;
-  }
-  res1 = SWIG_AsCharPtrAndSize(argv[0], &buf1, NULL, &alloc1);
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), Ruby_Format_TypeError( "", "char const *","perform_action", 1, argv[0] ));
-  }
-  arg1 = (char *)(buf1);
-  res2 = SWIG_AsCharPtrAndSize(argv[1], &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), Ruby_Format_TypeError( "", "char const *","perform_action", 2, argv[1] ));
-  }
-  arg2 = (char *)(buf2);
-  perform_action((char const *)arg1,(char const *)arg2);
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return Qnil;
-fail:
-  if (alloc1 == SWIG_NEWOBJ) free((char*)buf1);
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return Qnil;
 }
 
@@ -2258,8 +2168,6 @@ SWIGEXPORT void Init_RhoScriptVM(void) {
   }
   
   SWIG_RubyInitializeTrackings();
-  rb_define_module_function(mRhoScriptVM, "load_script", _wrap_load_script, -1);
-  rb_define_module_function(mRhoScriptVM, "unload_script", _wrap_unload_script, -1);
-  rb_define_module_function(mRhoScriptVM, "perform_action", _wrap_perform_action, -1);
+  rb_define_module_function(mRhoScriptVM, "call_js_function", _wrap_call_js_function, -1);
 }
 

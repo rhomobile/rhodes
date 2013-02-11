@@ -24,23 +24,19 @@
  * http://rhomobile.com
  *------------------------------------------------------------------------*/
 
-#ifndef rhorunner_WebViewCInterface_h
-#define rhorunner_WebViewCInterface_h
+#pragma once
 
-#include "ruby/ext/rho/rhoruby.h"
+#include "common/RhoStd.h"
+#include "common/AutoPointer.h"
 
-class WebViewCInterface
-{
-public:
-    WebViewCInterface( void );
-    ~WebViewCInterface( void );
-    
-    bool init( void );
-    
-    VALUE performAction( const char* actionName, const char* params);
-    
-private:
-    void * self;
+namespace rho {
+namespace common {
+
+struct IRhoJavaScriptVM {
+    virtual ~IRhoJavaScriptVM(void){}
+
+    virtual rho::String callJSFunction(const rho::String& function) = 0;
 };
 
-#endif
+}
+}

@@ -9,7 +9,7 @@ static const char* keys[] = { ""
 };
 
 static const char* values[] = { ""
-,"api_generator_spec"
+,"EmbeddedJSVM"
 };
 
 #define APP_BUILD_CONFIG_COUNT 2

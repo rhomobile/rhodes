@@ -26,9 +26,7 @@
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C59AB2912DDA1B800ED4A1E /* RhoCryptImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C59AB2812DDA1B800ED4A1E /* RhoCryptImpl.mm */; };
 		5C59AB4212DDA22E00ED4A1E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C59AB4112DDA22E00ED4A1E /* Security.framework */; };
-		AEC6426316C2A9AF0012C269 /* WebViewJavascriptBridge.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = AEC6426116C2A9AF0012C269 /* WebViewJavascriptBridge.js.txt */; };
-		AEC6426416C2A9AF0012C269 /* WebViewJavascriptBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = AEC6426216C2A9AF0012C269 /* WebViewJavascriptBridge.mm */; };
-		AEC6426D16C3F9FE0012C269 /* WebViewContainer.mm in Sources */ = {isa = PBXBuildFile; fileRef = AEC6426C16C3F9FD0012C269 /* WebViewContainer.mm */; };
+		AE3A755316C93B82007F57BB /* CIOSJavaScriptVM.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE3A755216C93B82007F57BB /* CIOSJavaScriptVM.mm */; };
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
 		BD486F59124FB66600F8A93F /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = BD486F58124FB66600F8A93F /* Event.m */; };
@@ -207,13 +205,9 @@
 		5C59AB2812DDA1B800ED4A1E /* RhoCryptImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoCryptImpl.mm; path = ../shared/common/iphone/RhoCryptImpl.mm; sourceTree = SOURCE_ROOT; };
 		5C59AB4112DDA22E00ED4A1E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
-		AEC6426016C2A9AF0012C269 /* WebViewJavascriptBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge.h; sourceTree = "<group>"; };
-		AEC6426116C2A9AF0012C269 /* WebViewJavascriptBridge.js.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WebViewJavascriptBridge.js.txt; sourceTree = "<group>"; };
-		AEC6426216C2A9AF0012C269 /* WebViewJavascriptBridge.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebViewJavascriptBridge.mm; sourceTree = "<group>"; };
-		AEC6426516C2AE940012C269 /* CRhoJavaScriptVMImpl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CRhoJavaScriptVMImpl.h; sourceTree = "<group>"; };
-		AEC6426B16C3F95E0012C269 /* WebViewContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebViewContainer.h; sourceTree = "<group>"; };
-		AEC6426C16C3F9FD0012C269 /* WebViewContainer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebViewContainer.mm; sourceTree = "<group>"; };
-		AEC6426E16C410110012C269 /* WebViewCInterface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebViewCInterface.h; sourceTree = "<group>"; };
+		AE3A755116C93B82007F57BB /* CIOSJavaScriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIOSJavaScriptVM.h; sourceTree = "<group>"; };
+		AE3A755216C93B82007F57BB /* CIOSJavaScriptVM.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CIOSJavaScriptVM.mm; sourceTree = "<group>"; };
+		AE3A755616C94245007F57BB /* WebViewContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebViewContainer.h; sourceTree = "<group>"; };
 		BD2C94A610AE052A008D4692 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
 		BD38E6DB115CFF14001CE05C /* WebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebView.m; sourceTree = "<group>"; };
 		BD38E753115D1AAC001CE05C /* TabbedMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabbedMainView.h; sourceTree = "<group>"; };
@@ -556,13 +550,9 @@
 		AEC6425F16C2A9AF0012C269 /* JavaScriptVM */ = {
 			isa = PBXGroup;
 			children = (
-				AEC6426016C2A9AF0012C269 /* WebViewJavascriptBridge.h */,
-				AEC6426116C2A9AF0012C269 /* WebViewJavascriptBridge.js.txt */,
-				AEC6426216C2A9AF0012C269 /* WebViewJavascriptBridge.mm */,
-				AEC6426516C2AE940012C269 /* CRhoJavaScriptVMImpl.h */,
-				AEC6426B16C3F95E0012C269 /* WebViewContainer.h */,
-				AEC6426C16C3F9FD0012C269 /* WebViewContainer.mm */,
-				AEC6426E16C410110012C269 /* WebViewCInterface.h */,
+				AE3A755116C93B82007F57BB /* CIOSJavaScriptVM.h */,
+				AE3A755216C93B82007F57BB /* CIOSJavaScriptVM.mm */,
+				AE3A755616C94245007F57BB /* WebViewContainer.h */,
 			);
 			path = JavaScriptVM;
 			sourceTree = "<group>";
@@ -928,7 +918,6 @@
 				FA52317B12E7511700AB55CC /* esri.png in Resources */,
 				FA52317C12E7511700AB55CC /* esri@2x.png in Resources */,
 				FA52330112E9204300AB55CC /* BluePushpin@2x.png in Resources */,
-				AEC6426316C2A9AF0012C269 /* WebViewJavascriptBridge.js.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1060,8 +1049,7 @@
 				C5D0D0C1153F279A00B8BF21 /* InitMemoryInfoCollector.mm in Sources */,
 				C5D90EF815F4F58D005F7C86 /* Reachability.m in Sources */,
 				C5D90EFB15F4FC92005F7C86 /* NetworkStatusMonitor.mm in Sources */,
-				AEC6426416C2A9AF0012C269 /* WebViewJavascriptBridge.mm in Sources */,
-				AEC6426D16C3F9FE0012C269 /* WebViewContainer.mm in Sources */,
+				AE3A755316C93B82007F57BB /* CIOSJavaScriptVM.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
