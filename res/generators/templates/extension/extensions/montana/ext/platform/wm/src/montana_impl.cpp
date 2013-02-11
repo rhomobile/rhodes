@@ -21,7 +21,7 @@ public:
 
 };
 
-class C<%= name.camel_case %>Singleton: public CModuleSingletonBase<I<%= name.camel_case %>Singleton>
+class C<%= name.camel_case %>Singleton: public C<%= name.camel_case %>SingletonBase
 {
     ~C<%= name.camel_case %>Singleton(){}
     virtual rho::StringW getInitialDefaultID();

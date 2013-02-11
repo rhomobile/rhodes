@@ -10,6 +10,7 @@ class CSystemFactoryBase : public CModuleFactoryBase<ISystem, ISystemSingleton, 
 {
 protected:
     static rho::common::CAutoPtr<CSystemFactoryBase> m_pInstance;
+    Hashtable<rho::StringW,ISystem*> m_hashModules;
 
 public:
 
@@ -17,8 +18,42 @@ public:
     static CSystemFactoryBase* getInstance(){ return m_pInstance; }
 
     static ISystemSingleton* getSystemSingletonS(){ return getInstance()->getModuleSingleton(); }
+
+    virtual ISystem* getModuleByID(const rho::StringW& strID)
+    {
+        if ( !m_hashModules.containsKey(strID) )
+        {
+            ISystem* pObj = createModuleByID(strID);
+            m_hashModules.put(strID, pObj );
+
+            return pObj;
+        }
+
+        return m_hashModules[strID];
+    }
+
+    virtual ISystem* createModuleByID(const rho::StringW& strID){ return (ISystem*)0; };
+
 };
 
+class CSystemSingletonBase : public CModuleSingletonBase< ISystemSingleton >
+{
+protected:
+
+    rho::StringW m_strDefaultID;
+
+public:
+
+
+    virtual void setDefaultID(const rho::StringW& strDefaultID){ m_strDefaultID = strDefaultID; }
+    virtual rho::StringW getDefaultID()
+    { 
+        if ( m_strDefaultID.length() == 0 )
+            setDefaultID(getInitialDefaultID());
+        return m_strDefaultID; 
+    }
+
+};
 
 class CSystemBase: public ISystem
 {
