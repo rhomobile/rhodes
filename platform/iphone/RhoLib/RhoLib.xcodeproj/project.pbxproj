@@ -67,6 +67,7 @@
 		A2D0557D15A7500A002376EE /* IRhoPushClient.h in Headers */ = {isa = PBXBuildFile; fileRef = A2D0557A15A7500A002376EE /* IRhoPushClient.h */; };
 		A2D0557E15A7500A002376EE /* RhoPushManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2D0557B15A7500A002376EE /* RhoPushManager.cpp */; };
 		A2D0557F15A7500A002376EE /* RhoPushManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A2D0557C15A7500A002376EE /* RhoPushManager.h */; };
+		AE3A755516C93BCB007F57BB /* IRhoJavaScriptVM.h in Headers */ = {isa = PBXBuildFile; fileRef = AE3A755416C93BCB007F57BB /* IRhoJavaScriptVM.h */; };
 		AEC6426916C2B8410012C269 /* ScriptVM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEC6426716C2B8410012C269 /* ScriptVM.cpp */; };
 		AEC6426A16C2B8410012C269 /* ScriptVM.h in Headers */ = {isa = PBXBuildFile; fileRef = AEC6426816C2B8410012C269 /* ScriptVM.h */; };
 		BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */; };
@@ -179,6 +180,7 @@
 		A2D0557A15A7500A002376EE /* IRhoPushClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoPushClient.h; path = ../../shared/common/push/IRhoPushClient.h; sourceTree = "<group>"; };
 		A2D0557B15A7500A002376EE /* RhoPushManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoPushManager.cpp; path = ../../shared/common/push/RhoPushManager.cpp; sourceTree = "<group>"; };
 		A2D0557C15A7500A002376EE /* RhoPushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoPushManager.h; path = ../../shared/common/push/RhoPushManager.h; sourceTree = "<group>"; };
+		AE3A755416C93BCB007F57BB /* IRhoJavaScriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoJavaScriptVM.h; path = ../../shared/common/IRhoJavaScriptVM.h; sourceTree = "<group>"; };
 		AEC6426716C2B8410012C269 /* ScriptVM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScriptVM.cpp; path = ../../shared/scriptvm/ScriptVM.cpp; sourceTree = "<group>"; };
 		AEC6426816C2B8410012C269 /* ScriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScriptVM.h; path = ../../shared/scriptvm/ScriptVM.h; sourceTree = "<group>"; };
 		BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PosixThreadImpl.cpp; path = ../../shared/common/PosixThreadImpl.cpp; sourceTree = SOURCE_ROOT; };
@@ -312,6 +314,7 @@
 				656E39311497A64300288105 /* BundleManager.cpp */,
 				5C98174A0FBC4FCE002597A5 /* InputStream.h */,
 				5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */,
+				AE3A755416C93BCB007F57BB /* IRhoJavaScriptVM.h */,
 				5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */,
 				BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */,
 				BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */,
@@ -560,6 +563,7 @@
 				FAEF1DD616AED9D200E22B05 /* js_helpers.h in Headers */,
 				FAEF1DD816AED9D200E22B05 /* MethodResult.h in Headers */,
 				AEC6426A16C2B8410012C269 /* ScriptVM.h in Headers */,
+				AE3A755516C93BCB007F57BB /* IRhoJavaScriptVM.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

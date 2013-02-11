@@ -29,12 +29,12 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
-#import "WebViewJavascriptBridge.h"
-
+// WebViewContainer is used for wrapping UIWebView into object and calling JS functions from C++
 @interface WebViewContainer : NSObject <UIApplicationDelegate>
 
-@property (strong, nonatomic) WebViewJavascriptBridge *javascriptBridge;
+@property (strong, nonatomic) UIWebView* webView;
 
-- (NSString*)executeJS:(NSString*)function parameter:(NSString*)parameter;
+- (NSString*)callJSFunction:(NSString*)function;
 
 @end
+

@@ -26,44 +26,17 @@
 
 #pragma once
 
-#include <scriptvm/ScriptVM.h>
+#include <common/IRhoJavaScriptVM.h>
 
-/*#import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>*/
-
-/*#import "WebViewContainer.h"*/
-
-#include <objc/objc-runtime.h>
-#include "WebViewCInterface.h"
- 
-namespace rho{
-namespace common{
-
-class CRhoJavaScriptVMImpl : public IRhoScriptVM
+// Class that is used to access JavaScript VM functionality
+class CIOSJavaScriptVM  : public rho::common::IRhoJavaScriptVM
 {
-    DEFINE_LOGCLASS;
-    WebViewCInterface* _WVContainer;
 public:
-    CRhoJavaScriptVMImpl(void) {
-        _WVContainer = new WebViewCInterface();
-        if (_WVContainer)
-        {
-            _WVContainer->init();
-        }
-    }
-    ~CRhoJavaScriptVMImpl(void) {
-        if (_WVContainer) { delete _WVContainer; _WVContainer = NULL; }
-    }
-    
-    virtual int getVMId() { return VM_JAVASCRIPT; }
-    virtual bool loadScript(const String& buffer, const String& tag) { return false; }
-    virtual bool unloadScript(const String& tag) { return false; }
-    
-    virtual String performAction(const String& actionName, const String& params) { return String("false");}
-    
+    CIOSJavaScriptVM(void);
+    ~CIOSJavaScriptVM(void);
+
+    virtual rho::String callJSFunction(const rho::String& function);
+
 private:
+    void * self;
 };
-
-}
-}
-
