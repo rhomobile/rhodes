@@ -167,7 +167,7 @@ namespace rho
 			task<unsigned int>(reader->LoadAsync(size)).then([this, reader, &retCode, data] (task<unsigned int> bytesLoaded) {
 				try
 				{
-					retCode = bytesLoaded.get();								
+					retCode = bytesLoaded.get();	
 			        reader->ReadBytes(data);
 				}
 				catch (Platform::Exception^ exception)
@@ -178,7 +178,7 @@ namespace rho
 
 			}).wait();
 
-			*wouldblock = 0;
+			*wouldblock = (retCode > 0) ? 0 : 1;
 
 			return retCode;
 		}
