@@ -8,13 +8,14 @@
 
 #include "common/StringConverter.h"
 
-#include "ext/rho/rhoruby.h"
-#include "rhodes/JNIRhoRuby.h"
+#include "rhodes/JNIRhoJS.h"
 
 using namespace rho;
 using namespace rho::json;
 using namespace rho::common;
 using namespace rhoelements;
+
+typedef CBarcode1<CJSONArray> CBarcode1JS;
 
 rho::String js_Barcode1_getDefaultID(CJSONArray& oParams, const rho::String& )
 {
@@ -31,15 +32,15 @@ rho::String js_Barcode1_enumerate(const rho::String& strID, CJSONArray& oParams)
     RAWTRACE("js_barcode1_enumerate");
 
     MethodResultJni result;
-    CBarcode1::enumerate(result);
+    CBarcode1JS::enumerate(oParams, result);
     return result.enumerateJSObjects();
 }
 
-rho::String js_Barcode1_getProps(const rho::String& strID, CJSONArray& oParams)
+rho::String js_Barcode1_getProperty(const rho::String& strID, CJSONArray& oParams)
 {
     rho::String id = strID;
     if (id.length() == 0)
-         id = CBarcode1::getDefaultID();
+         id = CBarcode1JS::getDefaultID();
 
     MethodResultJni result;
     if(!result)
@@ -49,11 +50,11 @@ rho::String js_Barcode1_getProps(const rho::String& strID, CJSONArray& oParams)
         return result.toJson();
     }
 
-    CBarcode1 barcode(id);
+    CBarcode1JS barcode(id);
 
     if(oParams.isEnd())
     {
-        barcode.getProps(result);
+        barcode.getProperty(oParams, result);
         return result.toJson();
     }
 

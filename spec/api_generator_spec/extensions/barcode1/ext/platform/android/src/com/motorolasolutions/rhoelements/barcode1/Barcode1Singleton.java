@@ -22,8 +22,8 @@ class Barcode1Singleton extends Barcode1SingletonBase implements IBarcode1Single
         return getIDs().get(0);
     }
 
-    @Override
-    public void enumerate(IMethodResult res) {
-        res.set(getIDs());
-    }
+//    @Override
+//    public void enumerate(IMethodResult res) {
+//        res.set(getIDs());
+//    }
 }
