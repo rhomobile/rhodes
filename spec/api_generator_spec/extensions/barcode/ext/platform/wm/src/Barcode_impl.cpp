@@ -1,4 +1,4 @@
-#include "../generated/BarcodeBase.h"
+#include "../../../shared/generated/cpp/BarcodeBase.h"
 
 namespace rho {
 
@@ -21,7 +21,7 @@ public:
 
 };
 
-class CBarcodeSingleton: public CModuleSingletonBase<IBarcodeSingleton>
+class CBarcodeSingleton: public CBarcodeSingletonBase
 {
     ~CBarcodeSingleton(){}
     virtual rho::StringW getInitialDefaultID();
