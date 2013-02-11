@@ -1,13 +1,19 @@
+/*
+    + 1) delete hardcoded namespace
+    + 2) constants in module
+    + 3) modules loading defined in html, not api file
+    + 4) /public resources in extensions? YES!
+    ~ 5) erb template in /public/api
+    - 6) generation
+    - 7) document
+ */
+
 var Rho = Rho || (function ($) {
     'use strict';
 
     // === API configuration ========================================================
 
-    var thisFileName = 'rho-api.js';
-
-    var apiParts = [
-        "rho-api-barcode1.js"
-    ];
+    var thisFileName = 'rhoapi.js';
 
     var RHO_ID_PARAM = '__rhoID';
 
@@ -20,8 +26,6 @@ var Rho = Rho || (function ($) {
     var pendingCallbacks = {};
 
     function defaultEmptyCallback() {}
-
-    function defaultId() { return 'DEFAULT_OBJECT_ID'; }
 
     function nextId(tag) {
         if ('undefined' == typeof tag || !tag)
@@ -76,19 +80,21 @@ var Rho = Rho || (function ($) {
         return value;
     }
 
-    function propsToHash(props) {
+    function namesToProps(names) {
         var propHash = {};
-        if ("string" == typeof props) {
-            propHash[props] = null;
-        } else if (props instanceof Array) {
-            for (var i=0; i<props.length; i++) {
-                propHash[props[i]] = null;
+        if ("string" == typeof names) {
+            names = names.split(/[\s\,]/);
+        }
+        if (names instanceof Array) {
+            for (var i=0; i<names.length; i++) {
+                propHash[names[i]] = null;
             }
-        } else if (props instanceof Object) {
-            propHash = props;
+        } else if (names instanceof Object) {
+            propHash = names;
         }
     }
 
+    var reqIdCount = 0;
     function commonReq(params) {
 
         var valueCallback = null;
@@ -108,20 +114,23 @@ var Rho = Rho || (function ($) {
             cmd['callback_index'] = params.callbackIndex;
             cmd['args'][params.callbackIndex] = prepareCallback(params.args[params.callbackIndex]);
         }
+        cmd['jsonrpc'] = '2.0';
+        cmd['id'] = reqIdCount++;
 
         var cmdText = $.toJSON(cmd);
+        console.log(cmdText);
 
         var result = null;
         var deferred =  new $.Deferred(function(dfr) {
             $.ajax({
                 async: (null != valueCallback),
-                type: 'get',
+                type: 'post',
                 url: API_CONTROLLER_URL,
                 data:{data: cmdText},
                 dataType: 'json',
                 headers:{'Accept':'text/plain'}
             }).done(function (data) {
-                result = jsValue(data);
+                result = jsValue(data['result']);
                 if (valueCallback) {
                     dfr.resolve(result);
                     valueCallback(result);
@@ -130,11 +139,9 @@ var Rho = Rho || (function ($) {
                 var errObj = null;
                 try {
                     errObj = $.evalJSON(xhr.responseText);
-                    if (errObj && "object" == typeof errObj && "string" == typeof errObj.error) {
-                        message = errObj.error;
-                    }
+                    message = errObj.error.message;
                 } catch (ex) {};
-                result = errObj;
+                result = errObj.error;
                 if (valueCallback) {
                     dfr.reject(message, result);
                     valueCallback(result);
@@ -147,32 +154,63 @@ var Rho = Rho || (function ($) {
 
     function apiReqFor(module) {
         return function(params) {
-            params.module = module;
             params.args = Array.prototype.slice.call(params.args);
+            if ('getProps' == params.method && 0 < params.args.length) {
+                params.args[0] = namesToProps(params.args[0]);
+            }
+            params.method = module +'.'+ params.method;
             return commonReq(params);
         };
+    }
+
+    function extendSafely(dst, src) {
+        for (var prop in src) {
+            if (dst.hasOwnProperty(prop))
+                continue;
+            if (src.hasOwnProperty(prop))
+                dst[prop] = src[prop];
+        }
+        return dst;
+    }
+
+    function namespace(nsPathStr, membersObj) {
+        membersObj = membersObj || {};
+
+        var ns = window;
+        var parts = nsPathStr.split(/[\:\.]/);
+        var nsLog = '';
+
+        for (var i=0; i<parts.length; i++) {
+            var nsProp = parts[i]; 
+            nsLog = nsLog +(i==0 ? '' : '.')+ nsProp;
+
+            var subNs = ns[nsProp];
+            if (!(subNs instanceof Object || 'undefined' == typeof subNs)) {
+                throw "Namespace "+ nsLog +" is already defined and it isn't an object!";
+            }
+
+            if(i == parts.length-1) {
+                if (ns[nsProp])
+                    extendSafely(ns[nsProp], membersObj);
+                else
+                    ns[nsProp] = membersObj;
+            }
+            ns[nsProp] = ns[nsProp] || {};
+            ns = ns[nsProp];
+        }
+        return ns;
     }
 
     // === Factory handling =========================================================
 
     var objClasses = {};
 
-
-
     function objectForClass(className, id) {
         //var obj = null;
         //if ("function" == typeof objClasses[className]) {
         //    obj = new objClasses[className](id);
         //}
-        return new Rho[className].constructor(id);
-    }
-
-    function defaultObjectForClass(className, id) {
-        //var obj = null;
-        //if ("function" == typeof objClasses[className]) {
-        //    obj = new objClasses[className](id);
-        //}
-        return new Rho[className];
+        return namespace(className)(id);
     }
 
     function off_objectForClass(className, id) {
@@ -191,38 +229,7 @@ var Rho = Rho || (function ($) {
         return obj;
     }
 
-
-    function classTemplateFor(moduleName, typeName){
-        var apiReq = apiReqFor(moduleName);
-
-        objClasses[moduleName] = objClasses[moduleName] || {};
-
-        var modClasses = objClasses[moduleName];
-
-        if (modClasses[typeName]) {
-            // return prototype if already defined;
-            return modClasses[typeName];
-        }
-
-        // to don't force to use 'new'
-        modClasses[typeName] = function(id){
-            this.id = id;
-        };
-
-        modClasses[typeName].prototype.getId = function(){ return this.id; };
-
-        modClasses[typeName].prototype.getProps = function(propHash, cb) {
-            return apiReq(arguments, 'getProps', /* params number including optional callback */ 2, this.id);
-        };
-
-        modClasses[typeName].prototype.setProps = function(propHash, cb) {
-            return apiReq(arguments, 'setProps', /* params number including optional callback */ 2, this.id);
-        };
-
-        return modClasses[typeName];
-    }
-
-    // === Common API implementation ================================================
+    // === Modules loading implementation ============================================
 
     function loadCSS(url) {
         $('<link>').attr('rel', 'stylesheet').attr('href', url).appendTo('head');
@@ -234,20 +241,17 @@ var Rho = Rho || (function ($) {
 
     var thisFileURL = $("script[src$='" +thisFileName+ "']").attr('src');
     //
-    function loadApiFile(fileName) {
-        loadScript(thisFileURL.replace(thisFileName, fileName));
+    function loadApiModule(moduleName) {
+        loadScript(thisFileURL.replace(thisFileName, 'rhoapi-'+moduleName+'.js'));
     }
     //
-    function loadRestOfAPI() {
-        $.each(apiParts, function (idx, fileName) {
-            loadApiFile(fileName);
-        });
+    function loadApiModules(parts) {
+        setTimeout(function() {
+            $.each(parts, function (idx, part) {
+                loadApiModule(part);
+            });
+        }, 10);
     }
-
-    // we should finish Rho definition first
-    setTimeout(function() {
-        loadRestOfAPI();
-    }, 10);
 
     // === Callback handler ==========================================================
 
@@ -287,15 +291,16 @@ var Rho = Rho || (function ($) {
     // === Utility internal methods ==================================================
 
     var util = {
+        namespace: namespace,
         apiReqFor: apiReqFor,
-        classTemplateFor: classTemplateFor,
-        defaultId: defaultId,
+        namesToProps: namesToProps,
         nextId: nextId
     };
 
     // === Public interface ==========================================================
 
     return {
+        loadApiModules: loadApiModules,
         util: util,
         callback_handler: callbackHandler
     };

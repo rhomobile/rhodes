@@ -16,10 +16,36 @@ describe("Rho common API", function () {
             expect(Rho.util).toBeNonEmpty();
         });
 
+        describe("namespace() function", function () {
+
+            it("is available", function () {
+                expect(typeof Rho.util.namespace).toEqual('function');
+            });
+
+            it("able to extend namespaces", function () {
+                Rho.util.namespace("Rho.Test", {test:123});
+                Rho.util.namespace("Rho.Test.A", {a:1});
+                Rho.util.namespace("Rho.Test.A", {aa:11});
+                Rho.util.namespace("Rho.Test.A.AA", {aaa:111});
+                Rho.util.namespace("Rho.Test.B", {b:2});
+                Rho.util.namespace("Rho.Test.C", {c:3});
+
+                Rho.util.namespace("Rho.Test.A", {a:'should not override if already defined'});
+
+                expect(Rho.Test.test).toEqual(123);
+                expect(Rho.Test.A.a).toEqual(1);
+                expect(Rho.Test.A.aa).toEqual(11);
+                expect(Rho.Test.A.AA.aaa).toEqual(111);
+                expect(Rho.Test.B.b).toEqual(2);
+                expect(Rho.Test.C.c).toEqual(3);
+            });
+
+        });
+
         describe("nextId() function", function () {
 
             it("is available", function () {
-                expect(Rho.util.nextId).toBeNonEmpty();
+                expect(typeof Rho.util.nextId).toEqual('function');
             });
 
             it("generates next ID value each time", function () {
@@ -39,7 +65,7 @@ describe("Rho common API", function () {
         describe("apiReqFor() function", function () {
 
             it("is available", function () {
-                expect(Rho.util.apiReqFor).toBeNonEmpty();
+                expect(typeof Rho.util.apiReqFor).toEqual('function');
             });
 
             it("provides module request function", function () {
@@ -47,7 +73,7 @@ describe("Rho common API", function () {
             });
 
             it("can perform synchronous request", function () {
-                var apiReq = Rho.util.apiReqFor('Barcode1');
+                var apiReq = Rho.util.apiReqFor('Rho:Barcode1');
                 var result = apiReq({
                     instanceId: '12345',
                     args: ['abc', 1, 2, 3],
@@ -59,7 +85,7 @@ describe("Rho common API", function () {
             });
 
             it("can perform asynchronous request with callback", function () {
-                var apiReq = Rho.util.apiReqFor('Barcode1');
+                var apiReq = Rho.util.apiReqFor('Rho:Barcode1');
 
                 var spy = jasmine.createSpy('callback');
 
@@ -80,7 +106,7 @@ describe("Rho common API", function () {
             });
 
             it("can perform asynchronous request with deferred", function () {
-                var apiReq = Rho.util.apiReqFor('Barcode1');
+                var apiReq = Rho.util.apiReqFor('Rho:Barcode1');
 
                 var dfr = apiReq({
                     instanceId: '12345',
@@ -115,37 +141,43 @@ describe("Rho common API", function () {
             expect(Rho.Barcode1).toBeNonEmpty();
         });
 
-        it("is an instance of Barcode1 class", function () {
-            expect(Rho.Barcode1.constructor.name).toEqual('Barcode1');
+        it("it have default() method", function () {
+            expect(typeof Rho.Barcode1.default).toEqual('function');
         });
 
-        it("is a default instance", function () {
-            expect(Rho.Barcode1.getId()).toEqual(Rho.util.defaultId());
+        it("can provide default instance via default() method", function () {
+            var defInst = Rho.Barcode1.default();
+            expect(defInst.constructor.name).toEqual('Barcode1');
         });
 
+        it("can enumerate instances", function () {
+            var objs = Rho.Barcode1.enumerate();
+
+            expect(objs).toBeNonEmpty();
+            expect(objs instanceof Array).toBeNonEmpty();
+            expect(objs.length).toBeGreaterThan(0);
+
+            for(var i=0; i<objs.length; i++) {
+                expect(objs[i].constructor.name).toEqual('Barcode1');
+                expect(typeof objs[i].getId()).toEqual('string');
+                for (var j = 0; j < objs.length; j++) {
+                    // they all should have different ids
+                    if (i == j) continue;
+                    expect(objs[i].getId()).not.toEqual(objs[j].getId());
+                }
+            }
+        });
 
         describe("as default instance", function () {
 
-            it("can enumerate instances", function () {
-                var objs = Rho.Barcode1.enumerate();
+            var defInstance;
 
-                expect(objs).toBeNonEmpty();
-                expect(objs instanceof Array).toBeNonEmpty();
-                expect(objs.length).toBeGreaterThan(0);
-
-                for(var i=0; i<objs.length; i++) {
-                    expect(objs[i].constructor.name).toEqual('Barcode1');
-                    expect(typeof objs[i].getId()).toEqual('string');
-                    for (var j = 0; j < objs.length; j++) {
-                        // they all should have different ids
-                        if (i == j) continue;
-                        expect(objs[i].getId()).not.toEqual(objs[j].getId());
-                    }
-                }
+            beforeEach(function () {
+                defInstance = Rho.Barcode1.default();
             });
 
             it("can get properties", function () {
-                var props = Rho.Barcode1.getProps();
+                var props = defInstance.getProps();
 
                 expect(props).toBeNonEmpty();
                 expect(typeof props).toEqual('object');
@@ -155,7 +187,7 @@ describe("Rho common API", function () {
             });
 
             it("can set properties", function () {
-                var props = Rho.Barcode1.setProps({ resolution: '800x600' });
+                var props = defInstance.setProps({ resolution: '800x600' });
 
                 expect(props).toBeNonEmpty();
                 expect(typeof props).toEqual('object');
@@ -169,26 +201,9 @@ describe("Rho common API", function () {
         describe("as non-default instance", function () {
 
             var instance = null;
+
             beforeEach(function(){
                 instance = Rho.Barcode1.enumerate()[0];
-            });
-
-            it("can enumerate instances", function () {
-                var objs = instance.enumerate();
-
-                expect(objs).toBeNonEmpty();
-                expect(objs instanceof Array).toBeNonEmpty();
-                expect(objs.length).toBeGreaterThan(0);
-
-                for(var i=0; i<objs.length; i++) {
-                    expect(objs[i].constructor.name).toEqual('Barcode1');
-                    expect(typeof objs[i].getId()).toEqual('string');
-                    for (var j = 0; j < objs.length; j++) {
-                        // they all should have different ids
-                        if (i == j) continue;
-                        expect(objs[i].getId()).not.toEqual(objs[j].getId());
-                    }
-                }
             });
 
             it("can get properties", function () {

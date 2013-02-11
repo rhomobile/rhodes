@@ -18,8 +18,10 @@ class RhoJavascriptApiController < Rho::RhoController
 
     data = Rho::JSON.parse(@params['data'])
 
-    module_name = data['module']
-    method_name = data['method'].gsub(/is_(.*)/, '\1?')
+    # data['method'] contain it as 'Rho.ModuleName.methodName' or 'Rho:ModuleName.methodName'
+    id = data['id']
+    module_name = data['method'][0 .. data['method'].rindex('.') - 1].gsub(/\:/, '.')
+    method_name = data['method'][data['method'].rindex('.') + 1 .. -1].gsub(/is_(.*)/, '\1?')
     method_args = data['args']
 
     begin
@@ -31,34 +33,40 @@ class RhoJavascriptApiController < Rho::RhoController
 
       puts "method_args : #{method_args}"
 
-      proxy_method = "command_proxy_#{module_name.gsub(/::/, '_')}_#{method_name}"
+      proxy_method = "command_proxy_#{module_name.gsub(/::|:|\./, '_')}_#{method_name}"
       res = self.send(proxy_method.to_sym(), module_name, method_name.to_sym(), method_args)
+      jsonrpc = { 'jsonrpc' => '2.0', 'id' => id, 'result' => res }
     rescue Exception => e
       @response['status'] = 500
       @response['message'] = e.message
-      res = ::JSON.generate({'error' => e.message, 'stack' => e.backtrace})
+      res = {'code' => -1, 'message' => e.message, 'stack' => e.backtrace}
+      jsonrpc = { 'jsonrpc' => '2.0', 'id' => id, 'error' => res }
     end
-    puts "res : #{res}"
 
-    render :string => "#{res}"
+    jsonrpc = ::JSON.generate(jsonrpc)
+    render :string => "#{jsonrpc}"
   end
 
-  def command_proxy_Barcode1_testMethod(module_name, method_name, method_args)
+  def command_proxy_Rho_Barcode1_testMethod(module_name, method_name, method_args)
     result = '';
     method_args.each { |arg| result.concat arg.to_s }
-    ::JSON.generate({'value' => result, 'type' => 'string'})
+    {'value' => result, 'type' => 'string'}
   end
 
-  def command_proxy_Barcode1_enumerate(module_name, method_name, method_args)
-    ::JSON.generate({'value' => '00001 00002 00003', 'type' => 'instance', 'class' => 'Barcode1'})
+  def command_proxy_Rho_Barcode1_getDefaultID(module_name, method_name, method_args)
+    {'value' => '00001', 'type' => 'instance', 'class' => 'Rho.Barcode1'}
   end
 
-  def command_proxy_Barcode1_getProps(module_name, method_name, method_args)
-    ::JSON.generate({'value' => { 'resolution' => '1024x768' }, 'type' => 'object'})
+  def command_proxy_Rho_Barcode1_enumerate(module_name, method_name, method_args)
+    {'value' => '00001 00002 00003', 'type' => 'instance', 'class' => 'Rho.Barcode1'}
   end
 
-  def command_proxy_Barcode1_setProps(module_name, method_name, method_args)
-    ::JSON.generate({'value' => { 'resolution' => method_args[0]['resolution'] }, 'type' => 'object'})
+  def command_proxy_Rho_Barcode1_getProps(module_name, method_name, method_args)
+    {'value' => { 'resolution' => '1024x768' }, 'type' => 'object'}
+  end
+
+  def command_proxy_Rho_Barcode1_setProps(module_name, method_name, method_args)
+    {'value' => { 'resolution' => method_args[0]['resolution'] }, 'type' => 'object'}
   end
 
 end
