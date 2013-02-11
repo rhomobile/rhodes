@@ -66,7 +66,7 @@ def run_apps(platform)
 	Kernel.system("bundle","install",:chdir => $server_path)
 	
 	puts "adding source files"
-	FileUtils.cp_r ["#{$source_path}/sources","#{$source_path}/settings"], $server_path
+	FileUtils.cp_r ["#{$source_path}/settings"], $server_path
 	
 	puts "cleanup rhoconnect data"
 	FileUtils.rm_r(File.join($server_path,"data")) if File.directory?(File.join($server_path,"data"))
