@@ -26,38 +26,55 @@
 
 #pragma once
 
-#include "common/RhoStd.h"
-#include "common/AutoPointer.h"
-#include "curl/curl.h"
+#include "net/ssl.h"
+#include <ppltasks.h>
 
-#ifdef OS_WP8
-#define ssize_t int
-#endif
+using namespace Windows::Networking::Sockets;
+using namespace Windows::Networking;
+using namespace Windows::Storage::Streams;
+using namespace Concurrency;
 
-namespace rho {
-namespace net {
-
-struct ISSL
+namespace rho
 {
-    virtual ~ISSL() {}
+namespace net
+{
 
-    virtual void* createStorage() = 0;
-    virtual void freeStorage(void *ptr) = 0;
+Platform::String^ A2PS(char* str)
+{
+	std::string s_str = std::string(str);
+	std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
+	const wchar_t* w_char = wid_str.c_str();
+	return ref new Platform::String(w_char);
+}
 
-    virtual CURLcode connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage) = 0;
-    virtual void shutdown(void *storage) = 0;
-    virtual ssize_t send(const void *mem, size_t len, void *storage) = 0;
-    virtual ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage) = 0;
+struct ssl_data_t {
+	ssl_data_t(){
+		m_sslSocket = ref new StreamSocket();
+	}
+	~ssl_data_t(){
+		if(m_sslSocket)
+			delete m_sslSocket;
+	}
+	StreamSocket^ m_sslSocket;
 };
 
-}
-}
+class SSLImpl : public ISSL
+{
+public:
+	SSLImpl() : m_Storage(null) {};
+	~SSLImpl() {};
+    void *createStorage();
+    void freeStorage(void *ptr);
+    
+    CURLcode connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage);
+    void shutdown(void *storage);
+    ssize_t send(const void *mem, size_t len, void *storage);
+    ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage);
 
-extern "C" {
-void *rho_ssl_create_storage();
-void rho_ssl_free_storage(void *);
-CURLcode rho_ssl_connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage);
-void rho_ssl_shutdown(void *storage);
-ssize_t rho_ssl_send(const void *mem, size_t len, void *storage);
-ssize_t rho_ssl_recv(char *buf, size_t size, int *wouldblock, void *storage);
-}
+private:
+	ssl_data_t* m_Storage;
+	CURLcode m_retCode;
+};
+
+} // namespace net
+} // namespace rho

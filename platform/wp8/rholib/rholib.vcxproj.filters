@@ -199,6 +199,9 @@
     <ClInclude Include="..\..\shared\api_generator\MethodResult.h">
       <Filter>api_generator</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\net\ssl.h">
+      <Filter>net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\common\app_build_configs.c">
@@ -305,6 +308,9 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\api_generator\MethodResult.cpp">
       <Filter>api_generator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\net\ssl.cpp">
+      <Filter>net</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
