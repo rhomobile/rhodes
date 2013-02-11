@@ -20,10 +20,8 @@ symbian:
   uid: '0xe77b6fc3'
 android:
   version: 2.3.3
-  capabilities:
-  - push
-#  push:
-#    notifications: none
-#    sender: 888725080924
+
+paths:
+  extensions: /Users/alexepifanoff/repos/Motorola-Extensions/extensions
 
 extensions: ["json", "rhoconnect-client", "rhoconnect-push"]
