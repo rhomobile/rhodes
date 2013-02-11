@@ -19,22 +19,37 @@ public class Barcode1 extends RhoApiObject implements IBarcode1 {
     }
 
     @Override
-    public void getProps(IMethodResult result) {
+    public void getAllProperties(IMethodResult result) {
         result.set(mProps);
     }
 
     @Override
-    public void getProps(String name, IMethodResult result) {
+    public void getProperty(String name, IMethodResult result) {
         result.set(mProps.get(name));
     }
 
     @Override
-    public void getProps(List<String> names, IMethodResult result) {
+    public void getProperties(List<String> names, IMethodResult result) {
         List<String> props = new ArrayList<String>();
         for (String name: names) {
             props.add(mProps.get(name));
         }
         result.set(props);
+    }
+
+    @Override
+    public void setProperty(String name, String val, IMethodResult result) {
+        mProps.put(name, val);
+    }
+
+    @Override
+    public void setProperties(Map<String, String> props, IMethodResult result) {
+        mProps.putAll(props);
+    }
+
+    @Override
+    public void clearAllProperties(IMethodResult result) {
+        mProps.clear();
     }
 
     @Override
