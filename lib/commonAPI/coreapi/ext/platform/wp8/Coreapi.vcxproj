@@ -155,9 +155,11 @@
     <ClCompile Include="src\SystemImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Coreapi.xml" />
     <ClInclude Include="generated\ISystem.h" />
     <ClInclude Include="generated\SystemBase.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\system.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

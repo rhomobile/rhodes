@@ -5,46 +5,53 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="shared">
+    <Filter Include="System">
+      <UniqueIdentifier>{80352120-70d6-42bb-98e3-1c361e52bcc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\generated">
+      <UniqueIdentifier>{6190c737-81f8-4307-9473-dab43bcb081b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\shared">
       <UniqueIdentifier>{60f58091-37ba-4e88-a355-14f7fd6cb57e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="shared\generated">
+    <Filter Include="System\shared\generated">
       <UniqueIdentifier>{e385e312-d9a0-4097-8630-ed93f91838f6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="generated">
-      <UniqueIdentifier>{6190c737-81f8-4307-9473-dab43bcb081b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\generated\system_api_init.cpp">
-      <Filter>shared\generated</Filter>
+      <Filter>System\shared\generated</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\generated\system_js_api.cpp">
-      <Filter>shared\generated</Filter>
+      <Filter>System\shared\generated</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\generated\system_ruby_api.c">
-      <Filter>shared\generated</Filter>
+      <Filter>System\shared\generated</Filter>
     </ClCompile>
     <ClCompile Include="generated\System_js_wrap.cpp">
-      <Filter>generated</Filter>
+      <Filter>System\generated</Filter>
     </ClCompile>
     <ClCompile Include="generated\System_ruby_wrap.cpp">
-      <Filter>generated</Filter>
+      <Filter>System\generated</Filter>
     </ClCompile>
     <ClCompile Include="generated\SystemBase.cpp">
-      <Filter>generated</Filter>
+      <Filter>System\generated</Filter>
     </ClCompile>
-    <ClCompile Include="src\SystemImpl.cpp" />
+    <ClCompile Include="src\SystemImpl.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Coreapi.xml">
-      <Filter>shared</Filter>
-    </ClInclude>
     <ClInclude Include="generated\ISystem.h">
-      <Filter>generated</Filter>
+      <Filter>System\generated</Filter>
     </ClInclude>
     <ClInclude Include="generated\SystemBase.h">
-      <Filter>generated</Filter>
+      <Filter>System\generated</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\system.xml">
+      <Filter>System\shared</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
