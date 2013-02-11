@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{<%=@productid%>}</ProjectGuid>
-    <RootNamespace><%= name.camel_case() %></RootNamespace>
+    <ProjectGuid>{7dc60e50-5666-0130-0c8a-00155d4225f3}</ProjectGuid>
+    <RootNamespace>Coreapi</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
   </PropertyGroup>
@@ -52,16 +52,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project=".\<%= name.camel_case() %>.props" />
+    <Import Project=".\Coreapi.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <Import Project=".\<%= name.camel_case() %>.props" />
+    <Import Project=".\Coreapi.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project=".\<%= name.camel_case() %>.props" />
+    <Import Project=".\Coreapi.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <Import Project=".\<%= name.camel_case() %>.props" />
+    <Import Project=".\Coreapi.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -146,18 +146,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp" />
-    <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_js_api.cpp" />
-    <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c" />
-    <ClInclude Include="..\..\<%= name.camel_case() %>.xml" />
-    <ClCompile Include="generated\<%= name.camel_case() %>Base.cpp" />
-    <ClCompile Include="generated\<%= name.downcase() %>_js_wrap.cpp" />
-    <ClCompile Include="generated\<%= name.downcase() %>_ruby_wrap.cpp" />
-    <ClInclude Include="generated\I<%= name.camel_case() %>.h" />
-	<ClInclude Include="generated\I<%= name.camel_case() %>Base.h" />
+    <ClCompile Include="..\..\shared\generated\system_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\system_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\system_ruby_api.c" />
+    <ClCompile Include="generated\SystemBase.cpp" />
+    <ClCompile Include="generated\System_js_wrap.cpp" />
+    <ClCompile Include="generated\System_ruby_wrap.cpp" />
+    <ClCompile Include="src\SystemImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\<%= name.camel_case() %>_impl.cpp" />
+    <ClInclude Include="..\..\Coreapi.xml" />
+    <ClInclude Include="generated\ISystem.h" />
+    <ClInclude Include="generated\SystemBase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />
