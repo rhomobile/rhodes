@@ -77,14 +77,14 @@ namespace rho
 				catch (Platform::Exception^ exception)
 				{
 					delete Storage->m_sslSocket;
-					m_Storage->m_sslSocket = nullptr;
+					Storage->m_sslSocket = nullptr;
 					RAWLOG_ERROR("SSL connection error");
 					retCode = CURLE_SSL_CONNECT_ERROR;
 				}
 
 			}).wait();
 
-			return m_retCode;
+			return retCode;
 		}
 
 		void SSLImpl::shutdown(void *storage)
@@ -106,7 +106,7 @@ namespace rho
 			if(Storage == null)
 				return -1;
 
-			IOutputStream^ os = m_Storage->m_sslSocket->OutputStream;
+			IOutputStream^ os = Storage->m_sslSocket->OutputStream;
 
 			auto writer = ref new DataWriter(os);
 
@@ -158,7 +158,7 @@ namespace rho
 			if(Storage == null)
 				return -1;
 
-			IInputStream^ is = m_Storage->m_sslSocket->InputStream;
+			IInputStream^ is = Storage->m_sslSocket->InputStream;
 		
 			auto reader = ref new DataReader(is);
 

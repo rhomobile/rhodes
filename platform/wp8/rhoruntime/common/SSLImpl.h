@@ -61,7 +61,7 @@ struct ssl_data_t {
 class SSLImpl : public ISSL
 {
 public:
-	SSLImpl() : m_Storage(null) {};
+	SSLImpl() {};
 	~SSLImpl() {};
     void *createStorage();
     void freeStorage(void *ptr);
@@ -70,10 +70,6 @@ public:
     void shutdown(void *storage);
     ssize_t send(const void *mem, size_t len, void *storage);
     ssize_t recv(char *buf, size_t size, int *wouldblock, void *storage);
-
-private:
-	ssl_data_t* m_Storage;
-	CURLcode m_retCode;
 };
 
 } // namespace net
