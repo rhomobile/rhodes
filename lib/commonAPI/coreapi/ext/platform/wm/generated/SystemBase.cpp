@@ -167,7 +167,7 @@ void CSystemBase::getProperties( const rho::Vector<::rho::StringW>& arrayofNames
         if ( oResult.isError() )
             break;
 
-        res[arrayofNames[i]] = oResult.toStringW();
+        res[arrayofNames[i]] = common::convertToStringW(oResult.toString());
     }
 
     oResult.setCollectionMode(false);

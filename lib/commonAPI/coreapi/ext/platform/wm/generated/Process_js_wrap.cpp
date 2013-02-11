@@ -1,4 +1,4 @@
-#include "IProcess.h"
+#include "ProcessBase.h"
 #include "api_generator\js_helpers.h"
 
 #include "logging/RhoLog.h"

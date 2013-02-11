@@ -1,4 +1,4 @@
-#include "IProcess.h"
+#include "ProcessBase.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY

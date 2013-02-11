@@ -690,7 +690,7 @@
 					Name="VCCustomBuildTool"
 					Description="API Generator"
 					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
-					Outputs="generated"
+					Outputs="$(InputDir)shared/generated"
 				/>
 			</FileConfiguration>
 			<FileConfiguration
@@ -700,7 +700,7 @@
 					Name="VCCustomBuildTool"
 					Description="API Generator"
 					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
-					Outputs="generated"
+					Outputs="$(InputDir)shared/generated"
 				/>
 			</FileConfiguration>
 			<FileConfiguration
@@ -710,7 +710,7 @@
 					Name="VCCustomBuildTool"
 					Description="API Generator"
 					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
-					Outputs="generated"
+					Outputs="$(InputDir)shared/generated"
 				/>
 			</FileConfiguration>
 		</File>
