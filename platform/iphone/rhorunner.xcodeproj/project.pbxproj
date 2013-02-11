@@ -26,7 +26,7 @@
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C59AB2912DDA1B800ED4A1E /* RhoCryptImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C59AB2812DDA1B800ED4A1E /* RhoCryptImpl.mm */; };
 		5C59AB4212DDA22E00ED4A1E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C59AB4112DDA22E00ED4A1E /* Security.framework */; };
-		AE3A755316C93B82007F57BB /* CIOSJavaScriptVM.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE3A755216C93B82007F57BB /* CIOSJavaScriptVM.mm */; };
+		AE3A757416C9A34F007F57BB /* CIOSJavaScriptVM.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE3A757216C9A34F007F57BB /* CIOSJavaScriptVM.mm */; };
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
 		BD486F59124FB66600F8A93F /* Event.m in Sources */ = {isa = PBXBuildFile; fileRef = BD486F58124FB66600F8A93F /* Event.m */; };
@@ -205,9 +205,9 @@
 		5C59AB2812DDA1B800ED4A1E /* RhoCryptImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoCryptImpl.mm; path = ../shared/common/iphone/RhoCryptImpl.mm; sourceTree = SOURCE_ROOT; };
 		5C59AB4112DDA22E00ED4A1E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
-		AE3A755116C93B82007F57BB /* CIOSJavaScriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIOSJavaScriptVM.h; sourceTree = "<group>"; };
-		AE3A755216C93B82007F57BB /* CIOSJavaScriptVM.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CIOSJavaScriptVM.mm; sourceTree = "<group>"; };
-		AE3A755616C94245007F57BB /* WebViewContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebViewContainer.h; sourceTree = "<group>"; };
+		AE3A757116C9A34F007F57BB /* CIOSJavaScriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIOSJavaScriptVM.h; sourceTree = "<group>"; };
+		AE3A757216C9A34F007F57BB /* CIOSJavaScriptVM.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CIOSJavaScriptVM.mm; sourceTree = "<group>"; };
+		AE3A757316C9A34F007F57BB /* WebViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewContainer.h; sourceTree = "<group>"; };
 		BD2C94A610AE052A008D4692 /* curl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl.xcodeproj; path = curl/curl.xcodeproj; sourceTree = SOURCE_ROOT; };
 		BD38E6DB115CFF14001CE05C /* WebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebView.m; sourceTree = "<group>"; };
 		BD38E753115D1AAC001CE05C /* TabbedMainView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TabbedMainView.h; sourceTree = "<group>"; };
@@ -371,7 +371,7 @@
 				46056CEE1031CFB700C21967 /* DateTimePicker */,
 				BD486F50124FB61800F8A93F /* Event */,
 				F563D0310EA5408C0062DA57 /* GeoLocation */,
-				AEC6425F16C2A9AF0012C269 /* JavaScriptVM */,
+				AE3A757016C9A34F007F57BB /* JavaScriptVM */,
 				F547F3D10F9CEB05007C2CD2 /* Log */,
 				BDB3735D11441FE0006EA6DA /* MainView */,
 				F5425BCD1060539A000CCA8C /* MapView */,
@@ -547,12 +547,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		AEC6425F16C2A9AF0012C269 /* JavaScriptVM */ = {
+		AE3A757016C9A34F007F57BB /* JavaScriptVM */ = {
 			isa = PBXGroup;
 			children = (
-				AE3A755116C93B82007F57BB /* CIOSJavaScriptVM.h */,
-				AE3A755216C93B82007F57BB /* CIOSJavaScriptVM.mm */,
-				AE3A755616C94245007F57BB /* WebViewContainer.h */,
+				AE3A757116C9A34F007F57BB /* CIOSJavaScriptVM.h */,
+				AE3A757216C9A34F007F57BB /* CIOSJavaScriptVM.mm */,
+				AE3A757316C9A34F007F57BB /* WebViewContainer.h */,
 			);
 			path = JavaScriptVM;
 			sourceTree = "<group>";
@@ -1049,7 +1049,7 @@
 				C5D0D0C1153F279A00B8BF21 /* InitMemoryInfoCollector.mm in Sources */,
 				C5D90EF815F4F58D005F7C86 /* Reachability.m in Sources */,
 				C5D90EFB15F4FC92005F7C86 /* NetworkStatusMonitor.mm in Sources */,
-				AE3A755316C93B82007F57BB /* CIOSJavaScriptVM.mm in Sources */,
+				AE3A757416C9A34F007F57BB /* CIOSJavaScriptVM.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

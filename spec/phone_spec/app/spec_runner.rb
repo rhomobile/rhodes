@@ -20,8 +20,8 @@ if !defined?(RHO_WP7)
     config[:files] << "spec/crypt_spec"
 end
 
-    config[:files] << "spec/json_spec"    
-    config[:files] << "spec/xml_spec"    
+    config[:files] << "spec/json_spec"
+    config[:files] << "spec/xml_spec"
     config[:files] << "spec/rhofile_spec"
     config[:files] << "spec/asynchttp_spec"
     config[:files] << "spec/date_spec"
@@ -32,7 +32,9 @@ end
     config[:files] << [ "spec/rhom_object_spec",
         [ {:schema_model=>true, :sync_model=>true},  {:schema_model=>true, :sync_model=>false},
           {:schema_model=>false, :sync_model=>true} , {:schema_model=>false, :sync_model=>false} ] ]
-          
+
+    config[:files] << "spec/javascriptvm_spec" if System.get_property('platform') == 'APPLE'
+
 if !defined?(RHO_WP7)
     config[:files] << "spec/contacts_spec" unless System.get_property('platform') == 'WINDOWS_DESKTOP'
 
@@ -66,5 +68,5 @@ end
     MSpec.process
     MSpec.exit_code
   end
-  
+
 end

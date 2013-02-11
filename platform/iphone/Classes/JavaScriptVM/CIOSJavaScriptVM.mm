@@ -76,15 +76,14 @@ rho::String CIOSJavaScriptVM::callJSFunction(const rho::String& function)
                            withObject:args
                         waitUntilDone:YES];
     
-    return args[2];
+    return [args objectAtIndex:2];
 }
 
 - (void) callJSFunctionImpl:(NSMutableArray*)args
 {
-    UIWebView* view = args[0];
-    NSString* js = args[1];
-    NSString* result = [view stringByEvaluatingJavaScriptFromString:js];
-    args[2] = result;
+    UIWebView* view = [args objectAtIndex:0];
+    NSString* js = [args objectAtIndex:1];
+    [args replaceObjectAtIndex:2 withObject:[view stringByEvaluatingJavaScriptFromString:js]];
 }
 
 - (void) dealloc {
