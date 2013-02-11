@@ -172,7 +172,7 @@ namespace rho
 				}
 				catch (Platform::Exception^ exception)
 				{
-					RAWLOG_ERROR("SSL send failed");
+					RAWLOG_ERROR("SSL read failed");
 					retCode = -1;
 				}
 
