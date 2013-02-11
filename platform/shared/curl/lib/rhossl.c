@@ -87,12 +87,13 @@ static CURLcode rhossl_connect_common(struct connectdata *conn, int sockindex,
     struct ssl_config_data *config = &conn->ssl_config;
     CURLcode retcode;
 
+	int idone = *done;
+
     if (connssl->state == ssl_connection_complete)
         return CURLE_OK;
     
     connssl->storage = rho_ssl_create_storage();
-    
-    int idone = *done;
+
     retcode = rho_ssl_connect(sockfd, nonblocking, &idone, config->verifypeer, connssl->storage);
     if (retcode)
         return retcode;
