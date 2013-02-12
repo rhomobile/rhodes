@@ -848,9 +848,11 @@ module Rhogen
     $possible_attributes = {}
     $possible_attributes["MODULE"] = ["name", "parent", "generateUnderscoreRubyNames"]
     $possible_attributes["CONSTANT"] = ["name", "value", "type"]
-    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readonly"]
+    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readonly", "generateAccessors"]
+    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readonly", "generateAccessors"]
     $possible_attributes["VALUE"] = ["constName", "value", "type"]
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
+    $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread"]
     $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName"]
     $possible_attributes["PARAM"] = ["name", "nativeName", "type"]
 
