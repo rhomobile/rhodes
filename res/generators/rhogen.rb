@@ -1134,25 +1134,25 @@ module Rhogen
             end
 
 
-            if xml_module_method.attribute("has_callback") != nil
-              if xml_module_method.attribute("has_callback").to_s.downcase == "none".downcase
+            if xml_module_method.attribute("hasCallback") != nil
+              if xml_module_method.attribute("hasCallback").to_s.downcase == "none".downcase
                  module_method.has_callback = ModuleMethod::CALLBACK_NONE
               end
-              if xml_module_method.attribute("has_callback").to_s.downcase == "mandatory".downcase
+              if xml_module_method.attribute("hasCallback").to_s.downcase == "mandatory".downcase
                  module_method.has_callback = ModuleMethod::CALLBACK_MANDATORY
               end
-              if xml_module_method.attribute("has_callback").to_s.downcase == "optional".downcase
+              if xml_module_method.attribute("hasCallback").to_s.downcase == "optional".downcase
                  module_method.has_callback = ModuleMethod::CALLBACK_OPTIONAL
               end
             else
-              if xml_methods_item.attribute("has_callback") != nil
-                if xml_methods_item.attribute("has_callback").to_s.downcase == "none".downcase
+              if xml_methods_item.attribute("hasCallback") != nil
+                if xml_methods_item.attribute("hasCallback").to_s.downcase == "none".downcase
                    module_method.has_callback = ModuleMethod::CALLBACK_NONE
                 end
-                if xml_methods_item.attribute("has_callback").to_s.downcase == "mandatory".downcase
+                if xml_methods_item.attribute("hasCallback").to_s.downcase == "mandatory".downcase
                    module_method.has_callback = ModuleMethod::CALLBACK_MANDATORY
                 end
-                if xml_methods_item.attribute("has_callback").to_s.downcase == "optional".downcase
+                if xml_methods_item.attribute("hasCallback").to_s.downcase == "optional".downcase
                    module_method.has_callback = ModuleMethod::CALLBACK_OPTIONAL
                 end
               end
