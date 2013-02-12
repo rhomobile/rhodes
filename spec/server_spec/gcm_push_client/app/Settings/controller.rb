@@ -10,10 +10,7 @@ class SettingsController < Rho::RhoController
   def index
     @msg = @params['msg']
     
-    #puts "Logged in: #{SyncEngine.logged_in}"
-    SyncEngine.login('gcmclient', 'gcmclient', '/app/Settings/login_callback' ) unless SyncEngine.logged_in > 0
-    
-    unless $push_check_started
+	unless $push_check_started
       check_registration
       $push_check_started = true
     end
@@ -30,7 +27,7 @@ class SettingsController < Rho::RhoController
     errCode = @params['error_code'].to_i
     if errCode == 0
       # run sync if we were successful
-      WebView.navigate Rho::RhoConfig.options_path
+		#WebView.navigate Rho::RhoConfig.options_path
       #SyncEngine.dosync
     else
       if errCode == Rho::RhoError::ERR_CUSTOMSYNCSERVER
@@ -44,11 +41,11 @@ class SettingsController < Rho::RhoController
       WebView.navigate ( url_for :action => :login, :query => {:msg => @msg} )      
     end
 
-    #host = SPEC_LOCAL_SERVER_HOST
+	#host = SPEC_LOCAL_SERVER_HOST
     #port = SPEC_LOCAL_SERVER_PORT
     
     #Rho::AsyncHttp.get :url => "http://#{host}:#{port}?error=#{errCode}"
-    #check_registration
+    check_registration
     
   end
   
@@ -58,9 +55,9 @@ class SettingsController < Rho::RhoController
     host = SPEC_LOCAL_SERVER_HOST
     port = SPEC_LOCAL_SERVER_PORT
 
-    if(Rho::RhoConfig.exiss?('push_pin') && Rho::RhoConfig.push_pin != '')
+    if(Rho::RhoConfig.exist?('push_pin') && Rho::RhoConfig.push_pin != '')
       puts "Sending device_id: #{Rho::RhoConfig.push_pin}"
-      Rho::AsyncHttp.get :url => "http://#{host}:#{port}?device_id=#{Rho::RhoConfig.push_pin}"
+	  Rho::AsyncHttp.get :url => "http://#{host}:#{port}?device_id=#{Rho::RhoConfig.push_pin}"
     else
       Rho::Timer.start(5000, url_for(:action=>'check_registration'), '')
     end
@@ -86,7 +83,7 @@ class SettingsController < Rho::RhoController
     System.exit if exit
     
   end
-
+=begin
   def do_login
     if @params['login'] and @params['password']
       begin
@@ -125,7 +122,9 @@ class SettingsController < Rho::RhoController
     @msg =  "Sync has been triggered."
     redirect :action => :index, :query => {:msg => @msg}
   end
-  
+=end
+	
+=begin
   def sync_notify
   	status = @params['status'] ? @params['status'] : ""
   	
@@ -166,4 +165,5 @@ class SettingsController < Rho::RhoController
       end    
 	end
   end  
+=end
 end

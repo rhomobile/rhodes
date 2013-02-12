@@ -172,6 +172,9 @@ CONVERT_TYPE_W( bool, L"%d" );
 CONVERT_TYPE_W( float, L"%f" );
 CONVERT_TYPE_W( double, L"%lf" );
 
+CONVERT_TYPE_W( uint64, L"%I64u" );
+CONVERT_TYPE_W( int64, L"%I64d" );
+
 #endif
 CONVERT_TYPE_A( unsigned int, "%u" );
 CONVERT_TYPE_A( int, "%d" );

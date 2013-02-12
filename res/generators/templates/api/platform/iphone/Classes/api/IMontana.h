@@ -4,17 +4,37 @@
 #import "api_generator/iphone/IMethodResult.h"
 
 <% $iphone_types = {}
+$iphone_types["BOOLEAN"] = 'BOOL'
+$iphone_types["INTEGER"] = 'int'
+$iphone_types["FLOAT"] = 'float'
 $iphone_types["STRING"] = 'NSString*'
 $iphone_types["ARRAY"] = 'NSArray*'
 $iphone_types["HASH"] = 'NSDictionary*'
 $iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
+
+
+<% $cur_module.constants.each do |module_constant|
+   cline = ''
+   cline = cline + '#define '
+   cline = cline + module_constant.name + ' '
+   if module_constant.type == MethodParam::TYPE_STRING
+        cline = cline + '@"'+module_constant.value + '"'
+   else
+        cline = cline + module_constant.value
+   end
+%><%= cline %>
+<%
+   end
+ %>
+
+
 
 @protocol I<%= $cur_module.name %> <NSObject>
 
 <% $cur_module.methods.each do |module_method|
   if module_method.access != ModuleMethod::ACCESS_STATIC
      method_line = '-(void) '
-     method_line = method_line + module_method.name
+     method_line = method_line + module_method.native_name
 
      if module_method.params.size == 0
         if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value || module_method.is_factory_method)
@@ -41,6 +61,8 @@ $iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
 <% end
 end %>
 
+
+
 // NOTE: if you want to hold methodResult(for periodically call callback for example) you should release it buself when you stop using it !
 
 @end
@@ -52,12 +74,12 @@ end %>
 -(NSString*) getDefaultID;
 -(void) setDefaultID:(NSString*)defaultID;
 -(NSString*)getInitialDefaultID;
-<% end %>
+    <% end %>
 
 <% $cur_module.methods.each do |module_method|
   if module_method.access == ModuleMethod::ACCESS_STATIC
      method_line = '-(void) '
-     method_line = method_line + module_method.name
+     method_line = method_line + module_method.native_name
 
      if module_method.params.size == 0
         if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value || module_method.is_factory_method)

@@ -1,5 +1,6 @@
 
 #import "CRubyConverter.h"
+#import "CMethodResult.h"
 #import "ruby/ext/rho/rhoruby.h"
 #import "ruby/include/ruby.h"
 
@@ -12,6 +13,19 @@
         // string
         NSString* objString = (NSString*)objectiveC_value;
         v = rho_ruby_create_string([objString UTF8String]);
+    }
+    else if ([objectiveC_value isKindOfClass:[NSNumber class]]) {
+        // int, bool or float
+        NSNumber* objNumber = (NSNumber*)objectiveC_value;
+        if ([CMethodResult isBoolInsideNumber:objNumber]) {
+            v = rho_ruby_create_boolean([objNumber boolValue]);
+        }
+        else if ([CMethodResult isFloatInsideNumber:objNumber]) {
+            v = rho_ruby_create_double([objNumber doubleValue]);
+        }
+        else {
+            v = rho_ruby_create_integer([objNumber longLongValue]);
+        }
     }
     else if ([objectiveC_value isKindOfClass:[NSArray class]]) {
         // array
@@ -43,9 +57,31 @@
     return v;
 }
 
+
 + (NSObject*) convertFromRuby:(VALUE)ruby_value {
     int i, size;
     switch(rb_type(ruby_value)) {
+        case T_FLOAT:
+        {
+            return [NSNumber numberWithDouble:RFLOAT_VALUE(ruby_value)];
+        }
+            break;
+        case T_FIXNUM:
+        case T_BIGNUM:
+        {
+            return [NSNumber numberWithLongLong:NUM2LL(ruby_value)];
+        }
+            break;
+        case T_TRUE:
+        {
+            return [NSNumber numberWithBool:YES];
+        }
+            break;
+        case T_FALSE:
+        {
+            return [NSNumber numberWithBool:NO];
+        }
+            break;
         case T_ARRAY:
         {
             size = RARRAY_LEN(ruby_value);

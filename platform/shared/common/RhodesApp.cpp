@@ -1281,7 +1281,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/shared", callback_shared);
 
 #ifndef RHO_NO_JS_API
-    m_httpServer->register_uri( "/system/js_api_entrypoint", rho_http_js_entry_point );
+    m_httpServer->register_uri( "/system/js_api_entrypoint", rho::apiGenerator::rho_http_js_entry_point );
 #endif
 
     m_httpServer->register_uri("/system/call_ruby_proc_callback", rho::net::rho_http_ruby_proc_callback );
@@ -2313,7 +2313,7 @@ int rho_is_motorola_licence_checked(const char* szMotorolaLicence, const char* s
     int res_check = 1;
 #if defined( OS_ANDROID ) || defined( OS_MACOSX )
     //res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence);
-    //res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence, szAppName);
+    res_check = MotorolaLicence_check(szMotorolaLicenceCompany, szMotorolaLicence, szAppName);
 #endif
     
     return res_check;

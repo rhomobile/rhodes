@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.motorolasolutions.rhoelements.IMethodResult;
-import com.motorolasolutions.rhoelements.RhoApiObject;
+import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.api.RhoApiObject;
 
 public class Barcode1 extends RhoApiObject implements IBarcode1 {
 

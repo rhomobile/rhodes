@@ -530,6 +530,11 @@ long rho_ruby_get_int(VALUE val)
     return NUM2LONG(val);
 }
 
+double rho_ruby_get_double(VALUE val)
+{
+    return RFLOAT_VALUE(val);
+}
+
 VALUE rho_ruby_get_time(VALUE rDate)
 {
     VALUE res, cDate;
@@ -1006,6 +1011,21 @@ VALUE rho_ruby_create_object_with_id( VALUE klass, const char* szID )
 int rho_ruby_is_string(VALUE val)
 {
     return (TYPE(val) == T_STRING) ? 1 : 0;
+}
+
+int rho_ruby_is_integer(VALUE val)
+{
+    return (TYPE(val) == T_FIXNUM) ? 1 : 0;
+}
+
+int rho_ruby_is_boolean(VALUE val)
+{
+    return (TYPE(val) == T_TRUE || TYPE(val) == T_FALSE) ? 1 : 0;
+}
+
+int rho_ruby_is_float(VALUE val)
+{
+    return (TYPE(val) == T_FLOAT) ? 1 : 0;
 }
 
 int rho_ruby_is_array(VALUE val)

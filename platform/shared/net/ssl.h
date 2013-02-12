@@ -30,6 +30,10 @@
 #include "common/AutoPointer.h"
 #include "curl/curl.h"
 
+#ifdef OS_WP8
+#define ssize_t int
+#endif
+
 namespace rho {
 namespace net {
 

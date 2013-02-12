@@ -31,6 +31,11 @@ public:
     }
 };*/
 
+namespace rho
+{
+namespace apiGenerator
+{
+
 class CMethodResult
 {
     rho::String m_strRubyCallback, m_strCallbackParam, m_strStringParam;
@@ -38,13 +43,18 @@ class CMethodResult
     rho::Hashtable<rho::StringW, rho::StringW> m_hashStrRes;
     rho::StringW m_strRes;
     rho::Vector<rho::StringW> m_arStrRes;
+    int64 m_nRes;
+    bool m_bRes;
+    double m_dRes;
+
     rho::StringW m_strError;
     rho::boolean m_bCallInUIThread;
-
-    enum ETypes{ eNone = 0, eString, eStringArray, eStringHash, eError, eArgError};
+    
+    enum ETypes{ eNone = 0, eString, eStringArray, eStringHash, eBool, eInt, eDouble, eError, eArgError};
     ETypes m_ResType;
 
     unsigned long m_oRubyObjectClass;
+    bool m_bCollectionMode;
 
     struct CMethodRubyValue
     {
@@ -59,7 +69,7 @@ class CMethodResult
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
 public:
 
-    CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false){}
+    CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(false){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     void setRubyCallbackProc(unsigned long oRubyCallbackProc);
@@ -72,7 +82,14 @@ public:
 
     void set(const rho::Hashtable<rho::StringW, rho::StringW>& res){ m_hashStrRes = res; m_ResType = eStringHash; callCallback(); }
     void set(const rho::StringW& res){ m_strRes = res;  m_ResType = eString; callCallback(); }
+    void set(rho::StringW::const_pointer res){ m_strRes = res;  m_ResType = eString; callCallback(); }
     void set(const rho::Vector<rho::StringW>& res){ m_arStrRes = res;  m_ResType = eStringArray; callCallback(); }
+    void set(bool res){ m_bRes = res;  m_ResType = eBool; callCallback(); }
+    void set(int64 res){ m_nRes = res;  m_ResType = eInt; callCallback(); }
+    void set(int res){ m_nRes = res;  m_ResType = eInt; callCallback(); }
+    void set(unsigned long res){ m_nRes = res;  m_ResType = eInt; callCallback(); }
+    void set(double res){ m_dRes = res;  m_ResType = eDouble; callCallback(); }
+
     void setError(const rho::StringW& res){ m_strError = res; m_ResType = eError; callCallback(); }
     void setArgError(const rho::StringW& fmt, ...)
     {
@@ -82,10 +99,18 @@ public:
         callCallback();
     }
 
+    bool isError(){ return m_ResType == eError || m_ResType == eArgError; }
+
     rho::Vector<rho::StringW>& getStringArray(){ return m_arStrRes; }
+
+    rho::String toString();
+    void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}
 
     unsigned long toRuby();
     rho::String toJSON();
 
     void callCallback();
 };
+
+}
+}

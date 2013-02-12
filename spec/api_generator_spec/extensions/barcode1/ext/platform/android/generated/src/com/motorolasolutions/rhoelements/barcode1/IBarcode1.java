@@ -1,8 +1,8 @@
 package com.motorolasolutions.rhoelements.barcode1;
 
-import com.motorolasolutions.rhoelements.IMethodResult;
-import com.motorolasolutions.rhoelements.IRhoApiProps;
+import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.api.IRhoApiPropertyBag;
 
-public interface IBarcode1 extends IRhoApiProps {
+public interface IBarcode1 extends IRhoApiPropertyBag {
     void takeBarcode(IMethodResult result);
 };

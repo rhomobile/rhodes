@@ -308,6 +308,7 @@ namespace "config" do
     extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
     extpaths << File.join($app_path, "extensions")
     extpaths << File.join($startdir, "lib","extensions")
+    extpaths << File.join($startdir, "lib","commonAPI")
     $app_config["extpaths"] = extpaths
     
     if $app_config["build"] and $app_config["build"] == "release"
@@ -706,6 +707,7 @@ def init_extensions(startdir, dest)
           entry = extconf["entry"]
           nlib = extconf["nativelibs"]
           type = extconf["exttype"]
+          xml_api_paths = extconf["xml_api_paths"]
             
           if nlib != nil
             nlib.each do |libname|
@@ -728,6 +730,17 @@ def init_extensions(startdir, dest)
             end
             extlibs += libs
           end
+        
+          if xml_api_paths
+            xml_api_paths = xml_api_paths.split(',')
+            
+            xml_api_paths.each do |xml_api|
+                cmd_line = "#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}"
+                puts "cmd_line: #{cmd_line}"
+                system "#{cmd_line}"
+            end
+          end
+            
         end
       end
       
@@ -1676,8 +1689,16 @@ namespace "run" do
             if extpath.nil?
                 begin
                     $rhodes_extensions = nil
+                    $rhodes_join_ext_name = false
                     require extname
-                    extpath = $rhodes_extensions[0] unless $rhodes_extensions.nil?
+                    
+                    if $rhodes_extensions
+                        extpath = $rhodes_extensions[0]
+          			    if $rhodes_join_ext_name
+        				    extpath = File.join(extpath,extname)
+		        	    end
+                    end
+                    
                     config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0 
                 rescue Exception => e
                 end

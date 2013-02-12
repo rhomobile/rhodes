@@ -5,6 +5,11 @@
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
 
+namespace rho
+{
+namespace apiGenerator
+{
+
 using namespace rho::json;
 using namespace rho::common;
 
@@ -42,6 +47,15 @@ rho::String CMethodResult::toJSON()
     }else if ( m_ResType == eString)
     {
         strRes = "{'_RhoValue':" + convertToStringA(m_strRes) + "}";
+    }else if ( m_ResType == eBool)
+    {
+        strRes = "{'_RhoValue':" + convertToStringA(m_bRes?1:0) + "}";
+    }else if ( m_ResType == eInt)
+    {
+        strRes = "{'_RhoValue':" + convertToStringA(m_nRes) + "}";
+    }else if ( m_ResType == eDouble)
+    {
+        strRes = "{'_RhoValue':" + convertToStringA(m_dRes) + "}";
     }else if ( m_ResType == eArgError )
     {
         strRes = "{'_RhoArgError':" + CJSONEntry::quoteValueW(m_strError) + "}";
@@ -51,6 +65,20 @@ rho::String CMethodResult::toJSON()
     }
 
     return strRes;
+}
+
+rho::String CMethodResult::toString()
+{
+    if ( m_ResType == eString)
+        return convertToStringA(m_strRes);
+    else if ( m_ResType == eBool)
+        return convertToStringA(m_bRes?1:0);
+    else if ( m_ResType == eInt)
+        return convertToStringA(m_nRes);
+    else if ( m_ResType == eDouble)
+        return convertToStringA(m_dRes);
+
+    return rho::String();
 }
 
 VALUE CMethodResult::toRuby()
@@ -90,6 +118,15 @@ VALUE CMethodResult::toRuby()
             valObj = rho_ruby_create_string( convertToStringA(m_strRes).c_str() );
 
         return valObj;
+    }else if ( m_ResType == eBool)
+    {
+        return rho_ruby_create_boolean(m_bRes ? 1 : 0);
+    }else if ( m_ResType == eInt)
+    {
+        return rho_ruby_create_integer(m_nRes ? 1 : 0);
+    }else if ( m_ResType == eDouble)
+    {
+        return rho_ruby_create_double(m_dRes ? 1 : 0);
     }else if ( m_ResType == eArgError)
     {
         rho_ruby_raise_argerror( convertToStringA(m_strError).c_str());
@@ -121,6 +158,9 @@ public:
 
 void CMethodResult::callCallback()
 {
+    if ( m_bCollectionMode )
+        return;
+
     if ( m_ResType != eNone && m_strRubyCallback.length() != 0 )
     {
         rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
@@ -166,4 +206,7 @@ CMethodResult::CMethodRubyValue::~CMethodRubyValue()
 void CMethodResult::setRubyCallbackProc(unsigned long oRubyCallbackProc)
 { 
     m_pRubyCallbackProc = new CMethodRubyValue(oRubyCallbackProc);
+}
+
+}
 }

@@ -7,3 +7,5 @@ project_paths:
   wp8: ext/platform/wp8/CoreAPI.vcxproj
   wm: ext/platform/wm/CoreAPI.sln
   win32: ext/platform/wm/CoreAPI.sln
+  
+xml_api_paths: ext/system.xml, ext/process.xml
