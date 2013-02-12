@@ -22,10 +22,10 @@
 			<PROPERTY name="Type" type="STRING">
 				<DESC>possible value - "hardware"/"software"</DESC>
 				<VALUES>
-					<VALUE const_name="const_value1" value="hardware" type="STRING">
+					<VALUE constName="const_value1" value="hardware" type="STRING">
 						<DESC>value doc 1</DESC>
 					</VALUE>
-					<VALUE const_name="const_value2" value="software">
+					<VALUE constName="const_value2" value="software">
 						<DESC>value doc 2</DESC>
 					</VALUE>
 				</VALUES>
@@ -91,7 +91,7 @@
 					</POSSIBILITY>	
 				</RETURN>
 			</METHOD>	
-			<METHOD name="scanBarcode" access="INSTANCE" run_in_thread="true" has_callback="mandatory">
+			<METHOD name="scanBarcode" access="INSTANCE" runInThread="separate" hasCallback="mandatory">
 				<DESC>start scanning barcode - callback when recognize process was finished, also example of UI_THREAD attribute</DESC>
 				<PARAMS>
 					<PARAM  name ="settings" type="HASH">
@@ -102,7 +102,7 @@
 					</PARAM>
 				</PARAMS>
 			</METHOD>
-			<METHOD name="scanBarcodeInUI" access="INSTANCE" run_in_ui_thread="true" has_callback="mandatory">
+			<METHOD name="scanBarcodeInUI" access="INSTANCE" runInThread="ui" hasCallback="mandatory">
 				<DESC>start scanning barcode - callback when recognize process was finished, also example of UI_THREAD attribute</DESC>
 				<PARAMS>
 					<PARAM  name ="settings" type="HASH">
