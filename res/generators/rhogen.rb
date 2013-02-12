@@ -614,11 +614,11 @@ module Rhogen
 
       def step_through_templates
         if @generator.respond_to? :setup_xml
-          @generator.setup_xml
-
-          $modules.each do |module_item|
-             $cur_module = module_item
-             old_step_through_templates
+          if @generator.setup_xml
+            $modules.each do |module_item|
+               $cur_module = module_item
+               old_step_through_templates
+            end
           end
         else
           old_step_through_templates
@@ -640,12 +640,19 @@ module Rhogen
 
     desc <<-DESC
       Generate API sources from XML API file
+
+      Options:
+        --skipwarnings - do not stop generation process by any XML parsing warnings
+
+      Required:
+        xml_path        - path to XML with API description
+
     DESC
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
 
+    option :skipwarnings, :desc=> 'skip any XML warnings, by default - generation break by any XML parse warning', :as => :boolean, :default => false
     first_argument :xmlpath, :required => true, :desc => "path to XML with API description"
-
 
     $xml = nil
 
@@ -836,6 +843,122 @@ module Rhogen
 
     $cur_module = nil
 
+
+
+    $possible_attributes = {}
+    $possible_attributes["MODULE"] = ["name", "parent", "generateUnderscoreRubyNames"]
+    $possible_attributes["CONSTANT"] = ["name", "value", "type"]
+    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readonly"]
+    $possible_attributes["VALUE"] = ["constName", "value", "type"]
+    $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
+    $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName"]
+    $possible_attributes["PARAM"] = ["name", "nativeName", "type"]
+
+    $possible_children = {}
+    $possible_children["API"] = ["MODULE"]
+    $possible_children["MODULE"] = ["HELP_OVERVIEW", "MORE_HELP", "TEMPLATES", "CONSTANTS", "PROPERTIES", "METHODS", "USER_OVERVIEW", "VER_INTRODUCED", "PLATFORM"]
+    $possible_children["TEMPLATES"] = ["SINGLETON_INSTANCES", "DEFAULT_INSTANCE", "PROPERTY_BAG"]
+    $possible_children["CONSTANTS"] = ["CONSTANT"]
+    $possible_children["CONSTANT"] = ["DESC"]
+    $possible_children["PROPERTIES"] = ["DESC", "PROPERTY", "ALIASES"]
+    $possible_children["PROPERTY"] = ["DESC", "VALUES"]
+    $possible_children["VALUES"] = ["VALUE"]
+    $possible_children["VALUE"] = ["DESC"]
+    $possible_children["ALIASES"] = ["ALIAS"]
+    $possible_children["ALIAS"] = ["DESC"]
+    $possible_children["METHODS"] = ["METHOD", "ALIASES", ]
+    $possible_children["METHOD"] = ["DESC", "PARAMS", "RETURN"]
+    $possible_children["PARAMS"] = ["PARAM"]
+    $possible_children["PARAM"] = ["DESC", "CAN_BE_NIL"]
+    $possible_children["RETURN"] = ["DESC"]
+    $possible_children["CAN_BE_NIL"] = ["DESC"]
+
+    $possible_values = {}
+    $possible_values["generateUnderscoreRubyNames"] = ["true", "false"]
+    $possible_values["readonly"] = ["true", "false"]
+    $possible_values["usePropertyBag"] = ["none", "accessorsViaPropertyBag", "PropertyBagViaAccessors"]
+    $possible_values["access"] = ["STATIC", "INSTANCE"]
+    $possible_values["factory"] = ["true", "false"]
+    $possible_values["runInThread"] = ["none", "ui", "module", "separate"]
+    $possible_values["hasCallback"] = ["none", "mandatory", "optional"]
+    $possible_values["deprecated"] = ["true", "false"]
+    $possible_values["reverseLogic"] = ["true", "false"]
+    $possible_values["rubyOnly"] = ["true", "false"]
+    $possible_values["generateAccessors"] = ["true", "false"]
+    $possible_values["generateUnderscoreRubyNames"] = ["true", "false"]
+    $possible_values["generateUnderscoreRubyNames"] = ["true", "false"]
+
+
+    def xml_error(error_desc, path)
+       puts 'XML WARNING: [ '+error_desc+' ] in Element '+path
+    end
+
+
+    def check_xml_element_for_children_and_attributes(xml_element, parent_path)
+       all_is_ok = true
+       this_name = xml_element.name
+       cur_path = ''
+       if xml_element.attribute("name") != nil
+          cur_path = parent_path + "<"+this_name+' name="'+xml_element.attribute("name").to_s+'">'
+       else
+          cur_path = parent_path + "<"+this_name+">"
+       end
+
+       # puts cur_path
+       # check properties
+       poss_attributes = $possible_attributes[this_name]
+       if (xml_element.attributes.to_a.size > 0)
+          if poss_attributes == nil
+             all_is_ok = false
+             xml_error("element should not have any attributes !", cur_path)
+          else
+            xml_element.attributes.to_a.each do |item_attribute|
+
+               attribute_name = item_attribute.name.to_s
+               # puts '           '+attribute_name
+
+               # check possibility
+               if !(poss_attributes.include?(attribute_name))
+                   all_is_ok = false
+                   xml_error( 'unrecognized attribute - "'+attribute_name+'"', cur_path)
+               else
+                  attribute_value = item_attribute.value.to_s
+                  if $possible_values[attribute_name] != nil
+                      if !($possible_values[attribute_name].include?(attribute_value))
+                          all_is_ok = false
+                          xml_error('unrecognized value "'+attribute_value+'" for attribute "'+attribute_name+'"', cur_path)
+                      end
+                  end
+               end
+            end
+          end
+       end
+
+
+       # check children
+       poss_children = $possible_children[this_name]
+       if xml_element.elements.to_a.size > 0
+          if poss_children == nil
+              all_is_ok = false
+              xml_error("element should not have any children !", cur_path)
+          else
+              xml_element.elements.to_a.each do |child_element|
+                  element_name = child_element.name
+                  if !(poss_children.include?(element_name))
+                      all_is_ok = false
+                      xml_error('unrecognized child <"'+element_name+'"> !', cur_path)
+                  else
+                      if !check_xml_element_for_children_and_attributes(child_element, cur_path)
+                         all_is_ok = false
+                      end
+                  end
+              end
+          end
+       end
+       return all_is_ok
+    end
+
+
     def namefixed(name)
         return name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
     end
@@ -906,6 +1029,13 @@ module Rhogen
       xml_f.close
       xml_api_root = $xml.elements["API"]
 
+      if !check_xml_element_for_children_and_attributes(xml_api_root, '')
+          if skipwarnings == false
+             puts 'ERROR: XML has parsing WARNINGS - stop generation process ! Use "--skipwarnings" option when you run generator for skip parsing warnings.'
+             return false
+          end
+      end
+
 
       xml_api_root.elements.each("MODULE") do |xml_module_item|
          module_item = ModuleItem.new()
@@ -949,7 +1079,7 @@ module Rhogen
          #constants in properties
          xml_module_item.elements.each("PROPERTIES/PROPERTY/VALUES/VALUE") do |xml_property_value|
             module_constant = ModuleConstant.new()
-            module_constant.name = xml_property_value.attribute("const_name").to_s
+            module_constant.name = xml_property_value.attribute("constName").to_s
             module_constant.value = xml_property_value.attribute("value").to_s
             if xml_property_value.attribute("type") != nil
                module_constant.type = xml_property_value.attribute("type").to_s.upcase
@@ -1101,31 +1231,31 @@ module Rhogen
                    module_item.has_factory_methods = true
                end
             end
-            if xml_module_method.attribute("run_in_thread") != nil
-               if xml_module_method.attribute("run_in_thread").to_s.downcase == "none".downcase
+            if xml_module_method.attribute("runInThread") != nil
+               if xml_module_method.attribute("runInThread").to_s.downcase == "none".downcase
                    module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
                end
-               if xml_module_method.attribute("run_in_thread").to_s.downcase == "module".downcase
+               if xml_module_method.attribute("runInThread").to_s.downcase == "module".downcase
                    module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_MODULE
                end
-               if xml_module_method.attribute("run_in_thread").to_s.downcase == "separate".downcase
+               if xml_module_method.attribute("runInThread").to_s.downcase == "separate".downcase
                    module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_SEPARATED
                end
-               if xml_module_method.attribute("run_in_thread").to_s.downcase == "ui".downcase
+               if xml_module_method.attribute("runInThread").to_s.downcase == "ui".downcase
                    module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
                end
             else
-              if xml_methods_item.attribute("run_in_thread") != nil
-                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "none".downcase
+              if xml_methods_item.attribute("runInThread") != nil
+                 if xml_methods_item.attribute("runInThread").to_s.downcase == "none".downcase
                      module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
                  end
-                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "module".downcase
+                 if xml_methods_item.attribute("runInThread").to_s.downcase == "module".downcase
                      module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_MODULE
                  end
-                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "separate".downcase
+                 if xml_methods_item.attribute("runInThread").to_s.downcase == "separate".downcase
                      module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_SEPARATED
                  end
-                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "ui".downcase
+                 if xml_methods_item.attribute("runInThread").to_s.downcase == "ui".downcase
                      module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
                  end
                end
@@ -1246,7 +1376,7 @@ module Rhogen
       end
 
       $cur_module = $modules[0]
-
+      return true
     end
 
 
@@ -1479,6 +1609,7 @@ class ApiMegatestGenerator < BaseGenerator
 
 
 
+
 =begin
 # Stub this method to force 1.8 compatibility (come on templater!)
 class Encoding
@@ -1506,5 +1637,5 @@ end
 
 
 Rhogen.run_cli(Dir.pwd, 'rhodes', Rhodes::VERSION, ARGV)
-=end
 
+=end
