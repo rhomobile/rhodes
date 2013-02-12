@@ -616,47 +616,98 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{9FC737FA-C7A5-4376-A066-2A32D752A2FF}"
+			Name="shared"
 			>
-			<File
-				RelativePath="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp"
+			<Filter
+				Name="generated"
 				>
-			</File>
+		        <Filter
+			        Name="cpp"
+			        >
+			        <File
+				        RelativePath="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h"
+				        >
+			        </File>
+			        <File
+				        RelativePath="..\..\shared\generated\cpp\<%= name.camel_case() %>_js_wrap.cpp"
+				        >
+			        </File>
+			        <File
+				        RelativePath="..\..\shared\generated\cpp\<%= name.camel_case() %>_ruby_wrap.cpp"
+				        >
+			        </File>
+			        <File
+				        RelativePath="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.cpp"
+				        >
+			        </File>
+			        <File
+				        RelativePath="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.h"
+				        >
+			        </File>
+		        </Filter>
+				<File
+					RelativePath="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\generated\<%= name.downcase() %>_js_api.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c"
+					>
+				</File>
+			</Filter>
 			<File
-				RelativePath="..\..\shared\generated\<%= name.downcase() %>_js_api.cpp"
+				RelativePath="..\..\<%= name.camel_case() %>.xml"
 				>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="$(InputDir)shared/generated"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="$(InputDir)shared/generated"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|MC3000c50b (ARMV4I)"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="$(InputDir)shared/generated"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Generate API"
+						CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+						Outputs="$(InputDir)shared/generated"
+					/>
+				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c"
-				>
-			</File>
-			<File
-				RelativePath=".\generated\<%= name.camel_case() %>FactoryBase.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\generated\<%= name.downcase() %>_js_wrap.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\generated\<%= name.downcase() %>_ruby_wrap.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\src\<%= name.camel_case() %>_impl.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Headers"
+		    
+	    </Filter>
+		<File
+			RelativePath=".\src\<%= name.camel_case() %>_impl.cpp"
 			>
-			<File
-				RelativePath=".\generated\<%= name.camel_case() %>.h"
-				>
-			</File>
-		</Filter>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

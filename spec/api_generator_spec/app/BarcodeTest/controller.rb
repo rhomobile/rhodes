@@ -14,6 +14,11 @@ class BarcodeTestController < Rho::RhoController
   #@@test_proc = lambda{|args| puts "lamda: #{args}"}
   def index
 
+    hash = { name: "David", age: 49 }
+    #puts "hash: #{hash.name}"
+
+    Rho::Barcode.enable(hash, url_for(:action => :test_callback))
+
     my_test = "123"
     Rho::Barcode.getProperty("display", lambda{|args| puts "lamda: #{args} #{my_test}"} )
     Rho::Barcode.getProperty("display", method(:test_proc) )

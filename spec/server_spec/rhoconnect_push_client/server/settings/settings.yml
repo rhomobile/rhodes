@@ -1,0 +1,20 @@
+:sources:
+
+:development:
+  :licensefile: settings/license.key
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/api/application/
+  :push_server: http://someappname@localhost:8675/
+  :api_token: my-rhoconnect-token
+  :push_notify: true
+:test: 
+  :licensefile: settings/license.key
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/api/application/
+  :push_server: http://someappname@localhost:8675/
+  :api_token: my-rhoconnect-token
+:production: 
+  :licensefile: settings/license.key
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/api/application/
+  :push_server: http://someappname@localhost:8675/

@@ -6,5 +6,7 @@ android:
 
 project_paths:
   wp8: ext/platform/wp8/<%= name.camel_case %>.vcxproj
-  wm: ext/platform/wm/<%= name.camel_case %>.sln
-  win32: ext/platform/wm/<%= name.camel_case %>.sln
+  wm: ext/platform/wm/<%= name.camel_case %>.vcproj
+  win32: ext/platform/wm/<%= name.camel_case %>.vcproj
+  
+xml_api_paths: ext/<%= name.camel_case %>.xml

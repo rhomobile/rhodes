@@ -57,6 +57,10 @@ public:
     int getInt(const char* name);
     uint64 getUInt64(const char* name);
     double getDouble(const char* name);
+    int getInt();
+    uint64 getUInt64();
+    double getDouble();
+
     const char* getString(const char* name);
     const char* getString();
 

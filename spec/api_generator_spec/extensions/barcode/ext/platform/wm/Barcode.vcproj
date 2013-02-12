@@ -629,42 +629,6 @@
 	</References>
 	<Files>
 		<Filter
-			Name="wm"
-			>
-			<File
-				RelativePath=".\src\Barcode_impl.cpp"
-				>
-			</File>
-			<Filter
-				Name="generated"
-				>
-				<File
-					RelativePath=".\generated\BarcodeFactoryBase.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\generated\IBarcode.h"
-					>
-				</File>
-				<Filter
-					Name="javascript"
-					>
-					<File
-						RelativePath=".\generated\javascript\Barcode_js_wrap.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="ruby"
-					>
-					<File
-						RelativePath=".\generated\ruby\Barcode_ruby_wrap.cpp"
-						>
-					</File>
-				</Filter>
-			</Filter>
-		</Filter>
-		<Filter
 			Name="shared"
 			>
 			<Filter
@@ -682,11 +646,69 @@
 					RelativePath="..\..\shared\generated\barcode_ruby_api.c"
 					>
 				</File>
+				<Filter
+					Name="cpp"
+					>
+					<File
+						RelativePath="..\..\shared\generated\cpp\Barcode_js_wrap.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\cpp\Barcode_ruby_wrap.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\cpp\BarcodeBase.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\cpp\BarcodeBase.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\cpp\IBarcode.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<File
+			RelativePath=".\src\Barcode_impl.cpp"
+			>
+		</File>
+		<File
 			RelativePath="..\..\new_barcode.xml"
 			>
+			<FileConfiguration
+				Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="API Generator"
+					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+					Outputs="$(InputDir)shared/generated"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="API Generator"
+					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+					Outputs="$(InputDir)shared/generated"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Debug|MC3000c50b (ARMV4I)"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+					Description="API Generator"
+					CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+					Outputs="$(InputDir)shared/generated"
+				/>
+			</FileConfiguration>
 		</File>
 	</Files>
 	<Globals>

@@ -3,7 +3,7 @@
 
 <PROPERTY_BAG>
 	<METHODS>
-		<METHOD name="getProperty" has_callback="optional">
+		<METHOD name="getProperty" hasCallback="optional">
 			<DESC>This is documentation</DESC>
 			<PARAMS>
 				<PARAM name="propertyName" type="STRING">
@@ -16,7 +16,7 @@
             </RETURN>
         </METHOD>
 
-        <METHOD name="getProperties" has_callback="optional">
+        <METHOD name="getProperties" hasCallback="optional">
             <DESC>This is documentation</DESC>
             <PARAMS>
                 <PARAM name="arrayofNames" type="ARRAY">
@@ -29,7 +29,7 @@
             </RETURN>
         </METHOD>
 
-        <METHOD name="getAllProperties" has_callback="optional">
+        <METHOD name="getAllProperties" hasCallback="optional">
             <DESC>This is documentation</DESC>
             <RETURN>
                 <DESC>Map of properties I want to know about</DESC>

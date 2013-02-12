@@ -160,12 +160,41 @@ module Rhogen
       directory.destination = "#{name}/icon"
     end
 
+    template :settings1 do |template|
+      template.source = 'app/Settings/controller.rb'
+      template.destination = "#{name}/app/Settings/controller.rb"
+    end
+    template :settings2 do |template|
+      template.source = 'app/Settings/err_sync.erb'
+      template.destination = "#{name}/app/Settings/err_sync.erb"
+    end
+    template :settings3 do |template|
+      template.source = 'app/Settings/home.erb'
+      template.destination = "#{name}/app/Settings/home.erb"
+    end
+    template :settings4 do |template|
+      template.source = 'app/Settings/index.erb'
+      template.destination = "#{name}/app/Settings/index.erb"
+    end
+    template :settings5 do |template|
+      template.source = 'app/Settings/login.erb'
+      template.destination = "#{name}/app/Settings/login.erb"
+    end
+    template :settings6 do |template|
+      template.source = 'app/Settings/reset.erb'
+      template.destination = "#{name}/app/Settings/reset.erb"
+    end
+    template :settings7 do |template|
+      template.source = 'app/Settings/wait.erb'
+      template.destination = "#{name}/app/Settings/wait.erb"
+    end
     
+=begin    
     directory :settings do |directory|
       directory.source = 'app/Settings'
       directory.destination = "#{name}/app/Settings/"
     end
-
+=end
     directory :public do |directory|
       directory.source = 'public'
       directory.destination = "#{name}/public/"
@@ -378,9 +407,10 @@ module Rhogen
 
 	def callback_after_delete_testapp(template)
 		if @@noapp == true
-			FileUtils.rm_rf "../../../app"
-			FileUtils.cp_r("../../../extensions/#{namefixed.downcase}", "../../..")
-			FileUtils.rm_rf "../../../extensions"
+			Dir.chdir("../../../")
+			FileUtils.rm_rf "app"
+			FileUtils.cp_r("extensions/#{namefixed.downcase}", Dir.pwd)
+			FileUtils.rm_rf "extensions"
 		end
 	end
 
@@ -600,6 +630,14 @@ module Rhogen
       File.join(File.dirname(__FILE__), 'templates', 'api')
     end
 
+    def destination_root
+        if File.dirname(@@xml_filepath)!= '.'
+            File.dirname(@@xml_filepath).gsub("\\", "/")
+        else
+            self.class.superclass.instance_method(:destination_root).bind(self).call
+        end
+    end
+
     desc <<-DESC
       Generate API sources from XML API file
     DESC
@@ -612,6 +650,24 @@ module Rhogen
     $xml = nil
 
     # array of arrays
+
+    class ModuleAlias
+
+      def initialize
+        @existing_name = ''
+        @new_name = ''
+        @is_ruby_only = false
+        @deprecated = false
+        @reverseLogic = false
+      end
+
+      attr_accessor :existing_name
+      attr_accessor :new_name
+      attr_accessor :is_ruby_only
+      attr_accessor :deprecated
+      attr_accessor :reverseLogic
+
+    end
 
     class MethodParam
 
@@ -655,25 +711,28 @@ module Rhogen
       USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS = "PROPERTY_BAG_VIA_ACCESSORS"
       USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG = "ACCESSORS_VIA_PROPERTY_BAG"
 
-      ACCESS_MODE_FULL = "FULL"
-      ACCESS_MODE_READONLY = "READONLY"
-      ACCESS_MODE_WRITEONLY = "WRITEONLY"
-
       def initialize
         @name = ''
         @type = MethodParam::TYPE_STRING
         @native_name = ''
-        @access_mode = ACCESS_MODE_FULL
+        @readonly = false
         @generate_accessors = true
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
+
+        #used if getter and setter are present - this used with generation of property bag function implementation
+        @getter = nil
+        @setter = nil
       end
 
       attr_accessor :name
       attr_accessor :type
       attr_accessor :native_name
-      attr_accessor :access_mode
+      attr_accessor :readonly
       attr_accessor :generate_accessors
       attr_accessor :use_property_bag_mode
+      attr_accessor :getter
+      attr_accessor :setter
+
 
 
     end
@@ -692,6 +751,9 @@ module Rhogen
       RUN_IN_THREAD_SEPARATED = "SEPARATED"
       RUN_IN_THREAD_UI = "UI"
 
+      SPECIAL_BEHAVIOUR_NONE = "NONE"
+      SPECIAL_BEHAVIOUR_GETTER = "GETTER"
+      SPECIAL_BEHAVIOUR_SETTER = "SETTER"
 
       def initialize
         @name = ''
@@ -702,6 +764,15 @@ module Rhogen
         @is_return_value = false
         @access = ACCESS_INSTANCE
         @has_callback = CALLBACK_NONE
+
+        # name of template produced this method if applicable
+        @generated_by_template = ''
+
+        @linked_property = nil # use only if method is setter or getter
+        #if this property is not NONE then generator should prepare special function code. For example setter or getter have already prepared code
+        @special_behaviour = SPECIAL_BEHAVIOUR_NONE
+
+        #use for store any data by string key. For example I save to this bag a prepared iOS full function signature for do not rebuild it everytime
         @cached_data = {}
       end
 
@@ -713,36 +784,53 @@ module Rhogen
       attr_accessor :is_return_value
       attr_accessor :access
       attr_accessor :has_callback
+      attr_accessor :generated_by_template
+      attr_accessor :linked_property
+      attr_accessor :special_behaviour
       attr_accessor :cached_data
     end
 
     class ModuleItem
       def initialize
         @name = ''
-        @parent = ''
+
+        # array of parents from top to lowest
+        @parents = []
         @methods = []
         @properties = []
         @constants = []
+        @method_aliases = []
+        @property_aliases = []
+        @generateUnderscoreRubyNames = false
         @is_template_singletone_id = false
         @is_template_default_instance = false
         @is_template_propertybag = false
         @has_instance_methods = false
         @has_factory_methods = false
         @is_property_bag_limit_to_only_declared_properties = false
+        @use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
       end
 
       attr_accessor :name
-      attr_accessor :parent
+      attr_accessor :parents
       attr_accessor :methods
       attr_accessor :properties
       attr_accessor :constants
+      attr_accessor :method_aliases
+      attr_accessor :property_aliases
+      attr_accessor :generateUnderscoreRubyNames
       attr_accessor :is_template_singletone_id
       attr_accessor :is_template_default_instance
       attr_accessor :is_template_propertybag
       attr_accessor :has_instance_methods
       attr_accessor :has_factory_methods
       attr_accessor :is_property_bag_limit_to_only_declared_properties
+      attr_accessor :use_property_bag_mode
     end
+
+    TEMPLATE_NAME = "TEMPLATE_NAME"
+    TEMPLATE_PROPERTY_BAG = "property_bag"
+    TEMPLATE_SINGLETONE_INSTANCES = "singleton_instances"
 
     $modules = []
 
@@ -752,6 +840,24 @@ module Rhogen
         return name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
     end
 
+    def convertCamelToUnderscore ( s )
+      res = ''
+      last_char_is_big = false
+      for i in 0..s.length
+         if (s[i..i]).downcase != s[i..i]
+            if (res.size > 0) && (res[(res.length-1)..(res.length-1)] != '_') && (!last_char_is_big)
+                res = res + '_' + s[i..i].downcase
+            else
+                res = res + s[i..i].downcase
+            end
+            last_char_is_big = true
+         else
+            last_char_is_big = false
+            res = res + s[i..i]
+         end
+      end
+      return res
+    end
 
     def apply_templates_to_module(xml_module_item, template_name)
       xml_f = File.new(File.join(File.dirname(__FILE__), 'templates', 'api', "xml_templates", template_name+".xml"))
@@ -760,9 +866,28 @@ module Rhogen
 
       methods_item = template_xml.elements["*/METHODS"]
       if methods_item != nil
+         methods_item.elements.each("METHOD") do |method|
+            method.add_attribute TEMPLATE_NAME, template_name
+         end
          xml_module_item.add_element methods_item
       end
+    end
 
+    def addAlias(xml_alias, dst_collection)
+      module_alias = ModuleAlias.new()
+
+      module_alias.existing_name = xml_alias.attribute("existing").to_s
+      module_alias.new_name = xml_alias.attribute("new").to_s
+      if xml_alias.attribute("deprecated") != nil
+          module_alias.deprecated = xml_alias.attribute("deprecated").to_s.downcase != "false"
+      end
+      if xml_alias.attribute("reverseLogic") != nil
+          module_alias.reverseLogic = xml_alias.attribute("reverseLogic").to_s.downcase != "false"
+      end
+      if xml_alias.attribute("rubyOnly") != nil
+          module_alias.is_ruby_only = xml_alias.attribute("rubyOnly").to_s.downcase != "false"
+      end
+      dst_collection << module_alias
     end
 
     def setup_xml
@@ -775,8 +900,8 @@ module Rhogen
       # force changes in generated files !
       @options[:force] = true
 
-      xml_filepath = xmlpath
-      xml_f = File.new(xml_filepath)
+      @@xml_filepath = xmlpath
+      xml_f = File.new(@@xml_filepath)
       $xml = REXML::Document.new(xml_f)
       xml_f.close
       xml_api_root = $xml.elements["API"]
@@ -787,7 +912,12 @@ module Rhogen
 
          module_item.name = xml_module_item.attribute("name").to_s
          if xml_module_item.attribute("parent") != nil
-            module_item.parent = xml_module_item.attribute("parent").to_s
+            parents = xml_module_item.attribute("parent").to_s.split('.')
+            module_item.parents = parents
+         end
+
+         if xml_module_item.attribute("generateUnderscoreRubyNames") != nil
+            module_item.generateUnderscoreRubyNames = xml_module_item.attribute("generateUnderscoreRubyNames").to_s.downcase != "false"
          end
 
          module_item.is_template_default_instance = (xml_module_item.elements["TEMPLATES/DEFAULT_INSTANCE"] != nil)
@@ -795,10 +925,10 @@ module Rhogen
          module_item.is_template_propertybag = (xml_module_item.elements["TEMPLATES/PROPERTY_BAG"] != nil)
 
          if module_item.is_template_propertybag
-             apply_templates_to_module(xml_module_item, "property_bag")
+             apply_templates_to_module(xml_module_item, TEMPLATE_PROPERTY_BAG)
          end
          if module_item.is_template_singletone_id
-             apply_templates_to_module(xml_module_item, "singleton_instances")
+             apply_templates_to_module(xml_module_item, TEMPLATE_SINGLETONE_INSTANCES)
          end
          if module_item.is_template_default_instance
              #apply_templates_to_module(xml_module_item, "default_instance")
@@ -832,7 +962,7 @@ module Rhogen
          xml_properties = xml_module_item.elements["PROPERTIES"]
          if xml_properties != nil
             if xml_properties.attribute("limitPropertyBag") != nil
-              module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute("limitPropertyBag").to_s != "false"
+              module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute("limitPropertyBag").to_s.downcase != "false"
             end
          end
          xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_module_property|
@@ -840,10 +970,22 @@ module Rhogen
             module_property.name = xml_module_property.attribute("name").to_s
             module_property.native_name = module_property.name.split(/[^a-zA-Z0-9\_]/).map{|w| w}.join("")
             if xml_module_property.attribute("generateAccessors") != nil
-               module_property.generate_accessors =  xml_module_property.attribute("generateAccessors").to_s != "false"
+               module_property.generate_accessors =  xml_module_property.attribute("generateAccessors").to_s.downcase != "false"
+            else
+                if xml_properties.attribute("generateAccessors") != nil
+                   module_property.generate_accessors =  xml_properties.attribute("generateAccessors").to_s.downcase != "false"
+                end
             end
+
             if xml_module_property.attribute("type") != nil
                module_property.type = xml_module_property.attribute("type").to_s.upcase
+            end
+            if xml_module_property.attribute("readOnly") != nil
+              module_property.readonly = xml_module_property.attribute("readOnly").to_s.downcase != "false"
+            else
+              if xml_properties.attribute("readOnly") != nil
+                 module_property.readonly = xml_properties.attribute("readOnly").to_s.downcase != "false"
+              end
             end
             if xml_module_property.attribute("usePropertyBag") != nil
                if xml_module_property.attribute("usePropertyBag").to_s.downcase == "none".downcase
@@ -854,15 +996,74 @@ module Rhogen
                end
                if xml_module_property.attribute("usePropertyBag").to_s.downcase == "PropertyBagViaAccessors".downcase
                   module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
+                  module_item.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
                end
+            else
+              if xml_properties.attribute("usePropertyBag") != nil
+                 if xml_properties.attribute("usePropertyBag").to_s.downcase == "none".downcase
+                    module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_NONE
+                 end
+                 if xml_properties.attribute("usePropertyBag").to_s.downcase == "accessorsViaPropertyBag".downcase
+                    module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
+                 end
+                 if xml_properties.attribute("usePropertyBag").to_s.downcase == "PropertyBagViaAccessors".downcase
+                    module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
+                    module_item.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
+                 end
+              end
             end
 
             module_item.properties << module_property
 
          end
 
+         #prepare getters and setters for property
+        module_item.properties.each do |module_property|
+           if module_property.generate_accessors
+              getter_method = ModuleMethod.new()
+
+              getter_method.name = module_property.name
+              getter_method.native_name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
+
+              getter_method.params = []
+              getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+              getter_method.is_factory_method = false
+              getter_method.is_return_value = true
+              getter_method.access = ModuleMethod::ACCESS_INSTANCE
+              getter_method.has_callback = ModuleMethod::CALLBACK_NONE
+              getter_method.linked_property = module_property
+              getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
+              module_property.getter = getter_method
+              module_item.methods << getter_method
+
+              if !module_property.readonly
+                setter_method = ModuleMethod.new()
+
+                setter_method.name = module_property.name + "="
+                setter_method.native_name = 'set' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
+
+                param = MethodParam.new()
+                param.name = "value"
+                param.can_be_nil = false
+                param.type = module_property.type
+                setter_method.params = [param]
+                setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+                setter_method.is_factory_method = false
+                setter_method.is_return_value = false
+                setter_method.access = ModuleMethod::ACCESS_INSTANCE
+                setter_method.has_callback = ModuleMethod::CALLBACK_NONE
+                setter_method.linked_property = module_property
+                setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
+                module_property.setter = setter_method
+
+                module_item.methods << setter_method
+              end
+           end
+        end
+
 
          #methods
+         xml_methods_item = xml_module_item.elements["METHODS"]
          xml_module_item.elements.each("METHODS/METHOD") do |xml_module_method|
             module_method = ModuleMethod.new()
 
@@ -872,7 +1073,10 @@ module Rhogen
 
             if xml_module_method.attribute("nativeName") != nil
                module_method.native_name = xml_module_method.attribute("nativeName").to_s
+            end
 
+            if xml_module_method.attribute(TEMPLATE_NAME) != nil
+               module_method.generated_by_template = xml_module_method.attribute(TEMPLATE_NAME).to_s
             end
 
             if xml_module_method.attribute("access") != nil
@@ -881,7 +1085,16 @@ module Rhogen
                else
                    module_item.has_instance_methods = true
                end
+            else
+               if xml_methods_item.attribute("access") != nil
+                 if xml_methods_item.attribute("access").to_s.downcase == "static"
+                     module_method.access = ModuleMethod::ACCESS_STATIC
+                 else
+                     module_item.has_instance_methods = true
+                 end
+               end
             end
+
             if xml_module_method.attribute("factory") != nil
                if xml_module_method.attribute("factory").to_s.downcase != "false"
                    module_method.is_factory_method = true
@@ -901,17 +1114,46 @@ module Rhogen
                if xml_module_method.attribute("run_in_thread").to_s.downcase == "ui".downcase
                    module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
                end
+            else
+              if xml_methods_item.attribute("run_in_thread") != nil
+                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "none".downcase
+                     module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+                 end
+                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "module".downcase
+                     module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_MODULE
+                 end
+                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "separate".downcase
+                     module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_SEPARATED
+                 end
+                 if xml_methods_item.attribute("run_in_thread").to_s.downcase == "ui".downcase
+                     module_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
+                 end
+               end
             end
-            if xml_module_method.attribute("has_callback") != nil
-              if xml_module_method.attribute("has_callback").to_s.downcase == "none".downcase
-                  module_method.has_callback = ModuleMethod::CALLBACK_NONE
+
+
+            if xml_module_method.attribute("hasCallback") != nil
+              if xml_module_method.attribute("hasCallback").to_s.downcase == "none".downcase
+                 module_method.has_callback = ModuleMethod::CALLBACK_NONE
               end
-               if xml_module_method.attribute("has_callback").to_s.downcase == "mandatory".downcase
+              if xml_module_method.attribute("hasCallback").to_s.downcase == "mandatory".downcase
+                 module_method.has_callback = ModuleMethod::CALLBACK_MANDATORY
+              end
+              if xml_module_method.attribute("hasCallback").to_s.downcase == "optional".downcase
+                 module_method.has_callback = ModuleMethod::CALLBACK_OPTIONAL
+              end
+            else
+              if xml_methods_item.attribute("hasCallback") != nil
+                if xml_methods_item.attribute("hasCallback").to_s.downcase == "none".downcase
+                   module_method.has_callback = ModuleMethod::CALLBACK_NONE
+                end
+                if xml_methods_item.attribute("hasCallback").to_s.downcase == "mandatory".downcase
                    module_method.has_callback = ModuleMethod::CALLBACK_MANDATORY
-               end
-               if xml_module_method.attribute("has_callback").to_s.downcase == "optional".downcase
+                end
+                if xml_methods_item.attribute("hasCallback").to_s.downcase == "optional".downcase
                    module_method.has_callback = ModuleMethod::CALLBACK_OPTIONAL
-               end
+                end
+              end
             end
 
             if xml_module_method.elements["RETURN"] != nil
@@ -948,6 +1190,57 @@ module Rhogen
          if module_item.has_instance_methods && (!module_item.has_factory_methods && !module_item.is_template_default_instance)
              raise "If module has instance methods, then module should have factory methods for produce instances ! Module[#{module_item.name}]"
          end
+
+         xml_module_item.elements.each("PROPERTIES/ALIASES/ALIAS") do |xml_property_alias|
+            addAlias(xml_property_alias, module_item.property_aliases)
+         end
+
+         xml_module_item.elements.each("METHODS/ALIASES/ALIAS") do |xml_method_alias|
+           addAlias(xml_method_alias, module_item.method_aliases)
+         end
+
+
+         if module_item.generateUnderscoreRubyNames
+            # auto generate aliases
+            # setup aliases hashes
+
+            property_aliases_hash = {}
+            module_item.property_aliases.each do |property_alias|
+               property_aliases_hash[property_alias.new_name] = property_alias
+            end
+            method_aliases_hash = {}
+            module_item.property_aliases.each do |method_alias|
+               method_aliases_hash[method_alias.new_name] = method_alias
+            end
+
+            # methods
+            module_item.methods.each do |module_method|
+               fixed_name = convertCamelToUnderscore(module_method.name)
+               if (fixed_name != module_method.name) && (method_aliases_hash[fixed_name] == nil)
+                  method_alias = ModuleAlias.new()
+                  method_alias.existing_name = module_method.name
+                  method_alias.new_name = fixed_name
+                  method_alias.is_ruby_only = true
+                  module_item.method_aliases << method_alias
+               end
+            end
+
+            # properties
+            module_item.properties.each do |module_property|
+               fixed_name = convertCamelToUnderscore(module_property.name)
+               if (fixed_name != module_property.name) && (property_aliases_hash[fixed_name] == nil)
+                  property_alias = ModuleAlias.new()
+                  property_alias.existing_name = module_property.name
+                  property_alias.new_name = fixed_name
+                  property_alias.is_ruby_only = true
+                  module_item.property_aliases << property_alias
+               end
+            end
+
+
+         end
+
+
 
          $modules << module_item
       end
@@ -1081,44 +1374,59 @@ module Rhogen
 
 
 
-    template :wm_api do |template|
+    template :cpp_api do |template|
       template.source = 'cpp/IMontana.h'
-      template.destination = "platform/wm/generated/I#{$cur_module.name}.h"
+      template.destination = "shared/generated/cpp/I#{$cur_module.name}.h"
     end
 
-    template :wm_api1 do |template|
-      template.source = 'cpp/MontanaFactoryBase.cpp'
-      template.destination = "platform/wm/generated/#{$cur_module.name}FactoryBase.cpp"
+    template :cpp_api1 do |template|
+      template.source = 'cpp/MontanaBase.h'
+      template.destination = "shared/generated/cpp/#{$cur_module.name}Base.h"
     end
 
-    template :wm_api2 do |template|
+    template :cpp_api2 do |template|
+      template.source = 'cpp/MontanaBase.cpp'
+      template.destination = "shared/generated/cpp/#{$cur_module.name}Base.cpp"
+    end
+
+    template :cpp_api3 do |template|
       template.source = 'cpp/montana_ruby_wrap.cpp'
-      template.destination = "platform/wm/generated/#{$cur_module.name}_ruby_wrap.cpp"
+      template.destination = "shared/generated/cpp/#{$cur_module.name}_ruby_wrap.cpp"
     end
 
-    template :wm_api3 do |template|
+    template :cpp_api4 do |template|
       template.source = 'cpp/montana_js_wrap.cpp'
-      template.destination = "platform/wm/generated/#{$cur_module.name}_js_wrap.cpp"
+      template.destination = "shared/generated/cpp/#{$cur_module.name}_js_wrap.cpp"
     end
 
-	template :wp8_api do |template|
-      template.source = 'cpp/IMontana.h'
-      template.destination = "platform/wp8/generated/I#{$cur_module.name}.h"
+    template :android_java_obj_interface do |template|
+      template.source = 'platform/android/gen/src/IMontana.java'
+      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/I#{$cur_module.name}.java"
     end
 
-    template :wp8_api1 do |template|
-      template.source = 'cpp/MontanaFactoryBase.cpp'
-      template.destination = "platform/wp8/generated/#{$cur_module.name}FactoryBase.cpp"
+    template :android_java_factory_interface do |template|
+      template.source = 'platform/android/gen/src/IMontanaFactory.java'
+      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/I#{$cur_module.name}Factory.java"
     end
 
-    template :wp8_api2 do |template|
-      template.source = 'cpp/montana_ruby_wrap.cpp'
-      template.destination = "platform/wp8/generated/#{$cur_module.name}_ruby_wrap.cpp"
+    template :android_java_singleton_interface do |template|
+      template.source = 'platform/android/gen/src/IMontanaSingleton.java'
+      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/I#{$cur_module.name}Singleton.java"
     end
 
-    template :wp8_api3 do |template|
-      template.source = 'cpp/montana_js_wrap.cpp'
-      template.destination = "platform/wp8/generated/#{$cur_module.name}_js_wrap.cpp"
+    template :android_java_obj_base do |template|
+      template.source = 'platform/android/gen/src/MontanaBase.java'
+      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/#{$cur_module.name}Base.java"
+    end
+
+    template :android_java_singleton_base do |template|
+      template.source = 'platform/android/gen/src/MontanaSingletonBase.java'
+      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/#{$cur_module.name}SingletonBase.java"
+    end
+
+    template :android_java_factory_singleton do |template|
+      template.source = 'platform/android/gen/src/MontanaFactorySingleton.java'
+      template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/#{$cur_module.name}FactorySingleton.java"
     end
 
 
@@ -1166,6 +1474,8 @@ class ApiMegatestGenerator < BaseGenerator
  add :api_test, ApiMegatestGenerator
 
  end
+
+
 
 
 

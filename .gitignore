@@ -119,6 +119,7 @@ lib/extensions/fcntl/ext/iphone/build/*
 
 spec/bin/*
 spec/**/bin/*
+spec/**/**/bin/*
 spec/**/sim-public*
 spec/**/faillog.txt
 spec/**/rholog-*.txt

@@ -2,7 +2,13 @@
 
 #include "common/RhodesApp.h"
 
+namespace rho
+{
+namespace apiGenerator
+{
+
 using namespace rho::json;
+
 
 static rho::Hashtable<rho::String,Func_JS> g_hashJSMethods;
 
@@ -51,4 +57,7 @@ void rho_http_js_entry_point(void *arg, rho::String const &query )
 {
     rho::String res = js_entry_point(query.c_str());
     rho_http_sendresponse(arg, res.c_str());
+}
+
+}
 }

@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="System" parent="Rho" access="STATIC" generateUndescoreRubyNames="true">
+    <MODULE name="System" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
         <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
     
@@ -10,12 +10,19 @@
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 
-        <PROPERTIES usePropertyBag="mapNamesToAccessors"  noAccessors="false">
+        <PROPERTIES usePropertyBag="PropertyBagViaAccessors"> <!-- accessorsViaPropertyBag -->
             <!-- list of properties supported by property bag methods getPops(), setProps() -->
             <DESC>object supports this properties bla bla bla :</DESC>
-            <PROPERTY name="platform" type="STRING">
+
+            <ALIASES>
+                <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
+                <ALIAS new="disable_screen_rotation" existing="screenAutoRotate" deprecated="true" reverse_logic="true"/>
+                <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
+            </ALIASES>
+
+            <PROPERTY name="platform" type="STRING" readOnly="true">
                 <DESC>Platform where application is running.</DESC>
-                <VALUES>
+                <VALUES>         
                     <VALUE const_name="PLATFORM_WM_CE" value ="WINDOWS">
                         <DESC></DESC>
                     </VALUE>
@@ -34,6 +41,116 @@
 
                 </VALUES>
             </PROPERTY>
+            
+            <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
+                <DESC>Is camera available on the device.</DESC>
+            </PROPERTY>
+            <PROPERTY name="screenWidth" type="INTEGER" readOnly="true" default="800">
+                <DESC>Screen width in logical pixels (used for set coordinates).</DESC>
+            </PROPERTY>
+            <PROPERTY name="screenHeight" type="INTEGER" readOnly="true" deafult="600">
+                <DESC>Screen height in logical pixels (used for set coordinates).</DESC>
+            </PROPERTY>
+            <PROPERTY name="realScreenWidth" type="INTEGER" readOnly="true">
+                <DESC>Screen width in real pixels.</DESC>
+            </PROPERTY>
+            <PROPERTY name="realScreenHeight" type="INTEGER" readOnly="true">
+                <DESC>Screen height in real pixels.</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="screenOrientation" type="STRING" readOnly="true">
+                <DESC>Current screen orientation.</DESC>
+                <VALUES>
+                    <VALUE const_name="SCREEN_PORTRAIT" value ="portrait">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE const_name="SCREEN_LANDSCAPE" value ="landscape">
+                        <DESC></DESC>
+                    </VALUE>
+
+                </VALUES>
+            </PROPERTY>
+
+            <PROPERTY name="ppiX" type="INTEGER" readOnly="true">
+                <DESC>Horizontal PPI (Pixels Per Inch).</DESC>
+            </PROPERTY>
+            <PROPERTY name="ppiY" type="INTEGER" readOnly="true">
+                <DESC>Vertical PPI (Pixels Per Inch).</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="phoneNumber" type="STRING" readOnly="true">
+                <DESC>Device phone number.</DESC>
+            </PROPERTY>
+            <PROPERTY name="deviceOwnerEmail" type="STRING" readOnly="true">
+                <DESC>Primary email of phone owner (works only on Android).</DESC>
+            </PROPERTY>
+            <PROPERTY name="deviceOwnerName" type="STRING" readOnly="true">
+                <DESC>Name(account name) of phone owner (works only on Android).</DESC>
+            </PROPERTY>
+            <PROPERTY name="devicePushId" type="STRING" readOnly="true">
+                <DESC>Push notifications device ID which may be used to receive push messages.</DESC>
+            </PROPERTY>
+            <PROPERTY name="phoneId" type="STRING" readOnly="true">
+                <DESC>Hardware based ID. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.</DESC>
+            </PROPERTY>
+            <PROPERTY name="deviceName" type="STRING" readOnly="true">
+                <DESC>Name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android).</DESC>
+            </PROPERTY>
+            <PROPERTY name="osVersion" type="STRING" readOnly="true">
+                <DESC>Version OS of device. Examples: '4.6.0.192' (BB), '3.0' (iPhone), '1.6' (Android).</DESC>
+            </PROPERTY>
+            <PROPERTY name="locale" type="STRING" readOnly="true">
+                <DESC>Current device locale.Like 'en', 'ru' etc.</DESC>
+            </PROPERTY>
+            <PROPERTY name="country" type="STRING" readOnly="true">
+                <DESC>Current device country code.</DESC>
+            </PROPERTY>
+            <PROPERTY name="isEmulator" type="BOOLEAN" readOnly="true">
+                <DESC>Is application is running on emulator.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasCalendar" type="BOOLEAN" readOnly="true">
+                <DESC>Is calendar support is available.</DESC>
+            </PROPERTY>
+            <PROPERTY name="isMotorolaDevice" type="BOOLEAN" readOnly="true">
+                <DESC>Is device supports Motorola device capabilities, such as Scanner, etc.</DESC>
+            </PROPERTY>
+            <PROPERTY name="oemInfo" type="STRING" readOnly="true">
+                <DESC>The OEM Information string for the terminal.</DESC>
+            </PROPERTY>
+            <PROPERTY name="uuid" type="STRING" readOnly="true">
+                <DESC>The Unique Unit IDentifier for the terminal.</DESC>
+            </PROPERTY>
+            <PROPERTY name="applicationIconBadge" type="INTEGER">
+                <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
+            </PROPERTY>
+            <PROPERTY name="httpProxyURI" type="STRING">
+                <DESC>Client HTTP proxy.</DESC>
+            </PROPERTY>
+            <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
+                <DESC>Lock/unlock the window size change by the user. Implemented only for Windows desktop.</DESC>
+            </PROPERTY>
+            <PROPERTY name="showKeyboard" type="BOOLEAN">
+                <DESC>Display\hide software keyboard.</DESC>
+            </PROPERTY>
+            <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
+                <DESC>Use full screen mode.</DESC>
+            </PROPERTY>
+            <PROPERTY name="localServerPort" type="INTEGER" default="8080">
+                <DESC>Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.</DESC>
+            </PROPERTY>
+            <PROPERTY name="freeServerPort" type="INTEGER" readOnly="true">
+                <DESC>Get free local server port, available for binding.</DESC>
+            </PROPERTY>
+            <PROPERTY name="screenAutoRotate" type="BOOLEAN" default="true">
+                <DESC>Screen auto rotate.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasTouchscreen" type="BOOLEAN" readOnly="true">
+                <DESC>Is device has touch screen.</DESC>
+            </PROPERTY>
+            <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
+                <DESC>Is the security token check was failed.</DESC>
+            </PROPERTY>
+
         </PROPERTIES>
     
         <METHODS>
@@ -41,9 +158,184 @@
                 <ALIAS new="get_property" existing="getProperty" deprecated="true">
                     <DESC>Use property names methods instead.</DESC>
                 </ALIAS>
-            </ALIASES>                
-            
-    
+
+                <ALIAS new="app_install" existing="applicationInstall" deprecated="true"/>
+                <ALIAS new="app_installed?" existing="isApplicationInstalled" deprecated="true"/>
+                <ALIAS new="app_uninstall" existing="applicationUninstall" deprecated="true"/>
+
+            </ALIASES>
+
+            <METHOD name="applicationInstall">
+                <DESC>Install an application.</DESC>
+                <PARAMS>
+                    <PARAM name="applicationUrl" type="STRING">
+                        <DESC>The url of an application to install on the device.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="isApplicationInstalled">
+                <DESC>Is application installed on the device?</DESC>
+                <PARAMS>
+                    <PARAM name="applicationName" type="STRING">
+                        <DESC>The name of the application.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="BOOLEAN"/>
+
+            </METHOD>
+
+            <METHOD name="applicationUninstall">
+                <DESC>Uninstall the application.</DESC>
+                <PARAMS>
+                    <PARAM name="applicationName" type="STRING">
+                        <DESC>The name of the application.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="getStartParams">
+                <DESC>Return the command line parameters.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="openUrl">
+                <DESC>Open the application associated with the URL.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>Open the application at this url; behavior may be different on different platforms and depend on installed software.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="runApplication">
+                <DESC>Run an application.</DESC>
+                <PARAMS>
+                    <PARAM name="appName" type="STRING">
+                        <DESC>The name of the application on the device to run.</DESC>
+                    </PARAM>
+                    <PARAM name="params" type="STRING">
+                        <DESC>The name of the application on the device to run.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                    <PARAM name="blockingCall" type="BOOLEAN">
+                        <DESC>The name of the application on the device to run.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>False by default</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="INTEGER">
+                    <DESC>Handle of created process.</DESC>                    
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="unzipFile">
+                <DESC>Unzip file.</DESC>
+                <PARAMS>
+                    <PARAM name="localPathToZip" type="STRING">
+                        <DESC>The path to the file to be unzipped.</DESC>
+                    </PARAM>
+                    <PARAM name="password" type="STRING">
+                        <DESC>Password for the zip.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="zipFile">
+                <DESC>Zip one file.</DESC>
+                <PARAMS>
+                    <PARAM name="localPathToZip" type="STRING">
+                        <DESC>The path to the specified zip.</DESC>
+                    </PARAM>
+                    <PARAM name="localPathToFile" type="STRING">
+                        <DESC>The path to the file to be zipped.</DESC>
+                    </PARAM>
+                    <PARAM name="password" type="STRING">
+                        <DESC>Password for the zip.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="zipFiles">
+                <DESC>Zip list of files.</DESC>
+                <PARAMS>
+                    <PARAM name="localPathToZip" type="STRING">
+                        <DESC>The path to the specified zip.</DESC>
+                    </PARAM>
+                    <PARAM name="basePath" type="STRING">
+                        <DESC>Base path to the files to be zipped.</DESC>
+                    </PARAM>
+                    <PARAM name="filePathsToZip" type="ARRAY">
+                        <DESC>List of file paths to be zipped.</DESC>
+                    </PARAM>
+                    <PARAM name="password" type="STRING">
+                        <DESC>Password for the zip.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setRegistrySetting">
+                <DESC>setRegistrySetting</DESC>
+                <PARAMS>
+                    <PARAM name="keyPath" type="STRING">
+                        <DESC>Path to key in registry</DESC>
+                    </PARAM>
+                    <PARAM name="keyValue" type="STRING">
+                        <DESC>Value of the key</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="getRegistrySetting">
+                <DESC>getRegistrySetting</DESC>
+                <PARAMS>
+                    <PARAM name="keyPath" type="STRING">
+                        <DESC>Path to key in registry</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="STRING">
+                    <DESC>Regsitry value of the key.</DESC>
+                </RETURN>
+
+            </METHOD>
+            <METHOD name="setWindowFrame">
+                <DESC>Change application window position and size. Implemented only for Windows desktop.</DESC>
+                <PARAMS>
+                    <PARAM name="x" type="INTEGER">
+                        <DESC>Left corner of window.</DESC>
+                    </PARAM>
+                    <PARAM name="y" type="INTEGER">
+                        <DESC>Top corner of window.</DESC>
+                    </PARAM>
+                    <PARAM name="width" type="INTEGER">
+                        <DESC>Width of window.</DESC>
+                    </PARAM>
+                    <PARAM name="height" type="INTEGER">
+                        <DESC>Height of window.</DESC>
+                    </PARAM>
+
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setWindowPosition">
+                <DESC>Change application window position and size. Implemented only for Windows desktop.</DESC>
+                <PARAMS>
+                    <PARAM name="x" type="INTEGER">
+                        <DESC>Left corner of window.</DESC>
+                    </PARAM>
+                    <PARAM name="y" type="INTEGER">
+                        <DESC>Top corner of window.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+ 
         </METHODS>
         
         <USER_OVERVIEW>

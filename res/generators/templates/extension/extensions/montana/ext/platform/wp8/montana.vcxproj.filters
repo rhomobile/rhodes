@@ -8,20 +8,14 @@
     <Filter Include="shared">
       <UniqueIdentifier>{60f58091-37ba-4e88-a355-14f7fd6cb57e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="wp8">
-      <UniqueIdentifier>{c5e11966-bbc5-4200-bd1d-963ecd33c58c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="wp8\generated">
+    <Filter Include="generated">
       <UniqueIdentifier>{6190c737-81f8-4307-9473-dab43bcb081b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="wp8\generated\javascript">
-      <UniqueIdentifier>{34d3e0a0-8b16-4778-ae36-12bbb2122368}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="wp8\generated\ruby">
-      <UniqueIdentifier>{4cb44028-11a8-4bc1-a372-bfab217ebf07}</UniqueIdentifier>
     </Filter>
     <Filter Include="shared\generated">
       <UniqueIdentifier>{e385e312-d9a0-4097-8630-ed93f91838f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shared\generated\cpp">
+      <UniqueIdentifier>{e385e312-d9a0-4097-8630-ad93f91838f6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,22 +28,23 @@
     <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c">
       <Filter>shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="generated\<%= name.downcase() %>_js_wrap.cpp">
-      <Filter>wp8\generated\javascript</Filter>
+    <ClInclude Include="..\..\<%= name.camel_case() %>.xml">
+      <Filter>shared</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_js_wrap.cpp">
+      <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="generated\<%= name.downcase() %>_ruby_wrap.cpp">
-      <Filter>wp8\generated\ruby</Filter>
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_ruby_wrap.cpp">
+      <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="generated\<%= name.camel_case() %>FactoryBase.cpp">
-      <Filter>wp8\generated</Filter>
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.cpp">
+      <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="src\<%= name.camel_case() %>_impl.cpp">
-      <Filter>wp8</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="generated\<%= name.camel_case() %>.h">
-      <Filter>wp8\generated</Filter>
+    <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h">
+      <Filter>shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.h">
+      <Filter>shared\generated\cpp</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

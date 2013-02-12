@@ -1,9 +1,13 @@
-#include "../generated/I<%= name.camel_case %>.h"
+#include "../../../shared/generated/cpp/<%= name.camel_case %>Base.h"
 
-class C<%= name.camel_case %>Impl: public CModuleBase<I<%= name.camel_case %>>
+namespace rho {
+
+using namespace apiGenerator;
+
+class C<%= name.camel_case %>Impl: public C<%= name.camel_case %>Base
 {
 public:
-    C<%= name.camel_case %>Impl(const rho::StringW& strID): CModuleBase<I<%= name.camel_case %>>(strID)
+    C<%= name.camel_case %>Impl(const rho::StringW& strID): C<%= name.camel_case %>Base()
     {
         m_hashProps.put( L"display", L"LCD");
         m_hashProps.put( L"sound", L"Dolby");
@@ -17,7 +21,7 @@ public:
 
 };
 
-class C<%= name.camel_case %>Singleton: public CModuleSingletonBase<I<%= name.camel_case %>Singleton>
+class C<%= name.camel_case %>Singleton: public C<%= name.camel_case %>SingletonBase
 {
     ~C<%= name.camel_case %>Singleton(){}
     virtual rho::StringW getInitialDefaultID();
@@ -66,7 +70,4 @@ rho::StringW C<%= name.camel_case %>Singleton::getInitialDefaultID()
     return arIDs[0];
 }
 
-/*
-extern "C" void Init_JSAPI_<%= name.camel_case %>()
-{
-}*/
+}

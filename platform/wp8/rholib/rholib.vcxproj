@@ -270,6 +270,7 @@
     <ClInclude Include="..\..\shared\net\HttpServer.h" />
     <ClInclude Include="..\..\shared\net\INetRequest.h" />
     <ClInclude Include="..\..\shared\net\RawSocket.h" />
+    <ClInclude Include="..\..\shared\net\ssl.h" />
     <ClInclude Include="..\..\shared\net\URI.h" />
     <ClInclude Include="..\..\shared\rubyext\GeoLocation.h" />
     <ClInclude Include="..\..\shared\rubyext\WebView.h" />
@@ -305,6 +306,7 @@
     <ClCompile Include="..\..\shared\net\HttpServer.cpp" />
     <ClCompile Include="..\..\shared\net\INetRequest.cpp" />
     <ClCompile Include="..\..\shared\net\RawSocket.cpp" />
+    <ClCompile Include="..\..\shared\net\ssl.cpp" />
     <ClCompile Include="..\..\shared\net\URI.cpp" />
     <ClCompile Include="..\..\shared\rubyext\GeoLocation.cpp" />
     <ClCompile Include="..\..\shared\rubyext\RhoAppAdapter.cpp" />

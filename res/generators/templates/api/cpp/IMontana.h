@@ -4,9 +4,21 @@
 #include "api_generator/MethodResult.h"
 #include "api_generator/BaseClasses.h"
 
+<% $cur_module.parents.each do |parent| %>
+namespace <%= parent.downcase() %> {<%
+end %>
 ///////////////////////////////////////////////////////////
 struct I<%= $cur_module.name %>
 {
+//constants
+<% $cur_module.constants.each do |module_constant|
+    if module_constant.type == MethodParam::TYPE_STRING %>
+    static const wchar_t <%= module_constant.name %>[];// L"<%= module_constant.value %>" <%
+else %>
+    static const <%= api_generator_cpp_makeNativeType(module_constant.type) %> <%= module_constant.name %> = <%= module_constant.value %>; <%
+end; end %>
+
+//methods
     virtual ~I<%= $cur_module.name %>(){}
 
 <% $cur_module.methods.each do |module_method|
@@ -14,12 +26,12 @@ struct I<%= $cur_module.name %>
 
     params = ''
     module_method.params.each do |param|
-        params += " const #{api_generator_cpp_makeNativeType(param.type)}& #{param.name}, "
+        params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
     end
 
-    params += 'CMethodResult& oResult'
-
-%>    virtual void <%= module_method.name%>(<%= params%>) = 0;
+    params += 'rho::apiGenerator::CMethodResult& oResult'
+    module_method.cached_data["cpp_params"] = params
+%>    virtual void <%= module_method.native_name%>(<%= params%>) = 0;
 <% end %>
 };
 
@@ -32,12 +44,12 @@ struct I<%= $cur_module.name %>Singleton
 
     params = ''
     module_method.params.each do |param|
-        params += " const #{api_generator_cpp_makeNativeType(param.type)}& #{param.name}, "
+        params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
     end
 
-    params += 'CMethodResult& oResult'
+    params += 'rho::apiGenerator::CMethodResult& oResult'
 
-%>    virtual void <%= module_method.name%>(<%= params%>) = 0;
+%>    virtual void <%= module_method.native_name%>(<%= params%>) = 0;
 <% end %>
 <% if $cur_module.is_template_default_instance %>
     virtual rho::StringW getDefaultID() = 0;
@@ -59,17 +71,6 @@ struct I<%= $cur_module.name %>Factory
 <% end %>
 };
 
-class C<%= $cur_module.name %>FactoryBase : public CModuleFactoryBase<I<%= $cur_module.name %>, I<%= $cur_module.name %>Singleton, I<%= $cur_module.name %>Factory>
-{
-protected:
-    static rho::common::CAutoPtr<C<%= $cur_module.name %>FactoryBase> m_pInstance;
-
-public:
-
-    static void setInstance(C<%= $cur_module.name %>FactoryBase* pInstance){ m_pInstance = pInstance; }
-    static C<%= $cur_module.name %>FactoryBase* getInstance(){ return m_pInstance; }
-
-    static I<%= $cur_module.name %>Singleton* get<%= $cur_module.name %>SingletonS(){ return getInstance()->getModuleSingleton(); }
-};
-
-extern "C" void Init_<%= $cur_module.name %>_API();
+<% $cur_module.parents.each do |parent| %>
+}<%
+end %>
