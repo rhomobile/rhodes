@@ -192,125 +192,125 @@ rho::String js_s_System_setDefaultID(rho::json::CJSONArray& argv, const rho::Str
 extern "C" void Init_JSAPI_System(void)
 {
 
-    rho::apiGenerator::js_define_method("Rho:System:getPlatform", js_System_getPlatform);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getPlatform", js_s_System_def_getPlatform);;
+    rho::apiGenerator::js_define_method("Rho:System:platform", js_System_getPlatform);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_platform", js_s_System_def_getPlatform);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getHasCamera", js_System_getHasCamera);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getHasCamera", js_s_System_def_getHasCamera);;
+    rho::apiGenerator::js_define_method("Rho:System:hasCamera", js_System_getHasCamera);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_hasCamera", js_s_System_def_getHasCamera);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getScreenWidth", js_System_getScreenWidth);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getScreenWidth", js_s_System_def_getScreenWidth);;
+    rho::apiGenerator::js_define_method("Rho:System:screenWidth", js_System_getScreenWidth);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_screenWidth", js_s_System_def_getScreenWidth);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getScreenHeight", js_System_getScreenHeight);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getScreenHeight", js_s_System_def_getScreenHeight);;
+    rho::apiGenerator::js_define_method("Rho:System:screenHeight", js_System_getScreenHeight);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_screenHeight", js_s_System_def_getScreenHeight);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getRealScreenWidth", js_System_getRealScreenWidth);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getRealScreenWidth", js_s_System_def_getRealScreenWidth);;
+    rho::apiGenerator::js_define_method("Rho:System:realScreenWidth", js_System_getRealScreenWidth);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_realScreenWidth", js_s_System_def_getRealScreenWidth);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getRealScreenHeight", js_System_getRealScreenHeight);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getRealScreenHeight", js_s_System_def_getRealScreenHeight);;
+    rho::apiGenerator::js_define_method("Rho:System:realScreenHeight", js_System_getRealScreenHeight);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_realScreenHeight", js_s_System_def_getRealScreenHeight);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getScreenOrientation", js_System_getScreenOrientation);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getScreenOrientation", js_s_System_def_getScreenOrientation);;
+    rho::apiGenerator::js_define_method("Rho:System:screenOrientation", js_System_getScreenOrientation);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_screenOrientation", js_s_System_def_getScreenOrientation);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getPpiX", js_System_getPpiX);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getPpiX", js_s_System_def_getPpiX);;
+    rho::apiGenerator::js_define_method("Rho:System:ppiX", js_System_getPpiX);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_ppiX", js_s_System_def_getPpiX);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getPpiY", js_System_getPpiY);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getPpiY", js_s_System_def_getPpiY);;
+    rho::apiGenerator::js_define_method("Rho:System:ppiY", js_System_getPpiY);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_ppiY", js_s_System_def_getPpiY);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getPhoneNumber", js_System_getPhoneNumber);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getPhoneNumber", js_s_System_def_getPhoneNumber);;
+    rho::apiGenerator::js_define_method("Rho:System:phoneNumber", js_System_getPhoneNumber);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_phoneNumber", js_s_System_def_getPhoneNumber);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getDeviceOwnerEmail", js_System_getDeviceOwnerEmail);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getDeviceOwnerEmail", js_s_System_def_getDeviceOwnerEmail);;
+    rho::apiGenerator::js_define_method("Rho:System:deviceOwnerEmail", js_System_getDeviceOwnerEmail);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_deviceOwnerEmail", js_s_System_def_getDeviceOwnerEmail);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getDeviceOwnerName", js_System_getDeviceOwnerName);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getDeviceOwnerName", js_s_System_def_getDeviceOwnerName);;
+    rho::apiGenerator::js_define_method("Rho:System:deviceOwnerName", js_System_getDeviceOwnerName);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_deviceOwnerName", js_s_System_def_getDeviceOwnerName);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getDevicePushId", js_System_getDevicePushId);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getDevicePushId", js_s_System_def_getDevicePushId);;
+    rho::apiGenerator::js_define_method("Rho:System:devicePushId", js_System_getDevicePushId);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_devicePushId", js_s_System_def_getDevicePushId);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getPhoneId", js_System_getPhoneId);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getPhoneId", js_s_System_def_getPhoneId);;
+    rho::apiGenerator::js_define_method("Rho:System:phoneId", js_System_getPhoneId);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_phoneId", js_s_System_def_getPhoneId);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getDeviceName", js_System_getDeviceName);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getDeviceName", js_s_System_def_getDeviceName);;
+    rho::apiGenerator::js_define_method("Rho:System:deviceName", js_System_getDeviceName);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_deviceName", js_s_System_def_getDeviceName);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getOsVersion", js_System_getOsVersion);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getOsVersion", js_s_System_def_getOsVersion);;
+    rho::apiGenerator::js_define_method("Rho:System:osVersion", js_System_getOsVersion);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_osVersion", js_s_System_def_getOsVersion);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getLocale", js_System_getLocale);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getLocale", js_s_System_def_getLocale);;
+    rho::apiGenerator::js_define_method("Rho:System:locale", js_System_getLocale);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_locale", js_s_System_def_getLocale);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getCountry", js_System_getCountry);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getCountry", js_s_System_def_getCountry);;
+    rho::apiGenerator::js_define_method("Rho:System:country", js_System_getCountry);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_country", js_s_System_def_getCountry);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getIsEmulator", js_System_getIsEmulator);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getIsEmulator", js_s_System_def_getIsEmulator);;
+    rho::apiGenerator::js_define_method("Rho:System:isEmulator", js_System_getIsEmulator);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_isEmulator", js_s_System_def_getIsEmulator);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getHasCalendar", js_System_getHasCalendar);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getHasCalendar", js_s_System_def_getHasCalendar);;
+    rho::apiGenerator::js_define_method("Rho:System:hasCalendar", js_System_getHasCalendar);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_hasCalendar", js_s_System_def_getHasCalendar);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getIsMotorolaDevice", js_System_getIsMotorolaDevice);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getIsMotorolaDevice", js_s_System_def_getIsMotorolaDevice);;
+    rho::apiGenerator::js_define_method("Rho:System:isMotorolaDevice", js_System_getIsMotorolaDevice);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_isMotorolaDevice", js_s_System_def_getIsMotorolaDevice);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getOemInfo", js_System_getOemInfo);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getOemInfo", js_s_System_def_getOemInfo);;
+    rho::apiGenerator::js_define_method("Rho:System:oemInfo", js_System_getOemInfo);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_oemInfo", js_s_System_def_getOemInfo);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getUuid", js_System_getUuid);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getUuid", js_s_System_def_getUuid);;
+    rho::apiGenerator::js_define_method("Rho:System:uuid", js_System_getUuid);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_uuid", js_s_System_def_getUuid);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getApplicationIconBadge", js_System_getApplicationIconBadge);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getApplicationIconBadge", js_s_System_def_getApplicationIconBadge);;
+    rho::apiGenerator::js_define_method("Rho:System:applicationIconBadge", js_System_getApplicationIconBadge);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_applicationIconBadge", js_s_System_def_getApplicationIconBadge);;
 
-    rho::apiGenerator::js_define_method("Rho:System:setApplicationIconBadge", js_System_setApplicationIconBadge);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setApplicationIconBadge", js_s_System_def_setApplicationIconBadge);;
+    rho::apiGenerator::js_define_method("Rho:System:applicationIconBadge=", js_System_setApplicationIconBadge);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_applicationIconBadge=", js_s_System_def_setApplicationIconBadge);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getHttpProxyURI", js_System_getHttpProxyURI);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getHttpProxyURI", js_s_System_def_getHttpProxyURI);;
+    rho::apiGenerator::js_define_method("Rho:System:httpProxyURI", js_System_getHttpProxyURI);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_httpProxyURI", js_s_System_def_getHttpProxyURI);;
 
-    rho::apiGenerator::js_define_method("Rho:System:setHttpProxyURI", js_System_setHttpProxyURI);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setHttpProxyURI", js_s_System_def_setHttpProxyURI);;
+    rho::apiGenerator::js_define_method("Rho:System:httpProxyURI=", js_System_setHttpProxyURI);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_httpProxyURI=", js_s_System_def_setHttpProxyURI);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getLockWindowSize", js_System_getLockWindowSize);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getLockWindowSize", js_s_System_def_getLockWindowSize);;
+    rho::apiGenerator::js_define_method("Rho:System:lockWindowSize", js_System_getLockWindowSize);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_lockWindowSize", js_s_System_def_getLockWindowSize);;
 
-    rho::apiGenerator::js_define_method("Rho:System:setLockWindowSize", js_System_setLockWindowSize);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setLockWindowSize", js_s_System_def_setLockWindowSize);;
+    rho::apiGenerator::js_define_method("Rho:System:lockWindowSize=", js_System_setLockWindowSize);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_lockWindowSize=", js_s_System_def_setLockWindowSize);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getShowKeyboard", js_System_getShowKeyboard);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getShowKeyboard", js_s_System_def_getShowKeyboard);;
+    rho::apiGenerator::js_define_method("Rho:System:showKeyboard", js_System_getShowKeyboard);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_showKeyboard", js_s_System_def_getShowKeyboard);;
 
-    rho::apiGenerator::js_define_method("Rho:System:setShowKeyboard", js_System_setShowKeyboard);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setShowKeyboard", js_s_System_def_setShowKeyboard);;
+    rho::apiGenerator::js_define_method("Rho:System:showKeyboard=", js_System_setShowKeyboard);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_showKeyboard=", js_s_System_def_setShowKeyboard);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getFullScreen", js_System_getFullScreen);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getFullScreen", js_s_System_def_getFullScreen);;
+    rho::apiGenerator::js_define_method("Rho:System:fullScreen", js_System_getFullScreen);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_fullScreen", js_s_System_def_getFullScreen);;
 
-    rho::apiGenerator::js_define_method("Rho:System:setFullScreen", js_System_setFullScreen);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setFullScreen", js_s_System_def_setFullScreen);;
+    rho::apiGenerator::js_define_method("Rho:System:fullScreen=", js_System_setFullScreen);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_fullScreen=", js_s_System_def_setFullScreen);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getLocalServerPort", js_System_getLocalServerPort);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getLocalServerPort", js_s_System_def_getLocalServerPort);;
+    rho::apiGenerator::js_define_method("Rho:System:localServerPort", js_System_getLocalServerPort);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_localServerPort", js_s_System_def_getLocalServerPort);;
 
-    rho::apiGenerator::js_define_method("Rho:System:setLocalServerPort", js_System_setLocalServerPort);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setLocalServerPort", js_s_System_def_setLocalServerPort);;
+    rho::apiGenerator::js_define_method("Rho:System:localServerPort=", js_System_setLocalServerPort);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_localServerPort=", js_s_System_def_setLocalServerPort);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getFreeServerPort", js_System_getFreeServerPort);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getFreeServerPort", js_s_System_def_getFreeServerPort);;
+    rho::apiGenerator::js_define_method("Rho:System:freeServerPort", js_System_getFreeServerPort);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_freeServerPort", js_s_System_def_getFreeServerPort);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getScreenAutoRotate", js_System_getScreenAutoRotate);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getScreenAutoRotate", js_s_System_def_getScreenAutoRotate);;
+    rho::apiGenerator::js_define_method("Rho:System:screenAutoRotate", js_System_getScreenAutoRotate);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_screenAutoRotate", js_s_System_def_getScreenAutoRotate);;
 
-    rho::apiGenerator::js_define_method("Rho:System:setScreenAutoRotate", js_System_setScreenAutoRotate);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setScreenAutoRotate", js_s_System_def_setScreenAutoRotate);;
+    rho::apiGenerator::js_define_method("Rho:System:screenAutoRotate=", js_System_setScreenAutoRotate);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_screenAutoRotate=", js_s_System_def_setScreenAutoRotate);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getHasTouchscreen", js_System_getHasTouchscreen);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getHasTouchscreen", js_s_System_def_getHasTouchscreen);;
+    rho::apiGenerator::js_define_method("Rho:System:hasTouchscreen", js_System_getHasTouchscreen);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_hasTouchscreen", js_s_System_def_getHasTouchscreen);;
 
-    rho::apiGenerator::js_define_method("Rho:System:getSecurityTokenNotPassed", js_System_getSecurityTokenNotPassed);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getSecurityTokenNotPassed", js_s_System_def_getSecurityTokenNotPassed);;
+    rho::apiGenerator::js_define_method("Rho:System:securityTokenNotPassed", js_System_getSecurityTokenNotPassed);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_securityTokenNotPassed", js_s_System_def_getSecurityTokenNotPassed);;
 
     rho::apiGenerator::js_define_method("Rho:System:applicationInstall", js_System_applicationInstall);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_applicationInstall", js_s_System_def_applicationInstall);;

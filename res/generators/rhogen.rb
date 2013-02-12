@@ -1022,9 +1022,8 @@ module Rhogen
            if module_property.generate_accessors
               getter_method = ModuleMethod.new()
 
-              getter_method.name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
-
-              getter_method.native_name = getter_method.name
+              getter_method.name = module_property.name
+              getter_method.native_name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
 
               getter_method.params = []
               getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
@@ -1040,9 +1039,8 @@ module Rhogen
               if !module_property.readonly
                 setter_method = ModuleMethod.new()
 
-                setter_method.name = 'set' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
-
-                setter_method.native_name = setter_method.name
+                setter_method.name = module_property.name + "="
+                setter_method.native_name = 'set' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
 
                 param = MethodParam.new()
                 param.name = "value"
