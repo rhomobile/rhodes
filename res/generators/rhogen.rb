@@ -651,6 +651,24 @@ module Rhogen
 
     # array of arrays
 
+    class ModuleAlias
+
+      def initialize
+        @existing_name = ''
+        @new_name = ''
+        @is_ruby_only = false
+        @deprecated = false
+        @reverseLogic = false
+      end
+
+      attr_accessor :existing_name
+      attr_accessor :new_name
+      attr_accessor :is_ruby_only
+      attr_accessor :deprecated
+      attr_accessor :reverseLogic
+
+    end
+
     class MethodParam
 
       TYPE_STRING = "STRING"
@@ -781,6 +799,9 @@ module Rhogen
         @methods = []
         @properties = []
         @constants = []
+        @method_aliases = []
+        @property_aliases = []
+        @generateUnderscoreRubyNames = false
         @is_template_singletone_id = false
         @is_template_default_instance = false
         @is_template_propertybag = false
@@ -795,6 +816,9 @@ module Rhogen
       attr_accessor :methods
       attr_accessor :properties
       attr_accessor :constants
+      attr_accessor :method_aliases
+      attr_accessor :property_aliases
+      attr_accessor :generateUnderscoreRubyNames
       attr_accessor :is_template_singletone_id
       attr_accessor :is_template_default_instance
       attr_accessor :is_template_propertybag
@@ -816,6 +840,24 @@ module Rhogen
         return name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
     end
 
+    def convertCamelToUnderscore ( s )
+      res = ''
+      last_char_is_big = false
+      for i in 0..s.length
+         if (s[i..i]).downcase != s[i..i]
+            if (res.size > 0) && (res[(res.length-1)..(res.length-1)] != '_') && (!last_char_is_big)
+                res = res + '_' + s[i..i].downcase
+            else
+                res = res + s[i..i].downcase
+            end
+            last_char_is_big = true
+         else
+            last_char_is_big = false
+            res = res + s[i..i]
+         end
+      end
+      return res
+    end
 
     def apply_templates_to_module(xml_module_item, template_name)
       xml_f = File.new(File.join(File.dirname(__FILE__), 'templates', 'api', "xml_templates", template_name+".xml"))
@@ -829,7 +871,23 @@ module Rhogen
          end
          xml_module_item.add_element methods_item
       end
+    end
 
+    def addAlias(xml_alias, dst_collection)
+      module_alias = ModuleAlias.new()
+
+      module_alias.existing_name = xml_alias.attribute("existing").to_s
+      module_alias.new_name = xml_alias.attribute("new").to_s
+      if xml_alias.attribute("deprecated") != nil
+          module_alias.deprecated = xml_alias.attribute("deprecated").to_s.downcase != "false"
+      end
+      if xml_alias.attribute("reverseLogic") != nil
+          module_alias.reverseLogic = xml_alias.attribute("reverseLogic").to_s.downcase != "false"
+      end
+      if xml_alias.attribute("rubyOnly") != nil
+          module_alias.is_ruby_only = xml_alias.attribute("rubyOnly").to_s.downcase != "false"
+      end
+      dst_collection << module_alias
     end
 
     def setup_xml
@@ -856,6 +914,10 @@ module Rhogen
          if xml_module_item.attribute("parent") != nil
             parents = xml_module_item.attribute("parent").to_s.split('.')
             module_item.parents = parents
+         end
+
+         if xml_module_item.attribute("generateUnderscoreRubyNames") != nil
+            module_item.generateUnderscoreRubyNames = xml_module_item.attribute("generateUnderscoreRubyNames").to_s.downcase != "false"
          end
 
          module_item.is_template_default_instance = (xml_module_item.elements["TEMPLATES/DEFAULT_INSTANCE"] != nil)
@@ -900,7 +962,7 @@ module Rhogen
          xml_properties = xml_module_item.elements["PROPERTIES"]
          if xml_properties != nil
             if xml_properties.attribute("limitPropertyBag") != nil
-              module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute("limitPropertyBag").to_s != "false"
+              module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute("limitPropertyBag").to_s.downcase != "false"
             end
          end
          xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_module_property|
@@ -908,10 +970,10 @@ module Rhogen
             module_property.name = xml_module_property.attribute("name").to_s
             module_property.native_name = module_property.name.split(/[^a-zA-Z0-9\_]/).map{|w| w}.join("")
             if xml_module_property.attribute("generateAccessors") != nil
-               module_property.generate_accessors =  xml_module_property.attribute("generateAccessors").to_s != "false"
+               module_property.generate_accessors =  xml_module_property.attribute("generateAccessors").to_s.downcase != "false"
             else
                 if xml_properties.attribute("generateAccessors") != nil
-                   module_property.generate_accessors =  xml_properties.attribute("generateAccessors").to_s != "false"
+                   module_property.generate_accessors =  xml_properties.attribute("generateAccessors").to_s.downcase != "false"
                 end
             end
 
@@ -960,7 +1022,7 @@ module Rhogen
            if module_property.generate_accessors
               getter_method = ModuleMethod.new()
 
-              getter_method.name = 'get' + module_property.native_name[0].upcase() + module_property.native_name[1..module_property.native_name.length-1]
+              getter_method.name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
 
               getter_method.native_name = getter_method.name
 
@@ -978,7 +1040,7 @@ module Rhogen
               if !module_property.readonly
                 setter_method = ModuleMethod.new()
 
-                setter_method.name = 'set' + module_property.native_name[0].upcase() + module_property.native_name[1..module_property.native_name.length-1]
+                setter_method.name = 'set' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
 
                 setter_method.native_name = setter_method.name
 
@@ -1130,6 +1192,57 @@ module Rhogen
          if module_item.has_instance_methods && (!module_item.has_factory_methods && !module_item.is_template_default_instance)
              raise "If module has instance methods, then module should have factory methods for produce instances ! Module[#{module_item.name}]"
          end
+
+         xml_module_item.elements.each("PROPERTIES/ALIASES/ALIAS") do |xml_property_alias|
+            addAlias(xml_property_alias, module_item.property_aliases)
+         end
+
+         xml_module_item.elements.each("METHODS/ALIASES/ALIAS") do |xml_method_alias|
+           addAlias(xml_method_alias, module_item.method_aliases)
+         end
+
+
+         if module_item.generateUnderscoreRubyNames
+            # auto generate aliases
+            # setup aliases hashes
+
+            property_aliases_hash = {}
+            module_item.property_aliases.each do |property_alias|
+               property_aliases_hash[property_alias.new_name] = property_alias
+            end
+            method_aliases_hash = {}
+            module_item.property_aliases.each do |method_alias|
+               method_aliases_hash[method_alias.new_name] = method_alias
+            end
+
+            # methods
+            module_item.methods.each do |module_method|
+               fixed_name = convertCamelToUnderscore(module_method.name)
+               if (fixed_name != module_method.name) && (method_aliases_hash[fixed_name] == nil)
+                  method_alias = ModuleAlias.new()
+                  method_alias.existing_name = module_method.name
+                  method_alias.new_name = fixed_name
+                  method_alias.is_ruby_only = true
+                  module_item.method_aliases << method_alias
+               end
+            end
+
+            # properties
+            module_item.properties.each do |module_property|
+               fixed_name = convertCamelToUnderscore(module_property.name)
+               if (fixed_name != module_property.name) && (property_aliases_hash[fixed_name] == nil)
+                  property_alias = ModuleAlias.new()
+                  property_alias.existing_name = module_property.name
+                  property_alias.new_name = fixed_name
+                  property_alias.is_ruby_only = true
+                  module_item.property_aliases << property_alias
+               end
+            end
+
+
+         end
+
+
 
          $modules << module_item
       end
@@ -1363,6 +1476,7 @@ class ApiMegatestGenerator < BaseGenerator
  add :api_test, ApiMegatestGenerator
 
  end
+
 
 
 

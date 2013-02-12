@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-	<MODULE name="Taho" parent="Rho.System">
+	<MODULE name="Taho" parent="Rho.System" generateUnderscoreRubyNames="true">
 		<HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
 		<MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
 	    <TEMPLATES>
@@ -33,8 +33,26 @@
 			<PROPERTY name="SupportedCodes" type="ARRAY" usePropertyBag="none" readonly="true">
 				<DESC>ARRAY of STRING with all supported barcode codes by this recognizer</DESC>
 			</PROPERTY>
+			<ALIASES>
+				<ALIAS new="mymegasuperpuper_type" existing="Type" >
+					<DESC>Message for logging in case of deprecated attribute</DESC>
+				</ALIAS>
+				<ALIAS new="supported_codes" existing="SupportedCodes" >
+					<DESC>Message for logging in case of deprecated attribute</DESC>
+				</ALIAS>
+			</ALIASES>
 		</PROPERTIES>	
 		<METHODS>
+			<METHOD name="simpleTypesTest">
+				<DESC>recognize barcode in image file or in images pixels array - just example of method</DESC>
+				<PARAMS>
+					<PARAM name="param1" type="STRING"/>
+					<PARAM name="param2" type="BOOLEAN"/>
+					<PARAM name="param3" type="INTEGER"/>
+					<PARAM name="param4" type="FLOAT"/>
+					<PARAM name="param5" type="STRING"/>
+				</PARAMS>
+			</METHOD>
 			<METHOD name="recognizeBarcodeOnImage">
 				<DESC>recognize barcode in image file or in images pixels array - just example of method</DESC>
 				<PARAMS>
@@ -95,6 +113,11 @@
 					</PARAM>
 				</PARAMS>
 			</METHOD>
+			<ALIASES>
+				<ALIAS new="scan_barcode_in_main_thread" existing="scanBarcodeInUI" deprecated="true" >
+					<DESC>Message for logging in case of deprecated attribute</DESC>
+				</ALIAS>
+			</ALIASES>
 		</METHODS>
 		<USER_OVERVIEW> <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
 			<![CDATA[
