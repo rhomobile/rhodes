@@ -29,6 +29,7 @@ require 'erb'
 #require 'rdoc/task'
 require 'digest/sha2'
 require 'rexml/document'
+require 'pathname'
 
 #Look, another big fat hack. Make it so we can remove tasks from rake -T by setting comment to nil
 module Rake
@@ -300,9 +301,19 @@ namespace "config" do
 
     if $app_config["paths"] and $app_config["paths"]["extensions"]
       if $app_config["paths"]["extensions"].is_a? String
-        extpaths << $app_config["paths"]["extensions"]
+		p = $app_config["paths"]["extensions"]
+		unless Pathname.new(p).absolute?
+			p = File.expand_path(File.join($app_path,p))
+		end
+		extpaths << p
       elsif $app_config["paths"]["extensions"].is_a? Array
-        extpaths += $app_config["paths"]["extensions"]
+		$app_config["paths"]["extensions"].each do |p|
+			unless Pathname.new(p).absolute?
+				p = File.expand_path(File.join($app_path,p))
+			end
+			extpaths << p
+		end
+		#extpaths += $app_config["paths"]["extensions"]
       end
     end
     extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
@@ -694,6 +705,10 @@ def init_extensions(startdir, dest)
         puts "exception: #{e}"  
       end
     end
+	  
+	if extpath.nil?
+		raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
+	end
         
     unless extpath.nil?      
       add_extension(extpath, dest) unless dest.nil?
