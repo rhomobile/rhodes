@@ -17,142 +17,65 @@ const wchar_t ISystem::SCREEN_LANDSCAPE[] = L"landscape";
 
 ////////////////////////////////////////////////
 
-void CSystemBase::getProperty( const rho::StringW& propertyName, CMethodResult& oResult)
+
+CSystemBase::CSystemBase()
 {
 
-    if (false){}
+    m_mapPropAccessors[L"platform"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getPlatform ); 
+    m_mapPropAccessors[L"hasCamera"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getHasCamera ); 
+    m_mapPropAccessors[L"screenWidth"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getScreenWidth ); 
+    m_mapPropAccessors[L"screenHeight"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getScreenHeight ); 
+    m_mapPropAccessors[L"realScreenWidth"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getRealScreenWidth ); 
+    m_mapPropAccessors[L"realScreenHeight"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getRealScreenHeight ); 
+    m_mapPropAccessors[L"screenOrientation"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getScreenOrientation ); 
+    m_mapPropAccessors[L"ppiX"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getPpiX ); 
+    m_mapPropAccessors[L"ppiY"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getPpiY ); 
+    m_mapPropAccessors[L"phoneNumber"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getPhoneNumber ); 
+    m_mapPropAccessors[L"deviceOwnerEmail"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getDeviceOwnerEmail ); 
+    m_mapPropAccessors[L"deviceOwnerName"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getDeviceOwnerName ); 
+    m_mapPropAccessors[L"devicePushId"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getDevicePushId ); 
+    m_mapPropAccessors[L"phoneId"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getPhoneId ); 
+    m_mapPropAccessors[L"deviceName"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getDeviceName ); 
+    m_mapPropAccessors[L"osVersion"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getOsVersion ); 
+    m_mapPropAccessors[L"locale"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getLocale ); 
+    m_mapPropAccessors[L"country"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getCountry ); 
+    m_mapPropAccessors[L"isEmulator"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getIsEmulator ); 
+    m_mapPropAccessors[L"hasCalendar"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getHasCalendar ); 
+    m_mapPropAccessors[L"isMotorolaDevice"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getIsMotorolaDevice ); 
+    m_mapPropAccessors[L"oemInfo"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getOemInfo ); 
+    m_mapPropAccessors[L"uuid"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getUuid ); 
+    m_mapPropAccessors[L"applicationIconBadge"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getApplicationIconBadge ); 
+    m_mapPropAccessors[L"httpProxyURI"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getHttpProxyURI ); 
+    m_mapPropAccessors[L"lockWindowSize"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getLockWindowSize ); 
+    m_mapPropAccessors[L"showKeyboard"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getShowKeyboard ); 
+    m_mapPropAccessors[L"fullScreen"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getFullScreen ); 
+    m_mapPropAccessors[L"localServerPort"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getLocalServerPort ); 
+    m_mapPropAccessors[L"freeServerPort"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getFreeServerPort ); 
+    m_mapPropAccessors[L"screenAutoRotate"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getScreenAutoRotate ); 
+    m_mapPropAccessors[L"hasTouchscreen"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getHasTouchscreen ); 
+    m_mapPropAccessors[L"securityTokenNotPassed"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getSecurityTokenNotPassed ); 
 
-    else if (_wcsicmp(L"platform",propertyName.c_str()) == 0){
 
-        getPlatform( oResult );
-    }
-    else if (_wcsicmp(L"hasCamera",propertyName.c_str()) == 0){
+    m_mapPropAccessors[L"applicationIconBadge"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< int64, int64 >(&ISystem::setApplicationIconBadge) );
+    m_mapPropAccessors[L"httpProxyURI"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< const rho::StringW&, rho::StringW >(&ISystem::setHttpProxyURI) );
+    m_mapPropAccessors[L"lockWindowSize"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< bool, bool >(&ISystem::setLockWindowSize) );
+    m_mapPropAccessors[L"showKeyboard"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< bool, bool >(&ISystem::setShowKeyboard) );
+    m_mapPropAccessors[L"fullScreen"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< bool, bool >(&ISystem::setFullScreen) );
+    m_mapPropAccessors[L"localServerPort"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< int64, int64 >(&ISystem::setLocalServerPort) );
+    m_mapPropAccessors[L"screenAutoRotate"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< bool, bool >(&ISystem::setScreenAutoRotate) );
+}
 
-        getHasCamera( oResult );
-    }
-    else if (_wcsicmp(L"screenWidth",propertyName.c_str()) == 0){
-
-        getScreenWidth( oResult );
-    }
-    else if (_wcsicmp(L"screenHeight",propertyName.c_str()) == 0){
-
-        getScreenHeight( oResult );
-    }
-    else if (_wcsicmp(L"realScreenWidth",propertyName.c_str()) == 0){
-
-        getRealScreenWidth( oResult );
-    }
-    else if (_wcsicmp(L"realScreenHeight",propertyName.c_str()) == 0){
-
-        getRealScreenHeight( oResult );
-    }
-    else if (_wcsicmp(L"screenOrientation",propertyName.c_str()) == 0){
-
-        getScreenOrientation( oResult );
-    }
-    else if (_wcsicmp(L"ppiX",propertyName.c_str()) == 0){
-
-        getPpiX( oResult );
-    }
-    else if (_wcsicmp(L"ppiY",propertyName.c_str()) == 0){
-
-        getPpiY( oResult );
-    }
-    else if (_wcsicmp(L"phoneNumber",propertyName.c_str()) == 0){
-
-        getPhoneNumber( oResult );
-    }
-    else if (_wcsicmp(L"deviceOwnerEmail",propertyName.c_str()) == 0){
-
-        getDeviceOwnerEmail( oResult );
-    }
-    else if (_wcsicmp(L"deviceOwnerName",propertyName.c_str()) == 0){
-
-        getDeviceOwnerName( oResult );
-    }
-    else if (_wcsicmp(L"devicePushId",propertyName.c_str()) == 0){
-
-        getDevicePushId( oResult );
-    }
-    else if (_wcsicmp(L"phoneId",propertyName.c_str()) == 0){
-
-        getPhoneId( oResult );
-    }
-    else if (_wcsicmp(L"deviceName",propertyName.c_str()) == 0){
-
-        getDeviceName( oResult );
-    }
-    else if (_wcsicmp(L"osVersion",propertyName.c_str()) == 0){
-
-        getOsVersion( oResult );
-    }
-    else if (_wcsicmp(L"locale",propertyName.c_str()) == 0){
-
-        getLocale( oResult );
-    }
-    else if (_wcsicmp(L"country",propertyName.c_str()) == 0){
-
-        getCountry( oResult );
-    }
-    else if (_wcsicmp(L"isEmulator",propertyName.c_str()) == 0){
-
-        getIsEmulator( oResult );
-    }
-    else if (_wcsicmp(L"hasCalendar",propertyName.c_str()) == 0){
-
-        getHasCalendar( oResult );
-    }
-    else if (_wcsicmp(L"isMotorolaDevice",propertyName.c_str()) == 0){
-
-        getIsMotorolaDevice( oResult );
-    }
-    else if (_wcsicmp(L"oemInfo",propertyName.c_str()) == 0){
-
-        getOemInfo( oResult );
-    }
-    else if (_wcsicmp(L"uuid",propertyName.c_str()) == 0){
-
-        getUuid( oResult );
-    }
-    else if (_wcsicmp(L"applicationIconBadge",propertyName.c_str()) == 0){
-
-        getApplicationIconBadge( oResult );
-    }
-    else if (_wcsicmp(L"httpProxyURI",propertyName.c_str()) == 0){
-
-        getHttpProxyURI( oResult );
-    }
-    else if (_wcsicmp(L"lockWindowSize",propertyName.c_str()) == 0){
-
-        getLockWindowSize( oResult );
-    }
-    else if (_wcsicmp(L"showKeyboard",propertyName.c_str()) == 0){
-
-        getShowKeyboard( oResult );
-    }
-    else if (_wcsicmp(L"fullScreen",propertyName.c_str()) == 0){
-
-        getFullScreen( oResult );
-    }
-    else if (_wcsicmp(L"localServerPort",propertyName.c_str()) == 0){
-
-        getLocalServerPort( oResult );
-    }
-    else if (_wcsicmp(L"freeServerPort",propertyName.c_str()) == 0){
-
-        getFreeServerPort( oResult );
-    }
-    else if (_wcsicmp(L"screenAutoRotate",propertyName.c_str()) == 0){
-
-        getScreenAutoRotate( oResult );
-    }
-    else if (_wcsicmp(L"hasTouchscreen",propertyName.c_str()) == 0){
-
-        getHasTouchscreen( oResult );
-    }
-    else if (_wcsicmp(L"securityTokenNotPassed",propertyName.c_str()) == 0){
-
-        getSecurityTokenNotPassed( oResult );
+void CSystemBase::getProperty( const rho::StringW& propertyName, CMethodResult& oResult)
+{
+    CMethodAccessor< ISystem >* pAccessor = m_mapPropAccessors[propertyName];
+    if ( pAccessor )
+        pAccessor->callGetter(this, oResult);
+    else
+    {
+        
+        if ( !m_mapPropAccessors.containsKey(propertyName) )
+            oResult.setArgError(L"Get unknown property: " + propertyName);
+        
     }
 }
 
@@ -184,50 +107,15 @@ void CSystemBase::getAllProperties(CMethodResult& oResult)
 
 void CSystemBase::setProperty( const rho::StringW& propertyName,  const rho::StringW& propertyValue, CMethodResult& oResult)
 {
-
-    if (false){}
-
-    else if (_wcsicmp(L"applicationIconBadge",propertyName.c_str()) == 0){
-
-        int64 arg;
-        rho::common::convertFromStringW(propertyValue.c_str(), arg);
-        setApplicationIconBadge( arg, oResult);
-    }
-    else if (_wcsicmp(L"httpProxyURI",propertyName.c_str()) == 0){
-
-        rho::StringW arg;
-        rho::common::convertFromStringW(propertyValue.c_str(), arg);
-        setHttpProxyURI( arg, oResult);
-    }
-    else if (_wcsicmp(L"lockWindowSize",propertyName.c_str()) == 0){
-
-        bool arg;
-        rho::common::convertFromStringW(propertyValue.c_str(), arg);
-        setLockWindowSize( arg, oResult);
-    }
-    else if (_wcsicmp(L"showKeyboard",propertyName.c_str()) == 0){
-
-        bool arg;
-        rho::common::convertFromStringW(propertyValue.c_str(), arg);
-        setShowKeyboard( arg, oResult);
-    }
-    else if (_wcsicmp(L"fullScreen",propertyName.c_str()) == 0){
-
-        bool arg;
-        rho::common::convertFromStringW(propertyValue.c_str(), arg);
-        setFullScreen( arg, oResult);
-    }
-    else if (_wcsicmp(L"localServerPort",propertyName.c_str()) == 0){
-
-        int64 arg;
-        rho::common::convertFromStringW(propertyValue.c_str(), arg);
-        setLocalServerPort( arg, oResult);
-    }
-    else if (_wcsicmp(L"screenAutoRotate",propertyName.c_str()) == 0){
-
-        bool arg;
-        rho::common::convertFromStringW(propertyValue.c_str(), arg);
-        setScreenAutoRotate( arg, oResult);
+    CMethodAccessor< ISystem >* pAccessor = m_mapPropAccessors[propertyName];
+    if (pAccessor && pAccessor->hasSetter())
+        m_mapPropAccessors[propertyName]->callSetter(this, propertyValue, oResult);
+    else
+    {
+        
+        if ( !m_mapPropAccessors.containsKey(propertyName) )
+            oResult.setArgError(L"Set unknown property: " + propertyName);
+        
     }
 }
 

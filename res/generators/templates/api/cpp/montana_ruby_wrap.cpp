@@ -185,7 +185,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
 <% if module_method.has_callback == ModuleMethod::CALLBACK_NONE %>
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(<%= module_method.params.size() %>) );
         return oRes.toRuby();
-<% end %>
+<% else %>
 
         if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
@@ -212,6 +212,7 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
         }
         
         bUseCallback = true;
+<% end %>
     }
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>

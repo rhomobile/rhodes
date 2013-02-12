@@ -651,7 +651,7 @@ module Rhogen
 
     #option :testing_framework, :desc => 'Specify which testing framework to use (spec, test_unit)'
 
-    option :skipwarnings, :desc=> 'skip any XML warnings, by default - generation break by any XML parse warning', :as => :boolean, :default => false
+    option :skipwarnings, :desc=> 'skip any XML warnings, by default - generation break by any XML parse warning', :as => :boolean, :default => true
     first_argument :xmlpath, :required => true, :desc => "path to XML with API description"
 
     $xml = nil
@@ -1095,6 +1095,8 @@ module Rhogen
          if xml_properties != nil
             if xml_properties.attribute("limitPropertyBag") != nil
               module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute("limitPropertyBag").to_s.downcase != "false"
+            else
+              module_item.is_property_bag_limit_to_only_declared_properties = true                 
             end
          end
          xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_module_property|
