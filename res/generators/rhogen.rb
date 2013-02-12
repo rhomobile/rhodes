@@ -725,6 +725,7 @@ module Rhogen
         @readonly = false
         @generate_accessors = true
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
+        @default_value = ''
 
         #used if getter and setter are present - this used with generation of property bag function implementation
         @getter = nil
@@ -737,6 +738,7 @@ module Rhogen
       attr_accessor :readonly
       attr_accessor :generate_accessors
       attr_accessor :use_property_bag_mode
+      attr_accessor :default_value
       attr_accessor :getter
       attr_accessor :setter
 
@@ -848,13 +850,14 @@ module Rhogen
     $possible_attributes = {}
     $possible_attributes["MODULE"] = ["name", "parent", "generateUnderscoreRubyNames"]
     $possible_attributes["CONSTANT"] = ["name", "value", "type"]
-    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readonly", "generateAccessors"]
-    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readonly", "generateAccessors"]
+    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "generateAccessors"]
+    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readOnly", "generateAccessors", "default"]
     $possible_attributes["VALUE"] = ["constName", "value", "type"]
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
     $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread"]
     $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName"]
     $possible_attributes["PARAM"] = ["name", "nativeName", "type"]
+    $possible_attributes["RETURN"] = ["type", "itemType"]
 
     $possible_children = {}
     $possible_children["API"] = ["MODULE"]
@@ -1095,8 +1098,6 @@ module Rhogen
          if xml_properties != nil
             if xml_properties.attribute("limitPropertyBag") != nil
               module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute("limitPropertyBag").to_s.downcase != "false"
-            else
-              module_item.is_property_bag_limit_to_only_declared_properties = true                 
             end
          end
          xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_module_property|
@@ -1113,6 +1114,9 @@ module Rhogen
 
             if xml_module_property.attribute("type") != nil
                module_property.type = xml_module_property.attribute("type").to_s.upcase
+            end
+            if xml_module_property.attribute("default") != nil
+               module_property.default_value = xml_module_property.attribute("default").to_s
             end
             if xml_module_property.attribute("readOnly") != nil
               module_property.readonly = xml_module_property.attribute("readOnly").to_s.downcase != "false"
