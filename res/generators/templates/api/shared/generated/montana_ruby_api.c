@@ -64,5 +64,9 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
 <% $cur_module.constants.each do |module_constant| %>
     rb_const_set(rb_c<%= $cur_module.name %>, rb_intern("<%= module_constant.name %>"), <%= api_generator_CreateSimpleRubyType(module_constant.type, module_constant.value) %> );<%
 end %>
+<% $cur_module.method_aliases.each do |alias_item| %>
+    rb_alias(rb_c<%= $cur_module.name %>, rb_intern("<%= alias_item.new_name %>"), rb_intern("<%= alias_item.existing_name %>"));<%
+end %>
+
 }
 
