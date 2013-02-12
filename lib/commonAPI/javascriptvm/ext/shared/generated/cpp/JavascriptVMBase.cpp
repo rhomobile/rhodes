@@ -10,4 +10,7 @@ rho::common::CAutoPtr< CJavascriptVMFactoryBase> CJavascriptVMFactoryBase::m_pIn
 
 ////////////////////////////////////////////////
 
+CJavascriptVMBase::CJavascriptVMBase()
+{
+}
 }

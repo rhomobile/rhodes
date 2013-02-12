@@ -51,7 +51,7 @@ class CProcessBase: public IProcess
 protected:
 
 public:
-    CProcessBase(){}
+    CProcessBase();
 
 
  

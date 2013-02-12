@@ -16,26 +16,26 @@
 
             <ALIASES>
                 <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
-                <ALIAS new="disable_screen_rotation" existing="screenAutoRotate" deprecated="true" reverse_logic="true"/>
+                <ALIAS new="disable_screen_rotation" existing="screenAutoRotate" deprecated="true" reverseLogic="true"/>
                 <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
             </ALIASES>
 
             <PROPERTY name="platform" type="STRING" readOnly="true">
                 <DESC>Platform where application is running.</DESC>
                 <VALUES>         
-                    <VALUE const_name="PLATFORM_WM_CE" value ="WINDOWS">
+                    <VALUE constName="PLATFORM_WM_CE" value ="WINDOWS">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE const_name="PLATFORM_ANDROID" value ="ANDROID">
+                    <VALUE constName="PLATFORM_ANDROID" value ="ANDROID">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE const_name="PLATFORM_IOS" value ="APPLE">
+                    <VALUE constName="PLATFORM_IOS" value ="APPLE">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE const_name="PLATFORM_WP8" value ="WP8">
+                    <VALUE constName="PLATFORM_WP8" value ="WP8">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE const_name="PLATFORM_WINDOWS_DESKTOP" value ="WINDOWS_DESKTOP">
+                    <VALUE constName="PLATFORM_WINDOWS_DESKTOP" value ="WINDOWS_DESKTOP">
                         <DESC></DESC>
                     </VALUE>
 
@@ -48,7 +48,7 @@
             <PROPERTY name="screenWidth" type="INTEGER" readOnly="true" default="800">
                 <DESC>Screen width in logical pixels (used for set coordinates).</DESC>
             </PROPERTY>
-            <PROPERTY name="screenHeight" type="INTEGER" readOnly="true" deafult="600">
+            <PROPERTY name="screenHeight" type="INTEGER" readOnly="true" default="600">
                 <DESC>Screen height in logical pixels (used for set coordinates).</DESC>
             </PROPERTY>
             <PROPERTY name="realScreenWidth" type="INTEGER" readOnly="true">
@@ -61,10 +61,10 @@
             <PROPERTY name="screenOrientation" type="STRING" readOnly="true">
                 <DESC>Current screen orientation.</DESC>
                 <VALUES>
-                    <VALUE const_name="SCREEN_PORTRAIT" value ="portrait">
+                    <VALUE constName="SCREEN_PORTRAIT" value ="portrait">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE const_name="SCREEN_LANDSCAPE" value ="landscape">
+                    <VALUE constName="SCREEN_LANDSCAPE" value ="landscape">
                         <DESC></DESC>
                     </VALUE>
 

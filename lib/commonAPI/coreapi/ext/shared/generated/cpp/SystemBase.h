@@ -59,10 +59,11 @@ class CSystemBase: public ISystem
 {
 protected:
 
-    rho::Hashtable<::rho::StringW, ::rho::StringW> m_hashProps;
+    rho::Hashtable<rho::StringW, rho::StringW> m_hashProps;
+    rho::Hashtable<rho::StringW, rho::apiGenerator::CMethodAccessor< ISystem > *> m_mapPropAccessors;
 
 public:
-    CSystemBase(){}
+    CSystemBase();
 
 
     virtual void getProperty( const rho::StringW& propertyName, CMethodResult& oResult);

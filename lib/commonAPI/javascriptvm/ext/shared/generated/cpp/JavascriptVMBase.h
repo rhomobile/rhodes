@@ -50,7 +50,7 @@ class CJavascriptVMBase: public IJavascriptVM
 protected:
 
 public:
-    CJavascriptVMBase(){}
+    CJavascriptVMBase();
 
 
  
