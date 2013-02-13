@@ -78,6 +78,63 @@ private:
     T m_object;
 };
 
+template <>
+class jholder<jboolean>
+{
+    typedef jboolean T;
+    T m_value;
+public:
+    jholder() : m_value(JNI_FALSE) {}
+    jholder(T val) : m_value(val) {}
+    jholder& operator=(T val)
+    {
+        m_value = val;
+        return *this;
+    }
+    T get() const { return m_value; }
+    T release() { return m_value; }
+    operator bool () const { return true; }
+    bool operator! () const { return false; }
+};
+
+template <>
+class jholder<jdouble>
+{
+    typedef jdouble T;
+    T m_value;
+public:
+    jholder() : m_value(0.0) {}
+    jholder(T val) : m_value(val) {}
+    jholder& operator=(T val)
+    {
+        m_value = val;
+        return *this;
+    }
+    T get() const { return m_value; }
+    T release() { return m_value; }
+    operator bool () const { return true; }
+    bool operator! () const { return false; }
+};
+
+template <>
+class jholder<jint>
+{
+    typedef jint T;
+    T m_value;
+public:
+    jholder() : m_value(0) {}
+    jholder(T val) : m_value(val) {}
+    jholder& operator=(T val)
+    {
+        m_value = val;
+        return *this;
+    }
+    T get() const { return m_value; }
+    T release() { return m_value; }
+    operator bool () const { return true; }
+    bool operator! () const { return false; }
+};
+
 typedef jholder<jobject> jhobject;
 typedef jholder<jstring> jhstring;
 typedef jholder<jobjectArray> jharray;
@@ -94,6 +151,14 @@ template <typename T, typename U> T rho_cast(JNIEnv *env, U u);
 template <typename T, typename U> T rho_cast(U u);
 template <typename T, typename U> T rho_cast(JNIEnv *env, U keys, U vals);
 template <typename T, typename U> T rho_cast(U keys, U vals);
+
+template <typename T>
+struct ArgumentsAdapter;
+
+template <typename T>
+ArgumentsAdapter<T> argumentsAdapter(const T& arguments) {
+    return ArgumentsAdapter<T>(arguments);
+}
 
 namespace details
 {
@@ -129,6 +194,24 @@ template <>
 struct rho_cast_helper<jstring, std::string>
 {
     jstring operator()(JNIEnv *env, std::string const &s) { return rho_cast_helper<jstring, char const *>()(env, s.c_str());}
+};
+
+template <>
+struct rho_cast_helper<jboolean, bool>
+{
+    jboolean operator()(JNIEnv *env, bool arg) { return static_cast<jboolean>(arg); }
+};
+
+template <>
+struct rho_cast_helper<jint, int>
+{
+    jint operator()(JNIEnv *env, int arg) { return static_cast<jint>(arg); }
+};
+
+template <>
+struct rho_cast_helper<jdouble, double>
+{
+    jdouble operator()(JNIEnv *env, double arg) { return static_cast<jdouble>(arg); }
 };
 
 struct RhoJniConvertor

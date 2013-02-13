@@ -20,8 +20,19 @@ jmethodID MethodResultJni::s_midSetCallBack;
 jfieldID MethodResultJni::s_fidString;
 jfieldID MethodResultJni::s_fidStringList;
 jfieldID MethodResultJni::s_fidStringMap;
-
 //----------------------------------------------------------------------------------------------------------------------
+
+//template <>
+CallbackSelector<VALUE>::CallbackSelector(MethodResultJni& result, JNIEnv* env, jstring jUrl, jstring jData) {
+    result.setRubyCallBack(env, jUrl, jData);
+}
+
+//template <>
+CallbackSelector<rho::json::CJSONEntry>::CallbackSelector(MethodResultJni& result, JNIEnv* env, jstring jUrl, jstring jData) {
+    result.setJSCallBack(env, jUrl, jData);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
 JNIEnv* MethodResultJni::jniInit()
 {
     JNIEnv *env = jnienv();
@@ -108,55 +119,68 @@ MethodResultJni::MethodResultJni() : m_jhResult(0), m_hasCallbackUrl(false), m_e
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void MethodResultJni::setCallBack(const char* url, const char* data)
+void MethodResultJni::setRubyCallBack(JNIEnv* env, jstring jUrl, jstring jData)
 {
-    RAWTRACE1("setCallBack(url=%s)", url);
+    RAWTRACE("setRubyCallBack");
 
-    JNIEnv* env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        return;
-    }
-
-    jhstring jhUrl = rho_cast<jstring>(env, url);
-    jhstring jhData = rho_cast<jstring>(env, data);
-    env->CallVoidMethod(m_jhResult.get(), s_midSetCallBack, jhUrl.get(), jhData.get());
-
+    env->CallVoidMethod(m_jhResult.get(), s_midSetCallBack, jUrl, jData);
     m_hasCallbackUrl = true;
 
     RAWTRACE("Callback has set");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
+void MethodResultJni::setJSCallBack(JNIEnv* env, jstring jUrl, jstring jData)
+{
+    RAWTRACE("setJSCallBack");
+
+    //TODO: Implement setJSCallBack()
+//    env->CallVoidMethod(m_jhResult.get(), s_midSetCallBack, jUrl, jData);
+//    m_hasCallbackUrl = true;
+//
+//    RAWTRACE("Callback has set");
+
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+void MethodResultJni::setRubyProcCallBack(unsigned long value)
+{
+    //TODO: Implement
+    RAWLOG_ERROR("Only URL is supported as call back handler");
+    setArgError("Only URL is supported as call back handler");
+}
+//----------------------------------------------------------------------------------------------------------------------
+
 VALUE MethodResultJni::enumerateRubyObjects(VALUE klass)
 {
     RAWTRACE("enumerateRubyObjects");
-    CHoldRubyValue valArray(rho_ruby_create_array());
 
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        rb_raise(rb_eRuntimeError,"JNI initialization failed");
-        return Qnil;;
-    }
-
-    HStringVector pIDs = rho_cast<HStringVector>(env, getListResult(env));
-
-    for(HStringVector::element_type::size_type i = 0; i < pIDs->size(); ++i)
+    if(m_errType == eNone)
     {
-        //TODO: ASk Evgeny about this staff
-        //if ( !CBarcode1SingletonBase::getInstance()->getModules().containsKey(arIDs[i]) )
-        //{
-        //    IBarcode1* pObj = CBarcode1SingletonBase::getInstance()->create(arIDs[i]);
-        //    CBarcode1SingletonBase::getInstance()->getModules().put(arIDs[i], pObj );
-        //}
 
-        VALUE valObj = rho_ruby_create_object_with_id( klass, (*pIDs)[i].c_str() );
-        rho_ruby_add_to_array(valArray, valObj);
+        CHoldRubyValue valArray(rho_ruby_create_array());
+
+        JNIEnv *env = jniInit();
+        if (!env) {
+            RAWLOG_ERROR("JNI initialization failed");
+            rb_raise(rb_eRuntimeError,"JNI initialization failed");
+            return Qnil;;
+        }
+
+        HStringVector pIDs = rho_cast<HStringVector>(env, getListResult(env));
+
+        for(HStringVector::element_type::size_type i = 0; i < pIDs->size(); ++i)
+        {
+            VALUE valObj = rho_ruby_create_object_with_id( klass, (*pIDs)[i].c_str() );
+            rho_ruby_add_to_array(valArray, valObj);
+        }
+
+        RAWTRACE("has enumerated");
+        return valArray;
+    } else
+    {
+        return toRuby();
     }
-
-    RAWTRACE("has enumerated");
-    return valArray;
 
 }
 //----------------------------------------------------------------------------------------------------------------------

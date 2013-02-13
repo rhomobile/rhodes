@@ -15,21 +15,14 @@ class MethodExecutorJni
     static jmethodID s_midRunWithSeparateThread;
     static jmethodID s_midRunWithUiThread;
 
-    bool m_separateThread;
-    bool m_uiThread;
-
 protected:
     static JNIEnv* jniInit(JNIEnv* env);
     static JNIEnv* jniInit();
     static jclass loadClass(JNIEnv* env, const char* const name);
 
 public:
-    MethodExecutorJni(bool separateThread, bool uiThread) : m_separateThread(separateThread), m_uiThread(uiThread) {}
+    static void run(JNIEnv* env, jobject jTask, MethodResultJni& result, bool thread, bool uiThread);
 
-    void run(JNIEnv* env, jobject jTask, MethodResultJni& result);
-
-    bool shouldRunWithThread() { return m_separateThread; }
-    bool shouldRunWithUiThread() { return m_uiThread; }
     virtual ~MethodExecutorJni() {}
 };
 

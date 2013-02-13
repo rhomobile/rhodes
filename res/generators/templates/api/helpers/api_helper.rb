@@ -64,6 +64,12 @@ def api_generator_jni_makeNativeType(gen_type)
         res = "rho::Vector<rho::String>"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
         res = "rho::Hashtable<rho::String, rho::String>"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
+        res = "int64"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
+        res = "bool"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
+        res = "double"
     else
         #raise "Unknown parameter type: #{gen_type}"
     end
@@ -79,6 +85,53 @@ def api_generator_java_makeNativeType(gen_type)
         res = "List<String>"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
         res = "Map<String, String>"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
+        res = "int"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
+        res = "boolean"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
+        res = "double"
+    else
+        raise "Unknown parameter type: #{gen_type}"     
+    end
+    
+    res
+end
+
+def api_generator_java_makeNativeTypeSignature(gen_type)
+    
+    if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
+        res = "Ljava/lang/String;"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
+        res = "Ljava/util/List;"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
+        res = "Ljava/util/Map;"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
+        res = "I"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
+        res = "Z"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
+        res = "D"
+    else
+        raise "Unknown parameter type: #{gen_type}"     
+    end
+    
+    res
+end
+
+def api_generator_jni_makeJNIType(gen_type)
+    if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
+        res = "jstring"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
+        res = "jobject"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
+        res = "jobject"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
+        res = "jint"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
+        res = "jboolean"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
+        res = "jdouble"
     else
         #raise "Unknown parameter type: #{gen_type}"
     end

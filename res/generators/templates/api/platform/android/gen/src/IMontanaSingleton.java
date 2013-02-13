@@ -5,6 +5,9 @@ package <%= api_generator_java_makePackageName($cur_module) %>;
   base = "IRhoApiDefaultId" if $cur_module.is_template_default_instance
 %>
 
+import java.util.Map;
+import java.util.List;
+
 import com.rhomobile.rhodes.api.IMethodResult;
 <% if base %>
 import com.rhomobile.rhodes.api.<%= base %>;
