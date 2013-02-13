@@ -352,7 +352,6 @@ namespace "config" do
             if !$app_config["capabilities"].index('non_motorola_device')        
                 $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
                 $app_config["extensions"] += ["rhoelementsext"]
-                $app_config["extensions"] += ["motoapi"] #extension with plug-ins
                 
                 #check for RE2 plugins
                 plugins = ""
