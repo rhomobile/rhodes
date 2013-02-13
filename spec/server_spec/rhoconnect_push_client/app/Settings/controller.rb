@@ -76,7 +76,7 @@ class SettingsController < Rho::RhoController
       Rho::Timer.start(5000, url_for(:action=>'check_registration'), '')
     end
   end
-
+	
   def push_callback
 	puts "======> PUSH CALLBACK params #{@params.inspect}"
 	  
@@ -91,11 +91,16 @@ class SettingsController < Rho::RhoController
         puts 'Exit command received!!!!!'
       end
     end
-    
+	  
 	url = "http://#{host}:#{port}?alert=#{@params['alert']}&error=#{@params['error']}"
-    puts "sending response: #{url} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-    
-    Rho::AsyncHttp.get :url => url
+
+	  
+	if @params['error']
+		puts "skipping response: #{url} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+	else
+		puts "sending response: #{url} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+		Rho::AsyncHttp.get :url => url
+	end
     
     System.exit if exit
   end

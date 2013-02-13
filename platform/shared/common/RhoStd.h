@@ -134,6 +134,24 @@ inline bool String_getline(const StrType& str, StrType& line, size_t& pos, CharT
     }
     return res;
 }
+/*
+template<typename StrType>
+inline StrType String_toLower(StrType& str)
+{
+    StrType strRes;
+    std::transform(str.begin(), str.end(), std::back_inserter(strRes), &::tolower);
+
+    return strRes;
+}
+
+template<typename StrType>
+inline StrType String_toUpper(StrType& str)
+{
+    StrType strRes;
+    std::transform(str.begin(), str.end(), std::back_inserter(strRes), &::toupper);
+
+    return strRes;
+}*/
 
 template<class Type>
 class Vector : public std::vector<Type>{

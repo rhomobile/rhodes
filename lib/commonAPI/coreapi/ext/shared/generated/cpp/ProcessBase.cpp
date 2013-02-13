@@ -11,5 +11,8 @@ rho::common::CAutoPtr< CProcessFactoryBase> CProcessFactoryBase::m_pInstance;
 
 ////////////////////////////////////////////////
 
+CProcessBase::CProcessBase()
+{
+}
 }
 }

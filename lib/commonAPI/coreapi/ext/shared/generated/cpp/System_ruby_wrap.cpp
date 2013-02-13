@@ -79,32 +79,6 @@ static VALUE _api_generator_System_getPlatform(int argc, VALUE *argv, rho::ISyst
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -170,32 +144,6 @@ static VALUE _api_generator_System_getHasCamera(int argc, VALUE *argv, rho::ISys
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -261,32 +209,6 @@ static VALUE _api_generator_System_getScreenWidth(int argc, VALUE *argv, rho::IS
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -352,32 +274,6 @@ static VALUE _api_generator_System_getScreenHeight(int argc, VALUE *argv, rho::I
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -443,32 +339,6 @@ static VALUE _api_generator_System_getRealScreenWidth(int argc, VALUE *argv, rho
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -534,32 +404,6 @@ static VALUE _api_generator_System_getRealScreenHeight(int argc, VALUE *argv, rh
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -625,32 +469,6 @@ static VALUE _api_generator_System_getScreenOrientation(int argc, VALUE *argv, r
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -716,32 +534,6 @@ static VALUE _api_generator_System_getPpiX(int argc, VALUE *argv, rho::ISystem* 
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -807,32 +599,6 @@ static VALUE _api_generator_System_getPpiY(int argc, VALUE *argv, rho::ISystem* 
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -898,32 +664,6 @@ static VALUE _api_generator_System_getPhoneNumber(int argc, VALUE *argv, rho::IS
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -989,32 +729,6 @@ static VALUE _api_generator_System_getDeviceOwnerEmail(int argc, VALUE *argv, rh
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1080,32 +794,6 @@ static VALUE _api_generator_System_getDeviceOwnerName(int argc, VALUE *argv, rho
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1171,32 +859,6 @@ static VALUE _api_generator_System_getDevicePushId(int argc, VALUE *argv, rho::I
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1262,32 +924,6 @@ static VALUE _api_generator_System_getPhoneId(int argc, VALUE *argv, rho::ISyste
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1353,32 +989,6 @@ static VALUE _api_generator_System_getDeviceName(int argc, VALUE *argv, rho::ISy
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1444,32 +1054,6 @@ static VALUE _api_generator_System_getOsVersion(int argc, VALUE *argv, rho::ISys
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1535,32 +1119,6 @@ static VALUE _api_generator_System_getLocale(int argc, VALUE *argv, rho::ISystem
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1626,32 +1184,6 @@ static VALUE _api_generator_System_getCountry(int argc, VALUE *argv, rho::ISyste
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1717,32 +1249,6 @@ static VALUE _api_generator_System_getIsEmulator(int argc, VALUE *argv, rho::ISy
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1808,32 +1314,6 @@ static VALUE _api_generator_System_getHasCalendar(int argc, VALUE *argv, rho::IS
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1899,32 +1379,6 @@ static VALUE _api_generator_System_getIsMotorolaDevice(int argc, VALUE *argv, rh
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -1990,32 +1444,6 @@ static VALUE _api_generator_System_getOemInfo(int argc, VALUE *argv, rho::ISyste
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -2081,32 +1509,6 @@ static VALUE _api_generator_System_getUuid(int argc, VALUE *argv, rho::ISystem* 
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -2172,32 +1574,6 @@ static VALUE _api_generator_System_getApplicationIconBadge(int argc, VALUE *argv
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -2301,32 +1677,6 @@ static VALUE _api_generator_System_setApplicationIconBadge(int argc, VALUE *argv
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -2392,32 +1742,6 @@ static VALUE _api_generator_System_getHttpProxyURI(int argc, VALUE *argv, rho::I
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -2526,32 +1850,6 @@ static VALUE _api_generator_System_setHttpProxyURI(int argc, VALUE *argv, rho::I
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -2617,32 +1915,6 @@ static VALUE _api_generator_System_getLockWindowSize(int argc, VALUE *argv, rho:
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -2746,32 +2018,6 @@ static VALUE _api_generator_System_setLockWindowSize(int argc, VALUE *argv, rho:
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -2837,32 +2083,6 @@ static VALUE _api_generator_System_getShowKeyboard(int argc, VALUE *argv, rho::I
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -2966,32 +2186,6 @@ static VALUE _api_generator_System_setShowKeyboard(int argc, VALUE *argv, rho::I
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -3057,32 +2251,6 @@ static VALUE _api_generator_System_getFullScreen(int argc, VALUE *argv, rho::ISy
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -3186,32 +2354,6 @@ static VALUE _api_generator_System_setFullScreen(int argc, VALUE *argv, rho::ISy
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -3277,32 +2419,6 @@ static VALUE _api_generator_System_getLocalServerPort(int argc, VALUE *argv, rho
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -3406,32 +2522,6 @@ static VALUE _api_generator_System_setLocalServerPort(int argc, VALUE *argv, rho
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -3497,32 +2587,6 @@ static VALUE _api_generator_System_getFreeServerPort(int argc, VALUE *argv, rho:
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -3588,32 +2652,6 @@ static VALUE _api_generator_System_getScreenAutoRotate(int argc, VALUE *argv, rh
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -3717,32 +2755,6 @@ static VALUE _api_generator_System_setScreenAutoRotate(int argc, VALUE *argv, rh
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -3808,32 +2820,6 @@ static VALUE _api_generator_System_getHasTouchscreen(int argc, VALUE *argv, rho:
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -3899,32 +2885,6 @@ static VALUE _api_generator_System_getSecurityTokenNotPassed(int argc, VALUE *ar
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -4033,32 +2993,6 @@ static VALUE _api_generator_System_applicationInstall(int argc, VALUE *argv, rho
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -4167,32 +3101,6 @@ static VALUE _api_generator_System_isApplicationInstalled(int argc, VALUE *argv,
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -4301,32 +3209,6 @@ static VALUE _api_generator_System_applicationUninstall(int argc, VALUE *argv, r
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -4392,32 +3274,6 @@ static VALUE _api_generator_System_getStartParams(int argc, VALUE *argv, rho::IS
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -4526,32 +3382,6 @@ static VALUE _api_generator_System_openUrl(int argc, VALUE *argv, rho::ISystem* 
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -4727,32 +3557,6 @@ static VALUE _api_generator_System_runApplication(int argc, VALUE *argv, rho::IS
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -4896,32 +3700,6 @@ static VALUE _api_generator_System_unzipFile(int argc, VALUE *argv, rho::ISystem
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -5106,32 +3884,6 @@ static VALUE _api_generator_System_zipFile(int argc, VALUE *argv, rho::ISystem* 
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -5354,32 +4106,6 @@ static VALUE _api_generator_System_zipFiles(int argc, VALUE *argv, rho::ISystem*
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(4) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -5529,32 +4255,6 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -5663,32 +4363,6 @@ static VALUE _api_generator_System_getRegistrySetting(int argc, VALUE *argv, rho
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -5906,32 +4580,6 @@ static VALUE _api_generator_System_setWindowFrame(int argc, VALUE *argv, rho::IS
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(4) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -6073,32 +4721,6 @@ static VALUE _api_generator_System_setWindowPosition(int argc, VALUE *argv, rho:
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -6230,6 +4852,7 @@ static VALUE _api_generator_System_getProperty(int argc, VALUE *argv, rho::ISyst
         }
         
         bUseCallback = true;
+
     }
 
 
@@ -6356,6 +4979,7 @@ static VALUE _api_generator_System_getProperties(int argc, VALUE *argv, rho::ISy
         }
         
         bUseCallback = true;
+
     }
 
 
@@ -6444,6 +5068,7 @@ static VALUE _api_generator_System_getAllProperties(int argc, VALUE *argv, rho::
         }
         
         bUseCallback = true;
+
     }
 
 
@@ -6593,32 +5218,6 @@ static VALUE _api_generator_System_setProperty(int argc, VALUE *argv, rho::ISyst
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -6722,32 +5321,6 @@ static VALUE _api_generator_System_setProperties(int argc, VALUE *argv, rho::ISy
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 
@@ -6813,32 +5386,6 @@ static VALUE _api_generator_System_clearAllProperties(int argc, VALUE *argv, rho
         oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
         return oRes.toRuby();
 
-
-        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallbackProc( argv[nCallbackArg] );
-        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
-        {
-            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
-        }else
-        {
-            oRes.setArgError(L"Type error: callback should be String");
-            return oRes.toRuby();
-        }
-
-        oRes.setCallInUIThread(false);
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
-            {
-                oRes.setArgError(L"Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
-
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
-        }
-        
-        bUseCallback = true;
     }
 
 

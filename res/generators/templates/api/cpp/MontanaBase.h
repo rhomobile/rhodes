@@ -60,10 +60,11 @@ class C<%= $cur_module.name %>Base: public I<%= $cur_module.name %>
 {
 protected:
 <% if $cur_module.is_template_propertybag %>
-    rho::Hashtable<::rho::StringW, ::rho::StringW> m_hashProps;
+    rho::Hashtable<rho::StringW, rho::StringW> m_hashProps;
+    rho::Hashtable<rho::StringW, rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %> > *> m_mapPropAccessors;
 <% end %>
 public:
-    C<%= $cur_module.name %>Base(){}
+    C<%= $cur_module.name %>Base();
 
 <% if $cur_module.is_template_propertybag %>
     virtual void getProperty( const rho::StringW& propertyName, CMethodResult& oResult);
