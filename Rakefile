@@ -479,8 +479,6 @@ namespace "config" do
 
     if $rhoelements_features.length() > 0
 
-        $app_config['extensions'] << 'rhoelements-license'
-
         #check for RhoElements gem and license
         begin
             require "rhoelements"
