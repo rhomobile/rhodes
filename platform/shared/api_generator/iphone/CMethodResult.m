@@ -14,11 +14,36 @@
     mJSCallbackUID = nil;
     mCallbackParam = nil;
     mRubyFactory = nil;
+    mRubyModulePath = nil;
     return self;
 }
 
 - (void) setResult:(NSObject*)value {
-    mValue = [value retain];
+    if (mRubyModulePath != nil) {
+        // convert all strings into CRubyModule !
+        if ([value isKindOfClass:[NSString class]]) {
+            mValue = [CRubyModule rubyModuleByName:mRubyModulePath instanceID:((NSString*)value)];
+        }
+        else if ([value isKindOfClass:[NSArray class]]) {
+            NSArray* value_ar = (NSArray*)value;
+            NSMutableArray* aValue = [NSMutableArray arrayWithCapacity:[value_ar count]];
+            int i;
+            for (i = 0; i < [value_ar count]; i++) {
+                NSObject* item = [value_ar objectAtIndex:i];
+                if ([item isKindOfClass:[NSString class]]) {
+                    item = [CRubyModule rubyModuleByName:mRubyModulePath instanceID:((NSString*)item)];
+                }
+                [aValue addObject:item];
+            }
+            mValue = aValue;
+        }
+        else {
+            mValue = [value retain];
+        }
+    }
+    else {
+        mValue = [value retain];
+    }
     [self callCallback];
 }
 
@@ -59,6 +84,11 @@
     mRubyFactory = factory;
 }
 
+-(void) enableObjectCreationModeWithRubyClassPath:(NSString*)classPath {
+    mRubyModulePath = [classPath stringByReplacingOccurrencesOfString:@"." withString:@":"];
+}
+
+
 
 -(void) callJSCallback:(NSString*)uid {
     //TODO:
@@ -98,6 +128,7 @@
     [mJSCallbackUID release];
     [mCallbackParam release];
     [mValue release];
+    [mRubyModulePath release];
     [super dealloc];
 }
 

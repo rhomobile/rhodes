@@ -53,6 +53,9 @@ end
 
 describe 'Rhoconnect push spec' do
   before(:all) do
+	  
+	  #TODO: check that Rhoelements gem is installed
+	  
 	puts "Starting local server"
 	$server, addr, port = Jake.run_local_server
 	File.open(File.join($spec_path, 'rhoconnect_push_client', 'app', 'local_server.rb'), 'w') do |f|
@@ -117,68 +120,47 @@ describe 'Rhoconnect push spec' do
     puts 'Sending push message...'
   
     message = 'magic1'
-	params = { :user_id=>['pushclient'], 'alert'=>message }
+	params = { :user_id=>['pushclient'], :message=>message }
 	RhoconnectHelper.api_post('users/ping',params,@api_token)
 
     puts 'Waiting message with push content...'
 	expect_request('alert').should == message
   end
 
-=begin
   it 'should proceed push message with exit comand' do
     puts 'Sending push message with exit command...'
   
     message = 'magic2'
-    params = { 'device_pin'=>$device_id, 'alert'=>message, 'command'=>'exit' }
-    RhoPush::Gcm.send_ping_to_device($gcm_api_key, params)
+    params = { :user_id=>['pushclient'], :message=>message, 'command'=>'exit' }
+	RhoconnectHelper.api_post('users/ping',params,@api_token)
 
     puts 'Waiting message with push content...'
-    $mutex.synchronize do
-      $signal.wait($mutex)
-      
-      $requests.count.should == 1
-
-      alert = $requests.first.query['alert']
-      
-      alert.should_not be_nil
-      alert.should == message
-      $requests.clear
-    end
+	expect_request('alert').should == message
     
     sleep 5
     
     output = Jake.run2('adb', ['-e', 'shell', 'ps'], {:hide_output=>true})
 
-    (output =~ /gcm_push_client/).should be_nil
+    (output =~ /rhoconnect_push_client/).should be_nil
   end
-  
+
   it 'should start to proceed push message' do
     puts 'Sending push message to start app...'
   
     message = 'magic3'
-    params = { 'device_pin'=>$device_id, 'alert'=>message}
-    RhoPush::Gcm.send_ping_to_device($gcm_api_key, params)
+    params = { :user_id=>['pushclient'], :message=>message}
+	RhoconnectHelper.api_post('users/ping',params,@api_token)
 
     puts 'Waiting message with push content...'
-    $mutex.synchronize do
-      $signal.wait($mutex)
-      
-      $requests.count.should == 1
-
-      alert = $requests.first.query['alert']
-      
-      alert.should_not be_nil
-      alert.should == message
-      $requests.clear
-    end
+	expect_request('alert').should == message
     
     sleep 5
     
     output = Jake.run2('adb', ['-e', 'shell', 'ps'], {:hide_output=>true})
     
-    (output =~ /gcm_push_client/).should_not be_nil
+    (output =~ /rhoconnect_push_client/).should_not be_nil
   end
-  
+
   it 'should proceed sequence of push messages' do
     puts 'Sending 5 push messages...'
     
@@ -187,8 +169,8 @@ describe 'Rhoconnect push spec' do
     5.times do |i|
       message = "magic#{i}"
       alerts[message] = true
-      params = { 'device_pin'=>$device_id, 'alert'=>message}
-      RhoPush::Gcm.send_ping_to_device($gcm_api_key, params)
+      params = { :user_id=>['pushclient'], 'alert'=>message}
+	  RhoconnectHelper.api_post('users/ping',params,@api_token)
     end
     
     puts 'Waiting 5 messages with push content...'
@@ -221,8 +203,8 @@ describe 'Rhoconnect push spec' do
     puts 'Sending push message with exit command...'
 
     message = 'magic6'
-    params = { 'device_pin'=>$device_id, 'alert'=>message, 'command'=>'exit' }
-    RhoPush::Gcm.send_ping_to_device($gcm_api_key, params)
+    params = { :user_id=>['pushclient'], 'alert'=>message, 'command'=>'exit' }
+	RhoconnectHelper.api_post('users/ping',params,@api_token)
 
     puts 'Waiting message with push content...'
     $mutex.synchronize do
@@ -241,7 +223,7 @@ describe 'Rhoconnect push spec' do
     
     output = Jake.run2('adb', ['-e', 'shell', 'ps'], {:hide_output=>true})
     
-    (output =~ /gcm_push_client/).should be_nil
+    (output =~ /rhoconnect_push_client/).should be_nil
   
 #    puts 'Sending 5 push messages...'
     
@@ -273,5 +255,4 @@ describe 'Rhoconnect push spec' do
 #      end
 #    end
   end
-=end
 end

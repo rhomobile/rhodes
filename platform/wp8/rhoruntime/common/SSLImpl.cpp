@@ -89,12 +89,12 @@ namespace rho
 
 		void SSLImpl::shutdown(void *storage)
 		{
-			ssl_data_t* st = (ssl_data_t*)storage;
-			if (st == nullptr)
+			ssl_data_t* Storage = (ssl_data_t*)storage;
+			if (Storage == nullptr)
 				return;
 
-			delete st->m_sslSocket;
-			st->m_sslSocket = nullptr;
+			delete Storage->m_sslSocket;
+			Storage->m_sslSocket = nullptr;
 		}
 
 		ssize_t SSLImpl::send(const void *mem, size_t len, void *storage)
@@ -129,8 +129,8 @@ namespace rho
 
 			}).wait();
 
-			if(retCode == CURLE_SSL_CONNECT_ERROR)
-				return CURLE_SSL_CONNECT_ERROR;
+			if(retCode == -1)
+				return -1;
 
 			task<bool>(writer->FlushAsync()).then([this, &retCode] (task<bool> isFlushed) {
 				try

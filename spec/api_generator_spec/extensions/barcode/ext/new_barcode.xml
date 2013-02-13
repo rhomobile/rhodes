@@ -18,13 +18,13 @@
             <PROPERTY name="illuminationMode" type="STRING" generateAccessors="false">
                 <DESC>Whether or not the Code128 symbology is used.</DESC>
                 <VALUES>
-                    <VALUE const_name="MODE_AUTO" value ="auto">
+                    <VALUE constName="MODE_AUTO" value ="auto">
                         <DESC>(not available on Enterprise Tablet) Auto-exposure algorithms will decide whether illumination is required or not. </DESC>
                     </VALUE>
-                    <VALUE const_name="MODE_ALWAYSE_ON" value ="alwaysOn">
+                    <VALUE constName="MODE_ALWAYSE_ON" value ="alwaysOn">
                         <DESC>External illumination is always on</DESC>
                     </VALUE>
-                    <VALUE const_name="MODE_ALWAYSE_OFF" value ="alwaysOff">
+                    <VALUE constName="MODE_ALWAYSE_OFF" value ="alwaysOff">
                         <DESC>External illumination is always off</DESC>
                     </VALUE>
 

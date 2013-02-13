@@ -137,5 +137,42 @@ public:
     virtual SingletonClass* createModuleSingleton() = 0;
 
 };
+
+template<typename ModuleClass>
+class CMethodAccessor
+{
+public:
+    typedef void (ModuleClass::*TGetter)(CMethodResult& oResult);
+
+    struct CSetterBase
+    {
+        virtual void call(ModuleClass* pModule, const rho::StringW& strArg, CMethodResult& oResult ) = 0;
+    };
+    template<typename TArg, typename TValue>        
+    class CSetter: public CSetterBase
+    {
+        typedef void (ModuleClass::*TSetter)(TArg arg, CMethodResult& oResult);
+        TSetter m_pSetterFunc;
+    public:
+        CSetter( TSetter pSetter ) : m_pSetterFunc(pSetter){}
+        virtual void call(ModuleClass* pModule, const rho::StringW& strArg, CMethodResult& oResult )
+        {
+            TValue arg;
+            rho::common::convertFromStringW( strArg.c_str(), arg );
+            (pModule->*m_pSetterFunc)( arg, oResult );
+        }
+    };
+private:
+    TGetter m_pGetter;
+    CSetterBase* m_pSetter;
+public:
+    CMethodAccessor( TGetter pGetter) : m_pGetter(pGetter), m_pSetter(0){}
+
+    void addSetter(CSetterBase* pSetter){ m_pSetter = pSetter; }
+    void callGetter( ModuleClass* pModule, CMethodResult& oResult ){ (pModule->*m_pGetter)(oResult); }
+    void callSetter( ModuleClass* pModule, const rho::StringW& strArg, CMethodResult& oResult){ m_pSetter->call( pModule, strArg, oResult); }
+    bool hasSetter()const{ return m_pSetter != 0; }
+};
+
 }
 }
