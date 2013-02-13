@@ -686,6 +686,8 @@ module Rhogen
       TYPE_DOUBLE = "FLOAT"
       TYPE_SELF = 'SELF_INSTANCE'
 
+      BASE_TYPES = [TYPE_STRING, TYPE_ARRAY, TYPE_HASH, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE]
+
       def initialize
         @name = ''
         @type = TYPE_STRING
@@ -698,6 +700,18 @@ module Rhogen
 
 
     end
+
+    class MethodResult
+
+      def initialize
+        @type = MethodParam::TYPE_STRING
+        @item_type = MethodParam::TYPE_STRING
+      end
+
+      attr_accessor :type
+      attr_accessor :item_type
+    end
+
 
     class ModuleConstant
       def initialize
@@ -773,6 +787,7 @@ module Rhogen
         @is_return_value = false
         @access = ACCESS_INSTANCE
         @has_callback = CALLBACK_NONE
+        @result = nil
 
         # name of template produced this method if applicable
         @generated_by_template = ''
@@ -793,6 +808,7 @@ module Rhogen
       attr_accessor :is_return_value
       attr_accessor :access
       attr_accessor :has_callback
+      attr_accessor :result
       attr_accessor :generated_by_template
       attr_accessor :linked_property
       attr_accessor :special_behaviour
@@ -1296,6 +1312,16 @@ module Rhogen
 
             if xml_module_method.elements["RETURN"] != nil
                 module_method.is_return_value = true
+                method_result = MethodResult.new()
+                result_type = xml_module_method.elements["RETURN"].attribute("type")
+                result_item_type = xml_module_method.elements["RETURN"].attribute("itemType")
+                if result_type != nil
+                    method_result.type = result_type.to_s
+                end
+                if result_item_type != nil
+                    method_result.item_type = result_item_type.to_s
+                end
+                module_method.result = method_result
             end
 
             param_index = 1

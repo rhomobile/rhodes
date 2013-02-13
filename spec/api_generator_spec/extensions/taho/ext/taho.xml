@@ -72,23 +72,17 @@
 					</POSSIBILITY>	
 				</RETURN>
 			</METHOD>
-			<METHOD name="getReccommendedDeviceForCodeType" access="STATIC" factory="true">
+			<METHOD name="getReccommendedDeviceForCodeType" access="STATIC">
 				<DESC>example of static and fabric method - return Barcode1 object</DESC>
 				<PARAMS>
 					<PARAM name="codetype" type="STRING">
 						<DESC>string name of codetype: EPC, EAN, UPC etc.</DESC>
 					</PARAM>
 				</PARAMS>
-				<RETURN>
+				<RETURN type="ARRAY" itemType="Rho.System.MyModule">
 					<DESC>
 						Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
 					</DESC>
-					<POSSIBILITY type="SELF">
-						<DESC>recognizer object recommended for recognize</DESC>
-					</POSSIBILITY>	
-					<POSSIBILITY type="NIL">
-						<DESC>if not any devices can recognized that codetype</DESC>
-					</POSSIBILITY>	
 				</RETURN>
 			</METHOD>	
 			<METHOD name="scanBarcode" access="INSTANCE" runInThread="separate" hasCallback="mandatory">
