@@ -16,6 +16,7 @@
     NSString* mRubyCallbackURL;
     NSString* mJSCallbackUID;
     NSString* mCallbackParam;
+    NSString* mRubyModulePath;
     id<IMethodResult_RubyObjectFactory> mRubyFactory;
 }
 
@@ -32,6 +33,8 @@
 -(void) setJSCallback:(NSString*)uid;
 -(void) setCallbackParam:(NSString*)param;
 -(void) setRubyFactory:(id<IMethodResult_RubyObjectFactory>)factory;
+-(void) enableObjectCreationModeWithRubyClassPath:(NSString*)classPath;
+
 
 + (NSObject*) getObjectiveCNULL;
 
