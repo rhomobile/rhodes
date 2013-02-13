@@ -38,27 +38,15 @@ static VALUE barcode1_getprops(int argc, VALUE *argv, const rho::String& id)
         if(argc >= 2)
         {
             RAWTRACE("Get props to callback");
-            if(!rho_ruby_is_string(argv[1]))
-            {
-                RAWLOG_ERROR("Type error: argument 2 should be String");
-                result.setArgError("Type error: argument 2 should be String"); //see SWIG Ruby_Format_TypeError
-                return result.toRuby();
-            }
 
             if(argc >= 3)
             {
                 RAWTRACE("Get props to callback with data");
-                if(!rho_ruby_is_string(argv[2]))
-                {
-                    RAWLOG_ERROR("Type error: argument 3 should be String");
-                    result.setArgError("Type error: argument 3 should be String"); //see SWIG Ruby_Format_TypeError
-                    return result.toRuby();
-                }
-                result.setCallBack(getStringFromValue(argv[1]), getStringFromValue(argv[2]));
+                result.setCallBack(argv[1], argv[2]);
             }
             else
             {
-                result.setCallBack(getStringFromValue(argv[1]), 0);
+                result.setCallBack(argv[1]);
             }
         }
 

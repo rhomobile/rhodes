@@ -1593,6 +1593,25 @@ module Rhogen
       template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/#{$cur_module.name}FactorySingleton.java"
     end
 
+    template :android_cpp_api_header do |template|
+      template.source = 'platform/android/gen/jni/Montana.h'
+      template.destination = "platform/android/generated/jni/#{$cur_module.name}.h"
+    end
+
+    template :android_cpp_api_impl do |template|
+      template.source = 'platform/android/gen/jni/Montana.cpp'
+      template.destination = "platform/android/generated/jni/#{$cur_module.name}.cpp"
+    end
+
+    template :android_cpp_ruby_wrapper do |template|
+      template.source = 'platform/android/gen/jni/montana_ruby_wrap.cpp'
+      template.destination = "platform/android/generated/jni/#{$cur_module.name.downcase}_ruby_wrap.cpp"
+    end
+
+    template :android_cpp_js_wrapper do |template|
+      template.source = 'platform/android/gen/jni/montana_js_wrap.cpp'
+      template.destination = "platform/android/generated/jni/#{$cur_module.name.downcase}_js_wrap.cpp"
+    end
 
     def attributes?
       self.attributes && !self.attributes.empty?

@@ -5,6 +5,9 @@ package <%= api_generator_java_makePackageName($cur_module) %>;
   base = "IRhoApiPropertyBag" if $cur_module.is_template_propertybag
 %>
 
+import java.util.Map;
+import java.util.List;
+
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.api.<%= base %>;
 

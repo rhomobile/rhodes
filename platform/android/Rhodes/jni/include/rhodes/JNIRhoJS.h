@@ -5,6 +5,19 @@
 #include "json/JSONIterator.h"
 #include "rhodes.h"
 
+template <>
+struct ArgumentsAdapter<rho::json::CJSONArray>
+{
+    typedef rho::json::CJSONEntry value_type;
+    typedef rho::json::CJSONArray container_type;
+    typedef int size_type;
+    const container_type& m_args;
+    ArgumentsAdapter(const container_type& args) : m_args(args) {}
+    ArgumentsAdapter(const ArgumentsAdapter& adapter) : m_args(adapter.m_args) {}
+    value_type operator[] (size_type n) const { return const_cast<container_type&>(m_args)[n]; }
+    size_type size() const { return const_cast<container_type&>(m_args).getSize(); }
+};
+
 namespace details
 {
 

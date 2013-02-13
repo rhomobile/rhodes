@@ -79,13 +79,13 @@ jclass MethodExecutorJni::loadClass(JNIEnv* env, const char* const name)
     return res;
 }
 //----------------------------------------------------------------------------------------------------------------------
-void MethodExecutorJni::run(JNIEnv* env, jobject jTask, MethodResultJni& result)
+void MethodExecutorJni::run(JNIEnv* env, jobject jTask, MethodResultJni& result, bool thread, bool uiThread)
 {
-    if(shouldRunWithUiThread())
+    if(uiThread)
     {
         env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithUiThread, jTask);
     }
-    else if(result.hasCallBackUrl() || shouldRunWithThread())
+    else if(result.hasCallBackUrl() || thread)
     {
         env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithSeparateThread, jTask);
     }
