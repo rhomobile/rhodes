@@ -836,6 +836,15 @@ module Rhogen
         @use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
       end
 
+      def getPropAliases(name)
+        ar = []
+        property_aliases.each do|alias_item|
+            ar << alias_item.new_name if alias_item.existing_name == name
+        end
+        
+        ar
+      end
+      
       attr_accessor :name
       attr_accessor :parents
       attr_accessor :methods
