@@ -26,6 +26,7 @@
 		5C53337B0FC1B20000F268F0 /* NetRequestImpl.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C5333790FC1B20000F268F0 /* NetRequestImpl.m */; };
 		5C59AB2912DDA1B800ED4A1E /* RhoCryptImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C59AB2812DDA1B800ED4A1E /* RhoCryptImpl.mm */; };
 		5C59AB4212DDA22E00ED4A1E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C59AB4112DDA22E00ED4A1E /* Security.framework */; };
+		AE14A30216CD57B9006B9B29 /* libJavascriptVM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AE14A2E316CD52C5006B9B29 /* libJavascriptVM.a */; };
 		AE3A757416C9A34F007F57BB /* CIOSJavaScriptVM.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE3A757216C9A34F007F57BB /* CIOSJavaScriptVM.mm */; };
 		BD38E6DC115CFF14001CE05C /* WebView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E6DB115CFF14001CE05C /* WebView.m */; };
 		BD38E755115D1AAC001CE05C /* TabbedMainView.m in Sources */ = {isa = PBXBuildFile; fileRef = BD38E754115D1AAC001CE05C /* TabbedMainView.m */; };
@@ -117,6 +118,20 @@
 			remoteGlobalIDString = D2AAC045055464E500DB518D;
 			remoteInfo = RhoLib;
 		};
+		AE14A2E216CD52C5006B9B29 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE14A2DE16CD52C4006B9B29 /* Javascriptvm.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FAC155F3145855CF0016F3BD;
+			remoteInfo = JavascriptVM;
+		};
+		AE14A2FF16CD5766006B9B29 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AE14A2DE16CD52C4006B9B29 /* Javascriptvm.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = FAC155E5145855CF0016F3BD;
+			remoteInfo = JavascriptVM;
+		};
 		BD2C94DE10AE0A8C008D4692 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BD2C94A610AE052A008D4692 /* curl.xcodeproj */;
@@ -205,6 +220,7 @@
 		5C59AB2812DDA1B800ED4A1E /* RhoCryptImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RhoCryptImpl.mm; path = ../shared/common/iphone/RhoCryptImpl.mm; sourceTree = SOURCE_ROOT; };
 		5C59AB4112DDA22E00ED4A1E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		5C7162920F8B7EEC0096B6AA /* RhoLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RhoLib.xcodeproj; path = RhoLib/RhoLib.xcodeproj; sourceTree = "<group>"; };
+		AE14A2DE16CD52C4006B9B29 /* Javascriptvm.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Javascriptvm.xcodeproj; path = ../../lib/commonAPI/javascriptvm/ext/platform/iphone/Javascriptvm.xcodeproj; sourceTree = "<group>"; };
 		AE3A757116C9A34F007F57BB /* CIOSJavaScriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIOSJavaScriptVM.h; sourceTree = "<group>"; };
 		AE3A757216C9A34F007F57BB /* CIOSJavaScriptVM.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CIOSJavaScriptVM.mm; sourceTree = "<group>"; };
 		AE3A757316C9A34F007F57BB /* WebViewContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewContainer.h; sourceTree = "<group>"; };
@@ -337,6 +353,7 @@
 				BDB15ED310B2EC6D00003DFA /* libcurl.a in Frameworks */,
 				BDB15ED210B2EC6600003DFA /* librhosynclib.a in Frameworks */,
 				BDB15ED110B2EBC200003DFA /* librhoextlib.a in Frameworks */,
+				AE14A30216CD57B9006B9B29 /* libJavascriptVM.a in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				05377D120E74D7D7003B8BD1 /* CoreFoundation.framework in Frameworks */,
@@ -415,6 +432,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				AE14A2DE16CD52C4006B9B29 /* Javascriptvm.xcodeproj */,
 				FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */,
 				FA3C79AD136ED523002302E5 /* CoreVideo.framework */,
 				FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */,
@@ -543,6 +561,14 @@
 			isa = PBXGroup;
 			children = (
 				5C7162970F8B7EEC0096B6AA /* librholib.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AE14A2DF16CD52C4006B9B29 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				AE14A2E316CD52C5006B9B29 /* libJavascriptVM.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -808,6 +834,7 @@
 				F563D5610EA8257A0062DA57 /* PBXTargetDependency */,
 				5C7162C90F8B817F0096B6AA /* PBXTargetDependency */,
 				F5F0652F102B9CA0006CFD39 /* PBXTargetDependency */,
+				AE14A30016CD5766006B9B29 /* PBXTargetDependency */,
 				BD2C94F310AE0BC3008D4692 /* PBXTargetDependency */,
 			);
 			name = rhorunner;
@@ -836,6 +863,10 @@
 				{
 					ProductGroup = BD2C94DB10AE0A8C008D4692 /* Products */;
 					ProjectRef = BD2C94A610AE052A008D4692 /* curl.xcodeproj */;
+				},
+				{
+					ProductGroup = AE14A2DF16CD52C4006B9B29 /* Products */;
+					ProjectRef = AE14A2DE16CD52C4006B9B29 /* Javascriptvm.xcodeproj */;
 				},
 				{
 					ProductGroup = F5F06492102B946F006CFD39 /* Products */;
@@ -867,6 +898,13 @@
 			fileType = archive.ar;
 			path = librholib.a;
 			remoteRef = 5C7162960F8B7EEC0096B6AA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AE14A2E316CD52C5006B9B29 /* libJavascriptVM.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libJavascriptVM.a;
+			remoteRef = AE14A2E216CD52C5006B9B29 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		BD2C94DF10AE0A8C008D4692 /* libcurl.a */ = {
@@ -1060,6 +1098,11 @@
 			isa = PBXTargetDependency;
 			name = RhoLib;
 			targetProxy = 5C7162C80F8B817F0096B6AA /* PBXContainerItemProxy */;
+		};
+		AE14A30016CD5766006B9B29 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = JavascriptVM;
+			targetProxy = AE14A2FF16CD5766006B9B29 /* PBXContainerItemProxy */;
 		};
 		BD2C94F310AE0BC3008D4692 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

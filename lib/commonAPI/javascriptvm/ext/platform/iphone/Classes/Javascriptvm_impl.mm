@@ -8,7 +8,9 @@
 
 @property (strong, nonatomic) UIWebView* webView;
 
-- (NSString*)callJSFunction:(NSString*)function;
+- (NSString*)executeScript:(NSString*)function;
+
+@end
 
 // WebViewContainer implementation
 @implementation WebViewContainer
@@ -89,8 +91,8 @@ protected:
     virtual void executeScript( const rho::StringW& script, rho::apiGenerator::CMethodResult& oResult)
     {
         const wchar_t * c_str = script.c_str();
-        NSString* script = [[NSString alloc] initWithBytes:charText length:wcslen(c_str)*sizeof(*c_str) encoding:NSUTF32LittleEndianStringEncoding];
-        NSString* result = [[(id)self executeScript:script] autorelease];
+        NSString* ns_script = [[NSString alloc] initWithBytes:c_str length:wcslen(c_str)*sizeof(*c_str) encoding:NSUTF32LittleEndianStringEncoding];
+        NSString* result = [[(id)self executeScript:ns_script] autorelease];
         oResult.set([result UTF8String]);
     }
 
