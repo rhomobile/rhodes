@@ -486,6 +486,11 @@ int get_msie_version(rho::String& msieVer)
 
 static int g_rho_has_network = 1, g_rho_has_cellnetwork = 0;
 
+const char* rho_sys_win32_getWebviewFramework()
+{
+    return "WEBKIT/" QTWEBKIT_VERSION_STR;
+}
+
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
 	if (strcasecmp("webview_framework",szPropName) == 0)

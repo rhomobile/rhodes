@@ -7,6 +7,7 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "unzip/zip.h"
+#include "db/DBAdapter.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
@@ -67,7 +68,17 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
 
 void CSystemImplBase::getHasCamera(CMethodResult& oResult)
 {
+#ifdef OS_WINDOWS_DESKTOP
+    oResult.set(false);
+#else
     oResult.set(true);
+#endif
+
+}
+
+void CSystemImplBase::getPhoneNumber(CMethodResult& oResult)
+{
+    oResult.set(L"");
 }
 
 void CSystemImplBase::getDevicePushId(CMethodResult& oResult)
@@ -205,6 +216,37 @@ void CSystemImplBase::zipFiles( const rho::StringW& localPathToZip,  const rho::
 
     int nRes = rho_sys_zip_files_with_path_array_ptr( convertToStringA(localPathToZip).c_str(), convertToStringA(basePath).c_str(), &arFiles, convertToStringA(password).c_str() );
 	oResult.set( nRes );
+}
+
+struct rho_param;
+extern "C" void rho_sys_replace_current_bundle(const char* path, rho_param *p);
+void CSystemImplBase::replaceCurrentBundle( const rho::StringW& pathToBundle, rho::apiGenerator::CMethodResult& oResult)
+{
+    rho_sys_replace_current_bundle( common::convertToStringA(pathToBundle).c_str(), 0 );
+}
+
+void CSystemImplBase::deleteFolder( const rho::StringW& pathToFolder, rho::apiGenerator::CMethodResult& oResult)
+{
+    CRhoFile::deleteFolder( convertToStringA(pathToFolder).c_str() );
+}
+
+void CSystemImplBase::setDoNotBackupAttribute( const rho::StringW& pathToFile, rho::apiGenerator::CMethodResult& oResult)
+{
+    //iOS only
+}
+
+//TODO: move to Database
+void CSystemImplBase::isBlobAttr( const rho::StringW& partition,  int64 sourceID,  const rho::StringW& attrName, rho::apiGenerator::CMethodResult& oResult)
+{
+    bool bRes = db::CDBAdapter::getDB(convertToStringA(partition).c_str()).getAttrMgr().isBlobAttr((int)sourceID, convertToStringA(attrName).c_str());
+    oResult.set(bRes);
+}
+
+//TODO: move to Database
+extern "C" void rho_sys_update_blob_attribs(const char* szPartition, int source_id);
+void CSystemImplBase::updateBlobAttribs( const rho::StringW& partition,  int64 sourceID, rho::apiGenerator::CMethodResult& oResult)
+{
+    rho_sys_update_blob_attribs( convertToStringA(partition).c_str(), (int)sourceID );
 }
 
 }
