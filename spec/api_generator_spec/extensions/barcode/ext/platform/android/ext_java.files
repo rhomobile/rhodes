@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/barcode/BarcodeBase.java
+ext/platform/android/generated/src/com/rho/barcode/BarcodeFactorySingleton.java
+ext/platform/android/generated/src/com/rho/barcode/BarcodeSingletonBase.java
+ext/platform/android/generated/src/com/rho/barcode/IBarcode.java
+ext/platform/android/generated/src/com/rho/barcode/IBarcodeFactory.java
+ext/platform/android/generated/src/com/rho/barcode/IBarcodeSingleton.java
+ext/platform/android/src/com/rho/barcode/Barcode.java
+ext/platform/android/src/com/rho/barcode/BarcodeFactory.java
+ext/platform/android/src/com/rho/barcode/BarcodeSingleton.java

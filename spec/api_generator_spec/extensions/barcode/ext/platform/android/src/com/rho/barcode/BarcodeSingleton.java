@@ -1,12 +1,12 @@
-package com.motorolasolutions.rhoelements.barcode1;
+package com.rho.barcode;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import com.rhomobile.rhodes.api.IMethodResult;
 
-class Barcode1Singleton extends Barcode1SingletonBase implements IBarcode1Singleton {
-    public Barcode1Singleton(Barcode1Factory factory) {
+class BarcodeSingleton extends BarcodeSingletonBase implements IBarcodeSingleton {
+    public BarcodeSingleton(BarcodeFactory factory) {
         super(factory);
     }
 
@@ -22,8 +22,8 @@ class Barcode1Singleton extends Barcode1SingletonBase implements IBarcode1Single
         return getIDs().get(0);
     }
 
-//    @Override
-//    public void enumerate(IMethodResult res) {
-//        res.set(getIDs());
-//    }
+    @Override
+    public void enumerate(IMethodResult res) {
+        res.set(getIDs());
+    }
 }

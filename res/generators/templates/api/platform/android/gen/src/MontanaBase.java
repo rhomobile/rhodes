@@ -1,117 +1,15 @@
 package <%= api_generator_java_makePackageName($cur_module) %>;
 
 import java.util.List;
+import java.util.Map;
 
 import com.rhomobile.rhodes.api.IMethodResult;
 
 public class <%= $cur_module.name %>Base {
 
-<% if $cur_module.is_template_propertybag
-
-%>    public static class GetAllPropertiesTask implements Runnable {
-        private I<%= $cur_module.name %> mApiObject;
-        private IMethodResult mResult;
-
-        public GetPropertyTask(I<%= $cur_module.name %> obj, IMethodResult result) {
-            mApiObject = obj;
-            mResult = result;
-        }
-
-        @Override
-        public void run() {
-            mApiObject.getProperty(mResult);
-        }
-    }
-
-    public static class GetPropertyTask implements Runnable {
-        private I<%= $cur_module.name %> mApiObject;
-        private String mName;
-        private IMethodResult mResult;
-
-        public GetPropertyTask(I<%= $cur_module.name %> obj, String name, IMethodResult result) {
-            mApiObject = obj;
-            mName = name;
-            mResult = result;
-        }
-
-        @Override
-        public void run() {
-            mApiObject.getProperty(mName, mResult);
-        }
-    }
-
-    public static class GetPropertiesTask implements Runnable {
-        private I<%= $cur_module.name %> mApiObject;
-        private List<String> mNames;
-        private IMethodResult mResult;
-
-        public GetPropertiesTask(I<%= $cur_module.name %> obj, List<String> names, IMethodResult result) {
-            mApiObject = obj;
-            mNames = names;
-            mResult = result;
-        }
-
-        @Override
-        public void run() {
-            mApiObject.getProperties(mNames, mResult);
-        }
-    }
-    
-    public static class SetPropertyTask implements Runnable {
-        private I<%= $cur_module.name %> mApiObject;
-        private String mName;
-        private String mValue;
-        private IMethodResult mResult;
-        
-        public SetPropertyTask(I<%= $cur_module.name %> obj, String name, String val, IMethodResult result) {
-            mApiObject = obj;
-            mName = name;
-            mVAlue = val;
-            mResult = result;
-        }
-
-        @Override
-        public void run() {
-            mApiObject.setProperty(mName, mValue);
-        }
-    }
-
-    public static class SetPropertiesTask implements Runnable {
-        private I<%= $cur_module.name %> mApiObject;
-        private Map<String, String> mProps;
-        private IMethodResult mResult;
-        
-        public SetPropertiesTask(I<%= $cur_module.name %> obj, Map<String, String> props, IMethodResult result) {
-            mApiObject = obj;
-            mProps = props;
-            mResult = result;
-        }
-
-        @Override
-        public void run() {
-            mApiObject.setProperties(mProps);
-        }
-    }
-
-    public static class ClearAllPropertiesTask implements Runnable {
-        private I<%= $cur_module.name %> mApiObject;
-        private IMethodResult mResult;
-
-        public ClearAllPropertiesTask(I<%= $cur_module.name %> obj, IMethodResult result) {
-            mApiObject = obj;
-            mResult = result;
-        }
-
-        @Override
-        public void run() {
-            mApiObject.clearAllProperties(mResult);
-        }
-    }
-<% end %>
-
 <% $cur_module.methods.each do |module_method|
     next if module_method.access == ModuleMethod::ACCESS_STATIC
-    next if module_method.generated_by_template == TEMPLATE_PROPERTY_BAG
+    #next if module_method.generated_by_template == TEMPLATE_PROPERTY_BAG
 
     param_hash = {}
     module_method.params.each do |param|
