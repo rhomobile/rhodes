@@ -7,21 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AE14A2EB16CD540C006B9B29 /* Javascriptvm_impl.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2EA16CD540C006B9B29 /* Javascriptvm_impl.mm */; };
+		AE14A2F716CD544B006B9B29 /* IJavascriptVM.h in Headers */ = {isa = PBXBuildFile; fileRef = AE14A2EF16CD544B006B9B29 /* IJavascriptVM.h */; };
+		AE14A2F816CD544B006B9B29 /* JavascriptVM_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F016CD544B006B9B29 /* JavascriptVM_js_wrap.cpp */; };
+		AE14A2F916CD544B006B9B29 /* JavascriptVM_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F116CD544B006B9B29 /* JavascriptVM_ruby_wrap.cpp */; };
+		AE14A2FA16CD544B006B9B29 /* JavascriptVMBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F216CD544B006B9B29 /* JavascriptVMBase.cpp */; };
+		AE14A2FB16CD544B006B9B29 /* JavascriptVMBase.h in Headers */ = {isa = PBXBuildFile; fileRef = AE14A2F316CD544B006B9B29 /* JavascriptVMBase.h */; };
+		AE14A2FC16CD544B006B9B29 /* javascriptvm_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F416CD544B006B9B29 /* javascriptvm_api_init.cpp */; };
+		AE14A2FD16CD544B006B9B29 /* javascriptvm_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F516CD544B006B9B29 /* javascriptvm_js_api.cpp */; };
+		AE14A2FE16CD544B006B9B29 /* javascriptvm_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F616CD544B006B9B29 /* javascriptvm_ruby_api.c */; };
 		FAC155E7145855CF0016F3BD /* JavascriptVM_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* JavascriptVM_Prefix.pch */; };
-		FAC155E8145855CF0016F3BD /* JavascriptVM.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC155E01458523C0016F3BD /* JavascriptVM.h */; };
-		FAC155EA145855CF0016F3BD /* javascriptvm_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FAC155D614584FD80016F3BD /* javascriptvm_wrap.c */; };
-		FAC155EB145855CF0016F3BD /* javascriptvm.c in Sources */ = {isa = PBXBuildFile; fileRef = FAC155D814584FE20016F3BD /* javascriptvm.c */; };
-		FAC155EC145855CF0016F3BD /* JavascriptVM.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC155DE145851440016F3BD /* JavascriptVM.m */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		FAC155D614584FD80016F3BD /* javascriptvm_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = javascriptvm_wrap.c; path = ../../shared/ruby/javascriptvm_wrap.c; sourceTree = "<group>"; };
-		FAC155D814584FE20016F3BD /* javascriptvm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = javascriptvm.c; path = ../../shared/src/javascriptvm.c; sourceTree = "<group>"; };
-		FAC155DE145851440016F3BD /* JavascriptVM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JavascriptVM.m; path = Classes/JavascriptVM.m; sourceTree = "<group>"; };
-		FAC155E01458523C0016F3BD /* JavascriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JavascriptVM.h; path = Classes/JavascriptVM.h; sourceTree = "<group>"; };
+		AE14A2EA16CD540C006B9B29 /* Javascriptvm_impl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Javascriptvm_impl.mm; path = Classes/Javascriptvm_impl.mm; sourceTree = "<group>"; };
+		AE14A2EF16CD544B006B9B29 /* IJavascriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IJavascriptVM.h; sourceTree = "<group>"; };
+		AE14A2F016CD544B006B9B29 /* JavascriptVM_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JavascriptVM_js_wrap.cpp; sourceTree = "<group>"; };
+		AE14A2F116CD544B006B9B29 /* JavascriptVM_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JavascriptVM_ruby_wrap.cpp; sourceTree = "<group>"; };
+		AE14A2F216CD544B006B9B29 /* JavascriptVMBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JavascriptVMBase.cpp; sourceTree = "<group>"; };
+		AE14A2F316CD544B006B9B29 /* JavascriptVMBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavascriptVMBase.h; sourceTree = "<group>"; };
+		AE14A2F416CD544B006B9B29 /* javascriptvm_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = javascriptvm_api_init.cpp; sourceTree = "<group>"; };
+		AE14A2F516CD544B006B9B29 /* javascriptvm_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = javascriptvm_js_api.cpp; sourceTree = "<group>"; };
+		AE14A2F616CD544B006B9B29 /* javascriptvm_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = javascriptvm_ruby_api.c; sourceTree = "<group>"; };
 		FAC155F3145855CF0016F3BD /* libJavascriptVM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libJavascriptVM.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD45FD51225FED600141873 /* JavascriptVM_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavascriptVM_Prefix.pch; sourceTree = "<group>"; };
 		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -72,7 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				FAC155DD1458511E0016F3BD /* iOS_specific */,
-				FAC155DA145850EB0016F3BD /* Shared */,
+				AE14A2EC16CD544B006B9B29 /* shared */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -85,36 +95,42 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
-		FAC155DA145850EB0016F3BD /* Shared */ = {
+		AE14A2EC16CD544B006B9B29 /* shared */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155DC145851020016F3BD /* src */,
-				FAC155DB145850F80016F3BD /* Ruby */,
+				AE14A2ED16CD544B006B9B29 /* generated */,
 			);
-			name = Shared;
+			name = shared;
+			path = ../../shared;
 			sourceTree = "<group>";
 		};
-		FAC155DB145850F80016F3BD /* Ruby */ = {
+		AE14A2ED16CD544B006B9B29 /* generated */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155D614584FD80016F3BD /* javascriptvm_wrap.c */,
+				AE14A2EE16CD544B006B9B29 /* cpp */,
+				AE14A2F416CD544B006B9B29 /* javascriptvm_api_init.cpp */,
+				AE14A2F516CD544B006B9B29 /* javascriptvm_js_api.cpp */,
+				AE14A2F616CD544B006B9B29 /* javascriptvm_ruby_api.c */,
 			);
-			name = Ruby;
+			path = generated;
 			sourceTree = "<group>";
 		};
-		FAC155DC145851020016F3BD /* src */ = {
+		AE14A2EE16CD544B006B9B29 /* cpp */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155D814584FE20016F3BD /* javascriptvm.c */,
+				AE14A2EF16CD544B006B9B29 /* IJavascriptVM.h */,
+				AE14A2F016CD544B006B9B29 /* JavascriptVM_js_wrap.cpp */,
+				AE14A2F116CD544B006B9B29 /* JavascriptVM_ruby_wrap.cpp */,
+				AE14A2F216CD544B006B9B29 /* JavascriptVMBase.cpp */,
+				AE14A2F316CD544B006B9B29 /* JavascriptVMBase.h */,
 			);
-			name = src;
+			path = cpp;
 			sourceTree = "<group>";
 		};
 		FAC155DD1458511E0016F3BD /* iOS_specific */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155E01458523C0016F3BD /* JavascriptVM.h */,
-				FAC155DE145851440016F3BD /* JavascriptVM.m */,
+				AE14A2EA16CD540C006B9B29 /* Javascriptvm_impl.mm */,
 			);
 			name = iOS_specific;
 			sourceTree = "<group>";
@@ -127,7 +143,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAC155E7145855CF0016F3BD /* JavascriptVM_Prefix.pch in Headers */,
-				FAC155E8145855CF0016F3BD /* JavascriptVM.h in Headers */,
+				AE14A2F716CD544B006B9B29 /* IJavascriptVM.h in Headers */,
+				AE14A2FB16CD544B006B9B29 /* JavascriptVMBase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,7 +173,7 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "JavascriptVM" */;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Javascriptvm" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -181,9 +198,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAC155EA145855CF0016F3BD /* javascriptvm_wrap.c in Sources */,
-				FAC155EB145855CF0016F3BD /* javascriptvm.c in Sources */,
-				FAC155EC145855CF0016F3BD /* JavascriptVM.m in Sources */,
+				AE14A2EB16CD540C006B9B29 /* Javascriptvm_impl.mm in Sources */,
+				AE14A2F816CD544B006B9B29 /* JavascriptVM_js_wrap.cpp in Sources */,
+				AE14A2F916CD544B006B9B29 /* JavascriptVM_ruby_wrap.cpp in Sources */,
+				AE14A2FA16CD544B006B9B29 /* JavascriptVMBase.cpp in Sources */,
+				AE14A2FC16CD544B006B9B29 /* javascriptvm_api_init.cpp in Sources */,
+				AE14A2FD16CD544B006B9B29 /* javascriptvm_js_api.cpp in Sources */,
+				AE14A2FE16CD544B006B9B29 /* javascriptvm_ruby_api.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,17 +219,17 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(RHO_ROOT)/platform/shared/common",
-					"$(RHO_ROOT)/platform/shared/rubyext",
-					"$(RHO_ROOT)/platform/shared/ruby/include",
-					"$(RHO_ROOT)/platform/shared/ruby/iphone",
-					"$(RHO_ROOT)/platform/shared",
+					../../../../../../platform/shared/common,
+					../../../../../../platform/shared/rubyext,
+					../../../../../../platform/shared/ruby/include,
+					../../../../../../platform/shared/ruby/iphone,
+					../../../../../../platform/shared/api_generator,
+					../../../../../../platform/shared,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				New_Setting = "";
 				ONLY_ACTIVE_ARCH = NO;
-				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 			};
 			name = Debug;
 		};
@@ -219,17 +240,17 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(RHO_ROOT)/platform/shared/common",
-					"$(RHO_ROOT)/platform/shared/rubyext",
-					"$(RHO_ROOT)/platform/shared/ruby/include",
-					"$(RHO_ROOT)/platform/shared/ruby/iphone",
-					"$(RHO_ROOT)/platform/shared",
+					../../../../../../platform/shared/common,
+					../../../../../../platform/shared/rubyext,
+					../../../../../../platform/shared/ruby/include,
+					../../../../../../platform/shared/ruby/iphone,
+					../../../../../../platform/shared/api_generator,
+					../../../../../../platform/shared,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				New_Setting = "";
 				ONLY_ACTIVE_ARCH = NO;
-				PREBINDING = NO;
 				SDKROOT = iphonesimulator4.1;
-				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
 			};
 			name = Release;
 		};
@@ -259,8 +280,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				DSTROOT = /tmp/JavascriptVM.dst;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /tmp/JavascriptVM.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = JavascriptVM_Prefix.pch;
@@ -276,7 +297,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "JavascriptVM" */ = {
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Javascriptvm" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB922308733DC00010E9CD /* Debug */,

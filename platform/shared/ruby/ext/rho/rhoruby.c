@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------
 * (The MIT License)
-* 
+*
 * Copyright (c) 2008-2011 Rhomobile, Inc.
-* 
+*
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
 * in the Software without restriction, including without limitation the rights
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-* 
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
-* 
+*
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
@@ -74,6 +74,7 @@ extern void Init_Calendar(void);
 extern void Init_Extensions(void);
 extern void init_rhoext_Signature();
 extern void Init_RhoScriptVM(void);
+extern void Init_JavascriptVM_extension(void);
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);
@@ -114,7 +115,7 @@ extern void rb_w32_sysinit(int *argc, char ***argv);
     rb_thread_t * res = ruby_thread_from_native();
     if ( res )
         return res;
-    
+
     return ruby_current_thread;
 }*/
 /*
@@ -125,9 +126,9 @@ void RhoRubyThreadStart()
     VALUE self = rb_thread_alloc(rb_cThread);
     GetThreadPtr(self, th);
 
-#if defined( WINDOWS_PLATFORM )	
+#if defined( WINDOWS_PLATFORM )
     ruby_thread_init_stack(th);
-#endif	
+#endif
     ruby_thread_set_native(th);
 
     rb_gc_register_mark_object(self);
@@ -160,7 +161,7 @@ void rho_ruby_start_threadidle()
 }
 
 void rho_ruby_stop_threadidle()
-{                                              
+{
     if ( g_th_stored )
     {
         native_mutex_lock(&g_th_stored->vm->global_vm_lock);
@@ -168,7 +169,7 @@ void rho_ruby_stop_threadidle()
         g_th_stored = 0;
     }
 }
-               
+
 #if !defined(OS_SYMBIAN) && (defined(RHO_SYMBIAN))// || defined (RHODES_EMULATOR))
 int   daylight;
 char *tzname[2];
@@ -183,9 +184,9 @@ void RhoRubyStart()
 #endif
     {
 #ifdef ENABLE_RUBY_VM_STAT
-    g_collect_stat = 1; 
-#endif    
-    
+    g_collect_stat = 1;
+#endif
+
     RUBY_INIT_STACK;
     ruby_init();
 #if defined(WIN32)
@@ -246,9 +247,9 @@ void RhoRubyStart()
 #else
     Init_SignatureCapture();
 #endif
-    
-    Init_RhoBluetooth();	
-	Init_RhodesNativeViewManager();	
+
+    Init_RhoBluetooth();
+	Init_RhodesNativeViewManager();
     Init_Camera();
     Init_stringio(); //+
     Init_DateTimePicker();
@@ -260,8 +261,9 @@ void RhoRubyStart()
     Init_NavBar();
     Init_RhoEvent();
     Init_Calendar();
-        
+
     Init_RhoScriptVM();
+    Init_JavascriptVM_extension();
 
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)
@@ -274,7 +276,7 @@ void RhoRubyStart()
 	Init_GeoLocation();
 	Init_AsyncHttp();
 	Init_System();
-	Init_RhoSupport();	
+	Init_RhoSupport();
 	Init_RhoConf();
 	Init_WebView();
 
@@ -283,7 +285,7 @@ void RhoRubyStart()
 
 	Init_Extensions();
 #endif //OS_WP8
-		
+
 	extensions_loaded = 1;
 
 
@@ -330,7 +332,7 @@ void RhoRubyStart()
     if ( end.tv_sec > 0 )
         g_require_compiled_msec += (end.tv_sec  - start.tv_sec) * 1000;
     else
-        g_require_compiled_msec += (end.tv_usec - start.tv_usec)/1000; 
+        g_require_compiled_msec += (end.tv_usec - start.tv_usec)/1000;
 
 #endif
 
@@ -351,7 +353,7 @@ void RhoRubyStart()
     //moduleRhom = rb_const_get(rb_cObject, rb_intern("Rhom"));
 
 #ifdef ENABLE_RUBY_VM_STAT
-    g_collect_stat = 0; 
+    g_collect_stat = 0;
 #endif
 
     }
@@ -496,7 +498,7 @@ void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func * func, void* data)
     if ( ary ==0 || ary == Qnil )
         return;
 
-    for (i=0; i<RARRAY_LEN(ary); i++) 
+    for (i=0; i<RARRAY_LEN(ary); i++)
     {
         VALUE value = RARRAY_PTR(ary)[i];
         const char* szValue = "";
@@ -541,7 +543,7 @@ VALUE rho_ruby_get_time(VALUE rDate)
     if (TYPE(rDate) == T_STRING) {
         rDate = rb_funcall(rb_cTime, rb_intern("parse"), 1, rDate);
     }
-    
+
     cDate = rb_class_of(rDate);
     if (!rb_equal(cDate, rb_cTime))
         rb_raise(rb_eArgError, "Wrong type of parameter: %s (Time expected)", rb_class2name(cDate));
@@ -612,7 +614,7 @@ VALUE rho_ruby_create_byte_array(unsigned char* buf, int length) {
 	return ar;
 }
 
-int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_length) 
+int rho_ruby_unpack_byte_array(VALUE array_value, unsigned char* buf, int max_length)
 {
     int size = 0;
 	int i = 0;
@@ -641,7 +643,7 @@ int rho_ruby_array_get_size(VALUE ar) {
 		return -1;
 	}
 	size = RARRAY_LEN(ar);
-    return size;    
+    return size;
 }
 
 
@@ -673,7 +675,7 @@ VALUE addStrToHashLen(VALUE hash, const char* key, const char* val, int len) {
 }
 
 VALUE addHashToHash(VALUE hash, const char* key, VALUE val) {
-    return rb_hash_aset(hash, rb_str_new2(key), val);	
+    return rb_hash_aset(hash, rb_str_new2(key), val);
 }
 
 VALUE rho_ruby_hash_aref(VALUE hash, const char* key)
@@ -757,7 +759,7 @@ struct CRhoRubyStringOrInt rho_ruby_getstringorint(VALUE val)
     oRes.m_nInt = 0;
 
     if (TYPE(val) == T_FIXNUM || TYPE(val) == T_BIGNUM)
-        oRes.m_nInt = rb_num2ll(val); 
+        oRes.m_nInt = rb_num2ll(val);
     else
     {
         VALUE strVal = rb_funcall(val, rb_intern("to_s"), 0);
@@ -852,7 +854,7 @@ VALUE rho_ruby_current_thread()
 
 VALUE callFramework(VALUE hashReq) {
     VALUE callres = rb_funcall(framework, framework_mid, 1, hashReq);
-    
+
     if (TYPE(callres)!=T_STRING) {
         RAWLOG_INFO1("Method call result type = %s", rb_type_to_s(callres));
         return rb_str_new2("Error");//TBD: Supply html description of the error
@@ -871,7 +873,7 @@ VALUE callServeIndex(char* index_name, VALUE hashReq) {
     VALUE callres;
     //RhoSetCurAppPath(index_name);
     callres = rb_funcall(framework, framework_mid2, 2, RhoPreparePath(rb_str_new2(index_name)), hashReq);
-    
+
     if (TYPE(callres)!=T_STRING) {
         RAWLOG_INFO1("Method call result type = %s", rb_type_to_s(callres));
         return rb_str_new2("Error");//TBD: Supply html description of the error
@@ -884,7 +886,7 @@ VALUE callServeIndex(char* index_name, VALUE hashReq) {
 
     //TBD: need to cleanup memory
     //rb_gc();
-    
+
     return callres;
 }
 
@@ -933,11 +935,11 @@ rb_type_to_s(VALUE obj)
             return "RUBY_T_OBJECT";
         case T_CLASS:
             return "RUBY_T_CLASS";
-        case T_ICLASS: 
+        case T_ICLASS:
             return "RUBY_T_ICLASS";
         case T_MODULE:
             return "RUBY_T_MODULE";
-        case T_FLOAT:  
+        case T_FLOAT:
             return "RUBY_T_FLOAT";
         case T_STRING:
             return "RUBY_T_STRING";
@@ -973,7 +975,7 @@ rb_type_to_s(VALUE obj)
             return "RUBY_T_UNDEF";
         case T_NODE:
             return "RUBY_T_NODE";
-        case T_ZOMBIE: 
+        case T_ZOMBIE:
             return "RUBY_T_ZOMBIE";
         default:
             return "Unknown";
