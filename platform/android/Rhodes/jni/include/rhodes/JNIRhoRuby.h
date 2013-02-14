@@ -27,8 +27,10 @@
 #ifndef JNIRHORUBY_H_INCLUDED
 #define JNIRHORUBY_H_INCLUDED
 
-#include <ruby.h>
-#include <ruby/ext/rho/rhoruby.h>
+#include "ruby.h"
+#include "ruby/ext/rho/rhoruby.h"
+
+#include <vector>
 
 #include <rhodes.h>
 
@@ -51,6 +53,20 @@ public:
     RhoValueConverter(JNIEnv *e);
 
     jobject createObject(rho_param *p);
+};
+
+template <>
+struct ArgumentsAdapter<std::vector<VALUE> >
+{
+    typedef VALUE value_type;
+    typedef std::vector<value_type> container_type;
+    typedef container_type::const_reference const_reference;
+    typedef container_type::size_type size_type;
+    const container_type& m_args;
+    ArgumentsAdapter(const container_type& args) : m_args(args) {}
+    ArgumentsAdapter(const ArgumentsAdapter& adapter) : m_args(adapter.m_args) {}
+    const_reference operator[] (size_type n) const { return m_args[n]; }
+    size_type size() const { return m_args.size(); }
 };
 
 namespace details

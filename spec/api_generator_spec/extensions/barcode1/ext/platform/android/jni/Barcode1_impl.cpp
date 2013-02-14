@@ -35,7 +35,7 @@ extern "C" void Init_Barcode1(void)
             return;
         }
 
-        rhoelements::CBarcode1::setJavaFactory(env, jFactory);
+        rhoelements::CBarcode1Base::setJavaFactory(env, jFactory);
 
         env->DeleteLocalRef(jFactory);
 

@@ -705,8 +705,9 @@ def init_extensions(startdir, dest)
         puts "exception: #{e}"  
       end
     end
-	  
-	if extpath.nil?
+      
+      
+    if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
 		raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
 	end
         

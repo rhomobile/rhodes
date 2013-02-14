@@ -8,8 +8,9 @@ namespace rhoelements {
 
 class MethodResultJni;
 
-class CBarcode1 : public MethodExecutorJni
+class CBarcode1Base : public MethodExecutorJni
 {
+protected:
     static const char* const FACTORY_SINGLETON_CLASS;
     static jclass s_clsFactorySingleton;
     static jmethodID s_midFactorySetInstance;
@@ -59,23 +60,108 @@ class CBarcode1 : public MethodExecutorJni
 
     rho::String m_id;
     jobject getObject(JNIEnv* env);
-
 public:
-    static void setJavaFactory(JNIEnv* env, jobject jFactory);
+    CBarcode1Base(const rho::String& id)
+        : MethodExecutorJni(false, true), m_id(id)
+        {}
+    virtual ~CBarcode1Base() {}
 
-    static void enumerate(MethodResultJni& result);
+    static void setJavaFactory(JNIEnv* env, jobject jFactory);
     static rho::String getDefaultID();
     static void setDefaultID(const rho::String& id);
+};
+
+template<typename T>
+class CBarcode1 : public CBarcode1Base
+{
+
+public:
+    static void enumerate(T& args, MethodResultJni& result)
+    {
+        RAWTRACEC("Barcode1JNI", "enumerate");
+
+        JNIEnv *env = jniInit();
+        if (!env) {
+            RAWLOGC_FATAL("Barcode1JNI", "JNI initialization failed");
+            return;
+        }
+
+        jhobject jhSingleton = getSingleton(env);
+        env->CallVoidMethod(jhSingleton.get(), s_midEnumerate, static_cast<jobject>(result));
+
+    }
 
     CBarcode1(const rho::String& id)
-        : MethodExecutorJni(false, true), m_id(id)
+        : CBarcode1Base(id)
         {}
     virtual ~CBarcode1() {}
 
-    void getProps(MethodResultJni& result);
-    void getProps(jstring name, MethodResultJni& result);
-    void getProps(jobject names, MethodResultJni& result);
-    void takeBarcode(MethodResultJni& result);
+    void getAllProperties(T& args, MethodResultJni& result)
+    {
+        RAWTRACEC("Barcode1JNI", "getAllProperties");
+
+        JNIEnv *env = jniInit();
+        if (!env) {
+            RAWLOGC_FATAL("Barcode1JNI", "JNI initialization failed");
+            return;
+        }
+
+        jhobject jhObject = getObject(env);
+        jhobject jhTask = env->NewObject(s_clsGetPropsTask, s_midGetPropsTask,
+                        jhObject.get(), static_cast<jobject>(result));
+        run(env, jhTask.get(), result);
+
+    }
+    void getProperty(T& args, MethodResultJni& result)
+    {
+        RAWTRACEC("Barcode1JNI", "getProperty");
+
+        JNIEnv *env = jniInit();
+        if (!env) {
+            RAWLOGC_FATAL("Barcode1JNI", "JNI initialization failed");
+            return;
+        }
+
+        jhobject jhObject = getObject(env);
+        jhstring jhName = rho_cast<jstring>(args[0]);
+        jhobject jhTask = env->NewObject(s_clsGetProps1Task, s_midGetProps1Task,
+                        jhObject.get(), jhName.get(), static_cast<jobject>(result));
+        run(env, jhTask.get(), result);
+    }
+
+    void getProperties(T& args, MethodResultJni& result)
+    {
+        RAWTRACEC("Barcode1JNI", "getProperties");
+
+        JNIEnv *env = jniInit();
+        if (!env) {
+            RAWLOGC_FATAL("Barcode1JNI", "JNI initialization failed");
+            return;
+        }
+
+        jhobject jhObject = getObject(env);
+        jhobject jhNames = rho_cast<jobject>(args[0]);
+        jhobject jhTask = env->NewObject(s_clsGetProps2Task, s_midGetProps2Task,
+                        jhObject.get(), jhNames.get(), static_cast<jobject>(result));
+        run(env, jhTask.get(), result);
+    }
+
+    void takeBarcode(T& args, MethodResultJni& result)
+    {
+        RAWTRACEC("Barcode1JNI", "takeBarcode");
+
+        JNIEnv *env = jniInit();
+        if (!env) {
+            RAWLOGC_FATAL("Barcode1JNI", "JNI initialization failed");
+            return;
+        }
+
+        jhobject jhObject = getObject(env);
+        jhobject jhTask = env->NewObject(s_clsTakeBarcodeTask, s_midTakeBarcodeTask,
+                        jhObject.get(), static_cast<jobject>(result));
+        run(env, jhTask.get(), result);
+
+    }
 
 };
 
