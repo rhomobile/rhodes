@@ -69,7 +69,7 @@ class CMethodResult
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
 public:
 
-    CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(false){}
+    CMethodResult():  m_bCallInUIThread(false), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(false){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     void setRubyCallbackProc(unsigned long oRubyCallbackProc);
