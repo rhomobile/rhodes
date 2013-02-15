@@ -134,6 +134,18 @@ rho::String js_s_System_def_getScreenSleeping(rho::json::CJSONArray& argv, const
 rho::String js_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_setScreenSleeping(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
+rho::String js_System_getHasNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getHasNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_getHasWifiNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getHasWifiNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_getHasCellNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getHasCellNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_getHasSqlite(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getHasSqlite(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
 rho::String js_System_applicationInstall(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_applicationInstall(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
@@ -190,6 +202,42 @@ rho::String js_s_System_def_isBlobAttr(rho::json::CJSONArray& argv, const rho::S
 
 rho::String js_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_get_locale(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_get_locale(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_setPushNotification(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_setScreenRotationNotification(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_setScreenRotationNotification(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_exit(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_exit(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_set_sleeping(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_set_sleeping(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_startTimer(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_stopTimer(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_stopTimer(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_setNetworkStatusNotify(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_clearNetworkStatusNotify(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_clearNetworkStatusNotify(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_set_http_proxy_url(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_set_http_proxy_url(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_unset_http_proxy(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_unset_http_proxy(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_runApplication(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 rho::String js_System_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
@@ -348,6 +396,18 @@ extern "C" void Init_JSAPI_System(void)
     rho::apiGenerator::js_define_method("Rho:System:screenSleeping=", js_System_setScreenSleeping);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_screenSleeping=", js_s_System_def_setScreenSleeping);;
 
+    rho::apiGenerator::js_define_method("Rho:System:hasNetwork", js_System_getHasNetwork);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_hasNetwork", js_s_System_def_getHasNetwork);;
+
+    rho::apiGenerator::js_define_method("Rho:System:hasWifiNetwork", js_System_getHasWifiNetwork);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_hasWifiNetwork", js_s_System_def_getHasWifiNetwork);;
+
+    rho::apiGenerator::js_define_method("Rho:System:hasCellNetwork", js_System_getHasCellNetwork);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_hasCellNetwork", js_s_System_def_getHasCellNetwork);;
+
+    rho::apiGenerator::js_define_method("Rho:System:hasSqlite", js_System_getHasSqlite);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_hasSqlite", js_s_System_def_getHasSqlite);;
+
     rho::apiGenerator::js_define_method("Rho:System:applicationInstall", js_System_applicationInstall);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_applicationInstall", js_s_System_def_applicationInstall);;
 
@@ -404,6 +464,42 @@ extern "C" void Init_JSAPI_System(void)
 
     rho::apiGenerator::js_define_method("Rho:System:updateBlobAttribs", js_System_updateBlobAttribs);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_updateBlobAttribs", js_s_System_def_updateBlobAttribs);;
+
+    rho::apiGenerator::js_define_method("Rho:System:get_locale", js_System_get_locale);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_get_locale", js_s_System_def_get_locale);;
+
+    rho::apiGenerator::js_define_method("Rho:System:setPushNotification", js_System_setPushNotification);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setPushNotification", js_s_System_def_setPushNotification);;
+
+    rho::apiGenerator::js_define_method("Rho:System:setScreenRotationNotification", js_System_setScreenRotationNotification);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setScreenRotationNotification", js_s_System_def_setScreenRotationNotification);;
+
+    rho::apiGenerator::js_define_method("Rho:System:exit", js_System_exit);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_exit", js_s_System_def_exit);;
+
+    rho::apiGenerator::js_define_method("Rho:System:set_sleeping", js_System_set_sleeping);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_set_sleeping", js_s_System_def_set_sleeping);;
+
+    rho::apiGenerator::js_define_method("Rho:System:startTimer", js_System_startTimer);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_startTimer", js_s_System_def_startTimer);;
+
+    rho::apiGenerator::js_define_method("Rho:System:stopTimer", js_System_stopTimer);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_stopTimer", js_s_System_def_stopTimer);;
+
+    rho::apiGenerator::js_define_method("Rho:System:setNetworkStatusNotify", js_System_setNetworkStatusNotify);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setNetworkStatusNotify", js_s_System_def_setNetworkStatusNotify);;
+
+    rho::apiGenerator::js_define_method("Rho:System:clearNetworkStatusNotify", js_System_clearNetworkStatusNotify);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_clearNetworkStatusNotify", js_s_System_def_clearNetworkStatusNotify);;
+
+    rho::apiGenerator::js_define_method("Rho:System:set_http_proxy_url", js_System_set_http_proxy_url);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_set_http_proxy_url", js_s_System_def_set_http_proxy_url);;
+
+    rho::apiGenerator::js_define_method("Rho:System:unset_http_proxy", js_System_unset_http_proxy);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_unset_http_proxy", js_s_System_def_unset_http_proxy);;
+
+    rho::apiGenerator::js_define_method("Rho:System:runApplication", js_System_runApplication);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_runApplication", js_s_System_def_runApplication);;
 
     rho::apiGenerator::js_define_method("Rho:System:getProperty", js_System_getProperty);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getProperty", js_s_System_def_getProperty);;

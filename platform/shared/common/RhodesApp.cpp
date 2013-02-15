@@ -2345,7 +2345,7 @@ int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, cons
 #endif        
     return res_check;
 }
- 
+    //TODO: remove it
 	void rho_sys_set_network_status_notify(const char* url, int poll_interval)
 	{
 		RHODESAPP().setNetworkStatusNotify(url,poll_interval);

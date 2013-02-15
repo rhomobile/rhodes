@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/RhoStd.h"
+#include "common/StringConverter.h"
 #include "GeneratorQueue.h"
 
 namespace rho
@@ -146,7 +147,7 @@ public:
 
     struct CSetterBase
     {
-        virtual void call(ModuleClass* pModule, const rho::StringW& strArg, CMethodResult& oResult ) = 0;
+        virtual void call(ModuleClass* pModule, const rho::String& strArg, CMethodResult& oResult ) = 0;
     };
     template<typename TArg, typename TValue>        
     class CSetter: public CSetterBase
@@ -155,10 +156,10 @@ public:
         TSetter m_pSetterFunc;
     public:
         CSetter( TSetter pSetter ) : m_pSetterFunc(pSetter){}
-        virtual void call(ModuleClass* pModule, const rho::StringW& strArg, CMethodResult& oResult )
+        virtual void call(ModuleClass* pModule, const rho::String& strArg, CMethodResult& oResult )
         {
             TValue arg;
-            rho::common::convertFromStringW( strArg.c_str(), arg );
+            rho::common::convertFromStringA( strArg.c_str(), arg );
             (pModule->*m_pSetterFunc)( arg, oResult );
         }
     };
@@ -170,7 +171,7 @@ public:
 
     void addSetter(CSetterBase* pSetter){ m_pSetter = pSetter; }
     void callGetter( ModuleClass* pModule, CMethodResult& oResult ){ (pModule->*m_pGetter)(oResult); }
-    void callSetter( ModuleClass* pModule, const rho::StringW& strArg, CMethodResult& oResult){ m_pSetter->call( pModule, strArg, oResult); }
+    void callSetter( ModuleClass* pModule, const rho::String& strArg, CMethodResult& oResult){ m_pSetter->call( pModule, strArg, oResult); }
     bool hasSetter()const{ return m_pSetter != 0; }
 };
 

@@ -30,25 +30,25 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
     
     if ( argc == 0 )
     {
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
     }
     
 
 
-    rho::StringW arg0;
+    rho::String arg0;
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
         {
-            arg0 = convertToStringW(argv[0].getString());
+            arg0 = argv[0].getString();
 
             oRes.setStringParam(argv[0].getString());
 
         }
         else if (!argv[0].isNull())
         {
-            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"string" );
+            oRes.setArgError( "Type error: argument " "0" " should be " "string" );
             return oRes.toJSON();
         }
     }
@@ -72,17 +72,17 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
     
 
 
-    rho::StringW arg1;
+    rho::String arg1;
     if ( argc > 1 )
     {
         if ( argv[1].isString() )
         {
-            arg1 = convertToStringW(argv[1].getString());
+            arg1 = argv[1].getString();
 
         }
         else if (!argv[1].isNull())
         {
-            oRes.setArgError(L"Type error: argument " L"1" L" should be " L"string" );
+            oRes.setArgError( "Type error: argument " "1" " should be " "string" );
             return oRes.toJSON();
         }
     }
@@ -117,7 +117,7 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
             arg2 = argv[2].getInt() ? true : false;
         else if (!argv[2].isNull())
         {
-            oRes.setArgError(L"Type error: argument " L"2" L" should be " L"boolean" );
+            oRes.setArgError("Type error: argument " "2" " should be " "boolean" );
             return oRes.toJSON();
         }
     }
@@ -136,13 +136,13 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
 
         
         if ( !argv[nCallbackArg].isString() )
         {
-            oRes.setArgError(L"Type error: callback should be String");
+            oRes.setArgError("Type error: callback should be String");
             return oRes.toJSON();
         }
 
@@ -152,7 +152,7 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
         {
             if ( !argv[nCallbackArg + 1].isString() )
             {
-                oRes.setArgError(L"Type error: callback parameter should be String");
+                oRes.setArgError("Type error: callback parameter should be String");
                 return oRes.toJSON();
             }
 
@@ -194,7 +194,7 @@ rho::String js_Process_waitForApplication(rho::json::CJSONArray& argv, const rho
     int argc = argv.getSize();
     int nCallbackArg = 0;
 
-    rho::system::IProcess* pObj = rho::system::CProcessFactoryBase::getInstance()->getModuleByID(convertToStringW(strObjID));
+    rho::system::IProcess* pObj = rho::system::CProcessFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -202,13 +202,13 @@ rho::String js_Process_waitForApplication(rho::json::CJSONArray& argv, const rho
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
         
         if ( !argv[nCallbackArg].isString() )
         {
-            oRes.setArgError(L"Type error: callback should be String");
+            oRes.setArgError("Type error: callback should be String");
             return oRes.toJSON();
         }
 
@@ -218,7 +218,7 @@ rho::String js_Process_waitForApplication(rho::json::CJSONArray& argv, const rho
         {
             if ( !argv[nCallbackArg + 1].isString() )
             {
-                oRes.setArgError(L"Type error: callback parameter should be String");
+                oRes.setArgError("Type error: callback parameter should be String");
                 return oRes.toJSON();
             }
 
@@ -260,7 +260,7 @@ rho::String js_Process_closeHandle(rho::json::CJSONArray& argv, const rho::Strin
     int argc = argv.getSize();
     int nCallbackArg = 0;
 
-    rho::system::IProcess* pObj = rho::system::CProcessFactoryBase::getInstance()->getModuleByID(convertToStringW(strObjID));
+    rho::system::IProcess* pObj = rho::system::CProcessFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -268,13 +268,13 @@ rho::String js_Process_closeHandle(rho::json::CJSONArray& argv, const rho::Strin
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
         
         if ( !argv[nCallbackArg].isString() )
         {
-            oRes.setArgError(L"Type error: callback should be String");
+            oRes.setArgError("Type error: callback should be String");
             return oRes.toJSON();
         }
 
@@ -284,7 +284,7 @@ rho::String js_Process_closeHandle(rho::json::CJSONArray& argv, const rho::Strin
         {
             if ( !argv[nCallbackArg + 1].isString() )
             {
-                oRes.setArgError(L"Type error: callback parameter should be String");
+                oRes.setArgError("Type error: callback parameter should be String");
                 return oRes.toJSON();
             }
 
@@ -326,7 +326,7 @@ rho::String js_Process_getProcessExitCode(rho::json::CJSONArray& argv, const rho
     int argc = argv.getSize();
     int nCallbackArg = 0;
 
-    rho::system::IProcess* pObj = rho::system::CProcessFactoryBase::getInstance()->getModuleByID(convertToStringW(strObjID));
+    rho::system::IProcess* pObj = rho::system::CProcessFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -334,13 +334,13 @@ rho::String js_Process_getProcessExitCode(rho::json::CJSONArray& argv, const rho
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
         
         if ( !argv[nCallbackArg].isString() )
         {
-            oRes.setArgError(L"Type error: callback should be String");
+            oRes.setArgError("Type error: callback should be String");
             return oRes.toJSON();
         }
 
@@ -350,7 +350,7 @@ rho::String js_Process_getProcessExitCode(rho::json::CJSONArray& argv, const rho
         {
             if ( !argv[nCallbackArg + 1].isString() )
             {
-                oRes.setArgError(L"Type error: callback parameter should be String");
+                oRes.setArgError("Type error: callback parameter should be String");
                 return oRes.toJSON();
             }
 
