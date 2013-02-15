@@ -101,7 +101,7 @@ public class RhoApiPropertyBag implements
                     Logger.W(TAG, "Cannot clear value for property of primitive type (" + prop.getValue().getSimpleName() + "): '" + prop.getKey() + "', object id: " + apiObject.getId());
                 } else {
                     MethodResult propResult = new MethodResult();
-                    Method method = clazz.getMethod("set" + prop.getKey(), prop.getValue(), IMethodResult.class);
+                    Method method = clazz.getMethod(makeAccessorName("set", prop.getKey()), prop.getValue(), IMethodResult.class);
                     method.invoke(apiObject, null, propResult);
                     if (propResult.getResultType() == MethodResult.ResultType.typeArgError.ordinal()) {
                         result.setArgError(propResult.getString());
@@ -139,7 +139,7 @@ public class RhoApiPropertyBag implements
             Class<? extends RhoApiObject> clazz = apiObject.getClass().asSubclass(RhoApiObject.class);
             try {
                 MethodResult propResult = new MethodResult();
-                Method method = clazz.getMethod("get" + prop.getKey(), IMethodResult.class);
+                Method method = clazz.getMethod(makeAccessorName("get", prop.getKey()), IMethodResult.class);
                 method.invoke(apiObject, propResult);
                 if (propResult.getResultType() == MethodResult.ResultType.typeArgError.ordinal()) {
                     result.setArgError(propResult.getString());
@@ -178,7 +178,7 @@ public class RhoApiPropertyBag implements
                 Class<? extends RhoApiObject> clazz = apiObject.getClass().asSubclass(RhoApiObject.class);
                 try {
                     MethodResult propResult = new MethodResult();
-                    Method method = clazz.getMethod("get" + name, IMethodResult.class);
+                    Method method = clazz.getMethod(makeAccessorName("get", name), IMethodResult.class);
                     method.invoke(apiObject, propResult);
                     if (propResult.getResultType() == MethodResult.ResultType.typeArgError.ordinal()) {
                         result.setArgError(propResult.getString());
@@ -239,14 +239,15 @@ public class RhoApiPropertyBag implements
                 try {
                     Method[] methods = clazz.getMethods();
                     Method method = null;
+                    String accessorName = makeAccessorName("set", name);
                     for(Method curMethod: methods) {
-                        if (curMethod.getName().equals("set" + name)) {
+                        if (curMethod.getName().equals(accessorName)) {
                             method = curMethod;
                             break;
                         }
                     }
                     if (method == null) {
-                        throw new NoSuchMethodException("set" + name);
+                        throw new NoSuchMethodException(accessorName);
                     }
                     Class<?> paramType = method.getParameterTypes()[0];
                     if (paramType.equals(String.class)) {
@@ -300,5 +301,11 @@ public class RhoApiPropertyBag implements
                 return;
             }
         }
+    }
+    
+    private static String makeAccessorName(String prefix, String name) {
+        StringBuilder sb = new StringBuilder(prefix).append(name);
+        sb.setCharAt(prefix.length(), Character.toUpperCase(name.charAt(0)));  
+        return sb.toString();
     }
 }
