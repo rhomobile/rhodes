@@ -268,7 +268,7 @@ void CNetRequestImpl::writeHeaders(Hashtable<String,String>* pHeaders)
         String strHeaders;
 
         for ( Hashtable<String,String>::iterator it = pHeaders->begin();  it != pHeaders->end(); ++it )
-            strHeaders += it->first + ":" + it->second + "\r\n";
+            strHeaders += it->first + ":" + (it->second.length() ? it->second : "''")  + "\r\n";
 
         if ( !HttpAddRequestHeaders( m_hRequest, common::convertToStringW(strHeaders).c_str(), -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
         {
