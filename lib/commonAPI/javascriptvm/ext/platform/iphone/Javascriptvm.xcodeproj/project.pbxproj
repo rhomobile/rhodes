@@ -7,15 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AE14A2EB16CD540C006B9B29 /* Javascriptvm_impl.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2EA16CD540C006B9B29 /* Javascriptvm_impl.mm */; };
-		AE14A2F716CD544B006B9B29 /* IJavascriptVM.h in Headers */ = {isa = PBXBuildFile; fileRef = AE14A2EF16CD544B006B9B29 /* IJavascriptVM.h */; };
-		AE14A2F816CD544B006B9B29 /* JavascriptVM_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F016CD544B006B9B29 /* JavascriptVM_js_wrap.cpp */; };
-		AE14A2F916CD544B006B9B29 /* JavascriptVM_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F116CD544B006B9B29 /* JavascriptVM_ruby_wrap.cpp */; };
-		AE14A2FA16CD544B006B9B29 /* JavascriptVMBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F216CD544B006B9B29 /* JavascriptVMBase.cpp */; };
-		AE14A2FB16CD544B006B9B29 /* JavascriptVMBase.h in Headers */ = {isa = PBXBuildFile; fileRef = AE14A2F316CD544B006B9B29 /* JavascriptVMBase.h */; };
-		AE14A2FC16CD544B006B9B29 /* javascriptvm_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F416CD544B006B9B29 /* javascriptvm_api_init.cpp */; };
-		AE14A2FD16CD544B006B9B29 /* javascriptvm_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F516CD544B006B9B29 /* javascriptvm_js_api.cpp */; };
-		AE14A2FE16CD544B006B9B29 /* javascriptvm_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = AE14A2F616CD544B006B9B29 /* javascriptvm_ruby_api.c */; };
+		AE14A33716CE5D02006B9B29 /* IJavascriptVM.h in Headers */ = {isa = PBXBuildFile; fileRef = AE14A31616CE5D01006B9B29 /* IJavascriptVM.h */; };
+		AE14A33816CE5D02006B9B29 /* JavascriptVMBase.h in Headers */ = {isa = PBXBuildFile; fileRef = AE14A31916CE5D01006B9B29 /* JavascriptVMBase.h */; };
+		AE14A33916CE5D02006B9B29 /* JavascriptVMBase.m in Sources */ = {isa = PBXBuildFile; fileRef = AE14A31A16CE5D01006B9B29 /* JavascriptVMBase.m */; };
+		AE14A33A16CE5D02006B9B29 /* JavascriptVMFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = AE14A31B16CE5D01006B9B29 /* JavascriptVMFactoryBase.h */; };
+		AE14A33B16CE5D02006B9B29 /* JavascriptVMFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = AE14A31C16CE5D01006B9B29 /* JavascriptVMFactoryBase.m */; };
+		AE14A33C16CE5D02006B9B29 /* JavascriptVMSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = AE14A31D16CE5D01006B9B29 /* JavascriptVMSingletonBase.h */; };
+		AE14A33D16CE5D02006B9B29 /* JavascriptVMSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = AE14A31E16CE5D01006B9B29 /* JavascriptVMSingletonBase.m */; };
+		AE14A33E16CE5D02006B9B29 /* JavascriptVM.h in Headers */ = {isa = PBXBuildFile; fileRef = AE14A32116CE5D01006B9B29 /* JavascriptVM.h */; };
+		AE14A33F16CE5D02006B9B29 /* JavascriptVM.m in Sources */ = {isa = PBXBuildFile; fileRef = AE14A32216CE5D01006B9B29 /* JavascriptVM.m */; };
+		AE14A34116CE5D02006B9B29 /* JavascriptVMFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AE14A32416CE5D01006B9B29 /* JavascriptVMFactorySingleton.m */; };
+		AE14A34216CE5D02006B9B29 /* JavascriptVMSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = AE14A32516CE5D02006B9B29 /* JavascriptVMSetup.m */; };
+		AE14A34316CE5D02006B9B29 /* JavascriptVMSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = AE14A32616CE5D02006B9B29 /* JavascriptVMSingleton.h */; };
+		AE14A34416CE5D02006B9B29 /* JavascriptVMSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AE14A32716CE5D02006B9B29 /* JavascriptVMSingleton.m */; };
+		AE14A34516CE5D02006B9B29 /* javascriptvm_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = AE14A32A16CE5D02006B9B29 /* javascriptvm_js_wrap.mm */; };
+		AE14A34616CE5D02006B9B29 /* javascriptvm_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = AE14A32D16CE5D02006B9B29 /* javascriptvm_ruby_wrap.m */; };
+		AE14A35D16CE5FE8006B9B29 /* javascriptvm_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A35516CE5FE8006B9B29 /* javascriptvm_api_init.cpp */; };
+		AE14A35E16CE5FE8006B9B29 /* javascriptvm_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE14A35616CE5FE8006B9B29 /* javascriptvm_js_api.cpp */; };
+		AE14A35F16CE5FE8006B9B29 /* javascriptvm_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = AE14A35716CE5FE8006B9B29 /* javascriptvm_ruby_api.c */; };
 		FAC155E7145855CF0016F3BD /* JavascriptVM_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* JavascriptVM_Prefix.pch */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
@@ -23,15 +32,24 @@
 
 /* Begin PBXFileReference section */
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		AE14A2EA16CD540C006B9B29 /* Javascriptvm_impl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = Javascriptvm_impl.mm; path = Classes/Javascriptvm_impl.mm; sourceTree = "<group>"; };
-		AE14A2EF16CD544B006B9B29 /* IJavascriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IJavascriptVM.h; sourceTree = "<group>"; };
-		AE14A2F016CD544B006B9B29 /* JavascriptVM_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JavascriptVM_js_wrap.cpp; sourceTree = "<group>"; };
-		AE14A2F116CD544B006B9B29 /* JavascriptVM_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JavascriptVM_ruby_wrap.cpp; sourceTree = "<group>"; };
-		AE14A2F216CD544B006B9B29 /* JavascriptVMBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JavascriptVMBase.cpp; sourceTree = "<group>"; };
-		AE14A2F316CD544B006B9B29 /* JavascriptVMBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavascriptVMBase.h; sourceTree = "<group>"; };
-		AE14A2F416CD544B006B9B29 /* javascriptvm_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = javascriptvm_api_init.cpp; sourceTree = "<group>"; };
-		AE14A2F516CD544B006B9B29 /* javascriptvm_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = javascriptvm_js_api.cpp; sourceTree = "<group>"; };
-		AE14A2F616CD544B006B9B29 /* javascriptvm_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = javascriptvm_ruby_api.c; sourceTree = "<group>"; };
+		AE14A31616CE5D01006B9B29 /* IJavascriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IJavascriptVM.h; sourceTree = "<group>"; };
+		AE14A31916CE5D01006B9B29 /* JavascriptVMBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavascriptVMBase.h; sourceTree = "<group>"; };
+		AE14A31A16CE5D01006B9B29 /* JavascriptVMBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JavascriptVMBase.m; sourceTree = "<group>"; };
+		AE14A31B16CE5D01006B9B29 /* JavascriptVMFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavascriptVMFactoryBase.h; sourceTree = "<group>"; };
+		AE14A31C16CE5D01006B9B29 /* JavascriptVMFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JavascriptVMFactoryBase.m; sourceTree = "<group>"; };
+		AE14A31D16CE5D01006B9B29 /* JavascriptVMSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavascriptVMSingletonBase.h; sourceTree = "<group>"; };
+		AE14A31E16CE5D01006B9B29 /* JavascriptVMSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JavascriptVMSingletonBase.m; sourceTree = "<group>"; };
+		AE14A32116CE5D01006B9B29 /* JavascriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavascriptVM.h; sourceTree = "<group>"; };
+		AE14A32216CE5D01006B9B29 /* JavascriptVM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JavascriptVM.m; sourceTree = "<group>"; };
+		AE14A32416CE5D01006B9B29 /* JavascriptVMFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JavascriptVMFactorySingleton.m; sourceTree = "<group>"; };
+		AE14A32516CE5D02006B9B29 /* JavascriptVMSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JavascriptVMSetup.m; sourceTree = "<group>"; };
+		AE14A32616CE5D02006B9B29 /* JavascriptVMSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavascriptVMSingleton.h; sourceTree = "<group>"; };
+		AE14A32716CE5D02006B9B29 /* JavascriptVMSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JavascriptVMSingleton.m; sourceTree = "<group>"; };
+		AE14A32A16CE5D02006B9B29 /* javascriptvm_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = javascriptvm_js_wrap.mm; sourceTree = "<group>"; };
+		AE14A32D16CE5D02006B9B29 /* javascriptvm_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = javascriptvm_ruby_wrap.m; sourceTree = "<group>"; };
+		AE14A35516CE5FE8006B9B29 /* javascriptvm_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = javascriptvm_api_init.cpp; sourceTree = "<group>"; };
+		AE14A35616CE5FE8006B9B29 /* javascriptvm_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = javascriptvm_js_api.cpp; sourceTree = "<group>"; };
+		AE14A35716CE5FE8006B9B29 /* javascriptvm_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = javascriptvm_ruby_api.c; sourceTree = "<group>"; };
 		FAC155F3145855CF0016F3BD /* libJavascriptVM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libJavascriptVM.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD45FD51225FED600141873 /* JavascriptVM_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JavascriptVM_Prefix.pch; sourceTree = "<group>"; };
 		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -61,8 +79,9 @@
 		0867D691FE84028FC02AAC07 /* Barcode */ = {
 			isa = PBXGroup;
 			children = (
-				08FB77AEFE84172EC02AAC07 /* Classes */,
+				AE14A31416CE5D01006B9B29 /* Classes */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
+				AE14A34D16CE5FE8006B9B29 /* shared */,
 				0867D69AFE84028FC02AAC07 /* Frameworks */,
 				034768DFFF38A50411DB9C8B /* Products */,
 			);
@@ -78,15 +97,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		08FB77AEFE84172EC02AAC07 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				FAC155DD1458511E0016F3BD /* iOS_specific */,
-				AE14A2EC16CD544B006B9B29 /* shared */,
-			);
-			name = Classes;
-			sourceTree = "<group>";
-		};
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -95,44 +105,85 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
-		AE14A2EC16CD544B006B9B29 /* shared */ = {
+		AE14A31416CE5D01006B9B29 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				AE14A2ED16CD544B006B9B29 /* generated */,
+				AE14A31516CE5D01006B9B29 /* api */,
+				AE14A31816CE5D01006B9B29 /* base_impl */,
+				AE14A32016CE5D01006B9B29 /* impl */,
+				AE14A32916CE5D02006B9B29 /* js_wrapper */,
+				AE14A32C16CE5D02006B9B29 /* ruby_wrapper */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		AE14A31516CE5D01006B9B29 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				AE14A31616CE5D01006B9B29 /* IJavascriptVM.h */,
+			);
+			path = api;
+			sourceTree = "<group>";
+		};
+		AE14A31816CE5D01006B9B29 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				AE14A31916CE5D01006B9B29 /* JavascriptVMBase.h */,
+				AE14A31A16CE5D01006B9B29 /* JavascriptVMBase.m */,
+				AE14A31B16CE5D01006B9B29 /* JavascriptVMFactoryBase.h */,
+				AE14A31C16CE5D01006B9B29 /* JavascriptVMFactoryBase.m */,
+				AE14A31D16CE5D01006B9B29 /* JavascriptVMSingletonBase.h */,
+				AE14A31E16CE5D01006B9B29 /* JavascriptVMSingletonBase.m */,
+			);
+			path = base_impl;
+			sourceTree = "<group>";
+		};
+		AE14A32016CE5D01006B9B29 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				AE14A32116CE5D01006B9B29 /* JavascriptVM.h */,
+				AE14A32216CE5D01006B9B29 /* JavascriptVM.m */,
+				AE14A32416CE5D01006B9B29 /* JavascriptVMFactorySingleton.m */,
+				AE14A32516CE5D02006B9B29 /* JavascriptVMSetup.m */,
+				AE14A32616CE5D02006B9B29 /* JavascriptVMSingleton.h */,
+				AE14A32716CE5D02006B9B29 /* JavascriptVMSingleton.m */,
+			);
+			path = impl;
+			sourceTree = "<group>";
+		};
+		AE14A32916CE5D02006B9B29 /* js_wrapper */ = {
+			isa = PBXGroup;
+			children = (
+				AE14A32A16CE5D02006B9B29 /* javascriptvm_js_wrap.mm */,
+			);
+			path = js_wrapper;
+			sourceTree = "<group>";
+		};
+		AE14A32C16CE5D02006B9B29 /* ruby_wrapper */ = {
+			isa = PBXGroup;
+			children = (
+				AE14A32D16CE5D02006B9B29 /* javascriptvm_ruby_wrap.m */,
+			);
+			path = ruby_wrapper;
+			sourceTree = "<group>";
+		};
+		AE14A34D16CE5FE8006B9B29 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				AE14A34E16CE5FE8006B9B29 /* generated */,
 			);
 			name = shared;
 			path = ../../shared;
 			sourceTree = "<group>";
 		};
-		AE14A2ED16CD544B006B9B29 /* generated */ = {
+		AE14A34E16CE5FE8006B9B29 /* generated */ = {
 			isa = PBXGroup;
 			children = (
-				AE14A2EE16CD544B006B9B29 /* cpp */,
-				AE14A2F416CD544B006B9B29 /* javascriptvm_api_init.cpp */,
-				AE14A2F516CD544B006B9B29 /* javascriptvm_js_api.cpp */,
-				AE14A2F616CD544B006B9B29 /* javascriptvm_ruby_api.c */,
+				AE14A35516CE5FE8006B9B29 /* javascriptvm_api_init.cpp */,
+				AE14A35616CE5FE8006B9B29 /* javascriptvm_js_api.cpp */,
+				AE14A35716CE5FE8006B9B29 /* javascriptvm_ruby_api.c */,
 			);
 			path = generated;
-			sourceTree = "<group>";
-		};
-		AE14A2EE16CD544B006B9B29 /* cpp */ = {
-			isa = PBXGroup;
-			children = (
-				AE14A2EF16CD544B006B9B29 /* IJavascriptVM.h */,
-				AE14A2F016CD544B006B9B29 /* JavascriptVM_js_wrap.cpp */,
-				AE14A2F116CD544B006B9B29 /* JavascriptVM_ruby_wrap.cpp */,
-				AE14A2F216CD544B006B9B29 /* JavascriptVMBase.cpp */,
-				AE14A2F316CD544B006B9B29 /* JavascriptVMBase.h */,
-			);
-			path = cpp;
-			sourceTree = "<group>";
-		};
-		FAC155DD1458511E0016F3BD /* iOS_specific */ = {
-			isa = PBXGroup;
-			children = (
-				AE14A2EA16CD540C006B9B29 /* Javascriptvm_impl.mm */,
-			);
-			name = iOS_specific;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,8 +194,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAC155E7145855CF0016F3BD /* JavascriptVM_Prefix.pch in Headers */,
-				AE14A2F716CD544B006B9B29 /* IJavascriptVM.h in Headers */,
-				AE14A2FB16CD544B006B9B29 /* JavascriptVMBase.h in Headers */,
+				AE14A33716CE5D02006B9B29 /* IJavascriptVM.h in Headers */,
+				AE14A33816CE5D02006B9B29 /* JavascriptVMBase.h in Headers */,
+				AE14A33A16CE5D02006B9B29 /* JavascriptVMFactoryBase.h in Headers */,
+				AE14A33C16CE5D02006B9B29 /* JavascriptVMSingletonBase.h in Headers */,
+				AE14A33E16CE5D02006B9B29 /* JavascriptVM.h in Headers */,
+				AE14A34316CE5D02006B9B29 /* JavascriptVMSingleton.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,13 +253,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AE14A2EB16CD540C006B9B29 /* Javascriptvm_impl.mm in Sources */,
-				AE14A2F816CD544B006B9B29 /* JavascriptVM_js_wrap.cpp in Sources */,
-				AE14A2F916CD544B006B9B29 /* JavascriptVM_ruby_wrap.cpp in Sources */,
-				AE14A2FA16CD544B006B9B29 /* JavascriptVMBase.cpp in Sources */,
-				AE14A2FC16CD544B006B9B29 /* javascriptvm_api_init.cpp in Sources */,
-				AE14A2FD16CD544B006B9B29 /* javascriptvm_js_api.cpp in Sources */,
-				AE14A2FE16CD544B006B9B29 /* javascriptvm_ruby_api.c in Sources */,
+				AE14A33916CE5D02006B9B29 /* JavascriptVMBase.m in Sources */,
+				AE14A33B16CE5D02006B9B29 /* JavascriptVMFactoryBase.m in Sources */,
+				AE14A33D16CE5D02006B9B29 /* JavascriptVMSingletonBase.m in Sources */,
+				AE14A33F16CE5D02006B9B29 /* JavascriptVM.m in Sources */,
+				AE14A34116CE5D02006B9B29 /* JavascriptVMFactorySingleton.m in Sources */,
+				AE14A34216CE5D02006B9B29 /* JavascriptVMSetup.m in Sources */,
+				AE14A34416CE5D02006B9B29 /* JavascriptVMSingleton.m in Sources */,
+				AE14A34516CE5D02006B9B29 /* javascriptvm_js_wrap.mm in Sources */,
+				AE14A34616CE5D02006B9B29 /* javascriptvm_ruby_wrap.m in Sources */,
+				AE14A35D16CE5FE8006B9B29 /* javascriptvm_api_init.cpp in Sources */,
+				AE14A35E16CE5FE8006B9B29 /* javascriptvm_js_api.cpp in Sources */,
+				AE14A35F16CE5FE8006B9B29 /* javascriptvm_ruby_api.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
