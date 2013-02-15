@@ -15,7 +15,7 @@ end; end %>
 
 ////////////////////////////////////////////////
 <% if $cur_module.is_template_propertybag %>
-
+//TODO: support property aliases
 C<%= $cur_module.name %>Base::C<%= $cur_module.name %>Base()
 {
 <% $cur_module.methods.each do |module_method|
@@ -23,17 +23,21 @@ C<%= $cur_module.name %>Base::C<%= $cur_module.name %>Base()
     next if module_method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
     if module_method.linked_property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
 %>
-    m_mapPropAccessors[L"<%= module_method.linked_property.native_name %>"] = new rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %> >( &I<%= $cur_module.name %>::<%= module_method.native_name%> ); <%
-else %>
-    m_mapPropAccessors[L"<%= module_method.linked_property.native_name %>"] = 0;<%
-end; end%>
+    m_mapPropAccessors[L"<%= module_method.linked_property.name %>"] = new rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %> >( &I<%= $cur_module.name %>::<%= module_method.native_name%> ); <%
+    $cur_module.getPropAliases(module_method.linked_property.name).each do |alias_name| %>
+    m_mapPropAccessors[L"<%=alias_name %>"] = new rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %> >( &I<%= $cur_module.name %>::<%= module_method.native_name%> ); <%
+end; else %>
+    m_mapPropAccessors[L"<%= module_method.linked_property.name %>"] = 0;<%
+    $cur_module.getPropAliases(module_method.linked_property.name).each do |alias_name| %>
+    m_mapPropAccessors[L"<%= alias_name %>"] = 0;<%
+end; end; end%>
 
 <% $cur_module.methods.each do |module_method|
     next if module_method.access != ModuleMethod::ACCESS_INSTANCE
     next if module_method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
     next if module_method.linked_property.use_property_bag_mode != ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
 %>
-    m_mapPropAccessors[L"<%= module_method.linked_property.native_name %>"]->addSetter( new rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %>>::CSetter< <%= api_generator_cpp_makeNativeTypeArg(module_method.linked_property.type) %>, <%= api_generator_cpp_makeNativeType(module_method.linked_property.type) %> >(&I<%= $cur_module.name %>::<%= module_method.native_name%>) );<%
+    m_mapPropAccessors[L"<%= module_method.linked_property.name %>"]->addSetter( new rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %>>::CSetter< <%= api_generator_cpp_makeNativeTypeArg(module_method.linked_property.type) %>, <%= api_generator_cpp_makeNativeType(module_method.linked_property.type) %> >(&I<%= $cur_module.name %>::<%= module_method.native_name%>) );<%
 end%>
 }
 

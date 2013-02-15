@@ -402,8 +402,10 @@ module Rhogen
 		args = []
 		args << "api"
 		args << Dir.pwd+"/#{namefixed.downcase}.xml"
-		puts Jake.run(source_root+"/../../../../bin/rhogen", args)
-    end    
+    ## TODO: fix it - next line do not work on Mac OS !
+		## puts Jake.run(source_root+"/../../../../bin/rhogen", args)
+    ##
+    end
 
 	def callback_after_delete_testapp(template)
 		if @@noapp == true
@@ -788,6 +790,7 @@ module Rhogen
         @access = ACCESS_INSTANCE
         @has_callback = CALLBACK_NONE
         @result = nil
+        @is_deprecated = false
 
         # name of template produced this method if applicable
         @generated_by_template = ''
@@ -809,6 +812,7 @@ module Rhogen
       attr_accessor :access
       attr_accessor :has_callback
       attr_accessor :result
+      attr_accessor :is_deprecated
       attr_accessor :generated_by_template
       attr_accessor :linked_property
       attr_accessor :special_behaviour
@@ -836,6 +840,15 @@ module Rhogen
         @use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
       end
 
+      def getPropAliases(name)
+        ar = []
+        property_aliases.each do|alias_item|
+            ar << alias_item.new_name if alias_item.existing_name == name
+        end
+        
+        ar
+      end
+      
       attr_accessor :name
       attr_accessor :parents
       attr_accessor :methods
@@ -866,12 +879,12 @@ module Rhogen
     $possible_attributes = {}
     $possible_attributes["MODULE"] = ["name", "parent", "generateUnderscoreRubyNames"]
     $possible_attributes["CONSTANT"] = ["name", "value", "type"]
-    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "generateAccessors"]
+    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "generateAccessors", "limitPropertyBag"]
     $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readOnly", "generateAccessors", "default"]
     $possible_attributes["VALUE"] = ["constName", "value", "type"]
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
-    $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread"]
-    $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName"]
+    $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread", "deprecated"]
+    $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName", "deprecated"]
     $possible_attributes["PARAM"] = ["name", "nativeName", "type"]
     $possible_attributes["RETURN"] = ["type", "itemType"]
 
@@ -1039,7 +1052,7 @@ module Rhogen
       require File.dirname(__FILE__) + '/templates/api/helpers/api_helper'
     
       if $xml != nil
-        return
+        return true
       end
       # force changes in generated files !
       @options[:force] = true
@@ -1249,6 +1262,14 @@ module Rhogen
                end
             end
 
+            if xml_module_method.attribute("deprecated") != nil
+               module_method.is_deprecated = xml_module_method.attribute("deprecated").to_s.downcase != "false"
+            else
+              if xml_methods_item.attribute("deprecated") != nil
+                 module_method.is_deprecated = xml_methods_item.attribute("deprecated").to_s.downcase != "false"
+              end
+            end
+
             if xml_module_method.attribute("factory") != nil
                if xml_module_method.attribute("factory").to_s.downcase != "false"
                    module_method.is_factory_method = true
@@ -1417,6 +1438,7 @@ module Rhogen
 
 
     template :shared_01 do |template|
+      setup_xml
       template.source = 'shared/generated/montana_api_init.cpp'
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_api_init.cpp"
     end

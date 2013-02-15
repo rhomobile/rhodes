@@ -822,6 +822,7 @@ int rho_sys_check_rollback_bundle(const char* szRhoPath)
     return oFT.rollback() != 0 ? 0 : 1;
 }
 
+//TODO: remove  rho_sys_delete_folder
 int rho_sys_delete_folder(const char* szRhoPath)
 {
     return CRhoFile::deleteFolder(szRhoPath);

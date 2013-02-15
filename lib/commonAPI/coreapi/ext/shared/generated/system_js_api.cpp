@@ -125,6 +125,15 @@ rho::String js_s_System_def_getHasTouchscreen(rho::json::CJSONArray& argv, const
 rho::String js_System_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
+rho::String js_System_getWebviewFramework(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getWebviewFramework(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_getScreenSleeping(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_getScreenSleeping(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_setScreenSleeping(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
 rho::String js_System_applicationInstall(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_applicationInstall(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
@@ -139,9 +148,6 @@ rho::String js_s_System_def_getStartParams(rho::json::CJSONArray& argv, const rh
 
 rho::String js_System_openUrl(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_openUrl(rho::json::CJSONArray& argv, const rho::String& strObjID);
-
-rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_System_def_runApplication(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_unzipFile(rho::json::CJSONArray& argv, const rho::String& strObjID);
@@ -163,6 +169,27 @@ rho::String js_s_System_def_setWindowFrame(rho::json::CJSONArray& argv, const rh
 
 rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_setWindowPosition(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_setWindowSize(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_setWindowSize(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_bringToFront(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_bringToFront(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_replaceCurrentBundle(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_deleteFolder(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_deleteFolder(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_setDoNotBackupAttribute(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_setDoNotBackupAttribute(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_isBlobAttr(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 rho::String js_System_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
@@ -312,6 +339,15 @@ extern "C" void Init_JSAPI_System(void)
     rho::apiGenerator::js_define_method("Rho:System:securityTokenNotPassed", js_System_getSecurityTokenNotPassed);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_securityTokenNotPassed", js_s_System_def_getSecurityTokenNotPassed);;
 
+    rho::apiGenerator::js_define_method("Rho:System:webviewFramework", js_System_getWebviewFramework);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_webviewFramework", js_s_System_def_getWebviewFramework);;
+
+    rho::apiGenerator::js_define_method("Rho:System:screenSleeping", js_System_getScreenSleeping);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_screenSleeping", js_s_System_def_getScreenSleeping);;
+
+    rho::apiGenerator::js_define_method("Rho:System:screenSleeping=", js_System_setScreenSleeping);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_screenSleeping=", js_s_System_def_setScreenSleeping);;
+
     rho::apiGenerator::js_define_method("Rho:System:applicationInstall", js_System_applicationInstall);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_applicationInstall", js_s_System_def_applicationInstall);;
 
@@ -326,9 +362,6 @@ extern "C" void Init_JSAPI_System(void)
 
     rho::apiGenerator::js_define_method("Rho:System:openUrl", js_System_openUrl);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_openUrl", js_s_System_def_openUrl);;
-
-    rho::apiGenerator::js_define_method("Rho:System:runApplication", js_System_runApplication);
-    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_runApplication", js_s_System_def_runApplication);;
 
     rho::apiGenerator::js_define_method("Rho:System:unzipFile", js_System_unzipFile);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_unzipFile", js_s_System_def_unzipFile);;
@@ -350,6 +383,27 @@ extern "C" void Init_JSAPI_System(void)
 
     rho::apiGenerator::js_define_method("Rho:System:setWindowPosition", js_System_setWindowPosition);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setWindowPosition", js_s_System_def_setWindowPosition);;
+
+    rho::apiGenerator::js_define_method("Rho:System:setWindowSize", js_System_setWindowSize);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setWindowSize", js_s_System_def_setWindowSize);;
+
+    rho::apiGenerator::js_define_method("Rho:System:bringToFront", js_System_bringToFront);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_bringToFront", js_s_System_def_bringToFront);;
+
+    rho::apiGenerator::js_define_method("Rho:System:replaceCurrentBundle", js_System_replaceCurrentBundle);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_replaceCurrentBundle", js_s_System_def_replaceCurrentBundle);;
+
+    rho::apiGenerator::js_define_method("Rho:System:deleteFolder", js_System_deleteFolder);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_deleteFolder", js_s_System_def_deleteFolder);;
+
+    rho::apiGenerator::js_define_method("Rho:System:setDoNotBackupAttribute", js_System_setDoNotBackupAttribute);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_setDoNotBackupAttribute", js_s_System_def_setDoNotBackupAttribute);;
+
+    rho::apiGenerator::js_define_method("Rho:System:isBlobAttr", js_System_isBlobAttr);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_isBlobAttr", js_s_System_def_isBlobAttr);;
+
+    rho::apiGenerator::js_define_method("Rho:System:updateBlobAttribs", js_System_updateBlobAttribs);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_updateBlobAttribs", js_s_System_def_updateBlobAttribs);;
 
     rho::apiGenerator::js_define_method("Rho:System:getProperty", js_System_getProperty);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_getProperty", js_s_System_def_getProperty);;
