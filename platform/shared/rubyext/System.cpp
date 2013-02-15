@@ -42,6 +42,8 @@
 using namespace rho;
 using namespace rho::common;
 
+int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw);
+
 extern "C"
 {
 extern int rho_sysimpl_get_property(char* szPropName, VALUE* resValue);
@@ -215,14 +217,11 @@ void zip_iter(const char* szVal, void* par)
     ar.addElement(szVal);
 }
 	
-int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, void* ptrFilesArray, const char* psw);
-
-	
 int rho_sys_zip_files(const char* szZipFilePath, const char *base_path, VALUE valToZipPaths, const char* psw)
 {
 	rho::Vector<rho::String> arFiles;
     rho_ruby_enum_strary(valToZipPaths, zip_iter, &arFiles);
-	return rho_sys_zip_files_with_path_array_ptr(szZipFilePath,base_path,&arFiles,psw);
+	return rho_sys_zip_files_with_path_array_ptr(szZipFilePath,base_path,arFiles,psw);
 }
 
 int rho_sys_zip_file(const char* szZipFilePath, const char* szToZipPath, const char* psw)

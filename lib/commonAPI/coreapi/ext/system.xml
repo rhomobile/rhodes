@@ -4,7 +4,11 @@
     <MODULE name="System" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
         <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
-    
+
+        <ALIASES>
+            <ALIAS new="System" existing="Rho::System" deprecated="true"/>
+        </ALIASES>
+
         <TEMPLATES>
             <DEFAULT_INSTANCE/>
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
@@ -15,7 +19,6 @@
 
             <ALIASES>
                 <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
-                <ALIAS new="disable_screen_rotation" existing="screenAutoRotate" deprecated="true" reverseLogic="true"/>
                 <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
             </ALIASES>
 
@@ -155,6 +158,18 @@
             <PROPERTY name="screenSleeping" type="BOOLEAN">
                 <DESC>Should screen go to sleep by timeout.</DESC>
             </PROPERTY>
+            <PROPERTY name="hasNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>USE Network.hasNetwork: Is device connected to the network.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasWifiNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>USE Network.hasWifiNetwork: Is device connected to the wifi network</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasCellNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>USE Network.hasCellNetwork: Is device connected to the cell network.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasSqlite" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>Does sqlite used on this platform.</DESC>
+            </PROPERTY>
 
         </PROPERTIES>
     
@@ -164,6 +179,7 @@
                     <DESC>Use property names methods instead.</DESC>
                 </ALIAS>
 
+                <ALIAS new="run_app" existing="runApplication" deprecated="true"/>
                 <ALIAS new="app_install" existing="applicationInstall" deprecated="true"/>
                 <ALIAS new="app_installed?" existing="isApplicationInstalled" deprecated="true"/>
                 <ALIAS new="app_uninstall" existing="applicationUninstall" deprecated="true"/>
@@ -340,6 +356,9 @@
                     <PARAM name="pathToBundle" type="STRING">
                         <DESC>Path to bundle.</DESC>
                     </PARAM>
+                    <PARAM name="params" type="HASH">
+                        <DESC>Update parameters.</DESC>
+                    </PARAM>
                 </PARAMS>
             </METHOD>
 
@@ -361,8 +380,8 @@
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="isBlobAttr">
-                <DESC>MOVE TO Database: is model attribute is blob.</DESC>
+            <METHOD name="isBlobAttr" deprecated="true">
+                <DESC>Use Database.isBlobAttr: is model attribute is blob.</DESC>
                 <PARAMS>
                     <PARAM name="partition" type="STRING"/>
                     <PARAM name="sourceID" type="INTEGER"/>
@@ -370,14 +389,135 @@
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="updateBlobAttribs">
-                <DESC>MOVE TO Database: update model blob attributes list.</DESC>
+            <METHOD name="updateBlobAttribs" deprecated="true">
+                <DESC>Use Database.updateBlobAttribs: update model blob attributes list.</DESC>
                 <PARAMS>
                     <PARAM name="partition" type="STRING"/>
                     <PARAM name="sourceID" type="INTEGER"/>
                 </PARAMS>
             </METHOD>
-            
+
+            <METHOD name="get_locale" deprecated="true">
+                <DESC>Use System.locale property: Current device locale.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="setPushNotification" deprecated="true">
+                <DESC>Use Push.setPushNotification: Register push callback, the method to call upon receiving a push message.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method. If empty, unregisters rhoconnect-push.</DESC>
+                    </PARAM>
+                    <PARAM name="url_params" type="STRING">
+                        <DESC>Params which will be added to callback URL.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                    <PARAM name="push_client" type="STRING">
+                        <DESC>Name of a push service client. Current values can be 'rhoconnect_push' or 'gcm' or 'legacy' or empty.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>The call will be applied to every push client.</DESC>
+                        </CAN_BE_NIL>    
+                    </PARAM>
+                </PARAMS>
+
+            </METHOD>
+
+            <METHOD name="setScreenRotationNotification" deprecated="true">
+                <DESC>Use ScreenOrientation.setNotification: Notify (call a callback method) when the screen rotates.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method. If empty, unregisters notification callback.</DESC>
+                    </PARAM>
+                    <PARAM name="url_params" type="STRING">
+                        <DESC>Params which will be added to callback URL.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="exit" deprecated="true">
+                <DESC>Use Application.quit: exit application.</DESC>
+            </METHOD>
+
+            <METHOD name="set_sleeping" deprecated="true">
+                <DESC>Use System.screenSleeping property: enable/disable phone sleeping.</DESC>
+                <PARAMS>
+                    <PARAM name="enable" type="BOOLEAN"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="startTimer" deprecated="true">
+                <DESC>Use Timer.start: start timer.</DESC>
+                <PARAMS>
+                    <PARAM name="interval" type="INTEGER">
+                        <DESC>Timer interval.</DESC>
+                    </PARAM>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method.</DESC>
+                    </PARAM>
+                    <PARAM name="url_params" type="STRING">
+                        <DESC>Params which will be added to callback URL.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="stopTimer" deprecated="true">
+                <DESC>Use Timer.stop: stop timer.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method which identify the timer to stop.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setNetworkStatusNotify" deprecated="true">
+                <DESC>Use Network.setNotify: set network notification callback.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>The url to the user-defined callback method.</DESC>
+                    </PARAM>
+                    <PARAM name="poll_interval" type="INTEGER">
+                        <DESC>iOS. The network status polling period for systems that can not notify network status change immediately. Default value is 20 seconds.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="clearNetworkStatusNotify" deprecated="true">
+                <DESC>Clear network status callback.</DESC>
+            </METHOD>
+
+            <METHOD name="set_http_proxy_url" deprecated="true">
+                <DESC>Use System.httpProxyURI property: To use client with the HTTP proxy</DESC>
+                <PARAMS>
+                    <PARAM name="proxyURI" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="unset_http_proxy" deprecated="true">
+                <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
+            </METHOD>
+
+            <METHOD name="runApplication" deprecated="true">
+                <DESC>Use System.Process.runApplication: Run an application.</DESC>
+                <PARAMS>
+                    <PARAM name="appName" type="STRING">
+                        <DESC>The name of the application on the device to run.</DESC>
+                    </PARAM>
+                    <PARAM name="params" type="STRING">
+                        <DESC>The name of the application on the device to run.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                    <PARAM name="blockingCall" type="BOOLEAN">
+                        <DESC>The name of the application on the device to run.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>False by default</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+
+            </METHOD>
+
         </METHODS>
         
         <USER_OVERVIEW>

@@ -11,7 +11,7 @@ class C<%= $cur_module.name %>FactoryBase : public CModuleFactoryBase<I<%= $cur_
 {
 protected:
     static rho::common::CAutoPtr<C<%= $cur_module.name %>FactoryBase> m_pInstance;
-    Hashtable<rho::StringW,I<%= $cur_module.name %>*> m_hashModules;
+    Hashtable<rho::String,I<%= $cur_module.name %>*> m_hashModules;
 
 public:
 
@@ -20,7 +20,7 @@ public:
 
     static I<%= $cur_module.name %>Singleton* get<%= $cur_module.name %>SingletonS(){ return getInstance()->getModuleSingleton(); }
 
-    virtual I<%= $cur_module.name %>* getModuleByID(const rho::StringW& strID)
+    virtual I<%= $cur_module.name %>* getModuleByID(const rho::String& strID)
     {
         if ( !m_hashModules.containsKey(strID) )
         {
@@ -33,7 +33,7 @@ public:
         return m_hashModules[strID];
     }
 
-    virtual I<%= $cur_module.name %>* createModuleByID(const rho::StringW& strID){ return (I<%= $cur_module.name %>*)0; };
+    virtual I<%= $cur_module.name %>* createModuleByID(const rho::String& strID){ return (I<%= $cur_module.name %>*)0; };
 
 };
 
@@ -41,13 +41,13 @@ class C<%= $cur_module.name %>SingletonBase : public CModuleSingletonBase< I<%= 
 {
 protected:
 <% if $cur_module.is_template_default_instance %>
-    rho::StringW m_strDefaultID;
+    rho::String m_strDefaultID;
 <% end %>
 public:
 
 <% if $cur_module.is_template_default_instance %>
-    virtual void setDefaultID(const rho::StringW& strDefaultID){ m_strDefaultID = strDefaultID; }
-    virtual rho::StringW getDefaultID()
+    virtual void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
+    virtual rho::String getDefaultID()
     { 
         if ( m_strDefaultID.length() == 0 )
             setDefaultID(getInitialDefaultID());
@@ -60,18 +60,18 @@ class C<%= $cur_module.name %>Base: public I<%= $cur_module.name %>
 {
 protected:
 <% if $cur_module.is_template_propertybag %>
-    rho::Hashtable<rho::StringW, rho::StringW> m_hashProps;
-    rho::Hashtable<rho::StringW, rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %> > *> m_mapPropAccessors;
+    rho::Hashtable<rho::String, rho::String> m_hashProps;
+    rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %> > *> m_mapPropAccessors;
 <% end %>
 public:
     C<%= $cur_module.name %>Base();
 
 <% if $cur_module.is_template_propertybag %>
-    virtual void getProperty( const rho::StringW& propertyName, CMethodResult& oResult);
-    virtual void getProperties( const rho::Vector<::rho::StringW>& arrayofNames, CMethodResult& oResult);
+    virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
+    virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);
     virtual void getAllProperties(CMethodResult& oResult);
-    virtual void setProperty( const rho::StringW& propertyName,  const rho::StringW& propertyValue, CMethodResult& oResult);
-    virtual void setProperties( const rho::Hashtable<::rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult);
+    virtual void setProperty( const rho::String& propertyName,  const rho::String& propertyValue, CMethodResult& oResult);
+    virtual void setProperties( const rho::Hashtable<::rho::String, rho::String>& propertyMap, CMethodResult& oResult);
     virtual void clearAllProperties(CMethodResult& oResult);
 <% $cur_module.methods.each do |module_method|
     next if module_method.access != ModuleMethod::ACCESS_INSTANCE

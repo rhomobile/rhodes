@@ -11,13 +11,13 @@ struct ISystem
 {
 //constants
 
-    static const wchar_t PLATFORM_WM_CE[];// L"WINDOWS" 
-    static const wchar_t PLATFORM_ANDROID[];// L"ANDROID" 
-    static const wchar_t PLATFORM_IOS[];// L"APPLE" 
-    static const wchar_t PLATFORM_WP8[];// L"WP8" 
-    static const wchar_t PLATFORM_WINDOWS_DESKTOP[];// L"WINDOWS_DESKTOP" 
-    static const wchar_t SCREEN_PORTRAIT[];// L"portrait" 
-    static const wchar_t SCREEN_LANDSCAPE[];// L"landscape" 
+    static const char PLATFORM_WM_CE[];// "WINDOWS" 
+    static const char PLATFORM_ANDROID[];// "ANDROID" 
+    static const char PLATFORM_IOS[];// "APPLE" 
+    static const char PLATFORM_WP8[];// "WP8" 
+    static const char PLATFORM_WINDOWS_DESKTOP[];// "WINDOWS_DESKTOP" 
+    static const char SCREEN_PORTRAIT[];// "portrait" 
+    static const char SCREEN_LANDSCAPE[];// "landscape" 
 
 //methods
     virtual ~ISystem(){}
@@ -48,7 +48,7 @@ struct ISystem
     virtual void getApplicationIconBadge(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setApplicationIconBadge( int64 value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getHttpProxyURI(rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setHttpProxyURI( const rho::StringW& value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setHttpProxyURI( const rho::String& value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getLockWindowSize(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setLockWindowSize( bool value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getShowKeyboard(rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -65,30 +65,46 @@ struct ISystem
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getScreenSleeping(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setScreenSleeping( bool value, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void applicationInstall( const rho::StringW& applicationUrl, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void isApplicationInstalled( const rho::StringW& applicationName, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void applicationUninstall( const rho::StringW& applicationName, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getHasNetwork(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getHasWifiNetwork(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getHasCellNetwork(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getHasSqlite(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void applicationInstall( const rho::String& applicationUrl, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void isApplicationInstalled( const rho::String& applicationName, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void applicationUninstall( const rho::String& applicationName, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getStartParams(rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void openUrl( const rho::StringW& url, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void unzipFile( const rho::StringW& localPathToZip,  const rho::StringW& password, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void zipFile( const rho::StringW& localPathToZip,  const rho::StringW& localPathToFile,  const rho::StringW& password, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void zipFiles( const rho::StringW& localPathToZip,  const rho::StringW& basePath,  const rho::Vector<rho::StringW>& filePathsToZip,  const rho::StringW& password, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setRegistrySetting( const rho::StringW& keyPath,  const rho::StringW& keyValue, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void getRegistrySetting( const rho::StringW& keyPath, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void openUrl( const rho::String& url, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void unzipFile( const rho::String& localPathToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void zipFile( const rho::String& localPathToZip,  const rho::String& localPathToFile,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void zipFiles( const rho::String& localPathToZip,  const rho::String& basePath,  const rho::Vector<rho::String>& filePathsToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setRegistrySetting( const rho::String& keyPath,  const rho::String& keyValue, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getRegistrySetting( const rho::String& keyPath, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setWindowFrame( int64 x,  int64 y,  int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setWindowPosition( int64 x,  int64 y, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setWindowSize( int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void replaceCurrentBundle( const rho::StringW& pathToBundle, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void deleteFolder( const rho::StringW& pathToFolder, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setDoNotBackupAttribute( const rho::StringW& pathToFile, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void isBlobAttr( const rho::StringW& partition,  int64 sourceID,  const rho::StringW& attrName, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void updateBlobAttribs( const rho::StringW& partition,  int64 sourceID, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void getProperty( const rho::StringW& propertyName, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void getProperties( const rho::Vector<rho::StringW>& arrayofNames, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void replaceCurrentBundle( const rho::String& pathToBundle,  const rho::Hashtable<rho::String, rho::String>& params, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void deleteFolder( const rho::String& pathToFolder, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setDoNotBackupAttribute( const rho::String& pathToFile, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void isBlobAttr( const rho::String& partition,  int64 sourceID,  const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void updateBlobAttribs( const rho::String& partition,  int64 sourceID, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void get_locale(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setPushNotification( const rho::String& url,  const rho::String& url_params,  const rho::String& push_client, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setScreenRotationNotification( const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void exit(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void set_sleeping( bool enable, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void startTimer( int64 interval,  const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void stopTimer( const rho::String& url, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setNetworkStatusNotify( const rho::String& url,  int64 poll_interval, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void clearNetworkStatusNotify(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getProperty( const rho::String& propertyName, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getProperties( const rho::Vector<rho::String>& arrayofNames, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getAllProperties(rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setProperty( const rho::StringW& propertyName,  const rho::StringW& propertyValue, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setProperties( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setProperty( const rho::String& propertyName,  const rho::String& propertyValue, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setProperties( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void clearAllProperties(rho::apiGenerator::CMethodResult& oResult) = 0;
 
 };
@@ -99,9 +115,9 @@ struct ISystemSingleton
 
 
 
-    virtual rho::StringW getDefaultID() = 0;
-    virtual rho::StringW getInitialDefaultID() = 0;
-    virtual void setDefaultID(const rho::StringW& strID) = 0;
+    virtual rho::String getDefaultID() = 0;
+    virtual rho::String getInitialDefaultID() = 0;
+    virtual void setDefaultID(const rho::String& strID) = 0;
 
     virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor) = 0;
     virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor) = 0;
@@ -114,7 +130,7 @@ struct ISystemFactory
     virtual ISystemSingleton* getModuleSingleton() = 0;
 
 
-    virtual ISystem* getModuleByID(const rho::StringW& strID) = 0;
+    virtual ISystem* getModuleByID(const rho::String& strID) = 0;
 
 };
 
