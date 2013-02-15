@@ -25,11 +25,13 @@ struct CallbackSelector<rho::json::CJSONEntry> {
 class MethodResultJni
 {
     static const char * const METHOD_RESULT_CLASS;
-    enum ErrType { eNone = 0, eError, eArgError };
+    enum ResultType { typeNone = 0, typeString, typeList, typeMap, typeError, typeArgError };
 
     static jclass s_methodResultClass;
     static jmethodID s_midMethodResult;
     static jmethodID s_midSetCallBack;
+    static jmethodID s_midGetResultType;
+    static jmethodID s_midReset;
     static jfieldID s_fidString;
     static jfieldID s_fidStringList;
     static jfieldID s_fidStringMap;
@@ -40,12 +42,15 @@ class MethodResultJni
 
     bool m_hasCallbackUrl;
 
-    ErrType m_errType;
+    ResultType m_resType;
     std::string m_errMsg;
 
     jstring getStringResult(JNIEnv*);
     jobject getListResult(JNIEnv*);
     jobject getMapResult(JNIEnv*);
+    int getResultType(JNIEnv*);
+    rho::String getErrorMessage(JNIEnv*);
+    void reset(JNIEnv*);
 
 public:
     MethodResultJni();
@@ -108,11 +113,11 @@ public:
     std::string toJson();
 
     void setError(const char* msg) {
-        m_errType = eError;
+        m_resType = typeError;
         m_errMsg = msg;
     }
     void setArgError(const char *msg) {
-        m_errType = eArgError;
+        m_resType = typeArgError;
         m_errMsg = msg;
     }
 };

@@ -142,11 +142,11 @@ describe("Rho common API", function () {
         });
 
         it("it have default() method", function () {
-            expect(typeof Rho.Barcode1.default).toEqual('function');
+            expect(typeof Rho.Barcode1['default']).toEqual('function');
         });
 
         it("can provide default instance via default() method", function () {
-            var defInst = Rho.Barcode1.default();
+            var defInst = Rho.Barcode1['default']();
             expect(defInst.constructor.name).toEqual('Barcode1');
         });
 
@@ -173,7 +173,7 @@ describe("Rho common API", function () {
             var defInstance;
 
             beforeEach(function () {
-                defInstance = Rho.Barcode1.default();
+                defInstance = Rho.Barcode1['default']();
             });
 
             it("can get properties", function () {

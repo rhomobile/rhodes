@@ -2930,6 +2930,239 @@ VALUE rb_s_System_def_getSecurityTokenNotPassed(int argc, VALUE *argv)
 
 
 
+static VALUE _api_generator_System_getWebviewFramework(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getWebviewFramework,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->getWebviewFramework(  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_getWebviewFramework(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_getWebviewFramework(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_getWebviewFramework(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_getWebviewFramework(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_getScreenSleeping(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getScreenSleeping,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->getScreenSleeping(  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_getScreenSleeping(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_getScreenSleeping(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_getScreenSleeping(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_getScreenSleeping(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_setScreenSleeping(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        return oRes.toRuby();
+    }
+    
+
+
+
+
+
+
+    bool arg0;
+    if ( argc > 0 )
+    {
+        if ( rho_ruby_is_boolean(argv[0]) )
+            arg0 = rho_ruby_get_bool(argv[0]) ? true : false;
+        else if (!rho_ruby_is_NIL(argv[0]))
+        {
+            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"boolean" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+        
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setScreenSleeping, arg0,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->setScreenSleeping( arg0,  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_setScreenSleeping(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_setScreenSleeping(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_setScreenSleeping(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_setScreenSleeping(argc, argv, pObj);
+}
+
+
+
 static VALUE _api_generator_System_applicationInstall(int argc, VALUE *argv, rho::ISystem* pObj)
 
 {
@@ -3423,181 +3656,6 @@ VALUE rb_s_System_def_openUrl(int argc, VALUE *argv)
     rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
 
     return _api_generator_System_openUrl(argc, argv, pObj);
-}
-
-
-
-static VALUE _api_generator_System_runApplication(int argc, VALUE *argv, rho::ISystem* pObj)
-
-{
-    rho::apiGenerator::CMethodResult oRes;
-
-
-
-    rho::common::IRhoRunnable* pFunctor = 0;
-    bool bUseCallback = false;
-    int nCallbackArg = 0;
-
-
-
-
-    nCallbackArg = 1;
-
-    
-    if ( argc == 0 )
-    {
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
-        return oRes.toRuby();
-    }
-    
-
-
-    rho::StringW arg0;
-    if ( argc > 0 )
-    {
-        if ( rho_ruby_is_string(argv[0]) )
-        {
-            arg0 = convertToStringW(getStringFromValue(argv[0]));
-
-            oRes.setStringParam(getStringFromValue(argv[0]));
-
-        }
-        else if (!rho_ruby_is_NIL(argv[0]))
-        {
-            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"string" );
-            return oRes.toRuby();
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-    nCallbackArg = 2;
-
-    
-
-
-    rho::StringW arg1;
-    if ( argc > 1 )
-    {
-        if ( rho_ruby_is_string(argv[1]) )
-        {
-            arg1 = convertToStringW(getStringFromValue(argv[1]));
-
-        }
-        else if (!rho_ruby_is_NIL(argv[1]))
-        {
-            oRes.setArgError(L"Type error: argument " L"1" L" should be " L"string" );
-            return oRes.toRuby();
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-    nCallbackArg = 3;
-
-    
-
-
-
-
-
-
-    bool arg2;
-    if ( argc > 2 )
-    {
-        if ( rho_ruby_is_boolean(argv[2]) )
-            arg2 = rho_ruby_get_bool(argv[2]) ? true : false;
-        else if (!rho_ruby_is_NIL(argv[2]))
-        {
-            oRes.setArgError(L"Type error: argument " L"2" L" should be " L"boolean" );
-            return oRes.toRuby();
-        }
-    }
-
-
-
-
-
-
-
-        
-
-
-
-
-    if ( argc > nCallbackArg )
-    {
-
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
-        return oRes.toRuby();
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::ISystem::runApplication, arg0, arg1, arg2,  oRes );
-
-
-
-
-    if ( bUseCallback )
-        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
-    {
-        delete pFunctor;
-
-
-        pObj->runApplication( arg0, arg1, arg2,  oRes );
-
-
-    }
-
-
-    return oRes.toRuby();
-}
-
-
-VALUE rb_System_runApplication(int argc, VALUE *argv, VALUE obj)
-{
-    const char* szID = rho_ruby_get_object_id( obj );
-    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
-
-    return _api_generator_System_runApplication(argc, argv, pObj);
-}
-
-
-
-VALUE rb_s_System_def_runApplication(int argc, VALUE *argv)
-{
-    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
-
-    return _api_generator_System_runApplication(argc, argv, pObj);
 }
 
 
@@ -4762,6 +4820,869 @@ VALUE rb_s_System_def_setWindowPosition(int argc, VALUE *argv)
     rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
 
     return _api_generator_System_setWindowPosition(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_setWindowSize(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
+        return oRes.toRuby();
+    }
+    
+
+
+
+
+    int64 arg0;
+    if ( argc > 0 )
+    {
+        if ( rho_ruby_is_integer(argv[0]) )
+            arg0 = rho_ruby_get_int(argv[0]);
+        else if (!rho_ruby_is_NIL(argv[0]))
+        {
+            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"integer" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    nCallbackArg = 2;
+
+    
+    if ( argc == 1 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
+        return oRes.toRuby();
+    }
+    
+
+
+
+
+    int64 arg1;
+    if ( argc > 1 )
+    {
+        if ( rho_ruby_is_integer(argv[1]) )
+            arg1 = rho_ruby_get_int(argv[1]);
+        else if (!rho_ruby_is_NIL(argv[1]))
+        {
+            oRes.setArgError(L"Type error: argument " L"1" L" should be " L"integer" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::setWindowSize, arg0, arg1,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->setWindowSize( arg0, arg1,  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_setWindowSize(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_setWindowSize(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_setWindowSize(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_setWindowSize(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_bringToFront(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::bringToFront,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->bringToFront(  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_bringToFront(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_bringToFront(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_bringToFront(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_bringToFront(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_replaceCurrentBundle(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::StringW arg0;
+    if ( argc > 0 )
+    {
+        if ( rho_ruby_is_string(argv[0]) )
+        {
+            arg0 = convertToStringW(getStringFromValue(argv[0]));
+
+            oRes.setStringParam(getStringFromValue(argv[0]));
+
+        }
+        else if (!rho_ruby_is_NIL(argv[0]))
+        {
+            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"string" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::replaceCurrentBundle, arg0,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->replaceCurrentBundle( arg0,  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_replaceCurrentBundle(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_replaceCurrentBundle(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_replaceCurrentBundle(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_replaceCurrentBundle(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_deleteFolder(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::StringW arg0;
+    if ( argc > 0 )
+    {
+        if ( rho_ruby_is_string(argv[0]) )
+        {
+            arg0 = convertToStringW(getStringFromValue(argv[0]));
+
+            oRes.setStringParam(getStringFromValue(argv[0]));
+
+        }
+        else if (!rho_ruby_is_NIL(argv[0]))
+        {
+            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"string" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::deleteFolder, arg0,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->deleteFolder( arg0,  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_deleteFolder(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_deleteFolder(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_deleteFolder(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_deleteFolder(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_setDoNotBackupAttribute(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::StringW arg0;
+    if ( argc > 0 )
+    {
+        if ( rho_ruby_is_string(argv[0]) )
+        {
+            arg0 = convertToStringW(getStringFromValue(argv[0]));
+
+            oRes.setStringParam(getStringFromValue(argv[0]));
+
+        }
+        else if (!rho_ruby_is_NIL(argv[0]))
+        {
+            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"string" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setDoNotBackupAttribute, arg0,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->setDoNotBackupAttribute( arg0,  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_setDoNotBackupAttribute(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_setDoNotBackupAttribute(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_setDoNotBackupAttribute(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_setDoNotBackupAttribute(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_isBlobAttr(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::StringW arg0;
+    if ( argc > 0 )
+    {
+        if ( rho_ruby_is_string(argv[0]) )
+        {
+            arg0 = convertToStringW(getStringFromValue(argv[0]));
+
+            oRes.setStringParam(getStringFromValue(argv[0]));
+
+        }
+        else if (!rho_ruby_is_NIL(argv[0]))
+        {
+            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"string" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    nCallbackArg = 2;
+
+    
+    if ( argc == 1 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
+        return oRes.toRuby();
+    }
+    
+
+
+
+
+    int64 arg1;
+    if ( argc > 1 )
+    {
+        if ( rho_ruby_is_integer(argv[1]) )
+            arg1 = rho_ruby_get_int(argv[1]);
+        else if (!rho_ruby_is_NIL(argv[1]))
+        {
+            oRes.setArgError(L"Type error: argument " L"1" L" should be " L"integer" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    nCallbackArg = 3;
+
+    
+    if ( argc == 2 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::StringW arg2;
+    if ( argc > 2 )
+    {
+        if ( rho_ruby_is_string(argv[2]) )
+        {
+            arg2 = convertToStringW(getStringFromValue(argv[2]));
+
+        }
+        else if (!rho_ruby_is_NIL(argv[2]))
+        {
+            oRes.setArgError(L"Type error: argument " L"2" L" should be " L"string" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::ISystem::isBlobAttr, arg0, arg1, arg2,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->isBlobAttr( arg0, arg1, arg2,  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_isBlobAttr(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_isBlobAttr(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_isBlobAttr(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_isBlobAttr(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_updateBlobAttribs(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::StringW arg0;
+    if ( argc > 0 )
+    {
+        if ( rho_ruby_is_string(argv[0]) )
+        {
+            arg0 = convertToStringW(getStringFromValue(argv[0]));
+
+            oRes.setStringParam(getStringFromValue(argv[0]));
+
+        }
+        else if (!rho_ruby_is_NIL(argv[0]))
+        {
+            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"string" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    nCallbackArg = 2;
+
+    
+    if ( argc == 1 )
+    {
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
+        return oRes.toRuby();
+    }
+    
+
+
+
+
+    int64 arg1;
+    if ( argc > 1 )
+    {
+        if ( rho_ruby_is_integer(argv[1]) )
+            arg1 = rho_ruby_get_int(argv[1]);
+        else if (!rho_ruby_is_NIL(argv[1]))
+        {
+            oRes.setArgError(L"Type error: argument " L"1" L" should be " L"integer" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(2) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::updateBlobAttribs, arg0, arg1,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->updateBlobAttribs( arg0, arg1,  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_updateBlobAttribs(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+
+    return _api_generator_System_updateBlobAttribs(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_updateBlobAttribs(int argc, VALUE *argv)
+{
+    rho::StringW strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_updateBlobAttribs(argc, argv, pObj);
 }
 
 
