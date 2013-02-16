@@ -76,11 +76,11 @@ public:
     virtual void isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult);
     virtual void applicationUninstall( const rho::String& applicationName, CMethodResult& oResult);
     virtual void openUrl( const rho::String& url, CMethodResult& oResult);
-    virtual void setRegistrySetting( int64 hive,  int64 type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult);
-    virtual void getRegistrySetting( int64 hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
-    virtual void setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, CMethodResult& oResult);
-    virtual void setWindowPosition( __int64 x,  __int64 y, CMethodResult& oResult);
-    virtual void setWindowSize( int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult);
+    virtual void setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
+    virtual void setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult);
+    virtual void setWindowPosition( int x,  int y, CMethodResult& oResult);
+    virtual void setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult);
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
@@ -570,18 +570,18 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
     }
 }
 
-void CSystemImpl::setRegistrySetting( int64 hive,  int64 type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
 {
     //TODO: setRegistrySetting - copy from RE1
 }
 
-void CSystemImpl::getRegistrySetting( int64 hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
 {
     //TODO: getRegistrySetting - copy from RE1
     oResult.set("");
 }
 
-void CSystemImpl::setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, CMethodResult& oResult)
+void CSystemImpl::setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult)
 {
 #if defined(OS_WINDOWS_DESKTOP)
     rho_sys_set_window_frame( (int)x, (int)y, (int)width, (int)height);
@@ -589,14 +589,14 @@ void CSystemImpl::setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int6
 
 }
 
-void CSystemImpl::setWindowPosition( __int64 x,  __int64 y, CMethodResult& oResult)
+void CSystemImpl::setWindowPosition( int x,  int y, CMethodResult& oResult)
 {
 #if defined(OS_WINDOWS_DESKTOP)
     rho_sys_set_window_position((int)x, (int)y);
 #endif
 }
 
-void CSystemImpl::setWindowSize( int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult)
 {
 #if defined(OS_WINDOWS_DESKTOP)
     rho_sys_set_window_size((int)width, (int)height);

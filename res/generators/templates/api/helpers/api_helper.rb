@@ -23,7 +23,7 @@ def api_generator_cpp_makeNativeType(gen_type)
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
         res = "rho::Hashtable<rho::String, rho::String>"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
-        res = "int64"
+        res = "int"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
         res = "bool"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
@@ -44,7 +44,7 @@ def api_generator_cpp_makeNativeTypeArg(gen_type)
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
         res = "const rho::Hashtable<rho::String, rho::String>&"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
-        res = "int64"
+        res = "int"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
         res = "bool"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
@@ -65,7 +65,7 @@ def api_generator_jni_makeNativeType(gen_type)
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
         res = "rho::Hashtable<rho::String, rho::String>"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
-        res = "int64"
+        res = "int"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
         res = "bool"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE

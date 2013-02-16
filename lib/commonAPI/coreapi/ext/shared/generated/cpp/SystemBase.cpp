@@ -99,12 +99,12 @@ CSystemBase::CSystemBase()
     m_mapPropAccessors["has_sqlite"] = new rho::apiGenerator::CMethodAccessor< ISystem >( &ISystem::getHasSqlite ); 
 
 
-    m_mapPropAccessors["applicationIconBadge"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< int64, int64 >(&ISystem::setApplicationIconBadge) );
+    m_mapPropAccessors["applicationIconBadge"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< int, int >(&ISystem::setApplicationIconBadge) );
     m_mapPropAccessors["httpProxyURI"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< const rho::String&, rho::String >(&ISystem::setHttpProxyURI) );
     m_mapPropAccessors["lockWindowSize"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< bool, bool >(&ISystem::setLockWindowSize) );
     m_mapPropAccessors["showKeyboard"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< bool, bool >(&ISystem::setShowKeyboard) );
     m_mapPropAccessors["fullScreen"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< bool, bool >(&ISystem::setFullScreen) );
-    m_mapPropAccessors["localServerPort"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< int64, int64 >(&ISystem::setLocalServerPort) );
+    m_mapPropAccessors["localServerPort"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< int, int >(&ISystem::setLocalServerPort) );
     m_mapPropAccessors["screenAutoRotate"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< bool, bool >(&ISystem::setScreenAutoRotate) );
     m_mapPropAccessors["screenSleeping"]->addSetter( new rho::apiGenerator::CMethodAccessor< ISystem>::CSetter< bool, bool >(&ISystem::setScreenSleeping) );
 }

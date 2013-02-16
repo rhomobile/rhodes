@@ -1646,7 +1646,7 @@ static VALUE _api_generator_System_setApplicationIconBadge(int argc, VALUE *argv
 
 
 
-    int64 arg0;
+    int arg0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -2491,7 +2491,7 @@ static VALUE _api_generator_System_setLocalServerPort(int argc, VALUE *argv, rho
 
 
 
-    int64 arg0;
+    int arg0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -4496,7 +4496,7 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-    int64 arg0;
+    int arg0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -4534,7 +4534,7 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-    int64 arg1;
+    int arg1;
     if ( argc > 1 )
     {
         if ( rho_ruby_is_integer(argv[1]) )
@@ -4760,7 +4760,7 @@ static VALUE _api_generator_System_getRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-    int64 arg0;
+    int arg0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -4945,7 +4945,7 @@ static VALUE _api_generator_System_setWindowFrame(int argc, VALUE *argv, rho::IS
 
 
 
-    int64 arg0;
+    int arg0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -4983,7 +4983,7 @@ static VALUE _api_generator_System_setWindowFrame(int argc, VALUE *argv, rho::IS
 
 
 
-    int64 arg1;
+    int arg1;
     if ( argc > 1 )
     {
         if ( rho_ruby_is_integer(argv[1]) )
@@ -5021,7 +5021,7 @@ static VALUE _api_generator_System_setWindowFrame(int argc, VALUE *argv, rho::IS
 
 
 
-    int64 arg2;
+    int arg2;
     if ( argc > 2 )
     {
         if ( rho_ruby_is_integer(argv[2]) )
@@ -5059,7 +5059,7 @@ static VALUE _api_generator_System_setWindowFrame(int argc, VALUE *argv, rho::IS
 
 
 
-    int64 arg3;
+    int arg3;
     if ( argc > 3 )
     {
         if ( rho_ruby_is_integer(argv[3]) )
@@ -5162,7 +5162,7 @@ static VALUE _api_generator_System_setWindowPosition(int argc, VALUE *argv, rho:
 
 
 
-    int64 arg0;
+    int arg0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -5200,7 +5200,7 @@ static VALUE _api_generator_System_setWindowPosition(int argc, VALUE *argv, rho:
 
 
 
-    int64 arg1;
+    int arg1;
     if ( argc > 1 )
     {
         if ( rho_ruby_is_integer(argv[1]) )
@@ -5303,7 +5303,7 @@ static VALUE _api_generator_System_setWindowSize(int argc, VALUE *argv, rho::ISy
 
 
 
-    int64 arg0;
+    int arg0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -5341,7 +5341,7 @@ static VALUE _api_generator_System_setWindowSize(int argc, VALUE *argv, rho::ISy
 
 
 
-    int64 arg1;
+    int arg1;
     if ( argc > 1 )
     {
         if ( rho_ruby_is_integer(argv[1]) )
@@ -5914,7 +5914,7 @@ static VALUE _api_generator_System_isBlobAttr(int argc, VALUE *argv, rho::ISyste
 
 
 
-    int64 arg1;
+    int arg1;
     if ( argc > 1 )
     {
         if ( rho_ruby_is_integer(argv[1]) )
@@ -6101,7 +6101,7 @@ static VALUE _api_generator_System_updateBlobAttribs(int argc, VALUE *argv, rho:
 
 
 
-    int64 arg1;
+    int arg1;
     if ( argc > 1 )
     {
         if ( rho_ruby_is_integer(argv[1]) )
@@ -6758,7 +6758,7 @@ static VALUE _api_generator_System_startTimer(int argc, VALUE *argv, rho::ISyste
 
 
 
-    int64 arg0;
+    int arg0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -7088,7 +7088,7 @@ static VALUE _api_generator_System_setNetworkStatusNotify(int argc, VALUE *argv,
 
 
 
-    int64 arg1;
+    int arg1;
     if ( argc > 1 )
     {
         if ( rho_ruby_is_integer(argv[1]) )
@@ -7429,7 +7429,7 @@ static VALUE _api_generator_System_set_application_icon_badge(int argc, VALUE *a
 
 
 
-    int64 arg0;
+    int arg0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
