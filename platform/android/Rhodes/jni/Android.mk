@@ -8,6 +8,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := rhodes
 LOCAL_SRC_FILES := \
     src/RhoClassFactory.cpp \
+    src/JNIRhoJS.cpp \
     src/JNIRhoRuby.cpp \
     src/alert.cpp \
     src/bluetooth.cpp \
@@ -21,6 +22,8 @@ LOCAL_SRC_FILES := \
     src/logger.cpp \
     src/mapview.cpp \
     src/menu.cpp \
+    src/MethodExecutorJni.cpp \
+    src/MethodResultJni.cpp \
     src/nativebar.cpp \
     src/nativeview.cpp \
     src/navbar.cpp \
@@ -49,10 +52,10 @@ LOCAL_C_INCLUDES := \
     $(SHARED_PATH_INC)/sqlite
 
 LOCAL_STATIC_LIBRARIES := \
-	ruby rhorubyext json rhomain rhocommon rhodb rhoconnect rhonet curl sqlite rholog \
-	rhocommon rhonet rhostat rhorubyext unzip \
-	anspush
-	
+	ruby rhorubyext json rhomain rhocommon rhodb rhonet curl sqlite rholog \
+	rhocommon rhonet rhostat rhorubyext sync rhoapi unzip
+
+
 #barcode nfc
 
 LOCAL_LDLIBS := -llog -ldl -lz
@@ -70,7 +73,8 @@ $(call import-module,net)
 $(call import-module,statistic)
 $(call import-module,db)
 $(call import-module,sync)
+$(call import-module,api_generator)
 #$(call import-module,barcode)
 #$(call import-module,nfc)
-$(call import-module,anspush)
+#$(call import-module,rhoconnect-push/ext/rhoconnect-push)
 $(call import-module,unzip)

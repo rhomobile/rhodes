@@ -22,22 +22,22 @@ VALUE getRuby_Process_Module();
 extern "C" static void
 string_iter(const char* szVal, void* par)
 {
-    rho::Vector<rho::StringW>& ar = *((rho::Vector<rho::StringW>*)(par));
-    ar.addElement( convertToStringW(szVal) );
+    rho::Vector<rho::String>& ar = *((rho::Vector<rho::String>*)(par));
+    ar.addElement( szVal );
 }
 
-static void getStringArrayFromValue(VALUE val, rho::Vector<rho::StringW>& res)
+static void getStringArrayFromValue(VALUE val, rho::Vector<rho::String>& res)
 {
     rho_ruby_enum_strary(val, string_iter, &res);
 }
 
 extern "C" static void hash_eachstr(const char* szName, const char* szVal, void* par)
 {
-    rho::Hashtable<rho::StringW, rho::StringW>& hash = *((rho::Hashtable<rho::StringW, rho::StringW>*)(par));
-    hash.put( convertToStringW(szName), convertToStringW(szVal) );
+    rho::Hashtable<rho::String, rho::String>& hash = *((rho::Hashtable<rho::String, rho::String>*)(par));
+    hash.put( szName, szVal );
 }
 
-static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::StringW, rho::StringW>& res)
+static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::String, rho::String>& res)
 {
     rho_ruby_enum_strhash(val, hash_eachstr, &res);
 }
@@ -65,25 +65,25 @@ VALUE rb_s_Process_runApplication(int argc, VALUE *argv)
     
     if ( argc == 0 )
     {
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toRuby();
     }
     
 
 
-    rho::StringW arg0;
+    rho::String arg0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_string(argv[0]) )
         {
-            arg0 = convertToStringW(getStringFromValue(argv[0]));
+            arg0 = getStringFromValue(argv[0]);
 
             oRes.setStringParam(getStringFromValue(argv[0]));
 
         }
         else if (!rho_ruby_is_NIL(argv[0]))
         {
-            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"string" );
+            oRes.setArgError("Type error: argument " "0" " should be " "string" );
             return oRes.toRuby();
         }
     }
@@ -108,17 +108,17 @@ VALUE rb_s_Process_runApplication(int argc, VALUE *argv)
     
 
 
-    rho::StringW arg1;
+    rho::String arg1;
     if ( argc > 1 )
     {
         if ( rho_ruby_is_string(argv[1]) )
         {
-            arg1 = convertToStringW(getStringFromValue(argv[1]));
+            arg1 = getStringFromValue(argv[1]);
 
         }
         else if (!rho_ruby_is_NIL(argv[1]))
         {
-            oRes.setArgError(L"Type error: argument " L"1" L" should be " L"string" );
+            oRes.setArgError("Type error: argument " "1" " should be " "string" );
             return oRes.toRuby();
         }
     }
@@ -154,7 +154,7 @@ VALUE rb_s_Process_runApplication(int argc, VALUE *argv)
             arg2 = rho_ruby_get_bool(argv[2]) ? true : false;
         else if (!rho_ruby_is_NIL(argv[2]))
         {
-            oRes.setArgError(L"Type error: argument " L"2" L" should be " L"boolean" );
+            oRes.setArgError("Type error: argument " "2" " should be " "boolean" );
             return oRes.toRuby();
         }
     }
@@ -173,7 +173,7 @@ VALUE rb_s_Process_runApplication(int argc, VALUE *argv)
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(3) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toRuby();
 
     }
@@ -222,7 +222,7 @@ static VALUE _api_generator_Process_waitForApplication(int argc, VALUE *argv, rh
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
 
     }
@@ -253,7 +253,7 @@ static VALUE _api_generator_Process_waitForApplication(int argc, VALUE *argv, rh
 VALUE rb_Process_waitForApplication(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
-    rho::system::IProcess* pObj =  rho::system::CProcessFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+    rho::system::IProcess* pObj =  rho::system::CProcessFactoryBase::getInstance()->getModuleByID(szID);
 
     return _api_generator_Process_waitForApplication(argc, argv, pObj);
 }
@@ -279,7 +279,7 @@ static VALUE _api_generator_Process_closeHandle(int argc, VALUE *argv, rho::syst
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
 
     }
@@ -310,7 +310,7 @@ static VALUE _api_generator_Process_closeHandle(int argc, VALUE *argv, rho::syst
 VALUE rb_Process_closeHandle(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
-    rho::system::IProcess* pObj =  rho::system::CProcessFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+    rho::system::IProcess* pObj =  rho::system::CProcessFactoryBase::getInstance()->getModuleByID(szID);
 
     return _api_generator_Process_closeHandle(argc, argv, pObj);
 }
@@ -336,7 +336,7 @@ static VALUE _api_generator_Process_getProcessExitCode(int argc, VALUE *argv, rh
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(0) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
 
     }
@@ -367,7 +367,7 @@ static VALUE _api_generator_Process_getProcessExitCode(int argc, VALUE *argv, rh
 VALUE rb_Process_getProcessExitCode(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
-    rho::system::IProcess* pObj =  rho::system::CProcessFactoryBase::getInstance()->getModuleByID(convertToStringW(szID));
+    rho::system::IProcess* pObj =  rho::system::CProcessFactoryBase::getInstance()->getModuleByID(szID);
 
     return _api_generator_Process_getProcessExitCode(argc, argv, pObj);
 }

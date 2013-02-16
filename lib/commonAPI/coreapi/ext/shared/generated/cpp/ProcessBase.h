@@ -11,7 +11,7 @@ class CProcessFactoryBase : public CModuleFactoryBase<IProcess, IProcessSingleto
 {
 protected:
     static rho::common::CAutoPtr<CProcessFactoryBase> m_pInstance;
-    Hashtable<rho::StringW,IProcess*> m_hashModules;
+    Hashtable<rho::String,IProcess*> m_hashModules;
 
 public:
 
@@ -20,7 +20,7 @@ public:
 
     static IProcessSingleton* getProcessSingletonS(){ return getInstance()->getModuleSingleton(); }
 
-    virtual IProcess* getModuleByID(const rho::StringW& strID)
+    virtual IProcess* getModuleByID(const rho::String& strID)
     {
         if ( !m_hashModules.containsKey(strID) )
         {
@@ -33,7 +33,7 @@ public:
         return m_hashModules[strID];
     }
 
-    virtual IProcess* createModuleByID(const rho::StringW& strID){ return (IProcess*)0; };
+    virtual IProcess* createModuleByID(const rho::String& strID){ return (IProcess*)0; };
 
 };
 

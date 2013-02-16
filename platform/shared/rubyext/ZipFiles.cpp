@@ -20,7 +20,7 @@ using namespace rho::common;
 
 extern "C"
 {		
-	int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, void* ptrFilesArray, const char* psw)
+	int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw)
 	{
 		ZRESULT res;
 		HZIP hz = 0;
@@ -33,8 +33,6 @@ extern "C"
 		
 		if ( !hz )
 			return -1;
-		
-		rho::Vector<rho::String>& arFiles = *reinterpret_cast<rho::Vector<rho::String>*>(ptrFilesArray);
 		
 		for ( int i = 0; i < (int)arFiles.size(); i++ )
 		{

@@ -27,7 +27,7 @@ rho::String CMethodResult::toJSON()
             if ( i > 0 )
                 strRes += ",";
 
-            strRes += CJSONEntry::quoteValueW(m_arStrRes[i]);
+            strRes += CJSONEntry::quoteValue(m_arStrRes[i]);
         }
         
         strRes += "]";
@@ -35,18 +35,21 @@ rho::String CMethodResult::toJSON()
     {
         strRes = "{";
 
-        for ( rho::Hashtable<rho::StringW, rho::StringW>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
+        for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
         {
             if ( it != m_hashStrRes.begin() )
                 strRes += ",";
 
-            strRes += CJSONEntry::quoteValueW(it->first) + ":" + CJSONEntry::quoteValueW(it->second);
+            strRes += CJSONEntry::quoteValue(it->first) + ":" + CJSONEntry::quoteValue(it->second);
         }
 
         strRes += "}";
     }else if ( m_ResType == eString)
     {
-        strRes = "{'_RhoValue':" + convertToStringA(m_strRes) + "}";
+        strRes = "{'_RhoValue':" + m_strRes + "}";
+    }else if ( m_ResType == eStringW)
+    {
+        strRes = "{'_RhoValue':" + convertToStringA(m_strResW) + "}";
     }else if ( m_ResType == eBool)
     {
         strRes = "{'_RhoValue':" + convertToStringA(m_bRes?1:0) + "}";
@@ -58,10 +61,10 @@ rho::String CMethodResult::toJSON()
         strRes = "{'_RhoValue':" + convertToStringA(m_dRes) + "}";
     }else if ( m_ResType == eArgError )
     {
-        strRes = "{'_RhoArgError':" + CJSONEntry::quoteValueW(m_strError) + "}";
+        strRes = "{'_RhoArgError':" + CJSONEntry::quoteValue(m_strError) + "}";
     }else if ( m_ResType == eError)
     {
-        strRes = "{'_RhoRuntimeError':" + CJSONEntry::quoteValueW(m_strError) + "}";
+        strRes = "{'_RhoRuntimeError':" + CJSONEntry::quoteValue(m_strError) + "}";
     }
 
     return strRes;
@@ -70,7 +73,7 @@ rho::String CMethodResult::toJSON()
 rho::String CMethodResult::toString()
 {
     if ( m_ResType == eString)
-        return convertToStringA(m_strRes);
+        return m_strRes;
     else if ( m_ResType == eBool)
         return convertToStringA(m_bRes?1:0);
     else if ( m_ResType == eInt)
@@ -91,9 +94,9 @@ VALUE CMethodResult::toRuby()
         {
             VALUE valObj = 0;
             if ( m_oRubyObjectClass )
-                valObj = rho_ruby_create_object_with_id( m_oRubyObjectClass, convertToStringA(m_arStrRes[i]).c_str() );
+                valObj = rho_ruby_create_object_with_id( m_oRubyObjectClass, m_arStrRes[i].c_str() );
             else
-                valObj = rho_ruby_create_string( convertToStringA(m_arStrRes[i]).c_str() );
+                valObj = rho_ruby_create_string( m_arStrRes[i].c_str() );
             
             rho_ruby_add_to_array( valArray, valObj );
         }
@@ -103,9 +106,9 @@ VALUE CMethodResult::toRuby()
     {
         CHoldRubyValue valHash(rho_ruby_createHash());
 
-        for ( rho::Hashtable<rho::StringW, rho::StringW>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
+        for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
         {
-            addStrToHash( valHash, convertToStringA(it->first).c_str(), convertToStringA(it->second).c_str() );
+            addStrToHash( valHash, it->first.c_str(), it->second.c_str() );
         }
 
         return valHash;
@@ -113,9 +116,18 @@ VALUE CMethodResult::toRuby()
     {
         VALUE valObj = 0;
         if ( m_oRubyObjectClass )
-            valObj = rho_ruby_create_object_with_id( m_oRubyObjectClass, convertToStringA(m_strRes).c_str() );
+            valObj = rho_ruby_create_object_with_id( m_oRubyObjectClass, m_strRes.c_str() );
         else
-            valObj = rho_ruby_create_string( convertToStringA(m_strRes).c_str() );
+            valObj = rho_ruby_create_string( m_strRes.c_str() );
+
+        return valObj;
+    }else if ( m_ResType == eStringW)
+    {
+        VALUE valObj = 0;
+        if ( m_oRubyObjectClass )
+            valObj = rho_ruby_create_object_with_id( m_oRubyObjectClass, convertToStringA(m_strResW).c_str() );
+        else
+            valObj = rho_ruby_create_string( convertToStringA(m_strResW).c_str() );
 
         return valObj;
     }else if ( m_ResType == eBool)
@@ -129,10 +141,10 @@ VALUE CMethodResult::toRuby()
         return rho_ruby_create_double(m_dRes ? 1 : 0);
     }else if ( m_ResType == eArgError)
     {
-        rho_ruby_raise_argerror( convertToStringA(m_strError).c_str());
+        rho_ruby_raise_argerror( m_strError.c_str());
     }else if ( m_ResType == eError)
     {
-        rho_ruby_raise_runtime( convertToStringA(m_strError).c_str());
+        rho_ruby_raise_runtime( m_strError.c_str());
     }
 
     return rho_ruby_get_NIL();
@@ -187,8 +199,13 @@ void CMethodResult::convertStringParamToHash()
 {
     if ( m_ResType == eString )
     {
-        rho::Hashtable<rho::StringW, rho::StringW> resHash;
-        resHash.put( convertToStringW(m_strStringParam), m_strRes);
+        rho::Hashtable<rho::String, rho::String> resHash;
+        resHash.put( m_strStringParam, m_strRes);
+        m_hashStrRes = resHash; m_ResType = eStringHash;
+    }else  if ( m_ResType == eStringW )
+    {
+        rho::Hashtable<rho::String, rho::String> resHash;
+        resHash.put( m_strStringParam, convertToStringA(m_strResW));
         m_hashStrRes = resHash; m_ResType = eStringHash;
     }
 }
