@@ -4488,30 +4488,25 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
     
     if ( argc == 0 )
     {
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
         return oRes.toRuby();
     }
     
 
 
-    rho::String arg0;
+
+
+    int64 arg0;
     if ( argc > 0 )
     {
-        if ( rho_ruby_is_string(argv[0]) )
-        {
-            arg0 = getStringFromValue(argv[0]);
-
-            oRes.setStringParam(getStringFromValue(argv[0]));
-
-        }
+        if ( rho_ruby_is_integer(argv[0]) )
+            arg0 = rho_ruby_get_int(argv[0]);
         else if (!rho_ruby_is_NIL(argv[0]))
         {
-            oRes.setArgError("Type error: argument " "0" " should be " "string" );
+            oRes.setArgError("Type error: argument " "0" " should be " "integer" );
             return oRes.toRuby();
         }
     }
-
-
 
 
 
@@ -4531,23 +4526,143 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
     
     if ( argc == 1 )
     {
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
         return oRes.toRuby();
     }
     
 
 
-    rho::String arg1;
+
+
+    int64 arg1;
     if ( argc > 1 )
     {
-        if ( rho_ruby_is_string(argv[1]) )
-        {
-            arg1 = getStringFromValue(argv[1]);
-
-        }
+        if ( rho_ruby_is_integer(argv[1]) )
+            arg1 = rho_ruby_get_int(argv[1]);
         else if (!rho_ruby_is_NIL(argv[1]))
         {
-            oRes.setArgError("Type error: argument " "1" " should be " "string" );
+            oRes.setArgError("Type error: argument " "1" " should be " "integer" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    nCallbackArg = 3;
+
+    
+    if ( argc == 2 )
+    {
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::String arg2;
+    if ( argc > 2 )
+    {
+        if ( rho_ruby_is_string(argv[2]) )
+        {
+            arg2 = getStringFromValue(argv[2]);
+
+        }
+        else if (!rho_ruby_is_NIL(argv[2]))
+        {
+            oRes.setArgError("Type error: argument " "2" " should be " "string" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    nCallbackArg = 4;
+
+    
+    if ( argc == 3 )
+    {
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::String arg3;
+    if ( argc > 3 )
+    {
+        if ( rho_ruby_is_string(argv[3]) )
+        {
+            arg3 = getStringFromValue(argv[3]);
+
+        }
+        else if (!rho_ruby_is_NIL(argv[3]))
+        {
+            oRes.setArgError("Type error: argument " "3" " should be " "string" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    nCallbackArg = 5;
+
+    
+    if ( argc == 4 )
+    {
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::String arg4;
+    if ( argc > 4 )
+    {
+        if ( rho_ruby_is_string(argv[4]) )
+        {
+            arg4 = getStringFromValue(argv[4]);
+
+        }
+        else if (!rho_ruby_is_NIL(argv[4]))
+        {
+            oRes.setArgError("Type error: argument " "4" " should be " "string" );
             return oRes.toRuby();
         }
     }
@@ -4570,13 +4685,13 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
         return oRes.toRuby();
 
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::setRegistrySetting, arg0, arg1,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor6( pObj, &rho::ISystem::setRegistrySetting, arg0, arg1, arg2, arg3, arg4,  oRes );
 
 
 
@@ -4588,7 +4703,7 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
         delete pFunctor;
 
 
-        pObj->setRegistrySetting( arg0, arg1,  oRes );
+        pObj->setRegistrySetting( arg0, arg1, arg2, arg3, arg4,  oRes );
 
 
     }
@@ -4637,25 +4752,102 @@ static VALUE _api_generator_System_getRegistrySetting(int argc, VALUE *argv, rho
     
     if ( argc == 0 )
     {
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toRuby();
     }
     
 
 
-    rho::String arg0;
+
+
+    int64 arg0;
     if ( argc > 0 )
     {
-        if ( rho_ruby_is_string(argv[0]) )
-        {
-            arg0 = getStringFromValue(argv[0]);
-
-            oRes.setStringParam(getStringFromValue(argv[0]));
-
-        }
+        if ( rho_ruby_is_integer(argv[0]) )
+            arg0 = rho_ruby_get_int(argv[0]);
         else if (!rho_ruby_is_NIL(argv[0]))
         {
-            oRes.setArgError("Type error: argument " "0" " should be " "string" );
+            oRes.setArgError("Type error: argument " "0" " should be " "integer" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    nCallbackArg = 2;
+
+    
+    if ( argc == 1 )
+    {
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::String arg1;
+    if ( argc > 1 )
+    {
+        if ( rho_ruby_is_string(argv[1]) )
+        {
+            arg1 = getStringFromValue(argv[1]);
+
+        }
+        else if (!rho_ruby_is_NIL(argv[1]))
+        {
+            oRes.setArgError("Type error: argument " "1" " should be " "string" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    nCallbackArg = 3;
+
+    
+    if ( argc == 2 )
+    {
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
+        return oRes.toRuby();
+    }
+    
+
+
+    rho::String arg2;
+    if ( argc > 2 )
+    {
+        if ( rho_ruby_is_string(argv[2]) )
+        {
+            arg2 = getStringFromValue(argv[2]);
+
+        }
+        else if (!rho_ruby_is_NIL(argv[2]))
+        {
+            oRes.setArgError("Type error: argument " "2" " should be " "string" );
             return oRes.toRuby();
         }
     }
@@ -4678,13 +4870,13 @@ static VALUE _api_generator_System_getRegistrySetting(int argc, VALUE *argv, rho
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toRuby();
 
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::getRegistrySetting, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::ISystem::getRegistrySetting, arg0, arg1, arg2,  oRes );
 
 
 
@@ -4696,7 +4888,7 @@ static VALUE _api_generator_System_getRegistrySetting(int argc, VALUE *argv, rho
         delete pFunctor;
 
 
-        pObj->getRegistrySetting( arg0,  oRes );
+        pObj->getRegistrySetting( arg0, arg1, arg2,  oRes );
 
 
     }
@@ -7206,6 +7398,109 @@ VALUE rb_s_System_def_unset_http_proxy(int argc, VALUE *argv)
     rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
 
     return _api_generator_System_unset_http_proxy(argc, argv, pObj);
+}
+
+
+
+static VALUE _api_generator_System_set_application_icon_badge(int argc, VALUE *argv, rho::ISystem* pObj)
+
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int nCallbackArg = 0;
+
+
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
+        return oRes.toRuby();
+    }
+    
+
+
+
+
+    int64 arg0;
+    if ( argc > 0 )
+    {
+        if ( rho_ruby_is_integer(argv[0]) )
+            arg0 = rho_ruby_get_int(argv[0]);
+        else if (!rho_ruby_is_NIL(argv[0]))
+        {
+            oRes.setArgError("Type error: argument " "0" " should be " "integer" );
+            return oRes.toRuby();
+        }
+    }
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
+        return oRes.toRuby();
+
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::set_application_icon_badge, arg0,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->set_application_icon_badge( arg0,  oRes );
+
+
+    }
+
+
+    return oRes.toRuby();
+}
+
+
+VALUE rb_System_set_application_icon_badge(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    rho::ISystem* pObj =  rho::CSystemFactoryBase::getInstance()->getModuleByID(szID);
+
+    return _api_generator_System_set_application_icon_badge(argc, argv, pObj);
+}
+
+
+
+VALUE rb_s_System_def_set_application_icon_badge(int argc, VALUE *argv)
+{
+    rho::String strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strDefaultID);
+
+    return _api_generator_System_set_application_icon_badge(argc, argv, pObj);
 }
 
 

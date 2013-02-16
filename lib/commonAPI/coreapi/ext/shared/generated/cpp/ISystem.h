@@ -77,8 +77,8 @@ struct ISystem
     virtual void unzipFile( const rho::String& localPathToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void zipFile( const rho::String& localPathToZip,  const rho::String& localPathToFile,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void zipFiles( const rho::String& localPathToZip,  const rho::String& basePath,  const rho::Vector<rho::String>& filePathsToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setRegistrySetting( const rho::String& keyPath,  const rho::String& keyValue, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void getRegistrySetting( const rho::String& keyPath, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setRegistrySetting( int64 hive,  int64 type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getRegistrySetting( int64 hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setWindowFrame( int64 x,  int64 y,  int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setWindowPosition( int64 x,  int64 y, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setWindowSize( int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -99,6 +99,7 @@ struct ISystem
     virtual void clearNetworkStatusNotify(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void set_application_icon_badge( int64 badgeNumber, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getProperty( const rho::String& propertyName, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getProperties( const rho::Vector<rho::String>& arrayofNames, rho::apiGenerator::CMethodResult& oResult) = 0;

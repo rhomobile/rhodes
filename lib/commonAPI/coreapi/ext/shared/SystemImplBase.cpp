@@ -173,6 +173,35 @@ void CSystemImplBase::getHasSqlite(rho::apiGenerator::CMethodResult& oResult)
     oResult.set(true);
 }
 
+void CSystemImplBase::getRealScreenWidth(CMethodResult& oResult)
+{
+    getScreenWidth(oResult);
+}
+
+void CSystemImplBase::getRealScreenHeight(CMethodResult& oResult)
+{
+    getScreenHeight(oResult);
+}
+
+void CSystemImplBase::getDeviceOwnerEmail(CMethodResult& oResult)
+{
+    oResult.set("");
+}
+
+void CSystemImplBase::getDeviceOwnerName(CMethodResult& oResult)
+{
+    oResult.set("");
+}
+
+void CSystemImplBase::getApplicationIconBadge(CMethodResult& oResult)
+{
+    oResult.set(0);
+}
+
+void CSystemImplBase::setApplicationIconBadge( __int64 value, CMethodResult& oResult)
+{
+}
+
 void CSystemImplBase::getStartParams(rho::apiGenerator::CMethodResult& oResult)
 {
     oResult.set( RHODESAPP().getStartParameters() );
@@ -257,14 +286,15 @@ void CSystemImplBase::setDoNotBackupAttribute( const rho::String& pathToFile, rh
     //iOS only
 }
 
-void CSystemImplBase::setRegistrySetting( const rho::String& keyPath,  const rho::String& keyValue, CMethodResult& oResult)
+void CSystemImplBase::setRegistrySetting( int64 hive,  int64 type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
 {
     //Windows only
 }
 
-void CSystemImplBase::getRegistrySetting( const rho::String& keyPath, CMethodResult& oResult)
+void CSystemImplBase::getRegistrySetting( int64 hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
 {
     //Windows only
+    oResult.set("");
 }
 
 //TODO: move to Database
@@ -339,6 +369,11 @@ void CSystemImplBase::exit(rho::apiGenerator::CMethodResult& oResult)
 void CSystemImplBase::set_sleeping( bool enable, rho::apiGenerator::CMethodResult& oResult)
 {
     setScreenSleeping(enable, oResult);
+}
+
+void CSystemImplBase::set_application_icon_badge( int64 badgeNumber, rho::apiGenerator::CMethodResult& oResult)
+{
+    setApplicationIconBadge(badgeNumber, oResult);
 }
 
 void CSystemImplBase::startTimer( int64 interval,  const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult)

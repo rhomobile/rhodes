@@ -45,13 +45,9 @@ public:
 
     virtual void getScreenWidth(CMethodResult& oResult);
     virtual void getScreenHeight(CMethodResult& oResult);
-    virtual void getRealScreenWidth(CMethodResult& oResult);
-    virtual void getRealScreenHeight(CMethodResult& oResult);
     virtual void getScreenOrientation(CMethodResult& oResult);
     virtual void getPpiX(CMethodResult& oResult);
     virtual void getPpiY(CMethodResult& oResult);
-    virtual void getDeviceOwnerEmail(CMethodResult& oResult);
-    virtual void getDeviceOwnerName(CMethodResult& oResult);
     virtual void getPhoneId(CMethodResult& oResult);
     virtual void getDeviceName(CMethodResult& oResult);
     virtual void getOsVersion(CMethodResult& oResult);
@@ -62,8 +58,6 @@ public:
     virtual void getHasCalendar(CMethodResult& oResult);
     virtual void getOemInfo(CMethodResult& oResult);
     virtual void getUuid(CMethodResult& oResult);
-    virtual void getApplicationIconBadge(CMethodResult& oResult);
-    virtual void setApplicationIconBadge( __int64 value, CMethodResult& oResult);
     virtual void getHttpProxyURI(CMethodResult& oResult);
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
@@ -82,8 +76,8 @@ public:
     virtual void isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult);
     virtual void applicationUninstall( const rho::String& applicationName, CMethodResult& oResult);
     virtual void openUrl( const rho::String& url, CMethodResult& oResult);
-    virtual void setRegistrySetting( const rho::String& keyPath,  const rho::String& keyValue, CMethodResult& oResult);
-    virtual void getRegistrySetting( const rho::String& keyPath, CMethodResult& oResult);
+    virtual void setRegistrySetting( int64 hive,  int64 type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getRegistrySetting( int64 hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
     virtual void setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, CMethodResult& oResult);
     virtual void setWindowPosition( __int64 x,  __int64 y, CMethodResult& oResult);
     virtual void setWindowSize( int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult);
@@ -150,8 +144,6 @@ void CSystemImpl::getScreenHeight(CMethodResult& oResult)
     oResult.set(rho_sys_get_screen_height());
 }
 
-void CSystemImpl::getRealScreenWidth(CMethodResult& oResult){}
-void CSystemImpl::getRealScreenHeight(CMethodResult& oResult){}
 void CSystemImpl::getScreenOrientation(CMethodResult& oResult)
 {
     if (rho_sys_get_screen_width() <= rho_sys_get_screen_height()) 
@@ -181,9 +173,6 @@ void CSystemImpl::getPpiY(CMethodResult& oResult)
 
     oResult.set(ret);
 }
-
-void CSystemImpl::getDeviceOwnerEmail(CMethodResult& oResult){}
-void CSystemImpl::getDeviceOwnerName(CMethodResult& oResult){}
 
 static void _toHexString(int i, String& strRes, int radix)
 {
@@ -307,12 +296,16 @@ void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
 #endif
 }
 
-void CSystemImpl::getOemInfo(CMethodResult& oResult){}
-void CSystemImpl::getUuid(CMethodResult& oResult){}
-void CSystemImpl::getApplicationIconBadge(CMethodResult& oResult){}
-void CSystemImpl::setApplicationIconBadge( __int64 value, CMethodResult& oResult){}
-void CSystemImpl::getHttpProxyURI(CMethodResult& oResult){}
-void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oResult){}
+void CSystemImpl::getOemInfo(CMethodResult& oResult)
+{
+    //TODO: getOemInfo - copy from RE1
+}
+
+void CSystemImpl::getUuid(CMethodResult& oResult)
+{
+    //TODO: getUuid - copy from RE1
+}
+
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
 
 void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult)
@@ -322,13 +315,39 @@ void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult)
 #endif
 }
 
-void CSystemImpl::getShowKeyboard(CMethodResult& oResult){}
-void CSystemImpl::setShowKeyboard( bool value, CMethodResult& oResult){}
-void CSystemImpl::getFullScreen(CMethodResult& oResult){}
-void CSystemImpl::setFullScreen( bool value, CMethodResult& oResult){}
+void CSystemImpl::getShowKeyboard(CMethodResult& oResult)
+{
+    //TODO: getShowKeyboard
+}
 
-void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult){}
-void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult){}
+void CSystemImpl::setShowKeyboard( bool value, CMethodResult& oResult)
+{
+    //TODO: setShowKeyboard
+}
+
+extern "C" void rho_wmsys_set_full_screen( int nFull );
+extern "C" int rho_wmsys_get_full_screen();
+void CSystemImpl::getFullScreen(CMethodResult& oResult)
+{
+    oResult.set(rho_wmsys_get_full_screen() != 0 ? true : false );
+}
+
+void CSystemImpl::setFullScreen( bool value, CMethodResult& oResult)
+{
+    rho_wmsys_set_full_screen( value ? 1 : 0 );
+}
+
+void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult)
+{
+    oResult.set(true);
+}
+
+void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult)
+{
+    //TODO:setScreenAutoRotate
+    //HKLM\System\GDI\Rotation\
+    //HKCU\Software\HTC\HTCSensor\Gsensor:AutoRotation = 0 
+}
 
 extern "C" int rho_wmsys_has_touchscreen()
 {
@@ -367,10 +386,13 @@ void CSystemImpl::getHasTouchscreen(CMethodResult& oResult)
 
 void CSystemImpl::getScreenSleeping(rho::apiGenerator::CMethodResult& oResult)
 {
+    oResult.set(true);
 }
 
 void CSystemImpl::setScreenSleeping( bool value, rho::apiGenerator::CMethodResult& oResult)
 {
+    //TODO: setScreenSleeping
+    // http://stackoverflow.com/questions/246407/disable-sleep-mode-in-windows-mobile-6
 }
 
 void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethodResult& oResult)
@@ -548,8 +570,16 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
     }
 }
 
-void CSystemImpl::setRegistrySetting( const rho::String& keyPath,  const rho::String& keyValue, CMethodResult& oResult){}
-void CSystemImpl::getRegistrySetting( const rho::String& keyPath, CMethodResult& oResult){}
+void CSystemImpl::setRegistrySetting( int64 hive,  int64 type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
+{
+    //TODO: setRegistrySetting - copy from RE1
+}
+
+void CSystemImpl::getRegistrySetting( int64 hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
+{
+    //TODO: getRegistrySetting - copy from RE1
+    oResult.set("");
+}
 
 void CSystemImpl::setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, CMethodResult& oResult)
 {
@@ -604,6 +634,20 @@ extern "C" void rho_sys_unset_http_proxy();
 void CSystemImpl::unset_http_proxy(rho::apiGenerator::CMethodResult& oResult)
 {
     rho_sys_unset_http_proxy();
+}
+
+extern "C" const char* rho_sys_get_http_proxy_url();
+void CSystemImpl::getHttpProxyURI(CMethodResult& oResult)
+{
+    oResult.set(rho_sys_get_http_proxy_url());
+}
+
+void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oResult)
+{
+    if ( value.length() )
+        rho_sys_set_http_proxy_url( value.c_str() );
+    else
+        rho_sys_unset_http_proxy();
 }
 
 ////////////////////////////////////////////////////////////////////////
