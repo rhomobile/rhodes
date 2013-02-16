@@ -307,7 +307,7 @@ public:
     {
         if ( containsKey(key) )
         {
-            std::map<TKEY,TVALUE>::const_iterator it = std::map<TKEY,TVALUE>::find(key);
+            typename std::map<TKEY,TVALUE>::const_iterator it = std::map<TKEY,TVALUE>::find(key);
             return (*it).first;
         }
 
