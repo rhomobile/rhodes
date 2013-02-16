@@ -4482,30 +4482,25 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
     
     if ( argc == 0 )
     {
-        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
         return oRes.toJSON();
     }
     
 
 
-    rho::String arg0;
+
+
+    int64 arg0;
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
-        {
-            arg0 = argv[0].getString();
-
-            oRes.setStringParam(argv[0].getString());
-
-        }
+            arg0 = argv[0].getInt();
         else if (!argv[0].isNull())
         {
-            oRes.setArgError( "Type error: argument " "0" " should be " "string" );
+            oRes.setArgError("Type error: argument " "0" " should be " "integer" );
             return oRes.toJSON();
         }
     }
-
-
 
 
 
@@ -4524,7 +4519,267 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
     
     if ( argc == 1 )
     {
-        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
+        return oRes.toJSON();
+    }
+    
+
+
+
+
+    int64 arg1;
+    if ( argc > 1 )
+    {
+        if ( argv[1].isString() )
+            arg1 = argv[1].getInt();
+        else if (!argv[1].isNull())
+        {
+            oRes.setArgError("Type error: argument " "1" " should be " "integer" );
+            return oRes.toJSON();
+        }
+    }
+
+
+
+
+
+
+
+
+
+        
+
+
+
+    nCallbackArg = 3;
+
+    
+    if ( argc == 2 )
+    {
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
+        return oRes.toJSON();
+    }
+    
+
+
+    rho::String arg2;
+    if ( argc > 2 )
+    {
+        if ( argv[2].isString() )
+        {
+            arg2 = argv[2].getString();
+
+        }
+        else if (!argv[2].isNull())
+        {
+            oRes.setArgError( "Type error: argument " "2" " should be " "string" );
+            return oRes.toJSON();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+    nCallbackArg = 4;
+
+    
+    if ( argc == 3 )
+    {
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
+        return oRes.toJSON();
+    }
+    
+
+
+    rho::String arg3;
+    if ( argc > 3 )
+    {
+        if ( argv[3].isString() )
+        {
+            arg3 = argv[3].getString();
+
+        }
+        else if (!argv[3].isNull())
+        {
+            oRes.setArgError( "Type error: argument " "3" " should be " "string" );
+            return oRes.toJSON();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+    nCallbackArg = 5;
+
+    
+    if ( argc == 4 )
+    {
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
+        return oRes.toJSON();
+    }
+    
+
+
+    rho::String arg4;
+    if ( argc > 4 )
+    {
+        if ( argv[4].isString() )
+        {
+            arg4 = argv[4].getString();
+
+        }
+        else if (!argv[4].isNull())
+        {
+            oRes.setArgError( "Type error: argument " "4" " should be " "string" );
+            return oRes.toJSON();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
+        return oRes.toJSON();
+
+        
+        if ( !argv[nCallbackArg].isString() )
+        {
+            oRes.setArgError("Type error: callback should be String");
+            return oRes.toJSON();
+        }
+
+        oRes.setCallInUIThread(false);
+        oRes.setRubyCallback( argv[nCallbackArg].getString() );
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !argv[nCallbackArg + 1].isString() )
+            {
+                oRes.setArgError("Type error: callback parameter should be String");
+                return oRes.toJSON();
+            }
+
+            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
+        }
+        
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor6( pObj, &rho::ISystem::setRegistrySetting, arg0, arg1, arg2, arg3, arg4,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->setRegistrySetting( arg0, arg1, arg2, arg3, arg4,  oRes );
+
+
+    }
+
+
+    return oRes.toJSON();
+
+}
+
+
+rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int argc = argv.getSize();
+    int nCallbackArg = 0;
+
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
+
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
+        return oRes.toJSON();
+    }
+    
+
+
+
+
+    int64 arg0;
+    if ( argc > 0 )
+    {
+        if ( argv[0].isString() )
+            arg0 = argv[0].getInt();
+        else if (!argv[0].isNull())
+        {
+            oRes.setArgError("Type error: argument " "0" " should be " "integer" );
+            return oRes.toJSON();
+        }
+    }
+
+
+
+
+
+
+
+
+
+        
+
+
+
+    nCallbackArg = 2;
+
+    
+    if ( argc == 1 )
+    {
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
     }
     
@@ -4559,11 +4814,51 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
+    nCallbackArg = 3;
+
+    
+    if ( argc == 2 )
+    {
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
+        return oRes.toJSON();
+    }
+    
+
+
+    rho::String arg2;
+    if ( argc > 2 )
+    {
+        if ( argv[2].isString() )
+        {
+            arg2 = argv[2].getString();
+
+        }
+        else if (!argv[2].isNull())
+        {
+            oRes.setArgError( "Type error: argument " "2" " should be " "string" );
+            return oRes.toJSON();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
 
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
 
         
@@ -4589,7 +4884,7 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::setRegistrySetting, arg0, arg1,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::ISystem::getRegistrySetting, arg0, arg1, arg2,  oRes );
 
 
 
@@ -4601,115 +4896,7 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
         delete pFunctor;
 
 
-        pObj->setRegistrySetting( arg0, arg1,  oRes );
-
-
-    }
-
-
-    return oRes.toJSON();
-
-}
-
-
-rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho::String& strObjID)
-{
-    rho::apiGenerator::CMethodResult oRes;
-
-    rho::common::IRhoRunnable* pFunctor = 0;
-    bool bUseCallback = false;
-    int argc = argv.getSize();
-    int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
-
-
-
-    nCallbackArg = 1;
-
-    
-    if ( argc == 0 )
-    {
-        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
-        return oRes.toJSON();
-    }
-    
-
-
-    rho::String arg0;
-    if ( argc > 0 )
-    {
-        if ( argv[0].isString() )
-        {
-            arg0 = argv[0].getString();
-
-            oRes.setStringParam(argv[0].getString());
-
-        }
-        else if (!argv[0].isNull())
-        {
-            oRes.setArgError( "Type error: argument " "0" " should be " "string" );
-            return oRes.toJSON();
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-    if ( argc > nCallbackArg )
-    {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
-        return oRes.toJSON();
-
-        
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-        
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::getRegistrySetting, arg0,  oRes );
-
-
-
-
-    if ( bUseCallback )
-        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
-    {
-        delete pFunctor;
-
-
-        pObj->getRegistrySetting( arg0,  oRes );
+        pObj->getRegistrySetting( arg0, arg1, arg2,  oRes );
 
 
     }
@@ -7191,6 +7378,109 @@ rho::String js_System_unset_http_proxy(rho::json::CJSONArray& argv, const rho::S
 
 
         pObj->unset_http_proxy(  oRes );
+
+
+    }
+
+
+    return oRes.toJSON();
+
+}
+
+
+rho::String js_System_set_application_icon_badge(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int argc = argv.getSize();
+    int nCallbackArg = 0;
+
+    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
+
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
+        return oRes.toJSON();
+    }
+    
+
+
+
+
+    int64 arg0;
+    if ( argc > 0 )
+    {
+        if ( argv[0].isString() )
+            arg0 = argv[0].getInt();
+        else if (!argv[0].isNull())
+        {
+            oRes.setArgError("Type error: argument " "0" " should be " "integer" );
+            return oRes.toJSON();
+        }
+    }
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
+        return oRes.toJSON();
+
+        
+        if ( !argv[nCallbackArg].isString() )
+        {
+            oRes.setArgError("Type error: callback should be String");
+            return oRes.toJSON();
+        }
+
+        oRes.setCallInUIThread(false);
+        oRes.setRubyCallback( argv[nCallbackArg].getString() );
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !argv[nCallbackArg + 1].isString() )
+            {
+                oRes.setArgError("Type error: callback parameter should be String");
+                return oRes.toJSON();
+            }
+
+            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
+        }
+        
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::set_application_icon_badge, arg0,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else
+    {
+        delete pFunctor;
+
+
+        pObj->set_application_icon_badge( arg0,  oRes );
 
 
     }

@@ -965,6 +965,11 @@ void QtMainWindow::fullscreenCommand(int enable)
     LOG(INFO) + (enable ? "Switched to Fullscreen mode" : "Switched to Normal mode" );
 }
 
+bool QtMainWindow::getFullScreen()
+{
+    return windowState()&Qt::WindowMaximized;
+}
+
 void QtMainWindow::setCookie(const char* url, const char* cookie)
 {
     if (url && cookie) {

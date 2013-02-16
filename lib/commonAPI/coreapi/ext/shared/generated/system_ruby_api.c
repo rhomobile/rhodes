@@ -158,6 +158,8 @@ VALUE rb_System_set_http_proxy_url(int argc, VALUE *argv, VALUE obj);
 VALUE rb_s_System_def_set_http_proxy_url(int argc, VALUE *argv);
 VALUE rb_System_unset_http_proxy(int argc, VALUE *argv, VALUE obj);
 VALUE rb_s_System_def_unset_http_proxy(int argc, VALUE *argv);
+VALUE rb_System_set_application_icon_badge(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_System_def_set_application_icon_badge(int argc, VALUE *argv);
 VALUE rb_System_runApplication(int argc, VALUE *argv, VALUE obj);
 VALUE rb_s_System_def_runApplication(int argc, VALUE *argv);
 VALUE rb_System_getProperty(int argc, VALUE *argv, VALUE obj);
@@ -350,6 +352,8 @@ void Init_RubyAPI_System(void)
     rb_define_module_function(rb_mSystem, "set_http_proxy_url", rb_s_System_def_set_http_proxy_url, -1);
     rb_define_method(rb_mSystem, "unset_http_proxy", rb_System_unset_http_proxy, -1);
     rb_define_module_function(rb_mSystem, "unset_http_proxy", rb_s_System_def_unset_http_proxy, -1);
+    rb_define_method(rb_mSystem, "set_application_icon_badge", rb_System_set_application_icon_badge, -1);
+    rb_define_module_function(rb_mSystem, "set_application_icon_badge", rb_s_System_def_set_application_icon_badge, -1);
     rb_define_method(rb_mSystem, "runApplication", rb_System_runApplication, -1);
     rb_define_module_function(rb_mSystem, "runApplication", rb_s_System_def_runApplication, -1);
     rb_define_method(rb_mSystem, "getProperty", rb_System_getProperty, -1);

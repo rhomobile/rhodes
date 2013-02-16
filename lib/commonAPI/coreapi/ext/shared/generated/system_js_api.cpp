@@ -236,6 +236,9 @@ rho::String js_s_System_def_set_http_proxy_url(rho::json::CJSONArray& argv, cons
 rho::String js_System_unset_http_proxy(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_unset_http_proxy(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
+rho::String js_System_set_application_icon_badge(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_System_def_set_application_icon_badge(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
 rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_System_def_runApplication(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
@@ -497,6 +500,9 @@ extern "C" void Init_JSAPI_System(void)
 
     rho::apiGenerator::js_define_method("Rho:System:unset_http_proxy", js_System_unset_http_proxy);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_unset_http_proxy", js_s_System_def_unset_http_proxy);;
+
+    rho::apiGenerator::js_define_method("Rho:System:set_application_icon_badge", js_System_set_application_icon_badge);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_set_application_icon_badge", js_s_System_def_set_application_icon_badge);;
 
     rho::apiGenerator::js_define_method("Rho:System:runApplication", js_System_runApplication);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:System:def_runApplication", js_s_System_def_runApplication);;

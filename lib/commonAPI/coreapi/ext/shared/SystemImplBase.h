@@ -21,13 +21,19 @@ public:
     virtual void getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult);
     virtual void getSecurityTokenNotPassed(rho::apiGenerator::CMethodResult& oResult);
     virtual void getHasSqlite(rho::apiGenerator::CMethodResult& oResult);
+    virtual void getRealScreenWidth(CMethodResult& oResult);
+    virtual void getRealScreenHeight(CMethodResult& oResult);
+    virtual void getDeviceOwnerEmail(CMethodResult& oResult);
+    virtual void getDeviceOwnerName(CMethodResult& oResult);
+    virtual void getApplicationIconBadge(CMethodResult& oResult);
+    virtual void setApplicationIconBadge( __int64 value, CMethodResult& oResult);
 
     virtual void getStartParams(rho::apiGenerator::CMethodResult& oResult);
     virtual void unzipFile( const rho::String& localPathToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult);
     virtual void zipFile( const rho::String& localPathToZip,  const rho::String& localPathToFile,  const rho::String& password, CMethodResult& oResult);
     virtual void zipFiles( const rho::String& localPathToZip,  const rho::String& basePath,  const rho::Vector<rho::String>& filePathsToZip,  const rho::String& password, CMethodResult& oResult);
-    virtual void setRegistrySetting( const rho::String& keyPath,  const rho::String& keyValue, CMethodResult& oResult);
-    virtual void getRegistrySetting( const rho::String& keyPath, CMethodResult& oResult);
+    virtual void setRegistrySetting( int64 hive,  int64 type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getRegistrySetting( int64 hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
 
     virtual void replaceCurrentBundle( const rho::String& pathToBundle,  const rho::Hashtable<rho::String, rho::String>& params, rho::apiGenerator::CMethodResult& oResult);
     virtual void deleteFolder( const rho::String& pathToFolder, rho::apiGenerator::CMethodResult& oResult);
@@ -51,6 +57,7 @@ public:
     virtual void clearNetworkStatusNotify(rho::apiGenerator::CMethodResult& oResult);
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
+    virtual void set_application_icon_badge( int64 badgeNumber, rho::apiGenerator::CMethodResult& oResult);
 
 };
 
