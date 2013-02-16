@@ -145,17 +145,17 @@ void CSystemImplBase::getIsMotorolaDevice(CMethodResult& oResult)
 
 void CSystemImplBase::getLocalServerPort(CMethodResult& oResult)
 {
-    oResult.set( (int64)atoi(RHODESAPP().getFreeListeningPort()) );
+    oResult.set( atoi(RHODESAPP().getFreeListeningPort()) );
 }
 
-void CSystemImplBase::setLocalServerPort( __int64 value, CMethodResult& oResult)
+void CSystemImplBase::setLocalServerPort( int value, CMethodResult& oResult)
 {
     //Local port can be set only in confuguration file
 }
 
 void CSystemImplBase::getFreeServerPort(rho::apiGenerator::CMethodResult& oResult)
 {
-    oResult.set( (int64)RHODESAPP().determineFreeListeningPort() );
+    oResult.set( RHODESAPP().determineFreeListeningPort() );
 }
 
 void CSystemImplBase::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult)
@@ -198,7 +198,7 @@ void CSystemImplBase::getApplicationIconBadge(CMethodResult& oResult)
     oResult.set(0);
 }
 
-void CSystemImplBase::setApplicationIconBadge( __int64 value, CMethodResult& oResult)
+void CSystemImplBase::setApplicationIconBadge( int value, CMethodResult& oResult)
 {
 }
 
@@ -286,19 +286,19 @@ void CSystemImplBase::setDoNotBackupAttribute( const rho::String& pathToFile, rh
     //iOS only
 }
 
-void CSystemImplBase::setRegistrySetting( int64 hive,  int64 type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImplBase::setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
 {
     //Windows only
 }
 
-void CSystemImplBase::getRegistrySetting( int64 hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImplBase::getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
 {
     //Windows only
     oResult.set("");
 }
 
 //TODO: move to Database
-void CSystemImplBase::isBlobAttr( const rho::String& partition,  int64 sourceID,  const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImplBase::isBlobAttr( const rho::String& partition,  int sourceID,  const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult)
 {
     bool bRes = db::CDBAdapter::getDB( partition.c_str()).getAttrMgr().isBlobAttr((int)sourceID, attrName.c_str());
     oResult.set(bRes);
@@ -306,7 +306,7 @@ void CSystemImplBase::isBlobAttr( const rho::String& partition,  int64 sourceID,
 
 //TODO: move to Database
 extern "C" void rho_sys_update_blob_attribs(const char* szPartition, int source_id);
-void CSystemImplBase::updateBlobAttribs( const rho::String& partition,  int64 sourceID, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImplBase::updateBlobAttribs( const rho::String& partition,  int sourceID, rho::apiGenerator::CMethodResult& oResult)
 {
     rho_sys_update_blob_attribs( partition.c_str(), (int)sourceID );
 }
@@ -371,12 +371,12 @@ void CSystemImplBase::set_sleeping( bool enable, rho::apiGenerator::CMethodResul
     setScreenSleeping(enable, oResult);
 }
 
-void CSystemImplBase::set_application_icon_badge( int64 badgeNumber, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImplBase::set_application_icon_badge( int badgeNumber, rho::apiGenerator::CMethodResult& oResult)
 {
     setApplicationIconBadge(badgeNumber, oResult);
 }
 
-void CSystemImplBase::startTimer( int64 interval,  const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImplBase::startTimer( int interval,  const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult)
 {
     RHODESAPP().getTimer().addTimer( (int)interval, url.c_str(), url_params.c_str() );
 }
@@ -386,7 +386,7 @@ void CSystemImplBase::stopTimer( const rho::String& url, rho::apiGenerator::CMet
     RHODESAPP().getTimer().stopTimer( url.c_str());
 }
 
-void CSystemImplBase::setNetworkStatusNotify( const rho::String& url, int64 poll_interval, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImplBase::setNetworkStatusNotify( const rho::String& url, int poll_interval, rho::apiGenerator::CMethodResult& oResult)
 {
     RHODESAPP().setNetworkStatusNotify( url, (int)poll_interval );
 }
