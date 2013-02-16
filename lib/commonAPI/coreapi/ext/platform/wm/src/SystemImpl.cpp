@@ -123,7 +123,7 @@ void CSystemImpl::getOsVersion(CMethodResult& oResult)
 void CSystemImpl::getIsEmulator(CMethodResult& oResult)
 {
 #ifdef RHODES_EMULATOR
-    CSystemImplBase::getIsEmulator(oResult);
+    oResult.set(true);
 #else
 
 #ifdef OS_WINDOWS_DESKTOP
