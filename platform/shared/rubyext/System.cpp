@@ -42,15 +42,14 @@
 using namespace rho;
 using namespace rho::common;
 
-int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw);
-
 extern "C"
 {
-extern int rho_sysimpl_get_property(char* szPropName, VALUE* resValue);
-extern VALUE rho_sys_has_network();
-extern VALUE rho_sys_get_locale();
-extern int rho_sys_get_screen_width();
-extern int rho_sys_get_screen_height();
+int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw);
+int rho_sysimpl_get_property(char* szPropName, VALUE* resValue);
+VALUE rho_sys_has_network();
+VALUE rho_sys_get_locale();
+int rho_sys_get_screen_width();
+int rho_sys_get_screen_height();
 #ifdef RHODES_EMULATOR
 int rho_simimpl_get_property(char* szPropName, VALUE* resValue)
 {
