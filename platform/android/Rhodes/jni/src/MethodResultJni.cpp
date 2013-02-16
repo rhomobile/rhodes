@@ -2,7 +2,7 @@
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/JNIRhoRuby.h"
 #include "rhodes/jni/com_rhomobile_rhodes_api_MethodResult.h"
-#include "MethodResult.h"
+#include "api_generator/MethodResult.h"
 #include "MethodResultJni.h"
 
 #include "logging/RhoLog.h"
@@ -305,6 +305,48 @@ std::string MethodResultJni::toJson()
 //
 //    reset();
     return res;
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetBoolean
+  (JNIEnv * env, jclass, jboolean jRes, jstring jUrl, jstring jUrlData)
+{
+    bool res = static_cast<bool>(jRes);
+    rho::String url = rho_cast<rho::String>(env, jUrl);
+    rho::String data = rho_cast<rho::String>(env, jUrlData);
+
+    rho::apiGenerator::CMethodResult result;
+    result.setRubyCallback(url);
+    result.setCallbackParam(data);
+    result.set(res);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetInteger
+  (JNIEnv * env, jclass, jint jRes, jstring jUrl, jstring jUrlData)
+{
+    int res = static_cast<int>(jRes);
+    rho::String url = rho_cast<rho::String>(env, jUrl);
+    rho::String data = rho_cast<rho::String>(env, jUrlData);
+
+    rho::apiGenerator::CMethodResult result;
+    result.setRubyCallback(url);
+    result.setCallbackParam(data);
+    result.set(res);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetDouble
+  (JNIEnv * env, jclass, jdouble jRes, jstring jUrl, jstring jUrlData)
+{
+    double res = static_cast<double>(jRes);
+    rho::String url = rho_cast<rho::String>(env, jUrl);
+    rho::String data = rho_cast<rho::String>(env, jUrlData);
+
+    rho::apiGenerator::CMethodResult result;
+    result.setRubyCallback(url);
+    result.setCallbackParam(data);
+    result.set(res);
 }
 //----------------------------------------------------------------------------------------------------------------------
 

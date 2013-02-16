@@ -3300,35 +3300,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\shared\rubyext\System.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\shared\rubyext\WebView.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\rubyext\ZipFiles.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="unzip"
-			>
-			<File
-				RelativePath="..\..\shared\unzip\unzip.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\unzip\unzip.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\unzip\zip.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\shared\unzip\zip.h"
 				>
 			</File>
 		</Filter>

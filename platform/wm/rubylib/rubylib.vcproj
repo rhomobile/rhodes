@@ -3503,26 +3503,10 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="syncengine"
-					>
-				</Filter>
-				<Filter
 					Name="geolocation"
 					>
 					<File
 						RelativePath="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="system"
-					>
-					<File
-						RelativePath="..\..\shared\ruby\ext\system\system.i"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\ruby\ext\system\system_wrap.c"
 						>
 					</File>
 				</Filter>

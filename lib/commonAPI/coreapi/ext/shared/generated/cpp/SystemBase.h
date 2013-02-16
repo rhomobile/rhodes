@@ -10,7 +10,7 @@ class CSystemFactoryBase : public CModuleFactoryBase<ISystem, ISystemSingleton, 
 {
 protected:
     static rho::common::CAutoPtr<CSystemFactoryBase> m_pInstance;
-    Hashtable<rho::StringW,ISystem*> m_hashModules;
+    Hashtable<rho::String,ISystem*> m_hashModules;
 
 public:
 
@@ -19,7 +19,7 @@ public:
 
     static ISystemSingleton* getSystemSingletonS(){ return getInstance()->getModuleSingleton(); }
 
-    virtual ISystem* getModuleByID(const rho::StringW& strID)
+    virtual ISystem* getModuleByID(const rho::String& strID)
     {
         if ( !m_hashModules.containsKey(strID) )
         {
@@ -32,7 +32,7 @@ public:
         return m_hashModules[strID];
     }
 
-    virtual ISystem* createModuleByID(const rho::StringW& strID){ return (ISystem*)0; };
+    virtual ISystem* createModuleByID(const rho::String& strID){ return (ISystem*)0; };
 
 };
 
@@ -40,13 +40,13 @@ class CSystemSingletonBase : public CModuleSingletonBase< ISystemSingleton >
 {
 protected:
 
-    rho::StringW m_strDefaultID;
+    rho::String m_strDefaultID;
 
 public:
 
 
-    virtual void setDefaultID(const rho::StringW& strDefaultID){ m_strDefaultID = strDefaultID; }
-    virtual rho::StringW getDefaultID()
+    virtual void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
+    virtual rho::String getDefaultID()
     { 
         if ( m_strDefaultID.length() == 0 )
             setDefaultID(getInitialDefaultID());
@@ -59,18 +59,18 @@ class CSystemBase: public ISystem
 {
 protected:
 
-    rho::Hashtable<rho::StringW, rho::StringW> m_hashProps;
-    rho::Hashtable<rho::StringW, rho::apiGenerator::CMethodAccessor< ISystem > *> m_mapPropAccessors;
+    rho::Hashtable<rho::String, rho::String> m_hashProps;
+    rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< ISystem > *> m_mapPropAccessors;
 
 public:
     CSystemBase();
 
 
-    virtual void getProperty( const rho::StringW& propertyName, CMethodResult& oResult);
-    virtual void getProperties( const rho::Vector<::rho::StringW>& arrayofNames, CMethodResult& oResult);
+    virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
+    virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);
     virtual void getAllProperties(CMethodResult& oResult);
-    virtual void setProperty( const rho::StringW& propertyName,  const rho::StringW& propertyValue, CMethodResult& oResult);
-    virtual void setProperties( const rho::Hashtable<::rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult);
+    virtual void setProperty( const rho::String& propertyName,  const rho::String& propertyValue, CMethodResult& oResult);
+    virtual void setProperties( const rho::Hashtable<::rho::String, rho::String>& propertyMap, CMethodResult& oResult);
     virtual void clearAllProperties(CMethodResult& oResult);
 
 

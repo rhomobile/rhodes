@@ -65,7 +65,7 @@ public:
     virtual void getApplicationIconBadge(CMethodResult& oResult);
     virtual void setApplicationIconBadge( __int64 value, CMethodResult& oResult);
     virtual void getHttpProxyURI(CMethodResult& oResult);
-    virtual void setHttpProxyURI( const rho::StringW& value, CMethodResult& oResult);
+    virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
     virtual void getShowKeyboard(CMethodResult& oResult);
@@ -78,17 +78,22 @@ public:
     virtual void getScreenSleeping(rho::apiGenerator::CMethodResult& oResult);
     virtual void setScreenSleeping( bool value, rho::apiGenerator::CMethodResult& oResult);
 
-    virtual void applicationInstall( const rho::StringW& applicationUrl, CMethodResult& oResult);
-    virtual void isApplicationInstalled( const rho::StringW& applicationName, CMethodResult& oResult);
-    virtual void applicationUninstall( const rho::StringW& applicationName, CMethodResult& oResult);
-    virtual void openUrl( const rho::StringW& url, CMethodResult& oResult);
-    virtual void setRegistrySetting( const rho::StringW& keyPath,  const rho::StringW& keyValue, CMethodResult& oResult);
-    virtual void getRegistrySetting( const rho::StringW& keyPath, CMethodResult& oResult);
+    virtual void applicationInstall( const rho::String& applicationUrl, CMethodResult& oResult);
+    virtual void isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult);
+    virtual void applicationUninstall( const rho::String& applicationName, CMethodResult& oResult);
+    virtual void openUrl( const rho::String& url, CMethodResult& oResult);
+    virtual void setRegistrySetting( const rho::String& keyPath,  const rho::String& keyValue, CMethodResult& oResult);
+    virtual void getRegistrySetting( const rho::String& keyPath, CMethodResult& oResult);
     virtual void setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, CMethodResult& oResult);
     virtual void setWindowPosition( __int64 x,  __int64 y, CMethodResult& oResult);
     virtual void setWindowSize( int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult);
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
+    virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
+
+    virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
+    virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
+
 };
 
 void CSystemImpl::getOsVersion(CMethodResult& oResult)
@@ -101,7 +106,7 @@ void CSystemImpl::getOsVersion(CMethodResult& oResult)
 	if (!GetVersionEx(&osv))
     {
         LOG(ERROR) + "GetVersionEx failed.";
-		oResult.set(L"0");
+		oResult.set("0");
     }
     else
     {
@@ -110,7 +115,7 @@ void CSystemImpl::getOsVersion(CMethodResult& oResult)
 	    _snwprintf(buf, sizeof(buf) - 1, L"%u.%u.%u", (unsigned)osv.dwMajorVersion,
 		    (unsigned)osv.dwMinorVersion, (unsigned)osv.dwBuildNumber);
 
-        oResult.set(StringW(buf));
+        oResult.set( StringW(buf));
     }
 #endif
 }
@@ -228,14 +233,14 @@ void CSystemImpl::getPhoneId(CMethodResult& oResult)
     }
 #endif
 
-    oResult.set( convertToStringW(strDeviceID) );
+    oResult.set( strDeviceID );
 }
 
 void CSystemImpl::getDeviceName(CMethodResult& oResult)
 {
-    StringW strRes;
+    String strRes;
 #ifdef OS_WINDOWS_DESKTOP
-	strRes = L"Win32";
+	strRes = "Win32";
 #else
 	HKEY hKey;
 	if (RegOpenKeyEx( HKEY_LOCAL_MACHINE, _T("Ident"), 0, KEY_READ, &hKey ) == ERROR_SUCCESS)
@@ -249,7 +254,7 @@ void CSystemImpl::getDeviceName(CMethodResult& oResult)
                 (PBYTE)deviceName.GetBuffer((dwDataSize/sizeof(TCHAR) + sizeof(TCHAR))), &dwDataSize );
             deviceName.ReleaseBuffer();
 
-            strRes = deviceName.GetString();
+            strRes = convertToStringA(deviceName.GetString());
         }
     }
 	RegCloseKey(hKey);
@@ -307,7 +312,7 @@ void CSystemImpl::getUuid(CMethodResult& oResult){}
 void CSystemImpl::getApplicationIconBadge(CMethodResult& oResult){}
 void CSystemImpl::setApplicationIconBadge( __int64 value, CMethodResult& oResult){}
 void CSystemImpl::getHttpProxyURI(CMethodResult& oResult){}
-void CSystemImpl::setHttpProxyURI( const rho::StringW& value, CMethodResult& oResult){}
+void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oResult){}
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
 
 void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult)
@@ -325,41 +330,39 @@ void CSystemImpl::setFullScreen( bool value, CMethodResult& oResult){}
 void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult){}
 void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult){}
 
-void CSystemImpl::getHasTouchscreen(CMethodResult& oResult)
+extern "C" int rho_wmsys_has_touchscreen()
 {
-    bool bRes = true;
 #if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
-    bRes = true;
+        return 1;
 #else
-    BOOL bRet;
-    TCHAR oem[257];
+        BOOL bRet;
+        TCHAR oem[257];
 #ifndef WIN32_PLATFORM_WFSP
-    // fix for all supported platforms expect Smartphone 2003:
-    // DeviceEmulator sould report it has a touch screen
-    bRet = SystemParametersInfo(SPI_GETOEMINFO, sizeof(oem), oem, 0);
-    if (bRet && wcsstr(oem, _T("DeviceEmulator"))!=NULL)
-        bRes = true;
-    else
+        // fix for all supported platforms expect Smartphone 2003:
+        // DeviceEmulator sould report it has a touch screen
+        bRet = SystemParametersInfo(SPI_GETOEMINFO, sizeof(oem), oem, 0);
+        if (bRet && wcsstr(oem, _T("DeviceEmulator"))!=NULL)
+            return 1;
 #endif
-    {
+
         bRet = SystemParametersInfo(SPI_GETPLATFORMTYPE, sizeof(oem), oem, 0);
         // SmartPhone has no touch screen
         if (bRet && wcsstr(oem, _T("SmartPhone"))!=NULL)
-            bRes = false;
+            return 0;
         // PocketPC has touch screen
-        else if (bRet && wcsstr(oem, _T("PocketPC"))!=NULL)
-            bRes = true;
-        else
-        {
-            // otherwise check mouse info
-            int aMouseInfo[3] = {0};
-            bRet = SystemParametersInfo(SPI_GETMOUSE, sizeof(aMouseInfo), aMouseInfo, 0);
-            bRes = bRet && aMouseInfo[0] != 0;
-        }
-    }
-#endif
+        if (bRet && wcsstr(oem, _T("PocketPC"))!=NULL)
+            return 1;
 
-    oResult.set( bRes );
+        // otherwise check mouse info
+        int aMouseInfo[3] = {0};
+        bRet = SystemParametersInfo(SPI_GETMOUSE, sizeof(aMouseInfo), aMouseInfo, 0);
+        return (bRet && aMouseInfo[0] != 0) ? 1 : 0;
+#endif
+}
+
+void CSystemImpl::getHasTouchscreen(CMethodResult& oResult)
+{
+    oResult.set( rho_wmsys_has_touchscreen() == 1 ? true : false );
 }
 
 void CSystemImpl::getScreenSleeping(rho::apiGenerator::CMethodResult& oResult)
@@ -370,10 +373,10 @@ void CSystemImpl::setScreenSleeping( bool value, rho::apiGenerator::CMethodResul
 {
 }
 
-void CSystemImpl::applicationInstall( const rho::StringW& applicationUrl, CMethodResult& oResult)
+void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethodResult& oResult)
 {
 #ifdef OS_WINDOWS_DESKTOP
-	String sUrl = convertToStringA(applicationUrl);
+	String sUrl = applicationUrl;
     CFilePath oFile(sUrl);
 	String filename = RHODESAPP().getRhoUserPath()+ oFile.getBaseName();
 	if (CRhoFile::isFileExist(filename.c_str()) && (CRhoFile::deleteFile(filename.c_str()) != 0)) {
@@ -390,13 +393,13 @@ void CSystemImpl::applicationInstall( const rho::StringW& applicationUrl, CMetho
 		}
 	}
 #else
-    rho_wmsys_run_appW( applicationUrl.c_str(), 0 );
+    rho_wmsys_run_appW( convertToStringW(applicationUrl).c_str(), 0 );
 #endif
 }
 
-static LONG _openRegAppPath( const rho::StringW& applicationName, CRegKey& oKey, StringW& strKeyPath)
+static LONG _openRegAppPath( const rho::String& applicationName, CRegKey& oKey, StringW& strKeyPath)
 {
-    CFilePath oPath( convertToStringA(applicationName) );
+    CFilePath oPath( applicationName );
     String strAppName = oPath.getFolderName();
 
 #ifdef OS_WINDOWS_DESKTOP
@@ -415,7 +418,7 @@ static LONG _openRegAppPath( const rho::StringW& applicationName, CRegKey& oKey,
 #endif
 }
 
-void CSystemImpl::isApplicationInstalled( const rho::StringW& applicationName, CMethodResult& oResult)
+void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult)
 {
     bool bRet = false;
 #ifdef OS_WINDOWS_DESKTOP
@@ -425,7 +428,7 @@ void CSystemImpl::isApplicationInstalled( const rho::StringW& applicationName, C
 
 	bRet = res == ERROR_SUCCESS;
 #else
-    CFilePath oPath( convertToStringA(applicationName) );
+    CFilePath oPath( applicationName );
     StringW strAppName = convertToStringW(oPath.getFolderName());
     
     StringW strRequest = 
@@ -455,7 +458,7 @@ void CSystemImpl::isApplicationInstalled( const rho::StringW& applicationName, C
     oResult.set(bRet);
 }
 
-void CSystemImpl::applicationUninstall( const rho::StringW& applicationName, CMethodResult& oResult)
+void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMethodResult& oResult)
 {
 #ifdef OS_WINDOWS_DESKTOP
     CRegKey oKey;
@@ -474,12 +477,12 @@ void CSystemImpl::applicationUninstall( const rho::StringW& applicationName, CMe
             LOG(ERROR) + "Cannot read registry key: Uninstaller; Code:" + res;
         else
         {
-            StringW strFullPath = szBuf;
-			rho_wmsys_run_appW( strFullPath.c_str(), L"" );
+            StringW strFullPathW = szBuf;
+			rho_wmsys_run_appW( strFullPathW.c_str(), L"" );
 		}
 	}
 #else
-    CFilePath oPath( convertToStringA(applicationName) );
+    CFilePath oPath( applicationName );
     StringW strAppName = convertToStringW(oPath.getFolderName());
     
     StringW strRequest = 
@@ -506,13 +509,47 @@ void CSystemImpl::applicationUninstall( const rho::StringW& applicationName, CMe
 #endif
 }
 
-void CSystemImpl::openUrl( const rho::StringW& url, CMethodResult& oResult)
+void CSystemImpl::openUrl( const rho::String& url, CMethodResult& oResult)
 {
-    rho_wmsys_run_appW( url.c_str(), 0 );
+    rho_wmsys_run_appW( convertToStringW(url).c_str(), 0 );
 }
 
-void CSystemImpl::setRegistrySetting( const rho::StringW& keyPath,  const rho::StringW& keyValue, CMethodResult& oResult){}
-void CSystemImpl::getRegistrySetting( const rho::StringW& keyPath, CMethodResult& oResult){}
+void CSystemImpl::runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult)
+{
+    CRegKey oKey;
+    StringW strKeyPath;
+    LONG res = _openRegAppPath(appName, oKey, strKeyPath);
+
+    if ( res != ERROR_SUCCESS )
+    {
+        LOG(ERROR) + "Cannot open registry key: " + strKeyPath + "; Code:" + res;
+    } else
+    {
+        TCHAR szBuf[MAX_PATH+1];
+        ULONG nChars = MAX_PATH;
+
+        res = oKey.QueryStringValue(L"InstallDir", szBuf, &nChars);
+        if ( res != ERROR_SUCCESS )
+            LOG(ERROR) + "Cannot read registry key: InstallDir; Code:" + res;
+        else
+        {
+            StringW strFullPath = szBuf;
+
+            if ( strFullPath[strFullPath.length()-1] != '/' && strFullPath[strFullPath.length()-1] != '\\' )
+                strFullPath += L"\\";
+
+			StringW strBaseName;
+            CFilePath oPath(appName);
+            convertToStringW(oPath.getBaseName(), strBaseName);
+            strFullPath += strBaseName;
+
+            rho_wmsys_run_appW( strFullPath.c_str(), convertToStringW(params).c_str());
+        }
+    }
+}
+
+void CSystemImpl::setRegistrySetting( const rho::String& keyPath,  const rho::String& keyValue, CMethodResult& oResult){}
+void CSystemImpl::getRegistrySetting( const rho::String& keyPath, CMethodResult& oResult){}
 
 void CSystemImpl::setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, CMethodResult& oResult)
 {
@@ -529,7 +566,7 @@ void CSystemImpl::setWindowPosition( __int64 x,  __int64 y, CMethodResult& oResu
 #endif
 }
 
-void setWindowSize( int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::setWindowSize( int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult)
 {
 #if defined(OS_WINDOWS_DESKTOP)
     rho_sys_set_window_size((int)width, (int)height);
@@ -538,14 +575,14 @@ void setWindowSize( int64 width,  int64 height, rho::apiGenerator::CMethodResult
 
 void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
 {
-    StringW strRes = L"";
+    String strRes = "";
 
 #if defined(OS_WINDOWS_DESKTOP)
-	strRes = convertToStringW(rho_sys_win32_getWebviewFramework());
+	strRes = rho_sys_win32_getWebviewFramework();
 #elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
 	strRes = "WEBKIT/MOTOROLA";
 #else
-	strRes = L"IE";
+	strRes = "IE";
     //TODO: get IE version for WM/CE
 #endif
 
@@ -557,12 +594,24 @@ void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
     rho_sys_bring_to_front();
 }
 
+extern "C" void rho_sys_set_http_proxy_url(const char* url);
+void CSystemImpl::set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult)
+{
+    rho_sys_set_http_proxy_url( proxyURI.c_str() );
+}
+
+extern "C" void rho_sys_unset_http_proxy();
+void CSystemImpl::unset_http_proxy(rho::apiGenerator::CMethodResult& oResult)
+{
+    rho_sys_unset_http_proxy();
+}
+
 ////////////////////////////////////////////////////////////////////////
 class CSystemSingleton: public CSystemSingletonBase
 {
 public:
     ~CSystemSingleton(){}
-    rho::StringW getInitialDefaultID(){return L"1";}
+    rho::String getInitialDefaultID(){return "1";}
 };
 
 class CSystemFactory: public CSystemFactoryBase
@@ -571,10 +620,10 @@ public:
     ~CSystemFactory(){}
 
     ISystemSingleton* createModuleSingleton(){ return new CSystemSingleton(); }
-    ISystem* createModuleByID(const rho::StringW& strID){ return new CSystemImpl(); }
+    ISystem* createModuleByID(const rho::String& strID){ return new CSystemImpl(); }
 };
 
-extern "C" void Init_System_extension()
+extern "C" void Init_System()
 {
     CSystemFactory::setInstance( new CSystemFactory() );
     Init_System_API();

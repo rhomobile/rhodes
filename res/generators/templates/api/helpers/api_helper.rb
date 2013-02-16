@@ -17,11 +17,11 @@ end
 def api_generator_cpp_makeNativeType(gen_type)
     
     if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
-        res = "rho::StringW"
+        res = "rho::String"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
-        res = "rho::Vector<rho::StringW>"
+        res = "rho::Vector<rho::String>"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
-        res = "rho::Hashtable<rho::StringW, rho::StringW>"
+        res = "rho::Hashtable<rho::String, rho::String>"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
         res = "int64"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
@@ -38,11 +38,11 @@ end
 def api_generator_cpp_makeNativeTypeArg(gen_type)
     
     if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
-        res = "const rho::StringW&"
+        res = "const rho::String&"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
-        res = "const rho::Vector<rho::StringW>&"
+        res = "const rho::Vector<rho::String>&"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
-        res = "const rho::Hashtable<rho::StringW, rho::StringW>&"
+        res = "const rho::Hashtable<rho::String, rho::String>&"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
         res = "int64"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
