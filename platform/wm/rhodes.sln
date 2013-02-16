@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rhodes", "rhodes\Rhodes.vcp
 		{DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B} = {DCD9FEEA-AEB5-4787-AF75-B8D66C1CDC3B}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rubylib", "rubylib\rubylib.vcproj", "{AA77BEC0-2A60-4589-A784-7D78F60B35B6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Coreapi", "..\..\lib\commonAPI\coreapi\ext\platform\wm\Coreapi.vcproj", "{E0343F80-50EA-0130-78EC-3CAEC51BD50E}"EndProjectProject("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rubylib", "rubylib\rubylib.vcproj", "{AA77BEC0-2A60-4589-A784-7D78F60B35B6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sqlite3", "sqlite3\sqlite3.vcproj", "{B381B601-04B1-475B-B635-003F8E7DA3A9}"
 EndProject
