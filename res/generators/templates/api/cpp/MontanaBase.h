@@ -43,7 +43,30 @@ protected:
 <% if $cur_module.is_template_default_instance %>
     rho::String m_strDefaultID;
 <% end %>
+
+<% if $cur_module.is_template_propertybag  && $cur_module.properties_access == ModuleMethod::ACCESS_STATIC %>
+    rho::Hashtable<rho::String, rho::String> m_hashProps;
+    rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %>Singleton > *> m_mapPropAccessors;
+<% end %>
+
 public:
+
+<% if $cur_module.properties_access == ModuleMethod::ACCESS_STATIC%>
+    C<%= $cur_module.name %>SingletonBase();
+<% if $cur_module.is_template_propertybag %>
+    virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
+    virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);
+    virtual void getAllProperties(CMethodResult& oResult);
+    virtual void setProperty( const rho::String& propertyName,  const rho::String& propertyValue, CMethodResult& oResult);
+    virtual void setProperties( const rho::Hashtable<::rho::String, rho::String>& propertyMap, CMethodResult& oResult);
+    virtual void clearAllProperties(CMethodResult& oResult);
+<% $cur_module.methods.each do |module_method|
+    next if module_method.access != ModuleMethod::ACCESS_INSTANCE
+    next if module_method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_GETTER && module_method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
+    next if module_method.linked_property.use_property_bag_mode != ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG %>
+
+    virtual void <%= module_method.native_name%>(<%= module_method.cached_data["cpp_params"] %>);<%
+end; end; end %>
 
 <% if $cur_module.is_template_default_instance %>
     virtual void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
@@ -59,13 +82,13 @@ public:
 class C<%= $cur_module.name %>Base: public I<%= $cur_module.name %>
 {
 protected:
-<% if $cur_module.is_template_propertybag %>
+<% if $cur_module.is_template_propertybag && $cur_module.properties_access != ModuleMethod::ACCESS_STATIC %>
     rho::Hashtable<rho::String, rho::String> m_hashProps;
     rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %> > *> m_mapPropAccessors;
 <% end %>
 public:
+<% if $cur_module.properties_access != ModuleMethod::ACCESS_STATIC %>
     C<%= $cur_module.name %>Base();
-
 <% if $cur_module.is_template_propertybag %>
     virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
     virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);
@@ -79,7 +102,8 @@ public:
     next if module_method.linked_property.use_property_bag_mode != ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG %>
 
     virtual void <%= module_method.native_name%>(<%= module_method.cached_data["cpp_params"] %>);<%
-end; end %>
+end; end; end %>
+
 <% if $cur_module.is_template_default_instance%>
     static C<%= $cur_module.name %>Base* getInstance(){ return static_cast< C<%= $cur_module.name %>Base* >(C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID())); }
 <% if false %>

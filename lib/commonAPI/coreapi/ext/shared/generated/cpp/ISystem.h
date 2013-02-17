@@ -11,6 +11,17 @@ struct ISystem
 {
 //constants
 
+
+//methods
+    virtual ~ISystem(){}
+
+
+};
+
+struct ISystemSingleton
+{
+//constants
+
     static const char PLATFORM_WM_CE[];// "WINDOWS" 
     static const char PLATFORM_ANDROID[];// "ANDROID" 
     static const char PLATFORM_IOS[];// "APPLE" 
@@ -19,9 +30,9 @@ struct ISystem
     static const char SCREEN_PORTRAIT[];// "portrait" 
     static const char SCREEN_LANDSCAPE[];// "landscape" 
 
-//methods
-    virtual ~ISystem(){}
+    virtual ~ISystemSingleton(){}
 
+//methods
     virtual void getPlatform(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getHasCamera(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getScreenWidth(rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -89,6 +100,7 @@ struct ISystem
     virtual void isBlobAttr( const rho::String& partition,  int sourceID,  const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void updateBlobAttribs( const rho::String& partition,  int sourceID, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void get_locale(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void set_locale( const rho::String& locale_code,  const rho::String& country_code, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setPushNotification( const rho::String& url,  const rho::String& url_params,  const rho::String& push_client, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setScreenRotationNotification( const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void exit(rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -108,17 +120,6 @@ struct ISystem
     virtual void setProperties( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void clearAllProperties(rho::apiGenerator::CMethodResult& oResult) = 0;
 
-};
-
-struct ISystemSingleton
-{
-    virtual ~ISystemSingleton(){}
-
-
-
-    virtual rho::String getDefaultID() = 0;
-    virtual rho::String getInitialDefaultID() = 0;
-    virtual void setDefaultID(const rho::String& strID) = 0;
 
     virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor) = 0;
     virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor) = 0;
@@ -130,8 +131,6 @@ struct ISystemFactory
 
     virtual ISystemSingleton* getModuleSingleton() = 0;
 
-
-    virtual ISystem* getModuleByID(const rho::String& strID) = 0;
 
 };
 

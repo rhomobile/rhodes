@@ -10,11 +10,11 @@
         </ALIASES>
 
         <TEMPLATES>
-            <DEFAULT_INSTANCE/>
+            <!-- <DEFAULT_INSTANCE/> -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 
-        <PROPERTIES usePropertyBag="PropertyBagViaAccessors" limitPropertyBag="true">
+        <PROPERTIES usePropertyBag="PropertyBagViaAccessors" limitPropertyBag="true" access="STATIC">
             <DESC>object supports this properties bla bla bla :</DESC>
 
             <ALIASES>
@@ -173,7 +173,7 @@
 
         </PROPERTIES>
     
-        <METHODS>
+        <METHODS  access="STATIC">
             <ALIASES>
                 <ALIAS new="get_property" existing="getProperty" deprecated="true">
                     <DESC>Use property names methods instead.</DESC>
@@ -465,6 +465,14 @@
             <METHOD name="get_locale" deprecated="true">
                 <DESC>Use System.locale property: Current device locale.</DESC>
                 <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="set_locale" deprecated="true" generateAPI="false" access="STATIC">
+                <DESC>Use Application.locale property: set application specific locale</DESC>
+                <PARAMS>
+                    <PARAM name="locale_code" type="STRING"/>
+                    <PARAM name="country_code" type="STRING"/>
+                </PARAMS>
             </METHOD>
 
             <METHOD name="setPushNotification" deprecated="true">
