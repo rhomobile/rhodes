@@ -70,6 +70,7 @@ end
 
 #LocalizationSimplified.requre_loc('rholang/lang_',false)
 
+if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
 module System
     def self.set_locale(locale_code, country_code = nil)
         LocalizationSimplified::set_cur_locale(locale_code, country_code)
@@ -79,6 +80,18 @@ module System
         LocalizationSimplified.requre_loc('rholang/rhoerror_',false)
         LocalizationSimplified.requre_loc('rholang/rhomsg_',false)    
     end
+end
+else
+class System
+    def self.set_locale(locale_code, country_code = nil)
+        LocalizationSimplified::set_cur_locale(locale_code, country_code)
+
+        LocalizationSimplified.requre_loc('rholang/lang_',false)
+        LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
+        LocalizationSimplified.requre_loc('rholang/rhoerror_',false)
+        LocalizationSimplified.requre_loc('rholang/rhomsg_',false)    
+    end
+end
 end
 
 class Hash

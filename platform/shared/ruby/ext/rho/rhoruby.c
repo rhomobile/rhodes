@@ -1054,6 +1054,21 @@ int rho_ruby_is_method(VALUE val)
     return CLASS_OF(val) == rb_cMethod ? 1 : 0;
 }
 
+int rho_ruby_is_object_of_class(VALUE val, VALUE valClass)
+{
+    return CLASS_OF(val) == valClass ? 1 : 0;
+}
+
+VALUE rho_ruby_get_object_class(VALUE val)
+{
+    return CLASS_OF(val);
+}
+
+VALUE rho_ruby_get_class_byname(const char* szName)
+{
+    return rb_path_to_class(rb_str_new2(szName));
+}
+
 VALUE rho_ruby_getProcBinding(VALUE proc)
 {
     static ID binding_mid;

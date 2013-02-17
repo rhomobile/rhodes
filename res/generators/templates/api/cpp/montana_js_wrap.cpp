@@ -139,7 +139,11 @@ using namespace rho::common;
         }
     }
 <% end %>
-        
+
+<% if !MethodParam::BASE_TYPES.include?(param.type) %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+<% end %>
+
 <% functor_params += "arg#{first_arg}, " %>
 <% first_arg = first_arg+1 %>
 <% end %>
