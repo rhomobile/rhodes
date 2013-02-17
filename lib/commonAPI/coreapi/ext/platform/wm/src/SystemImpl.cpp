@@ -651,20 +651,13 @@ void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oRes
 }
 
 ////////////////////////////////////////////////////////////////////////
-class CSystemSingleton: public CSystemSingletonBase
-{
-public:
-    ~CSystemSingleton(){}
-    rho::String getInitialDefaultID(){return "1";}
-};
 
 class CSystemFactory: public CSystemFactoryBase
 {
 public:
     ~CSystemFactory(){}
 
-    ISystemSingleton* createModuleSingleton(){ return new CSystemSingleton(); }
-    ISystem* createModuleByID(const rho::String& strID){ return new CSystemImpl(); }
+    ISystemSingleton* createModuleSingleton(){ return new CSystemImpl(); }
 };
 
 extern "C" void Init_System()

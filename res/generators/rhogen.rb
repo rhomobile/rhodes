@@ -759,7 +759,7 @@ module Rhogen
         @generate_accessors = true
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
         @default_value = ''
-
+        
         #used if getter and setter are present - this used with generation of property bag function implementation
         @getter = nil
         @setter = nil
@@ -774,8 +774,6 @@ module Rhogen
       attr_accessor :default_value
       attr_accessor :getter
       attr_accessor :setter
-
-
 
     end
 
@@ -855,6 +853,7 @@ module Rhogen
         @has_factory_methods = false
         @is_property_bag_limit_to_only_declared_properties = false
         @use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
+        @properties_access = ModuleMethod::ACCESS_INSTANCE
       end
 
       def getPropAliases(name)
@@ -881,6 +880,7 @@ module Rhogen
       attr_accessor :has_factory_methods
       attr_accessor :is_property_bag_limit_to_only_declared_properties
       attr_accessor :use_property_bag_mode
+      attr_accessor :properties_access
     end
 
     TEMPLATE_NAME = "TEMPLATE_NAME"
@@ -1145,7 +1145,15 @@ module Rhogen
             if xml_properties.attribute("limitPropertyBag") != nil
               module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute("limitPropertyBag").to_s.downcase != "false"
             end
+            
+            if xml_properties.attribute("access") != nil
+              if xml_properties.attribute("access").to_s.downcase == "static"
+                 module_item.properties_access = ModuleMethod::ACCESS_STATIC
+              end
+            end
+            
          end
+         
          xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_module_property|
             module_property = ModuleProperty.new()
             module_property.name = xml_module_property.attribute("name").to_s
@@ -1213,7 +1221,7 @@ module Rhogen
               getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
               getter_method.is_factory_method = false
               getter_method.is_return_value = true
-              getter_method.access = ModuleMethod::ACCESS_INSTANCE
+              getter_method.access = module_item.properties_access
               getter_method.has_callback = ModuleMethod::CALLBACK_NONE
               getter_method.linked_property = module_property
               getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
@@ -1234,7 +1242,7 @@ module Rhogen
                 setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
                 setter_method.is_factory_method = false
                 setter_method.is_return_value = false
-                setter_method.access = ModuleMethod::ACCESS_INSTANCE
+                setter_method.access = module_item.properties_access
                 setter_method.has_callback = ModuleMethod::CALLBACK_NONE
                 setter_method.linked_property = module_property
                 setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
