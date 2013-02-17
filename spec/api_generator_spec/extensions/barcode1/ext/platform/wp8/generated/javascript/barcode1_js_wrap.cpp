@@ -12,7 +12,7 @@ extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 using namespace rho;
 using namespace rho::json;
 using namespace rho::common;
-
+using namespace rho::apiGenerator;
 
 rho::String js_Barcode1_enable(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {

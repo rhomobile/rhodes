@@ -507,7 +507,7 @@ DWORD WINAPI WaitForMultipleObjects(
     _In_ DWORD dwMilliseconds
     )
 {
-	return 0;
+	return WaitForMultipleObjectsEx(nCount, lpHandles, bWaitAll, dwMilliseconds, 0);;
 }
 
 /*
@@ -875,6 +875,19 @@ HANDLE WINAPI CreateEventWP8(
 	return CreateEventExW(lpEventAttributes, lpName, flags, EVENT_ALL_ACCESS);
 }
 
+HANDLE WINAPI CreateMutexWP8(
+    _In_opt_  LPSECURITY_ATTRIBUTES lpMutexAttributes,
+	_In_      BOOL bInitialOwner,
+	_In_opt_  LPCWSTR lpName)
+{
+	DWORD flags = 0;
+	
+	if(bInitialOwner)
+		flags |= CREATE_MUTEX_INITIAL_OWNER;
+
+	return CreateMutexExW(lpMutexAttributes, lpName, flags, MUTEX_ALL_ACCESS);
+}
+
 DWORD
 WINAPI
 WaitForSingleObjectWP8(
@@ -883,4 +896,18 @@ WaitForSingleObjectWP8(
     )
 {
 	return WaitForSingleObjectEx(hHandle, dwMilliseconds, 0);
+}
+
+BOOL WINAPI TerminateThreadWP8(_In_ HANDLE hThread, _In_ DWORD dwExitCode)
+{
+	return FALSE;
+}
+
+BOOL WINAPI GetExitCodeThreadWP8(
+  _In_   HANDLE hThread,
+  _Out_  LPDWORD lpExitCode
+)
+{
+	lpExitCode = 0;
+	return TRUE;
 }

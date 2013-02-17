@@ -2,6 +2,11 @@
 
 #include "common/ThreadQueue.h"
 
+namespace rho
+{
+namespace apiGenerator
+{
+
 class CGeneratorQueue : public rho::common::CThreadQueue
 {
 public:
@@ -37,3 +42,5 @@ public:
     }
 };
 
+}
+}

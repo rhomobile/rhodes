@@ -10,50 +10,50 @@
 namespace rhoelements {
 
 //Barcode1FactorySingleton staff
-const char* const CBarcode1::FACTORY_SINGLETON_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1FactorySingleton";
-jclass CBarcode1::s_clsFactorySingleton = 0;
-jmethodID CBarcode1::s_midFactorySetInstance;
-jmethodID CBarcode1::s_midFactoryGetInstance;
+const char* const CBarcode1Base::FACTORY_SINGLETON_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1FactorySingleton";
+jclass CBarcode1Base::s_clsFactorySingleton = 0;
+jmethodID CBarcode1Base::s_midFactorySetInstance;
+jmethodID CBarcode1Base::s_midFactoryGetInstance;
 
 //Barcode1Factory staff
-const char* const CBarcode1::IFACTORY_CLASS = "com.motorolasolutions.rhoelements.barcode1.IBarcode1Factory";
-jclass CBarcode1::s_clsIFactory = 0;
-jmethodID CBarcode1::s_midGetApiSingleton;
-jmethodID CBarcode1::s_midGetApiObject;
+const char* const CBarcode1Base::IFACTORY_CLASS = "com.motorolasolutions.rhoelements.barcode1.IBarcode1Factory";
+jclass CBarcode1Base::s_clsIFactory = 0;
+jmethodID CBarcode1Base::s_midGetApiSingleton;
+jmethodID CBarcode1Base::s_midGetApiObject;
 
 //Barcode1SingletonBase staff
-//const char* const CBarcode1::SINGLETON_BASE_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1SingletonBase";
-//jclass CBarcode1::s_clsSingletonBase = 0;
+//const char* const CBarcode1Base::SINGLETON_BASE_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1SingletonBase";
+//jclass CBarcode1Base::s_clsSingletonBase = 0;
 
 //Barcode1Base staff
-const char* const CBarcode1::OBJECT_BASE_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Base";
-const char* const CBarcode1::GETPROPS_TASK_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Base$GetPropsTask";
-const char* const CBarcode1::GETPROPS1_TASK_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Base$GetProps1Task";
-const char* const CBarcode1::GETPROPS2_TASK_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Base$GetProps2Task";
-const char* const CBarcode1::TAKEBARCODE_TASK_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Base$TakeBarcodeTask";
-jclass CBarcode1::s_clsObjectBase = 0;
-jclass CBarcode1::s_clsGetPropsTask = 0;
-jclass CBarcode1::s_clsGetProps1Task = 0;
-jclass CBarcode1::s_clsGetProps2Task = 0;
-jclass CBarcode1::s_clsTakeBarcodeTask = 0;
-jmethodID CBarcode1::s_midGetPropsTask;
-jmethodID CBarcode1::s_midGetProps1Task;
-jmethodID CBarcode1::s_midGetProps2Task;
-jmethodID CBarcode1::s_midTakeBarcodeTask;
+const char* const CBarcode1Base::OBJECT_BASE_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Base";
+const char* const CBarcode1Base::GETPROPS_TASK_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Base$GetPropsTask";
+const char* const CBarcode1Base::GETPROPS1_TASK_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Base$GetProps1Task";
+const char* const CBarcode1Base::GETPROPS2_TASK_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Base$GetProps2Task";
+const char* const CBarcode1Base::TAKEBARCODE_TASK_CLASS = "com.motorolasolutions.rhoelements.barcode1.Barcode1Base$TakeBarcodeTask";
+jclass CBarcode1Base::s_clsObjectBase = 0;
+jclass CBarcode1Base::s_clsGetPropsTask = 0;
+jclass CBarcode1Base::s_clsGetProps1Task = 0;
+jclass CBarcode1Base::s_clsGetProps2Task = 0;
+jclass CBarcode1Base::s_clsTakeBarcodeTask = 0;
+jmethodID CBarcode1Base::s_midGetPropsTask;
+jmethodID CBarcode1Base::s_midGetProps1Task;
+jmethodID CBarcode1Base::s_midGetProps2Task;
+jmethodID CBarcode1Base::s_midTakeBarcodeTask;
 
 //Barcode1Singleton staff
-const char* const CBarcode1::ISINGLETON_CLASS = "com.motorolasolutions.rhoelements.IRhoApiSingleton";
-jclass CBarcode1::s_clsISingleton = 0;
-jmethodID CBarcode1::s_midEnumerate;
-jmethodID CBarcode1::s_midGetDefaultID;
-jmethodID CBarcode1::s_midSetDefaultID;
+const char* const CBarcode1Base::ISINGLETON_CLASS = "com.motorolasolutions.rhoelements.IRhoApiSingleton";
+jclass CBarcode1Base::s_clsISingleton = 0;
+jmethodID CBarcode1Base::s_midEnumerate;
+jmethodID CBarcode1Base::s_midGetDefaultID;
+jmethodID CBarcode1Base::s_midSetDefaultID;
 
 //Barcode1 staff
-//const char* const CBarcode1::IOBJECT_CLASS = "com.motorolasolutions.rhoelements.barcode1.IBarcode1";
+//const char* const CBarcode1Base::IOBJECT_CLASS = "com.motorolasolutions.rhoelements.barcode1.IBarcode1";
 
 //----------------------------------------------------------------------------------------------------------------------
 
-JNIEnv* CBarcode1::jniInit()
+JNIEnv* CBarcode1Base::jniInit()
 {
     JNIEnv *env = jnienv();
     if(!env)
@@ -65,7 +65,7 @@ JNIEnv* CBarcode1::jniInit()
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-JNIEnv* CBarcode1::jniInit(JNIEnv* env)
+JNIEnv* CBarcode1Base::jniInit(JNIEnv* env)
 {
     static bool initialized = false;
     env = MethodExecutorJni::jniInit(env);
@@ -172,7 +172,7 @@ JNIEnv* CBarcode1::jniInit(JNIEnv* env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void CBarcode1::setJavaFactory(JNIEnv* env, jobject jFactory)
+void CBarcode1Base::setJavaFactory(JNIEnv* env, jobject jFactory)
 {
     RAWTRACE("setJavaFactory");
 
@@ -190,22 +190,7 @@ void CBarcode1::setJavaFactory(JNIEnv* env, jobject jFactory)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void CBarcode1::enumerate(MethodResultJni& res)
-{
-    RAWTRACE("enumerate");
-
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        return;
-    }
-
-    jhobject jhSingleton = getSingleton(env);
-    env->CallVoidMethod(jhSingleton.get(), s_midEnumerate, static_cast<jobject>(res));
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-rho::String CBarcode1::getDefaultID()
+rho::String CBarcode1Base::getDefaultID()
 {
     RAWTRACE("getDefaultID");
 
@@ -221,7 +206,7 @@ rho::String CBarcode1::getDefaultID()
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void CBarcode1::setDefaultID(const rho::String& id)
+void CBarcode1Base::setDefaultID(const rho::String& id)
 {
     RAWTRACE1("setDefaultID(id = \"%s\")", id.c_str());
 
@@ -237,14 +222,14 @@ void CBarcode1::setDefaultID(const rho::String& id)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jobject CBarcode1::getFactory(JNIEnv* env)
+jobject CBarcode1Base::getFactory(JNIEnv* env)
 {
     jobject res = env->CallStaticObjectMethod(s_clsFactorySingleton, s_midFactoryGetInstance);
     return res;
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jobject CBarcode1::getSingleton(JNIEnv* env)
+jobject CBarcode1Base::getSingleton(JNIEnv* env)
 {
     jhobject jhFactory = getFactory(env);
     jobject res = env->CallObjectMethod(jhFactory.get(), s_midGetApiSingleton);
@@ -252,7 +237,7 @@ jobject CBarcode1::getSingleton(JNIEnv* env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jobject CBarcode1::getObject(JNIEnv* env)
+jobject CBarcode1Base::getObject(JNIEnv* env)
 {
     jhstring jhId = rho_cast<jstring>(env, m_id);
     jhobject jhFactory = getFactory(env);
@@ -261,72 +246,5 @@ jobject CBarcode1::getObject(JNIEnv* env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void CBarcode1::getProps(MethodResultJni& result)
-{
-    RAWTRACE("getProps(result)");
-
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        return;
-    }
-
-    jhobject jhObject = getObject(env);
-    jhobject jhTask = env->NewObject(s_clsGetPropsTask, s_midGetPropsTask,
-                    jhObject.get(), static_cast<jobject>(result));
-    run(env, jhTask.get(), result);
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-void CBarcode1::getProps(jstring name, MethodResultJni& result)
-{
-    RAWTRACE("getProps(name, result)");
-
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        return;
-    }
-
-    jhobject jhObject = getObject(env);
-    jhobject jhTask = env->NewObject(s_clsGetProps1Task, s_midGetProps1Task,
-                    jhObject.get(), name, static_cast<jobject>(result));
-    run(env, jhTask.get(), result);
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-void CBarcode1::getProps(jobject names, MethodResultJni& result)
-{
-    RAWTRACE("getProps(nameList, result)");
-
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        return;
-    }
-
-    jhobject jhObject = getObject(env);
-    jhobject jhTask = env->NewObject(s_clsGetProps2Task, s_midGetProps2Task,
-                    jhObject.get(), names, static_cast<jobject>(result));
-    run(env, jhTask.get(), result);
-}
-//----------------------------------------------------------------------------------------------------------------------
-void CBarcode1::takeBarcode(MethodResultJni& result)
-{
-    RAWTRACE("takeBarcode(result)");
-
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        return;
-    }
-
-    jhobject jhObject = getObject(env);
-    jhobject jhTask = env->NewObject(s_clsTakeBarcodeTask, s_midTakeBarcodeTask,
-                    jhObject.get(), static_cast<jobject>(result));
-    run(env, jhTask.get(), result);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
 }
 

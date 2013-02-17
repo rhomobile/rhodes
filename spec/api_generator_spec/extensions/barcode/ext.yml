@@ -1,9 +1,12 @@
 entry: Init_Barcode_extension	
 javaentry: com.barcode.Barcode
-android_additional_sources_list: ext/platform/android/ext_build.files
+android:
+  source_list: ext/platform/android/ext_java.files
 libraries: ["Barcode"]
 
 project_paths:
   wp8: ext/platform/wp8/Barcode.vcxproj
-  wm: ext/platform/wm/Barcode.sln
-  win32: ext/platform/wm/Barcode.sln
+  wm: ext/platform/wm/Barcode.vcproj
+  win32: ext/platform/wm/Barcode.vcproj
+
+xml_api_paths: ext/new_barcode.xml

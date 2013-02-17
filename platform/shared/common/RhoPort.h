@@ -513,6 +513,13 @@ CreateEventWP8(
 #define CreateEventW CreateEventWP8
 #define CreateEvent CreateEventW
 
+HANDLE WINAPI CreateMutexWP8(
+    _In_opt_  LPSECURITY_ATTRIBUTES lpMutexAttributes,
+	_In_      BOOL bInitialOwner,
+	_In_opt_  LPCWSTR lpName);
+
+#define CreateMutex CreateMutexWP8
+
 
 HANDLE
 WINAPI
@@ -617,12 +624,14 @@ void WINAPI TlsShutdown();
 
 DWORD
 WINAPI
-WaitForMultipleObjects(
+WaitForMultipleObjectsWP8(
     _In_ DWORD nCount,
     _In_reads_(nCount) CONST HANDLE *lpHandles,
     _In_ BOOL bWaitAll,
     _In_ DWORD dwMilliseconds
     );
+
+#define WaitForMultipleObjects WaitForMultipleObjectsWP8
 
 BOOL
 WINAPI
@@ -658,10 +667,19 @@ ExitThread(
 
 BOOL
 WINAPI
-TerminateThread(
+TerminateThreadWP8(
     _In_ HANDLE hThread,
     _In_ DWORD dwExitCode
     );
+
+#define TerminateThread TerminateThreadWP8
+
+BOOL WINAPI GetExitCodeThreadWP8(
+  _In_   HANDLE hThread,
+  _Out_  LPDWORD lpExitCode
+);
+
+#define GetExitCodeThread GetExitCodeThreadWP8
 
 #define SetThreadPriority SetThreadPriorityWP8
 

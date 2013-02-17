@@ -15,28 +15,32 @@
 <% if $cur_module.is_template_propertybag %>
 
 -(void) getProperty:(NSString*)propertyName methodResult:(id<IMethodResult>)methodResult {
-     [methodResult setResult:[mProperties objectForKey:propertyName]];
-}
-
--(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult {
-     [methodResult setResult:[mProperties dictionaryWithValuesForKeys:arrayofNames]];
-}
-
--(void) getAllProperties:(id<IMethodResult>)methodResult {
-     [methodResult setResult:[mProperties dictionaryWithValuesForKeys:[[mProperties keyEnumerator] allObjects]]];
+    [methodResult setResult:[mProperties objectForKey:propertyName]];
 }
 
 -(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue {
-    [mProperties setObject:propertyValue forKey:propertyName];
+   [mProperties setObject:propertyValue forKey:propertyName];
 }
 
+-(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[mProperties dictionaryWithValuesForKeys:arrayofNames]];
+}
+
+-(void) getAllProperties:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[mProperties dictionaryWithValuesForKeys:[[mProperties keyEnumerator] allObjects]]];
+}
+
+
 -(void) setProperties:(NSDictionary*)propertyMap {
-    [mProperties addEntriesFromDictionary:dict];
+   [mProperties addEntriesFromDictionary:propertyMap];
 }
 
 -(void) clearAllProperties {
-    [mProperties removeAllObjects];
+   [mProperties removeAllObjects];
 }
+
+
+
 
 <% end %>
 
@@ -55,10 +59,10 @@
   if add_method
 %><%= module_method.cached_data["iphone_line"] %>; {
 <% if module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
-    [self getProperty:@"<%= module_method.linked_property.native_name %>" methodResult:methodResult]
+    [self getProperty:@"<%= module_method.linked_property.native_name %>" methodResult:methodResult];
 <% end
  if module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER %>
-    [self setProperty::@"<%= module_method.linked_property.native_name %>" propertyValue:value]
+    [self setProperty:@"<%= module_method.linked_property.native_name %>" propertyValue:value];
 <% end %>
 }
 

@@ -1150,6 +1150,7 @@ namespace "build" do
       args << "-I\"#{srcdir}/../include/rhodes/details\""
       args << "-I\"#{$shareddir}\""
       args << "-I\"#{$shareddir}/common\""
+      args << "-I\"#{$shareddir}/api_generator\""
       args << "-I\"#{$shareddir}/sqlite\""
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""

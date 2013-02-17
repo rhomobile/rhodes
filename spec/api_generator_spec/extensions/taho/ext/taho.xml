@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-	<MODULE name="Taho" parent="Rho">
+	<MODULE name="Taho" parent="Rho.System" generateUnderscoreRubyNames="true">
 		<HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
 		<MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
 	    <TEMPLATES>
@@ -22,19 +22,37 @@
 			<PROPERTY name="Type" type="STRING">
 				<DESC>possible value - "hardware"/"software"</DESC>
 				<VALUES>
-					<VALUE const_name="const_value1" value="hardware" type="STRING">
+					<VALUE constName="const_value1" value="hardware" type="STRING">
 						<DESC>value doc 1</DESC>
 					</VALUE>
-					<VALUE const_name="const_value2" value="software">
+					<VALUE constName="const_value2" value="software">
 						<DESC>value doc 2</DESC>
 					</VALUE>
 				</VALUES>
 			</PROPERTY>
-			<PROPERTY name="SupportedCodes" type="ARRAY" usePropertyBag="none">
+			<PROPERTY name="SupportedCodes" type="ARRAY" usePropertyBag="none" readonly="true">
 				<DESC>ARRAY of STRING with all supported barcode codes by this recognizer</DESC>
 			</PROPERTY>
+			<ALIASES>
+				<ALIAS new="mymegasuperpuper_type" existing="Type" >
+					<DESC>Message for logging in case of deprecated attribute</DESC>
+				</ALIAS>
+				<ALIAS new="supported_codes" existing="SupportedCodes" >
+					<DESC>Message for logging in case of deprecated attribute</DESC>
+				</ALIAS>
+			</ALIASES>
 		</PROPERTIES>	
 		<METHODS>
+			<METHOD name="simpleTypesTest">
+				<DESC>recognize barcode in image file or in images pixels array - just example of method</DESC>
+				<PARAMS>
+					<PARAM name="param1" type="STRING"/>
+					<PARAM name="param2" type="BOOLEAN"/>
+					<PARAM name="param3" type="INTEGER"/>
+					<PARAM name="param4" type="FLOAT"/>
+					<PARAM name="param5" type="STRING"/>
+				</PARAMS>
+			</METHOD>
 			<METHOD name="recognizeBarcodeOnImage">
 				<DESC>recognize barcode in image file or in images pixels array - just example of method</DESC>
 				<PARAMS>
@@ -54,26 +72,20 @@
 					</POSSIBILITY>	
 				</RETURN>
 			</METHOD>
-			<METHOD name="getReccommendedDeviceForCodeType" access="STATIC" factory="true">
+			<METHOD name="getReccommendedDeviceForCodeType" access="STATIC">
 				<DESC>example of static and fabric method - return Barcode1 object</DESC>
 				<PARAMS>
 					<PARAM name="codetype" type="STRING">
 						<DESC>string name of codetype: EPC, EAN, UPC etc.</DESC>
 					</PARAM>
 				</PARAMS>
-				<RETURN>
+				<RETURN type="ARRAY" itemType="Rho.System.MyModule">
 					<DESC>
 						Some text that the user can read.  Also note: The actual type returned will depend on what properties the user requested but the generator will just eval() the string returned so does not need to know information on return type.  Marshalled code from C can be used to determine the actual type.  Dmitry to put XML together.
 					</DESC>
-					<POSSIBILITY type="SELF">
-						<DESC>recognizer object recommended for recognize</DESC>
-					</POSSIBILITY>	
-					<POSSIBILITY type="NIL">
-						<DESC>if not any devices can recognized that codetype</DESC>
-					</POSSIBILITY>	
 				</RETURN>
 			</METHOD>	
-			<METHOD name="scanBarcode" access="INSTANCE" run_in_thread="true" has_callback="mandatory">
+			<METHOD name="scanBarcode" access="INSTANCE" runInThread="separate" hasCallback="mandatory">
 				<DESC>start scanning barcode - callback when recognize process was finished, also example of UI_THREAD attribute</DESC>
 				<PARAMS>
 					<PARAM  name ="settings" type="HASH">
@@ -84,7 +96,7 @@
 					</PARAM>
 				</PARAMS>
 			</METHOD>
-			<METHOD name="scanBarcodeInUI" access="INSTANCE" run_in_ui_thread="true" has_callback="mandatory">
+			<METHOD name="scanBarcodeInUI" access="INSTANCE" runInThread="ui" hasCallback="mandatory">
 				<DESC>start scanning barcode - callback when recognize process was finished, also example of UI_THREAD attribute</DESC>
 				<PARAMS>
 					<PARAM  name ="settings" type="HASH">
@@ -95,6 +107,11 @@
 					</PARAM>
 				</PARAMS>
 			</METHOD>
+			<ALIASES>
+				<ALIAS new="scan_barcode_in_main_thread" existing="scanBarcodeInUI" deprecated="true" >
+					<DESC>Message for logging in case of deprecated attribute</DESC>
+				</ALIAS>
+			</ALIASES>
 		</METHODS>
 		<USER_OVERVIEW> <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
 			<![CDATA[

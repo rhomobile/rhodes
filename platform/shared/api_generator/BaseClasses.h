@@ -1,8 +1,14 @@
 #pragma once
 
 #include "common/RhoStd.h"
+#include "common/StringConverter.h"
 #include "GeneratorQueue.h"
 
+namespace rho
+{
+namespace apiGenerator
+{
+/*
 template<typename ModuleClass>
 class CModuleBase: public ModuleClass
 {
@@ -24,7 +30,23 @@ public:
 
     virtual void getProperties( const rho::Vector<rho::StringW>& arrayofNames, CMethodResult& oResult)
     {
-        oResult.set(m_hashProps);
+        rho::Hashtable<rho::StringW, rho::StringW> res;
+        oResult.setCollectionMode(true);
+        for ( int i = 0; i < (int)arrayofNames.size(); i++ )
+        {
+            getProperty(arrayofNames[i], oResult);
+
+            if ( oResult.isError() )
+                break;
+
+            res[arrayofNames[i]] = oResult.toString();
+        }
+
+        oResult.setCollectionMode(false);
+        if ( oResult.isError() )
+            oResult.callCallback();
+        else
+            oResult.set(res);
     }
 
     virtual void getAllProperties(CMethodResult& oResult)
@@ -39,7 +61,12 @@ public:
 
     virtual void setProperties( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult)
     {
-        //TODO:setProperties
+        for ( rho::Hashtable<rho::StringW, rho::StringW>::const_iterator it = propertyMap.begin();  it != propertyMap.end(); ++it )
+        {
+            setProperty( it->first, it->second, oResult );
+            if ( oResult.isError() )
+                break;
+        }
     }
 
     virtual void clearAllProperties(CMethodResult& oResult)
@@ -47,13 +74,12 @@ public:
         m_hashProps.clear();
     }
 
-};
+};*/
 
 template<typename ModuleClass>
 class CModuleSingletonBase : public ModuleClass
 {
 protected:
-    rho::StringW m_strDefaultID;
     rho::common::CAutoPtr<rho::common::CThreadQueue> m_pCommandQueue;
 
     class CCallInThread : public rho::common::CRhoThread
@@ -91,22 +117,13 @@ public:
     {
         new CCallInThread(pFunctor);
     }
-
-    virtual void setDefaultID(const rho::StringW& strDefaultID){ m_strDefaultID = strDefaultID; }
-    virtual rho::StringW getDefaultID()
-    { 
-        if ( m_strDefaultID.length() == 0 )
-            setDefaultID(getInitialDefaultID());
-        return m_strDefaultID; 
-    }
 };
 
 template<typename ModuleClass, typename SingletonClass, typename BaseClass>
 class CModuleFactoryBase : public BaseClass
 {
 protected:
-    rho::common::CAutoPtr<SingletonClass> m_pModuleSingleton;
-    rho::Hashtable<rho::StringW,ModuleClass*> m_hashModules;
+    common::CAutoPtr<SingletonClass> m_pModuleSingleton;
 
 public:
 
@@ -118,20 +135,45 @@ public:
         return m_pModuleSingleton;
     }
 
-    virtual ModuleClass* getModuleByID(const rho::StringW& strID)
-    {
-        if ( !m_hashModules.containsKey(strID) )
-        {
-            ModuleClass* pObj = createModuleByID(strID);
-            m_hashModules.put(strID, pObj );
-
-            return pObj;
-        }
-
-        return m_hashModules[strID];
-    }
-    
     virtual SingletonClass* createModuleSingleton() = 0;
-    virtual ModuleClass* createModuleByID(const rho::StringW& strID) = 0;
 
 };
+
+template<typename ModuleClass>
+class CMethodAccessor
+{
+public:
+    typedef void (ModuleClass::*TGetter)(CMethodResult& oResult);
+
+    struct CSetterBase
+    {
+        virtual void call(ModuleClass* pModule, const rho::String& strArg, CMethodResult& oResult ) = 0;
+    };
+    template<typename TArg, typename TValue>        
+    class CSetter: public CSetterBase
+    {
+        typedef void (ModuleClass::*TSetter)(TArg arg, CMethodResult& oResult);
+        TSetter m_pSetterFunc;
+    public:
+        CSetter( TSetter pSetter ) : m_pSetterFunc(pSetter){}
+        virtual void call(ModuleClass* pModule, const rho::String& strArg, CMethodResult& oResult )
+        {
+            TValue arg;
+            rho::common::convertFromStringA( strArg.c_str(), arg );
+            (pModule->*m_pSetterFunc)( arg, oResult );
+        }
+    };
+private:
+    TGetter m_pGetter;
+    CSetterBase* m_pSetter;
+public:
+    CMethodAccessor( TGetter pGetter) : m_pGetter(pGetter), m_pSetter(0){}
+
+    void addSetter(CSetterBase* pSetter){ m_pSetter = pSetter; }
+    void callGetter( ModuleClass* pModule, CMethodResult& oResult ){ (pModule->*m_pGetter)(oResult); }
+    void callSetter( ModuleClass* pModule, const rho::String& strArg, CMethodResult& oResult){ m_pSetter->call( pModule, strArg, oResult); }
+    bool hasSetter()const{ return m_pSetter != 0; }
+};
+
+}
+}
