@@ -113,6 +113,20 @@ HWND CMainWindow::getWebViewHWND(int index)
     return 0;
 }
 
+void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*= false*/)
+{
+    if (qtMainWindow)
+        ((QtMainWindow*)qtMainWindow)->fullscreenCommand(bFull ? 1 : 0);
+}
+
+bool CMainWindow::getFullScreen()
+{
+    if (qtMainWindow)
+        return ((QtMainWindow*)qtMainWindow)->getFullScreen();
+
+    return false;
+}
+
 void CMainWindow::MessageLoop(void)
 {
     messageLoop();

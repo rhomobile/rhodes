@@ -134,6 +134,24 @@ inline bool String_getline(const StrType& str, StrType& line, size_t& pos, CharT
     }
     return res;
 }
+/*
+template<typename StrType>
+inline StrType String_toLower(StrType& str)
+{
+    StrType strRes;
+    std::transform(str.begin(), str.end(), std::back_inserter(strRes), &::tolower);
+
+    return strRes;
+}
+
+template<typename StrType>
+inline StrType String_toUpper(StrType& str)
+{
+    StrType strRes;
+    std::transform(str.begin(), str.end(), std::back_inserter(strRes), &::toupper);
+
+    return strRes;
+}*/
 
 template<class Type>
 class Vector : public std::vector<Type>{
@@ -285,6 +303,17 @@ public:
         std::map<TKEY,TVALUE>::erase(key);
     }
 
+    TVALUE get(const TKEY& key)const
+    {
+        if ( containsKey(key) )
+        {
+            typename std::map<TKEY,TVALUE>::const_iterator it = std::map<TKEY,TVALUE>::find(key);
+            return (*it).second;
+        }
+
+        return TVALUE();
+    }
+
     TVALUE get(const TKEY& key)
     {
         if ( containsKey(key) )
@@ -293,7 +322,7 @@ public:
         return TVALUE();
     }
 
-    boolean containsKey(const TKEY& key)
+    boolean containsKey(const TKEY& key)const
     {
         return !std::map<TKEY,TVALUE>::empty() && std::map<TKEY,TVALUE>::find(key) != std::map<TKEY,TVALUE>::end();
     }

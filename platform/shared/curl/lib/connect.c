@@ -439,7 +439,11 @@ static bool verifyconnect(curl_socket_t sockfd, int *error)
 #ifdef _WIN32_WCE
   Sleep(0);
 #else
+#ifndef OS_WP8
   SleepEx(0, FALSE);
+#else
+  Sleep(0);
+#endif
 #endif
 
 #endif

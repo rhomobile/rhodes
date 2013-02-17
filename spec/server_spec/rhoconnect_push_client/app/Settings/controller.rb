@@ -2,7 +2,10 @@ require 'rho'
 require 'rho/rhocontroller'
 require 'rho/rhoerror'
 require 'helpers/browser_helper'
+require 'sync_server'
 require 'local_server'
+require 'push_server'
+
 
 class SettingsController < Rho::RhoController
   include BrowserHelper
@@ -12,27 +15,31 @@ class SettingsController < Rho::RhoController
     
     puts "Logged in: #{SyncEngine.logged_in}"
 	SyncEngine.set_syncserver("http://#{SYNC_SERVER_HOST}:#{SYNC_SERVER_PORT}/application")
-	SyncEngine.login('pushclient', 'pushclient', '/app/Settings/login_callback' ) unless SyncEngine.logged_in > 0
-    
+	RhoConf.set_property_by_name('rhoconnect_push_server',"http://#{PUSH_SERVER_HOST}:#{PUSH_SERVER_PORT}")
+	puts "push server is #{RhoConf.get_property_by_name('rhoconnect_push_server')}"
+	  
+	SyncEngine.logout
+	SyncEngine.login('pushclient', 'pushclient', '/app/Settings/login_callback' )
 	  #unless $push_check_started
       #check_registration
       #$push_check_started = true
 	  #end
     
-    render
+	  #    render
   end
-
+=begin
   def login
     @msg = @params['msg']
     render :action => :login
   end
-
+=end
   def login_callback
     errCode = @params['error_code'].to_i
+	  
+	puts "login callback, error code: #{errCode}"
+	  
     if errCode == 0
-      # run sync if we were successful
-      WebView.navigate Rho::RhoConfig.options_path
-      #SyncEngine.dosync
+		#      WebView.navigate Rho::RhoConfig.options_path
     else
       if errCode == Rho::RhoError::ERR_CUSTOMSYNCSERVER
         @msg = @params['error_message']
@@ -42,14 +49,16 @@ class SettingsController < Rho::RhoController
         @msg = Rho::RhoError.new(errCode).message
       end
       
-      WebView.navigate ( url_for :action => :login, :query => {:msg => @msg} )      
+		#      WebView.navigate ( url_for :action => :login, :query => {:msg => @msg} )
     end
 
     host = SPEC_LOCAL_SERVER_HOST
     port = SPEC_LOCAL_SERVER_PORT
 	Rho::AsyncHttp.get :url => "http://#{host}:#{port}?error=#{errCode}"
 	  
-	  #check_registration
+	puts "sent error code to the spec server"
+	  
+	check_registration
   end
   
   def check_registration
@@ -59,14 +68,18 @@ class SettingsController < Rho::RhoController
     port = SPEC_LOCAL_SERVER_PORT
 
     if(Rho::RhoConfig.exist?('push_pin') && Rho::RhoConfig.push_pin != '')
+	  puts "RhoConfig: #{Rho::RhoConfig}"
+		
       puts "Sending device_id: #{Rho::RhoConfig.push_pin}"
       Rho::AsyncHttp.get :url => "http://#{host}:#{port}?device_id=#{Rho::RhoConfig.push_pin}"
     else
       Rho::Timer.start(5000, url_for(:action=>'check_registration'), '')
     end
   end
-  
+	
   def push_callback
+	puts "======> PUSH CALLBACK params #{@params.inspect}"
+	  
     host = SPEC_LOCAL_SERVER_HOST
     port = SPEC_LOCAL_SERVER_PORT
     exit = nil
@@ -78,15 +91,21 @@ class SettingsController < Rho::RhoController
         puts 'Exit command received!!!!!'
       end
     end
-    
-    puts "sending response: http://#{host}:#{port}?alert=#{@params['alert']} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-    
-    Rho::AsyncHttp.get :url => "http://#{host}:#{port}?alert=#{@params['alert']}"
+	  
+	url = "http://#{host}:#{port}?alert=#{@params['alert']}&error=#{@params['error']}"
+
+	  
+	if @params['error']
+		puts "skipping response: #{url} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+	else
+		puts "sending response: #{url} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+		Rho::AsyncHttp.get :url => url
+	end
     
     System.exit if exit
-    
   end
-
+ 
+=begin
   def do_login
     if @params['login'] and @params['password']
       begin
@@ -165,5 +184,6 @@ class SettingsController < Rho::RhoController
         WebView.navigate( url_for :action => :err_sync, :query => { :msg => @msg } )
       end    
 	end
-  end  
+  end
+=end
 end

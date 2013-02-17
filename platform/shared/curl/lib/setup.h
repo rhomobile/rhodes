@@ -500,4 +500,60 @@ int netware_init(void);
 #include "setup_once.h"
 #endif
 
+#ifdef OS_WP8
+extern VOID WINAPI SleepWP8(_In_ DWORD dwMilliseconds);
+#define Sleep SleepWP8
+extern DWORD
+WINAPI
+WaitForSingleObjectWP8(
+    _In_ HANDLE hHandle,
+    _In_ DWORD dwMilliseconds
+    );
+
+#define WaitForSingleObject WaitForSingleObjectWP8
+extern DWORD
+WINAPI
+WaitForMultipleObjectsWP8(
+    _In_ DWORD nCount,
+    _In_reads_(nCount) CONST HANDLE *lpHandles,
+    _In_ BOOL bWaitAll,
+    _In_ DWORD dwMilliseconds
+    );
+
+#define WaitForMultipleObjects WaitForMultipleObjectsWP8
+extern HANDLE
+WINAPI
+CreateEventWP8(
+    _In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+    _In_ BOOL bManualReset,
+    _In_ BOOL bInitialState,
+    _In_opt_ LPCWSTR lpName);
+
+#define CreateEventW CreateEventWP8
+#define CreateEvent CreateEventW
+
+extern HANDLE WINAPI CreateMutexWP8(
+    _In_opt_  LPSECURITY_ATTRIBUTES lpMutexAttributes,
+	_In_      BOOL bInitialOwner,
+	_In_opt_  LPCWSTR lpName);
+
+#define CreateMutex CreateMutexWP8
+
+extern BOOL
+WINAPI
+TerminateThreadWP8(
+    _In_ HANDLE hThread,
+    _In_ DWORD dwExitCode
+    );
+
+#define TerminateThread TerminateThreadWP8
+
+extern BOOL WINAPI GetExitCodeThreadWP8(
+  _In_   HANDLE hThread,
+  _Out_  LPDWORD lpExitCode
+);
+
+#define GetExitCodeThread GetExitCodeThreadWP8
+#endif
+
 #endif /* __LIB_CURL_SETUP_H */

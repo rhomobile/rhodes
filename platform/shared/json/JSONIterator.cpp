@@ -315,6 +315,33 @@ double CJSONEntry::getDouble(const char* name)
     return res;
 }
 
+int CJSONEntry::getInt()
+{
+    int nRes = 0;
+    if ( m_object != 0 )
+        nRes = static_cast<int>(json_object_get_int(m_object));
+
+    return nRes;
+}
+
+uint64 CJSONEntry::getUInt64()
+{
+    uint64 nRes = 0;
+    if ( m_object != 0 )
+        nRes = (uint64)json_object_get_int(m_object);
+
+    return nRes;
+}
+
+double CJSONEntry::getDouble()
+{
+    double res = 0;
+    if (m_object != 0)
+        res = json_object_get_double(m_object);
+
+    return res;
+}
+
 /*
 uint64 CJSONEntry::getUInt64(const char* name)
 {

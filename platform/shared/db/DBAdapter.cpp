@@ -42,6 +42,8 @@
 
 #include <sstream>
 
+int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw);
+
 namespace rho{
 namespace db{
 IMPLEMENT_LOGCLASS(CDBAdapter,"DB");
@@ -1088,10 +1090,6 @@ void CDBAdapter::rollback()
     Unlock();
 }
 	
-extern "C" int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, void* ptrFilesArray, const char* psw);
-	
-	
-	
 String CDBAdapter::exportDatabase() {
 	
 	String basePath = CFilePath(m_strDbPath).getFolderName();
@@ -1121,7 +1119,7 @@ String CDBAdapter::exportDatabase() {
 
 	String ret = zipName;
 	
-	if (rho_sys_zip_files_with_path_array_ptr(zipName.c_str(),basePath.c_str(),&fileList,0)!=0) {
+	if (rho_sys_zip_files_with_path_array_ptr(zipName.c_str(),basePath.c_str(),fileList,0)!=0) {
 		ret = "";
 	}
 

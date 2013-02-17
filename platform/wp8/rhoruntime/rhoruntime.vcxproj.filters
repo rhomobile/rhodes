@@ -48,6 +48,9 @@
     <ClCompile Include="ToolbarImpl.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="common\SSLImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />
@@ -62,6 +65,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\net\CURLNetRequest.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\SSLImpl.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>

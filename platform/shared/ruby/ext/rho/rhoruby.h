@@ -97,6 +97,7 @@ VALUE rho_ruby_get_NIL();
 int rho_ruby_is_NIL(VALUE val);
 int rho_ruby_get_bool(VALUE val);
 long rho_ruby_get_int(VALUE val);
+double rho_ruby_get_double(VALUE val);
 VALUE rho_ruby_create_array();
 VALUE rho_ruby_create_string(const char* szVal);
 VALUE rho_ruby_create_string_withlen(int len);
@@ -154,6 +155,9 @@ int rho_ruby_is_hash(VALUE val);
 int rho_ruby_is_proc(VALUE val);
 int rho_ruby_is_method(VALUE val);
 VALUE rho_ruby_getProcBinding(VALUE proc);
+int rho_ruby_is_integer(VALUE val);
+int rho_ruby_is_boolean(VALUE val);
+int rho_ruby_is_float(VALUE val);
 
 #define RHO_PARAM_UNKNWON 0
 #define RHO_PARAM_STRING 1

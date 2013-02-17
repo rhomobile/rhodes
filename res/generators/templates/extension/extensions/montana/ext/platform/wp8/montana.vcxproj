@@ -149,13 +149,15 @@
     <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c" />
-    <ClCompile Include="generated\<%= name.camel_case() %>FactoryBase.cpp" />
-    <ClCompile Include="generated\<%= name.downcase() %>_js_wrap.cpp" />
-    <ClCompile Include="generated\<%= name.downcase() %>_ruby_wrap.cpp" />
-    <ClCompile Include="src\<%= name.camel_case() %>_impl.cpp" />
+    <ClInclude Include="..\..\<%= name.camel_case() %>.xml" />
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_ruby_wrap.cpp" />
+    <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h" />
+	<ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>Base.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\<%= name.camel_case() %>.h" />
+    <ClCompile Include="src\<%= name.camel_case() %>_impl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

@@ -11,6 +11,7 @@ class SettingsController < Rho::RhoController
     render
   end
 
+<% if @rhoconnectclient_ext %>    
   def login
     @msg = @params['msg']
     render :action => :login
@@ -114,4 +115,7 @@ class SettingsController < Rho::RhoController
       end    
 	end
   end  
+  
+<% end %>
+  
 end

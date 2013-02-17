@@ -1,39 +1,176 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="System" parent="Rho" generateUndescoreRubyNames="true">
+    <MODULE name="System" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
         <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
-    
+
+        <ALIASES>
+            <ALIAS new="System" existing="Rho::System" deprecated="true"/>
+        </ALIASES>
+
         <TEMPLATES>
             <DEFAULT_INSTANCE/>
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 
-        <PROPERTIES usePropertyBag="mapNamesToAccessors"  noAccessors="false">
-            <!-- list of properties supported by property bag methods getPops(), setProps() -->
+        <PROPERTIES usePropertyBag="PropertyBagViaAccessors" limitPropertyBag="true">
             <DESC>object supports this properties bla bla bla :</DESC>
-            <PROPERTY name="platform" type="STRING">
+
+            <ALIASES>
+                <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
+                <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
+            </ALIASES>
+
+            <PROPERTY name="platform" type="STRING" readOnly="true">
                 <DESC>Platform where application is running.</DESC>
-                <VALUES>
-                    <VALUE const_name="PLATFORM_WM_CE" value ="WINDOWS">
+                <VALUES>         
+                    <VALUE constName="PLATFORM_WM_CE" value ="WINDOWS">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE const_name="PLATFORM_ANDROID" value ="ANDROID">
+                    <VALUE constName="PLATFORM_ANDROID" value ="ANDROID">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE const_name="PLATFORM_IOS" value ="APPLE">
+                    <VALUE constName="PLATFORM_IOS" value ="APPLE">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE const_name="PLATFORM_WP8" value ="WP8">
+                    <VALUE constName="PLATFORM_WP8" value ="WP8">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE const_name="PLATFORM_WINDOWS_DESKTOP" value ="WINDOWS_DESKTOP">
+                    <VALUE constName="PLATFORM_WINDOWS_DESKTOP" value ="WINDOWS_DESKTOP">
                         <DESC></DESC>
                     </VALUE>
 
                 </VALUES>
             </PROPERTY>
+            
+            <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
+                <DESC>Is camera available on the device.</DESC>
+            </PROPERTY>
+            <PROPERTY name="screenWidth" type="INTEGER" readOnly="true">
+                <DESC>Screen width in logical pixels (used for set coordinates).</DESC>
+            </PROPERTY>
+            <PROPERTY name="screenHeight" type="INTEGER" readOnly="true">
+                <DESC>Screen height in logical pixels (used for set coordinates).</DESC>
+            </PROPERTY>
+            <PROPERTY name="realScreenWidth" type="INTEGER" readOnly="true">
+                <DESC>Screen width in real pixels.</DESC>
+            </PROPERTY>
+            <PROPERTY name="realScreenHeight" type="INTEGER" readOnly="true">
+                <DESC>Screen height in real pixels.</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="screenOrientation" type="STRING" readOnly="true">
+                <DESC>Current screen orientation.</DESC>
+                <VALUES>
+                    <VALUE constName="SCREEN_PORTRAIT" value ="portrait">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE constName="SCREEN_LANDSCAPE" value ="landscape">
+                        <DESC></DESC>
+                    </VALUE>
+
+                </VALUES>
+            </PROPERTY>
+
+            <PROPERTY name="ppiX" type="INTEGER" readOnly="true">
+                <DESC>Horizontal PPI (Pixels Per Inch).</DESC>
+            </PROPERTY>
+            <PROPERTY name="ppiY" type="INTEGER" readOnly="true">
+                <DESC>Vertical PPI (Pixels Per Inch).</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="phoneNumber" type="STRING" readOnly="true">
+                <DESC>Device phone number.</DESC>
+            </PROPERTY>
+            <PROPERTY name="deviceOwnerEmail" type="STRING" readOnly="true">
+                <DESC>Primary email of phone owner (works only on Android).</DESC>
+            </PROPERTY>
+            <PROPERTY name="deviceOwnerName" type="STRING" readOnly="true">
+                <DESC>Name(account name) of phone owner (works only on Android).</DESC>
+            </PROPERTY>
+            <PROPERTY name="devicePushId" type="STRING" readOnly="true">
+                <DESC>Push notifications device ID which may be used to receive push messages.</DESC>
+            </PROPERTY>
+            <PROPERTY name="phoneId" type="STRING" readOnly="true">
+                <DESC>Hardware based ID. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.</DESC>
+            </PROPERTY>
+            <PROPERTY name="deviceName" type="STRING" readOnly="true">
+                <DESC>Name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android).</DESC>
+            </PROPERTY>
+            <PROPERTY name="osVersion" type="STRING" readOnly="true">
+                <DESC>Version OS of device. Examples: '4.6.0.192' (BB), '3.0' (iPhone), '1.6' (Android).</DESC>
+            </PROPERTY>
+            <PROPERTY name="locale" type="STRING" readOnly="true">
+                <DESC>Current device locale.Like 'en', 'ru' etc.</DESC>
+            </PROPERTY>
+            <PROPERTY name="country" type="STRING" readOnly="true">
+                <DESC>Current device country code.</DESC>
+            </PROPERTY>
+            <PROPERTY name="isEmulator" type="BOOLEAN" readOnly="true">
+                <DESC>Is application is running on emulator.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasCalendar" type="BOOLEAN" readOnly="true">
+                <DESC>Is calendar support is available.</DESC>
+            </PROPERTY>
+            <PROPERTY name="isMotorolaDevice" type="BOOLEAN" readOnly="true">
+                <DESC>Is device supports Motorola device capabilities, such as Scanner, etc.</DESC>
+            </PROPERTY>
+            <PROPERTY name="oemInfo" type="STRING" readOnly="true">
+                <DESC>The OEM Information string for the terminal.</DESC>
+            </PROPERTY>
+            <PROPERTY name="uuid" type="STRING" readOnly="true">
+                <DESC>The Unique Unit IDentifier for the terminal.</DESC>
+            </PROPERTY>
+            <PROPERTY name="applicationIconBadge" type="INTEGER">
+                <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
+            </PROPERTY>
+            <PROPERTY name="httpProxyURI" type="STRING">
+                <DESC>Client HTTP proxy.</DESC>
+            </PROPERTY>
+            <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
+                <DESC>Lock/unlock the window size change by the user. Implemented only for Windows desktop.</DESC>
+            </PROPERTY>
+            <PROPERTY name="showKeyboard" type="BOOLEAN">
+                <DESC>Display\hide software keyboard.</DESC>
+            </PROPERTY>
+            <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
+                <DESC>Use full screen mode.</DESC>
+            </PROPERTY>
+            <PROPERTY name="localServerPort" type="INTEGER" default="8080">
+                <DESC>Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.</DESC>
+            </PROPERTY>
+            <PROPERTY name="freeServerPort" type="INTEGER" readOnly="true">
+                <DESC>Get free local server port, available for binding.</DESC>
+            </PROPERTY>
+            <PROPERTY name="screenAutoRotate" type="BOOLEAN" default="true">
+                <DESC>Screen auto rotate.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasTouchscreen" type="BOOLEAN" readOnly="true">
+                <DESC>Is device has touch screen.</DESC>
+            </PROPERTY>
+            <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
+                <DESC>Is the security token check was failed.</DESC>
+            </PROPERTY>
+            <PROPERTY name="webviewFramework" type="STRING" readOnly="true">
+                <DESC>Browser framework identity string.</DESC>
+            </PROPERTY>
+            <PROPERTY name="screenSleeping" type="BOOLEAN">
+                <DESC>Should screen go to sleep by timeout.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>USE Network.hasNetwork: Is device connected to the network.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasWifiNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>USE Network.hasWifiNetwork: Is device connected to the wifi network</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasCellNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>USE Network.hasCellNetwork: Is device connected to the cell network.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasSqlite" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>Does sqlite used on this platform.</DESC>
+            </PROPERTY>
+
         </PROPERTIES>
     
         <METHODS>
@@ -42,7 +179,11 @@
                     <DESC>Use property names methods instead.</DESC>
                 </ALIAS>
 
+                <ALIAS new="run_app" existing="runApplication" deprecated="true"/>
                 <ALIAS new="app_install" existing="applicationInstall" deprecated="true"/>
+                <ALIAS new="app_installed?" existing="isApplicationInstalled" deprecated="true"/>
+                <ALIAS new="app_uninstall" existing="applicationUninstall" deprecated="true"/>
+
             </ALIASES>
 
             <METHOD name="applicationInstall">
@@ -75,6 +216,11 @@
                 </PARAMS>
             </METHOD>
 
+            <METHOD name="getStartParams">
+                <DESC>Return the command line parameters.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+
             <METHOD name="openUrl">
                 <DESC>Open the application associated with the URL.</DESC>
                 <PARAMS>
@@ -84,34 +230,15 @@
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="runApplication">
-                <DESC>Run an application.</DESC>
-                <PARAMS>
-                    <PARAM name="appName" type="STRING">
-                        <DESC>The name of the application on the device to run.</DESC>
-                    </PARAM>
-                    <PARAM name="params" type="STRING">
-                        <DESC>The name of the application on the device to run.</DESC>
-                        <CAN_BE_NIL/>
-                    </PARAM>
-                    <PARAM name="blockingCall" type="BOOLEAN">
-                        <DESC>The name of the application on the device to run.</DESC>
-                        <CAN_BE_NIL>
-                            <DESC>False by default</DESC>
-                        </CAN_BE_NIL>
-                    </PARAM>
-                </PARAMS>
-
-                <RETURN type="INTEGER">
-                    <DESC>Handle of created process.</DESC>                    
-                </RETURN>
-            </METHOD>
-
             <METHOD name="unzipFile">
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
                         <DESC>The path to the file to be unzipped.</DESC>
+                    </PARAM>
+                    <PARAM name="password" type="STRING">
+                        <DESC>Password for the zip.</DESC>
+                        <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
             </METHOD>
@@ -154,26 +281,312 @@
             <METHOD name="setRegistrySetting">
                 <DESC>setRegistrySetting</DESC>
                 <PARAMS>
-                    <PARAM name="keyPath" type="STRING">
-                        <DESC>Path to key in registry</DESC>
+                    <PARAM name="hive" type="INTEGER">
+                        <DESC>The hive name</DESC>
+                        <VALUES>
+                            <VALUE constName="HKEY_CLASSES_ROOT" value ="0">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_CURRENT_USER" value ="1">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_LOCAL_MACHINE" value ="2">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_USERS" value ="3">
+                                <DESC></DESC>
+                            </VALUE>
+                        </VALUES>
                     </PARAM>
-                    <PARAM name="keyValue" type="STRING">
-                        <DESC>Value of the key</DESC>
+                    <PARAM name="type" type="INTEGER">
+                        <DESC>The hive name</DESC>
+                        <VALUES>
+                            <VALUE constName="REG_SZ" value ="1">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="REG_BINARY" value ="3">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="REG_DWORD" value ="4">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="REG_MULTI_SZ" value ="7">
+                                <DESC></DESC>
+                            </VALUE>
+                        </VALUES>
+
                     </PARAM>
+                    <PARAM name="subKey" type="STRING">
+                        <DESC>The name of the sub key to set</DESC>
+                    </PARAM>
+
+                    <PARAM name="setting" type="STRING">
+                        <DESC>The name of the setting within the sub key</DESC>
+                    </PARAM>
+
+                    <PARAM name="value" type="STRING">
+                        <DESC>The string value to be set</DESC>
+                    </PARAM>
+
                 </PARAMS>
             </METHOD>
 
             <METHOD name="getRegistrySetting">
                 <DESC>getRegistrySetting</DESC>
                 <PARAMS>
-                    <PARAM name="keyPath" type="STRING">
-                        <DESC>Path to key in registry</DESC>
+                    <PARAM name="hive" type="INTEGER">
+                        <DESC>The hive name</DESC>
+                        <VALUES>
+                            <VALUE constName="HKEY_CLASSES_ROOT" value ="0">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_CURRENT_USER" value ="1">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_LOCAL_MACHINE" value ="2">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_USERS" value ="3">
+                                <DESC></DESC>
+                            </VALUE>
+                        </VALUES>
+
                     </PARAM>
+
+                    <PARAM name="subKey" type="STRING">
+                        <DESC>The name of the sub key to be retrieved</DESC>
+                    </PARAM>
+
+                    <PARAM name="setting" type="STRING">
+                        <DESC>The name of the setting within the sub key</DESC>
+                    </PARAM>
+
                 </PARAMS>
 
                 <RETURN type="STRING">
                     <DESC>Regsitry value of the key.</DESC>
                 </RETURN>
+
+            </METHOD>
+            <METHOD name="setWindowFrame">
+                <DESC>Change application window position and size. Implemented only for Windows desktop.</DESC>
+                <PARAMS>
+                    <PARAM name="x" type="INTEGER">
+                        <DESC>Left corner of window.</DESC>
+                    </PARAM>
+                    <PARAM name="y" type="INTEGER">
+                        <DESC>Top corner of window.</DESC>
+                    </PARAM>
+                    <PARAM name="width" type="INTEGER">
+                        <DESC>Width of window.</DESC>
+                    </PARAM>
+                    <PARAM name="height" type="INTEGER">
+                        <DESC>Height of window.</DESC>
+                    </PARAM>
+
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setWindowPosition">
+                <DESC>Change application window position. Implemented only for Windows desktop.</DESC>
+                <PARAMS>
+                    <PARAM name="x" type="INTEGER">
+                        <DESC>Left corner of window.</DESC>
+                    </PARAM>
+                    <PARAM name="y" type="INTEGER">
+                        <DESC>Top corner of window.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setWindowSize">
+                <DESC>Change application window size. Implemented only for Windows desktop.</DESC>
+                <PARAMS>
+                    <PARAM name="width" type="INTEGER">
+                        <DESC>Width of the window.</DESC>
+                    </PARAM>
+                    <PARAM name="height" type="INTEGER">
+                        <DESC>Width of the of window.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="bringToFront">
+                <DESC>Bring application window to the top of the screen.</DESC>
+            </METHOD>
+
+            <METHOD name="replaceCurrentBundle">
+                <DESC>Replace application bundle.</DESC>
+                <PARAMS>
+                    <PARAM name="pathToBundle" type="STRING">
+                        <DESC>Path to bundle.</DESC>
+                    </PARAM>
+                    <PARAM name="params" type="HASH">
+                        <DESC>Update parameters.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="deleteFolder">
+                <DESC>Delete folder.</DESC>
+                <PARAMS>
+                    <PARAM name="pathToFolder" type="STRING">
+                        <DESC>Path to folder.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setDoNotBackupAttribute">
+                <DESC>Set do not backup aiitribute for file. iOS only.</DESC>
+                <PARAMS>
+                    <PARAM name="pathToFile" type="STRING">
+                        <DESC>Path to file.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="isBlobAttr" deprecated="true">
+                <DESC>Use Database.isBlobAttr: is model attribute is blob.</DESC>
+                <PARAMS>
+                    <PARAM name="partition" type="STRING"/>
+                    <PARAM name="sourceID" type="INTEGER"/>
+                    <PARAM name="attrName" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="updateBlobAttribs" deprecated="true">
+                <DESC>Use Database.updateBlobAttribs: update model blob attributes list.</DESC>
+                <PARAMS>
+                    <PARAM name="partition" type="STRING"/>
+                    <PARAM name="sourceID" type="INTEGER"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="get_locale" deprecated="true">
+                <DESC>Use System.locale property: Current device locale.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="setPushNotification" deprecated="true">
+                <DESC>Use Push.setPushNotification: Register push callback, the method to call upon receiving a push message.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method. If empty, unregisters rhoconnect-push.</DESC>
+                    </PARAM>
+                    <PARAM name="url_params" type="STRING">
+                        <DESC>Params which will be added to callback URL.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                    <PARAM name="push_client" type="STRING">
+                        <DESC>Name of a push service client. Current values can be 'rhoconnect_push' or 'gcm' or 'legacy' or empty.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>The call will be applied to every push client.</DESC>
+                        </CAN_BE_NIL>    
+                    </PARAM>
+                </PARAMS>
+
+            </METHOD>
+
+            <METHOD name="setScreenRotationNotification" deprecated="true">
+                <DESC>Use ScreenOrientation.setNotification: Notify (call a callback method) when the screen rotates.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method. If empty, unregisters notification callback.</DESC>
+                    </PARAM>
+                    <PARAM name="url_params" type="STRING">
+                        <DESC>Params which will be added to callback URL.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="exit" deprecated="true">
+                <DESC>Use Application.quit: exit application.</DESC>
+            </METHOD>
+
+            <METHOD name="set_sleeping" deprecated="true">
+                <DESC>Use System.screenSleeping property: enable/disable phone sleeping.</DESC>
+                <PARAMS>
+                    <PARAM name="enable" type="BOOLEAN"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="startTimer" deprecated="true">
+                <DESC>Use Timer.start: start timer.</DESC>
+                <PARAMS>
+                    <PARAM name="interval" type="INTEGER">
+                        <DESC>Timer interval.</DESC>
+                    </PARAM>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method.</DESC>
+                    </PARAM>
+                    <PARAM name="url_params" type="STRING">
+                        <DESC>Params which will be added to callback URL.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="stopTimer" deprecated="true">
+                <DESC>Use Timer.stop: stop timer.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method which identify the timer to stop.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setNetworkStatusNotify" deprecated="true">
+                <DESC>Use Network.setNotify: set network notification callback.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>The url to the user-defined callback method.</DESC>
+                    </PARAM>
+                    <PARAM name="poll_interval" type="INTEGER">
+                        <DESC>iOS. The network status polling period for systems that can not notify network status change immediately. Default value is 20 seconds.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="clearNetworkStatusNotify" deprecated="true">
+                <DESC>Clear network status callback.</DESC>
+            </METHOD>
+
+            <METHOD name="set_http_proxy_url" deprecated="true">
+                <DESC>Use System.httpProxyURI property: To use client with the HTTP proxy</DESC>
+                <PARAMS>
+                    <PARAM name="proxyURI" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="unset_http_proxy" deprecated="true">
+                <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
+            </METHOD>
+
+            <METHOD name="set_application_icon_badge" deprecated="true">
+                <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
+                <PARAMS>
+                    <PARAM name="badgeNumber" type="INTEGER"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="runApplication" deprecated="true">
+                <DESC>Use System.Process.runApplication: Run an application.</DESC>
+                <PARAMS>
+                    <PARAM name="appName" type="STRING">
+                        <DESC>The name of the application on the device to run.</DESC>
+                    </PARAM>
+                    <PARAM name="params" type="STRING">
+                        <DESC>The name of the application on the device to run.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                    <PARAM name="blockingCall" type="BOOLEAN">
+                        <DESC>The name of the application on the device to run.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>False by default</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
 
             </METHOD>
 

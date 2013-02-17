@@ -1281,7 +1281,7 @@ void CRhodesApp::initHttpServer()
     m_httpServer->register_uri("/system/shared", callback_shared);
 
 #ifndef RHO_NO_JS_API
-    m_httpServer->register_uri( "/system/js_api_entrypoint", rho_http_js_entry_point );
+    m_httpServer->register_uri( "/system/js_api_entrypoint", rho::apiGenerator::rho_http_js_entry_point );
 #endif
 
     m_httpServer->register_uri("/system/call_ruby_proc_callback", rho::net::rho_http_ruby_proc_callback );
@@ -2345,7 +2345,7 @@ int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, cons
 #endif        
     return res_check;
 }
- 
+    //TODO: remove it
 	void rho_sys_set_network_status_notify(const char* url, int poll_interval)
 	{
 		RHODESAPP().setNetworkStatusNotify(url,poll_interval);

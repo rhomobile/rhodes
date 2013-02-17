@@ -1,5 +1,3 @@
-ext/platform/android/generated/jni/MethodExecutorJni.cpp
-ext/platform/android/generated/jni/MethodResultJni.cpp
 ext/platform/android/generated/jni/Barcode1.cpp
 ext/platform/android/generated/jni/barcode1_ruby_wrap.cpp
 ext/platform/android/generated/jni/barcode1_js_wrap.cpp

@@ -1,0 +1,12 @@
+entry: Init_JavascriptVM_extension	
+javaentry: com.javascriptvm.JavascriptVM
+libraries: ["JavascriptVM"]
+android:
+  source_list: ext/platform/android/ext_build.files
+
+project_paths:
+  wp8: ext/platform/wp8/JavascriptVM.vcxproj
+  wm: ext/platform/wm/JavascriptVM.vcproj
+  win32: ext/platform/wm/JavascriptVM.vcproj
+  
+xml_api_paths: ext/JavascriptVM.xml

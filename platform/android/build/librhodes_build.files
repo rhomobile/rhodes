@@ -1,5 +1,6 @@
 platform/android/Rhodes/jni/src/RhoClassFactory.cpp
 platform/android/Rhodes/jni/src/JNIRhoRuby.cpp
+platform/android/Rhodes/jni/src/JNIRhoJS.cpp
 platform/android/Rhodes/jni/src/alert.cpp
 platform/android/Rhodes/jni/src/bluetooth.cpp
 platform/android/Rhodes/jni/src/callbacks.cpp
@@ -28,3 +29,7 @@ platform/android/Rhodes/jni/src/sslimpl.cpp
 platform/android/Rhodes/jni/src/webview.cpp
 platform/android/Rhodes/jni/src/rhocryptimpl.cpp
 platform/android/Rhodes/jni/src/extmanager.cpp
+platform/android/Rhodes/jni/src/MethodExecutorJni.cpp
+platform/android/Rhodes/jni/src/MethodResultJni.cpp
+platform/shared/api_generator/MethodResult.cpp
+platform/shared/api_generator/js_helpers.cpp
