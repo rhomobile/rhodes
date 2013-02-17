@@ -55,6 +55,7 @@ class CMethodResult
     ETypes m_ResType;
 
     unsigned long m_oRubyObjectClass;
+    rho::String   m_strRubyObjectClassPath;
     bool m_bCollectionMode;
 
     struct CMethodRubyValue
@@ -79,6 +80,7 @@ public:
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
     void setStringParam(const rho::String& strParam){m_strStringParam = strParam;}
     void setRubyObjectClass(unsigned long val){ m_oRubyObjectClass = val; }
+    void setRubyObjectClassPath(const rho::String& strPath){ m_strRubyObjectClassPath = strPath; }
     void convertStringParamToHash();
 
     void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; m_ResType = eStringHash; callCallback(); }

@@ -1644,7 +1644,9 @@ rho::String js_System_setApplicationIconBadge(rho::json::CJSONArray& argv, const
 
 
 
-        
+
+
+
 
 
 
@@ -1818,7 +1820,9 @@ rho::String js_System_setHttpProxyURI(rho::json::CJSONArray& argv, const rho::St
 
 
 
-        
+
+
+
 
 
 
@@ -1987,7 +1991,9 @@ rho::String js_System_setLockWindowSize(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -2156,7 +2162,9 @@ rho::String js_System_setShowKeyboard(rho::json::CJSONArray& argv, const rho::St
 
 
 
-        
+
+
+
 
 
 
@@ -2325,7 +2333,9 @@ rho::String js_System_setFullScreen(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-        
+
+
+
 
 
 
@@ -2494,7 +2504,9 @@ rho::String js_System_setLocalServerPort(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -2729,7 +2741,9 @@ rho::String js_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const rho
 
 
 
-        
+
+
+
 
 
 
@@ -3096,7 +3110,9 @@ rho::String js_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -3468,7 +3484,9 @@ rho::String js_System_applicationInstall(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -3576,7 +3594,9 @@ rho::String js_System_isApplicationInstalled(rho::json::CJSONArray& argv, const 
 
 
 
-        
+
+
+
 
 
 
@@ -3684,7 +3704,9 @@ rho::String js_System_applicationUninstall(rho::json::CJSONArray& argv, const rh
 
 
 
-        
+
+
+
 
 
 
@@ -3858,7 +3880,9 @@ rho::String js_System_openUrl(rho::json::CJSONArray& argv, const rho::String& st
 
 
 
-        
+
+
+
 
 
 
@@ -3966,7 +3990,9 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
 
 
 
-        
+
+
+
 
 
 
@@ -4000,7 +4026,9 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
 
 
 
-        
+
+
+
 
 
 
@@ -4108,7 +4136,9 @@ rho::String js_System_zipFile(rho::json::CJSONArray& argv, const rho::String& st
 
 
 
-        
+
+
+
 
 
 
@@ -4148,7 +4178,9 @@ rho::String js_System_zipFile(rho::json::CJSONArray& argv, const rho::String& st
 
 
 
-        
+
+
+
 
 
 
@@ -4182,7 +4214,9 @@ rho::String js_System_zipFile(rho::json::CJSONArray& argv, const rho::String& st
 
 
 
-        
+
+
+
 
 
 
@@ -4290,7 +4324,9 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
 
 
 
-        
+
+
+
 
 
 
@@ -4330,7 +4366,9 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
 
 
 
-        
+
+
+
 
 
 
@@ -4373,7 +4411,9 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
 
 
 
-        
+
+
+
 
 
 
@@ -4407,7 +4447,9 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
 
 
 
-        
+
+
+
 
 
 
@@ -4510,7 +4552,9 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4547,7 +4591,9 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4587,7 +4633,9 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4627,7 +4675,9 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4667,7 +4717,9 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4770,7 +4822,9 @@ rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4810,7 +4864,9 @@ rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4850,7 +4906,9 @@ rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4953,7 +5011,9 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -4990,7 +5050,9 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -5027,7 +5089,9 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -5064,7 +5128,9 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -5167,7 +5233,9 @@ rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -5204,7 +5272,9 @@ rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -5307,7 +5377,9 @@ rho::String js_System_setWindowSize(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-        
+
+
+
 
 
 
@@ -5344,7 +5416,9 @@ rho::String js_System_setWindowSize(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-        
+
+
+
 
 
 
@@ -5518,7 +5592,9 @@ rho::String js_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const rh
 
 
 
-        
+
+
+
 
 
 
@@ -5562,7 +5638,9 @@ rho::String js_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const rh
         }
     }
 
-        
+
+
+
 
 
 
@@ -5670,7 +5748,9 @@ rho::String js_System_deleteFolder(rho::json::CJSONArray& argv, const rho::Strin
 
 
 
-        
+
+
+
 
 
 
@@ -5778,7 +5858,9 @@ rho::String js_System_setDoNotBackupAttribute(rho::json::CJSONArray& argv, const
 
 
 
-        
+
+
+
 
 
 
@@ -5886,7 +5968,9 @@ rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -5923,7 +6007,9 @@ rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -5963,7 +6049,9 @@ rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -6071,7 +6159,9 @@ rho::String js_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -6108,7 +6198,9 @@ rho::String js_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -6282,7 +6374,9 @@ rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho
 
 
 
-        
+
+
+
 
 
 
@@ -6316,7 +6410,9 @@ rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho
 
 
 
-        
+
+
+
 
 
 
@@ -6350,7 +6446,9 @@ rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho
 
 
 
-        
+
+
+
 
 
 
@@ -6458,7 +6556,9 @@ rho::String js_System_setScreenRotationNotification(rho::json::CJSONArray& argv,
 
 
 
-        
+
+
+
 
 
 
@@ -6492,7 +6592,9 @@ rho::String js_System_setScreenRotationNotification(rho::json::CJSONArray& argv,
 
 
 
-        
+
+
+
 
 
 
@@ -6661,7 +6763,9 @@ rho::String js_System_set_sleeping(rho::json::CJSONArray& argv, const rho::Strin
 
 
 
-        
+
+
+
 
 
 
@@ -6764,7 +6868,9 @@ rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -6804,7 +6910,9 @@ rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -6838,7 +6946,9 @@ rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -6946,7 +7056,9 @@ rho::String js_System_stopTimer(rho::json::CJSONArray& argv, const rho::String& 
 
 
 
-        
+
+
+
 
 
 
@@ -7054,7 +7166,9 @@ rho::String js_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, const 
 
 
 
-        
+
+
+
 
 
 
@@ -7091,7 +7205,9 @@ rho::String js_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, const 
 
 
 
-        
+
+
+
 
 
 
@@ -7265,7 +7381,9 @@ rho::String js_System_set_http_proxy_url(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -7434,7 +7552,9 @@ rho::String js_System_set_application_icon_badge(rho::json::CJSONArray& argv, co
 
 
 
-        
+
+
+
 
 
 
@@ -7542,7 +7662,9 @@ rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -7576,7 +7698,9 @@ rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -7607,7 +7731,9 @@ rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -7715,7 +7841,9 @@ rho::String js_System_getProperty(rho::json::CJSONArray& argv, const rho::String
 
 
 
-        
+
+
+
 
 
 
@@ -7821,7 +7949,9 @@ rho::String js_System_getProperties(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-        
+
+
+
 
 
 
@@ -7989,7 +8119,9 @@ rho::String js_System_setProperty(rho::json::CJSONArray& argv, const rho::String
 
 
 
-        
+
+
+
 
 
 
@@ -8029,7 +8161,9 @@ rho::String js_System_setProperty(rho::json::CJSONArray& argv, const rho::String
 
 
 
-        
+
+
+
 
 
 
@@ -8139,7 +8273,9 @@ rho::String js_System_setProperties(rho::json::CJSONArray& argv, const rho::Stri
         }
     }
 
-        
+
+
+
 
 
 

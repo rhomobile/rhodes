@@ -66,9 +66,19 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
 {
     rho::apiGenerator::CMethodResult oRes;
 
-<% if module_method.is_factory_method %>
-    oRes.setRubyObjectClass(getRuby_<%= $cur_module.name %>_Module());
-<% end %>
+<% if module_method.result != nil
+    result_type = nil
+    if MethodParam::BASE_TYPES.include?(module_method.result.type)
+      result_type = module_method.result.item_type
+    else
+      result_type = module_method.result.type;
+    end
+
+    if api_generator_isSelfModule( $cur_module, result_type) %>
+        oRes.setRubyObjectClass( getRuby_<%= $cur_module.name %>_Module() );<%
+    elsif result_type && !MethodParam::BASE_TYPES.include?(result_type) %>
+        oRes.setRubyObjectClassPath( "<%= result_type %>" );<%
+end; end %>
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
@@ -175,7 +185,26 @@ static VALUE _api_generator_<%= $cur_module.name %>_<%= module_method.native_nam
         }
     }
 <% end %>
-        
+
+<% if !MethodParam::BASE_TYPES.include?(param.type) %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    if ( argc > <%= first_arg %> )
+    {
+        <%  type_name = param.type;
+            if api_generator_isSelfModule( $cur_module, param.type); type_name = api_generator_getRubyModuleFullName($cur_module); %>
+        if ( rho_ruby_is_object_of_class(argv[<%= first_arg %>], getRuby_<%= $cur_module.name %>_Module()) )
+        <% else %>
+        if ( rho_ruby_is_object_of_class(argv[<%= first_arg %>], rho_ruby_get_class_byname("<%=param.type%>") ) )
+        <% end %>
+            arg<%= first_arg %> = rho_ruby_get_object_id( argv[<%= first_arg %>] );
+        else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))
+        {
+            oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{type_name}\"" %> );
+            return oRes.toRuby();
+        }
+    }
+<% end %>
+
 <% functor_params += "arg#{first_arg}, " %>
 <% first_arg = first_arg+1 %>
 <% end %>

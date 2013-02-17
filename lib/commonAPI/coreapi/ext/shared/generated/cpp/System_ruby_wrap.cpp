@@ -1666,7 +1666,9 @@ static VALUE _api_generator_System_setApplicationIconBadge(int argc, VALUE *argv
 
 
 
-        
+
+
+
 
 
 
@@ -1839,7 +1841,9 @@ static VALUE _api_generator_System_setHttpProxyURI(int argc, VALUE *argv, rho::I
 
 
 
-        
+
+
+
 
 
 
@@ -2007,7 +2011,9 @@ static VALUE _api_generator_System_setLockWindowSize(int argc, VALUE *argv, rho:
 
 
 
-        
+
+
+
 
 
 
@@ -2175,7 +2181,9 @@ static VALUE _api_generator_System_setShowKeyboard(int argc, VALUE *argv, rho::I
 
 
 
-        
+
+
+
 
 
 
@@ -2343,7 +2351,9 @@ static VALUE _api_generator_System_setFullScreen(int argc, VALUE *argv, rho::ISy
 
 
 
-        
+
+
+
 
 
 
@@ -2511,7 +2521,9 @@ static VALUE _api_generator_System_setLocalServerPort(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -2744,7 +2756,9 @@ static VALUE _api_generator_System_setScreenAutoRotate(int argc, VALUE *argv, rh
 
 
 
-        
+
+
+
 
 
 
@@ -3107,7 +3121,9 @@ static VALUE _api_generator_System_setScreenSleeping(int argc, VALUE *argv, rho:
 
 
 
-        
+
+
+
 
 
 
@@ -3475,7 +3491,9 @@ static VALUE _api_generator_System_applicationInstall(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -3583,7 +3601,9 @@ static VALUE _api_generator_System_isApplicationInstalled(int argc, VALUE *argv,
 
 
 
-        
+
+
+
 
 
 
@@ -3691,7 +3711,9 @@ static VALUE _api_generator_System_applicationUninstall(int argc, VALUE *argv, r
 
 
 
-        
+
+
+
 
 
 
@@ -3864,7 +3886,9 @@ static VALUE _api_generator_System_openUrl(int argc, VALUE *argv, rho::ISystem* 
 
 
 
-        
+
+
+
 
 
 
@@ -3972,7 +3996,9 @@ static VALUE _api_generator_System_unzipFile(int argc, VALUE *argv, rho::ISystem
 
 
 
-        
+
+
+
 
 
 
@@ -4007,7 +4033,9 @@ static VALUE _api_generator_System_unzipFile(int argc, VALUE *argv, rho::ISystem
 
 
 
-        
+
+
+
 
 
 
@@ -4115,7 +4143,9 @@ static VALUE _api_generator_System_zipFile(int argc, VALUE *argv, rho::ISystem* 
 
 
 
-        
+
+
+
 
 
 
@@ -4156,7 +4186,9 @@ static VALUE _api_generator_System_zipFile(int argc, VALUE *argv, rho::ISystem* 
 
 
 
-        
+
+
+
 
 
 
@@ -4191,7 +4223,9 @@ static VALUE _api_generator_System_zipFile(int argc, VALUE *argv, rho::ISystem* 
 
 
 
-        
+
+
+
 
 
 
@@ -4299,7 +4333,9 @@ static VALUE _api_generator_System_zipFiles(int argc, VALUE *argv, rho::ISystem*
 
 
 
-        
+
+
+
 
 
 
@@ -4340,7 +4376,9 @@ static VALUE _api_generator_System_zipFiles(int argc, VALUE *argv, rho::ISystem*
 
 
 
-        
+
+
+
 
 
 
@@ -4378,7 +4416,9 @@ static VALUE _api_generator_System_zipFiles(int argc, VALUE *argv, rho::ISystem*
 
 
 
-        
+
+
+
 
 
 
@@ -4413,7 +4453,9 @@ static VALUE _api_generator_System_zipFiles(int argc, VALUE *argv, rho::ISystem*
 
 
 
-        
+
+
+
 
 
 
@@ -4516,7 +4558,9 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -4554,7 +4598,9 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -4595,7 +4641,9 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -4636,7 +4684,9 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -4677,7 +4727,9 @@ static VALUE _api_generator_System_setRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -4780,7 +4832,9 @@ static VALUE _api_generator_System_getRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -4821,7 +4875,9 @@ static VALUE _api_generator_System_getRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -4862,7 +4918,9 @@ static VALUE _api_generator_System_getRegistrySetting(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -4965,7 +5023,9 @@ static VALUE _api_generator_System_setWindowFrame(int argc, VALUE *argv, rho::IS
 
 
 
-        
+
+
+
 
 
 
@@ -5003,7 +5063,9 @@ static VALUE _api_generator_System_setWindowFrame(int argc, VALUE *argv, rho::IS
 
 
 
-        
+
+
+
 
 
 
@@ -5041,7 +5103,9 @@ static VALUE _api_generator_System_setWindowFrame(int argc, VALUE *argv, rho::IS
 
 
 
-        
+
+
+
 
 
 
@@ -5079,7 +5143,9 @@ static VALUE _api_generator_System_setWindowFrame(int argc, VALUE *argv, rho::IS
 
 
 
-        
+
+
+
 
 
 
@@ -5182,7 +5248,9 @@ static VALUE _api_generator_System_setWindowPosition(int argc, VALUE *argv, rho:
 
 
 
-        
+
+
+
 
 
 
@@ -5220,7 +5288,9 @@ static VALUE _api_generator_System_setWindowPosition(int argc, VALUE *argv, rho:
 
 
 
-        
+
+
+
 
 
 
@@ -5323,7 +5393,9 @@ static VALUE _api_generator_System_setWindowSize(int argc, VALUE *argv, rho::ISy
 
 
 
-        
+
+
+
 
 
 
@@ -5361,7 +5433,9 @@ static VALUE _api_generator_System_setWindowSize(int argc, VALUE *argv, rho::ISy
 
 
 
-        
+
+
+
 
 
 
@@ -5534,7 +5608,9 @@ static VALUE _api_generator_System_replaceCurrentBundle(int argc, VALUE *argv, r
 
 
 
-        
+
+
+
 
 
 
@@ -5572,7 +5648,9 @@ static VALUE _api_generator_System_replaceCurrentBundle(int argc, VALUE *argv, r
         }
     }
 
-        
+
+
+
 
 
 
@@ -5680,7 +5758,9 @@ static VALUE _api_generator_System_deleteFolder(int argc, VALUE *argv, rho::ISys
 
 
 
-        
+
+
+
 
 
 
@@ -5788,7 +5868,9 @@ static VALUE _api_generator_System_setDoNotBackupAttribute(int argc, VALUE *argv
 
 
 
-        
+
+
+
 
 
 
@@ -5896,7 +5978,9 @@ static VALUE _api_generator_System_isBlobAttr(int argc, VALUE *argv, rho::ISyste
 
 
 
-        
+
+
+
 
 
 
@@ -5934,7 +6018,9 @@ static VALUE _api_generator_System_isBlobAttr(int argc, VALUE *argv, rho::ISyste
 
 
 
-        
+
+
+
 
 
 
@@ -5975,7 +6061,9 @@ static VALUE _api_generator_System_isBlobAttr(int argc, VALUE *argv, rho::ISyste
 
 
 
-        
+
+
+
 
 
 
@@ -6083,7 +6171,9 @@ static VALUE _api_generator_System_updateBlobAttribs(int argc, VALUE *argv, rho:
 
 
 
-        
+
+
+
 
 
 
@@ -6121,7 +6211,9 @@ static VALUE _api_generator_System_updateBlobAttribs(int argc, VALUE *argv, rho:
 
 
 
-        
+
+
+
 
 
 
@@ -6294,7 +6386,9 @@ static VALUE _api_generator_System_setPushNotification(int argc, VALUE *argv, rh
 
 
 
-        
+
+
+
 
 
 
@@ -6329,7 +6423,9 @@ static VALUE _api_generator_System_setPushNotification(int argc, VALUE *argv, rh
 
 
 
-        
+
+
+
 
 
 
@@ -6364,7 +6460,9 @@ static VALUE _api_generator_System_setPushNotification(int argc, VALUE *argv, rh
 
 
 
-        
+
+
+
 
 
 
@@ -6472,7 +6570,9 @@ static VALUE _api_generator_System_setScreenRotationNotification(int argc, VALUE
 
 
 
-        
+
+
+
 
 
 
@@ -6507,7 +6607,9 @@ static VALUE _api_generator_System_setScreenRotationNotification(int argc, VALUE
 
 
 
-        
+
+
+
 
 
 
@@ -6675,7 +6777,9 @@ static VALUE _api_generator_System_set_sleeping(int argc, VALUE *argv, rho::ISys
 
 
 
-        
+
+
+
 
 
 
@@ -6778,7 +6882,9 @@ static VALUE _api_generator_System_startTimer(int argc, VALUE *argv, rho::ISyste
 
 
 
-        
+
+
+
 
 
 
@@ -6819,7 +6925,9 @@ static VALUE _api_generator_System_startTimer(int argc, VALUE *argv, rho::ISyste
 
 
 
-        
+
+
+
 
 
 
@@ -6854,7 +6962,9 @@ static VALUE _api_generator_System_startTimer(int argc, VALUE *argv, rho::ISyste
 
 
 
-        
+
+
+
 
 
 
@@ -6962,7 +7072,9 @@ static VALUE _api_generator_System_stopTimer(int argc, VALUE *argv, rho::ISystem
 
 
 
-        
+
+
+
 
 
 
@@ -7070,7 +7182,9 @@ static VALUE _api_generator_System_setNetworkStatusNotify(int argc, VALUE *argv,
 
 
 
-        
+
+
+
 
 
 
@@ -7108,7 +7222,9 @@ static VALUE _api_generator_System_setNetworkStatusNotify(int argc, VALUE *argv,
 
 
 
-        
+
+
+
 
 
 
@@ -7281,7 +7397,9 @@ static VALUE _api_generator_System_set_http_proxy_url(int argc, VALUE *argv, rho
 
 
 
-        
+
+
+
 
 
 
@@ -7449,7 +7567,9 @@ static VALUE _api_generator_System_set_application_icon_badge(int argc, VALUE *a
 
 
 
-        
+
+
+
 
 
 
@@ -7557,7 +7677,9 @@ static VALUE _api_generator_System_runApplication(int argc, VALUE *argv, rho::IS
 
 
 
-        
+
+
+
 
 
 
@@ -7592,7 +7714,9 @@ static VALUE _api_generator_System_runApplication(int argc, VALUE *argv, rho::IS
 
 
 
-        
+
+
+
 
 
 
@@ -7624,7 +7748,9 @@ static VALUE _api_generator_System_runApplication(int argc, VALUE *argv, rho::IS
 
 
 
-        
+
+
+
 
 
 
@@ -7732,7 +7858,9 @@ static VALUE _api_generator_System_getProperty(int argc, VALUE *argv, rho::ISyst
 
 
 
-        
+
+
+
 
 
 
@@ -7859,7 +7987,9 @@ static VALUE _api_generator_System_getProperties(int argc, VALUE *argv, rho::ISy
 
 
 
-        
+
+
+
 
 
 
@@ -8080,7 +8210,9 @@ static VALUE _api_generator_System_setProperty(int argc, VALUE *argv, rho::ISyst
 
 
 
-        
+
+
+
 
 
 
@@ -8121,7 +8253,9 @@ static VALUE _api_generator_System_setProperty(int argc, VALUE *argv, rho::ISyst
 
 
 
-        
+
+
+
 
 
 
@@ -8224,7 +8358,9 @@ static VALUE _api_generator_System_setProperties(int argc, VALUE *argv, rho::ISy
         }
     }
 
-        
+
+
+
 
 
 

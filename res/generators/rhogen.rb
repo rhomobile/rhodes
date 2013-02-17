@@ -697,9 +697,26 @@ module Rhogen
       end
 
       attr_accessor :name
-      attr_accessor :type
+      #attr_accessor :type
+      attr_reader :type
       attr_accessor :can_be_nil
 
+      def type=(value)
+        up_value = value.upcase
+        BASE_TYPES.each do |t|
+            if up_value == t 
+                @type = up_value
+                return     
+            end
+        end
+        
+        if up_value == TYPE_SELF
+            @type = up_value
+        else
+            @type = value
+        end
+        
+      end
 
     end
 
@@ -1357,7 +1374,7 @@ module Rhogen
                end
 
                if xml_method_param.attribute("type") != nil
-                  method_param.type = xml_method_param.attribute("type").to_s.upcase
+                  method_param.type = xml_method_param.attribute("type").to_s #.upcase
                else
                   raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
                end
@@ -1435,8 +1452,6 @@ module Rhogen
     end
 
 
-
-
     template :shared_01 do |template|
       setup_xml
       template.source = 'shared/generated/montana_api_init.cpp'
@@ -1452,7 +1467,7 @@ module Rhogen
       template.source = 'shared/generated/montana_js_api.cpp'
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_js_api.cpp"
     end
-    
+
     template :iphone_api do |template|
       template.source = 'platform/iphone/Classes/api/IMontana.h'
       template.destination = "platform/iphone/Classes/api/I#{$cur_module.name}.h"
@@ -1557,7 +1572,6 @@ module Rhogen
       template.source = 'platform/iphone/Classes/stub_impl/readme.txt'
       template.destination = "platform/iphone/Classes/stub_impl/readme.txt"
     end
-
 
 
     template :cpp_api do |template|
