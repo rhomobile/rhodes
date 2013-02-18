@@ -1,6 +1,6 @@
 
-#import "../api/IJavascriptVM.h"
-#import "../base_impl/JavascriptVMSingletonBase.h"
+#import "IJavascriptVM.h"
+#import "JavascriptVMSingletonBase.h"
 #import "api_generator/iphone/CMethodResult.h"
 
 #import <UIKit/UIKit.h>

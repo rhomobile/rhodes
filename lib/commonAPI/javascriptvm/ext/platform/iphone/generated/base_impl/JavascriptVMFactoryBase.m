@@ -1,7 +1,7 @@
 
 #import "JavascriptVMFactoryBase.h"
-#import "../impl/JavascriptVM.h"
-#import "../impl/JavascriptVMSingleton.h"
+#import "JavascriptVM.h"
+#import "JavascriptVMSingleton.h"
 
 @implementation JavascriptVMFactoryBase
 
@@ -21,9 +21,17 @@
     return obj;
 }
 
+-(void) destroyObjectByID:(NSString*)ID {
+    JavascriptVM* obj = [mJavascriptVMInstances objectForKey:ID];
+    if (obj != nil) {
+        [mJavascriptVMInstances removeObjectForKey:ID];
+    }
+}
+
+
 -(id<IJavascriptVM>)createJavascriptVMByID:(NSString*)ID {
     JavascriptVM* obj = [[JavascriptVM alloc] init];
-    [obj setProperty:@"ID" value:ID];
+    [obj setProperty:@"ID" propertyValue:ID];
     return obj;
 }
 

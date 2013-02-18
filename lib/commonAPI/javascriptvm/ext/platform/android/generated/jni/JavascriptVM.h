@@ -97,7 +97,7 @@ public:
                     jhscript.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
 

@@ -34,6 +34,7 @@
 @protocol IJavascriptVMFactory <NSObject>
 -(id<IJavascriptVMSingleton>) getJavascriptVMSingleton;
 -(id<IJavascriptVM>) getJavascriptVMByID:(NSString*)ID;
+-(void) destroyObjectByID:(NSString*)ID;
 @end
 
 

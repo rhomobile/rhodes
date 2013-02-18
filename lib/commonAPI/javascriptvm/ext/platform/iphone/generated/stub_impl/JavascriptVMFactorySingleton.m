@@ -1,5 +1,5 @@
 
-#import "../api/IJavascriptVM.h"
+#import "IJavascriptVM.h"
 #import "JavascriptVMFactoryBase.h"
 
 static JavascriptVMFactoryBase* ourJavascriptVMFactory = nil;

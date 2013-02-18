@@ -20,9 +20,13 @@ struct IJavascriptVM
 
 struct IJavascriptVMSingleton
 {
+//constants
+
+
     virtual ~IJavascriptVMSingleton(){}
 
-    virtual void executeScript( const rho::StringW& script, rho::apiGenerator::CMethodResult& oResult) = 0;
+//methods
+    virtual void executeScript( const rho::String& script, rho::apiGenerator::CMethodResult& oResult) = 0;
 
 
     virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor) = 0;

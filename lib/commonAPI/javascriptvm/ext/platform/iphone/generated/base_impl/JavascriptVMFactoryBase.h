@@ -1,5 +1,5 @@
 
-#import "../api/IJavascriptVM.h"
+#import "IJavascriptVM.h"
 
 @interface JavascriptVMFactoryBase : NSObject<IJavascriptVMFactory> {
     NSMutableDictionary* mJavascriptVMInstances;
@@ -10,6 +10,8 @@
 
 -(id<IJavascriptVMSingleton>) getJavascriptVMSingleton;
 -(id<IJavascriptVM>) getJavascriptVMByID:(NSString*)ID;
+
+-(void) destroyObjectByID:(NSString*)ID;
 
 -(id<IJavascriptVM>)createJavascriptVMByID:(NSString*)ID;
 
