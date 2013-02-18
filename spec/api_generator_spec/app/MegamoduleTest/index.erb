@@ -1,0 +1,22 @@
+<div data-role="page">
+
+  <div data-role="header" data-position="inline">
+    <h1>MegaModule Extension Test</h1>
+    <a href="<%= Rho::RhoConfig.start_path %>" class="ui-btn-left" data-icon="home" data-direction="reverse"
+       <%= "data-ajax='false'" if is_bb6 %>>Home</a>
+      
+  </div>
+
+  <div data-role="content">
+    <ul data-role="listview">
+<br>        
+<%= link_to 'run test', { :action => :run_test }%><br>
+<br>
+<%= link_to 'run showAlertFromUIThread test', { :action => :run_show_alert_test }%><br>
+
+
+    </ul>
+  </div>
+
+</div>
+

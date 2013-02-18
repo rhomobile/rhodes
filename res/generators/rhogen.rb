@@ -715,7 +715,6 @@ module Rhogen
         else
             @type = value
         end
-        
       end
 
     end
@@ -1359,13 +1358,19 @@ module Rhogen
             if xml_module_method.elements["RETURN"] != nil
                 module_method.is_return_value = true
                 method_result = MethodResult.new()
-                result_type = xml_module_method.elements["RETURN"].attribute("type")
-                result_item_type = xml_module_method.elements["RETURN"].attribute("itemType")
+                result_type = xml_module_method.elements["RETURN"].attribute("type").to_s
+                result_item_type = xml_module_method.elements["RETURN"].attribute("itemType").to_s
                 if result_type != nil
-                    method_result.type = result_type.to_s
+                  if result_type == MethodParam::TYPE_SELF
+                    result_type = [module_item.parents.join("."),module_item.name].join(".")
+                  end
+                    method_result.type = result_type
                 end
                 if result_item_type != nil
-                    method_result.item_type = result_item_type.to_s
+                   if result_item_type == MethodParam::TYPE_SELF
+                     result_item_type = [module_item.parents.join("."),module_item.name].join(".")
+                   end
+                   method_result.item_type = result_item_type
                 end
                 module_method.result = method_result
             end
@@ -1382,7 +1387,11 @@ module Rhogen
                end
 
                if xml_method_param.attribute("type") != nil
-                  method_param.type = xml_method_param.attribute("type").to_s #.upcase
+                  ttype = xml_method_param.attribute("type").to_s #.upcase
+                  if ttype == MethodParam::TYPE_SELF
+                     ttype = [module_item.parents.join("."),module_item.name].join(".")
+                  end
+                  method_param.type = ttype
                else
                   raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
                end
@@ -1477,108 +1486,88 @@ module Rhogen
     end
 
     template :iphone_api do |template|
-      template.source = 'platform/iphone/Classes/api/IMontana.h'
-      template.destination = "platform/iphone/Classes/api/I#{$cur_module.name}.h"
-    end
-
-    template :iphone_api_readme do |template|
-      template.source = 'platform/iphone/Classes/api/readme.txt'
-      template.destination = "platform/iphone/Classes/api/readme.txt"
+      template.source = 'platform/iphone/generated/IMontana.h'
+      template.destination = "platform/iphone/generated/I#{$cur_module.name}.h"
     end
 
     template :iphone_ruby_wrapper do |template|
-      template.source = 'platform/iphone/Classes/ruby_wrapper/montana_ruby_wrap.m'
-      template.destination = "platform/iphone/Classes/ruby_wrapper/#{namefixed($cur_module.name)}_ruby_wrap.m"
-    end
-
-    template :iphone_ruby_wrapper_readme do |template|
-      template.source = 'platform/iphone/Classes/ruby_wrapper/readme.txt'
-      template.destination = "platform/iphone/Classes/ruby_wrapper/readme.txt"
+      template.source = 'platform/iphone/generated/ruby/montana_ruby_wrap.m'
+      template.destination = "platform/iphone/generated/ruby/#{namefixed($cur_module.name)}_ruby_wrap.m"
     end
 
     template :iphone_js_wrapper do |template|
-      template.source = 'platform/iphone/Classes/js_wrapper/montana_js_wrap.mm'
-      template.destination = "platform/iphone/Classes/js_wrapper/#{namefixed($cur_module.name)}_js_wrap.mm"
-    end
-
-    template :iphone_js_wrapper_readme do |template|
-      template.source = 'platform/iphone/Classes/js_wrapper/readme.txt'
-      template.destination = "platform/iphone/Classes/js_wrapper/readme.txt"
+      template.source = 'platform/iphone/generated/javascript/montana_js_wrap.mm'
+      template.destination = "platform/iphone/generated/javascript/#{namefixed($cur_module.name)}_js_wrap.mm"
     end
 
     template :iphone_impl_readme do |template|
-      template.source = 'platform/iphone/Classes/impl/readme.txt'
-      template.destination = "platform/iphone/Classes/impl/readme.txt"
+      template.source = 'platform/iphone/impl/readme.txt'
+      template.destination = "platform/iphone/impl/readme.txt"
     end
 
     template :iphone_base_impl_01 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaBase.h'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}Base.h"
+      template.source = 'platform/iphone/generated/base_impl/MontanaBase.h'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}Base.h"
     end
 
     template :iphone_base_impl_02 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaBase.m'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}Base.m"
+      template.source = 'platform/iphone/generated/base_impl/MontanaBase.m'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}Base.m"
     end
 
     template :iphone_base_impl_03 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaFactoryBase.h'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}FactoryBase.h"
+      template.source = 'platform/iphone/generated/base_impl/MontanaFactoryBase.h'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}FactoryBase.h"
     end
 
     template :iphone_base_impl_04 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaFactoryBase.m'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}FactoryBase.m"
+      template.source = 'platform/iphone/generated/base_impl/MontanaFactoryBase.m'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}FactoryBase.m"
     end
 
     template :iphone_base_impl_05 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaSingletonBase.h'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}SingletonBase.h"
+      template.source = 'platform/iphone/generated/base_impl/MontanaSingletonBase.h'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}SingletonBase.h"
     end
 
     template :iphone_base_impl_06 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaSingletonBase.m'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}SingletonBase.m"
-    end
-
-    template :iphone_base_impl_readme do |template|
-      template.source = 'platform/iphone/Classes/base_impl/readme.txt'
-      template.destination = "platform/iphone/Classes/base_impl/readme.txt"
+      template.source = 'platform/iphone/generated/base_impl/MontanaSingletonBase.m'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}SingletonBase.m"
     end
 
     template :iphone_stub_impl_01 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/Montana.h'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}.h"
+      template.source = 'platform/iphone/generated/stub_impl/Montana.h'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}.h"
     end
 
     template :iphone_stub_impl_02 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/Montana.m'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}.m"
+      template.source = 'platform/iphone/generated/stub_impl/Montana.m'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}.m"
     end
 
     template :iphone_stub_impl_03 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/MontanaFactorySingleton.m'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}FactorySingleton.m"
+      template.source = 'platform/iphone/generated/stub_impl/MontanaFactorySingleton.m'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}FactorySingleton.m"
     end
 
     template :iphone_stub_impl_04 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/MontanaSetup.m'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}Setup.m"
+      template.source = 'platform/iphone/generated/stub_impl/MontanaSetup.m'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}Setup.m"
     end
 
     template :iphone_stub_impl_05 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/MontanaSingleton.h'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}Singleton.h"
+      template.source = 'platform/iphone/generated/stub_impl/MontanaSingleton.h'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}Singleton.h"
     end
 
     template :iphone_stub_impl_06 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/MontanaSingleton.m'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}Singleton.m"
+      template.source = 'platform/iphone/generated/stub_impl/MontanaSingleton.m'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}Singleton.m"
     end
 
     template :iphone_stub_impl_readme do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/readme.txt'
-      template.destination = "platform/iphone/Classes/stub_impl/readme.txt"
+      template.source = 'platform/iphone/generated/stub_impl/readme.txt'
+      template.destination = "platform/iphone/generated/stub_impl/readme.txt"
     end
 
 
@@ -1707,6 +1696,7 @@ class ApiMegatestGenerator < BaseGenerator
 
 
 
+
 =begin
 # Stub this method to force 1.8 compatibility (come on templater!)
 class Encoding
@@ -1734,5 +1724,6 @@ end
 
 
 Rhogen.run_cli(Dir.pwd, 'rhodes', Rhodes::VERSION, ARGV)
+
 
 =end
