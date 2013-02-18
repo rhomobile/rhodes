@@ -1485,7 +1485,7 @@ module Rhogen
       template.source = 'shared/generated/montana_js_api.cpp'
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_js_api.cpp"
     end
-=begin
+
     template :iphone_api do |template|
       template.source = 'platform/iphone/generated/IMontana.h'
       template.destination = "platform/iphone/generated/I#{$cur_module.name}.h"
@@ -1570,7 +1570,7 @@ module Rhogen
       template.source = 'platform/iphone/generated/stub_impl/readme.txt'
       template.destination = "platform/iphone/generated/stub_impl/readme.txt"
     end
-=end
+
 
     template :cpp_api do |template|
       template.source = 'cpp/IMontana.h'
@@ -1596,7 +1596,7 @@ module Rhogen
       template.source = 'cpp/montana_js_wrap.cpp'
       template.destination = "shared/generated/cpp/#{$cur_module.name}_js_wrap.cpp"
     end
-=begin
+
     template :android_java_obj_interface do |template|
       template.source = 'platform/android/gen/src/IMontana.java'
       template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/I#{$cur_module.name}.java"
@@ -1646,7 +1646,7 @@ module Rhogen
       template.source = 'platform/android/gen/jni/montana_js_wrap.cpp'
       template.destination = "platform/android/generated/jni/#{$cur_module.name.downcase}_js_wrap.cpp"
     end
-=end
+
     def attributes?
       self.attributes && !self.attributes.empty?
     end
