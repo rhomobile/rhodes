@@ -127,6 +127,9 @@ public:
 	void setSize(int width, int height);
 	void lockSize(int locked);
 
+   	void RhoSetFullScreen(bool bFull, bool bDestroy = false);
+    bool getFullScreen();
+
     BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         //MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)

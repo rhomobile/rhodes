@@ -6,7 +6,7 @@
 	    <METHOD name="enumerate" access="STATIC" hasCallback="optional" factory="true">
 			<DESC>This is documentation</DESC>
 
-            <RETURN type="ARRAY">
+            <RETURN type="ARRAY" itemType="SELF_INSTANCE">
                 <DESC>Array of objects.</DESC>                
             </RETURN>
         </METHOD>

@@ -6,15 +6,15 @@
         <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
 
         <ALIASES>
-            <ALIAS new="System" existing="Rho::System" deprecated="true"/>
+            <ALIAS new="System" existing="Rho.System" deprecated="true"/>
         </ALIASES>
 
         <TEMPLATES>
-            <DEFAULT_INSTANCE/>
+            <!-- <DEFAULT_INSTANCE/> -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 
-        <PROPERTIES usePropertyBag="PropertyBagViaAccessors" limitPropertyBag="true">
+        <PROPERTIES usePropertyBag="PropertyBagViaAccessors" limitPropertyBag="true" access="STATIC">
             <DESC>object supports this properties bla bla bla :</DESC>
 
             <ALIASES>
@@ -173,7 +173,7 @@
 
         </PROPERTIES>
     
-        <METHODS>
+        <METHODS  access="STATIC">
             <ALIASES>
                 <ALIAS new="get_property" existing="getProperty" deprecated="true">
                     <DESC>Use property names methods instead.</DESC>
@@ -281,21 +281,86 @@
             <METHOD name="setRegistrySetting">
                 <DESC>setRegistrySetting</DESC>
                 <PARAMS>
-                    <PARAM name="keyPath" type="STRING">
-                        <DESC>Path to key in registry</DESC>
+                    <PARAM name="hive" type="INTEGER">
+                        <DESC>The hive name</DESC>
+                        <VALUES>
+                            <VALUE constName="HKEY_CLASSES_ROOT" value ="0">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_CURRENT_USER" value ="1">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_LOCAL_MACHINE" value ="2">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_USERS" value ="3">
+                                <DESC></DESC>
+                            </VALUE>
+                        </VALUES>
                     </PARAM>
-                    <PARAM name="keyValue" type="STRING">
-                        <DESC>Value of the key</DESC>
+                    <PARAM name="type" type="INTEGER">
+                        <DESC>The hive name</DESC>
+                        <VALUES>
+                            <VALUE constName="REG_SZ" value ="1">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="REG_BINARY" value ="3">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="REG_DWORD" value ="4">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="REG_MULTI_SZ" value ="7">
+                                <DESC></DESC>
+                            </VALUE>
+                        </VALUES>
+
                     </PARAM>
+                    <PARAM name="subKey" type="STRING">
+                        <DESC>The name of the sub key to set</DESC>
+                    </PARAM>
+
+                    <PARAM name="setting" type="STRING">
+                        <DESC>The name of the setting within the sub key</DESC>
+                    </PARAM>
+
+                    <PARAM name="value" type="STRING">
+                        <DESC>The string value to be set</DESC>
+                    </PARAM>
+
                 </PARAMS>
             </METHOD>
 
             <METHOD name="getRegistrySetting">
                 <DESC>getRegistrySetting</DESC>
                 <PARAMS>
-                    <PARAM name="keyPath" type="STRING">
-                        <DESC>Path to key in registry</DESC>
+                    <PARAM name="hive" type="INTEGER">
+                        <DESC>The hive name</DESC>
+                        <VALUES>
+                            <VALUE constName="HKEY_CLASSES_ROOT" value ="0">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_CURRENT_USER" value ="1">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_LOCAL_MACHINE" value ="2">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_USERS" value ="3">
+                                <DESC></DESC>
+                            </VALUE>
+                        </VALUES>
+
                     </PARAM>
+
+                    <PARAM name="subKey" type="STRING">
+                        <DESC>The name of the sub key to be retrieved</DESC>
+                    </PARAM>
+
+                    <PARAM name="setting" type="STRING">
+                        <DESC>The name of the setting within the sub key</DESC>
+                    </PARAM>
+
                 </PARAMS>
 
                 <RETURN type="STRING">
@@ -402,6 +467,14 @@
                 <RETURN type="STRING"/>
             </METHOD>
 
+            <METHOD name="set_locale" deprecated="true" generateAPI="false" access="STATIC">
+                <DESC>Use Application.locale property: set application specific locale</DESC>
+                <PARAMS>
+                    <PARAM name="locale_code" type="STRING"/>
+                    <PARAM name="country_code" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
             <METHOD name="setPushNotification" deprecated="true">
                 <DESC>Use Push.setPushNotification: Register push callback, the method to call upon receiving a push message.</DESC>
                 <PARAMS>
@@ -496,6 +569,13 @@
 
             <METHOD name="unset_http_proxy" deprecated="true">
                 <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
+            </METHOD>
+
+            <METHOD name="set_application_icon_badge" deprecated="true">
+                <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
+                <PARAMS>
+                    <PARAM name="badgeNumber" type="INTEGER"/>
+                </PARAMS>
             </METHOD>
 
             <METHOD name="runApplication" deprecated="true">

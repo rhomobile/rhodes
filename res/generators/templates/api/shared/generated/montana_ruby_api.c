@@ -26,7 +26,7 @@ def api_generator_MakeRubyMethodDef(module_name, module_method, is_static, metho
     method_name += method_suffix + "_" if method_suffix.length() > 0
     method_name += module_method.native_name
 
-    "    rb_define_#{(is_static) ? 'module_function':'method'}(rb_m#{module_name}, \"#{module_method.name}\", #{method_name}, -1);"
+    "    rb_define_#{(is_static) ? 'singleton_method':'method'}(rb_m#{module_name}, \"#{module_method.name}\", #{method_name}, -1);"
 end
 %>
 
@@ -40,10 +40,10 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
     rb_mParent = rb_define_module_under(tmpParent, "<%= $cur_module.parents[i] %>");
     <% end %>
 
-	rb_m<%= $cur_module.name %> = rb_define_module_under(rb_mParent, "<%= $cur_module.name %>");
+	rb_m<%= $cur_module.name %> = rb_define_class_under(rb_mParent, "<%= $cur_module.name %>", rb_cObject);
 <% else %>
     rb_mParent = rho_ruby_get_NIL();
-	rb_m<%= $cur_module.name %> = rb_define_module("<%= $cur_module.name %>");
+	rb_m<%= $cur_module.name %> = rb_define_class_under(rb_mParent, "<%= $cur_module.name %>", rb_cObject);
 <% end %>
     //Constructor should be not available
 	//rb_define_alloc_func(rb_cBarcode1, rb_barcode1_allocate);
@@ -57,8 +57,8 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
    end %>
 
 <% if $cur_module.is_template_default_instance %>
-    rb_define_module_function(rb_m<%= $cur_module.name %>, "default", rb_<%= $cur_module.name %>_s_default, 0);
-    rb_define_module_function(rb_m<%= $cur_module.name %>, "setDefault", rb_<%= $cur_module.name %>_s_setDefault, 1);
+    rb_define_singleton_method(rb_m<%= $cur_module.name %>, "default", rb_<%= $cur_module.name %>_s_default, 0);
+    rb_define_singleton_method(rb_m<%= $cur_module.name %>, "setDefault", rb_<%= $cur_module.name %>_s_setDefault, 1);
 <% end %>
 
 <% $cur_module.constants.each do |module_constant| %>

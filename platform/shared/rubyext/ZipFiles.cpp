@@ -18,8 +18,8 @@
 using namespace rho;
 using namespace rho::common;
 
-extern "C"
-{		
+//extern "C"
+//{		
 	int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw)
 	{
 		ZRESULT res;
@@ -60,4 +60,4 @@ extern "C"
 		
 		return res;
 	}
-}
+//}

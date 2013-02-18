@@ -13,9 +13,9 @@
 
         <!-- <PROPERTIES usePropertyBag="accessorsViaPropertyBag"> -->
         <!-- <PROPERTIES usePropertyBag="PropertyBagViaAccessors"> -->
-        <PROPERTIES >
+        <PROPERTIES usePropertyBag="accessorsViaPropertyBag">
             <DESC>object supports this properties bla bla bla :</DESC>
-            <PROPERTY name="illuminationMode" type="STRING" generateAccessors="false">
+            <PROPERTY name="illuminationMode" type="STRING" generateAccessors="true">
                 <DESC>Whether or not the Code128 symbology is used.</DESC>
                 <VALUES>
                     <VALUE constName="MODE_AUTO" value ="auto">
@@ -30,9 +30,23 @@
 
                 </VALUES>
             </PROPERTY>
+
+            <PROPERTY name="test" type="STRING" generateAccessors="true"/>
+            
         </PROPERTIES>
 
         <METHODS>
+            <!--            
+            <METHOD name="myTest" access="STATIC">
+                <DESC>This is documentation</DESC>
+                <PARAMS>
+                    <PARAM name="obj1" type="Rho.Barcode">
+                        <DESC></DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+                 -->
+            
             <METHOD name="enable" hasCallback="mandatory">
                 <DESC>This is documentation</DESC>
     

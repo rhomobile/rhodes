@@ -1379,8 +1379,14 @@ void parseHttpProxyURI(const rho::String &http_proxy)
 	}
 }
 
+String g_strHttpProxy;
 extern "C" void rho_sys_set_http_proxy_url(const char* url)
 {
-	String m_strHttpProxy = url;
-    parseHttpProxyURI(m_strHttpProxy);
+	g_strHttpProxy = url;
+    parseHttpProxyURI(g_strHttpProxy);
+}
+
+extern "C" const char* rho_sys_get_http_proxy_url()
+{
+    return g_strHttpProxy.c_str();
 }
