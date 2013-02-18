@@ -31,7 +31,7 @@
 
 -(id<ISimpleOnlyStaticModule>)createSimpleOnlyStaticModuleByID:(NSString*)ID {
     SimpleOnlyStaticModule* obj = [[SimpleOnlyStaticModule alloc] init];
-    [obj setProperty:@"ID" value:ID];
+    [obj setProperty:@"ID" propertyValue:ID];
     return obj;
 }
 
