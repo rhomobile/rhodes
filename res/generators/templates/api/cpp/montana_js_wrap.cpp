@@ -186,11 +186,12 @@ using namespace rho::common;
     rho_wm_impl_performOnUiThread( pFunctor );
 <% elsif (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE) || (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED) %>
     <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
-<% else %>
+<% else if module_method.run_in_thread != ModuleMethod::RUN_IN_THREAD_NONE %>
 
     if ( bUseCallback )
         <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
-    else
+    else <%
+end %>
     {
         delete pFunctor;
 

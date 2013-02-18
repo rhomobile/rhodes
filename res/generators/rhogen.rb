@@ -785,6 +785,7 @@ module Rhogen
       CALLBACK_OPTIONAL = "OPTIONAL"
       CALLBACK_NONE = "NONE"
 
+      RUN_IN_THREAD_UNDEFINED = "UNDEFINED"
       RUN_IN_THREAD_NONE = "NONE"
       RUN_IN_THREAD_MODULE = "MODULE"
       RUN_IN_THREAD_SEPARATED = "SEPARATED"
@@ -798,7 +799,7 @@ module Rhogen
         @name = ''
         @native_name = ''
         @params = [] # array of MethodArgument
-        @run_in_thread = RUN_IN_THREAD_NONE
+        @run_in_thread = RUN_IN_THREAD_UNDEFINED
         @is_factory_method = false
         @is_return_value = false
         @access = ACCESS_INSTANCE
@@ -1217,7 +1218,7 @@ module Rhogen
               getter_method.native_name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
 
               getter_method.params = []
-              getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+              getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
               getter_method.is_factory_method = false
               getter_method.is_return_value = true
               getter_method.access = module_item.properties_access
@@ -1238,7 +1239,7 @@ module Rhogen
                 param.can_be_nil = false
                 param.type = module_property.type
                 setter_method.params = [param]
-                setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+                setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
                 setter_method.is_factory_method = false
                 setter_method.is_return_value = false
                 setter_method.access = module_item.properties_access
@@ -1484,7 +1485,7 @@ module Rhogen
       template.source = 'shared/generated/montana_js_api.cpp'
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_js_api.cpp"
     end
-
+=begin
     template :iphone_api do |template|
       template.source = 'platform/iphone/generated/IMontana.h'
       template.destination = "platform/iphone/generated/I#{$cur_module.name}.h"
@@ -1569,7 +1570,7 @@ module Rhogen
       template.source = 'platform/iphone/generated/stub_impl/readme.txt'
       template.destination = "platform/iphone/generated/stub_impl/readme.txt"
     end
-
+=end
 
     template :cpp_api do |template|
       template.source = 'cpp/IMontana.h'
@@ -1595,7 +1596,7 @@ module Rhogen
       template.source = 'cpp/montana_js_wrap.cpp'
       template.destination = "shared/generated/cpp/#{$cur_module.name}_js_wrap.cpp"
     end
-
+=begin
     template :android_java_obj_interface do |template|
       template.source = 'platform/android/gen/src/IMontana.java'
       template.destination = "platform/android/generated/src/#{api_generator_java_makePackagePath($cur_module)}/I#{$cur_module.name}.java"
@@ -1645,7 +1646,7 @@ module Rhogen
       template.source = 'platform/android/gen/jni/montana_js_wrap.cpp'
       template.destination = "platform/android/generated/jni/#{$cur_module.name.downcase}_js_wrap.cpp"
     end
-
+=end
     def attributes?
       self.attributes && !self.attributes.empty?
     end
