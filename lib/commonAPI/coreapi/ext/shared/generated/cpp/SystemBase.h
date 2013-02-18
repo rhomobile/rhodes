@@ -40,31 +40,16 @@ class CSystemSingletonBase : public CModuleSingletonBase< ISystemSingleton >
 {
 protected:
 
-    rho::String m_strDefaultID;
 
-public:
-
-
-    virtual void setDefaultID(const rho::String& strDefaultID){ m_strDefaultID = strDefaultID; }
-    virtual rho::String getDefaultID()
-    { 
-        if ( m_strDefaultID.length() == 0 )
-            setDefaultID(getInitialDefaultID());
-        return m_strDefaultID; 
-    }
-
-};
-
-class CSystemBase: public ISystem
-{
-protected:
 
     rho::Hashtable<rho::String, rho::String> m_hashProps;
-    rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< ISystem > *> m_mapPropAccessors;
+    rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< ISystemSingleton > *> m_mapPropAccessors;
+
 
 public:
-    CSystemBase();
 
+
+    CSystemSingletonBase();
 
     virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
     virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);
@@ -74,7 +59,16 @@ public:
     virtual void clearAllProperties(CMethodResult& oResult);
 
 
-    static CSystemBase* getInstance(){ return static_cast< CSystemBase* >(CSystemFactoryBase::getInstance()->getModuleByID(CSystemFactoryBase::getSystemSingletonS()->getDefaultID())); }
+
+};
+
+class CSystemBase: public ISystem
+{
+protected:
+
+public:
+
+
  
 
 };

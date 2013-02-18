@@ -18,7 +18,6 @@ public:
     virtual void stop(CMethodResult& oResult){}
     virtual void disable(CMethodResult& oResult){}
     virtual void take( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult){}
-
 };
 
 class CBarcodeSingleton: public CBarcodeSingletonBase
@@ -26,6 +25,7 @@ class CBarcodeSingleton: public CBarcodeSingletonBase
     ~CBarcodeSingleton(){}
     virtual rho::String getInitialDefaultID();
     virtual void enumerate(CMethodResult& oResult);
+    virtual void myTest( const rho::String& obj1, rho::apiGenerator::CMethodResult& oResult);
 };
 
 class CBarcodeFactory: public CBarcodeFactoryBase
@@ -68,6 +68,12 @@ rho::String CBarcodeSingleton::getInitialDefaultID()
     rho::Vector<rho::String>& arIDs = oRes.getStringArray();
         
     return arIDs[0];
+}
+
+
+void CBarcodeSingleton::myTest( const rho::String& obj1, rho::apiGenerator::CMethodResult& oResult)
+{
+    int i = 0;
 }
 
 }

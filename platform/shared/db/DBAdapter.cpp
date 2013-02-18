@@ -42,7 +42,7 @@
 
 #include <sstream>
 
-extern "C" int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw);
+int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw);
 
 namespace rho{
 namespace db{

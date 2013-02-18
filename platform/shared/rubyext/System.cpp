@@ -41,10 +41,10 @@
 
 using namespace rho;
 using namespace rho::common;
+int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw);
 
 extern "C"
 {
-int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char *base_path, const rho::Vector<rho::String>& arFiles, const char* psw);
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue);
 VALUE rho_sys_has_network();
 VALUE rho_sys_get_locale();

@@ -11,6 +11,17 @@ struct ISystem
 {
 //constants
 
+
+//methods
+    virtual ~ISystem(){}
+
+
+};
+
+struct ISystemSingleton
+{
+//constants
+
     static const char PLATFORM_WM_CE[];// "WINDOWS" 
     static const char PLATFORM_ANDROID[];// "ANDROID" 
     static const char PLATFORM_IOS[];// "APPLE" 
@@ -19,9 +30,9 @@ struct ISystem
     static const char SCREEN_PORTRAIT[];// "portrait" 
     static const char SCREEN_LANDSCAPE[];// "landscape" 
 
-//methods
-    virtual ~ISystem(){}
+    virtual ~ISystemSingleton(){}
 
+//methods
     virtual void getPlatform(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getHasCamera(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getScreenWidth(rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -46,7 +57,7 @@ struct ISystem
     virtual void getOemInfo(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getUuid(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getApplicationIconBadge(rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setApplicationIconBadge( int64 value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setApplicationIconBadge( int value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getHttpProxyURI(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setHttpProxyURI( const rho::String& value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getLockWindowSize(rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -56,7 +67,7 @@ struct ISystem
     virtual void getFullScreen(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setFullScreen( bool value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getLocalServerPort(rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setLocalServerPort( int64 value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setLocalServerPort( int value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getFreeServerPort(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getScreenAutoRotate(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setScreenAutoRotate( bool value, rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -77,28 +88,30 @@ struct ISystem
     virtual void unzipFile( const rho::String& localPathToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void zipFile( const rho::String& localPathToZip,  const rho::String& localPathToFile,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void zipFiles( const rho::String& localPathToZip,  const rho::String& basePath,  const rho::Vector<rho::String>& filePathsToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setRegistrySetting( const rho::String& keyPath,  const rho::String& keyValue, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void getRegistrySetting( const rho::String& keyPath, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setWindowFrame( int64 x,  int64 y,  int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setWindowPosition( int64 x,  int64 y, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setWindowSize( int64 width,  int64 height, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setWindowFrame( int x,  int y,  int width,  int height, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setWindowPosition( int x,  int y, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void replaceCurrentBundle( const rho::String& pathToBundle,  const rho::Hashtable<rho::String, rho::String>& params, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void deleteFolder( const rho::String& pathToFolder, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setDoNotBackupAttribute( const rho::String& pathToFile, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void isBlobAttr( const rho::String& partition,  int64 sourceID,  const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void updateBlobAttribs( const rho::String& partition,  int64 sourceID, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void isBlobAttr( const rho::String& partition,  int sourceID,  const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void updateBlobAttribs( const rho::String& partition,  int sourceID, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void get_locale(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void set_locale( const rho::String& locale_code,  const rho::String& country_code, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setPushNotification( const rho::String& url,  const rho::String& url_params,  const rho::String& push_client, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setScreenRotationNotification( const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void exit(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void set_sleeping( bool enable, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void startTimer( int64 interval,  const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void startTimer( int interval,  const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void stopTimer( const rho::String& url, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setNetworkStatusNotify( const rho::String& url,  int64 poll_interval, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setNetworkStatusNotify( const rho::String& url,  int poll_interval, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void clearNetworkStatusNotify(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void set_application_icon_badge( int badgeNumber, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getProperty( const rho::String& propertyName, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getProperties( const rho::Vector<rho::String>& arrayofNames, rho::apiGenerator::CMethodResult& oResult) = 0;
@@ -107,17 +120,6 @@ struct ISystem
     virtual void setProperties( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void clearAllProperties(rho::apiGenerator::CMethodResult& oResult) = 0;
 
-};
-
-struct ISystemSingleton
-{
-    virtual ~ISystemSingleton(){}
-
-
-
-    virtual rho::String getDefaultID() = 0;
-    virtual rho::String getInitialDefaultID() = 0;
-    virtual void setDefaultID(const rho::String& strID) = 0;
 
     virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor) = 0;
     virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor) = 0;
@@ -129,8 +131,6 @@ struct ISystemFactory
 
     virtual ISystemSingleton* getModuleSingleton() = 0;
 
-
-    virtual ISystem* getModuleByID(const rho::String& strID) = 0;
 
 };
 

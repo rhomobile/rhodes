@@ -113,6 +113,20 @@ HWND CMainWindow::getWebViewHWND(int index)
     return 0;
 }
 
+void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*= false*/)
+{
+    if (qtMainWindow)
+        ((QtMainWindow*)qtMainWindow)->fullscreenCommand(bFull ? 1 : 0);
+}
+
+bool CMainWindow::getFullScreen()
+{
+    if (qtMainWindow)
+        return ((QtMainWindow*)qtMainWindow)->getFullScreen();
+
+    return false;
+}
+
 void CMainWindow::MessageLoop(void)
 {
     messageLoop();
@@ -390,7 +404,7 @@ void CMainWindow::createToolbar(rho_param *p)
                         strImagePath = rho::common::CFilePath::join( RHODESAPP().getRhoRootPath(), icon );
                     else {
 #if defined(RHODES_EMULATOR)
-#define RHODES_EMULATOR_PLATFORM_STR ".wm"
+#define RHODES_EMULATOR_PLATFORM_STR ".win32"
 #elif defined(RHO_SYMBIAN)
 #define RHODES_EMULATOR_PLATFORM_STR ".sym"
 #else
