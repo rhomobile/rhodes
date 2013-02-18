@@ -1,4 +1,4 @@
-#import "../api/IJavascriptVM.h"
+#import "IJavascriptVM.h"
 //#import "api_generator/common/ruby_helpers.h"
 
 #import "ruby/ext/rho/rhoruby.h"
@@ -173,6 +173,21 @@ VALUE rb_JavascriptVM_executeScript_Obj(int argc, VALUE *argv, id<IJavascriptVMS
         [params_array addObject:params[i]];
     }
 
+    
+    // check callback
+    if (argc >= (1+1)) {
+        VALUE callback = argv[1];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (1+2)) {
+        VALUE callback_param = argv[1+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
     
 
     

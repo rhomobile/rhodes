@@ -1,6 +1,6 @@
 
 
-#import "../api/IJavascriptVM.h"
+#import "IJavascriptVM.h"
 
 @interface JavascriptVMSingletonBase : NSObject {
     NSString* mDefaultID;

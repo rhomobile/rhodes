@@ -1,4 +1,4 @@
-#import "../api/IJavascriptVM.h"
+#import "IJavascriptVM.h"
 //#import "api_generator/common/ruby_helpers.h"
 
 #include "api_generator/js_helpers.h"
@@ -7,8 +7,6 @@
 #import "api_generator/iphone/CJSConverter.h"
 
 extern VALUE getRuby_JavascriptVM_Module();
-
-
 
 
 
@@ -135,6 +133,22 @@ rho::String js_JavascriptVM_executeScript_Obj(rho::json::CJSONArray& argv, id<IJ
         [params_array addObject:params[i]];
     }
 
+    
+    // check callback
+    if (argc >= (1+1)) {
+        rho::json::CJSONEntry callback = argv.getItem(1);
+        if (callback.isString()) {
+            rho::json::CJSONEntry entry = argv.getItem(i);
+            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (1+2)) {
+        rho::json::CJSONEntry callback_param = argv.getItem(1+1);
+        if (callback_param.isString()) {
+            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
+        }
+    }
     
 
     if (callbackURL != nil) {
