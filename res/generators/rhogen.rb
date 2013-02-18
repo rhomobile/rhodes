@@ -403,7 +403,7 @@ module Rhogen
 		args << "api"
 		args << Dir.pwd+"/#{namefixed.downcase}.xml"
     ## TODO: fix it - next line do not work on Mac OS !
-		## puts Jake.run(source_root+"/../../../../bin/rhogen", args)
+		puts Jake.run(source_root+"/../../../../bin/rhogen", args)
     ##
     end
 
