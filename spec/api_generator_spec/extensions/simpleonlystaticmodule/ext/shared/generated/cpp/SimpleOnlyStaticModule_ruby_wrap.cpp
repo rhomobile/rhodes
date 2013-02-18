@@ -50,6 +50,7 @@ VALUE rb_s_SimpleOnlyStaticModule_calcSumm(int argc, VALUE *argv)
     rho::apiGenerator::CMethodResult oRes;
 
 
+        oRes.setRubyObjectClassPath( "" );
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
@@ -203,6 +204,7 @@ VALUE rb_s_SimpleOnlyStaticModule_joinStrings(int argc, VALUE *argv)
     rho::apiGenerator::CMethodResult oRes;
 
 
+        oRes.setRubyObjectClassPath( "" );
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
@@ -316,6 +318,7 @@ VALUE rb_s_SimpleOnlyStaticModule_getPlatform(int argc, VALUE *argv)
     rho::apiGenerator::CMethodResult oRes;
 
 
+        oRes.setRubyObjectClassPath( "" );
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;

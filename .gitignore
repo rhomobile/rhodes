@@ -119,6 +119,7 @@ lib/extensions/fcntl/ext/iphone/build/*
 
 spec/api_generator_spec/extensions/megamodule/ext/platform/iphone/build/*
 spec/api_generator_spec/extensions/simpleonlystaticmodule/ext/platform/iphone/build/*
+spec/api_generator_spec/extensions/barcode1/ext/platform/iphone/build/*
 
 spec/bin/*
 spec/**/bin/*
