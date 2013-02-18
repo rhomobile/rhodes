@@ -118,6 +118,7 @@ public:
     unsigned long toRuby();
     rho::String toJSON();
 
+    bool hasCallback();
     void callCallback();
 };
 

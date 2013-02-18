@@ -192,6 +192,12 @@ public:
 
 };
 
+bool CMethodResult::hasCallback()
+{
+    return m_ResType != eNone && (m_strRubyCallback.length() != 0 || m_pRubyCallbackProc || m_strJSCallback.length() != 0);
+
+}
+
 void CMethodResult::callCallback()
 {
     if ( m_bCollectionMode )
