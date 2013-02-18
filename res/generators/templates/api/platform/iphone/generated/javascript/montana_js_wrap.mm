@@ -111,9 +111,9 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     <%
     method_line = "[objItem "+module_method.native_name
     if module_method.params.size > 0
-        method_line = method_line + ":(#{$iphone_types[module_method.params[0].type]})#{$iphone_extract_param_prefix[module_method.params[0].type]}params[0]#{$iphone_extract_param_suffix[module_method.params[0].type]} "
+        method_line = method_line + ":(#{$iphone_types[module_method.params[0].type]})#{$iphone_extract_param_prefix[module_method.params[0].type]}[params objectAtIndex:0]#{$iphone_extract_param_suffix[module_method.params[0].type]} "
         for i in 1..(module_method.params.size-1)
-            method_line = method_line + "#{module_method.params[i].name}:(#{$iphone_types[module_method.params[i].type]})#{$iphone_extract_param_prefix[module_method.params[i].type]}params[#{i}]#{$iphone_extract_param_suffix[module_method.params[i].type]} "
+            method_line = method_line + "#{module_method.params[i].name}:(#{$iphone_types[module_method.params[i].type]})#{$iphone_extract_param_prefix[module_method.params[i].type]}[params objectAtIndex:#{i}]#{$iphone_extract_param_suffix[module_method.params[i].type]} "
         end
         if (module_method.has_callback != ModuleMethod::CALLBACK_NONE) || (module_method.is_return_value  || module_method.is_factory_method)
             method_line = method_line + "methodResult:methodResult "
@@ -127,6 +127,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     %>
     <%= method_line %>
 }
+
 
 +(void) <%= module_method.native_name %>:(<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params*)caller_params {
     [[<%= $cur_module.name %>_<%= module_method.native_name %>_caller getSharedInstance] command_<%= module_method.native_name %>:caller_params];
