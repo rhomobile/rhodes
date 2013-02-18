@@ -3,7 +3,7 @@ describe "JavaScriptVM" do
   it "should evaluate easy javascript" do
 	js_function = "(function(x){ return x*x; })(10)"
 
-	hundred = Rho.JavascriptVM.executeScript(js_function)
+	hundred = Rho::JavascriptVM.executeScript(js_function)
 
 	puts js_function + ' = ' + hundred
 
@@ -93,7 +93,7 @@ describe "JavaScriptVM" do
 			return sorted.join();
 		})(} + test_string + ')'
 
-	sorted = Rho.JavascriptVM.executeScript(sorting_test)
+	sorted = Rho::JavascriptVM.executeScript(sorting_test)
 
 	puts " Sorted result " + sorted
 
@@ -642,7 +642,7 @@ describe "JavaScriptVM" do
 		})()
 	}
 
-	Richards_result = Rho.JavascriptVM.executeScript(Richards_test)
+	Richards_result = Rho::JavascriptVM.executeScript(Richards_test)
 
 	puts "Richards test result " + Richards_result
 
@@ -1202,7 +1202,7 @@ K.moveTo(G.position.x*y,G.position.y*y);K.lineTo((G.position.x+this.m_xformScale
 		Box2D = null;
 		return "ok";
 		})()}
-		Box2D_result = Rho.JavascriptVM.executeScript(Box2D)
+		Box2D_result = Rho::JavascriptVM.executeScript(Box2D)
 
 		puts "Box2D test result " + Box2D_result
 

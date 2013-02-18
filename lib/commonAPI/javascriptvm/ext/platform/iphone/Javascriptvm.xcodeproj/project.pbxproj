@@ -324,6 +324,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = "-DRHO_NO_JS_API";
 				PRODUCT_NAME = JavascriptVM;
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "i386 armv7";
@@ -342,6 +343,7 @@
 				INSTALL_PATH = /usr/local/lib;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				OTHER_CFLAGS = "-DRHO_NO_JS_API";
 				PRODUCT_NAME = JavascriptVM;
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "i386  armv7";
