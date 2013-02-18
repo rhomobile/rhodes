@@ -70,8 +70,10 @@ end
 
 #LocalizationSimplified.requre_loc('rholang/lang_',false)
 
-if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
-module System
+systemClass = Module.const_get("System")
+
+if systemClass && systemClass.instance_of?( Class )
+class System
     def self.set_locale(locale_code, country_code = nil)
         LocalizationSimplified::set_cur_locale(locale_code, country_code)
 
@@ -82,7 +84,7 @@ module System
     end
 end
 else
-class System
+module System
     def self.set_locale(locale_code, country_code = nil)
         LocalizationSimplified::set_cur_locale(locale_code, country_code)
 
