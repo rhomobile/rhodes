@@ -398,13 +398,11 @@ module Rhogen
     def callback_after_make_build(template)
         # change atribbutes in build script file to executable
         File.chmod(0755, $build_script_full_path) 
-		Dir.chdir("extensions/#{namefixed.downcase}/ext")
-		args = []
-		args << "api"
-		args << Dir.pwd+"/#{namefixed.downcase}.xml"
-    ## TODO: fix it - next line do not work on Mac OS !
-		puts Jake.run(source_root+"/../../../../bin/rhogen", args)
-    ##
+  		Dir.chdir("extensions/#{namefixed.downcase}/ext")
+	  	args = []
+		  args << "api"
+		  args << Dir.pwd+"/#{namefixed.downcase}.xml"
+		  Jake.run(source_root+"/../../../../bin/rhogen", args)
     end
 
 	def callback_after_delete_testapp(template)
