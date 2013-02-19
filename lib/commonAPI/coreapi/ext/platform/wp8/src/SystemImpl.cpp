@@ -115,43 +115,32 @@ void CSystemImpl::getIsEmulator(CMethodResult& oResult)
 
 void CSystemImpl::getScreenWidth(CMethodResult& oResult)
 {
-	return oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getScreenWidth());
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getScreenWidth());
 }
 
 void CSystemImpl::getScreenHeight(CMethodResult& oResult)
 {
-	return oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getScreenHeight());
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getScreenHeight());
 }
 
 void CSystemImpl::getScreenOrientation(CMethodResult& oResult)
 {
-	if (DisplayProperties::CurrentOrientation == DisplayOrientations::Portrait ||
-        DisplayProperties::CurrentOrientation == DisplayOrientations::PortraitFlipped)
-	{
-		oResult.set(L"portrait");
-	}
-	else if (DisplayProperties::CurrentOrientation == DisplayOrientations::Landscape ||
-		DisplayProperties::CurrentOrientation == DisplayOrientations::LandscapeFlipped)
-	{
-		oResult.set(L"landscape");
-	}
-
-	
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getScreenOrientation()->Data());
 }
 
 void CSystemImpl::getPpiX(CMethodResult& oResult)
 {
-	oResult.set(DisplayProperties::LogicalDpi);
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getLogicalDpiX());
 }
 
 void CSystemImpl::getPpiY(CMethodResult& oResult)
 {
-	oResult.set(DisplayProperties::LogicalDpi);
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getLogicalDpiY());
 }
 
 void CSystemImpl::getPhoneId(CMethodResult& oResult)
 {
-	oResult.set(Windows::Networking::Proximity::ProximityDevice::GetDefault()->DeviceId->Data());
+	oResult.set(Windows::Phone::System::Analytics::HostInformation::PublisherHostId->Data());
 }
 
 void CSystemImpl::getDeviceName(CMethodResult& oResult)
@@ -184,7 +173,7 @@ void CSystemImpl::getHasCalendar(CMethodResult& oResult)
 
 void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
 {
-
+	oResult.set(false);
 }
 
 void CSystemImpl::getOemInfo(CMethodResult& oResult)
@@ -194,7 +183,7 @@ void CSystemImpl::getOemInfo(CMethodResult& oResult)
 
 void CSystemImpl::getUuid(CMethodResult& oResult)
 {
-	oResult.set(Windows::Networking::Proximity::ProximityDevice::GetDefault()->DeviceId->Data());
+	oResult.set(Windows::Phone::System::Analytics::HostInformation::PublisherHostId->Data());
 }
 
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
@@ -319,7 +308,7 @@ void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
 
 void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
 {
-	
+	rhoruntime::CRhoRuntime::getInstance()->getMainPage()->bringToFront();
 }
 
 extern "C" const char* rho_sys_get_http_proxy_url();
@@ -340,8 +329,7 @@ void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oRes
 
 void CSystemImpl::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult)
 {
-	auto touchCapabilities = ref new Windows::Devices::Input::TouchCapabilities();
-	oResult.set(touchCapabilities->TouchPresent);
+	oResult.set(true);
 }
 
 void CSystemImpl::getScreenSleeping(rho::apiGenerator::CMethodResult& oResult)
