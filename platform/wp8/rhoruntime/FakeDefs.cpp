@@ -15,11 +15,24 @@ RHO_GLOBAL void rho_appmanager_load( void* /*httpContext*/, const char* /*szQuer
     // Nothing
 }
 
-/*RHO_GLOBAL void rho_sys_report_app_started()
+RHO_GLOBAL void rho_sys_report_app_started()
 {
-}*/
+}
 
 RHO_GLOBAL void rho_conf_show_log()
+{
+}
+
+RHO_GLOBAL const char* rho_sys_get_http_proxy_url()
+{
+	return "";
+}
+
+RHO_GLOBAL void rho_sys_set_http_proxy_url(const char* url)
+{
+}
+
+RHO_GLOBAL void rho_sys_unset_http_proxy()
 {
 }
 
@@ -42,7 +55,6 @@ RHO_GLOBAL HWND getMainWnd()
 {
 	return 0;
 }
-
 
 
 RHO_GLOBAL void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
