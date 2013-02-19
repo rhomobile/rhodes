@@ -4,6 +4,7 @@
 #include "rhodes/jni/com_rhomobile_rhodes_api_MethodResult.h"
 #include "api_generator/MethodResult.h"
 #include "MethodResultJni.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #include "logging/RhoLog.h"
 
@@ -19,6 +20,9 @@ jmethodID MethodResultJni::s_midMethodResult;
 jmethodID MethodResultJni::s_midSetCallBack;
 jmethodID MethodResultJni::s_midGetResultType;
 jmethodID MethodResultJni::s_midReset;
+jfieldID MethodResultJni::s_fidBoolean;
+jfieldID MethodResultJni::s_fidInteger;
+jfieldID MethodResultJni::s_fidDouble;
 jfieldID MethodResultJni::s_fidString;
 jfieldID MethodResultJni::s_fidStringList;
 jfieldID MethodResultJni::s_fidStringMap;
@@ -78,6 +82,27 @@ JNIEnv* MethodResultJni::jniInit()
             s_methodResultClass = 0;
             return NULL;
         }
+        s_fidBoolean = env->GetFieldID(s_methodResultClass, "mBooleanResult", "Z");
+        if(!s_fidBoolean)
+        {
+            RAWLOG_ERROR1("Failed to get 'mBooleanResult' field for java class %s", METHOD_RESULT_CLASS);
+            s_methodResultClass = 0;
+            return NULL;
+        }
+        s_fidInteger = env->GetFieldID(s_methodResultClass, "mIntegerResult", "I");
+        if(!s_fidInteger)
+        {
+            RAWLOG_ERROR1("Failed to get 'mIntegerResult' field for java class %s", METHOD_RESULT_CLASS);
+            s_methodResultClass = 0;
+            return NULL;
+        }
+        s_fidDouble = env->GetFieldID(s_methodResultClass, "mDoubleResult", "D");
+        if(!s_fidDouble)
+        {
+            RAWLOG_ERROR1("Failed to get 'mDoubleResult' field for java class %s", METHOD_RESULT_CLASS);
+            s_methodResultClass = 0;
+            return NULL;
+        }
         s_fidString = env->GetFieldID(s_methodResultClass, "mStrResult", "Ljava/lang/String;");
         if(!s_fidString)
         {
@@ -102,6 +127,24 @@ JNIEnv* MethodResultJni::jniInit()
 
     }
     return env;
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+jboolean MethodResultJni::getBooleanResult(JNIEnv* env)
+{
+    return env->GetBooleanField(m_jhResult.get(), s_fidBoolean);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+jint MethodResultJni::getIntegerResult(JNIEnv* env)
+{
+    return env->GetIntField(m_jhResult.get(), s_fidInteger);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+jdouble MethodResultJni::getDoubleResult(JNIEnv* env)
+{
+    return env->GetDoubleField(m_jhResult.get(), s_fidDouble);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -257,6 +300,24 @@ VALUE MethodResultJni::toRuby()
     {
     case typeNone:
         break;
+    case typeBoolean:
+        {
+            bool booleanResult = static_cast<bool>(getBooleanResult(env));
+            res = booleanResult ? Qtrue : Qfalse;
+        }
+        break;
+    case typeInteger:
+    {
+        int intResult = static_cast<int>(getIntegerResult(env));
+        res = rho_ruby_create_integer(intResult);
+    }
+    break;
+    case typeDouble:
+    {
+        double doubleResult = static_cast<double>(getDoubleResult(env));
+        res = rho_ruby_create_double(doubleResult);
+    }
+    break;
     case typeString:
         {
             jhstring jhStrResult = getStringResult(env);
@@ -311,6 +372,8 @@ std::string MethodResultJni::toJson()
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetBoolean
   (JNIEnv * env, jclass, jboolean jRes, jstring jUrl, jstring jUrlData)
 {
+    RAWTRACE("nativeSetBoolean");
+
     bool res = static_cast<bool>(jRes);
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
@@ -325,6 +388,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetBool
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetInteger
   (JNIEnv * env, jclass, jint jRes, jstring jUrl, jstring jUrlData)
 {
+    RAWTRACE("nativeSetInteger");
+
     int res = static_cast<int>(jRes);
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
@@ -339,6 +404,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetInte
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetDouble
   (JNIEnv * env, jclass, jdouble jRes, jstring jUrl, jstring jUrlData)
 {
+    RAWTRACE("nativeSetDouble");
+
     double res = static_cast<double>(jRes);
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
@@ -353,6 +420,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetDoub
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetString
   (JNIEnv * env, jclass, jstring jRes, jstring jUrl, jstring jUrlData)
 {
+    RAWTRACE("nativeSetString");
+
     rho::String res = rho_cast<rho::String>(env, jRes);
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
@@ -368,6 +437,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStri
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStringList
   (JNIEnv * env, jclass, jobject jRes, jstring jUrl, jstring jUrlData)
 {
+    RAWTRACE("nativeSetStringList");
+
     HStringVector pRes = rho_cast<HStringVector>(env, jRes);
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
@@ -382,6 +453,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStri
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStringMap
   (JNIEnv * env, jclass, jobject jRes, jstring jUrl, jstring jUrlData)
 {
+    RAWTRACE("nativeSetStringMap");
+
     HStringMap pRes = rho_cast<HStringMap>(env, jRes);
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
@@ -396,6 +469,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStri
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetArgError
   (JNIEnv * env, jclass, jstring jRes, jstring jUrl, jstring jUrlData)
 {
+    RAWTRACE("nativeSetArgError");
+
     rho::String res = rho_cast<rho::String>(env, jRes);
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
@@ -410,6 +485,8 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetArgE
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetError
   (JNIEnv * env, jclass, jstring jRes, jstring jUrl, jstring jUrlData)
 {
+    RAWTRACE("nativeSetError");
+
     rho::String res = rho_cast<rho::String>(env, jRes);
     rho::String url = rho_cast<rho::String>(env, jUrl);
     rho::String data = rho_cast<rho::String>(env, jUrlData);
