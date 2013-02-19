@@ -43,35 +43,19 @@ static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::String, rho::S
 }
 
 
-
 VALUE rb_s_SimpleOnlyStaticModule_calcSumm(int argc, VALUE *argv)
-
 {
     rho::apiGenerator::CMethodResult oRes;
-
-
-        oRes.setRubyObjectClassPath( "" );
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
-
-
-
-
     nCallbackArg = 1;
-
-    
     if ( argc == 0 )
     {
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toRuby();
     }
-    
-
-
-
-
     int arg0;
     if ( argc > 0 )
     {
@@ -84,34 +68,12 @@ VALUE rb_s_SimpleOnlyStaticModule_calcSumm(int argc, VALUE *argv)
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     nCallbackArg = 2;
-
-    
     if ( argc == 1 )
     {
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toRuby();
     }
-    
-
-
-
-
     int arg1;
     if ( argc > 1 )
     {
@@ -124,24 +86,8 @@ VALUE rb_s_SimpleOnlyStaticModule_calcSumm(int argc, VALUE *argv)
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     if ( argc > nCallbackArg )
     {
-
 
         if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
@@ -168,28 +114,19 @@ VALUE rb_s_SimpleOnlyStaticModule_calcSumm(int argc, VALUE *argv)
         }
         
         bUseCallback = true;
-
     }
-
-
     pFunctor = rho_makeInstanceClassFunctor3( rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS(), &rho::examples::ISimpleOnlyStaticModuleSingleton::calcSumm, arg0, arg1,  oRes );
-
-
-
 
     if ( bUseCallback )
         rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
         rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS()->calcSumm( arg0, arg1,  oRes );
 
-
     }
-
-
     return oRes.toRuby();
 }
 
@@ -197,41 +134,19 @@ VALUE rb_s_SimpleOnlyStaticModule_calcSumm(int argc, VALUE *argv)
 
 
 
-
 VALUE rb_s_SimpleOnlyStaticModule_joinStrings(int argc, VALUE *argv)
-
 {
     rho::apiGenerator::CMethodResult oRes;
-
-
-        oRes.setRubyObjectClassPath( "" );
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
-
-
-
-
     nCallbackArg = 1;
-
-    
     if ( argc == 0 )
     {
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toRuby();
     }
-    
-
-
-
-
-
-
-
-
-
-
     rho::Vector<rho::String> arg0;
     if ( argc > 0 )
     {
@@ -244,18 +159,8 @@ VALUE rb_s_SimpleOnlyStaticModule_joinStrings(int argc, VALUE *argv)
         }
     }
 
-
-
-
-
-
-
-
-
-
     if ( argc > nCallbackArg )
     {
-
 
         if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
         {
@@ -282,78 +187,51 @@ VALUE rb_s_SimpleOnlyStaticModule_joinStrings(int argc, VALUE *argv)
         }
         
         bUseCallback = true;
-
     }
-
-
     pFunctor = rho_makeInstanceClassFunctor2( rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS(), &rho::examples::ISimpleOnlyStaticModuleSingleton::joinStrings, arg0,  oRes );
-
-
-
 
     if ( bUseCallback )
         rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
         rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS()->joinStrings( arg0,  oRes );
 
-
     }
-
-
     return oRes.toRuby();
 }
-
 
 
 
 
 
 VALUE rb_s_SimpleOnlyStaticModule_getPlatform(int argc, VALUE *argv)
-
 {
     rho::apiGenerator::CMethodResult oRes;
-
-
-        oRes.setRubyObjectClassPath( "" );
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
-
-
-
-
     if ( argc > nCallbackArg )
     {
 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
-
     }
-
-
     pFunctor = rho_makeInstanceClassFunctor1( rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS(), &rho::examples::ISimpleOnlyStaticModuleSingleton::getPlatform,  oRes );
-
-
-
 
     if ( bUseCallback )
         rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
         rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS()->getPlatform(  oRes );
 
-
     }
-
-
     return oRes.toRuby();
 }
 
@@ -361,37 +239,21 @@ VALUE rb_s_SimpleOnlyStaticModule_getPlatform(int argc, VALUE *argv)
 
 
 
-
 VALUE rb_s_SimpleOnlyStaticModule_showAlertFromUIThread(int argc, VALUE *argv)
-
 {
     rho::apiGenerator::CMethodResult oRes;
-
-
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
-
-
-
-
     if ( argc > nCallbackArg )
     {
 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
-
     }
-
-
     pFunctor = rho_makeInstanceClassFunctor1( rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS(), &rho::examples::ISimpleOnlyStaticModuleSingleton::showAlertFromUIThread,  oRes );
-
-
-
     rho_wm_impl_performOnUiThread( pFunctor );
-
-
     return oRes.toRuby();
 }
 

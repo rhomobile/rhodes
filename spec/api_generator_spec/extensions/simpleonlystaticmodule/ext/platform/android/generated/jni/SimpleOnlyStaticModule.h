@@ -111,7 +111,7 @@ public:
                     jhy.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     static
@@ -138,7 +138,7 @@ public:
                     jhstrings.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     static
@@ -161,7 +161,7 @@ public:
                     jhObject.get(), 
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     static
