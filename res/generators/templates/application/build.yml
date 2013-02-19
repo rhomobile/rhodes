@@ -8,7 +8,7 @@ bbver: 6.0
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator5.0
+  sdk: iphonesimulator6.0
   provisionprofile:
   codesignidentity:
   entitlements:
