@@ -14,7 +14,7 @@ using namespace rho::json;
 using namespace rho::common;
 
 
-rho::String js_System_getPlatform(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getPlatform(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -22,8 +22,6 @@ rho::String js_System_getPlatform(rho::json::CJSONArray& argv, const rho::String
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -57,19 +55,19 @@ rho::String js_System_getPlatform(rho::json::CJSONArray& argv, const rho::String
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getPlatform,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getPlatform,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getPlatform(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getPlatform(  oRes );
 
 
     }
@@ -80,7 +78,7 @@ rho::String js_System_getPlatform(rho::json::CJSONArray& argv, const rho::String
 }
 
 
-rho::String js_System_getHasCamera(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getHasCamera(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -88,8 +86,6 @@ rho::String js_System_getHasCamera(rho::json::CJSONArray& argv, const rho::Strin
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -123,19 +119,19 @@ rho::String js_System_getHasCamera(rho::json::CJSONArray& argv, const rho::Strin
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getHasCamera,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getHasCamera,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getHasCamera(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getHasCamera(  oRes );
 
 
     }
@@ -146,7 +142,7 @@ rho::String js_System_getHasCamera(rho::json::CJSONArray& argv, const rho::Strin
 }
 
 
-rho::String js_System_getScreenWidth(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getScreenWidth(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -154,8 +150,6 @@ rho::String js_System_getScreenWidth(rho::json::CJSONArray& argv, const rho::Str
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -189,19 +183,19 @@ rho::String js_System_getScreenWidth(rho::json::CJSONArray& argv, const rho::Str
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getScreenWidth,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getScreenWidth,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getScreenWidth(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getScreenWidth(  oRes );
 
 
     }
@@ -212,7 +206,7 @@ rho::String js_System_getScreenWidth(rho::json::CJSONArray& argv, const rho::Str
 }
 
 
-rho::String js_System_getScreenHeight(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getScreenHeight(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -220,8 +214,6 @@ rho::String js_System_getScreenHeight(rho::json::CJSONArray& argv, const rho::St
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -255,19 +247,19 @@ rho::String js_System_getScreenHeight(rho::json::CJSONArray& argv, const rho::St
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getScreenHeight,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getScreenHeight,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getScreenHeight(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getScreenHeight(  oRes );
 
 
     }
@@ -278,7 +270,7 @@ rho::String js_System_getScreenHeight(rho::json::CJSONArray& argv, const rho::St
 }
 
 
-rho::String js_System_getRealScreenWidth(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getRealScreenWidth(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -286,8 +278,6 @@ rho::String js_System_getRealScreenWidth(rho::json::CJSONArray& argv, const rho:
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -321,19 +311,19 @@ rho::String js_System_getRealScreenWidth(rho::json::CJSONArray& argv, const rho:
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getRealScreenWidth,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getRealScreenWidth,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getRealScreenWidth(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getRealScreenWidth(  oRes );
 
 
     }
@@ -344,7 +334,7 @@ rho::String js_System_getRealScreenWidth(rho::json::CJSONArray& argv, const rho:
 }
 
 
-rho::String js_System_getRealScreenHeight(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getRealScreenHeight(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -352,8 +342,6 @@ rho::String js_System_getRealScreenHeight(rho::json::CJSONArray& argv, const rho
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -387,19 +375,19 @@ rho::String js_System_getRealScreenHeight(rho::json::CJSONArray& argv, const rho
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getRealScreenHeight,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getRealScreenHeight,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getRealScreenHeight(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getRealScreenHeight(  oRes );
 
 
     }
@@ -410,7 +398,7 @@ rho::String js_System_getRealScreenHeight(rho::json::CJSONArray& argv, const rho
 }
 
 
-rho::String js_System_getScreenOrientation(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getScreenOrientation(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -418,8 +406,6 @@ rho::String js_System_getScreenOrientation(rho::json::CJSONArray& argv, const rh
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -453,19 +439,19 @@ rho::String js_System_getScreenOrientation(rho::json::CJSONArray& argv, const rh
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getScreenOrientation,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getScreenOrientation,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getScreenOrientation(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getScreenOrientation(  oRes );
 
 
     }
@@ -476,7 +462,7 @@ rho::String js_System_getScreenOrientation(rho::json::CJSONArray& argv, const rh
 }
 
 
-rho::String js_System_getPpiX(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getPpiX(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -484,8 +470,6 @@ rho::String js_System_getPpiX(rho::json::CJSONArray& argv, const rho::String& st
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -519,19 +503,19 @@ rho::String js_System_getPpiX(rho::json::CJSONArray& argv, const rho::String& st
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getPpiX,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getPpiX,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getPpiX(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getPpiX(  oRes );
 
 
     }
@@ -542,7 +526,7 @@ rho::String js_System_getPpiX(rho::json::CJSONArray& argv, const rho::String& st
 }
 
 
-rho::String js_System_getPpiY(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getPpiY(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -550,8 +534,6 @@ rho::String js_System_getPpiY(rho::json::CJSONArray& argv, const rho::String& st
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -585,19 +567,19 @@ rho::String js_System_getPpiY(rho::json::CJSONArray& argv, const rho::String& st
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getPpiY,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getPpiY,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getPpiY(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getPpiY(  oRes );
 
 
     }
@@ -608,7 +590,7 @@ rho::String js_System_getPpiY(rho::json::CJSONArray& argv, const rho::String& st
 }
 
 
-rho::String js_System_getPhoneNumber(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getPhoneNumber(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -616,8 +598,6 @@ rho::String js_System_getPhoneNumber(rho::json::CJSONArray& argv, const rho::Str
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -651,19 +631,19 @@ rho::String js_System_getPhoneNumber(rho::json::CJSONArray& argv, const rho::Str
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getPhoneNumber,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getPhoneNumber,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getPhoneNumber(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getPhoneNumber(  oRes );
 
 
     }
@@ -674,7 +654,7 @@ rho::String js_System_getPhoneNumber(rho::json::CJSONArray& argv, const rho::Str
 }
 
 
-rho::String js_System_getDeviceOwnerEmail(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getDeviceOwnerEmail(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -682,8 +662,6 @@ rho::String js_System_getDeviceOwnerEmail(rho::json::CJSONArray& argv, const rho
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -717,19 +695,19 @@ rho::String js_System_getDeviceOwnerEmail(rho::json::CJSONArray& argv, const rho
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getDeviceOwnerEmail,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getDeviceOwnerEmail,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getDeviceOwnerEmail(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getDeviceOwnerEmail(  oRes );
 
 
     }
@@ -740,7 +718,7 @@ rho::String js_System_getDeviceOwnerEmail(rho::json::CJSONArray& argv, const rho
 }
 
 
-rho::String js_System_getDeviceOwnerName(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getDeviceOwnerName(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -748,8 +726,6 @@ rho::String js_System_getDeviceOwnerName(rho::json::CJSONArray& argv, const rho:
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -783,19 +759,19 @@ rho::String js_System_getDeviceOwnerName(rho::json::CJSONArray& argv, const rho:
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getDeviceOwnerName,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getDeviceOwnerName,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getDeviceOwnerName(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getDeviceOwnerName(  oRes );
 
 
     }
@@ -806,7 +782,7 @@ rho::String js_System_getDeviceOwnerName(rho::json::CJSONArray& argv, const rho:
 }
 
 
-rho::String js_System_getDevicePushId(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getDevicePushId(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -814,8 +790,6 @@ rho::String js_System_getDevicePushId(rho::json::CJSONArray& argv, const rho::St
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -849,19 +823,19 @@ rho::String js_System_getDevicePushId(rho::json::CJSONArray& argv, const rho::St
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getDevicePushId,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getDevicePushId,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getDevicePushId(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getDevicePushId(  oRes );
 
 
     }
@@ -872,7 +846,7 @@ rho::String js_System_getDevicePushId(rho::json::CJSONArray& argv, const rho::St
 }
 
 
-rho::String js_System_getPhoneId(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getPhoneId(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -880,8 +854,6 @@ rho::String js_System_getPhoneId(rho::json::CJSONArray& argv, const rho::String&
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -915,19 +887,19 @@ rho::String js_System_getPhoneId(rho::json::CJSONArray& argv, const rho::String&
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getPhoneId,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getPhoneId,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getPhoneId(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getPhoneId(  oRes );
 
 
     }
@@ -938,7 +910,7 @@ rho::String js_System_getPhoneId(rho::json::CJSONArray& argv, const rho::String&
 }
 
 
-rho::String js_System_getDeviceName(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getDeviceName(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -946,8 +918,6 @@ rho::String js_System_getDeviceName(rho::json::CJSONArray& argv, const rho::Stri
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -981,19 +951,19 @@ rho::String js_System_getDeviceName(rho::json::CJSONArray& argv, const rho::Stri
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getDeviceName,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getDeviceName,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getDeviceName(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getDeviceName(  oRes );
 
 
     }
@@ -1004,7 +974,7 @@ rho::String js_System_getDeviceName(rho::json::CJSONArray& argv, const rho::Stri
 }
 
 
-rho::String js_System_getOsVersion(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getOsVersion(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1012,8 +982,6 @@ rho::String js_System_getOsVersion(rho::json::CJSONArray& argv, const rho::Strin
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1047,19 +1015,19 @@ rho::String js_System_getOsVersion(rho::json::CJSONArray& argv, const rho::Strin
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getOsVersion,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getOsVersion,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getOsVersion(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getOsVersion(  oRes );
 
 
     }
@@ -1070,7 +1038,7 @@ rho::String js_System_getOsVersion(rho::json::CJSONArray& argv, const rho::Strin
 }
 
 
-rho::String js_System_getLocale(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getLocale(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1078,8 +1046,6 @@ rho::String js_System_getLocale(rho::json::CJSONArray& argv, const rho::String& 
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1113,19 +1079,19 @@ rho::String js_System_getLocale(rho::json::CJSONArray& argv, const rho::String& 
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getLocale,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getLocale,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getLocale(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getLocale(  oRes );
 
 
     }
@@ -1136,7 +1102,7 @@ rho::String js_System_getLocale(rho::json::CJSONArray& argv, const rho::String& 
 }
 
 
-rho::String js_System_getCountry(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getCountry(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1144,8 +1110,6 @@ rho::String js_System_getCountry(rho::json::CJSONArray& argv, const rho::String&
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1179,19 +1143,19 @@ rho::String js_System_getCountry(rho::json::CJSONArray& argv, const rho::String&
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getCountry,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getCountry,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getCountry(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getCountry(  oRes );
 
 
     }
@@ -1202,7 +1166,7 @@ rho::String js_System_getCountry(rho::json::CJSONArray& argv, const rho::String&
 }
 
 
-rho::String js_System_getIsEmulator(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getIsEmulator(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1210,8 +1174,6 @@ rho::String js_System_getIsEmulator(rho::json::CJSONArray& argv, const rho::Stri
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1245,19 +1207,19 @@ rho::String js_System_getIsEmulator(rho::json::CJSONArray& argv, const rho::Stri
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getIsEmulator,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getIsEmulator,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getIsEmulator(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getIsEmulator(  oRes );
 
 
     }
@@ -1268,7 +1230,7 @@ rho::String js_System_getIsEmulator(rho::json::CJSONArray& argv, const rho::Stri
 }
 
 
-rho::String js_System_getHasCalendar(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getHasCalendar(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1276,8 +1238,6 @@ rho::String js_System_getHasCalendar(rho::json::CJSONArray& argv, const rho::Str
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1311,19 +1271,19 @@ rho::String js_System_getHasCalendar(rho::json::CJSONArray& argv, const rho::Str
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getHasCalendar,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getHasCalendar,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getHasCalendar(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getHasCalendar(  oRes );
 
 
     }
@@ -1334,7 +1294,7 @@ rho::String js_System_getHasCalendar(rho::json::CJSONArray& argv, const rho::Str
 }
 
 
-rho::String js_System_getIsMotorolaDevice(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getIsMotorolaDevice(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1342,8 +1302,6 @@ rho::String js_System_getIsMotorolaDevice(rho::json::CJSONArray& argv, const rho
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1377,19 +1335,19 @@ rho::String js_System_getIsMotorolaDevice(rho::json::CJSONArray& argv, const rho
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getIsMotorolaDevice,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getIsMotorolaDevice,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getIsMotorolaDevice(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getIsMotorolaDevice(  oRes );
 
 
     }
@@ -1400,7 +1358,7 @@ rho::String js_System_getIsMotorolaDevice(rho::json::CJSONArray& argv, const rho
 }
 
 
-rho::String js_System_getOemInfo(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getOemInfo(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1408,8 +1366,6 @@ rho::String js_System_getOemInfo(rho::json::CJSONArray& argv, const rho::String&
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1443,19 +1399,19 @@ rho::String js_System_getOemInfo(rho::json::CJSONArray& argv, const rho::String&
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getOemInfo,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getOemInfo,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getOemInfo(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getOemInfo(  oRes );
 
 
     }
@@ -1466,7 +1422,7 @@ rho::String js_System_getOemInfo(rho::json::CJSONArray& argv, const rho::String&
 }
 
 
-rho::String js_System_getUuid(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getUuid(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1474,8 +1430,6 @@ rho::String js_System_getUuid(rho::json::CJSONArray& argv, const rho::String& st
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1509,19 +1463,19 @@ rho::String js_System_getUuid(rho::json::CJSONArray& argv, const rho::String& st
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getUuid,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getUuid,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getUuid(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getUuid(  oRes );
 
 
     }
@@ -1532,7 +1486,7 @@ rho::String js_System_getUuid(rho::json::CJSONArray& argv, const rho::String& st
 }
 
 
-rho::String js_System_getApplicationIconBadge(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getApplicationIconBadge(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1540,8 +1494,6 @@ rho::String js_System_getApplicationIconBadge(rho::json::CJSONArray& argv, const
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1575,19 +1527,19 @@ rho::String js_System_getApplicationIconBadge(rho::json::CJSONArray& argv, const
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getApplicationIconBadge,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getApplicationIconBadge,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getApplicationIconBadge(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getApplicationIconBadge(  oRes );
 
 
     }
@@ -1598,7 +1550,7 @@ rho::String js_System_getApplicationIconBadge(rho::json::CJSONArray& argv, const
 }
 
 
-rho::String js_System_setApplicationIconBadge(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setApplicationIconBadge(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1606,8 +1558,6 @@ rho::String js_System_setApplicationIconBadge(rho::json::CJSONArray& argv, const
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1644,7 +1594,9 @@ rho::String js_System_setApplicationIconBadge(rho::json::CJSONArray& argv, const
 
 
 
-        
+
+
+
 
 
 
@@ -1678,19 +1630,19 @@ rho::String js_System_setApplicationIconBadge(rho::json::CJSONArray& argv, const
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setApplicationIconBadge, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setApplicationIconBadge, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setApplicationIconBadge( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setApplicationIconBadge( arg0,  oRes );
 
 
     }
@@ -1701,7 +1653,7 @@ rho::String js_System_setApplicationIconBadge(rho::json::CJSONArray& argv, const
 }
 
 
-rho::String js_System_getHttpProxyURI(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getHttpProxyURI(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1709,8 +1661,6 @@ rho::String js_System_getHttpProxyURI(rho::json::CJSONArray& argv, const rho::St
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1744,19 +1694,19 @@ rho::String js_System_getHttpProxyURI(rho::json::CJSONArray& argv, const rho::St
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getHttpProxyURI,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getHttpProxyURI,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getHttpProxyURI(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getHttpProxyURI(  oRes );
 
 
     }
@@ -1767,7 +1717,7 @@ rho::String js_System_getHttpProxyURI(rho::json::CJSONArray& argv, const rho::St
 }
 
 
-rho::String js_System_setHttpProxyURI(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setHttpProxyURI(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1775,8 +1725,6 @@ rho::String js_System_setHttpProxyURI(rho::json::CJSONArray& argv, const rho::St
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1818,7 +1766,9 @@ rho::String js_System_setHttpProxyURI(rho::json::CJSONArray& argv, const rho::St
 
 
 
-        
+
+
+
 
 
 
@@ -1852,19 +1802,19 @@ rho::String js_System_setHttpProxyURI(rho::json::CJSONArray& argv, const rho::St
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setHttpProxyURI, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setHttpProxyURI, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setHttpProxyURI( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setHttpProxyURI( arg0,  oRes );
 
 
     }
@@ -1875,7 +1825,7 @@ rho::String js_System_setHttpProxyURI(rho::json::CJSONArray& argv, const rho::St
 }
 
 
-rho::String js_System_getLockWindowSize(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getLockWindowSize(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1883,8 +1833,6 @@ rho::String js_System_getLockWindowSize(rho::json::CJSONArray& argv, const rho::
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1918,19 +1866,19 @@ rho::String js_System_getLockWindowSize(rho::json::CJSONArray& argv, const rho::
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getLockWindowSize,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getLockWindowSize,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getLockWindowSize(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getLockWindowSize(  oRes );
 
 
     }
@@ -1941,7 +1889,7 @@ rho::String js_System_getLockWindowSize(rho::json::CJSONArray& argv, const rho::
 }
 
 
-rho::String js_System_setLockWindowSize(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setLockWindowSize(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -1949,8 +1897,6 @@ rho::String js_System_setLockWindowSize(rho::json::CJSONArray& argv, const rho::
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -1987,7 +1933,9 @@ rho::String js_System_setLockWindowSize(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -2021,19 +1969,19 @@ rho::String js_System_setLockWindowSize(rho::json::CJSONArray& argv, const rho::
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setLockWindowSize, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setLockWindowSize, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setLockWindowSize( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setLockWindowSize( arg0,  oRes );
 
 
     }
@@ -2044,7 +1992,7 @@ rho::String js_System_setLockWindowSize(rho::json::CJSONArray& argv, const rho::
 }
 
 
-rho::String js_System_getShowKeyboard(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getShowKeyboard(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2052,8 +2000,6 @@ rho::String js_System_getShowKeyboard(rho::json::CJSONArray& argv, const rho::St
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2087,19 +2033,19 @@ rho::String js_System_getShowKeyboard(rho::json::CJSONArray& argv, const rho::St
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getShowKeyboard,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getShowKeyboard,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getShowKeyboard(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getShowKeyboard(  oRes );
 
 
     }
@@ -2110,7 +2056,7 @@ rho::String js_System_getShowKeyboard(rho::json::CJSONArray& argv, const rho::St
 }
 
 
-rho::String js_System_setShowKeyboard(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setShowKeyboard(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2118,8 +2064,6 @@ rho::String js_System_setShowKeyboard(rho::json::CJSONArray& argv, const rho::St
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2156,7 +2100,9 @@ rho::String js_System_setShowKeyboard(rho::json::CJSONArray& argv, const rho::St
 
 
 
-        
+
+
+
 
 
 
@@ -2190,19 +2136,19 @@ rho::String js_System_setShowKeyboard(rho::json::CJSONArray& argv, const rho::St
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setShowKeyboard, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setShowKeyboard, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setShowKeyboard( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setShowKeyboard( arg0,  oRes );
 
 
     }
@@ -2213,7 +2159,7 @@ rho::String js_System_setShowKeyboard(rho::json::CJSONArray& argv, const rho::St
 }
 
 
-rho::String js_System_getFullScreen(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getFullScreen(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2221,8 +2167,6 @@ rho::String js_System_getFullScreen(rho::json::CJSONArray& argv, const rho::Stri
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2256,19 +2200,19 @@ rho::String js_System_getFullScreen(rho::json::CJSONArray& argv, const rho::Stri
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getFullScreen,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getFullScreen,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getFullScreen(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getFullScreen(  oRes );
 
 
     }
@@ -2279,7 +2223,7 @@ rho::String js_System_getFullScreen(rho::json::CJSONArray& argv, const rho::Stri
 }
 
 
-rho::String js_System_setFullScreen(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setFullScreen(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2287,8 +2231,6 @@ rho::String js_System_setFullScreen(rho::json::CJSONArray& argv, const rho::Stri
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2325,7 +2267,9 @@ rho::String js_System_setFullScreen(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-        
+
+
+
 
 
 
@@ -2359,19 +2303,19 @@ rho::String js_System_setFullScreen(rho::json::CJSONArray& argv, const rho::Stri
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setFullScreen, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setFullScreen, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setFullScreen( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setFullScreen( arg0,  oRes );
 
 
     }
@@ -2382,7 +2326,7 @@ rho::String js_System_setFullScreen(rho::json::CJSONArray& argv, const rho::Stri
 }
 
 
-rho::String js_System_getLocalServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getLocalServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2390,8 +2334,6 @@ rho::String js_System_getLocalServerPort(rho::json::CJSONArray& argv, const rho:
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2425,19 +2367,19 @@ rho::String js_System_getLocalServerPort(rho::json::CJSONArray& argv, const rho:
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getLocalServerPort,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getLocalServerPort,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getLocalServerPort(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getLocalServerPort(  oRes );
 
 
     }
@@ -2448,7 +2390,7 @@ rho::String js_System_getLocalServerPort(rho::json::CJSONArray& argv, const rho:
 }
 
 
-rho::String js_System_setLocalServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setLocalServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2456,8 +2398,6 @@ rho::String js_System_setLocalServerPort(rho::json::CJSONArray& argv, const rho:
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2494,7 +2434,9 @@ rho::String js_System_setLocalServerPort(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -2528,19 +2470,19 @@ rho::String js_System_setLocalServerPort(rho::json::CJSONArray& argv, const rho:
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setLocalServerPort, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setLocalServerPort, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setLocalServerPort( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setLocalServerPort( arg0,  oRes );
 
 
     }
@@ -2551,7 +2493,7 @@ rho::String js_System_setLocalServerPort(rho::json::CJSONArray& argv, const rho:
 }
 
 
-rho::String js_System_getFreeServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getFreeServerPort(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2559,8 +2501,6 @@ rho::String js_System_getFreeServerPort(rho::json::CJSONArray& argv, const rho::
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2594,19 +2534,19 @@ rho::String js_System_getFreeServerPort(rho::json::CJSONArray& argv, const rho::
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getFreeServerPort,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getFreeServerPort,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getFreeServerPort(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getFreeServerPort(  oRes );
 
 
     }
@@ -2617,7 +2557,7 @@ rho::String js_System_getFreeServerPort(rho::json::CJSONArray& argv, const rho::
 }
 
 
-rho::String js_System_getScreenAutoRotate(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getScreenAutoRotate(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2625,8 +2565,6 @@ rho::String js_System_getScreenAutoRotate(rho::json::CJSONArray& argv, const rho
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2660,19 +2598,19 @@ rho::String js_System_getScreenAutoRotate(rho::json::CJSONArray& argv, const rho
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getScreenAutoRotate,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getScreenAutoRotate,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getScreenAutoRotate(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getScreenAutoRotate(  oRes );
 
 
     }
@@ -2683,7 +2621,7 @@ rho::String js_System_getScreenAutoRotate(rho::json::CJSONArray& argv, const rho
 }
 
 
-rho::String js_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2691,8 +2629,6 @@ rho::String js_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const rho
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2729,7 +2665,9 @@ rho::String js_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const rho
 
 
 
-        
+
+
+
 
 
 
@@ -2763,19 +2701,19 @@ rho::String js_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const rho
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setScreenAutoRotate, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setScreenAutoRotate, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setScreenAutoRotate( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setScreenAutoRotate( arg0,  oRes );
 
 
     }
@@ -2786,7 +2724,7 @@ rho::String js_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const rho
 }
 
 
-rho::String js_System_getHasTouchscreen(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getHasTouchscreen(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2794,8 +2732,6 @@ rho::String js_System_getHasTouchscreen(rho::json::CJSONArray& argv, const rho::
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2829,19 +2765,19 @@ rho::String js_System_getHasTouchscreen(rho::json::CJSONArray& argv, const rho::
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getHasTouchscreen,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getHasTouchscreen,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getHasTouchscreen(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getHasTouchscreen(  oRes );
 
 
     }
@@ -2852,7 +2788,7 @@ rho::String js_System_getHasTouchscreen(rho::json::CJSONArray& argv, const rho::
 }
 
 
-rho::String js_System_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2860,8 +2796,6 @@ rho::String js_System_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, con
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2895,19 +2829,19 @@ rho::String js_System_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, con
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getSecurityTokenNotPassed,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getSecurityTokenNotPassed,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getSecurityTokenNotPassed(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getSecurityTokenNotPassed(  oRes );
 
 
     }
@@ -2918,7 +2852,7 @@ rho::String js_System_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, con
 }
 
 
-rho::String js_System_getWebviewFramework(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getWebviewFramework(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2926,8 +2860,6 @@ rho::String js_System_getWebviewFramework(rho::json::CJSONArray& argv, const rho
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -2961,19 +2893,19 @@ rho::String js_System_getWebviewFramework(rho::json::CJSONArray& argv, const rho
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getWebviewFramework,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getWebviewFramework,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getWebviewFramework(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getWebviewFramework(  oRes );
 
 
     }
@@ -2984,7 +2916,7 @@ rho::String js_System_getWebviewFramework(rho::json::CJSONArray& argv, const rho
 }
 
 
-rho::String js_System_getScreenSleeping(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getScreenSleeping(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -2992,8 +2924,6 @@ rho::String js_System_getScreenSleeping(rho::json::CJSONArray& argv, const rho::
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3027,19 +2957,19 @@ rho::String js_System_getScreenSleeping(rho::json::CJSONArray& argv, const rho::
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getScreenSleeping,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getScreenSleeping,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getScreenSleeping(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getScreenSleeping(  oRes );
 
 
     }
@@ -3050,7 +2980,7 @@ rho::String js_System_getScreenSleeping(rho::json::CJSONArray& argv, const rho::
 }
 
 
-rho::String js_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3058,8 +2988,6 @@ rho::String js_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho::
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3096,7 +3024,9 @@ rho::String js_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -3130,19 +3060,19 @@ rho::String js_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho::
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setScreenSleeping, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setScreenSleeping, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setScreenSleeping( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setScreenSleeping( arg0,  oRes );
 
 
     }
@@ -3153,7 +3083,7 @@ rho::String js_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho::
 }
 
 
-rho::String js_System_getHasNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getHasNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3161,8 +3091,6 @@ rho::String js_System_getHasNetwork(rho::json::CJSONArray& argv, const rho::Stri
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3196,19 +3124,19 @@ rho::String js_System_getHasNetwork(rho::json::CJSONArray& argv, const rho::Stri
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getHasNetwork,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getHasNetwork,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getHasNetwork(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getHasNetwork(  oRes );
 
 
     }
@@ -3219,7 +3147,7 @@ rho::String js_System_getHasNetwork(rho::json::CJSONArray& argv, const rho::Stri
 }
 
 
-rho::String js_System_getHasWifiNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getHasWifiNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3227,8 +3155,6 @@ rho::String js_System_getHasWifiNetwork(rho::json::CJSONArray& argv, const rho::
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3262,19 +3188,19 @@ rho::String js_System_getHasWifiNetwork(rho::json::CJSONArray& argv, const rho::
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getHasWifiNetwork,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getHasWifiNetwork,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getHasWifiNetwork(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getHasWifiNetwork(  oRes );
 
 
     }
@@ -3285,7 +3211,7 @@ rho::String js_System_getHasWifiNetwork(rho::json::CJSONArray& argv, const rho::
 }
 
 
-rho::String js_System_getHasCellNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getHasCellNetwork(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3293,8 +3219,6 @@ rho::String js_System_getHasCellNetwork(rho::json::CJSONArray& argv, const rho::
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3328,19 +3252,19 @@ rho::String js_System_getHasCellNetwork(rho::json::CJSONArray& argv, const rho::
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getHasCellNetwork,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getHasCellNetwork,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getHasCellNetwork(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getHasCellNetwork(  oRes );
 
 
     }
@@ -3351,7 +3275,7 @@ rho::String js_System_getHasCellNetwork(rho::json::CJSONArray& argv, const rho::
 }
 
 
-rho::String js_System_getHasSqlite(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getHasSqlite(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3359,8 +3283,6 @@ rho::String js_System_getHasSqlite(rho::json::CJSONArray& argv, const rho::Strin
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3394,19 +3316,19 @@ rho::String js_System_getHasSqlite(rho::json::CJSONArray& argv, const rho::Strin
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getHasSqlite,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getHasSqlite,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getHasSqlite(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getHasSqlite(  oRes );
 
 
     }
@@ -3417,7 +3339,7 @@ rho::String js_System_getHasSqlite(rho::json::CJSONArray& argv, const rho::Strin
 }
 
 
-rho::String js_System_applicationInstall(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_applicationInstall(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3425,8 +3347,6 @@ rho::String js_System_applicationInstall(rho::json::CJSONArray& argv, const rho:
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3468,7 +3388,9 @@ rho::String js_System_applicationInstall(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -3502,19 +3424,19 @@ rho::String js_System_applicationInstall(rho::json::CJSONArray& argv, const rho:
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::applicationInstall, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::applicationInstall, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->applicationInstall( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->applicationInstall( arg0,  oRes );
 
 
     }
@@ -3525,7 +3447,7 @@ rho::String js_System_applicationInstall(rho::json::CJSONArray& argv, const rho:
 }
 
 
-rho::String js_System_isApplicationInstalled(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_isApplicationInstalled(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3533,8 +3455,6 @@ rho::String js_System_isApplicationInstalled(rho::json::CJSONArray& argv, const 
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3576,7 +3496,9 @@ rho::String js_System_isApplicationInstalled(rho::json::CJSONArray& argv, const 
 
 
 
-        
+
+
+
 
 
 
@@ -3610,19 +3532,19 @@ rho::String js_System_isApplicationInstalled(rho::json::CJSONArray& argv, const 
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::isApplicationInstalled, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::isApplicationInstalled, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->isApplicationInstalled( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->isApplicationInstalled( arg0,  oRes );
 
 
     }
@@ -3633,7 +3555,7 @@ rho::String js_System_isApplicationInstalled(rho::json::CJSONArray& argv, const 
 }
 
 
-rho::String js_System_applicationUninstall(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_applicationUninstall(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3641,8 +3563,6 @@ rho::String js_System_applicationUninstall(rho::json::CJSONArray& argv, const rh
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3684,7 +3604,9 @@ rho::String js_System_applicationUninstall(rho::json::CJSONArray& argv, const rh
 
 
 
-        
+
+
+
 
 
 
@@ -3718,19 +3640,19 @@ rho::String js_System_applicationUninstall(rho::json::CJSONArray& argv, const rh
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::applicationUninstall, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::applicationUninstall, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->applicationUninstall( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->applicationUninstall( arg0,  oRes );
 
 
     }
@@ -3741,7 +3663,7 @@ rho::String js_System_applicationUninstall(rho::json::CJSONArray& argv, const rh
 }
 
 
-rho::String js_System_getStartParams(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getStartParams(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3749,8 +3671,6 @@ rho::String js_System_getStartParams(rho::json::CJSONArray& argv, const rho::Str
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3784,19 +3704,19 @@ rho::String js_System_getStartParams(rho::json::CJSONArray& argv, const rho::Str
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getStartParams,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getStartParams,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getStartParams(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getStartParams(  oRes );
 
 
     }
@@ -3807,7 +3727,7 @@ rho::String js_System_getStartParams(rho::json::CJSONArray& argv, const rho::Str
 }
 
 
-rho::String js_System_openUrl(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_openUrl(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3815,8 +3735,6 @@ rho::String js_System_openUrl(rho::json::CJSONArray& argv, const rho::String& st
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3858,7 +3776,9 @@ rho::String js_System_openUrl(rho::json::CJSONArray& argv, const rho::String& st
 
 
 
-        
+
+
+
 
 
 
@@ -3892,19 +3812,19 @@ rho::String js_System_openUrl(rho::json::CJSONArray& argv, const rho::String& st
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::openUrl, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::openUrl, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->openUrl( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->openUrl( arg0,  oRes );
 
 
     }
@@ -3915,7 +3835,7 @@ rho::String js_System_openUrl(rho::json::CJSONArray& argv, const rho::String& st
 }
 
 
-rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -3923,8 +3843,6 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -3966,7 +3884,9 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
 
 
 
-        
+
+
+
 
 
 
@@ -4000,7 +3920,9 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
 
 
 
-        
+
+
+
 
 
 
@@ -4034,19 +3956,19 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::unzipFile, arg0, arg1,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor3( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::unzipFile, arg0, arg1,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->unzipFile( arg0, arg1,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->unzipFile( arg0, arg1,  oRes );
 
 
     }
@@ -4057,7 +3979,7 @@ rho::String js_System_unzipFile(rho::json::CJSONArray& argv, const rho::String& 
 }
 
 
-rho::String js_System_zipFile(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_zipFile(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -4065,8 +3987,6 @@ rho::String js_System_zipFile(rho::json::CJSONArray& argv, const rho::String& st
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -4108,7 +4028,9 @@ rho::String js_System_zipFile(rho::json::CJSONArray& argv, const rho::String& st
 
 
 
-        
+
+
+
 
 
 
@@ -4148,7 +4070,9 @@ rho::String js_System_zipFile(rho::json::CJSONArray& argv, const rho::String& st
 
 
 
-        
+
+
+
 
 
 
@@ -4182,7 +4106,9 @@ rho::String js_System_zipFile(rho::json::CJSONArray& argv, const rho::String& st
 
 
 
-        
+
+
+
 
 
 
@@ -4216,19 +4142,19 @@ rho::String js_System_zipFile(rho::json::CJSONArray& argv, const rho::String& st
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::ISystem::zipFile, arg0, arg1, arg2,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor4( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::zipFile, arg0, arg1, arg2,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->zipFile( arg0, arg1, arg2,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->zipFile( arg0, arg1, arg2,  oRes );
 
 
     }
@@ -4239,7 +4165,7 @@ rho::String js_System_zipFile(rho::json::CJSONArray& argv, const rho::String& st
 }
 
 
-rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -4247,8 +4173,6 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -4290,7 +4214,9 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
 
 
 
-        
+
+
+
 
 
 
@@ -4330,7 +4256,9 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
 
 
 
-        
+
+
+
 
 
 
@@ -4373,7 +4301,9 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
 
 
 
-        
+
+
+
 
 
 
@@ -4407,7 +4337,9 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
 
 
 
-        
+
+
+
 
 
 
@@ -4441,19 +4373,19 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor5( pObj, &rho::ISystem::zipFiles, arg0, arg1, arg2, arg3,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor5( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::zipFiles, arg0, arg1, arg2, arg3,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->zipFiles( arg0, arg1, arg2, arg3,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->zipFiles( arg0, arg1, arg2, arg3,  oRes );
 
 
     }
@@ -4464,7 +4396,7 @@ rho::String js_System_zipFiles(rho::json::CJSONArray& argv, const rho::String& s
 }
 
 
-rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -4472,8 +4404,6 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -4510,7 +4440,9 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4547,7 +4479,9 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4587,7 +4521,9 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4627,7 +4563,9 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4667,7 +4605,9 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4701,19 +4641,19 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor6( pObj, &rho::ISystem::setRegistrySetting, arg0, arg1, arg2, arg3, arg4,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor6( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setRegistrySetting, arg0, arg1, arg2, arg3, arg4,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setRegistrySetting( arg0, arg1, arg2, arg3, arg4,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setRegistrySetting( arg0, arg1, arg2, arg3, arg4,  oRes );
 
 
     }
@@ -4724,7 +4664,7 @@ rho::String js_System_setRegistrySetting(rho::json::CJSONArray& argv, const rho:
 }
 
 
-rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -4732,8 +4672,6 @@ rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho:
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -4770,7 +4708,9 @@ rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4810,7 +4750,9 @@ rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4850,7 +4792,9 @@ rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -4884,19 +4828,19 @@ rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho:
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::ISystem::getRegistrySetting, arg0, arg1, arg2,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor4( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getRegistrySetting, arg0, arg1, arg2,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getRegistrySetting( arg0, arg1, arg2,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getRegistrySetting( arg0, arg1, arg2,  oRes );
 
 
     }
@@ -4907,7 +4851,7 @@ rho::String js_System_getRegistrySetting(rho::json::CJSONArray& argv, const rho:
 }
 
 
-rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -4915,8 +4859,6 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -4953,7 +4895,9 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -4990,7 +4934,9 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -5027,7 +4973,9 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -5064,7 +5012,9 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -5098,19 +5048,19 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor5( pObj, &rho::ISystem::setWindowFrame, arg0, arg1, arg2, arg3,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor5( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setWindowFrame, arg0, arg1, arg2, arg3,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setWindowFrame( arg0, arg1, arg2, arg3,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setWindowFrame( arg0, arg1, arg2, arg3,  oRes );
 
 
     }
@@ -5121,7 +5071,7 @@ rho::String js_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::Str
 }
 
 
-rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -5129,8 +5079,6 @@ rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -5167,7 +5115,9 @@ rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -5204,7 +5154,9 @@ rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -5238,19 +5190,19 @@ rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::setWindowPosition, arg0, arg1,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor3( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setWindowPosition, arg0, arg1,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setWindowPosition( arg0, arg1,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setWindowPosition( arg0, arg1,  oRes );
 
 
     }
@@ -5261,7 +5213,7 @@ rho::String js_System_setWindowPosition(rho::json::CJSONArray& argv, const rho::
 }
 
 
-rho::String js_System_setWindowSize(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setWindowSize(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -5269,8 +5221,6 @@ rho::String js_System_setWindowSize(rho::json::CJSONArray& argv, const rho::Stri
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -5307,7 +5257,9 @@ rho::String js_System_setWindowSize(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-        
+
+
+
 
 
 
@@ -5344,7 +5296,9 @@ rho::String js_System_setWindowSize(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-        
+
+
+
 
 
 
@@ -5378,19 +5332,19 @@ rho::String js_System_setWindowSize(rho::json::CJSONArray& argv, const rho::Stri
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::setWindowSize, arg0, arg1,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor3( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setWindowSize, arg0, arg1,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setWindowSize( arg0, arg1,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setWindowSize( arg0, arg1,  oRes );
 
 
     }
@@ -5401,7 +5355,7 @@ rho::String js_System_setWindowSize(rho::json::CJSONArray& argv, const rho::Stri
 }
 
 
-rho::String js_System_bringToFront(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_bringToFront(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -5409,8 +5363,6 @@ rho::String js_System_bringToFront(rho::json::CJSONArray& argv, const rho::Strin
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -5444,19 +5396,19 @@ rho::String js_System_bringToFront(rho::json::CJSONArray& argv, const rho::Strin
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::bringToFront,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::bringToFront,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->bringToFront(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->bringToFront(  oRes );
 
 
     }
@@ -5467,7 +5419,7 @@ rho::String js_System_bringToFront(rho::json::CJSONArray& argv, const rho::Strin
 }
 
 
-rho::String js_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -5475,8 +5427,6 @@ rho::String js_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const rh
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -5518,7 +5468,9 @@ rho::String js_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const rh
 
 
 
-        
+
+
+
 
 
 
@@ -5562,7 +5514,9 @@ rho::String js_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const rh
         }
     }
 
-        
+
+
+
 
 
 
@@ -5596,19 +5550,19 @@ rho::String js_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const rh
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::replaceCurrentBundle, arg0, arg1,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor3( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::replaceCurrentBundle, arg0, arg1,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->replaceCurrentBundle( arg0, arg1,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->replaceCurrentBundle( arg0, arg1,  oRes );
 
 
     }
@@ -5619,7 +5573,7 @@ rho::String js_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const rh
 }
 
 
-rho::String js_System_deleteFolder(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_deleteFolder(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -5627,8 +5581,6 @@ rho::String js_System_deleteFolder(rho::json::CJSONArray& argv, const rho::Strin
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -5670,7 +5622,9 @@ rho::String js_System_deleteFolder(rho::json::CJSONArray& argv, const rho::Strin
 
 
 
-        
+
+
+
 
 
 
@@ -5704,19 +5658,19 @@ rho::String js_System_deleteFolder(rho::json::CJSONArray& argv, const rho::Strin
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::deleteFolder, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::deleteFolder, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->deleteFolder( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->deleteFolder( arg0,  oRes );
 
 
     }
@@ -5727,7 +5681,7 @@ rho::String js_System_deleteFolder(rho::json::CJSONArray& argv, const rho::Strin
 }
 
 
-rho::String js_System_setDoNotBackupAttribute(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setDoNotBackupAttribute(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -5735,8 +5689,6 @@ rho::String js_System_setDoNotBackupAttribute(rho::json::CJSONArray& argv, const
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -5778,7 +5730,9 @@ rho::String js_System_setDoNotBackupAttribute(rho::json::CJSONArray& argv, const
 
 
 
-        
+
+
+
 
 
 
@@ -5812,19 +5766,19 @@ rho::String js_System_setDoNotBackupAttribute(rho::json::CJSONArray& argv, const
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setDoNotBackupAttribute, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setDoNotBackupAttribute, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setDoNotBackupAttribute( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setDoNotBackupAttribute( arg0,  oRes );
 
 
     }
@@ -5835,7 +5789,7 @@ rho::String js_System_setDoNotBackupAttribute(rho::json::CJSONArray& argv, const
 }
 
 
-rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -5843,8 +5797,6 @@ rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String&
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -5886,7 +5838,9 @@ rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -5923,7 +5877,9 @@ rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -5963,7 +5919,9 @@ rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -5997,19 +5955,19 @@ rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String&
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::ISystem::isBlobAttr, arg0, arg1, arg2,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor4( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::isBlobAttr, arg0, arg1, arg2,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->isBlobAttr( arg0, arg1, arg2,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->isBlobAttr( arg0, arg1, arg2,  oRes );
 
 
     }
@@ -6020,7 +5978,7 @@ rho::String js_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::String&
 }
 
 
-rho::String js_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -6028,8 +5986,6 @@ rho::String js_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -6071,7 +6027,9 @@ rho::String js_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -6108,7 +6066,9 @@ rho::String js_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -6142,19 +6102,19 @@ rho::String js_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::updateBlobAttribs, arg0, arg1,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor3( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::updateBlobAttribs, arg0, arg1,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->updateBlobAttribs( arg0, arg1,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->updateBlobAttribs( arg0, arg1,  oRes );
 
 
     }
@@ -6165,7 +6125,7 @@ rho::String js_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho::
 }
 
 
-rho::String js_System_get_locale(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_get_locale(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -6173,8 +6133,6 @@ rho::String js_System_get_locale(rho::json::CJSONArray& argv, const rho::String&
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -6208,19 +6166,19 @@ rho::String js_System_get_locale(rho::json::CJSONArray& argv, const rho::String&
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::get_locale,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::get_locale,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->get_locale(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->get_locale(  oRes );
 
 
     }
@@ -6231,7 +6189,7 @@ rho::String js_System_get_locale(rho::json::CJSONArray& argv, const rho::String&
 }
 
 
-rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_set_locale(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -6240,7 +6198,155 @@ rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho
     int argc = argv.getSize();
     int nCallbackArg = 0;
 
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
+
+
+    nCallbackArg = 1;
+
+    
+    if ( argc == 0 )
+    {
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
+        return oRes.toJSON();
+    }
+    
+
+
+    rho::String arg0;
+    if ( argc > 0 )
+    {
+        if ( argv[0].isString() )
+        {
+            arg0 = argv[0].getString();
+
+            oRes.setStringParam(argv[0].getString());
+
+        }
+        else if (!argv[0].isNull())
+        {
+            oRes.setArgError( "Type error: argument " "0" " should be " "string" );
+            return oRes.toJSON();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    nCallbackArg = 2;
+
+    
+    if ( argc == 1 )
+    {
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
+        return oRes.toJSON();
+    }
+    
+
+
+    rho::String arg1;
+    if ( argc > 1 )
+    {
+        if ( argv[1].isString() )
+        {
+            arg1 = argv[1].getString();
+
+        }
+        else if (!argv[1].isNull())
+        {
+            oRes.setArgError( "Type error: argument " "1" " should be " "string" );
+            return oRes.toJSON();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
+        return oRes.toJSON();
+
+        
+        if ( !argv[nCallbackArg].isString() )
+        {
+            oRes.setArgError("Type error: callback should be String");
+            return oRes.toJSON();
+        }
+
+        oRes.setCallInUIThread(false);
+        oRes.setRubyCallback( argv[nCallbackArg].getString() );
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !argv[nCallbackArg + 1].isString() )
+            {
+                oRes.setArgError("Type error: callback parameter should be String");
+                return oRes.toJSON();
+            }
+
+            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
+        }
+        
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor3( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::set_locale, arg0, arg1,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else 
+    {
+        delete pFunctor;
+
+
+        rho::CSystemFactoryBase::getSystemSingletonS()->set_locale( arg0, arg1,  oRes );
+
+
+    }
+
+
+    return oRes.toJSON();
+
+}
+
+
+rho::String js_s_System_setPushNotification(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int argc = argv.getSize();
+    int nCallbackArg = 0;
 
 
 
@@ -6282,7 +6388,9 @@ rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho
 
 
 
-        
+
+
+
 
 
 
@@ -6316,7 +6424,9 @@ rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho
 
 
 
-        
+
+
+
 
 
 
@@ -6350,7 +6460,9 @@ rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho
 
 
 
-        
+
+
+
 
 
 
@@ -6384,19 +6496,19 @@ rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::ISystem::setPushNotification, arg0, arg1, arg2,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor4( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setPushNotification, arg0, arg1, arg2,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setPushNotification( arg0, arg1, arg2,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setPushNotification( arg0, arg1, arg2,  oRes );
 
 
     }
@@ -6407,7 +6519,7 @@ rho::String js_System_setPushNotification(rho::json::CJSONArray& argv, const rho
 }
 
 
-rho::String js_System_setScreenRotationNotification(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setScreenRotationNotification(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -6415,8 +6527,6 @@ rho::String js_System_setScreenRotationNotification(rho::json::CJSONArray& argv,
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -6458,7 +6568,9 @@ rho::String js_System_setScreenRotationNotification(rho::json::CJSONArray& argv,
 
 
 
-        
+
+
+
 
 
 
@@ -6492,7 +6604,9 @@ rho::String js_System_setScreenRotationNotification(rho::json::CJSONArray& argv,
 
 
 
-        
+
+
+
 
 
 
@@ -6526,19 +6640,19 @@ rho::String js_System_setScreenRotationNotification(rho::json::CJSONArray& argv,
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::setScreenRotationNotification, arg0, arg1,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor3( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setScreenRotationNotification, arg0, arg1,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setScreenRotationNotification( arg0, arg1,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setScreenRotationNotification( arg0, arg1,  oRes );
 
 
     }
@@ -6549,7 +6663,7 @@ rho::String js_System_setScreenRotationNotification(rho::json::CJSONArray& argv,
 }
 
 
-rho::String js_System_exit(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_exit(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -6557,8 +6671,6 @@ rho::String js_System_exit(rho::json::CJSONArray& argv, const rho::String& strOb
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -6592,19 +6704,19 @@ rho::String js_System_exit(rho::json::CJSONArray& argv, const rho::String& strOb
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::exit,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::exit,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->exit(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->exit(  oRes );
 
 
     }
@@ -6615,7 +6727,7 @@ rho::String js_System_exit(rho::json::CJSONArray& argv, const rho::String& strOb
 }
 
 
-rho::String js_System_set_sleeping(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_set_sleeping(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -6623,8 +6735,6 @@ rho::String js_System_set_sleeping(rho::json::CJSONArray& argv, const rho::Strin
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -6661,7 +6771,9 @@ rho::String js_System_set_sleeping(rho::json::CJSONArray& argv, const rho::Strin
 
 
 
-        
+
+
+
 
 
 
@@ -6695,19 +6807,19 @@ rho::String js_System_set_sleeping(rho::json::CJSONArray& argv, const rho::Strin
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::set_sleeping, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::set_sleeping, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->set_sleeping( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->set_sleeping( arg0,  oRes );
 
 
     }
@@ -6718,7 +6830,7 @@ rho::String js_System_set_sleeping(rho::json::CJSONArray& argv, const rho::Strin
 }
 
 
-rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_startTimer(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -6726,8 +6838,6 @@ rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String&
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -6764,7 +6874,9 @@ rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -6804,7 +6916,9 @@ rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -6838,7 +6952,9 @@ rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String&
 
 
 
-        
+
+
+
 
 
 
@@ -6872,19 +6988,19 @@ rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String&
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::ISystem::startTimer, arg0, arg1, arg2,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor4( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::startTimer, arg0, arg1, arg2,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->startTimer( arg0, arg1, arg2,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->startTimer( arg0, arg1, arg2,  oRes );
 
 
     }
@@ -6895,7 +7011,7 @@ rho::String js_System_startTimer(rho::json::CJSONArray& argv, const rho::String&
 }
 
 
-rho::String js_System_stopTimer(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_stopTimer(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -6903,8 +7019,6 @@ rho::String js_System_stopTimer(rho::json::CJSONArray& argv, const rho::String& 
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -6946,7 +7060,9 @@ rho::String js_System_stopTimer(rho::json::CJSONArray& argv, const rho::String& 
 
 
 
-        
+
+
+
 
 
 
@@ -6980,19 +7096,19 @@ rho::String js_System_stopTimer(rho::json::CJSONArray& argv, const rho::String& 
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::stopTimer, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::stopTimer, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->stopTimer( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->stopTimer( arg0,  oRes );
 
 
     }
@@ -7003,7 +7119,7 @@ rho::String js_System_stopTimer(rho::json::CJSONArray& argv, const rho::String& 
 }
 
 
-rho::String js_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -7011,8 +7127,6 @@ rho::String js_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, const 
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -7054,7 +7168,9 @@ rho::String js_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, const 
 
 
 
-        
+
+
+
 
 
 
@@ -7091,7 +7207,9 @@ rho::String js_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, const 
 
 
 
-        
+
+
+
 
 
 
@@ -7125,19 +7243,19 @@ rho::String js_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, const 
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::setNetworkStatusNotify, arg0, arg1,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor3( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setNetworkStatusNotify, arg0, arg1,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setNetworkStatusNotify( arg0, arg1,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setNetworkStatusNotify( arg0, arg1,  oRes );
 
 
     }
@@ -7148,7 +7266,7 @@ rho::String js_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, const 
 }
 
 
-rho::String js_System_clearNetworkStatusNotify(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_clearNetworkStatusNotify(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -7156,8 +7274,6 @@ rho::String js_System_clearNetworkStatusNotify(rho::json::CJSONArray& argv, cons
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -7191,19 +7307,19 @@ rho::String js_System_clearNetworkStatusNotify(rho::json::CJSONArray& argv, cons
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::clearNetworkStatusNotify,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::clearNetworkStatusNotify,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->clearNetworkStatusNotify(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->clearNetworkStatusNotify(  oRes );
 
 
     }
@@ -7214,7 +7330,7 @@ rho::String js_System_clearNetworkStatusNotify(rho::json::CJSONArray& argv, cons
 }
 
 
-rho::String js_System_set_http_proxy_url(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_set_http_proxy_url(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -7222,8 +7338,6 @@ rho::String js_System_set_http_proxy_url(rho::json::CJSONArray& argv, const rho:
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -7265,7 +7379,9 @@ rho::String js_System_set_http_proxy_url(rho::json::CJSONArray& argv, const rho:
 
 
 
-        
+
+
+
 
 
 
@@ -7299,19 +7415,19 @@ rho::String js_System_set_http_proxy_url(rho::json::CJSONArray& argv, const rho:
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::set_http_proxy_url, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::set_http_proxy_url, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->set_http_proxy_url( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->set_http_proxy_url( arg0,  oRes );
 
 
     }
@@ -7322,7 +7438,7 @@ rho::String js_System_set_http_proxy_url(rho::json::CJSONArray& argv, const rho:
 }
 
 
-rho::String js_System_unset_http_proxy(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_unset_http_proxy(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -7330,8 +7446,6 @@ rho::String js_System_unset_http_proxy(rho::json::CJSONArray& argv, const rho::S
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -7365,19 +7479,19 @@ rho::String js_System_unset_http_proxy(rho::json::CJSONArray& argv, const rho::S
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::unset_http_proxy,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::unset_http_proxy,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->unset_http_proxy(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->unset_http_proxy(  oRes );
 
 
     }
@@ -7388,7 +7502,7 @@ rho::String js_System_unset_http_proxy(rho::json::CJSONArray& argv, const rho::S
 }
 
 
-rho::String js_System_set_application_icon_badge(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_set_application_icon_badge(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -7396,8 +7510,6 @@ rho::String js_System_set_application_icon_badge(rho::json::CJSONArray& argv, co
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -7434,7 +7546,9 @@ rho::String js_System_set_application_icon_badge(rho::json::CJSONArray& argv, co
 
 
 
-        
+
+
+
 
 
 
@@ -7468,19 +7582,19 @@ rho::String js_System_set_application_icon_badge(rho::json::CJSONArray& argv, co
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::set_application_icon_badge, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::set_application_icon_badge, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->set_application_icon_badge( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->set_application_icon_badge( arg0,  oRes );
 
 
     }
@@ -7491,7 +7605,7 @@ rho::String js_System_set_application_icon_badge(rho::json::CJSONArray& argv, co
 }
 
 
-rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_runApplication(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -7499,8 +7613,6 @@ rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::Str
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -7542,7 +7654,9 @@ rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -7576,7 +7690,9 @@ rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -7607,7 +7723,9 @@ rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::Str
 
 
 
-        
+
+
+
 
 
 
@@ -7641,19 +7759,19 @@ rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::Str
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::ISystem::runApplication, arg0, arg1, arg2,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor4( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::runApplication, arg0, arg1, arg2,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->runApplication( arg0, arg1, arg2,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->runApplication( arg0, arg1, arg2,  oRes );
 
 
     }
@@ -7664,7 +7782,7 @@ rho::String js_System_runApplication(rho::json::CJSONArray& argv, const rho::Str
 }
 
 
-rho::String js_System_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -7672,8 +7790,6 @@ rho::String js_System_getProperty(rho::json::CJSONArray& argv, const rho::String
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -7715,7 +7831,9 @@ rho::String js_System_getProperty(rho::json::CJSONArray& argv, const rho::String
 
 
 
-        
+
+
+
 
 
 
@@ -7746,19 +7864,19 @@ rho::String js_System_getProperty(rho::json::CJSONArray& argv, const rho::String
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::getProperty, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getProperty, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getProperty( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getProperty( arg0,  oRes );
 
 
     }
@@ -7769,7 +7887,7 @@ rho::String js_System_getProperty(rho::json::CJSONArray& argv, const rho::String
 }
 
 
-rho::String js_System_getProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -7777,8 +7895,6 @@ rho::String js_System_getProperties(rho::json::CJSONArray& argv, const rho::Stri
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -7821,70 +7937,9 @@ rho::String js_System_getProperties(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-        
 
 
 
-
-    if ( argc > nCallbackArg )
-    {
-
-        
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-        
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::getProperties, arg0,  oRes );
-
-
-
-
-    if ( bUseCallback )
-        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
-    {
-        delete pFunctor;
-
-
-        pObj->getProperties( arg0,  oRes );
-
-
-    }
-
-
-    return oRes.toJSON();
-
-}
-
-
-rho::String js_System_getAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
-{
-    rho::apiGenerator::CMethodResult oRes;
-
-    rho::common::IRhoRunnable* pFunctor = 0;
-    bool bUseCallback = false;
-    int argc = argv.getSize();
-    int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -7915,19 +7970,19 @@ rho::String js_System_getAllProperties(rho::json::CJSONArray& argv, const rho::S
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::getAllProperties,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getProperties, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->getAllProperties(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->getProperties( arg0,  oRes );
 
 
     }
@@ -7938,7 +7993,7 @@ rho::String js_System_getAllProperties(rho::json::CJSONArray& argv, const rho::S
 }
 
 
-rho::String js_System_setProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_getAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -7947,7 +8002,66 @@ rho::String js_System_setProperty(rho::json::CJSONArray& argv, const rho::String
     int argc = argv.getSize();
     int nCallbackArg = 0;
 
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
+
+
+
+    if ( argc > nCallbackArg )
+    {
+
+        
+        if ( !argv[nCallbackArg].isString() )
+        {
+            oRes.setArgError("Type error: callback should be String");
+            return oRes.toJSON();
+        }
+
+        oRes.setCallInUIThread(false);
+        oRes.setRubyCallback( argv[nCallbackArg].getString() );
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !argv[nCallbackArg + 1].isString() )
+            {
+                oRes.setArgError("Type error: callback parameter should be String");
+                return oRes.toJSON();
+            }
+
+            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
+        }
+        
+    }
+
+
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::getAllProperties,  oRes );
+
+
+
+
+    if ( bUseCallback )
+        rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
+    else 
+    {
+        delete pFunctor;
+
+
+        rho::CSystemFactoryBase::getSystemSingletonS()->getAllProperties(  oRes );
+
+
+    }
+
+
+    return oRes.toJSON();
+
+}
+
+
+rho::String js_s_System_setProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    rho::apiGenerator::CMethodResult oRes;
+
+    rho::common::IRhoRunnable* pFunctor = 0;
+    bool bUseCallback = false;
+    int argc = argv.getSize();
+    int nCallbackArg = 0;
 
 
 
@@ -7989,7 +8103,9 @@ rho::String js_System_setProperty(rho::json::CJSONArray& argv, const rho::String
 
 
 
-        
+
+
+
 
 
 
@@ -8029,7 +8145,9 @@ rho::String js_System_setProperty(rho::json::CJSONArray& argv, const rho::String
 
 
 
-        
+
+
+
 
 
 
@@ -8063,19 +8181,19 @@ rho::String js_System_setProperty(rho::json::CJSONArray& argv, const rho::String
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::ISystem::setProperty, arg0, arg1,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor3( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setProperty, arg0, arg1,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setProperty( arg0, arg1,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setProperty( arg0, arg1,  oRes );
 
 
     }
@@ -8086,7 +8204,7 @@ rho::String js_System_setProperty(rho::json::CJSONArray& argv, const rho::String
 }
 
 
-rho::String js_System_setProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_setProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -8094,8 +8212,6 @@ rho::String js_System_setProperties(rho::json::CJSONArray& argv, const rho::Stri
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -8139,7 +8255,9 @@ rho::String js_System_setProperties(rho::json::CJSONArray& argv, const rho::Stri
         }
     }
 
-        
+
+
+
 
 
 
@@ -8173,19 +8291,19 @@ rho::String js_System_setProperties(rho::json::CJSONArray& argv, const rho::Stri
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::ISystem::setProperties, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor2( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::setProperties, arg0,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->setProperties( arg0,  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->setProperties( arg0,  oRes );
 
 
     }
@@ -8196,7 +8314,7 @@ rho::String js_System_setProperties(rho::json::CJSONArray& argv, const rho::Stri
 }
 
 
-rho::String js_System_clearAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_System_clearAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
 
@@ -8204,8 +8322,6 @@ rho::String js_System_clearAllProperties(rho::json::CJSONArray& argv, const rho:
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
-
-    rho::ISystem* pObj = rho::CSystemFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
@@ -8239,19 +8355,19 @@ rho::String js_System_clearAllProperties(rho::json::CJSONArray& argv, const rho:
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::ISystem::clearAllProperties,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CSystemFactoryBase::getSystemSingletonS(), &rho::ISystemSingleton::clearAllProperties,  oRes );
 
 
 
 
     if ( bUseCallback )
         rho::CSystemFactoryBase::getSystemSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
-        pObj->clearAllProperties(  oRes );
+        rho::CSystemFactoryBase::getSystemSingletonS()->clearAllProperties(  oRes );
 
 
     }
@@ -8262,23 +8378,5 @@ rho::String js_System_clearAllProperties(rho::json::CJSONArray& argv, const rho:
 }
 
 
-
-
-rho::String js_s_System_getDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID)
-{
-    rho::apiGenerator::CMethodResult oRes;
-    rho::String strDefaultID = rho::CSystemFactoryBase::getSystemSingletonS()->getDefaultID();
-    oRes.set(strDefaultID);
-
-    return oRes.toJSON();
-}
-
-rho::String js_s_System_setDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID)
-{
-    rho::apiGenerator::CMethodResult oRes;
-    rho::CSystemFactoryBase::getSystemSingletonS()->setDefaultID(strObjID);
-
-    return oRes.toJSON();
-}
 
 

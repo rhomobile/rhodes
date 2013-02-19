@@ -4,10 +4,10 @@ namespace rho {
 
 using namespace apiGenerator;
 
-class CSystemImplBase: public CSystemBase
+class CSystemImplBase: public CSystemSingletonBase
 {
 public:
-    CSystemImplBase(): CSystemBase(){}
+    CSystemImplBase(): CSystemSingletonBase(){}
 
     virtual void getPlatform(CMethodResult& oResult);
     virtual void getHasCamera(CMethodResult& oResult);
@@ -58,6 +58,9 @@ public:
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
     virtual void set_application_icon_badge( int badgeNumber, rho::apiGenerator::CMethodResult& oResult);
+
+    //TODO: remove when generateAPI attribute will be supported in generator
+    virtual void set_locale( const rho::String& locale_code,  const rho::String& country_code, rho::apiGenerator::CMethodResult& oResult);
 
 };
 

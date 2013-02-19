@@ -1,0 +1,51 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+	<MODULE name="SimpleOnlyStaticModule" parent="Rho.Examples">
+		<HELP_OVERVIEW>help overview text</HELP_OVERVIEW>
+		<MORE_HELP>more help text </MORE_HELP>
+		<METHODS access="STATIC" hasCallback="optional">
+			<METHOD name="calcSumm">
+				<DESC>calc summ of two integer</DESC>
+				<PARAMS>
+					<PARAM name="x" type="INTEGER"/>
+					<PARAM name="y" type="INTEGER"/>
+				</PARAMS>
+				<RETURN type="INTEGER">
+					<DESC>
+						return x+y
+					</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD name="joinStrings">
+				<DESC>join strings from input array and return one string</DESC>
+				<PARAMS>
+					<PARAM name="strings" type="ARRAY">
+							<DESC>array with strings</DESC>
+					</PARAM>
+				</PARAMS>
+				<RETURN type="STRING">
+					<DESC>
+						return string produced from array of strings via joining.
+					</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD name="getPlatform" hasCallback="none">
+				<DESC>return string with current platform : "iphone", "android" etc. Method should call syncronously</DESC>
+				<RETURN type="STRING">
+					<DESC>
+						return string with current platform : "iphone", "android" etc.
+					</DESC>
+				</RETURN>
+			</METHOD>	
+			<METHOD name="showAlertFromUIThread" hasCallback="none" runInThread="ui">
+				<DESC>example method for not return, not callback - just make some functionality</DESC>
+			</METHOD>	
+		</METHODS>
+		<USER_OVERVIEW>
+			user overview text
+		</USER_OVERVIEW>	
+		<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		<PLATFORM>platform text</PLATFORM>
+	</MODULE>
+</API>

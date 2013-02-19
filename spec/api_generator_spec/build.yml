@@ -9,7 +9,7 @@ bbver: 4.6
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator5.0
+  sdk: iphonesimulator6.0
   provisionprofile:
   codesignidentity:
   entitlements:
@@ -22,4 +22,5 @@ symbian:
 android:
   version: 2.1
 
-extensions: ["json", "barcode1"]
+#extensions: ["json", "barcode1", "megamodule", "simpleonlystaticmodule"]
+extensions: ["json", "megamodule", "simpleonlystaticmodule"]

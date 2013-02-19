@@ -1,0 +1,12 @@
+entry: Init_Megamodule	
+javaentry: com.megamodule.MegaModule
+libraries: ["MegaModule"]
+android:
+  source_list: ext/platform/android/ext_build.files
+
+project_paths:
+  wp8: ext/platform/wp8/MegaModule.vcxproj
+  wm: ext/platform/wm/MegaModule.vcproj
+  win32: ext/platform/wm/MegaModule.vcproj
+  
+xml_api_paths: ext/MegaModule.xml

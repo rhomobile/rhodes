@@ -95,6 +95,14 @@ VALUE CMethodResult::toRuby()
             VALUE valObj = 0;
             if ( m_oRubyObjectClass )
                 valObj = rho_ruby_create_object_with_id( m_oRubyObjectClass, m_arStrRes[i].c_str() );
+            else if ( m_strRubyObjectClassPath.length() > 0 )
+            {
+                VALUE oRubyClass = rho_ruby_get_class_byname(m_strRubyObjectClassPath.c_str());
+                if ( !rho_ruby_is_NIL(oRubyClass) )
+                    valObj = rho_ruby_create_object_with_id( oRubyClass, m_arStrRes[i].c_str() );
+                else
+                    rho_ruby_raise_runtime( (String("can not found Ruby Module (") + m_strRubyObjectClassPath + ")").c_str() );
+            }
             else
                 valObj = rho_ruby_create_string( m_arStrRes[i].c_str() );
             
@@ -117,6 +125,14 @@ VALUE CMethodResult::toRuby()
         VALUE valObj = 0;
         if ( m_oRubyObjectClass )
             valObj = rho_ruby_create_object_with_id( m_oRubyObjectClass, m_strRes.c_str() );
+        else if ( m_strRubyObjectClassPath.length() > 0 )
+        {
+            VALUE oRubyClass = rho_ruby_get_class_byname(m_strRubyObjectClassPath.c_str());
+            if ( !rho_ruby_is_NIL(oRubyClass) )
+                valObj = rho_ruby_create_object_with_id( oRubyClass, m_strRes.c_str() );
+            else
+                rho_ruby_raise_runtime( (String("can not found Ruby Module (") + m_strRubyObjectClassPath + ")").c_str() );
+        }
         else
             valObj = rho_ruby_create_string( m_strRes.c_str() );
 
@@ -126,6 +142,14 @@ VALUE CMethodResult::toRuby()
         VALUE valObj = 0;
         if ( m_oRubyObjectClass )
             valObj = rho_ruby_create_object_with_id( m_oRubyObjectClass, convertToStringA(m_strResW).c_str() );
+        else if ( m_strRubyObjectClassPath.length() > 0 )
+        {
+            VALUE oRubyClass = rho_ruby_get_class_byname(m_strRubyObjectClassPath.c_str());
+            if ( !rho_ruby_is_NIL(oRubyClass) )
+                valObj = rho_ruby_create_object_with_id( oRubyClass, convertToStringA(m_strResW).c_str() );
+            else
+                rho_ruby_raise_runtime( (String("can not found Ruby Module (") + m_strRubyObjectClassPath + ")").c_str() );
+        }
         else
             valObj = rho_ruby_create_string( convertToStringA(m_strResW).c_str() );
 
@@ -135,10 +159,10 @@ VALUE CMethodResult::toRuby()
         return rho_ruby_create_boolean(m_bRes ? 1 : 0);
     }else if ( m_ResType == eInt)
     {
-        return rho_ruby_create_integer(m_nRes ? 1 : 0);
+        return rho_ruby_create_integer(m_nRes);
     }else if ( m_ResType == eDouble)
     {
-        return rho_ruby_create_double(m_dRes ? 1 : 0);
+        return rho_ruby_create_double(m_dRes);
     }else if ( m_ResType == eArgError)
     {
         rho_ruby_raise_argerror( m_strError.c_str());
@@ -167,6 +191,12 @@ public:
     }
 
 };
+
+bool CMethodResult::hasCallback()
+{
+    return m_ResType != eNone && (m_strRubyCallback.length() != 0 || m_pRubyCallbackProc || m_strJSCallback.length() != 0);
+
+}
 
 void CMethodResult::callCallback()
 {

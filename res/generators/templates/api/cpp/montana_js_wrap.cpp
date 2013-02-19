@@ -1,5 +1,5 @@
 #include "<%= $cur_module.name %>Base.h"
-#include "api_generator\js_helpers.h"
+#include "api_generator/js_helpers.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -26,7 +26,7 @@ using namespace rho::common;
     <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>* pObj = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(strObjID);
 <%end%>
 
-<% functor_params = ""; first_arg = 0; 
+<% functor_params = ""; first_arg = 0;
    module_method.params.each do |param| %>
     nCallbackArg = <%= first_arg + 1 %>;
 
@@ -139,7 +139,11 @@ using namespace rho::common;
         }
     }
 <% end %>
-        
+
+<% if !MethodParam::BASE_TYPES.include?(param.type) %>
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+<% end %>
+
 <% functor_params += "arg#{first_arg}, " %>
 <% first_arg = first_arg+1 %>
 <% end %>
@@ -150,7 +154,7 @@ using namespace rho::common;
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(<%= module_method.params.size() %>) );
         return oRes.toJSON();
 <% end %>
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -169,7 +173,7 @@ using namespace rho::common;
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
@@ -182,11 +186,12 @@ using namespace rho::common;
     rho_wm_impl_performOnUiThread( pFunctor );
 <% elsif (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE) || (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED) %>
     <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
-<% else %>
+<% else if module_method.run_in_thread != ModuleMethod::RUN_IN_THREAD_NONE %>
 
     if ( bUseCallback )
         <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
-    else
+    else <%
+end %>
     {
         delete pFunctor;
 

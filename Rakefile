@@ -979,8 +979,10 @@ def common_bundle_start(startdir, dest)
       end
       
       Dir.glob("**/*.wm.*").each { |f| rm f }
-	  Dir.glob("**/*.wp7.*").each { |f| rm f }
+      Dir.glob("**/*.win32.*").each { |f| rm f }
+	  Dir.glob("**/*.wp.*").each { |f| rm f }
 	  Dir.glob("**/*.wp8.*").each { |f| rm f }
+	  Dir.glob("**/*.sym.*").each { |f| rm f }
       Dir.glob("**/*.iphone.*").each { |f| rm f }
       Dir.glob("**/*.bb.*").each { |f| rm f }
       Dir.glob("**/*.bb6.*").each { |f| rm f }
