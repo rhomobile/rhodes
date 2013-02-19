@@ -258,8 +258,5 @@
     <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c">
       <Filter>ext\stringio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\system\system_wrap.c">
-      <Filter>ext\system</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
