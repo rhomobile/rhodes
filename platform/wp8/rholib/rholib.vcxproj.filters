@@ -288,9 +288,6 @@
     <ClCompile Include="..\..\shared\rubyext\RhoAppAdapter.cpp">
       <Filter>rubyext</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\rubyext\System.cpp">
-      <Filter>rubyext</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\common\push\RhoPushManager.cpp">
       <Filter>common\push</Filter>
     </ClCompile>

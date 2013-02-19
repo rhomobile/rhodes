@@ -40,6 +40,9 @@
     <ClCompile Include="..\..\shared\generated\cpp\SystemBase.cpp">
       <Filter>System\shared\generated\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\SystemImplBase.cpp">
+      <Filter>System\shared\generated\cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\system.xml">
