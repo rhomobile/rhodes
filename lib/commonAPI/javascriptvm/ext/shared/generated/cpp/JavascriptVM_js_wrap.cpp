@@ -76,7 +76,7 @@ rho::String js_s_JavascriptVM_executeScript(rho::json::CJSONArray& argv, const r
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -95,7 +95,7 @@ rho::String js_s_JavascriptVM_executeScript(rho::json::CJSONArray& argv, const r
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 

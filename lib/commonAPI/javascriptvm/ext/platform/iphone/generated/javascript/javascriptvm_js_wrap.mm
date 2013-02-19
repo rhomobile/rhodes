@@ -79,6 +79,7 @@ static JavascriptVM_executeScript_caller* our_JavascriptVM_executeScript_caller 
     [objItem executeScript:(NSString*)[params objectAtIndex:0] methodResult:methodResult ];
 }
 
+
 +(void) executeScript:(JavascriptVM_executeScript_caller_params*)caller_params {
     [[JavascriptVM_executeScript_caller getSharedInstance] command_executeScript:caller_params];
 }
