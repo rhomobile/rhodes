@@ -11,6 +11,6 @@ public interface I<%= $cur_module.name %>Factory
     I<%= $cur_module.name %>Singleton getApiSingleton();
 
     @Override
-    <%= $cur_module.name %> getApiObject(String id);
+    I<%= $cur_module.name %> getApiObject(String id);
 
 }
