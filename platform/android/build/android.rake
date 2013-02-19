@@ -378,8 +378,7 @@ namespace "config" do
     # Look for Motorola SDK addon
     if $use_motosol_api_classpath
       puts "Looking for Motorola API SDK add-on..." if USE_TRACES
-      motosol_jars = ['com.motorolasolutions.scanner']
-      motosol_jars << 'com.motorolasolutions.emdk.msr'
+      motosol_jars = ['com.motorolasolutions.scanner', 'com.motorolasolutions.msr']
       $motosol_classpath = AndroidTools::get_addon_classpath(motosol_jars)
     end
 
