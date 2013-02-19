@@ -76,8 +76,9 @@ static SimpleOnlyStaticModule_calcSumm_caller* our_SimpleOnlyStaticModule_calcSu
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem calcSumm:(int)[((NSNumber*)params[0]) intValue] y:(int)[((NSNumber*)params[1]) intValue] methodResult:methodResult ];
+    [objItem calcSumm:(int)[((NSNumber*)[params objectAtIndex:0]) intValue] y:(int)[((NSNumber*)[params objectAtIndex:1]) intValue] methodResult:methodResult ];
 }
+
 
 +(void) calcSumm:(SimpleOnlyStaticModule_calcSumm_caller_params*)caller_params {
     [[SimpleOnlyStaticModule_calcSumm_caller getSharedInstance] command_calcSumm:caller_params];
@@ -241,8 +242,9 @@ static SimpleOnlyStaticModule_joinStrings_caller* our_SimpleOnlyStaticModule_joi
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem joinStrings:(NSArray*)params[0] methodResult:methodResult ];
+    [objItem joinStrings:(NSArray*)[params objectAtIndex:0] methodResult:methodResult ];
 }
+
 
 +(void) joinStrings:(SimpleOnlyStaticModule_joinStrings_caller_params*)caller_params {
     [[SimpleOnlyStaticModule_joinStrings_caller getSharedInstance] command_joinStrings:caller_params];
@@ -409,6 +411,7 @@ static SimpleOnlyStaticModule_getPlatform_caller* our_SimpleOnlyStaticModule_get
     [objItem getPlatform:methodResult ];
 }
 
+
 +(void) getPlatform:(SimpleOnlyStaticModule_getPlatform_caller_params*)caller_params {
     [[SimpleOnlyStaticModule_getPlatform_caller getSharedInstance] command_getPlatform:caller_params];
 }
@@ -463,6 +466,22 @@ rho::String js_SimpleOnlyStaticModule_getPlatform_Obj(rho::json::CJSONArray& arg
         [params_array addObject:params[i]];
     }
 
+    
+    // check callback
+    if (argc >= (0+1)) {
+        rho::json::CJSONEntry callback = argv.getItem(0);
+        if (callback.isString()) {
+            rho::json::CJSONEntry entry = argv.getItem(i);
+            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
+        if (callback_param.isString()) {
+            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
+        }
+    }
     
 
     if (callbackURL != nil) {
@@ -557,6 +576,7 @@ static SimpleOnlyStaticModule_showAlertFromUIThread_caller* our_SimpleOnlyStatic
     
     [objItem showAlertFromUIThread];
 }
+
 
 +(void) showAlertFromUIThread:(SimpleOnlyStaticModule_showAlertFromUIThread_caller_params*)caller_params {
     [[SimpleOnlyStaticModule_showAlertFromUIThread_caller getSharedInstance] command_showAlertFromUIThread:caller_params];

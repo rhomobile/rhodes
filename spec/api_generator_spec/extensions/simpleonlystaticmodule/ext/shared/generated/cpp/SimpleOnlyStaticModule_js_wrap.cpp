@@ -1,5 +1,5 @@
 #include "SimpleOnlyStaticModuleBase.h"
-#include "api_generator\js_helpers.h"
+#include "api_generator/js_helpers.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -107,7 +107,7 @@ rho::String js_s_SimpleOnlyStaticModule_calcSumm(rho::json::CJSONArray& argv, co
     if ( argc > nCallbackArg )
     {
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -126,7 +126,7 @@ rho::String js_s_SimpleOnlyStaticModule_calcSumm(rho::json::CJSONArray& argv, co
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -137,7 +137,7 @@ rho::String js_s_SimpleOnlyStaticModule_calcSumm(rho::json::CJSONArray& argv, co
 
     if ( bUseCallback )
         rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
@@ -213,7 +213,7 @@ rho::String js_s_SimpleOnlyStaticModule_joinStrings(rho::json::CJSONArray& argv,
     if ( argc > nCallbackArg )
     {
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -232,7 +232,7 @@ rho::String js_s_SimpleOnlyStaticModule_joinStrings(rho::json::CJSONArray& argv,
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -243,7 +243,7 @@ rho::String js_s_SimpleOnlyStaticModule_joinStrings(rho::json::CJSONArray& argv,
 
     if ( bUseCallback )
         rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
@@ -277,7 +277,7 @@ rho::String js_s_SimpleOnlyStaticModule_getPlatform(rho::json::CJSONArray& argv,
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -296,7 +296,7 @@ rho::String js_s_SimpleOnlyStaticModule_getPlatform(rho::json::CJSONArray& argv,
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -307,7 +307,7 @@ rho::String js_s_SimpleOnlyStaticModule_getPlatform(rho::json::CJSONArray& argv,
 
     if ( bUseCallback )
         rho::examples::CSimpleOnlyStaticModuleFactoryBase::getSimpleOnlyStaticModuleSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
@@ -341,7 +341,7 @@ rho::String js_s_SimpleOnlyStaticModule_showAlertFromUIThread(rho::json::CJSONAr
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -360,7 +360,7 @@ rho::String js_s_SimpleOnlyStaticModule_showAlertFromUIThread(rho::json::CJSONAr
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
