@@ -118,7 +118,7 @@ static rb_SimpleOnlyStaticModule_calcSumm_caller* our_SimpleOnlyStaticModule_cal
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem calcSumm:(int)[((NSNumber*)params[0]) intValue] y:(int)[((NSNumber*)params[1]) intValue] methodResult:methodResult ];
+    [objItem calcSumm:(int)[((NSNumber*)[params objectAtIndex:0]) intValue] y:(int)[((NSNumber*)[params objectAtIndex:1]) intValue] methodResult:methodResult ];
 }
 
 +(void) calcSumm:(rb_SimpleOnlyStaticModule_calcSumm_caller_params*)caller_params {
@@ -284,7 +284,7 @@ static rb_SimpleOnlyStaticModule_joinStrings_caller* our_SimpleOnlyStaticModule_
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem joinStrings:(NSArray*)params[0] methodResult:methodResult ];
+    [objItem joinStrings:(NSArray*)[params objectAtIndex:0] methodResult:methodResult ];
 }
 
 +(void) joinStrings:(rb_SimpleOnlyStaticModule_joinStrings_caller_params*)caller_params {
@@ -505,6 +505,21 @@ VALUE rb_SimpleOnlyStaticModule_getPlatform_Obj(int argc, VALUE *argv, id<ISimpl
         [params_array addObject:params[i]];
     }
 
+    
+    // check callback
+    if (argc >= (0+1)) {
+        VALUE callback = argv[0];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        VALUE callback_param = argv[0+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
     
 
     
