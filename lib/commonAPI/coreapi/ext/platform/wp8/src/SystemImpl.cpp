@@ -7,6 +7,23 @@
 #define DEFAULT_LOGCATEGORY "System"
 
 #include <windows.h>
+#include "rhoruntime/rhoruntime.h"
+
+using namespace Windows::Graphics::Display;
+using namespace Windows::Devices::Input;
+using namespace Windows::UI::Core;
+using namespace Windows::Foundation;
+using namespace Windows::Phone::Management::Deployment;
+using namespace Windows::ApplicationModel;
+using namespace Windows::Foundation::Collections;
+
+Platform::String^ A2PS(char* str)
+{
+	std::string s_str = std::string(str);
+	std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
+	const wchar_t* w_char = wid_str.c_str();
+	return ref new Platform::String(w_char);
+}
 
 namespace rho {
 
@@ -19,14 +36,9 @@ public:
 
     virtual void getScreenWidth(CMethodResult& oResult);
     virtual void getScreenHeight(CMethodResult& oResult);
-    virtual void getRealScreenWidth(CMethodResult& oResult);
-    virtual void getRealScreenHeight(CMethodResult& oResult);
     virtual void getScreenOrientation(CMethodResult& oResult);
     virtual void getPpiX(CMethodResult& oResult);
     virtual void getPpiY(CMethodResult& oResult);
-    virtual void getPhoneNumber(CMethodResult& oResult);
-    virtual void getDeviceOwnerEmail(CMethodResult& oResult);
-    virtual void getDeviceOwnerName(CMethodResult& oResult);
     virtual void getPhoneId(CMethodResult& oResult);
     virtual void getDeviceName(CMethodResult& oResult);
     virtual void getOsVersion(CMethodResult& oResult);
@@ -37,10 +49,8 @@ public:
     virtual void getHasCalendar(CMethodResult& oResult);
     virtual void getOemInfo(CMethodResult& oResult);
     virtual void getUuid(CMethodResult& oResult);
-    virtual void getApplicationIconBadge(CMethodResult& oResult);
-    virtual void setApplicationIconBadge( __int64 value, CMethodResult& oResult);
     virtual void getHttpProxyURI(CMethodResult& oResult);
-    virtual void setHttpProxyURI( const rho::StringW& value, CMethodResult& oResult);
+    virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
     virtual void getShowKeyboard(CMethodResult& oResult);
@@ -49,16 +59,25 @@ public:
     virtual void setFullScreen( bool value, CMethodResult& oResult);
     virtual void getScreenAutoRotate(CMethodResult& oResult);
     virtual void setScreenAutoRotate( bool value, CMethodResult& oResult);
+    virtual void getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult);
+    virtual void getScreenSleeping(rho::apiGenerator::CMethodResult& oResult);
+    virtual void setScreenSleeping( bool value, rho::apiGenerator::CMethodResult& oResult);
 
-    virtual void applicationInstall( const rho::StringW& applicationUrl, CMethodResult& oResult);
-    virtual void isApplicationInstalled( const rho::StringW& applicationName, CMethodResult& oResult);
-    virtual void applicationUninstall( const rho::StringW& applicationName, CMethodResult& oResult);
-    virtual void openUrl( const rho::StringW& url, CMethodResult& oResult);
-    virtual void runApplication( const rho::StringW& appName,  const rho::StringW& params,  bool blockingCall, CMethodResult& oResult);
-    virtual void setRegistrySetting( const rho::StringW& keyPath,  const rho::StringW& keyValue, CMethodResult& oResult);
-    virtual void getRegistrySetting( const rho::StringW& keyPath, CMethodResult& oResult);
-    virtual void setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, CMethodResult& oResult);
-    virtual void setWindowPosition( __int64 x,  __int64 y, CMethodResult& oResult);
+    virtual void applicationInstall( const rho::String& applicationUrl, CMethodResult& oResult);
+    virtual void isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult);
+    virtual void applicationUninstall( const rho::String& applicationName, CMethodResult& oResult);
+    virtual void openUrl( const rho::String& url, CMethodResult& oResult);
+    virtual void setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
+    virtual void setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult);
+    virtual void setWindowPosition( int x,  int y, CMethodResult& oResult);
+    virtual void setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
+    virtual void bringToFront(rho::apiGenerator::CMethodResult& oResult);
+    virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult);
+
+    virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
+    virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
 };
 
 void CSystemImpl::getOsVersion(CMethodResult& oResult)
@@ -94,56 +113,248 @@ void CSystemImpl::getIsEmulator(CMethodResult& oResult)
 #endif
 }
 
-void CSystemImpl::getScreenWidth(CMethodResult& oResult){}
-void CSystemImpl::getScreenHeight(CMethodResult& oResult){}
-void CSystemImpl::getRealScreenWidth(CMethodResult& oResult){}
-void CSystemImpl::getRealScreenHeight(CMethodResult& oResult){}
-void CSystemImpl::getScreenOrientation(CMethodResult& oResult){}
-void CSystemImpl::getPpiX(CMethodResult& oResult){}
-void CSystemImpl::getPpiY(CMethodResult& oResult){}
-void CSystemImpl::getPhoneNumber(CMethodResult& oResult){}
-void CSystemImpl::getDeviceOwnerEmail(CMethodResult& oResult){}
-void CSystemImpl::getDeviceOwnerName(CMethodResult& oResult){}
+void CSystemImpl::getScreenWidth(CMethodResult& oResult)
+{
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getScreenWidth());
+}
 
-void CSystemImpl::getPhoneId(CMethodResult& oResult){}
-void CSystemImpl::getDeviceName(CMethodResult& oResult){}
+void CSystemImpl::getScreenHeight(CMethodResult& oResult)
+{
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getScreenHeight());
+}
 
-void CSystemImpl::getLocale(CMethodResult& oResult){}
-void CSystemImpl::getCountry(CMethodResult& oResult){}
+void CSystemImpl::getScreenOrientation(CMethodResult& oResult)
+{
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getScreenOrientation()->Data());
+}
 
-void CSystemImpl::getHasCalendar(CMethodResult& oResult){}
+void CSystemImpl::getPpiX(CMethodResult& oResult)
+{
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getLogicalDpiX());
+}
+
+void CSystemImpl::getPpiY(CMethodResult& oResult)
+{
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->getLogicalDpiY());
+}
+
+void CSystemImpl::getPhoneId(CMethodResult& oResult)
+{
+	oResult.set(Windows::Phone::System::Analytics::HostInformation::PublisherHostId->Data());
+}
+
+void CSystemImpl::getDeviceName(CMethodResult& oResult)
+{
+	oResult.set(Windows::Networking::Proximity::PeerFinder::DisplayName->Data());
+}
+
+void CSystemImpl::getLocale(CMethodResult& oResult)
+{
+	wchar_t szLang[20];
+	int nRes = GetLocaleInfoEx(LOCALE_NAME_USER_DEFAULT,LOCALE_SABBREVLANGNAME , szLang, sizeof(szLang)/sizeof(szLang[0]));
+	szLang[2] = 0;
+	wcslwr(szLang);
+
+	oResult.set(StringW(szLang));
+}
+void CSystemImpl::getCountry(CMethodResult& oResult)
+{
+	wchar_t szCountry[20];
+	int nRes = GetLocaleInfoEx(LOCALE_NAME_USER_DEFAULT,LOCALE_SISO3166CTRYNAME , szCountry, sizeof(szCountry)/sizeof(szCountry[0]));
+	szCountry[2] = 0;
+
+	oResult.set(StringW(szCountry));
+}
+
+void CSystemImpl::getHasCalendar(CMethodResult& oResult)
+{
+	oResult.set(true);
+}
 
 void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
 {
+	oResult.set(false);
 }
 
-void CSystemImpl::getOemInfo(CMethodResult& oResult){}
-void CSystemImpl::getUuid(CMethodResult& oResult){}
-void CSystemImpl::getApplicationIconBadge(CMethodResult& oResult){}
-void CSystemImpl::setApplicationIconBadge( __int64 value, CMethodResult& oResult){}
-void CSystemImpl::getHttpProxyURI(CMethodResult& oResult){}
-void CSystemImpl::setHttpProxyURI( const rho::StringW& value, CMethodResult& oResult){}
+void CSystemImpl::getOemInfo(CMethodResult& oResult)
+{
+
+}
+
+void CSystemImpl::getUuid(CMethodResult& oResult)
+{
+	oResult.set(Windows::Phone::System::Analytics::HostInformation::PublisherHostId->Data());
+}
+
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
 void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult){}
-void CSystemImpl::getShowKeyboard(CMethodResult& oResult){}
-void CSystemImpl::setShowKeyboard( bool value, CMethodResult& oResult){}
-void CSystemImpl::getFullScreen(CMethodResult& oResult){}
-void CSystemImpl::setFullScreen( bool value, CMethodResult& oResult){}
+void CSystemImpl::getShowKeyboard(CMethodResult& oResult)
+{
+	//seems it's unsupported
+}
+void CSystemImpl::setShowKeyboard( bool value, CMethodResult& oResult)
+{
+	//seems it's unsupported
+	//to show SIP on WP8 we firstly have to focus text box element
+}
+void CSystemImpl::getFullScreen(CMethodResult& oResult)
+{
+	//all apps working in full screen mode on WP8
+	oResult.set(true);
+}
+void CSystemImpl::setFullScreen( bool value, CMethodResult& oResult)
+{
+	//all apps working in full screen mode on WP8
+}
 
-void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult){}
-void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult){}
+void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult)
+{
+	if(DisplayProperties::AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::None)
+		oResult.set(false);
+	else 
+		oResult.set(true);
+}
 
-void CSystemImpl::applicationInstall( const rho::StringW& applicationUrl, CMethodResult& oResult){}
-void CSystemImpl::isApplicationInstalled( const rho::StringW& applicationName, CMethodResult& oResult){}
-void CSystemImpl::applicationUninstall( const rho::StringW& applicationName, CMethodResult& oResult){}
+void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult)
+{
+	if(value)
+		DisplayProperties::AutoRotationPreferences = Windows::Graphics::Display::DisplayOrientations::Portrait |
+													 Windows::Graphics::Display::DisplayOrientations::PortraitFlipped;
+	else
+		DisplayProperties::AutoRotationPreferences = Windows::Graphics::Display::DisplayOrientations::None;
+}
 
-void CSystemImpl::openUrl( const rho::StringW& url, CMethodResult& oResult){}
-void CSystemImpl::runApplication( const rho::StringW& appName,  const rho::StringW& params,  bool blockingCall, CMethodResult& oResult){}
+void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethodResult& oResult)
+{
+}
 
-void CSystemImpl::setRegistrySetting( const rho::StringW& keyPath,  const rho::StringW& keyValue, CMethodResult& oResult){}
-void CSystemImpl::getRegistrySetting( const rho::StringW& keyPath, CMethodResult& oResult){}
-void CSystemImpl::setWindowFrame( __int64 x,  __int64 y,  __int64 width,  __int64 height, CMethodResult& oResult){}
-void CSystemImpl::setWindowPosition( __int64 x,  __int64 y, CMethodResult& oResult){}
+void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult)
+{
+	IIterable<Package^>^ packages = InstallationManager::FindPackagesForCurrentPublisher();
+	IIterator<Package^>^ it = packages->First();
+	do
+    {
+		if (it->Current->Id->Name == A2PS(const_cast<char*>(applicationName.c_str())))
+        {
+            oResult.set(true);
+			return;
+        
+        }
+	}while(it->MoveNext());
+
+	oResult.set(false);
+}
+
+void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMethodResult& oResult)
+{
+
+}
+
+void CSystemImpl::openUrl( const rho::String& url, CMethodResult& oResult)
+{
+	auto uri = ref new Windows::Foundation::Uri(A2PS(const_cast<char*>(url.c_str())));
+	Windows::System::Launcher::LaunchUriAsync(uri);
+}
+
+void CSystemImpl::runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, CMethodResult& oResult)
+{
+	IIterable<Package^>^ packages = InstallationManager::FindPackagesForCurrentPublisher();
+	IIterator<Package^>^ it = packages->First();
+	do
+    {
+		if (it->Current->Id->Name == A2PS(const_cast<char*>(appName.c_str())))
+        {
+            CMethodResult res;
+			it->Current->Launch(A2PS(const_cast<char*>(params.c_str())));
+			return;
+        
+        }
+	}while(it->MoveNext());
+}
+
+void CSystemImpl::setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
+{
+	//unsupported
+}
+
+void CSystemImpl::getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
+{
+	//unsupported
+}
+
+void CSystemImpl::setWindowFrame(int x,  int y,  int width,  int height, CMethodResult& oResult)
+{
+	//seems it doesn't make sence on WP8
+}
+void CSystemImpl::setWindowPosition( int x,  int y, CMethodResult& oResult)
+{
+	//seems it doesn't make sence on WP8
+}
+
+void CSystemImpl::getWebviewFramework(rho::apiGenerator::CMethodResult& oResult)
+{
+	String strRes = "";
+
+#if defined(OS_WINDOWS_DESKTOP)
+	strRes = rho_sys_win32_getWebviewFramework();
+#elif defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+	strRes = "WEBKIT/MOTOROLA";
+#else
+	strRes = "IE";
+#endif
+
+    oResult.set(strRes);
+}
+
+void CSystemImpl::bringToFront(rho::apiGenerator::CMethodResult& oResult)
+{
+	rhoruntime::CRhoRuntime::getInstance()->getMainPage()->bringToFront();
+}
+
+extern "C" const char* rho_sys_get_http_proxy_url();
+extern "C" void rho_sys_set_http_proxy_url(const char* url);
+extern "C" void rho_sys_unset_http_proxy();
+void CSystemImpl::getHttpProxyURI(CMethodResult& oResult)
+{
+	oResult.set(rho_sys_get_http_proxy_url());
+}
+
+void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oResult)
+{
+	if ( value.length() )
+        rho_sys_set_http_proxy_url( value.c_str() );
+    else
+        rho_sys_unset_http_proxy();
+}
+
+void CSystemImpl::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult)
+{
+	oResult.set(true);
+}
+
+void CSystemImpl::getScreenSleeping(rho::apiGenerator::CMethodResult& oResult)
+{
+	oResult.set(Windows::Phone::System::SystemProtection::ScreenLocked);
+}
+
+void CSystemImpl::setScreenSleeping( bool value, rho::apiGenerator::CMethodResult& oResult)
+{
+	//http://msdn.microsoft.com/en-us/library/windowsphone/develop/jj206968(v=vs.105).aspx
+}
+
+void CSystemImpl::setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult)
+{
+}
+
+void CSystemImpl::set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult)
+{
+	rho_sys_set_http_proxy_url( proxyURI.c_str() );
+}
+
+void CSystemImpl::unset_http_proxy(rho::apiGenerator::CMethodResult& oResult)
+{
+	rho_sys_unset_http_proxy();
+}
 
 ////////////////////////////////////////////////////////////////////////
 class CSystemSingleton: public CModuleSingletonBase<ISystemSingleton>
@@ -151,6 +362,8 @@ class CSystemSingleton: public CModuleSingletonBase<ISystemSingleton>
 public:
     ~CSystemSingleton(){}
     rho::StringW getInitialDefaultID(){return L"1";}
+	rho::StringW getDefaultID(){return L"1";}
+	void setDefaultID(const rho::StringW& strI){}
 };
 
 class CSystemFactory: public CSystemFactoryBase
@@ -158,11 +371,10 @@ class CSystemFactory: public CSystemFactoryBase
 public:
     ~CSystemFactory(){}
 
-    ISystemSingleton* createModuleSingleton(){ return new CSystemSingleton(); }
-    ISystem* createModuleByID(const rho::StringW& strID){ return new CSystemImpl(); }
+    ISystemSingleton* createModuleSingleton(){ return new CSystemImpl(); }
 };
 
-extern "C" void Init_System_extension()
+extern "C" void Init_System()
 {
     CSystemFactory::setInstance( new CSystemFactory() );
     Init_System_API();

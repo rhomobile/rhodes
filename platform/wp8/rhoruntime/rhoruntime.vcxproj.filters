@@ -39,9 +39,6 @@
     <ClCompile Include="GeoLocationImpl.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="SystemImpl.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="TabbarImpl.cpp">
       <Filter>common</Filter>
     </ClCompile>
