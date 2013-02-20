@@ -782,9 +782,14 @@ namespace "build" do
       
       mkdir_p objdir
       mkdir_p File.dirname(libname)
+      
+      args = ["-I\"#{srcdir}\"", "-I\"#{$shareddir}\""]
 
-      cc_build sourcelist, objdir, ["-I\"#{srcdir}\"", "-I\"#{$shareddir}\""] or exit 1
-      cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+      sources = get_sources sourcelist
+      objects = get_objects sources, objdir
+
+      cc_build sources, objdir, args or exit 1
+      cc_ar ('"'+(libname)+'"'), objects.collect{|x| '"'+x+'"'} or exit 1
     end
 
     task :libcurl => "config:android" do
@@ -810,8 +815,11 @@ namespace "build" do
       args << "-I\"#{srcdir}\""
       args << "-I\"#{$shareddir}\""      
 
-      cc_build sourcelist, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+      sources = get_sources sourcelist
+      objects = get_objects sources, objdir
+
+      cc_build sources, objdir, args or exit 1
+      cc_ar ('"'+(libname)+'"'), objects.collect{|x| '"'+x+'"'} or exit 1
     end
 
     task :libruby => "config:android" do
@@ -836,8 +844,11 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build sourcelist, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+      sources = get_sources sourcelist
+      objects = get_objects sources, objdir
+
+      cc_build sources, objdir, args or exit 1
+      cc_ar ('"'+(libname)+'"'), objects.collect{|x| '"'+x+'"'} or exit 1
     end
 
     task :libjson => "config:android" do
@@ -856,8 +867,11 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build sourcelist, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+      sources = get_sources sourcelist
+      objects = get_objects sources, objdir
+
+      cc_build sources, objdir, args or exit 1
+      cc_ar ('"'+(libname)+'"'), objects.collect{|x| '"'+x+'"'} or exit 1
     end
 
     task :libstlport => "config:android" do
@@ -882,8 +896,11 @@ namespace "build" do
         args << "-fno-rtti"
         args << "-fno-exceptions"
 
-        cc_build sourcelist, objdir, args or exit 1
-        cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+        sources = get_sources sourcelist
+        objects = get_objects sources, objdir
+
+        cc_build sources, objdir, args or exit 1
+        cc_ar ('"'+(libname)+'"'), objects.collect{|x| '"'+x+'"'} or exit 1
       end
     end
 
@@ -902,8 +919,11 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build sourcelist, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+      sources = get_sources sourcelist
+      objects = get_objects sources, objdir
+
+      cc_build sources, objdir, args or exit 1
+      cc_ar ('"'+(libname)+'"'), objects.collect{|x| '"'+x+'"'} or exit 1
     end
 
     task :librhomain => "config:android" do
@@ -921,8 +941,11 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build sourcelist, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+      sources = get_sources sourcelist
+      objects = get_objects sources, objdir
+
+      cc_build sources, objdir, args or exit 1
+      cc_ar ('"'+(libname)+'"'), objects.collect{|x| '"'+x+'"'} or exit 1
     end
 
     task :librhocommon => "config:android" do
@@ -942,8 +965,11 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build sourcelist, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+      sources = get_sources sourcelist
+      objects = get_objects sources, objdir
+
+      cc_build sources, objdir, args or exit 1
+      cc_ar ('"'+(libname)+'"'), objects.collect{|x| '"'+x+'"'} or exit 1
     end
 
     task :librhodb => "config:android" do
@@ -963,8 +989,11 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build sourcelist, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+      sources = get_sources sourcelist
+      objects = get_objects sources, objdir
+
+      cc_build sources, objdir, args or exit 1
+      cc_ar ('"'+(libname)+'"'), objects.collect{|x| '"'+x+'"'} or exit 1
     end
 
     task :librhosync => "config:android" do
@@ -984,8 +1013,11 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build sourcelist, objdir, args or exit 1
-      cc_ar ('"'+(libname)+'"'), Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
+      sources = get_sources sourcelist
+      objects = get_objects sources, objdir
+
+      cc_build sources, objdir, args or exit 1
+      cc_ar ('"'+(libname)+'"'), objects.collect{|x| '"'+x+'"'} or exit 1
     end
 
     task :libs => [:libsqlite, :libcurl, :libruby, :libjson, :libstlport, :librhodb, :librhocommon, :librhomain, :librhosync, :librholog]
@@ -1159,7 +1191,9 @@ namespace "build" do
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
 
-      cc_build sourcelist, objdir, args or exit 1
+      sources = get_sources sourcelist
+
+      cc_build sources, objdir, args or exit 1
 
       deps = []
       $libname.each do |k,v|
@@ -1201,8 +1235,9 @@ namespace "build" do
       args += elibs
       args += rlibs
 
+      objects = get_objects sources, objdir
   	  #mkdir_p File.dirname(libname) unless File.directory? File.dirname(libname)
-      cc_link libname, Dir.glob(objdir + "/**/*.o").collect{|x| '"'+x+'"'}, args, deps or exit 1
+      cc_link libname, objects.collect{|x| '"'+x+'"'}, args, deps+extlibs or exit 1
 
       destdir = File.join($androidpath, "Rhodes", "libs", "armeabi")
       mkdir_p destdir unless File.exists? destdir

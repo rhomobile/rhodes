@@ -5,7 +5,7 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Barcode_impl"
 
-#define BARCODE_FACTORY_CLASS "com.motorolasolutions.rho.barcode.BarcodeFactory"
+#define BARCODE_FACTORY_CLASS "com.rho.barcode.BarcodeFactory"
 
 extern "C" void Init_Barcode_API(void);
 
@@ -34,10 +34,16 @@ extern "C" void Init_Barcode(void)
             RAWLOG_ERROR1("Failed to create %s instance", BARCODE_FACTORY_CLASS);
             return;
         }
+        
+        RAWTRACE("Initializing Java factory");
 
         rho::CBarcodeBase::setJavaFactory(env, jFactory);
 
+        RAWTRACE("Deleting JNI reference");
+
         env->DeleteLocalRef(jFactory);
+
+        RAWTRACE("Initializing API");
 
         Init_Barcode_API();
 
@@ -50,4 +56,6 @@ extern "C" void Init_Barcode(void)
 
 }
 
-extern "C" void Init_Barcode_extension() {}
+extern "C" void Init_Barcode_extension() {
+    Init_Barcode();
+}

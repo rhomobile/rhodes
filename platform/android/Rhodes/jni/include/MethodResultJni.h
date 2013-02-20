@@ -25,13 +25,16 @@ struct CallbackSelector<rho::json::CJSONEntry> {
 class MethodResultJni
 {
     static const char * const METHOD_RESULT_CLASS;
-    enum ResultType { typeNone = 0, typeString, typeList, typeMap, typeError, typeArgError };
+    enum ResultType { typeNone = 0, typeBoolean, typeInteger, typeDouble, typeString, typeList, typeMap, typeError, typeArgError };
 
     static jclass s_methodResultClass;
     static jmethodID s_midMethodResult;
     static jmethodID s_midSetCallBack;
     static jmethodID s_midGetResultType;
     static jmethodID s_midReset;
+    static jfieldID s_fidBoolean;
+    static jfieldID s_fidInteger;
+    static jfieldID s_fidDouble;
     static jfieldID s_fidString;
     static jfieldID s_fidStringList;
     static jfieldID s_fidStringMap;
@@ -45,6 +48,9 @@ class MethodResultJni
     ResultType m_resType;
     std::string m_errMsg;
 
+    jboolean getBooleanResult(JNIEnv*);
+    jint getIntegerResult(JNIEnv*);
+    jdouble getDoubleResult(JNIEnv*);
     jstring getStringResult(JNIEnv*);
     jobject getListResult(JNIEnv*);
     jobject getMapResult(JNIEnv*);
