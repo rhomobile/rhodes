@@ -33,8 +33,6 @@
 #include "common/PosixThreadImpl.h"
 #include "net/iphone/sslimpl.h"
 #include "RhoCryptImpl.h"
-#include "scriptvm/ScriptVM.h"
-#include "CIOSJavaScriptVM.h"
 #include <common/RhoMutexLock.h>
 #include <common/AutoPointer.h>
 
@@ -68,19 +66,9 @@ public:
         return m_pSsl;
     }
 
-    IRhoJavaScriptVM* createJavaScriptVM()
-    {
-        if (!m_vm)
-        {
-            m_vm = new CIOSJavaScriptVM();
-        }
-        return m_vm;
-    }
-
 private:
     CMutex m_sslMutex;
     common::CAutoPtr<net::ISSL> m_pSsl;
-    common::CAutoPtr<IRhoJavaScriptVM> m_vm;
 };
 
 }

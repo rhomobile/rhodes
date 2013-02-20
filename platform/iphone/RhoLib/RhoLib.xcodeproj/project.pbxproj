@@ -67,9 +67,6 @@
 		A2D0557D15A7500A002376EE /* IRhoPushClient.h in Headers */ = {isa = PBXBuildFile; fileRef = A2D0557A15A7500A002376EE /* IRhoPushClient.h */; };
 		A2D0557E15A7500A002376EE /* RhoPushManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2D0557B15A7500A002376EE /* RhoPushManager.cpp */; };
 		A2D0557F15A7500A002376EE /* RhoPushManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A2D0557C15A7500A002376EE /* RhoPushManager.h */; };
-		AE3A755516C93BCB007F57BB /* IRhoJavaScriptVM.h in Headers */ = {isa = PBXBuildFile; fileRef = AE3A755416C93BCB007F57BB /* IRhoJavaScriptVM.h */; };
-		AEC6426916C2B8410012C269 /* ScriptVM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEC6426716C2B8410012C269 /* ScriptVM.cpp */; };
-		AEC6426A16C2B8410012C269 /* ScriptVM.h in Headers */ = {isa = PBXBuildFile; fileRef = AEC6426816C2B8410012C269 /* ScriptVM.h */; };
 		BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */; };
 		BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */; };
 		BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */; };
@@ -180,9 +177,6 @@
 		A2D0557A15A7500A002376EE /* IRhoPushClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoPushClient.h; path = ../../shared/common/push/IRhoPushClient.h; sourceTree = "<group>"; };
 		A2D0557B15A7500A002376EE /* RhoPushManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoPushManager.cpp; path = ../../shared/common/push/RhoPushManager.cpp; sourceTree = "<group>"; };
 		A2D0557C15A7500A002376EE /* RhoPushManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoPushManager.h; path = ../../shared/common/push/RhoPushManager.h; sourceTree = "<group>"; };
-		AE3A755416C93BCB007F57BB /* IRhoJavaScriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IRhoJavaScriptVM.h; path = ../../shared/common/IRhoJavaScriptVM.h; sourceTree = "<group>"; };
-		AEC6426716C2B8410012C269 /* ScriptVM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScriptVM.cpp; path = ../../shared/scriptvm/ScriptVM.cpp; sourceTree = "<group>"; };
-		AEC6426816C2B8410012C269 /* ScriptVM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScriptVM.h; path = ../../shared/scriptvm/ScriptVM.h; sourceTree = "<group>"; };
 		BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PosixThreadImpl.cpp; path = ../../shared/common/PosixThreadImpl.cpp; sourceTree = SOURCE_ROOT; };
 		BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PosixThreadImpl.h; path = ../../shared/common/PosixThreadImpl.h; sourceTree = SOURCE_ROOT; };
 		BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CURLNetRequest.cpp; path = ../../shared/net/CURLNetRequest.cpp; sourceTree = SOURCE_ROOT; };
@@ -264,7 +258,6 @@
 				5C7162630F8B7DF40096B6AA /* logging */,
 				5CBD46251087397B00107D0D /* net */,
 				5C798931113BD10C005F8736 /* rubyext */,
-				AEC6426616C2B70E0012C269 /* scriptvm */,
 				5CE03CC912DB7E670058B474 /* sqlite */,
 				5C6B45280F9468C5003CB43A /* statistic */,
 				5C59BF4A115B4BA300E96ADE /* unzip */,
@@ -314,7 +307,6 @@
 				656E39311497A64300288105 /* BundleManager.cpp */,
 				5C98174A0FBC4FCE002597A5 /* InputStream.h */,
 				5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */,
-				AE3A755416C93BCB007F57BB /* IRhoJavaScriptVM.h */,
 				5C5335500FC2977600F268F0 /* IRhoThreadImpl.h */,
 				BD2C950610AE0D4B008D4692 /* PosixThreadImpl.cpp */,
 				BD2C950710AE0D4B008D4692 /* PosixThreadImpl.h */,
@@ -426,15 +418,6 @@
 				A2D0557C15A7500A002376EE /* RhoPushManager.h */,
 			);
 			name = push;
-			sourceTree = "<group>";
-		};
-		AEC6426616C2B70E0012C269 /* scriptvm */ = {
-			isa = PBXGroup;
-			children = (
-				AEC6426716C2B8410012C269 /* ScriptVM.cpp */,
-				AEC6426816C2B8410012C269 /* ScriptVM.h */,
-			);
-			name = scriptvm;
 			sourceTree = "<group>";
 		};
 		C6A0FF2B0290797F04C91782 /* Documentation */ = {
@@ -562,8 +545,6 @@
 				FAEF1DD316AED9D200E22B05 /* RubyCallbackHelper.h in Headers */,
 				FAEF1DD616AED9D200E22B05 /* js_helpers.h in Headers */,
 				FAEF1DD816AED9D200E22B05 /* MethodResult.h in Headers */,
-				AEC6426A16C2B8410012C269 /* ScriptVM.h in Headers */,
-				AE3A755516C93BCB007F57BB /* IRhoJavaScriptVM.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -663,7 +644,6 @@
 				FAEF1DD516AED9D200E22B05 /* js_helpers.cpp in Sources */,
 				FAEF1DD716AED9D200E22B05 /* MethodResult.cpp in Sources */,
 				FA0E908D16B7FE000094CCDE /* CJSConverter.mm in Sources */,
-				AEC6426916C2B8410012C269 /* ScriptVM.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
