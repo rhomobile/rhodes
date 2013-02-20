@@ -272,13 +272,9 @@ namespace "build" do
                 ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
                 ENV['VCBUILD'] = $vcbuild
                 ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
-                
-                if ENV["TARGET_EXT_DIR"]
-                  ENV['TARGET_TEMP_DIR'] = File.join(ENV["TARGET_EXT_DIR"], ext)
-                else
-			      ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
-                end
-                
+	        ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
+                ENV['RHO_EXT_NAME']=ext                
+
                 puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
           
           else
@@ -294,6 +290,7 @@ namespace "build" do
               else
                 ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", 'wm', "bin", $sdk, "rhodes", $current_platform == 'wm' ? "Release" : $buildcfg)
               end
+              ENV['RHO_EXT_NAME']=ext                
 
               ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform",  'wm', "bin", $sdk, "extensions", ext)
               ENV['VCBUILD'] = $vcbuild

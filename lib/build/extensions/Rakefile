@@ -25,13 +25,22 @@ def build_extension()
   
   exit unless $? == 0
 
-  cp_r File.join($tempdir, ENV['RHO_BUILD_CONFIG'], name + ".lib"), $targetdir if $targetdir
+    puts "$target_temp_dir :  #{$target_temp_dir}"
+    puts "$targetext_dir :  #{$targetext_dir}"
+
+    if $targetext_dir
+      $targetext_dir = File.join($targetext_dir,$extname)
+      puts "$targetext_dir : #{$targetext_dir}"
+      mkdir_p $targetext_dir
+      cp_r File.join($target_temp_dir, $extname + ".lib"), $targetext_dir
+    end
 end
 
 namespace "build" do
   task :config do
-    $targetdir = ENV['TARGET_TEMP_DIR']
-    #raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $target_temp_dir = ENV['TARGET_TEMP_DIR']
+    $targetext_dir = ENV['TARGET_EXT_DIR']
+    $extname = ENV['RHO_EXT_NAME']
 
     $tempdir = ENV['TEMP_FILES_DIR']
     raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
