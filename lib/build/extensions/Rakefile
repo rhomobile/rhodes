@@ -25,11 +25,12 @@ def build_extension()
   
   exit unless $? == 0
 
+  cp_r File.join($tempdir, ENV['RHO_BUILD_CONFIG'], name + ".lib"), $targetdir if $targetdir
 end
 
 namespace "build" do
   task :config do
-    #$targetdir = ENV['TARGET_TEMP_DIR']
+    $targetdir = ENV['TARGET_TEMP_DIR']
     #raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
 
     $tempdir = ENV['TEMP_FILES_DIR']
