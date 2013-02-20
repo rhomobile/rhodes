@@ -109,12 +109,7 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
 
 void CSystemImplBase::getHasCamera(CMethodResult& oResult)
 {
-#ifdef OS_WINDOWS_DESKTOP
-    oResult.set(false);
-#else
     oResult.set(true);
-#endif
-
 }
 
 void CSystemImplBase::getPhoneNumber(CMethodResult& oResult)

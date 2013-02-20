@@ -1,5 +1,5 @@
 #include "SystemBase.h"
-#include "api_generator\js_helpers.h"
+#include "api_generator/js_helpers.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -32,7 +32,7 @@ rho::String js_s_System_getPlatform(rho::json::CJSONArray& argv, const rho::Stri
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -51,7 +51,7 @@ rho::String js_s_System_getPlatform(rho::json::CJSONArray& argv, const rho::Stri
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -96,7 +96,7 @@ rho::String js_s_System_getHasCamera(rho::json::CJSONArray& argv, const rho::Str
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -115,7 +115,7 @@ rho::String js_s_System_getHasCamera(rho::json::CJSONArray& argv, const rho::Str
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -160,7 +160,7 @@ rho::String js_s_System_getScreenWidth(rho::json::CJSONArray& argv, const rho::S
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -179,7 +179,7 @@ rho::String js_s_System_getScreenWidth(rho::json::CJSONArray& argv, const rho::S
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -224,7 +224,7 @@ rho::String js_s_System_getScreenHeight(rho::json::CJSONArray& argv, const rho::
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -243,7 +243,7 @@ rho::String js_s_System_getScreenHeight(rho::json::CJSONArray& argv, const rho::
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -288,7 +288,7 @@ rho::String js_s_System_getRealScreenWidth(rho::json::CJSONArray& argv, const rh
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -307,7 +307,7 @@ rho::String js_s_System_getRealScreenWidth(rho::json::CJSONArray& argv, const rh
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -352,7 +352,7 @@ rho::String js_s_System_getRealScreenHeight(rho::json::CJSONArray& argv, const r
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -371,7 +371,7 @@ rho::String js_s_System_getRealScreenHeight(rho::json::CJSONArray& argv, const r
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -416,7 +416,7 @@ rho::String js_s_System_getScreenOrientation(rho::json::CJSONArray& argv, const 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -435,7 +435,7 @@ rho::String js_s_System_getScreenOrientation(rho::json::CJSONArray& argv, const 
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -480,7 +480,7 @@ rho::String js_s_System_getPpiX(rho::json::CJSONArray& argv, const rho::String& 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -499,7 +499,7 @@ rho::String js_s_System_getPpiX(rho::json::CJSONArray& argv, const rho::String& 
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -544,7 +544,7 @@ rho::String js_s_System_getPpiY(rho::json::CJSONArray& argv, const rho::String& 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -563,7 +563,7 @@ rho::String js_s_System_getPpiY(rho::json::CJSONArray& argv, const rho::String& 
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -608,7 +608,7 @@ rho::String js_s_System_getPhoneNumber(rho::json::CJSONArray& argv, const rho::S
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -627,7 +627,7 @@ rho::String js_s_System_getPhoneNumber(rho::json::CJSONArray& argv, const rho::S
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -672,7 +672,7 @@ rho::String js_s_System_getDeviceOwnerEmail(rho::json::CJSONArray& argv, const r
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -691,7 +691,7 @@ rho::String js_s_System_getDeviceOwnerEmail(rho::json::CJSONArray& argv, const r
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -736,7 +736,7 @@ rho::String js_s_System_getDeviceOwnerName(rho::json::CJSONArray& argv, const rh
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -755,7 +755,7 @@ rho::String js_s_System_getDeviceOwnerName(rho::json::CJSONArray& argv, const rh
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -800,7 +800,7 @@ rho::String js_s_System_getDevicePushId(rho::json::CJSONArray& argv, const rho::
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -819,7 +819,7 @@ rho::String js_s_System_getDevicePushId(rho::json::CJSONArray& argv, const rho::
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -864,7 +864,7 @@ rho::String js_s_System_getPhoneId(rho::json::CJSONArray& argv, const rho::Strin
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -883,7 +883,7 @@ rho::String js_s_System_getPhoneId(rho::json::CJSONArray& argv, const rho::Strin
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -928,7 +928,7 @@ rho::String js_s_System_getDeviceName(rho::json::CJSONArray& argv, const rho::St
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -947,7 +947,7 @@ rho::String js_s_System_getDeviceName(rho::json::CJSONArray& argv, const rho::St
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -992,7 +992,7 @@ rho::String js_s_System_getOsVersion(rho::json::CJSONArray& argv, const rho::Str
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1011,7 +1011,7 @@ rho::String js_s_System_getOsVersion(rho::json::CJSONArray& argv, const rho::Str
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1056,7 +1056,7 @@ rho::String js_s_System_getLocale(rho::json::CJSONArray& argv, const rho::String
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1075,7 +1075,7 @@ rho::String js_s_System_getLocale(rho::json::CJSONArray& argv, const rho::String
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1120,7 +1120,7 @@ rho::String js_s_System_getCountry(rho::json::CJSONArray& argv, const rho::Strin
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1139,7 +1139,7 @@ rho::String js_s_System_getCountry(rho::json::CJSONArray& argv, const rho::Strin
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1184,7 +1184,7 @@ rho::String js_s_System_getIsEmulator(rho::json::CJSONArray& argv, const rho::St
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1203,7 +1203,7 @@ rho::String js_s_System_getIsEmulator(rho::json::CJSONArray& argv, const rho::St
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1248,7 +1248,7 @@ rho::String js_s_System_getHasCalendar(rho::json::CJSONArray& argv, const rho::S
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1267,7 +1267,7 @@ rho::String js_s_System_getHasCalendar(rho::json::CJSONArray& argv, const rho::S
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1312,7 +1312,7 @@ rho::String js_s_System_getIsMotorolaDevice(rho::json::CJSONArray& argv, const r
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1331,7 +1331,7 @@ rho::String js_s_System_getIsMotorolaDevice(rho::json::CJSONArray& argv, const r
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1376,7 +1376,7 @@ rho::String js_s_System_getOemInfo(rho::json::CJSONArray& argv, const rho::Strin
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1395,7 +1395,7 @@ rho::String js_s_System_getOemInfo(rho::json::CJSONArray& argv, const rho::Strin
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1440,7 +1440,7 @@ rho::String js_s_System_getUuid(rho::json::CJSONArray& argv, const rho::String& 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1459,7 +1459,7 @@ rho::String js_s_System_getUuid(rho::json::CJSONArray& argv, const rho::String& 
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1504,7 +1504,7 @@ rho::String js_s_System_getApplicationIconBadge(rho::json::CJSONArray& argv, con
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1523,7 +1523,7 @@ rho::String js_s_System_getApplicationIconBadge(rho::json::CJSONArray& argv, con
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1607,7 +1607,7 @@ rho::String js_s_System_setApplicationIconBadge(rho::json::CJSONArray& argv, con
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1626,7 +1626,7 @@ rho::String js_s_System_setApplicationIconBadge(rho::json::CJSONArray& argv, con
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1671,7 +1671,7 @@ rho::String js_s_System_getHttpProxyURI(rho::json::CJSONArray& argv, const rho::
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1690,7 +1690,7 @@ rho::String js_s_System_getHttpProxyURI(rho::json::CJSONArray& argv, const rho::
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1779,7 +1779,7 @@ rho::String js_s_System_setHttpProxyURI(rho::json::CJSONArray& argv, const rho::
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1798,7 +1798,7 @@ rho::String js_s_System_setHttpProxyURI(rho::json::CJSONArray& argv, const rho::
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1843,7 +1843,7 @@ rho::String js_s_System_getLockWindowSize(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1862,7 +1862,7 @@ rho::String js_s_System_getLockWindowSize(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -1946,7 +1946,7 @@ rho::String js_s_System_setLockWindowSize(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -1965,7 +1965,7 @@ rho::String js_s_System_setLockWindowSize(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2010,7 +2010,7 @@ rho::String js_s_System_getShowKeyboard(rho::json::CJSONArray& argv, const rho::
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2029,7 +2029,7 @@ rho::String js_s_System_getShowKeyboard(rho::json::CJSONArray& argv, const rho::
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2113,7 +2113,7 @@ rho::String js_s_System_setShowKeyboard(rho::json::CJSONArray& argv, const rho::
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2132,7 +2132,7 @@ rho::String js_s_System_setShowKeyboard(rho::json::CJSONArray& argv, const rho::
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2177,7 +2177,7 @@ rho::String js_s_System_getFullScreen(rho::json::CJSONArray& argv, const rho::St
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2196,7 +2196,7 @@ rho::String js_s_System_getFullScreen(rho::json::CJSONArray& argv, const rho::St
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2280,7 +2280,7 @@ rho::String js_s_System_setFullScreen(rho::json::CJSONArray& argv, const rho::St
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2299,7 +2299,7 @@ rho::String js_s_System_setFullScreen(rho::json::CJSONArray& argv, const rho::St
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2344,7 +2344,7 @@ rho::String js_s_System_getLocalServerPort(rho::json::CJSONArray& argv, const rh
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2363,7 +2363,7 @@ rho::String js_s_System_getLocalServerPort(rho::json::CJSONArray& argv, const rh
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2447,7 +2447,7 @@ rho::String js_s_System_setLocalServerPort(rho::json::CJSONArray& argv, const rh
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2466,7 +2466,7 @@ rho::String js_s_System_setLocalServerPort(rho::json::CJSONArray& argv, const rh
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2511,7 +2511,7 @@ rho::String js_s_System_getFreeServerPort(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2530,7 +2530,7 @@ rho::String js_s_System_getFreeServerPort(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2575,7 +2575,7 @@ rho::String js_s_System_getScreenAutoRotate(rho::json::CJSONArray& argv, const r
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2594,7 +2594,7 @@ rho::String js_s_System_getScreenAutoRotate(rho::json::CJSONArray& argv, const r
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2678,7 +2678,7 @@ rho::String js_s_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const r
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2697,7 +2697,7 @@ rho::String js_s_System_setScreenAutoRotate(rho::json::CJSONArray& argv, const r
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2742,7 +2742,7 @@ rho::String js_s_System_getHasTouchscreen(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2761,7 +2761,7 @@ rho::String js_s_System_getHasTouchscreen(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2806,7 +2806,7 @@ rho::String js_s_System_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, c
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2825,7 +2825,7 @@ rho::String js_s_System_getSecurityTokenNotPassed(rho::json::CJSONArray& argv, c
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2870,7 +2870,7 @@ rho::String js_s_System_getWebviewFramework(rho::json::CJSONArray& argv, const r
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2889,7 +2889,7 @@ rho::String js_s_System_getWebviewFramework(rho::json::CJSONArray& argv, const r
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -2934,7 +2934,7 @@ rho::String js_s_System_getScreenSleeping(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -2953,7 +2953,7 @@ rho::String js_s_System_getScreenSleeping(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3037,7 +3037,7 @@ rho::String js_s_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3056,7 +3056,7 @@ rho::String js_s_System_setScreenSleeping(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3101,7 +3101,7 @@ rho::String js_s_System_getHasNetwork(rho::json::CJSONArray& argv, const rho::St
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3120,7 +3120,7 @@ rho::String js_s_System_getHasNetwork(rho::json::CJSONArray& argv, const rho::St
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3165,7 +3165,7 @@ rho::String js_s_System_getHasWifiNetwork(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3184,7 +3184,7 @@ rho::String js_s_System_getHasWifiNetwork(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3229,7 +3229,7 @@ rho::String js_s_System_getHasCellNetwork(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3248,7 +3248,7 @@ rho::String js_s_System_getHasCellNetwork(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3293,7 +3293,7 @@ rho::String js_s_System_getHasSqlite(rho::json::CJSONArray& argv, const rho::Str
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3312,7 +3312,7 @@ rho::String js_s_System_getHasSqlite(rho::json::CJSONArray& argv, const rho::Str
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3401,7 +3401,7 @@ rho::String js_s_System_applicationInstall(rho::json::CJSONArray& argv, const rh
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3420,7 +3420,7 @@ rho::String js_s_System_applicationInstall(rho::json::CJSONArray& argv, const rh
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3509,7 +3509,7 @@ rho::String js_s_System_isApplicationInstalled(rho::json::CJSONArray& argv, cons
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3528,7 +3528,7 @@ rho::String js_s_System_isApplicationInstalled(rho::json::CJSONArray& argv, cons
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3617,7 +3617,7 @@ rho::String js_s_System_applicationUninstall(rho::json::CJSONArray& argv, const 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3636,7 +3636,7 @@ rho::String js_s_System_applicationUninstall(rho::json::CJSONArray& argv, const 
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3681,7 +3681,7 @@ rho::String js_s_System_getStartParams(rho::json::CJSONArray& argv, const rho::S
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3700,7 +3700,7 @@ rho::String js_s_System_getStartParams(rho::json::CJSONArray& argv, const rho::S
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3789,7 +3789,7 @@ rho::String js_s_System_openUrl(rho::json::CJSONArray& argv, const rho::String& 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3808,7 +3808,7 @@ rho::String js_s_System_openUrl(rho::json::CJSONArray& argv, const rho::String& 
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -3933,7 +3933,7 @@ rho::String js_s_System_unzipFile(rho::json::CJSONArray& argv, const rho::String
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -3952,7 +3952,7 @@ rho::String js_s_System_unzipFile(rho::json::CJSONArray& argv, const rho::String
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -4119,7 +4119,7 @@ rho::String js_s_System_zipFile(rho::json::CJSONArray& argv, const rho::String& 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -4138,7 +4138,7 @@ rho::String js_s_System_zipFile(rho::json::CJSONArray& argv, const rho::String& 
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -4350,7 +4350,7 @@ rho::String js_s_System_zipFiles(rho::json::CJSONArray& argv, const rho::String&
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(4) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -4369,7 +4369,7 @@ rho::String js_s_System_zipFiles(rho::json::CJSONArray& argv, const rho::String&
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -4618,7 +4618,7 @@ rho::String js_s_System_setRegistrySetting(rho::json::CJSONArray& argv, const rh
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(5) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -4637,7 +4637,7 @@ rho::String js_s_System_setRegistrySetting(rho::json::CJSONArray& argv, const rh
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -4805,7 +4805,7 @@ rho::String js_s_System_getRegistrySetting(rho::json::CJSONArray& argv, const rh
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -4824,7 +4824,7 @@ rho::String js_s_System_getRegistrySetting(rho::json::CJSONArray& argv, const rh
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -5025,7 +5025,7 @@ rho::String js_s_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::S
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(4) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -5044,7 +5044,7 @@ rho::String js_s_System_setWindowFrame(rho::json::CJSONArray& argv, const rho::S
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -5167,7 +5167,7 @@ rho::String js_s_System_setWindowPosition(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -5186,7 +5186,7 @@ rho::String js_s_System_setWindowPosition(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -5309,7 +5309,7 @@ rho::String js_s_System_setWindowSize(rho::json::CJSONArray& argv, const rho::St
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -5328,7 +5328,7 @@ rho::String js_s_System_setWindowSize(rho::json::CJSONArray& argv, const rho::St
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -5373,7 +5373,7 @@ rho::String js_s_System_bringToFront(rho::json::CJSONArray& argv, const rho::Str
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -5392,7 +5392,7 @@ rho::String js_s_System_bringToFront(rho::json::CJSONArray& argv, const rho::Str
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -5527,7 +5527,7 @@ rho::String js_s_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -5546,7 +5546,7 @@ rho::String js_s_System_replaceCurrentBundle(rho::json::CJSONArray& argv, const 
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -5635,7 +5635,7 @@ rho::String js_s_System_deleteFolder(rho::json::CJSONArray& argv, const rho::Str
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -5654,7 +5654,7 @@ rho::String js_s_System_deleteFolder(rho::json::CJSONArray& argv, const rho::Str
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -5743,7 +5743,7 @@ rho::String js_s_System_setDoNotBackupAttribute(rho::json::CJSONArray& argv, con
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -5762,7 +5762,7 @@ rho::String js_s_System_setDoNotBackupAttribute(rho::json::CJSONArray& argv, con
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -5932,7 +5932,7 @@ rho::String js_s_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::Strin
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -5951,7 +5951,7 @@ rho::String js_s_System_isBlobAttr(rho::json::CJSONArray& argv, const rho::Strin
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -6079,7 +6079,7 @@ rho::String js_s_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -6098,7 +6098,7 @@ rho::String js_s_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -6143,7 +6143,7 @@ rho::String js_s_System_get_locale(rho::json::CJSONArray& argv, const rho::Strin
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -6162,7 +6162,7 @@ rho::String js_s_System_get_locale(rho::json::CJSONArray& argv, const rho::Strin
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -6293,7 +6293,7 @@ rho::String js_s_System_set_locale(rho::json::CJSONArray& argv, const rho::Strin
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -6312,7 +6312,7 @@ rho::String js_s_System_set_locale(rho::json::CJSONArray& argv, const rho::Strin
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -6473,7 +6473,7 @@ rho::String js_s_System_setPushNotification(rho::json::CJSONArray& argv, const r
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -6492,7 +6492,7 @@ rho::String js_s_System_setPushNotification(rho::json::CJSONArray& argv, const r
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -6617,7 +6617,7 @@ rho::String js_s_System_setScreenRotationNotification(rho::json::CJSONArray& arg
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -6636,7 +6636,7 @@ rho::String js_s_System_setScreenRotationNotification(rho::json::CJSONArray& arg
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -6681,7 +6681,7 @@ rho::String js_s_System_exit(rho::json::CJSONArray& argv, const rho::String& str
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -6700,7 +6700,7 @@ rho::String js_s_System_exit(rho::json::CJSONArray& argv, const rho::String& str
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -6784,7 +6784,7 @@ rho::String js_s_System_set_sleeping(rho::json::CJSONArray& argv, const rho::Str
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -6803,7 +6803,7 @@ rho::String js_s_System_set_sleeping(rho::json::CJSONArray& argv, const rho::Str
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -6965,7 +6965,7 @@ rho::String js_s_System_startTimer(rho::json::CJSONArray& argv, const rho::Strin
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -6984,7 +6984,7 @@ rho::String js_s_System_startTimer(rho::json::CJSONArray& argv, const rho::Strin
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -7073,7 +7073,7 @@ rho::String js_s_System_stopTimer(rho::json::CJSONArray& argv, const rho::String
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -7092,7 +7092,7 @@ rho::String js_s_System_stopTimer(rho::json::CJSONArray& argv, const rho::String
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -7220,7 +7220,7 @@ rho::String js_s_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, cons
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -7239,7 +7239,7 @@ rho::String js_s_System_setNetworkStatusNotify(rho::json::CJSONArray& argv, cons
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -7284,7 +7284,7 @@ rho::String js_s_System_clearNetworkStatusNotify(rho::json::CJSONArray& argv, co
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -7303,7 +7303,7 @@ rho::String js_s_System_clearNetworkStatusNotify(rho::json::CJSONArray& argv, co
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -7392,7 +7392,7 @@ rho::String js_s_System_set_http_proxy_url(rho::json::CJSONArray& argv, const rh
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -7411,7 +7411,7 @@ rho::String js_s_System_set_http_proxy_url(rho::json::CJSONArray& argv, const rh
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -7456,7 +7456,7 @@ rho::String js_s_System_unset_http_proxy(rho::json::CJSONArray& argv, const rho:
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -7475,7 +7475,7 @@ rho::String js_s_System_unset_http_proxy(rho::json::CJSONArray& argv, const rho:
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -7559,7 +7559,7 @@ rho::String js_s_System_set_application_icon_badge(rho::json::CJSONArray& argv, 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -7578,7 +7578,7 @@ rho::String js_s_System_set_application_icon_badge(rho::json::CJSONArray& argv, 
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -7736,7 +7736,7 @@ rho::String js_s_System_runApplication(rho::json::CJSONArray& argv, const rho::S
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -7755,7 +7755,7 @@ rho::String js_s_System_runApplication(rho::json::CJSONArray& argv, const rho::S
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -7841,7 +7841,7 @@ rho::String js_s_System_getProperty(rho::json::CJSONArray& argv, const rho::Stri
     if ( argc > nCallbackArg )
     {
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -7860,7 +7860,7 @@ rho::String js_s_System_getProperty(rho::json::CJSONArray& argv, const rho::Stri
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -7947,7 +7947,7 @@ rho::String js_s_System_getProperties(rho::json::CJSONArray& argv, const rho::St
     if ( argc > nCallbackArg )
     {
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -7966,7 +7966,7 @@ rho::String js_s_System_getProperties(rho::json::CJSONArray& argv, const rho::St
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -8008,7 +8008,7 @@ rho::String js_s_System_getAllProperties(rho::json::CJSONArray& argv, const rho:
     if ( argc > nCallbackArg )
     {
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -8027,7 +8027,7 @@ rho::String js_s_System_getAllProperties(rho::json::CJSONArray& argv, const rho:
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -8158,7 +8158,7 @@ rho::String js_s_System_setProperty(rho::json::CJSONArray& argv, const rho::Stri
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -8177,7 +8177,7 @@ rho::String js_s_System_setProperty(rho::json::CJSONArray& argv, const rho::Stri
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -8268,7 +8268,7 @@ rho::String js_s_System_setProperties(rho::json::CJSONArray& argv, const rho::St
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -8287,7 +8287,7 @@ rho::String js_s_System_setProperties(rho::json::CJSONArray& argv, const rho::St
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -8332,7 +8332,7 @@ rho::String js_s_System_clearAllProperties(rho::json::CJSONArray& argv, const rh
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -8351,7 +8351,7 @@ rho::String js_s_System_clearAllProperties(rho::json::CJSONArray& argv, const rh
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
