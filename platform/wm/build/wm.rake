@@ -272,10 +272,20 @@ namespace "build" do
                 ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
                 ENV['VCBUILD'] = $vcbuild
                 ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
-	        ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
+	            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
                 ENV['RHO_EXT_NAME']=ext                
 
-                puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
+                if is_prebuilt
+                    file_mask = File.join(extpath, 'wm/lib/*.lib' ) 
+                    puts "PREBUILD: #{file_mask}"
+                
+                    mkdir_p ENV['TARGET_TEMP_DIR'] unless File.exist? ENV['TARGET_TEMP_DIR']
+                    Dir.glob( file_mask ).each do |lib|
+                        cp_r lib, ENV['TARGET_TEMP_DIR']
+                    end
+                else    
+                    puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
+                end    
           
           else
               chdir $startdir
