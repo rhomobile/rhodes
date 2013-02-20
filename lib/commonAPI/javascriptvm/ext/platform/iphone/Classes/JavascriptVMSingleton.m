@@ -3,7 +3,7 @@
 
 @implementation JavascriptVMSingleton
 
-@synthesize webView = _webView;
+@synthesize webView;
 
 - (id) init
 {
@@ -18,13 +18,13 @@
 
 - (void) perfromInit
 {
-    _webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+    webView = [[UIWebView alloc] initWithFrame:CGRectZero];
 }
 
 -(void) executeScript:(NSString*)script methodResult:(CMethodResult*)methodResult
 {
     NSMutableArray *args = [[NSMutableArray arrayWithCapacity:3] autorelease];
-    [args addObject:_webView];
+    [args addObject:webView];
     [args addObject:script];
     [args addObject:[[NSString alloc] autorelease]];
     
@@ -43,6 +43,10 @@
 }
 
 - (void) dealloc {
+    if (webView)
+    {
+        [webView release];
+    }
     [super dealloc];
 }
 
