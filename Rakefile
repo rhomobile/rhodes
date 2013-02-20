@@ -334,7 +334,7 @@ namespace "config" do
     extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
        $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
     extensions += get_extensions
-    extensions << "coreAPI" if $current_platform == "wm"
+    extensions << "coreAPI" if $current_platform == "wm" || $current_platform == "wp8"
     $app_config["extensions"] = extensions.uniq
     
     capabilities = []
