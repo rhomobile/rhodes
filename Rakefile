@@ -478,11 +478,12 @@ namespace "config" do
     
     $invalid_license = false
 
-    if $rhoelements_features.length() > 0 && !$app_config['re_buildstub']
+    if $rhoelements_features.length() > 0
 
         $app_config['extensions'] << 'rhoelements-license'
 
         #check for RhoElements gem and license
+	if  !$app_config['re_buildstub']	
         begin
             require "rhoelements"
             
@@ -519,6 +520,7 @@ namespace "config" do
             if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
                 $application_build_configs.delete('encrypt_database')
             end
+        end
         end
     end
         
