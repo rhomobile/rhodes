@@ -1025,7 +1025,7 @@ int rho_ruby_is_boolean(VALUE val)
     return (TYPE(val) == T_TRUE || TYPE(val) == T_FALSE) ? 1 : 0;
 }
 
-int rho_ruby_is_float(VALUE val)
+int rho_ruby_is_double(VALUE val)
 {
     return (TYPE(val) == T_FLOAT) ? 1 : 0;
 }

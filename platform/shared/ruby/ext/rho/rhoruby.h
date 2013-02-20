@@ -160,7 +160,7 @@ VALUE rho_ruby_get_class_byname(const char* szName);
 VALUE rho_ruby_getProcBinding(VALUE proc);
 int rho_ruby_is_integer(VALUE val);
 int rho_ruby_is_boolean(VALUE val);
-int rho_ruby_is_float(VALUE val);
+int rho_ruby_is_double(VALUE val);
 
 #define RHO_PARAM_UNKNWON 0
 #define RHO_PARAM_STRING 1

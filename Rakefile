@@ -681,6 +681,8 @@ def init_extensions(startdir, dest)
     
     extpath = nil
     extpaths.each do |p|
+      next if p.index("rhodes") && extname.downcase() == "barcode" && $current_platform == "wm"
+      
       ep = File.join(p, extname)
       if File.exists? ep
         extpath = ep
