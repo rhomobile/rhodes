@@ -56,6 +56,7 @@ public:
     virtual void getCountry(CMethodResult& oResult);
     virtual void getIsEmulator(CMethodResult& oResult);
     virtual void getHasCalendar(CMethodResult& oResult);
+    virtual void getHasCamera(CMethodResult& oResult);
     virtual void getOemInfo(CMethodResult& oResult);
     virtual void getUuid(CMethodResult& oResult);
     virtual void getHttpProxyURI(CMethodResult& oResult);
@@ -648,6 +649,17 @@ void CSystemImpl::setHttpProxyURI( const rho::String& value, CMethodResult& oRes
         rho_sys_set_http_proxy_url( value.c_str() );
     else
         rho_sys_unset_http_proxy();
+}
+
+
+void CSystemImpl::getHasCamera(CMethodResult& oResult)
+{
+#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
+    oResult.set(false);
+#else
+    oResult.set(true);
+#endif
+
 }
 
 ////////////////////////////////////////////////////////////////////////
