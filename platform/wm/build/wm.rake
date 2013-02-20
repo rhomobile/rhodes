@@ -271,8 +271,13 @@ namespace "build" do
                 ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
                 ENV['VCBUILD'] = $vcbuild
                 ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
-				ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
-
+                
+                if ENV["TARGET_EXT_DIR"]
+                  ENV['TARGET_TEMP_DIR'] = File.join(ENV["TARGET_EXT_DIR"], ext)
+                else
+			      ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
+                end
+                
                 puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
           
           else

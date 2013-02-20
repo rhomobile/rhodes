@@ -159,10 +159,10 @@ VALUE CMethodResult::toRuby()
         return rho_ruby_create_boolean(m_bRes ? 1 : 0);
     }else if ( m_ResType == eInt)
     {
-        return rho_ruby_create_integer(m_nRes ? 1 : 0);
+        return rho_ruby_create_integer(m_nRes);
     }else if ( m_ResType == eDouble)
     {
-        return rho_ruby_create_double(m_dRes ? 1 : 0);
+        return rho_ruby_create_double(m_dRes);
     }else if ( m_ResType == eArgError)
     {
         rho_ruby_raise_argerror( m_strError.c_str());
