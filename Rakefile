@@ -478,7 +478,7 @@ namespace "config" do
     
     $invalid_license = false
 
-    if $rhoelements_features.length() > 0
+    if $rhoelements_features.length() > 0 && !$app_config['re_buildstub']
 
         $app_config['extensions'] << 'rhoelements-license'
 
