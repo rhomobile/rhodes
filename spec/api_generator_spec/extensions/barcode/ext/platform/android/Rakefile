@@ -1,29 +1,30 @@
 require 'fileutils'
 
+$curdir = pwd
+$barcode1dir = $curdir.gsub('/ext/barcode1/platform/android','');
+TARGETDIR = ENV['TARGET_TEMP_DIR']
+raise "TARGET_TEMP_DIR is not set" if TARGETDIR.nil?
+OBJDIR = ENV['TEMP_FILES_DIR']
+raise "TEMP_FILES_DIR is not set" if OBJDIR.nil?
+$rootdir = ENV['RHO_ROOT']
+raise "RHO_ROOT is not set" if $rootdir.nil?
+$appincdir = ENV["RHO_INC"]
+raise "RHO_INC is not set" if $appincdir.nil?
 
-namespace "build" do
-  task :config do
-    $curdir = pwd
-    $barcode1dir = $curdir.gsub('/ext/barcode1/platform/android','');
-    $targetdir = ENV['TARGET_TEMP_DIR']
-    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
-    $tempdir = ENV['TEMP_FILES_DIR']
-    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
-    $rootdir = ENV['RHO_ROOT']
-    raise "RHO_ROOT is not set" if $rootdir.nil?
-    $appincdir = ENV["RHO_INC"]
-    raise "RHO_INC is not set" if $appincdir.nil?
+TARGETLIB = File.join(TARGETDIR, 'libbarcode.a')
 
-    require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
+task :config do
     setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+    $sources = get_sources File.join($curdir, 'ext_native.files')
+    $objects = get_objects $sources, OBJDIR
+end
 
-  end
+directory TARGETDIR
+directory OBJDIR
 
-  task :all => :config do
-    objects = []
-    mkdir_p $tempdir unless File.exists? $tempdir
-    mkdir_p $targetdir unless File.exist? $targetdir
+task :build => [:config, OBJDIR] do
 
     $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
 
@@ -40,14 +41,17 @@ namespace "build" do
     args << "-I#{$rootdir}/platform/shared/ruby"
     args << "-I#{$rootdir}/platform/shared/ruby/android"
     args << "-I#{$rootdir}/platform/shared/ruby/generated"
-
     
     cd '../../..'
     puts "pwd: #{pwd} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
- 
-    cc_build File.join($curdir, 'ext_native.files'), $tempdir, args
-    cc_ar(File.join($targetdir, 'libbarcode.a'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'}) or exit 1
-  end
+    
+    cc_build $sources, OBJDIR, args or exit 1
 end
 
-task :default => "build:all"
+file TARGETLIB => [TARGETDIR, :build] do |t|
+    puts "objects: " + $objects.inspect
+    
+    cc_ar ('"'+t.name+'"'), $objects.collect{|x| '"'+x+'"'} or exit 1
+end
+
+task :default => TARGETLIB

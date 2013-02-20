@@ -115,11 +115,13 @@ JNIEnv* C<%= $cur_module.name %>Base::jniInit(JNIEnv* env)
 
 
 <% $cur_module.methods.each do |method|
-    params_signature = "(L#{api_generator_java_makePackagePath($cur_module)}/I#{$cur_module.name};"
+    java_class = "I#{$cur_module.name}"
+    java_class += 'Singleton' if method.access == ModuleMethod::ACCESS_STATIC
+    params_signature = "(L#{api_generator_java_makePackagePath($cur_module)}/#{java_class};"
     method.params.each do |param|
         params_signature += api_generator_java_makeNativeTypeSignature(param.type)
     end
-    params_signature += "Lcom/motorolasolutions/rhoelements/IMethodResult;)V"
+    params_signature += "Lcom/rhomobile/rhodes/api/IMethodResult;)V"
 %>
         s_cls<%= method.native_name %>Task = loadClass(env, <%= method.native_name.upcase %>_TASK_CLASS);
         if (!s_cls<%= method.native_name %>Task) return 0;

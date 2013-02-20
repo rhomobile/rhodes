@@ -15,11 +15,15 @@ public class RhoApiPropertyBag implements
 
     private HashMap<String, String> mProperties;
     private List<String> mAllowedNames;
-    
+
     public boolean isAllowed(String name) {
         return (mAllowedNames == null) || mAllowedNames.contains(name);
     }
-    
+
+    public boolean isAllAllowed(Set<String> names) {
+        return (mAllowedNames == null) || mAllowedNames.containsAll(names);
+    }
+
     public Map<String, String> getPropertiesMap() { return mProperties; }
 
     public RhoApiPropertyBag() {
@@ -77,7 +81,7 @@ public class RhoApiPropertyBag implements
     @Override
     public void setProperties(Map<String, String> props, IMethodResult result) {
         Set<String> names = props.keySet();
-        if (mAllowedNames.containsAll(names)) {
+        if (isAllAllowed(names)) {
             getPropertiesMap().putAll(props);
         } else {
             names.removeAll(getPropertiesMap().keySet());
