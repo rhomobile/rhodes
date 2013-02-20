@@ -244,9 +244,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\lib\commonAPI\coreapi\ext\platform\wp8\Coreapi.vcxproj">
-      <Project>{7dc60e50-5666-0130-0c8a-00155d4225f3}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\shared\curl\lib\libcurl.vcxproj">
       <Project>{87ee9da4-de1e-4448-8324-183c98dca588}</Project>
     </ProjectReference>
