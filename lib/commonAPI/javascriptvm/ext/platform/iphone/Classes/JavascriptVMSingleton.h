@@ -9,7 +9,7 @@
 @interface JavascriptVMSingleton : JavascriptVMSingletonBase<IJavascriptVMSingleton> {
 }
 
-@property (strong, nonatomic) UIWebView* webView;
+@property (strong, nonatomic, retain) UIWebView* webView;
 
 -(void) executeScript:(NSString*)script methodResult:(CMethodResult*)methodResult;
 
