@@ -41,7 +41,6 @@ struct ICallbackObject
 namespace common {
 struct IRhoThreadImpl;
 struct IRhoCrypt;
-struct IRhoJavaScriptVM;
 
 struct IRhoClassFactory
 {
@@ -53,8 +52,6 @@ struct IRhoClassFactory
     virtual IRhoCrypt* createRhoCrypt() = 0;
 
     virtual net::INetRequestImpl* createNetRequestImpl() = 0;
-
-    virtual IRhoJavaScriptVM* createJavaScriptVM() = 0;
 };
 
 }

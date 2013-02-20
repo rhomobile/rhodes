@@ -73,8 +73,6 @@ extern void Init_RhoEvent(void);
 extern void Init_Calendar(void);
 extern void Init_Extensions(void);
 extern void init_rhoext_Signature();
-extern void Init_RhoScriptVM(void);
-extern void Init_JavascriptVM(void);
 
 //RhoSupport extension
 extern void Init_RhoSupport(void);
@@ -261,9 +259,6 @@ void RhoRubyStart()
     Init_NavBar();
     Init_RhoEvent();
     Init_Calendar();
-
-    Init_RhoScriptVM();
-    Init_JavascriptVM();
 
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)
