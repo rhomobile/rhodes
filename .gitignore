@@ -122,6 +122,11 @@ lib/commonAPI/javascriptvm/ext/platform/iphone/build/*
 spec/api_generator_spec/extensions/megamodule/ext/platform/iphone/build/*
 spec/api_generator_spec/extensions/simpleonlystaticmodule/ext/platform/iphone/build/*
 spec/api_generator_spec/extensions/barcode1/ext/platform/iphone/build/*
+spec/api_generator_spec/extensions/barcode/ext/platform/android/generated/*
+spec/api_generator_spec/extensions/barcode/ext/platform/iphone/generated/*
+spec/api_generator_spec/extensions/barcode/ext/shared/generated/*
+spec/api_generator_spec/public/api/generated
+spec/api_generator_spec/rhosimulator
 
 spec/bin/*
 spec/**/bin/*

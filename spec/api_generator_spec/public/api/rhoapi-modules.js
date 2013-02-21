@@ -1,5 +1,5 @@
 $(document).ready(function(){
     Rho.loadApiModules([
-        "Rho.Barcode1"
+        "Rho.Barcode"
     ]);
 });

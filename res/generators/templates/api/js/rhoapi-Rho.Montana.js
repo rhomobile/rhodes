@@ -3,7 +3,7 @@
 
     var module = null;
 
-    var apiReq = rhoUtil.apiReqFor('<%= $cur_module.parents.push($cur_module.name).join(".") %>');
+    var apiReq = rhoUtil.apiReqFor('<%= $cur_module.parents.join(".") %>');
 
     // === <%= $cur_module.name %> class definition ===
 
@@ -23,12 +23,17 @@
         params = module_method.params.map do |param|
             "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
+
+        actual_method_name = module_method.name
+        if actual_method_name.end_with?('=')
+            actual_method_name = 'set' + actual_method_name[0].upcase + actual_method_name[1..actual_method_name.length-2]
+        end
     %>
-        <%= $cur_module.name %>.prototype.<%= module_method.name %> = function(<%= params %>) {
+        <%= $cur_module.name %>.prototype.<%= actual_method_name %> = function(<%= params %>) {
             return apiReq({
                 instanceId: this.getId(),
                 args: arguments,
-                method: '<%= module_method.name %>',
+                method: '<%= actual_method_name %>',
                 valueCallbackIndex: <%= module_method.params.size %>
             });
         };
@@ -52,9 +57,9 @@
             "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
     %>
-        <%= $cur_module.name %>.prototype.<%= module_method.name %> = function(<%= params %>) {
+        <%= $cur_module.name %>['<%= module_method.name %>'] = function(<%= params %>) {
             return apiReq({
-                instanceId: null,
+                instanceId: '0',
                 args: arguments,
                 method: '<%= module_method.name %>',
                 valueCallbackIndex: <%= module_method.params.size %>
@@ -69,7 +74,7 @@
         <%= $cur_module.name %>['default'] = function () {
             return new <%= $cur_module.name %>(
                 apiReq({
-                    instanceId: null,
+                    instanceId: '0',
                     args: [],
                     method:'getDefaultID'
                 })
@@ -78,7 +83,7 @@
 
         <%= $cur_module.name %>['getDefaultID'] = function (valueCallback) {
             return apiReq({
-                instanceId: null,
+                instanceId: '0',
                 args: arguments,
                 method:'getDefaultID',
                 valueCallbackIndex: 0
@@ -87,7 +92,7 @@
 
         <%= $cur_module.name %>['setDefaultID'] = function (id) {
             return apiReq({
-                instanceId: null,
+                instanceId: '0',
                 args: arguments,
                 method:'setDefaultID'
             });
@@ -95,6 +100,6 @@
 
     <% end %>
 
-    rhoUtil.namespace('<%= $cur_module.parents.push($cur_module.name).join(".") %>', <%= $cur_module.name %>);
+    rhoUtil.namespace('<%= $cur_module.parents.join(".") %>', <%= $cur_module.name %>);
 
 })(jQuery, Rho, Rho.util);
