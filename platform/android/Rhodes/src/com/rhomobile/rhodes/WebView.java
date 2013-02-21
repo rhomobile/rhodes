@@ -106,13 +106,19 @@ public class WebView {
 		
 		public SetCookieTask(String u, String c) {
 			Uri uri = Uri.parse(u);
-			url = uri.getScheme() + "://" + uri.getHost() + "/" + uri.getPath();
+
+            // SPR 23472
+			// url = uri.getScheme() + "://" + uri.getHost() + "/" + uri.getPath();
+            url = u;
 			cookie = c;
 		}
 		
 		public void run() {
 			CookieManager mgr = CookieManager.getInstance();
+            // SPR 23472
+            mgr.setAcceptCookie(true); //this seemed to also be needed
 			mgr.setCookie(url, cookie);
+            Logger.I(TAG, "Setting Cookie(url:cookie)(" + url + ":" + cookie + ")");
 		}
 	};
 
