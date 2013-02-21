@@ -68,7 +68,9 @@ class AndroidFunctionality01 implements AndroidFunctionality {
             settings.setSupportZoom(false);
             Logger.I(TAG, "Disable WebView zoom");
         }
-        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+//		SPR 23451  
+//        settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         settings.setSupportMultipleWindows(false);
         setWebPlugins(settings);
     }
