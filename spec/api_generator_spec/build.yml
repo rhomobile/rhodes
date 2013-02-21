@@ -1,7 +1,7 @@
 #sdk: "C:/Ruby193/lib/ruby/gems/1.9.1/gems/rhodes-3.3.2"
 sdk: ../../
 sdkversion: 3.3.2
-name: api_generator_spec
+name: api_gen_spec
 version: 1.0
 vendor: rhomobile
 build: debug
@@ -22,5 +22,4 @@ symbian:
 android:
   version: 2.1
 
-#extensions: ["json", "barcode1", "megamodule", "simpleonlystaticmodule"]
-extensions: ["json", "megamodule", "simpleonlystaticmodule"]
+extensions: ["json", "rhospec", "megamodule", "simpleonlystaticmodule"]

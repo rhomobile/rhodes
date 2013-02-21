@@ -59,13 +59,19 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
 <% if $cur_module.is_template_default_instance %>
     rb_define_singleton_method(rb_m<%= $cur_module.name %>, "default", rb_<%= $cur_module.name %>_s_default, 0);
     rb_define_singleton_method(rb_m<%= $cur_module.name %>, "setDefault", rb_<%= $cur_module.name %>_s_setDefault, 1);
+    rb_define_singleton_method(rb_m<%= $cur_module.name %>, "default=", rb_<%= $cur_module.name %>_s_setDefault, 1);
 <% end %>
 
 <% $cur_module.constants.each do |module_constant| %>
     rb_const_set(rb_m<%= $cur_module.name %>, rb_intern("<%= module_constant.name %>"), <%= api_generator_CreateSimpleRubyType(module_constant.type, module_constant.value) %> );<%
 end %>
-<% $cur_module.method_aliases.each do |alias_item| %>
+<% $cur_module.method_aliases.each do |alias_item|
+   if alias_item.is_method_instance %>
+    rb_define_alias(rb_m<%= $cur_module.name %>, "<%= alias_item.new_name %>", "<%= alias_item.existing_name %>");
+    <% end
+    if alias_item.is_method_static %>
     rb_define_alias(rb_singleton_class(rb_m<%= $cur_module.name %>), "<%= alias_item.new_name %>", "<%= alias_item.existing_name %>");<%
+    end
 end %>
 
 //TODO: support module aliases

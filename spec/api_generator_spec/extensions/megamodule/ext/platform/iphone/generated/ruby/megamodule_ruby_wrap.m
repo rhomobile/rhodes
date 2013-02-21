@@ -174,6 +174,21 @@ VALUE rb_Megamodule_getStringProperty_Obj(int argc, VALUE *argv, id<IMegamodule>
     }
 
     
+    // check callback
+    if (argc >= (0+1)) {
+        VALUE callback = argv[0];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        VALUE callback_param = argv[0+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
+    
 
     
     
@@ -334,6 +349,21 @@ VALUE rb_Megamodule_getIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
     }
 
     
+    // check callback
+    if (argc >= (0+1)) {
+        VALUE callback = argv[0];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        VALUE callback_param = argv[0+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
+    
 
     
     
@@ -438,7 +468,7 @@ static rb_Megamodule_setIntegerProperty_caller* our_Megamodule_setIntegerPropert
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem setIntegerProperty:(int)[((NSNumber*)params[0]) intValue] ];
+    [objItem setIntegerProperty:(int)[((NSNumber*)[params objectAtIndex:0]) intValue] ];
 }
 
 +(void) setIntegerProperty:(rb_Megamodule_setIntegerProperty_caller_params*)caller_params {
@@ -493,6 +523,21 @@ VALUE rb_Megamodule_setIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
         [params_array addObject:params[i]];
     }
 
+    
+    // check callback
+    if (argc >= (1+1)) {
+        VALUE callback = argv[1];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (1+2)) {
+        VALUE callback_param = argv[1+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
     
 
     
@@ -598,7 +643,7 @@ static rb_Megamodule_typesTest_caller* our_Megamodule_typesTest_caller = nil;
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem typesTest:(NSString*)params[0] paramBool:(BOOL)[((NSNumber*)params[1]) boolValue] paramInt:(int)[((NSNumber*)params[2]) intValue] paramFloat:(float)[((NSNumber*)params[3]) floatValue] paramArray:(NSArray*)params[4] paramHash:(NSDictionary*)params[5] methodResult:methodResult ];
+    [objItem typesTest:(NSString*)[params objectAtIndex:0] paramBool:(BOOL)[((NSNumber*)[params objectAtIndex:1]) boolValue] paramInt:(int)[((NSNumber*)[params objectAtIndex:2]) intValue] paramFloat:(float)[((NSNumber*)[params objectAtIndex:3]) floatValue] paramArray:(NSArray*)[params objectAtIndex:4] paramHash:(NSDictionary*)[params objectAtIndex:5] methodResult:methodResult ];
 }
 
 +(void) typesTest:(rb_Megamodule_typesTest_caller_params*)caller_params {
@@ -653,6 +698,21 @@ VALUE rb_Megamodule_typesTest_Obj(int argc, VALUE *argv, id<IMegamodule>objItem)
         [params_array addObject:params[i]];
     }
 
+    
+    // check callback
+    if (argc >= (6+1)) {
+        VALUE callback = argv[6];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (6+2)) {
+        VALUE callback_param = argv[6+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
     
 
     
@@ -814,6 +874,21 @@ VALUE rb_Megamodule_produceArray_Obj(int argc, VALUE *argv, id<IMegamodule>objIt
     }
 
     
+    // check callback
+    if (argc >= (0+1)) {
+        VALUE callback = argv[0];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        VALUE callback_param = argv[0+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
+    
 
     
     
@@ -974,6 +1049,21 @@ VALUE rb_Megamodule_getObjectsCount_Obj(int argc, VALUE *argv, id<IMegamoduleSin
     }
 
     
+    // check callback
+    if (argc >= (0+1)) {
+        VALUE callback = argv[0];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        VALUE callback_param = argv[0+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
+    
 
     
     
@@ -1069,7 +1159,7 @@ static rb_Megamodule_getObjectByIndex_caller* our_Megamodule_getObjectByIndex_ca
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem getObjectByIndex:(int)[((NSNumber*)params[0]) intValue] methodResult:methodResult ];
+    [objItem getObjectByIndex:(int)[((NSNumber*)[params objectAtIndex:0]) intValue] methodResult:methodResult ];
 }
 
 +(void) getObjectByIndex:(rb_Megamodule_getObjectByIndex_caller_params*)caller_params {
@@ -1124,6 +1214,21 @@ VALUE rb_Megamodule_getObjectByIndex_Obj(int argc, VALUE *argv, id<IMegamoduleSi
         [params_array addObject:params[i]];
     }
 
+    
+    // check callback
+    if (argc >= (1+1)) {
+        VALUE callback = argv[1];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (1+2)) {
+        VALUE callback_param = argv[1+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
     
 
     
@@ -1220,7 +1325,7 @@ static rb_Megamodule_showAlertFromUIThread_caller* our_Megamodule_showAlertFromU
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem showAlertFromUIThread:(NSString*)params[0] ];
+    [objItem showAlertFromUIThread:(NSString*)[params objectAtIndex:0] ];
 }
 
 +(void) showAlertFromUIThread:(rb_Megamodule_showAlertFromUIThread_caller_params*)caller_params {
@@ -1396,7 +1501,7 @@ static rb_Megamodule_setPeriodicallyCallback_caller* our_Megamodule_setPeriodica
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem setPeriodicallyCallback:(int)[((NSNumber*)params[0]) intValue] methodResult:methodResult ];
+    [objItem setPeriodicallyCallback:(int)[((NSNumber*)[params objectAtIndex:0]) intValue] methodResult:methodResult ];
 }
 
 +(void) setPeriodicallyCallback:(rb_Megamodule_setPeriodicallyCallback_caller_params*)caller_params {
@@ -1802,6 +1907,21 @@ VALUE rb_Megamodule_stopPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMega
     }
 
     
+    // check callback
+    if (argc >= (0+1)) {
+        VALUE callback = argv[0];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        VALUE callback_param = argv[0+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
+    
 
     
     
@@ -1906,7 +2026,7 @@ static rb_Megamodule_getProperty_caller* our_Megamodule_getProperty_caller = nil
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem getProperty:(NSString*)params[0] methodResult:methodResult ];
+    [objItem getProperty:(NSString*)[params objectAtIndex:0] methodResult:methodResult ];
 }
 
 +(void) getProperty:(rb_Megamodule_getProperty_caller_params*)caller_params {
@@ -1979,7 +2099,7 @@ VALUE rb_Megamodule_getProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
     
 
     
-    [methodResult enableObjectCreationModeWithRubyClassPath:@""];
+    
 
 
     if (callbackURL != nil) {
@@ -2081,7 +2201,7 @@ static rb_Megamodule_getProperties_caller* our_Megamodule_getProperties_caller =
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem getProperties:(NSArray*)params[0] methodResult:methodResult ];
+    [objItem getProperties:(NSArray*)[params objectAtIndex:0] methodResult:methodResult ];
 }
 
 +(void) getProperties:(rb_Megamodule_getProperties_caller_params*)caller_params {
@@ -2154,7 +2274,7 @@ VALUE rb_Megamodule_getProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
     
 
     
-    [methodResult enableObjectCreationModeWithRubyClassPath:@""];
+    
 
 
     if (callbackURL != nil) {
@@ -2329,7 +2449,7 @@ VALUE rb_Megamodule_getAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule>o
     
 
     
-    [methodResult enableObjectCreationModeWithRubyClassPath:@""];
+    
 
 
     if (callbackURL != nil) {
@@ -2431,7 +2551,7 @@ static rb_Megamodule_setProperty_caller* our_Megamodule_setProperty_caller = nil
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem setProperty:(NSString*)params[0] propertyValue:(NSString*)params[1] ];
+    [objItem setProperty:(NSString*)[params objectAtIndex:0] propertyValue:(NSString*)[params objectAtIndex:1] ];
 }
 
 +(void) setProperty:(rb_Megamodule_setProperty_caller_params*)caller_params {
@@ -2486,6 +2606,21 @@ VALUE rb_Megamodule_setProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
         [params_array addObject:params[i]];
     }
 
+    
+    // check callback
+    if (argc >= (2+1)) {
+        VALUE callback = argv[2];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (2+2)) {
+        VALUE callback_param = argv[2+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
     
 
     
@@ -2591,7 +2726,7 @@ static rb_Megamodule_setProperties_caller* our_Megamodule_setProperties_caller =
     CMethodResult* methodResult = caller_params.methodResult;
 
     
-    [objItem setProperties:(NSDictionary*)params[0] ];
+    [objItem setProperties:(NSDictionary*)[params objectAtIndex:0] ];
 }
 
 +(void) setProperties:(rb_Megamodule_setProperties_caller_params*)caller_params {
@@ -2646,6 +2781,21 @@ VALUE rb_Megamodule_setProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
         [params_array addObject:params[i]];
     }
 
+    
+    // check callback
+    if (argc >= (1+1)) {
+        VALUE callback = argv[1];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (1+2)) {
+        VALUE callback_param = argv[1+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
     
 
     
@@ -2806,6 +2956,21 @@ VALUE rb_Megamodule_clearAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule
         [params_array addObject:params[i]];
     }
 
+    
+    // check callback
+    if (argc >= (0+1)) {
+        VALUE callback = argv[0];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        VALUE callback_param = argv[0+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
     
 
     
