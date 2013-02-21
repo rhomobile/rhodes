@@ -102,6 +102,7 @@ void Init_RubyAPI_Megamodule(void)
 
     rb_define_singleton_method(rb_mMegamodule, "default", rb_Megamodule_s_default, 0);
     rb_define_singleton_method(rb_mMegamodule, "setDefault", rb_Megamodule_s_setDefault, 1);
+    rb_define_singleton_method(rb_mMegamodule, "default=", rb_Megamodule_s_setDefault, 1);
 
 
 
@@ -110,21 +111,55 @@ void Init_RubyAPI_Megamodule(void)
     rb_const_set(rb_mMegamodule, rb_intern("CONST_STRING_1"), rb_str_new2("const1") );
     rb_const_set(rb_mMegamodule, rb_intern("CONST_STRING_2"), rb_str_new2("const2") );
 
+    rb_define_alias(rb_mMegamodule, "set_period", "setPeriodicallyCallback");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "set_period", "setPeriodicallyCallback");
+    rb_define_alias(rb_mMegamodule, "string_property", "StringProperty");
+    
+    rb_define_alias(rb_singleton_class(rb_mMegamodule), "string_property", "StringProperty");
+    rb_define_alias(rb_mMegamodule, "integer_property", "IntegerProperty");
+    
+    rb_define_alias(rb_singleton_class(rb_mMegamodule), "integer_property", "IntegerProperty");
+    rb_define_alias(rb_mMegamodule, "integer_property=", "IntegerProperty=");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "integer_property=", "IntegerProperty=");
+    rb_define_alias(rb_mMegamodule, "types_test", "typesTest");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "types_test", "typesTest");
+    rb_define_alias(rb_mMegamodule, "produce_array", "produceArray");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "produce_array", "produceArray");
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "get_objects_count", "getObjectsCount");
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "get_object_by_index", "getObjectByIndex");
+    rb_define_alias(rb_mMegamodule, "show_alert_from_uithread", "showAlertFromUIThread");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "show_alert_from_uithread", "showAlertFromUIThread");
+    rb_define_alias(rb_mMegamodule, "set_periodically_callback", "setPeriodicallyCallback");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "set_periodically_callback", "setPeriodicallyCallback");
+    rb_define_alias(rb_mMegamodule, "is_periodically_callback_setted", "isPeriodicallyCallbackSetted");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "is_periodically_callback_setted", "isPeriodicallyCallbackSetted");
+    rb_define_alias(rb_mMegamodule, "stop_periodically_callback", "stopPeriodicallyCallback");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "stop_periodically_callback", "stopPeriodicallyCallback");
+    rb_define_alias(rb_mMegamodule, "get_property", "getProperty");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "get_property", "getProperty");
+    rb_define_alias(rb_mMegamodule, "get_properties", "getProperties");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "get_properties", "getProperties");
+    rb_define_alias(rb_mMegamodule, "get_all_properties", "getAllProperties");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "get_all_properties", "getAllProperties");
+    rb_define_alias(rb_mMegamodule, "set_property", "setProperty");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "set_property", "setProperty");
+    rb_define_alias(rb_mMegamodule, "set_properties", "setProperties");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "set_properties", "setProperties");
+    rb_define_alias(rb_mMegamodule, "clear_all_properties", "clearAllProperties");
+    
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "clear_all_properties", "clearAllProperties");
 
 //TODO: support module aliases

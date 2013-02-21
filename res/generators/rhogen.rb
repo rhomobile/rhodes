@@ -666,6 +666,8 @@ module Rhogen
         @is_ruby_only = false
         @deprecated = false
         @reverseLogic = false
+        @is_method_static = false
+        @is_method_instance = false
       end
 
       attr_accessor :existing_name
@@ -673,6 +675,8 @@ module Rhogen
       attr_accessor :is_ruby_only
       attr_accessor :deprecated
       attr_accessor :reverseLogic
+      attr_accessor :is_method_static
+      attr_accessor :is_method_instance
 
     end
 
@@ -1029,6 +1033,16 @@ module Rhogen
          end
       end
       return res
+    end
+
+
+    def foundMethodByName(module_item, method_name)
+       module_item.methods.each do |method_item|
+          if method_item.name == method_name
+             return method_item
+          end
+       end
+       return nil
     end
 
     def apply_templates_to_module(xml_module_item, template_name)
@@ -1427,7 +1441,7 @@ module Rhogen
                property_aliases_hash[property_alias.new_name] = property_alias
             end
             method_aliases_hash = {}
-            module_item.property_aliases.each do |method_alias|
+            module_item.method_aliases.each do |method_alias|
                method_aliases_hash[method_alias.new_name] = method_alias
             end
 
@@ -1442,6 +1456,24 @@ module Rhogen
                   module_item.method_aliases << method_alias
                end
             end
+
+            module_item.method_aliases.each do |method_alias|
+               method_item = foundMethodByName(module_item, method_alias.existing_name)
+               if method_item != nil
+                  if method_item.access == ModuleMethod::ACCESS_STATIC
+                     method_alias.is_method_static = true
+                  end
+                  if method_item.access == ModuleMethod::ACCESS_INSTANCE
+                     method_alias.is_method_instance = true
+                     if module_item.is_template_default_instance
+                        method_alias.is_method_static = true
+                     end
+                  end
+               end
+            end
+
+
+
 
             # properties
             module_item.properties.each do |module_property|

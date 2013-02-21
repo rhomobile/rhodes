@@ -10,9 +10,8 @@
 					<DESC>The one property that I want to know about</DESC>
                 </PARAM>
             </PARAMS>
-            <RETURN>
+            <RETURN type="STRING">
                 <DESC>The one property that I want to know about</DESC>
-                <TYPE>STRING</TYPE>
             </RETURN>
         </METHOD>
 
@@ -23,17 +22,15 @@
                     <DESC>List of properties I want to know about</DESC>
                 </PARAM>
             </PARAMS>
-            <RETURN>
+            <RETURN type="HASH" itemType="STRING">
                 <DESC>Map of properties I want to know about</DESC>
-                <TYPE>HASH</TYPE>
             </RETURN>
         </METHOD>
 
         <METHOD name="getAllProperties" hasCallback="optional">
             <DESC>This is documentation</DESC>
-            <RETURN>
+            <RETURN type="HASH" itemType="STRING">
                 <DESC>Map of properties I want to know about</DESC>
-                <TYPE>HASH</TYPE>
             </RETURN>
         </METHOD>
 
