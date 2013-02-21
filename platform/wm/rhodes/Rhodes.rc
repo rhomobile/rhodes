@@ -93,14 +93,29 @@ END
 IDR_MAIN_MENUBAR RCDATA 
 BEGIN
     0x0069, 0x0002, 0xfffe, 0x9c41, 0x0004, 0x0010, 0x2711, 0x0000, 0xffff, 
-    0xfffe, 0x9c42, 0x0004, 0x0018, 0x2712, 0x0000, 0x0000
+   0xfffe, 0x9c42, 0x0004, 0x0018, 0x2712, 0x0000, 0x0000
 END
+// 0x9c41 = 40001
+// 0x2711 = 10001
+// 0x9c42 = 40002
+// 0x2712 = 10002
+
+IDR_MAIN_MENUBAR_THD RCDATA 
+BEGIN
+    0x0069, 0x0002, 0xfffe, 0x9859, 0x0004, 0x0010, 0x9471, 0x0000, 0xffff, 
+    0xfffe, 0x985a, 0x0004, 0x0010, 0x9472, 0x0000, 0xffff
+END
+// 39001 = 0x9859 IDM_SK1_EXIT_THD 
+// 38001 = 0x9471 IDS_EXIT_THD
+//  IDM_SK2_MENU_THD  39002 = 0x985a
+//  IDS_MENU_THD      38002 = 0x9472
 
 IDR_GETURL_MENUBAR RCDATA 
 BEGIN
     0x0000, 0x0002, 0xfffe, 0x0001, 0x0004, 0x0010, 0x2713, 0x0000, 0xffff, 
     0xfffe, 0x0002, 0x0004, 0x0010, 0x2714, 0x0000, 0xffff
 END
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -122,8 +137,8 @@ END
 
 IDR_LOGMENUBAR MENU 
 BEGIN
-    MENUITEM "Back",                        IDM_BACK
-    POPUP "Menu"
+    MENUITEM "NoelBack",                        IDM_BACK
+    POPUP "NoelMenu"
     BEGIN
         MENUITEM "Options",                     IDM_OPTIONS
         MENUITEM "Refresh",                     IDM_REFRESH
@@ -413,8 +428,10 @@ IDI_ICON                ICON                    "resources\\icon.ico"
 
 STRINGTABLE 
 BEGIN
-    IDS_EXIT                "Back"
-    IDS_MENU                "Menu"
+    IDS_EXIT                "nMainBack"
+    IDS_MENU                "nMainMenu"
+    IDS_EXIT_THD            "thdLeft"
+    IDS_MENU_THD            "thdRight"    
     IDS_OK                  "OK"
     IDS_CANCEL              "Cancel"
     IDS_WND_CLASS           "Rhodes.MainWindow"
