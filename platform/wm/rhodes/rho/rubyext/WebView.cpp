@@ -119,6 +119,8 @@ int rho_webview_active_tab()
 void rho_webview_set_menu_items(VALUE valMenu) 
 {
     rho_rhodesapp_setViewMenu(valMenu); 
+    // Noel added to force update of submenu items.
+    ::PostMessage( getMainWnd(), WM_COMMAND, ID_REFRESH_SUBMENU_ITEMS,(LPARAM)valMenu);
 }
 
 

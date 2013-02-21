@@ -2041,6 +2041,7 @@ void rho_rhodesapp_callUiDestroyedCallback()
 
 void rho_rhodesapp_setViewMenu(unsigned long valMenu)
 {
+    LOG(INFO) + "Noel: RhodesApp is now settingViewMenu";    
     RHODESAPP().getAppMenu().setAppMenu(valMenu);
 }
 

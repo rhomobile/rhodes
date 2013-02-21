@@ -203,7 +203,11 @@ public:
         COMMAND_ID_HANDLER(IDM_EXIT, OnExitCommand)
         COMMAND_ID_HANDLER(IDM_NAVIGATE_BACK, OnNavigateBackCommand)
         COMMAND_ID_HANDLER(IDM_NAVIGATE_FORWARD, OnNavigateForwardCommand)
-        COMMAND_ID_HANDLER(IDM_SK1_EXIT, OnBackCommand)
+        //COMMAND_ID_HANDLER(IDM_SK1_EXIT, OnBackCommand)
+        COMMAND_ID_HANDLER(IDM_SK1_EXIT, patchOnLeftMenuCommand)   // Noel added     
+        COMMAND_ID_HANDLER(IDM_SK1_EXIT_THD, patchOnLeftMenuCommand)   // Noel added 
+        COMMAND_ID_HANDLER(IDM_SK2_MENU_THD, patchOnRightMenuCommand)   // Noel added 
+        COMMAND_ID_HANDLER(ID_REFRESH_SUBMENU_ITEMS, patchRefreshSubmenu) // Noel added
         COMMAND_ID_HANDLER(IDM_REFRESH, OnRefreshCommand)
 		COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
         COMMAND_ID_HANDLER(IDM_EXECUTEJS, OnExecuteJSCommand)
@@ -211,7 +215,7 @@ public:
         COMMAND_ID_HANDLER(IDM_ZOOMPAGE, OnZoomPage)
         COMMAND_ID_HANDLER(IDM_ZOOMTEXT, OnZoomText)
         COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
-		COMMAND_ID_HANDLER(ID_FULLSCREEN, OnFullscreenCommand)
+        COMMAND_ID_HANDLER(ID_FULLSCREEN, OnFullscreenCommand)        
         COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_MENU_ITEM_FIRST, ID_CUSTOM_MENU_ITEM_LAST, OnCustomMenuItemCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_TOOLBAR_ITEM_FIRST, ID_CUSTOM_TOOLBAR_ITEM_LAST, OnCustomToolbarItemCommand)
@@ -273,6 +277,9 @@ private:
     LRESULT OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT patchOnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);   // Noel 
+    LRESULT patchOnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);   // Noel
+    LRESULT patchRefreshSubmenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);   // Noel    
     LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -353,7 +360,8 @@ private:
     // utility functions
     BOOL SetMenuItemEnabled      (UINT uMenuItemID, BOOL bEnable);
 	BOOL SetToolbarButtonEnabled (UINT uTbbID, BOOL bEnable);
-	
+    BOOL SetToolbarButtonText    (UINT buttonId, LPTSTR lpButtonText);
+
 	void ShowLoadingPage();
 
 	void createCustomMenu(void);
@@ -377,6 +385,7 @@ private:
 
 private:
     bool mIsBrowserViewHided;
+    bool doesRightSoftKeyShowMenu;
 
     rho::IBrowserEngine* m_pBrowserEng;
 

@@ -40,6 +40,7 @@ IMPLEMENT_LOGCLASS(CAppMenu, "AppMenu");
 
 void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink )
 {
+    LOG(INFO)  + "Noel: adding app menu item " + strLabel;           
     if ( strLabel.length() == 0 )
         return;
 
@@ -68,6 +69,8 @@ void CAppMenu::setAppMenu(unsigned long valMenu)
         RHODESAPP().setAppBackUrl("");
         rho_ruby_enum_strhash(valMenu, menu_iter, this);
     }
+    //Noel Not sure why menu doesn't update on its own, but seem to need to force it here
+    //CMainWindow::createCustomMenu();
 }
 
 void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems)
@@ -103,6 +106,10 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 		m_eType = emtBack;
 	else if (strLink == "fullscreen")
 		m_eType = emtFullscreen;
+    else if (strLink == "leftSoftKey")
+        m_eType = emtLeftSoftKey;
+    else if (strLink == "rightSoftKey")
+        m_eType = emtRightSoftKey;
 	else
 		m_eType = emtUrl;
 }

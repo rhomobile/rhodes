@@ -36,7 +36,7 @@ LRESULT CMenuBar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 //	m_btnLeft.Create(m_hWnd,CWindow::rcDefault,TEXT("Exit"),WS_CHILD|WS_VISIBLE|BS_OWNERDRAW,0,10);
 //	m_btnRight.Create(m_hWnd,CWindow::rcDefault,TEXT("Menu"),WS_CHILD|WS_VISIBLE|BS_OWNERDRAW,0,11);
 	m_btnLeft.Create(m_hWnd,CWindow::rcDefault,TEXT("Back"),WS_CHILD|WS_VISIBLE,0,IDB_BACK);
-	m_btnRight.Create(m_hWnd,CWindow::rcDefault,TEXT("Menu"),WS_CHILD|WS_VISIBLE,0,IDB_MENU);
+	m_btnRight.Create(m_hWnd,CWindow::rcDefault,TEXT("HiNoel"),WS_CHILD|WS_VISIBLE,0,IDB_MENU);
 	return 0;
 }
 
@@ -71,12 +71,12 @@ LRESULT CMenuBar::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 {
     RHODESAPP().navigateBack();
     return 0;
+
 }
 
 LRESULT CMenuBar::OnMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	::PostMessage(this->GetParent(),WM_COMMAND,IDM_POPUP_MENU,0);
     return 0;
-}
-
+`
 #endif //!defined(_WIN32_WCE)

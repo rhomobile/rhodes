@@ -61,6 +61,14 @@
 #define IDS_CONNECT                     10006
 #define IDM_SK1_EXIT                    40001
 #define IDM_SK2_MENU                    40002
+//Noel add special toolbar for THD
+#define IDM_SK1_EXIT_THD                39001
+#define IDM_SK2_MENU_THD                39002
+#define IDS_EXIT_THD                    38001
+#define IDS_MENU_THD                    38002
+#define IDR_MAIN_MENUBAR_THD            39106
+#define ID_REFRESH_SUBMENU_ITEMS        39990
+
 #define IDM_BACK                        40003
 #define IDM_NAVIGATE_BACK               40005
 #define IDM_NAVIGATE_FORWARD            40006
