@@ -108,7 +108,7 @@ JNIEnv* CJavascriptVMBase::jniInit(JNIEnv* env)
         s_clsexecuteScriptTask = loadClass(env, EXECUTESCRIPT_TASK_CLASS);
         if (!s_clsexecuteScriptTask) return 0;
         s_midexecuteScriptTask = env->GetMethodID(s_clsexecuteScriptTask, "<init>",
-                        "(Lcom/rho/javascriptvm/IJavascriptVM;Ljava/lang/String;Lcom/motorolasolutions/rhoelements/IMethodResult;)V");
+                        "(Lcom/rho/javascriptvm/IJavascriptVMSingleton;Ljava/lang/String;Lcom/rhomobile/rhodes/api/IMethodResult;)V");
         if(!s_midexecuteScriptTask)
         {
             LOG(FATAL) + "Failed to get constructor for java class " + EXECUTESCRIPT_TASK_CLASS;
