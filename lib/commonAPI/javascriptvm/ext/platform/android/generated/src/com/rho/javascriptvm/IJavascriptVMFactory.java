@@ -11,6 +11,6 @@ public interface IJavascriptVMFactory
     IJavascriptVMSingleton getApiSingleton();
 
     @Override
-    JavascriptVM getApiObject(String id);
+    IJavascriptVM getApiObject(String id);
 
 }
