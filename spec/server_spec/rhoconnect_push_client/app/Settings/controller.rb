@@ -84,8 +84,8 @@ class SettingsController < Rho::RhoController
     port = SPEC_LOCAL_SERVER_PORT
     exit = nil
     
-    if @params['command']
-      case @params['command']
+    if @params['alert']
+      case @params['alert']
       when 'exit'
         exit = true
         puts 'Exit command received!!!!!'
