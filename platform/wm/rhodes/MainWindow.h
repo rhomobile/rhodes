@@ -63,7 +63,7 @@
 #define PB_SCREEN_ORIENTATION_CHANGED	WM_USER + 11
 #define PB_NEWGPSDATA					WM_USER + 12
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
 
 extern UINT WM_BROWSER_ONDOCUMENTCOMPLETE;
 extern UINT WM_BROWSER_ONNAVIGATECOMPLETE;
@@ -142,7 +142,7 @@ class CMainWindow :
 #else
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >
 #endif
-#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#if !defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) && !defined(OS_PLATFORM_MOTCE)
     ,public IDispEventImpl<ID_BROWSER, CMainWindow>
 #endif
 {
@@ -240,7 +240,7 @@ public:
 		MESSAGE_HANDLER(WM_LICENSE_SCREEN, OnLicenseScreen);
         MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
         MESSAGE_HANDLER(WM_HOTKEY, OnHotKey);
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
         MESSAGE_HANDLER(WM_BROWSER_ONDOCUMENTCOMPLETE, OnBrowserDocumentComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONNAVIGATECOMPLETE, OnNavigateComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONTITLECHANGE, OnTitleChange);
@@ -254,7 +254,6 @@ public:
 #endif
 
         MESSAGE_RANGE_HANDLER(PB_NAVIGATETAB, PB_NEWGPSDATA, OnWebKitMessages)
-
     END_MSG_MAP()
 	
 private:
@@ -314,7 +313,7 @@ private:
 
     LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
     LRESULT OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnNavigateComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -329,7 +328,7 @@ private:
 
 public:
 
-#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#if !defined APP_BUILD_CAPABILITY_WEBKIT_BROWSER && !defined(OS_PLATFORM_MOTCE)
     BEGIN_SINK_MAP(CMainWindow)
         SINK_ENTRY(ID_BROWSER, DISPID_BEFORENAVIGATE2, &CMainWindow::OnBeforeNavigate2)
         SINK_ENTRY(ID_BROWSER, DISPID_TITLECHANGE, &CMainWindow::OnBrowserTitleChange)
