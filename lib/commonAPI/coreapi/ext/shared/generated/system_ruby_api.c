@@ -284,7 +284,6 @@ void Init_RubyAPI_System(void)
     rb_define_alias(rb_singleton_class(rb_mSystem), "set_network_status_notify", "setNetworkStatusNotify");
     rb_define_alias(rb_singleton_class(rb_mSystem), "clear_network_status_notify", "clearNetworkStatusNotify");
     rb_define_alias(rb_singleton_class(rb_mSystem), "run_application", "runApplication");
-    rb_define_alias(rb_singleton_class(rb_mSystem), "get_property", "getProperty");
     rb_define_alias(rb_singleton_class(rb_mSystem), "get_properties", "getProperties");
     rb_define_alias(rb_singleton_class(rb_mSystem), "get_all_properties", "getAllProperties");
     rb_define_alias(rb_singleton_class(rb_mSystem), "set_property", "setProperty");

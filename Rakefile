@@ -267,6 +267,7 @@ namespace "config" do
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
     $config = Jake.config(File.open(buildyml))
     $config["platform"] = $current_platform if $current_platform
+    $config["env"]["app"] = "spec/framework_spec" if $rhosimulator_build
     
     if RUBY_PLATFORM =~ /(win|w)32$/
       $all_files_mask = "*.*"
@@ -318,8 +319,8 @@ namespace "config" do
     end
     extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
     extpaths << File.join($app_path, "extensions")
-    extpaths << File.join($startdir, "lib","extensions")
     extpaths << File.join($startdir, "lib","commonAPI")
+    extpaths << File.join($startdir, "lib","extensions")
     $app_config["extpaths"] = extpaths
     
     if $app_config["build"] and $app_config["build"] == "release"
@@ -334,7 +335,8 @@ namespace "config" do
     extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
        $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
     extensions += get_extensions
-    extensions << "coreAPI" if $current_platform == "wm" || $current_platform == "wp8"
+    extensions << "coreAPI" if $current_platform == "wm" || $current_platform == "wp8" || $current_platform == "win32"
+    extensions << "rhoconnect-client" if $rhosimulator_build
     $app_config["extensions"] = extensions.uniq
     
     capabilities = []
@@ -484,44 +486,44 @@ namespace "config" do
         $app_config['extensions'] << 'rhoelements-license'
 
         #check for RhoElements gem and license
-	if  !$app_config['re_buildstub']	
-        begin
-            require "rhoelements"
-            
-            $rhoelements_features = ""
-            
-            # check license
-            is_ET1 = (($current_platform == "android") and ($app_config["capabilities"].index("motorola")))
-            is_win_platform = (($current_platform == "wm") or ($current_platform == "win32") or $is_rho_simulator )
+	    if  !$app_config['re_buildstub']	
+            begin
+                require "rhoelements"
+                
+                $rhoelements_features = ""
+                
+                # check license
+                is_ET1 = (($current_platform == "android") and ($app_config["capabilities"].index("motorola")))
+                is_win_platform = (($current_platform == "wm") or ($current_platform == "win32") or $is_rho_simulator )
 
-            if (!is_ET1) and (!is_win_platform)
-                 # check the license parameter
-                 if (!$application_build_configs["motorola_license"]) or (!$application_build_configs["motorola_license_company"])
-                    $invalid_license = true
-                 end
+                if (!is_ET1) and (!is_win_platform)
+                     # check the license parameter
+                     if (!$application_build_configs["motorola_license"]) or (!$application_build_configs["motorola_license_company"])
+                        $invalid_license = true
+                     end
+                end
+                
+            rescue Exception => e
+                if $app_config['extensions'].index('barcode')
+                    $app_config['extensions'].delete('barcode')
+                end
+                if $app_config['extensions'].index('nfc')
+                    $app_config['extensions'].delete('nfc')
+                end
+                if $app_config['extensions'].index('rawsensors')
+                    $app_config['extensions'].delete('rawsensors')
+                end
+                if $app_config['extensions'].index('audiocapture')
+                    $app_config['extensions'].delete('audiocapture')
+                end
+                if $app_config['extensions'].index('rho-javascript')
+                    $app_config['extensions'].delete('rho-javascript')
+                end
+                
+                if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
+                    $application_build_configs.delete('encrypt_database')
+                end
             end
-            
-        rescue Exception => e
-            if $app_config['extensions'].index('barcode')
-                $app_config['extensions'].delete('barcode')
-            end
-            if $app_config['extensions'].index('nfc')
-                $app_config['extensions'].delete('nfc')
-            end
-            if $app_config['extensions'].index('rawsensors')
-                $app_config['extensions'].delete('rawsensors')
-            end
-            if $app_config['extensions'].index('audiocapture')
-                $app_config['extensions'].delete('audiocapture')
-            end
-            if $app_config['extensions'].index('rho-javascript')
-                $app_config['extensions'].delete('rho-javascript')
-            end
-            
-            if $application_build_configs['encrypt_database'] && $application_build_configs['encrypt_database'].to_s == '1'
-                $application_build_configs.delete('encrypt_database')
-            end
-        end
         end
     end
         
@@ -672,6 +674,27 @@ def add_extension(path,dest)
   chdir start
 end
 
+def find_ext_ingems(extname)
+  extpath = nil
+  begin
+    $rhodes_extensions = nil
+	$rhodes_join_ext_name = false
+	
+    require extname
+    if $rhodes_extensions
+        extpath = $rhodes_extensions[0]
+        $app_config["extpaths"] << extpath
+		if $rhodes_join_ext_name
+			extpath = File.join(extpath,extname)
+		end
+    end    
+  rescue Exception => e      
+    puts "exception: #{e}"  
+  end
+  
+  extpath
+end
+
 def init_extensions(startdir, dest)
   extentries = []
   nativelib = []
@@ -683,34 +706,21 @@ def init_extensions(startdir, dest)
     puts 'ext - ' + extname
     
     extpath = nil
-    extpaths.each do |p|
-      next if p.index("rhodes") && extname.downcase() == "barcode" && $current_platform == "wm"
-      
-      ep = File.join(p, extname)
-      if File.exists? ep
-        extpath = ep
-        break
-      end
-    end    
-    
-    if extpath.nil?
-      begin
-        $rhodes_extensions = nil
-		$rhodes_join_ext_name = false
-		
-        require extname
-        if $rhodes_extensions
-            extpath = $rhodes_extensions[0]
-            $app_config["extpaths"] << extpath
-			if $rhodes_join_ext_name
-				extpath = File.join(extpath,extname)
-			end
+    extpath = find_ext_ingems(extname) if $app_config["app_type"] == 'rhoelements'
+
+    if extpath.nil?    
+        extpaths.each do |p|
+          #next if p.index("rhodes") && extname.downcase() == "barcode" && $current_platform == "wm"
+          
+          ep = File.join(p, extname)
+          if File.exists? ep
+            extpath = ep
+            break
+          end
         end    
-      rescue Exception => e      
-        puts "exception: #{e}"  
-      end
     end
-      
+        
+    extpath = find_ext_ingems(extname) if extpath.nil? && $app_config["app_type"] != 'rhoelements'
       
     if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
 		raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"

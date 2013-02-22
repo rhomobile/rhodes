@@ -1685,7 +1685,7 @@ module Rhogen
 
     template :public_api_module do |template|
       template.source = 'js/rhoapi-Rho.Montana.js'
-      module_name = $cur_module.parents
+      module_name = $cur_module.parents.clone()
       template.destination = "../../../public/api/generated/rhoapi-#{module_name.push($cur_module.name).join(".")}.js"
     end
 
