@@ -27,6 +27,7 @@
 #include "stdafx.h"
 #include "MainWindow.h"
 #include "IEBrowserEngine.h"
+#include "CEBrowserEngine.h"
 //#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
 #include "LogMemory.h"
 //#endif
@@ -209,8 +210,10 @@ bool g_restartOnExit = false;
 #if !defined(OS_WINDOWS_DESKTOP)
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 {
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
     return rho_wmimpl_get_webkitBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
+#elif defined(OS_PLATFORM_MOTCE)
+    return new CEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 #else
     return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
