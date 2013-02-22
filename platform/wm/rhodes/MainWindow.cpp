@@ -331,9 +331,9 @@ void CMainWindow::initBrowserWindow()
     //m_pBrowserEng->ResizeOnTab(0, rect);
 
     HRESULT hr = S_OK;
-#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#if !defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
     // set up connection point
-    hr = AtlAdviseSinkMap(this, true);
+//    hr = AtlAdviseSinkMap(this, true);
 #endif
 
 }
@@ -420,7 +420,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	LOGCONF().setLogView(NULL);
 #endif
 
-#ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#if !defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) && !defined(OS_PLATFORM_MOTCE)
     // Tear down connection points while controls are still alive.
     RHO_ASSERT(SUCCEEDED(AtlAdviseSinkMap(this, false)));
 #endif
@@ -527,7 +527,7 @@ LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     return m_pBrowserEng->OnWebKitMessages(uMsg, wParam, lParam, bHandled);
 }
 
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
 LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ProcessDocumentComplete( (LPCTSTR)lParam );
