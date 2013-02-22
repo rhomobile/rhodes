@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="<%= name.camel_case() %>" parent="Rho">
+    <MODULE name="<%= namecamelcase %>" parent="Rho">
         <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
         <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
     
@@ -18,13 +18,13 @@
             <PROPERTY name="illuminationMode" type="STRING" generateAccessors="false">
                 <DESC>Whether or not the Code128 symbology is used.</DESC>
                 <VALUES>
-                    <VALUE const_name="MODE_AUTO" value ="auto">
+                    <VALUE constName="MODE_AUTO" value ="auto">
                         <DESC>(not available on Enterprise Tablet) Auto-exposure algorithms will decide whether illumination is required or not. </DESC>
                     </VALUE>
-                    <VALUE const_name="MODE_ALWAYSE_ON" value ="alwaysOn">
+                    <VALUE constName="MODE_ALWAYSE_ON" value ="alwaysOn">
                         <DESC>External illumination is always on</DESC>
                     </VALUE>
-                    <VALUE const_name="MODE_ALWAYSE_OFF" value ="alwaysOff">
+                    <VALUE constName="MODE_ALWAYSE_OFF" value ="alwaysOff">
                         <DESC>External illumination is always off</DESC>
                     </VALUE>
 
@@ -58,7 +58,7 @@
                 <DESC>This is documentation</DESC>
             </METHOD>
     
-            <METHOD name="take" hasCallback="mandatory">
+            <METHOD name="take">
                 <DESC>Enable and start automatically</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH">

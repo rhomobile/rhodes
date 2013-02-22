@@ -1,9 +1,8 @@
 require 'rho/rhocontroller'
 require 'helpers/application_helper'
 require 'helpers/browser_helper'
-require '<%= name.downcase %>'
 
-class <%= name.camel_case %>TestController < Rho::RhoController
+class <%= namecamelcase %>TestController < Rho::RhoController
   include BrowserHelper
   include ApplicationHelper
   
@@ -12,8 +11,8 @@ class <%= name.camel_case %>TestController < Rho::RhoController
   end
 
   def run_test
-    res = Rho::<%= name.camel_case %>.enumerate 
-    Alert.show_popup "Rho::<%= name.camel_case %>.enumerate return : #{res}"
+    res = Rho::<%= namecamelcase %>.take 
+    Alert.show_popup "Rho::<%= namecamelcase %>.take return : #{res}"
     render :action => :index, :back => '/app'
   end
   

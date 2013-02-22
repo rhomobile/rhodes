@@ -1,1 +1,0 @@
-ext/platform/android/src/com/<%= name.downcase %>/<%= name.camel_case %>.java
