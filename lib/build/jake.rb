@@ -315,6 +315,7 @@ class Jake
 
     cmdstr = argv.map { |x| x =~ / |\|/ ? '"' + x + '"' : x }.join(' ')
 
+    $stdout.flush
     unless options[:hide_output]
       puts "PWD: " + Dir.pwd()
       puts "CMD: " + cmdstr
@@ -334,7 +335,8 @@ class Jake
       system(cmdstr)
       retval = ""
     else
-      argv = cmdstr if RUBY_VERSION =~ /^1\.8/
+      # this check was commented by crash on 1.9.2 Ruby on Mac OS
+      argv = cmdstr #if RUBY_VERSION =~ /^1\.8/
       if options[:nowait]
         retval = IO.popen(argv)
       else

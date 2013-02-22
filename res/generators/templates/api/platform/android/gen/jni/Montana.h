@@ -100,8 +100,7 @@ end %>
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= <%= method.params.size %>);
-        RHO_ASSERT(argsAdapter.size() <= (<%= method.params.size %> + 2));
+        RHO_ASSERT(argsAdapter.size() <= <%= method.params.size + 2 %>);
 
         jhobject jhObject = <%
 if method.access == ModuleMethod::ACCESS_STATIC %>
@@ -113,8 +112,9 @@ end
 method.params.each_index do |index| 
 param = method.params[index] %>
 
-        jholder< <%=api_generator_jni_makeJNIType(param.type) %> > jh<%= param.name %>
-            = rho_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(env, argsAdapter[<%= index %>]);<%
+        jholder< <%=api_generator_jni_makeJNIType(param.type) %> > jh<%= param.name %> = (argsAdapter.size() <= <%= index %>) ?
+            static_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(0) :
+                rho_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(env, argsAdapter[<%= index %>]);<%
 end %>
         jhobject jhTask = env->NewObject(s_cls<%= method.native_name%>Task, s_mid<%= method.native_name%>Task,
                     jhObject.get(), <%

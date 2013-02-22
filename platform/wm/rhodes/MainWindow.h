@@ -168,6 +168,7 @@ public:
 #if defined(OS_WINCE)
 	bool m_bFullScreen;
    	void RhoSetFullScreen(bool bFull, bool bDestroy = false);
+    bool getFullScreen(){ return m_bFullScreen; }
 #endif
 
 	void openNativeView(	NativeViewFactory* nativeViewFactory, 

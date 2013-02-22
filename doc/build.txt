@@ -1167,14 +1167,14 @@ If your application needs HTTPS, then you need to build the Qt libraries for Vis
 
 Now when you build your application the usual way, the HTTPS protocol support will be enabled automatically.
 
-## Build for Windows Phone 7
+## Build for Windows Phone 8
 
 ### Prerequisites
 
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
-* Windows 7 OS
-* Visual Studio 2010 installed or VS Express for Windows Phone and VS Express for C#
-    * [Windows Phone SDK 7.1](http://www.microsoft.com/download/en/details.aspx?id=27570)
+* Windows 8 OS
+* Visual Studio 2012 installed or VS Express 2012 for Windows Phone
+    * [Windows Phone SDK 8.0](http://dev.windowsphone.com/en-us/downloadsdk)
     
 * Add path to `msbuild` to `rhobuild.yml` in rhodes folder. For example:
 
@@ -1190,53 +1190,19 @@ Now when you build your application the usual way, the HTTPS protocol support wi
           productid: 632621d0-5ecb-012e-2c97-482a1411c191
 NOTE: When you use rhodes command to generate application, productid is generated automatically
 
-* Windows Phone 7 does not support POST method in HTML forms. So you have to change all form method to GET or use javascript to do it:
-
-    Copy file:
-
-        <rhodes>\res\generators\templates\application\public\js\wp7.js
-
-        to your application public/js folder
-        
-    Modify layout.erb:
-
-        <%if System::get_property('platform') == 'WP7' %>
-            <script src="/public/js/wp7.js" type="text/javascript"></script> 
-        <% end %>
-
-        <% if System::get_property('platform') == 'WP7' %>
-	        <body onload="wp7_change_forms_action_to_get()">
-        <% else %>
-	        <body>
-        <% end %>
-            <%%= @content %>
-        </body>
-
-    This script just replace FORM action to GET:
-
-        function wp7_change_forms_action_to_get() {
-            for(i=0;i<document.forms.length; i++)
-            {
-                document.forms[i].method = "GET";
-            }
-        }
-
-You can use [Rhodes Application Generator](#generator) to see application code with all this changes
-NOTE: in form action when using url_for specify :action => :create to call create controller method
-
 ### Build and run using Rhodes gem
 
 * Install Rhodes gem
 
 * Run application simulator:
 
-        $rake run:wp
+        $rake run:wp8
 
-NOTE: You may use your computer keyboard with Windows Phone 7 emulator. By default it is disabled, but you can enable it pressing **PgUp** key. While it is enabled a device rotation simulation is not supported. To rotate device you need to disable keyboard support pressing **PgDown** key.  Look [MSDN page](http://msdn.microsoft.com/en-us/library/ff754352(v=vs.92).aspx) for much more details on this topic.
+NOTE: You may use your computer keyboard with Windows Phone 8 emulator. By default it is disabled, but you can enable it pressing **PgUp** key. While it is enabled a device rotation simulation is not supported. To rotate device you need to disable keyboard support pressing **PgDown** key.  Look [MSDN page](http://msdn.microsoft.com/en-us/library/ff754352(v=vs.92).aspx) for much more details on this topic.
 
 * Run application device:
 
-        $rake run:wp:device
+        $rake run:wp8:device
 
 * See log in application folder : rholog.txt
 
@@ -1246,25 +1212,11 @@ NOTE: When running on device you may need to disconnect USB cable from device to
 
 ### Build from sources
 * Checkout rhodes source code from github 
-* Get IronRuby master branch to parent folder of rhodes:
-
-        $ git clone https://github.com/IronLanguages/main.git
-  
-  rename IronLanguages folder to IronRuby
-
-* Build IronRuby(Once)
-
-        rake build:wp:ironruby
 
 ### Build from IDE
-#### IronRuby
-* Copy folder `rhodes\platform\wp7\IronRuby\Languages` to `IronRuby`
-* Open `IronRuby\Solutions\Ruby.sln` in VS 2010 or VS Express 2010 for C#.
-* Select 'Silverlight3Debug|Any CPU' or 'Silverlight3Release|Any CPU' in solution configuration and build solution
-
 #### Rhodes
-* Open `rhodes\platform\wp7\rhodes.sln` in VS 2010 or VS Express 2010 for Windows Phone.
-* Select Debug or Release configuration, Windows Phone 7 Emulator target and build solution.
+* Open `rhodes\platform\wp8\rhodes.sln` in VS 2012 or VS Express 2012 for Windows Phone.
+* Select Debug or Release configuration, Windows Phone 8 Emulator target and build solution.
 * Run emulator by pressing Start Debugging or Start Without Debugging
 * After Application code modifications , build Rhodes solution and Start Debugging. DO NOT close emulator!
 * See log in VS output console (Debug mode only)

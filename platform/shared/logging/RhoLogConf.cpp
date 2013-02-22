@@ -37,7 +37,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 #endif //RHO_NO_RUBY
 
-extern "C" rho::String GetLocalFolderFullPath();
+rho::String GetLocalFolderFullPath();
 
 namespace rho{
 common::CMutex LogSettings::m_FlushLock;

@@ -65,6 +65,10 @@ def get_sources(sourcelist)
     File.read(sourcelist).split("\n")
 end
 
+def get_objects(sources, objdir)
+    sources.map { |src| File.join(objdir, File.basename(src) + ".o") }    
+end
+
 def setup_ndk(ndkpath,apilevel)
   puts "setup_ndk(#{ndkpath}, #{apilevel})" if USE_TRACES
 
@@ -279,8 +283,7 @@ def cc_compile(filename, objdir, additional = nil)
   cc_run(ccbin, args)
 end
 
-def cc_build(name, objdir, additional = nil)
-  sources = get_sources(name)
+def cc_build(sources, objdir, additional = nil)
   
   # Ruby 1.8 has problems with Thread.join on Windows
   if RUBY_PLATFORM =~ /w(in)?32/ and RUBY_VERSION =~ /^1\.8\./
@@ -325,6 +328,7 @@ end
 
 def cc_ar(libname, objects)
   return true if FileUtils.uptodate? libname, objects
+  rm_f libname
   cc_run($arbin, ["crs", libname] + objects)
 end
 

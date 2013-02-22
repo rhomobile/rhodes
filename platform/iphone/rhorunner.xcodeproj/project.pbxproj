@@ -99,7 +99,6 @@
 		FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = FACC20C9123A60F40088A447 /* Bluetooth.m */; };
 		FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACC20FF123A759A0088A447 /* GameKit.framework */; };
 		FAD42C58152CE61A000F906A /* libMotorolaLicence.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD42C57152CE61A000F906A /* libMotorolaLicence.a */; };
-		FAE52DA11683D74300F9C13B /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAE52DA01683D74300F9C13B /* MobileCoreServices.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -318,7 +317,6 @@
 		FACC20C9123A60F40088A447 /* Bluetooth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Bluetooth.m; path = Bluetooth/Bluetooth.m; sourceTree = "<group>"; };
 		FACC20FF123A759A0088A447 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		FAD42C57152CE61A000F906A /* libMotorolaLicence.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMotorolaLicence.a; path = ../../res/libs/motorolalicence/iphone/libMotorolaLicence.a; sourceTree = "<group>"; };
-		FAE52DA01683D74300F9C13B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/System/Library/Frameworks/MobileCoreServices.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -326,7 +324,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAE52DA11683D74300F9C13B /* MobileCoreServices.framework in Frameworks */,
 				FA673A5715FCD787005CAD64 /* CoreMotion.framework in Frameworks */,
 				FA3C79E2136ED8BB002302E5 /* CoreMedia.framework in Frameworks */,
 				FA3C79AE136ED523002302E5 /* CoreVideo.framework in Frameworks */,
@@ -363,16 +360,9 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				C5D90EF615F4F58D005F7C86 /* Reachability.h */,
-				C5D90EF715F4F58D005F7C86 /* Reachability.m */,
-				FA522E6C12DEA74F00AB55CC /* NativeView */,
-				BDC6F34611F4ABBF0056C1C3 /* icon57.png */,
-				BDC6F34711F4ABBF0056C1C3 /* icon72.png */,
-				BDC6F34811F4ABBF0056C1C3 /* icon114.png */,
-				BDFBD9A610B1BA2000BAAFAB /* icon.png */,
 				BD97AC1E1160EE7A006960F9 /* Alert */,
-				FACC20C4123A60800088A447 /* Bluetooth */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
+				FACC20C4123A60800088A447 /* Bluetooth */,
 				F5B8FAD10F44E95F00C9AF85 /* Camera */,
 				46056CEE1031CFB700C21967 /* DateTimePicker */,
 				BD486F50124FB61800F8A93F /* Event */,
@@ -381,6 +371,7 @@
 				BDB3735D11441FE0006EA6DA /* MainView */,
 				F5425BCD1060539A000CCA8C /* MapView */,
 				468E573F1035DBA600A2293C /* NativeBar */,
+				FA522E6C12DEA74F00AB55CC /* NativeView */,
 				BD9E5DF71185D2C50053049C /* NavBar */,
 				F58E7FD80F008A2300E46829 /* Phonebook */,
 				5C5332610FBD6AC700F268F0 /* rho */,
@@ -388,16 +379,22 @@
 				FA291E9111FF2CAD0096AC39 /* Signature */,
 				F56DF8D40E8D81FD00F6CBE8 /* Utils */,
 				BD38E76D115D1C3C001CE05C /* WebView */,
+				BDFBD9A610B1BA2000BAAFAB /* icon.png */,
+				BDC6F34811F4ABBF0056C1C3 /* icon114.png */,
+				BDC6F34611F4ABBF0056C1C3 /* icon57.png */,
+				BDC6F34711F4ABBF0056C1C3 /* icon72.png */,
+				C5D90EF915F4FC92005F7C86 /* NetworkStatusMonitor.h */,
+				C5D90EFA15F4FC92005F7C86 /* NetworkStatusMonitor.mm */,
+				C5D90EF615F4F58D005F7C86 /* Reachability.h */,
+				C5D90EF715F4F58D005F7C86 /* Reachability.m */,
 				46C25E39103240A400A26428 /* RhoDelegate.h */,
 				46C25E3A103240A400A26428 /* RhoDelegate.m */,
 				BDB373C3114449B6006EA6DA /* Rhodes.h */,
 				BDB373C411444A8F006EA6DA /* Rhodes.m */,
-				BD5B7448113BE2DB00C6070A /* SplashViewController.h */,
-				BD5B7449113BE2DB00C6070A /* SplashViewController.m */,
 				BD6A6228123E46BB0093E03C /* RhoViewController.h */,
 				BD6A6229123E46BB0093E03C /* RhoViewController.m */,
-				C5D90EF915F4FC92005F7C86 /* NetworkStatusMonitor.h */,
-				C5D90EFA15F4FC92005F7C86 /* NetworkStatusMonitor.mm */,
+				BD5B7448113BE2DB00C6070A /* SplashViewController.h */,
+				BD5B7449113BE2DB00C6070A /* SplashViewController.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -413,7 +410,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				FAE52DA01683D74300F9C13B /* MobileCoreServices.framework */,
 				FA3C79E1136ED8BB002302E5 /* CoreMedia.framework */,
 				FA3C79AD136ED523002302E5 /* CoreVideo.framework */,
 				FA4D3F8C136B0A98009D6E63 /* libiconv.dylib */,

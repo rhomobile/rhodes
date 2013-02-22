@@ -47,25 +47,25 @@ class RhoJavascriptApiController < Rho::RhoController
     render :string => "#{jsonrpc}"
   end
 
-  def command_proxy_Rho_Barcode1_testMethod(module_name, method_name, method_args)
+  def command_proxy_Rho_Barcode_testMethod(module_name, method_name, method_args)
     result = '';
     method_args.each { |arg| result.concat arg.to_s }
     {'value' => result, 'type' => 'string'}
   end
 
-  def command_proxy_Rho_Barcode1_getDefaultID(module_name, method_name, method_args)
-    {'value' => '00001', 'type' => 'instance', 'class' => 'Rho.Barcode1'}
+  def command_proxy_Rho_Barcode_getDefaultID(module_name, method_name, method_args)
+    {'value' => '00001', 'type' => 'instance', 'class' => 'Rho.Barcode'}
   end
 
-  def command_proxy_Rho_Barcode1_enumerate(module_name, method_name, method_args)
-    {'value' => '00001 00002 00003', 'type' => 'instance', 'class' => 'Rho.Barcode1'}
+  def command_proxy_Rho_Barcode_enumerate(module_name, method_name, method_args)
+    {'value' => '00001 00002 00003', 'type' => 'instance', 'class' => 'Rho.Barcode'}
   end
 
-  def command_proxy_Rho_Barcode1_getProps(module_name, method_name, method_args)
+  def command_proxy_Rho_Barcode_getProperties(module_name, method_name, method_args)
     {'value' => { 'resolution' => '1024x768' }, 'type' => 'object'}
   end
 
-  def command_proxy_Rho_Barcode1_setProps(module_name, method_name, method_args)
+  def command_proxy_Rho_Barcode_setProperties(module_name, method_name, method_args)
     {'value' => { 'resolution' => method_args[0]['resolution'] }, 'type' => 'object'}
   end
 

@@ -303,6 +303,17 @@ public:
         std::map<TKEY,TVALUE>::erase(key);
     }
 
+    TVALUE get(const TKEY& key)const
+    {
+        if ( containsKey(key) )
+        {
+            typename std::map<TKEY,TVALUE>::const_iterator it = std::map<TKEY,TVALUE>::find(key);
+            return (*it).second;
+        }
+
+        return TVALUE();
+    }
+
     TVALUE get(const TKEY& key)
     {
         if ( containsKey(key) )
@@ -311,7 +322,7 @@ public:
         return TVALUE();
     }
 
-    boolean containsKey(const TKEY& key)
+    boolean containsKey(const TKEY& key)const
     {
         return !std::map<TKEY,TVALUE>::empty() && std::map<TKEY,TVALUE>::find(key) != std::map<TKEY,TVALUE>::end();
     }

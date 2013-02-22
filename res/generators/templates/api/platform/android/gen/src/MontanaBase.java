@@ -1,42 +1,113 @@
 package <%= api_generator_java_makePackageName($cur_module) %>;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.api.RhoApiObject;
+<%
+if $cur_module.is_template_propertybag %>
+import com.rhomobile.rhodes.api.RhoApiPropertyBag; <%
 
-public class <%= $cur_module.name %>Base {
+custom_props = {}
+$cur_module.properties.each do |property|
+    custom_props[property.name] = property.type if property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
+end
+end %>
 
-<% $cur_module.methods.each do |module_method|
-    next if module_method.access == ModuleMethod::ACCESS_STATIC
-    #next if module_method.generated_by_template == TEMPLATE_PROPERTY_BAG
+public class <%= $cur_module.name %>Base extends RhoApiObject {
+<%
+if $cur_module.is_template_propertybag %>
+    private RhoApiPropertyBag mPropertyBag;<%
+unless custom_props.empty? %>
+    private static Map<String, Class<?> > sCustomAccessNames;
+    static {
+        sCustomAccessNames = new HashMap<String, Class<?> >();
+<%
+custom_props.each do |name, type| %>
+        sCustomAccessNames.put("<%= name %>", <%= api_generator_java_makeNativeType(type) %>.class);
+<%
+end %>
+    }<%
+end
+if $cur_module.is_property_bag_limit_to_only_declared_properties %>
+    static private List<String> sAllowedPropertyNames;
+    static {
+        sAllowedPropertyNames = new ArrayList<String>(); <%
+$cur_module.properties.each do |property| %>
+        sAllowedPropertyNames.add("<%= property.name %>");<%
+end %>
+    }<%
+end
+end %>
+    public <%= $cur_module.name %>Base(String id) {
+        super(id);
+<%
+if $cur_module.is_template_propertybag %>
+        mPropertyBag = new RhoApiPropertyBag(<%
+if $cur_module.is_property_bag_limit_to_only_declared_properties %>sAllowedPropertyNames<%
+end %>);<%
+end %>
+    }
+<% $cur_module.methods.each do |method|
+    next if method.access == ModuleMethod::ACCESS_STATIC
+    #next if method.generated_by_template == TEMPLATE_PROPERTY_BAG
 
     param_hash = {}
-    module_method.params.each do |param|
+    method.params.each do |param|
         param_hash[param.name] = api_generator_java_makeNativeType(param.type)
     end %>
+<%
+if method.generated_by_template == TEMPLATE_PROPERTY_BAG %>
+    public void <%= method.native_name %>(<%
+param_hash.each do |name, type| %><%= type %> <%= name %>, <% end %>IMethodResult result) { <%
+unless custom_props.empty? %>
+        mPropertyBag.<%= method.native_name %>(<% param_hash.each do |name, type| %><%= name %>, <% end %>sCustomAccessNames, this, result);<%
+else %>
+        mPropertyBag.<%= method.native_name %>(<% param_hash.each do |name, type| %><%= name %>, <% end %>result);<%
+end %>
+    }<%
+end %>
+<%
+if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER or method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
+if method.linked_property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG %>
+    public void <%= method.native_name %>(<% param_hash.each do |name, type| %><%= type %> <%= name %>, <% end %>IMethodResult result) {
+<%
+if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
+        getProperty("<%= method.linked_property.name %>", result);<%
+else %>
+        setProperty("<%= method.linked_property.name %>", <%= method.params.first.name %>, result);<%
+end %>
+    }<%
+end
+end %>
 
-    public static class <%= module_method.native_name %>Task implements Runnable {
+    public static class <%= method.native_name %>Task implements Runnable {
         private I<%= $cur_module.name %> mApiObject; <%
 param_hash.each do |name, type| %>
-        private <%= type %> <%= name %>; <% end %>
+        private <%= type %> <%= name %>;<%
+end %>
         private IMethodResult mResult;
 
-        public <%= module_method.native_name %>Task(I<%= $cur_module.name %> obj, <%
+        public <%= method.native_name %>Task(I<%= $cur_module.name %> obj, <%
 param_hash.each do |name, type| %>
-                <%= type %> <%= name %>, <% end %>        
+                <%= type %> <%= name %>, <%
+end %>
                 IMethodResult result) {
             this.mApiObject = obj; <%
 param_hash.each do |name, type| %>
-            this.<%= name %> = <%= name %>;<% end %>        
+            this.<%= name %> = <%= name %>;<%
+end %>
             this.mResult = result;
         }
 
         @Override
         public void run() {
-            mApiObject.<%= module_method.native_name %>(<%
+            mApiObject.<%= method.native_name %>(<%
 param_hash.each do |name, type| %>
-                <%= name %>, <% end %> mResult);
+                <%= name %>, <% end %>mResult);
         }
     }
 <% end %>

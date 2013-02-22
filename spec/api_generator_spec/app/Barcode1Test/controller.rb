@@ -11,8 +11,8 @@ class Barcode1TestController < Rho::RhoController
 
 
   def run_test
-   Rho::Barcode1.getProps("display", url_for(:action => :test_callback1))
-   arBarcodes = Rho::Barcode1.enumerate
+   Rho::Barcode.getProperties("display", url_for(:action => :test_callback1))
+   arBarcodes = Rho::Barcode.enumerate
    puts "arBarcodes : #{arBarcodes}"
    Alert.show_popup "arBarcodes : #{arBarcodes}"
    id = arBarcodes[0].getProps("ID")

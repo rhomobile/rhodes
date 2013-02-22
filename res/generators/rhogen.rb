@@ -379,177 +379,195 @@ module Rhogen
         return name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
     end    
 
+    def namecamelcase
+        return name.split(/[^a-zA-Z0-9]/).map{|w| w.capitalize}.join("")
+    end    
+
     template :ext do |template|
       template.source = 'extensions/montana/ext.yml'
-      template.destination = "extensions/#{namefixed.downcase}/ext.yml"
+      template.destination = "extensions/#{name}/ext.yml"
 	  puuid = UUID.new
       generated_uuid = puuid.generate
       @productid = generated_uuid
 	  @@noapp = noapp
     end
 
-    template :extension_ruby do |template|
-      template.source = 'extensions/montana/montana.rb'
-      template.destination = "extensions/#{namefixed.downcase}/#{namefixed.downcase}.rb"
-    end
+#    template :extension_ruby do |template|
+#      template.source = 'extensions/montana/montana.rb'
+#      template.destination = "extensions/#{name}/#{name}.rb"
+#    end
 
     $build_script_full_path = ''
 
     def callback_after_make_build(template)
         # change atribbutes in build script file to executable
         File.chmod(0755, $build_script_full_path) 
-		Dir.chdir("extensions/#{namefixed.downcase}/ext")
-		args = []
-		args << "api"
-		args << Dir.pwd+"/#{namefixed.downcase}.xml"
-		puts Jake.run(source_root+"/../../../../bin/rhogen", args)
-    end    
+  		Dir.chdir("extensions/#{name}/ext")
+	  	args = []
+		  args << "api"
+		  args << Dir.pwd+"/#{namefixed.downcase}.xml"
+		  Jake.run(source_root+"/../../../../bin/rhogen", args)
+    end
 
 	def callback_after_delete_testapp(template)
 		if @@noapp == true
 			Dir.chdir("../../../")
 			FileUtils.rm_rf "app"
-			FileUtils.cp_r("extensions/#{namefixed.downcase}", Dir.pwd)
+			FileUtils.cp_r("extensions/#{name}", Dir.pwd)
 			FileUtils.rm_rf "extensions"
 		end
 	end
 
 	template :extension_apigen_xml do |template|
         template.source = 'extensions/montana/ext/montana.xml'
-        template.destination = "extensions/#{namefixed.downcase}/ext/#{namefixed.downcase}.xml"
+        template.destination = "extensions/#{name}/ext/#{namefixed}.xml"
     end
 
     template :build do |template|
       template.source = 'extensions/montana/ext/build'
-      template.destination = "extensions/#{namefixed.downcase}/ext/build"
+      template.destination = "extensions/#{name}/ext/build"
       $build_script_full_path = template.destination   
       template.options = { :after => :callback_after_make_build}  
     end
 
     template :build_bat do |template|
       template.source = 'extensions/montana/ext/build.bat'
-      template.destination = "extensions/#{namefixed.downcase}/ext/build.bat"
+      template.destination = "extensions/#{name}/ext/build.bat"
     end
 
     template :extension_iphone_rakefile do |template|
       template.source = 'extensions/montana/ext/platform/iphone/Rakefile'
-      template.destination = "extensions/#{namefixed.downcase}/ext/platform/iphone/Rakefile"
+      template.destination = "extensions/#{name}/ext/platform/iphone/Rakefile"
     end
 
     template :extension_iphone_pch do |template|
       template.source = 'extensions/montana/ext/platform/iphone/Montana_Prefix.pch'
-      template.destination = "extensions/#{namefixed.downcase}/ext/platform/iphone/#{namefixed.camel_case}_Prefix.pch"
+      template.destination = "extensions/#{name}/ext/platform/iphone/#{namecamelcase}_Prefix.pch"
     end
 
     template :extension_iphone_project do |template|
       template.source = 'extensions/montana/ext/platform/iphone/Montana.xcodeproj/project.pbxproj'
-      template.destination = "extensions/#{namefixed.downcase}/ext/platform/iphone/#{namefixed.camel_case}.xcodeproj/project.pbxproj"
+      template.destination = "extensions/#{name}/ext/platform/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
     end
 
     template :extension_iphone_src_h do |template|
       template.source = 'extensions/montana/ext/platform/iphone/Classes/Montana.h'
-      template.destination = "extensions/#{namefixed.downcase}/ext/platform/iphone/Classes/#{namefixed.camel_case}.h"
+      template.destination = "extensions/#{name}/ext/platform/iphone/Classes/#{namecamelcase}.h"
     end
 
     template :extension_iphone_src_m do |template|
       template.source = 'extensions/montana/ext/platform/iphone/Classes/Montana.m'
-      template.destination = "extensions/#{namefixed.downcase}/ext/platform/iphone/Classes/#{namefixed.camel_case}.m"
+      template.destination = "extensions/#{name}/ext/platform/iphone/Classes/#{namecamelcase}.m"
     end
 
-    template :extension_android_ext_build do |template|
-        template.source = 'extensions/montana/ext/platform/android/ext_build.files'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/android/ext_build.files"
+    template :extension_android_ext_java do |template|
+        template.source = 'extensions/montana/ext/platform/android/ext_java.files'
+        template.destination = "extensions/#{name}/ext/platform/android/ext_java.files"
+    end
+
+    template :extension_android_ext_native do |template|
+        template.source = 'extensions/montana/ext/platform/android/ext_native.files'
+        template.destination = "extensions/#{name}/ext/platform/android/ext_native.files"
     end
 
     template :extension_android_rakefile do |template|
         template.source = 'extensions/montana/ext/platform/android/Rakefile'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/android/Rakefile"
+        template.destination = "extensions/#{name}/ext/platform/android/Rakefile"
     end
 
     template :extension_android_cpp do |template|
-        template.source = 'extensions/montana/ext/platform/android/jni/src/montana.cpp'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/android/jni/src/#{namefixed.downcase}.cpp"
+        template.source = 'extensions/montana/ext/platform/android/jni/Montana_impl.cpp'
+        template.destination = "extensions/#{name}/ext/platform/android/jni/#{namecamelcase}_impl.cpp"
     end
 
-    template :extension_android_java do |template|
-        template.source = 'extensions/montana/ext/platform/android/src/com/montana/Montana.java'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/android/src/com/#{namefixed.downcase}/#{namefixed.camel_case}.java"
+    template :extension_android_module_module_java do |template|
+        template.source = 'extensions/montana/ext/platform/android/src/Montana.java'
+        template.destination = "extensions/#{name}/ext/platform/android/src/com/rho/#{namefixed}/#{namecamelcase}.java"
     end
 
+    template :extension_android_module_singleton_java do |template|
+        template.source = 'extensions/montana/ext/platform/android/src/MontanaSingleton.java'
+        template.destination = "extensions/#{name}/ext/platform/android/src/com/rho/#{namefixed}/#{namecamelcase}Singleton.java"
+    end
+
+    template :extension_android_module_module_java do |template|
+        template.source = 'extensions/montana/ext/platform/android/src/MontanaFactory.java'
+        template.destination = "extensions/#{name}/ext/platform/android/src/com/rho/#{namefixed}/#{namecamelcase}Factory.java"
+    end
 
     #template :extension_wm_rakefile do |template|
     #    template.source = 'extensions/montana/ext/platform/wm/Rakefile'
-    #    template.destination = "extensions/#{namefixed.downcase}/ext/platform/wm/Rakefile"
+    #    template.destination = "extensions/#{name}/ext/platform/wm/Rakefile"
     #end
 
     template :extension_wm_vcsol do |template|
         template.source = 'extensions/montana/ext/platform/wm/Montana.sln'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wm/#{namefixed.camel_case}.sln"
+        template.destination = "extensions/#{name}/ext/platform/wm/#{namecamelcase}.sln"
     end
 
     template :extension_wm_vcproject do |template|
         template.source = 'extensions/montana/ext/platform/wm/Montana.vcproj'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wm/#{namefixed.camel_case}.vcproj"
+        template.destination = "extensions/#{name}/ext/platform/wm/#{namecamelcase}.vcproj"
     end
 
     template :extension_wm_vcprojectprops do |template|
         template.source = 'extensions/montana/ext/platform/wm/montana.vsprops'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wm/#{namefixed.camel_case}.vsprops"
+        template.destination = "extensions/#{name}/ext/platform/wm/#{namecamelcase}.vsprops"
     end
 
     template :extension_wm_impl_cpp do |template|
         template.source = 'extensions/montana/ext/platform/wm/src/montana_impl.cpp'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wm/src/#{namefixed.camel_case}_impl.cpp"
+        template.destination = "extensions/#{name}/ext/platform/wm/src/#{namecamelcase}_impl.cpp"
     end
 
 	template :extension_wp8_vcproject do |template|
         template.source = 'extensions/montana/ext/platform/wp8/Montana.vcxproj'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wp8/#{namefixed.camel_case}.vcxproj"
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}.vcxproj"
     end
 
     template :extension_wp8_vcprojectprops do |template|
         template.source = 'extensions/montana/ext/platform/wp8/montana.props'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wp8/#{namefixed.camel_case}.props"
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}.props"
     end
 
 	template :extension_wp8_vcprojectfilters do |template|
         template.source = 'extensions/montana/ext/platform/wp8/montana.vcxproj.filters'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wp8/#{namefixed.camel_case}.vcxproj.filters"
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}.vcxproj.filters"
     end
 
 	template :extension_wp8_impl_cpp do |template|
         template.source = 'extensions/montana/ext/platform/wp8/src/montana_impl.cpp'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/wp8/src/#{namefixed.camel_case}_impl.cpp"
+        template.destination = "extensions/#{name}/ext/platform/wp8/src/#{namecamelcase}_impl.cpp"
     end
 
     template :extension_bb_files do |template|
         template.source = 'extensions/montana/ext/platform/bb/Montana.files'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/bb/#{namefixed.camel_case}.files"
+        template.destination = "extensions/#{name}/ext/platform/bb/#{namecamelcase}.files"
     end
 
     template :extension_bb_jgp do |template|
         template.source = 'extensions/montana/ext/platform/bb/montana.jdp'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/bb/#{namefixed.downcase}.jdp"
+        template.destination = "extensions/#{name}/ext/platform/bb/#{namefixed.downcase}.jdp"
     end
 
     template :extension_bb_Rakefile do |template|
         template.source = 'extensions/montana/ext/platform/bb/Rakefile'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/bb/Rakefile"
+        template.destination = "extensions/#{name}/ext/platform/bb/Rakefile"
     end
 
     template :extension_bb_java do |template|
         template.source = 'extensions/montana/ext/platform/bb/src/com/montana/Montana.java'
-        template.destination = "extensions/#{namefixed.downcase}/ext/platform/bb/src/com/#{namefixed.downcase}/#{namefixed.camel_case}.java"
+        template.destination = "extensions/#{name}/ext/platform/bb/src/com/#{namefixed}/#{namecamelcase}.java"
     end
   
     template :extension_test_controller do |template|
 	  template.source = 'app/MontanaTest/controller.rb'
-      template.destination = "app/#{namefixed.camel_case}Test/controller.rb"
+      template.destination = "app/#{namecamelcase}Test/controller.rb"
     end
 
     template :extension_test_index do |template|
       template.source = 'app/MontanaTest/index.erb'
-      template.destination = "app/#{namefixed.camel_case}Test/index.erb"
+      template.destination = "app/#{namecamelcase}Test/index.erb"
 	  template.options = { :after => :callback_after_delete_testapp}  
 	end
 
@@ -666,6 +684,8 @@ module Rhogen
         @is_ruby_only = false
         @deprecated = false
         @reverseLogic = false
+        @is_method_static = false
+        @is_method_instance = false
       end
 
       attr_accessor :existing_name
@@ -673,6 +693,8 @@ module Rhogen
       attr_accessor :is_ruby_only
       attr_accessor :deprecated
       attr_accessor :reverseLogic
+      attr_accessor :is_method_static
+      attr_accessor :is_method_instance
 
     end
 
@@ -695,9 +717,25 @@ module Rhogen
       end
 
       attr_accessor :name
-      attr_accessor :type
+      #attr_accessor :type
+      attr_reader :type
       attr_accessor :can_be_nil
 
+      def type=(value)
+        up_value = value.upcase
+        BASE_TYPES.each do |t|
+            if up_value == t 
+                @type = up_value
+                return     
+            end
+        end
+        
+        if up_value == TYPE_SELF
+            @type = up_value
+        else
+            @type = value
+        end
+      end
 
     end
 
@@ -740,7 +778,7 @@ module Rhogen
         @generate_accessors = true
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
         @default_value = ''
-
+        
         #used if getter and setter are present - this used with generation of property bag function implementation
         @getter = nil
         @setter = nil
@@ -756,8 +794,6 @@ module Rhogen
       attr_accessor :getter
       attr_accessor :setter
 
-
-
     end
 
     class ModuleMethod
@@ -769,6 +805,7 @@ module Rhogen
       CALLBACK_OPTIONAL = "OPTIONAL"
       CALLBACK_NONE = "NONE"
 
+      RUN_IN_THREAD_UNDEFINED = "UNDEFINED"
       RUN_IN_THREAD_NONE = "NONE"
       RUN_IN_THREAD_MODULE = "MODULE"
       RUN_IN_THREAD_SEPARATED = "SEPARATED"
@@ -782,12 +819,13 @@ module Rhogen
         @name = ''
         @native_name = ''
         @params = [] # array of MethodArgument
-        @run_in_thread = RUN_IN_THREAD_NONE
+        @run_in_thread = RUN_IN_THREAD_UNDEFINED
         @is_factory_method = false
         @is_return_value = false
         @access = ACCESS_INSTANCE
         @has_callback = CALLBACK_NONE
         @result = nil
+        @is_deprecated = false
 
         # name of template produced this method if applicable
         @generated_by_template = ''
@@ -809,6 +847,7 @@ module Rhogen
       attr_accessor :access
       attr_accessor :has_callback
       attr_accessor :result
+      attr_accessor :is_deprecated
       attr_accessor :generated_by_template
       attr_accessor :linked_property
       attr_accessor :special_behaviour
@@ -834,8 +873,18 @@ module Rhogen
         @has_factory_methods = false
         @is_property_bag_limit_to_only_declared_properties = false
         @use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
+        @properties_access = ModuleMethod::ACCESS_INSTANCE
       end
 
+      def getPropAliases(name)
+        ar = []
+        property_aliases.each do|alias_item|
+            ar << alias_item.new_name if alias_item.existing_name == name
+        end
+        
+        ar
+      end
+      
       attr_accessor :name
       attr_accessor :parents
       attr_accessor :methods
@@ -851,6 +900,7 @@ module Rhogen
       attr_accessor :has_factory_methods
       attr_accessor :is_property_bag_limit_to_only_declared_properties
       attr_accessor :use_property_bag_mode
+      attr_accessor :properties_access
     end
 
     TEMPLATE_NAME = "TEMPLATE_NAME"
@@ -866,12 +916,12 @@ module Rhogen
     $possible_attributes = {}
     $possible_attributes["MODULE"] = ["name", "parent", "generateUnderscoreRubyNames"]
     $possible_attributes["CONSTANT"] = ["name", "value", "type"]
-    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "generateAccessors"]
+    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "generateAccessors", "limitPropertyBag"]
     $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readOnly", "generateAccessors", "default"]
     $possible_attributes["VALUE"] = ["constName", "value", "type"]
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
-    $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread"]
-    $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName"]
+    $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread", "deprecated"]
+    $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName", "deprecated"]
     $possible_attributes["PARAM"] = ["name", "nativeName", "type"]
     $possible_attributes["RETURN"] = ["type", "itemType"]
 
@@ -1003,6 +1053,16 @@ module Rhogen
       return res
     end
 
+
+    def foundMethodByName(module_item, method_name)
+       module_item.methods.each do |method_item|
+          if method_item.name == method_name
+             return method_item
+          end
+       end
+       return nil
+    end
+
     def apply_templates_to_module(xml_module_item, template_name)
       xml_f = File.new(File.join(File.dirname(__FILE__), 'templates', 'api', "xml_templates", template_name+".xml"))
       template_xml = REXML::Document.new(xml_f)
@@ -1039,7 +1099,7 @@ module Rhogen
       require File.dirname(__FILE__) + '/templates/api/helpers/api_helper'
     
       if $xml != nil
-        return
+        return true
       end
       # force changes in generated files !
       @options[:force] = true
@@ -1115,7 +1175,15 @@ module Rhogen
             if xml_properties.attribute("limitPropertyBag") != nil
               module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute("limitPropertyBag").to_s.downcase != "false"
             end
+            
+            if xml_properties.attribute("access") != nil
+              if xml_properties.attribute("access").to_s.downcase == "static"
+                 module_item.properties_access = ModuleMethod::ACCESS_STATIC
+              end
+            end
+            
          end
+         
          xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_module_property|
             module_property = ModuleProperty.new()
             module_property.name = xml_module_property.attribute("name").to_s
@@ -1180,10 +1248,10 @@ module Rhogen
               getter_method.native_name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
 
               getter_method.params = []
-              getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+              getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
               getter_method.is_factory_method = false
               getter_method.is_return_value = true
-              getter_method.access = ModuleMethod::ACCESS_INSTANCE
+              getter_method.access = module_item.properties_access
               getter_method.has_callback = ModuleMethod::CALLBACK_NONE
               getter_method.linked_property = module_property
               getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
@@ -1201,10 +1269,10 @@ module Rhogen
                 param.can_be_nil = false
                 param.type = module_property.type
                 setter_method.params = [param]
-                setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+                setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
                 setter_method.is_factory_method = false
                 setter_method.is_return_value = false
-                setter_method.access = ModuleMethod::ACCESS_INSTANCE
+                setter_method.access = module_item.properties_access
                 setter_method.has_callback = ModuleMethod::CALLBACK_NONE
                 setter_method.linked_property = module_property
                 setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
@@ -1247,6 +1315,14 @@ module Rhogen
                      module_item.has_instance_methods = true
                  end
                end
+            end
+
+            if xml_module_method.attribute("deprecated") != nil
+               module_method.is_deprecated = xml_module_method.attribute("deprecated").to_s.downcase != "false"
+            else
+              if xml_methods_item.attribute("deprecated") != nil
+                 module_method.is_deprecated = xml_methods_item.attribute("deprecated").to_s.downcase != "false"
+              end
             end
 
             if xml_module_method.attribute("factory") != nil
@@ -1313,13 +1389,19 @@ module Rhogen
             if xml_module_method.elements["RETURN"] != nil
                 module_method.is_return_value = true
                 method_result = MethodResult.new()
-                result_type = xml_module_method.elements["RETURN"].attribute("type")
-                result_item_type = xml_module_method.elements["RETURN"].attribute("itemType")
+                result_type = xml_module_method.elements["RETURN"].attribute("type").to_s
+                result_item_type = xml_module_method.elements["RETURN"].attribute("itemType").to_s
                 if result_type != nil
-                    method_result.type = result_type.to_s
+                  if result_type == MethodParam::TYPE_SELF
+                    result_type = [module_item.parents.join("."),module_item.name].join(".")
+                  end
+                    method_result.type = result_type
                 end
                 if result_item_type != nil
-                    method_result.item_type = result_item_type.to_s
+                   if result_item_type == MethodParam::TYPE_SELF
+                     result_item_type = [module_item.parents.join("."),module_item.name].join(".")
+                   end
+                   method_result.item_type = result_item_type
                 end
                 module_method.result = method_result
             end
@@ -1336,7 +1418,11 @@ module Rhogen
                end
 
                if xml_method_param.attribute("type") != nil
-                  method_param.type = xml_method_param.attribute("type").to_s.upcase
+                  ttype = xml_method_param.attribute("type").to_s #.upcase
+                  if ttype == MethodParam::TYPE_SELF
+                     ttype = [module_item.parents.join("."),module_item.name].join(".")
+                  end
+                  method_param.type = ttype
                else
                   raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
                end
@@ -1373,7 +1459,7 @@ module Rhogen
                property_aliases_hash[property_alias.new_name] = property_alias
             end
             method_aliases_hash = {}
-            module_item.property_aliases.each do |method_alias|
+            module_item.method_aliases.each do |method_alias|
                method_aliases_hash[method_alias.new_name] = method_alias
             end
 
@@ -1388,6 +1474,24 @@ module Rhogen
                   module_item.method_aliases << method_alias
                end
             end
+
+            module_item.method_aliases.each do |method_alias|
+               method_item = foundMethodByName(module_item, method_alias.existing_name)
+               if method_item != nil
+                  if method_item.access == ModuleMethod::ACCESS_STATIC
+                     method_alias.is_method_static = true
+                  end
+                  if method_item.access == ModuleMethod::ACCESS_INSTANCE
+                     method_alias.is_method_instance = true
+                     if module_item.is_template_default_instance
+                        method_alias.is_method_static = true
+                     end
+                  end
+               end
+            end
+
+
+
 
             # properties
             module_item.properties.each do |module_property|
@@ -1414,9 +1518,8 @@ module Rhogen
     end
 
 
-
-
     template :shared_01 do |template|
+      setup_xml
       template.source = 'shared/generated/montana_api_init.cpp'
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_api_init.cpp"
     end
@@ -1430,112 +1533,91 @@ module Rhogen
       template.source = 'shared/generated/montana_js_api.cpp'
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_js_api.cpp"
     end
-    
-    template :iphone_api do |template|
-      template.source = 'platform/iphone/Classes/api/IMontana.h'
-      template.destination = "platform/iphone/Classes/api/I#{$cur_module.name}.h"
-    end
 
-    template :iphone_api_readme do |template|
-      template.source = 'platform/iphone/Classes/api/readme.txt'
-      template.destination = "platform/iphone/Classes/api/readme.txt"
+    template :iphone_api do |template|
+      template.source = 'platform/iphone/generated/IMontana.h'
+      template.destination = "platform/iphone/generated/I#{$cur_module.name}.h"
     end
 
     template :iphone_ruby_wrapper do |template|
-      template.source = 'platform/iphone/Classes/ruby_wrapper/montana_ruby_wrap.m'
-      template.destination = "platform/iphone/Classes/ruby_wrapper/#{namefixed($cur_module.name)}_ruby_wrap.m"
-    end
-
-    template :iphone_ruby_wrapper_readme do |template|
-      template.source = 'platform/iphone/Classes/ruby_wrapper/readme.txt'
-      template.destination = "platform/iphone/Classes/ruby_wrapper/readme.txt"
+      template.source = 'platform/iphone/generated/ruby/montana_ruby_wrap.m'
+      template.destination = "platform/iphone/generated/ruby/#{namefixed($cur_module.name)}_ruby_wrap.m"
     end
 
     template :iphone_js_wrapper do |template|
-      template.source = 'platform/iphone/Classes/js_wrapper/montana_js_wrap.mm'
-      template.destination = "platform/iphone/Classes/js_wrapper/#{namefixed($cur_module.name)}_js_wrap.mm"
-    end
-
-    template :iphone_js_wrapper_readme do |template|
-      template.source = 'platform/iphone/Classes/js_wrapper/readme.txt'
-      template.destination = "platform/iphone/Classes/js_wrapper/readme.txt"
+      template.source = 'platform/iphone/generated/javascript/montana_js_wrap.mm'
+      template.destination = "platform/iphone/generated/javascript/#{namefixed($cur_module.name)}_js_wrap.mm"
     end
 
     template :iphone_impl_readme do |template|
-      template.source = 'platform/iphone/Classes/impl/readme.txt'
-      template.destination = "platform/iphone/Classes/impl/readme.txt"
+      template.source = 'platform/iphone/impl/readme.txt'
+      template.destination = "platform/iphone/impl/readme.txt"
     end
 
     template :iphone_base_impl_01 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaBase.h'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}Base.h"
+      template.source = 'platform/iphone/generated/base_impl/MontanaBase.h'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}Base.h"
     end
 
     template :iphone_base_impl_02 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaBase.m'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}Base.m"
+      template.source = 'platform/iphone/generated/base_impl/MontanaBase.m'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}Base.m"
     end
 
     template :iphone_base_impl_03 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaFactoryBase.h'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}FactoryBase.h"
+      template.source = 'platform/iphone/generated/base_impl/MontanaFactoryBase.h'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}FactoryBase.h"
     end
 
     template :iphone_base_impl_04 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaFactoryBase.m'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}FactoryBase.m"
+      template.source = 'platform/iphone/generated/base_impl/MontanaFactoryBase.m'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}FactoryBase.m"
     end
 
     template :iphone_base_impl_05 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaSingletonBase.h'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}SingletonBase.h"
+      template.source = 'platform/iphone/generated/base_impl/MontanaSingletonBase.h'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}SingletonBase.h"
     end
 
     template :iphone_base_impl_06 do |template|
-      template.source = 'platform/iphone/Classes/base_impl/MontanaSingletonBase.m'
-      template.destination = "platform/iphone/Classes/base_impl/#{$cur_module.name}SingletonBase.m"
-    end
-
-    template :iphone_base_impl_readme do |template|
-      template.source = 'platform/iphone/Classes/base_impl/readme.txt'
-      template.destination = "platform/iphone/Classes/base_impl/readme.txt"
+      template.source = 'platform/iphone/generated/base_impl/MontanaSingletonBase.m'
+      template.destination = "platform/iphone/generated/base_impl/#{$cur_module.name}SingletonBase.m"
     end
 
     template :iphone_stub_impl_01 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/Montana.h'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}.h"
+      template.source = 'platform/iphone/generated/stub_impl/Montana.h'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}.h"
     end
 
     template :iphone_stub_impl_02 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/Montana.m'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}.m"
+      template.source = 'platform/iphone/generated/stub_impl/Montana.m'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}.m"
     end
 
     template :iphone_stub_impl_03 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/MontanaFactorySingleton.m'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}FactorySingleton.m"
+      template.source = 'platform/iphone/generated/stub_impl/MontanaFactorySingleton.m'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}FactorySingleton.m"
     end
 
     template :iphone_stub_impl_04 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/MontanaSetup.m'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}Setup.m"
+      template.source = 'platform/iphone/generated/stub_impl/MontanaSetup.m'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}Setup.m"
     end
 
     template :iphone_stub_impl_05 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/MontanaSingleton.h'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}Singleton.h"
+      template.source = 'platform/iphone/generated/stub_impl/MontanaSingleton.h'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}Singleton.h"
     end
 
     template :iphone_stub_impl_06 do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/MontanaSingleton.m'
-      template.destination = "platform/iphone/Classes/stub_impl/#{$cur_module.name}Singleton.m"
+      template.source = 'platform/iphone/generated/stub_impl/MontanaSingleton.m'
+      template.destination = "platform/iphone/generated/stub_impl/#{$cur_module.name}Singleton.m"
     end
 
     template :iphone_stub_impl_readme do |template|
-      template.source = 'platform/iphone/Classes/stub_impl/readme.txt'
-      template.destination = "platform/iphone/Classes/stub_impl/readme.txt"
+      template.source = 'platform/iphone/generated/stub_impl/readme.txt'
+      template.destination = "platform/iphone/generated/stub_impl/readme.txt"
     end
-
 
 
     template :cpp_api do |template|
@@ -1613,6 +1695,18 @@ module Rhogen
       template.destination = "platform/android/generated/jni/#{$cur_module.name.downcase}_js_wrap.cpp"
     end
 
+
+    file :public_api_rhoapi do |file|
+      file.source = 'js/rhoapi.js'
+      file.destination = "../../../public/api/generated/rhoapi.js"
+    end
+
+    template :public_api_module do |template|
+      template.source = 'js/rhoapi-Rho.Montana.js'
+      module_name = $cur_module.parents.clone()
+      template.destination = "../../../public/api/generated/rhoapi-#{module_name.push($cur_module.name).join(".")}.js"
+    end
+
     def attributes?
       self.attributes && !self.attributes.empty?
     end
@@ -1663,6 +1757,7 @@ class ApiMegatestGenerator < BaseGenerator
 
 
 
+
 =begin
 # Stub this method to force 1.8 compatibility (come on templater!)
 class Encoding
@@ -1690,5 +1785,6 @@ end
 
 
 Rhogen.run_cli(Dir.pwd, 'rhodes', Rhodes::VERSION, ARGV)
+
 
 =end

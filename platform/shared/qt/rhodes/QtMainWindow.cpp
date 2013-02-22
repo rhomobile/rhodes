@@ -734,10 +734,9 @@ void QtMainWindow::on_actionAbout_triggered()
 {
 #ifndef RHO_SYMBIAN
 #ifdef RHODES_EMULATOR
-    QMessageBox::about(this, RHOSIMULATOR_NAME, RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION);
+    QMessageBox::about(this, RHOSIMULATOR_NAME, RHOSIMULATOR_NAME " v" RHOSIMULATOR_VERSION "\n(QtWebKit v" QTWEBKIT_VERSION_STR ")");
 #else
     QMessageBox::about(this, APPLICATION_NAME, APPLICATION_NAME " v" APPLICATION_VERSION);
-
 #endif
 
 #endif
@@ -964,6 +963,11 @@ void QtMainWindow::fullscreenCommand(int enable)
     if ((enable && !isMaximized()) || (!enable && isMaximized()))
         setWindowState(windowState() ^ Qt::WindowMaximized);
     LOG(INFO) + (enable ? "Switched to Fullscreen mode" : "Switched to Normal mode" );
+}
+
+bool QtMainWindow::getFullScreen()
+{
+    return windowState()&Qt::WindowMaximized;
 }
 
 void QtMainWindow::setCookie(const char* url, const char* cookie)

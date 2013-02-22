@@ -770,6 +770,17 @@ void CReplaceBundleThread::doReplaceBundle()
 extern "C" 
 {
 
+void rho_sys_replace_current_bundleEx(const char* path, const char* finish_callback, bool do_not_restart_app, bool not_thread_mode )
+{
+    bool is_finished_flag = false;
+    CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, &is_finished_flag);  
+    if (not_thread_mode) {
+        while (!is_finished_flag) {
+            replace_thread->sleep(10);
+        }
+    }
+}
+
 void rho_sys_replace_current_bundle(const char* path, rho_param *p)
 {
     const char* finish_callback = "";
@@ -792,7 +803,7 @@ void rho_sys_replace_current_bundle(const char* path, rho_param *p)
                 if (strcasecmp(name, "do_not_restart_app") == 0) {
                     if (value->type == RHO_PARAM_STRING) {
                         if (strcasecmp(value->v.string, "true") == 0) {
-                            do_not_restart_app = "true";
+                            do_not_restart_app = true;
                         }
                     }
                 }
@@ -806,13 +817,7 @@ void rho_sys_replace_current_bundle(const char* path, rho_param *p)
             }
         }
     }
-    bool is_finished_flag = false;
-    CReplaceBundleThread* replace_thread = new CReplaceBundleThread(path, finish_callback, do_not_restart_app, &is_finished_flag);  
-    if (not_thread_mode) {
-        while (!is_finished_flag) {
-            replace_thread->sleep(10);
-        }
-    }
+    rho_sys_replace_current_bundleEx( path, finish_callback, do_not_restart_app, not_thread_mode );
 }
 
 int rho_sys_check_rollback_bundle(const char* szRhoPath)
@@ -822,6 +827,7 @@ int rho_sys_check_rollback_bundle(const char* szRhoPath)
     return oFT.rollback() != 0 ? 0 : 1;
 }
 
+//TODO: remove  rho_sys_delete_folder
 int rho_sys_delete_folder(const char* szRhoPath)
 {
     return CRhoFile::deleteFolder(szRhoPath);

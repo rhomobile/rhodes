@@ -162,7 +162,7 @@ void hideSIPButton()
 void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 {
     LOG(INFO) + "RhoSetFullScreen: " + (bFull ? 1 : 0);
-
+    m_bFullScreen = bFull;
     HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
     if ( hTaskBar )
     {

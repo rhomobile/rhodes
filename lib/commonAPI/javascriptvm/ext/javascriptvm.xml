@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="JavascriptVM" parent="Rho">
-        <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
-        <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
-    
+        <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function.</HELP_OVERVIEW>
+        <MORE_HELP>Used for calling any java script code inside hidden WebView(for controllers).</MORE_HELP>
+
         <TEMPLATES>
         </TEMPLATES>
 
@@ -13,18 +13,21 @@
 
         <METHODS>
             <METHOD name="executeScript" access="STATIC">
-                <DESC>This is documentation</DESC>
-    
+                <DESC>Execute any script</DESC>
+
                 <PARAMS>
                     <PARAM name="script" type="STRING">
-                        <DESC>Map of properties I want to set</DESC>
+                        <DESC>Valid javascript code</DESC>
                     </PARAM>
                 </PARAMS>
-    
+                <RETURN type="STRING">
+                    <DESC>Result of script evaluation</DESC>
+                </RETURN>
+
             </METHOD>
-    
+
         </METHODS>
-        
+
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
             <![CDATA[
@@ -33,7 +36,7 @@
     					from the raw card data, and once with the encrypted pan data if the pin has been supplied by the
     					user within 10s.:</DESC>
     				<html><head>
-    
+
     				<script language="javascript" type="text/javascript">
     					function doTransaction(data, mode)
     					{
@@ -58,15 +61,15 @@
     				<body>
     				</body>
     				</html>
-    
+
     				You must have the appropriate drivers installed on your device to use the CardReader.  You will see which drivers are installed in the RhoElements log file after you attempt to use any of the card reader functions in RhoElements.  All necessary drivers should be included as part of the platform for supported devices.
-    
+
     				]]>
-    
+
         </USER_OVERVIEW>
-        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
     </MODULE>
-</API>    
+</API>

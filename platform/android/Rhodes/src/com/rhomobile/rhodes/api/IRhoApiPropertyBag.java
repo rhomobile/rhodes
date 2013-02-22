@@ -3,7 +3,7 @@ package com.rhomobile.rhodes.api;
 import java.util.List;
 import java.util.Map;
 
-public interface IRhoApiPropertyBag extends IRhoApiObject {
+public interface IRhoApiPropertyBag {
     void getAllProperties(IMethodResult result);
     void getProperty(String name, IMethodResult result);
     void getProperties(List<String> names, IMethodResult result);

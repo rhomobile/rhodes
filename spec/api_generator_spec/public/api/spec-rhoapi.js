@@ -73,7 +73,7 @@ describe("Rho common API", function () {
             });
 
             it("can perform synchronous request", function () {
-                var apiReq = Rho.util.apiReqFor('Rho:Barcode1');
+                var apiReq = Rho.util.apiReqFor('Rho:Barcode');
                 var result = apiReq({
                     instanceId: '12345',
                     args: ['abc', 1, 2, 3],
@@ -85,7 +85,7 @@ describe("Rho common API", function () {
             });
 
             it("can perform asynchronous request with callback", function () {
-                var apiReq = Rho.util.apiReqFor('Rho:Barcode1');
+                var apiReq = Rho.util.apiReqFor('Rho:Barcode');
 
                 var spy = jasmine.createSpy('callback');
 
@@ -106,7 +106,7 @@ describe("Rho common API", function () {
             });
 
             it("can perform asynchronous request with deferred", function () {
-                var apiReq = Rho.util.apiReqFor('Rho:Barcode1');
+                var apiReq = Rho.util.apiReqFor('Rho:Barcode');
 
                 var dfr = apiReq({
                     instanceId: '12345',
@@ -135,30 +135,30 @@ describe("Rho common API", function () {
 
     });
 
-    describe("Barcode1 module", function () {
+    describe("Barcode module", function () {
 
         it("is available", function () {
-            expect(Rho.Barcode1).toBeNonEmpty();
+            expect(Rho.Barcode).toBeNonEmpty();
         });
 
         it("it have default() method", function () {
-            expect(typeof Rho.Barcode1.default).toEqual('function');
+            expect(typeof Rho.Barcode['default']).toEqual('function');
         });
 
         it("can provide default instance via default() method", function () {
-            var defInst = Rho.Barcode1.default();
-            expect(defInst.constructor.name).toEqual('Barcode1');
+            var defInst = Rho.Barcode['default']();
+            expect(defInst.constructor.name).toEqual('Barcode');
         });
 
         it("can enumerate instances", function () {
-            var objs = Rho.Barcode1.enumerate();
+            var objs = Rho.Barcode.enumerate();
 
             expect(objs).toBeNonEmpty();
             expect(objs instanceof Array).toBeNonEmpty();
             expect(objs.length).toBeGreaterThan(0);
 
             for(var i=0; i<objs.length; i++) {
-                expect(objs[i].constructor.name).toEqual('Barcode1');
+                expect(objs[i].constructor.name).toEqual('Barcode');
                 expect(typeof objs[i].getId()).toEqual('string');
                 for (var j = 0; j < objs.length; j++) {
                     // they all should have different ids
@@ -173,11 +173,11 @@ describe("Rho common API", function () {
             var defInstance;
 
             beforeEach(function () {
-                defInstance = Rho.Barcode1.default();
+                defInstance = Rho.Barcode['default']();
             });
 
             it("can get properties", function () {
-                var props = defInstance.getProps();
+                var props = defInstance.getProperties();
 
                 expect(props).toBeNonEmpty();
                 expect(typeof props).toEqual('object');
@@ -187,13 +187,13 @@ describe("Rho common API", function () {
             });
 
             it("can set properties", function () {
-                var props = defInstance.setProps({ resolution: '800x600' });
+                defInstance.setProperties({ resolution: '800x600' }, function(props) {
+                   expect(props).toBeNonEmpty();
+                   expect(typeof props).toEqual('object');
 
-                expect(props).toBeNonEmpty();
-                expect(typeof props).toEqual('object');
-
-                expect(typeof props.resolution).toEqual('string');
-                expect(props.resolution).toEqual('800x600');
+                   expect(typeof props.resolution).toEqual('string');
+                   expect(props.resolution).toEqual('800x600');
+                });
             });
 
         });
@@ -203,11 +203,11 @@ describe("Rho common API", function () {
             var instance = null;
 
             beforeEach(function(){
-                instance = Rho.Barcode1.enumerate()[0];
+                instance = Rho.Barcode.enumerate()[0];
             });
 
             it("can get properties", function () {
-                var props = instance.getProps();
+                var props = instance.getProperties();
 
                 expect(props).toBeNonEmpty();
                 expect(typeof props).toEqual('object');
@@ -217,13 +217,13 @@ describe("Rho common API", function () {
             });
 
             it("can set properties", function () {
-                var props = instance.setProps({ resolution: '800x600' });
+                instance.setProperties({ resolution: '800x600' }, function(props) {
+                   expect(props).toBeNonEmpty();
+                   expect(typeof props).toEqual('object');
 
-                expect(props).toBeNonEmpty();
-                expect(typeof props).toEqual('object');
-
-                expect(typeof props.resolution).toEqual('string');
-                expect(props.resolution).toEqual('800x600');
+                   expect(typeof props.resolution).toEqual('string');
+                   expect(props.resolution).toEqual('800x600');
+                });
             });
 
         });

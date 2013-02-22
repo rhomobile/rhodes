@@ -23,7 +23,6 @@
 * 
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
-
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -103,6 +102,24 @@ namespace rhodes
         {
             // TODO: consider rotation
             return (int)_screenHeight;
+        }
+
+        public string getScreenOrientation()
+        {
+            if (_screenOrientation == PageOrientation.Portrait ||
+                _screenOrientation == PageOrientation.PortraitDown ||
+                _screenOrientation == PageOrientation.PortraitUp)
+	        {
+		        return "portrait";
+	        }
+	        else if (_screenOrientation == PageOrientation.Landscape ||
+                     _screenOrientation == PageOrientation.LandscapeLeft ||
+                     _screenOrientation == PageOrientation.LandscapeRight)
+	        {
+		         return "landscape";
+	        }
+
+            return "none";
         }
 
         public void bringToFront()

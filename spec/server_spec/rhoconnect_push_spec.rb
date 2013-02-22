@@ -119,25 +119,27 @@ describe 'Rhoconnect push spec' do
   
     puts 'Sending push message...'
   
-    message = 'magic1'
+	message = 'magic1'
 	params = { :user_id=>['pushclient'], :message=>message }
 	RhoconnectHelper.api_post('users/ping',params,@api_token)
 
-    puts 'Waiting message with push content...'
+	puts 'Waiting message with push content...'
 	expect_request('alert').should == message
+		
+	sleep 3
   end
 
   it 'should proceed push message with exit comand' do
     puts 'Sending push message with exit command...'
-  
-    message = 'magic2'
-    params = { :user_id=>['pushclient'], :message=>message, 'command'=>'exit' }
+	  
+	message = 'exit'
+	params = { :user_id=>['pushclient'], :message=>message }
 	RhoconnectHelper.api_post('users/ping',params,@api_token)
 
-    puts 'Waiting message with push content...'
+	puts 'Waiting message with push content...'
 	expect_request('alert').should == message
     
-    sleep 5
+	sleep 5
     
     output = Jake.run2('adb', ['-e', 'shell', 'ps'], {:hide_output=>true})
 
@@ -165,27 +167,30 @@ describe 'Rhoconnect push spec' do
     puts 'Sending 5 push messages...'
     
     alerts = {}
-  
+	  
     5.times do |i|
       message = "magic#{i}"
       alerts[message] = true
-      params = { :user_id=>['pushclient'], 'alert'=>message}
+      params = { :user_id=>['pushclient'], :message=>message}
 	  RhoconnectHelper.api_post('users/ping',params,@api_token)
+	  sleep 0.5
     end
     
     puts 'Waiting 5 messages with push content...'
-    $mutex.synchronize do
     
-      5.times do |i|
-        break if $requests.count == 5
-        $signal.wait($mutex)
+	5.times do |i|
+		$mutex.synchronize do
+			break if $requests.count == 5
+			$signal.wait($mutex)
+		end
         puts "Message count: #{$requests.count}"
-      end
+	end
       
-      $requests.count.should == 5
-
-      puts alerts.inspect
-      5.times do |i|
+	$requests.count.should == 5
+	  
+	$mutex.synchronize do
+	  puts alerts.inspect
+	  5.times do |i|
         message = $requests[i].query['alert']
         message.should_not be_nil
         puts "message: #{message}"
@@ -193,17 +198,15 @@ describe 'Rhoconnect push spec' do
         alerts[message] = false
         #$requests.delete_at 0
       end
-      
       $requests.clear
-    end
-    
+    end    
   end
 
   it 'should start to proceed sequence of push messages' do
     puts 'Sending push message with exit command...'
 
-    message = 'magic6'
-    params = { :user_id=>['pushclient'], 'alert'=>message, 'command'=>'exit' }
+    message = 'exit'
+	params = { :user_id=>['pushclient'], :message=>message }
 	RhoconnectHelper.api_post('users/ping',params,@api_token)
 
     puts 'Waiting message with push content...'
@@ -255,4 +258,5 @@ describe 'Rhoconnect push spec' do
 #      end
 #    end
   end
+
 end

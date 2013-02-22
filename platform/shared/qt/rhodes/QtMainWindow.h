@@ -150,6 +150,7 @@ public slots:
     void executeRunnable(rho::common::IRhoRunnable* pTask);
     void takeSignature(void*); //TODO: Signature::Params*
     void fullscreenCommand(int);
+    bool getFullScreen();
     void setCookie(const char* url, const char* cookie);
     void setFrame(int x, int y, int width, int height);
     void setPosition(int x, int y);
