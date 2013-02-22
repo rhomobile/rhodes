@@ -21,7 +21,7 @@ Android 2.1 and greater
 ### iPhone
 All versions of iPhone 3.0 or greater, iPad
 
-### Windows Phone 7
+### Windows Phone 8
 Latest Windows Phone devices
 
 ## Rhodes Application

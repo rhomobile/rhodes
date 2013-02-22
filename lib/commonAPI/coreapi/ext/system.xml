@@ -4,19 +4,21 @@
     <MODULE name="System" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
         <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
-    
+
+        <ALIASES>
+            <ALIAS new="System" existing="Rho.System" deprecated="true"/>
+        </ALIASES>
+
         <TEMPLATES>
-            <DEFAULT_INSTANCE/>
+            <!-- <DEFAULT_INSTANCE/> -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 
-        <PROPERTIES usePropertyBag="PropertyBagViaAccessors"> <!-- accessorsViaPropertyBag -->
-            <!-- list of properties supported by property bag methods getPops(), setProps() -->
+        <PROPERTIES usePropertyBag="PropertyBagViaAccessors" limitPropertyBag="true" access="STATIC">
             <DESC>object supports this properties bla bla bla :</DESC>
 
             <ALIASES>
                 <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
-                <ALIAS new="disable_screen_rotation" existing="screenAutoRotate" deprecated="true" reverseLogic="true"/>
                 <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
             </ALIASES>
 
@@ -45,10 +47,10 @@
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
                 <DESC>Is camera available on the device.</DESC>
             </PROPERTY>
-            <PROPERTY name="screenWidth" type="INTEGER" readOnly="true" default="800">
+            <PROPERTY name="screenWidth" type="INTEGER" readOnly="true">
                 <DESC>Screen width in logical pixels (used for set coordinates).</DESC>
             </PROPERTY>
-            <PROPERTY name="screenHeight" type="INTEGER" readOnly="true" default="600">
+            <PROPERTY name="screenHeight" type="INTEGER" readOnly="true">
                 <DESC>Screen height in logical pixels (used for set coordinates).</DESC>
             </PROPERTY>
             <PROPERTY name="realScreenWidth" type="INTEGER" readOnly="true">
@@ -150,15 +152,34 @@
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
                 <DESC>Is the security token check was failed.</DESC>
             </PROPERTY>
+            <PROPERTY name="webviewFramework" type="STRING" readOnly="true">
+                <DESC>Browser framework identity string.</DESC>
+            </PROPERTY>
+            <PROPERTY name="screenSleeping" type="BOOLEAN">
+                <DESC>Should screen go to sleep by timeout.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>USE Network.hasNetwork: Is device connected to the network.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasWifiNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>USE Network.hasWifiNetwork: Is device connected to the wifi network</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasCellNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>USE Network.hasCellNetwork: Is device connected to the cell network.</DESC>
+            </PROPERTY>
+            <PROPERTY name="hasSqlite" type="BOOLEAN" readOnly="true" deprecated="true">
+                <DESC>Does sqlite used on this platform.</DESC>
+            </PROPERTY>
 
         </PROPERTIES>
     
-        <METHODS>
+        <METHODS  access="STATIC">
             <ALIASES>
                 <ALIAS new="get_property" existing="getProperty" deprecated="true">
                     <DESC>Use property names methods instead.</DESC>
                 </ALIAS>
 
+                <ALIAS new="run_app" existing="runApplication" deprecated="true"/>
                 <ALIAS new="app_install" existing="applicationInstall" deprecated="true"/>
                 <ALIAS new="app_installed?" existing="isApplicationInstalled" deprecated="true"/>
                 <ALIAS new="app_uninstall" existing="applicationUninstall" deprecated="true"/>
@@ -207,29 +228,6 @@
                         <DESC>Open the application at this url; behavior may be different on different platforms and depend on installed software.</DESC>
                     </PARAM>
                 </PARAMS>
-            </METHOD>
-
-            <METHOD name="runApplication">
-                <DESC>Run an application.</DESC>
-                <PARAMS>
-                    <PARAM name="appName" type="STRING">
-                        <DESC>The name of the application on the device to run.</DESC>
-                    </PARAM>
-                    <PARAM name="params" type="STRING">
-                        <DESC>The name of the application on the device to run.</DESC>
-                        <CAN_BE_NIL/>
-                    </PARAM>
-                    <PARAM name="blockingCall" type="BOOLEAN">
-                        <DESC>The name of the application on the device to run.</DESC>
-                        <CAN_BE_NIL>
-                            <DESC>False by default</DESC>
-                        </CAN_BE_NIL>
-                    </PARAM>
-                </PARAMS>
-
-                <RETURN type="INTEGER">
-                    <DESC>Handle of created process.</DESC>                    
-                </RETURN>
             </METHOD>
 
             <METHOD name="unzipFile">
@@ -283,21 +281,86 @@
             <METHOD name="setRegistrySetting">
                 <DESC>setRegistrySetting</DESC>
                 <PARAMS>
-                    <PARAM name="keyPath" type="STRING">
-                        <DESC>Path to key in registry</DESC>
+                    <PARAM name="hive" type="INTEGER">
+                        <DESC>The hive name</DESC>
+                        <VALUES>
+                            <VALUE constName="HKEY_CLASSES_ROOT" value ="0">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_CURRENT_USER" value ="1">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_LOCAL_MACHINE" value ="2">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_USERS" value ="3">
+                                <DESC></DESC>
+                            </VALUE>
+                        </VALUES>
                     </PARAM>
-                    <PARAM name="keyValue" type="STRING">
-                        <DESC>Value of the key</DESC>
+                    <PARAM name="type" type="INTEGER">
+                        <DESC>The hive name</DESC>
+                        <VALUES>
+                            <VALUE constName="REG_SZ" value ="1">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="REG_BINARY" value ="3">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="REG_DWORD" value ="4">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="REG_MULTI_SZ" value ="7">
+                                <DESC></DESC>
+                            </VALUE>
+                        </VALUES>
+
                     </PARAM>
+                    <PARAM name="subKey" type="STRING">
+                        <DESC>The name of the sub key to set</DESC>
+                    </PARAM>
+
+                    <PARAM name="setting" type="STRING">
+                        <DESC>The name of the setting within the sub key</DESC>
+                    </PARAM>
+
+                    <PARAM name="value" type="STRING">
+                        <DESC>The string value to be set</DESC>
+                    </PARAM>
+
                 </PARAMS>
             </METHOD>
 
             <METHOD name="getRegistrySetting">
                 <DESC>getRegistrySetting</DESC>
                 <PARAMS>
-                    <PARAM name="keyPath" type="STRING">
-                        <DESC>Path to key in registry</DESC>
+                    <PARAM name="hive" type="INTEGER">
+                        <DESC>The hive name</DESC>
+                        <VALUES>
+                            <VALUE constName="HKEY_CLASSES_ROOT" value ="0">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_CURRENT_USER" value ="1">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_LOCAL_MACHINE" value ="2">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="HKEY_USERS" value ="3">
+                                <DESC></DESC>
+                            </VALUE>
+                        </VALUES>
+
                     </PARAM>
+
+                    <PARAM name="subKey" type="STRING">
+                        <DESC>The name of the sub key to be retrieved</DESC>
+                    </PARAM>
+
+                    <PARAM name="setting" type="STRING">
+                        <DESC>The name of the setting within the sub key</DESC>
+                    </PARAM>
+
                 </PARAMS>
 
                 <RETURN type="STRING">
@@ -325,7 +388,7 @@
             </METHOD>
 
             <METHOD name="setWindowPosition">
-                <DESC>Change application window position and size. Implemented only for Windows desktop.</DESC>
+                <DESC>Change application window position. Implemented only for Windows desktop.</DESC>
                 <PARAMS>
                     <PARAM name="x" type="INTEGER">
                         <DESC>Left corner of window.</DESC>
@@ -335,7 +398,206 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
- 
+
+            <METHOD name="setWindowSize">
+                <DESC>Change application window size. Implemented only for Windows desktop.</DESC>
+                <PARAMS>
+                    <PARAM name="width" type="INTEGER">
+                        <DESC>Width of the window.</DESC>
+                    </PARAM>
+                    <PARAM name="height" type="INTEGER">
+                        <DESC>Width of the of window.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="bringToFront">
+                <DESC>Bring application window to the top of the screen.</DESC>
+            </METHOD>
+
+            <METHOD name="replaceCurrentBundle">
+                <DESC>Replace application bundle.</DESC>
+                <PARAMS>
+                    <PARAM name="pathToBundle" type="STRING">
+                        <DESC>Path to bundle.</DESC>
+                    </PARAM>
+                    <PARAM name="params" type="HASH">
+                        <DESC>Update parameters.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="deleteFolder">
+                <DESC>Delete folder.</DESC>
+                <PARAMS>
+                    <PARAM name="pathToFolder" type="STRING">
+                        <DESC>Path to folder.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setDoNotBackupAttribute">
+                <DESC>Set do not backup aiitribute for file. iOS only.</DESC>
+                <PARAMS>
+                    <PARAM name="pathToFile" type="STRING">
+                        <DESC>Path to file.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="isBlobAttr" deprecated="true">
+                <DESC>Use Database.isBlobAttr: is model attribute is blob.</DESC>
+                <PARAMS>
+                    <PARAM name="partition" type="STRING"/>
+                    <PARAM name="sourceID" type="INTEGER"/>
+                    <PARAM name="attrName" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="updateBlobAttribs" deprecated="true">
+                <DESC>Use Database.updateBlobAttribs: update model blob attributes list.</DESC>
+                <PARAMS>
+                    <PARAM name="partition" type="STRING"/>
+                    <PARAM name="sourceID" type="INTEGER"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="get_locale" deprecated="true">
+                <DESC>Use System.locale property: Current device locale.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="set_locale" deprecated="true" generateAPI="false" access="STATIC">
+                <DESC>Use Application.locale property: set application specific locale</DESC>
+                <PARAMS>
+                    <PARAM name="locale_code" type="STRING"/>
+                    <PARAM name="country_code" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setPushNotification" deprecated="true">
+                <DESC>Use Push.setPushNotification: Register push callback, the method to call upon receiving a push message.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method. If empty, unregisters rhoconnect-push.</DESC>
+                    </PARAM>
+                    <PARAM name="url_params" type="STRING">
+                        <DESC>Params which will be added to callback URL.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                    <PARAM name="push_client" type="STRING">
+                        <DESC>Name of a push service client. Current values can be 'rhoconnect_push' or 'gcm' or 'legacy' or empty.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>The call will be applied to every push client.</DESC>
+                        </CAN_BE_NIL>    
+                    </PARAM>
+                </PARAMS>
+
+            </METHOD>
+
+            <METHOD name="setScreenRotationNotification" deprecated="true">
+                <DESC>Use ScreenOrientation.setNotification: Notify (call a callback method) when the screen rotates.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method. If empty, unregisters notification callback.</DESC>
+                    </PARAM>
+                    <PARAM name="url_params" type="STRING">
+                        <DESC>Params which will be added to callback URL.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="exit" deprecated="true">
+                <DESC>Use Application.quit: exit application.</DESC>
+            </METHOD>
+
+            <METHOD name="set_sleeping" deprecated="true">
+                <DESC>Use System.screenSleeping property: enable/disable phone sleeping.</DESC>
+                <PARAMS>
+                    <PARAM name="enable" type="BOOLEAN"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="startTimer" deprecated="true">
+                <DESC>Use Timer.start: start timer.</DESC>
+                <PARAMS>
+                    <PARAM name="interval" type="INTEGER">
+                        <DESC>Timer interval.</DESC>
+                    </PARAM>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method.</DESC>
+                    </PARAM>
+                    <PARAM name="url_params" type="STRING">
+                        <DESC>Params which will be added to callback URL.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="stopTimer" deprecated="true">
+                <DESC>Use Timer.stop: stop timer.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>URL of the callback method which identify the timer to stop.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="setNetworkStatusNotify" deprecated="true">
+                <DESC>Use Network.setNotify: set network notification callback.</DESC>
+                <PARAMS>
+                    <PARAM name="url" type="STRING">
+                        <DESC>The url to the user-defined callback method.</DESC>
+                    </PARAM>
+                    <PARAM name="poll_interval" type="INTEGER">
+                        <DESC>iOS. The network status polling period for systems that can not notify network status change immediately. Default value is 20 seconds.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="clearNetworkStatusNotify" deprecated="true">
+                <DESC>Clear network status callback.</DESC>
+            </METHOD>
+
+            <METHOD name="set_http_proxy_url" deprecated="true">
+                <DESC>Use System.httpProxyURI property: To use client with the HTTP proxy</DESC>
+                <PARAMS>
+                    <PARAM name="proxyURI" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="unset_http_proxy" deprecated="true">
+                <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
+            </METHOD>
+
+            <METHOD name="set_application_icon_badge" deprecated="true">
+                <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
+                <PARAMS>
+                    <PARAM name="badgeNumber" type="INTEGER"/>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="runApplication" deprecated="true">
+                <DESC>Use System.Process.runApplication: Run an application.</DESC>
+                <PARAMS>
+                    <PARAM name="appName" type="STRING">
+                        <DESC>The name of the application on the device to run.</DESC>
+                    </PARAM>
+                    <PARAM name="params" type="STRING">
+                        <DESC>The name of the application on the device to run.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                    <PARAM name="blockingCall" type="BOOLEAN">
+                        <DESC>The name of the application on the device to run.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>False by default</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+
+            </METHOD>
+
         </METHODS>
         
         <USER_OVERVIEW>

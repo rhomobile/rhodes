@@ -26,7 +26,7 @@ struct IProcessSingleton
 {
     virtual ~IProcessSingleton(){}
 
-    virtual void runApplication( const rho::StringW& appName,  const rho::StringW& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult) = 0;
 
 
     virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor) = 0;

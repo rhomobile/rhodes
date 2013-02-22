@@ -255,7 +255,6 @@
     <ClCompile Include="..\..\shared\ruby\ext\sqlite3_api\sqlite3_api_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c" />
     <ClCompile Include="..\..\shared\ruby\ext\strscan\strscan.c" />
-    <ClCompile Include="..\..\shared\ruby\ext\system\system_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\webview\webview_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\file.c" />
     <ClCompile Include="..\..\shared\ruby\gc.c" />

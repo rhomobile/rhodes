@@ -24,6 +24,8 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+if System.get_property('platform') != 'WINDOWS'
+
 if (((System.get_property('platform') != 'ANDROID') and Object.const_defined?('RhoElementsExt')) or
    ((System.get_property('platform') == 'ANDROID') and System.get_property('is_motorola_device')))
 
@@ -173,4 +175,5 @@ class << self
 end    
 end
 
+end
 end

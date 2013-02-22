@@ -4,7 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 public interface IMethodResult {
-    void set(final String res);
-    void set(final List<String> res);
-    void set(final Map<String, String> res);
+    void set(boolean res);
+    void set(int res);
+    void set(double res);
+    void set(String res);
+    void set(List<String> res);
+    void set(Map<String, String> res);
+    
+    void setError(String mesage);
+    void setArgError(String message);
 }

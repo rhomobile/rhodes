@@ -1,5 +1,5 @@
 #include "JavascriptVMBase.h"
-#include "api_generator\js_helpers.h"
+#include "api_generator/js_helpers.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -30,25 +30,25 @@ rho::String js_s_JavascriptVM_executeScript(rho::json::CJSONArray& argv, const r
     
     if ( argc == 0 )
     {
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
     }
     
 
 
-    rho::StringW arg0;
+    rho::String arg0;
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
         {
-            arg0 = convertToStringW(argv[0].getString());
+            arg0 = argv[0].getString();
 
             oRes.setStringParam(argv[0].getString());
 
         }
         else if (!argv[0].isNull())
         {
-            oRes.setArgError(L"Type error: argument " L"0" L" should be " L"string" );
+            oRes.setArgError( "Type error: argument " "0" " should be " "string" );
             return oRes.toJSON();
         }
     }
@@ -63,7 +63,9 @@ rho::String js_s_JavascriptVM_executeScript(rho::json::CJSONArray& argv, const r
 
 
 
-        
+
+
+
 
 
 
@@ -71,13 +73,13 @@ rho::String js_s_JavascriptVM_executeScript(rho::json::CJSONArray& argv, const r
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError(L"Wrong number of arguments: " + convertToStringW(argc) + L" instead of " + convertToStringW(1) );
+        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
-            oRes.setArgError(L"Type error: callback should be String");
+            oRes.setArgError("Type error: callback should be String");
             return oRes.toJSON();
         }
 
@@ -87,13 +89,13 @@ rho::String js_s_JavascriptVM_executeScript(rho::json::CJSONArray& argv, const r
         {
             if ( !argv[nCallbackArg + 1].isString() )
             {
-                oRes.setArgError(L"Type error: callback parameter should be String");
+                oRes.setArgError("Type error: callback parameter should be String");
                 return oRes.toJSON();
             }
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -104,7 +106,7 @@ rho::String js_s_JavascriptVM_executeScript(rho::json::CJSONArray& argv, const r
 
     if ( bUseCallback )
         rho::CJavascriptVMFactoryBase::getJavascriptVMSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 

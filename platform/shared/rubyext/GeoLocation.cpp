@@ -73,7 +73,9 @@ CGeoLocation* CGeoLocation::m_pInstance = 0;
 {
     if (!m_pInstance)
     {
-        RAWLOG_FATAL("No singleton instance!!!!");
+//        RAWLOG_FATAL("No singleton instance!!!!");
+        RAWLOG_INFO("Creating singleton instance.");
+        m_pInstance = new CGeoLocation();
     }
     return m_pInstance;
 }

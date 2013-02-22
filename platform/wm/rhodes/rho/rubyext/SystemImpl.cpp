@@ -23,7 +23,206 @@
 * 
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
+#include "stdafx.h"
+#include "common/RhoPort.h"
+#include "ruby/ext/rho/rhoruby.h"
+#include "MainWindow.h"
 
+#if defined(OS_WINDOWS_DESKTOP)
+#undef null
+#include <QWebPage>
+#endif
+
+using namespace rho;
+using namespace rho::common;
+extern "C" HWND getMainWnd();
+CMainWindow& getAppWindow();
+
+extern "C"
+{
+
+#if defined(OS_WINDOWS_DESKTOP)
+const char* rho_sys_win32_getWebviewFramework()
+{
+    return "WEBKIT/" QTWEBKIT_VERSION_STR;
+}
+#endif
+
+void rho_sys_app_exit()
+{
+	::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
+}
+
+void rho_wmsys_set_full_screen( int nFull )
+{
+    getAppWindow().RhoSetFullScreen( nFull != 0 );
+}
+
+int rho_wmsys_get_full_screen( )
+{
+    return getAppWindow().getFullScreen() ? 1 : 0;
+}
+
+void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
+
+void rho_wmsys_run_app(const char* szPath, const char* szParams )
+{
+    StringW strAppNameW;
+    convertToStringW(szPath, strAppNameW);
+
+    StringW strParamsW;
+    if ( szParams && *szParams )
+        convertToStringW(szParams, strParamsW);
+
+    rho_wmsys_run_appW(strAppNameW.c_str(), strParamsW.c_str() );
+}
+
+void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams )
+{
+	SHELLEXECUTEINFO se = {0};
+    se.cbSize = sizeof(SHELLEXECUTEINFO);
+    se.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
+    se.lpVerb = L"Open";
+    se.nShow = SW_SHOWNORMAL;
+
+    StringW strAppNameW = szPath;
+    String_replace(strAppNameW, '/', '\\' );
+
+    se.lpFile = strAppNameW.c_str();
+
+    if ( szParams && *szParams )
+        se.lpParameters = szParams;
+
+    if ( !ShellExecuteEx(&se) )
+	{
+        LOG(ERROR) + "Cannot execute: " + strAppNameW + ";Error: " + GetLastError();
+		SetLastError(-1);
+	}
+
+    if(se.hProcess)
+        CloseHandle(se.hProcess); 
+}
+
+#ifdef OS_WINDOWS_DESKTOP
+void rho_win32sys_run_appW(const wchar_t* szPath, const wchar_t* szParams, const wchar_t* szDir)
+{
+	HINSTANCE result = ShellExecute(NULL, NULL, (WCHAR*)szPath, (WCHAR*)szParams, (WCHAR*)szDir, SW_SHOW);
+	if ((int)result > 32) {
+		LOG(INFO) + "Application started: " + szPath;
+	} else {
+		LOG(ERROR) + "Cannot start application: " + szPath;
+	}
+}
+#endif
+
+int rho_sys_get_screen_width()
+{
+#ifdef OS_WINCE
+	return GetSystemMetrics(SM_CXSCREEN);
+#else
+	return CMainWindow::getScreenWidth();
+#endif
+}
+
+int rho_sys_get_screen_height()
+{
+#ifdef OS_WINCE
+	return GetSystemMetrics(SM_CYSCREEN);
+#else
+	return CMainWindow::getScreenHeight();
+#endif
+}
+
+void rho_sys_bring_to_front()
+{
+    SetForegroundWindow(getMainWnd());
+}
+
+void rho_sys_report_app_started()
+{
+    LOG(INFO) + "rho_sys_report_app_started() has no implementation on Win Mobile.";
+	RHODESAPP().initPushClients();
+}
+
+
+#if defined(OS_WINDOWS_DESKTOP)
+
+namespace rho {
+
+class CRhoWindow
+{
+public:
+    class CParams
+    {
+	private:
+		int m_x;
+		int m_y;
+		int m_width;
+		int m_height;
+	public:
+		CParams(int x, int y, int width, int height) : m_x(x), m_y(y), m_width(width), m_height(height) {}
+		~CParams(){}
+		int getX() { return m_x; }
+		int getY() { return m_y; }
+		int getWidth() { return m_width; }
+		int getHeight() { return m_height; }
+	};
+
+public:
+	CRhoWindow(void){}
+	~CRhoWindow(void){}
+
+    static void setFrame(CParams* params)
+	{
+	    CParams& frame = *((CParams*)params);
+		CMainWindow& mainWin = getAppWindow();
+		mainWin.setFrame(frame.getX(), frame.getY(), frame.getWidth(), frame.getHeight());
+	}
+    static void setPosition(CParams* params)
+	{
+	    CParams& frame = *((CParams*)params);
+		CMainWindow& mainWin = getAppWindow();
+		mainWin.setPosition(frame.getX(), frame.getY());
+	}
+    static void setSize(CParams* params)
+	{
+	    CParams& frame = *((CParams*)params);
+		CMainWindow& mainWin = getAppWindow();
+		mainWin.setSize(frame.getWidth(), frame.getHeight());
+	}
+	static void lockSize(CParams* params)
+	{
+	    CParams& p = *((CParams*)params);
+		CMainWindow& mainWin = getAppWindow();
+		mainWin.lockSize(p.getX());
+	}
+};
+
+}
+
+void rho_sys_set_window_frame(int x0, int y0, int width, int height)
+{
+	rho_callInUIThread(CRhoWindow::setFrame, new CRhoWindow::CParams(x0, y0, width, height));
+}
+
+void rho_sys_set_window_position(int x0, int y0)
+{
+	rho_callInUIThread(CRhoWindow::setPosition, new CRhoWindow::CParams(x0, y0, 0, 0));
+}
+
+void rho_sys_set_window_size(int width, int height)
+{
+	rho_callInUIThread(CRhoWindow::setSize, new CRhoWindow::CParams(0, 0, width, height));
+}
+
+void rho_sys_lock_window_size(int locked)
+{
+	rho_callInUIThread(CRhoWindow::lockSize, new CRhoWindow::CParams(locked, 0, 0, 0));
+}
+#endif
+
+}
+#if 0
 #include "stdafx.h"
 
 #include "common/RhoPort.h"
@@ -485,6 +684,7 @@ int get_msie_version(rho::String& msieVer)
 #endif
 
 static int g_rho_has_network = 1, g_rho_has_cellnetwork = 0;
+
 
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
@@ -975,3 +1175,4 @@ void rho_sys_lock_window_size(int locked)
 #endif
 
 } //extern "C"
+#endif //0

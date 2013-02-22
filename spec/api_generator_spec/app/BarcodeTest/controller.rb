@@ -1,7 +1,7 @@
 require 'rho/rhocontroller'
 require 'helpers/application_helper'
 require 'helpers/browser_helper'
-require 'barcode'
+#require 'barcode'
 
 class BarcodeTestController < Rho::RhoController
   include BrowserHelper
@@ -13,7 +13,13 @@ class BarcodeTestController < Rho::RhoController
   
   #@@test_proc = lambda{|args| puts "lamda: #{args}"}
   def index
-
+=begin
+    str1 = ""
+    #Rho::Barcode.myTest(str1)
+    Rho::Barcode.test    
+    Rho::Barcode.test= "123"
+    Rho::Barcode.test = "123"
+    
     hash = { name: "David", age: 49 }
     #puts "hash: #{hash.name}"
 
@@ -24,7 +30,7 @@ class BarcodeTestController < Rho::RhoController
     Rho::Barcode.getProperty("display", method(:test_proc) )
     Rho::Barcode.getProperty("display", Proc.new{|args| puts "proc: #{args}"} )
     
-#=begin
+
     Rho::Barcode.getProperty("display", "/app/BarcodeTest/test_callback")
     
     Rho::Barcode.getProperty("display", "/app/BarcodeTest/test_callback")
@@ -33,13 +39,16 @@ class BarcodeTestController < Rho::RhoController
     puts "arBarcodes : #{arBarcodes}"
     id = arBarcodes[0].getProperty("ID")
     puts "id: #{id}"
+    
+    Rho::Barcode.myTest(arBarcodes[0])
+    
     arBarcodes[1].getProperty("sound", "/app/BarcodeTest/test_callback")
     
     arBarcodes[1].getAllProperties( "/app/BarcodeTest/test_callback", "param1=123")
 
     #hash = { name: "David", age: 49 }
     Rho::Barcode.setProperties(  Barcode128: 'enabled' )
-#=end  
+=end  
     render :back => '/app'
   end
 

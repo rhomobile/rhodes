@@ -74,7 +74,7 @@
     else if ([objectiveC_value isKindOfClass:[CRubyModule class]]) {
         // rubyModule
         CRubyModule* rubyModule = (CRubyModule*)objectiveC_value;
-        NSString* rubyPath = [[rubyModule getModuleName] stringByReplacingOccurrencesOfString:@"." withString:@":"];
+        NSString* rubyPath = [[rubyModule getModuleName] stringByReplacingOccurrencesOfString:@"." withString:@"::"];
         VALUE klass = rb_path_to_class(rho_ruby_create_string([rubyPath UTF8String]));
         if (!rho_ruby_is_NIL(klass)) {
             v = rho_ruby_create_object_with_id(klass, [[rubyModule getInstanceID] UTF8String]);

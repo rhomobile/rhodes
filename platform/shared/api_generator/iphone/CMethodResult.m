@@ -85,7 +85,7 @@
 }
 
 -(void) enableObjectCreationModeWithRubyClassPath:(NSString*)classPath {
-    mRubyModulePath = [classPath stringByReplacingOccurrencesOfString:@"." withString:@":"];
+    mRubyModulePath = [classPath stringByReplacingOccurrencesOfString:@"." withString:@"::"];
 }
 
 

@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/<%= namefixed %>/<%= namecamelcase %>Base.java
+ext/platform/android/generated/src/com/rho/<%= namefixed %>/<%= namecamelcase %>FactorySingleton.java
+ext/platform/android/generated/src/com/rho/<%= namefixed %>/<%= namecamelcase %>SingletonBase.java
+ext/platform/android/generated/src/com/rho/<%= namefixed %>/I<%= namecamelcase %>.java
+ext/platform/android/generated/src/com/rho/<%= namefixed %>/I<%= namecamelcase %>Factory.java
+ext/platform/android/generated/src/com/rho/<%= namefixed %>/I<%= namecamelcase %>Singleton.java
+ext/platform/android/src/com/rho/<%= namefixed %>/<%= namecamelcase %>.java
+ext/platform/android/src/com/rho/<%= namefixed %>/<%= namecamelcase %>Factory.java
+ext/platform/android/src/com/rho/<%= namefixed %>/<%= namecamelcase %>Singleton.java

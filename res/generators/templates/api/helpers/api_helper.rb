@@ -17,19 +17,21 @@ end
 def api_generator_cpp_makeNativeType(gen_type)
     
     if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
-        res = "rho::StringW"
+        res = "rho::String"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
-        res = "rho::Vector<rho::StringW>"
+        res = "rho::Vector<rho::String>"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
-        res = "rho::Hashtable<rho::StringW, rho::StringW>"
+        res = "rho::Hashtable<rho::String, rho::String>"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
-        res = "int64"
+        res = "int"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
         res = "bool"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
         res = "double"
     else
-        raise "Unknown parameter type: #{gen_type}"     
+        #Module name, pass ID of object
+        res = "rho::String"
+        #raise "Unknown parameter type: #{gen_type}"     
     end
     
     res
@@ -38,19 +40,21 @@ end
 def api_generator_cpp_makeNativeTypeArg(gen_type)
     
     if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
-        res = "const rho::StringW&"
+        res = "const rho::String&"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
-        res = "const rho::Vector<rho::StringW>&"
+        res = "const rho::Vector<rho::String>&"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
-        res = "const rho::Hashtable<rho::StringW, rho::StringW>&"
+        res = "const rho::Hashtable<rho::String, rho::String>&"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
-        res = "int64"
+        res = "int"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
         res = "bool"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
         res = "double"
     else
-        raise "Unknown parameter type: #{gen_type}"     
+        #Module name, pass ID of object
+        res = "const rho::String&"
+        #raise "Unknown parameter type: #{gen_type}"     
     end
     
     res
@@ -65,7 +69,7 @@ def api_generator_jni_makeNativeType(gen_type)
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
         res = "rho::Hashtable<rho::String, rho::String>"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
-        res = "int64"
+        res = "int"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
         res = "bool"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
@@ -175,6 +179,21 @@ def api_generator_cpp_MakeNamespace(parents)
     end
     
     namespace
+end
+
+def api_generator_getRubyModuleFullName(cur_module)
+    module_name = cur_module.parents.join('.')
+    module_name += '.' if module_name && module_name.length() > 0
+    module_name += cur_module.name
+
+    module_name.gsub('.', '::')
+end
+
+def api_generator_isSelfModule(cur_module, type)
+    return false unless type
+    return true if type == Rhogen::ApiGenerator::MethodParam::TYPE_SELF
+    
+    api_generator_getRubyModuleFullName(cur_module) == type.gsub('.', '::')
 end
 
 def api_generator_java_makePackageName(cur_module)

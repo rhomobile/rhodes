@@ -10,7 +10,7 @@ class CJavascriptVMFactoryBase : public CModuleFactoryBase<IJavascriptVM, IJavas
 {
 protected:
     static rho::common::CAutoPtr<CJavascriptVMFactoryBase> m_pInstance;
-    Hashtable<rho::StringW,IJavascriptVM*> m_hashModules;
+    Hashtable<rho::String,IJavascriptVM*> m_hashModules;
 
 public:
 
@@ -19,7 +19,7 @@ public:
 
     static IJavascriptVMSingleton* getJavascriptVMSingletonS(){ return getInstance()->getModuleSingleton(); }
 
-    virtual IJavascriptVM* getModuleByID(const rho::StringW& strID)
+    virtual IJavascriptVM* getModuleByID(const rho::String& strID)
     {
         if ( !m_hashModules.containsKey(strID) )
         {
@@ -32,7 +32,7 @@ public:
         return m_hashModules[strID];
     }
 
-    virtual IJavascriptVM* createModuleByID(const rho::StringW& strID){ return (IJavascriptVM*)0; };
+    virtual IJavascriptVM* createModuleByID(const rho::String& strID){ return (IJavascriptVM*)0; };
 
 };
 
@@ -40,7 +40,12 @@ class CJavascriptVMSingletonBase : public CModuleSingletonBase< IJavascriptVMSin
 {
 protected:
 
+
+
+
 public:
+
+
 
 
 };
@@ -50,6 +55,7 @@ class CJavascriptVMBase: public IJavascriptVM
 protected:
 
 public:
+
     CJavascriptVMBase();
 
 

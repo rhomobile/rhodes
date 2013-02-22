@@ -1,55 +1,18 @@
 package com.rho.barcode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.rhomobile.rhodes.api.IMethodResult;
-import com.rhomobile.rhodes.api.RhoApiObject;
+import com.rhomobile.rhodes.api.MethodResult;
 
-public class Barcode extends RhoApiObject implements IBarcode {
+public class Barcode extends BarcodeBase implements IBarcode {
 
-    private Map<String, String> mProps = new HashMap<String, String>();
     
     public Barcode(String id) {
         super(id);
-        mProps.put("display", "LCD");
-        mProps.put("sound", "Dolby");
-    }
-
-    @Override
-    public void getAllProperties(IMethodResult result) {
-        result.set(mProps);
-    }
-
-    @Override
-    public void getProperty(String name, IMethodResult result) {
-        result.set(mProps.get(name));
-    }
-
-    @Override
-    public void getProperties(List<String> names, IMethodResult result) {
-        List<String> props = new ArrayList<String>();
-        for (String name: names) {
-            props.add(mProps.get(name));
-        }
-        result.set(props);
-    }
-
-    @Override
-    public void setProperty(String name, String val, IMethodResult result) {
-        mProps.put(name, val);
-    }
-
-    @Override
-    public void setProperties(Map<String, String> props, IMethodResult result) {
-        mProps.putAll(props);
-    }
-
-    @Override
-    public void clearAllProperties(IMethodResult result) {
-        mProps.clear();
+        
+        setProperty("display", "LCD", new MethodResult());
+        setProperty("sound", "Dolby", new MethodResult());
     }
 
     @Override
@@ -76,6 +39,18 @@ public class Barcode extends RhoApiObject implements IBarcode {
 
     @Override
     public void enable(Map<String, String> propertyMap, IMethodResult result) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void getIlluminationMode(IMethodResult result) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setIlluminationMode(String value, IMethodResult result) {
         // TODO Auto-generated method stub
         
     }

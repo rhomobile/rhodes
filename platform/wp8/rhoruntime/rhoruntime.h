@@ -35,6 +35,7 @@ namespace rhoruntime
 		int getLogicalDpiY();
         int getScreenWidth();
         int getScreenHeight();
+		::Platform::String^ getScreenOrientation();
 
 		void bringToFront();
 

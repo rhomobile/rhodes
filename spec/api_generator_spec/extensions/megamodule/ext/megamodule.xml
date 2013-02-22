@@ -1,0 +1,128 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+	<MODULE name="Megamodule" parent="Rho.Examples" generateUnderscoreRubyNames="true">
+		<HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
+		<MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
+	    <TEMPLATES>
+	    	<SINGLETON_INSTANCES/> 
+	    	<DEFAULT_INSTANCE/> 
+	    	<PROPERTY_BAG/>
+	    </TEMPLATES>	
+		<CONSTANTS>
+			<CONSTANT name="CONST1_STRING" value="value1">
+				<DESC>This is documentation const 1</DESC>
+			</CONSTANT>
+			<CONSTANT name="CONST2_INTEGER" value="123" type="INTEGER">
+				<DESC>This is documentation const 2</DESC>
+			</CONSTANT>
+		</CONSTANTS>	
+		<PROPERTIES> 
+			<DESC>object supports this properties bla bla bla :</DESC>
+			<PROPERTY name="StringProperty" type="STRING" readOnly="true">
+				<DESC>possible value - "hardware"/"software"</DESC>
+				<VALUES>
+					<VALUE constName="CONST_STRING_1" value="const1" type="STRING">
+						<DESC>value doc 1</DESC>
+					</VALUE>
+					<VALUE constName="CONST_STRING_2" value="const2">
+						<DESC>value doc 2</DESC>
+					</VALUE>
+				</VALUES>
+			</PROPERTY>
+			<PROPERTY name="IntegerProperty" type="INTEGER" usePropertyBag="none">
+				<DESC>int property</DESC>
+			</PROPERTY>
+			<ALIASES>
+				<ALIAS new="integer_property" existing="IntegerProperty" >
+					<DESC>Message for logging in case of deprecated attribute</DESC>
+				</ALIAS>
+				<ALIAS new="string_property" existing="StringProperty" >
+					<DESC>Message for logging in case of deprecated attribute</DESC>
+				</ALIAS>
+			</ALIASES>
+		</PROPERTIES>	
+		<METHODS>
+			<METHOD name="typesTest">
+				<DESC>test types</DESC>
+				<PARAMS>
+					<PARAM name="paramStr" type="STRING"/>
+					<PARAM name="paramBool" type="BOOLEAN"/>
+					<PARAM name="paramInt" type="INTEGER"/>
+					<PARAM name="paramFloat" type="FLOAT"/>
+					<PARAM name="paramArray" type="ARRAY"/>
+					<PARAM name="paramHash" type="HASH"/>
+				</PARAMS>
+				<RETURN type="BOOLEAN">
+					<DESC>
+						return true if (paramStr == "ABC") AND (paramBool == true) AND (paramInt == 555123) AND (paramFloat == 3.14) AND (paramArray == [1,2,3]) AND (paramHash == {:p1 => "abc", :p2 => "qwe"}).
+					</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD name="produceArray">
+				<DESC>doc produceArray</DESC>
+				<RETURN type="ARRAY" itemType="INTEGER">
+					<DESC>
+						return 1,2,3,4,5,6,7,8,9,10
+					</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD name="getObjectsCount" access="STATIC">
+				<DESC></DESC>
+				<RETURN type="INTEGER">
+					<DESC>
+						return count of objects
+					</DESC>
+				</RETURN>
+			</METHOD>	
+			<METHOD name="getObjectByIndex" access="STATIC">
+				<DESC></DESC>
+				<PARAMS>
+					<PARAM name="index" type="INTEGER"/>
+				</PARAMS>
+				<RETURN type="Rho.Examples.Megamodule">
+					<DESC>
+						return object by index
+					</DESC>
+				</RETURN>
+			</METHOD>	
+			<METHOD name="showAlertFromUIThread" access="INSTANCE" runInThread="ui" hasCallback="none">
+				<DESC>show Alert from UI thread</DESC>
+				<PARAMS>
+					<PARAM  name ="message" type="STRING">
+							<DESC> message for show in Alert box</DESC>
+					</PARAM>
+				</PARAMS>
+			</METHOD>
+			<METHOD name="setPeriodicallyCallback" access="INSTANCE" hasCallback="mandatory">
+				<DESC>start periodically callback</DESC>
+				<PARAMS>
+					<PARAM  name ="periodInMilliseconds" type="INTEGER">
+						<DESC>hash of additional settings for scan</DESC>
+						<CAN_BE_NIL>
+							<DESC>use dafault period = 5000 miliseconds (5 seconds)</DESC>
+						</CAN_BE_NIL>
+					</PARAM>
+				</PARAMS>
+			</METHOD>
+			<METHOD name="isPeriodicallyCallbackSetted" access="INSTANCE" hasCallback="optional">
+				<DESC>check for callback is setted</DESC>
+				<RETURN type="BOOLEAN">
+					<DESC>return true if setted</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD name="stopPeriodicallyCallback" access="INSTANCE" hasCallback="none">
+				<DESC>stop callback</DESC>
+			</METHOD>
+			<ALIASES>
+				<ALIAS new="set_period" existing="setPeriodicallyCallback" deprecated="true" >
+					<DESC>old deprecated set callback method</DESC>
+				</ALIAS>
+			</ALIASES>
+		</METHODS>
+		<USER_OVERVIEW>
+		</USER_OVERVIEW>	
+		<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		<PLATFORM></PLATFORM>
+	</MODULE>
+</API>
