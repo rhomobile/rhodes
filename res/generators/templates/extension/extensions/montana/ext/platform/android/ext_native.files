@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/<%= namecamelcase %>.cpp
+ext/platform/android/generated/jni/<%= namefixed %>_ruby_wrap.cpp
+ext/platform/android/generated/jni/<%= namefixed %>_js_wrap.cpp
+ext/platform/android/jni/<%= namecamelcase %>_impl.cpp
+ext/shared/generated/<%= namefixed %>_api_init.cpp
+ext/shared/generated/<%= namefixed %>_js_api.cpp
+ext/shared/generated/<%= namefixed %>_ruby_api.c
