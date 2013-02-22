@@ -243,9 +243,10 @@ namespace "build" do
 
           puts "#{ext_config}"
           is_prebuilt = ext_config && ext_config['wm'] && ext_config['wm']['exttype'] && ext_config['wm']['exttype'] == 'prebuilt'
-          next unless (File.exists?( File.join(extpath, "build.bat") ) || is_prebuilt )
+		  project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
+          
+          next unless (File.exists?( File.join(extpath, "build.bat") ) || is_prebuilt || project_path)
 
-		  project_path = ext_config["project_paths"][$current_platform] if (ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
 
           puts "extpath - " + commin_ext_path.to_s
           chdir commin_ext_path 
@@ -477,18 +478,46 @@ namespace "build" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
-          next unless File.exists? File.join(extpath, "build.bat")
+          ext_config_path = File.join(p, ext, "ext.yml")
+          ext_config = nil
+          if File.exist? ext_config_path
+            ext_config = Jake.config(File.open(ext_config_path))
+          end
+          
+		  project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
+          next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
 
-          ENV['RHO_PLATFORM'] = 'win32'
-          ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
-          ENV['PWD'] = $startdir
-          ENV['RHO_ROOT'] = ENV['PWD']
-          ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
-          ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "extensions", ext)
-          ENV['VCBUILD'] = $vcbuild
-          ENV['SDK'] = $sdk
+          if (project_path)
+          
+                ENV['RHO_PLATFORM'] = 'win32'
+                ENV['PWD'] = $startdir
+                ENV['RHO_ROOT'] = $startdir
+                ENV['SDK'] = $sdk
+                ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+                ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
+                ENV['VCBUILD'] = $vcbuild
+                ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
+	            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
+                ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
+                
+                ENV['RHO_EXT_NAME']=ext                
 
-          puts Jake.run("build.bat", [], extpath)
+                puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
+          
+          else
+
+              ENV['RHO_PLATFORM'] = 'win32'
+              ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+              ENV['PWD'] = $startdir
+              ENV['RHO_ROOT'] = ENV['PWD']
+              ENV['TARGET_TEMP_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
+              ENV['TEMP_FILES_DIR'] = File.join(ENV['PWD'], "platform", "wm", "bin", "win32", "extensions", ext)
+              ENV['VCBUILD'] = $vcbuild
+              ENV['SDK'] = $sdk
+
+              puts Jake.run("build.bat", [], extpath)
+          end
+              
           break
         end
       end

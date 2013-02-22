@@ -25,21 +25,28 @@ def build_extension()
   
   exit unless $? == 0
 
-    puts "$target_temp_dir :  #{$target_temp_dir}"
-    puts "$targetext_dir :  #{$targetext_dir}"
+  if $targetext_dir
+    $targetext_dir = File.join($targetext_dir,$extname)
+    mkdir_p $targetext_dir
+    file_to_copy = File.join($target_temp_dir, $extname + ".lib")
+    puts "copy file #{file_to_copy} to #{$targetext_dir}"
+    cp_r file_to_copy, $targetext_dir
+  end
 
-    if $targetext_dir
-      $targetext_dir = File.join($targetext_dir,$extname)
-      puts "$targetext_dir : #{$targetext_dir}"
-      mkdir_p $targetext_dir
-      cp_r File.join($target_temp_dir, $extname + ".lib"), $targetext_dir
-    end
+  if $targetext_dir2
+    mkdir_p $targetext_dir2
+    file_to_copy = File.join($target_temp_dir, $extname + ".lib")
+    puts "copy file #{file_to_copy} to #{$targetext_dir2}"
+    cp_r file_to_copy, $targetext_dir2
+  end
+  
 end
 
 namespace "build" do
   task :config do
     $target_temp_dir = ENV['TARGET_TEMP_DIR']
     $targetext_dir = ENV['TARGET_EXT_DIR']
+    $targetext_dir2 = ENV['TARGET_EXT_DIR_SIM']
     $extname = ENV['RHO_EXT_NAME']
 
     $tempdir = ENV['TEMP_FILES_DIR']
