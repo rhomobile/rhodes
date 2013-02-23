@@ -230,7 +230,6 @@ namespace "build" do
       
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
-          next if p.index("rhodes") && ext.downcase() == "barcode"
           extpath = File.join(p, ext, 'ext')
           commin_ext_path = File.join(p, ext)
           ext_config_path = File.join(p, ext, "ext.yml")

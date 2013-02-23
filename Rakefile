@@ -706,21 +706,17 @@ def init_extensions(startdir, dest)
     puts 'ext - ' + extname
     
     extpath = nil
-    extpath = find_ext_ingems(extname) if $app_config["app_type"] == 'rhoelements'
-
-    if extpath.nil?    
-        extpaths.each do |p|
-          #next if p.index("rhodes") && extname.downcase() == "barcode" && $current_platform == "wm"
-          
-          ep = File.join(p, extname)
-          if File.exists? ep
-            extpath = ep
-            break
-          end
-        end    
-    end
+    extpaths.each do |p|
+      #next if p.index("rhodes") && extname.downcase() == "barcode" && $current_platform == "wm"
+      
+      ep = File.join(p, extname)
+      if File.exists? ep
+        extpath = ep
+        break
+      end
+    end    
         
-    extpath = find_ext_ingems(extname) if extpath.nil? && $app_config["app_type"] != 'rhoelements'
+    extpath = find_ext_ingems(extname) if extpath.nil?
       
     if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
 		raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
