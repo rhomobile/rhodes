@@ -24,8 +24,12 @@ struct IProcess
 
 struct IProcessSingleton
 {
+//constants
+
+
     virtual ~IProcessSingleton(){}
 
+//methods
     virtual void runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult) = 0;
 
 
