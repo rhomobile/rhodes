@@ -1,4 +1,4 @@
-entry: Init_System
+entry: Init_CoreAPI_Extension
 javaentry: com.coreapi.CoreAPI
 android_additional_sources_list: ext/platform/android/ext_build.files
 libraries: ["CoreAPI"]
