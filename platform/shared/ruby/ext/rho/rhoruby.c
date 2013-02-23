@@ -235,7 +235,10 @@ void RhoRubyStart()
     Init_sqlite3_api(); //+
     Init_GeoLocation(); //+
     Init_AsyncHttp(); //+
+#if !defined(WINDOWS_PLATFORM)
     Init_System();
+#endif
+
     Init_Phonebook();
     Init_WebView(); //+
     Init_RhoConf(); //+
@@ -270,6 +273,7 @@ void RhoRubyStart()
 	Init_strscan();
 	Init_GeoLocation();
 	Init_AsyncHttp();
+    //TODO: remove Init_System(); 
 	Init_System();
 	Init_RhoSupport();
 	Init_RhoConf();
