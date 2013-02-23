@@ -41,7 +41,12 @@ class CProcessSingletonBase : public CModuleSingletonBase< IProcessSingleton >
 {
 protected:
 
+
+
+
 public:
+
+
 
 
 };
@@ -51,6 +56,7 @@ class CProcessBase: public IProcess
 protected:
 
 public:
+
     CProcessBase();
 
 

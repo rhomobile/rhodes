@@ -43,34 +43,20 @@ static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::String, rho::S
 }
 
 
-
 VALUE rb_s_Process_runApplication(int argc, VALUE *argv)
-
 {
     rho::apiGenerator::CMethodResult oRes;
 
-
-    oRes.setRubyObjectClass(getRuby_Process_Module());
-
-
+    oRes.setRubyObjectClass( getRuby_Process_Module() );
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
-
-
-
-
     nCallbackArg = 1;
-
-    
     if ( argc == 0 )
     {
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toRuby();
     }
-    
-
-
     rho::String arg0;
     if ( argc > 0 )
     {
@@ -88,26 +74,7 @@ VALUE rb_s_Process_runApplication(int argc, VALUE *argv)
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
     nCallbackArg = 2;
-
-    
-
-
     rho::String arg1;
     if ( argc > 1 )
     {
@@ -123,30 +90,7 @@ VALUE rb_s_Process_runApplication(int argc, VALUE *argv)
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
     nCallbackArg = 3;
-
-    
-
-
-
-
-
-
     bool arg2;
     if ( argc > 2 )
     {
@@ -159,44 +103,24 @@ VALUE rb_s_Process_runApplication(int argc, VALUE *argv)
         }
     }
 
-
-
-
-
-
-
-        
-
-
-
-
     if ( argc > nCallbackArg )
     {
 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toRuby();
-
     }
-
-
     pFunctor = rho_makeInstanceClassFunctor4( rho::system::CProcessFactoryBase::getProcessSingletonS(), &rho::system::IProcessSingleton::runApplication, arg0, arg1, arg2,  oRes );
-
-
-
 
     if ( bUseCallback )
         rho::system::CProcessFactoryBase::getProcessSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
         rho::system::CProcessFactoryBase::getProcessSingletonS()->runApplication( arg0, arg1, arg2,  oRes );
 
-
     }
-
-
     return oRes.toRuby();
 }
 
@@ -204,48 +128,31 @@ VALUE rb_s_Process_runApplication(int argc, VALUE *argv)
 
 
 
-
 static VALUE _api_generator_Process_waitForApplication(int argc, VALUE *argv, rho::system::IProcess* pObj)
-
 {
     rho::apiGenerator::CMethodResult oRes;
-
-
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
-
-
-
-
     if ( argc > nCallbackArg )
     {
 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
-
     }
-
-
     pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::system::IProcess::waitForApplication,  oRes );
-
-
-
 
     if ( bUseCallback )
         rho::system::CProcessFactoryBase::getProcessSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
         pObj->waitForApplication(  oRes );
 
-
     }
-
-
     return oRes.toRuby();
 }
 
@@ -261,48 +168,31 @@ VALUE rb_Process_waitForApplication(int argc, VALUE *argv, VALUE obj)
 
 
 
-
 static VALUE _api_generator_Process_closeHandle(int argc, VALUE *argv, rho::system::IProcess* pObj)
-
 {
     rho::apiGenerator::CMethodResult oRes;
-
-
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
-
-
-
-
     if ( argc > nCallbackArg )
     {
 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
-
     }
-
-
     pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::system::IProcess::closeHandle,  oRes );
-
-
-
 
     if ( bUseCallback )
         rho::system::CProcessFactoryBase::getProcessSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
         pObj->closeHandle(  oRes );
 
-
     }
-
-
     return oRes.toRuby();
 }
 
@@ -318,48 +208,31 @@ VALUE rb_Process_closeHandle(int argc, VALUE *argv, VALUE obj)
 
 
 
-
 static VALUE _api_generator_Process_getProcessExitCode(int argc, VALUE *argv, rho::system::IProcess* pObj)
-
 {
     rho::apiGenerator::CMethodResult oRes;
-
-
 
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
-
-
-
-
     if ( argc > nCallbackArg )
     {
 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
-
     }
-
-
     pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::system::IProcess::getProcessExitCode,  oRes );
-
-
-
 
     if ( bUseCallback )
         rho::system::CProcessFactoryBase::getProcessSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
 
         pObj->getProcessExitCode(  oRes );
 
-
     }
-
-
     return oRes.toRuby();
 }
 

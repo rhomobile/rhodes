@@ -1288,7 +1288,57 @@
 				<File
 					RelativePath="..\..\NetworkAccess.xml"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Generate API1"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+							Outputs="$(InputDir)shared/generated3"
+						/>
+					</FileConfiguration>
 				</File>
+				<Filter
+					Name="generated"
+					>
+					<File
+						RelativePath="..\..\shared\generated\networkaccess_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\networkaccess_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\networkaccess_ruby_api.c"
+						>
+					</File>
+					<Filter
+						Name="cpp"
+						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\INetworkAccess.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\NetworkAccess_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\NetworkAccess_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\NetworkAccessBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\NetworkAccessBase.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 		</Filter>
 	</Files>

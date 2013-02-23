@@ -1,5 +1,5 @@
 #include "ProcessBase.h"
-#include "api_generator\js_helpers.h"
+#include "api_generator/js_helpers.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
@@ -63,7 +63,9 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -97,7 +99,9 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -128,7 +132,9 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
 
 
 
-        
+
+
+
 
 
 
@@ -139,7 +145,7 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -158,7 +164,7 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -169,7 +175,7 @@ rho::String js_s_Process_runApplication(rho::json::CJSONArray& argv, const rho::
 
     if ( bUseCallback )
         rho::system::CProcessFactoryBase::getProcessSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
@@ -205,7 +211,7 @@ rho::String js_Process_waitForApplication(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -224,7 +230,7 @@ rho::String js_Process_waitForApplication(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -235,7 +241,7 @@ rho::String js_Process_waitForApplication(rho::json::CJSONArray& argv, const rho
 
     if ( bUseCallback )
         rho::system::CProcessFactoryBase::getProcessSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
@@ -271,7 +277,7 @@ rho::String js_Process_closeHandle(rho::json::CJSONArray& argv, const rho::Strin
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -290,7 +296,7 @@ rho::String js_Process_closeHandle(rho::json::CJSONArray& argv, const rho::Strin
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -301,7 +307,7 @@ rho::String js_Process_closeHandle(rho::json::CJSONArray& argv, const rho::Strin
 
     if ( bUseCallback )
         rho::system::CProcessFactoryBase::getProcessSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
@@ -337,7 +343,7 @@ rho::String js_Process_getProcessExitCode(rho::json::CJSONArray& argv, const rho
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toJSON();
 
-        
+
         if ( !argv[nCallbackArg].isString() )
         {
             oRes.setArgError("Type error: callback should be String");
@@ -356,7 +362,7 @@ rho::String js_Process_getProcessExitCode(rho::json::CJSONArray& argv, const rho
 
             oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
         }
-        
+
     }
 
 
@@ -367,7 +373,7 @@ rho::String js_Process_getProcessExitCode(rho::json::CJSONArray& argv, const rho
 
     if ( bUseCallback )
         rho::system::CProcessFactoryBase::getProcessSingletonS()->addCommandToQueue( pFunctor );
-    else
+    else 
     {
         delete pFunctor;
 
