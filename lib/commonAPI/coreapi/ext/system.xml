@@ -6,7 +6,7 @@
         <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
 
         <ALIASES>
-            <ALIAS new="System" existing="Rho.System" deprecated="true"/>
+            <ALIAS new="System" deprecated="true"/>
         </ALIASES>
 
         <TEMPLATES>

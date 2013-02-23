@@ -865,6 +865,7 @@ module Rhogen
         @constants = []
         @method_aliases = []
         @property_aliases = []
+        @module_aliases = []
         @generateUnderscoreRubyNames = false
         @is_template_singletone_id = false
         @is_template_default_instance = false
@@ -892,6 +893,7 @@ module Rhogen
       attr_accessor :constants
       attr_accessor :method_aliases
       attr_accessor :property_aliases
+      attr_accessor :module_aliases
       attr_accessor :generateUnderscoreRubyNames
       attr_accessor :is_template_singletone_id
       attr_accessor :is_template_default_instance
@@ -916,7 +918,7 @@ module Rhogen
     $possible_attributes = {}
     $possible_attributes["MODULE"] = ["name", "parent", "generateUnderscoreRubyNames"]
     $possible_attributes["CONSTANT"] = ["name", "value", "type"]
-    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "generateAccessors", "limitPropertyBag"]
+    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "generateAccessors", "limitPropertyBag", "access"]
     $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readOnly", "generateAccessors", "default"]
     $possible_attributes["VALUE"] = ["constName", "value", "type"]
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
@@ -927,7 +929,7 @@ module Rhogen
 
     $possible_children = {}
     $possible_children["API"] = ["MODULE"]
-    $possible_children["MODULE"] = ["HELP_OVERVIEW", "MORE_HELP", "TEMPLATES", "CONSTANTS", "PROPERTIES", "METHODS", "USER_OVERVIEW", "VER_INTRODUCED", "PLATFORM"]
+    $possible_children["MODULE"] = ["HELP_OVERVIEW", "MORE_HELP", "TEMPLATES", "CONSTANTS", "PROPERTIES", "METHODS", "USER_OVERVIEW", "VER_INTRODUCED", "PLATFORM", "ALIASES"]
     $possible_children["TEMPLATES"] = ["SINGLETON_INSTANCES", "DEFAULT_INSTANCE", "PROPERTY_BAG"]
     $possible_children["CONSTANTS"] = ["CONSTANT"]
     $possible_children["CONSTANT"] = ["DESC"]
@@ -1439,6 +1441,10 @@ module Rhogen
 
          if module_item.has_instance_methods && (!module_item.has_factory_methods && !module_item.is_template_default_instance)
              raise "If module has instance methods, then module should have factory methods for produce instances ! Module[#{module_item.name}]"
+         end
+
+         xml_module_item.elements.each("ALIASES/ALIAS") do |xml_module_alias|
+            addAlias(xml_module_alias, module_item.module_aliases)
          end
 
          xml_module_item.elements.each("PROPERTIES/ALIASES/ALIAS") do |xml_property_alias|

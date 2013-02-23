@@ -74,7 +74,8 @@ end %>
     end
 end %>
 
-//TODO: support module aliases
-    rb_const_set(rb_mKernel, rb_intern("<%= $cur_module.name %>"), rb_m<%= $cur_module.name %> );
+<% $cur_module.module_aliases.each do |alias_item| %>
+    rb_const_set(rb_mKernel, rb_intern("<%= alias_item.new_name %>"), rb_m<%= $cur_module.name %> );<%
+end %>
 }
 
