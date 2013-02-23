@@ -290,7 +290,7 @@ void Init_RubyAPI_System(void)
     rb_define_alias(rb_singleton_class(rb_mSystem), "set_properties", "setProperties");
     rb_define_alias(rb_singleton_class(rb_mSystem), "clear_all_properties", "clearAllProperties");
 
-//TODO: support module aliases
+
     rb_const_set(rb_mKernel, rb_intern("System"), rb_mSystem );
 }
 
