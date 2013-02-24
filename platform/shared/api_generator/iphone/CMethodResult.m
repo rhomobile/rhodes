@@ -22,7 +22,7 @@
     if (mRubyModulePath != nil) {
         // convert all strings into CRubyModule !
         if ([value isKindOfClass:[NSString class]]) {
-            mValue = [CRubyModule rubyModuleByName:mRubyModulePath instanceID:((NSString*)value)];
+            mValue = [CRubyClass rubyClassByName:mRubyModulePath instanceID:((NSString*)value)];
         }
         else if ([value isKindOfClass:[NSArray class]]) {
             NSArray* value_ar = (NSArray*)value;
@@ -31,7 +31,7 @@
             for (i = 0; i < [value_ar count]; i++) {
                 NSObject* item = [value_ar objectAtIndex:i];
                 if ([item isKindOfClass:[NSString class]]) {
-                    item = [CRubyModule rubyModuleByName:mRubyModulePath instanceID:((NSString*)item)];
+                    item = [CRubyClass rubyClassByName:mRubyModulePath instanceID:((NSString*)item)];
                 }
                 [aValue addObject:item];
             }
@@ -61,6 +61,14 @@
 
 -(NSString*) toJSON {
     return [CJSConverter convertToJS:mValue];
+}
+
+-(BOOL) isHash {
+    return [mValue isKindOfClass:[NSDictionary class]];
+}
+
+-(NSDictionary*) getHashResult {
+    return (NSDictionary*)mValue;
 }
 
 

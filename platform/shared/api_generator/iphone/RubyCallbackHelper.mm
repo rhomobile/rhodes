@@ -44,10 +44,25 @@ void RubyCallbackHelper_callCallback(NSString* callbackURL,
 	
     strBody = [strBody stringByAppendingString:@"&"];
     
-    NSString* strParam = [NSString stringWithUTF8String:( RHODESAPP().addCallbackObject( new BarcodeRhoCallbackResultContainer(methodResult), "body").c_str() ) ];
-                                                         
-    strBody = [strBody stringByAppendingString:strParam];
-             
+    if ([methodResult isHash]) {
+        NSDictionary* hash = [methodResult getHashResult];
+        NSArray* keys = [hash allKeys];
+        int i;
+        for (i = 0; i < [keys count]; i++) {
+            NSString* key = (NSString*)[keys objectAtIndex:i];
+            NSObject* value = [hash objectForKey:key];
+            CMethodResult* mr = [[CMethodResult alloc] init];
+            [mr setResult:value];
+            NSString* strParam = [NSString stringWithUTF8String:( RHODESAPP().addCallbackObject( new BarcodeRhoCallbackResultContainer(mr), [key UTF8String]).c_str() ) ];
+            strBody = [strBody stringByAppendingString:strParam];
+        }
+        [methodResult release];
+    }
+    else {
+        NSString* strParam = [NSString stringWithUTF8String:( RHODESAPP().addCallbackObject( new BarcodeRhoCallbackResultContainer(methodResult), "result").c_str() ) ];
+        strBody = [strBody stringByAppendingString:strParam];
+    }
+    
     if (callbackParam != nil) {
         strBody = [strBody stringByAppendingString:callbackParam];
     }
