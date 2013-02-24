@@ -90,6 +90,36 @@
     }
     [methodResult setResult:ar];
 }
+
+-(void) produceHash:(id<IMethodResult>)methodResult {
+   // { :parame1 => "value1", :parama2 = > 55 }
+    NSMutableDictionary* hash = [NSMutableDictionary dictionaryWithCapacity:2];
+    [hash setObject:@"value1" forKey:@"parame1"];
+    [hash setObject:[NSNumber numberWithInt:55] forKey:@"parama2"];
+    [methodResult setResult:hash];
+}
+
+-(void) produceComplicatedResult:(id<IMethodResult>)methodResult {
+    //[{ :parame1 => "value1", :parama2 = > 55 }, { :paramu3 => [1,2,3] } ]
+    NSMutableArray* ar = [NSMutableArray arrayWithCapacity:10];
+    
+    // 1
+    NSMutableDictionary* hash1 = [NSMutableDictionary dictionaryWithCapacity:2];
+    [hash1 setObject:@"value1" forKey:@"parame1"];
+    [hash1 setObject:[NSNumber numberWithInt:55] forKey:@"parama2"];
+    [ar addObject:hash1];
+
+    //2
+    NSMutableDictionary* hash2 = [NSMutableDictionary dictionaryWithCapacity:2];
+    NSMutableArray* array2 = [NSMutableArray arrayWithCapacity:1];
+    [array2 addObject:[NSNumber numberWithInt:1]];
+    [array2 addObject:[NSNumber numberWithInt:2]];
+    [array2 addObject:[NSNumber numberWithInt:3]];
+    [hash2 setObject:array2 forKey:@"paramu3"];
+    [ar addObject:hash2];
+    
+    [methodResult setResult:ar];
+}
      
 -(void) showAlertFromUIThread:(NSString*)message {
     // this code crashed if run from non UI thread !
@@ -111,6 +141,10 @@
 }
      
 -(void) stopPeriodicallyCallback {
+
+}
+
+-(void) complicatedTypesTest1:(NSArray*)paramArray methodResult:(id<IMethodResult>)methodResult {
 
 }
 

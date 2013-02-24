@@ -22,7 +22,11 @@ $iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
    else
         cline = cline + module_constant.value
    end
-%><%= cline %>
+   if (module_constant.desc != nil) && (module_constant.desc.size > 0)
+%><%= '/* '+module_constant.desc+' */' %><%
+   end %>
+<%= cline %>
+
 <%
    end
  %>
@@ -57,7 +61,11 @@ $iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
      end
      module_method.cached_data["iphone_line"] = method_line
      method_line = method_line + ';';
-%><%= method_line %>
+   if (module_method.desc != nil) && (module_method.desc.size > 0)
+%>
+<%= '/* '+module_method.desc+' */' %><%
+   end %>
+<%= method_line %>
 <% end
 end %>
 
@@ -102,7 +110,11 @@ end %>
      end
      module_method.cached_data["iphone_line"] = method_line
      method_line = method_line + ';';
-%><%= method_line %>
+   if (module_method.desc != nil) && (module_method.desc.size > 0)
+%>
+<%= '/* '+module_method.desc+' */' %><%
+   end %>
+<%= method_line %>
 <% end
 end %>
 

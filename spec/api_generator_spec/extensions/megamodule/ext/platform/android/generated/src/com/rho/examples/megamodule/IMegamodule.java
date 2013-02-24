@@ -17,8 +17,11 @@ public interface IMegamodule extends IRhoApiObject, IRhoApiPropertyBag {
     void setIntegerProperty(int value, IMethodResult result);
     void typesTest(String paramStr, boolean paramBool, int paramInt, double paramFloat, List<String> paramArray, Map<String, String> paramHash, IMethodResult result);
     void produceArray(IMethodResult result);
+    void produceHash(IMethodResult result);
+    void produceComplicatedResult(IMethodResult result);
     void showAlertFromUIThread(String message, IMethodResult result);
     void setPeriodicallyCallback(int periodInMilliseconds, IMethodResult result);
     void isPeriodicallyCallbackSetted(IMethodResult result);
     void stopPeriodicallyCallback(IMethodResult result);
+    void complicatedTypesTest1(List<String> paramArray, IMethodResult result);
 };

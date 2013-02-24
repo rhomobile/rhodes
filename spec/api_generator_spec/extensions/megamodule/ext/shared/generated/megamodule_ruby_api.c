@@ -14,6 +14,10 @@ VALUE rb_Megamodule_typesTest(int argc, VALUE *argv, VALUE obj);
 VALUE rb_s_Megamodule_def_typesTest(int argc, VALUE *argv);
 VALUE rb_Megamodule_produceArray(int argc, VALUE *argv, VALUE obj);
 VALUE rb_s_Megamodule_def_produceArray(int argc, VALUE *argv);
+VALUE rb_Megamodule_produceHash(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_Megamodule_def_produceHash(int argc, VALUE *argv);
+VALUE rb_Megamodule_produceComplicatedResult(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_Megamodule_def_produceComplicatedResult(int argc, VALUE *argv);
 VALUE rb_s_Megamodule_getObjectsCount(int argc, VALUE *argv);
 VALUE rb_s_Megamodule_getObjectByIndex(int argc, VALUE *argv);
 VALUE rb_Megamodule_showAlertFromUIThread(int argc, VALUE *argv, VALUE obj);
@@ -24,6 +28,8 @@ VALUE rb_Megamodule_isPeriodicallyCallbackSetted(int argc, VALUE *argv, VALUE ob
 VALUE rb_s_Megamodule_def_isPeriodicallyCallbackSetted(int argc, VALUE *argv);
 VALUE rb_Megamodule_stopPeriodicallyCallback(int argc, VALUE *argv, VALUE obj);
 VALUE rb_s_Megamodule_def_stopPeriodicallyCallback(int argc, VALUE *argv);
+VALUE rb_Megamodule_complicatedTypesTest1(int argc, VALUE *argv, VALUE obj);
+VALUE rb_s_Megamodule_def_complicatedTypesTest1(int argc, VALUE *argv);
 VALUE rb_Megamodule_getProperty(int argc, VALUE *argv, VALUE obj);
 VALUE rb_s_Megamodule_def_getProperty(int argc, VALUE *argv);
 VALUE rb_Megamodule_getProperties(int argc, VALUE *argv, VALUE obj);
@@ -74,6 +80,10 @@ void Init_RubyAPI_Megamodule(void)
     rb_define_singleton_method(rb_mMegamodule, "typesTest", rb_s_Megamodule_def_typesTest, -1);
     rb_define_method(rb_mMegamodule, "produceArray", rb_Megamodule_produceArray, -1);
     rb_define_singleton_method(rb_mMegamodule, "produceArray", rb_s_Megamodule_def_produceArray, -1);
+    rb_define_method(rb_mMegamodule, "produceHash", rb_Megamodule_produceHash, -1);
+    rb_define_singleton_method(rb_mMegamodule, "produceHash", rb_s_Megamodule_def_produceHash, -1);
+    rb_define_method(rb_mMegamodule, "produceComplicatedResult", rb_Megamodule_produceComplicatedResult, -1);
+    rb_define_singleton_method(rb_mMegamodule, "produceComplicatedResult", rb_s_Megamodule_def_produceComplicatedResult, -1);
     rb_define_singleton_method(rb_mMegamodule, "getObjectsCount", rb_s_Megamodule_getObjectsCount, -1);
     rb_define_singleton_method(rb_mMegamodule, "getObjectByIndex", rb_s_Megamodule_getObjectByIndex, -1);
     rb_define_method(rb_mMegamodule, "showAlertFromUIThread", rb_Megamodule_showAlertFromUIThread, -1);
@@ -84,6 +94,8 @@ void Init_RubyAPI_Megamodule(void)
     rb_define_singleton_method(rb_mMegamodule, "isPeriodicallyCallbackSetted", rb_s_Megamodule_def_isPeriodicallyCallbackSetted, -1);
     rb_define_method(rb_mMegamodule, "stopPeriodicallyCallback", rb_Megamodule_stopPeriodicallyCallback, -1);
     rb_define_singleton_method(rb_mMegamodule, "stopPeriodicallyCallback", rb_s_Megamodule_def_stopPeriodicallyCallback, -1);
+    rb_define_method(rb_mMegamodule, "complicatedTypesTest1", rb_Megamodule_complicatedTypesTest1, -1);
+    rb_define_singleton_method(rb_mMegamodule, "complicatedTypesTest1", rb_s_Megamodule_def_complicatedTypesTest1, -1);
     rb_define_method(rb_mMegamodule, "getProperty", rb_Megamodule_getProperty, -1);
     rb_define_singleton_method(rb_mMegamodule, "getProperty", rb_s_Megamodule_def_getProperty, -1);
     rb_define_method(rb_mMegamodule, "getProperties", rb_Megamodule_getProperties, -1);
@@ -129,6 +141,12 @@ void Init_RubyAPI_Megamodule(void)
     rb_define_alias(rb_mMegamodule, "produce_array", "produceArray");
     
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "produce_array", "produceArray");
+    rb_define_alias(rb_mMegamodule, "produce_hash", "produceHash");
+    
+    rb_define_alias(rb_singleton_class(rb_mMegamodule), "produce_hash", "produceHash");
+    rb_define_alias(rb_mMegamodule, "produce_complicated_result", "produceComplicatedResult");
+    
+    rb_define_alias(rb_singleton_class(rb_mMegamodule), "produce_complicated_result", "produceComplicatedResult");
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "get_objects_count", "getObjectsCount");
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "get_object_by_index", "getObjectByIndex");
     rb_define_alias(rb_mMegamodule, "show_alert_from_uithread", "showAlertFromUIThread");
@@ -143,6 +161,9 @@ void Init_RubyAPI_Megamodule(void)
     rb_define_alias(rb_mMegamodule, "stop_periodically_callback", "stopPeriodicallyCallback");
     
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "stop_periodically_callback", "stopPeriodicallyCallback");
+    rb_define_alias(rb_mMegamodule, "complicated_types_test1", "complicatedTypesTest1");
+    
+    rb_define_alias(rb_singleton_class(rb_mMegamodule), "complicated_types_test1", "complicatedTypesTest1");
     rb_define_alias(rb_mMegamodule, "get_property", "getProperty");
     
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "get_property", "getProperty");
@@ -162,7 +183,6 @@ void Init_RubyAPI_Megamodule(void)
     
     rb_define_alias(rb_singleton_class(rb_mMegamodule), "clear_all_properties", "clearAllProperties");
 
-//TODO: support module aliases
-    rb_const_set(rb_mKernel, rb_intern("Megamodule"), rb_mMegamodule );
+
 }
 

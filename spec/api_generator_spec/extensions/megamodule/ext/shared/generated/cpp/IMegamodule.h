@@ -25,10 +25,13 @@ struct IMegamodule
     virtual void setIntegerProperty( int value, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void typesTest( const rho::String& paramStr,  bool paramBool,  int paramInt,  double paramFloat,  const rho::Vector<rho::String>& paramArray,  const rho::Hashtable<rho::String, rho::String>& paramHash, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void produceArray(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void produceHash(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void produceComplicatedResult(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void showAlertFromUIThread( const rho::String& message, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setPeriodicallyCallback( int periodInMilliseconds, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void isPeriodicallyCallbackSetted(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void stopPeriodicallyCallback(rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void complicatedTypesTest1( const rho::Vector<rho::String>& paramArray, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getProperty( const rho::String& propertyName, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getProperties( const rho::Vector<rho::String>& arrayofNames, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getAllProperties(rho::apiGenerator::CMethodResult& oResult) = 0;

@@ -94,17 +94,18 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 2);
-        RHO_ASSERT(argsAdapter.size() <= (2 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 4);
 
         jhobject jhObject = 
             getSingleton(env); 
 
-        jholder< jint > jhx
-            = rho_cast< jint >(env, argsAdapter[0]);
+        jholder< jint > jhx = (argsAdapter.size() <= 0) ?
+            static_cast< jint >(0) :
+                rho_cast< jint >(env, argsAdapter[0]);
 
-        jholder< jint > jhy
-            = rho_cast< jint >(env, argsAdapter[1]);
+        jholder< jint > jhy = (argsAdapter.size() <= 1) ?
+            static_cast< jint >(0) :
+                rho_cast< jint >(env, argsAdapter[1]);
         jhobject jhTask = env->NewObject(s_clscalcSummTask, s_midcalcSummTask,
                     jhObject.get(), 
                     jhx.get(),
@@ -125,14 +126,14 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 1);
-        RHO_ASSERT(argsAdapter.size() <= (1 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 3);
 
         jhobject jhObject = 
             getSingleton(env); 
 
-        jholder< jobject > jhstrings
-            = rho_cast< jobject >(env, argsAdapter[0]);
+        jholder< jobject > jhstrings = (argsAdapter.size() <= 0) ?
+            static_cast< jobject >(0) :
+                rho_cast< jobject >(env, argsAdapter[0]);
         jhobject jhTask = env->NewObject(s_clsjoinStringsTask, s_midjoinStringsTask,
                     jhObject.get(), 
                     jhstrings.get(),
@@ -152,8 +153,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getSingleton(env); 
@@ -175,8 +175,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getSingleton(env); 

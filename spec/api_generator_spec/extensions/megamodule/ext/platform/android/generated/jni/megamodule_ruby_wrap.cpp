@@ -335,6 +335,126 @@ VALUE rb_s_Megamodule_def_produceArray(int argc, VALUE *argv)
     rho::String id = ObjectProxy::getDefaultID();
     return Megamodule_produceArray(argc, argv, id);
 }
+static VALUE Megamodule_produceHash(int argc, VALUE *argv, const rho::String& id)
+{
+    RAWTRACE2("%s(id=%s)", __FUNCTION__, id.c_str());
+    MethodResultJni result;
+    if(!result)
+    {
+        result.setError("JNI error: failed to initialize MethodResult java object");
+        RAWLOG_ERROR("JNI error: failed to initialize MethodResult java object ^^^");
+        return result.toRuby();
+    }
+
+    ObjectProxy megamodule(id);
+
+    if((argc < 0) || (argc > 0))
+    {
+        result.setArgError("Wrong number of arguments");
+        RAWLOG_ERROR1("Wrong number of arguments: %d ^^^", argc);
+        return result.toRuby();
+    }
+    
+    unsigned realParamCount = (argc < 0) ? argc : 0;
+    std::vector<VALUE> arguments(argv, argv + realParamCount);
+    if(argc > 0)
+    {
+        if (rho_ruby_is_proc(argv[0]) || rho_ruby_is_method(argv[0]))
+        {
+            result.setRubyProcCallBack(argv[0]);
+        } else
+        {
+            if(argc > 1)
+                result.setCallBack(argv[0], argv[1]);
+            else
+                result.setCallBack(argv[0]);
+    
+        }
+        if(!result.hasCallBackUrl())
+        {
+            RAWLOG_ERROR("Error setting callback ^^^");
+            return result.toRuby();
+        }
+    }
+
+    megamodule.produceHash(argumentsAdapter(arguments), result); 
+    VALUE res = 
+        result.toRuby();
+
+    RAWTRACE(__FUNCTION__);
+    return res;
+}
+VALUE rb_Megamodule_produceHash(int argc, VALUE *argv, VALUE obj)
+{
+    rho::String id = rho_ruby_get_object_id(obj);
+    return Megamodule_produceHash(argc, argv, id);
+}
+
+VALUE rb_s_Megamodule_def_produceHash(int argc, VALUE *argv)
+{
+    rho::String id = ObjectProxy::getDefaultID();
+    return Megamodule_produceHash(argc, argv, id);
+}
+static VALUE Megamodule_produceComplicatedResult(int argc, VALUE *argv, const rho::String& id)
+{
+    RAWTRACE2("%s(id=%s)", __FUNCTION__, id.c_str());
+    MethodResultJni result;
+    if(!result)
+    {
+        result.setError("JNI error: failed to initialize MethodResult java object");
+        RAWLOG_ERROR("JNI error: failed to initialize MethodResult java object ^^^");
+        return result.toRuby();
+    }
+
+    ObjectProxy megamodule(id);
+
+    if((argc < 0) || (argc > 0))
+    {
+        result.setArgError("Wrong number of arguments");
+        RAWLOG_ERROR1("Wrong number of arguments: %d ^^^", argc);
+        return result.toRuby();
+    }
+    
+    unsigned realParamCount = (argc < 0) ? argc : 0;
+    std::vector<VALUE> arguments(argv, argv + realParamCount);
+    if(argc > 0)
+    {
+        if (rho_ruby_is_proc(argv[0]) || rho_ruby_is_method(argv[0]))
+        {
+            result.setRubyProcCallBack(argv[0]);
+        } else
+        {
+            if(argc > 1)
+                result.setCallBack(argv[0], argv[1]);
+            else
+                result.setCallBack(argv[0]);
+    
+        }
+        if(!result.hasCallBackUrl())
+        {
+            RAWLOG_ERROR("Error setting callback ^^^");
+            return result.toRuby();
+        }
+    }
+
+    megamodule.produceComplicatedResult(argumentsAdapter(arguments), result); 
+    VALUE res = 
+        result.toRuby();
+
+    RAWTRACE(__FUNCTION__);
+    return res;
+}
+VALUE rb_Megamodule_produceComplicatedResult(int argc, VALUE *argv, VALUE obj)
+{
+    rho::String id = rho_ruby_get_object_id(obj);
+    return Megamodule_produceComplicatedResult(argc, argv, id);
+}
+
+VALUE rb_s_Megamodule_def_produceComplicatedResult(int argc, VALUE *argv)
+{
+    rho::String id = ObjectProxy::getDefaultID();
+    return Megamodule_produceComplicatedResult(argc, argv, id);
+}
 VALUE rb_s_Megamodule_getObjectsCount(int argc, VALUE *argv)
 {
     RAWTRACE(__FUNCTION__);
@@ -672,6 +792,66 @@ VALUE rb_s_Megamodule_def_stopPeriodicallyCallback(int argc, VALUE *argv)
 {
     rho::String id = ObjectProxy::getDefaultID();
     return Megamodule_stopPeriodicallyCallback(argc, argv, id);
+}
+static VALUE Megamodule_complicatedTypesTest1(int argc, VALUE *argv, const rho::String& id)
+{
+    RAWTRACE2("%s(id=%s)", __FUNCTION__, id.c_str());
+    MethodResultJni result;
+    if(!result)
+    {
+        result.setError("JNI error: failed to initialize MethodResult java object");
+        RAWLOG_ERROR("JNI error: failed to initialize MethodResult java object ^^^");
+        return result.toRuby();
+    }
+
+    ObjectProxy megamodule(id);
+
+    if((argc < 1) || (argc > 1))
+    {
+        result.setArgError("Wrong number of arguments");
+        RAWLOG_ERROR1("Wrong number of arguments: %d ^^^", argc);
+        return result.toRuby();
+    }
+    
+    unsigned realParamCount = (argc < 1) ? argc : 1;
+    std::vector<VALUE> arguments(argv, argv + realParamCount);
+    if(argc > 1)
+    {
+        if (rho_ruby_is_proc(argv[1]) || rho_ruby_is_method(argv[1]))
+        {
+            result.setRubyProcCallBack(argv[1]);
+        } else
+        {
+            if(argc > 2)
+                result.setCallBack(argv[1], argv[2]);
+            else
+                result.setCallBack(argv[1]);
+    
+        }
+        if(!result.hasCallBackUrl())
+        {
+            RAWLOG_ERROR("Error setting callback ^^^");
+            return result.toRuby();
+        }
+    }
+
+    megamodule.complicatedTypesTest1(argumentsAdapter(arguments), result); 
+    VALUE res = 
+        result.toRuby();
+
+    RAWTRACE(__FUNCTION__);
+    return res;
+}
+VALUE rb_Megamodule_complicatedTypesTest1(int argc, VALUE *argv, VALUE obj)
+{
+    rho::String id = rho_ruby_get_object_id(obj);
+    return Megamodule_complicatedTypesTest1(argc, argv, id);
+}
+
+VALUE rb_s_Megamodule_def_complicatedTypesTest1(int argc, VALUE *argv)
+{
+    rho::String id = ObjectProxy::getDefaultID();
+    return Megamodule_complicatedTypesTest1(argc, argv, id);
 }
 static VALUE Megamodule_getProperty(int argc, VALUE *argv, const rho::String& id)
 {

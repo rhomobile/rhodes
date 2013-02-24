@@ -25,9 +25,17 @@
 
 
 
+
+/* calc summ of two integer */
 -(void) calcSumm:(int)x y:(int)y methodResult:(id<IMethodResult>)methodResult;
+
+/* join strings from input array and return one string */
 -(void) joinStrings:(NSArray*)strings methodResult:(id<IMethodResult>)methodResult;
+
+/* return string with current platform : "iphone", "android" etc. Method should call syncronously */
 -(void) getPlatform:(id<IMethodResult>)methodResult;
+
+/* example method for not return, not callback - just make some functionality */
 -(void) showAlertFromUIThread;
 
 
