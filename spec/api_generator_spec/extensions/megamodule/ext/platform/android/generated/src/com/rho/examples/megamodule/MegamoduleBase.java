@@ -149,6 +149,44 @@ public class MegamoduleBase extends RhoApiObject {
 
 
 
+    public static class produceHashTask implements Runnable {
+        private IMegamodule mApiObject; 
+        private IMethodResult mResult;
+
+        public produceHashTask(IMegamodule obj, 
+                IMethodResult result) {
+            this.mApiObject = obj; 
+            this.mResult = result;
+        }
+
+        @Override
+        public void run() {
+            mApiObject.produceHash(mResult);
+        }
+    }
+
+
+
+
+    public static class produceComplicatedResultTask implements Runnable {
+        private IMegamodule mApiObject; 
+        private IMethodResult mResult;
+
+        public produceComplicatedResultTask(IMegamodule obj, 
+                IMethodResult result) {
+            this.mApiObject = obj; 
+            this.mResult = result;
+        }
+
+        @Override
+        public void run() {
+            mApiObject.produceComplicatedResult(mResult);
+        }
+    }
+
+
+
+
     public static class showAlertFromUIThreadTask implements Runnable {
         private IMegamodule mApiObject; 
         private String message;
@@ -227,6 +265,29 @@ public class MegamoduleBase extends RhoApiObject {
         @Override
         public void run() {
             mApiObject.stopPeriodicallyCallback(mResult);
+        }
+    }
+
+
+
+
+    public static class complicatedTypesTest1Task implements Runnable {
+        private IMegamodule mApiObject; 
+        private List<String> paramArray;
+        private IMethodResult mResult;
+
+        public complicatedTypesTest1Task(IMegamodule obj, 
+                List<String> paramArray, 
+                IMethodResult result) {
+            this.mApiObject = obj; 
+            this.paramArray = paramArray;
+            this.mResult = result;
+        }
+
+        @Override
+        public void run() {
+            mApiObject.complicatedTypesTest1(
+                paramArray, mResult);
         }
     }
 

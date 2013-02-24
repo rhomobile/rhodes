@@ -11,6 +11,6 @@ public interface IMegamoduleFactory
     IMegamoduleSingleton getApiSingleton();
 
     @Override
-    Megamodule getApiObject(String id);
+    IMegamodule getApiObject(String id);
 
 }

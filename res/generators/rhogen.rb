@@ -713,13 +713,23 @@ module Rhogen
       def initialize
         @name = ''
         @type = TYPE_STRING
+        @sub_param  = nil
+        @sub_params = nil
         @can_be_nil = false
+        @desc = ''
       end
 
       attr_accessor :name
       #attr_accessor :type
       attr_reader :type
+
+      # for ARRAY
+      attr_accessor :sub_param
+
+      #for HASH
+      attr_accessor :sub_params
       attr_accessor :can_be_nil
+      attr_accessor :desc
 
       def type=(value)
         up_value = value.upcase
@@ -744,10 +754,20 @@ module Rhogen
       def initialize
         @type = MethodParam::TYPE_STRING
         @item_type = MethodParam::TYPE_STRING
+
+        # if type=ARRAY
+        @sub_param  = nil
+
+        # if type=HASH
+        @sub_params = nil
+        @desc = ''
       end
 
       attr_accessor :type
       attr_accessor :item_type
+      attr_accessor :sub_param
+      attr_accessor :sub_params
+      attr_accessor :desc
     end
 
 
@@ -756,12 +776,13 @@ module Rhogen
         @name = ''
         @type = MethodParam::TYPE_STRING
         @value = ''
+        @desc = ''
       end
 
       attr_accessor :name
       attr_accessor :type
       attr_accessor :value
-
+      attr_accessor :desc
     end
 
     class ModuleProperty
@@ -778,10 +799,13 @@ module Rhogen
         @generate_accessors = true
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
         @default_value = ''
+        @access = ModuleMethod::ACCESS_INSTANCE
         
         #used if getter and setter are present - this used with generation of property bag function implementation
         @getter = nil
         @setter = nil
+        @generateAPI = true
+        @generateDoc = true
       end
 
       attr_accessor :name
@@ -791,8 +815,11 @@ module Rhogen
       attr_accessor :generate_accessors
       attr_accessor :use_property_bag_mode
       attr_accessor :default_value
+      attr_accessor :access
       attr_accessor :getter
       attr_accessor :setter
+      attr_accessor :generateAPI
+      attr_accessor :generateDoc
 
     end
 
@@ -836,6 +863,9 @@ module Rhogen
 
         #use for store any data by string key. For example I save to this bag a prepared iOS full function signature for do not rebuild it everytime
         @cached_data = {}
+        @generateAPI = true
+        @generateDoc = true
+        @desc = ''
       end
 
       attr_accessor :name
@@ -852,6 +882,9 @@ module Rhogen
       attr_accessor :linked_property
       attr_accessor :special_behaviour
       attr_accessor :cached_data
+      attr_accessor :generateAPI
+      attr_accessor :generateDoc
+      attr_accessor :desc
     end
 
     class ModuleItem
@@ -861,6 +894,7 @@ module Rhogen
         # array of parents from top to lowest
         @parents = []
         @methods = []
+        @methods_without_generated_code = []
         @properties = []
         @constants = []
         @method_aliases = []
@@ -889,6 +923,7 @@ module Rhogen
       attr_accessor :name
       attr_accessor :parents
       attr_accessor :methods
+      attr_accessor :methods_without_generated_code
       attr_accessor :properties
       attr_accessor :constants
       attr_accessor :method_aliases
@@ -918,12 +953,12 @@ module Rhogen
     $possible_attributes = {}
     $possible_attributes["MODULE"] = ["name", "parent", "generateUnderscoreRubyNames"]
     $possible_attributes["CONSTANT"] = ["name", "value", "type"]
-    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "generateAccessors", "limitPropertyBag", "access"]
-    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readOnly", "generateAccessors", "default"]
+    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "generateAccessors", "limitPropertyBag", "generateAPI", "generateDoc", "access"]
+    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readOnly", "generateAccessors", "default", "generateAPI", "generateDoc", "access"]
     $possible_attributes["VALUE"] = ["constName", "value", "type"]
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
-    $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread", "deprecated"]
-    $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName", "deprecated"]
+    $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread", "deprecated", "generateAPI", "generateDoc"]
+    $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName", "deprecated", "generateAPI", "generateDoc"]
     $possible_attributes["PARAM"] = ["name", "nativeName", "type"]
     $possible_attributes["RETURN"] = ["type", "itemType"]
 
@@ -942,8 +977,8 @@ module Rhogen
     $possible_children["METHODS"] = ["METHOD", "ALIASES", ]
     $possible_children["METHOD"] = ["DESC", "PARAMS", "RETURN"]
     $possible_children["PARAMS"] = ["PARAM"]
-    $possible_children["PARAM"] = ["DESC", "CAN_BE_NIL"]
-    $possible_children["RETURN"] = ["DESC"]
+    $possible_children["PARAM"] = ["DESC", "PARAM", "PARAMS", "VALUES", "CAN_BE_NIL"]
+    $possible_children["RETURN"] = ["DESC", "PARAM", "PARAMS"]
     $possible_children["CAN_BE_NIL"] = ["DESC"]
 
     $possible_values = {}
@@ -960,6 +995,8 @@ module Rhogen
     $possible_values["generateAccessors"] = ["true", "false"]
     $possible_values["generateUnderscoreRubyNames"] = ["true", "false"]
     $possible_values["generateUnderscoreRubyNames"] = ["true", "false"]
+    $possible_values["generateAPI"] = ["true", "false"]
+    $possible_values["generateDoc"] = ["true", "false"]
 
 
     def xml_error(error_desc, path)
@@ -1096,6 +1133,75 @@ module Rhogen
       dst_collection << module_alias
     end
 
+
+    #return MethodParam object
+    def process_param(xml_param_item, predefined_name, module_item)
+       param = MethodParam.new()
+
+       if xml_param_item.attribute("name") != nil
+          param.name = xml_param_item.attribute("name").to_s
+       else
+          param.name = predefined_name
+       end
+
+       xml_param_item.elements.each("DESC") do |xml_desc|
+          param.desc = xml_desc.text
+       end
+
+       if xml_param_item.attribute("type") != nil
+          ttype = xml_param_item.attribute("type").to_s #.upcase
+          if ttype == MethodParam::TYPE_SELF
+             ttype = [module_item.parents.join("."),module_item.name].join(".")
+          end
+          param.type = ttype
+
+          if ttype == MethodParam::TYPE_ARRAY
+              # looking for <PARAM> child
+              xml_param_item.elements.each("PARAM") do |xml_method_subparam|
+                  if xml_method_subparam.parent == xml_param_item
+                      param.sub_param = process_param(xml_method_subparam, 'array_param', module_item)
+                  end
+              end
+          end
+
+          if ttype == MethodParam::TYPE_HASH
+            xml_param_item.elements.each("PARAMS") do |xml_method_subparams|
+               if xml_method_subparams.parent == xml_param_item
+                  param.sub_params = process_params(xml_method_subparams, module_item)
+               end
+            end
+
+          end
+
+       else
+          raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
+       end
+
+       xml_param_item.elements.each("CAN_BE_NIL")  do |canbenil|
+          if canbenil.parent == xml_param_item
+             param.can_be_nil = true
+          end
+       end
+
+       return param
+    end
+
+    #return array of MethodParam objects
+    def process_params(xml_params_item, module_item)
+       params = []
+
+       param_index = 1
+       xml_params_item.elements.each("PARAM") do |xml_param|
+          if xml_param.parent == xml_params_item
+              param = process_param(xml_param, 'param'+ param_index.to_s, module_item)
+              param_index = param_index + 1
+              params << param
+          end
+       end
+
+       return params
+    end
+
     def setup_xml
     
       require File.dirname(__FILE__) + '/templates/api/helpers/api_helper'
@@ -1156,6 +1262,9 @@ module Rhogen
             if xml_constant.attribute("type") != nil
                module_constant.type = xml_constant.attribute("type").to_s.upcase
             end
+            xml_constant.elements.each("DESC") do |xml_desc|
+               module_constant.desc = xml_desc.text
+            end
             module_item.constants << module_constant
          end
 
@@ -1167,9 +1276,25 @@ module Rhogen
             if xml_property_value.attribute("type") != nil
                module_constant.type = xml_property_value.attribute("type").to_s.upcase
             end
+            xml_property_value.elements.each("DESC") do |xml_desc|
+               module_constant.desc = xml_desc.text
+            end
             module_item.constants << module_constant
          end
 
+         #constants in param
+         xml_module_item.elements.each("*/PARAM/VALUES/VALUE") do |xml_param_value|
+            module_constant = ModuleConstant.new()
+            module_constant.name = xml_param_value.attribute("constName").to_s
+            module_constant.value = xml_param_value.attribute("value").to_s
+            if xml_param_value.attribute("type") != nil
+               module_constant.type = xml_param_value.attribute("type").to_s.upcase
+            end
+            xml_param_value.elements.each("DESC") do |xml_desc|
+               module_constant.desc = xml_desc.text
+            end
+            module_item.constants << module_constant
+         end
 
          #properties
          xml_properties = xml_module_item.elements["PROPERTIES"]
@@ -1177,13 +1302,11 @@ module Rhogen
             if xml_properties.attribute("limitPropertyBag") != nil
               module_item.is_property_bag_limit_to_only_declared_properties = xml_properties.attribute("limitPropertyBag").to_s.downcase != "false"
             end
-            
             if xml_properties.attribute("access") != nil
               if xml_properties.attribute("access").to_s.downcase == "static"
                  module_item.properties_access = ModuleMethod::ACCESS_STATIC
               end
             end
-            
          end
          
          xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_module_property|
@@ -1211,6 +1334,32 @@ module Rhogen
                  module_property.readonly = xml_properties.attribute("readOnly").to_s.downcase != "false"
               end
             end
+
+            if xml_module_property.attribute("generateAPI") != nil
+              module_property.generateAPI = xml_module_property.attribute("generateAPI").to_s.downcase != "false"
+            else
+              if xml_properties.attribute("generateAPI") != nil
+                 module_property.generateAPI = xml_properties.attribute("generateAPI").to_s.downcase != "false"
+              end
+            end
+
+            if xml_module_property.attribute("generateDoc") != nil
+              module_property.generateDoc = xml_module_property.attribute("generateDoc").to_s.downcase != "false"
+            else
+              if xml_properties.attribute("generateDoc") != nil
+                 module_property.generateDoc = xml_properties.attribute("generateDoc").to_s.downcase != "false"
+              end
+            end
+
+            if xml_module_property.attribute("access") != nil
+              if xml_module_property.attribute("access").to_s.downcase == "static"
+                 module_property.access = ModuleMethod::ACCESS_STATIC
+              end
+            else
+               module_property.access = module_item.properties_access
+            end
+
+
             if xml_module_property.attribute("usePropertyBag") != nil
                if xml_module_property.attribute("usePropertyBag").to_s.downcase == "none".downcase
                   module_property.use_property_bag_mode = ModuleProperty::USE_PROPERTY_BAG_MODE_NONE
@@ -1248,12 +1397,12 @@ module Rhogen
 
               getter_method.name = module_property.name
               getter_method.native_name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
-
+              getter_method.desc = 'getter for "' + module_property.name + '" property'
               getter_method.params = []
               getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
               getter_method.is_factory_method = false
               getter_method.is_return_value = true
-              getter_method.access = module_item.properties_access
+              getter_method.access = module_property.access
               getter_method.has_callback = ModuleMethod::CALLBACK_NONE
               getter_method.linked_property = module_property
               getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
@@ -1265,7 +1414,7 @@ module Rhogen
 
                 setter_method.name = module_property.name + "="
                 setter_method.native_name = 'set' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
-
+                getter_method.desc = 'setter for "'+ module_property.name + '" property'
                 param = MethodParam.new()
                 param.name = "value"
                 param.can_be_nil = false
@@ -1274,7 +1423,7 @@ module Rhogen
                 setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
                 setter_method.is_factory_method = false
                 setter_method.is_return_value = false
-                setter_method.access = module_item.properties_access
+                setter_method.access = module_property.access
                 setter_method.has_callback = ModuleMethod::CALLBACK_NONE
                 setter_method.linked_property = module_property
                 setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
@@ -1324,6 +1473,22 @@ module Rhogen
             else
               if xml_methods_item.attribute("deprecated") != nil
                  module_method.is_deprecated = xml_methods_item.attribute("deprecated").to_s.downcase != "false"
+              end
+            end
+
+            if xml_module_method.attribute("generateAPI") != nil
+               module_method.generateAPI = xml_module_method.attribute("generateAPI").to_s.downcase != "false"
+            else
+              if xml_methods_item.attribute("generateAPI") != nil
+                 module_method.generateAPI = xml_methods_item.attribute("generateAPI").to_s.downcase != "false"
+              end
+            end
+
+            if xml_module_method.attribute("generateDoc") != nil
+               module_method.generateDoc = xml_module_method.attribute("generateDoc").to_s.downcase != "false"
+            else
+              if xml_methods_item.attribute("generateDoc") != nil
+                 module_method.generateDoc = xml_methods_item.attribute("generateDoc").to_s.downcase != "false"
               end
             end
 
@@ -1388,16 +1553,23 @@ module Rhogen
               end
             end
 
+            xml_module_method.elements.each("DESC") do |xml_desc|
+               module_method.desc = xml_desc.text
+            end
+
             if xml_module_method.elements["RETURN"] != nil
                 module_method.is_return_value = true
                 method_result = MethodResult.new()
                 result_type = xml_module_method.elements["RETURN"].attribute("type").to_s
                 result_item_type = xml_module_method.elements["RETURN"].attribute("itemType").to_s
+                xml_module_method.elements["RETURN"].elements.each("DESC") do |xml_desc|
+                   method_result.desc = xml_desc.text
+                end
                 if result_type != nil
                   if result_type == MethodParam::TYPE_SELF
                     result_type = [module_item.parents.join("."),module_item.name].join(".")
                   end
-                    method_result.type = result_type
+                  method_result.type = result_type
                 end
                 if result_item_type != nil
                    if result_item_type == MethodParam::TYPE_SELF
@@ -1405,9 +1577,30 @@ module Rhogen
                    end
                    method_result.item_type = result_item_type
                 end
+
+                xml_module_method.elements.each("RETURN/PARAM") do |return_param_xml|
+                   method_result.sub_param = process_param(return_param_xml, "result", module_item)
+                   if method_result.sub_param != nil
+                      method_result.item_type = method_result.sub_param.type
+                   end
+                end
+                xml_module_method.elements.each("RETURN/PARAMS") do |return_params_xml|
+                   method_result.sub_params = process_params(return_params_xml, module_item)
+                end
+
+
                 module_method.result = method_result
             end
 
+
+
+            xml_module_method.elements.each("PARAMS") do |xml_method_params|
+                if xml_method_params.parent == xml_module_method
+                   module_method.params = process_params(xml_method_params, module_item)
+                end
+            end
+
+=begin
             param_index = 1
 
             xml_module_method.elements.each("PARAMS/PARAM") do |xml_method_param|
@@ -1434,6 +1627,7 @@ module Rhogen
                param_index = param_index + 1
                module_method.params << method_param
             end
+=end
 
 
             module_item.methods << module_method
@@ -1510,10 +1704,18 @@ module Rhogen
                   module_item.property_aliases << property_alias
                end
             end
-
-
          end
 
+         # remove methods with generateAPI=true from list of methods for generation
+         tmp_methods = module_item.methods
+         module_item.methods = []
+         tmp_methods.each do |method_item|
+           if method_item.generateAPI
+              module_item.methods << method_item
+           else
+              module_item.methods_without_generated_code << method_item
+           end
+         end
 
 
          $modules << module_item

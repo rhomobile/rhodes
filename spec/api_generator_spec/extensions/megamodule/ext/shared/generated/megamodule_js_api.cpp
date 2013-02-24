@@ -20,6 +20,12 @@ rho::String js_s_Megamodule_def_typesTest(rho::json::CJSONArray& argv, const rho
 rho::String js_Megamodule_produceArray(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_Megamodule_def_produceArray(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
+rho::String js_Megamodule_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_Megamodule_def_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_Megamodule_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_Megamodule_def_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
 rho::String js_s_Megamodule_getObjectsCount(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 rho::String js_s_Megamodule_getObjectByIndex(rho::json::CJSONArray& argv, const rho::String& strObjID);
@@ -35,6 +41,9 @@ rho::String js_s_Megamodule_def_isPeriodicallyCallbackSetted(rho::json::CJSONArr
 
 rho::String js_Megamodule_stopPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_Megamodule_def_stopPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID);
+
+rho::String js_Megamodule_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_Megamodule_def_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 rho::String js_Megamodule_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
 rho::String js_s_Megamodule_def_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
@@ -81,6 +90,12 @@ extern "C" void Init_JSAPI_Megamodule(void)
     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:produceArray", js_Megamodule_produceArray);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:def_produceArray", js_s_Megamodule_def_produceArray);;
 
+    rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:produceHash", js_Megamodule_produceHash);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:def_produceHash", js_s_Megamodule_def_produceHash);;
+
+    rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:produceComplicatedResult", js_Megamodule_produceComplicatedResult);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:def_produceComplicatedResult", js_s_Megamodule_def_produceComplicatedResult);;
+
     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:getObjectsCount", js_s_Megamodule_getObjectsCount);
 
     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:getObjectByIndex", js_s_Megamodule_getObjectByIndex);
@@ -96,6 +111,9 @@ extern "C" void Init_JSAPI_Megamodule(void)
 
     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:stopPeriodicallyCallback", js_Megamodule_stopPeriodicallyCallback);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:def_stopPeriodicallyCallback", js_s_Megamodule_def_stopPeriodicallyCallback);;
+
+    rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:complicatedTypesTest1", js_Megamodule_complicatedTypesTest1);
+    //  should define static method !     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:def_complicatedTypesTest1", js_s_Megamodule_def_complicatedTypesTest1);;
 
     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:getProperty", js_Megamodule_getProperty);
     //  should define static method !     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:def_getProperty", js_s_Megamodule_def_getProperty);;
