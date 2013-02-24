@@ -24,6 +24,9 @@
 
 - (void) setResult:(NSObject*)value;
 
+-(BOOL) isHash;
+-(NSDictionary*) getHashResult;
+
 -(NSObject*) getResult;
 
 -(VALUE) toRuby;

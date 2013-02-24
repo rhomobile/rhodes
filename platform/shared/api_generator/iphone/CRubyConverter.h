@@ -4,16 +4,16 @@
 #import "ruby/ext/rho/rhoruby.h"
 
 
-@interface CRubyModule : NSObject {
-    NSString* mModuleName;
+@interface CRubyClass : NSObject {
+    NSString* mClassName;
     NSString* mInstanceID;
 }
 
-- (id) init:(NSString*)mName iID:(NSString*)iID;
+- (id) init:(NSString*)clasRubyFullName iID:(NSString*)iID;
 
-+(CRubyModule*) rubyModuleByName:(NSString*)moduleName instanceID:(NSString*)instanceID;
++(CRubyClass*) rubyClassByName:(NSString*)className instanceID:(NSString*)instanceID;
 
--(NSString*)getModuleName;
+-(NSString*)getClassName;
 
 -(NSString*)getInstanceID;
 
