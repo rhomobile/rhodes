@@ -2,7 +2,7 @@ entry: Init_JavascriptVM_API
 javaentry: com.javascriptvm.JavascriptVM
 libraries: ["JavascriptVM"]
 android:
-  source_list: ext/platform/android/ext_build.files
+  source_list: ext/platform/android/ext_java.files
 
 project_paths:
   wp8: ext/platform/wp8/JavascriptVM.vcxproj
