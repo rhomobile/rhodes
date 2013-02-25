@@ -25,6 +25,8 @@
 
 
 
+
+/* Execute any script */
 -(void) executeScript:(NSString*)script methodResult:(id<IMethodResult>)methodResult;
 
 

@@ -84,14 +84,14 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 1);
-        RHO_ASSERT(argsAdapter.size() <= (1 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 3);
 
         jhobject jhObject = 
             getSingleton(env); 
 
-        jholder< jstring > jhscript
-            = rho_cast< jstring >(env, argsAdapter[0]);
+        jholder< jstring > jhscript = (argsAdapter.size() <= 0) ?
+            static_cast< jstring >(0) :
+                rho_cast< jstring >(env, argsAdapter[0]);
         jhobject jhTask = env->NewObject(s_clsexecuteScriptTask, s_midexecuteScriptTask,
                     jhObject.get(), 
                     jhscript.get(),

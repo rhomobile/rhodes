@@ -34,7 +34,6 @@ void Init_RubyAPI_JavascriptVM(void)
 
 
 
-//TODO: support module aliases
-    rb_const_set(rb_mKernel, rb_intern("JavascriptVM"), rb_mJavascriptVM );
+
 }
 
