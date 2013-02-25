@@ -34,8 +34,7 @@ VALUE rb_<%= $cur_module.name %>_s_setDefault(VALUE klass, VALUE valObj)
 }
 <% end %>
 
-extern "C" static void
-string_iter(const char* szVal, void* par)
+static void string_iter(const char* szVal, void* par)
 {
     rho::Vector<rho::String>& ar = *((rho::Vector<rho::String>*)(par));
     ar.addElement( szVal );
@@ -46,7 +45,7 @@ static void getStringArrayFromValue(VALUE val, rho::Vector<rho::String>& res)
     rho_ruby_enum_strary(val, string_iter, &res);
 }
 
-extern "C" static void hash_eachstr(const char* szName, const char* szVal, void* par)
+static void hash_eachstr(const char* szName, const char* szVal, void* par)
 {
     rho::Hashtable<rho::String, rho::String>& hash = *((rho::Hashtable<rho::String, rho::String>*)(par));
     hash.put( szName, szVal );
