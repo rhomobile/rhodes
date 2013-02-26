@@ -40,10 +40,10 @@ module Rhogen
 
       Options:
         --norhoconnect - don't include rhoconnect-client in application
-      
+
       Required:
         name        - application name
-        
+
       Optional:
         syncserver  - url to the rhosync application (i.e. "http://localhost:9292/application")
         zip_url     - optional url to zipfile download of bundle (this can be your RhoHub Bundle URL)
@@ -77,12 +77,12 @@ module Rhogen
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end
-    
+
     template :gitignore do |template|
       template.source = 'gitignore'
       template.destination = "#{name}/.gitignore"
     end
-    
+
     template :application do |template|
       template.source = 'app/application.rb'
       template.destination = "#{name}/app/application.rb"
@@ -96,14 +96,14 @@ module Rhogen
     template :bb_index do |template|
       template.source = 'app/index.bb.erb'
       template.destination = "#{name}/app/index.bb.erb"
-    end   
+    end
 =end
 
     template :layout do |template|
       template.source = 'app/layout.erb'
       template.destination = "#{name}/app/layout.erb"
     end
-    
+
     template :loading do |template|
       template.source = 'app/loading.html'
       template.destination = "#{name}/app/loading.html"
@@ -149,7 +149,7 @@ module Rhogen
       file.destination = "#{name}/app/loading@2x.png"
     end
 
-    
+
     directory :helpers do |directory|
       directory.source = 'app/helpers'
       directory.destination = "#{name}/app/helpers"
@@ -188,8 +188,8 @@ module Rhogen
       template.source = 'app/Settings/wait.erb'
       template.destination = "#{name}/app/Settings/wait.erb"
     end
-    
-=begin    
+
+=begin
     directory :settings do |directory|
       directory.source = 'app/Settings'
       directory.destination = "#{name}/app/Settings/"
@@ -199,7 +199,7 @@ module Rhogen
       directory.source = 'public'
       directory.destination = "#{name}/public/"
     end
- 
+
     template :rakefile do |template|
       template.source = 'Rakefile'
       template.destination = "#{name}/Rakefile"
@@ -215,14 +215,14 @@ module Rhogen
 
     desc <<-DESC
       Generates a new model for a rhodes application.
-      
+
       Required:
         name        - model name
         attributes  - list of one or more string attributes (i.e. name,industry,progress), NO spaces between attributes
-        
+
       Optional:
         priority    - sync priority (i.e. 100)
-        type        - DEPRECATED: type of model (i.e. "ask" for an ask model). This will be removed in 1.5, instead use 
+        type        - DEPRECATED: type of model (i.e. "ask" for an ask model). This will be removed in 1.5, instead use
                       search method.
     DESC
 
@@ -258,7 +258,7 @@ module Rhogen
       template.source = 'show.erb'
       template.destination = "app/#{name.camel_case}/show.erb"
     end
-=begin    
+=begin
     template :bb_index do |template|
       template.source = 'index.bb.erb'
       template.destination = "app/#{name.camel_case}/index.bb.erb"
@@ -273,7 +273,7 @@ module Rhogen
       template.source = 'new.bb.erb'
       template.destination = "app/#{name.camel_case}/new.bb.erb"
     end
-    
+
     template :bb_show do |template|
       template.source = 'show.bb.erb'
       template.destination = "app/#{name.camel_case}/show.bb.erb"
@@ -301,7 +301,7 @@ module Rhogen
     def attributes?
       self.attributes && !self.attributes.empty?
     end
-    
+
     def syncserver_exists?
       found = true
       File.open('rhoconfig.txt').each do |line|
@@ -377,11 +377,11 @@ module Rhogen
 
     def namefixed
         return name.downcase.split(/[^a-zA-Z0-9]/).map{|w| w.downcase}.join("")
-    end    
+    end
 
     def namecamelcase
-        return name.split(/[^a-zA-Z0-9]/).map{|w| w.capitalize}.join("")
-    end    
+        return name.split(/[^a-zA-Z0-9]/).map{|w| (w.slice(0,1).capitalize + w.slice(1..-1))}.join("")
+    end
 
     template :ext do |template|
       template.source = 'extensions/montana/ext.yml'
@@ -401,7 +401,7 @@ module Rhogen
 
     def callback_after_make_build(template)
         # change atribbutes in build script file to executable
-        File.chmod(0755, $build_script_full_path) 
+        File.chmod(0755, $build_script_full_path)
   		Dir.chdir("extensions/#{name}/ext")
 	  	args = []
 		  args << "api"
@@ -426,8 +426,8 @@ module Rhogen
     template :build do |template|
       template.source = 'extensions/montana/ext/build'
       template.destination = "extensions/#{name}/ext/build"
-      $build_script_full_path = template.destination   
-      template.options = { :after => :callback_after_make_build}  
+      $build_script_full_path = template.destination
+      template.options = { :after => :callback_after_make_build}
     end
 
     template :build_bat do |template|
@@ -559,7 +559,7 @@ module Rhogen
         template.source = 'extensions/montana/ext/platform/bb/src/com/montana/Montana.java'
         template.destination = "extensions/#{name}/ext/platform/bb/src/com/#{namefixed}/#{namecamelcase}.java"
     end
-  
+
     template :extension_test_controller do |template|
 	  template.source = 'app/MontanaTest/controller.rb'
       template.destination = "app/#{namecamelcase}Test/controller.rb"
@@ -568,7 +568,7 @@ module Rhogen
     template :extension_test_index do |template|
       template.source = 'app/MontanaTest/index.erb'
       template.destination = "app/#{namecamelcase}Test/index.erb"
-	  template.options = { :after => :callback_after_delete_testapp}  
+	  template.options = { :after => :callback_after_delete_testapp}
 	end
 
 
@@ -586,7 +586,7 @@ module Rhogen
     #  file.source = 'app/loading.png'
     #  file.destination = "#{name}/app/loading.png"
     #end
-    
+
     #directory :helpers do |directory|
     #  directory.source = 'app/helpers'
     #  directory.destination = "#{name}/app/helpers"
@@ -734,12 +734,12 @@ module Rhogen
       def type=(value)
         up_value = value.upcase
         BASE_TYPES.each do |t|
-            if up_value == t 
+            if up_value == t
                 @type = up_value
-                return     
+                return
             end
         end
-        
+
         if up_value == TYPE_SELF
             @type = up_value
         else
@@ -800,7 +800,7 @@ module Rhogen
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
         @default_value = ''
         @access = ModuleMethod::ACCESS_INSTANCE
-        
+
         #used if getter and setter are present - this used with generation of property bag function implementation
         @getter = nil
         @setter = nil
@@ -916,10 +916,10 @@ module Rhogen
         property_aliases.each do|alias_item|
             ar << alias_item.new_name if alias_item.existing_name == name
         end
-        
+
         ar
       end
-      
+
       attr_accessor :name
       attr_accessor :parents
       attr_accessor :methods
@@ -1203,9 +1203,9 @@ module Rhogen
     end
 
     def setup_xml
-    
+
       require File.dirname(__FILE__) + '/templates/api/helpers/api_helper'
-    
+
       if $xml != nil
         return true
       end
@@ -1308,7 +1308,7 @@ module Rhogen
               end
             end
          end
-         
+
          xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_module_property|
             module_property = ModuleProperty.new()
             module_property.name = xml_module_property.attribute("name").to_s
@@ -1736,7 +1736,7 @@ module Rhogen
       template.source = 'shared/generated/montana_ruby_api.c'
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_ruby_api.c"
     end
-    
+
     template :shared_03 do |template|
       template.source = 'shared/generated/montana_js_api.cpp'
       template.destination = "shared/generated/#{namefixed($cur_module.name)}_js_api.cpp"
