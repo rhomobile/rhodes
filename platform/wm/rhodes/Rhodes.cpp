@@ -173,7 +173,6 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 #ifndef RHODES_EMULATOR
 	HANDLE m_hMutex;
 #endif
-    CExtManager m_oExtManager;
 
 #ifdef OS_WINDOWS_DESKTOP
     String m_strHttpProxy;
@@ -539,7 +538,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
-    RHODESAPP().setExtManager( &m_oExtManager );
 
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {

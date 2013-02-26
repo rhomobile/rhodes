@@ -175,10 +175,31 @@ public:
 } //namespace rho
 
 #else //WINDOWS_PLATFORM
+
+struct IRhoExtension 
+{
+    virtual ~IRhoExtension(){}
+};
+
 class CExtManager
 {
+	HashtablePtr<String, IRhoExtension*> m_hashExtensions;
+
 public:
-    void close(){}
+    void registerExtension(const String& strName, IRhoExtension* pExt)
+    {
+        m_hashExtensions.put(strName, pExt);
+    }
+
+    IRhoExtension* getExtByName(const String& strName)
+    {
+        return m_hashExtensions.get(strName);
+    }
+
+    void close()
+    {
+        m_hashExtensions.clear();
+    }
 };
 
 #endif
