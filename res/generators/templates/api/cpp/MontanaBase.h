@@ -98,10 +98,8 @@ protected:
 <% end %>
 public:
 
-    C<%= $cur_module.name %>Base();
-
 <% if $cur_module.properties_access != ModuleMethod::ACCESS_STATIC %>
-
+    C<%= $cur_module.name %>Base();
 <% if $cur_module.is_template_propertybag %>
     virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
     virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);
