@@ -1,8 +1,12 @@
 #include "<%= $cur_module.name %>Base.h"
+#include "common/RhodesApp.h"
 
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
 end %>
+
+IMPLEMENT_LOGCLASS(C<%= $cur_module.name %>SingletonBase, "<%= $cur_module.name %>");
+IMPLEMENT_LOGCLASS(C<%= $cur_module.name %>Base, "<%= $cur_module.name %>");
 
 rho::common::CAutoPtr< C<%= $cur_module.name %>FactoryBase> C<%= $cur_module.name %>FactoryBase::m_pInstance;
 
@@ -26,7 +30,10 @@ end; end %>
 <% if $cur_module.is_template_propertybag %>
 <%= propBaseClass %>::<%= propBaseClass %>()
 {
-<% $cur_module.methods.each do |module_method|
+<% if propBaseClass == "C#{$cur_module.name}SingletonBase" %>
+    RHODESAPP().getExtManager().registerExtension( "<%= $cur_module.name %>", this ); <%   
+end
+ $cur_module.methods.each do |module_method|
     next if module_method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
     if module_method.linked_property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_PROPERTY_BAG_VIA_ACCESSORS
 %>
@@ -133,7 +140,16 @@ end %>
 }<% end ; else %>
 <%= propBaseClass %>::<%= propBaseClass %>()
 {
-}<%
-end; $cur_module.parents.each do |parent| %>
+<% if propBaseClass == "C#{$cur_module.name}SingletonBase" %>
+    RHODESAPP().getExtManager().registerExtension( "<%= $cur_module.name %>", this ); <%   
+end %>
+}<%end%>
+
+C<%= $cur_module.name %>SingletonBase::~C<%= $cur_module.name %>SingletonBase()
+{
+    C<%= $cur_module.name %>FactoryBase::setInstance(0);
+}
+
+<%$cur_module.parents.each do |parent| %>
 }<%
 end %>

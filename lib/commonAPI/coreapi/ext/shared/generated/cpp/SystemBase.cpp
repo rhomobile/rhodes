@@ -1,7 +1,11 @@
 #include "SystemBase.h"
+#include "common/RhodesApp.h"
 
 
 namespace rho {
+
+IMPLEMENT_LOGCLASS(CSystemSingletonBase, "System");
+IMPLEMENT_LOGCLASS(CSystemBase, "System");
 
 rho::common::CAutoPtr< CSystemFactoryBase> CSystemFactoryBase::m_pInstance;
 
@@ -22,6 +26,7 @@ const char ISystemSingleton::SCREEN_LANDSCAPE[] = "landscape";
 CSystemSingletonBase::CSystemSingletonBase()
 {
 
+    RHODESAPP().getExtManager().registerExtension( "System", this ); 
     m_mapPropAccessors["platform"] = new rho::apiGenerator::CMethodAccessor< ISystemSingleton >( &ISystemSingleton::getPlatform ); 
     m_mapPropAccessors["hasCamera"] = new rho::apiGenerator::CMethodAccessor< ISystemSingleton >( &ISystemSingleton::getHasCamera ); 
     m_mapPropAccessors["has_camera"] = new rho::apiGenerator::CMethodAccessor< ISystemSingleton >( &ISystemSingleton::getHasCamera ); 
@@ -177,6 +182,13 @@ void CSystemSingletonBase::setProperties( const rho::Hashtable<::rho::String, rh
 void CSystemSingletonBase::clearAllProperties(CMethodResult& oResult)
 {
     m_hashProps.clear();
+}
+
+
+
+CSystemSingletonBase::~CSystemSingletonBase()
+{
+    CSystemFactoryBase::setInstance(0);
 }
 
 

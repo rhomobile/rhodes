@@ -1,5 +1,7 @@
 #include "I<%= $cur_module.name %>.h"
+#include "logging/RhoLog.h"
 #include "common/StringConverter.h"
+#include "common/ExtManager.h"
 
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
@@ -11,7 +13,7 @@ class C<%= $cur_module.name %>FactoryBase : public CModuleFactoryBase<I<%= $cur_
 {
 protected:
     static rho::common::CAutoPtr<C<%= $cur_module.name %>FactoryBase> m_pInstance;
-    Hashtable<rho::String,I<%= $cur_module.name %>*> m_hashModules;
+    HashtablePtr<rho::String,I<%= $cur_module.name %>*> m_hashModules;
 
 public:
 
@@ -37,9 +39,11 @@ public:
 
 };
 
-class C<%= $cur_module.name %>SingletonBase : public CModuleSingletonBase< I<%= $cur_module.name %>Singleton >
+class C<%= $cur_module.name %>SingletonBase : public CModuleSingletonBase< I<%= $cur_module.name %>Singleton >, public rho::common::IRhoExtension
 {
 protected:
+    DEFINE_LOGCLASS;
+
 <% if $cur_module.is_template_default_instance %>
     rho::String m_strDefaultID;
 <% end %>
@@ -50,9 +54,13 @@ protected:
 <% end %>
 
 public:
+    virtual rho::LogCategory getModuleLogCategory(){ return getLogCategory(); }
+
+    C<%= $cur_module.name %>SingletonBase();
+    ~C<%= $cur_module.name %>SingletonBase();
 
 <% if $cur_module.properties_access == ModuleMethod::ACCESS_STATIC%>
-    C<%= $cur_module.name %>SingletonBase();
+
 <% if $cur_module.is_template_propertybag %>
     virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
     virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);
@@ -82,13 +90,18 @@ end; end; end %>
 class C<%= $cur_module.name %>Base: public I<%= $cur_module.name %>
 {
 protected:
+    DEFINE_LOGCLASS;
+
 <% if $cur_module.is_template_propertybag && $cur_module.properties_access != ModuleMethod::ACCESS_STATIC %>
     rho::Hashtable<rho::String, rho::String> m_hashProps;
     rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %> > *> m_mapPropAccessors;
 <% end %>
 public:
-<% if $cur_module.properties_access != ModuleMethod::ACCESS_STATIC %>
+
     C<%= $cur_module.name %>Base();
+
+<% if $cur_module.properties_access != ModuleMethod::ACCESS_STATIC %>
+
 <% if $cur_module.is_template_propertybag %>
     virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
     virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);

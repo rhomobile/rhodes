@@ -100,7 +100,6 @@ struct ISystemSingleton
     virtual void isBlobAttr( const rho::String& partition,  int sourceID,  const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void updateBlobAttribs( const rho::String& partition,  int sourceID, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void get_locale(rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void set_locale( const rho::String& locale_code,  const rho::String& country_code, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setPushNotification( const rho::String& url,  const rho::String& url_params,  const rho::String& push_client, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void setScreenRotationNotification( const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void exit(rho::apiGenerator::CMethodResult& oResult) = 0;

@@ -27,7 +27,7 @@ struct INetworkAccessSingleton
     virtual ~INetworkAccessSingleton(){}
 
 //methods
-    virtual void cancel( const rho::String& callbackURL, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void cancel(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void downloadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void get( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void post( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) = 0;

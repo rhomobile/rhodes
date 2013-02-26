@@ -120,9 +120,11 @@ const char* rho_ruby_getRhoDBVersion();
 
 typedef void rho_hash_eachstr_func(const char*, const char*, void*);
 void rho_ruby_enum_strhash(VALUE hash, rho_hash_eachstr_func *, void* data);
+void rho_ruby_enum_strhash_json(VALUE hash, rho_hash_eachstr_func *, void* data);
 
 typedef void rho_ary_eachstr_func(const char*, void*);
 void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func *, void* data);
+void rho_ruby_enum_strary_json(VALUE ary, rho_ary_eachstr_func *, void* data);
 
 struct CRhoRubyStringOrInt 
 {

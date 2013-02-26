@@ -71,7 +71,6 @@ VALUE rb_s_System_setDoNotBackupAttribute(int argc, VALUE *argv);
 VALUE rb_s_System_isBlobAttr(int argc, VALUE *argv);
 VALUE rb_s_System_updateBlobAttribs(int argc, VALUE *argv);
 VALUE rb_s_System_get_locale(int argc, VALUE *argv);
-VALUE rb_s_System_set_locale(int argc, VALUE *argv);
 VALUE rb_s_System_setPushNotification(int argc, VALUE *argv);
 VALUE rb_s_System_setScreenRotationNotification(int argc, VALUE *argv);
 VALUE rb_s_System_exit(int argc, VALUE *argv);
@@ -178,7 +177,6 @@ void Init_RubyAPI_System(void)
     rb_define_singleton_method(rb_mSystem, "isBlobAttr", rb_s_System_isBlobAttr, -1);
     rb_define_singleton_method(rb_mSystem, "updateBlobAttribs", rb_s_System_updateBlobAttribs, -1);
     rb_define_singleton_method(rb_mSystem, "get_locale", rb_s_System_get_locale, -1);
-    rb_define_singleton_method(rb_mSystem, "set_locale", rb_s_System_set_locale, -1);
     rb_define_singleton_method(rb_mSystem, "setPushNotification", rb_s_System_setPushNotification, -1);
     rb_define_singleton_method(rb_mSystem, "setScreenRotationNotification", rb_s_System_setScreenRotationNotification, -1);
     rb_define_singleton_method(rb_mSystem, "exit", rb_s_System_exit, -1);

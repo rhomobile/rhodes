@@ -1,4 +1,5 @@
 #include "IProcess.h"
+#include "logging/RhoLog.h"
 #include "common/StringConverter.h"
 
 
@@ -40,11 +41,14 @@ public:
 class CProcessSingletonBase : public CModuleSingletonBase< IProcessSingleton >
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
 
 
 
 public:
+    virtual rho::LogCategory getModuleLogCategory(){ return getLogCategory(); }
 
 
 
@@ -54,8 +58,11 @@ public:
 class CProcessBase: public IProcess
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
 public:
+
 
     CProcessBase();
 

@@ -1215,6 +1215,7 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -1285,6 +1286,10 @@
 			<Filter
 				Name="shared"
 				>
+				<File
+					RelativePath="..\..\shared\NetworkAcceessImpl.cpp"
+					>
+				</File>
 				<File
 					RelativePath="..\..\NetworkAccess.xml"
 					>

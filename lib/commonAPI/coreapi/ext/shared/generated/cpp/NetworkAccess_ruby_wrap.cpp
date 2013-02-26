@@ -19,8 +19,7 @@ VALUE getRuby_NetworkAccess_Module();
 
 
 
-extern "C" static void
-string_iter(const char* szVal, void* par)
+static void string_iter(const char* szVal, void* par)
 {
     rho::Vector<rho::String>& ar = *((rho::Vector<rho::String>*)(par));
     ar.addElement( szVal );
@@ -28,10 +27,10 @@ string_iter(const char* szVal, void* par)
 
 static void getStringArrayFromValue(VALUE val, rho::Vector<rho::String>& res)
 {
-    rho_ruby_enum_strary(val, string_iter, &res);
+    rho_ruby_enum_strary_json(val, string_iter, &res);
 }
 
-extern "C" static void hash_eachstr(const char* szName, const char* szVal, void* par)
+static void hash_eachstr(const char* szName, const char* szVal, void* par)
 {
     rho::Hashtable<rho::String, rho::String>& hash = *((rho::Hashtable<rho::String, rho::String>*)(par));
     hash.put( szName, szVal );
@@ -39,7 +38,7 @@ extern "C" static void hash_eachstr(const char* szName, const char* szVal, void*
 
 static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::String, rho::String>& res)
 {
-    rho_ruby_enum_strhash(val, hash_eachstr, &res);
+    rho_ruby_enum_strhash_json(val, hash_eachstr, &res);
 }
 
 
@@ -50,40 +49,41 @@ VALUE rb_s_NetworkAccess_cancel(int argc, VALUE *argv)
     rho::common::IRhoRunnable* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
-    nCallbackArg = 1;
-    rho::String arg0;
-    if ( argc > 0 )
-    {
-        if ( rho_ruby_is_string(argv[0]) )
-        {
-            arg0 = getStringFromValue(argv[0]);
-
-            oRes.setStringParam(getStringFromValue(argv[0]));
-
-        }
-        else if (!rho_ruby_is_NIL(argv[0]))
-        {
-            oRes.setArgError("Type error: argument " "0" " should be " "string" );
-            return oRes.toRuby();
-        }
-    }
-
     if ( argc > nCallbackArg )
     {
 
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
-        return oRes.toRuby();
-    }
-    pFunctor = rho_makeInstanceClassFunctor2( rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS(), &rho::INetworkAccessSingleton::cancel, arg0,  oRes );
+        if ( rho_ruby_is_proc(argv[nCallbackArg]) || rho_ruby_is_method(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallbackProc( argv[nCallbackArg] );
+        }else if ( rho_ruby_is_string(argv[nCallbackArg]) )
+        {
+            oRes.setRubyCallback( getStringFromValue(argv[nCallbackArg]) );
+        }else
+        {
+            oRes.setArgError("Type error: callback should be String");
+            return oRes.toRuby();
+        }
 
-    if ( bUseCallback )
-        rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS()->addCommandToQueue( pFunctor );
-    else 
+        oRes.setCallInUIThread(false);
+        if ( argc > nCallbackArg + 1 )
+        {
+            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
+            {
+                oRes.setArgError("Type error: callback parameter should be String");
+                return oRes.toRuby();
+            }
+
+            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
+        }
+        
+        bUseCallback = true;
+    }
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS(), &rho::INetworkAccessSingleton::cancel,  oRes );
     {
         delete pFunctor;
 
 
-        rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS()->cancel( arg0,  oRes );
+        rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS()->cancel(  oRes );
 
     }
     return oRes.toRuby();
@@ -225,11 +225,6 @@ VALUE rb_s_NetworkAccess_get(int argc, VALUE *argv)
         
         bUseCallback = true;
     }
-    else
-    {
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) + ".Mandatory Callback parameter is mised." );
-        return oRes.toRuby();
-    }
     pFunctor = rho_makeInstanceClassFunctor2( rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS(), &rho::INetworkAccessSingleton::get, arg0,  oRes );
 
     if ( bUseCallback )
@@ -303,11 +298,6 @@ VALUE rb_s_NetworkAccess_post(int argc, VALUE *argv)
         
         bUseCallback = true;
     }
-    else
-    {
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) + ".Mandatory Callback parameter is mised." );
-        return oRes.toRuby();
-    }
     pFunctor = rho_makeInstanceClassFunctor2( rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS(), &rho::INetworkAccessSingleton::post, arg0,  oRes );
 
     if ( bUseCallback )
@@ -380,11 +370,6 @@ VALUE rb_s_NetworkAccess_uploadFile(int argc, VALUE *argv)
         }
         
         bUseCallback = true;
-    }
-    else
-    {
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) + ".Mandatory Callback parameter is mised." );
-        return oRes.toRuby();
     }
     pFunctor = rho_makeInstanceClassFunctor2( rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS(), &rho::INetworkAccessSingleton::uploadFile, arg0,  oRes );
 

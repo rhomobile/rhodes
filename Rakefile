@@ -337,6 +337,7 @@ namespace "config" do
     extensions += get_extensions
     extensions << "coreAPI" if $current_platform == "wm" || $current_platform == "wp8" || $current_platform == "win32"
     extensions << "rhoconnect-client" if $rhosimulator_build
+    extensions << "json"
     $app_config["extensions"] = extensions.uniq
     
     capabilities = []

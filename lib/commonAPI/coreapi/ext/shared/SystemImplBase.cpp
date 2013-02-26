@@ -401,10 +401,4 @@ void CSystemImplBase::unset_http_proxy(rho::apiGenerator::CMethodResult& oResult
     //windows only
 }
 
-//TODO: remove when generateAPI attribute will be supported in generator
-void CSystemImplBase::set_locale( const rho::String& locale_code,  const rho::String& country_code, rho::apiGenerator::CMethodResult& oResult)
-{
-    //Implemented in Ruby code.
-}
-
 }

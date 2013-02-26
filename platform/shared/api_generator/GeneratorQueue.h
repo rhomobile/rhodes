@@ -23,6 +23,7 @@ public:
         }
         virtual rho::String toString()
         {
+            //TODO: toString
             return "";
         }
         virtual void cancel(){}
@@ -35,9 +36,6 @@ public:
 
     CGeneratorQueue() : CThreadQueue()
     {
-        //TODO: use log category from CBarcode1
-        //CThreadQueue::setLogCategory(getLogCategory());
-
         setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
     }
 };

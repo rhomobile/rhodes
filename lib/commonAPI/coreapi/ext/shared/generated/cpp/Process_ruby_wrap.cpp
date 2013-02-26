@@ -28,7 +28,7 @@ string_iter(const char* szVal, void* par)
 
 static void getStringArrayFromValue(VALUE val, rho::Vector<rho::String>& res)
 {
-    rho_ruby_enum_strary(val, string_iter, &res);
+    rho_ruby_enum_strary_json(val, string_iter, &res);
 }
 
 extern "C" static void hash_eachstr(const char* szName, const char* szVal, void* par)
@@ -39,7 +39,7 @@ extern "C" static void hash_eachstr(const char* szName, const char* szVal, void*
 
 static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::String, rho::String>& res)
 {
-    rho_ruby_enum_strhash(val, hash_eachstr, &res);
+    rho_ruby_enum_strhash_json(val, hash_eachstr, &res);
 }
 
 

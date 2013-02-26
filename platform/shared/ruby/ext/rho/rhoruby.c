@@ -490,6 +490,46 @@ void rho_ruby_enum_strhash(VALUE hash, rho_hash_eachstr_func * func, void* data)
     rb_hash_foreach(hash, hash_each, (VALUE)(&enumData));
 }
 
+static int
+hash_each_json(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
+{
+    const char* szValue = "";
+    const char* szKey = "";
+
+    if ( value != 0 && value != Qnil )
+    {
+        VALUE strVal;
+        if ( TYPE(value) == T_STRING || TYPE(value) == T_FIXNUM || TYPE(value) == T_TRUE || TYPE(value) == T_FALSE ||
+             TYPE(value) == T_FLOAT || TYPE(value) == T_BIGNUM || TYPE(value) == T_SYMBOL || TYPE(value) == T_RATIONAL || TYPE(value) == T_COMPLEX )
+            strVal = rb_funcall(value, rb_intern("to_s"), 0);
+        else
+            strVal = rb_funcall(value, rb_intern("to_json"), 0);
+
+        szValue = RSTRING_PTR(strVal);
+    }
+    if ( key != 0 && key != Qnil )
+    {
+        VALUE strKey = rb_funcall(key, rb_intern("to_s"), 0);
+        szKey = RSTRING_PTR(strKey);
+    }
+
+    (*pEnumData->func)(szKey, szValue, pEnumData->data );
+    return ST_CONTINUE;
+}
+
+void rho_ruby_enum_strhash_json(VALUE hash, rho_hash_eachstr_func *func, void* data)
+{
+    struct CHashEnumData enumData;
+
+    if ( !hash || hash ==Qnil )
+        return;
+
+    enumData.data = data;
+    enumData.func = func;
+
+    rb_hash_foreach(hash, hash_each_json, (VALUE)(&enumData));
+}
+
 void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func * func, void* data)
 {
     int i = 0;
@@ -504,6 +544,33 @@ void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func * func, void* data)
         if ( value != 0 && value != Qnil )
         {
             VALUE strVal = rb_funcall(value, rb_intern("to_s"), 0);
+            szValue = RSTRING_PTR(strVal);
+        }
+
+        (*func)(szValue, data );
+    }
+}
+
+void rho_ruby_enum_strary_json(VALUE ary, rho_ary_eachstr_func * func, void* data)
+{
+    int i = 0;
+
+    if ( ary ==0 || ary == Qnil )
+        return;
+
+    for (i=0; i<RARRAY_LEN(ary); i++)
+    {
+        VALUE value = RARRAY_PTR(ary)[i];
+        const char* szValue = "";
+        if ( value != 0 && value != Qnil )
+        {
+            VALUE strVal;
+            if ( TYPE(value) == T_STRING || TYPE(value) == T_FIXNUM || TYPE(value) == T_TRUE || TYPE(value) == T_FALSE ||
+                 TYPE(value) == T_FLOAT || TYPE(value) == T_BIGNUM || TYPE(value) == T_SYMBOL || TYPE(value) == T_RATIONAL || TYPE(value) == T_COMPLEX )
+                strVal = rb_funcall(value, rb_intern("to_s"), 0);
+            else
+                strVal = rb_funcall(value, rb_intern("to_json"), 0);
+
             szValue = RSTRING_PTR(strVal);
         }
 
