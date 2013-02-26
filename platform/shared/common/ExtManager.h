@@ -114,7 +114,7 @@ class CExtManager : public IRhoExtManager
 {
 	DEFINE_LOGCLASS;
 
-	HashtablePtr<String, IRhoExtension*> m_hashExtensions;
+    rho::HashtablePtr<String, IRhoExtension*> m_hashExtensions;
 
 public:
     void registerExtension(const String& strName, IRhoExtension* pExt);
@@ -183,7 +183,7 @@ struct IRhoExtension
 
 class CExtManager
 {
-	HashtablePtr<String, IRhoExtension*> m_hashExtensions;
+    rho::HashtablePtr<String, IRhoExtension*> m_hashExtensions;
 
 public:
     void registerExtension(const String& strName, IRhoExtension* pExt)
