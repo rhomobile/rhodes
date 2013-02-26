@@ -334,7 +334,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
     m_bDeactivationMode = false;
     m_bRestartServer = false;
     //m_activateCounter = 0;
-    m_pExtManager = 0;
+    //m_pExtManager = 0;
 	m_pNetworkStatusMonitor = 0;
 
 	m_appCallbacksQueue = new CAppCallbacksQueue();
