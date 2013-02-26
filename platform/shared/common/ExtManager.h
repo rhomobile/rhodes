@@ -183,15 +183,15 @@ struct IRhoExtension
 
 class CExtManager
 {
-    rho::HashtablePtr<String, IRhoExtension*> m_hashExtensions;
+    rho::HashtablePtr<rho::String, IRhoExtension*> m_hashExtensions;
 
 public:
-    void registerExtension(const String& strName, IRhoExtension* pExt)
+    void registerExtension(const rho::String& strName, IRhoExtension* pExt)
     {
         m_hashExtensions.put(strName, pExt);
     }
 
-    IRhoExtension* getExtByName(const String& strName)
+    IRhoExtension* getExtByName(const rho::String& strName)
     {
         return m_hashExtensions.get(strName);
     }
