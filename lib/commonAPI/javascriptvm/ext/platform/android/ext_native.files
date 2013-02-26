@@ -1,7 +1,7 @@
-ext/platform/android/generated/jni/Javascriptvm.cpp
+ext/platform/android/generated/jni/JavascriptVM.cpp
 ext/platform/android/generated/jni/javascriptvm_ruby_wrap.cpp
 ext/platform/android/generated/jni/javascriptvm_js_wrap.cpp
-ext/platform/android/jni/Javascriptvm_impl.cpp
+ext/platform/android/jni/JavascriptVM_impl.cpp
 ext/shared/generated/javascriptvm_api_init.cpp
 ext/shared/generated/javascriptvm_js_api.cpp
 ext/shared/generated/javascriptvm_ruby_api.c

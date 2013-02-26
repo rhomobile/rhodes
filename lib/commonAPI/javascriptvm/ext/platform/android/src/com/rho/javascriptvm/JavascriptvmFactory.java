@@ -2,17 +2,17 @@ package com.rho.javascriptvm;
 
 import com.rhomobile.rhodes.api.RhoApiFactory;
 
-public class JavascriptvmFactory
-        extends RhoApiFactory< Javascriptvm, JavascriptvmSingleton>
-        implements IJavascriptvmFactory {
+public class JavascriptVMFactory
+        extends RhoApiFactory< JavascriptVM, JavascriptVMSingleton>
+        implements IJavascriptVMFactory {
 
     @Override
-    protected JavascriptvmSingleton createSingleton() {
-        return new JavascriptvmSingleton(this);
+    protected JavascriptVMSingleton createSingleton() {
+        return new JavascriptVMSingleton(this);
     }
 
     @Override
-    protected Javascriptvm createApiObject(String id) {
-        return new Javascriptvm(id);
+    protected JavascriptVM createApiObject(String id) {
+        return new JavascriptVM(id);
     }
 }
