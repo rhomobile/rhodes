@@ -68,8 +68,6 @@ protected:
 
 public:
 
-    CNetworkAccessBase();
-
 
 
  
