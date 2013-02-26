@@ -5,9 +5,9 @@ import java.util.Map;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.api.MethodResult;
 
-public class Javascriptvm extends JavascriptvmBase implements IJavascriptvm {
+public class JavascriptVM extends JavascriptVMBase implements IJavascriptVM {
     
-    public Javascriptvm(String id) {
+    public JavascriptVM(String id) {
         super(id);
     }
 

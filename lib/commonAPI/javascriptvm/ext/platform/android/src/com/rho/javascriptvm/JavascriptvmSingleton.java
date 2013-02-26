@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.rhomobile.rhodes.api.IMethodResult;
 
-class JavascriptvmSingleton extends JavascriptvmSingletonBase implements IJavascriptvmSingleton {
-    public JavascriptvmSingleton(JavascriptvmFactory factory) {
+class JavascriptVMSingleton extends JavascriptVMSingletonBase implements IJavascriptVMSingleton {
+    public JavascriptVMSingleton(JavascriptVMFactory factory) {
         super(factory);
     }
 

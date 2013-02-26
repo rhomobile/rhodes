@@ -1,5 +1,7 @@
 #include "IJavascriptVM.h"
+#include "logging/RhoLog.h"
 #include "common/StringConverter.h"
+#include "common/ExtManager.h"
 
 
 namespace rho {
@@ -10,7 +12,7 @@ class CJavascriptVMFactoryBase : public CModuleFactoryBase<IJavascriptVM, IJavas
 {
 protected:
     static rho::common::CAutoPtr<CJavascriptVMFactoryBase> m_pInstance;
-    Hashtable<rho::String,IJavascriptVM*> m_hashModules;
+    HashtablePtr<rho::String,IJavascriptVM*> m_hashModules;
 
 public:
 
@@ -36,14 +38,20 @@ public:
 
 };
 
-class CJavascriptVMSingletonBase : public CModuleSingletonBase< IJavascriptVMSingleton >
+class CJavascriptVMSingletonBase : public CModuleSingletonBase< IJavascriptVMSingleton >, public rho::common::IRhoExtension
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
 
 
 
 public:
+    virtual rho::LogCategory getModuleLogCategory(){ return getLogCategory(); }
+
+    CJavascriptVMSingletonBase();
+    ~CJavascriptVMSingletonBase();
 
 
 
@@ -53,10 +61,15 @@ public:
 class CJavascriptVMBase: public IJavascriptVM
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
 public:
 
     CJavascriptVMBase();
+
+
+
 
 
  

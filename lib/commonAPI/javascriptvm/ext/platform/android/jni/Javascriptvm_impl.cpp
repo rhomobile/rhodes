@@ -1,15 +1,15 @@
 #include "rhodes.h"
-#include "Javascriptvm.h"
+#include "JavascriptVM.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
-#define DEFAULT_LOGCATEGORY "Javascriptvm_impl"
+#define DEFAULT_LOGCATEGORY "JavascriptVM_impl"
 
-#define JAVASCRIPTVM_FACTORY_CLASS "com.rho.javascriptvm.JavascriptvmFactory"
+#define JAVASCRIPTVM_FACTORY_CLASS "com.rho.javascriptvm.JavascriptVMFactory"
 
-extern "C" void Init_Javascriptvm_API(void);
+extern "C" void Init_JavascriptVM_API(void);
 
-extern "C" void Init_Javascriptvm(void)
+extern "C" void Init_JavascriptVM(void)
 {
     RAWTRACE(__FUNCTION__);
 
@@ -37,7 +37,7 @@ extern "C" void Init_Javascriptvm(void)
         
         RAWTRACE("Initializing Java factory");
 
-        rho::CJavascriptvmBase::setJavaFactory(env, jFactory);
+        rho::CJavascriptVMBase::setJavaFactory(env, jFactory);
 
         RAWTRACE("Deleting JNI reference");
 
@@ -45,17 +45,17 @@ extern "C" void Init_Javascriptvm(void)
 
         RAWTRACE("Initializing API");
 
-        Init_Javascriptvm_API();
+        Init_JavascriptVM_API();
 
-        RAWTRACE("Init_Javascriptvm succeeded");
+        RAWTRACE("Init_JavascriptVM succeeded");
     }
     else
     {
-        RAWLOG_ERROR("Failed to initialize Javascriptvm API: jnienv() is failed");
+        RAWLOG_ERROR("Failed to initialize JavascriptVM API: jnienv() is failed");
     }
 
 }
 
-extern "C" void Init_Javascriptvm_extension() {
-    Init_Javascriptvm();
+extern "C" void Init_JavascriptVM_extension() {
+    Init_JavascriptVM();
 }
