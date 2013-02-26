@@ -30,7 +30,7 @@
                     <DESC>List of properties I want to know about</DESC>
                 </PARAM>
             </PARAMS>
-            <RETURN type="HASH" itemType="STRING">
+            <RETURN type="HASH">
                 <DESC>Map of properties I want to know about</DESC>
             </RETURN>
 
@@ -40,7 +40,7 @@
 
         <METHOD name="getAllProperties" hasCallback="optional">
             <DESC>This is documentation</DESC>
-            <RETURN type="HASH" itemType="STRING">
+            <RETURN type="HASH">
                 <DESC>Map of properties I want to know about</DESC>
             </RETURN>
 

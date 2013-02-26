@@ -1,5 +1,7 @@
 #include "INetworkAccess.h"
+#include "logging/RhoLog.h"
 #include "common/StringConverter.h"
+#include "common/ExtManager.h"
 
 
 namespace rho {
@@ -10,7 +12,7 @@ class CNetworkAccessFactoryBase : public CModuleFactoryBase<INetworkAccess, INet
 {
 protected:
     static rho::common::CAutoPtr<CNetworkAccessFactoryBase> m_pInstance;
-    Hashtable<rho::String,INetworkAccess*> m_hashModules;
+    HashtablePtr<rho::String,INetworkAccess*> m_hashModules;
 
 public:
 
@@ -36,17 +38,23 @@ public:
 
 };
 
-class CNetworkAccessSingletonBase : public CModuleSingletonBase< INetworkAccessSingleton >
+class CNetworkAccessSingletonBase : public CModuleSingletonBase< INetworkAccessSingleton >, public rho::common::IRhoExtension
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
 
 
 
 public:
-
+    virtual rho::LogCategory getModuleLogCategory(){ return getLogCategory(); }
 
     CNetworkAccessSingletonBase();
+    ~CNetworkAccessSingletonBase();
+
+
+
 
 
 
@@ -55,8 +63,13 @@ public:
 class CNetworkAccessBase: public INetworkAccess
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
 public:
+
+    CNetworkAccessBase();
+
 
 
  

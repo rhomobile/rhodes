@@ -41,6 +41,7 @@ class CMethodResult
     rho::String m_strRubyCallback, m_strCallbackParam, m_strStringParam;
     rho::String m_strJSCallback;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
+    rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > m_hashStrL2Res;
     rho::String m_strRes;
     rho::StringW m_strResW;
     rho::Vector<rho::String> m_arStrRes;
@@ -111,6 +112,8 @@ public:
     bool isError(){ return m_ResType == eError || m_ResType == eArgError; }
 
     rho::Vector<rho::String>& getStringArray(){ return m_arStrRes; }
+    rho::Hashtable<rho::String, rho::String>& getStringHash(){ return m_hashStrRes; }
+    rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >& getStringHashL2(){ return m_hashStrL2Res; }
 
     rho::String toString();
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}

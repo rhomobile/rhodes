@@ -157,7 +157,8 @@ begin
 	
     require 'rhom/rhom_object'
     require 'rhofsconnector'
-	
+
+    require 'json'	
     require 'rhom/rhom_object_factory'
     
     require 'rhom/rhom'

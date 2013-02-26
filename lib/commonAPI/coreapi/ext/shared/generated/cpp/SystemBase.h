@@ -1,5 +1,7 @@
 #include "ISystem.h"
+#include "logging/RhoLog.h"
 #include "common/StringConverter.h"
+#include "common/ExtManager.h"
 
 
 namespace rho {
@@ -10,7 +12,7 @@ class CSystemFactoryBase : public CModuleFactoryBase<ISystem, ISystemSingleton, 
 {
 protected:
     static rho::common::CAutoPtr<CSystemFactoryBase> m_pInstance;
-    Hashtable<rho::String,ISystem*> m_hashModules;
+    HashtablePtr<rho::String,ISystem*> m_hashModules;
 
 public:
 
@@ -36,9 +38,11 @@ public:
 
 };
 
-class CSystemSingletonBase : public CModuleSingletonBase< ISystemSingleton >
+class CSystemSingletonBase : public CModuleSingletonBase< ISystemSingleton >, public rho::common::IRhoExtension
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
 
 
@@ -47,9 +51,13 @@ protected:
 
 
 public:
-
+    virtual rho::LogCategory getModuleLogCategory(){ return getLogCategory(); }
 
     CSystemSingletonBase();
+    ~CSystemSingletonBase();
+
+
+
 
     virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
     virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);
@@ -65,8 +73,13 @@ public:
 class CSystemBase: public ISystem
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
 public:
+
+    CSystemBase();
+
 
 
  

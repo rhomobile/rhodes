@@ -59,9 +59,6 @@ public:
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
     virtual void set_application_icon_badge( int badgeNumber, rho::apiGenerator::CMethodResult& oResult);
 
-    //TODO: remove when generateAPI attribute will be supported in generator
-    virtual void set_locale( const rho::String& locale_code,  const rho::String& country_code, rho::apiGenerator::CMethodResult& oResult);
-
 };
 
 }

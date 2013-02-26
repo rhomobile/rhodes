@@ -53,19 +53,12 @@
             <ALIASES>
             </ALIASES>
 
-            <METHOD name="cancel">
-                <DESC>Install an application.</DESC>
-                <PARAMS>
-                    <PARAM name="callbackURL" type="STRING">
-                        <DESC>The url of an application to install on the device.</DESC>
-                        <CAN_BE_NIL>
-                            <DESC>Cancel all requests</DESC>                            
-                        </CAN_BE_NIL>
-                    </PARAM>
-                </PARAMS>
+            <METHOD name="cancel" hasCallback="optional" runInThread="none">
+                <DESC>Cancel the request identified by callback. If callback is mossed then all requests will be cancelled.</DESC>
+                <CALLBACK optional="true"/>
             </METHOD>
 
-            <METHOD name="downloadFile" hasCallback="mandatory">
+            <METHOD name="downloadFile" hasCallback="mandatory"  propertyHash="true">
                 <DESC>Download a file to the specified filename.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH">
@@ -97,10 +90,10 @@
 
             </METHOD>
 
-            <METHOD name="get" hasCallback="mandatory">
+            <METHOD name="get" hasCallback="optional">
                 <DESC>Perform an HTTP GET request.</DESC>
                 <PARAMS>
-                    <PARAM name="propertyMap" type="HASH">
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
                     </PARAM>
                 </PARAMS>
@@ -124,10 +117,10 @@
 
             </METHOD>
 
-            <METHOD name="post" hasCallback="mandatory">
+            <METHOD name="post" hasCallback="optional">
                 <DESC>Download a file to the specified filename.</DESC>
                 <PARAMS>
-                    <PARAM name="propertyMap" type="HASH">
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
                         <PARAMS>
                             <PARAM name="body" type="STRING">
@@ -156,10 +149,10 @@
 
             </METHOD>
 
-            <METHOD name="uploadFile" hasCallback="mandatory">
+            <METHOD name="uploadFile" hasCallback="optional">
                 <DESC>Upload the specified file using HTTP POST.</DESC>
                 <PARAMS>
-                    <PARAM name="propertyMap" type="HASH">
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
                         <PARAMS>
                             <PARAM name="filename" type="STRING">

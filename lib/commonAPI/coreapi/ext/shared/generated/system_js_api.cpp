@@ -139,8 +139,6 @@ rho::String js_s_System_updateBlobAttribs(rho::json::CJSONArray& argv, const rho
 
 rho::String js_s_System_get_locale(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
-rho::String js_s_System_set_locale(rho::json::CJSONArray& argv, const rho::String& strObjID);
-
 rho::String js_s_System_setPushNotification(rho::json::CJSONArray& argv, const rho::String& strObjID);
 
 rho::String js_s_System_setScreenRotationNotification(rho::json::CJSONArray& argv, const rho::String& strObjID);
@@ -317,8 +315,6 @@ extern "C" void Init_JSAPI_System(void)
     rho::apiGenerator::js_define_method("Rho:System:updateBlobAttribs", js_s_System_updateBlobAttribs);
 
     rho::apiGenerator::js_define_method("Rho:System:get_locale", js_s_System_get_locale);
-
-    rho::apiGenerator::js_define_method("Rho:System:set_locale", js_s_System_set_locale);
 
     rho::apiGenerator::js_define_method("Rho:System:setPushNotification", js_s_System_setPushNotification);
 

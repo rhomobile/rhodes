@@ -25,50 +25,9 @@ rho::String js_s_NetworkAccess_cancel(rho::json::CJSONArray& argv, const rho::St
 
 
 
-    nCallbackArg = 1;
-
-    
-
-
-    rho::String arg0;
-    if ( argc > 0 )
-    {
-        if ( argv[0].isString() )
-        {
-            arg0 = argv[0].getString();
-
-            oRes.setStringParam(argv[0].getString());
-
-        }
-        else if (!argv[0].isNull())
-        {
-            oRes.setArgError( "Type error: argument " "0" " should be " "string" );
-            return oRes.toJSON();
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     if ( argc > nCallbackArg )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
-        return oRes.toJSON();
 
 
         if ( !argv[nCallbackArg].isString() )
@@ -93,19 +52,15 @@ rho::String js_s_NetworkAccess_cancel(rho::json::CJSONArray& argv, const rho::St
     }
 
 
-    pFunctor = rho_makeInstanceClassFunctor2( rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS(), &rho::INetworkAccessSingleton::cancel, arg0,  oRes );
+    pFunctor = rho_makeInstanceClassFunctor1( rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS(), &rho::INetworkAccessSingleton::cancel,  oRes );
 
 
 
-
-    if ( bUseCallback )
-        rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS()->addCommandToQueue( pFunctor );
-    else 
     {
         delete pFunctor;
 
 
-        rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS()->cancel( arg0,  oRes );
+        rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS()->cancel(  oRes );
 
 
     }

@@ -37,10 +37,28 @@ rho::String CMethodResult::toJSON()
 
         for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
         {
-            if ( it != m_hashStrRes.begin() )
+            if ( strRes.length() > 1 )
                 strRes += ",";
 
             strRes += CJSONEntry::quoteValue(it->first) + ":" + CJSONEntry::quoteValue(it->second);
+        }
+
+        for ( rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >::iterator it = m_hashStrL2Res.begin(); it != m_hashStrL2Res.end(); ++it)
+        {
+            if ( strRes.length() > 1 )
+                strRes += ",";
+
+            strRes += CJSONEntry::quoteValue(it->first) + ":{";
+
+            for ( rho::Hashtable<rho::String, rho::String>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+            {
+                if ( it2 != it->second.begin() )
+                    strRes += ",";
+
+                strRes += CJSONEntry::quoteValue(it2->first) + ":" + CJSONEntry::quoteValue(it2->second);
+            }
+
+            strRes += "}";
         }
 
         strRes += "}";
@@ -117,6 +135,18 @@ VALUE CMethodResult::toRuby()
         for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
         {
             addStrToHash( valHash, it->first.c_str(), it->second.c_str() );
+        }
+
+        for ( rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >::iterator it = m_hashStrL2Res.begin(); it != m_hashStrL2Res.end(); ++it)
+        {
+            CHoldRubyValue valHashL2(rho_ruby_createHash());
+
+            for ( rho::Hashtable<rho::String, rho::String>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+            {
+                addStrToHash( valHashL2, it2->first.c_str(), it2->second.c_str() );
+            }
+
+            addHashToHash( valHash, it->first.c_str(), valHashL2 );
         }
 
         return valHash;
