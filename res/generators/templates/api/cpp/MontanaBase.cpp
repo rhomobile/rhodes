@@ -143,6 +143,12 @@ end %>
 <% if propBaseClass == "C#{$cur_module.name}SingletonBase" %>
     RHODESAPP().getExtManager().registerExtension( "<%= $cur_module.name %>", this ); <%   
 end %>
+}<%end
+
+if propBaseClass != "C#{$cur_module.name}SingletonBase" %>
+C<%= $cur_module.name %>SingletonBase::C<%= $cur_module.name %>SingletonBase()
+{
+    RHODESAPP().getExtManager().registerExtension( "<%= $cur_module.name %>", this );
 }<%end%>
 
 C<%= $cur_module.name %>SingletonBase::~C<%= $cur_module.name %>SingletonBase()
