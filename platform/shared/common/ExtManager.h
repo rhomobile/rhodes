@@ -170,13 +170,17 @@ public:
     virtual void setBrowserGesturing(bool bEnableGesturing);
     virtual void passSipPositionToEngine();
 };
-
+	
 } //namespace common
 } //namespace rho
 
 #else //WINDOWS_PLATFORM
 
-struct IRhoExtension 
+namespace rho {
+namespace common {
+
+
+struct IRhoExtension
 {
     virtual ~IRhoExtension(){}
 };
@@ -201,6 +205,10 @@ public:
         m_hashExtensions.clear();
     }
 };
+	
+} //namespace common
+} //namespace rho
+
 
 #endif
 
