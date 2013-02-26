@@ -78,8 +78,6 @@ protected:
 
 public:
 
-    CSystemBase();
-
 
 
  
