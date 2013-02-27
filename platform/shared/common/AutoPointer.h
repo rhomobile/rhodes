@@ -205,7 +205,7 @@ public:
     CInstanceClassFunctor1( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE param ): CInstanceClassFunctorBase<PARAMTYPE>(param), m_obj(obj), m_pFunc(pFunc){}
     virtual void runObject()
     { 
-        (m_obj->*m_pFunc)(m_param); 
+        (m_obj->*m_pFunc)(CInstanceClassFunctorBase<PARAMTYPE>::m_param); 
     }
 
     ~CInstanceClassFunctor1()
@@ -231,7 +231,7 @@ public:
     CInstanceClassFunctor2( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2 ): CInstanceClassFunctorBase<PARAMTYPE2>(param2), m_obj(obj), m_pFunc(pFunc), m_param1(param1){}
     virtual void runObject()
     { 
-        (m_obj->*m_pFunc)(m_param1, m_param); 
+        (m_obj->*m_pFunc)(m_param1, CInstanceClassFunctorBase<PARAMTYPE2>::m_param); 
     }
 
     ~CInstanceClassFunctor2()
@@ -258,7 +258,7 @@ public:
     CInstanceClassFunctor3( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2, PARAMTYPE3 param3 ): CInstanceClassFunctorBase<PARAMTYPE3>(param3), m_obj(obj), m_pFunc(pFunc), m_param1(param1), m_param2(param2){}
     virtual void runObject()
     { 
-        (m_obj->*m_pFunc)(m_param1, m_param2, m_param); 
+        (m_obj->*m_pFunc)(m_param1, m_param2, CInstanceClassFunctorBase<PARAMTYPE3>::m_param); 
     }
 
     ~CInstanceClassFunctor3()
@@ -286,7 +286,7 @@ public:
     CInstanceClassFunctor4( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2, PARAMTYPE3 param3, PARAMTYPE4 param4 ): CInstanceClassFunctorBase<PARAMTYPE4>(param4), m_obj(obj), m_pFunc(pFunc), m_param1(param1), m_param2(param2), m_param3(param3){}
     virtual void runObject()
     { 
-        (m_obj->*m_pFunc)(m_param1, m_param2, m_param3, m_param); 
+        (m_obj->*m_pFunc)(m_param1, m_param2, m_param3, CInstanceClassFunctorBase<PARAMTYPE4>::m_param); 
     }
 
     ~CInstanceClassFunctor4()
@@ -315,7 +315,7 @@ public:
     CInstanceClassFunctor5( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2, PARAMTYPE3 param3, PARAMTYPE4 param4, PARAMTYPE5 param5 ): CInstanceClassFunctorBase<PARAMTYPE5>(param5), m_obj(obj), m_pFunc(pFunc), m_param1(param1), m_param2(param2), m_param3(param3), m_param4(param4){}
     virtual void runObject()
     { 
-        (m_obj->*m_pFunc)(m_param1, m_param2, m_param3, m_param4, m_param); 
+        (m_obj->*m_pFunc)(m_param1, m_param2, m_param3, m_param4, CInstanceClassFunctorBase<PARAMTYPE5>::m_param); 
     }
 
     ~CInstanceClassFunctor5()
@@ -345,7 +345,7 @@ public:
     CInstanceClassFunctor6( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2, PARAMTYPE3 param3, PARAMTYPE4 param4, PARAMTYPE5 param5, PARAMTYPE6 param6 ): CInstanceClassFunctorBase<PARAMTYPE6>(param6), m_obj(obj), m_pFunc(pFunc), m_param1(param1), m_param2(param2), m_param3(param3), m_param4(param4), m_param5(param5){}
     virtual void runObject()
     { 
-        (m_obj->*m_pFunc)(m_param1, m_param2, m_param3, m_param4, m_param5, m_param); 
+        (m_obj->*m_pFunc)(m_param1, m_param2, m_param3, m_param4, m_param5, CInstanceClassFunctorBase<PARAMTYPE6>::m_param); 
     }
 
     ~CInstanceClassFunctor6()
