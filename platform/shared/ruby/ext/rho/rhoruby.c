@@ -236,6 +236,8 @@ void RhoRubyStart()
     Init_GeoLocation(); //+
 #if !defined(WINDOWS_PLATFORM)
     Init_AsyncHttp(); //+
+#endif
+#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID)
     Init_System();
 #endif
 

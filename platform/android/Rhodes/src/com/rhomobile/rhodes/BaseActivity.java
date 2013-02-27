@@ -27,6 +27,7 @@
 package com.rhomobile.rhodes;
 
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -40,6 +41,7 @@ import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Window;
 import android.view.WindowManager;
 
 public class BaseActivity extends Activity implements ServiceConnection {
@@ -92,11 +94,70 @@ public class BaseActivity extends Activity implements ServiceConnection {
     private static ScreenProperties sScreenProp = null;
     
     public static ScreenProperties getScreenProperties() { return sScreenProp; }
-    
+
+    private static boolean sFullScreen = RhoConf.isExist("full_screen") ? RhoConf.getBool("full_screen") : false;
+
     protected RhodesService mRhodesService;
 	private boolean mBoundToService;
 
-	@Override
+    private static int sActivitiesActive;
+    private static BaseActivity sTopActivity = null;
+    
+    private static boolean sScreenAutoRotate = true;
+
+    public static void onActivityStarted(Activity activity) {
+        sTopActivity = null;
+        activityStarted();
+    }
+
+    public static void onActivityStopped(Activity activity) {
+        activityStopped();
+    }
+
+    public static void onActivityStarted(BaseActivity activity) {
+        sTopActivity = activity;
+        activityStarted();
+    }
+
+    public static void onActivityStopped(BaseActivity activity) {
+        if(sTopActivity == activity) {
+            sTopActivity = null;
+        }
+        activityStopped();
+    }
+
+    private static void activityStarted() {
+        Logger.D(TAG, "activityStarted (1): sActivitiesActive=" + sActivitiesActive);
+        if (sActivitiesActive == 0) {
+            Logger.D(TAG, "first activity started");
+
+            RhodesService r = RhodesService.getInstance();
+            if (r != null)
+                r.handleAppActivation();
+        }
+        ++sActivitiesActive;
+        Logger.D(TAG, "activityStarted (2): sActivitiesActive=" + sActivitiesActive);
+    }
+    
+    public static void activityStopped() {
+        Logger.D(TAG, "activityStopped (1): sActivitiesActive=" + sActivitiesActive);
+
+        --sActivitiesActive;
+        if (sActivitiesActive == 0) {
+            Logger.D(TAG, "last activity stopped");
+
+            RhodesService r = RhodesService.getInstance();
+            if (r != null)
+                r.handleAppDeactivation();
+        }
+        Logger.D(TAG, "activityStopped (2): sActivitiesActive=" + sActivitiesActive);
+    }
+    
+    public static int getActivitiesCount() {
+        return sActivitiesActive;
+    }
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Logger.T(TAG, "onCreate");
@@ -109,16 +170,20 @@ public class BaseActivity extends Activity implements ServiceConnection {
 		bindService(intent, this, Context.BIND_AUTO_CREATE);
 		mBoundToService = true;
 
+        if (RhoConf.isExist("disable_screen_rotation")) {
+            sScreenAutoRotate = !RhoConf.getBool("disable_screen_rotation");
+        }
+
         if (sScreenProp == null) {
             sScreenProp = new ScreenProperties(this);
         } else {
-            if (RhoConf.getBool("disable_screen_rotation")) { 
+            if (!sScreenAutoRotate) { 
                 Logger.D(TAG, "Screen rotation is disabled. Force orientation: " + getScreenProperties().getOrientation());
                 setRequestedOrientation(getScreenProperties().getOrientation());
             }
         }
-	}
-	
+    }
+
 	@Override
 	protected void onDestroy() {
 		if (mBoundToService) {
@@ -127,32 +192,36 @@ public class BaseActivity extends Activity implements ServiceConnection {
 		}
 		super.onDestroy();
 	}
-	
-	@Override
-	protected void onStart() {
-		super.onStart();
-		RhodesService.activityStarted();
-	}
-	
-	@Override
-	protected void onStop() {
-		RhodesService.activityStopped();
-		super.onStop();
-	}
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        onActivityStarted(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setFullScreen(sFullScreen);
+    }
+
+    @Override
+    protected void onStop() {
+        onActivityStopped(this);
+        super.onStop();
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         Logger.T(TAG, "onConfigurationChanged");
-        if (RhoConf.getBool("disable_screen_rotation"))
+        super.onConfigurationChanged(newConfig);
+        if(!sScreenAutoRotate)
         {
-            super.onConfigurationChanged(newConfig);
             Logger.D(TAG, "Screen rotation is disabled. Force old orientation: " + getScreenProperties().getOrientation());
             setRequestedOrientation(getScreenProperties().getOrientation());
         }
         else
         {
-            super.onConfigurationChanged(newConfig);
-
             ScreenProperties props = getScreenProperties();
             props.reread(this);
 
@@ -190,4 +259,40 @@ public class BaseActivity extends Activity implements ServiceConnection {
 			Log.d(TAG, "Disconnected from service: " + mRhodesService);
 		mRhodesService = null;
 	}
+
+    public static void setFullScreenMode(final boolean mode) {
+        sFullScreen = mode;
+        PerformOnUiThread.exec(new Runnable() {
+            @Override public void run() {
+                if (sTopActivity != null) {
+                    sTopActivity.setFullScreen(mode);
+                }
+            }
+        });
+    }
+    
+    public static boolean getFullScreenMode() {
+        return sFullScreen;
+    }
+    
+    public static void setScreenAutoRotateMode(boolean mode) {
+        sScreenAutoRotate = mode;
+    }
+
+    public static boolean getScreenAutoRotateMode() {
+        return sScreenAutoRotate; 
+    }
+
+    public void setFullScreen(boolean enable) {
+        Window window = getWindow();
+        if (enable) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+        else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            window.setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        }
+    }
+
 }

@@ -28,7 +28,6 @@ platform/shared/net/INetRequest.cpp
 platform/shared/rubyext/GeoLocation.cpp
 platform/shared/rubyext/RhoAppAdapter.cpp
 platform/shared/rubyext/System.cpp
-platform/shared/rubyext/ZipFiles.cpp
 platform/shared/statistic/RhoProfiler.cpp
 platform/shared/unzip/unzip.cpp
 platform/shared/unzip/zip.cpp

@@ -63,10 +63,10 @@ public:
 
 <% if $cur_module.is_template_propertybag %>
     virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
-    virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);
+    virtual void getProperties( const rho::Vector<rho::String>& arrayofNames, CMethodResult& oResult);
     virtual void getAllProperties(CMethodResult& oResult);
     virtual void setProperty( const rho::String& propertyName,  const rho::String& propertyValue, CMethodResult& oResult);
-    virtual void setProperties( const rho::Hashtable<::rho::String, rho::String>& propertyMap, CMethodResult& oResult);
+    virtual void setProperties( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult);
     virtual void clearAllProperties(CMethodResult& oResult);
 <% $cur_module.methods.each do |module_method|
     next if module_method.access != ModuleMethod::ACCESS_INSTANCE
@@ -102,10 +102,10 @@ public:
     C<%= $cur_module.name %>Base();
 <% if $cur_module.is_template_propertybag %>
     virtual void getProperty( const rho::String& propertyName, CMethodResult& oResult);
-    virtual void getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult);
+    virtual void getProperties( const rho::Vector<rho::String>& arrayofNames, CMethodResult& oResult);
     virtual void getAllProperties(CMethodResult& oResult);
     virtual void setProperty( const rho::String& propertyName,  const rho::String& propertyValue, CMethodResult& oResult);
-    virtual void setProperties( const rho::Hashtable<::rho::String, rho::String>& propertyMap, CMethodResult& oResult);
+    virtual void setProperties( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult);
     virtual void clearAllProperties(CMethodResult& oResult);
 <% $cur_module.methods.each do |module_method|
     next if module_method.access != ModuleMethod::ACCESS_INSTANCE

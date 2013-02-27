@@ -235,16 +235,14 @@ void CSystemImplBase::zipFile( const rho::String& localPathToZip,  const rho::St
     }
 
 #else
-
-    HZIP hz = CreateZip(szZipFilePath, psw);
-    if ( !hz )
-        res = -1;
-    else
+    HZIP hz = CreateZip(localPathToZip.c_str(), password.c_str());
+    if(!hz)
     {
-        CFilePath oPath(szToZipPath);
-
-        res = ZipAdd( hz, oPath.getBaseName(), szToZipPath );
-
+        res = -1;
+    } else
+    {
+        CFilePath oPath(localPathToFile);
+        res = ZipAdd(hz, oPath.getBaseName(), localPathToFile.c_str());
         res = CloseZip(hz);
     }
 #endif

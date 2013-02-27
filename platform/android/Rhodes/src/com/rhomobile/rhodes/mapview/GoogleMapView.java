@@ -43,6 +43,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 
@@ -115,7 +117,7 @@ public class GoogleMapView extends MapActivity {
 			public void run() {
 				mCalloutOverlay.selectAnnotation(fann);
 			}
-		}, false);
+		});
 	}
 
 	@Override
@@ -133,10 +135,11 @@ public class GoogleMapView extends MapActivity {
 		
 		mc = this;
 		
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
-		
+		//getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
+		setFullScreen(BaseActivity.getFullScreenMode());
+
 		RelativeLayout layout = new RelativeLayout(this);
-		setContentView(layout, new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+		setContentView(layout, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		
 		// Extrace parameters
 		//Bundle extras = getIntent().getExtras();
@@ -283,31 +286,26 @@ public class GoogleMapView extends MapActivity {
 		});
 		geocoding.start();
 
-        if (RhoConf.getBool("disable_screen_rotation")) 
+        if (!BaseActivity.getScreenAutoRotateMode()) {
             setRequestedOrientation(BaseActivity.getScreenProperties().getOrientation());
-	}
-	
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		Logger.T(TAG, "+++ onConfigurationChanged");
-		if (RhoConf.getBool("disable_screen_rotation"))
-		{
-			super.onConfigurationChanged(newConfig);
-			setRequestedOrientation(BaseActivity.getScreenProperties().getOrientation());
-		}
-		else
-		{
-            super.onConfigurationChanged(newConfig);
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        Logger.T(TAG, "+++ onConfigurationChanged");
+        super.onConfigurationChanged(newConfig);
+        if (!BaseActivity.getScreenAutoRotateMode()) {
+            setRequestedOrientation(BaseActivity.getScreenProperties().getOrientation());
+        } else {
             BaseActivity.getScreenProperties().reread(this);
-		}
-	}
-	
-	
-	
+        }
+    }
+
 	@Override
 	protected void onStart() {
 		super.onStart();
-		RhodesService.activityStarted();
+		BaseActivity.onActivityStarted(this);
 	}
 	
 	@Override
@@ -328,7 +326,7 @@ public class GoogleMapView extends MapActivity {
 	
 	@Override
 	protected void onStop() {
-		RhodesService.activityStopped();
+		BaseActivity.onActivityStopped(this);
 		super.onStop();
 	}
 	
@@ -371,7 +369,7 @@ public class GoogleMapView extends MapActivity {
 						public void run() {
 							view.invalidate();
 						}
-					}, false);
+					});
 				}
 				else
 					anns.addElement(ann);
@@ -386,7 +384,7 @@ public class GoogleMapView extends MapActivity {
 			public void run() {
 				view.invalidate();
 			}
-		}, false);
+		});
 	}
 	
 	private class AddAnnotationsCommand implements Runnable {
@@ -407,7 +405,7 @@ public class GoogleMapView extends MapActivity {
 	
 	private void addAnnotationsInUIThread(AnnotationsOverlay overlay, Vector<Annotation> annotations, com.google.android.maps.MapView view) {
 		//Utils.platformLog(TAG, "perform add Annotations !");
-		PerformOnUiThread.exec(new AddAnnotationsCommand(overlay, annotations, view), false);
+		PerformOnUiThread.exec(new AddAnnotationsCommand(overlay, annotations, view));
 	}
 
 	@Override
@@ -546,7 +544,7 @@ public class GoogleMapView extends MapActivity {
 						mc = null;
 					}
 				}
-			}, false);
+			});
 		}
 		catch (Exception e) {
 			reportFail("close", e);
@@ -580,4 +578,16 @@ public class GoogleMapView extends MapActivity {
 			return 0;
 		}
 	}
+
+    public void setFullScreen(boolean enable) {
+        Window window = getWindow();
+        if (enable) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+            window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
+        else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            window.setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+        }
+    }
 }
