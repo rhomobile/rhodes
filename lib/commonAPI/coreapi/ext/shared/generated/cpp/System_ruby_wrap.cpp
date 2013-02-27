@@ -46,7 +46,7 @@ VALUE rb_s_System_getPlatform(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -78,7 +78,7 @@ VALUE rb_s_System_getHasCamera(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -110,7 +110,7 @@ VALUE rb_s_System_getScreenWidth(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -142,7 +142,7 @@ VALUE rb_s_System_getScreenHeight(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -174,7 +174,7 @@ VALUE rb_s_System_getRealScreenWidth(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -206,7 +206,7 @@ VALUE rb_s_System_getRealScreenHeight(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -238,7 +238,7 @@ VALUE rb_s_System_getScreenOrientation(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -270,7 +270,7 @@ VALUE rb_s_System_getPpiX(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -302,7 +302,7 @@ VALUE rb_s_System_getPpiY(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -334,7 +334,7 @@ VALUE rb_s_System_getPhoneNumber(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -366,7 +366,7 @@ VALUE rb_s_System_getDeviceOwnerEmail(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -398,7 +398,7 @@ VALUE rb_s_System_getDeviceOwnerName(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -430,7 +430,7 @@ VALUE rb_s_System_getDevicePushId(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -462,7 +462,7 @@ VALUE rb_s_System_getPhoneId(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -494,7 +494,7 @@ VALUE rb_s_System_getDeviceName(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -526,7 +526,7 @@ VALUE rb_s_System_getOsVersion(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -558,7 +558,7 @@ VALUE rb_s_System_getLocale(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -590,7 +590,7 @@ VALUE rb_s_System_getCountry(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -622,7 +622,7 @@ VALUE rb_s_System_getIsEmulator(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -654,7 +654,7 @@ VALUE rb_s_System_getHasCalendar(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -686,7 +686,7 @@ VALUE rb_s_System_getIsMotorolaDevice(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -718,7 +718,7 @@ VALUE rb_s_System_getOemInfo(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -750,7 +750,7 @@ VALUE rb_s_System_getUuid(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -782,7 +782,7 @@ VALUE rb_s_System_getApplicationIconBadge(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -814,7 +814,7 @@ VALUE rb_s_System_setApplicationIconBadge(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -864,7 +864,7 @@ VALUE rb_s_System_getHttpProxyURI(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -896,7 +896,7 @@ VALUE rb_s_System_setHttpProxyURI(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -951,7 +951,7 @@ VALUE rb_s_System_getLockWindowSize(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -983,7 +983,7 @@ VALUE rb_s_System_setLockWindowSize(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1033,7 +1033,7 @@ VALUE rb_s_System_getShowKeyboard(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1065,7 +1065,7 @@ VALUE rb_s_System_setShowKeyboard(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1115,7 +1115,7 @@ VALUE rb_s_System_getFullScreen(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1147,7 +1147,7 @@ VALUE rb_s_System_setFullScreen(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1197,7 +1197,7 @@ VALUE rb_s_System_getLocalServerPort(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1229,7 +1229,7 @@ VALUE rb_s_System_setLocalServerPort(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1279,7 +1279,7 @@ VALUE rb_s_System_getFreeServerPort(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1311,7 +1311,7 @@ VALUE rb_s_System_getScreenAutoRotate(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1343,7 +1343,7 @@ VALUE rb_s_System_setScreenAutoRotate(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1393,7 +1393,7 @@ VALUE rb_s_System_getHasTouchscreen(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1425,7 +1425,7 @@ VALUE rb_s_System_getSecurityTokenNotPassed(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1457,7 +1457,7 @@ VALUE rb_s_System_getWebviewFramework(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1489,7 +1489,7 @@ VALUE rb_s_System_getScreenSleeping(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1521,7 +1521,7 @@ VALUE rb_s_System_setScreenSleeping(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1571,7 +1571,7 @@ VALUE rb_s_System_getHasNetwork(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1603,7 +1603,7 @@ VALUE rb_s_System_getHasWifiNetwork(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1635,7 +1635,7 @@ VALUE rb_s_System_getHasCellNetwork(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1667,7 +1667,7 @@ VALUE rb_s_System_getHasSqlite(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1699,7 +1699,7 @@ VALUE rb_s_System_applicationInstall(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1754,7 +1754,7 @@ VALUE rb_s_System_isApplicationInstalled(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1809,7 +1809,7 @@ VALUE rb_s_System_applicationUninstall(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1864,7 +1864,7 @@ VALUE rb_s_System_getStartParams(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1896,7 +1896,7 @@ VALUE rb_s_System_openUrl(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1951,7 +1951,7 @@ VALUE rb_s_System_unzipFile(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2022,7 +2022,7 @@ VALUE rb_s_System_zipFile(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2114,7 +2114,7 @@ VALUE rb_s_System_zipFiles(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2224,7 +2224,7 @@ VALUE rb_s_System_setRegistrySetting(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2355,7 +2355,7 @@ VALUE rb_s_System_getRegistrySetting(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2447,7 +2447,7 @@ VALUE rb_s_System_setWindowFrame(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2551,7 +2551,7 @@ VALUE rb_s_System_setWindowPosition(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2619,7 +2619,7 @@ VALUE rb_s_System_setWindowSize(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2687,7 +2687,7 @@ VALUE rb_s_System_bringToFront(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -2719,7 +2719,7 @@ VALUE rb_s_System_replaceCurrentBundle(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2792,7 +2792,7 @@ VALUE rb_s_System_deleteFolder(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2847,7 +2847,7 @@ VALUE rb_s_System_setDoNotBackupAttribute(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2902,7 +2902,7 @@ VALUE rb_s_System_isBlobAttr(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -2996,7 +2996,7 @@ VALUE rb_s_System_updateBlobAttribs(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3069,7 +3069,7 @@ VALUE rb_s_System_get_locale(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -3101,7 +3101,7 @@ VALUE rb_s_System_setPushNotification(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3188,7 +3188,7 @@ VALUE rb_s_System_setScreenRotationNotification(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3259,7 +3259,7 @@ VALUE rb_s_System_exit(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -3291,7 +3291,7 @@ VALUE rb_s_System_set_sleeping(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3341,7 +3341,7 @@ VALUE rb_s_System_startTimer(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3428,7 +3428,7 @@ VALUE rb_s_System_stopTimer(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3483,7 +3483,7 @@ VALUE rb_s_System_setNetworkStatusNotify(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3556,7 +3556,7 @@ VALUE rb_s_System_clearNetworkStatusNotify(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -3588,7 +3588,7 @@ VALUE rb_s_System_set_http_proxy_url(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3643,7 +3643,7 @@ VALUE rb_s_System_unset_http_proxy(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -3675,7 +3675,7 @@ VALUE rb_s_System_set_application_icon_badge(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3725,7 +3725,7 @@ VALUE rb_s_System_runApplication(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3809,7 +3809,7 @@ VALUE rb_s_System_getProperty(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3887,7 +3887,7 @@ VALUE rb_s_System_getProperties(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -3960,7 +3960,7 @@ VALUE rb_s_System_getAllProperties(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -4015,7 +4015,7 @@ VALUE rb_s_System_setProperty(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -4091,7 +4091,7 @@ VALUE rb_s_System_setProperties(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -4141,7 +4141,7 @@ VALUE rb_s_System_clearAllProperties(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )

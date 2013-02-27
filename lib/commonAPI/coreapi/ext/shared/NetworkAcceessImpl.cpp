@@ -1,6 +1,9 @@
 #include "generated/cpp/NetworkAccessBase.h"
 #include "net/INetRequest.h"
 #include "common/RhoAppAdapter.h"
+#include "json/JSONIterator.h"
+#include "common/RhodesApp.h"
+#include "System.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NetworkAcceess"
@@ -9,6 +12,7 @@ namespace rho {
 
 using namespace apiGenerator;
 using namespace common;
+using namespace json;
 
 class CNetworkAccessImpl: public CNetworkAccessSingletonBase
 {
@@ -20,18 +24,18 @@ public:
 
         NetRequest m_NetRequest;
 
-        CHttpCommand(rho::common::IRhoRunnable* pFunctor) : CGeneratorQueue::CGeneratorQueueCommand(pFunctor){}
+        CHttpCommand(rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor) : CGeneratorQueue::CGeneratorQueueCommand(pFunctor){}
         virtual void cancel(){}
     };
 
     CNetworkAccessImpl(): CNetworkAccessSingletonBase(){}
 
-    virtual rho::common::CThreadQueue::IQueueCommand* createQueueCommand(rho::common::IRhoRunnable* pFunctor){ return new CHttpCommand(pFunctor); }
+    virtual rho::common::CThreadQueue::IQueueCommand* createQueueCommand(rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor){ return new CHttpCommand(pFunctor); }
 
-    virtual void cancel( rho::apiGenerator::CMethodResult& oResult){}
-    virtual void downloadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){}
+    virtual void cancel( rho::apiGenerator::CMethodResult& oResult);
+    virtual void downloadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
     virtual void get( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
-    virtual void post( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){}
+    virtual void post( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
     virtual void uploadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult){}
 private:
 
@@ -66,13 +70,73 @@ static String getStringProp(const rho::Hashtable<rho::String, rho::String>& prop
     return strRes;
 }
 
+void CNetworkAccessImpl::cancel( rho::apiGenerator::CMethodResult& oResult)
+{
+/*    synchronized(getCommandLock());
+    CHttpCommand* pCmd = (CHttpCommand*)getCurCommand();
+
+    if ( pCmd != null && ( *szCallback == '*' || pCmd->m_strCallback.compare(szCallback) == 0) )
+        pCmd->cancel();
+
+    if ( *szCallback == '*' )
+        getCommands().clear();
+    else
+    {
+        for (int i = getCommands().size()-1; i >= 0; i--)
+        {
+            CHttpCommand* pCmd1 = (CHttpCommand*)getCommands().get(i);
+
+            if ( pCmd1 != null && pCmd1->m_strCallback.compare(szCallback) == 0 )
+                getCommands().remove(i);
+        }
+
+    }*/
+}
+
 void CNetworkAccessImpl::get( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
     Hashtable<String,String> mapHeaders;                                          
     readHeaders( propertyMap, mapHeaders );
 
     NetRequest oNetRequest;
+
+    if ( propertyMap.containsKey("verifyPeerCertificate") )
+        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+
     NetResponse resp = getNet(oNetRequest).doRequest( getStringProp(propertyMap, "http_command", "GET").c_str(),
+            propertyMap.get("url"), propertyMap.get("body"), null, &mapHeaders);
+
+    if ( !getCurRequest(oNetRequest).isCancelled())
+        createResult( resp, mapHeaders, oResult );
+}
+
+void CNetworkAccessImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+{
+    Hashtable<String,String> mapHeaders;                                          
+    readHeaders( propertyMap, mapHeaders );
+
+    NetRequest oNetRequest;
+
+    if ( propertyMap.containsKey("verifyPeerCertificate") )
+        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+
+    NetResponse resp = getNet(oNetRequest).pullFile( propertyMap.get("url"), propertyMap.get("filename"), null, &mapHeaders);
+
+    if ( !getCurRequest(oNetRequest).isCancelled())
+        createResult( resp, mapHeaders, oResult );
+}
+
+void CNetworkAccessImpl::post( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+{
+    Hashtable<String,String> mapHeaders;                                          
+    readHeaders( propertyMap, mapHeaders );
+
+    NetRequest oNetRequest;
+
+    if ( propertyMap.containsKey("verifyPeerCertificate") )
+        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+
+    NetResponse resp = getNet(oNetRequest).doRequest( getStringProp(propertyMap, "http_command", "POST").c_str(),
             propertyMap.get("url"), propertyMap.get("body"), null, &mapHeaders);
 
     if ( !getCurRequest(oNetRequest).isCancelled())
@@ -81,8 +145,29 @@ void CNetworkAccessImpl::get( const rho::Hashtable<rho::String, rho::String>& pr
 
 void CNetworkAccessImpl::readHeaders( const rho::Hashtable<rho::String, rho::String>& propertyMap, Hashtable<String,String>& mapHeaders )
 {
-    //TODO: read Auth
-    //TODO:: readHeaders 
+    for( CJSONStructIterator oHashIter( propertyMap.get("headers").c_str() ); !oHashIter.isEnd(); oHashIter.next() )
+    {
+        mapHeaders[oHashIter.getCurKey()] = oHashIter.getCurString();
+    }
+
+    if ( propertyMap.get("authType") == AUTH_BASIC )
+    {
+        int nLen = rho_base64_encode(propertyMap.get("authPassword").c_str(), -1, 0);
+        char* szBuf = new char[nLen+1];
+        rho_base64_encode(propertyMap.get("authPassword").c_str(), -1, szBuf );
+
+        char* szBuf2 = new char[nLen+1];
+        rho_base64_decode(szBuf, -1, szBuf2 );
+
+        mapHeaders["Authorization"] = "Basic " + propertyMap.get("authUser") + ":" + szBuf;
+        delete szBuf;
+    }
+
+    if ( mapHeaders.get("User-Agent").length() == 0 )
+    {
+        mapHeaders["User-Agent"] = "Mozilla-5.0 (" + rho::System::getPlatform() + "; " + rho::System::getDeviceName() + "; " + rho::System::getOsVersion() + ")";
+    }
+
 }
 
 void CNetworkAccessImpl::createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult )

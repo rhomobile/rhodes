@@ -18,7 +18,7 @@ rho::String js_s_NetworkAccess_cancel(rho::json::CJSONArray& argv, const rho::St
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -75,7 +75,7 @@ rho::String js_s_NetworkAccess_downloadFile(rho::json::CJSONArray& argv, const r
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -182,7 +182,7 @@ rho::String js_s_NetworkAccess_get(rho::json::CJSONArray& argv, const rho::Strin
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -289,7 +289,7 @@ rho::String js_s_NetworkAccess_post(rho::json::CJSONArray& argv, const rho::Stri
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -396,7 +396,7 @@ rho::String js_s_NetworkAccess_uploadFile(rho::json::CJSONArray& argv, const rho
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;

@@ -120,7 +120,7 @@ struct ISystemSingleton
     virtual void clearAllProperties(rho::apiGenerator::CMethodResult& oResult) = 0;
 
 
-    virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor) = 0;
+    virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor) = 0;
     virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor) = 0;
 };
 

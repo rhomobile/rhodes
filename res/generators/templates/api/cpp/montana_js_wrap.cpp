@@ -18,7 +18,7 @@ using namespace rho::common;
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
