@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common/ThreadQueue.h"
+#include "common/AutoPointer.h"
+#include "MethodResult.h"
 
 namespace rho
 {
@@ -13,9 +15,9 @@ public:
 
     class CGeneratorQueueCommand: public rho::common::CThreadQueue::IQueueCommand
     {
-        rho::common::IRhoRunnable* m_pFunctor;
+        rho::common::CInstanceClassFunctorBase<CMethodResult>* m_pFunctor;
     public:
-        CGeneratorQueueCommand(rho::common::IRhoRunnable* pFunctor) : m_pFunctor(pFunctor){}
+        CGeneratorQueueCommand(rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor) : m_pFunctor(pFunctor){}
         virtual ~CGeneratorQueueCommand(){};
         virtual bool equals(const IQueueCommand& cmd)
         {

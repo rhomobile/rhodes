@@ -46,7 +46,7 @@ VALUE rb_s_NetworkAccess_cancel(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -97,7 +97,7 @@ VALUE rb_s_NetworkAccess_downloadFile(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -175,7 +175,7 @@ VALUE rb_s_NetworkAccess_get(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -248,7 +248,7 @@ VALUE rb_s_NetworkAccess_post(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -321,7 +321,7 @@ VALUE rb_s_NetworkAccess_uploadFile(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;

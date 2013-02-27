@@ -77,7 +77,7 @@ if api_generator_isSelfModule( $cur_module, result_type) %>
 elsif result_type && result_type.length()>0 && !MethodParam::BASE_TYPES.include?(result_type) %>
     oRes.setRubyObjectClassPath( "<%= result_type %>" );<%
 end; end %>
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;<%
 

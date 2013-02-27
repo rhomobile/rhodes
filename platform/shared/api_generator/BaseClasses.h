@@ -44,7 +44,7 @@ public:
 
     void setCommandQueue( rho::common::CThreadQueue* pQueue){ m_pCommandQueue = pQueue; }
     rho::common::CThreadQueue* getCommandQueue(){ return m_pCommandQueue; }
-    virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor)
+    virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor)
     {
         if ( !m_pCommandQueue )
         {
@@ -56,7 +56,7 @@ public:
         m_pCommandQueue->addQueueCommand( createQueueCommand(pFunctor) );
     }
 
-    virtual rho::common::CThreadQueue::IQueueCommand* createQueueCommand(rho::common::IRhoRunnable* pFunctor)
+    virtual rho::common::CThreadQueue::IQueueCommand* createQueueCommand(rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor)
     {
         return new CGeneratorQueue::CGeneratorQueueCommand(pFunctor);
     }
