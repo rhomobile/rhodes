@@ -72,7 +72,7 @@ class CMethodResult
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
 public:
 
-    CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(false){}
+    CMethodResult(bool bCollectionMode=false): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(bCollectionMode){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     void setRubyCallbackProc(unsigned long oRubyCallbackProc);
@@ -114,6 +114,7 @@ public:
     rho::Vector<rho::String>& getStringArray(){ return m_arStrRes; }
     rho::Hashtable<rho::String, rho::String>& getStringHash(){ return m_hashStrRes; }
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >& getStringHashL2(){ return m_hashStrL2Res; }
+    rho::String& getString(){ return m_strRes; }
 
     rho::String toString();
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}
