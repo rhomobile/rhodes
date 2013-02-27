@@ -8,10 +8,8 @@
     <TEMPLATES>
     </TEMPLATES>
 
-    <METHODS  access="STATIC">
+    <METHODS>
       <ALIASES>
-        <ALIAS new="initialize" existing="openDb" deprecated="true"/>
-        <ALIAS new="close" existing="closeDb" deprecated="true"/>
         <ALIAS new="start_transaction" existing="startTransaction" deprecated="true"/>
         <ALIAS new="commit" existing="commitTransaction" deprecated="true"/>
         <ALIAS new="rollback" existing="rollbackTransaction" deprecated="true"/>
@@ -22,7 +20,7 @@
         <ALIAS new="is_ui_waitfordb" existing="isUiWaitForDb" deprecated="true"/>
       </ALIASES>
 
-      <METHOD name="openDb">
+      <METHOD name="initialize">
         <DESC>Open database</DESC>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
@@ -35,7 +33,7 @@
         <RETURN type="INTEGER"/>  
       </METHOD>
 
-      <METHOD name="closeDb">
+      <METHOD name="close">
         <DESC>Close database</DESC>
         <RETURN type="INTEGER"/>
       </METHOD>
