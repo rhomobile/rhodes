@@ -1,9 +1,0 @@
-ext/platform/android/generated/src/com/rho/javascriptvm/JavascriptVMBase.java
-ext/platform/android/generated/src/com/rho/javascriptvm/JavascriptVMFactorySingleton.java
-ext/platform/android/generated/src/com/rho/javascriptvm/JavascriptVMSingletonBase.java
-ext/platform/android/generated/src/com/rho/javascriptvm/IJavascriptVM.java
-ext/platform/android/generated/src/com/rho/javascriptvm/IJavascriptVMFactory.java
-ext/platform/android/generated/src/com/rho/javascriptvm/IJavascriptVMSingleton.java
-ext/platform/android/src/com/rho/javascriptvm/JavascriptVM.java
-ext/platform/android/src/com/rho/javascriptvm/JavascriptVMFactory.java
-ext/platform/android/src/com/rho/javascriptvm/JavascriptVMSingleton.java
