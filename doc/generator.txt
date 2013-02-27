@@ -58,19 +58,19 @@ The generated application has the following directory structure and files.
 
 ## Adding a Model to a Rhodes Application from RhoStudio
 
-Rhodes applications support a Model-View-Controller (MVC) pattern.  To start our application, we will generate a Model. To generate a Rhodes model and create the associated Controller and View templates, right-click on the application project in the Project Explorer and select New->Rhodes model.
+Rhodes applications support a Model-View-Controller (MVC) pattern.  To start our application, we will generate a Model. To generate a Rhodes model and create the associated Controller and View templates, right-click on the application project in the Project Explorer and select New->RhoMobile model.
 
 <img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/menu-new-rhodes-model.png"/>
 
 In the Model Information window, enter the name for your model: in this case, `Product`. 
 
-** NOTE: Do not use the following for model names: Config, Settings, helpers, test, Client, Sync, or any built-in Ruby class name. It is good programming practice to avoid using generic names, such as client, or time, or print.
+**NOTE: Do not use the following for model names: Config, Settings, helpers, test, Client, Sync, or any built-in Ruby class name. It is good programming practice to avoid using generic names, such as client, or time, or print.**
 
 Also enter the Model attributes as a string with no spaces and each attribute separated by a comma: in this case, `name,brand,price,quantity,sku`. (Whitespaces at the field name beginning and end will be trimmed and whitespaces in the middle of the field name will be replaced with an underscore character.)
 
 <img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/model-information.png"/>
 
-After pressing the Finish button, you'll see the Rhodes model generator script output in the output console (Rhodes build log console).
+After pressing the Finish button, you'll see the RhoMobile model generator script output in the output console (Rhodes build log console).
 
 <img src="http://rhodocs.s3.amazonaws.com/rhostudio-tutorial/rhodes-model-generator-output.png"/>
 
@@ -85,7 +85,7 @@ This will generate the following files in the folder app/Account:
 * app/Product/product_controller.rb - contains the the business logic for the model, the basic CRUD actions: index, new, create, edit, update and delete.
 * app/Product/product.rb - contains the Product model definition. Since we are using the default PropertyBag definition, we don't need to modify this file any further.
 
-A placeholder for Account test specs will be generated in the app/test folder:
+A placeholder for test specs will be generated in the app/test folder:
 
 * app/test/product_spec.rb - placeholder for Account test specs
 
@@ -166,7 +166,7 @@ For example, here is the command to generate a model named account, with the att
 
 
 
-## Add test framework
+## Adding Test Framework
 
 To add a test framework to the application:
 
