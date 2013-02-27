@@ -44,6 +44,5 @@ void Init_RubyAPI_NetworkAccess(void)
 
 
 
-    rb_const_set(rb_mKernel, rb_intern("AsyncHttp"), rb_mNetworkAccess );
 }
 

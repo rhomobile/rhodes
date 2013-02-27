@@ -280,6 +280,16 @@ const char* CJSONEntry::getString(const char* name)
     return szRes;
 }
 
+const char* CJSONEntry::getString(const char* name, const char* szDefValue)
+{
+    const char* szRes = szDefValue;
+    struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
+    if ( obj != 0 )
+        szRes = json_object_get_string(obj);
+
+    return szRes;
+}
+
 const char* CJSONEntry::getString()
 {
     return json_object_get_string(m_object);

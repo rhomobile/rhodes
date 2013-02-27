@@ -1107,6 +1107,7 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32"
+						ExcludedFromBuild="true"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1287,14 +1288,11 @@
 				Name="shared"
 				>
 				<File
-					RelativePath="..\..\shared\NetworkAcceessImpl.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\NetworkAccess.xml"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
+						ExcludedFromBuild="true"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1303,6 +1301,10 @@
 							Outputs="$(InputDir)shared/generated3"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\NetworkAccessImpl.cpp"
+					>
 				</File>
 				<Filter
 					Name="generated"

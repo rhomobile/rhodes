@@ -124,6 +124,7 @@ public:
 
     bool hasCallback();
     void callCallback();
+    bool isEqualCallback(CMethodResult& oResult);
 };
 
 }

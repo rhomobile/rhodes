@@ -62,6 +62,7 @@ public:
     double getDouble();
 
     const char* getString(const char* name);
+    const char* getString(const char* name, const char* szDefValue );
     const char* getString();
 
     CJSONEntry getEntry(const char* name)const;

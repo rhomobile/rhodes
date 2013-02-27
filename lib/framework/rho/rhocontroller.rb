@@ -63,15 +63,12 @@ module Rho
             if name == '__rho_inline'
                 params.merge!( __rhoGetCallbackObject(index.to_i()) )
                 
-                barcodeModule = Object.const_get('Barcode') if Object.const_defined?('Barcode')
-                if barcodeModule && barcodeModule.respond_to?( :rho_process_moto_callback )
-                    barcodeModule.rho_process_moto_callback(params)
-                end
-                cameraModule = Object.const_get('Camera') if Object.const_defined?('Camera')
-                if cameraModule && cameraModule.respond_to?( :rho_process_moto_callback )
-                    cameraModule.rho_process_moto_callback(params)
-                end
-                
+                if System.get_property('platform') == 'ANDROID'
+                    barcodeModule = Object.const_get('Barcode') if Object.const_defined?('Barcode')
+                    if barcodeModule && barcodeModule.respond_to?( :rho_process_moto_callback )
+                        barcodeModule.rho_process_moto_callback(params)
+                    end
+                end                
             else
                 params[name] = __rhoGetCallbackObject(index.to_i())
             end    

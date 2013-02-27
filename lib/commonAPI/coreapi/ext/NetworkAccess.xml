@@ -4,11 +4,7 @@
     <MODULE name="NetworkAccess" parent="Rho">
         <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
         <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
-
-        <ALIASES>
-            <ALIAS new="AsyncHttp" existing="Rho.NetworkAccess" deprecated="true"/>
-        </ALIASES>
-
+        
         <TEMPLATES>
         </TEMPLATES>
 
@@ -58,7 +54,7 @@
                 <CALLBACK optional="true"/>
             </METHOD>
 
-            <METHOD name="downloadFile" hasCallback="mandatory"  propertyHash="true">
+            <METHOD name="downloadFile" hasCallback="optional"  propertyHash="true">
                 <DESC>Download a file to the specified filename.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH">
@@ -161,9 +157,29 @@
                             <PARAM name="body" type="STRING">
                                 <DESC>The message body of the HTTP request.</DESC>
                             </PARAM>
+                            <PARAM name="fileContentType" type="STRING">
+                                <DESC>Content-Type header for the file, defaults to "application/octet-stream".</DESC>
+                            </PARAM>
                             <PARAM name="multipart" type="ARRAY">
                                 <DESC>Array of hashes containing file information.</DESC>
-                            </PARAM>
+                                <PARAM type="HASH">
+                                    <DESC>Multipart properties.</DESC>
+                                    <PARAMS>
+                                        <PARAM name="filename" type="STRING">
+                                            <DESC>The path and name of the file to be uploaded.</DESC>
+                                        </PARAM>
+                                        <PARAM name="contentType" type="STRING">
+                                            <DESC>Content-Type header, defaults to "application/octet-stream".</DESC>
+                                        </PARAM>
+                                        <PARAM name="filenameBase" type="STRING">
+                                            <DESC>Base directory containing the :filename.</DESC>
+                                        </PARAM>
+                                        <PARAM name="name" type="STRING">
+                                            <DESC>File type, defaults to "blob".</DESC>
+                                        </PARAM>
+                                    </PARAMS>
+                                </PARAM>
+                            </PARAM>    
                         </PARAMS>
                     </PARAM>
                 </PARAMS>

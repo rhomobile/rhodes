@@ -975,7 +975,7 @@ module Rhogen
     $possible_children["ALIASES"] = ["ALIAS"]
     $possible_children["ALIAS"] = ["DESC"]
     $possible_children["METHODS"] = ["METHOD", "ALIASES", ]
-    $possible_children["METHOD"] = ["DESC", "PARAMS", "RETURN"]
+    $possible_children["METHOD"] = ["DESC", "PARAMS", "RETURN", "CALLBACK"]
     $possible_children["PARAMS"] = ["PARAM"]
     $possible_children["PARAM"] = ["DESC", "PARAM", "PARAMS", "VALUES", "CAN_BE_NIL"]
     $possible_children["RETURN"] = ["DESC", "PARAM", "PARAMS"]

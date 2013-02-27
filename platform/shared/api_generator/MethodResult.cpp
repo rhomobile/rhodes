@@ -228,6 +228,20 @@ bool CMethodResult::hasCallback()
 
 }
 
+bool CMethodResult::isEqualCallback(CMethodResult& oResult)
+{
+    if (!hasCallback())
+        return hasCallback() == oResult.hasCallback();
+
+    if ( m_strRubyCallback.length() != 0 )
+        return m_strRubyCallback == oResult.m_strRubyCallback;
+
+    if ( m_pRubyCallbackProc )
+        return m_pRubyCallbackProc == oResult.m_pRubyCallbackProc;
+
+    return m_strJSCallback == oResult.m_strJSCallback;
+}
+
 void CMethodResult::callCallback()
 {
     if ( m_bCollectionMode )
@@ -235,7 +249,7 @@ void CMethodResult::callCallback()
 
     if ( m_ResType != eNone && m_strRubyCallback.length() != 0 )
     {
-        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "__rho_inline");
 
         RHODESAPP().callCallbackWithData( m_strRubyCallback, strResBody, m_strCallbackParam, true);
 
@@ -243,7 +257,7 @@ void CMethodResult::callCallback()
     }else if ( m_ResType != eNone && m_pRubyCallbackProc)
     {
         VALUE oProc = m_pRubyCallbackProc->getValue();
-        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "__rho_inline");
 
         RHODESAPP().callCallbackProcWithData( oProc, strResBody, m_strCallbackParam, true);
 
