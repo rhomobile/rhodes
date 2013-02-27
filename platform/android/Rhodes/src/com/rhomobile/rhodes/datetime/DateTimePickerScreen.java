@@ -330,7 +330,6 @@ public class DateTimePickerScreen extends BaseActivity {
 		super.onCreate(icicle);
 		Logger.D(TAG, "onCreate");
 		
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
 		setContentView(AndroidR.layout.datetime);
 		
 		Bundle extras = this.getIntent().getExtras();

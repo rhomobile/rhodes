@@ -36,7 +36,6 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
-import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.webview.GoogleWebView;
 
 import android.app.Dialog;
@@ -55,7 +54,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
@@ -191,24 +189,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		}
 	}
 	
-	public static void setFullscreen(int enable) {
-		//Utils.platformLog(TAG, "setFullscreen("+String.valueOf(enable)+")");
-		final int en = enable;
-		PerformOnUiThread.exec( new Runnable() {
-			public void run() {
-				if (en != 0) {
-					getInstance().getWindow().clearFlags( WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-					getInstance().getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-				}
-				else {
-					getInstance().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-					getInstance().getWindow().setFlags( WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN, WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-				}
-			}
-		});
-	}
-
-    @Override
+	@Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 

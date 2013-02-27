@@ -30,10 +30,24 @@
 #include "rhodes/RhoClassFactory.h"
 #include "rhodes/fileapi.h"
 
-#include <ruby/ext/rho/rhoruby.h>
+#include "ruby/ext/rho/rhoruby.h"
+#include "MethodResult.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Callbacks"
+
+#define JNI_EXCEPTION_CHECK(env, result) if(env->ExceptionCheck()) { \
+    jholder<jthrowable> jhexc = env->ExceptionOccurred(); \
+    jholder<jclass> jhclass = env->GetObjectClass(jhexc.get()); \
+    jmethodID mid = env->GetMethodID(jhclass.get(), "toString", "()Ljava/lang/String;"); \
+    env->ExceptionClear(); \
+    jhstring jhmsg = (jstring)env->CallObjectMethod(jhexc.get(), mid); \
+    rho::String error = rho_cast<rho::String>(env, jhmsg); \
+    RAWLOG_ERROR(error.c_str()); \
+    result.setError(error); \
+}
+
+
 
 extern "C" void rho_webview_navigate(const char* url, int index);
 
@@ -98,22 +112,7 @@ RHO_GLOBAL int rho_net_ping_network(const char* szHost)
     return (int)env->CallStaticBooleanMethod(cls, mid, jhHost.get());
 }
 
-rho::String rho_sysimpl_get_phone_id()
-{
-    JNIEnv *env = jnienv();
-
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
-    if (!cls) return rho::String();
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "getProperty", "(Ljava/lang/String;)Ljava/lang/Object;");
-    if (!mid) return rho::String();
-
-    jhstring propNameObj = rho_cast<jstring>(env, "phone_id");
-    jhstring result = static_cast<jstring>(env->CallStaticObjectMethod(cls, mid, propNameObj.get()));
-
-    return rho_cast<std::string>(env, result);
-}
-
-RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
+RHO_GLOBAL int rho_sysimpl_get_property(const char* szPropName, rho::apiGenerator::CMethodResult& result)
 {
     JNIEnv *env = jnienv();
 
@@ -123,8 +122,8 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     if (!mid) return 0;
 
     jhstring propNameObj = rho_cast<jstring>(env, szPropName);
-    jhobject result = env->CallStaticObjectMethod(cls, mid, propNameObj.get());
-    if (!result) return 0;
+    jhobject jhresult = env->CallStaticObjectMethod(cls, mid, propNameObj.get());
+    if (!jhresult) return 0;
 
     jclass clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
     jclass clsInteger = getJNIClass(RHODES_JAVA_CLASS_INTEGER);
@@ -132,29 +131,34 @@ RHO_GLOBAL int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
     jclass clsDouble = getJNIClass(RHODES_JAVA_CLASS_DOUBLE);
     jclass clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
 
-    if (env->IsInstanceOf(result.get(), clsBoolean)) {
+    if (env->IsInstanceOf(jhresult.get(), clsBoolean)) {
         jmethodID midValue = getJNIClassMethod(env, clsBoolean, "booleanValue", "()Z");
-        *resValue = rho_ruby_create_boolean((int)env->CallBooleanMethod(result.get(), midValue));
+        bool res = static_cast<bool>(env->CallBooleanMethod(jhresult.get(), midValue));
+        result.set(res);
         return 1;
     }
-    else if (env->IsInstanceOf(result.get(), clsInteger)) {
+    else if (env->IsInstanceOf(jhresult.get(), clsInteger)) {
         jmethodID midValue = getJNIClassMethod(env, clsInteger, "intValue", "()I");
-        *resValue = rho_ruby_create_integer((int)env->CallIntMethod(result.get(), midValue));
+        int res = static_cast<int>(env->CallIntMethod(jhresult.get(), midValue));
+        result.set(res);
         return 1;
     }
-    else if (env->IsInstanceOf(result.get(), clsFloat)) {
+    else if (env->IsInstanceOf(jhresult.get(), clsFloat)) {
         jmethodID midValue = getJNIClassMethod(env, clsFloat, "floatValue", "()F");
-        *resValue = rho_ruby_create_double((double)env->CallFloatMethod(result.get(), midValue));
+        double res = static_cast<double>(env->CallFloatMethod(jhresult.get(), midValue));
+        result.set(res);
         return 1;
     }
-    else if (env->IsInstanceOf(result.get(), clsDouble)) {
+    else if (env->IsInstanceOf(jhresult.get(), clsDouble)) {
         jmethodID midValue = getJNIClassMethod(env, clsDouble, "doubleValue", "()D");
-        *resValue = rho_ruby_create_double((double)env->CallDoubleMethod(result.get(), midValue));
+        double res = static_cast<double>(env->CallFloatMethod(jhresult.get(), midValue));
+        result.set(res);
         return 1;
     }
-    else if (env->IsInstanceOf(result.get(), clsString)) {
-        jstring resStrObj = (jstring)result.get();
-        *resValue = rho_cast<VALUE>(env, resStrObj);
+    else if (env->IsInstanceOf(jhresult.get(), clsString)) {
+        jstring resStrObj = (jstring)jhresult.get();
+        rho::String res = rho_cast<rho::String>(env, resStrObj);
+        result.set(res);
         return 1;
     }
 
@@ -171,33 +175,6 @@ RHO_GLOBAL int rho_sys_set_sleeping(int sleeping) {
     return env->CallStaticIntMethod(cls, mid, sleeping);
 }
 
-RHO_GLOBAL VALUE rho_sys_get_locale()
-{
-    VALUE res;
-    if ( rho_sysimpl_get_property((char*)"locale", &res) )
-        return res;
-
-    return rho_ruby_get_NIL();
-}
-
-RHO_GLOBAL int rho_sys_get_screen_width()
-{
-    VALUE res;
-    if ( rho_sysimpl_get_property((char*)"screen_width", &res) )
-        return NUM2INT(res);
-
-    return 0;
-}
-
-RHO_GLOBAL int rho_sys_get_screen_height()
-{
-    VALUE res;
-    if ( rho_sysimpl_get_property((char*)"screen_height", &res) )
-        return NUM2INT(res);
-
-    return 0;
-}
-
 RHO_GLOBAL void rho_sys_app_exit()
 {
     JNIEnv *env = jnienv();
@@ -208,7 +185,7 @@ RHO_GLOBAL void rho_sys_app_exit()
     env->CallStaticVoidMethod(cls, mid);
 }
 
-RHO_GLOBAL void rho_sys_run_app(const char *appname, VALUE params)
+RHO_GLOBAL void rho_sys_run_app(const rho::String& appname, const rho::String& params, rho::apiGenerator::CMethodResult& result)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
@@ -216,8 +193,9 @@ RHO_GLOBAL void rho_sys_run_app(const char *appname, VALUE params)
     jmethodID mid = getJNIClassStaticMethod(env, cls, "runApplication", "(Ljava/lang/String;Ljava/lang/Object;)V");
     if (!mid) return;
     jhstring jhName = rho_cast<jstring>(env, appname);
-    jhobject jhParams = rho_cast<jobject>(env, params);
+    jhstring jhParams = rho_cast<jstring>(env, params);
     env->CallStaticVoidMethod(cls, mid, jhName.get(), jhParams.get());
+    JNI_EXCEPTION_CHECK(env, result);
 }
 
 RHO_GLOBAL void rho_sys_bring_to_front()
@@ -254,19 +232,21 @@ RHO_GLOBAL void rho_sys_open_url(const char *url)
     env->CallStaticVoidMethod(cls, mid, jhUrl.get());
 }
 
-RHO_GLOBAL int rho_sys_is_app_installed(const char *appname)
+RHO_GLOBAL void rho_sys_is_app_installed(const rho::String& appname, rho::apiGenerator::CMethodResult& result)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
-    if (!cls) return 0;
+    if (!cls) return;
     jmethodID mid = getJNIClassStaticMethod(env, cls, "isAppInstalled", "(Ljava/lang/String;)Z");
-    if (!mid) return 0;
+    if (!mid) return;
 
     jhstring jhAppName = rho_cast<jstring>(env, appname);
-    return (int)env->CallStaticBooleanMethod(cls, mid, jhAppName.get());
+    jboolean res = static_cast<bool>(env->CallStaticBooleanMethod(cls, mid, jhAppName.get()));
+    result.set(res);
+    JNI_EXCEPTION_CHECK(env, result);
 }
 
-RHO_GLOBAL void rho_sys_app_install(const char *url)
+RHO_GLOBAL void rho_sys_app_install(const rho::String& url, rho::apiGenerator::CMethodResult& result)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
@@ -276,9 +256,10 @@ RHO_GLOBAL void rho_sys_app_install(const char *url)
 
     jhstring jhUrl = rho_cast<jstring>(env, url);
     env->CallStaticVoidMethod(cls, mid, jhUrl.get());
+    JNI_EXCEPTION_CHECK(env, result);
 }
 
-RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
+RHO_GLOBAL void rho_sys_app_uninstall(const rho::String& appname, rho::apiGenerator::CMethodResult& result)
 {
     JNIEnv *env = jnienv();
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
@@ -288,9 +269,50 @@ RHO_GLOBAL void rho_sys_app_uninstall(const char *appname)
 
     jhstring jhAppName = rho_cast<jstring>(env, appname);
     env->CallStaticVoidMethod(cls, mid, jhAppName.get());
+    JNI_EXCEPTION_CHECK(env, result);
 }
 
 RHO_GLOBAL void rho_sys_set_application_icon_badge(int badge_number) {
     //unsupported on Android
+}
+
+RHO_GLOBAL void rho_sys_set_full_screen_mode(bool enable)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "setFullscreen", "(Z)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, static_cast<jboolean>(enable));
+}
+
+RHO_GLOBAL void rho_sys_get_full_screen_mode(rho::apiGenerator::CMethodResult& result)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "getFullscreen", "()Z");
+    if (!mid) return;
+    result.set(static_cast<bool>(env->CallStaticBooleanMethod(cls, mid)));
+}
+
+RHO_GLOBAL void rho_sys_set_screen_auto_rotate_mode(bool enable)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "setScreenAutoRotate", "(Z)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, static_cast<jboolean>(enable));
+}
+
+RHO_GLOBAL void rho_sys_get_screen_auto_rotate_mode(rho::apiGenerator::CMethodResult& result)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "getScreenAutoRotate", "()Z");
+    if (!mid) return;
+    result.set(static_cast<bool>(env->CallStaticBooleanMethod(cls, mid)));
 }
 

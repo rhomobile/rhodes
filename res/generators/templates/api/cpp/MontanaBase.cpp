@@ -70,9 +70,9 @@ void <%= propBaseClass %>::getProperty( const rho::String& propertyName, CMethod
     }
 }
 
-void <%= propBaseClass %>::getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult)
+void <%= propBaseClass %>::getProperties( const rho::Vector<rho::String>& arrayofNames, CMethodResult& oResult)
 {
-    rho::Hashtable<::rho::String, rho::String> res;
+    rho::Hashtable<rho::String, rho::String> res;
     oResult.setCollectionMode(true);
     for ( int i = 0; i < (int)arrayofNames.size(); i++ )
     {
@@ -112,7 +112,7 @@ void <%= propBaseClass %>::setProperty( const rho::String& propertyName,  const 
     }
 }
 
-void <%= propBaseClass %>::setProperties( const rho::Hashtable<::rho::String, rho::String>& propertyMap, CMethodResult& oResult)
+void <%= propBaseClass %>::setProperties( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult)
 {
     for ( rho::Hashtable<rho::String, rho::String>::const_iterator it = propertyMap.begin();  it != propertyMap.end(); ++it )
     {
