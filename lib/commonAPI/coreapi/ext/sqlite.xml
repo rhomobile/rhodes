@@ -1,0 +1,154 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+  <MODULE name="SQLite3" parent="Rho.Database" generateUnderscoreRubyNames="true">
+    <HELP_OVERVIEW>is used to perform database operations</HELP_OVERVIEW>
+    <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
+
+    <TEMPLATES>
+    </TEMPLATES>
+
+    <METHODS  access="STATIC">
+      <ALIASES>
+        <ALIAS new="initialize" existing="openDb" deprecated="true"/>
+        <ALIAS new="close" existing="closeDb" deprecated="true"/>
+        <ALIAS new="start_transaction" existing="startTransaction" deprecated="true"/>
+        <ALIAS new="commit" existing="commitTransaction" deprecated="true"/>
+        <ALIAS new="rollback" existing="rollbackTransaction" deprecated="true"/>
+        <ALIAS new="lock_db" existing="lockDb" deprecated="true"/>
+        <ALIAS new="unlock_db" existing="unlockDb" deprecated="true"/>
+        <ALIAS new="destroy_tables" existing="destroyTables" deprecated="true"/>
+        <ALIAS new="table_exist?" existing="isTableExist" deprecated="true"/>
+        <ALIAS new="is_ui_waitfordb" existing="isUiWaitForDb" deprecated="true"/>
+      </ALIASES>
+
+      <METHOD name="openDb">
+        <DESC>Open database</DESC>
+        <PARAMS>
+          <PARAM name="dbPath" type="STRING">
+            <DESC>The path to the database</DESC>
+          </PARAM>
+          <PARAM name="dbPartition" type="STRING">
+            <DESC>The database partition</DESC>
+          </PARAM>
+        </PARAMS>
+        <RETURN type="INTEGER"/>  
+      </METHOD>
+
+      <METHOD name="closeDb">
+        <DESC>Close database</DESC>
+        <RETURN type="INTEGER"/>
+      </METHOD>
+
+      <METHOD name="startTransaction">
+        <DESC>Start database transaction</DESC>
+        <RETURN type="INTEGER"/>
+      </METHOD>
+
+      <METHOD name="commitTransaction">
+        <DESC>Commit database transaction</DESC>
+        <RETURN type="INTEGER"/>
+      </METHOD>
+
+      <METHOD name="rollbackTransaction">
+        <DESC>Rollback database transaction</DESC>
+        <RETURN type="INTEGER"/>
+      </METHOD>
+
+      <METHOD name="lockDb">
+        <DESC>Lock database</DESC>
+      </METHOD>
+
+      <METHOD name="unlockDb">
+        <DESC>Unlock database</DESC>
+      </METHOD>
+
+      <METHOD name="destroyTables">
+        <DESC>Destroy database tables</DESC>
+        <RETURN type="INTEGER"/>
+      </METHOD>
+
+      <METHOD name="isTableExist">
+        <DESC>Does table exist?></DESC>
+        <PARAMS>
+          <PARAM name="tableName" type="STRING">
+            <DESC>The name of the table</DESC>
+          </PARAM>
+        </PARAMS>
+        <RETURN type="BOOLEAN"/>
+      </METHOD>
+
+      <METHOD name="isUiWaitForDb">
+        <DESC>Is UI waiting for DB?></DESC>
+        <PARAMS>
+          <PARAM name="tableName" type="STRING">
+            <DESC>The name of the table</DESC>
+          </PARAM>
+        </PARAMS>
+        <RETURN type="BOOLEAN"/>
+      </METHOD>
+
+      <METHOD name="execute">
+        <DESC>Execute sql statement</DESC>
+        <PARAMS>
+          <PARAM name="sqlStmt" type="STRING">
+            <DESC>The SQL statement</DESC>
+          </PARAM>
+          <PARAM name="isBatch" type="BOOLEAN">
+            <DESC>Is it batch</DESC>
+          </PARAM>
+          <PARAM name="args" type="ARRAY">
+            <DESC>Array of the sql expressions</DESC>
+            <CAN_BE_NIL/>
+          </PARAM>
+        </PARAMS>
+        <RETURN type="INTEGER"/>
+      </METHOD>
+
+    </METHODS>
+
+    <USER_OVERVIEW>
+      <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+      <![CDATA[
+    	The following example sets up the card reader to call a javascript function upon successful decoding. The javascript
+    					function will be called 3 times, once with the raw card data, once with just the pan data extracted
+    					from the raw card data, and once with the encrypted pan data if the pin has been supplied by the
+    					user within 10s.:</DESC>
+    				<html><head>
+    
+    				<script language="javascript" type="text/javascript">
+    					function doTransaction(data, mode)
+    					{
+    						switch(mode) {
+    						case 'CR':
+    							alert('Card: '+data);
+    							break;
+    						case 'ENCDATA':
+    							alert('Encoded data: '+data);
+    							break;
+    						case 'MESSAGE':
+    							alert('Error: '+data);
+    							break;
+    						case 'PAN':
+    							alert('PAN data: '+data);
+    							alert('Please turn the unit over and enter the PIN');
+    							break;
+    						}
+    					}
+    				</script>
+    				</head>
+    				<body>
+    				</body>
+    				</html>
+    
+    				You must have the appropriate drivers installed on your device to use the CardReader.  You will see which drivers are installed in the RhoElements log file after you attempt to use any of the card reader functions in RhoElements.  All necessary drivers should be included as part of the platform for supported devices.
+    
+    				]]>
+
+    </USER_OVERVIEW>
+    <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+    <PLATFORM>
+      <!--  This section is used for the supported platform images at the top -->
+    </PLATFORM>
+  </MODULE>
+</API>
