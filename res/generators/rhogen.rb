@@ -1675,24 +1675,6 @@ module Rhogen
                end
             end
 
-            module_item.method_aliases.each do |method_alias|
-               method_item = foundMethodByName(module_item, method_alias.existing_name)
-               if method_item != nil
-                  if method_item.access == ModuleMethod::ACCESS_STATIC
-                     method_alias.is_method_static = true
-                  end
-                  if method_item.access == ModuleMethod::ACCESS_INSTANCE
-                     method_alias.is_method_instance = true
-                     if module_item.is_template_default_instance
-                        method_alias.is_method_static = true
-                     end
-                  end
-               end
-            end
-
-
-
-
             # properties
             module_item.properties.each do |module_property|
                fixed_name = convertCamelToUnderscore(module_property.name)
@@ -1705,6 +1687,22 @@ module Rhogen
                end
             end
          end
+
+         module_item.method_aliases.each do |method_alias|
+            method_item = foundMethodByName(module_item, method_alias.existing_name)
+            if method_item != nil
+               if method_item.access == ModuleMethod::ACCESS_STATIC
+                  method_alias.is_method_static = true
+               end
+               if method_item.access == ModuleMethod::ACCESS_INSTANCE
+                  method_alias.is_method_instance = true
+                  if module_item.is_template_default_instance
+                     method_alias.is_method_static = true
+                  end
+               end
+            end
+         end
+
 
          # remove methods with generateAPI=true from list of methods for generation
          tmp_methods = module_item.methods
