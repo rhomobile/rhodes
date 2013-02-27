@@ -46,7 +46,7 @@ VALUE rb_s_JavascriptVM_executeScript(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;

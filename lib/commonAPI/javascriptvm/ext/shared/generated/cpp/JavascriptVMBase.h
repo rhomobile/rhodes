@@ -66,10 +66,8 @@ protected:
 
 public:
 
+
     CJavascriptVMBase();
-
-
-
 
 
  
