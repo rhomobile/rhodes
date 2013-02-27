@@ -147,11 +147,6 @@ VALUE rb_s_NetworkAccess_downloadFile(int argc, VALUE *argv)
         
         bUseCallback = true;
     }
-    else
-    {
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) + ".Mandatory Callback parameter is mised." );
-        return oRes.toRuby();
-    }
     pFunctor = rho_makeInstanceClassFunctor2( rho::CNetworkAccessFactoryBase::getNetworkAccessSingletonS(), &rho::INetworkAccessSingleton::downloadFile, arg0,  oRes );
 
     if ( bUseCallback )

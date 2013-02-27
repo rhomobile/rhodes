@@ -86,7 +86,7 @@ describe "Json" do
         puts "res : #{res}"
         res['status'].should == 'ok'
 
-        parsed = res['body']
+        parsed = Rho::JSON.parse( res['body'] )
         parsed.is_a?(Array).should ==  true
         parsed[0].is_a?(Hash).should ==  true
     end

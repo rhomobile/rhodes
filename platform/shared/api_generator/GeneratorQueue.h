@@ -34,6 +34,8 @@ public:
         {
             m_pFunctor->runObject();
         }
+
+        bool isEqualCallback(CMethodResult& oResult){ return m_pFunctor->getLastParam().isEqualCallback(oResult); }
     };
 
     CGeneratorQueue() : CThreadQueue()

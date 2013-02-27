@@ -234,8 +234,8 @@ void RhoRubyStart()
     Init_strscan(); //+
     Init_sqlite3_api(); //+
     Init_GeoLocation(); //+
-    Init_AsyncHttp(); //+
 #if !defined(WINDOWS_PLATFORM)
+    Init_AsyncHttp(); //+
     Init_System();
 #endif
 

@@ -1240,6 +1240,7 @@ end
     end
   end # RhoConfig
   
+unless System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'  
     module AsyncHttp
 
         def self.make_auth_header(args)
@@ -1314,6 +1315,7 @@ end
         end
         
     end
+end
 
     module Timer
         def self.start( interval_ms, callback, callback_data )
