@@ -19,7 +19,7 @@ class JavascriptVMSingleton extends JavascriptVMSingletonBase implements IJavasc
         result.set("Result");
     }
 
-    List<String> getIDs() {
+    public List<String> getIDs() {
         return mIds;
     }
 

@@ -20,6 +20,10 @@ CJavascriptVMBase::CJavascriptVMBase()
 {
 
 }
+CJavascriptVMSingletonBase::CJavascriptVMSingletonBase()
+{
+    RHODESAPP().getExtManager().registerExtension( "JavascriptVM", this );
+}
 
 CJavascriptVMSingletonBase::~CJavascriptVMSingletonBase()
 {
