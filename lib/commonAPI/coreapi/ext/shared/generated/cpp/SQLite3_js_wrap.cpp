@@ -165,7 +165,6 @@ rho::String js_SQLite3_open(rho::json::CJSONArray& argv, const rho::String& strO
 
 }
 
-
 rho::String js_SQLite3_close(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -230,7 +229,6 @@ rho::String js_SQLite3_close(rho::json::CJSONArray& argv, const rho::String& str
     return oRes.toJSON();
 
 }
-
 
 rho::String js_SQLite3_startTransaction(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -297,7 +295,6 @@ rho::String js_SQLite3_startTransaction(rho::json::CJSONArray& argv, const rho::
 
 }
 
-
 rho::String js_SQLite3_commitTransaction(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -362,7 +359,6 @@ rho::String js_SQLite3_commitTransaction(rho::json::CJSONArray& argv, const rho:
     return oRes.toJSON();
 
 }
-
 
 rho::String js_SQLite3_rollbackTransaction(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -429,7 +425,6 @@ rho::String js_SQLite3_rollbackTransaction(rho::json::CJSONArray& argv, const rh
 
 }
 
-
 rho::String js_SQLite3_lockDb(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -494,7 +489,6 @@ rho::String js_SQLite3_lockDb(rho::json::CJSONArray& argv, const rho::String& st
     return oRes.toJSON();
 
 }
-
 
 rho::String js_SQLite3_unlockDb(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -561,7 +555,6 @@ rho::String js_SQLite3_unlockDb(rho::json::CJSONArray& argv, const rho::String& 
 
 }
 
-
 rho::String js_SQLite3_destroyTables(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -626,7 +619,6 @@ rho::String js_SQLite3_destroyTables(rho::json::CJSONArray& argv, const rho::Str
     return oRes.toJSON();
 
 }
-
 
 rho::String js_SQLite3_isTableExist(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -737,7 +729,6 @@ rho::String js_SQLite3_isTableExist(rho::json::CJSONArray& argv, const rho::Stri
 
 }
 
-
 rho::String js_SQLite3_isUiWaitForDb(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -846,195 +837,6 @@ rho::String js_SQLite3_isUiWaitForDb(rho::json::CJSONArray& argv, const rho::Str
     return oRes.toJSON();
 
 }
-
-
-rho::String js_SQLite3_execute(rho::json::CJSONArray& argv, const rho::String& strObjID)
-{
-    rho::apiGenerator::CMethodResult oRes;
-
-    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
-    int argc = argv.getSize();
-    int nCallbackArg = 0;
-
-    rho::database::ISQLite3* pObj = rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(strObjID);
-
-
-
-    nCallbackArg = 1;
-
-    
-    if ( argc == 0 )
-    {
-        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
-        return oRes.toJSON();
-    }
-    
-
-
-    rho::String arg0;
-    if ( argc > 0 )
-    {
-        if ( argv[0].isString() )
-        {
-            arg0 = argv[0].getString();
-
-            oRes.setStringParam(argv[0].getString());
-
-        }
-        else if (!argv[0].isNull())
-        {
-            oRes.setArgError( "Type error: argument " "0" " should be " "string" );
-            return oRes.toJSON();
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    nCallbackArg = 2;
-
-    
-    if ( argc == 1 )
-    {
-        oRes.setArgError( "Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
-        return oRes.toJSON();
-    }
-    
-
-
-
-
-
-
-    bool arg1;
-    if ( argc > 1 )
-    {
-        if ( argv[1].isString() )
-            arg1 = argv[1].getInt() ? true : false;
-        else if (!argv[1].isNull())
-        {
-            oRes.setArgError("Type error: argument " "1" " should be " "boolean" );
-            return oRes.toJSON();
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-    nCallbackArg = 3;
-
-    
-
-
-
-
-
-
-
-
-
-
-    rho::Vector<rho::String> arg2;
-    if ( argc > 2 )
-    {
-        if ( argv[2].isArray() )
-        {
-            CJSONArray arParam(argv[2]);
-            for( int i = 0; i < arParam.getSize(); i++ )
-            {
-                arg2.addElement( arParam[i].getString() );
-            }
-        }
-        else if (!argv[2].isNull())
-        {
-            oRes.setArgError("Type error: argument " "2" " should be " "array" );
-            return oRes.toJSON();
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-    if ( argc > nCallbackArg )
-    {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::database::ISQLite3::execute, arg0, arg1, arg2,  oRes );
-
-
-
-
-    if ( bUseCallback )
-        rho::database::CSQLite3FactoryBase::getSQLite3SingletonS()->addCommandToQueue( pFunctor );
-    else 
-    {
-        delete pFunctor;
-
-
-        pObj->execute( arg0, arg1, arg2,  oRes );
-
-
-    }
-
-
-    return oRes.toJSON();
-
-}
-
 
 
 

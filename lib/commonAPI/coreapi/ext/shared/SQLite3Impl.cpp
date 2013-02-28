@@ -1,12 +1,20 @@
 #include "generated/cpp/SQLite3Base.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "json/JSONIterator.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SQLite3"
 
-extern "C" VALUE rb_SQLite3_execute(int argc, VALUE *argv, VALUE obj)
+extern "C" VALUE rb_impl_SQLite3_execute(int argc, VALUE *argv, rho::database::ISQLite3* pObj)
 {
+    //TODO: rb_impl_SQLite3_execute
     return 0;
+}
+
+rho::String js_SQLite3_execute(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    //TODO: js_SQLite3_execute
+    return "{}";
 }
 
 namespace rho {

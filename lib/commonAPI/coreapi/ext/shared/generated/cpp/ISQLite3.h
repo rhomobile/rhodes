@@ -26,7 +26,6 @@ struct ISQLite3
     virtual void destroyTables(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void isTableExist( const rho::String& tableName, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void isUiWaitForDb( const rho::String& tableName, rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void execute( const rho::String& sqlStmt,  bool isBatch,  const rho::Vector<rho::String>& args, rho::apiGenerator::CMethodResult& oResult) = 0;
 
 };
 

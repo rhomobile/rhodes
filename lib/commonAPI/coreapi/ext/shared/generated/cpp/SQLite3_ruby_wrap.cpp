@@ -115,6 +115,7 @@ static VALUE _api_generator_SQLite3_open(int argc, VALUE *argv, rho::database::I
 }
 
 
+
 VALUE rb_SQLite3_open(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
@@ -128,7 +129,6 @@ VALUE rb_SQLite3_open(int argc, VALUE *argv, VALUE obj)
 
     return res;
 }
-
 
 
 
@@ -162,6 +162,7 @@ static VALUE _api_generator_SQLite3_close(int argc, VALUE *argv, rho::database::
 }
 
 
+
 VALUE rb_SQLite3_close(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
@@ -177,7 +178,6 @@ VALUE rb_SQLite3_close(int argc, VALUE *argv, VALUE obj)
     rho_ruby_clear_object_id( obj );
     return res;
 }
-
 
 
 
@@ -211,6 +211,7 @@ static VALUE _api_generator_SQLite3_startTransaction(int argc, VALUE *argv, rho:
 }
 
 
+
 VALUE rb_SQLite3_startTransaction(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
@@ -224,7 +225,6 @@ VALUE rb_SQLite3_startTransaction(int argc, VALUE *argv, VALUE obj)
 
     return res;
 }
-
 
 
 
@@ -258,6 +258,7 @@ static VALUE _api_generator_SQLite3_commitTransaction(int argc, VALUE *argv, rho
 }
 
 
+
 VALUE rb_SQLite3_commitTransaction(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
@@ -271,7 +272,6 @@ VALUE rb_SQLite3_commitTransaction(int argc, VALUE *argv, VALUE obj)
 
     return res;
 }
-
 
 
 
@@ -305,6 +305,7 @@ static VALUE _api_generator_SQLite3_rollbackTransaction(int argc, VALUE *argv, r
 }
 
 
+
 VALUE rb_SQLite3_rollbackTransaction(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
@@ -318,7 +319,6 @@ VALUE rb_SQLite3_rollbackTransaction(int argc, VALUE *argv, VALUE obj)
 
     return res;
 }
-
 
 
 
@@ -352,6 +352,7 @@ static VALUE _api_generator_SQLite3_lockDb(int argc, VALUE *argv, rho::database:
 }
 
 
+
 VALUE rb_SQLite3_lockDb(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
@@ -365,7 +366,6 @@ VALUE rb_SQLite3_lockDb(int argc, VALUE *argv, VALUE obj)
 
     return res;
 }
-
 
 
 
@@ -399,6 +399,7 @@ static VALUE _api_generator_SQLite3_unlockDb(int argc, VALUE *argv, rho::databas
 }
 
 
+
 VALUE rb_SQLite3_unlockDb(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
@@ -412,7 +413,6 @@ VALUE rb_SQLite3_unlockDb(int argc, VALUE *argv, VALUE obj)
 
     return res;
 }
-
 
 
 
@@ -446,6 +446,7 @@ static VALUE _api_generator_SQLite3_destroyTables(int argc, VALUE *argv, rho::da
 }
 
 
+
 VALUE rb_SQLite3_destroyTables(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
@@ -459,7 +460,6 @@ VALUE rb_SQLite3_destroyTables(int argc, VALUE *argv, VALUE obj)
 
     return res;
 }
-
 
 
 
@@ -516,6 +516,7 @@ static VALUE _api_generator_SQLite3_isTableExist(int argc, VALUE *argv, rho::dat
 }
 
 
+
 VALUE rb_SQLite3_isTableExist(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
@@ -529,7 +530,6 @@ VALUE rb_SQLite3_isTableExist(int argc, VALUE *argv, VALUE obj)
 
     return res;
 }
-
 
 
 
@@ -586,6 +586,7 @@ static VALUE _api_generator_SQLite3_isUiWaitForDb(int argc, VALUE *argv, rho::da
 }
 
 
+
 VALUE rb_SQLite3_isUiWaitForDb(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
@@ -601,6 +602,24 @@ VALUE rb_SQLite3_isUiWaitForDb(int argc, VALUE *argv, VALUE obj)
 }
 
 
+
+
+VALUE rb_impl_SQLite3_execute(int argc, VALUE *argv, rho::database::ISQLite3* pObj);
+
+
+VALUE rb_SQLite3_execute(int argc, VALUE *argv, VALUE obj)
+{
+    const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
+    rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
+
+    res = rb_impl_SQLite3_execute(argc, argv, pObj);
+
+    return res;
+}
 
 
 
