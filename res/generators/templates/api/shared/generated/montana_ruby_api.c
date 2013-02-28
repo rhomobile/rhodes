@@ -6,7 +6,7 @@ static VALUE rb_m<%= $cur_module.name %>;
 
 <% $cur_module.methods.each do |module_method|
 %><%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC)%>;
-<% if $cur_module.is_template_default_instance && module_method.access == ModuleMethod::ACCESS_INSTANCE
+<% if $cur_module.is_template_default_instance && module_method.access == ModuleMethod::ACCESS_INSTANCE && !module_method.is_constructor
 %><%= api_generator_MakeRubyMethodDecl($cur_module.name + "_def", module_method, true)%>;
 <% end
    end %>
@@ -25,10 +25,32 @@ def api_generator_MakeRubyMethodDef(module_name, module_method, is_static, metho
     method_name += module_name + "_"
     method_name += method_suffix + "_" if method_suffix.length() > 0
     method_name += module_method.native_name
+    api_name = module_method.is_constructor ? "initialize" : module_method.name
 
-    "    rb_define_#{(is_static) ? 'singleton_method':'method'}(rb_m#{module_name}, \"#{module_method.name}\", #{method_name}, -1);"
+    "    rb_define_#{(is_static) ? 'singleton_method':'method'}(rb_m#{module_name}, \"#{api_name}\", #{method_name}, -1);"
 end
 %>
+
+static void _free_class_object(void *p)
+{
+    ruby_xfree(p);
+}
+
+static VALUE _allocate_class_object(VALUE klass)
+{
+    VALUE valObj = 0;
+    char ** ppString = NULL;
+    void* pData = ALLOC(void*);
+    memset( pData, 0, sizeof(pData) );
+    
+	valObj = Data_Wrap_Struct(klass, 0, _free_class_object, pData);
+
+    Data_Get_Struct(valObj, void *, (void**)ppString);
+    *ppString = xmalloc(10);
+    sprintf(*ppString, "%X", valObj);
+
+    return valObj;
+}
 
 void Init_RubyAPI_<%= $cur_module.name %>(void)
 {
@@ -45,13 +67,13 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
     rb_mParent = rho_ruby_get_NIL();
 	rb_m<%= $cur_module.name %> = rb_define_class_under(rb_mParent, "<%= $cur_module.name %>", rb_cObject);
 <% end %>
-    //Constructor should be not available
-	//rb_define_alloc_func(rb_cBarcode1, rb_barcode1_allocate);
+	rb_define_alloc_func(rb_m<%= $cur_module.name %>, _allocate_class_object);
+    //Constructor should be not available in case of static members
     //rb_undef_alloc_func(rb_m<%= $cur_module.name %>);
 
 <% $cur_module.methods.each do |module_method|
 %><%= api_generator_MakeRubyMethodDef($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC, "" ) %>
-<% if $cur_module.is_template_default_instance && module_method.access == ModuleMethod::ACCESS_INSTANCE
+<% if $cur_module.is_template_default_instance && module_method.access == ModuleMethod::ACCESS_INSTANCE && !module_method.is_constructor
 %><%= api_generator_MakeRubyMethodDef($cur_module.name, module_method, true, "def")%>
 <% end
    end %>

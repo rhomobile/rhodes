@@ -853,6 +853,9 @@ module Rhogen
         @has_callback = CALLBACK_NONE
         @result = nil
         @is_deprecated = false
+        @is_constructor = false
+        @is_destructor = false
+        @generateNativeAPI = true
 
         # name of template produced this method if applicable
         @generated_by_template = ''
@@ -885,6 +888,10 @@ module Rhogen
       attr_accessor :generateAPI
       attr_accessor :generateDoc
       attr_accessor :desc
+      attr_accessor :is_constructor
+      attr_accessor :is_destructor
+      attr_accessor :generateNativeAPI
+      
     end
 
     class ModuleItem
@@ -958,7 +965,7 @@ module Rhogen
     $possible_attributes["VALUE"] = ["constName", "value", "type"]
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
     $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread", "deprecated", "generateAPI", "generateDoc"]
-    $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName", "deprecated", "generateAPI", "generateDoc"]
+    $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName", "deprecated", "generateAPI", "generateDoc", "constructor", "destructor", "generateNativeAPI"]
     $possible_attributes["PARAM"] = ["name", "nativeName", "type"]
     $possible_attributes["RETURN"] = ["type", "itemType"]
 
@@ -997,7 +1004,9 @@ module Rhogen
     $possible_values["generateUnderscoreRubyNames"] = ["true", "false"]
     $possible_values["generateAPI"] = ["true", "false"]
     $possible_values["generateDoc"] = ["true", "false"]
-
+    $possible_values["constructor"] = ["true", "false"]
+    $possible_values["destructor"] = ["true", "false"]
+    $possible_values["generateNativeAPI"] = ["true", "false"]
 
     def xml_error(error_desc, path)
        puts 'XML WARNING: [ '+error_desc+' ] in Element '+path
@@ -1490,6 +1499,16 @@ module Rhogen
               if xml_methods_item.attribute("generateDoc") != nil
                  module_method.generateDoc = xml_methods_item.attribute("generateDoc").to_s.downcase != "false"
               end
+            end
+
+            if xml_module_method.attribute("constructor") != nil
+               module_method.is_constructor = xml_module_method.attribute("constructor").to_s.downcase != "false"
+            end
+            if xml_module_method.attribute("destructor") != nil
+               module_method.is_destructor = xml_module_method.attribute("destructor").to_s.downcase != "false"
+            end
+            if xml_module_method.attribute("generateNativeAPI") != nil
+               module_method.generateNativeAPI = xml_module_method.attribute("generateNativeAPI").to_s.downcase != "false"
             end
 
             if xml_module_method.attribute("factory") != nil
