@@ -13,7 +13,8 @@ using namespace rho;
 using namespace rho::json;
 using namespace rho::common;
 
-<% $cur_module.methods.each do |module_method| %>
+<% $cur_module.methods.each do |module_method| 
+   if module_method.generateNativeAPI %>
 <%= api_generator_MakeJSMethodDecl($cur_module.name, module_method.native_name, module_method.access == ModuleMethod::ACCESS_STATIC)%>
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -207,8 +208,8 @@ end %>
     return oRes.toJSON();
 
 }
-
-<% end %>
+<% end 
+   end %>
 
 <% if $cur_module.is_template_default_instance %>
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "getDefaultID", true)%>

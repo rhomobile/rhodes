@@ -24,6 +24,7 @@ end; end; end %>
 
 <% $cur_module.methods.each do |module_method|
     next if module_method.access == ModuleMethod::ACCESS_STATIC
+    next if !module_method.generateNativeAPI
 
     params = ''
     module_method.params.each do |param|

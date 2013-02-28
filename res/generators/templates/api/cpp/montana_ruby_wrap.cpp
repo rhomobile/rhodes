@@ -273,6 +273,11 @@ end %>
 end %>
     return oRes.toRuby();
 }
+<% else 
+if !module_method.generateNativeAPI && module_method.access != ModuleMethod::ACCESS_STATIC %>
+VALUE rb_impl_<%= $cur_module.name %>_<%= module_method.native_name %>(int argc, VALUE *argv, <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>* pObj);<%
+end
+end %>
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
 <%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC)%>
@@ -283,8 +288,11 @@ end %>
 
     VALUE res = 0;
     <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>* pObj =  <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(szID);
-
-    res = _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);
+<% if module_method.generateNativeAPI%>
+    res = _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);<%
+else%>
+    res = rb_impl_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);<%
+end%>
 <% if module_method.is_destructor %>
     <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::getInstance()->deleteModuleByID(szID);        
     rho_ruby_clear_object_id( obj );<%
@@ -298,10 +306,12 @@ end %>
 {
     rho::String strDefaultID = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
     <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>* pObj = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(strDefaultID);
-
-    return _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);
+<% if module_method.generateNativeAPI%>
+    return _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);<%
+else%>
+    return rb_impl_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);<%
+end%>
 }
-<% end %>
 <% end %>
 <% end %>
 
