@@ -129,9 +129,9 @@ void CSystemSingletonBase::getProperty( const rho::String& propertyName, CMethod
     }
 }
 
-void CSystemSingletonBase::getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult)
+void CSystemSingletonBase::getProperties( const rho::Vector<rho::String>& arrayofNames, CMethodResult& oResult)
 {
-    rho::Hashtable<::rho::String, rho::String> res;
+    rho::Hashtable<rho::String, rho::String> res;
     oResult.setCollectionMode(true);
     for ( int i = 0; i < (int)arrayofNames.size(); i++ )
     {
@@ -169,7 +169,7 @@ void CSystemSingletonBase::setProperty( const rho::String& propertyName,  const 
     }
 }
 
-void CSystemSingletonBase::setProperties( const rho::Hashtable<::rho::String, rho::String>& propertyMap, CMethodResult& oResult)
+void CSystemSingletonBase::setProperties( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult)
 {
     for ( rho::Hashtable<rho::String, rho::String>::const_iterator it = propertyMap.begin();  it != propertyMap.end(); ++it )
     {

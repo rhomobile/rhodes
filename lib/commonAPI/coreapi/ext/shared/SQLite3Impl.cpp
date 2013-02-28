@@ -1,7 +1,13 @@
 #include "generated/cpp/SQLite3Base.h"
+#include "ruby/ext/rho/rhoruby.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "SQLite3"
+
+extern "C" VALUE rb_SQLite3_execute(int argc, VALUE *argv, VALUE obj)
+{
+    return 0;
+}
 
 namespace rho {
 namespace database {
@@ -18,7 +24,11 @@ public:
         int i = 0;
     }
 
-    virtual void close(rho::apiGenerator::CMethodResult& oResult){}
+    virtual void close(rho::apiGenerator::CMethodResult& oResult)
+    {
+        int i = 0;
+    }
+
     virtual void startTransaction(rho::apiGenerator::CMethodResult& oResult){}
     virtual void commitTransaction(rho::apiGenerator::CMethodResult& oResult){}
     virtual void rollbackTransaction(rho::apiGenerator::CMethodResult& oResult){}
@@ -30,7 +40,6 @@ public:
     virtual void execute( const rho::String& sqlStmt,  bool isBatch,  const rho::Vector<rho::String>& args, rho::apiGenerator::CMethodResult& oResult){}
 
 };
-
 
 ////////////////////////////////////////////////////////////////////////
 

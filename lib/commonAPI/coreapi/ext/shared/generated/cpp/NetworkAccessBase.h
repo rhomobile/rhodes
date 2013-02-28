@@ -35,6 +35,10 @@ public:
     }
 
     virtual INetworkAccess* createModuleByID(const rho::String& strID){ return (INetworkAccess*)0; };
+    virtual void deleteModuleByID(const rho::String& strID)
+    {
+        m_hashModules.remove(strID);
+    }
 
 };
 

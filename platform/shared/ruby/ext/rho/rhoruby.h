@@ -151,6 +151,7 @@ void rho_ruby_raise_argerror(const char *fmt, ...);
 
 VALUE rho_ruby_create_object_with_id( VALUE klass, const char* szID );
 const char* rho_ruby_get_object_id( VALUE valObj );
+void rho_ruby_clear_object_id( VALUE valObj );
 int rho_ruby_is_string(VALUE val);
 int rho_ruby_is_array(VALUE val);
 int rho_ruby_is_hash(VALUE val);

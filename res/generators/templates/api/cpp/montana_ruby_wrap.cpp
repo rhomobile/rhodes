@@ -57,6 +57,7 @@ static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::String, rho::S
 }
 
 <% $cur_module.methods.each do |module_method| 
+   if module_method.generateNativeAPI
    if module_method.access == ModuleMethod::ACCESS_STATIC %>
 <%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, true)%><%
 else %>
@@ -277,9 +278,18 @@ end %>
 <%= api_generator_MakeRubyMethodDecl($cur_module.name, module_method, module_method.access == ModuleMethod::ACCESS_STATIC)%>
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>* pObj =  <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);
+    res = _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);
+<% if module_method.is_destructor %>
+    <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::getInstance()->deleteModuleByID(szID);        
+    rho_ruby_clear_object_id( obj );<%
+end %>
+    return res;
 }
 <% end %>
 
@@ -291,6 +301,7 @@ end %>
 
     return _api_generator_<%= $cur_module.name %>_<%= module_method.native_name %>(argc, argv, pObj);
 }
+<% end %>
 <% end %>
 <% end %>
 
