@@ -227,12 +227,10 @@ namespace "build" do
       end
       
       $regkeys = Array.new
-      
-      $app_config["extensions"].each do |ext|
-        $app_config["extpaths"].each do |p|
-          extpath = File.join(p, ext, 'ext')
-          commin_ext_path = File.join(p, ext)
-          ext_config_path = File.join(p, ext, "ext.yml")
+
+      $app_extensions_list.each do |ext, commin_ext_path |
+          extpath = File.join( commin_ext_path, 'ext')
+          ext_config_path = File.join( commin_ext_path, "ext.yml")
           ext_config = nil
           
           #puts "ext_config_path - " + ext_config_path.to_s
@@ -271,7 +269,7 @@ namespace "build" do
                 ENV['RHO_BUILD_CONFIG'] = $buildcfg
                 ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
                 ENV['VCBUILD'] = $vcbuild
-                ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
+                ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
 	            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
                 ENV['RHO_EXT_NAME']=ext                
 
@@ -322,8 +320,6 @@ namespace "build" do
           
           chdir $startdir
           
-          break
-        end
       end      
     end
 
@@ -474,10 +470,9 @@ namespace "build" do
     end
 
     task :extensions => "config:wm" do
-      $app_config["extensions"].each do |ext|
-        $app_config["extpaths"].each do |p|
-          extpath = File.join(p, ext, 'ext')
-          ext_config_path = File.join(p, ext, "ext.yml")
+      $app_extensions_list.each do |ext, commin_ext_path |      
+          extpath = File.join(commin_ext_path, 'ext')
+          ext_config_path = File.join(commin_ext_path, "ext.yml")
           ext_config = nil
           if File.exist? ext_config_path
             ext_config = Jake.config(File.open(ext_config_path))
@@ -495,7 +490,7 @@ namespace "build" do
                 ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
                 ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
                 ENV['VCBUILD'] = $vcbuild
-                ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
+                ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
 	            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $buildcfg)
                 ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
                 
@@ -516,9 +511,6 @@ namespace "build" do
 
               puts Jake.run("build.bat", [], extpath)
           end
-              
-          break
-        end
       end
     end
 

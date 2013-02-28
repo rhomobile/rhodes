@@ -262,6 +262,7 @@ namespace "config" do
   task :common do
     
     $binextensions = []
+    $app_extensions_list = {}
     buildyml = 'rhobuild.yml'
 
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
@@ -717,6 +718,18 @@ def write_modules_js(filename,modules)
   end
 end
 
+def is_ext_supported(extpath)
+    extyml = File.join(extpath, "ext.yml")    
+    res = true
+    if File.file? extyml
+      extconf = Jake.config(File.open(extyml))
+      if extconf["platforms"]
+        res = extconf["platforms"].index($current_platform) != nil
+      end  
+    end
+    res    
+end
+
 def init_extensions(startdir, dest)
   extentries = []
   nativelib = []
@@ -738,17 +751,24 @@ def init_extensions(startdir, dest)
       #next if p.index("rhodes") && extname.downcase() == "barcode" && $current_platform == "wm"
       
       ep = File.join(p, extname)
-      if File.exists? ep
+      if File.exists?( ep ) && is_ext_supported(ep)
         extpath = ep
         break
       end
     end    
-        
-    extpath = find_ext_ingems(extname) if extpath.nil?
+
+    if extpath.nil?        
+        extpath = find_ext_ingems(extname) 
+        if extpath
+            extpath = nil unless is_ext_supported(extpath)
+        end    
+    end
       
     if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
 		raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
 	end
+
+    $app_extensions_list[extname] = extpath
         
     unless extpath.nil?      
       add_extension(extpath, dest) unless dest.nil?
