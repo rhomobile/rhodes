@@ -232,7 +232,7 @@ var Rho = Rho || (function ($) {
     var thisFileURL = $("script[src$='" +thisFileName+ "']").attr('src');
     //
     function loadApiModule(moduleName) {
-        loadScript(thisFileURL.replace(thisFileName, 'rhoapi-'+moduleName+'.js'));
+        loadScript(thisFileURL.replace(thisFileName, moduleName+'.js'));
     }
     //
     function loadApiModules(parts) {

@@ -317,7 +317,17 @@ namespace "config" do
 		#extpaths += $app_config["paths"]["extensions"]
       end
     end
-    extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
+    if $config["env"]["paths"]["extensions"]
+      #extpaths << $config["env"]["paths"]["extensions"]
+      env_path_exts = $config["env"]["paths"]["extensions"]
+      if env_path_exts.is_a? String
+        extpaths << p
+      elsif env_path_exts.is_a? Array
+        env_path_exts.each do |p|
+          extpaths << p
+        end
+      end
+    end
     extpaths << File.join($app_path, "extensions")
     extpaths << File.join($startdir, "lib","commonAPI")
     extpaths << File.join($startdir, "lib","extensions")
@@ -696,12 +706,29 @@ def find_ext_ingems(extname)
   extpath
 end
 
+def write_modules_js(filename,modules)
+  File.open(filename, "w") do |f|
+    f.puts "// Generated #{Time.now.to_s}"
+    f.puts '$(document).ready(function(){'
+    f.puts '    Rho.loadApiModules(['
+    f.puts '        "' + modules.join('","') + '"'
+    f.puts '    ]);'
+    f.puts '});'
+  end
+end
+
 def init_extensions(startdir, dest)
   extentries = []
   nativelib = []
-  extlibs = [] 
+  extlibs = []
+  extjsmodules = []
   extpaths = $app_config["extpaths"]  
-    
+
+  rhoapi_js_folder = nil
+  unless dest.nil?
+    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api/generated" )
+  end
+
   puts 'init extensions'
   $app_config["extensions"].each do |extname|  
     puts 'ext - ' + extname
@@ -768,6 +795,12 @@ def init_extensions(startdir, dest)
                 system "#{cmd_line}"
             end
           end
+
+          unless rhoapi_js_folder.nil?
+            Dir.glob(extpath + "/public/api/generated/Rho.*.js").each do |f|
+              extjsmodules << f.gsub(/^.*(Rho\.[^\.]+)\.js$/, '\1')
+            end
+          end
             
         end
       end
@@ -778,7 +811,14 @@ def init_extensions(startdir, dest)
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
   puts "exts " + exts
-  
+
+  # deploy Common API JS implementation
+  if extjsmodules.count > 0
+    mkdir_p rhoapi_js_folder
+    cp_r "#{$startdir}/res/generators/templates/api/js/rhoapi.js", "#{rhoapi_js_folder}/rhoapi.js" # if File.exist? rhoapi_js_folder
+    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodules)
+  end
+
   if $config["platform"] != "bb"
     #exists = []
       
@@ -1704,7 +1744,10 @@ namespace "run" do
 
         #check gem extensions
         config_ext_paths = ""
-        extpaths = $app_config["extpaths"]        
+        extpaths = $app_config["extpaths"]
+        extjsmodules = []
+        rhoapi_js_folder = File.join( $app_path, "public/api/generated" )
+
         $app_config["extensions"].each do |extname|
         
             extpath = nil
@@ -1741,6 +1784,23 @@ namespace "run" do
                 
                 config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0                     
             end    
+
+            if extpath && extpath.length() > 0
+                js_folder = File.join(extpath, "public/api/generated")
+                # TODO: RhoSimulator should look for 'public' at all extension folders!
+                Dir.glob(js_folder + "/Rho.*.js").each do |f|
+                  mkdir_p rhoapi_js_folder
+                  cp f, "#{rhoapi_js_folder}/"
+                  extjsmodules << f.gsub(/^.*(Rho\.[^\.]+)\.js$/, '\1')
+                end
+            end
+        end
+
+        # deploy Common API JS implementation
+        if extjsmodules.count > 0
+          mkdir_p rhoapi_js_folder
+          cp_r "#{$startdir}/res/generators/templates/api/js/rhoapi.js", "#{rhoapi_js_folder}/rhoapi.js"
+          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodules)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 

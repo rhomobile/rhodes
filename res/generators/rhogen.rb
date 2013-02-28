@@ -1901,16 +1901,10 @@ module Rhogen
       template.destination = "platform/android/generated/jni/#{$cur_module.name.downcase}_js_wrap.cpp"
     end
 
-
-    file :public_api_rhoapi do |file|
-      file.source = 'js/rhoapi.js'
-      file.destination = "../../../public/api/generated/rhoapi.js"
-    end
-
     template :public_api_module do |template|
-      template.source = 'js/rhoapi-Rho.Montana.js'
+      template.source = 'js/Rho.Montana.js'
       module_name = $cur_module.parents.clone()
-      template.destination = "../../../public/api/generated/rhoapi-#{module_name.push($cur_module.name).join(".")}.js"
+      template.destination = "../public/api/generated/#{module_name.push($cur_module.name).join(".")}.js"
     end
 
     def attributes?
