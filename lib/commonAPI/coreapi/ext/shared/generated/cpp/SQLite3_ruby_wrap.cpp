@@ -118,10 +118,17 @@ static VALUE _api_generator_SQLite3_open(int argc, VALUE *argv, rho::database::I
 VALUE rb_SQLite3_open(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_SQLite3_open(argc, argv, pObj);
+    res = _api_generator_SQLite3_open(argc, argv, pObj);
+
+    return res;
 }
+
 
 
 
@@ -158,10 +165,19 @@ static VALUE _api_generator_SQLite3_close(int argc, VALUE *argv, rho::database::
 VALUE rb_SQLite3_close(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_SQLite3_close(argc, argv, pObj);
+    res = _api_generator_SQLite3_close(argc, argv, pObj);
+
+    rho::database::CSQLite3FactoryBase::getInstance()->deleteModuleByID(szID);        
+    rho_ruby_clear_object_id( obj );
+    return res;
 }
+
 
 
 
@@ -198,10 +214,17 @@ static VALUE _api_generator_SQLite3_startTransaction(int argc, VALUE *argv, rho:
 VALUE rb_SQLite3_startTransaction(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_SQLite3_startTransaction(argc, argv, pObj);
+    res = _api_generator_SQLite3_startTransaction(argc, argv, pObj);
+
+    return res;
 }
+
 
 
 
@@ -238,10 +261,17 @@ static VALUE _api_generator_SQLite3_commitTransaction(int argc, VALUE *argv, rho
 VALUE rb_SQLite3_commitTransaction(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_SQLite3_commitTransaction(argc, argv, pObj);
+    res = _api_generator_SQLite3_commitTransaction(argc, argv, pObj);
+
+    return res;
 }
+
 
 
 
@@ -278,10 +308,17 @@ static VALUE _api_generator_SQLite3_rollbackTransaction(int argc, VALUE *argv, r
 VALUE rb_SQLite3_rollbackTransaction(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_SQLite3_rollbackTransaction(argc, argv, pObj);
+    res = _api_generator_SQLite3_rollbackTransaction(argc, argv, pObj);
+
+    return res;
 }
+
 
 
 
@@ -318,10 +355,17 @@ static VALUE _api_generator_SQLite3_lockDb(int argc, VALUE *argv, rho::database:
 VALUE rb_SQLite3_lockDb(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_SQLite3_lockDb(argc, argv, pObj);
+    res = _api_generator_SQLite3_lockDb(argc, argv, pObj);
+
+    return res;
 }
+
 
 
 
@@ -358,10 +402,17 @@ static VALUE _api_generator_SQLite3_unlockDb(int argc, VALUE *argv, rho::databas
 VALUE rb_SQLite3_unlockDb(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_SQLite3_unlockDb(argc, argv, pObj);
+    res = _api_generator_SQLite3_unlockDb(argc, argv, pObj);
+
+    return res;
 }
+
 
 
 
@@ -398,10 +449,17 @@ static VALUE _api_generator_SQLite3_destroyTables(int argc, VALUE *argv, rho::da
 VALUE rb_SQLite3_destroyTables(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_SQLite3_destroyTables(argc, argv, pObj);
+    res = _api_generator_SQLite3_destroyTables(argc, argv, pObj);
+
+    return res;
 }
+
 
 
 
@@ -461,10 +519,17 @@ static VALUE _api_generator_SQLite3_isTableExist(int argc, VALUE *argv, rho::dat
 VALUE rb_SQLite3_isTableExist(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_SQLite3_isTableExist(argc, argv, pObj);
+    res = _api_generator_SQLite3_isTableExist(argc, argv, pObj);
+
+    return res;
 }
+
 
 
 
@@ -524,104 +589,18 @@ static VALUE _api_generator_SQLite3_isUiWaitForDb(int argc, VALUE *argv, rho::da
 VALUE rb_SQLite3_isUiWaitForDb(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_SQLite3_isUiWaitForDb(argc, argv, pObj);
+    res = _api_generator_SQLite3_isUiWaitForDb(argc, argv, pObj);
+
+    return res;
 }
 
 
-
-
-static VALUE _api_generator_SQLite3_execute(int argc, VALUE *argv, rho::database::ISQLite3* pObj)
-{
-    rho::apiGenerator::CMethodResult oRes;
-
-    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
-    int nCallbackArg = 0;
-    nCallbackArg = 1;
-    if ( argc == 0 )
-    {
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
-        return oRes.toRuby();
-    }
-    rho::String arg0;
-    if ( argc > 0 )
-    {
-        if ( rho_ruby_is_string(argv[0]) )
-        {
-            arg0 = getStringFromValue(argv[0]);
-
-            oRes.setStringParam(getStringFromValue(argv[0]));
-
-        }
-        else if (!rho_ruby_is_NIL(argv[0]))
-        {
-            oRes.setArgError("Type error: argument " "0" " should be " "string" );
-            return oRes.toRuby();
-        }
-    }
-
-    nCallbackArg = 2;
-    if ( argc == 1 )
-    {
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
-        return oRes.toRuby();
-    }
-    bool arg1;
-    if ( argc > 1 )
-    {
-        if ( rho_ruby_is_boolean(argv[1]) )
-            arg1 = rho_ruby_get_bool(argv[1]) ? true : false;
-        else if (!rho_ruby_is_NIL(argv[1]))
-        {
-            oRes.setArgError("Type error: argument " "1" " should be " "boolean" );
-            return oRes.toRuby();
-        }
-    }
-
-    nCallbackArg = 3;
-    rho::Vector<rho::String> arg2;
-    if ( argc > 2 )
-    {
-        if ( rho_ruby_is_array(argv[2]) )
-            getStringArrayFromValue(argv[2], arg2);
-        else if (!rho_ruby_is_NIL(argv[2]))
-        {
-            oRes.setArgError("Type error: argument " "2" " should be " "array" );
-            return oRes.toRuby();
-        }
-    }
-
-    if ( argc > nCallbackArg )
-    {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(3) );
-        return oRes.toRuby();
-    }
-    pFunctor = rho_makeInstanceClassFunctor4( pObj, &rho::database::ISQLite3::execute, arg0, arg1, arg2,  oRes );
-
-    if ( bUseCallback )
-        rho::database::CSQLite3FactoryBase::getSQLite3SingletonS()->addCommandToQueue( pFunctor );
-    else 
-    {
-        delete pFunctor;
-
-
-        pObj->execute( arg0, arg1, arg2,  oRes );
-
-    }
-    return oRes.toRuby();
-}
-
-
-VALUE rb_SQLite3_execute(int argc, VALUE *argv, VALUE obj)
-{
-    const char* szID = rho_ruby_get_object_id( obj );
-    rho::database::ISQLite3* pObj =  rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(szID);
-
-    return _api_generator_SQLite3_execute(argc, argv, pObj);
-}
 
 
 

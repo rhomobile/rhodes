@@ -1117,6 +1117,15 @@ const char* rho_ruby_get_object_id( VALUE valObj )
     return *ppString;
 }
 
+void rho_ruby_clear_object_id( VALUE valObj )
+{
+    const char ** ppString = NULL;
+
+    Data_Get_Struct(valObj, void *, ppString);
+
+    *ppString = 0;
+}
+
 int rho_ruby_is_proc(VALUE val)
 {
     return CLASS_OF(val) == rb_cProc ? 1 : 0;

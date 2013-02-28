@@ -36,6 +36,10 @@ public:
     }
 
     virtual ISQLite3* createModuleByID(const rho::String& strID){ return (ISQLite3*)0; };
+    virtual void deleteModuleByID(const rho::String& strID)
+    {
+        m_hashModules.remove(strID);
+    }
 
 };
 

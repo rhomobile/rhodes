@@ -17,6 +17,27 @@ VALUE getRuby_NetworkAccess_Module(){ return rb_mNetworkAccess; }
 
 
 
+static void _free_class_object(void *p)
+{
+    ruby_xfree(p);
+}
+
+static VALUE _allocate_class_object(VALUE klass)
+{
+    VALUE valObj = 0;
+    char ** ppString = NULL;
+    void* pData = ALLOC(void*);
+    memset( pData, 0, sizeof(pData) );
+    
+	valObj = Data_Wrap_Struct(klass, 0, _free_class_object, pData);
+
+    Data_Get_Struct(valObj, void *, (void**)ppString);
+    *ppString = xmalloc(10);
+    sprintf(*ppString, "%X", valObj);
+
+    return valObj;
+}
+
 void Init_RubyAPI_NetworkAccess(void)
 {
 
@@ -26,8 +47,8 @@ void Init_RubyAPI_NetworkAccess(void)
 
 	rb_mNetworkAccess = rb_define_class_under(rb_mParent, "NetworkAccess", rb_cObject);
 
-    //Constructor should be not available
-	//rb_define_alloc_func(rb_cBarcode1, rb_barcode1_allocate);
+	rb_define_alloc_func(rb_mNetworkAccess, _allocate_class_object);
+    //Constructor should be not available in case of static members
     //rb_undef_alloc_func(rb_mNetworkAccess);
 
     rb_define_singleton_method(rb_mNetworkAccess, "cancel", rb_s_NetworkAccess_cancel, -1);
