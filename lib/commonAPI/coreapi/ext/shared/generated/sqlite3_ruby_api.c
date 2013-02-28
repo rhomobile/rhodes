@@ -37,7 +37,7 @@ static VALUE _allocate_class_object(VALUE klass)
     
 	valObj = Data_Wrap_Struct(klass, 0, _free_class_object, pData);
 
-    Data_Get_Struct(valObj, void *, (void**)ppString);
+    Data_Get_Struct(valObj, char *, ppString);
     *ppString = xmalloc(10);
     sprintf(*ppString, "%X", valObj);
 
