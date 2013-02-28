@@ -3,7 +3,7 @@
 
     var module = null;
 
-    var apiReq = rhoUtil.apiReqFor('Rho');
+    var apiReq = rhoUtil.apiReqFor('Rho.Barcode');
 
     // === Barcode class definition ===
 
@@ -226,6 +226,6 @@
 
     
 
-    rhoUtil.namespace('Rho', Barcode);
+    rhoUtil.namespace('Rho.Barcode', Barcode);
 
 })(jQuery, Rho, Rho.util);

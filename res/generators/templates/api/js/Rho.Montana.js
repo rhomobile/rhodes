@@ -3,7 +3,7 @@
 
     var module = null;
 
-    var apiReq = rhoUtil.apiReqFor('<%= $cur_module.parents.join(".") %>');
+    var apiReq = rhoUtil.apiReqFor('<%= $cur_module.parents.clone().push($cur_module.name).join(".") %>');
 
     // === <%= $cur_module.name %> class definition ===
 
@@ -100,6 +100,6 @@
 
     <% end %>
 
-    rhoUtil.namespace('<%= $cur_module.parents.join(".") %>', <%= $cur_module.name %>);
+    rhoUtil.namespace('<%= $cur_module.parents.clone().push($cur_module.name).join(".") %>', <%= $cur_module.name %>);
 
 })(jQuery, Rho, Rho.util);
