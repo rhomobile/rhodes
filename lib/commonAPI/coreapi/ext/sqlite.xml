@@ -20,7 +20,7 @@
         <ALIAS new="is_ui_waitfordb" existing="isUiWaitForDb" deprecated="true"/>
       </ALIASES>
 
-      <METHOD name="initialize">
+      <METHOD name="open" constructor="true">
         <DESC>Open database</DESC>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
@@ -33,7 +33,7 @@
         <RETURN type="INTEGER"/>  
       </METHOD>
 
-      <METHOD name="close">
+      <METHOD name="close" destructor="true">
         <DESC>Close database</DESC>
         <RETURN type="INTEGER"/>
       </METHOD>
@@ -86,7 +86,7 @@
         <RETURN type="BOOLEAN"/>
       </METHOD>
 
-      <METHOD name="execute">
+      <METHOD name="execute" generateNativeAPI="false" >
         <DESC>Execute sql statement</DESC>
         <PARAMS>
           <PARAM name="sqlStmt" type="STRING">
