@@ -204,6 +204,8 @@ public:
     {
         m_hashExtensions.clear();
     }
+
+    virtual void requireRubyFile( const char* szFilePath );
 };
 	
 } //namespace common

@@ -1858,6 +1858,14 @@ void CRhodesApp::notifyLocalServerStarted()
     m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::local_server_started));
 }
 	
+extern "C" unsigned long rb_require(const char *fname);
+extern "C" int  rho_ruby_is_started();
+
+void CExtManager::requireRubyFile( const char* szFilePath )
+{
+    if( rho_ruby_is_started() )
+        rb_require(szFilePath);
+}
 	
 	void CRhodesApp::setNetworkStatusNotify(const String& url, int poll_interval)
 	{
