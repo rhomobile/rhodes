@@ -88,7 +88,7 @@ Follow these instructions to build your own customized version of RhoSimulator.
 
 * First build the Qt libraries for Mac from sources to enable HTTPS protocol support in RhoSimulator:
     * Download the Qt source:
-        * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
+        * Go to [http://qt-project.org/downloads](http://qt-project.org/downloads)
         * Jump to `Qt libraries`
         * Download the [source code as a zipped tar](http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.2.tar.gz) (228 MB)
         * Extract the downloaded archive, e.g. into `~/qt-4.8.2`
