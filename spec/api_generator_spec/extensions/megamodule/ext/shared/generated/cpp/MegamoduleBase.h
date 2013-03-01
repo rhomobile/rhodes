@@ -1,5 +1,7 @@
 #include "IMegamodule.h"
+#include "logging/RhoLog.h"
 #include "common/StringConverter.h"
+#include "common/ExtManager.h"
 
 
 namespace rho {
@@ -11,7 +13,7 @@ class CMegamoduleFactoryBase : public CModuleFactoryBase<IMegamodule, IMegamodul
 {
 protected:
     static rho::common::CAutoPtr<CMegamoduleFactoryBase> m_pInstance;
-    Hashtable<rho::String,IMegamodule*> m_hashModules;
+    HashtablePtr<rho::String,IMegamodule*> m_hashModules;
 
 public:
 
@@ -37,9 +39,11 @@ public:
 
 };
 
-class CMegamoduleSingletonBase : public CModuleSingletonBase< IMegamoduleSingleton >
+class CMegamoduleSingletonBase : public CModuleSingletonBase< IMegamoduleSingleton >, public rho::common::IRhoExtension
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
     rho::String m_strDefaultID;
 
@@ -47,6 +51,10 @@ protected:
 
 
 public:
+    virtual rho::LogCategory getModuleLogCategory(){ return getLogCategory(); }
+
+    CMegamoduleSingletonBase();
+    ~CMegamoduleSingletonBase();
 
 
 
@@ -64,11 +72,14 @@ public:
 class CMegamoduleBase: public IMegamodule
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
     rho::Hashtable<rho::String, rho::String> m_hashProps;
     rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< IMegamodule > *> m_mapPropAccessors;
 
 public:
+
 
     CMegamoduleBase();
 

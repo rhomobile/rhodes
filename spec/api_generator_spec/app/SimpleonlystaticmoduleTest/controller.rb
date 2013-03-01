@@ -32,7 +32,7 @@ class SimpleonlystaticmoduleTestController < Rho::RhoController
   end
 
   def run_calc_async_test_callback
-     res = @params["body"]
+     res = @params["result"]
      title = "Test ERROR:"
      if res.class.to_s == "Fixnum" 
           if res == 5
@@ -68,7 +68,7 @@ class SimpleonlystaticmoduleTestController < Rho::RhoController
   end
 
   def run_join_strings_async_test_callback
-     res = @params["body"]
+     res = @params["result"]
      myparam = @params["callback_myparam"]
      title = "Test ERROR:"
      if res.class.to_s == "String" 

@@ -53,6 +53,9 @@ public:
     boolean isArray();
     boolean isObject();
     boolean isNull();
+    boolean isInteger();
+    boolean isFloat();
+    boolean isBoolean();
 
     int getInt(const char* name);
     uint64 getUInt64(const char* name);
@@ -60,6 +63,7 @@ public:
     int getInt();
     uint64 getUInt64();
     double getDouble();
+    boolean getBoolean();
 
     const char* getString(const char* name);
     const char* getString(const char* name, const char* szDefValue );

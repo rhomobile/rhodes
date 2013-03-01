@@ -18,7 +18,7 @@ rho::String js_Megamodule_getStringProperty(rho::json::CJSONArray& argv, const r
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -84,7 +84,7 @@ rho::String js_Megamodule_getIntegerProperty(rho::json::CJSONArray& argv, const 
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -150,7 +150,7 @@ rho::String js_Megamodule_setIntegerProperty(rho::json::CJSONArray& argv, const 
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -255,7 +255,7 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -573,7 +573,7 @@ rho::String js_Megamodule_produceArray(rho::json::CJSONArray& argv, const rho::S
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -639,7 +639,7 @@ rho::String js_Megamodule_produceHash(rho::json::CJSONArray& argv, const rho::St
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -705,7 +705,7 @@ rho::String js_Megamodule_produceComplicatedResult(rho::json::CJSONArray& argv, 
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -771,7 +771,7 @@ rho::String js_s_Megamodule_getObjectsCount(rho::json::CJSONArray& argv, const r
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -835,7 +835,7 @@ rho::String js_s_Megamodule_getObjectByIndex(rho::json::CJSONArray& argv, const 
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -938,7 +938,7 @@ rho::String js_Megamodule_showAlertFromUIThread(rho::json::CJSONArray& argv, con
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1037,7 +1037,7 @@ rho::String js_Megamodule_setPeriodicallyCallback(rho::json::CJSONArray& argv, c
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1133,7 +1133,7 @@ rho::String js_Megamodule_isPeriodicallyCallbackSetted(rho::json::CJSONArray& ar
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1196,7 +1196,7 @@ rho::String js_Megamodule_stopPeriodicallyCallback(rho::json::CJSONArray& argv, 
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1262,7 +1262,7 @@ rho::String js_Megamodule_complicatedTypesTest1(rho::json::CJSONArray& argv, con
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1373,7 +1373,7 @@ rho::String js_Megamodule_getProperty(rho::json::CJSONArray& argv, const rho::St
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1480,7 +1480,7 @@ rho::String js_Megamodule_getProperties(rho::json::CJSONArray& argv, const rho::
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1588,7 +1588,7 @@ rho::String js_Megamodule_getAllProperties(rho::json::CJSONArray& argv, const rh
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1651,7 +1651,7 @@ rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::St
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1803,7 +1803,7 @@ rho::String js_Megamodule_setProperties(rho::json::CJSONArray& argv, const rho::
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1915,7 +1915,7 @@ rho::String js_Megamodule_clearAllProperties(rho::json::CJSONArray& argv, const 
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;
@@ -1981,7 +1981,7 @@ rho::String js_s_Megamodule_enumerate(rho::json::CJSONArray& argv, const rho::St
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int argc = argv.getSize();
     int nCallbackArg = 0;

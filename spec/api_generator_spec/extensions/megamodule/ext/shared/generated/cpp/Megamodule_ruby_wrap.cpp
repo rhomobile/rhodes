@@ -34,8 +34,7 @@ VALUE rb_Megamodule_s_setDefault(VALUE klass, VALUE valObj)
 }
 
 
-extern "C" static void
-string_iter(const char* szVal, void* par)
+static void string_iter(const char* szVal, void* par)
 {
     rho::Vector<rho::String>& ar = *((rho::Vector<rho::String>*)(par));
     ar.addElement( szVal );
@@ -43,10 +42,10 @@ string_iter(const char* szVal, void* par)
 
 static void getStringArrayFromValue(VALUE val, rho::Vector<rho::String>& res)
 {
-    rho_ruby_enum_strary(val, string_iter, &res);
+    rho_ruby_enum_strary_json(val, string_iter, &res);
 }
 
-extern "C" static void hash_eachstr(const char* szName, const char* szVal, void* par)
+static void hash_eachstr(const char* szName, const char* szVal, void* par)
 {
     rho::Hashtable<rho::String, rho::String>& hash = *((rho::Hashtable<rho::String, rho::String>*)(par));
     hash.put( szName, szVal );
@@ -54,7 +53,7 @@ extern "C" static void hash_eachstr(const char* szName, const char* szVal, void*
 
 static void getStringHashFromValue(VALUE val, rho::Hashtable<rho::String, rho::String>& res)
 {
-    rho_ruby_enum_strhash(val, hash_eachstr, &res);
+    rho_ruby_enum_strhash_json(val, hash_eachstr, &res);
 }
 
 
@@ -62,7 +61,7 @@ static VALUE _api_generator_Megamodule_getStringProperty(int argc, VALUE *argv, 
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -110,7 +109,7 @@ static VALUE _api_generator_Megamodule_getIntegerProperty(int argc, VALUE *argv,
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -158,7 +157,7 @@ static VALUE _api_generator_Megamodule_setIntegerProperty(int argc, VALUE *argv,
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -224,7 +223,7 @@ static VALUE _api_generator_Megamodule_typesTest(int argc, VALUE *argv, rho::exa
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -385,7 +384,7 @@ static VALUE _api_generator_Megamodule_produceArray(int argc, VALUE *argv, rho::
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -433,7 +432,7 @@ static VALUE _api_generator_Megamodule_produceHash(int argc, VALUE *argv, rho::e
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -481,7 +480,7 @@ static VALUE _api_generator_Megamodule_produceComplicatedResult(int argc, VALUE 
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -529,7 +528,7 @@ VALUE rb_s_Megamodule_getObjectsCount(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -562,7 +561,7 @@ VALUE rb_s_Megamodule_getObjectByIndex(int argc, VALUE *argv)
     rho::apiGenerator::CMethodResult oRes;
 
     oRes.setRubyObjectClass( getRuby_Megamodule_Module() );
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -612,7 +611,7 @@ static VALUE _api_generator_Megamodule_showAlertFromUIThread(int argc, VALUE *ar
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -673,7 +672,7 @@ static VALUE _api_generator_Megamodule_setPeriodicallyCallback(int argc, VALUE *
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -762,7 +761,7 @@ static VALUE _api_generator_Megamodule_isPeriodicallyCallbackSetted(int argc, VA
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -833,7 +832,7 @@ static VALUE _api_generator_Megamodule_stopPeriodicallyCallback(int argc, VALUE 
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -881,7 +880,7 @@ static VALUE _api_generator_Megamodule_complicatedTypesTest1(int argc, VALUE *ar
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -947,7 +946,7 @@ static VALUE _api_generator_Megamodule_getProperty(int argc, VALUE *argv, rho::e
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1041,7 +1040,7 @@ static VALUE _api_generator_Megamodule_getProperties(int argc, VALUE *argv, rho:
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1130,7 +1129,7 @@ static VALUE _api_generator_Megamodule_getAllProperties(int argc, VALUE *argv, r
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1201,7 +1200,7 @@ static VALUE _api_generator_Megamodule_setProperty(int argc, VALUE *argv, rho::e
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1293,7 +1292,7 @@ static VALUE _api_generator_Megamodule_setProperties(int argc, VALUE *argv, rho:
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
@@ -1359,7 +1358,7 @@ static VALUE _api_generator_Megamodule_clearAllProperties(int argc, VALUE *argv,
 {
     rho::apiGenerator::CMethodResult oRes;
 
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )
@@ -1408,7 +1407,7 @@ VALUE rb_s_Megamodule_enumerate(int argc, VALUE *argv)
     rho::apiGenerator::CMethodResult oRes;
 
     oRes.setRubyObjectClass( getRuby_Megamodule_Module() );
-    rho::common::IRhoRunnable* pFunctor = 0;
+    rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
     if ( argc > nCallbackArg )

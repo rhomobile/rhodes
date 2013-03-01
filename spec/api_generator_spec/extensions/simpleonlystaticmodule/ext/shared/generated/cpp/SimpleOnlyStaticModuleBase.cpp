@@ -1,8 +1,12 @@
 #include "SimpleOnlyStaticModuleBase.h"
+#include "common/RhodesApp.h"
 
 
 namespace rho {
 namespace examples {
+
+IMPLEMENT_LOGCLASS(CSimpleOnlyStaticModuleSingletonBase, "SimpleOnlyStaticModule");
+IMPLEMENT_LOGCLASS(CSimpleOnlyStaticModuleBase, "SimpleOnlyStaticModule");
 
 rho::common::CAutoPtr< CSimpleOnlyStaticModuleFactoryBase> CSimpleOnlyStaticModuleFactoryBase::m_pInstance;
 
@@ -15,6 +19,18 @@ rho::common::CAutoPtr< CSimpleOnlyStaticModuleFactoryBase> CSimpleOnlyStaticModu
 
 CSimpleOnlyStaticModuleBase::CSimpleOnlyStaticModuleBase()
 {
+
 }
+CSimpleOnlyStaticModuleSingletonBase::CSimpleOnlyStaticModuleSingletonBase()
+{
+    RHODESAPP().getExtManager().registerExtension( "SimpleOnlyStaticModule", this );
+}
+
+CSimpleOnlyStaticModuleSingletonBase::~CSimpleOnlyStaticModuleSingletonBase()
+{
+    CSimpleOnlyStaticModuleFactoryBase::setInstance(0);
+}
+
+
 }
 }

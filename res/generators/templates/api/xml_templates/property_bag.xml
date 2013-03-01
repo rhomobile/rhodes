@@ -27,6 +27,7 @@
             <DESC>This is documentation</DESC>
             <PARAMS>
                 <PARAM name="arrayofNames" type="ARRAY">
+                    <PARAM type="STRING"/>
                     <DESC>List of properties I want to know about</DESC>
                 </PARAM>
             </PARAMS>

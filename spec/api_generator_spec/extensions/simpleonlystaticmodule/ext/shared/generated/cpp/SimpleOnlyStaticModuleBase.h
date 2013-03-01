@@ -1,5 +1,7 @@
 #include "ISimpleOnlyStaticModule.h"
+#include "logging/RhoLog.h"
 #include "common/StringConverter.h"
+#include "common/ExtManager.h"
 
 
 namespace rho {
@@ -11,7 +13,7 @@ class CSimpleOnlyStaticModuleFactoryBase : public CModuleFactoryBase<ISimpleOnly
 {
 protected:
     static rho::common::CAutoPtr<CSimpleOnlyStaticModuleFactoryBase> m_pInstance;
-    Hashtable<rho::String,ISimpleOnlyStaticModule*> m_hashModules;
+    HashtablePtr<rho::String,ISimpleOnlyStaticModule*> m_hashModules;
 
 public:
 
@@ -37,14 +39,20 @@ public:
 
 };
 
-class CSimpleOnlyStaticModuleSingletonBase : public CModuleSingletonBase< ISimpleOnlyStaticModuleSingleton >
+class CSimpleOnlyStaticModuleSingletonBase : public CModuleSingletonBase< ISimpleOnlyStaticModuleSingleton >, public rho::common::IRhoExtension
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
 
 
 
 public:
+    virtual rho::LogCategory getModuleLogCategory(){ return getLogCategory(); }
+
+    CSimpleOnlyStaticModuleSingletonBase();
+    ~CSimpleOnlyStaticModuleSingletonBase();
 
 
 
@@ -54,8 +62,11 @@ public:
 class CSimpleOnlyStaticModuleBase: public ISimpleOnlyStaticModule
 {
 protected:
+    DEFINE_LOGCLASS;
+
 
 public:
+
 
     CSimpleOnlyStaticModuleBase();
 
