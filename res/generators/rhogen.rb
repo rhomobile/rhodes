@@ -1250,6 +1250,9 @@ module Rhogen
                       param.sub_param = process_param(xml_method_subparam, 'array_param', module_item)
                   end
               end
+              if param.sub_param == nil
+                 raise "<ARRAY> must have <PARAM> child ! in Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
+              end
           end
 
           if ttype == MethodParam::TYPE_HASH
