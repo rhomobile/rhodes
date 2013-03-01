@@ -11,6 +11,10 @@
 
 @property (strong, nonatomic, retain) UIWebView* webView;
 
--(void) executeScript:(NSString*)script methodResult:(CMethodResult*)methodResult;
+/* Execute javascript code synchronously and wait for result */
+-(void) executeScript:(NSString*)script methodResult:(id<IMethodResult>)methodResult;
+
+/* Execute javascript code without blocking. No result returned. */
+-(void) executeScriptAsync:(NSString*)script;
 
 @end
