@@ -261,10 +261,9 @@ Same procedure as for plug-in
 
 1. Download and install Qt Libraries for Mac:
 
-   * Go to [http://qt.nokia.com/downloads](http://qt.nokia.com/downloads)
+   * Go to [http://qt-project.org/downloads](http://qt-project.org/downloads)
    * Jump to `Qt libraries`
-   * Select [Qt libraries 4.7.3 for Mac](http://qt.nokia.com/downloads/qt-for-open-source-cpp-development-on-mac-os-x)
-   * Download [Cocoa: Mac binary package](http://get.qt.nokia.com/qt/source/qt-mac-opensource-4.7.3.dmg) (206 MB)
+   * Download [Qt libraries 4.8.4 for Mac](http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg) (185 MB)
    * Install Qt libraries for Mac
 
 2. Build RhoSimulator for Mac:
