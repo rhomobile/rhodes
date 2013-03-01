@@ -1,3 +1,5 @@
+#include <strstream>
+
 #include "common/RhoStd.h"
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/JNIRhoRuby.h"
@@ -354,17 +356,69 @@ VALUE MethodResultJni::toRuby()
 
 std::string MethodResultJni::toJson()
 {
-    std::string res;
-//    if(m_errType == eArgError )
-//    {
-//        res = "{'_RhoArgError':" + CJSONEntry::quoteValue(m_errMsg) + "}";
-//    }
-//    else if(m_errType == eError)
-//    {
-//        res = "{'_RhoRuntimeError':" + CJSONEntry::quoteValue(m_errMsg) + "}";
-//    }
-//
-//    reset();
+    std::string res = "{}";
+    JNIEnv *env = jniInit();
+    if (!env) {
+        RAWLOG_FATAL("JNI initialization failed");
+        rb_raise(rb_eRuntimeError,"JNI initialization failed");
+        return res;
+    }
+
+    int type = getResultType(env);
+    switch(type)
+    {
+    case typeNone:
+        break;
+    case typeBoolean:
+//        {
+//            bool booleanResult = static_cast<bool>(getBooleanResult(env));
+//            res = booleanResult ? Qtrue : Qfalse;
+//        }
+        break;
+    case typeInteger:
+//        {
+//            int intResult = static_cast<int>(getIntegerResult(env));
+//            res = rho_ruby_create_integer(intResult);
+//        }
+        break;
+    case typeDouble:
+//        {
+//            double doubleResult = static_cast<double>(getDoubleResult(env));
+//            res = rho_ruby_create_double(doubleResult);
+//        }
+        break;
+    case typeString:
+//        {
+//            jhstring jhStrResult = getStringResult(env);
+//            res = rho_cast<VALUE>(env, jhStrResult);
+//        }
+        break;
+    case typeList:
+//        {
+//            jhobject jhListResult = getListResult(env);
+//            res = rho_cast<VALUE>(env, jhListResult);
+//        }
+        break;
+    case typeMap:
+//        {
+//            jhobject jhMapResult = getMapResult(env);
+//            res = rho_cast<VALUE>(env, jhMapResult);
+//        }
+        break;
+    case typeArgError:
+    case typeError:
+        {
+            std::strstream buf;
+            buf << "{'error' : { 'message' : '" << getErrorMessage(env) << "' } }";
+            res = buf.str();
+        }
+        break;
+    default:
+        RAWLOG_ERROR("Unknown runtime error in MethodResultJni class");
+        res = "{'error' : { 'message' : 'Unknown runtime error in MethodResultJni class' } }";
+    }
+
+    reset(env);
     return res;
 }
 //----------------------------------------------------------------------------------------------------------------------

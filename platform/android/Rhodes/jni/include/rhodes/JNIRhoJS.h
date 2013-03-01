@@ -39,22 +39,40 @@ using rho::json::CJSONArray;
 template <>
 struct rho_cast_helper<jstring, CJSONEntry>: public RhoJniConvertor
 {
-    jstring operator()(JNIEnv *env, CJSONEntry jsonEntry);
+    jstring operator()(JNIEnv *env, const CJSONEntry& jsonEntry);
 };
 
 template <>
 struct rho_cast_helper<jobject, CJSONEntry>: public RhoJniConvertor
 {
 //    jobject m_jObject;
-    jobject operator()(JNIEnv *env, CJSONEntry jsonEntry);
+    jobject operator()(JNIEnv *env, const CJSONEntry& jsonEntry);
 //    jobject convertRubyArrayToJavaCollection(VALUE array);
 //    jobject convertRubyHashToJavaMap(VALUE array);
 };
 
 template <>
-struct rho_cast_helper<jobjectArray, CJSONArray>
+struct rho_cast_helper<jobjectArray, CJSONEntry>
 {
-    jobjectArray operator()(JNIEnv *env, const CJSONArray& jsonArray);
+    jobjectArray operator()(JNIEnv *env, const CJSONEntry& entry);
+};
+
+template <>
+struct rho_cast_helper<jboolean, CJSONEntry>
+{
+    jboolean operator()(JNIEnv *env, const CJSONEntry& entry);
+};
+
+template <>
+struct rho_cast_helper<jint, CJSONEntry>
+{
+    jint operator()(JNIEnv *env, const CJSONEntry& entry);
+};
+
+template <>
+struct rho_cast_helper<jdouble, CJSONEntry>
+{
+    jdouble operator()(JNIEnv *env, const CJSONEntry& entry);
 };
 
 }

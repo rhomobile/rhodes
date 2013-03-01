@@ -108,9 +108,27 @@ struct rho_cast_helper<jstring, VALUE>
 };
 
 template <>
-struct rho_cast_helper<jobjectArray, VALUE>
+struct rho_cast_helper<jobjectArray, VALUE>: public RhoJniConvertor
 {
     jobjectArray operator()(JNIEnv *env, VALUE value);
+};
+
+template <>
+struct rho_cast_helper<jboolean, VALUE>
+{
+    jboolean operator()(JNIEnv *env, VALUE value);
+};
+
+template <>
+struct rho_cast_helper<jint, VALUE>
+{
+    jint operator()(JNIEnv *env, VALUE value);
+};
+
+template <>
+struct rho_cast_helper<jdouble, VALUE>
+{
+    jdouble operator()(JNIEnv *env, VALUE value);
 };
 
 }
