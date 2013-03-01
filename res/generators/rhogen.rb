@@ -1223,7 +1223,7 @@ module Rhogen
     end
 
     #return MethodParam object
-    def process_param(xml_param_item, predefined_name, module_item)
+    def process_param(xml_param_item, predefined_name, module_item, method_name, param_index)
        param = MethodParam.new()
 
        if xml_param_item.attribute("name") != nil
@@ -1251,21 +1251,21 @@ module Rhogen
                   end
               end
               if param.sub_param == nil
-                 raise "<ARRAY> must have <PARAM> child ! in Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
+                 raise "<ARRAY> must have <PARAM> child ! in Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
               end
           end
 
           if ttype == MethodParam::TYPE_HASH
             xml_param_item.elements.each("PARAMS") do |xml_method_subparams|
                if xml_method_subparams.parent == xml_param_item
-                  param.sub_params = process_params(xml_method_subparams, module_item)
+                  param.sub_params = process_params(xml_method_subparams, module_item, method_name+'_'+param.name)
                end
             end
 
           end
 
        else
-          raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
+          raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
        end
 
        xml_param_item.elements.each("CAN_BE_NIL")  do |canbenil|
@@ -1278,13 +1278,13 @@ module Rhogen
     end
 
     #return array of MethodParam objects
-    def process_params(xml_params_item, module_item)
+    def process_params(xml_params_item, module_item, method_name)
        params = []
 
        param_index = 1
        xml_params_item.elements.each("PARAM") do |xml_param|
           if xml_param.parent == xml_params_item
-              param = process_param(xml_param, 'param'+ param_index.to_s, module_item)
+              param = process_param(xml_param, 'param'+ param_index.to_s, module_item, method_name, param_index)
               param_index = param_index + 1
               params << param
           end
@@ -1680,13 +1680,13 @@ module Rhogen
                 end
 
                 xml_module_method.elements.each("RETURN/PARAM") do |return_param_xml|
-                   method_result.sub_param = process_param(return_param_xml, "result", module_item)
+                   method_result.sub_param = process_param(return_param_xml, "result", module_item, module_method.name+'_RETURN', 0)
                    if method_result.sub_param != nil
                       method_result.item_type = method_result.sub_param.type
                    end
                 end
                 xml_module_method.elements.each("RETURN/PARAMS") do |return_params_xml|
-                   method_result.sub_params = process_params(return_params_xml, module_item)
+                   method_result.sub_params = process_params(return_params_xml, module_item, module_method.name+'_RETURN')
                 end
 
 
@@ -1697,7 +1697,7 @@ module Rhogen
 
             xml_module_method.elements.each("PARAMS") do |xml_method_params|
                 if xml_method_params.parent == xml_module_method
-                   module_method.params = process_params(xml_method_params, module_item)
+                   module_method.params = process_params(xml_method_params, module_item, module_method.name)
                 end
             end
 
