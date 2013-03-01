@@ -968,7 +968,7 @@ module Rhogen
     $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread", "deprecated", "generateAPI", "generateDoc"]
     $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName", "deprecated", "generateAPI", "generateDoc", "constructor", "destructor", "generateNativeAPI"]
     $possible_attributes["PARAM"] = ["name", "nativeName", "type"]
-    $possible_attributes["RETURN"] = ["type", "itemType"]
+    $possible_attributes["RETURN"] = ["type"]
 
     $possible_children = {}
     $possible_children["API"] = ["MODULE"]
@@ -1223,7 +1223,7 @@ module Rhogen
     end
 
     #return MethodParam object
-    def process_param(xml_param_item, predefined_name, module_item)
+    def process_param(xml_param_item, predefined_name, module_item, method_name, param_index)
        param = MethodParam.new()
 
        if xml_param_item.attribute("name") != nil
@@ -1247,25 +1247,30 @@ module Rhogen
               # looking for <PARAM> child
               xml_param_item.elements.each("PARAM") do |xml_method_subparam|
                   if xml_method_subparam.parent == xml_param_item
-                      param.sub_param = process_param(xml_method_subparam, 'array_param', module_item)
+                      param.sub_param = process_param(xml_method_subparam, 'array_param', module_item, method_name ,param_index)
                   end
               end
               if param.sub_param == nil
-                 raise "<ARRAY> must have <PARAM> child ! in Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
+                 param.sub_param = MethodParam.new()
+                 puts "WARNING: <ARRAY> do not have specified item type - set to STRING by default ! in Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
               end
           end
 
           if ttype == MethodParam::TYPE_HASH
             xml_param_item.elements.each("PARAMS") do |xml_method_subparams|
                if xml_method_subparams.parent == xml_param_item
-                  param.sub_params = process_params(xml_method_subparams, module_item)
+                  param.sub_params = process_params(xml_method_subparams, module_item, method_name+'_'+param.name)
                end
+            end
+
+            if param.sub_params == nil
+              puts "WARNING: you use HASH type without specified items ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
             end
 
           end
 
        else
-          raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{module_method.name}].param_index[#{param_index.to_s}]"
+          raise "parameter in method must have specified type ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
        end
 
        xml_param_item.elements.each("CAN_BE_NIL")  do |canbenil|
@@ -1278,13 +1283,13 @@ module Rhogen
     end
 
     #return array of MethodParam objects
-    def process_params(xml_params_item, module_item)
+    def process_params(xml_params_item, module_item, method_name)
        params = []
 
        param_index = 1
        xml_params_item.elements.each("PARAM") do |xml_param|
           if xml_param.parent == xml_params_item
-              param = process_param(xml_param, 'param'+ param_index.to_s, module_item)
+              param = process_param(xml_param, 'param'+ param_index.to_s, module_item, method_name, param_index)
               param_index = param_index + 1
               params << param
           end
@@ -1662,7 +1667,7 @@ module Rhogen
                 module_method.is_return_value = true
                 method_result = MethodResult.new()
                 result_type = xml_module_method.elements["RETURN"].attribute("type").to_s
-                result_item_type = xml_module_method.elements["RETURN"].attribute("itemType").to_s
+                #result_item_type = xml_module_method.elements["RETURN"].attribute("itemType").to_s
                 xml_module_method.elements["RETURN"].elements.each("DESC") do |xml_desc|
                    method_result.desc = xml_desc.text
                 end
@@ -1672,21 +1677,31 @@ module Rhogen
                   end
                   method_result.type = result_type
                 end
-                if result_item_type != nil
-                   if result_item_type == MethodParam::TYPE_SELF
-                     result_item_type = [module_item.parents.join("."),module_item.name].join(".")
-                   end
-                   method_result.item_type = result_item_type
-                end
+                #if result_item_type != nil
+                #   if result_item_type == MethodParam::TYPE_SELF
+                #     result_item_type = [module_item.parents.join("."),module_item.name].join(".")
+                #   end
+                #   method_result.item_type = result_item_type
+                #end
 
                 xml_module_method.elements.each("RETURN/PARAM") do |return_param_xml|
-                   method_result.sub_param = process_param(return_param_xml, "result", module_item)
+                   method_result.sub_param = process_param(return_param_xml, "result", module_item, module_method.name+'_RETURN', 0)
                    if method_result.sub_param != nil
                       method_result.item_type = method_result.sub_param.type
                    end
                 end
                 xml_module_method.elements.each("RETURN/PARAMS") do |return_params_xml|
-                   method_result.sub_params = process_params(return_params_xml, module_item)
+                   method_result.sub_params = process_params(return_params_xml, module_item, module_method.name+'_RETURN')
+                end
+
+                if (method_result.type == MethodParam::TYPE_ARRAY) && (method_result.item_type == nil)
+                     # set default STRING type and show WARNING
+                     method_result.sub_param = MethodParam.new()
+                     method_result.item_type = MethodParam::TYPE_STRING
+                     puts "you use ARRAY type without specified item type - set to STRING by default ! Module[#{module_item.name}].method[#{module_method.name}].RETURN"
+                end
+                if (method_result.type == MethodParam::TYPE_HASH) && (method_result.sub_params  == nil)
+                     puts "you use HASH type without specified items ! Module[#{module_item.name}].method[#{module_method.name}].RETURN"
                 end
 
 
@@ -1697,7 +1712,7 @@ module Rhogen
 
             xml_module_method.elements.each("PARAMS") do |xml_method_params|
                 if xml_method_params.parent == xml_module_method
-                   module_method.params = process_params(xml_method_params, module_item)
+                   module_method.params = process_params(xml_method_params, module_item, module_method.name)
                 end
             end
 

@@ -35,6 +35,18 @@
     [methodResult setResult:[args objectAtIndex:2]];
 }
 
+-(void) executeScriptAsync:(NSString*)script {
+    NSMutableArray *args = [[NSMutableArray arrayWithCapacity:3] autorelease];
+    [args addObject:webView];
+    [args addObject:script];
+    [args addObject:[[NSString alloc] autorelease]];
+    
+    [self performSelectorOnMainThread:@selector(executeScriptImpl:)
+                           withObject:args
+                        waitUntilDone:NO];
+}
+
+
 - (void) executeScriptImpl:(NSMutableArray*)args
 {
     UIWebView* view = [args objectAtIndex:0];

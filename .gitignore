@@ -10,24 +10,11 @@ rhobuild.*.yml
 rhodes/*/pkg/
 rhodes/rhodes-framework/spec/bin/
 platform/mac/**/build/*
-platform/iphone/build/*
-platform/iphone/rhoextlib/build/*
-platform/iphone/shttpd/build/*
-platform/iphone/rhorubylib/build/*
-platform/iphone/rhosynclib/build/*
-platform/iphone/tcmalloc/build/*
-platform/iphone/RhoLib/build/*
-platform/iphone/Tests/build/*
-platform/iphone/curl/build/*
-lib/extensions/audiocapture/ext/audiocapture/platform/iphone/build/*
-lib/extensions/videocapture/ext/videocapture/platform/iphone/build/*
-lib/extensions/barcode/ext/barcode/platform/iphone/build/*
-lib/extensions/digest-sha2/ext/iphone/build/*
-lib/extensions/esri/ext/esri/platform/iphone/build/*
-lib/extensions/openssl/ext/iphone/build/*
-lib/extensions/openssl.so/wm/tmp/*
-lib/extensions/rawsensors/ext/rawsensors/platform/iphone/build/*
-lib/extensions/zlib/ext/iphone/build/*
+platform/iphone/build/
+platform/iphone/*/build/
+lib/extensions/openssl.so/wm/tmp/
+lib/extensions/*/ext/*/platform/iphone/build/
+lib/extensions/*/ext/iphone/build/
 platform/shared/*/iphone/*/build/*
 platform/shared/*/iphone/build/*
 platform/iphone/bin/*
@@ -119,14 +106,12 @@ lib/extensions/fcntl/ext/iphone/build/*
 
 lib/commonAPI/javascriptvm/ext/platform/iphone/build/*
 
-spec/api_generator_spec/extensions/megamodule/ext/platform/iphone/build/*
-spec/api_generator_spec/extensions/simpleonlystaticmodule/ext/platform/iphone/build/*
-spec/api_generator_spec/extensions/barcode1/ext/platform/iphone/build/*
+spec/api_generator_spec/extensions/*/ext/platform/*/build/
 spec/api_generator_spec/extensions/barcode/ext/platform/android/generated/*
 spec/api_generator_spec/extensions/barcode/ext/platform/iphone/generated/*
 spec/api_generator_spec/extensions/barcode/ext/shared/generated/*
-spec/api_generator_spec/public/api/generated
-spec/api_generator_spec/rhosimulator
+spec/api_generator_spec/public/api/generated/
+spec/api_generator_spec/rhosimulator/
 
 spec/bin/*
 spec/**/bin/*
@@ -264,5 +249,6 @@ platform/osx/bin/syncengine/*
 platform/osx/bin/RhoSimulator/generated_files/*
 platform/osx/bin/RhoSimulator/tmp/*
 
-lib/commonAPI/coreapi/ext/platform/iphone/*
-
+lib/commonAPI/*/ext/platform/iphone/build/
+lib/commonAPI/*/*/*/generated/
+lib/commonAPI/*/*/*/*/generated/
