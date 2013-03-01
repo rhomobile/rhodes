@@ -1247,8 +1247,7 @@ module Rhogen
               # looking for <PARAM> child
               xml_param_item.elements.each("PARAM") do |xml_method_subparam|
                   if xml_method_subparam.parent == xml_param_item
-                      # TODO: FIX IT! param.sub_param = process_param(xml_method_subparam, 'array_param', module_item)
-                      param.sub_param = process_param(xml_method_subparam, 'array_param', module_item,'SOMETHING_GONE_WRONG_FIXME!',0)
+                      param.sub_param = process_param(xml_method_subparam, 'array_param', module_item, method_name ,param_index)
                   end
               end
               if param.sub_param == nil
