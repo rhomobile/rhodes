@@ -6,34 +6,124 @@
 
 namespace details {
 
+using rho::json::CJSONArray;
+using rho::json::CJSONStructIterator;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 jstring rho_cast_helper<jstring, CJSONEntry>::operator ()(JNIEnv *env, const CJSONEntry& jsonEntry)
 {
-    return NULL;
+    return rho_cast<jstring>(env, jsonEntry.getString());
 }
+//----------------------------------------------------------------------------------------------------------------------
+
+jobject rho_cast_helper<jobject, CJSONEntry>::convertJsonEntryToJavaCollection(const CJSONEntry& jsonEntry)
+{
+    jobject jList = m_env->NewObject(clsArrayList, midArrayList);
+    if(!jList)
+    {
+        return 0;
+    }
+    CJSONArray jsonArray(jsonEntry);
+    int size = jsonArray.getSize();
+
+    for(int i = 0; i < size; ++i)
+    {
+        jhstring jhElement = rho_cast<jstring>(m_env, jsonArray.getItem(i).getString());
+        m_env->CallBooleanMethod(jList, RhoJniConvertor::midArrayListAdd, jhElement.get());
+    }
+
+    return jList;
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+jobject rho_cast_helper<jobject, CJSONEntry>::convertJsonEntryToJavaMap(const CJSONEntry& jsonEntry)
+{
+    jobject jMap = m_env->NewObject(clsHashMap, midHashMap);
+    if(!jMap)
+    {
+        return 0;
+    }
+
+    CJSONStructIterator jsonObjectIt(jsonEntry);
+    while(!jsonObjectIt.isEnd())
+    {
+        jhstring jhKey = rho_cast<jstring>(m_env, jsonObjectIt.getCurKey());
+        jhstring jhVal = rho_cast<jstring>(m_env, jsonObjectIt.getCurString());
+
+        jhobject jhPrev = m_env->CallObjectMethod(jMap, RhoJniConvertor::midHashMapPut, jhKey.get(), jhVal.get());
+    }
+
+    return jMap;
+
+}
+//----------------------------------------------------------------------------------------------------------------------
 
 jobject rho_cast_helper<jobject, CJSONEntry>::operator ()(JNIEnv *env, const CJSONEntry& jsonEntry)
 {
-    return NULL;
+    if(jsonEntry.isEmpty() || jsonEntry.isNull()) {
+        return 0;
+    }
+    if (!initConvertor(env))
+    {
+        return 0;
+    }
+    if(jsonEntry.isString())
+    {
+        return rho_cast<jstring>(env, jsonEntry.getString());
+    }
+    if(jsonEntry.isArray())
+    {
+        return convertJsonEntryToJavaCollection(jsonEntry);
+    }
+    if(jsonEntry.isObject())
+    {
+        return convertJsonEntryToJavaMap(jsonEntry);
+    }
+    return 0;
 }
+//----------------------------------------------------------------------------------------------------------------------
 
-jobjectArray rho_cast_helper<jobjectArray, CJSONEntry>::operator ()(JNIEnv *env, const CJSONEntry& jsonArray)
+jobjectArray rho_cast_helper<jobjectArray, CJSONEntry>::operator ()(JNIEnv *env, const CJSONEntry& jsonEntry)
 {
-    return NULL;
+    if (!jsonEntry.isArray())
+    {
+        return 0;
+    }
+    if (!initConvertor(env))
+    {
+        return 0;
+    }
+
+    CJSONArray jsonArray(jsonEntry);
+    int size = jsonArray.getSize();
+    jobjectArray jArray = env->NewObjectArray(size, clsString, 0);
+
+    for(int i = 0; i < size; ++i)
+    {
+        jhstring jhElement = rho_cast<jstring>(env, jsonArray.getItem(i).getString());
+        env->SetObjectArrayElement(jArray, i, jhElement.get());
+    }
+    return jArray;
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 jint rho_cast_helper<jint, CJSONEntry>::operator ()(JNIEnv *env, const CJSONEntry& jsonEntry)
 {
-    return 0;
+    return static_cast<jint>(jsonEntry.getInt());
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 jboolean rho_cast_helper<jboolean, CJSONEntry>::operator ()(JNIEnv *env, const CJSONEntry& jsonEntry)
 {
-    return false;
+    return static_cast<jboolean>(jsonEntry.getBoolean());
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 jdouble rho_cast_helper<jdouble, CJSONEntry>::operator ()(JNIEnv *env, const CJSONEntry& jsonEntry)
 {
-    return 0.0;
+    return static_cast<jdouble>(jsonEntry.getDouble());
 }
+//----------------------------------------------------------------------------------------------------------------------
 
 }
