@@ -47,31 +47,31 @@ public:
     CJSONEntry() : m_rootObject(null){}
     ~CJSONEntry();
 
-    boolean isEmpty();
-	boolean hasName(String name);
-    boolean isString();
-    boolean isArray();
-    boolean isObject();
-    boolean isNull();
-    boolean isInteger();
-    boolean isFloat();
-    boolean isBoolean();
+    boolean isEmpty() const;
+	boolean hasName(String name) const;
+    boolean isString() const;
+    boolean isArray() const;
+    boolean isObject() const;
+    boolean isNull() const;
+    boolean isInteger() const;
+    boolean isFloat() const;
+    boolean isBoolean() const;
 
     int getInt(const char* name);
     uint64 getUInt64(const char* name);
     double getDouble(const char* name);
-    int getInt();
-    uint64 getUInt64();
-    double getDouble();
-    boolean getBoolean();
+    int getInt() const;
+    uint64 getUInt64() const;
+    double getDouble() const;
+    boolean getBoolean() const;
 
     const char* getString(const char* name);
     const char* getString(const char* name, const char* szDefValue );
-    const char* getString();
+    const char* getString() const;
 
-    CJSONEntry getEntry(const char* name)const;
+    CJSONEntry getEntry(const char* name) const;
 
-    struct json_object* getObject()const{ return m_object; }
+    struct json_object* getObject() const { return m_object; }
 
     static String quoteValue(const String& strValue);
     static String quoteValueW(const StringW& strValue);
@@ -90,14 +90,14 @@ public:
     CJSONArrayIterator(const CJSONEntry& oEntry);
     ~CJSONArrayIterator(void);
 
-    boolean isEnd();
+    boolean isEnd() const;
     void    next();
     void    reset(int nPos);
-    int     getCurPos(){ return m_nCurItem; }
+    int     getCurPos() const { return m_nCurItem; }
 
     CJSONEntry getCurItem();
 
-    int getSize();
+    int getSize() const;
 };
 
 class CJSONArray : public CJSONArrayIterator
@@ -122,13 +122,13 @@ public:
     CJSONStructIterator(const CJSONEntry& oEntry);
     ~CJSONStructIterator(void);
 
-    boolean isEnd();
+    boolean isEnd() const;
     void    next();
     void    reset();
 
-    String     getCurKey();
-    CJSONEntry getCurValue();
-    String     getCurString();
+    String     getCurKey() const;
+    CJSONEntry getCurValue() const;
+    String     getCurString() const;
     
 };
 
