@@ -21,7 +21,8 @@
 				<DESC>join strings from input array and return one string</DESC>
 				<PARAMS>
 					<PARAM name="strings" type="ARRAY">
-							<DESC>array with strings</DESC>
+						<PARAM type="STRING"/>
+						<DESC>array with strings</DESC>
 					</PARAM>
 				</PARAMS>
 				<RETURN type="STRING">

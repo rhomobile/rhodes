@@ -264,6 +264,34 @@ boolean CJSONEntry::isObject()
 
     return json_object_is_type(m_object, json_type_object) ? true : false;
 }
+    
+    boolean CJSONEntry::isInteger()
+    {
+        if ( isEmpty() )
+            return false;
+        
+        return json_object_is_type(m_object, json_type_int) ? true : false;
+    }
+    
+    boolean CJSONEntry::isFloat()
+    {
+        if ( isEmpty() )
+            return false;
+        
+        return json_object_is_type(m_object, json_type_double) ? true : false;
+    }
+    
+    boolean CJSONEntry::isBoolean()
+    {
+        if ( isEmpty() )
+            return false;
+        
+        return json_object_is_type(m_object, json_type_boolean) ? true : false;
+    }
+    
+    
+    
+    
 
 boolean CJSONEntry::hasName(String name)
 {
@@ -331,6 +359,16 @@ int CJSONEntry::getInt()
     if ( m_object != 0 )
         nRes = static_cast<int>(json_object_get_int(m_object));
 
+    return nRes;
+}
+
+boolean CJSONEntry::getBoolean()
+{
+
+    boolean nRes = false;
+    if ( m_object != 0 )
+        nRes = static_cast<boolean>(json_object_get_boolean(m_object));
+    
     return nRes;
 }
 

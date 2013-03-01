@@ -42,7 +42,7 @@ void RubyCallbackHelper_callCallback(NSString* callbackURL,
     
 	NSString* strBody = @"&rho_callback=1";
 	
-    strBody = [strBody stringByAppendingString:@"&"];
+    
     
     if ([methodResult isHash]) {
         NSDictionary* hash = [methodResult getHashResult];
@@ -54,12 +54,14 @@ void RubyCallbackHelper_callCallback(NSString* callbackURL,
             CMethodResult* mr = [[CMethodResult alloc] init];
             [mr setResult:value];
             NSString* strParam = [NSString stringWithUTF8String:( RHODESAPP().addCallbackObject( new BarcodeRhoCallbackResultContainer(mr), [key UTF8String]).c_str() ) ];
+            strBody = [strBody stringByAppendingString:@"&"];
             strBody = [strBody stringByAppendingString:strParam];
         }
         [methodResult release];
     }
     else {
         NSString* strParam = [NSString stringWithUTF8String:( RHODESAPP().addCallbackObject( new BarcodeRhoCallbackResultContainer(methodResult), "result").c_str() ) ];
+        strBody = [strBody stringByAppendingString:@"&"];
         strBody = [strBody stringByAppendingString:strParam];
     }
     

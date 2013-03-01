@@ -58,7 +58,7 @@ struct IMegamoduleSingleton
     virtual rho::String getInitialDefaultID() = 0;
     virtual void setDefaultID(const rho::String& strID) = 0;
 
-    virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor) = 0;
+    virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor) = 0;
     virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor) = 0;
 };
 

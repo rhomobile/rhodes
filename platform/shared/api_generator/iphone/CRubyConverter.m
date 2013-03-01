@@ -4,36 +4,6 @@
 #import "ruby/ext/rho/rhoruby.h"
 #import "ruby/include/ruby.h"
 
-@implementation CRubyClass
-
-- (id) init:(NSString*)clasRubyFullName iID:(NSString*)iID {
-    self = [super init];
-    mClassName = [clasRubyFullName retain];
-    mInstanceID = [iID retain];
-    return self;
-}
-
-+(CRubyClass*) rubyClassByName:(NSString*)className instanceID:(NSString*)instanceID {
-    CRubyClass* m = [[CRubyClass alloc] init:className iID:instanceID];
-    return m;
-}
-
--(NSString*)getClassName {
-    return mClassName;
-}
-
--(NSString*)getInstanceID {
-    return mInstanceID;
-}
-
--(void)dealloc {
-    [mClassName release];
-    [mInstanceID release];
-    [super dealloc];
-}
-
-@end
-
 
 
 @implementation CRubyConverter
@@ -71,9 +41,9 @@
             rho_ruby_add_to_array(v, objValue);
         }
     }
-    else if ([objectiveC_value isKindOfClass:[CRubyClass class]]) {
+    else if ([objectiveC_value isKindOfClass:[CRhoAPIClassInstance class]]) {
         // rubyModule
-        CRubyClass* rubyModule = (CRubyClass*)objectiveC_value;
+        CRhoAPIClassInstance* rubyModule = (CRhoAPIClassInstance*)objectiveC_value;
         NSString* rubyPath = [[rubyModule getClassName] stringByReplacingOccurrencesOfString:@"." withString:@"::"];
         VALUE klass = rb_path_to_class(rho_ruby_create_string([rubyPath UTF8String]));
         if (!rho_ruby_is_NIL(klass)) {

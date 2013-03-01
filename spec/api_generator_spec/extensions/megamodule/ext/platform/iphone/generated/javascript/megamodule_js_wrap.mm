@@ -106,6 +106,9 @@ rho::String js_Megamodule_getStringProperty_Obj(rho::json::CJSONArray& argv, id<
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -124,7 +127,7 @@ rho::String js_Megamodule_getStringProperty_Obj(rho::json::CJSONArray& argv, id<
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -281,6 +284,9 @@ rho::String js_Megamodule_getIntegerProperty_Obj(rho::json::CJSONArray& argv, id
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -299,7 +305,7 @@ rho::String js_Megamodule_getIntegerProperty_Obj(rho::json::CJSONArray& argv, id
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -456,6 +462,9 @@ rho::String js_Megamodule_setIntegerProperty_Obj(rho::json::CJSONArray& argv, id
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_INTEGER, 0, "value", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -474,7 +483,7 @@ rho::String js_Megamodule_setIntegerProperty_Obj(rho::json::CJSONArray& argv, id
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -631,6 +640,11 @@ rho::String js_Megamodule_typesTest_Obj(rho::json::CJSONArray& argv, id<IMegamod
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params_param4[] = {{RHO_API_INTEGER, 0, "array_param", 0, 0 } };
+    static RHO_API_PARAM rho_api_params_param5[] = {{RHO_API_STRING, 0, "strParam", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "paramStr", 0, 0 }, {RHO_API_BOOLEAN, 0, "paramBool", 0, 0 }, {RHO_API_INTEGER, 0, "paramInt", 0, 0 }, {RHO_API_FLOAT, 0, "paramFloat", 0, 0 }, {RHO_API_ARRAY, 0, "paramArray", 1, rho_api_params_param4 }, {RHO_API_HASH, 0, "paramHash", 1, rho_api_params_param5 } };
+
+    
     BOOL is_factory_param[] = { NO, NO, NO, NO, NO, NO, NO };
 
     int i;
@@ -649,7 +663,7 @@ rho::String js_Megamodule_typesTest_Obj(rho::json::CJSONArray& argv, id<IMegamod
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -806,6 +820,9 @@ rho::String js_Megamodule_produceArray_Obj(rho::json::CJSONArray& argv, id<IMega
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -824,7 +841,7 @@ rho::String js_Megamodule_produceArray_Obj(rho::json::CJSONArray& argv, id<IMega
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -981,6 +998,9 @@ rho::String js_Megamodule_produceHash_Obj(rho::json::CJSONArray& argv, id<IMegam
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -999,7 +1019,7 @@ rho::String js_Megamodule_produceHash_Obj(rho::json::CJSONArray& argv, id<IMegam
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1156,6 +1176,9 @@ rho::String js_Megamodule_produceComplicatedResult_Obj(rho::json::CJSONArray& ar
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -1174,7 +1197,7 @@ rho::String js_Megamodule_produceComplicatedResult_Obj(rho::json::CJSONArray& ar
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1331,6 +1354,9 @@ rho::String js_Megamodule_getObjectsCount_Obj(rho::json::CJSONArray& argv, id<IM
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -1349,7 +1375,7 @@ rho::String js_Megamodule_getObjectsCount_Obj(rho::json::CJSONArray& argv, id<IM
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1497,6 +1523,9 @@ rho::String js_Megamodule_getObjectByIndex_Obj(rho::json::CJSONArray& argv, id<I
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_INTEGER, 0, "index", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -1515,7 +1544,7 @@ rho::String js_Megamodule_getObjectByIndex_Obj(rho::json::CJSONArray& argv, id<I
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1663,6 +1692,9 @@ rho::String js_Megamodule_showAlertFromUIThread_Obj(rho::json::CJSONArray& argv,
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "message", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -1681,7 +1713,7 @@ rho::String js_Megamodule_showAlertFromUIThread_Obj(rho::json::CJSONArray& argv,
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1839,6 +1871,9 @@ rho::String js_Megamodule_setPeriodicallyCallback_Obj(rho::json::CJSONArray& arg
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_INTEGER, 0, "periodInMilliseconds", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -1857,7 +1892,7 @@ rho::String js_Megamodule_setPeriodicallyCallback_Obj(rho::json::CJSONArray& arg
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2014,6 +2049,9 @@ rho::String js_Megamodule_isPeriodicallyCallbackSetted_Obj(rho::json::CJSONArray
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -2032,7 +2070,7 @@ rho::String js_Megamodule_isPeriodicallyCallbackSetted_Obj(rho::json::CJSONArray
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2189,6 +2227,9 @@ rho::String js_Megamodule_stopPeriodicallyCallback_Obj(rho::json::CJSONArray& ar
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -2207,7 +2248,7 @@ rho::String js_Megamodule_stopPeriodicallyCallback_Obj(rho::json::CJSONArray& ar
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2364,6 +2405,13 @@ rho::String js_Megamodule_complicatedTypesTest1_Obj(rho::json::CJSONArray& argv,
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params_param0_param0_param2_param1[] = {{RHO_API_BOOLEAN, 0, "array_param", 0, 0 } };
+    static RHO_API_PARAM rho_api_params_param0_param0_param2[] = {{RHO_API_STRING, 0, "itemStr", 0, 0 }, {RHO_API_ARRAY, 0, "itemArray", 1, rho_api_params_param0_param0_param2_param1 } };
+    static RHO_API_PARAM rho_api_params_param0_param0[] = {{RHO_API_INTEGER, 0, "intItem", 0, 0 }, {RHO_API_STRING, 0, "strItem", 0, 0 }, {RHO_API_HASH, 0, "hashItem", 2, rho_api_params_param0_param0_param2 } };
+    static RHO_API_PARAM rho_api_params_param0[] = {{RHO_API_HASH, 0, "array_param", 3, rho_api_params_param0_param0 } };
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_ARRAY, 0, "paramArray", 1, rho_api_params_param0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -2382,7 +2430,7 @@ rho::String js_Megamodule_complicatedTypesTest1_Obj(rho::json::CJSONArray& argv,
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2539,6 +2587,9 @@ rho::String js_Megamodule_getProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "propertyName", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -2557,7 +2608,7 @@ rho::String js_Megamodule_getProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2714,6 +2765,10 @@ rho::String js_Megamodule_getProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params_param0[] = {{RHO_API_STRING, 0, "array_param", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_ARRAY, 0, "arrayofNames", 1, rho_api_params_param0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -2732,7 +2787,7 @@ rho::String js_Megamodule_getProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2889,6 +2944,9 @@ rho::String js_Megamodule_getAllProperties_Obj(rho::json::CJSONArray& argv, id<I
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -2907,7 +2965,7 @@ rho::String js_Megamodule_getAllProperties_Obj(rho::json::CJSONArray& argv, id<I
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -3064,6 +3122,9 @@ rho::String js_Megamodule_setProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "propertyName", 0, 0 }, {RHO_API_STRING, 0, "propertyValue", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO, NO };
 
     int i;
@@ -3082,7 +3143,7 @@ rho::String js_Megamodule_setProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -3239,6 +3300,9 @@ rho::String js_Megamodule_setProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_HASH, 0, "propertyMap", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -3257,7 +3321,7 @@ rho::String js_Megamodule_setProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -3414,6 +3478,9 @@ rho::String js_Megamodule_clearAllProperties_Obj(rho::json::CJSONArray& argv, id
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -3432,7 +3499,7 @@ rho::String js_Megamodule_clearAllProperties_Obj(rho::json::CJSONArray& argv, id
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -3589,6 +3656,9 @@ rho::String js_Megamodule_enumerate_Obj(rho::json::CJSONArray& argv, id<IMegamod
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -3607,7 +3677,7 @@ rho::String js_Megamodule_enumerate_Obj(rho::json::CJSONArray& argv, id<IMegamod
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }

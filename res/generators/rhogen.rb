@@ -708,6 +708,7 @@ module Rhogen
       TYPE_DOUBLE = "FLOAT"
       TYPE_SELF = 'SELF_INSTANCE'
 
+      SIMPLE_TYPES = [TYPE_STRING, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE]
       BASE_TYPES = [TYPE_STRING, TYPE_ARRAY, TYPE_HASH, TYPE_INT, TYPE_BOOL, TYPE_DOUBLE]
 
       def initialize
@@ -1142,6 +1143,84 @@ module Rhogen
       dst_collection << module_alias
     end
 
+
+
+    def prepare_rho_api_param_string(str)
+       if str == nil
+          return '0'
+       end
+       if str.size <= 0
+          return '0'
+       end
+       return '"'+str+'"'
+    end
+
+    #return string {...}
+    def prepare_rho_api_param_structure(param, name_prefix, param_index, lines)
+       str = ''
+       if MethodParam::SIMPLE_TYPES.include?(param.type)
+          str = '{'
+          str = str + 'RHO_API_'+param.type+', '
+          str = str + '0, '
+          str = str + prepare_rho_api_param_string(param.name)+', '
+          str = str + '0, 0 }'
+       else
+          if param.type == MethodParam::TYPE_ARRAY
+            str = '{'
+            str = str + 'RHO_API_ARRAY, '
+            str = str + '0, '
+            str = str + prepare_rho_api_param_string(param.name)+', '
+            str = str + '1, '+name_prefix+'_param'+param_index.to_s
+            str = str + ' }'
+            tmp_ar = []
+            tmp_ar << param.sub_param
+            prepare_rho_api_params_structure_line(tmp_ar, name_prefix+'_param'+param_index.to_s, lines)
+          else
+             if param.type == MethodParam::TYPE_HASH
+               str = '{'
+               str = str + 'RHO_API_HASH, '
+               str = str + '0, '
+               str = str + prepare_rho_api_param_string(param.name)+', '
+               if param.sub_params != nil
+                   str = str + param.sub_params.size.to_s + ', '+name_prefix+'_param'+param_index.to_s
+                   str = str + ' }'
+                   prepare_rho_api_params_structure_line(param.sub_params, name_prefix+'_param'+param_index.to_s, lines)
+               else
+                   str = str + '0, 0 }'
+               end
+             else
+                #custom type - object
+               str = '{'
+               str = str + 'RHO_API_OBJECT, '
+               str = str + '"' + param.type + '", '
+               str = str + prepare_rho_api_param_string(param.name)+', '
+               str = str + '0, 0 }'
+             end
+          end
+       end
+       return str
+    end
+
+    def prepare_rho_api_params_structure_line(params, name, lines)
+      index = 0
+      line = 'static RHO_API_PARAM '+name+'[] = { '
+      params.each do |param|
+        line = line + prepare_rho_api_param_structure(param, name, index, lines)
+        index = index + 1
+        if index < params.size
+           line = line + ', '
+        end
+      end
+      line = line + ' };'
+      lines << line
+    end
+
+    #return array of strings
+    def prepare_rho_api_params_structure_lines(root_params, name)
+      tmp_lines = []
+      prepare_rho_api_params_structure_line(root_params, name, tmp_lines)
+      return tmp_lines
+    end
 
     #return MethodParam object
     def process_param(xml_param_item, predefined_name, module_item)

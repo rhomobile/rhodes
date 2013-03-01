@@ -1,0 +1,49 @@
+<div data-role="page">
+
+  <div data-role="header" data-position="inline">
+    <h1>SimpleOnlyStaticModule Extension Test</h1>
+      
+  </div>
+
+  <div data-role="content">
+
+<INPUT type="button" id="id_button1" value="Show Alert in UI thread" name="id_button1" onClick="run_test_showAlert();"><br>
+<br>
+<INPUT type="button" id="id_button2" value="run calcSumm" name="id_button2" onClick="run_test_calcSumm();"><br>
+<br>
+<INPUT type="button" id="id_button3" value="run joinStrings" name="id_button3" onClick="run_test_joinStrings();"><br>
+<br>
+
+
+<script type="text/javascript">
+   
+
+function run_test_showAlert() {
+       $.post('/system/js_api_entrypoint', JSON.stringify({Module: 'Rho:Examples:SimpleOnlyStaticModule', Method: 'showAlertFromUIThread'}) );
+}
+
+function run_test_calcSumm() {
+       $.post('/system/js_api_entrypoint', JSON.stringify({Module: 'Rho:Examples:SimpleOnlyStaticModule', Method: 'calcSumm', Params: [23,32] }), function(data) {
+  alert("Data Loaded: " + data);
+} );
+}
+
+function run_test_joinStrings() {
+       $.post('/system/js_api_entrypoint', JSON.stringify({Module: 'Rho:Examples:SimpleOnlyStaticModule', Method: 'joinStrings', Params: [ ["bla","-","bla"] ] }), function(data) {
+  alert("Data Loaded: " + data);
+} );
+}
+
+</script>
+
+
+
+
+
+
+  </div>
+
+</div>
+
+
+

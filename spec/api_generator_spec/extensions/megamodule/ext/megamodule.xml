@@ -54,7 +54,9 @@
 						<PARAM type="INTEGER"/>
 					</PARAM>
 					<PARAM name="paramHash" type="HASH">
-						<PARAM type="STRING"/>
+						<PARAMS>
+							<PARAM name="strParam" type="STRING"/>
+						</PARAMS>	
 					</PARAM>
 					
 				</PARAMS>
