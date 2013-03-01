@@ -249,6 +249,6 @@ platform/osx/bin/syncengine/*
 platform/osx/bin/RhoSimulator/generated_files/*
 platform/osx/bin/RhoSimulator/tmp/*
 
-lib/commonAPI/coreapi/ext/platform/iphone/*
+lib/commonAPI/*/ext/platform/iphone/build/
 lib/commonAPI/*/*/*/generated/
 lib/commonAPI/*/*/*/*/generated/
