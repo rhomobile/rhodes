@@ -266,15 +266,6 @@ StringW CExtManager::getPageTitle(UINT iTab)
 #endif
 }
 
-extern "C" unsigned long rb_require(const char *fname);
-extern "C" int  rho_ruby_is_started();
-
-void CExtManager::requireRubyFile( const char* szFilePath )
-{
-    //if( rho_ruby_is_started() )
-        //rb_require(szFilePath);
-}
-
 extern "C" int rho_wmimpl_is_loglevel_enabled(int nLogLevel);
 extern "C" bool rho_wmimpl_get_is_version2();
 void CExtManager::rhoLog(ELogExtLevels eLogLevel, const char* szModule, const char* szMsg, const char* szFile, int nLine)

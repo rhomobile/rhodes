@@ -43,6 +43,7 @@
     <ClCompile Include="..\..\shared\SystemImplBase.cpp">
       <Filter>System\shared\generated\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\InitExtension.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\system.xml">
