@@ -162,6 +162,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\..\shared\InitExtension.cpp" />
     <ClCompile Include="..\..\shared\SystemImplBase.cpp" />
     <ClCompile Include="src\SystemImpl.cpp" />
   </ItemGroup>
