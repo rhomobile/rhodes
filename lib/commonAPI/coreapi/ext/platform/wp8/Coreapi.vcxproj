@@ -150,9 +150,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\shared\generated\cpp\SQLite3Base.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\SQLite3_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\SQLite3_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\SystemBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\System_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\System_ruby_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\sqlite3_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\sqlite3_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\sqlite3_ruby_api.c">
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
+      <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
+    </ClCompile>
     <ClCompile Include="..\..\shared\generated\system_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\system_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\system_ruby_api.c">
@@ -163,6 +172,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
     </ClCompile>
     <ClCompile Include="..\..\shared\InitExtension.cpp" />
+    <ClCompile Include="..\..\shared\SQLite3Impl.cpp" />
     <ClCompile Include="..\..\shared\SystemImplBase.cpp" />
     <ClCompile Include="src\SystemImpl.cpp" />
   </ItemGroup>
@@ -173,7 +183,9 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\shared\generated\cpp\ISQLite3.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\SQLite3Base.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h" />
   </ItemGroup>
   <ItemGroup>
@@ -181,6 +193,12 @@
       <IsWinMDFile>true</IsWinMDFile>
       <Private>false</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\sqlite3.xml">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

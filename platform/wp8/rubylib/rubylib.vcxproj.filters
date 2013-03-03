@@ -32,9 +32,6 @@
     <Filter Include="ext\rho">
       <UniqueIdentifier>{44597372-8b82-43e8-ac5c-405b711b8c0a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ext\sqlite3">
-      <UniqueIdentifier>{17374a1c-cbb3-4139-987f-150c24faec79}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ext\rhoconf">
       <UniqueIdentifier>{25f8b020-5691-410e-9583-8d034bb27bf0}</UniqueIdentifier>
     </Filter>
@@ -215,9 +212,6 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\rhoconf\rhoconf_wrap.c">
       <Filter>ext\rhoconf</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\sqlite3_api\sqlite3_api_wrap.c">
-      <Filter>ext\sqlite3</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\rho\extensions.c">
       <Filter>ext\rho</Filter>

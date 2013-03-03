@@ -6,8 +6,10 @@ extern "C" void Init_SQLite3();
 extern "C" void Init_CoreAPI_Extension()
 {
     Init_System();
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
-    Init_NetworkAccess();
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8)
+#ifndef OS_WP8
+	Init_NetworkAccess();
+#endif
     Init_SQLite3();
 #endif
 }

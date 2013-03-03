@@ -266,6 +266,9 @@ extern "C" {
 //TODO: use System.unzip_file
 int rho_sys_unzip_file(const char* szZipPath, const char* psw)
 {
+#ifdef OS_WP8
+	return -1;
+#endif
     rho::common::CFilePath oPath(szZipPath);
     rho::String strBaseDir = oPath.getFolderName();
 #if defined(UNICODE) && defined(WIN32)

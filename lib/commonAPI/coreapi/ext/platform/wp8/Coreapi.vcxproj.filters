@@ -17,6 +17,18 @@
     <Filter Include="System\shared\generated\cpp">
       <UniqueIdentifier>{dd423364-566a-4ce9-9775-2e900845a2df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SQLite3">
+      <UniqueIdentifier>{d42746e2-e21c-4696-b575-56a7c8a67952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SQLite3\shared">
+      <UniqueIdentifier>{106ebca7-65c8-489c-aee7-991dc698395c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SQLite3\shared\generated">
+      <UniqueIdentifier>{b6f6b51e-7c0b-4d38-961f-5fe755de9730}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SQLite3\shared\generated\cpp">
+      <UniqueIdentifier>{c0ca87c1-cd56-4d2d-add0-eed89529bfac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\generated\system_api_init.cpp">
@@ -44,6 +56,27 @@
       <Filter>System\shared\generated\cpp</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\InitExtension.cpp" />
+    <ClCompile Include="..\..\shared\SQLite3Impl.cpp">
+      <Filter>SQLite3</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\sqlite3_api_init.cpp">
+      <Filter>SQLite3\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\sqlite3_js_api.cpp">
+      <Filter>SQLite3\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\sqlite3_ruby_api.c">
+      <Filter>SQLite3\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\SQLite3_js_wrap.cpp">
+      <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\SQLite3_ruby_wrap.cpp">
+      <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\SQLite3Base.cpp">
+      <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
@@ -52,10 +85,19 @@
     <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h">
       <Filter>System\shared\generated\cpp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\ISQLite3.h">
+      <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\SQLite3Base.h">
+      <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\system.xml">
       <Filter>System\shared</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\sqlite3.xml">
+      <Filter>SQLite3\shared</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
