@@ -5,6 +5,11 @@
     <HELP_OVERVIEW>is used to perform database operations</HELP_OVERVIEW>
     <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
 
+    <ALIASES>
+      <ALIAS new="Database" existing="SQLite3" deprecated="true"/>
+      <ALIAS new="SQLite3" existing="Database" deprecated="true"/>
+    </ALIASES>
+    
     <TEMPLATES>
     </TEMPLATES>
 
@@ -61,8 +66,31 @@
         <DESC>Unlock database</DESC>
       </METHOD>
 
+      <METHOD name="import" depricated="true">
+        <DESC>Import db</DESC>
+        <PARAMS>
+          <PARAM name="zipName" type="STRING">
+            <DESC>The name of the zip file</DESC>
+          </PARAM>
+        </PARAMS>
+        <RETURN type="INTEGER"/>
+      </METHOD>
+
+      <METHOD name="export" depricated="true">
+        <DESC>Export db</DESC>
+        <RETURN type="STRING"/>
+      </METHOD>
+
       <METHOD name="destroyTables">
         <DESC>Destroy database tables</DESC>
+        <PARAMS>
+          <PARAM name="include" type="ARRAY">
+           <DESC>include tables</DESC>
+          </PARAM>
+          <PARAM name="exclude" type="ARRAY">
+            <DESC>exclude tables</DESC>
+          </PARAM>
+        </PARAMS>
         <RETURN type="INTEGER"/>
       </METHOD>
 
@@ -78,11 +106,6 @@
 
       <METHOD name="isUiWaitForDb">
         <DESC>Is UI waiting for DB?></DESC>
-        <PARAMS>
-          <PARAM name="tableName" type="STRING">
-            <DESC>The name of the table</DESC>
-          </PARAM>
-        </PARAMS>
         <RETURN type="BOOLEAN"/>
       </METHOD>
 
