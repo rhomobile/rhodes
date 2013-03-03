@@ -1351,7 +1351,7 @@
 				Name="shared"
 				>
 				<File
-					RelativePath="..\..\sqlite.xml"
+					RelativePath="..\..\sqlite3.xml"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -1359,7 +1359,7 @@
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Generate API"
-							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
 							Outputs="$(InputDir)shared/generated3"
 						/>
 					</FileConfiguration>
@@ -1404,6 +1404,68 @@
 						</File>
 						<File
 							RelativePath="..\..\shared\generated\cpp\SQLite3Base.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="WebView"
+			>
+			<Filter
+				Name="shared"
+				>
+				<File
+					RelativePath="..\..\webview.xml"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							Description="Generate API4"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							Outputs="$(InputDir)shared/generated6"
+						/>
+					</FileConfiguration>
+				</File>
+				<Filter
+					Name="generated"
+					>
+					<File
+						RelativePath="..\..\shared\generated\webview_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\webview_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\webview_ruby_api.c"
+						>
+					</File>
+					<Filter
+						Name="cpp"
+						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\IWebView.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\WebView_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\WebView_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\WebViewBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\WebViewBase.h"
 							>
 						</File>
 					</Filter>
