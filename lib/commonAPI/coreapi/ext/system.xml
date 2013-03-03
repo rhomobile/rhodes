@@ -134,9 +134,6 @@
             <PROPERTY name="showKeyboard" type="BOOLEAN">
                 <DESC>Display\hide software keyboard.</DESC>
             </PROPERTY>
-            <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
-                <DESC>Use full screen mode.</DESC>
-            </PROPERTY>
             <PROPERTY name="localServerPort" type="INTEGER" default="8080">
                 <DESC>Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.</DESC>
             </PROPERTY>

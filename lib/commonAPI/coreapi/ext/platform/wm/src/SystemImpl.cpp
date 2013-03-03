@@ -65,8 +65,6 @@ public:
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
     virtual void getShowKeyboard(CMethodResult& oResult);
     virtual void setShowKeyboard( bool value, CMethodResult& oResult);
-    virtual void getFullScreen(CMethodResult& oResult);
-    virtual void setFullScreen( bool value, CMethodResult& oResult);
     virtual void getScreenAutoRotate(CMethodResult& oResult);
     virtual void setScreenAutoRotate( bool value, CMethodResult& oResult);
     virtual void getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult);
@@ -325,7 +323,7 @@ void CSystemImpl::setShowKeyboard( bool value, CMethodResult& oResult)
 {
     //TODO: setShowKeyboard
 }
-
+/*
 extern "C" void rho_wmsys_set_full_screen( int nFull );
 extern "C" int rho_wmsys_get_full_screen();
 void CSystemImpl::getFullScreen(CMethodResult& oResult)
@@ -336,7 +334,7 @@ void CSystemImpl::getFullScreen(CMethodResult& oResult)
 void CSystemImpl::setFullScreen( bool value, CMethodResult& oResult)
 {
     rho_wmsys_set_full_screen( value ? 1 : 0 );
-}
+}*/
 
 void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult)
 {
