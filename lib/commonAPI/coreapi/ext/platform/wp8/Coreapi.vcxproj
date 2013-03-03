@@ -167,7 +167,10 @@
     <ClCompile Include="src\SystemImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\..\system.xml" />
+    <CustomBuild Include="..\..\system.xml">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h" />
