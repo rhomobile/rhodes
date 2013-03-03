@@ -46,16 +46,16 @@
     <ClCompile Include="..\..\shared\InitExtension.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\..\system.xml">
-      <Filter>System\shared</Filter>
-    </Xml>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
       <Filter>System\shared\generated\cpp</Filter>
     </ClInclude>
     <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h">
       <Filter>System\shared\generated\cpp</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\system.xml">
+      <Filter>System\shared</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
