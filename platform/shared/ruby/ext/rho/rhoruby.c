@@ -74,6 +74,7 @@ extern void Init_Calendar(void);
 extern void Init_Extensions(void);
 extern void init_rhoext_Signature();
 
+
 //RhoSupport extension
 extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
@@ -237,7 +238,7 @@ void RhoRubyStart()
 #if !defined(WINDOWS_PLATFORM)
     Init_AsyncHttp(); //+
 #endif
-#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID)
+#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID) && !defined(OS_MACOSX)
     Init_System();
 #endif
 
@@ -286,6 +287,7 @@ void RhoRubyStart()
 
 	Init_Extensions();
 #endif //OS_WP8
+ 
 
 	extensions_loaded = 1;
 
