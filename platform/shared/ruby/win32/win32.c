@@ -12,7 +12,7 @@
 
 #include "ruby/ruby.h"
 #include "ruby/encoding.h"
-#include "logging/RhoLog.h"
+
 #include "dln.h"
 #include <fcntl.h>
 #include <process.h>
@@ -671,17 +671,19 @@ rb_w32_sysinit(int *argc, char ***argv)
 #if RT_VER >= 80
     static void set_pioinfo_extra(void);
 
-//    _CrtSetReportMode(_CRT_ASSERT, 0);
+    _CrtSetReportMode(_CRT_ASSERT, 0);
     _set_invalid_parameter_handler(invalid_parameter);
-       RAWLOG_INFO("[rb_w32_sysinit] _set_invalid_parameter_handler");
+
     _RTC_SetErrorFunc(rtc_error_handler);
-    RAWLOG_INFO("[rb_w32_sysinit] _RTC_SetErrorFunc");
-    //set_pioinfo_extra();
-    RAWLOG_INFO("[rb_w32_sysinit] set_pioinfo_extra");
+
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
+    set_pioinfo_extra();
+#endif
+
 #endif
 
     get_version();
-    RAWLOG_INFO("[rb_w32_sysinit] get_version");
+
     //
     // subvert cmd.exe's feeble attempt at command line parsing
     //
@@ -710,11 +712,9 @@ rb_w32_sysinit(int *argc, char ***argv)
     RAWLOG_INFO("[ruby_init] InitializeCriticalSection");
 
     atexit(exit_handler);
-    RAWLOG_INFO("[ruby_init] atexit");
 
     // Initialize Winsock
     StartSockets();
-    RAWLOG_INFO("[ruby_init] StartSockets");
 }
 
 char *
