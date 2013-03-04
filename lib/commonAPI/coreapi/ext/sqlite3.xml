@@ -35,27 +35,22 @@
             <DESC>The database partition</DESC>
           </PARAM>
         </PARAMS>
-        <RETURN type="INTEGER"/>  
       </METHOD>
 
       <METHOD name="close" destructor="true">
         <DESC>Close database</DESC>
-        <RETURN type="INTEGER"/>
       </METHOD>
 
       <METHOD name="startTransaction">
         <DESC>Start database transaction</DESC>
-        <RETURN type="INTEGER"/>
       </METHOD>
 
       <METHOD name="commitTransaction">
         <DESC>Commit database transaction</DESC>
-        <RETURN type="INTEGER"/>
       </METHOD>
 
       <METHOD name="rollbackTransaction">
         <DESC>Rollback database transaction</DESC>
-        <RETURN type="INTEGER"/>
       </METHOD>
 
       <METHOD name="lockDb">
@@ -66,7 +61,7 @@
         <DESC>Unlock database</DESC>
       </METHOD>
 
-      <METHOD name="import" depricated="true">
+      <METHOD name="import" deprecated="true" nativeName="doImport">
         <DESC>Import db</DESC>
         <PARAMS>
           <PARAM name="zipName" type="STRING">
@@ -76,7 +71,7 @@
         <RETURN type="INTEGER"/>
       </METHOD>
 
-      <METHOD name="export" depricated="true">
+      <METHOD name="export" deprecated="true" nativeName="doExport">
         <DESC>Export db</DESC>
         <RETURN type="STRING"/>
       </METHOD>
@@ -91,7 +86,6 @@
             <DESC>exclude tables</DESC>
           </PARAM>
         </PARAMS>
-        <RETURN type="INTEGER"/>
       </METHOD>
 
       <METHOD name="isTableExist">
@@ -123,48 +117,13 @@
             <CAN_BE_NIL/>
           </PARAM>
         </PARAMS>
-        <RETURN type="INTEGER"/>
       </METHOD>
 
     </METHODS>
 
     <USER_OVERVIEW>
       <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-      <![CDATA[
-    	The following example sets up the card reader to call a javascript function upon successful decoding. The javascript
-    					function will be called 3 times, once with the raw card data, once with just the pan data extracted
-    					from the raw card data, and once with the encrypted pan data if the pin has been supplied by the
-    					user within 10s.:</DESC>
-    				<html><head>
-    
-    				<script language="javascript" type="text/javascript">
-    					function doTransaction(data, mode)
-    					{
-    						switch(mode) {
-    						case 'CR':
-    							alert('Card: '+data);
-    							break;
-    						case 'ENCDATA':
-    							alert('Encoded data: '+data);
-    							break;
-    						case 'MESSAGE':
-    							alert('Error: '+data);
-    							break;
-    						case 'PAN':
-    							alert('PAN data: '+data);
-    							alert('Please turn the unit over and enter the PIN');
-    							break;
-    						}
-    					}
-    				</script>
-    				</head>
-    				<body>
-    				</body>
-    				</html>
-    
-    				You must have the appropriate drivers installed on your device to use the CardReader.  You will see which drivers are installed in the RhoElements log file after you attempt to use any of the card reader functions in RhoElements.  All necessary drivers should be included as part of the platform for supported devices.
-    
-    				]]>
+      <![CDATA[]]>
 
     </USER_OVERVIEW>
     <VER_INTRODUCED>1.0.0</VER_INTRODUCED>

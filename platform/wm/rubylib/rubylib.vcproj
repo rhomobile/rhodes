@@ -3495,14 +3495,6 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="sqlite3"
-					>
-					<File
-						RelativePath="..\..\shared\ruby\ext\sqlite3_api\sqlite3_api_wrap.c"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="geolocation"
 					>
 					<File

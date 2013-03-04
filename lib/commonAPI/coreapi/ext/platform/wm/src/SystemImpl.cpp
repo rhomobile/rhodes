@@ -670,10 +670,10 @@ public:
     ISystemSingleton* createModuleSingleton(){ return new CSystemImpl(); }
 };
 
-extern "C" void Init_System()
-{
-    CSystemFactory::setInstance( new CSystemFactory() );
-    Init_System_API();
 }
 
+extern "C" void Init_System()
+{
+    rho::CSystemFactory::setInstance( new rho::CSystemFactory() );
+    rho::Init_System_API();
 }
