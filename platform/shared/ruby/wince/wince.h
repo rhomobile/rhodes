@@ -2,6 +2,7 @@
 #ifndef _EXT_CE_
 #define _EXT_CE_
 
+#include "common/app_build_capabilities.h"
 #include <tchar.h>
 
 #if !defined(APP_BUILD_CAPABILITY_WINXPE)
