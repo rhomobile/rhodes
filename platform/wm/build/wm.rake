@@ -478,6 +478,8 @@ namespace "build" do
       puts "$app_extensions_list : #{$app_extensions_list}"
 
       $app_extensions_list.each do |ext, commin_ext_path |      
+          next unless commin_ext_path
+          
           extpath = File.join(commin_ext_path, 'ext')
           ext_config_path = File.join(commin_ext_path, "ext.yml")
           ext_config = nil
