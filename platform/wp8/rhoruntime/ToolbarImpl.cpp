@@ -145,15 +145,15 @@ void create_native_toolbar(int bar_type, rho_param *p)
 			rho::common::convertToStringW(action, actionW);
 
 			//TODO: toolbarAddAction
-			//CRhoRuntime::getInstance()->getMainPage()->toolbarAddAction(ref new String(iconW.c_str()), ref new String(labelW.c_str()), ref new String(actionW.c_str()));
+			CRhoRuntime::getInstance()->getMainPage()->toolbarAddAction(ref new String(iconW.c_str()), ref new String(labelW.c_str()), ref new String(actionW.c_str()));
 		}
     }
 	rho::StringW rgbBackColorW;
 	rho::common::convertToStringW(rgbBackColor, rgbBackColorW);
 	//TODO: setToolbarStyle
 	//TODO: toolbarShow
-	//CRhoRuntime::getInstance()->getMainPage()->setToolbarStyle(false, ref new String(rgbBackColorW.c_str()));
-    //CRhoRuntime::getInstance()->getMainPage()->toolbarShow();
+	CRhoRuntime::getInstance()->getMainPage()->setToolbarStyle(false, ref new String(rgbBackColorW.c_str()));
+    CRhoRuntime::getInstance()->getMainPage()->toolbarShow();
     //m_started = true;
 }
 
