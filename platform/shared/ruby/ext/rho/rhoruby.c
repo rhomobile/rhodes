@@ -280,6 +280,8 @@ void RhoRubyStart()
 	Init_AsyncHttp();
     //TODO: remove Init_System(); 
 	//Init_System();
+	Init_NativeBar();
+	Init_NavBar();
 	Init_RhoSupport();
 	Init_RhoConf();
 	Init_WebView();
@@ -1072,10 +1074,10 @@ static VALUE obj_allocate(VALUE klass)
 
 VALUE rho_ruby_create_object_with_id( VALUE klass, const char* szID )
 {
-    const char ** ppString = NULL;
+    char ** ppString = NULL;
 
     VALUE valObj = obj_allocate(klass);
-    Data_Get_Struct(valObj, void *, ppString);
+    Data_Get_Struct(valObj, char *, ppString);
     *ppString = xmalloc(strlen(szID)+1);
     strcpy(*ppString, szID);
 
@@ -1114,18 +1116,18 @@ int rho_ruby_is_hash(VALUE val)
 
 const char* rho_ruby_get_object_id( VALUE valObj )
 {
-    const char ** ppString = NULL;
+    char ** ppString = NULL;
 
-    Data_Get_Struct(valObj, void *, ppString);
+    Data_Get_Struct(valObj, char *, ppString);
 
     return *ppString;
 }
 
 void rho_ruby_clear_object_id( VALUE valObj )
 {
-    const char ** ppString = NULL;
+    char ** ppString = NULL;
 
-    Data_Get_Struct(valObj, void *, ppString);
+    Data_Get_Struct(valObj, char *, ppString);
 
     *ppString = 0;
 }

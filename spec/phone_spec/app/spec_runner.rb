@@ -36,7 +36,7 @@ end
     # should be enabled as extension
     # config[:files] << "spec/javascriptvm_spec" if System.get_property('platform') == 'APPLE'
 
-if !defined?(RHO_WP7)
+if !defined?(RHO_WP7) && System.get_property('platform') != 'WP8'
     config[:files] << "spec/contacts_spec" unless System.get_property('platform') == 'WINDOWS_DESKTOP'
 
     # Disable events specs on Android because emulator doesn't contain Calendar provider
@@ -48,12 +48,12 @@ end
 
     config[:files] << "spec/bundle_update_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID' || System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
 
-    config[:files] << "spec/nativebar_spec" if System.get_property('platform') != 'Blackberry'
+    config[:files] << "spec/nativebar_spec" if System.get_property('platform') != 'Blackberry' && System.get_property('platform') != 'WP8'
     config[:files] << "spec/navbar_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
 
     config[:files] << "spec/xruby_spec" if defined? RHO_ME
 
-if !defined?(RHO_WP7) && !(System.get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/))
+if !defined?(RHO_WP7) && !(System.get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/)) && System.get_property('platform') != 'WP8'
     config[:files] << "spec/uri_spec"
 end
 
