@@ -369,6 +369,10 @@ namespace rhodes
 
 		public void toolbarAddAction(string icon, string text, string action)
         {
+            if ((action == null) || (action.Length == 0))
+                return;
+            if ((text == null) || (text.Length == 0))
+                text = action;
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddAction(icon, text, action); }); return; }
             if (ApplicationBar.Buttons.Count < 4)
             {
