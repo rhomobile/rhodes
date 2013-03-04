@@ -709,7 +709,6 @@ rb_w32_sysinit(int *argc, char ***argv)
 //RHO
 
     InitializeCriticalSection(&select_mutex);
-    RAWLOG_INFO("[ruby_init] InitializeCriticalSection");
 
     atexit(exit_handler);
 
