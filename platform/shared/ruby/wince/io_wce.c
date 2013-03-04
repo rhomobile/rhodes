@@ -14,12 +14,27 @@
 #include <fcntl.h>
 #include <time.h>
 #include <errno.h>
+
+#include "common/app_build_capabilities.h"
+
+#if defined(APP_BUILD_CAPABILITY_WINXPE)
+#define _WIN32_WCE
+
+extern int FAR PASCAL rb_w32_recv(int, char *, int, int);
+extern int FAR PASCAL rb_w32_send(int, const char *, int, int);
+#endif
+
+#if defined(_WIN32_WCE)
 #include "wince.h" /* for wce_mbtowc */
+#endif
+
 #include "common/RhoMutexLock.h"
 
-#if !defined(APP_BUILD_CAPABILITY_WINXPE)
+#if defined(_WIN32_WCE) && !defined(APP_BUILD_CAPABILITY_WINXPE)
 extern int _errno;
 #endif
+
+#if defined(_WIN32_WCE)
 
 #define map_errno rb_w32_map_errno
 #if 0
@@ -361,8 +376,8 @@ long _lseek(int fd, long offset, int origin)
 size_t
 rb_w32_read(int fd, void *buf, size_t size)
 {
-    //if (rb_w32_is_socket(fd))
-    //	return rb_w32_recv(fd, buf, size, 0);
+    if (rb_w32_is_socket(fd))
+    	return rb_w32_recv(fd, buf, size, 0);
 
     return _read(fd,buf,size);
 }
@@ -370,8 +385,8 @@ rb_w32_read(int fd, void *buf, size_t size)
 size_t
 rb_w32_write(int fd, const void *buf, size_t size)
 {
-    //if (rb_w32_is_socket(fd))
-    //	return rb_w32_send(fd, buf, size, 0);
+    if (rb_w32_is_socket(fd))
+    	return rb_w32_send(fd, buf, size, 0);
 
     return _write(fd,buf,size);
 }
@@ -517,4 +532,6 @@ long _get_osfhandle( int filehandle )
  /*	return 0; */
 	return (long)filehandle;
 }
+#endif
+
 #endif

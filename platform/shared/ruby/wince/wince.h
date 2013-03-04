@@ -2,10 +2,9 @@
 #ifndef _EXT_CE_
 #define _EXT_CE_
 
-#include "common/app_build_capabilities.h"
 #include <tchar.h>
 
-#if !defined(APP_BUILD_CAPABILITY_WINXPE)
+#if defined(_WIN32_WCE) && !defined(APP_BUILD_CAPABILITY_WINXPE)
 #include <winsock2.h>
 //#include "tcmalloc/rhomem.h"
 #endif
@@ -141,9 +140,9 @@ int strnicmp( const char *s1, const char *s2, size_t count );
 #define stricmp _stricmp
 
 /* for win32.c */
-FARPROC GetProcAddressX(HMODULE hModule, LPCSTR lpProcName);
+//FARPROC GetProcAddressX(HMODULE hModule, LPCSTR lpProcName);
 
-#if !defined(APP_BUILD_CAPABILITY_WINXPE)
+#if !defined(APP_BUILD_CAPABILITY_WINXPE) 
 BOOL MoveFileEx(LPCSTR oldname, LPCSTR newname, DWORD dwFlags);
 BOOL DuplicateHandle(
 	HANDLE source_process, HANDLE source,
@@ -179,13 +178,13 @@ BOOL GenerateConsoleCtrlEvent(DWORD dwCtrlEvent,
 BOOL GetProcessTimes(HANDLE hprocess,
 	LPFILETIME lpCreationTime, LPFILETIME lpExitTime,
 	LPFILETIME lpKernelTime, LPFILETIME lpUserTime);
-#endif //APP_BUILD_CAPABILITY_WINXPE
+#endif //
 
 /* char -> wchar_t, wchar_t -> char */
 wchar_t* wce_mbtowc(const char* a);
 char*    wce_wctomb(const wchar_t* w);
 /* other helpers. */
-void wce_SetCommandLine(LPCWSTR wcmd);
+//void wce_SetCommandLine(LPCWSTR wcmd);
 void wce_FreeCommandLine(void);
 TCHAR *wce_replaceRelativeDir(const char* str);
 void wce_SetCurrentDir();

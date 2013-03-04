@@ -48,8 +48,10 @@
 #ifdef __MINGW32__
 #include <mswsock.h>
 #endif
+
 #include "ruby/win32.h"
 #include "win32/dir.h"
+
 #define isdirsep(x) ((x) == '/' || (x) == '\\')
 
 #if defined(APP_BUILD_CAPABILITY_WINXPE)

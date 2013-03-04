@@ -13,7 +13,16 @@
 #include <windows.h>
 #include <tchar.h>
 #include <time.h>
+
+#include "common/app_build_capabilities.h"
+
+#if defined(APP_BUILD_CAPABILITY_WINXPE)
+#define _WIN32_WCE
+#endif
+
+#if defined(_WIN32_WCE)
 #include "wince.h"
+#endif
 
 struct tm * __cdecl localtime(const time_t *);
 
@@ -144,7 +153,7 @@ FILETIME wce_time_t2FILETIME(const time_t t)
 	return f;
 }
 
-#if !defined(APP_BUILD_CAPABILITY_WINXPE)
+#if defined(_WIN32_WCE) && !defined(APP_BUILD_CAPABILITY_WINXPE)
 /* time.h difinition */
 time_t time( time_t *timer )
 {
