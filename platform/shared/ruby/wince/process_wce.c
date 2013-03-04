@@ -37,10 +37,12 @@ int execv(const char *path, char *const argv[])
 	return 0;
 }
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 void abort(void)
 {
     exit(-1);
 }
+#endif //APP_BUILD_CAPABILITY_WINXPE
 
 int _cwait( int *termstat, int procHandle, int action )
 {

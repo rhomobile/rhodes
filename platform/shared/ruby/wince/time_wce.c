@@ -144,6 +144,7 @@ FILETIME wce_time_t2FILETIME(const time_t t)
 	return f;
 }
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 /* time.h difinition */
 time_t time( time_t *timer )
 {
@@ -194,7 +195,8 @@ struct tm *localtime( const time_t *timer )
 	tms = wce_SYSTEMTIME2tm(&s);
 
 	return &tms;
-}*/
+}
+*/
 
 time_t mktime(struct tm* pt)
 {
@@ -257,13 +259,8 @@ char *asctime(const struct tm *pt)
 		pt->tm_hour, pt->tm_min, pt->tm_sec, pt->tm_year+1900 );
 	return buf;
 }
-/*
-void tzset()
-{
-	daylight = 1;
-	_timezone = 28800;
-	timezone = 28800;
-}*/
+
+#endif // APP_BUILD_CAPABILITY_WINXPE
 
 void tzset(void)
 {
