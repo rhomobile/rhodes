@@ -17,7 +17,10 @@
 #include "wince.h" /* for wce_mbtowc */
 #include "common/RhoMutexLock.h"
 
-//extern int _errno;
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
+extern int _errno;
+#endif
+
 #define map_errno rb_w32_map_errno
 #if 0
 int rb_w32_rename(const char *oldname, const char *newname)
