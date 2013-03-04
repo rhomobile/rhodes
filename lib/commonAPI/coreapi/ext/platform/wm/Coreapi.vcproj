@@ -1355,6 +1355,7 @@
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
+						ExcludedFromBuild="true"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1366,6 +1367,10 @@
 				</File>
 				<File
 					RelativePath="..\..\shared\SQLite3Impl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\SQLite3ImplRuby.c"
 					>
 				</File>
 				<Filter
@@ -1421,11 +1426,12 @@
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
+						ExcludedFromBuild="true"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
 							Description="Generate API4"
-							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
 							Outputs="$(InputDir)shared/generated6"
 						/>
 					</FileConfiguration>

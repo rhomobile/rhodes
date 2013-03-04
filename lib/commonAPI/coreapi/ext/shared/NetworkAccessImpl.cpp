@@ -281,12 +281,12 @@ public:
     }
 };
 
-extern "C" void Init_NetworkAccess()                                                                                      
-{
-    CNetworkAccessFactory::setInstance( new CNetworkAccessFactory() );
-    Init_NetworkAccess_API();
-
-    RHODESAPP().getExtManager().requireRubyFile("NetworkAccess");
 }
 
+extern "C" void Init_NetworkAccess()                                                                                      
+{
+    rho::CNetworkAccessFactory::setInstance( new rho::CNetworkAccessFactory() );
+    rho::Init_NetworkAccess_API();
+
+    RHODESAPP().getExtManager().requireRubyFile("NetworkAccess");
 }
