@@ -86,7 +86,7 @@ describe "Json" do
         puts "res : #{res}"
         res['status'].should == 'ok'
 
-if System.get_property('platform') == 'WINDOWS'
+if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
         parsed = Rho::JSON.parse( res['body'] )
 else
         parsed = res['body']
