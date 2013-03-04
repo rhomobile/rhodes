@@ -59,8 +59,8 @@ Platform::String^ A2PS(char* str)
 
 		CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
 		{
-			struct sockaddr_in adr_inet;
-			int len_inet;
+			struct sockaddr_in adr_inet= {0};
+			int len_inet = sizeof(adr_inet);
 			int res;
 			char buffer [33];
 			CURLcode retCode = CURLE_SSL_CONNECT_ERROR;
