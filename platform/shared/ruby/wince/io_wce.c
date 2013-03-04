@@ -17,7 +17,7 @@
 #include "wince.h" /* for wce_mbtowc */
 #include "common/RhoMutexLock.h"
 
-extern int _errno;
+//extern int _errno;
 #define map_errno rb_w32_map_errno
 #if 0
 int rb_w32_rename(const char *oldname, const char *newname)
@@ -142,6 +142,7 @@ HANDLE get_OSHandleByFileNumber(int fNumber)
     return res;
 }
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 int _open(const char *path, int oflag, va_list arg)
 {
     wchar_t *wfile = wce_mbtowc(path);
@@ -276,34 +277,7 @@ int _wopen(const wchar_t *path, int oflag, va_list arg)
     errno = rb_w32_map_errno(lasterror);
     return -1;
 }
-/*
-	wchar_t *wfile;
-	DWORD access=0, share=0, create=0, lasterror = 0;
-	HANDLE h;
-    int fd = 0;
-
-	if( (mode&_O_RDWR) != 0 )
-		access = GENERIC_READ|GENERIC_WRITE;
-	else if( (mode&_O_WRONLY) != 0 )
-		access = GENERIC_WRITE;
-	else //if( (mode&_O_RDONLY) != 0 )
-		access = GENERIC_READ;
-
-	if( (mode&_O_CREAT) != 0 )
-		create = CREATE_ALWAYS;
-	else
-		create = OPEN_ALWAYS;
-
-	wfile = wce_mbtowc(file);
-
-	h = CreateFileW(wfile, access, share, NULL,
-			create, 0, NULL );
-  
-  lasterror = GetLastError();
-	
-  free(wfile);
-	return (int)h;
-}*/
+#endif
 
 int close(int fd)
 {
@@ -319,6 +293,7 @@ rb_w32_fclose(FILE *fp)
     return fclose(fp);
 }
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 int _read(int fd, void *buffer, int length)
 {
 	DWORD dw;
@@ -333,14 +308,6 @@ int _read(int fd, void *buffer, int length)
 	return (int)dw;
 }
 
-size_t
-rb_w32_read(int fd, void *buf, size_t size)
-{
-    if (rb_w32_is_socket(fd))
-    	return rb_w32_recv(fd, buf, size, 0);
-
-    return _read(fd,buf,size);
-}
 
 int _write(int fd, const void *buffer, unsigned count)
 {
@@ -353,7 +320,7 @@ int _write(int fd, const void *buffer, unsigned count)
         //free(buf);
         //dw = count;
         //TBD: fix output of the long strings
-        dw = fwrite( buffer, 1, count, stdout);
+       // dw = fwrite( buffer, 1, count, stdout);
     } else {
         HANDLE fHandle = get_OSHandleByFileNumber(fd);
         if ( WriteFile( fHandle, buffer, count, &dw, NULL ) == FALSE )
@@ -364,15 +331,6 @@ int _write(int fd, const void *buffer, unsigned count)
 
     }
     return (int)dw;
-}
-
-size_t
-rb_w32_write(int fd, const void *buf, size_t size)
-{
-    if (rb_w32_is_socket(fd))
-    	return rb_w32_send(fd, buf, size, 0);
-
-    return _write(fd,buf,size);
 }
 
 long _lseek(int fd, long offset, int origin)
@@ -395,11 +353,25 @@ long _lseek(int fd, long offset, int origin)
 
 	return ret ? -1 : 0;
 }
-/*
-long _lseeki64(int handle, long offset, int origin)
+#endif // APP_BUILD_CAPABILITY_WINXPE
+
+size_t
+rb_w32_read(int fd, void *buf, size_t size)
 {
-    return _lseek(handle,offset,origin);
-}*/
+    //if (rb_w32_is_socket(fd))
+    //	return rb_w32_recv(fd, buf, size, 0);
+
+    return _read(fd,buf,size);
+}
+
+size_t
+rb_w32_write(int fd, const void *buf, size_t size)
+{
+    //if (rb_w32_is_socket(fd))
+    //	return rb_w32_send(fd, buf, size, 0);
+
+    return _write(fd,buf,size);
+}
 
 /* _findfirst, _findnext, _findclose. */
 /* replace them with FindFirstFile, etc. */
@@ -471,11 +443,11 @@ int _findclose( long fd )
 
 /* below functions unsupported... */
 /* I have no idea how to replace... */
-int _chsize(int handle, long size)
-{
-	errno = EACCES;
-	return -1;
-}
+//int _chsize(int handle, long size)
+//{
+//	errno = EACCES;
+//	return -1;
+//}
 
 int _umask(int cmask)
 {
@@ -494,13 +466,7 @@ int dup( int handle )
 	errno = EBADF;
 	return -1;
 }
-/*
-int dup2( int handle1, int handle2 )
-{
-	errno = EBADF;
-	return -1;
-}
-*/
+
 int _isatty(int fd)
 {
 	/*if( fd==(int)_fileno(stdin) || 
@@ -536,14 +502,16 @@ int _access(const char *filename, int flags)
 	return 0;
 }
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 int _open_osfhandle( long osfhandle, int flags)
 {
-/*	return 0; */
+ /*	return 0; */
 	return (int)osfhandle;
 }
 
 long _get_osfhandle( int filehandle )
 {
-/*	return 0; */
+ /*	return 0; */
 	return (long)filehandle;
 }
+#endif

@@ -12,6 +12,7 @@
 
 #include "ruby/ruby.h"
 #include "ruby/encoding.h"
+#include "logging/RhoLog.h"
 #include "dln.h"
 #include <fcntl.h>
 #include <process.h>
@@ -32,6 +33,10 @@
 #include <shlobj.h>
 #endif
 
+#if defined(APP_BUILD_CAPABILITY_WINXPE)
+#define _WIN32_WCE
+#endif
+
 #ifndef _WIN32_WCE
 #include <mbstring.h>
 #if _MSC_VER >= 1400
@@ -45,6 +50,10 @@
 #include "ruby/win32.h"
 #include "win32/dir.h"
 #define isdirsep(x) ((x) == '/' || (x) == '\\')
+
+#if defined(APP_BUILD_CAPABILITY_WINXPE)
+#include "wince/wince.h"
+#endif
 
 #undef stat
 #undef fclose
@@ -658,18 +667,21 @@ StartSockets(void)
 //
 void
 rb_w32_sysinit(int *argc, char ***argv)
-{
+{ 
 #if RT_VER >= 80
     static void set_pioinfo_extra(void);
 
-    _CrtSetReportMode(_CRT_ASSERT, 0);
+//    _CrtSetReportMode(_CRT_ASSERT, 0);
     _set_invalid_parameter_handler(invalid_parameter);
+       RAWLOG_INFO("[rb_w32_sysinit] _set_invalid_parameter_handler");
     _RTC_SetErrorFunc(rtc_error_handler);
-    set_pioinfo_extra();
+    RAWLOG_INFO("[rb_w32_sysinit] _RTC_SetErrorFunc");
+    //set_pioinfo_extra();
+    RAWLOG_INFO("[rb_w32_sysinit] set_pioinfo_extra");
 #endif
 
     get_version();
-
+    RAWLOG_INFO("[rb_w32_sysinit] get_version");
     //
     // subvert cmd.exe's feeble attempt at command line parsing
     //
@@ -695,11 +707,14 @@ rb_w32_sysinit(int *argc, char ***argv)
 //RHO
 
     InitializeCriticalSection(&select_mutex);
+    RAWLOG_INFO("[ruby_init] InitializeCriticalSection");
 
     atexit(exit_handler);
+    RAWLOG_INFO("[ruby_init] atexit");
 
     // Initialize Winsock
     StartSockets();
+    RAWLOG_INFO("[ruby_init] StartSockets");
 }
 
 char *
@@ -4476,6 +4491,7 @@ _filelengthi64(int fd)
     return ((off_t)u << 32) | l;
 }
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 off_t
 _lseeki64(int fd, off_t offset, int whence)
 {
@@ -4495,6 +4511,7 @@ _lseeki64(int fd, off_t offset, int whence)
     }
     return ((off_t)u << 32) | l;
 }
+#endif //APP_BUILD_CAPABILITY_WINXPE
 #endif
 
 int

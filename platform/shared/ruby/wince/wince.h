@@ -3,8 +3,11 @@
 #define _EXT_CE_
 
 #include <tchar.h>
+
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 #include <winsock2.h>
 //#include "tcmalloc/rhomem.h"
+#endif
 
 #ifndef _OFF_T_DEFINED
 
@@ -139,6 +142,7 @@ int strnicmp( const char *s1, const char *s2, size_t count );
 /* for win32.c */
 FARPROC GetProcAddressX(HMODULE hModule, LPCSTR lpProcName);
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 BOOL MoveFileEx(LPCSTR oldname, LPCSTR newname, DWORD dwFlags);
 BOOL DuplicateHandle(
 	HANDLE source_process, HANDLE source,
@@ -174,6 +178,7 @@ BOOL GenerateConsoleCtrlEvent(DWORD dwCtrlEvent,
 BOOL GetProcessTimes(HANDLE hprocess,
 	LPFILETIME lpCreationTime, LPFILETIME lpExitTime,
 	LPFILETIME lpKernelTime, LPFILETIME lpUserTime);
+#endif //APP_BUILD_CAPABILITY_WINXPE
 
 /* char -> wchar_t, wchar_t -> char */
 wchar_t* wce_mbtowc(const char* a);
@@ -184,6 +189,7 @@ void wce_FreeCommandLine(void);
 TCHAR *wce_replaceRelativeDir(const char* str);
 void wce_SetCurrentDir();
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 #if _WIN32_WCE < 300
   /* for Handheld PC Pro. */
   char *strrchr( const char *p, int c );
@@ -202,6 +208,7 @@ void wce_SetCurrentDir();
   #define ispunct(c) ( !(isalnum(c)||isspace(c))?1:0 )
   #define isxdigit(c) ( ((c>=0&&c<=9)||(c>='A'&&c<='F')||(c>='a'&&c<='f'))?1:0 )
 #endif
+#endif //APP_BUILD_CAPABILITY_WINXPE
 
 #ifdef __cplusplus
 };
@@ -218,6 +225,7 @@ void wce_SetCurrentDir();
 #undef stati64
 #define stati64 stat
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 BOOL GetHandleInformation(
   HANDLE hObject,
   LPDWORD lpdwFlags
@@ -235,16 +243,19 @@ DWORD GetCurrentDirectoryA(
   DWORD nBufferLength,
   LPSTR lpBuffer
 );
+#endif
 
 int __cdecl _getdrive (void);
 #define _mbspbrk strpbrk
 
 //extern char **environ;
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
 #if _WIN32_WCE<=0x501
 #define BUFSIZ  512
 #define TLS_OUT_OF_INDEXES ((DWORD)0xFFFFFFFF)
 #endif //_WIN32_WCE<=0x501
+#endif // APP_BUILD_CAPABILITY_WINXPE
 
 #define BUFSIZ  512
 
