@@ -56,9 +56,6 @@
       <Filter>System\shared\generated\cpp</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\InitExtension.cpp" />
-    <ClCompile Include="..\..\shared\SQLite3Impl.cpp">
-      <Filter>SQLite3</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\generated\sqlite3_api_init.cpp">
       <Filter>SQLite3\shared\generated</Filter>
     </ClCompile>
@@ -76,6 +73,12 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\generated\cpp\SQLite3Base.cpp">
       <Filter>SQLite3\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\SQLite3ImplRuby.c">
+      <Filter>SQLite3\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\SQLite3Impl.cpp">
+      <Filter>SQLite3\shared</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
