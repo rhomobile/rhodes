@@ -12,6 +12,7 @@
 
 #include "ruby/ruby.h"
 #include "ruby/encoding.h"
+#include "common/app_build_capabilities.h"
 
 #include "dln.h"
 #include <fcntl.h>
@@ -671,7 +672,10 @@ rb_w32_sysinit(int *argc, char ***argv)
 #if RT_VER >= 80
     static void set_pioinfo_extra(void);
 
+#if !defined(APP_BUILD_CAPABILITY_WINXPE)
     _CrtSetReportMode(_CRT_ASSERT, 0);
+#endif
+
     _set_invalid_parameter_handler(invalid_parameter);
 
     _RTC_SetErrorFunc(rtc_error_handler);

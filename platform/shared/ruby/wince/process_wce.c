@@ -4,6 +4,7 @@
 
 #include <windows.h>
 #include "process.h"
+#include "common/app_build_capabilities.h"
 
 int _getpid(void)
 {
