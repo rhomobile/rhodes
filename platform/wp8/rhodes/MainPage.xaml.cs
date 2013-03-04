@@ -52,6 +52,7 @@ namespace rhodes
         private Dictionary<string, int> menuItems = new Dictionary<string, int>();
         // toolbar items hash table
         private Dictionary<string, string> toolbarItems = new Dictionary<string, string>();
+        private List<ApplicationBarMenuItem> toolbarMenuItems = new List<ApplicationBarMenuItem>();
 
         private bool isUIThread
         {
@@ -337,6 +338,18 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarRemoveAllButtons(); }); return; }
             ApplicationBar.Buttons.Clear();
             toolbarItems.Clear();
+            // remove all toolbar items added to menu (wp8 toolbar allows 4 buttons only)
+            int j = toolbarMenuItems.Count-1;
+            if (j >= 0) {
+                for (int i = ApplicationBar.MenuItems.Count - 1; i >= 0; i--) {
+                    if (ApplicationBar.MenuItems[i].Equals(toolbarMenuItems[j])) {
+                        ApplicationBar.MenuItems.RemoveAt(i);
+                        if ((--j) < 0)
+                            break;
+                    }
+                }
+            }
+            toolbarMenuItems.Clear();
             updateAppBarModeAndVisibility();
         }
 
@@ -371,8 +384,15 @@ namespace rhodes
         {
             if ((action == null) || (action.Length == 0))
                 return;
-            if ((text == null) || (text.Length == 0))
+            if ((text == null) || (text.Length == 0)) {
                 text = action;
+                if (text.IndexOf('/') >= 0) {
+                    while (text.EndsWith("/"))
+                        text.Remove(text.Length-1);
+                    if (text.LastIndexOf('/') >= 0)
+                        text = text.Substring(text.LastIndexOf('/') + 1);
+                }
+            }
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddAction(icon, text, action); }); return; }
             if (ApplicationBar.Buttons.Count < 4)
             {
@@ -387,6 +407,7 @@ namespace rhodes
                 ApplicationBarMenuItem menuItem = new ApplicationBarMenuItem(text);
                 ApplicationBar.MenuItems.Add(menuItem);
                 menuItem.Click += new EventHandler(toolbarMenuItem_Click);
+                toolbarMenuItems.Add(menuItem);
             }
             toolbarItems.Add(text, action);
             updateAppBarModeAndVisibility();
@@ -421,6 +442,8 @@ namespace rhodes
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuClear(); }); return; }
             ApplicationBar.MenuItems.Clear();
+            // restore menu items converted from toolbar buttons (wp8 allows 4 actual buttons only)
+            toolbarMenuItems.ForEach(item => ApplicationBar.MenuItems.Add(item));
             menuItems.Clear();
             updateAppBarModeAndVisibility();
         }
