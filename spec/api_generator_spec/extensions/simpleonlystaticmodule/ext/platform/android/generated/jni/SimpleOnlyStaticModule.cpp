@@ -127,7 +127,7 @@ JNIEnv* CSimpleOnlyStaticModuleBase::jniInit(JNIEnv* env)
         s_clscalcSummTask = loadClass(env, CALCSUMM_TASK_CLASS);
         if (!s_clscalcSummTask) return 0;
         s_midcalcSummTask = env->GetMethodID(s_clscalcSummTask, "<init>",
-                        "(Lcom/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModule;IILcom/motorolasolutions/rhoelements/IMethodResult;)V");
+                        "(Lcom/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModuleSingleton;IILcom/rhomobile/rhodes/api/IMethodResult;)V");
         if(!s_midcalcSummTask)
         {
             LOG(FATAL) + "Failed to get constructor for java class " + CALCSUMM_TASK_CLASS;
@@ -137,7 +137,7 @@ JNIEnv* CSimpleOnlyStaticModuleBase::jniInit(JNIEnv* env)
         s_clsjoinStringsTask = loadClass(env, JOINSTRINGS_TASK_CLASS);
         if (!s_clsjoinStringsTask) return 0;
         s_midjoinStringsTask = env->GetMethodID(s_clsjoinStringsTask, "<init>",
-                        "(Lcom/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModule;Ljava/util/List;Lcom/motorolasolutions/rhoelements/IMethodResult;)V");
+                        "(Lcom/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModuleSingleton;Ljava/util/List;Lcom/rhomobile/rhodes/api/IMethodResult;)V");
         if(!s_midjoinStringsTask)
         {
             LOG(FATAL) + "Failed to get constructor for java class " + JOINSTRINGS_TASK_CLASS;
@@ -147,7 +147,7 @@ JNIEnv* CSimpleOnlyStaticModuleBase::jniInit(JNIEnv* env)
         s_clsgetPlatformTask = loadClass(env, GETPLATFORM_TASK_CLASS);
         if (!s_clsgetPlatformTask) return 0;
         s_midgetPlatformTask = env->GetMethodID(s_clsgetPlatformTask, "<init>",
-                        "(Lcom/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModule;Lcom/motorolasolutions/rhoelements/IMethodResult;)V");
+                        "(Lcom/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModuleSingleton;Lcom/rhomobile/rhodes/api/IMethodResult;)V");
         if(!s_midgetPlatformTask)
         {
             LOG(FATAL) + "Failed to get constructor for java class " + GETPLATFORM_TASK_CLASS;
@@ -157,7 +157,7 @@ JNIEnv* CSimpleOnlyStaticModuleBase::jniInit(JNIEnv* env)
         s_clsshowAlertFromUIThreadTask = loadClass(env, SHOWALERTFROMUITHREAD_TASK_CLASS);
         if (!s_clsshowAlertFromUIThreadTask) return 0;
         s_midshowAlertFromUIThreadTask = env->GetMethodID(s_clsshowAlertFromUIThreadTask, "<init>",
-                        "(Lcom/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModule;Lcom/motorolasolutions/rhoelements/IMethodResult;)V");
+                        "(Lcom/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModuleSingleton;Lcom/rhomobile/rhodes/api/IMethodResult;)V");
         if(!s_midshowAlertFromUIThreadTask)
         {
             LOG(FATAL) + "Failed to get constructor for java class " + SHOWALERTFROMUITHREAD_TASK_CLASS;

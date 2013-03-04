@@ -3839,6 +3839,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CEBrowserEngine.h"
+				>
+			</File>
+			<File
 				RelativePath=".\DateTimePicker.cpp"
 				>
 			</File>

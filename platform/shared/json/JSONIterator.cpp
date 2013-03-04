@@ -90,7 +90,7 @@ CJSONArrayIterator::~CJSONArrayIterator(void)
         json_object_put(m_rootObject);
 }
 
-boolean CJSONArrayIterator::isEnd()
+boolean CJSONArrayIterator::isEnd() const
 {
     return !(m_array != 0 && m_nCurItem < array_list_length(m_array));
 }
@@ -111,7 +111,7 @@ CJSONEntry CJSONArrayIterator::getCurItem()
         ( struct json_object *) array_list_get_idx(m_array, m_nCurItem) );
 }
 
-int CJSONArrayIterator::getSize()
+int CJSONArrayIterator::getSize() const
 {
     return m_array == 0 ? 0 : array_list_length(m_array);
 }
@@ -172,7 +172,7 @@ CJSONStructIterator::~CJSONStructIterator(void)
         json_object_put(m_rootObject);
 }
 
-boolean CJSONStructIterator::isEnd()
+boolean CJSONStructIterator::isEnd() const
 {
     return m_curEntry == 0;
 }
@@ -187,18 +187,18 @@ void CJSONStructIterator::reset()
     m_curEntry = m_struct->head;
 }
 
-String CJSONStructIterator::getCurKey()
+String CJSONStructIterator::getCurKey() const
 {
     return isEnd() ? String() : String((char*)m_curEntry->k);
 }
 
-CJSONEntry CJSONStructIterator::getCurValue()
+CJSONEntry CJSONStructIterator::getCurValue() const
 {
     return CJSONEntry( isEnd() ? 0 :
         ( struct json_object *) m_curEntry->v );
 }
 
-String CJSONStructIterator::getCurString()
+String CJSONStructIterator::getCurString() const
 {
     return getCurValue().getString();
 }
@@ -228,12 +228,12 @@ CJSONEntry::~CJSONEntry()
         json_object_put(m_rootObject);
 }
 
-boolean CJSONEntry::isEmpty()
+boolean CJSONEntry::isEmpty() const
 {
     return m_object == 0;
 }
 
-boolean CJSONEntry::isString()
+boolean CJSONEntry::isString() const
 {
     if ( isEmpty() )
         return false;
@@ -241,7 +241,7 @@ boolean CJSONEntry::isString()
     return json_object_is_type(m_object, json_type_string) ? true : false;
 }
 
-boolean CJSONEntry::isNull()
+boolean CJSONEntry::isNull() const
 {
     if ( isEmpty() )
         return false;
@@ -249,7 +249,7 @@ boolean CJSONEntry::isNull()
     return json_object_is_type(m_object, json_type_null) ? true : false;
 }
 
-boolean CJSONEntry::isArray()
+boolean CJSONEntry::isArray() const
 {
     if ( isEmpty() )
         return false;
@@ -257,17 +257,41 @@ boolean CJSONEntry::isArray()
     return json_object_is_type(m_object, json_type_array) ? true : false;
 }
 
-boolean CJSONEntry::isObject()
+boolean CJSONEntry::isObject() const
 {
     if ( isEmpty() )
         return false;
 
     return json_object_is_type(m_object, json_type_object) ? true : false;
 }
-
-boolean CJSONEntry::hasName(String name)
+    
+boolean CJSONEntry::isInteger() const
 {
-	return json_object_object_get(m_object,const_cast<char*>(name.c_str())) != null;
+    if ( isEmpty() )
+        return false;
+
+    return json_object_is_type(m_object, json_type_int) ? true : false;
+}
+
+boolean CJSONEntry::isFloat() const
+{
+    if ( isEmpty() )
+        return false;
+
+    return json_object_is_type(m_object, json_type_double) ? true : false;
+}
+
+boolean CJSONEntry::isBoolean() const
+{
+    if ( isEmpty() )
+        return false;
+    
+    return json_object_is_type(m_object, json_type_boolean) ? true : false;
+}
+
+boolean CJSONEntry::hasName(String name) const
+{
+    return json_object_object_get(m_object,const_cast<char*>(name.c_str())) != null;
 }
 
 const char* CJSONEntry::getString(const char* name)
@@ -280,7 +304,17 @@ const char* CJSONEntry::getString(const char* name)
     return szRes;
 }
 
-const char* CJSONEntry::getString()
+const char* CJSONEntry::getString(const char* name, const char* szDefValue)
+{
+    const char* szRes = szDefValue;
+    struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
+    if ( obj != 0 )
+        szRes = json_object_get_string(obj);
+
+    return szRes;
+}
+
+const char* CJSONEntry::getString() const
 {
     return json_object_get_string(m_object);
 }
@@ -315,7 +349,7 @@ double CJSONEntry::getDouble(const char* name)
     return res;
 }
 
-int CJSONEntry::getInt()
+int CJSONEntry::getInt() const
 {
     int nRes = 0;
     if ( m_object != 0 )
@@ -324,7 +358,16 @@ int CJSONEntry::getInt()
     return nRes;
 }
 
-uint64 CJSONEntry::getUInt64()
+boolean CJSONEntry::getBoolean() const
+{
+    boolean nRes = false;
+    if ( m_object != 0 )
+        nRes = static_cast<boolean>(json_object_get_boolean(m_object));
+    
+    return nRes;
+}
+
+uint64 CJSONEntry::getUInt64() const
 {
     uint64 nRes = 0;
     if ( m_object != 0 )
@@ -333,7 +376,7 @@ uint64 CJSONEntry::getUInt64()
     return nRes;
 }
 
-double CJSONEntry::getDouble()
+double CJSONEntry::getDouble() const
 {
     double res = 0;
     if (m_object != 0)
@@ -353,7 +396,7 @@ uint64 CJSONEntry::getUInt64(const char* name)
     return nRes;
 }*/
 
-CJSONEntry CJSONEntry::getEntry(const char* name)const
+CJSONEntry CJSONEntry::getEntry(const char* name) const
 {
     struct json_object* obj = json_object_object_get(m_object,const_cast<char*>(name));
 

@@ -138,5 +138,70 @@ describe "megamodule" do
      Rho::Examples::Megamodule::CONST_STRING_2.should == "const2"
   end
 
+  it "should produceArray" do
+     res = Rho::Examples::Megamodule.produceArray
+
+     res.should_not be_nil
+     res.class.to_s.should == "Array"
+     res[0].should == 1
+     res[1].should == 2
+     res[2].should == 3
+     res[3].should == 4
+     res[4].should == 5
+     res[5].should == 6
+     res[6].should == 7
+     res[7].should == 8
+     res[8].should == 9
+     res[9].should == 10
+  end
+
+  it "should produceHash" do
+     res = Rho::Examples::Megamodule.produceHash
+
+     res.should_not be_nil
+     res.class.to_s.should == "Hash"
+
+     #{:parame1 => "value1", :parama2 = > 55}
+     res["parame1"].should == "value1"
+     res["parama2"].should == 55
+  end
+
+  it "should produce complicated result" do
+    res = Rho::Examples::Megamodule.default.produceComplicatedResult
+
+    res.should_not be_nil
+    res.class.to_s.should == "Array"
+
+    #[{ :parame1 => "value1", :parama2 = > 55 }, { :paramu3 => [1,2,3] } ]
+    res[0].should_not be_nil
+    res[0].class.to_s.should == "Hash"
+    res[0]["parame1"].should_not be_nil
+    res[0]["parame1"].class.to_s.should == "String"
+    res[0]["parame1"].should == "value1"
+    res[0]["parama2"].should_not be_nil
+    res[0]["parama2"].class.to_s.should == "Fixnum"
+    res[0]["parama2"].should == 55
+    res[0]["paramu3"].should be_nil
+
+    res[1].should_not be_nil
+    res[1].class.to_s.should == "Hash"
+    res[1]["parame1"].should be_nil
+    res[1]["parama2"].should be_nil
+    res[1]["paramu3"].should_not be_nil
+    res[1]["paramu3"].class.to_s.should == "Array"
+    res[1]["paramu3"].size.should == 3
+    res[1]["paramu3"][0].should_not be_nil
+    res[1]["paramu3"][0].class.to_s.should == "Fixnum"
+    res[1]["paramu3"][0].should == 1
+    res[1]["paramu3"][1].should_not be_nil
+    res[1]["paramu3"][1].class.to_s.should == "Fixnum"
+    res[1]["paramu3"][1].should == 2
+    res[1]["paramu3"][2].should_not be_nil
+    res[1]["paramu3"][2].class.to_s.should == "Fixnum"
+    res[1]["paramu3"][2].should == 3
+
+    res[2].should be_nil
+
+  end
 
 end

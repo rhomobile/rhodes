@@ -39,7 +39,7 @@ public:
 	virtual int rho_sync_issyncing() = 0;
 	
 	virtual int logged_in() = 0;
-	virtual unsigned long login(const char* login, const char* password, const char* callback) = 0;
+	virtual unsigned long login(const char* szLogin, const char* password, const char* callback) = 0;
 	virtual void logout() = 0;
 	virtual void stop() = 0;
 	virtual int set_pollinterval( int interval ) = 0;
@@ -88,7 +88,7 @@ class RhoconnectClientManager {
 		virtual int rho_sync_issyncing() { return 0; }
 		
 		virtual int logged_in() { return 0; }
-		virtual unsigned long login(const char* login, const char* password, const char* callback) { return 0; }
+		virtual unsigned long login(const char* szLogin, const char* password, const char* callback) { return 0; }
 		virtual void logout() {}
 		virtual void stop() {}
 		virtual int set_pollinterval( int interval ) { return 0; }
@@ -139,7 +139,7 @@ public:
 	static int rho_sync_issyncing() { return m_pImpl->rho_sync_issyncing(); }
 	
 	static int logged_in() { return m_pImpl->logged_in(); }
-	static unsigned long login(const char* login, const char* password, const char* callback) { return m_pImpl->login(login,password,callback); }
+	static unsigned long login(const char* szLogin, const char* password, const char* callback) { return m_pImpl->login(szLogin,password,callback); }
 	static void logout() { m_pImpl->logout(); }
 	static void stop() { m_pImpl->stop(); }
 	static int set_pollinterval( int interval ) { return m_pImpl->set_pollinterval(interval); }

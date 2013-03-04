@@ -37,7 +37,7 @@ public:
 
     virtual void replaceCurrentBundle( const rho::String& pathToBundle,  const rho::Hashtable<rho::String, rho::String>& params, rho::apiGenerator::CMethodResult& oResult);
     virtual void deleteFolder( const rho::String& pathToFolder, rho::apiGenerator::CMethodResult& oResult);
-    virtual void setDoNotBackupAttribute( const rho::String& pathToFile, rho::apiGenerator::CMethodResult& oResult);
+    virtual void setDoNotBackupAttribute( const rho::String& pathToFile,  bool doNotBackup, rho::apiGenerator::CMethodResult& oResult);
     virtual void isBlobAttr( const rho::String& partition,  int sourceID,  const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult);
     virtual void updateBlobAttribs( const rho::String& partition,  int sourceID, rho::apiGenerator::CMethodResult& oResult);
     virtual void get_locale(rho::apiGenerator::CMethodResult& oResult);
@@ -58,9 +58,6 @@ public:
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
     virtual void set_application_icon_badge( int badgeNumber, rho::apiGenerator::CMethodResult& oResult);
-
-    //TODO: remove when generateAPI attribute will be supported in generator
-    virtual void set_locale( const rho::String& locale_code,  const rho::String& country_code, rho::apiGenerator::CMethodResult& oResult);
 
 };
 

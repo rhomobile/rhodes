@@ -106,6 +106,9 @@ rho::String js_SimpleOnlyStaticModule_calcSumm_Obj(rho::json::CJSONArray& argv, 
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_INTEGER, 0, "x", 0, 0 }, {RHO_API_INTEGER, 0, "y", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO, NO };
 
     int i;
@@ -124,7 +127,7 @@ rho::String js_SimpleOnlyStaticModule_calcSumm_Obj(rho::json::CJSONArray& argv, 
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -272,6 +275,10 @@ rho::String js_SimpleOnlyStaticModule_joinStrings_Obj(rho::json::CJSONArray& arg
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params_param0[] = { {RHO_API_STRING, 0, "array_param", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_ARRAY, 0, "strings", 1, rho_api_params_param0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -290,7 +297,7 @@ rho::String js_SimpleOnlyStaticModule_joinStrings_Obj(rho::json::CJSONArray& arg
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -438,6 +445,9 @@ rho::String js_SimpleOnlyStaticModule_getPlatform_Obj(rho::json::CJSONArray& arg
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {  };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -456,7 +466,7 @@ rho::String js_SimpleOnlyStaticModule_getPlatform_Obj(rho::json::CJSONArray& arg
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -604,6 +614,9 @@ rho::String js_SimpleOnlyStaticModule_showAlertFromUIThread_Obj(rho::json::CJSON
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {  };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -622,7 +635,7 @@ rho::String js_SimpleOnlyStaticModule_showAlertFromUIThread_Obj(rho::json::CJSON
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }

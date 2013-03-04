@@ -1,8 +1,12 @@
 #include "MegamoduleBase.h"
+#include "common/RhodesApp.h"
 
 
 namespace rho {
 namespace examples {
+
+IMPLEMENT_LOGCLASS(CMegamoduleSingletonBase, "Megamodule");
+IMPLEMENT_LOGCLASS(CMegamoduleBase, "Megamodule");
 
 rho::common::CAutoPtr< CMegamoduleFactoryBase> CMegamoduleFactoryBase::m_pInstance;
 
@@ -100,5 +104,16 @@ void CMegamoduleBase::getStringProperty(rho::apiGenerator::CMethodResult& oResul
 { 
     getProperty( "StringProperty", oResult); 
 }
+CMegamoduleSingletonBase::CMegamoduleSingletonBase()
+{
+    RHODESAPP().getExtManager().registerExtension( "Megamodule", this );
+}
+
+CMegamoduleSingletonBase::~CMegamoduleSingletonBase()
+{
+    CMegamoduleFactoryBase::setInstance(0);
+}
+
+
 }
 }

@@ -37,7 +37,9 @@
 
 #include "net/HttpServer.h"
 #include "ruby/ext/rho/rhoruby.h"
+#if !defined(WINDOWS_PLATFORM)
 #include "net/AsyncHttp.h"
+#endif 
 #include "rubyext/WebView.h"
 #include "rubyext/GeoLocation.h"
 #include "common/app_build_configs.h"
@@ -334,7 +336,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
     m_bDeactivationMode = false;
     m_bRestartServer = false;
     //m_activateCounter = 0;
-    m_pExtManager = 0;
+    //m_pExtManager = 0;
 	m_pNetworkStatusMonitor = 0;
 
 	m_appCallbacksQueue = new CAppCallbacksQueue();
@@ -409,8 +411,9 @@ void CRhodesApp::run()
 
 	db::CDBAdapter::closeAll();
 
+#if !defined(WINDOWS_PLATFORM)
     net::CAsyncHttp::Destroy();
-
+#endif
     RhoRubyStop();
 }
 
@@ -1855,6 +1858,14 @@ void CRhodesApp::notifyLocalServerStarted()
     m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::local_server_started));
 }
 	
+extern "C" unsigned long rb_require(const char *fname);
+extern "C" int  rho_ruby_is_started();
+
+void CExtManager::requireRubyFile( const char* szFilePath )
+{
+    if( rho_ruby_is_started() )
+        rb_require(szFilePath);
+}
 	
 	void CRhodesApp::setNetworkStatusNotify(const String& url, int poll_interval)
 	{

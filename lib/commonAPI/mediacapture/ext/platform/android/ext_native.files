@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/Mediacapture.cpp
+ext/platform/android/generated/jni/mediacapture_ruby_wrap.cpp
+ext/platform/android/generated/jni/mediacapture_js_wrap.cpp
+ext/platform/android/jni/Mediacapture_impl.cpp
+ext/shared/generated/mediacapture_api_init.cpp
+ext/shared/generated/mediacapture_js_api.cpp
+ext/shared/generated/mediacapture_ruby_api.c

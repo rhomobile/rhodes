@@ -246,6 +246,10 @@ static Rhodes *instance = NULL;
     return rotationLocked;
 }
 
+-(void) setRotationLocked:(BOOL)locked {
+    rotationLocked = locked;
+}
+
 - (void)openMapLocation:(NSString*)query {
 	[self hideSplash];
     NSURL* url = [NSURL URLWithString:[@"http://maps.google.com/?" stringByAppendingString:query]];
@@ -1253,4 +1257,13 @@ void _rho_ext_syscall(PARAMS_WRAPPER* params) {
 
 void rho_conf_show_log() {
     [[Rhodes sharedInstance] showLog];
+}
+
+
+BOOL rho_main_is_rotation_locked() {
+    return [[Rhodes sharedInstance] isRotationLocked];
+}
+
+void rho_main_set_rotation_locked(BOOL locked) {
+    [[Rhodes sharedInstance] setRotationLocked:locked];
 }

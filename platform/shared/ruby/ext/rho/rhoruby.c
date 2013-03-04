@@ -74,6 +74,7 @@ extern void Init_Calendar(void);
 extern void Init_Extensions(void);
 extern void init_rhoext_Signature();
 
+
 //RhoSupport extension
 extern void Init_RhoSupport(void);
 extern VALUE require_compiled(VALUE fname, VALUE* result);
@@ -232,10 +233,17 @@ void RhoRubyStart()
 #if !defined(OS_WP8)
 
     Init_strscan(); //+
+#if !defined(WINDOWS_PLATFORM)
     Init_sqlite3_api(); //+
+#endif
     Init_GeoLocation(); //+
+#if !defined(WINDOWS_PLATFORM)
     Init_AsyncHttp(); //+
+#endif
+#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID) && !defined(OS_MACOSX)
     Init_System();
+#endif
+
     Init_Phonebook();
     Init_WebView(); //+
     Init_RhoConf(); //+
@@ -266,11 +274,14 @@ void RhoRubyStart()
 #endif //RHO_SYMBIAN
 
 #else // OS_WP8 is set
-	Init_sqlite3_api();
+	//Init_sqlite3_api();
 	Init_strscan();
 	Init_GeoLocation();
 	Init_AsyncHttp();
-	Init_System();
+    //TODO: remove Init_System(); 
+	//Init_System();
+	Init_NativeBar();
+	Init_NavBar();
 	Init_RhoSupport();
 	Init_RhoConf();
 	Init_WebView();
@@ -280,6 +291,7 @@ void RhoRubyStart()
 
 	Init_Extensions();
 #endif //OS_WP8
+ 
 
 	extensions_loaded = 1;
 
@@ -486,6 +498,46 @@ void rho_ruby_enum_strhash(VALUE hash, rho_hash_eachstr_func * func, void* data)
     rb_hash_foreach(hash, hash_each, (VALUE)(&enumData));
 }
 
+static int
+hash_each_json(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
+{
+    const char* szValue = "";
+    const char* szKey = "";
+
+    if ( value != 0 && value != Qnil )
+    {
+        VALUE strVal;
+        if ( TYPE(value) == T_STRING || TYPE(value) == T_FIXNUM || TYPE(value) == T_TRUE || TYPE(value) == T_FALSE ||
+             TYPE(value) == T_FLOAT || TYPE(value) == T_BIGNUM || TYPE(value) == T_SYMBOL || TYPE(value) == T_RATIONAL || TYPE(value) == T_COMPLEX )
+            strVal = rb_funcall(value, rb_intern("to_s"), 0);
+        else
+            strVal = rb_funcall(value, rb_intern("to_json"), 0);
+
+        szValue = RSTRING_PTR(strVal);
+    }
+    if ( key != 0 && key != Qnil )
+    {
+        VALUE strKey = rb_funcall(key, rb_intern("to_s"), 0);
+        szKey = RSTRING_PTR(strKey);
+    }
+
+    (*pEnumData->func)(szKey, szValue, pEnumData->data );
+    return ST_CONTINUE;
+}
+
+void rho_ruby_enum_strhash_json(VALUE hash, rho_hash_eachstr_func *func, void* data)
+{
+    struct CHashEnumData enumData;
+
+    if ( !hash || hash ==Qnil )
+        return;
+
+    enumData.data = data;
+    enumData.func = func;
+
+    rb_hash_foreach(hash, hash_each_json, (VALUE)(&enumData));
+}
+
 void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func * func, void* data)
 {
     int i = 0;
@@ -500,6 +552,33 @@ void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func * func, void* data)
         if ( value != 0 && value != Qnil )
         {
             VALUE strVal = rb_funcall(value, rb_intern("to_s"), 0);
+            szValue = RSTRING_PTR(strVal);
+        }
+
+        (*func)(szValue, data );
+    }
+}
+
+void rho_ruby_enum_strary_json(VALUE ary, rho_ary_eachstr_func * func, void* data)
+{
+    int i = 0;
+
+    if ( ary ==0 || ary == Qnil )
+        return;
+
+    for (i=0; i<RARRAY_LEN(ary); i++)
+    {
+        VALUE value = RARRAY_PTR(ary)[i];
+        const char* szValue = "";
+        if ( value != 0 && value != Qnil )
+        {
+            VALUE strVal;
+            if ( TYPE(value) == T_STRING || TYPE(value) == T_FIXNUM || TYPE(value) == T_TRUE || TYPE(value) == T_FALSE ||
+                 TYPE(value) == T_FLOAT || TYPE(value) == T_BIGNUM || TYPE(value) == T_SYMBOL || TYPE(value) == T_RATIONAL || TYPE(value) == T_COMPLEX )
+                strVal = rb_funcall(value, rb_intern("to_s"), 0);
+            else
+                strVal = rb_funcall(value, rb_intern("to_json"), 0);
+
             szValue = RSTRING_PTR(strVal);
         }
 
@@ -995,10 +1074,10 @@ static VALUE obj_allocate(VALUE klass)
 
 VALUE rho_ruby_create_object_with_id( VALUE klass, const char* szID )
 {
-    const char ** ppString = NULL;
+    char ** ppString = NULL;
 
     VALUE valObj = obj_allocate(klass);
-    Data_Get_Struct(valObj, void *, ppString);
+    Data_Get_Struct(valObj, char *, ppString);
     *ppString = xmalloc(strlen(szID)+1);
     strcpy(*ppString, szID);
 
@@ -1037,11 +1116,20 @@ int rho_ruby_is_hash(VALUE val)
 
 const char* rho_ruby_get_object_id( VALUE valObj )
 {
-    const char ** ppString = NULL;
+    char ** ppString = NULL;
 
-    Data_Get_Struct(valObj, void *, ppString);
+    Data_Get_Struct(valObj, char *, ppString);
 
     return *ppString;
+}
+
+void rho_ruby_clear_object_id( VALUE valObj )
+{
+    char ** ppString = NULL;
+
+    Data_Get_Struct(valObj, char *, ppString);
+
+    *ppString = 0;
 }
 
 int rho_ruby_is_proc(VALUE val)

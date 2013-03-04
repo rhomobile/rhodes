@@ -247,6 +247,92 @@ rho::String js_Megamodule_produceArray(rho::json::CJSONArray& argv, const rho::S
     RAWTRACE2("%s(id=%s) end ^^^", __FUNCTION__, strObjID.c_str());
     return res;
 }
+rho::String js_Megamodule_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    RAWTRACE2("%s(id=%s)", __FUNCTION__, strObjID.c_str());
+
+    MethodResultJni result;
+    if(!result)
+    {
+        result.setError("JNI error: failed to initialize MethodResult java object");
+        RAWLOG_ERROR("JNI error: failed to initialize MethodResult java object ^^^");
+        return result.toJson();
+    }
+
+    ObjectProxy megamodule(strObjID);
+
+    int argc = argv.getSize();
+    if((argc < 0) || (argc > 0))
+    {
+        result.setArgError("Wrong number of arguments");
+        RAWLOG_ERROR1("Wrong number of arguments: %d ^^^", argc);
+        return result.toJson();
+    }
+    
+    if(argc > 0)
+    {
+        if(argc > 1)
+            result.setCallBack(argv[0], argv[1]);
+        else
+            result.setCallBack(argv[0]);
+    
+        if(!result.hasCallBackUrl())
+        {
+            RAWLOG_ERROR("Error setting callback ^^^");
+            return result.toJson();
+        }
+    }
+
+    megamodule.produceHash(argumentsAdapter(argv), result); 
+    rho::String res = 
+        result.toJson();
+
+    RAWTRACE2("%s(id=%s) end ^^^", __FUNCTION__, strObjID.c_str());
+    return res;
+}
+rho::String js_Megamodule_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    RAWTRACE2("%s(id=%s)", __FUNCTION__, strObjID.c_str());
+
+    MethodResultJni result;
+    if(!result)
+    {
+        result.setError("JNI error: failed to initialize MethodResult java object");
+        RAWLOG_ERROR("JNI error: failed to initialize MethodResult java object ^^^");
+        return result.toJson();
+    }
+
+    ObjectProxy megamodule(strObjID);
+
+    int argc = argv.getSize();
+    if((argc < 0) || (argc > 0))
+    {
+        result.setArgError("Wrong number of arguments");
+        RAWLOG_ERROR1("Wrong number of arguments: %d ^^^", argc);
+        return result.toJson();
+    }
+    
+    if(argc > 0)
+    {
+        if(argc > 1)
+            result.setCallBack(argv[0], argv[1]);
+        else
+            result.setCallBack(argv[0]);
+    
+        if(!result.hasCallBackUrl())
+        {
+            RAWLOG_ERROR("Error setting callback ^^^");
+            return result.toJson();
+        }
+    }
+
+    megamodule.produceComplicatedResult(argumentsAdapter(argv), result); 
+    rho::String res = 
+        result.toJson();
+
+    RAWTRACE2("%s(id=%s) end ^^^", __FUNCTION__, strObjID.c_str());
+    return res;
+}
 rho::String js_s_Megamodule_getObjectsCount(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     RAWTRACE2("%s(id=%s)", __FUNCTION__, strObjID.c_str());
@@ -497,6 +583,49 @@ rho::String js_Megamodule_stopPeriodicallyCallback(rho::json::CJSONArray& argv, 
     }
 
     megamodule.stopPeriodicallyCallback(argumentsAdapter(argv), result); 
+    rho::String res = 
+        result.toJson();
+
+    RAWTRACE2("%s(id=%s) end ^^^", __FUNCTION__, strObjID.c_str());
+    return res;
+}
+rho::String js_Megamodule_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID)
+{
+    RAWTRACE2("%s(id=%s)", __FUNCTION__, strObjID.c_str());
+
+    MethodResultJni result;
+    if(!result)
+    {
+        result.setError("JNI error: failed to initialize MethodResult java object");
+        RAWLOG_ERROR("JNI error: failed to initialize MethodResult java object ^^^");
+        return result.toJson();
+    }
+
+    ObjectProxy megamodule(strObjID);
+
+    int argc = argv.getSize();
+    if((argc < 1) || (argc > 1))
+    {
+        result.setArgError("Wrong number of arguments");
+        RAWLOG_ERROR1("Wrong number of arguments: %d ^^^", argc);
+        return result.toJson();
+    }
+    
+    if(argc > 1)
+    {
+        if(argc > 2)
+            result.setCallBack(argv[1], argv[2]);
+        else
+            result.setCallBack(argv[1]);
+    
+        if(!result.hasCallBackUrl())
+        {
+            RAWLOG_ERROR("Error setting callback ^^^");
+            return result.toJson();
+        }
+    }
+
+    megamodule.complicatedTypesTest1(argumentsAdapter(argv), result); 
     rho::String res = 
         result.toJson();
 

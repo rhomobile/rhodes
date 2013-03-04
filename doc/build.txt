@@ -791,7 +791,7 @@ Note that Symbian versions of your Rhodes app must be built in a Windows environ
 
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
 * Visual Studio 2005 Service Pack 1 installed
-* [Qt SDK](http://qt.nokia.com/downloads/sdk-windows-cpp-offline)
+* [Qt 4.7 SDK](http://qt-project.org/downloads)
 
 If you want to build for Symbian device you have to install QT and QT Mobility for Symbian on your device.
 You can find installation files in QT SDK folder like below:
@@ -1055,7 +1055,7 @@ To read the log file from the emulator or your device:
 
 * Follow [All Platforms Prerequisites](#all-platforms-prerequisites)
 * Visual Studio 2008
-* Install [Qt libraries 4.7.4 for Visual Studio 2008](http://download.qt.nokia.com/qt/source/qt-win-opensource-4.7.4-vs2008.exe) (235 MB)
+* Install [Qt libraries 4.7.4 for Visual Studio 2008](ftp://ftp.qt-project.org/qt/source/qt-win-opensource-4.7.4-vs2008.exe) (235 MB)
 * Create new (or update existing) system environment variable `QTDIR` and make sure it points to root folder of the installed Qt libraries, e.g. `C:\Qt\4.7.4`
 * Add `bin` folder of installed Qt libraries, e.g. `C:\Qt\4.7.4\bin`, to `PATH` system environment variable
 
@@ -1138,7 +1138,7 @@ Rholog.txt is placed in `<rhodes folder>\platform\wm\bin\win32\rhodes\Debug\rho`
 
 If your application needs HTTPS, then you need to build the Qt libraries for Visual Studio 2008 with OpenSSL as described below:
 
-* Download the [Qt 4.7.4 source](http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.zip) (237 MB) and extract the archive, e.g. into `C:\Qt\4.7.4-src`
+* Download the [Qt 4.7.4 source](ftp://ftp.qt-project.org/qt/source/qt-everywhere-opensource-src-4.7.4.zip) (237 MB) and extract the archive, e.g. into `C:\Qt\4.7.4-src`
 * Open Control Panel » System » Advanced system settings » Environment Variables and then:
     * Create new (or update existing) system variable `QTDIR` = `C:\Qt\4.7.4` (this will be the installation folder for the compiled Qt libraries)
     * Add to the `PATH` variable: `C:\Qt\4.7.4\bin` (it doesn't matter that this folder does not exist yet)

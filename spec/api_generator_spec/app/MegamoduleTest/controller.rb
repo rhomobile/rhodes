@@ -11,48 +11,56 @@ class MegamoduleTestController < Rho::RhoController
   end
 
 
-  def run_test
-    render :action => :index, :back => '/app'
-    # test int property
-    defItem = Rho::Examples::Megamodule.default
-    defItem.IntegerProperty = 3
-    if defItem.IntegerProperty != 3
-       Alert.show_popup "Test FAILED : [defItem.IntegerProperty != 3] !"
-       return
-    end
-    defItem.IntegerProperty = 7
-    if defItem.IntegerProperty != 7
-       Alert.show_popup "Test FAILED : [defItem.IntegerProperty != 3] !"
-       return
-    end
-    itemCount = Rho::Examples::Megamodule.getObjectsCount
-    if itemCount != 3
-       Alert.show_popup "Test FAILED : [itemCount != 3 != 3] !"
-       return
-    end
-
-    secondItem = Rho::Examples::Megamodule.getObjectByIndex 1
-    secondItem.setProperty("StringProperty", "ABC")
-    sip = secondItem.StringProperty
-    if sip != "ABC"
-      Alert.show_popup "Test FAILED : [secondItem.StringProperty != ABC] !"
-      return
-    end
-
-    res1 = secondItem.typesTest("ABC", true, 555123, 3.14, [1,2,3], {:p1 => "abc", :p2 => "qwe"})
-    res2 = Rho::Examples::Megamodule.typesTest("ABC", true, 555123, 3.14, [1,2,3], {:p1 => "abc", :p2 => "qwe"})
-    res3 = secondItem.typesTest("ABC", true, 555123, 3.14, [1,2,3], {:p1 => "abc", :p3 => "qwa"})
-    res4 = Rho::Examples::Megamodule.typesTest("ABC", true, 555123, 3.15, [1,2,3], {:p1 => "abc", :p2 => "qwe"})
-    if (!res1) || (!res2) || (res3) || (res4)
-      Alert.show_popup "Test FAILED : [secondItem.typesTest ] ("+res1.to_s+","+res2.to_s+","+res3.to_s+","+res4.to_s+")"
-      return
-    end
-
-
-
-    Alert.show_popup "Test DONE OK!"
-    render :action => :index, :back => '/app'
+ def run_array_async_test
+      Rho::Examples::Megamodule.produceArray  (url_for :action => :run_array_async_test_callback) 
+      render :action => :index, :back => '/app'
   end
+
+  def run_array_async_test_callback
+     res = @params["result"]
+     title = "Test ERROR:"
+     if res.class.to_s == "Array" 
+          if res == [1,2,3,4,5,6,7,8,9,10]
+               title = "Test OK:"
+          end
+     end	
+     Alert.show_popup(
+        :message=>("Callback with produceArray() = "+res.to_s + "\n result.class = "+res.class.to_s),
+        :title=>title,
+        :buttons => ["Ok"]
+     )
+  end
+
+ def run_hash_async_test
+      Rho::Examples::Megamodule.produceHash  (url_for :action => :run_hash_async_test_callback), "&callback_myparam=qwerty" 
+      render :action => :index, :back => '/app'
+  end
+
+  def run_hash_async_test_callback
+     # check { :parame1 => "value1", :parama2 = > 55 }
+     parame1 = @params["parame1"]
+     parama2 = @params["parama2"]
+     myparam = @params["callback_myparam"]
+     title = "Test ERROR:"
+     if parame1.class.to_s == "String" 
+          if parame1 == "value1"
+              if parama2.class.to_s == "Fixnum"
+                  if parama2 == 55
+                       if myparam == "qwerty"
+                           title = "Test OK:"
+                       end
+                  end
+               end
+          end
+     end	
+     Alert.show_popup(
+        :message=>("Callback with produceHash() \nparame1= "+parame1.to_s + "\n parame1.class = "+parame1.class.to_s+"\nparama2= "+parama2.to_s + "\n parama2.class = "+parama2.class.to_s+   "\ncallback_param = "+myparam.to_s),
+        :title=>title,
+        :buttons => ["Ok"]
+     )
+  end
+
+
 
   def run_show_alert_test
     Rho::Examples::Megamodule.showAlertFromUIThread "message text from Ruby controller !"

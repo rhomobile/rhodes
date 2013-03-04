@@ -245,6 +245,8 @@
     <ClCompile Include="..\..\shared\ruby\eval.c" />
     <ClCompile Include="..\..\shared\ruby\ext\asynchttp\asynchttp_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\nativebar\nativebar_wrap.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\navbar\navbar_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\rhoconf\rhoconf_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\rho\extensions.c" />
     <ClCompile Include="..\..\shared\ruby\ext\rho\rhoruby.c">
@@ -252,7 +254,6 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\rho\rhosupport.c" />
     <ClCompile Include="..\..\shared\ruby\ext\socket\socket.c" />
-    <ClCompile Include="..\..\shared\ruby\ext\sqlite3_api\sqlite3_api_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c" />
     <ClCompile Include="..\..\shared\ruby\ext\strscan\strscan.c" />
     <ClCompile Include="..\..\shared\ruby\ext\webview\webview_wrap.c" />
@@ -311,6 +312,10 @@
     <ClCompile Include="..\..\shared\ruby\win32\newline.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\win32\win32.c" />
     <ClCompile Include="..\..\shared\ruby\wp8\wp8.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\shared\ruby\ext\nativebar\nativebar.i" />
+    <None Include="..\..\shared\ruby\ext\navbar\navbar.i" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsPhone\v$(TargetPlatformVersion)\Microsoft.Cpp.WindowsPhone.$(TargetPlatformVersion).targets" />

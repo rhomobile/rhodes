@@ -119,7 +119,7 @@ private:
     //int m_activateCounter;
 
     common::CAutoPtr<common::CThreadQueue> m_appCallbacksQueue;
-    CExtManager* m_pExtManager;
+    CExtManager m_oExtManager;
 	
 	common::CMutex m_mxNetworkStatus;
 	NetworkStatusReceiver m_networkStatusReceiver;
@@ -183,8 +183,7 @@ public:
     CSplashScreen& getSplashScreen(){return m_oSplashScreen;}
     CRhoTimer&     getTimer(){ return m_oTimer; }
 
-    void setExtManager( CExtManager* pExtManager ){m_pExtManager = pExtManager; }
-    CExtManager&   getExtManager(){ return *m_pExtManager; }
+    CExtManager&  getExtManager(){ return m_oExtManager; }
 
     String addCallbackObject(ICallbackObject* pCallbackObject, String strName);
     unsigned long getCallbackObject(int nIndex);

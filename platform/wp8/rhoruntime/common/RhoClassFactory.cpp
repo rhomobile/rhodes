@@ -30,6 +30,7 @@
 //#include "sync/SyncThread.h"
 //#include "sync/ClientRegister.h"
 #include "RhoCryptImpl.h"
+#include "SSLImpl.h"
 
 static rho::common::CRhoClassFactory g_oRhoClassFactory;
 rho::common::IRhoClassFactory* rho_get_RhoClassFactory()
@@ -39,6 +40,11 @@ rho::common::IRhoClassFactory* rho_get_RhoClassFactory()
 
 namespace rho{
 namespace common{
+
+net::ISSL* CRhoClassFactory::createSSLEngine()
+{
+	return new rho::net::SSLImpl();
+}
 
 IRhoCrypt* CRhoClassFactory::createRhoCrypt()
 {

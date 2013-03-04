@@ -11,6 +11,6 @@ public interface ISimpleOnlyStaticModuleFactory
     ISimpleOnlyStaticModuleSingleton getApiSingleton();
 
     @Override
-    SimpleOnlyStaticModule getApiObject(String id);
+    ISimpleOnlyStaticModule getApiObject(String id);
 
 }

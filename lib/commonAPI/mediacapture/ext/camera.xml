@@ -1,0 +1,224 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Camera" parent="Rho">
+        <HELP_OVERVIEW></HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
+    
+        <TEMPLATES>
+            <SINGLETON_INSTANCES/>   <!-- produce enumerate() fabric method, all instances is singletones by ID, add ID property -->
+            <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
+            <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
+        </TEMPLATES>
+
+        <PROPERTIES usePropertyBag="accessorsViaPropertyBag">
+            <DESC>TODO.</DESC>
+			<ALIASES>
+				<ALIAS new="format" existing="compressionFormat" deprecated="true"/>
+			</ALIASES>
+			
+            <PROPERTY name="desiredWidth" type="INTEGER" generateAccessors="true">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+            </PROPERTY>
+            <PROPERTY name="desiredHeight" type="INTEGER" generateAccessors="true">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+            </PROPERTY>
+            <PROPERTY name="compressionFormat" type="STRING" generateAccessors="true" default="jpg">
+				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+				<VALUES>
+                    <VALUE constName="COMPRESSION_FORMAT_JPG" value="jpg">
+                        <DESC>TODO.</DESC>
+                    </VALUE>
+                    <VALUE constName="COMPRESSION_FORMAT_PNG" value="png">
+                        <DESC>TODO.</DESC>
+                    </VALUE>
+                </VALUES>
+			</PROPERTY>
+            <PROPERTY name="outputFormat" type="STRING" generateAccessors="true" default="image">
+				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+				<VALUES>
+                    <VALUE constName="OUTPUT_FORMAT_IMAGE" value="image">
+                        <DESC>TODO.</DESC>
+                    </VALUE>
+                    <VALUE constName="OUTPUT_FORMAT_DATAURI" value="dataUri">
+                        <DESC>TODO.</DESC>
+                    </VALUE>
+                </VALUES>
+            </PROPERTY>
+            <PROPERTY name="colorModel" type="STRING" generateAccessors="true">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+            </PROPERTY>
+            <PROPERTY name="enableEditing" type="BOOLEAN" generateAccessors="true">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+            </PROPERTY>
+            <PROPERTY name="flashMode" type="STRING" generateAccessors="true">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+				<VALUES>
+                    <VALUE constName="FLASH_ON" value="on">
+                        <DESC>TODO.</DESC>
+                    </VALUE>
+                    <VALUE constName="FLASH_OFF" value="off">
+                        <DESC>TODO.</DESC>
+                    </VALUE>
+                    <VALUE constName="FLASH_AUTO" value="auto">
+                        <DESC>TODO.</DESC>
+                    </VALUE>
+                    <VALUE constName="FLASH_RED_EYE" value="redEye">
+                        <DESC>TODO.</DESC>
+                    </VALUE>
+                    <VALUE constName="FLASH_TORCH" value="torch">
+                        <DESC>TODO.</DESC>
+                    </VALUE>
+                </VALUES>   
+			</PROPERTY>
+            <PROPERTY name="saveToSharedGallery" type="BOOLEAN" generateAccessors="true">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+            </PROPERTY>
+            <PROPERTY name="captureSound" type="STRING" generateAccessors="true">
+				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+            </PROPERTY>
+            <PROPERTY name="previewLeft" type="INTEGER" generateAccessors="true">
+				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+            </PROPERTY>
+            <PROPERTY name="previewTop" type="INTEGER" generateAccessors="true">
+				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+            </PROPERTY>
+            <PROPERTY name="previewWidth" type="INTEGER" generateAccessors="true">
+				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+            </PROPERTY>
+            <PROPERTY name="previewHeight" type="INTEGER" generateAccessors="true">
+				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+				<APPLIES>TODO</APPLIES>
+				<DESC>TODO</DESC>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS>
+            <METHOD name="takePicture" hasCallback="mandatory">
+                <DESC>TODO</DESC>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH">
+                        <DESC>TODO</DESC>
+                        
+                        <CAN_BE_NIL>
+                            <DESC>TODO</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK>
+					<PARAMS>
+						<PARAM name="status" type="STRING">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="imageUri" type="STRING">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="height" type="INTEGER">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="width" type="INTEGER">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="format" type="STRING">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="message" type="STRING">
+							<DESC>TODO</DESC>
+						</PARAM>
+					</PARAMS>
+				</CALLBACK>
+			</METHOD>
+
+            <METHOD name="getCameraInfo" hasCallback="mandatory">
+                <DESC>TODO</DESC>
+				<CALLBACK>
+					<PARAMS>
+						<PARAM name="maxHeight" type="INTEGER">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="maxWidth" type="INTEGER">
+							<DESC>TODO</DESC>
+						</PARAM>
+					</PARAMS>
+				</CALLBACK>
+			</METHOD>
+    
+            <METHOD name="choosePicture" runInThread="module">
+                <DESC>TODO</DESC>
+                <PARAMS>
+                    <PARAM name="propertyMap" type="HASH">
+                        <DESC>TODO</DESC>
+                        
+                        <CAN_BE_NIL>
+                            <DESC>TODO</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK>
+					<PARAMS>
+						<PARAM name="status" type="STRING">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="imageUri" type="STRING">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="height" type="INTEGER">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="width" type="INTEGER">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="format" type="STRING">
+							<DESC>TODO</DESC>
+						</PARAM>
+						<PARAM name="message" type="STRING">
+							<DESC>TODO</DESC>
+						</PARAM>
+					</PARAMS>
+				</CALLBACK>
+			</METHOD>
+
+            <METHOD name="saveImageToDeviceGallery">
+                <DESC>TODO</DESC>
+            </METHOD>
+    
+    
+        </METHODS>
+        
+        <USER_OVERVIEW>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+            <![CDATA[
+ 
+    				]]>
+    
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+    </MODULE>
+</API>    

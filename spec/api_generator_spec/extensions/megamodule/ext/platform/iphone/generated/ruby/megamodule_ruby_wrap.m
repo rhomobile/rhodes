@@ -941,6 +941,356 @@ VALUE rb_s_Megamodule_def_produceArray(int argc, VALUE *argv) {
 
 
 
+@interface rb_Megamodule_produceHash_caller_params : NSObject
+
+@property (assign) NSArray* params;
+@property (assign) id<IMegamodule> item;
+@property (assign) CMethodResult* methodResult;
+
++(rb_Megamodule_produceHash_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult;
+
+@end
+
+@implementation rb_Megamodule_produceHash_caller_params
+
+@synthesize params,item,methodResult;
+
++(rb_Megamodule_produceHash_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult {
+    rb_Megamodule_produceHash_caller_params* par = [[rb_Megamodule_produceHash_caller_params alloc] init];
+    par.params = _params;
+    par.item = _item;
+    par.methodResult = _methodResult;
+    return par;
+}
+
+@end
+
+
+@interface rb_Megamodule_produceHash_caller : NSObject {
+
+}
++(rb_Megamodule_produceHash_caller*) getSharedInstance;
++(void) produceHash:(rb_Megamodule_produceHash_caller_params*)caller_params;
++(void) produceHash_in_thread:(rb_Megamodule_produceHash_caller_params*)caller_params;
++(void) produceHash_in_UI_thread:(rb_Megamodule_produceHash_caller_params*)caller_params;
+
+@end
+
+static rb_Megamodule_produceHash_caller* our_Megamodule_produceHash_caller = nil;
+
+@implementation rb_Megamodule_produceHash_caller
+
++(rb_Megamodule_produceHash_caller*) getSharedInstance {
+    if (our_Megamodule_produceHash_caller == nil) {
+        our_Megamodule_produceHash_caller = [[rb_Megamodule_produceHash_caller alloc] init];
+    }
+    return our_Megamodule_produceHash_caller;
+}
+
+-(void) command_produceHash:(rb_Megamodule_produceHash_caller_params*)caller_params {
+    NSArray* params = caller_params.params;
+    id<IMegamodule> objItem = caller_params.item;
+    CMethodResult* methodResult = caller_params.methodResult;
+
+    
+    [objItem produceHash:methodResult ];
+}
+
++(void) produceHash:(rb_Megamodule_produceHash_caller_params*)caller_params {
+    [[rb_Megamodule_produceHash_caller getSharedInstance] command_produceHash:caller_params];
+}
+
++(void) produceHash_in_thread:(rb_Megamodule_produceHash_caller_params*)caller_params {
+    [[rb_Megamodule_produceHash_caller getSharedInstance] performSelectorInBackground:@selector(command_produceHash:) withObject:caller_params];
+}
+
++(void) produceHash_in_UI_thread:(rb_Megamodule_produceHash_caller_params*)caller_params {
+    [[rb_Megamodule_produceHash_caller getSharedInstance] performSelectorOnMainThread:@selector(command_produceHash:) withObject:caller_params waitUntilDone:NO];
+}
+
+
+@end
+
+
+VALUE rb_Megamodule_produceHash_Obj(int argc, VALUE *argv, id<IMegamodule>objItem) {
+
+    CMethodResult* methodResult = [[CMethodResult alloc] init];
+
+    NSObject* params[0+1];
+    NSString* callbackURL = nil;
+    NSString* callbackParam = nil;
+    BOOL method_return_result = YES;
+    
+    BOOL is_factory_param[] = { NO };
+
+    int i;
+
+    // init
+    for (i = 0; i < (0); i++) {
+        params[i] = [NSNull null];
+    }
+
+    // enumerate params
+    for (int i = 0; i < (0); i++) {
+        if (argc > i) {
+            // we have a [i] param !
+            if (is_factory_param[i]) {
+                params[i] = Megamodule_makeInstanceByRubyObject(argv[i]);
+            }
+            else {
+                params[i] = [[CRubyConverter convertFromRuby:argv[i]] retain];
+            }
+        }
+    }
+
+    NSMutableArray* params_array = [NSMutableArray arrayWithCapacity:(0)];
+    for (i = 0 ; i < (0); i++) {
+        [params_array addObject:params[i]];
+    }
+
+    
+    // check callback
+    if (argc >= (0+1)) {
+        VALUE callback = argv[0];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        VALUE callback_param = argv[0+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
+    
+
+    
+    
+
+
+    if (callbackURL != nil) {
+        // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
+        [methodResult setRubyCallback:callbackURL];
+        if (callbackParam != nil) {
+            [methodResult setCallbackParam:callbackParam];
+        }
+        
+        [rb_Megamodule_produceHash_caller produceHash_in_thread:[rb_Megamodule_produceHash_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    else {
+        // we do not have callback
+        
+        [rb_Megamodule_produceHash_caller produceHash:[rb_Megamodule_produceHash_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    VALUE resValue = rho_ruby_get_NIL();
+    if ((callbackURL == nil) && (method_return_result)) {
+        resValue = [methodResult toRuby];
+    }
+    return resValue;
+}
+
+
+VALUE rb_Megamodule_produceHash(int argc, VALUE *argv, VALUE obj) {
+
+    id<IMegamodule> item = Megamodule_makeInstanceByRubyObject(obj);
+    return rb_Megamodule_produceHash_Obj(argc, argv, item);
+
+}
+
+VALUE rb_s_Megamodule_def_produceHash(int argc, VALUE *argv) {
+    id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
+    id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
+
+    NSString* defID = [singleton getDefaultID];
+
+    id<IMegamodule> item = [factory getMegamoduleByID:defID];
+    return rb_Megamodule_produceHash_Obj(argc, argv, item);
+}
+
+
+
+
+
+
+
+@interface rb_Megamodule_produceComplicatedResult_caller_params : NSObject
+
+@property (assign) NSArray* params;
+@property (assign) id<IMegamodule> item;
+@property (assign) CMethodResult* methodResult;
+
++(rb_Megamodule_produceComplicatedResult_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult;
+
+@end
+
+@implementation rb_Megamodule_produceComplicatedResult_caller_params
+
+@synthesize params,item,methodResult;
+
++(rb_Megamodule_produceComplicatedResult_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult {
+    rb_Megamodule_produceComplicatedResult_caller_params* par = [[rb_Megamodule_produceComplicatedResult_caller_params alloc] init];
+    par.params = _params;
+    par.item = _item;
+    par.methodResult = _methodResult;
+    return par;
+}
+
+@end
+
+
+@interface rb_Megamodule_produceComplicatedResult_caller : NSObject {
+
+}
++(rb_Megamodule_produceComplicatedResult_caller*) getSharedInstance;
++(void) produceComplicatedResult:(rb_Megamodule_produceComplicatedResult_caller_params*)caller_params;
++(void) produceComplicatedResult_in_thread:(rb_Megamodule_produceComplicatedResult_caller_params*)caller_params;
++(void) produceComplicatedResult_in_UI_thread:(rb_Megamodule_produceComplicatedResult_caller_params*)caller_params;
+
+@end
+
+static rb_Megamodule_produceComplicatedResult_caller* our_Megamodule_produceComplicatedResult_caller = nil;
+
+@implementation rb_Megamodule_produceComplicatedResult_caller
+
++(rb_Megamodule_produceComplicatedResult_caller*) getSharedInstance {
+    if (our_Megamodule_produceComplicatedResult_caller == nil) {
+        our_Megamodule_produceComplicatedResult_caller = [[rb_Megamodule_produceComplicatedResult_caller alloc] init];
+    }
+    return our_Megamodule_produceComplicatedResult_caller;
+}
+
+-(void) command_produceComplicatedResult:(rb_Megamodule_produceComplicatedResult_caller_params*)caller_params {
+    NSArray* params = caller_params.params;
+    id<IMegamodule> objItem = caller_params.item;
+    CMethodResult* methodResult = caller_params.methodResult;
+
+    
+    [objItem produceComplicatedResult:methodResult ];
+}
+
++(void) produceComplicatedResult:(rb_Megamodule_produceComplicatedResult_caller_params*)caller_params {
+    [[rb_Megamodule_produceComplicatedResult_caller getSharedInstance] command_produceComplicatedResult:caller_params];
+}
+
++(void) produceComplicatedResult_in_thread:(rb_Megamodule_produceComplicatedResult_caller_params*)caller_params {
+    [[rb_Megamodule_produceComplicatedResult_caller getSharedInstance] performSelectorInBackground:@selector(command_produceComplicatedResult:) withObject:caller_params];
+}
+
++(void) produceComplicatedResult_in_UI_thread:(rb_Megamodule_produceComplicatedResult_caller_params*)caller_params {
+    [[rb_Megamodule_produceComplicatedResult_caller getSharedInstance] performSelectorOnMainThread:@selector(command_produceComplicatedResult:) withObject:caller_params waitUntilDone:NO];
+}
+
+
+@end
+
+
+VALUE rb_Megamodule_produceComplicatedResult_Obj(int argc, VALUE *argv, id<IMegamodule>objItem) {
+
+    CMethodResult* methodResult = [[CMethodResult alloc] init];
+
+    NSObject* params[0+1];
+    NSString* callbackURL = nil;
+    NSString* callbackParam = nil;
+    BOOL method_return_result = YES;
+    
+    BOOL is_factory_param[] = { NO };
+
+    int i;
+
+    // init
+    for (i = 0; i < (0); i++) {
+        params[i] = [NSNull null];
+    }
+
+    // enumerate params
+    for (int i = 0; i < (0); i++) {
+        if (argc > i) {
+            // we have a [i] param !
+            if (is_factory_param[i]) {
+                params[i] = Megamodule_makeInstanceByRubyObject(argv[i]);
+            }
+            else {
+                params[i] = [[CRubyConverter convertFromRuby:argv[i]] retain];
+            }
+        }
+    }
+
+    NSMutableArray* params_array = [NSMutableArray arrayWithCapacity:(0)];
+    for (i = 0 ; i < (0); i++) {
+        [params_array addObject:params[i]];
+    }
+
+    
+    // check callback
+    if (argc >= (0+1)) {
+        VALUE callback = argv[0];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        VALUE callback_param = argv[0+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
+    
+
+    
+    
+
+
+    if (callbackURL != nil) {
+        // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
+        [methodResult setRubyCallback:callbackURL];
+        if (callbackParam != nil) {
+            [methodResult setCallbackParam:callbackParam];
+        }
+        
+        [rb_Megamodule_produceComplicatedResult_caller produceComplicatedResult_in_thread:[rb_Megamodule_produceComplicatedResult_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    else {
+        // we do not have callback
+        
+        [rb_Megamodule_produceComplicatedResult_caller produceComplicatedResult:[rb_Megamodule_produceComplicatedResult_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    VALUE resValue = rho_ruby_get_NIL();
+    if ((callbackURL == nil) && (method_return_result)) {
+        resValue = [methodResult toRuby];
+    }
+    return resValue;
+}
+
+
+VALUE rb_Megamodule_produceComplicatedResult(int argc, VALUE *argv, VALUE obj) {
+
+    id<IMegamodule> item = Megamodule_makeInstanceByRubyObject(obj);
+    return rb_Megamodule_produceComplicatedResult_Obj(argc, argv, item);
+
+}
+
+VALUE rb_s_Megamodule_def_produceComplicatedResult(int argc, VALUE *argv) {
+    id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
+    id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
+
+    NSString* defID = [singleton getDefaultID];
+
+    id<IMegamodule> item = [factory getMegamoduleByID:defID];
+    return rb_Megamodule_produceComplicatedResult_Obj(argc, argv, item);
+}
+
+
+
+
+
+
+
 @interface rb_Megamodule_getObjectsCount_caller_params : NSObject
 
 @property (assign) NSArray* params;
@@ -1966,6 +2316,181 @@ VALUE rb_s_Megamodule_def_stopPeriodicallyCallback(int argc, VALUE *argv) {
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
     return rb_Megamodule_stopPeriodicallyCallback_Obj(argc, argv, item);
+}
+
+
+
+
+
+
+
+@interface rb_Megamodule_complicatedTypesTest1_caller_params : NSObject
+
+@property (assign) NSArray* params;
+@property (assign) id<IMegamodule> item;
+@property (assign) CMethodResult* methodResult;
+
++(rb_Megamodule_complicatedTypesTest1_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult;
+
+@end
+
+@implementation rb_Megamodule_complicatedTypesTest1_caller_params
+
+@synthesize params,item,methodResult;
+
++(rb_Megamodule_complicatedTypesTest1_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult {
+    rb_Megamodule_complicatedTypesTest1_caller_params* par = [[rb_Megamodule_complicatedTypesTest1_caller_params alloc] init];
+    par.params = _params;
+    par.item = _item;
+    par.methodResult = _methodResult;
+    return par;
+}
+
+@end
+
+
+@interface rb_Megamodule_complicatedTypesTest1_caller : NSObject {
+
+}
++(rb_Megamodule_complicatedTypesTest1_caller*) getSharedInstance;
++(void) complicatedTypesTest1:(rb_Megamodule_complicatedTypesTest1_caller_params*)caller_params;
++(void) complicatedTypesTest1_in_thread:(rb_Megamodule_complicatedTypesTest1_caller_params*)caller_params;
++(void) complicatedTypesTest1_in_UI_thread:(rb_Megamodule_complicatedTypesTest1_caller_params*)caller_params;
+
+@end
+
+static rb_Megamodule_complicatedTypesTest1_caller* our_Megamodule_complicatedTypesTest1_caller = nil;
+
+@implementation rb_Megamodule_complicatedTypesTest1_caller
+
++(rb_Megamodule_complicatedTypesTest1_caller*) getSharedInstance {
+    if (our_Megamodule_complicatedTypesTest1_caller == nil) {
+        our_Megamodule_complicatedTypesTest1_caller = [[rb_Megamodule_complicatedTypesTest1_caller alloc] init];
+    }
+    return our_Megamodule_complicatedTypesTest1_caller;
+}
+
+-(void) command_complicatedTypesTest1:(rb_Megamodule_complicatedTypesTest1_caller_params*)caller_params {
+    NSArray* params = caller_params.params;
+    id<IMegamodule> objItem = caller_params.item;
+    CMethodResult* methodResult = caller_params.methodResult;
+
+    
+    [objItem complicatedTypesTest1:(NSArray*)[params objectAtIndex:0] methodResult:methodResult ];
+}
+
++(void) complicatedTypesTest1:(rb_Megamodule_complicatedTypesTest1_caller_params*)caller_params {
+    [[rb_Megamodule_complicatedTypesTest1_caller getSharedInstance] command_complicatedTypesTest1:caller_params];
+}
+
++(void) complicatedTypesTest1_in_thread:(rb_Megamodule_complicatedTypesTest1_caller_params*)caller_params {
+    [[rb_Megamodule_complicatedTypesTest1_caller getSharedInstance] performSelectorInBackground:@selector(command_complicatedTypesTest1:) withObject:caller_params];
+}
+
++(void) complicatedTypesTest1_in_UI_thread:(rb_Megamodule_complicatedTypesTest1_caller_params*)caller_params {
+    [[rb_Megamodule_complicatedTypesTest1_caller getSharedInstance] performSelectorOnMainThread:@selector(command_complicatedTypesTest1:) withObject:caller_params waitUntilDone:NO];
+}
+
+
+@end
+
+
+VALUE rb_Megamodule_complicatedTypesTest1_Obj(int argc, VALUE *argv, id<IMegamodule>objItem) {
+
+    CMethodResult* methodResult = [[CMethodResult alloc] init];
+
+    NSObject* params[1+1];
+    NSString* callbackURL = nil;
+    NSString* callbackParam = nil;
+    BOOL method_return_result = YES;
+    
+    BOOL is_factory_param[] = { NO, NO };
+
+    int i;
+
+    // init
+    for (i = 0; i < (1); i++) {
+        params[i] = [NSNull null];
+    }
+
+    // enumerate params
+    for (int i = 0; i < (1); i++) {
+        if (argc > i) {
+            // we have a [i] param !
+            if (is_factory_param[i]) {
+                params[i] = Megamodule_makeInstanceByRubyObject(argv[i]);
+            }
+            else {
+                params[i] = [[CRubyConverter convertFromRuby:argv[i]] retain];
+            }
+        }
+    }
+
+    NSMutableArray* params_array = [NSMutableArray arrayWithCapacity:(1)];
+    for (i = 0 ; i < (1); i++) {
+        [params_array addObject:params[i]];
+    }
+
+    
+    // check callback
+    if (argc >= (1+1)) {
+        VALUE callback = argv[1];
+        if (rho_ruby_is_string(callback)) {
+            callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (1+2)) {
+        VALUE callback_param = argv[1+1];
+        if (rho_ruby_is_string(callback_param)) {
+            callbackParam = [((NSString*)[CRubyConverter convertFromRuby:callback_param]) retain];
+        }
+    }
+    
+
+    
+    
+
+
+    if (callbackURL != nil) {
+        // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
+        [methodResult setRubyCallback:callbackURL];
+        if (callbackParam != nil) {
+            [methodResult setCallbackParam:callbackParam];
+        }
+        
+        [rb_Megamodule_complicatedTypesTest1_caller complicatedTypesTest1_in_thread:[rb_Megamodule_complicatedTypesTest1_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    else {
+        // we do not have callback
+        
+        [rb_Megamodule_complicatedTypesTest1_caller complicatedTypesTest1:[rb_Megamodule_complicatedTypesTest1_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    VALUE resValue = rho_ruby_get_NIL();
+    if ((callbackURL == nil) && (method_return_result)) {
+        resValue = [methodResult toRuby];
+    }
+    return resValue;
+}
+
+
+VALUE rb_Megamodule_complicatedTypesTest1(int argc, VALUE *argv, VALUE obj) {
+
+    id<IMegamodule> item = Megamodule_makeInstanceByRubyObject(obj);
+    return rb_Megamodule_complicatedTypesTest1_Obj(argc, argv, item);
+
+}
+
+VALUE rb_s_Megamodule_def_complicatedTypesTest1(int argc, VALUE *argv) {
+    id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
+    id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
+
+    NSString* defID = [singleton getDefaultID];
+
+    id<IMegamodule> item = [factory getMegamoduleByID:defID];
+    return rb_Megamodule_complicatedTypesTest1_Obj(argc, argv, item);
 }
 
 

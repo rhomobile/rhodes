@@ -267,16 +267,81 @@ jobjectArray rho_cast_helper<jobjectArray, VALUE>::operator()(JNIEnv *env, VALUE
 {
     RAWTRACE("rho_cast<jobjectArray, VALUE>");
 
+    if (!initConvertor(env))
+        return 0;
+
     if (NIL_P(value))
         return 0;
 
     if(TYPE(value) == T_ARRAY)
     {
-        //TODO: implement cast
+        int size = RARRAY_LEN(value);
+        jobjectArray jArray = env->NewObjectArray(size, clsString, 0);
+
+        if (!jArray)
+            return 0;
+
+        for (int i = 0; i < size; ++i)
+        {
+            jhstring jhElement = rho_cast<jstring>(env, rb_ary_entry(value, i));
+            env->SetObjectArrayElement(jArray, i, jhElement.get());
+        }
+        return jArray;
     }
 
     RAWLOG_ERROR("rho_cast<jobjectArray, VALUE>: wrong type of VALUE");
     return 0;
 }
 
+jboolean rho_cast_helper<jboolean, VALUE>::operator()(JNIEnv *env, VALUE value)
+{
+    RAWTRACE("rho_cast<jboolean, VALUE>");
+
+    if (NIL_P(value))
+        return 0;
+
+    if(TYPE(value) == T_TRUE)
+    {
+        return static_cast<jboolean>(true);
+    }
+    if(TYPE(value) == T_FALSE)
+    {
+        return static_cast<jboolean>(false);
+    }
+
+    RAWLOG_ERROR("rho_cast<jboolean, VALUE>: wrong type of VALUE");
+    return 0;
+}
+
+jint rho_cast_helper<jint, VALUE>::operator()(JNIEnv *env, VALUE value)
+{
+    RAWTRACE("rho_cast<jint, VALUE>");
+
+    if (NIL_P(value))
+        return 0;
+
+    if(TYPE(value) == T_FIXNUM)
+    {
+        return static_cast<jint>(NUM2LONG(value));
+    }
+
+    RAWLOG_ERROR("rho_cast<jint, VALUE>: wrong type of VALUE");
+    return 0;
+}
+
+jdouble rho_cast_helper<jdouble, VALUE>::operator()(JNIEnv *env, VALUE value)
+{
+    RAWTRACE("rho_cast<jdouble, VALUE>");
+
+    if (NIL_P(value))
+        return 0;
+
+    if(TYPE(value) == T_FLOAT)
+    {
+        return static_cast<jdouble>(RFLOAT_VALUE(value));
+    }
+
+    RAWLOG_ERROR("rho_cast<jint, VALUE>: wrong type of VALUE");
+    return 0;
+}
 }

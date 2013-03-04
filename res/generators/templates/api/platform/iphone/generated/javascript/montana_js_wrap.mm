@@ -155,6 +155,14 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     <%
+     lines = prepare_rho_api_params_structure_lines(module_method.params, 'rho_api_params')
+     lines.each do |line|
+    %>
+    <%= line %><%
+     end
+    %>
+
+    <%
      factory_params = "BOOL is_factory_param[] = { "
      module_method.params.each do |method_param|
         if method_param.type == MethodParam::TYPE_SELF
@@ -183,7 +191,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }

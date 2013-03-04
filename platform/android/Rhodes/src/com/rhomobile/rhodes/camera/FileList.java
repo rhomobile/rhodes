@@ -85,7 +85,6 @@ public class FileList extends BaseActivity implements OnClickListener{
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
-		getWindow().setFlags(RhodesService.WINDOW_FLAGS, RhodesService.WINDOW_MASK);
 		setContentView(AndroidR.layout.directory_list);
 		
 		Bundle extras = getIntent().getExtras();

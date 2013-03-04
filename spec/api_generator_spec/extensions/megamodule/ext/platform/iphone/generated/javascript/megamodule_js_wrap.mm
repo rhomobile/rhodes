@@ -106,6 +106,9 @@ rho::String js_Megamodule_getStringProperty_Obj(rho::json::CJSONArray& argv, id<
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -124,7 +127,7 @@ rho::String js_Megamodule_getStringProperty_Obj(rho::json::CJSONArray& argv, id<
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -281,6 +284,9 @@ rho::String js_Megamodule_getIntegerProperty_Obj(rho::json::CJSONArray& argv, id
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -299,7 +305,7 @@ rho::String js_Megamodule_getIntegerProperty_Obj(rho::json::CJSONArray& argv, id
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -456,6 +462,9 @@ rho::String js_Megamodule_setIntegerProperty_Obj(rho::json::CJSONArray& argv, id
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_INTEGER, 0, "value", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -474,7 +483,7 @@ rho::String js_Megamodule_setIntegerProperty_Obj(rho::json::CJSONArray& argv, id
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -631,6 +640,11 @@ rho::String js_Megamodule_typesTest_Obj(rho::json::CJSONArray& argv, id<IMegamod
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params_param4[] = {{RHO_API_INTEGER, 0, "array_param", 0, 0 } };
+    static RHO_API_PARAM rho_api_params_param5[] = {{RHO_API_STRING, 0, "strParam", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "paramStr", 0, 0 }, {RHO_API_BOOLEAN, 0, "paramBool", 0, 0 }, {RHO_API_INTEGER, 0, "paramInt", 0, 0 }, {RHO_API_FLOAT, 0, "paramFloat", 0, 0 }, {RHO_API_ARRAY, 0, "paramArray", 1, rho_api_params_param4 }, {RHO_API_HASH, 0, "paramHash", 1, rho_api_params_param5 } };
+
+    
     BOOL is_factory_param[] = { NO, NO, NO, NO, NO, NO, NO };
 
     int i;
@@ -649,7 +663,7 @@ rho::String js_Megamodule_typesTest_Obj(rho::json::CJSONArray& argv, id<IMegamod
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -806,6 +820,9 @@ rho::String js_Megamodule_produceArray_Obj(rho::json::CJSONArray& argv, id<IMega
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -824,7 +841,7 @@ rho::String js_Megamodule_produceArray_Obj(rho::json::CJSONArray& argv, id<IMega
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -891,6 +908,362 @@ rho::String js_s_Megamodule_def_produceArray(rho::json::CJSONArray& argv, const 
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
     return js_Megamodule_produceArray_Obj(argv, item);
+}
+
+
+
+
+
+
+
+@interface Megamodule_produceHash_caller_params : NSObject
+
+@property (assign) NSArray* params;
+@property (assign) id<IMegamodule> item;
+@property (assign) CMethodResult* methodResult;
+
++(Megamodule_produceHash_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult;
+
+@end
+
+@implementation Megamodule_produceHash_caller_params
+
+@synthesize params,item,methodResult;
+
++(Megamodule_produceHash_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult {
+    Megamodule_produceHash_caller_params* par = [[Megamodule_produceHash_caller_params alloc] init];
+    par.params = _params;
+    par.item = _item;
+    par.methodResult = _methodResult;
+    return par;
+}
+
+@end
+
+
+@interface Megamodule_produceHash_caller : NSObject {
+
+}
++(Megamodule_produceHash_caller*) getSharedInstance;
++(void) produceHash:(Megamodule_produceHash_caller_params*)caller_params;
++(void) produceHash_in_thread:(Megamodule_produceHash_caller_params*)caller_params;
++(void) produceHash_in_UI_thread:(Megamodule_produceHash_caller_params*)caller_params;
+
+@end
+
+static Megamodule_produceHash_caller* our_Megamodule_produceHash_caller = nil;
+
+@implementation Megamodule_produceHash_caller
+
++(Megamodule_produceHash_caller*) getSharedInstance {
+    if (our_Megamodule_produceHash_caller == nil) {
+        our_Megamodule_produceHash_caller = [[Megamodule_produceHash_caller alloc] init];
+    }
+    return our_Megamodule_produceHash_caller;
+}
+
+-(void) command_produceHash:(Megamodule_produceHash_caller_params*)caller_params {
+    NSArray* params = caller_params.params;
+    id<IMegamodule> objItem = caller_params.item;
+    CMethodResult* methodResult = caller_params.methodResult;
+
+    
+    [objItem produceHash:methodResult ];
+}
+
+
++(void) produceHash:(Megamodule_produceHash_caller_params*)caller_params {
+    [[Megamodule_produceHash_caller getSharedInstance] command_produceHash:caller_params];
+}
+
++(void) produceHash_in_thread:(Megamodule_produceHash_caller_params*)caller_params {
+    [[Megamodule_produceHash_caller getSharedInstance] performSelectorInBackground:@selector(command_produceHash:) withObject:caller_params];
+}
+
++(void) produceHash_in_UI_thread:(Megamodule_produceHash_caller_params*)caller_params {
+    [[Megamodule_produceHash_caller getSharedInstance] performSelectorOnMainThread:@selector(command_produceHash:) withObject:caller_params waitUntilDone:NO];
+}
+
+
+@end
+
+
+rho::String js_Megamodule_produceHash_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+
+    CMethodResult* methodResult = [[CMethodResult alloc] init];
+
+    NSObject* params[0+1];
+    NSString* callbackURL = nil;
+    NSString* callbackParam = nil;
+    BOOL method_return_result = YES;
+    int argc = argv.getSize();
+    
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
+    BOOL is_factory_param[] = { NO };
+
+    int i;
+
+    // init
+    for (i = 0; i < (0); i++) {
+        params[i] = [CJSConverter getObjectiveCNULL];
+    }
+
+    // enumerate params
+    for (int i = 0; i < (0); i++) {
+        if (argc > i) {
+            // we have a [i] param !
+            if (is_factory_param[i]) {
+                params[i] = Megamodule_makeInstanceByJSObject(argv.getItem(i).getString());
+            }
+            else {
+                rho::json::CJSONEntry entry = argv.getItem(i);
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
+            }
+        }
+    }
+
+    NSMutableArray* params_array = [NSMutableArray arrayWithCapacity:(0)];
+    for (i = 0 ; i < (0); i++) {
+        [params_array addObject:params[i]];
+    }
+
+    
+    // check callback
+    if (argc >= (0+1)) {
+        rho::json::CJSONEntry callback = argv.getItem(0);
+        if (callback.isString()) {
+            rho::json::CJSONEntry entry = argv.getItem(i);
+            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
+        if (callback_param.isString()) {
+            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
+        }
+    }
+    
+
+    if (callbackURL != nil) {
+        // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
+        [methodResult setJSCallback:callbackURL];
+        if (callbackParam != nil) {
+            [methodResult setCallbackParam:callbackParam];
+        }
+        
+        [Megamodule_produceHash_caller produceHash_in_thread:[Megamodule_produceHash_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    else {
+        // we do not have callback
+        
+        [Megamodule_produceHash_caller produceHash:[Megamodule_produceHash_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    rho::String resValue = "";
+    if ((callbackURL == nil) && (method_return_result)) {
+        resValue = [[methodResult toJSON] UTF8String];
+    }
+    return resValue;
+}
+
+
+rho::String js_Megamodule_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+
+    id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
+    return js_Megamodule_produceHash_Obj(argv, item);
+
+}
+
+rho::String js_s_Megamodule_def_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+    id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
+    id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
+
+    NSString* defID = [singleton getDefaultID];
+
+    id<IMegamodule> item = [factory getMegamoduleByID:defID];
+    return js_Megamodule_produceHash_Obj(argv, item);
+}
+
+
+
+
+
+
+
+@interface Megamodule_produceComplicatedResult_caller_params : NSObject
+
+@property (assign) NSArray* params;
+@property (assign) id<IMegamodule> item;
+@property (assign) CMethodResult* methodResult;
+
++(Megamodule_produceComplicatedResult_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult;
+
+@end
+
+@implementation Megamodule_produceComplicatedResult_caller_params
+
+@synthesize params,item,methodResult;
+
++(Megamodule_produceComplicatedResult_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult {
+    Megamodule_produceComplicatedResult_caller_params* par = [[Megamodule_produceComplicatedResult_caller_params alloc] init];
+    par.params = _params;
+    par.item = _item;
+    par.methodResult = _methodResult;
+    return par;
+}
+
+@end
+
+
+@interface Megamodule_produceComplicatedResult_caller : NSObject {
+
+}
++(Megamodule_produceComplicatedResult_caller*) getSharedInstance;
++(void) produceComplicatedResult:(Megamodule_produceComplicatedResult_caller_params*)caller_params;
++(void) produceComplicatedResult_in_thread:(Megamodule_produceComplicatedResult_caller_params*)caller_params;
++(void) produceComplicatedResult_in_UI_thread:(Megamodule_produceComplicatedResult_caller_params*)caller_params;
+
+@end
+
+static Megamodule_produceComplicatedResult_caller* our_Megamodule_produceComplicatedResult_caller = nil;
+
+@implementation Megamodule_produceComplicatedResult_caller
+
++(Megamodule_produceComplicatedResult_caller*) getSharedInstance {
+    if (our_Megamodule_produceComplicatedResult_caller == nil) {
+        our_Megamodule_produceComplicatedResult_caller = [[Megamodule_produceComplicatedResult_caller alloc] init];
+    }
+    return our_Megamodule_produceComplicatedResult_caller;
+}
+
+-(void) command_produceComplicatedResult:(Megamodule_produceComplicatedResult_caller_params*)caller_params {
+    NSArray* params = caller_params.params;
+    id<IMegamodule> objItem = caller_params.item;
+    CMethodResult* methodResult = caller_params.methodResult;
+
+    
+    [objItem produceComplicatedResult:methodResult ];
+}
+
+
++(void) produceComplicatedResult:(Megamodule_produceComplicatedResult_caller_params*)caller_params {
+    [[Megamodule_produceComplicatedResult_caller getSharedInstance] command_produceComplicatedResult:caller_params];
+}
+
++(void) produceComplicatedResult_in_thread:(Megamodule_produceComplicatedResult_caller_params*)caller_params {
+    [[Megamodule_produceComplicatedResult_caller getSharedInstance] performSelectorInBackground:@selector(command_produceComplicatedResult:) withObject:caller_params];
+}
+
++(void) produceComplicatedResult_in_UI_thread:(Megamodule_produceComplicatedResult_caller_params*)caller_params {
+    [[Megamodule_produceComplicatedResult_caller getSharedInstance] performSelectorOnMainThread:@selector(command_produceComplicatedResult:) withObject:caller_params waitUntilDone:NO];
+}
+
+
+@end
+
+
+rho::String js_Megamodule_produceComplicatedResult_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+
+    CMethodResult* methodResult = [[CMethodResult alloc] init];
+
+    NSObject* params[0+1];
+    NSString* callbackURL = nil;
+    NSString* callbackParam = nil;
+    BOOL method_return_result = YES;
+    int argc = argv.getSize();
+    
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
+    BOOL is_factory_param[] = { NO };
+
+    int i;
+
+    // init
+    for (i = 0; i < (0); i++) {
+        params[i] = [CJSConverter getObjectiveCNULL];
+    }
+
+    // enumerate params
+    for (int i = 0; i < (0); i++) {
+        if (argc > i) {
+            // we have a [i] param !
+            if (is_factory_param[i]) {
+                params[i] = Megamodule_makeInstanceByJSObject(argv.getItem(i).getString());
+            }
+            else {
+                rho::json::CJSONEntry entry = argv.getItem(i);
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
+            }
+        }
+    }
+
+    NSMutableArray* params_array = [NSMutableArray arrayWithCapacity:(0)];
+    for (i = 0 ; i < (0); i++) {
+        [params_array addObject:params[i]];
+    }
+
+    
+    // check callback
+    if (argc >= (0+1)) {
+        rho::json::CJSONEntry callback = argv.getItem(0);
+        if (callback.isString()) {
+            rho::json::CJSONEntry entry = argv.getItem(i);
+            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (0+2)) {
+        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
+        if (callback_param.isString()) {
+            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
+        }
+    }
+    
+
+    if (callbackURL != nil) {
+        // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
+        [methodResult setJSCallback:callbackURL];
+        if (callbackParam != nil) {
+            [methodResult setCallbackParam:callbackParam];
+        }
+        
+        [Megamodule_produceComplicatedResult_caller produceComplicatedResult_in_thread:[Megamodule_produceComplicatedResult_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    else {
+        // we do not have callback
+        
+        [Megamodule_produceComplicatedResult_caller produceComplicatedResult:[Megamodule_produceComplicatedResult_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    rho::String resValue = "";
+    if ((callbackURL == nil) && (method_return_result)) {
+        resValue = [[methodResult toJSON] UTF8String];
+    }
+    return resValue;
+}
+
+
+rho::String js_Megamodule_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+
+    id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
+    return js_Megamodule_produceComplicatedResult_Obj(argv, item);
+
+}
+
+rho::String js_s_Megamodule_def_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+    id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
+    id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
+
+    NSString* defID = [singleton getDefaultID];
+
+    id<IMegamodule> item = [factory getMegamoduleByID:defID];
+    return js_Megamodule_produceComplicatedResult_Obj(argv, item);
 }
 
 
@@ -981,6 +1354,9 @@ rho::String js_Megamodule_getObjectsCount_Obj(rho::json::CJSONArray& argv, id<IM
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -999,7 +1375,7 @@ rho::String js_Megamodule_getObjectsCount_Obj(rho::json::CJSONArray& argv, id<IM
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1147,6 +1523,9 @@ rho::String js_Megamodule_getObjectByIndex_Obj(rho::json::CJSONArray& argv, id<I
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_INTEGER, 0, "index", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -1165,7 +1544,7 @@ rho::String js_Megamodule_getObjectByIndex_Obj(rho::json::CJSONArray& argv, id<I
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1313,6 +1692,9 @@ rho::String js_Megamodule_showAlertFromUIThread_Obj(rho::json::CJSONArray& argv,
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "message", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -1331,7 +1713,7 @@ rho::String js_Megamodule_showAlertFromUIThread_Obj(rho::json::CJSONArray& argv,
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1489,6 +1871,9 @@ rho::String js_Megamodule_setPeriodicallyCallback_Obj(rho::json::CJSONArray& arg
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_INTEGER, 0, "periodInMilliseconds", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -1507,7 +1892,7 @@ rho::String js_Megamodule_setPeriodicallyCallback_Obj(rho::json::CJSONArray& arg
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1664,6 +2049,9 @@ rho::String js_Megamodule_isPeriodicallyCallbackSetted_Obj(rho::json::CJSONArray
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -1682,7 +2070,7 @@ rho::String js_Megamodule_isPeriodicallyCallbackSetted_Obj(rho::json::CJSONArray
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1839,6 +2227,9 @@ rho::String js_Megamodule_stopPeriodicallyCallback_Obj(rho::json::CJSONArray& ar
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -1857,7 +2248,7 @@ rho::String js_Megamodule_stopPeriodicallyCallback_Obj(rho::json::CJSONArray& ar
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -1924,6 +2315,188 @@ rho::String js_s_Megamodule_def_stopPeriodicallyCallback(rho::json::CJSONArray& 
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
     return js_Megamodule_stopPeriodicallyCallback_Obj(argv, item);
+}
+
+
+
+
+
+
+
+@interface Megamodule_complicatedTypesTest1_caller_params : NSObject
+
+@property (assign) NSArray* params;
+@property (assign) id<IMegamodule> item;
+@property (assign) CMethodResult* methodResult;
+
++(Megamodule_complicatedTypesTest1_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult;
+
+@end
+
+@implementation Megamodule_complicatedTypesTest1_caller_params
+
+@synthesize params,item,methodResult;
+
++(Megamodule_complicatedTypesTest1_caller_params*) makeParams:(NSArray*)_params _item:(id<IMegamodule>)_item _methodResult:(CMethodResult*)_methodResult {
+    Megamodule_complicatedTypesTest1_caller_params* par = [[Megamodule_complicatedTypesTest1_caller_params alloc] init];
+    par.params = _params;
+    par.item = _item;
+    par.methodResult = _methodResult;
+    return par;
+}
+
+@end
+
+
+@interface Megamodule_complicatedTypesTest1_caller : NSObject {
+
+}
++(Megamodule_complicatedTypesTest1_caller*) getSharedInstance;
++(void) complicatedTypesTest1:(Megamodule_complicatedTypesTest1_caller_params*)caller_params;
++(void) complicatedTypesTest1_in_thread:(Megamodule_complicatedTypesTest1_caller_params*)caller_params;
++(void) complicatedTypesTest1_in_UI_thread:(Megamodule_complicatedTypesTest1_caller_params*)caller_params;
+
+@end
+
+static Megamodule_complicatedTypesTest1_caller* our_Megamodule_complicatedTypesTest1_caller = nil;
+
+@implementation Megamodule_complicatedTypesTest1_caller
+
++(Megamodule_complicatedTypesTest1_caller*) getSharedInstance {
+    if (our_Megamodule_complicatedTypesTest1_caller == nil) {
+        our_Megamodule_complicatedTypesTest1_caller = [[Megamodule_complicatedTypesTest1_caller alloc] init];
+    }
+    return our_Megamodule_complicatedTypesTest1_caller;
+}
+
+-(void) command_complicatedTypesTest1:(Megamodule_complicatedTypesTest1_caller_params*)caller_params {
+    NSArray* params = caller_params.params;
+    id<IMegamodule> objItem = caller_params.item;
+    CMethodResult* methodResult = caller_params.methodResult;
+
+    
+    [objItem complicatedTypesTest1:(NSArray*)[params objectAtIndex:0] methodResult:methodResult ];
+}
+
+
++(void) complicatedTypesTest1:(Megamodule_complicatedTypesTest1_caller_params*)caller_params {
+    [[Megamodule_complicatedTypesTest1_caller getSharedInstance] command_complicatedTypesTest1:caller_params];
+}
+
++(void) complicatedTypesTest1_in_thread:(Megamodule_complicatedTypesTest1_caller_params*)caller_params {
+    [[Megamodule_complicatedTypesTest1_caller getSharedInstance] performSelectorInBackground:@selector(command_complicatedTypesTest1:) withObject:caller_params];
+}
+
++(void) complicatedTypesTest1_in_UI_thread:(Megamodule_complicatedTypesTest1_caller_params*)caller_params {
+    [[Megamodule_complicatedTypesTest1_caller getSharedInstance] performSelectorOnMainThread:@selector(command_complicatedTypesTest1:) withObject:caller_params waitUntilDone:NO];
+}
+
+
+@end
+
+
+rho::String js_Megamodule_complicatedTypesTest1_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+
+    CMethodResult* methodResult = [[CMethodResult alloc] init];
+
+    NSObject* params[1+1];
+    NSString* callbackURL = nil;
+    NSString* callbackParam = nil;
+    BOOL method_return_result = YES;
+    int argc = argv.getSize();
+    
+    static RHO_API_PARAM rho_api_params_param0_param0_param2_param1[] = {{RHO_API_BOOLEAN, 0, "array_param", 0, 0 } };
+    static RHO_API_PARAM rho_api_params_param0_param0_param2[] = {{RHO_API_STRING, 0, "itemStr", 0, 0 }, {RHO_API_ARRAY, 0, "itemArray", 1, rho_api_params_param0_param0_param2_param1 } };
+    static RHO_API_PARAM rho_api_params_param0_param0[] = {{RHO_API_INTEGER, 0, "intItem", 0, 0 }, {RHO_API_STRING, 0, "strItem", 0, 0 }, {RHO_API_HASH, 0, "hashItem", 2, rho_api_params_param0_param0_param2 } };
+    static RHO_API_PARAM rho_api_params_param0[] = {{RHO_API_HASH, 0, "array_param", 3, rho_api_params_param0_param0 } };
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_ARRAY, 0, "paramArray", 1, rho_api_params_param0 } };
+
+    
+    BOOL is_factory_param[] = { NO, NO };
+
+    int i;
+
+    // init
+    for (i = 0; i < (1); i++) {
+        params[i] = [CJSConverter getObjectiveCNULL];
+    }
+
+    // enumerate params
+    for (int i = 0; i < (1); i++) {
+        if (argc > i) {
+            // we have a [i] param !
+            if (is_factory_param[i]) {
+                params[i] = Megamodule_makeInstanceByJSObject(argv.getItem(i).getString());
+            }
+            else {
+                rho::json::CJSONEntry entry = argv.getItem(i);
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
+            }
+        }
+    }
+
+    NSMutableArray* params_array = [NSMutableArray arrayWithCapacity:(1)];
+    for (i = 0 ; i < (1); i++) {
+        [params_array addObject:params[i]];
+    }
+
+    
+    // check callback
+    if (argc >= (1+1)) {
+        rho::json::CJSONEntry callback = argv.getItem(1);
+        if (callback.isString()) {
+            rho::json::CJSONEntry entry = argv.getItem(i);
+            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        }
+    }
+    // check callback param
+    if (argc >= (1+2)) {
+        rho::json::CJSONEntry callback_param = argv.getItem(1+1);
+        if (callback_param.isString()) {
+            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
+        }
+    }
+    
+
+    if (callbackURL != nil) {
+        // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
+        [methodResult setJSCallback:callbackURL];
+        if (callbackParam != nil) {
+            [methodResult setCallbackParam:callbackParam];
+        }
+        
+        [Megamodule_complicatedTypesTest1_caller complicatedTypesTest1_in_thread:[Megamodule_complicatedTypesTest1_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    else {
+        // we do not have callback
+        
+        [Megamodule_complicatedTypesTest1_caller complicatedTypesTest1:[Megamodule_complicatedTypesTest1_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
+        
+    }
+    rho::String resValue = "";
+    if ((callbackURL == nil) && (method_return_result)) {
+        resValue = [[methodResult toJSON] UTF8String];
+    }
+    return resValue;
+}
+
+
+rho::String js_Megamodule_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+
+    id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
+    return js_Megamodule_complicatedTypesTest1_Obj(argv, item);
+
+}
+
+rho::String js_s_Megamodule_def_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+    id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
+    id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
+
+    NSString* defID = [singleton getDefaultID];
+
+    id<IMegamodule> item = [factory getMegamoduleByID:defID];
+    return js_Megamodule_complicatedTypesTest1_Obj(argv, item);
 }
 
 
@@ -2014,6 +2587,9 @@ rho::String js_Megamodule_getProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "propertyName", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -2032,7 +2608,7 @@ rho::String js_Megamodule_getProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2189,6 +2765,10 @@ rho::String js_Megamodule_getProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params_param0[] = {{RHO_API_STRING, 0, "array_param", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_ARRAY, 0, "arrayofNames", 1, rho_api_params_param0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -2207,7 +2787,7 @@ rho::String js_Megamodule_getProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2364,6 +2944,9 @@ rho::String js_Megamodule_getAllProperties_Obj(rho::json::CJSONArray& argv, id<I
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -2382,7 +2965,7 @@ rho::String js_Megamodule_getAllProperties_Obj(rho::json::CJSONArray& argv, id<I
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2539,6 +3122,9 @@ rho::String js_Megamodule_setProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "propertyName", 0, 0 }, {RHO_API_STRING, 0, "propertyValue", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO, NO };
 
     int i;
@@ -2557,7 +3143,7 @@ rho::String js_Megamodule_setProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2714,6 +3300,9 @@ rho::String js_Megamodule_setProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = {{RHO_API_HASH, 0, "propertyMap", 0, 0 } };
+
+    
     BOOL is_factory_param[] = { NO, NO };
 
     int i;
@@ -2732,7 +3321,7 @@ rho::String js_Megamodule_setProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -2889,6 +3478,9 @@ rho::String js_Megamodule_clearAllProperties_Obj(rho::json::CJSONArray& argv, id
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -2907,7 +3499,7 @@ rho::String js_Megamodule_clearAllProperties_Obj(rho::json::CJSONArray& argv, id
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }
@@ -3064,6 +3656,9 @@ rho::String js_Megamodule_enumerate_Obj(rho::json::CJSONArray& argv, id<IMegamod
     BOOL method_return_result = YES;
     int argc = argv.getSize();
     
+    static RHO_API_PARAM rho_api_params[] = { };
+
+    
     BOOL is_factory_param[] = { NO };
 
     int i;
@@ -3082,7 +3677,7 @@ rho::String js_Megamodule_enumerate_Obj(rho::json::CJSONArray& argv, id<IMegamod
             }
             else {
                 rho::json::CJSONEntry entry = argv.getItem(i);
-                params[i] = [[CJSConverter convertFromJS:&entry] retain];
+                params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
         }
     }

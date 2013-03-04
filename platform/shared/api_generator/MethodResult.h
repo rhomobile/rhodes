@@ -41,6 +41,7 @@ class CMethodResult
     rho::String m_strRubyCallback, m_strCallbackParam, m_strStringParam;
     rho::String m_strJSCallback;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
+    rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > m_hashStrL2Res;
     rho::String m_strRes;
     rho::StringW m_strResW;
     rho::Vector<rho::String> m_arStrRes;
@@ -71,7 +72,7 @@ class CMethodResult
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
 public:
 
-    CMethodResult(): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(false){}
+    CMethodResult(bool bCollectionMode=false): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(bCollectionMode){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     void setRubyCallbackProc(unsigned long oRubyCallbackProc);
@@ -111,6 +112,9 @@ public:
     bool isError(){ return m_ResType == eError || m_ResType == eArgError; }
 
     rho::Vector<rho::String>& getStringArray(){ return m_arStrRes; }
+    rho::Hashtable<rho::String, rho::String>& getStringHash(){ return m_hashStrRes; }
+    rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >& getStringHashL2(){ return m_hashStrL2Res; }
+    rho::String& getString(){ return m_strRes; }
 
     rho::String toString();
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}
@@ -120,6 +124,7 @@ public:
 
     bool hasCallback();
     void callCallback();
+    bool isEqualCallback(CMethodResult& oResult);
 };
 
 }

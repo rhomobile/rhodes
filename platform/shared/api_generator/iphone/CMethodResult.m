@@ -5,6 +5,72 @@
 #import "CJSConverter.h"
 #import "RubyCallbackHelper.h"
 
+
+@implementation CMethodResultError
+
+-(id)init:(NSString*)error_type description:(NSString*)description {
+    self = [super init];
+    errorType = error_type;
+    errorDescription = description;
+    return self;
+}
+
++ (CMethodResultError*) errorWithType:(NSString*)error_type description:(NSString*)description {
+    CMethodResultError* b = [[CMethodResultError alloc] init:error_type description:description];
+    return b;
+}
+
+-(NSString*)getErrorType {
+    return errorType;
+}
+
+-(NSString*)getErrorDescription {
+    return errorDescription;
+}
+
+-(void)dealloc {
+    [errorDescription release];
+    [super dealloc];
+}
+
+
+@end
+
+
+@implementation CRhoAPIClassInstance
+
+- (id) init:(NSString*)clasRubyFullName iID:(NSString*)iID {
+    self = [super init];
+    mClassName = [clasRubyFullName retain];
+    mInstanceID = [iID retain];
+    return self;
+}
+
++(CRhoAPIClassInstance*) rubyClassByName:(NSString*)className instanceID:(NSString*)instanceID {
+    CRhoAPIClassInstance* m = [[CRhoAPIClassInstance alloc] init:className iID:instanceID];
+    return m;
+}
+
+-(NSString*)getClassName {
+    return mClassName;
+}
+
+-(NSString*)getInstanceID {
+    return mInstanceID;
+}
+
+-(void)dealloc {
+    [mClassName release];
+    [mInstanceID release];
+    [super dealloc];
+}
+
+@end
+
+
+
+
+
 @implementation CMethodResult
 
 -(id) init {
@@ -22,7 +88,7 @@
     if (mRubyModulePath != nil) {
         // convert all strings into CRubyModule !
         if ([value isKindOfClass:[NSString class]]) {
-            mValue = [CRubyModule rubyModuleByName:mRubyModulePath instanceID:((NSString*)value)];
+            mValue = [CRhoAPIClassInstance rubyClassByName:mRubyModulePath instanceID:((NSString*)value)];
         }
         else if ([value isKindOfClass:[NSArray class]]) {
             NSArray* value_ar = (NSArray*)value;
@@ -31,7 +97,7 @@
             for (i = 0; i < [value_ar count]; i++) {
                 NSObject* item = [value_ar objectAtIndex:i];
                 if ([item isKindOfClass:[NSString class]]) {
-                    item = [CRubyModule rubyModuleByName:mRubyModulePath instanceID:((NSString*)item)];
+                    item = [CRhoAPIClassInstance rubyClassByName:mRubyModulePath instanceID:((NSString*)item)];
                 }
                 [aValue addObject:item];
             }
@@ -60,7 +126,17 @@
 }
 
 -(NSString*) toJSON {
-    return [CJSConverter convertToJS:mValue];
+    NSString* res = [CJSConverter convertToJS:mValue level:0];
+    const char* ttt = [res UTF8String];
+    return res;
+}
+
+-(BOOL) isHash {
+    return [mValue isKindOfClass:[NSDictionary class]];
+}
+
+-(NSDictionary*) getHashResult {
+    return (NSDictionary*)mValue;
 }
 
 

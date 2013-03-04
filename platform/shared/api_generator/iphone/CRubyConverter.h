@@ -4,20 +4,6 @@
 #import "ruby/ext/rho/rhoruby.h"
 
 
-@interface CRubyModule : NSObject {
-    NSString* mModuleName;
-    NSString* mInstanceID;
-}
-
-- (id) init:(NSString*)mName iID:(NSString*)iID;
-
-+(CRubyModule*) rubyModuleByName:(NSString*)moduleName instanceID:(NSString*)instanceID;
-
--(NSString*)getModuleName;
-
--(NSString*)getInstanceID;
-
-@end
 
 
 @interface CRubyConverter : NSObject {

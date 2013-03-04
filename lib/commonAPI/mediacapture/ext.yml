@@ -1,0 +1,12 @@
+entry: Init_Mediacapture_extension	
+javaentry: com.mediacapture.Mediacapture
+libraries: ["Mediacapture"]
+android:
+  source_list: ext/platform/android/ext_java.files
+
+project_paths:
+  wp8: ext/platform/wp8/Mediacapture.vcxproj
+  wm: ext/platform/wm/Mediacapture.vcproj
+  win32: ext/platform/wm/Mediacapture.vcproj
+  
+xml_api_paths: ext/Mediacapture.xml

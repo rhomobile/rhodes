@@ -7,21 +7,59 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA7C85BB16E4126C0000EAE6 /* networkaccess_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85B816E4126C0000EAE6 /* networkaccess_api_init.cpp */; };
+		FA7C85BC16E4126C0000EAE6 /* networkaccess_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85B916E4126C0000EAE6 /* networkaccess_js_api.cpp */; };
+		FA7C85BD16E4126C0000EAE6 /* networkaccess_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85BA16E4126C0000EAE6 /* networkaccess_ruby_api.c */; };
+		FA7C85C316E4127D0000EAE6 /* INetworkAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7C85BE16E4127D0000EAE6 /* INetworkAccess.h */; };
+		FA7C85C416E4127D0000EAE6 /* NetworkAccess_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85BF16E4127D0000EAE6 /* NetworkAccess_js_wrap.cpp */; };
+		FA7C85C516E4127D0000EAE6 /* NetworkAccess_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85C016E4127D0000EAE6 /* NetworkAccess_ruby_wrap.cpp */; };
+		FA7C85C616E4127D0000EAE6 /* NetworkAccessBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85C116E4127D0000EAE6 /* NetworkAccessBase.cpp */; };
+		FA7C85C716E4127D0000EAE6 /* NetworkAccessBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7C85C216E4127D0000EAE6 /* NetworkAccessBase.h */; };
+		FA7C85CA16E412950000EAE6 /* InitExtension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85C816E412950000EAE6 /* InitExtension.cpp */; };
+		FA7C85CB16E412950000EAE6 /* NetworkAccessImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85C916E412950000EAE6 /* NetworkAccessImpl.cpp */; };
+		FA7C85D416E413300000EAE6 /* system_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85D116E413300000EAE6 /* system_api_init.cpp */; };
+		FA7C85D516E413300000EAE6 /* system_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85D216E413300000EAE6 /* system_js_api.cpp */; };
+		FA7C85D616E413300000EAE6 /* system_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85D316E413300000EAE6 /* system_ruby_api.c */; };
+		FA7C85DC16E413400000EAE6 /* ISystem.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7C85D716E413400000EAE6 /* ISystem.h */; };
+		FA7C85DD16E413400000EAE6 /* System_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85D816E413400000EAE6 /* System_js_wrap.cpp */; };
+		FA7C85DE16E413400000EAE6 /* System_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85D916E413400000EAE6 /* System_ruby_wrap.cpp */; };
+		FA7C85DF16E413400000EAE6 /* SystemBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85DA16E413400000EAE6 /* SystemBase.cpp */; };
+		FA7C85E016E413400000EAE6 /* SystemBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7C85DB16E413400000EAE6 /* SystemBase.h */; };
+		FA7C85E416E4135F0000EAE6 /* System.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7C85E116E4135F0000EAE6 /* System.h */; };
+		FA7C85E516E4135F0000EAE6 /* SystemImplBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85E216E4135F0000EAE6 /* SystemImplBase.cpp */; };
+		FA7C85E616E4135F0000EAE6 /* SystemImplBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7C85E316E4135F0000EAE6 /* SystemImplBase.h */; };
+		FA7C85E816E413D40000EAE6 /* SystemImpl.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85E716E413D40000EAE6 /* SystemImpl.mm */; };
+		FA7C85ED16E41E460000EAE6 /* SystemImpl.h in Headers */ = {isa = PBXBuildFile; fileRef = FA7C85EC16E41E460000EAE6 /* SystemImpl.h */; };
 		FAC155E7145855CF0016F3BD /* CoreAPI_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* CoreAPI_Prefix.pch */; };
-		FAC155E8145855CF0016F3BD /* CoreAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC155E01458523C0016F3BD /* CoreAPI.h */; };
-		FAC155EA145855CF0016F3BD /* coreapi_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FAC155D614584FD80016F3BD /* coreapi_wrap.c */; };
-		FAC155EB145855CF0016F3BD /* coreapi.c in Sources */ = {isa = PBXBuildFile; fileRef = FAC155D814584FE20016F3BD /* coreapi.c */; };
-		FAC155EC145855CF0016F3BD /* CoreAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC155DE145851440016F3BD /* CoreAPI.m */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		FAC155D614584FD80016F3BD /* coreapi_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = coreapi_wrap.c; path = ../../shared/ruby/coreapi_wrap.c; sourceTree = "<group>"; };
-		FAC155D814584FE20016F3BD /* coreapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = coreapi.c; path = ../../shared/src/coreapi.c; sourceTree = "<group>"; };
-		FAC155DE145851440016F3BD /* CoreAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CoreAPI.m; path = Classes/CoreAPI.m; sourceTree = "<group>"; };
-		FAC155E01458523C0016F3BD /* CoreAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoreAPI.h; path = Classes/CoreAPI.h; sourceTree = "<group>"; };
+		FA7C85B816E4126C0000EAE6 /* networkaccess_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = networkaccess_api_init.cpp; path = ../../shared/generated/networkaccess_api_init.cpp; sourceTree = "<group>"; };
+		FA7C85B916E4126C0000EAE6 /* networkaccess_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = networkaccess_js_api.cpp; path = ../../shared/generated/networkaccess_js_api.cpp; sourceTree = "<group>"; };
+		FA7C85BA16E4126C0000EAE6 /* networkaccess_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = networkaccess_ruby_api.c; path = ../../shared/generated/networkaccess_ruby_api.c; sourceTree = "<group>"; };
+		FA7C85BE16E4127D0000EAE6 /* INetworkAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INetworkAccess.h; path = ../../shared/generated/cpp/INetworkAccess.h; sourceTree = "<group>"; };
+		FA7C85BF16E4127D0000EAE6 /* NetworkAccess_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetworkAccess_js_wrap.cpp; path = ../../shared/generated/cpp/NetworkAccess_js_wrap.cpp; sourceTree = "<group>"; };
+		FA7C85C016E4127D0000EAE6 /* NetworkAccess_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetworkAccess_ruby_wrap.cpp; path = ../../shared/generated/cpp/NetworkAccess_ruby_wrap.cpp; sourceTree = "<group>"; };
+		FA7C85C116E4127D0000EAE6 /* NetworkAccessBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetworkAccessBase.cpp; path = ../../shared/generated/cpp/NetworkAccessBase.cpp; sourceTree = "<group>"; };
+		FA7C85C216E4127D0000EAE6 /* NetworkAccessBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetworkAccessBase.h; path = ../../shared/generated/cpp/NetworkAccessBase.h; sourceTree = "<group>"; };
+		FA7C85C816E412950000EAE6 /* InitExtension.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InitExtension.cpp; path = ../../shared/InitExtension.cpp; sourceTree = "<group>"; };
+		FA7C85C916E412950000EAE6 /* NetworkAccessImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetworkAccessImpl.cpp; path = ../../shared/NetworkAccessImpl.cpp; sourceTree = "<group>"; };
+		FA7C85D116E413300000EAE6 /* system_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = system_api_init.cpp; path = ../../shared/generated/system_api_init.cpp; sourceTree = "<group>"; };
+		FA7C85D216E413300000EAE6 /* system_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = system_js_api.cpp; path = ../../shared/generated/system_js_api.cpp; sourceTree = "<group>"; };
+		FA7C85D316E413300000EAE6 /* system_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = system_ruby_api.c; path = ../../shared/generated/system_ruby_api.c; sourceTree = "<group>"; };
+		FA7C85D716E413400000EAE6 /* ISystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISystem.h; path = ../../shared/generated/cpp/ISystem.h; sourceTree = "<group>"; };
+		FA7C85D816E413400000EAE6 /* System_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = System_js_wrap.cpp; path = ../../shared/generated/cpp/System_js_wrap.cpp; sourceTree = "<group>"; };
+		FA7C85D916E413400000EAE6 /* System_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = System_ruby_wrap.cpp; path = ../../shared/generated/cpp/System_ruby_wrap.cpp; sourceTree = "<group>"; };
+		FA7C85DA16E413400000EAE6 /* SystemBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemBase.cpp; path = ../../shared/generated/cpp/SystemBase.cpp; sourceTree = "<group>"; };
+		FA7C85DB16E413400000EAE6 /* SystemBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemBase.h; path = ../../shared/generated/cpp/SystemBase.h; sourceTree = "<group>"; };
+		FA7C85E116E4135F0000EAE6 /* System.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = System.h; path = ../../shared/System.h; sourceTree = "<group>"; };
+		FA7C85E216E4135F0000EAE6 /* SystemImplBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SystemImplBase.cpp; path = ../../shared/SystemImplBase.cpp; sourceTree = "<group>"; };
+		FA7C85E316E4135F0000EAE6 /* SystemImplBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemImplBase.h; path = ../../shared/SystemImplBase.h; sourceTree = "<group>"; };
+		FA7C85E716E413D40000EAE6 /* SystemImpl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = SystemImpl.mm; path = cpp_based_impl/SystemImpl.mm; sourceTree = "<group>"; };
+		FA7C85EC16E41E460000EAE6 /* SystemImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SystemImpl.h; path = cpp_based_impl/SystemImpl.h; sourceTree = "<group>"; };
 		FAC155F3145855CF0016F3BD /* libCoreAPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCoreAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD45FD51225FED600141873 /* CoreAPI_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAPI_Prefix.pch; sourceTree = "<group>"; };
 		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -71,8 +109,9 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155DD1458511E0016F3BD /* iOS_specific */,
-				FAC155DA145850EB0016F3BD /* Shared */,
+				FA7C85C816E412950000EAE6 /* InitExtension.cpp */,
+				FA7C85B216E411C20000EAE6 /* NetworkAccess */,
+				FA7C85B116E411B90000EAE6 /* System */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -85,38 +124,120 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
-		FAC155DA145850EB0016F3BD /* Shared */ = {
+		FA7C85B116E411B90000EAE6 /* System */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155DC145851020016F3BD /* src */,
-				FAC155DB145850F80016F3BD /* Ruby */,
+				FA7C85D016E4131A0000EAE6 /* iphone */,
+				FA7C85CD16E412FD0000EAE6 /* CPP */,
+				FA7C85CC16E412F20000EAE6 /* shared */,
 			);
-			name = Shared;
+			name = System;
 			sourceTree = "<group>";
 		};
-		FAC155DB145850F80016F3BD /* Ruby */ = {
+		FA7C85B216E411C20000EAE6 /* NetworkAccess */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155D614584FD80016F3BD /* coreapi_wrap.c */,
+				FA7C85B316E411F70000EAE6 /* CPP */,
 			);
-			name = Ruby;
+			name = NetworkAccess;
 			sourceTree = "<group>";
 		};
-		FAC155DC145851020016F3BD /* src */ = {
+		FA7C85B316E411F70000EAE6 /* CPP */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155D814584FE20016F3BD /* coreapi.c */,
+				FA7C85B516E412040000EAE6 /* impl */,
+				FA7C85B416E411FE0000EAE6 /* generated */,
 			);
-			name = src;
+			name = CPP;
 			sourceTree = "<group>";
 		};
-		FAC155DD1458511E0016F3BD /* iOS_specific */ = {
+		FA7C85B416E411FE0000EAE6 /* generated */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155E01458523C0016F3BD /* CoreAPI.h */,
-				FAC155DE145851440016F3BD /* CoreAPI.m */,
+				FA7C85B716E412520000EAE6 /* CPP */,
+				FA7C85B616E4124C0000EAE6 /* shared */,
 			);
-			name = iOS_specific;
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FA7C85B516E412040000EAE6 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA7C85C916E412950000EAE6 /* NetworkAccessImpl.cpp */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FA7C85B616E4124C0000EAE6 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA7C85B816E4126C0000EAE6 /* networkaccess_api_init.cpp */,
+				FA7C85B916E4126C0000EAE6 /* networkaccess_js_api.cpp */,
+				FA7C85BA16E4126C0000EAE6 /* networkaccess_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FA7C85B716E412520000EAE6 /* CPP */ = {
+			isa = PBXGroup;
+			children = (
+				FA7C85BE16E4127D0000EAE6 /* INetworkAccess.h */,
+				FA7C85BF16E4127D0000EAE6 /* NetworkAccess_js_wrap.cpp */,
+				FA7C85C016E4127D0000EAE6 /* NetworkAccess_ruby_wrap.cpp */,
+				FA7C85C116E4127D0000EAE6 /* NetworkAccessBase.cpp */,
+				FA7C85C216E4127D0000EAE6 /* NetworkAccessBase.h */,
+			);
+			name = CPP;
+			sourceTree = "<group>";
+		};
+		FA7C85CC16E412F20000EAE6 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA7C85D116E413300000EAE6 /* system_api_init.cpp */,
+				FA7C85D216E413300000EAE6 /* system_js_api.cpp */,
+				FA7C85D316E413300000EAE6 /* system_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FA7C85CD16E412FD0000EAE6 /* CPP */ = {
+			isa = PBXGroup;
+			children = (
+				FA7C85CF16E4130C0000EAE6 /* impl */,
+				FA7C85CE16E413040000EAE6 /* generated */,
+			);
+			name = CPP;
+			sourceTree = "<group>";
+		};
+		FA7C85CE16E413040000EAE6 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FA7C85D716E413400000EAE6 /* ISystem.h */,
+				FA7C85D816E413400000EAE6 /* System_js_wrap.cpp */,
+				FA7C85D916E413400000EAE6 /* System_ruby_wrap.cpp */,
+				FA7C85DA16E413400000EAE6 /* SystemBase.cpp */,
+				FA7C85DB16E413400000EAE6 /* SystemBase.h */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FA7C85CF16E4130C0000EAE6 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA7C85E116E4135F0000EAE6 /* System.h */,
+				FA7C85E216E4135F0000EAE6 /* SystemImplBase.cpp */,
+				FA7C85E316E4135F0000EAE6 /* SystemImplBase.h */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FA7C85D016E4131A0000EAE6 /* iphone */ = {
+			isa = PBXGroup;
+			children = (
+				FA7C85EC16E41E460000EAE6 /* SystemImpl.h */,
+				FA7C85E716E413D40000EAE6 /* SystemImpl.mm */,
+			);
+			name = iphone;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,7 +248,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAC155E7145855CF0016F3BD /* CoreAPI_Prefix.pch in Headers */,
-				FAC155E8145855CF0016F3BD /* CoreAPI.h in Headers */,
+				FA7C85C316E4127D0000EAE6 /* INetworkAccess.h in Headers */,
+				FA7C85C716E4127D0000EAE6 /* NetworkAccessBase.h in Headers */,
+				FA7C85DC16E413400000EAE6 /* ISystem.h in Headers */,
+				FA7C85E016E413400000EAE6 /* SystemBase.h in Headers */,
+				FA7C85E416E4135F0000EAE6 /* System.h in Headers */,
+				FA7C85E616E4135F0000EAE6 /* SystemImplBase.h in Headers */,
+				FA7C85ED16E41E460000EAE6 /* SystemImpl.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,7 +283,7 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "CoreAPI" */;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Coreapi" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -181,9 +308,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAC155EA145855CF0016F3BD /* coreapi_wrap.c in Sources */,
-				FAC155EB145855CF0016F3BD /* coreapi.c in Sources */,
-				FAC155EC145855CF0016F3BD /* CoreAPI.m in Sources */,
+				FA7C85BB16E4126C0000EAE6 /* networkaccess_api_init.cpp in Sources */,
+				FA7C85BC16E4126C0000EAE6 /* networkaccess_js_api.cpp in Sources */,
+				FA7C85BD16E4126C0000EAE6 /* networkaccess_ruby_api.c in Sources */,
+				FA7C85C416E4127D0000EAE6 /* NetworkAccess_js_wrap.cpp in Sources */,
+				FA7C85C516E4127D0000EAE6 /* NetworkAccess_ruby_wrap.cpp in Sources */,
+				FA7C85C616E4127D0000EAE6 /* NetworkAccessBase.cpp in Sources */,
+				FA7C85CA16E412950000EAE6 /* InitExtension.cpp in Sources */,
+				FA7C85CB16E412950000EAE6 /* NetworkAccessImpl.cpp in Sources */,
+				FA7C85D416E413300000EAE6 /* system_api_init.cpp in Sources */,
+				FA7C85D516E413300000EAE6 /* system_js_api.cpp in Sources */,
+				FA7C85D616E413300000EAE6 /* system_ruby_api.c in Sources */,
+				FA7C85DD16E413400000EAE6 /* System_js_wrap.cpp in Sources */,
+				FA7C85DE16E413400000EAE6 /* System_ruby_wrap.cpp in Sources */,
+				FA7C85DF16E413400000EAE6 /* SystemBase.cpp in Sources */,
+				FA7C85E516E4135F0000EAE6 /* SystemImplBase.cpp in Sources */,
+				FA7C85E816E413D40000EAE6 /* SystemImpl.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,6 +343,11 @@
 					"$(RHO_ROOT)/platform/shared/ruby/include",
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -224,6 +369,11 @@
 					"$(RHO_ROOT)/platform/shared/ruby/include",
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -259,8 +409,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				DSTROOT = /tmp/CoreAPI.dst;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /tmp/CoreAPI.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = CoreAPI_Prefix.pch;
@@ -276,7 +426,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "CoreAPI" */ = {
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Coreapi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB922308733DC00010E9CD /* Debug */,

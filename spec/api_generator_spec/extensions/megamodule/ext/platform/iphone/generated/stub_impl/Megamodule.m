@@ -22,6 +22,14 @@
 
 }
 
+-(void) produceHash:(id<IMethodResult>)methodResult {
+
+}
+
+-(void) produceComplicatedResult:(id<IMethodResult>)methodResult {
+
+}
+
 -(void) showAlertFromUIThread:(NSString*)message {
 
 }
@@ -35,6 +43,10 @@
 }
 
 -(void) stopPeriodicallyCallback {
+
+}
+
+-(void) complicatedTypesTest1:(NSArray*)paramArray methodResult:(id<IMethodResult>)methodResult {
 
 }
 

@@ -114,7 +114,7 @@ class CExtManager : public IRhoExtManager
 {
 	DEFINE_LOGCLASS;
 
-	HashtablePtr<String, IRhoExtension*> m_hashExtensions;
+    rho::HashtablePtr<String, IRhoExtension*> m_hashExtensions;
 
 public:
     void registerExtension(const String& strName, IRhoExtension* pExt);
@@ -170,16 +170,47 @@ public:
     virtual void setBrowserGesturing(bool bEnableGesturing);
     virtual void passSipPositionToEngine();
 };
-
+	
 } //namespace common
 } //namespace rho
 
 #else //WINDOWS_PLATFORM
+
+namespace rho {
+namespace common {
+
+
+struct IRhoExtension
+{
+    virtual ~IRhoExtension(){}
+};
+
 class CExtManager
 {
+    rho::HashtablePtr<rho::String, IRhoExtension*> m_hashExtensions;
+
 public:
-    void close(){}
+    void registerExtension(const rho::String& strName, IRhoExtension* pExt)
+    {
+        m_hashExtensions.put(strName, pExt);
+    }
+
+    IRhoExtension* getExtByName(const rho::String& strName)
+    {
+        return m_hashExtensions.get(strName);
+    }
+
+    void close()
+    {
+        m_hashExtensions.clear();
+    }
+
+    virtual void requireRubyFile( const char* szFilePath );
 };
+	
+} //namespace common
+} //namespace rho
+
 
 #endif
 

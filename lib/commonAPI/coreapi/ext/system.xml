@@ -6,7 +6,7 @@
         <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
 
         <ALIASES>
-            <ALIAS new="System" existing="Rho.System" deprecated="true"/>
+            <ALIAS new="System" deprecated="true"/>
         </ALIASES>
 
         <TEMPLATES>
@@ -133,9 +133,6 @@
             </PROPERTY>
             <PROPERTY name="showKeyboard" type="BOOLEAN">
                 <DESC>Display\hide software keyboard.</DESC>
-            </PROPERTY>
-            <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
-                <DESC>Use full screen mode.</DESC>
             </PROPERTY>
             <PROPERTY name="localServerPort" type="INTEGER" default="8080">
                 <DESC>Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.</DESC>
@@ -441,6 +438,9 @@
                 <PARAMS>
                     <PARAM name="pathToFile" type="STRING">
                         <DESC>Path to file.</DESC>
+                    </PARAM>
+                    <PARAM name="doNotBackup" type="BOOLEAN">
+                        <DESC>true set doNotBakup attribute to file (exlude this file from bakup), false for remove doNotBakup attribute from file</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
