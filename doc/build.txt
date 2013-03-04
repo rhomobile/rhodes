@@ -116,13 +116,13 @@ Now run the following command to tell Rhodes to set up the Xcode environment for
 	:::term
 	$ rake build:iphone:setup_xcode_project
 
-Then in the Rhodes source code folder (the path in your Rhodes application build.yml file), navigate to the /platform/iphone folder and open rrhorunner.xcodeproj. This will open your Rhodes application in Xcode.
+Then in the Rhodes source code folder (the path in your Rhodes application build.yml file), navigate to the /platform/iphone folder and open rhorunner.xcodeproj. This will open your Rhodes application in Xcode.
 
 In the Xcode Scheme menu, select the proper scheme before you build and run your project. Click on the Scheme menu.
 
 <img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/rhorunner-xcode-scheme.png" alt="xcode scheme" />
 
-Select the Scheme for your project under rrhorunner. You can select to run in the simulator.
+Select the Scheme for your project under rhorunner. You can select to run in the simulator.
 
 <img src="http://rhodocs.s3.amazonaws.com/build-rhodes-app/rhorunner-xcode-scheme-simulator.png" alt="xcode scheme simulator" />
 
@@ -158,9 +158,9 @@ If you want to build/run/debug your application on devices before iPhone4/iPad (
 
 Once you have the application building with Xcode as described above, it is treated as any other iPhone application when it comes to [signing and distributing to the app store](http://developer.apple.com/iphone/appstore/). 
 
-### Restoring rrhorunner.xcodeproj
+### Restoring rhorunner.xcodeproj
 
-To restore the Xcode rrhorunner.xcodeproj to its original state:
+To restore the Xcode rhorunner.xcodeproj to its original state:
 
 	:::term
   	$ rake build:iphone:restore_xcode_project

@@ -1723,7 +1723,11 @@ describe "Rhom#paginate" do
 if !USE_HSQLDB
         return @expected_s if $spec_settings[:schema_model]
         
-        @expected
+		if  System.get_property('platform') == 'WP8'
+			return @expected_s
+		else
+			return @expected
+		end
 else
         return @expected if $spec_settings[:schema_model]
         
