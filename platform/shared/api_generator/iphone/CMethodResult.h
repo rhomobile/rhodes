@@ -4,6 +4,39 @@
 #import "ruby/ext/rho/rhoruby.h"
 
 
+@interface CMethodResultError : NSObject {
+    NSString* errorType;
+    NSString* errorDescription;
+}
+
+-(id)init;
+
++ (CMethodResultError*) errorWithType:(NSString*)error_type description:(NSString*)description;
+
+-(NSString*)getErrorType;
+-(NSString*)getErrorDescription;
+
+-(void)dealloc;
+
+@end
+
+@interface CRhoAPIClassInstance : NSObject {
+    NSString* mClassName;
+    NSString* mInstanceID;
+}
+
+- (id) init:(NSString*)clasRubyFullName iID:(NSString*)iID;
+
++(CRhoAPIClassInstance*) rubyClassByName:(NSString*)className instanceID:(NSString*)instanceID;
+
+-(NSString*)getClassName;
+
+-(NSString*)getInstanceID;
+
+@end
+
+
+
 @protocol IMethodResult_RubyObjectFactory <NSObject>
 
 - (VALUE) makeRubyValue:(NSObject*)obj;
@@ -23,6 +56,9 @@
 -(id) init;
 
 - (void) setResult:(NSObject*)value;
+
+-(BOOL) isHash;
+-(NSDictionary*) getHashResult;
 
 -(NSObject*) getResult;
 

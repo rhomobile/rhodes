@@ -43,7 +43,6 @@ void Init_RubyAPI_SimpleOnlyStaticModule(void)
 
 
 
-//TODO: support module aliases
-    rb_const_set(rb_mKernel, rb_intern("SimpleOnlyStaticModule"), rb_mSimpleOnlyStaticModule );
+
 }
 

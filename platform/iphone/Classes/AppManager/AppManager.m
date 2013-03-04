@@ -41,6 +41,8 @@
 #import "logging/RhoLog.h"
 #import "../Event/Event.h"
 
+#import "api_generator/iphone/CRubyConverter.h"
+
 #import "Rhodes.h"
 
 #import "common/app_build_configs.h"
@@ -587,15 +589,23 @@ const char* rho_native_rhodbpath()
 
 
 
+NSString* rho_sys_get_locale_iphone()
+{
+	NSString *preferredLang = [[NSLocale preferredLanguages] objectAtIndex:0];
+	
+	return preferredLang;
+}
 
 
 
 VALUE rho_sys_get_locale() 
 {
-	NSString *preferredLang = [[NSLocale preferredLanguages] objectAtIndex:0];
+	NSString *preferredLang = rho_sys_get_locale_iphone();
 	
 	return rho_ruby_create_string( [preferredLang UTF8String] );
 }
+
+
 
 int rho_sys_get_screen_width()
 {
@@ -654,35 +664,47 @@ void rho_sys_app_install(const char *url) {
     rho_sys_open_url(url);
 }
 
-void rho_sys_run_app(const char* appname, VALUE params) 
-{
+
+
+void rho_sys_run_app_iphone(const char* appname, char* params) {
 	NSString* app_name = [NSString stringWithUTF8String:appname];
 	app_name = [app_name stringByAppendingString:@":"];
-
-	if (params != 0) {
-		//if (TYPE(params) == T_STRING) {
-			char* parameter = getStringFromValue(params);
-			if (parameter != NULL) {
-				NSString* param = [NSString stringWithUTF8String:(const char*)parameter];
-				app_name = [app_name stringByAppendingString:param];
-			}
-		//}
+    
+	if (params != NULL) {
+        NSString* param = [NSString stringWithUTF8String:params];
+        app_name = [app_name stringByAppendingString:param];
 	}
     const char* full_url = [app_name UTF8String];
-    RAWLOG_INFO1("rho_sys_run_app: %s", full_url);	
+    RAWLOG_INFO1("rho_sys_run_app: %s", full_url);
 	
-
+    
 	BOOL res = FALSE;
-
+    
     if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:app_name]]) {
         res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:app_name]];
     }
 	
 	if ( res)
-		RAWLOG_INFO("rho_sys_run_app suceeded.");	
+		RAWLOG_INFO("rho_sys_run_app suceeded.");
 	else
-		RAWLOG_INFO("rho_sys_run_app failed.");	
+		RAWLOG_INFO("rho_sys_run_app failed.");
 }
+
+void rho_sys_run_app(const char* appname, VALUE params)
+{
+    char* str_params = NULL;
+    if (params != 0) {
+       char* parameter = getStringFromValue(params);
+        if (parameter != NULL) {
+            str_params = parameter;
+        }
+    }
+    rho_sys_run_app_iphone(appname, str_params);
+}
+
+
+
+
 
 void rho_sys_bring_to_front()
 {
@@ -715,6 +737,130 @@ static float get_scale() {
 }
 
 
+
+extern BOOL rho_sys_has_wifi_network_iphone();
+extern BOOL rho_sys_has_cell_network_iphone();
+extern BOOL rho_sys_has_network_iphone();
+
+
+int rho_sysimpl_get_property_iphone(char* szPropName, NSObject** resValue)
+{
+    if (strcasecmp("platform", szPropName) == 0)
+    {*resValue = [NSString stringWithUTF8String:"APPLE"]; return 1;}
+    else if (strcasecmp("locale", szPropName) == 0)
+    {*resValue = rho_sys_get_locale_iphone(); return 1; }
+    else if (strcasecmp("country", szPropName) == 0) {
+        NSLocale *locale = [NSLocale currentLocale];
+        NSString *cl = [locale objectForKey:NSLocaleCountryCode];
+        *resValue = cl;
+        return 1;
+    }
+    else if (strcasecmp("screen_width", szPropName) == 0)
+    {*resValue = [NSNumber numberWithInt:rho_sys_get_screen_width()]; return 1; }
+    else if (strcasecmp("screen_height", szPropName) == 0)
+    {*resValue = [NSNumber numberWithInt:rho_sys_get_screen_height()]; return 1; }
+    else if (strcasecmp("real_screen_height", szPropName) == 0)
+    {
+        
+        *resValue = [NSNumber numberWithInt:((int)(rho_sys_get_screen_height()*get_scale()))];
+        return 1;
+    }
+    else if (strcasecmp("real_screen_width", szPropName) == 0)
+    {
+        *resValue = [NSNumber numberWithInt:((int)(rho_sys_get_screen_width()*get_scale()))];
+        return 1;
+    }
+    else if (strcasecmp("screen_orientation", szPropName) == 0) {
+        UIInterfaceOrientation current_orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        if ((current_orientation == UIInterfaceOrientationLandscapeLeft) || (current_orientation == UIInterfaceOrientationLandscapeRight)) {
+            *resValue = @"landscape";
+        }
+        else {
+            *resValue = @"portrait";
+        }
+        return 1;
+    }
+    else if (strcasecmp("has_network", szPropName) == 0)
+    {*resValue = [NSNumber numberWithBool:rho_sys_has_network_iphone()]; return 1; }
+    else if (strcasecmp("has_wifi_network", szPropName) == 0)
+    {*resValue = [NSNumber numberWithBool:rho_sys_has_wifi_network_iphone()]; return 1; }
+    else if (strcasecmp("has_cell_network", szPropName) == 0)
+    {*resValue = [NSNumber numberWithBool:rho_sys_has_cell_network_iphone()]; return 1; }
+    else if (strcasecmp("has_camera", szPropName) == 0) {
+        int has_camera = [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera];
+        *resValue = [NSNumber numberWithBool:(has_camera != 0)];
+        return 1;
+    }
+    else if (strcasecmp("ppi_x", szPropName) == 0 ||
+             strcasecmp("ppi_y", szPropName) == 0) {
+#ifdef __IPHONE_3_2
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+            if (get_scale() > 1.2) {
+                *resValue = [NSNumber numberWithDouble:RHO_NEW_IPAD_PPI];
+            }
+            else {
+                *resValue = [NSNumber numberWithDouble:RHO_IPAD_PPI];
+            }
+            return 1;
+        }
+#endif
+        if (get_scale() > 1.2) {
+            *resValue = [NSNumber numberWithDouble:RHO_IPHONE4_PPI];
+        }
+        else {
+            *resValue = [NSNumber numberWithDouble:RHO_IPHONE_PPI];
+        }
+        return 1;
+    }
+    else if (strcasecmp("device_name", szPropName) == 0) {
+        NSString *model = [[UIDevice currentDevice] model];
+        *resValue = model;
+        return 1;
+    }
+    else if (strcasecmp("os_version", szPropName) == 0) {
+        NSString *version = [[UIDevice currentDevice] systemVersion];
+        *resValue = version;
+        return 1;
+    }
+    else if (strcasecmp("webview_framework", szPropName) == 0) {
+        NSString *version = [[UIDevice currentDevice] systemVersion];
+        NSString *wvf = @"WEBKIT/";
+        wvf = [wvf stringByAppendingString:version];
+        *resValue = wvf;
+        return 1;
+    }
+    else if (strcasecmp("is_emulator", szPropName) == 0) {
+        int bSim = 0;
+#if TARGET_IPHONE_SIMULATOR
+		bSim = 1;
+#endif
+		*resValue = [NSNumber numberWithBool:(bSim != 0)];
+        return 1;
+    }else if (strcasecmp("has_calendar", szPropName) == 0) {
+		int bCal = 0;
+		if (is_rho_calendar_supported())
+			bCal = 1;
+		*resValue = [NSNumber numberWithBool:(bCal != 0)];
+		return 1;
+	}
+    return 0;
+}
+
+
+
+int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
+{
+    NSObject* result = nil;
+    if (rho_sysimpl_get_property_iphone(szPropName, &result)) {
+        *resValue = [CRubyConverter convertToRuby:result];
+        return 1;
+    }
+    return 0;
+}
+
+
+
+/*
 int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 {
     if (strcasecmp("platform", szPropName) == 0)
@@ -816,30 +962,41 @@ int rho_sysimpl_get_property(char* szPropName, VALUE* resValue)
 		return 1;
 	} 
 	
-	/* "device_id" property used only for PUSH technology !
-	 else if (strcasecmp("device_id", szPropName) == 0) {
-		NSString* uuid = [[UIDevice currentDevice] uniqueIdentifier];
-        *resValue = rho_ruby_create_string([uuid UTF8String]);
-        return 1;
-	}
-	*/
+	//// "device_id" property used only for PUSH technology !
+	// else if (strcasecmp("device_id", szPropName) == 0) {
+	//	NSString* uuid = [[UIDevice currentDevice] uniqueIdentifier];
+    //    *resValue = rho_ruby_create_string([uuid UTF8String]);
+    //    return 1;
+	//}
+	
 
 	
-    /*
-	 [[UIDevice currentDevice] uniqueIdentifier]
-    // Removed because it's possibly dangerous: Apple could reject application
-    // used such approach from its AppStore
-    else if (strcasecmp("phone_number", szPropName) == 0) {
-        NSString *num = [[NSUserDefaults standardUserDefaults] stringForKey:@"SBFormattedPhoneNumber"];
-        if (!num)
-            return 0;
-        *resValue =  rho_ruby_create_string([num UTF8String]);
-        return 1;
-    }
-    */
+ 
+	// [[UIDevice currentDevice] uniqueIdentifier]
+    //// Removed because it's possibly dangerous: Apple could reject application
+    //// used such approach from its AppStore
+    //else if (strcasecmp("phone_number", szPropName) == 0) {
+    //    NSString *num = [[NSUserDefaults standardUserDefaults] stringForKey:@"SBFormattedPhoneNumber"];
+    //    if (!num)
+    //        return 0;
+    //    *resValue =  rho_ruby_create_string([num UTF8String]);
+    //    return 1;
+    //}
+ 
 
     return 0;
 }
+
+*/
+
+
+
+
+
+
+
+
+
 
 const char* GetApplicationsRootPath() {
 	static bool loaded = FALSE;

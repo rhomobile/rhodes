@@ -37,10 +37,28 @@ rho::String CMethodResult::toJSON()
 
         for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
         {
-            if ( it != m_hashStrRes.begin() )
+            if ( strRes.length() > 1 )
                 strRes += ",";
 
             strRes += CJSONEntry::quoteValue(it->first) + ":" + CJSONEntry::quoteValue(it->second);
+        }
+
+        for ( rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >::iterator it = m_hashStrL2Res.begin(); it != m_hashStrL2Res.end(); ++it)
+        {
+            if ( strRes.length() > 1 )
+                strRes += ",";
+
+            strRes += CJSONEntry::quoteValue(it->first) + ":{";
+
+            for ( rho::Hashtable<rho::String, rho::String>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+            {
+                if ( it2 != it->second.begin() )
+                    strRes += ",";
+
+                strRes += CJSONEntry::quoteValue(it2->first) + ":" + CJSONEntry::quoteValue(it2->second);
+            }
+
+            strRes += "}";
         }
 
         strRes += "}";
@@ -119,6 +137,18 @@ VALUE CMethodResult::toRuby()
             addStrToHash( valHash, it->first.c_str(), it->second.c_str() );
         }
 
+        for ( rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >::iterator it = m_hashStrL2Res.begin(); it != m_hashStrL2Res.end(); ++it)
+        {
+            CHoldRubyValue valHashL2(rho_ruby_createHash());
+
+            for ( rho::Hashtable<rho::String, rho::String>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+            {
+                addStrToHash( valHashL2, it2->first.c_str(), it2->second.c_str() );
+            }
+
+            addHashToHash( valHash, it->first.c_str(), valHashL2 );
+        }
+
         return valHash;
     }else if ( m_ResType == eString)
     {
@@ -194,8 +224,22 @@ public:
 
 bool CMethodResult::hasCallback()
 {
-    return m_ResType != eNone && (m_strRubyCallback.length() != 0 || m_pRubyCallbackProc || m_strJSCallback.length() != 0);
+    return m_strRubyCallback.length() != 0 || m_pRubyCallbackProc || m_strJSCallback.length() != 0;
 
+}
+
+bool CMethodResult::isEqualCallback(CMethodResult& oResult)
+{
+    if (!hasCallback())
+        return hasCallback() == oResult.hasCallback();
+
+    if ( m_strRubyCallback.length() != 0 )
+        return m_strRubyCallback == oResult.m_strRubyCallback;
+
+    if ( m_pRubyCallbackProc )
+        return m_pRubyCallbackProc == oResult.m_pRubyCallbackProc;
+
+    return m_strJSCallback == oResult.m_strJSCallback;
 }
 
 void CMethodResult::callCallback()
@@ -205,7 +249,7 @@ void CMethodResult::callCallback()
 
     if ( m_ResType != eNone && m_strRubyCallback.length() != 0 )
     {
-        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "__rho_inline");
 
         RHODESAPP().callCallbackWithData( m_strRubyCallback, strResBody, m_strCallbackParam, true);
 
@@ -213,7 +257,7 @@ void CMethodResult::callCallback()
     }else if ( m_ResType != eNone && m_pRubyCallbackProc)
     {
         VALUE oProc = m_pRubyCallbackProc->getValue();
-        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "body");
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "__rho_inline");
 
         RHODESAPP().callCallbackProcWithData( oProc, strResBody, m_strCallbackParam, true);
 

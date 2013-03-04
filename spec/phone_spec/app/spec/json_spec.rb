@@ -86,7 +86,11 @@ describe "Json" do
         puts "res : #{res}"
         res['status'].should == 'ok'
 
+if System.get_property('platform') == 'WINDOWS'
+        parsed = Rho::JSON.parse( res['body'] )
+else
         parsed = res['body']
+end
         parsed.is_a?(Array).should ==  true
         parsed[0].is_a?(Hash).should ==  true
     end

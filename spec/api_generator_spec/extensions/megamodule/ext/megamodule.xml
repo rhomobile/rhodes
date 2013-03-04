@@ -44,27 +44,69 @@
 		</PROPERTIES>	
 		<METHODS>
 			<METHOD name="typesTest">
-				<DESC>test types</DESC>
+				<DESC>test types: return true if (paramStr == "ABC") AND (paramBool == true) AND (paramInt == 555123) AND (paramFloat == 3.14) AND (paramArray == [1,2,3]) AND (paramHash == {:p1 => "abc", :p2 => "qwe"}).</DESC>
 				<PARAMS>
 					<PARAM name="paramStr" type="STRING"/>
 					<PARAM name="paramBool" type="BOOLEAN"/>
 					<PARAM name="paramInt" type="INTEGER"/>
 					<PARAM name="paramFloat" type="FLOAT"/>
-					<PARAM name="paramArray" type="ARRAY"/>
-					<PARAM name="paramHash" type="HASH"/>
+					<PARAM name="paramArray" type="ARRAY">
+						<PARAM type="INTEGER"/>
+					</PARAM>
+					<PARAM name="paramHash" type="HASH">
+						<PARAMS>
+							<PARAM name="strParam" type="STRING"/>
+						</PARAMS>	
+					</PARAM>
+					
 				</PARAMS>
 				<RETURN type="BOOLEAN">
-					<DESC>
-						return true if (paramStr == "ABC") AND (paramBool == true) AND (paramInt == 555123) AND (paramFloat == 3.14) AND (paramArray == [1,2,3]) AND (paramHash == {:p1 => "abc", :p2 => "qwe"}).
-					</DESC>
+					<DESC>return true if (paramStr == "ABC") AND (paramBool == true) AND (paramInt == 555123) AND (paramFloat == 3.14) AND (paramArray == [1,2,3]) AND (paramHash == {:p1 => "abc", :p2 => "qwe"}).</DESC>
 				</RETURN>
 			</METHOD>
 			<METHOD name="produceArray">
-				<DESC>doc produceArray</DESC>
-				<RETURN type="ARRAY" itemType="INTEGER">
-					<DESC>
-						return 1,2,3,4,5,6,7,8,9,10
-					</DESC>
+				<DESC>example of producing Array for return - must return [1,2,3,4,5,6,7,8,9,10]</DESC>
+				<RETURN type="ARRAY">
+					<PARAM type="INTEGER">
+						<DESC>doc produceArray</DESC>
+					</PARAM>	
+					<DESC>return 1,2,3,4,5,6,7,8,9,10</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD name="produceHash">
+				<DESC>example of producing Hash for return</DESC>
+				<RETURN type="HASH">
+					<PARAMS>
+						<PARAM name="parame1" type="STRING">
+							<DESC></DESC>
+						</PARAM>
+						<PARAM name="parama2" type="INTEGER">
+							<DESC></DESC>
+						</PARAM>
+					</PARAMS>	
+					<DESC>return { :parame1 => "value1", :parama2 = > 55 }</DESC>
+				</RETURN>
+			</METHOD>
+			<METHOD name="produceComplicatedResult">
+				<DESC>example of producing complicated type(array of hash of dif types) for return. should return ; [{ :parame1 => "value1", :parama2 = > 55 }, { :paramu3 => [1,2,3] } ]</DESC>
+				<RETURN type="ARRAY">
+					<PARAM type = "HASH">
+						<PARAMS>
+							<PARAM name="parame1" type="STRING">
+								<DESC></DESC>
+							</PARAM>
+							<PARAM name="parama2" type="INTEGER">
+								<DESC></DESC>
+							</PARAM>
+							<PARAM name="paramu3" type="ARRAY">
+								<PARAM type="INTEGER">
+									<DESC></DESC>
+								</PARAM>	
+								<DESC></DESC>
+							</PARAM>
+						</PARAMS>	
+					</PARAM>
+					<DESC>return [{ :parame1 => "value1", :parama2 = > 55 }, { :paramu3 => [1,2,3] } ]</DESC>
 				</RETURN>
 			</METHOD>
 			<METHOD name="getObjectsCount" access="STATIC">
@@ -114,6 +156,41 @@
 			<METHOD name="stopPeriodicallyCallback" access="INSTANCE" hasCallback="none">
 				<DESC>stop callback</DESC>
 			</METHOD>
+			<METHOD name="complicatedTypesTest1">
+				<DESC>test complicated params: return true if params == [ { :intItem => 35, :strItem => 'ddd', hashItem => { :itemStr => 'eee', :itemArray => [true, false, true] } }, { :intItem => 12, :strItem => 'bla-bla-bla' } ]</DESC>
+				<PARAMS>
+					<PARAM name="paramArray" type="ARRAY">
+						<PARAM type="HASH">
+							 <PARAMS>
+							 	  <PARAM name="intItem" type="INTEGER">
+								 	  	<DESC>doc text</DESC>
+							 	  </PARAM>
+							 	<PARAM name="strItem" type="STRING">
+							 		<DESC>doc text</DESC>
+							 	</PARAM>
+							 	<PARAM name="hashItem" type="HASH">
+							 		<DESC>doc text</DESC>
+							 		<PARAMS>
+							 			<PARAM name="itemStr" type="STRING">
+							 				<DESC>doc text</DESC>
+							 			</PARAM>
+							 			<PARAM name="itemArray" type="ARRAY">
+							 				<DESC>doc text</DESC>
+							 				<PARAM type="BOOLEAN">
+							 					<DESC>doc text</DESC>
+							 				</PARAM>
+							 			</PARAM>
+							 		</PARAMS>
+							 	</PARAM>
+							 </PARAMS>
+						</PARAM>		
+					</PARAM>
+				</PARAMS>
+				<RETURN type="BOOLEAN">
+					<DESC>return true if params == [ { :intItem => 35, :strItem => 'ddd', hashItem => { :itemStr => 'eee', :itemArray => [true, false, true] } }, { :intItem => 12, :strItem => 'bla-bla-bla' } ]</DESC>
+				</RETURN>
+			</METHOD>
+			
 			<ALIASES>
 				<ALIAS new="set_period" existing="setPeriodicallyCallback" deprecated="true" >
 					<DESC>old deprecated set callback method</DESC>

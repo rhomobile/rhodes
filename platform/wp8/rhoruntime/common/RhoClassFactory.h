@@ -47,11 +47,7 @@ public:
         return new CRhoThreadImpl;
     }
 
-    net::ISSL* createSSLEngine()
-    {
-        return null;
-    }
-
+    virtual net::ISSL* createSSLEngine();
     virtual IRhoCrypt* createRhoCrypt();
 };
 

@@ -262,6 +262,7 @@ namespace "config" do
   task :common do
     
     $binextensions = []
+    $app_extensions_list = {}
     buildyml = 'rhobuild.yml'
 
     buildyml = ENV["RHOBUILD"] unless ENV["RHOBUILD"].nil?
@@ -317,7 +318,17 @@ namespace "config" do
 		#extpaths += $app_config["paths"]["extensions"]
       end
     end
-    extpaths << $config["env"]["paths"]["extensions"] if $config["env"]["paths"]["extensions"]
+    if $config["env"]["paths"]["extensions"]
+      #extpaths << $config["env"]["paths"]["extensions"]
+      env_path_exts = $config["env"]["paths"]["extensions"]
+      if env_path_exts.is_a? String
+        extpaths << p
+      elsif env_path_exts.is_a? Array
+        env_path_exts.each do |p|
+          extpaths << p
+        end
+      end
+    end
     extpaths << File.join($app_path, "extensions")
     extpaths << File.join($startdir, "lib","commonAPI")
     extpaths << File.join($startdir, "lib","extensions")
@@ -335,8 +346,9 @@ namespace "config" do
     extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
        $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
     extensions += get_extensions
-    extensions << "coreAPI" if $current_platform == "wm" || $current_platform == "wp8" || $current_platform == "win32"
+    extensions << "coreapi" if $current_platform == "wm" || $current_platform == "wp8" || $current_platform == "win32" || $current_platform == 'android' || $current_platform == 'iphone'
     extensions << "rhoconnect-client" if $rhosimulator_build
+    extensions << "json"
     $app_config["extensions"] = extensions.uniq
     
     capabilities = []
@@ -695,36 +707,68 @@ def find_ext_ingems(extname)
   extpath
 end
 
+def write_modules_js(filename,modules)
+  File.open(filename, "w") do |f|
+    f.puts "// Generated #{Time.now.to_s}"
+    f.puts '$(document).ready(function(){'
+    f.puts '    Rho.loadApiModules(['
+    f.puts '        "' + modules.join('","') + '"'
+    f.puts '    ]);'
+    f.puts '});'
+  end
+end
+
+def is_ext_supported(extpath)
+    extyml = File.join(extpath, "ext.yml")    
+    res = true
+    if File.file? extyml
+      extconf = Jake.config(File.open(extyml))
+      if extconf["platforms"]
+        res = extconf["platforms"].index($current_platform) != nil
+      end  
+    end
+    res    
+end
+
 def init_extensions(startdir, dest)
   extentries = []
   nativelib = []
-  extlibs = [] 
+  extlibs = []
+  extjsmodules = []
   extpaths = $app_config["extpaths"]  
-    
+
+  rhoapi_js_folder = nil
+  unless dest.nil?
+    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api/generated" )
+  end
+
   puts 'init extensions'
   $app_config["extensions"].each do |extname|  
     puts 'ext - ' + extname
     
     extpath = nil
-    extpath = find_ext_ingems(extname) if $app_config["app_type"] == 'rhoelements'
+    extpaths.each do |p|
+      #next if p.index("rhodes") && extname.downcase() == "barcode" && $current_platform == "wm"
+      
+      ep = File.join(p, extname)
+      if File.exists?( ep ) && is_ext_supported(ep)
+        extpath = ep
+        break
+      end
+    end    
 
-    if extpath.nil?    
-        extpaths.each do |p|
-          #next if p.index("rhodes") && extname.downcase() == "barcode" && $current_platform == "wm"
-          
-          ep = File.join(p, extname)
-          if File.exists? ep
-            extpath = ep
-            break
-          end
+    if extpath.nil?        
+        extpath = find_ext_ingems(extname) 
+        if extpath
+            extpath = nil unless is_ext_supported(extpath)
         end    
     end
-        
-    extpath = find_ext_ingems(extname) if extpath.nil? && $app_config["app_type"] != 'rhoelements'
       
     if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
 		raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
 	end
+
+    $app_extensions_list[extname] = extpath
         
     unless extpath.nil?      
       add_extension(extpath, dest) unless dest.nil?
@@ -766,9 +810,13 @@ def init_extensions(startdir, dest)
             xml_api_paths = xml_api_paths.split(',')
             
             xml_api_paths.each do |xml_api|
-                cmd_line = "#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}"
-                puts "cmd_line: #{cmd_line}"
-                system "#{cmd_line}"
+                Jake.run3("#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}")
+            end
+          end
+
+          unless rhoapi_js_folder.nil?
+            Dir.glob(extpath + "/public/api/generated/Rho.*.js").each do |f|
+              extjsmodules << f.gsub(/^.*(Rho\.[^\.]+)\.js$/, '\1')
             end
           end
             
@@ -781,7 +829,14 @@ def init_extensions(startdir, dest)
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
   puts "exts " + exts
-  
+
+  # deploy Common API JS implementation
+  if extjsmodules.count > 0
+    mkdir_p rhoapi_js_folder
+    cp_r "#{$startdir}/res/generators/templates/api/js/rhoapi.js", "#{rhoapi_js_folder}/rhoapi.js" # if File.exist? rhoapi_js_folder
+    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodules)
+  end
+
   if $config["platform"] != "bb"
     #exists = []
       
@@ -1707,7 +1762,10 @@ namespace "run" do
 
         #check gem extensions
         config_ext_paths = ""
-        extpaths = $app_config["extpaths"]        
+        extpaths = $app_config["extpaths"]
+        extjsmodules = []
+        rhoapi_js_folder = File.join( $app_path, "public/api/generated" )
+
         $app_config["extensions"].each do |extname|
         
             extpath = nil
@@ -1744,6 +1802,23 @@ namespace "run" do
                 
                 config_ext_paths += "#{extpath};" if extpath && extpath.length() > 0                     
             end    
+
+            if extpath && extpath.length() > 0
+                js_folder = File.join(extpath, "public/api/generated")
+                # TODO: RhoSimulator should look for 'public' at all extension folders!
+                Dir.glob(js_folder + "/Rho.*.js").each do |f|
+                  mkdir_p rhoapi_js_folder
+                  cp f, "#{rhoapi_js_folder}/"
+                  extjsmodules << f.gsub(/^.*(Rho\.[^\.]+)\.js$/, '\1')
+                end
+            end
+        end
+
+        # deploy Common API JS implementation
+        if extjsmodules.count > 0
+          mkdir_p rhoapi_js_folder
+          cp_r "#{$startdir}/res/generators/templates/api/js/rhoapi.js", "#{rhoapi_js_folder}/rhoapi.js"
+          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodules)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 

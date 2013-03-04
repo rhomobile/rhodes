@@ -22,7 +22,6 @@ namespace details
 {
 
 using rho::json::CJSONEntry;
-using rho::json::CJSONArray;
 
 //template <>
 //struct rho_cast_helper<CJSONEntry, jobject>: public RhoJniConvertor
@@ -37,24 +36,41 @@ using rho::json::CJSONArray;
 //};
 
 template <>
-struct rho_cast_helper<jstring, CJSONEntry>: public RhoJniConvertor
+struct rho_cast_helper<jstring, CJSONEntry>
 {
-    jstring operator()(JNIEnv *env, CJSONEntry jsonEntry);
+    jstring operator()(JNIEnv *env, const CJSONEntry& jsonEntry);
 };
 
 template <>
 struct rho_cast_helper<jobject, CJSONEntry>: public RhoJniConvertor
 {
-//    jobject m_jObject;
-    jobject operator()(JNIEnv *env, CJSONEntry jsonEntry);
-//    jobject convertRubyArrayToJavaCollection(VALUE array);
-//    jobject convertRubyHashToJavaMap(VALUE array);
+    jobject operator()(JNIEnv *env, const CJSONEntry& jsonEntry);
+    jobject convertJsonEntryToJavaCollection(const CJSONEntry& entry);
+    jobject convertJsonEntryToJavaMap(const CJSONEntry& entry);
 };
 
 template <>
-struct rho_cast_helper<jobjectArray, CJSONArray>
+struct rho_cast_helper<jobjectArray, CJSONEntry>: public RhoJniConvertor
 {
-    jobjectArray operator()(JNIEnv *env, const CJSONArray& jsonArray);
+    jobjectArray operator()(JNIEnv *env, const CJSONEntry& entry);
+};
+
+template <>
+struct rho_cast_helper<jboolean, CJSONEntry>
+{
+    jboolean operator()(JNIEnv *env, const CJSONEntry& entry);
+};
+
+template <>
+struct rho_cast_helper<jint, CJSONEntry>
+{
+    jint operator()(JNIEnv *env, const CJSONEntry& entry);
+};
+
+template <>
+struct rho_cast_helper<jdouble, CJSONEntry>
+{
+    jdouble operator()(JNIEnv *env, const CJSONEntry& entry);
 };
 
 }

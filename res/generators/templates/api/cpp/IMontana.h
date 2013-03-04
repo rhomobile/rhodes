@@ -24,6 +24,7 @@ end; end; end %>
 
 <% $cur_module.methods.each do |module_method|
     next if module_method.access == ModuleMethod::ACCESS_STATIC
+    next if !module_method.generateNativeAPI
 
     params = ''
     module_method.params.each do |param|
@@ -67,7 +68,7 @@ end; end; end %>
     virtual rho::String getInitialDefaultID() = 0;
     virtual void setDefaultID(const rho::String& strID) = 0;
 <% end %>
-    virtual void addCommandToQueue(rho::common::IRhoRunnable* pFunctor) = 0;
+    virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor) = 0;
     virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor) = 0;
 };
 

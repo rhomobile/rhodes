@@ -15,15 +15,14 @@ def build_extension()
     args = [$project_path, "/property:Configuration="+$build_config+" /property:Platform="+$sdk, '/t:Build']
     
   else
-    puts "This rakefile support only Windows platforms(WM, CE, Desktop and WP8)"
-    exit
+    fail "This rakefile support only Windows platforms(WM, CE, Desktop and WP8)"
   end
 
   cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
   puts cmdline
   puts `#{cmdline}`
   
-  exit unless $? == 0
+  fail "[#{cmdline}]" unless $? == 0
 
   if $targetext_dir
     $targetext_dir = File.join($targetext_dir,$extname)

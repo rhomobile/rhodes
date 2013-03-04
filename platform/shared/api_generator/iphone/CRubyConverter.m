@@ -4,36 +4,6 @@
 #import "ruby/ext/rho/rhoruby.h"
 #import "ruby/include/ruby.h"
 
-@implementation CRubyModule
-
-- (id) init:(NSString*)mName iID:(NSString*)iID {
-    self = [super init];
-    mModuleName = [mName retain];
-    mInstanceID = [iID retain];
-    return self;
-}
-
-+(CRubyModule*) rubyModuleByName:(NSString*)moduleName instanceID:(NSString*)instanceID {
-    CRubyModule* m = [[CRubyModule alloc] init:moduleName iID:instanceID];
-    return m;
-}
-
--(NSString*)getModuleName {
-    return mModuleName;
-}
-
--(NSString*)getInstanceID {
-    return mInstanceID;
-}
-
--(void)dealloc {
-    [mModuleName release];
-    [mInstanceID release];
-    [super dealloc];
-}
-
-@end
-
 
 
 @implementation CRubyConverter
@@ -71,16 +41,16 @@
             rho_ruby_add_to_array(v, objValue);
         }
     }
-    else if ([objectiveC_value isKindOfClass:[CRubyModule class]]) {
+    else if ([objectiveC_value isKindOfClass:[CRhoAPIClassInstance class]]) {
         // rubyModule
-        CRubyModule* rubyModule = (CRubyModule*)objectiveC_value;
-        NSString* rubyPath = [[rubyModule getModuleName] stringByReplacingOccurrencesOfString:@"." withString:@"::"];
+        CRhoAPIClassInstance* rubyModule = (CRhoAPIClassInstance*)objectiveC_value;
+        NSString* rubyPath = [[rubyModule getClassName] stringByReplacingOccurrencesOfString:@"." withString:@"::"];
         VALUE klass = rb_path_to_class(rho_ruby_create_string([rubyPath UTF8String]));
         if (!rho_ruby_is_NIL(klass)) {
             v = rho_ruby_create_object_with_id(klass, [[rubyModule getInstanceID] UTF8String]);
         }
         else {
-            rb_raise(rho_ruby_get_NIL(), "can not found Ruby Module (%s)", [rubyPath UTF8String]);
+            rb_raise(rho_ruby_get_NIL(), "can not found Ruby Class (%s)", [rubyPath UTF8String]);
         }
     }
     else if ([objectiveC_value isKindOfClass:[NSDictionary class]]) {

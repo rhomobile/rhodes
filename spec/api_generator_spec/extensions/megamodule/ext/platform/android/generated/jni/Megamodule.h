@@ -57,6 +57,12 @@ protected:
     static const char* const PRODUCEARRAY_TASK_CLASS;
     static jclass s_clsproduceArrayTask;
     static jmethodID s_midproduceArrayTask;
+    static const char* const PRODUCEHASH_TASK_CLASS;
+    static jclass s_clsproduceHashTask;
+    static jmethodID s_midproduceHashTask;
+    static const char* const PRODUCECOMPLICATEDRESULT_TASK_CLASS;
+    static jclass s_clsproduceComplicatedResultTask;
+    static jmethodID s_midproduceComplicatedResultTask;
     static const char* const GETOBJECTSCOUNT_TASK_CLASS;
     static jclass s_clsgetObjectsCountTask;
     static jmethodID s_midgetObjectsCountTask;
@@ -75,6 +81,9 @@ protected:
     static const char* const STOPPERIODICALLYCALLBACK_TASK_CLASS;
     static jclass s_clsstopPeriodicallyCallbackTask;
     static jmethodID s_midstopPeriodicallyCallbackTask;
+    static const char* const COMPLICATEDTYPESTEST1_TASK_CLASS;
+    static jclass s_clscomplicatedTypesTest1Task;
+    static jmethodID s_midcomplicatedTypesTest1Task;
     static const char* const GETPROPERTY_TASK_CLASS;
     static jclass s_clsgetPropertyTask;
     static jmethodID s_midgetPropertyTask;
@@ -142,8 +151,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getObject(env); 
@@ -151,7 +159,7 @@ public:
                     jhObject.get(), 
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void getIntegerProperty(const T& argsAdapter, MethodResultJni& result)
@@ -164,8 +172,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getObject(env); 
@@ -173,7 +180,7 @@ public:
                     jhObject.get(), 
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void setIntegerProperty(const T& argsAdapter, MethodResultJni& result)
@@ -186,20 +193,20 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 1);
-        RHO_ASSERT(argsAdapter.size() <= (1 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 3);
 
         jhobject jhObject = 
             getObject(env); 
 
-        jholder< jint > jhvalue
-            = rho_cast< jint >(env, argsAdapter[0]);
+        jholder< jint > jhvalue = (argsAdapter.size() <= 0) ?
+            static_cast< jint >(0) :
+                rho_cast< jint >(env, argsAdapter[0]);
         jhobject jhTask = env->NewObject(s_clssetIntegerPropertyTask, s_midsetIntegerPropertyTask,
                     jhObject.get(), 
                     jhvalue.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void typesTest(const T& argsAdapter, MethodResultJni& result)
@@ -212,29 +219,34 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 6);
-        RHO_ASSERT(argsAdapter.size() <= (6 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 8);
 
         jhobject jhObject = 
             getObject(env); 
 
-        jholder< jstring > jhparamStr
-            = rho_cast< jstring >(env, argsAdapter[0]);
+        jholder< jstring > jhparamStr = (argsAdapter.size() <= 0) ?
+            static_cast< jstring >(0) :
+                rho_cast< jstring >(env, argsAdapter[0]);
 
-        jholder< jboolean > jhparamBool
-            = rho_cast< jboolean >(env, argsAdapter[1]);
+        jholder< jboolean > jhparamBool = (argsAdapter.size() <= 1) ?
+            static_cast< jboolean >(0) :
+                rho_cast< jboolean >(env, argsAdapter[1]);
 
-        jholder< jint > jhparamInt
-            = rho_cast< jint >(env, argsAdapter[2]);
+        jholder< jint > jhparamInt = (argsAdapter.size() <= 2) ?
+            static_cast< jint >(0) :
+                rho_cast< jint >(env, argsAdapter[2]);
 
-        jholder< jdouble > jhparamFloat
-            = rho_cast< jdouble >(env, argsAdapter[3]);
+        jholder< jdouble > jhparamFloat = (argsAdapter.size() <= 3) ?
+            static_cast< jdouble >(0) :
+                rho_cast< jdouble >(env, argsAdapter[3]);
 
-        jholder< jobject > jhparamArray
-            = rho_cast< jobject >(env, argsAdapter[4]);
+        jholder< jobject > jhparamArray = (argsAdapter.size() <= 4) ?
+            static_cast< jobject >(0) :
+                rho_cast< jobject >(env, argsAdapter[4]);
 
-        jholder< jobject > jhparamHash
-            = rho_cast< jobject >(env, argsAdapter[5]);
+        jholder< jobject > jhparamHash = (argsAdapter.size() <= 5) ?
+            static_cast< jobject >(0) :
+                rho_cast< jobject >(env, argsAdapter[5]);
         jhobject jhTask = env->NewObject(s_clstypesTestTask, s_midtypesTestTask,
                     jhObject.get(), 
                     jhparamStr.get(),
@@ -245,7 +257,7 @@ public:
                     jhparamHash.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void produceArray(const T& argsAdapter, MethodResultJni& result)
@@ -258,8 +270,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getObject(env); 
@@ -267,7 +278,49 @@ public:
                     jhObject.get(), 
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
+    }
+
+    void produceHash(const T& argsAdapter, MethodResultJni& result)
+    {
+        LOG(TRACE) + "produceHash";
+
+        JNIEnv *env = jniInit();
+        if (!env) {
+            LOG(FATAL) + "JNI initialization failed";
+            return;
+        }
+
+        RHO_ASSERT(argsAdapter.size() <= 2);
+
+        jhobject jhObject = 
+            getObject(env); 
+        jhobject jhTask = env->NewObject(s_clsproduceHashTask, s_midproduceHashTask,
+                    jhObject.get(), 
+                    static_cast<jobject>(result));
+
+        run(env, jhTask.get(), result, true, true);
+    }
+
+    void produceComplicatedResult(const T& argsAdapter, MethodResultJni& result)
+    {
+        LOG(TRACE) + "produceComplicatedResult";
+
+        JNIEnv *env = jniInit();
+        if (!env) {
+            LOG(FATAL) + "JNI initialization failed";
+            return;
+        }
+
+        RHO_ASSERT(argsAdapter.size() <= 2);
+
+        jhobject jhObject = 
+            getObject(env); 
+        jhobject jhTask = env->NewObject(s_clsproduceComplicatedResultTask, s_midproduceComplicatedResultTask,
+                    jhObject.get(), 
+                    static_cast<jobject>(result));
+
+        run(env, jhTask.get(), result, true, true);
     }
 
     static
@@ -281,8 +334,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getSingleton(env); 
@@ -290,7 +342,7 @@ public:
                     jhObject.get(), 
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     static
@@ -304,20 +356,20 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 1);
-        RHO_ASSERT(argsAdapter.size() <= (1 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 3);
 
         jhobject jhObject = 
             getSingleton(env); 
 
-        jholder< jint > jhindex
-            = rho_cast< jint >(env, argsAdapter[0]);
+        jholder< jint > jhindex = (argsAdapter.size() <= 0) ?
+            static_cast< jint >(0) :
+                rho_cast< jint >(env, argsAdapter[0]);
         jhobject jhTask = env->NewObject(s_clsgetObjectByIndexTask, s_midgetObjectByIndexTask,
                     jhObject.get(), 
                     jhindex.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void showAlertFromUIThread(const T& argsAdapter, MethodResultJni& result)
@@ -330,14 +382,14 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 1);
-        RHO_ASSERT(argsAdapter.size() <= (1 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 3);
 
         jhobject jhObject = 
             getObject(env); 
 
-        jholder< jstring > jhmessage
-            = rho_cast< jstring >(env, argsAdapter[0]);
+        jholder< jstring > jhmessage = (argsAdapter.size() <= 0) ?
+            static_cast< jstring >(0) :
+                rho_cast< jstring >(env, argsAdapter[0]);
         jhobject jhTask = env->NewObject(s_clsshowAlertFromUIThreadTask, s_midshowAlertFromUIThreadTask,
                     jhObject.get(), 
                     jhmessage.get(),
@@ -356,20 +408,20 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 1);
-        RHO_ASSERT(argsAdapter.size() <= (1 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 3);
 
         jhobject jhObject = 
             getObject(env); 
 
-        jholder< jint > jhperiodInMilliseconds
-            = rho_cast< jint >(env, argsAdapter[0]);
+        jholder< jint > jhperiodInMilliseconds = (argsAdapter.size() <= 0) ?
+            static_cast< jint >(0) :
+                rho_cast< jint >(env, argsAdapter[0]);
         jhobject jhTask = env->NewObject(s_clssetPeriodicallyCallbackTask, s_midsetPeriodicallyCallbackTask,
                     jhObject.get(), 
                     jhperiodInMilliseconds.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void isPeriodicallyCallbackSetted(const T& argsAdapter, MethodResultJni& result)
@@ -382,8 +434,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getObject(env); 
@@ -391,7 +442,7 @@ public:
                     jhObject.get(), 
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void stopPeriodicallyCallback(const T& argsAdapter, MethodResultJni& result)
@@ -404,8 +455,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getObject(env); 
@@ -413,7 +463,33 @@ public:
                     jhObject.get(), 
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
+    }
+
+    void complicatedTypesTest1(const T& argsAdapter, MethodResultJni& result)
+    {
+        LOG(TRACE) + "complicatedTypesTest1";
+
+        JNIEnv *env = jniInit();
+        if (!env) {
+            LOG(FATAL) + "JNI initialization failed";
+            return;
+        }
+
+        RHO_ASSERT(argsAdapter.size() <= 3);
+
+        jhobject jhObject = 
+            getObject(env); 
+
+        jholder< jobject > jhparamArray = (argsAdapter.size() <= 0) ?
+            static_cast< jobject >(0) :
+                rho_cast< jobject >(env, argsAdapter[0]);
+        jhobject jhTask = env->NewObject(s_clscomplicatedTypesTest1Task, s_midcomplicatedTypesTest1Task,
+                    jhObject.get(), 
+                    jhparamArray.get(),
+                    static_cast<jobject>(result));
+
+        run(env, jhTask.get(), result, true, true);
     }
 
     void getProperty(const T& argsAdapter, MethodResultJni& result)
@@ -426,20 +502,20 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 1);
-        RHO_ASSERT(argsAdapter.size() <= (1 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 3);
 
         jhobject jhObject = 
             getObject(env); 
 
-        jholder< jstring > jhpropertyName
-            = rho_cast< jstring >(env, argsAdapter[0]);
+        jholder< jstring > jhpropertyName = (argsAdapter.size() <= 0) ?
+            static_cast< jstring >(0) :
+                rho_cast< jstring >(env, argsAdapter[0]);
         jhobject jhTask = env->NewObject(s_clsgetPropertyTask, s_midgetPropertyTask,
                     jhObject.get(), 
                     jhpropertyName.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void getProperties(const T& argsAdapter, MethodResultJni& result)
@@ -452,20 +528,20 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 1);
-        RHO_ASSERT(argsAdapter.size() <= (1 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 3);
 
         jhobject jhObject = 
             getObject(env); 
 
-        jholder< jobject > jharrayofNames
-            = rho_cast< jobject >(env, argsAdapter[0]);
+        jholder< jobject > jharrayofNames = (argsAdapter.size() <= 0) ?
+            static_cast< jobject >(0) :
+                rho_cast< jobject >(env, argsAdapter[0]);
         jhobject jhTask = env->NewObject(s_clsgetPropertiesTask, s_midgetPropertiesTask,
                     jhObject.get(), 
                     jharrayofNames.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void getAllProperties(const T& argsAdapter, MethodResultJni& result)
@@ -478,8 +554,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getObject(env); 
@@ -487,7 +562,7 @@ public:
                     jhObject.get(), 
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void setProperty(const T& argsAdapter, MethodResultJni& result)
@@ -500,24 +575,25 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 2);
-        RHO_ASSERT(argsAdapter.size() <= (2 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 4);
 
         jhobject jhObject = 
             getObject(env); 
 
-        jholder< jstring > jhpropertyName
-            = rho_cast< jstring >(env, argsAdapter[0]);
+        jholder< jstring > jhpropertyName = (argsAdapter.size() <= 0) ?
+            static_cast< jstring >(0) :
+                rho_cast< jstring >(env, argsAdapter[0]);
 
-        jholder< jstring > jhpropertyValue
-            = rho_cast< jstring >(env, argsAdapter[1]);
+        jholder< jstring > jhpropertyValue = (argsAdapter.size() <= 1) ?
+            static_cast< jstring >(0) :
+                rho_cast< jstring >(env, argsAdapter[1]);
         jhobject jhTask = env->NewObject(s_clssetPropertyTask, s_midsetPropertyTask,
                     jhObject.get(), 
                     jhpropertyName.get(),
                     jhpropertyValue.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void setProperties(const T& argsAdapter, MethodResultJni& result)
@@ -530,20 +606,20 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 1);
-        RHO_ASSERT(argsAdapter.size() <= (1 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 3);
 
         jhobject jhObject = 
             getObject(env); 
 
-        jholder< jobject > jhpropertyMap
-            = rho_cast< jobject >(env, argsAdapter[0]);
+        jholder< jobject > jhpropertyMap = (argsAdapter.size() <= 0) ?
+            static_cast< jobject >(0) :
+                rho_cast< jobject >(env, argsAdapter[0]);
         jhobject jhTask = env->NewObject(s_clssetPropertiesTask, s_midsetPropertiesTask,
                     jhObject.get(), 
                     jhpropertyMap.get(),
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     void clearAllProperties(const T& argsAdapter, MethodResultJni& result)
@@ -556,8 +632,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getObject(env); 
@@ -565,7 +640,7 @@ public:
                     jhObject.get(), 
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
     static
@@ -579,8 +654,7 @@ public:
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() >= 0);
-        RHO_ASSERT(argsAdapter.size() <= (0 + 2));
+        RHO_ASSERT(argsAdapter.size() <= 2);
 
         jhobject jhObject = 
             getSingleton(env); 
@@ -588,7 +662,7 @@ public:
                     jhObject.get(), 
                     static_cast<jobject>(result));
 
-        run(env, jhTask.get(), result, false, false);
+        run(env, jhTask.get(), result, true, true);
     }
 
 

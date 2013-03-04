@@ -3495,14 +3495,6 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="sqlite3"
-					>
-					<File
-						RelativePath="..\..\shared\ruby\ext\sqlite3_api\sqlite3_api_wrap.c"
-						>
-					</File>
-				</Filter>
-				<Filter
 					Name="geolocation"
 					>
 					<File
@@ -3655,18 +3647,6 @@
 					</File>
 					<File
 						RelativePath="..\..\shared\ruby\ext\socket\sockport.h"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="asynchttp"
-					>
-					<File
-						RelativePath="..\..\shared\ruby\ext\asynchttp\asynchttp.i"
-						>
-					</File>
-					<File
-						RelativePath="..\..\shared\ruby\ext\asynchttp\asynchttp_wrap.c"
 						>
 					</File>
 				</Filter>

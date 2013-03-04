@@ -1,6 +1,5 @@
-entry: Init_System
+entry: Init_CoreAPI_Extension
 javaentry: com.coreapi.CoreAPI
-android_additional_sources_list: ext/platform/android/ext_build.files
 libraries: ["CoreAPI"]
 
 project_paths:
@@ -8,4 +7,4 @@ project_paths:
   wm: ext/platform/wm/CoreAPI.vcproj
   win32: ext/platform/wm/CoreAPI.vcproj
   
-xml_api_paths: ext/system.xml
+xml_api_paths: ext/system.xml, ext/NetworkAccess.xml, ext/sqlite3.xml, ext/process.xml, ext/webview.xml

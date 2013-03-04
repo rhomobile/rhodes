@@ -32,7 +32,7 @@ def build_extension(name, arch)
       cmdline = $gccbin + ' ' + args.join(' ')
       puts cmdline
       puts `#{cmdline}`
-      exit unless $? == 0
+      fail "[#{cmdline}]" unless $? == 0
 
 
     end
@@ -51,7 +51,7 @@ def build_extension(name, arch)
     cmdline = $arbin + ' ' + args.join(' ')
     puts cmdline
     puts `#{cmdline}`
-    exit unless $? == 0
+    fail "[#{cmdline}]" unless $? == 0
 
   elsif ENV['RHO_PLATFORM'] == 'wm'
     args = []
@@ -61,7 +61,7 @@ def build_extension(name, arch)
     cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
     puts cmdline
     puts `#{cmdline}`
-    exit unless $? == 0
+    fail "[#{cmdline}]" unless $? == 0
 
     cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
 
@@ -73,7 +73,7 @@ def build_extension(name, arch)
     cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
     puts cmdline
     puts `#{cmdline}`
-    exit unless $? == 0
+    fail "[#{cmdline}]" unless $? == 0
 
     cp_r File.join($tempdir, ENV['RHO_BUILD_CONFIG'], name + ".lib"), $targetdir
   end

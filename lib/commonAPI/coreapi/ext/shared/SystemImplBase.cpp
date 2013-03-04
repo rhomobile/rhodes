@@ -235,16 +235,14 @@ void CSystemImplBase::zipFile( const rho::String& localPathToZip,  const rho::St
     }
 
 #else
-
-    HZIP hz = CreateZip(szZipFilePath, psw);
-    if ( !hz )
-        res = -1;
-    else
+    HZIP hz = CreateZip(localPathToZip.c_str(), password.c_str());
+    if(!hz)
     {
-        CFilePath oPath(szToZipPath);
-
-        res = ZipAdd( hz, oPath.getBaseName(), szToZipPath );
-
+        res = -1;
+    } else
+    {
+        CFilePath oPath(localPathToFile);
+        res = ZipAdd(hz, oPath.getBaseName(), localPathToFile.c_str());
         res = CloseZip(hz);
     }
 #endif
@@ -276,7 +274,8 @@ void CSystemImplBase::deleteFolder( const rho::String& pathToFolder, rho::apiGen
     CRhoFile::deleteFolder( pathToFolder.c_str() );
 }
 
-void CSystemImplBase::setDoNotBackupAttribute( const rho::String& pathToFile, rho::apiGenerator::CMethodResult& oResult)
+
+void CSystemImplBase::setDoNotBackupAttribute( const rho::String& pathToFile,  bool doNotBackup, rho::apiGenerator::CMethodResult& oResult)
 {
     //iOS only
 }
@@ -399,12 +398,6 @@ void CSystemImplBase::set_http_proxy_url( const rho::String& proxyURI, rho::apiG
 void CSystemImplBase::unset_http_proxy(rho::apiGenerator::CMethodResult& oResult)
 {
     //windows only
-}
-
-//TODO: remove when generateAPI attribute will be supported in generator
-void CSystemImplBase::set_locale( const rho::String& locale_code,  const rho::String& country_code, rho::apiGenerator::CMethodResult& oResult)
-{
-    //Implemented in Ruby code.
 }
 
 }

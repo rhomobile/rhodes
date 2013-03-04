@@ -147,8 +147,6 @@ public class RhodesService extends Service {
 	
 	private static boolean mCameraAvailable;
 	
-	private static int sActivitiesActive;
-	
 	private boolean mNeedGeoLocationRestart = false;
 	
 	class PowerWakeLock {
@@ -318,7 +316,6 @@ public class RhodesService extends Service {
         }
 
 		initForegroundServiceApi();
-		setFullscreenParameters();
 
 		// TODO: detect camera availability
 		mCameraAvailable = true;
@@ -337,30 +334,13 @@ public class RhodesService extends Service {
 
 		RhodesApplication.start();
 
-		if (sActivitiesActive > 0)
+		if (BaseActivity.getActivitiesCount() > 0)
 			handleAppActivation();
 	}
 
 	public static void handleAppStarted()
 	{
 	    RhodesApplication.handleAppStarted();
-	}
-
-	private void setFullscreenParameters() {
-		boolean fullScreen = true;
-		if (RhoConf.isExist("full_screen"))
-			fullScreen = RhoConf.getBool("full_screen");
-		if (fullScreen) {
-			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FULLSCREEN;
-			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FULLSCREEN;
-			RhodesActivity.setFullscreen(1);
-		}
-		else {
-			WINDOW_FLAGS = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
-			WINDOW_MASK = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
-			RhodesActivity.setFullscreen(0);
-		}
-		//Utils.platformLog(TAG, "rhoconfig    full_screen = "+String.valueOf(fullScreen)+" ");
 	}
 	
 	private void initForegroundServiceApi() {
@@ -772,9 +752,9 @@ public class RhodesService extends Service {
 			else if (name.equalsIgnoreCase("country"))
 				return getCurrentCountry();
 			else if (name.equalsIgnoreCase("screen_width"))
-				return new Integer(getScreenWidth());
+				return Integer.valueOf(getScreenWidth());
 			else if (name.equalsIgnoreCase("screen_height"))
-				return new Integer(getScreenHeight());
+				return Integer.valueOf(getScreenHeight());
 			else if (name.equalsIgnoreCase("screen_orientation")) {
 			    int orientation = getScreenOrientation();
 				if ((orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
@@ -784,23 +764,24 @@ public class RhodesService extends Service {
 					return "portrait";
 			}
 			else if (name.equalsIgnoreCase("has_camera"))
-				return new Boolean(mCameraAvailable);
+				return Boolean.valueOf(mCameraAvailable);
 			else if (name.equalsIgnoreCase("has_network"))
-				return new Boolean(hasNetwork());
+				return Boolean.valueOf(hasNetwork());
 			else if (name.equalsIgnoreCase("has_wifi_network"))
-				return new Boolean(hasWiFiNetwork());
+				return Boolean.valueOf(hasWiFiNetwork());
 			else if (name.equalsIgnoreCase("has_cell_network"))
-				return new Boolean(hasCellNetwork());
+				return Boolean.valueOf(hasCellNetwork());
 			else if (name.equalsIgnoreCase("ppi_x"))
-				return new Float(getScreenPpiX());
+				return Float.valueOf(getScreenPpiX());
 			else if (name.equalsIgnoreCase("ppi_y"))
-				return new Float(getScreenPpiY());
+				return Float.valueOf(getScreenPpiY());
 			else if (name.equalsIgnoreCase("phone_number")) {
                 Context context = ContextFactory.getContext();
                 String number = "";
                 if (context != null) {
                     TelephonyManager manager = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
                     number = manager.getLine1Number();
+                    Logger.I(TAG, "Phone number: " + number + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                 }
 				return number;
 			}
@@ -815,13 +796,13 @@ public class RhodesService extends Service {
 			}
 			else if (name.equalsIgnoreCase("is_emulator")) {
 			    String strDevice = Build.DEVICE;
-				return new Boolean(strDevice != null && strDevice.equalsIgnoreCase("generic"));
+				return Boolean.valueOf(strDevice != null && strDevice.equalsIgnoreCase("generic"));
 			}
 			else if (name.equalsIgnoreCase("os_version")) {
 				return Build.VERSION.RELEASE;
 			}
 			else if (name.equalsIgnoreCase("has_calendar")) {
-				return new Boolean(EventStore.hasCalendar());
+				return Boolean.valueOf(EventStore.hasCalendar());
 			}
 			else if (name.equalsIgnoreCase("phone_id")) {
                 RhodesService service = RhodesService.getInstance();
@@ -847,7 +828,7 @@ public class RhodesService extends Service {
 		return null;
 	}
     
-    public static boolean isMotorolaDevice() {
+    public static Boolean isMotorolaDevice() {
         Boolean res = false;
         try
         {
@@ -856,7 +837,7 @@ public class RhodesService extends Service {
             res = (Boolean)isEmdkDeviceMethod.invoke(null);
         } 
         catch (Throwable e) { }
-        return new Boolean(Capabilities.MOTOROLA_ENABLED && res);
+        return Boolean.valueOf(Capabilities.MOTOROLA_ENABLED && res);
     }
 	
 	public static String getTimezoneStr() {
@@ -1244,7 +1225,6 @@ public class RhodesService extends Service {
         }
 
         final String alert = extras.getString("alert");
-        final String from = extras.getString("from");
 
         boolean statusNotification = false;
         if (Push.PUSH_NOTIFICATIONS.equals(NOTIFICATION_ALWAYS))
@@ -1418,7 +1398,7 @@ public class RhodesService extends Service {
 		return wasEnabled;
 	}
 	
-	private void handleAppActivation() {
+	void handleAppActivation() {
 		if (DEBUG)
 			Log.d(TAG, "handle app activation");
 		restartGeoLocationIfNeeded();
@@ -1427,7 +1407,7 @@ public class RhodesService extends Service {
         RhodesApplication.stateChanged(RhodesApplication.AppState.AppActivated);
 	}
 	
-	private void handleAppDeactivation() {
+	void handleAppDeactivation() {
 		if (DEBUG)
 			Log.d(TAG, "handle app deactivation");
         RhodesApplication.stateChanged(RhodesApplication.AppState.AppDeactivated);
@@ -1435,37 +1415,7 @@ public class RhodesService extends Service {
 		stopGeoLocation();
 		callActivationCallback(false);
 	}
-	
-	public static void activityStarted() {
-		if (DEBUG)
-			Log.d(TAG, "activityStarted (1): sActivitiesActive=" + sActivitiesActive);
-		if (sActivitiesActive == 0) {
-			RhodesService r = RhodesService.getInstance();
-			if (DEBUG)
-				Log.d(TAG, "first activity started; r=" + r);
-			if (r != null)
-				r.handleAppActivation();
-		}
-		++sActivitiesActive;
-		if (DEBUG)
-			Log.d(TAG, "activityStarted (2): sActivitiesActive=" + sActivitiesActive);
-	}
-	
-	public static void activityStopped() {
-		if (DEBUG)
-			Log.d(TAG, "activityStopped (1): sActivitiesActive=" + sActivitiesActive);
-		--sActivitiesActive;
-		if (sActivitiesActive == 0) {
-			RhodesService r = RhodesService.getInstance();
-			if (DEBUG)
-				Log.d(TAG, "last activity stopped; r=" + r);
-			if (r != null)
-				r.handleAppDeactivation();
-		}
-		if (DEBUG)
-			Log.d(TAG, "activityStopped (2): sActivitiesActive=" + sActivitiesActive);
-	}
-	
+
 	@Override
 	public void startActivity(Intent intent) {
 
@@ -1498,9 +1448,25 @@ public class RhodesService extends Service {
         } else {
             throw new IllegalStateException("Trying to start activity, but there is no main activity instance (we are in background, no UI active)");
         }
-	}
-	
-	public static Context getContext() {
+    }
+
+    public static void setFullscreen(boolean enable) {
+        BaseActivity.setFullScreenMode(enable);
+    }
+
+    public static boolean getFullscreen() {
+        return BaseActivity.getFullScreenMode();
+    }
+
+    public static void setScreenAutoRotate(boolean enable) {
+        BaseActivity.setScreenAutoRotateMode(enable);
+    }
+
+    public static boolean getScreenAutoRotate() {
+        return BaseActivity.getScreenAutoRotateMode();
+    }
+
+    public static Context getContext() {
 		RhodesService r = RhodesService.getInstance();
 		if (r == null)
 			throw new IllegalStateException("No rhodes service instance at this moment");
