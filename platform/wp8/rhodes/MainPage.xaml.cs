@@ -352,9 +352,14 @@ namespace rhodes
             updateAppBarModeAndVisibility(false);
         }
 
-		public int toolbarGetHeight()
+		private int toolbarGetHeightFunc()
         {
             return ApplicationBar.IsVisible ? (ApplicationBar.Mode == ApplicationBarMode.Default ? 72 : 30) : 0;
+        }
+
+        public int toolbarGetHeight()
+        {
+            return IntValueReturnAgent(toolbarGetHeightFunc);
         }
 
         public void toolbarAddAction(string text)
@@ -687,8 +692,8 @@ namespace rhodes
 
         private string StringValueByIntReturnAgent(Func<int, string> func, int index)
         {
-             if (isUIThread)
-                 return func(index);
+            if (isUIThread)
+                return func(index);
 
             Exception exception = null;
             var waitEvent = new System.Threading.ManualResetEvent(false);
