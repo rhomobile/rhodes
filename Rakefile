@@ -282,6 +282,8 @@ namespace "config" do
       end
     end
 
+	$app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
+
     if $app_path.nil? #if we are called from the rakefile directly, this wont be set
       #load the apps path and config
 
@@ -292,6 +294,7 @@ namespace "config" do
       end
     end
 
+	ENV["RHO_APP_PATH"] = $app_path.to_s
     ENV["ROOT_PATH"] = $app_path.to_s + '/app/'
     ENV["APP_TYPE"] = "rhodes"
 
