@@ -192,4 +192,18 @@ void nativebar_switch_tab(int index)
     native_tabbar_switch_tab(index);
 }
 
+//NavBar - iphone only
+void create_navbar(rho_param *p)
+{
+}
+
+void remove_navbar()
+{
+}
+
+VALUE navbar_started()
+{
+    return rho_ruby_create_boolean(0);
+}
+
 } //extern "C"

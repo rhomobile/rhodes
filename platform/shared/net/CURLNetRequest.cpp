@@ -278,9 +278,12 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
             nAttempts = 0;
 		}
         else {
-            if (oFile) {
-                oFile->movePosToStart();
-                oFile->write(&respChunk[0], respChunk.size());
+			if (oFile) {
+				if ( respChunk.size() > 0 )
+				{
+					oFile->movePosToStart();
+					oFile->write(&respChunk[0], respChunk.size());
+				}
             }
             else
                 respBody = respChunk;

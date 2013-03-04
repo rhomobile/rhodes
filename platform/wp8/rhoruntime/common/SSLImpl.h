@@ -39,14 +39,6 @@ namespace rho
 namespace net
 {
 
-Platform::String^ A2PS(char* str)
-{
-	std::string s_str = std::string(str);
-	std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
-	const wchar_t* w_char = wid_str.c_str();
-	return ref new Platform::String(w_char);
-}
-
 struct ssl_data_t {
 	ssl_data_t(){
 		m_sslSocket = ref new StreamSocket();

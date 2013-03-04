@@ -176,6 +176,7 @@ end
         File.exists?(file_name).should ==  true
     end
 
+if System.get_property('platform') != 'WP8'
     it "should decode chunked body" do
 
       host = SPEC_LOCAL_SERVER_HOST
@@ -186,6 +187,7 @@ end
       res['body'].should_not be_nil
       res['body'].should == "1234567890"
     end
+end
 
     it "should send custom command" do
         
