@@ -61,7 +61,7 @@ public:
         if (res.length() > 0)
         {
             const char* pSlash = findLastSlash();
-            if (!pSlash || (pSlash != (res.c_str() + res.length())))
+            if (!pSlash || (pSlash != (m_szPath + (res.length()-1))))
                 res += "/";
         }
 

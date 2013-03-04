@@ -36,21 +36,6 @@ RHO_GLOBAL void rho_sys_unset_http_proxy()
 {
 }
 
-extern "C" const char* rho_native_rhopath()
-{
-    return "rho/";
-}
-
-extern "C" const char* rho_native_get_appname()
-{
-    return "Rhodes";
-}
-
-RHO_GLOBAL const char* rho_native_reruntimepath()
-{
-    return "rho/";
-}
-
 RHO_GLOBAL HWND getMainWnd()
 {
 	return 0;

@@ -283,3 +283,23 @@ rho::String GetLocalFolderFullPath()
 {
 	return  rho::common::convertToStringA(Windows::Storage::ApplicationData::Current->LocalFolder->Path->Data());
 }
+
+extern "C" const char* rho_native_rhopath()
+{
+	//static rho::String rhoPath;
+	//if ( rhoPath.length() == 0 )
+	//	rhoPath = GetLocalFolderFullPath() + "\\rho\\";
+
+    return "rho/";
+}
+
+extern "C" const char* rho_native_get_appname()
+{
+	//TODO: app_name
+    return "Rhodes";
+}
+
+RHO_GLOBAL const char* rho_native_reruntimepath()
+{
+    return rho_native_rhopath();
+}

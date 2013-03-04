@@ -11,6 +11,7 @@ struct System
     static rho::String getPlatform(){ rho::apiGenerator::CMethodResult oResult(true); getSystemObj()->getPlatform(oResult); return oResult.getString(); }
     static rho::String getDeviceName(){ rho::apiGenerator::CMethodResult oResult(true); getSystemObj()->getDeviceName(oResult); return oResult.getString(); }
     static rho::String getOsVersion(){ rho::apiGenerator::CMethodResult oResult(true); getSystemObj()->getOsVersion(oResult); return oResult.getString(); }
+    static rho::String getPhoneId(){ rho::apiGenerator::CMethodResult oResult(true); getSystemObj()->getPhoneId(oResult); return oResult.getString(); }
 };
 
 }
