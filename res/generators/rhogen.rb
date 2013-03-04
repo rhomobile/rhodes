@@ -797,6 +797,7 @@ module Rhogen
         @type = MethodParam::TYPE_STRING
         @native_name = ''
         @readonly = false
+        @writeonly = false
         @generate_accessors = true
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
         @default_value = ''
@@ -813,6 +814,7 @@ module Rhogen
       attr_accessor :type
       attr_accessor :native_name
       attr_accessor :readonly
+      attr_accessor :writeonly
       attr_accessor :generate_accessors
       attr_accessor :use_property_bag_mode
       attr_accessor :default_value
@@ -961,8 +963,8 @@ module Rhogen
     $possible_attributes = {}
     $possible_attributes["MODULE"] = ["name", "parent", "generateUnderscoreRubyNames"]
     $possible_attributes["CONSTANT"] = ["name", "value", "type"]
-    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "generateAccessors", "limitPropertyBag", "generateAPI", "generateDoc", "access"]
-    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readOnly", "generateAccessors", "default", "generateAPI", "generateDoc", "access"]
+    $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "writeOnly", "generateAccessors", "limitPropertyBag", "generateAPI", "generateDoc", "access"]
+    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readOnly", "writeOnly", "generateAccessors", "default", "generateAPI", "generateDoc", "access"]
     $possible_attributes["VALUE"] = ["constName", "value", "type"]
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
     $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread", "deprecated", "generateAPI", "generateDoc"]
@@ -991,7 +993,8 @@ module Rhogen
 
     $possible_values = {}
     $possible_values["generateUnderscoreRubyNames"] = ["true", "false"]
-    $possible_values["readonly"] = ["true", "false"]
+    $possible_values["readOnly"] = ["true", "false"]
+    $possible_values["writeOnly"] = ["true", "false"]
     $possible_values["usePropertyBag"] = ["none", "accessorsViaPropertyBag", "PropertyBagViaAccessors"]
     $possible_values["access"] = ["STATIC", "INSTANCE"]
     $possible_values["factory"] = ["true", "false"]
@@ -1431,6 +1434,15 @@ module Rhogen
               end
             end
 
+            if xml_module_property.attribute("writeOnly") != nil
+              module_property.writeonly = xml_module_property.attribute("writeOnly").to_s.downcase != "false"
+            else
+              if xml_properties.attribute("writeOnly") != nil
+                 module_property.writeonly = xml_properties.attribute("writeOnly").to_s.downcase != "false"
+              end
+            end
+
+
             if xml_module_property.attribute("generateAPI") != nil
               module_property.generateAPI = xml_module_property.attribute("generateAPI").to_s.downcase != "false"
             else
@@ -1489,28 +1501,30 @@ module Rhogen
          #prepare getters and setters for property
         module_item.properties.each do |module_property|
            if module_property.generate_accessors
-              getter_method = ModuleMethod.new()
+              if  !module_property.writeonly
+                getter_method = ModuleMethod.new()
 
-              getter_method.name = module_property.name
-              getter_method.native_name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
-              getter_method.desc = 'getter for "' + module_property.name + '" property'
-              getter_method.params = []
-              getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
-              getter_method.is_factory_method = false
-              getter_method.is_return_value = true
-              getter_method.access = module_property.access
-              getter_method.has_callback = ModuleMethod::CALLBACK_NONE
-              getter_method.linked_property = module_property
-              getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
-              module_property.getter = getter_method
-              module_item.methods << getter_method
+                getter_method.name = module_property.name
+                getter_method.native_name = 'get' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
+                getter_method.desc = 'getter for "' + module_property.name + '" property'
+                getter_method.params = []
+                getter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
+                getter_method.is_factory_method = false
+                getter_method.is_return_value = true
+                getter_method.access = module_property.access
+                getter_method.has_callback = ModuleMethod::CALLBACK_NONE
+                getter_method.linked_property = module_property
+                getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
+                module_property.getter = getter_method
+                module_item.methods << getter_method
+              end
 
               if !module_property.readonly
                 setter_method = ModuleMethod.new()
 
                 setter_method.name = module_property.name + "="
                 setter_method.native_name = 'set' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
-                getter_method.desc = 'setter for "'+ module_property.name + '" property'
+                setter_method.desc = 'setter for "'+ module_property.name + '" property'
                 param = MethodParam.new()
                 param.name = "value"
                 param.can_be_nil = false

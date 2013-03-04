@@ -82,6 +82,7 @@
 + (void)setStatusBarHidden:(BOOL)v;
 
 - (BOOL)isRotationLocked;
+- (void) setRotationLocked:(BOOL)locked;
 
 //+ (UIView*)subviewWithTag:(NSInteger)tag ofView:(UIView*)view;
 

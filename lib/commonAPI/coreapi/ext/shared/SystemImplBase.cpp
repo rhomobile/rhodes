@@ -274,7 +274,8 @@ void CSystemImplBase::deleteFolder( const rho::String& pathToFolder, rho::apiGen
     CRhoFile::deleteFolder( pathToFolder.c_str() );
 }
 
-void CSystemImplBase::setDoNotBackupAttribute( const rho::String& pathToFile, rho::apiGenerator::CMethodResult& oResult)
+
+void CSystemImplBase::setDoNotBackupAttribute( const rho::String& pathToFile,  bool doNotBackup, rho::apiGenerator::CMethodResult& oResult)
 {
     //iOS only
 }

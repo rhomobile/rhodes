@@ -57,7 +57,8 @@ void rho_net_impl_network_indicator(int active)
 }
 
 
-VALUE rho_sys_has_wifi_network() {
+
+BOOL rho_sys_has_wifi_network_iphone() {
 	SCNetworkReachabilityFlags defaultRouteFlags;
 	
 	int defaultRouteIsAvailable = 0;
@@ -70,17 +71,25 @@ VALUE rho_sys_has_wifi_network() {
 	if (defaultRouteIsAvailable == 1) {
 		if (defaultRouteFlags & kSCNetworkReachabilityFlagsIsDirect) {
 			// Ad-Hoc network, not available
-			return rho_ruby_create_boolean(0);
+			return NO;
 		}
 		else if (defaultRouteFlags & ReachableViaWiFiNetwork) {
 			// WiFi network available
-			return rho_ruby_create_boolean(1);
+			return YES;
 		}
 	}
-	return rho_ruby_create_boolean(0);
+	return NO;
 }
 
-VALUE rho_sys_has_cell_network() {
+VALUE rho_sys_has_wifi_network() {
+    int res = 0;
+    if (rho_sys_has_wifi_network_iphone()) {
+        res = 1;
+    }
+    rho_ruby_create_boolean(res);
+}
+
+BOOL rho_sys_has_cell_network_iphone() {
 	SCNetworkReachabilityFlags defaultRouteFlags;
 	
 	int defaultRouteIsAvailable = 0;
@@ -93,23 +102,31 @@ VALUE rho_sys_has_cell_network() {
 	if (defaultRouteIsAvailable == 1) {
 		if (defaultRouteFlags & kSCNetworkReachabilityFlagsIsDirect) {
 			// Ad-Hoc network, not available
-			return rho_ruby_create_boolean(0);
+			return NO;
 		}
 		else if (defaultRouteFlags & ReachableViaCarrierDataNetwork) {
 			// Cell network available
-			return rho_ruby_create_boolean(1);
+			return YES;
 		}
 		else if (defaultRouteFlags & ReachableViaWiFiNetwork) {
 			// Wifi network available
-			return rho_ruby_create_boolean(1);
+			return YES;
 		}
 	}
-	return rho_ruby_create_boolean(0);
+	return NO;
+    
+}
+
+VALUE rho_sys_has_cell_network() {
+    int res = 0;
+    if (rho_sys_has_cell_network_iphone()) {
+        res = 1;
+    }
+    rho_ruby_create_boolean(res);
 }
 
 
-// Determines network connectivity
-VALUE rho_sys_has_network() {
+BOOL rho_sys_has_network_iphone() {
 	SCNetworkReachabilityFlags defaultRouteFlags;
 	
 	
@@ -123,17 +140,27 @@ VALUE rho_sys_has_network() {
 	if (defaultRouteIsAvailable == 1) {
 		if (defaultRouteFlags & kSCNetworkReachabilityFlagsIsDirect) {
 			// Ad-Hoc network, not available
-			return rho_ruby_create_boolean(0);
+			return NO;
 		}
 		else if (defaultRouteFlags & ReachableViaCarrierDataNetwork) {
 			// Cell network available
-			return rho_ruby_create_boolean(1);
+			return YES;
 		}
 		// WIFI available
-		return rho_ruby_create_boolean(1);
+		return YES;
 	}
-	return rho_ruby_create_boolean(0);
+	return NO;
 }
+
+// Determines network connectivity
+VALUE rho_sys_has_network() {
+    int res = 0;
+    if (rho_sys_has_network_iphone()) {
+        res = 1;
+    }
+    rho_ruby_create_boolean(res);
+}
+
 
 int rho_net_ping_network(const char* szHost)
 {

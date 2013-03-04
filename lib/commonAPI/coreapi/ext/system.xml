@@ -439,6 +439,9 @@
                     <PARAM name="pathToFile" type="STRING">
                         <DESC>Path to file.</DESC>
                     </PARAM>
+                    <PARAM name="doNotBackup" type="BOOLEAN">
+                        <DESC>true set doNotBakup attribute to file (exlude this file from bakup), false for remove doNotBakup attribute from file</DESC>
+                    </PARAM>
                 </PARAMS>
             </METHOD>
 
