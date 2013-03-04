@@ -16,7 +16,7 @@ def build_extension(name, arch)
     cmdline = "\"" + $vcbuild + "\"" + ' ' + args.join(' ')
     puts cmdline
     puts `#{cmdline}`
-    exit unless $? == 0
+    fail "[#{cmdline}]" unless $? == 0
 
     cp_r File.join($tempdir, "Release", name + ".lib"), $targetdir
 end
