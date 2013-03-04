@@ -785,6 +785,7 @@ def init_extensions(startdir, dest)
           entry = extconf["entry"]
           nlib = extconf["nativelibs"]
           type = extconf["exttype"]
+          wm_type = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths = extconf["xml_api_paths"]
             
           if nlib != nil
@@ -809,7 +810,7 @@ def init_extensions(startdir, dest)
             extlibs += libs
           end
         
-          if xml_api_paths
+          if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
             xml_api_paths = xml_api_paths.split(',')
             
             xml_api_paths.each do |xml_api|
