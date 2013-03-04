@@ -474,6 +474,9 @@ namespace "build" do
     end
 
     task :extensions => "config:wm" do
+
+      puts "$app_extensions_list : #{$app_extensions_list}"
+
       $app_extensions_list.each do |ext, commin_ext_path |      
           extpath = File.join(commin_ext_path, 'ext')
           ext_config_path = File.join(commin_ext_path, "ext.yml")
@@ -500,7 +503,7 @@ namespace "build" do
                 
                 ENV['RHO_EXT_NAME']=ext                
 
-                puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
+                Jake.run3('rake --trace', File.join($startdir, 'lib/build/extensions'))
           
           else
 
@@ -513,7 +516,7 @@ namespace "build" do
               ENV['VCBUILD'] = $vcbuild
               ENV['SDK'] = $sdk
 
-              puts Jake.run("build.bat", [], extpath)
+              Jake.run3('build.bat', extpath)
           end
       end
     end
