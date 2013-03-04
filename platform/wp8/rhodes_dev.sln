@@ -31,7 +31,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rholib", "rholib\rholib.vcx
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3C29B599-DB6C-4153-AD86-183746E1E0F7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcurl", "..\shared\curl\lib\libcurl.vcxproj", "{87EE9DA4-DE1E-4448-8324-183C98DCA588}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libcurl", "curl\libcurl.vcxproj", "{87EE9DA4-DE1E-4448-8324-183C98DCA588}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Coreapi", "..\..\lib\commonAPI\coreapi\ext\platform\wp8\Coreapi.vcxproj", "{7DC60E50-5666-0130-0C8A-00155D4225F3}"
 EndProject
