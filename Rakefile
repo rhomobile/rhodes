@@ -810,9 +810,7 @@ def init_extensions(startdir, dest)
             xml_api_paths = xml_api_paths.split(',')
             
             xml_api_paths.each do |xml_api|
-                cmd_line = "#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}"
-                puts "cmd_line: #{cmd_line}"
-                system "#{cmd_line}"
+                Jake.run3("#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}")
             end
           end
 
