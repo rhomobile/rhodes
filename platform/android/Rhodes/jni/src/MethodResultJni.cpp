@@ -1,5 +1,3 @@
-#include <strstream>
-
 #include "common/RhoStd.h"
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/JNIRhoRuby.h"
@@ -408,9 +406,8 @@ std::string MethodResultJni::toJson()
     case typeArgError:
     case typeError:
         {
-            std::strstream buf;
-            buf << "{'error' : { 'message' : '" << getErrorMessage(env) << "' } }";
-            res = buf.str();
+            res = "{'error' : { 'message' : '";
+            res += getErrorMessage(env) + "' } }";
         }
         break;
     default:
