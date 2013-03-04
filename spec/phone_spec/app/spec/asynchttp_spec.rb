@@ -260,7 +260,7 @@ end
         res['status'].should == 'ok'
         File.exists?(file_name).should == true
     end
-
+if System.get_property('platform') != 'WP8'
     it "should send https request" do
             
         res = Rho::AsyncHttp.get(
@@ -278,5 +278,6 @@ end
         end    
         
     end
+end
 
 end    
