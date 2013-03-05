@@ -8,12 +8,10 @@ extern "C" void Init_CoreAPI_Extension()
     Init_System();
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8) || defined(OS_MACOSX)
-
 	Init_NetworkAccess();
-
-#ifndef OS_MACOSX
-    Init_SQLite3();
 #endif
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8) || defined(OS_ANDROID)
+    Init_SQLite3();
 #endif
 }
