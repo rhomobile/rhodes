@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   IO.read("Manifest.txt").each_line {|x| files << x.chomp}
   s.files =  files
   s.homepage = %q{http://www.rhomobile.com}
-  s.rdoc_options = ["--inline-source", "--charset=UTF-8"]
+  s.rdoc_options = ["--inline-source", "--charset=UTF-8", '--exclude=bin', '--exclude=doc', '--exclude=ext', '--exclude=installer', '--exclude=lib/build', '--exclude=lib/commonAPI', '--exclude=lib/extensions', '--exclude=lib/rhodes', '--exclude=lib/test', '--exclude=lib/rhodes.rb', '--exclude=platform', '--exclude=res', '--exclude=spec']
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{rhodes}
   s.rubygems_version = %q{1.3.5}

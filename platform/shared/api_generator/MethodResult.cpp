@@ -102,7 +102,7 @@ rho::String CMethodResult::toString()
     return rho::String();
 }
 
-VALUE CMethodResult::toRuby()
+VALUE CMethodResult::toRuby(bool bForCallback/* = false*/)
 {
     if ( m_ResType == eStringArray )
     {
@@ -127,7 +127,12 @@ VALUE CMethodResult::toRuby()
             rho_ruby_add_to_array( valArray, valObj );
         }
         
-        return valArray;
+        if (!bForCallback)
+            return valArray;
+
+        CHoldRubyValue valHash(rho_ruby_createHash());
+        addHashToHash( valHash, m_strParamName.c_str(), valArray );
+        return valHash;
     }else if ( m_ResType == eStringHash )
     {
         CHoldRubyValue valHash(rho_ruby_createHash());
@@ -166,7 +171,12 @@ VALUE CMethodResult::toRuby()
         else
             valObj = rho_ruby_create_string( m_strRes.c_str() );
 
-        return valObj;
+        if (!bForCallback)
+            return valObj;
+
+        CHoldRubyValue valHash(rho_ruby_createHash());
+        addHashToHash( valHash, m_strParamName.c_str(), valObj );
+        return valHash;
     }else if ( m_ResType == eStringW)
     {
         VALUE valObj = 0;
@@ -183,22 +193,63 @@ VALUE CMethodResult::toRuby()
         else
             valObj = rho_ruby_create_string( convertToStringA(m_strResW).c_str() );
 
-        return valObj;
+        if (!bForCallback)
+            return valObj;
+
+        CHoldRubyValue valHash(rho_ruby_createHash());
+        addHashToHash( valHash, m_strParamName.c_str(), valObj );
+        return valHash;
     }else if ( m_ResType == eBool)
     {
-        return rho_ruby_create_boolean(m_bRes ? 1 : 0);
+        VALUE valObj = rho_ruby_create_boolean(m_bRes ? 1 : 0);
+        if (!bForCallback)
+            return valObj;
+
+        CHoldRubyValue valHash(rho_ruby_createHash());
+        addHashToHash( valHash, m_strParamName.c_str(), valObj );
+        return valHash;
     }else if ( m_ResType == eInt)
     {
-        return rho_ruby_create_integer(m_nRes);
+        VALUE valObj = rho_ruby_create_integer(m_nRes);
+        if (!bForCallback)
+            return valObj;
+
+        CHoldRubyValue valHash(rho_ruby_createHash());
+        addHashToHash( valHash, m_strParamName.c_str(), valObj );
+        return valHash;
     }else if ( m_ResType == eDouble)
     {
-        return rho_ruby_create_double(m_dRes);
+        VALUE valObj = rho_ruby_create_double(m_dRes);
+        if (!bForCallback)
+            return valObj;
+
+        CHoldRubyValue valHash(rho_ruby_createHash());
+        addHashToHash( valHash, m_strParamName.c_str(), valObj );
+        return valHash;
     }else if ( m_ResType == eArgError)
     {
-        rho_ruby_raise_argerror( m_strError.c_str());
+        if (!bForCallback)
+        {
+            rho_ruby_raise_argerror( m_strError.c_str());
+            return rho_ruby_get_NIL();
+        }
+
+        VALUE valObj = rho_ruby_create_string( m_strError.c_str() );
+        CHoldRubyValue valHash(rho_ruby_createHash());
+        addHashToHash( valHash, "argError", valObj );
+        return valHash;
     }else if ( m_ResType == eError)
     {
-        rho_ruby_raise_runtime( m_strError.c_str());
+        if (!bForCallback)
+        {
+            rho_ruby_raise_runtime( m_strError.c_str());
+            return rho_ruby_get_NIL();
+        }
+
+        VALUE valObj = rho_ruby_create_string( m_strError.c_str() );
+        CHoldRubyValue valHash(rho_ruby_createHash());
+        addHashToHash( valHash, "runtimeError", valObj );
+        return valHash;
     }
 
     return rho_ruby_get_NIL();
@@ -216,8 +267,7 @@ public:
 
     virtual unsigned long getObjectValue()
     {
-        m_oResult.convertStringParamToHash();
-        return m_oResult.toRuby();
+        return m_oResult.toRuby(true);
     }
 
 };
@@ -266,21 +316,6 @@ void CMethodResult::callCallback()
     {
         rho_webview_execute_js( m_strJSCallback.c_str(), rho_webview_active_tab() );
         m_ResType = eNone;
-    }
-}
-
-void CMethodResult::convertStringParamToHash()
-{
-    if ( m_ResType == eString )
-    {
-        rho::Hashtable<rho::String, rho::String> resHash;
-        resHash.put( m_strStringParam, m_strRes);
-        m_hashStrRes = resHash; m_ResType = eStringHash;
-    }else  if ( m_ResType == eStringW )
-    {
-        rho::Hashtable<rho::String, rho::String> resHash;
-        resHash.put( m_strStringParam, convertToStringA(m_strResW));
-        m_hashStrRes = resHash; m_ResType = eStringHash;
     }
 }
 

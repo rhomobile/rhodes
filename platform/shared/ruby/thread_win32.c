@@ -486,7 +486,9 @@ native_thread_init_stack(rb_thread_t *th)
     CHECK_ERR(VirtualQuery(&mi, &mi, sizeof(mi)));
     base = mi.AllocationBase;
     end = mi.BaseAddress;
-    end += mi.RegionSize;
+//RHO : WinCE workaround for RegionSize issue
+    end += mi.RegionSize > 20480 ? 20480 : mi.RegionSize;
+//RHO
     size = end - base;
     space = size / 5;
     if (space > 1024*1024) space = 1024*1024;

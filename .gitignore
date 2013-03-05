@@ -121,6 +121,15 @@ spec/**/faillog.txt
 spec/**/rholog-*.txt
 spec/**/app/local_server.rb
 spec/**/RhoLogSpec.txt
+spec/**/rhosimulator/
+spec/javascript_api_spec/**/generated/
+spec/javascript_api_spec/*/*/generated/
+spec/javascript_api_spec/*/*/*/generated/
+spec/javascript_api_spec/*/*/*/generated/
+spec/javascript_api_spec/*/*/*/*/generated/
+spec/javascript_api_spec/*/*/*/*/*/generated/
+spec/javascript_api_spec/*/*/*/*/*/*/generated/
+spec/javascript_api_spec/*/*/*/*/*/*/*/generated/
 
 platform/bb/.metadata/*
 platform/bb/bin/*
