@@ -66,11 +66,11 @@ class CEng;
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
 #else
-extern "C" void rho_wm_impl_SetApplicationLicenseObj(void* pAppLicenseObj)
+/*extern "C" void rho_wm_impl_SetApplicationLicenseObj(void* pAppLicenseObj)
 {
     if (pAppLicenseObj)
         delete pAppLicenseObj;
-}
+}*/
 #endif // APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
 extern "C" {
@@ -609,12 +609,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
         registerRhoExtension();
 #endif
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 	    m_appWindow.Navigate2(_T("about:blank")
 #if defined(OS_WINDOWS_DESKTOP)
             , -1
 #endif
         );
-        
+#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+
         rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
 /*    	m_appWindow.Navigate2( convertToStringW( RHOCONF().getString("start_path") ).c_str()
 #if defined(OS_WINDOWS_DESKTOP)
@@ -625,13 +627,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     else
     {
         RHODESAPP().startApp();
-
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         // Navigate to the "loading..." page
 	    m_appWindow.Navigate2(_T("about:blank")
     #if defined(OS_WINDOWS_DESKTOP)
             , -1
     #endif
         );
+#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     }
     // Show the main application window
     //m_appWindow.ShowWindow(nShowCmd);
