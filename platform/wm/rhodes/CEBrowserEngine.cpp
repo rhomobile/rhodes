@@ -267,9 +267,9 @@ Cleanup:
     SetWindowLong(m_hwndTabHTML, GWL_STYLE, lStyle);
 	SetParent(m_hwndTabHTML, m_hwndParent);
 
-	ShowWindow(m_hwndTabHTML, SW_SHOW);
-	SetForegroundWindow(m_hwndTabHTML);
-	MoveWindow(m_hwndTabHTML, m_rcViewSize.left, m_rcViewSize.top, (m_rcViewSize.right-m_rcViewSize.left), (m_rcViewSize.bottom-m_rcViewSize.top), TRUE);
+	//ShowWindow(m_hwndTabHTML, SW_SHOW);
+	//SetForegroundWindow(m_hwndTabHTML);
+	//MoveWindow(m_hwndTabHTML, m_rcViewSize.left, m_rcViewSize.top, (m_rcViewSize.right-m_rcViewSize.left), (m_rcViewSize.bottom-m_rcViewSize.top), FALSE);
 
 	return S_OK;		
 };
@@ -283,7 +283,7 @@ BOOL CEBrowserEngine::Navigate(LPCTSTR tcURL)
 
     LOG(INFO)  + "Navigate: " + tcURL;
 
-    m_bLoadingComplete = FALSE;
+    //m_bLoadingComplete = FALSE;
 
 	if (wcslen(tcURL) >= wcslen(L"history:back") && 
         wcsicmp(tcURL, L"history:back") == 0)
@@ -701,12 +701,14 @@ HRESULT CEBrowserEngine::OnInPlaceDeactivate(void)
 BOOL CEBrowserEngine::ResizeOnTab(int iInstID,RECT rcNewSize) 
 {
     m_rcViewSize = rcNewSize;
+    if(!m_bLoadingComplete)
+        return TRUE;
 
     if (MoveWindow(m_hwndTabHTML, m_rcViewSize.left, 
         m_rcViewSize.top, 
         (m_rcViewSize.right-m_rcViewSize.left), 
         (m_rcViewSize.bottom-m_rcViewSize.top), 
-        TRUE))
+        FALSE))
     {
         return TRUE;
     }
@@ -856,8 +858,10 @@ void CEBrowserEngine::OnDocumentComplete(LPCTSTR url)
 {
     if(!m_bLoadingComplete && wcscmp(url,_T("about:blank")) != 0)
     {
-        rho_wm_impl_CheckLicense();
         m_bLoadingComplete = true;
+
+        ResizeOnTab(0, m_rcViewSize);
+        rho_wm_impl_CheckLicense();
     }
 }
 
