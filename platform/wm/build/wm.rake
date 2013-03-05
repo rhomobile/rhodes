@@ -488,7 +488,7 @@ namespace "build" do
             ext_config = Jake.config(File.open(ext_config_path))
           end
           
-		  project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
+          project_path = ext_config["project_paths"][$current_platform] if ( ext_config && ext_config["project_paths"] && ext_config["project_paths"][$current_platform])
           next unless (File.exists?( File.join(extpath, "build.bat") ) || project_path)
 
           if (project_path)
@@ -744,89 +744,92 @@ namespace "device" do
     end
   end
 
+  def createWin32Production()
+    out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
+    puts "out_dir - "  + out_dir
+
+    mkdir_p $targetdir
+    mkdir_p $tmpdir
+    mkdir_p out_dir
+
+    cp out_dir + "rhodes.exe", $tmpdir + "/" + $appname + ".exe"
+    cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), $tmpdir
+
+    script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
+    app_script_name = File.join($tmpdir, $appname + ".nsi")
+
+    license_filename = "LICENSE.txt"
+    license_file = File.join($app_path, license_filename)
+    license_present = '#'
+    license_line = ''
+    if File.exists? license_file
+      cp license_file, $tmpdir
+      license_present = ''
+      license_line = 'File "' + license_filename + '"'
+    end
+
+    readme_filename = "README.html"
+    readme_file = File.join($app_path, readme_filename)
+    readme_present = '#'
+    readme_line = '#'
+    if File.exists? readme_file
+      cp readme_file, $tmpdir
+      readme_present = ''
+      readme_line = 'File "' + readme_filename + '"'
+    end
+
+    # custumize install script for application
+    install_script = File.read(script_name)
+    install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
+    install_script = install_script.gsub(/%APPNAME%/, $appname)
+    install_script = install_script.gsub(/%APPVERSION%/, $app_version)
+    install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
+    install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
+    install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
+    install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
+    install_script = install_script.gsub(/%APPICON%/, "icon.ico")
+    install_script = install_script.gsub(/%GROUP_NAME%/, $app_config["vendor"])
+    install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
+    install_script = install_script.gsub(/%LICENSE_FILE%/, license_line)
+    install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
+    install_script = install_script.gsub(/%README_FILE%/, readme_line)
+    install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
+    install_script = install_script.gsub(/%VENDOR%/, $app_config["vendor"])
+    File.open(app_script_name, "w") { |file| file.puts install_script }
+
+    puts "$appname - " + $appname
+
+    cp $app_icon_path, $tmpdir + "/icon.ico"
+
+    File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + "/" + $appname + "/" + $appname + ".exe") }
+
+    chdir $tmpdir
+
+    target_rho_dir = File.join($tmpdir, "rho")
+    rm_rf target_rho_dir
+    mv $srcdir, target_rho_dir
+
+    $target_path = $tmpdir
+    Rake::Task["build:win32:deployqt"].invoke
+
+    puts "$nsis - " + $nsis
+    args = [$tmpdir + "/" + $appname + ".nsi"]
+    puts "arg = " + args.to_s
+
+    puts Jake.run2($nsis, args, {:nowait => false} )
+  end
+
   namespace "winxpe" do
     desc "Build installer for Windows XP Embedded"
     task :production => ["build:win32:set_release_config", "config:win32:qt", "build:winxpe"] do     
+      createWin32Production
     end
   end
 
   namespace "win32" do
     desc "Build installer for Windows"
     task :production => ["build:win32:set_release_config", "config:win32:qt", "build:win32"] do
-
-      out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/" + $buildcfg + "/"
-      puts "out_dir - "  + out_dir
-
-      mkdir_p $targetdir
-      mkdir_p $tmpdir
-      mkdir_p out_dir
-
-      cp out_dir + "rhodes.exe", $tmpdir + "/" + $appname + ".exe"
-      cp File.join($startdir, "res/build-tools/win32/license_rc.dll"), $tmpdir
-
-      script_name = File.join($startdir, "platform", "wm", "build", "rhodes.nsi")
-      app_script_name = File.join($tmpdir, $appname + ".nsi")
-
-      license_filename = "LICENSE.txt"
-      license_file = File.join($app_path, license_filename)
-      license_present = '#'
-      license_line = ''
-      if File.exists? license_file
-        cp license_file, $tmpdir
-        license_present = ''
-        license_line = 'File "' + license_filename + '"'
-      end
-
-      readme_filename = "README.html"
-      readme_file = File.join($app_path, readme_filename)
-      readme_present = '#'
-      readme_line = '#'
-      if File.exists? readme_file
-        cp readme_file, $tmpdir
-        readme_present = ''
-        readme_line = 'File "' + readme_filename + '"'
-      end
-
-      # custumize install script for application
-      install_script = File.read(script_name)
-      install_script = install_script.gsub(/%OUTPUTFILE%/, $targetdir + "/" + $appname + "-setup.exe" )
-      install_script = install_script.gsub(/%APPNAME%/, $appname)
-      install_script = install_script.gsub(/%APPVERSION%/, $app_version)
-      install_script = install_script.gsub(/%APP_EXECUTABLE%/, $appname + ".exe") 
-      install_script = install_script.gsub(/%SECTOIN_TITLE%/, "\"This installs " + $appname + "\"")
-      install_script = install_script.gsub(/%FINISHPAGE_TEXT%/, "\"Thank you for installing " + $appname + " \\r\\n\\n\\n\"")
-      install_script = install_script.gsub(/%APPINSTALLDIR%/, "C:\\" + $appname)
-      install_script = install_script.gsub(/%APPICON%/, "icon.ico")
-      install_script = install_script.gsub(/%GROUP_NAME%/, $app_config["vendor"])
-      install_script = install_script.gsub(/%SECTION_NAME%/, "\"" + $appname + "\"")
-      install_script = install_script.gsub(/%LICENSE_FILE%/, license_line)
-      install_script = install_script.gsub(/%LICENSE_PRESENT%/, license_present)
-      install_script = install_script.gsub(/%README_FILE%/, readme_line)
-      install_script = install_script.gsub(/%README_PRESENT%/, readme_present)
-      install_script = install_script.gsub(/%VENDOR%/, $app_config["vendor"])
-      File.open(app_script_name, "w") { |file| file.puts install_script }
-
-      puts "$appname - " + $appname
-
-      cp $app_icon_path, $tmpdir + "/icon.ico"
-
-      File.open(File.join($targetdir,"app_info.txt"), "w") { |f| f.write( $app_config["vendor"] + "/" + $appname + "/" + $appname + ".exe") }
-
-      chdir $tmpdir
-
-      target_rho_dir = File.join($tmpdir, "rho")
-      rm_rf target_rho_dir
-      mv $srcdir, target_rho_dir
-
-      $target_path = $tmpdir
-      Rake::Task["build:win32:deployqt"].invoke
-
-      puts "$nsis - " + $nsis
-      args = [$tmpdir + "/" + $appname + ".nsi"]
-      puts "arg = " + args.to_s
-
-      puts Jake.run2($nsis, args, {:nowait => false} )
-      
+      createWin32Production
     end
   end
 end
