@@ -166,7 +166,7 @@ public:
     BOOL TranslateAccelerator(MSG* pMsg);
 
 #if defined(OS_WINCE)
-	bool m_bFullScreen;
+	bool m_bFullScreen, m_bFullScreenBeforeLicense;
    	void RhoSetFullScreen(bool bFull, bool bDestroy = false);
     bool getFullScreen(){ return m_bFullScreen; }
 #endif
