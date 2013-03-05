@@ -33,6 +33,7 @@ using rhodes.Resources;
 using rhoruntime;
 using Microsoft.Phone.Shell;
 using System.Windows.Media;
+using System.Windows.Controls;
 
 namespace rhodes
 {
@@ -550,11 +551,26 @@ namespace rhodes
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarAddTab(label, icon, action, disabled, web_bkg_color, selected_color, reload, use_current_view_for_tab); }); return; }
             PivotItem tab = new PivotItem();
+            // TODO: make labels font smaller
             // TODO: implement icons
-            //if ((icon==null) || (icon.Length == 0))
-            tab.Header =  label;
-            //else
-            //    tab.Header =  new RhoTabHeader(label, prependWithSlash(icon));
+            tab.Header = label;
+            //if ((icon == null) || (icon.Length == 0))
+            //{
+            //    TextBlock tb = new TextBlock();
+            //    tb.Text = label;
+            //    tb.FontSize = 20;
+            //    tb.Height = double.NaN;
+            //    tb.Width = double.NaN;
+            //    tb.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+            //    tb.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+            //    tb.SetValue(FrameworkElement.NameProperty, "tabLabel"+TabbarPivot.Items.Count.ToString());
+            //    //tb.Margin = new Thickness(5, 5, 5, 5);
+            //    //tb.TextWrapping = TextWrapping.Wrap;
+            //    //tb.TextAlignment = TextAlignment.Left;
+            //    tab.Header = tb;
+            //}
+            // //else
+            // //    tab.Header = new RhoTabHeader(label, prependWithSlash(icon));
             if (use_current_view_for_tab)
                 tab.Content = RhodesWebBrowser;
             else
@@ -569,6 +585,7 @@ namespace rhodes
                 wv.LoadCompleted += RhodesWebBrowser_LoadCompleted;
                 wv.Loaded += RhodesWebBrowser_Loaded;
                 wv.Unloaded += RhodesWebBrowser_Unloaded;
+                //wv.SetValue(FrameworkElement.NameProperty, "tabWeb" + TabbarPivot.Items.Count.ToString());
                 // TODO: reload
                 // TODO: web_bkg_color
                 tab.Content = wv;
@@ -577,6 +594,7 @@ namespace rhodes
                 tab.Background = new SolidColorBrush(getColorFromString(selected_color));
             tab.IsEnabled = !disabled;
             tab.Tag = action;
+            //tab.SetValue(FrameworkElement.NameProperty, "tabItem" + TabbarPivot.Items.Count.ToString());
 
             TabbarPivot.Items.Add(tab);
 

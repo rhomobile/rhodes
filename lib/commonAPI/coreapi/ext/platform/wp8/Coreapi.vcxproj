@@ -150,6 +150,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\shared\generated\cpp\NetworkAccessBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\NetworkAccess_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\NetworkAccess_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\SQLite3Base.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -186,6 +189,9 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\..\shared\generated\networkaccess_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\networkaccess_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\networkaccess_ruby_api.c" />
     <ClCompile Include="..\..\shared\generated\sqlite3_api_init.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -229,6 +235,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\..\shared\NetworkAccessImpl.cpp" />
     <ClCompile Include="..\..\shared\SQLite3Impl.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -262,8 +269,10 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\shared\generated\cpp\INetworkAccess.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ISQLite3.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\NetworkAccessBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SQLite3Base.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h" />
   </ItemGroup>
@@ -275,6 +284,13 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\sqlite3.xml">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\NetworkAccess.xml">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

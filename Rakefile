@@ -820,7 +820,7 @@ def init_extensions(startdir, dest)
 
           unless rhoapi_js_folder.nil?
             Dir.glob(extpath + "/public/api/generated/Rho.*.js").each do |f|
-              extjsmodules << f.gsub(/^.*(Rho\.[^\.]+)\.js$/, '\1')
+              extjsmodules << f.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
             end
           end
             
@@ -1808,13 +1808,30 @@ namespace "run" do
             end    
 
             if extpath && extpath.length() > 0
-                js_folder = File.join(extpath, "public/api/generated")
-                # TODO: RhoSimulator should look for 'public' at all extension folders!
-                Dir.glob(js_folder + "/Rho.*.js").each do |f|
-                  mkdir_p rhoapi_js_folder
-                  cp f, "#{rhoapi_js_folder}/"
-                  extjsmodules << f.gsub(/^.*(Rho\.[^\.]+)\.js$/, '\1')
+              extyml = File.join(extpath, "ext.yml")
+              puts "extyml " + extyml 
+        
+              if File.file? extyml
+                extconf = Jake.config(File.open(extyml))
+                xml_api_paths = extconf["xml_api_paths"]
+                if xml_api_paths
+                  xml_api_paths = xml_api_paths.split(',')
+
+                  xml_api_paths.each do |xml_api|
+                    cmd_line = "#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}"
+                    puts "cmd_line: #{cmd_line}"
+                    system "#{cmd_line}"
+                  end
                 end
+              end
+
+              js_folder = File.join(extpath, "public/api/generated")
+              # TODO: RhoSimulator should look for 'public' at all extension folders!
+              Dir.glob(js_folder + "/Rho.*.js").each do |f|
+                mkdir_p rhoapi_js_folder
+                cp f, "#{rhoapi_js_folder}/"
+                extjsmodules << f.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+              end
             end
         end
 

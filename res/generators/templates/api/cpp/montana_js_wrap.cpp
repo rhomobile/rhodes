@@ -47,7 +47,7 @@ using namespace rho::common;
         {
             arg<%= first_arg %> = argv[<%= first_arg %>].getString();
 <% if first_arg == 0 %>
-            oRes.setStringParam(argv[<%= first_arg %>].getString());
+            oRes.setParamName(argv[<%= first_arg %>].getString());
 <% end %>
         }
         else if (!argv[<%= first_arg %>].isNull())

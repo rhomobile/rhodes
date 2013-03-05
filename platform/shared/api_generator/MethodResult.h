@@ -38,7 +38,7 @@ namespace apiGenerator
 
 class CMethodResult
 {
-    rho::String m_strRubyCallback, m_strCallbackParam, m_strStringParam;
+    rho::String m_strRubyCallback, m_strCallbackParam, m_strParamName;
     rho::String m_strJSCallback;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > m_hashStrL2Res;
@@ -72,17 +72,16 @@ class CMethodResult
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
 public:
 
-    CMethodResult(bool bCollectionMode=false): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(bCollectionMode){}
+    CMethodResult(bool bCollectionMode=false): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(bCollectionMode), m_strParamName("result"){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     void setRubyCallbackProc(unsigned long oRubyCallbackProc);
     void setJSCallback(const rho::String& strCallback){ m_strJSCallback = strCallback; }
     void setCallInUIThread(rho::boolean bUIThread){ m_bCallInUIThread = bUIThread; }
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
-    void setStringParam(const rho::String& strParam){m_strStringParam = strParam;}
+    void setParamName(const rho::String& strParam){m_strParamName = strParam;}
     void setRubyObjectClass(unsigned long val){ m_oRubyObjectClass = val; }
     void setRubyObjectClassPath(const rho::String& strPath){ m_strRubyObjectClassPath = strPath; }
-    void convertStringParamToHash();
 
     void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; m_ResType = eStringHash; callCallback(); }
 #ifndef OS_ANDROID
@@ -119,7 +118,7 @@ public:
     rho::String toString();
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}
 
-    unsigned long toRuby();
+    unsigned long toRuby(bool bForCallback = false);
     rho::String toJSON();
 
     bool hasCallback();

@@ -101,7 +101,7 @@ if param.type == MethodParam::TYPE_STRING %>
         {
             arg<%= first_arg %> = getStringFromValue(argv[<%= first_arg %>]);
 <% if first_arg == 0 %>
-            oRes.setStringParam(getStringFromValue(argv[<%= first_arg %>]));
+            oRes.setParamName(getStringFromValue(argv[<%= first_arg %>]));
 <% end %>
         }
         else if (!rho_ruby_is_NIL(argv[<%= first_arg %>]))

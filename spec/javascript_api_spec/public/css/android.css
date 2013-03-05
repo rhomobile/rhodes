@@ -1,0 +1,418 @@
+a {
+    text-decoration: none;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    width: inherit;
+    font-family: "Droid", sans-serif;
+    background: black;
+    color: white;
+}
+
+h1 {
+    font-size: 1em;
+}
+
+div.itemLabel {
+    font-weight: bold;
+}
+div.itemValue {
+    font-weight: normal;
+}
+
+/*
+.ui-page,
+.ui-content,
+.ui-content ul li,
+.ui-content form,
+.ui-btn a.ui-link-inherit {
+    font-family: "Droid", sans-serif;
+    background: black;
+    color: white;
+}
+
+.ui-header h1 {
+    font-size: 2em;
+
+}
+
+.ui-header {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B), color-stop(0.2, #585858), color-stop(1.0, #2B2B2B));
+}
+
+.ui-header h1 {
+    color: white;
+    line-height: 25px;
+    text-shadow: 1px 1px 1px #000;
+}
+
+*/
+
+/* ---------- JQM theme customization ------------- */
+
+.ui-bar-a {
+	border: 1px solid 		#2A2A2A;
+	background: 			#111111;
+	color: 					#ffffff;
+	font-weight: bold;
+	text-shadow: 0 -1px 1px #000000;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, #2B2B2B), color-stop(0.2, #585858), color-stop(1.0, #2B2B2B));
+}
+.ui-bar-a,
+.ui-bar-a input,
+.ui-bar-a select,
+.ui-bar-a textarea,
+.ui-bar-a button {
+    font-family: "Droid", sans-serif;
+/*
+	font-family: Helvetica, Arial, sans-serif;
+*/
+}
+.ui-bar-a .ui-link-inherit {
+	color: 					#fff;
+}
+.ui-bar-a .ui-link {
+	color: 					#7cc4e7;
+	font-weight: bold;
+}
+.ui-body-c {
+	border: 1px solid 		#2A2A2A;
+	background: 			#000;
+	color: 					#fff;
+	text-shadow: 0 1px 0 	#000;
+	font-weight: normal;
+/*
+	background: 			#222222;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#666), to(#222));
+*/
+}
+.ui-body-c,
+.ui-body-c input,
+.ui-body-c select,
+.ui-body-c textarea,
+.ui-body-c button {
+    font-family: "Droid", sans-serif;
+/*
+	font-family: Helvetica, Arial, sans-serif;
+*/
+}
+.ui-body-c .ui-link-inherit {
+	color: 					#fff;
+}
+.ui-body-c .ui-link {
+	color: 					#2489CE;
+	font-weight: bold;
+}
+.ui-br {
+	border-bottom: rgb(130,130,130);
+	border-bottom: rgba(130,130,130,.3);
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+
+li.ui-btn-up-c {
+    border: 1px solid 		#222;
+    background: #000;
+    font-weight: bold;
+    color: 					#fff;
+    text-shadow: 0 -1px 1px #000;
+/*
+    background: 			#333333;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#555), to(#333));
+*/
+}
+
+
+.ui-btn-up-c {
+	border: 1px solid 		#222;
+	background: 			#333333;
+	font-weight: bold;
+	color: 					#000;
+	text-shadow: 0 -1px 1px #fff;
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0.0, white), color-stop(0.5, #ccc), color-stop(1.0, #bdbebd));
+/*
+	border: 1px solid 		#222;
+	background: 			#333333;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#555), to(#333));
+*/
+}
+.ui-btn-up-c a.ui-link-inherit {
+	color: 					#fff;
+}
+.ui-btn-hover-c {
+    border: 1px solid 		#000;
+    background: 			#f73923;
+    font-weight: bold;
+    color: 					#000;
+    text-shadow: none;
+    /*text-shadow: 0 -1px 1px #fff;*/
+/*
+    background: 			#F76922;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F76922), to(#F73932));
+*/
+/*
+	border: 1px solid 		#000;
+	background: 			#444444;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#666), to(#444));
+*/
+}
+.ui-btn-hover-c a.ui-link-inherit {
+	color: 					#555;
+}
+.ui-btn-down-c {
+    border: 1px solid 		#000;
+    background: 			#f76933;
+    font-weight: bold;
+    color: 					#000;
+    text-shadow: none;
+    /*text-shadow: 0 -1px 1px #fff;*/
+/*
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#F76922), to(#fadb4e));
+*/
+/*
+	border: 1px solid 		#000;
+	background: 			#3d3d3d;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#333), to(#5a5a5a));
+*/
+}
+.ui-slider-switch.ui-btn-down-c {
+	border: 1px solid 		#000;
+	background: 			#3d3d3d;
+	font-weight: bold;
+	color: 					#fff;
+	text-shadow: 0 -1px 1px #000;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#333), to(#5a5a5a));
+}
+.ui-btn-down-c a.ui-link-inherit {
+	color: 					#000;
+}
+.ui-btn-up-c,
+.ui-btn-hover-c,
+.ui-btn-down-c {
+    font-family: "Droid", sans-serif;
+/*
+	font-family: Helvetica, Arial, sans-serif;
+*/
+	text-decoration: none;
+}
+
+.ui-field-contain {
+    border-bottom: 0;
+}
+
+
+
+
+.ui-field-contain input[type="text"],
+.ui-field-contain input[type="number"],
+.ui-field-contain input[type="password"],
+.ui-field-contain input[type="true"],
+.ui-field-contain textarea {
+    -webkit-appearance: none;
+    color: #000000;
+    text-shadow: none;
+    font-size: 0.9em;
+
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
+    border: 1px solid #d6d7d6;
+    box-shadow: 0 -1px 3px #000000;
+
+}
+
+.ui-input-search {
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
+/*
+    background: #666 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#666), to(#222));
+*/
+    background-image: url(../jqmobile/images/icon-search-black.png);
+    background-position: 8px 50%;
+    background-repeat: no-repeat;
+
+    border: 1px solid #666;
+    box-shadow: 0 -1px 3px #000000;
+}
+.ui-input-search .ui-input-clear {
+    margin: -12px 4px;
+}
+
+
+.ui-bar-a select,
+.ui-body-c select {
+    -webkit-appearance: none;
+    border: 0;
+    padding-left: 20px;
+/*
+    width: 100%;
+    height: 60px;
+*/
+    color: white;
+    background: url('/public/images/android/ic_menu_more.png') no-repeat center right;
+}
+
+
+.ui-li-static {
+    font-size: 16px;
+    /*font-size: 0.9em;*/
+    background: black;
+    /*color: white;*/
+    border-bottom: 1px solid #666;
+/*
+    color: #000000;
+    text-shadow: none;
+    font-size: 0.9em;
+
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.0125, #d6d7d6), color-stop(0.25, #efefef), color-stop(0.95, #f7f7f7), color-stop(1.0, #f7f3f7));
+    border: 1px solid #d6d7d6;
+    box-shadow: 0 -1px 3px #000000;
+*/
+}
+
+
+.ui-corner-tl {
+	-moz-border-radius-topleft: 		4px;
+	-webkit-border-top-left-radius: 	4px;
+	border-top-left-radius: 			4px;
+}
+.ui-corner-tr {
+	-moz-border-radius-topright: 		4px;
+	-webkit-border-top-right-radius: 	4px;
+	border-top-right-radius: 			4px;
+}
+.ui-corner-bl {
+	-moz-border-radius-bottomleft: 		4px;
+	-webkit-border-bottom-left-radius: 	4px;
+	border-bottom-left-radius: 			4px;
+}
+.ui-corner-br {
+	-moz-border-radius-bottomright: 	4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 		4px;
+}
+.ui-corner-top {
+	-moz-border-radius-topleft: 		4px;
+	-webkit-border-top-left-radius: 	4px;
+	border-top-left-radius: 			4px;
+	-moz-border-radius-topright: 		4px;
+	-webkit-border-top-right-radius: 	4px;
+	border-top-right-radius: 			4px;
+}
+.ui-corner-bottom {
+	-moz-border-radius-bottomleft: 		4px;
+	-webkit-border-bottom-left-radius: 	4px;
+	border-bottom-left-radius: 			4px;
+	-moz-border-radius-bottomright: 	4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 		4px;
+	}
+.ui-corner-right {
+	-moz-border-radius-topright: 		4px;
+	-webkit-border-top-right-radius: 	4px;
+	border-top-right-radius: 			4px;
+	-moz-border-radius-bottomright: 	4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 		4px;
+}
+.ui-corner-left {
+	-moz-border-radius-topleft: 		4px;
+	-webkit-border-top-left-radius: 	4px;
+	border-top-left-radius: 			4px;
+	-moz-border-radius-bottomleft: 		4px;
+	-webkit-border-bottom-left-radius: 	4px;
+	border-bottom-left-radius: 			4px;
+}
+.ui-corner-all {
+	-moz-border-radius: 				4px;
+	-webkit-border-radius: 				4px;
+	border-radius: 						4px;
+}
+
+
+
+.ui-btn-corner-tl {
+	-moz-border-radius-topleft: 		5px;
+	-webkit-border-top-left-radius: 	5px;
+	border-top-left-radius: 			5px;
+}
+.ui-btn-corner-tr {
+	-moz-border-radius-topright: 		5px;
+	-webkit-border-top-right-radius: 	5px;
+	border-top-right-radius: 			5px;
+}
+.ui-btn-corner-bl {
+	-moz-border-radius-bottomleft: 		5px;
+	-webkit-border-bottom-left-radius: 	5px;
+	border-bottom-left-radius: 			5px;
+}
+.ui-btn-corner-br {
+	-moz-border-radius-bottomright: 	5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-bottom-right-radius: 		5px;
+}
+.ui-btn-corner-top {
+	-moz-border-radius-topleft: 		5px;
+	-webkit-border-top-left-radius: 	5px;
+	border-top-left-radius: 			5px;
+	-moz-border-radius-topright: 		5px;
+	-webkit-border-top-right-radius: 	5px;
+	border-top-right-radius: 			5px;
+}
+.ui-btn-corner-bottom {
+	-moz-border-radius-bottomleft: 		5px;
+	-webkit-border-bottom-left-radius: 	5px;
+	border-bottom-left-radius: 			5px;
+	-moz-border-radius-bottomright: 	5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-bottom-right-radius: 		5px;
+}
+.ui-btn-corner-right {
+	 -moz-border-radius-topright: 		5px;
+	-webkit-border-top-right-radius: 	5px;
+	border-top-right-radius: 			5px;
+	-moz-border-radius-bottomright: 	5px;
+	-webkit-border-bottom-right-radius: 5px;
+	border-bottom-right-radius: 		5px;
+}
+.ui-btn-corner-left {
+	-moz-border-radius-topleft: 		5px;
+	-webkit-border-top-left-radius: 	5px;
+	border-top-left-radius: 			5px;
+	-moz-border-radius-bottomleft: 		5px;
+	-webkit-border-bottom-left-radius: 	5px;
+	border-bottom-left-radius: 			5px;
+}
+.ui-btn-corner-all {
+	-moz-border-radius: 				5px;
+	-webkit-border-radius: 				5px;
+	border-radius: 						5px;
+}
+
+
+@media all and (min-width: 320px){
+    .ui-content ul li div.itemLabel {
+        display: inline-block;
+        width: 50%;
+        overflow: hidden;
+    }
+
+    .ui-content ul li div.itemValue {
+        display: inline-block;
+        overflow: hidden;
+    }
+}
+
+.errorMessage {
+    color: red;
+    text-align: center;
+}
