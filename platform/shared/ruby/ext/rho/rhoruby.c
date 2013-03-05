@@ -277,7 +277,7 @@ void RhoRubyStart()
 	//Init_sqlite3_api();
 	Init_strscan();
 	Init_GeoLocation();
-	Init_AsyncHttp();
+	//Init_AsyncHttp();
     //TODO: remove Init_System(); 
 	//Init_System();
 	Init_NativeBar();
