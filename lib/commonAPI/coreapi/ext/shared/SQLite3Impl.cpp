@@ -154,7 +154,7 @@ extern "C" void Init_SQLite3()
 
 extern "C" unsigned long rb_impl_SQLite3_execute(int argc, unsigned long *argv, rho::database::ISQLite3* pObj)
 {
-    void* pDB =  dynamic_cast<rho::database::CSQLite3Impl*>(pObj)->getDb();
+    void* pDB =  static_cast<rho::database::CSQLite3Impl*>(pObj)->getDb();
     return rb_c_impl_SQLite3_execute(argc, argv, pDB);
 }
 
