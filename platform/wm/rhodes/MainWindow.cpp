@@ -95,6 +95,7 @@ CMainWindow::CMainWindow()
     m_pBrowserEng = NULL;
 #if defined(OS_WINCE)
     m_bFullScreen = false;
+    m_bFullScreenBeforeLicense = m_bFullScreen;
 #endif
 
     mIsOpenedByURL = false;
@@ -1264,15 +1265,23 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 {
     LOG(INFO) + "OnLicenseScreen";
 #if defined( OS_WINCE )
-	if (!m_bFullScreen) {
-		RhoSetFullScreen(wParam != 0);
+    if ( wParam != 0 )
+    {
+        m_bFullScreenBeforeLicense = m_bFullScreen;
+	    if (!m_bFullScreen)
+		    RhoSetFullScreen(true);
+    }else
+    {
+        if ( !m_bFullScreenBeforeLicense )
+            RhoSetFullScreen(false);
+    }
+
 /*		HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
 		if(hTaskBar) {
 			bool bEnableTaskBar = (wParam == 0);
 			::ShowWindow(hTaskBar, (bEnableTaskBar ? SW_SHOW : SW_HIDE));
 			::EnableWindow(hTaskBar, bEnableTaskBar);
 		}*/
-	}
 #endif
 
     //Fix issue with lost focus after License Screen hides
