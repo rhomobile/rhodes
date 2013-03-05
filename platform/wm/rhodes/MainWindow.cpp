@@ -332,9 +332,9 @@ void CMainWindow::initBrowserWindow()
     //m_pBrowserEng->ResizeOnTab(0, rect);
 
     HRESULT hr = S_OK;
-#if !defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
+#if !defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) && !defined(OS_PLATFORM_MOTCE)
     // set up connection point
-//    hr = AtlAdviseSinkMap(this, true);
+    hr = AtlAdviseSinkMap(this, true);
 #endif
 
 }

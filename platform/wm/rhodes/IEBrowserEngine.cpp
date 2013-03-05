@@ -241,8 +241,10 @@ void CIEBrowserEngine::OnDocumentComplete(LPCTSTR url)
 {
 	if(!m_bLoadingComplete && wcscmp(url,_T("about:blank"))!=0)
 	{
-        rho_wm_impl_CheckLicense();
 		m_bLoadingComplete = true;
+
+        ShowWindow(m_browser.m_hWnd, SW_SHOW);
+        rho_wm_impl_CheckLicense();
 	}
 }
 
