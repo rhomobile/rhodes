@@ -27,6 +27,8 @@ UINT WM_BROWSER_ONAUTHENTICATIONREQUEST = ::RegisterWindowMessage(L"WM_BROWSER_O
 
 extern "C" void rho_wm_impl_CheckLicense();
 
+IMPLEMENT_LOGCLASS(CEBrowserEngine,"IEBrowser");
+
 namespace
 {
 
@@ -278,6 +280,8 @@ BOOL CEBrowserEngine::Navigate(LPCTSTR tcURL)
 
 	if (!tcURL || wcslen(tcURL) == 0)
 		return S_FALSE;
+
+    LOG(INFO)  + "Navigate: " + tcURL;
 
     m_bLoadingComplete = FALSE;
 
@@ -852,7 +856,7 @@ void CEBrowserEngine::OnDocumentComplete(LPCTSTR url)
 {
     if(!m_bLoadingComplete && wcscmp(url,_T("about:blank")) != 0)
     {
-//        rho_wm_impl_CheckLicense();
+        rho_wm_impl_CheckLicense();
         m_bLoadingComplete = true;
     }
 }

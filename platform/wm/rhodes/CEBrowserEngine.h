@@ -29,6 +29,8 @@ class CEBrowserEngine :
 	public DWebBrowserEvents2,
 	public IDocHostShowUI
 {
+    DEFINE_LOGCLASS;
+
 public:
 
 	CEBrowserEngine(HWND hwndParent, HINSTANCE hInstance);
