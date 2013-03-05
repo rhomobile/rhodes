@@ -192,7 +192,7 @@ end
 
 namespace "build" do
 
-    namespace "windows" do
+  namespace "windows" do
     task :devrhobundle, [:sdk, :configuration] do |t,args|
 	  throw "You must pass in sdk(Win32, WM, WinCE)" if args.sdk.nil?
 	  throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
@@ -209,15 +209,16 @@ namespace "build" do
         throw "You must pass in sdk(Win32, WM, WinCE)"
       end
 
-	  $buildcfg = args.configuration
+      $buildcfg = args.configuration
       
       Rake::Task["build:wm:rhobundle"].invoke  
       Rake::Task["config:win32:application"].invoke() if $current_platform == "win32"
       Rake::Task["build:win32:after_bundle"].invoke  
     end
-    end
+  end
+
   namespace "wm" do
-    
+  
     task :extensions => "config:wm" do
       if not $use_shared_runtime.nil? then next end
 
@@ -595,6 +596,30 @@ namespace "build" do
 
   end
 
+  #desc "Build rhodes for winxp embeded"
+  task :winxpe => ["build:win32:rhobundle", "config:win32:application"] do
+    if  $app_config["capabilities"].nil?
+       $app_config["capabilities"] = Array.new
+    end
+
+    $app_config["capabilities"] << "winxpe"
+
+    puts $app_config["capabilities"].to_s
+
+    chdir $config["build"]["wmpath"]
+
+    args = ['/M4', $build_solution,  "\"" + $buildcfg + '|Win32"']
+    puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
+    puts Jake.run($vcbuild,args)
+
+    chdir $startdir
+
+    unless $? == 0
+      puts "Error building"
+      exit 1
+    end
+  end
+
   #desc "Build rhodes for win32"
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
     chdir $config["build"]["wmpath"]
@@ -716,6 +741,12 @@ namespace "device" do
       rm_f "cleanup.js"
 
       chdir $startdir
+    end
+  end
+
+  namespace "winxpe" do
+    desc "Build installer for Windows XP Embedded"
+    task :production => ["build:win32:set_release_config", "config:win32:qt", "build:winxpe"] do     
     end
   end
 
