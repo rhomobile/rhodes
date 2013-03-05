@@ -10,7 +10,6 @@
 		46056D171031DC7E00C21967 /* datetimepicker_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46056D151031DC7E00C21967 /* datetimepicker_wrap.c */; };
 		46A4ABC0101A25DD00AF74C7 /* rhoconf_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */; };
 		46AF502F103DE480006E02E1 /* nativebar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46AF502D103DE480006E02E1 /* nativebar_wrap.c */; };
-		5C40CF66122703E6007298DA /* sqlite3_api_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C40CF65122703E6007298DA /* sqlite3_api_wrap.c */; };
 		5C76527E0FD3E3C100CB43FD /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C76527B0FD3E3C100CB43FD /* rhoruby.c */; };
 		5C76527F0FD3E3C100CB43FD /* rhoruby.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C76527C0FD3E3C100CB43FD /* rhoruby.h */; };
 		5C7652800FD3E3C100CB43FD /* rhosupport.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C76527D0FD3E3C100CB43FD /* rhosupport.c */; };
@@ -811,7 +810,6 @@
 				BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */,
 				BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */,
 				FA291E8911FF2BF90096AC39 /* signature_wrap.c in Sources */,
-				5C40CF66122703E6007298DA /* sqlite3_api_wrap.c in Sources */,
 				FACC2099123A5F300088A447 /* bluetooth_wrap.c in Sources */,
 				BD807BB01259E25A00A4E4B2 /* calendar_wrap.c in Sources */,
 				BD807BC31259E37900A4E4B2 /* event_wrap.c in Sources */,

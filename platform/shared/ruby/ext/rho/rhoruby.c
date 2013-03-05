@@ -233,7 +233,7 @@ void RhoRubyStart()
 #if !defined(OS_WP8)
 
     Init_strscan(); //+
-#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID)
+#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID) && !defined(OS_MACOSX)
     Init_sqlite3_api(); //+
 #endif
     Init_GeoLocation(); //+

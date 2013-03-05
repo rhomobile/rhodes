@@ -11,7 +11,7 @@ extern "C" void Init_CoreAPI_Extension()
 	Init_NetworkAccess();
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8) || defined(OS_ANDROID)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8) || defined(OS_ANDROID) || defined(OS_MACOSX)
     Init_SQLite3();
 #endif
 }
