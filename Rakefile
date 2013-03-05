@@ -820,7 +820,7 @@ def init_extensions(startdir, dest)
 
           unless rhoapi_js_folder.nil?
             Dir.glob(extpath + "/public/api/generated/Rho.*.js").each do |f|
-              extjsmodules << f.gsub(/^.*(Rho\.[^\.]+)\.js$/, '\1')
+              extjsmodules << f.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
             end
           end
             
@@ -1830,7 +1830,7 @@ namespace "run" do
               Dir.glob(js_folder + "/Rho.*.js").each do |f|
                 mkdir_p rhoapi_js_folder
                 cp f, "#{rhoapi_js_folder}/"
-                extjsmodules << f.gsub(/^.*(Rho\.[^\.]+)\.js$/, '\1')
+                extjsmodules << f.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
               end
             end
         end
