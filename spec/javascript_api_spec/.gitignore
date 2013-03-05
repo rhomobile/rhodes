@@ -1,0 +1,8 @@
+# logs and symlinks
+rholog.txt
+rholog-*
+sim-*
+
+# build output
+bin/
+public/api/generated/

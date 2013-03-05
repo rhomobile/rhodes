@@ -1,0 +1,21 @@
+<div data-role="page">
+
+        
+  <div data-role="header" data-position="inline">
+    <h1>Home</h1>
+    <% if SyncEngine::logged_in > 0 %>
+        <a href="<%= url_for :action => :do_sync %>" class="ui-btn-left" data-icon="refresh">Sync</a>
+        <a href="<%= url_for :action => :logout %>" class="ui-btn-right" data-icon="star">Logout</a>
+    <% else %>
+        <a href="<%= url_for :action => :login %>" class="ui-btn-right" data-icon="star">Login</a>
+    <% end %>
+  </div>
+
+    
+  <div data-role="content">
+    <ul data-role="listview">
+      <li><a href="#">Add Links Here...</a></li>
+    </ul>
+  </div>
+
+</div>
