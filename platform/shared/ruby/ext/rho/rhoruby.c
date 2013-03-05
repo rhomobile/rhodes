@@ -237,7 +237,7 @@ void RhoRubyStart()
     Init_sqlite3_api(); //+
 #endif
     Init_GeoLocation(); //+
-#if !defined(WINDOWS_PLATFORM)
+#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID)
     Init_AsyncHttp(); //+
 #endif
 #if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID) && !defined(OS_MACOSX)

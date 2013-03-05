@@ -1240,7 +1240,7 @@ end
     end
   end # RhoConfig
   
-unless System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP' || System.get_property('platform') == 'WP8'
+unless System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP' || System.get_property('platform') == 'WP8' || System.get_property('platform') == 'ANDROID'
     module AsyncHttp
 
         def self.make_auth_header(args)
