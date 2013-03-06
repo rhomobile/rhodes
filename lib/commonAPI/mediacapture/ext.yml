@@ -9,4 +9,4 @@ project_paths:
   wm: ext/platform/wm/Mediacapture.vcproj
   win32: ext/platform/wm/Mediacapture.vcproj
   
-xml_api_paths: ext/Mediacapture.xml
+xml_api_paths: ext/camera.xml
