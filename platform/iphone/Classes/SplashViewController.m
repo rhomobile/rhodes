@@ -354,7 +354,8 @@
 
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
 	BOOL is_iPad = NO;
 	
 	NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
@@ -366,6 +367,28 @@
 	}
  	return YES;
 }
+
+#ifdef __IPHONE_6_0
+- (BOOL)shouldAutorotate
+{
+    BOOL is_iPad = NO;
+	
+	NSString *model = [[UIDevice currentDevice] model]; // "iPad ..."
+	if ([model hasPrefix:@"iPad"]) {
+		is_iPad = YES;
+	}
+	if (!is_iPad) {
+		return NO;
+	}
+ 	return YES;
+}
+
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskAll;
+}
+#endif
 
 
 @end

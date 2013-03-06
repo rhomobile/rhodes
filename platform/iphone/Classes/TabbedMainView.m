@@ -256,8 +256,6 @@
 
 @synthesize tabbar, tabbarData, tabindex, on_change_tab_callback;
 
-
-
 - (UIImage*)recolorImageWithColor:(UIImage*)image color:(UIColor *)color shadowColor:(UIColor *)shadowColor shadowOffset:(CGSize)shadowOffset shadowBlur:(CGFloat)shadowBlur
 {
     CGColorRef cgColor = [color CGColor];
@@ -332,10 +330,13 @@
     return (RhoTabBarData*)[tabbarData objectAtIndex:index];
 }
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
+
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info {
 	[SimpleMainView disableHiddenOnStart];
     CGRect frame = [[v view] frame];
-    
+
 	NSString *background_color = nil;
 	
 	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
@@ -353,18 +354,40 @@
 	else {
 		tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
     }
-	tabbar.delegate = [Rhodes sharedInstance];
+    
+    tabbar.delegate = [Rhodes sharedInstance];
     tabbar.view.frame = frame;
     tabbar.selectedIndex = 0;
+    
+    // Fix of rotation bug 
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0"))
+    {
+        // add new view
+        UIView* container = [[UIView alloc] init];
+        container.frame = frame;
+        container.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        container.autoresizesSubviews = YES;
+        
+        // register new view
+        self.view = container;
+        
+        [container release];
+        assert([container retainCount] == 1);
+        
+        tabbar.view.frame = container.frame;
+        
+        [self.view addSubview:tabbar.view];
+    }
+   
+	
     //tabbar.tabBar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
     //tabbar.tabBar.autoresizesSubviews = YES;
-	
     
     CGRect childFrame = [[v view] bounds];
 	childFrame.origin.x = 0;
 	childFrame.origin.y = 0;
     CGRect tbFrame = tabbar.tabBar.frame;
-	UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	//UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
 	//if ((orientation == UIInterfaceOrientationLandscapeLeft)) {
 		//childFrame.size.width -= tbFrame.size.height;
     //}
@@ -372,8 +395,7 @@
 		childFrame.size.height -= tbFrame.size.height;
 	//}
 	
-	
-	NSArray* items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
+    NSArray *items = (NSArray*)[bar_info objectForKey:NATIVE_BAR_ITEMS];
 	
     int count = [items count];
     NSMutableArray *views = [NSMutableArray arrayWithCapacity:count];
@@ -498,7 +520,8 @@
     tabbar.viewControllers = views;
     tabbar.customizableViewControllers = nil;
     tabbar.view.hidden = NO;
-    tabbar.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
+    tabbar.view.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleWidth |
+        UIViewAutoresizingFlexibleHeight;
     tabbar.view.autoresizesSubviews = YES;
     
     self.tabbarData = tabs;
@@ -547,7 +570,14 @@
 // RhoMainView implementation
 
 - (UIView*)view {
-    return tabbar.view;
+    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0"))
+    {
+        return super.view;
+    }
+    else
+    {
+        return tabbar.view;
+    }
 }
 
 - (UIWebView*)detachWebView {
@@ -702,7 +732,6 @@
 }
 
 
-
 -(void)setTabBarBadge:(NSString*)badge_text tab_index:(int)tab_index {
     
     SimpleMainView* subview = [self subView:tab_index]; 
@@ -716,6 +745,5 @@
     }
 
 }
-
 
 @end

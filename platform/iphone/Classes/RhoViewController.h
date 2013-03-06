@@ -31,4 +31,8 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
+- (BOOL)shouldAutorotate;
+
+- (NSUInteger)supportedInterfaceOrientations;
+
 @end
