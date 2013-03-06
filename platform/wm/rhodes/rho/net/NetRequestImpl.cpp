@@ -99,31 +99,8 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
 			break;
 		}
 
-#ifdef OS_WINDOWS_DESKTOP
-		if (RHOCONF().isExist("http_proxy_host")) {
-			rho::String login, password;
-			
-			if (RHOCONF().isExist("http_proxy_login"))
-				login = RHOCONF().getString ("http_proxy_login");
-			else
-				login = "anonymous";
-
-			if (RHOCONF().isExist("http_proxy_password"))
-				password = RHOCONF().getString("http_proxy_password");
-
-			m_hConnection = InternetConnect(m_hInternet, m_uri.lpszHostName, m_uri.nPort, 
-											//rho::common::convertToStringW(login).c_str(),
-											//password.length() ? rho::common::convertToStringW(password).c_str() : NULL,
-											_T("baran"), _T("baran"),
-											INTERNET_SERVICE_HTTP, 0, 0);
-		} else {
-			m_hConnection = InternetConnect(m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), NULL, 
-											INTERNET_SERVICE_HTTP, 0, 0);
-		}
-#else
         m_hConnection = InternetConnect( m_hInternet, m_uri.lpszHostName, m_uri.nPort, _T("anonymous"), 
 										 NULL, INTERNET_SERVICE_HTTP, 0, 0 );
-#endif
         if ( !m_hConnection ) 
         {
             m_pszErrFunction = L"InternetConnect";
@@ -164,6 +141,34 @@ void CNetRequestImpl::init(const char* method, const String& strUrl, IRhoSession
                     m_pszErrFunction = L"HttpAddRequestHeaders";
             }
         }
+
+		if (RHOCONF().isExist("http_proxy_host")) 
+        {
+			rho::String strLogin, strPassword;
+			
+			if (RHOCONF().isExist("http_proxy_login"))
+				strLogin = RHOCONF().getString ("http_proxy_login");
+
+			if (RHOCONF().isExist("http_proxy_password"))
+				strPassword = RHOCONF().getString("http_proxy_password");
+
+            if ( strPassword.length() > 0 && strLogin.length() > 0 )
+            {
+                String strAuth = strLogin+":"+strPassword;
+                int nLen = rho_base64_encode(strAuth.c_str(), -1, 0);
+                char* szBuf = new char[nLen+1];
+                rho_base64_encode(strAuth.c_str(), -1, szBuf );
+
+                String strHeader = "Proxy-Authorization: Basic ";
+                strHeader += szBuf;
+                strHeader += "\r\n";
+
+                delete szBuf;
+
+                if ( !HttpAddRequestHeaders( m_hRequest, common::convertToStringW(strHeader).c_str(), -1, HTTP_ADDREQ_FLAG_ADD|HTTP_ADDREQ_FLAG_REPLACE ) )
+                    m_pszErrFunction = L"HttpAddRequestHeaders";
+            }
+		}
 
     }while(0);
 }
@@ -871,7 +876,6 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
     if (m_hInternet)
         return true;
 
-#ifdef OS_WINDOWS_DESKTOP
 	if (RHOCONF().isExist("http_proxy_host")) {
 		rho::String proxyName = RHOCONF().getString("http_proxy_host");
 
@@ -887,9 +891,6 @@ bool CNetRequestImpl::initConnection(boolean bLocalHost, LPCTSTR url)
 	} else {
 		m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL );
 	}
-#else
-    m_hInternet = InternetOpen(_T("rhodes-wm"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL );
-#endif
 
 	if ( !m_hInternet ) 
     {
