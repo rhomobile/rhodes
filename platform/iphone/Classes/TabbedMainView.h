@@ -48,16 +48,14 @@
 
 @end
 
-
-
 @interface TabbedMainView : RhoViewController<RhoMainView> {
-    RhoUITabBarController *tabbar;
+    UITabBarController *tabbar;
     NSArray *tabbarData;
     int tabindex;
     NSString* on_change_tab_callback;
 }
 
-@property (nonatomic,retain) RhoUITabBarController *tabbar;
+@property (nonatomic,retain) UITabBarController *tabbar;
 @property (nonatomic,retain) NSArray *tabbarData;
 @property (nonatomic,assign) int tabindex;
 @property (nonatomic,retain) NSString *on_change_tab_callback;
