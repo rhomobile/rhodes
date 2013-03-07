@@ -165,6 +165,12 @@ RHO_GLOBAL int rho_sysimpl_get_property(const char* szPropName, rho::apiGenerato
     return 0;
 }
 
+rho::String rho_sysimpl_get_phone_id()
+{
+    rho::apiGenerator::CMethodResult result;
+    rho_sysimpl_get_property("phone_id", result);
+    return result.getString();
+}
 
 RHO_GLOBAL int rho_sys_set_sleeping(int sleeping) {
     JNIEnv *env = jnienv();
