@@ -67,6 +67,7 @@ public:
     virtual void getDeviceOwnerName(rho::apiGenerator::CMethodResult& result);
     virtual void getDeviceOwnerEmail(rho::apiGenerator::CMethodResult& result);
     virtual void getOsVersion(rho::apiGenerator::CMethodResult& result);
+    virtual void getIsMotorolaDevice(rho::apiGenerator::CMethodResult& result);
 
 };
 //----------------------------------------------------------------------------------------------------------------------
@@ -331,6 +332,10 @@ void CSystemImpl::getOsVersion(rho::apiGenerator::CMethodResult& result)
     rho_sysimpl_get_property("os_version", result);
 }
 //----------------------------------------------------------------------------------------------------------------------
+void CSystemImpl::getIsMotorolaDevice(rho::apiGenerator::CMethodResult& result)
+{
+    rho_sysimpl_get_property("is_motorola_device", result);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
