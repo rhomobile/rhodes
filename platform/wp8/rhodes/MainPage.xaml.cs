@@ -34,6 +34,7 @@ using rhoruntime;
 using Microsoft.Phone.Shell;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.IO.IsolatedStorage;
 
 namespace rhodes
 {
@@ -625,8 +626,8 @@ namespace rhodes
         public void exitCommand()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke( delegate() { exitCommand(); } );  return; }
-            // TODO: App.Current.Terminate(); -- we may terminate all processes instead of crashing app via Exception ?
-            App.Quit();
+            IsolatedStorageSettings.ApplicationSettings.Save();
+            App.Current.Terminate();
         }
 
         public void navigateBackCommand()
