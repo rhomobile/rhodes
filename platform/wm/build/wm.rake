@@ -128,7 +128,7 @@ namespace "config" do
     end
         
     unless $build_solution
-        $build_solution = 'rhodes.sln'
+      $build_solution = 'rhodes.sln'
     end
 
     if $app_config["wm"].nil?
@@ -142,8 +142,20 @@ namespace "config" do
     $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
     $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
 
-    $use_shared_runtime = (($app_config["use_shared_runtime"].nil? && ($app_config["wm"].nil? || $app_config["wm"]["use_shared_runtime"].nil?)) ? nil : 1 )
-      
+    $use_shared_runtime = nil
+
+    if !$app_config["use_shared_runtime"].nil? 
+      $use_shared_runtime = $app_config["use_shared_runtime"]
+    end
+
+    if $use_shared_runtime.nil? && ($app_config["wm"].nil? || $app_config["wm"]["use_shared_runtime"].nil?) == false
+      $use_shared_runtime = $app_config["wm"]["use_shared_runtime"]
+    end
+
+    if !$use_shared_runtime.nil? && $use_shared_runtime.to_s == '0'
+      $use_shared_runtime = nil
+    end
+
     puts "$sdk [#{$sdk}]"
   end
 
@@ -596,30 +608,6 @@ namespace "build" do
 
   end
 
-  #desc "Build rhodes for winxp embeded"
-  task :winxpe => ["build:win32:rhobundle", "config:win32:application"] do
-    if  $app_config["capabilities"].nil?
-       $app_config["capabilities"] = Array.new
-    end
-
-    $app_config["capabilities"] << "winxpe"
-
-    puts $app_config["capabilities"].to_s
-
-    chdir $config["build"]["wmpath"]
-
-    args = ['/M4', $build_solution,  "\"" + $buildcfg + '|Win32"']
-    puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
-    puts Jake.run($vcbuild,args)
-
-    chdir $startdir
-
-    unless $? == 0
-      puts "Error building"
-      exit 1
-    end
-  end
-
   #desc "Build rhodes for win32"
   task :win32 => ["build:win32:rhobundle", "config:win32:application"] do
     chdir $config["build"]["wmpath"]
@@ -821,8 +809,9 @@ namespace "device" do
 
   namespace "winxpe" do
     desc "Build installer for Windows XP Embedded"
-    task :production => ["build:win32:set_release_config", "config:win32:qt", "build:winxpe"] do     
-      createWin32Production
+    task :production do     
+      $winxpe_build = true
+      Rake::Task["device:win32:production"].invoke  
     end
   end
 

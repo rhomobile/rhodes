@@ -63,10 +63,10 @@
     else if ([objectiveC_value isKindOfClass:[CRhoAPIClassInstance class]]) {
         // rubyModule
         CRhoAPIClassInstance* rubyModule = (CRhoAPIClassInstance*)objectiveC_value;
-        NSString* rubyPath = [rubyModule getClassName];
+        NSString* rubyID = [rubyModule getInstanceID];
         if (level == 0)
             strRes = [strRes stringByAppendingString:@"'_RhoValue':'"];
-        strRes = [strRes stringByAppendingString:rubyPath];
+        strRes = [strRes stringByAppendingString:rubyID];
         strRes = [strRes stringByAppendingString:@"'"];
     }
     else if ([objectiveC_value isKindOfClass:[NSDictionary class]]) {

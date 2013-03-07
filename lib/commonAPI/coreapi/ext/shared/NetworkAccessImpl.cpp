@@ -224,9 +224,6 @@ void CNetworkAccessImpl::readHeaders( const rho::Hashtable<rho::String, rho::Str
         char* szBuf = new char[nLen+1];
         rho_base64_encode(propertyMap.get("authPassword").c_str(), -1, szBuf );
 
-        char* szBuf2 = new char[nLen+1];
-        rho_base64_decode(szBuf, -1, szBuf2 );
-
         mapHeaders["Authorization"] = "Basic " + propertyMap.get("authUser") + ":" + szBuf;
         delete szBuf;
     }

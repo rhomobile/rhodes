@@ -89,5 +89,12 @@ module AsyncHttp
         end    
     end
 
+    def self.cancel(callback='*')
+        if !callback || callback == '*'
+            Rho::NetworkAccess.cancel()            
+        else
+            Rho::NetworkAccess.cancel(callback)
+        end
+    end
 end
 end
