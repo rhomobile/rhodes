@@ -170,6 +170,24 @@ void CExtManager::passSipPositionToEngine()
 #endif
 }
 
+bool CExtManager::RegisterForMessageCallback(unsigned int iMsgId)
+{
+#if !defined(OS_WINDOWS_DESKTOP)
+    return getAppWindow().getWebKitEngine()->RegisterForMessage(iMsgId);
+#else
+	return true;
+#endif
+}
+
+bool CExtManager::DeRegisterForMessageCallback(unsigned int iMsgId)
+{
+#if !defined(OS_WINDOWS_DESKTOP)
+    return getAppWindow().getWebKitEngine()->DeRegisterForMessage(iMsgId);
+#else
+	return true;
+#endif
+}
+
 void CExtManager::executeJavascript(const wchar_t* szJSFunction)
 {
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)_wcsdup(szJSFunction) );

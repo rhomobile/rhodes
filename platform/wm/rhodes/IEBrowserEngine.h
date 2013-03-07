@@ -43,4 +43,6 @@ public:
     virtual void OnDocumentComplete(LPCTSTR url);
     virtual void setBrowserGesturing(bool bEnableGesturing);
     virtual void NotifyEngineOfSipPosition();
+	virtual bool RegisterForMessage(unsigned int iMsgId);
+	virtual bool DeRegisterForMessage(unsigned int iMsgId);
 };
