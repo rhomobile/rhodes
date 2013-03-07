@@ -255,3 +255,13 @@ void CIEBrowserEngine::setBrowserGesturing(bool bEnableGesturing)
 void CIEBrowserEngine::NotifyEngineOfSipPosition()
 {
 }
+
+bool CIEBrowserEngine::RegisterForMessage(unsigned int iMsgId)
+{
+	return true;
+}
+
+bool CIEBrowserEngine::DeRegisterForMessage(unsigned int iMsgId)
+{
+	return true;
+}
