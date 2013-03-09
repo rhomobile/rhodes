@@ -29,10 +29,11 @@
 
 @interface RhoViewController : UIViewController {}
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation;
 
+#if defined(__IPHONE_6_0)
 - (BOOL)shouldAutorotate;
-
 - (NSUInteger)supportedInterfaceOrientations;
+#endif
 
 @end

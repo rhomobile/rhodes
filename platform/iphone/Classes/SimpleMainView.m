@@ -375,7 +375,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     webView.frame = wFrame;
     
     webView.autoresizesSubviews = YES;
-    webView.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    webView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 
 	if (web_bkg_color != nil) {
 		self.webView.backgroundColor = web_bkg_color;
@@ -402,7 +402,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	nativeViewType = nil;
 	nativeViewView = nil;
     
-   // DO NOT REMOVE THIS LINE!!!
+    // DO NOT REMOVE THIS LINE!!!
     // First call of self.view (when self.view is nil) trigger loadView
     // and viewDidLoad which add all our subviews to the root view
     NSLog(@"root view: %@", self.view);
@@ -418,7 +418,6 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	}
     root.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     root.autoresizesSubviews = YES;
-	
 	
     self.view = root;
 	
