@@ -332,10 +332,13 @@
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
-
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info {
 	[SimpleMainView disableHiddenOnStart];
     CGRect frame = [[v view] frame];
+    frame.origin.x = 0;
+    frame.origin.y = 0;
+    
+    rootFrame = frame;
 
 	NSString *background_color = nil;
 	
@@ -359,27 +362,11 @@
     tabbar.view.frame = frame;
     tabbar.selectedIndex = 0;
     
-    // Fix of rotation bug 
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0"))
-    {
-        // add new view
-        UIView* container = [[UIView alloc] init];
-        container.frame = frame;
-        container.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        container.autoresizesSubviews = YES;
-        
-        // register new view
-        self.view = container;
-        
-        [container release];
-        assert([container retainCount] == 1);
-        
-        tabbar.view.frame = container.frame;
-        
-        [self.view addSubview:tabbar.view];
-    }
-   
-	
+    // DO NOT REMOVE THIS LINE!!!
+    // First call of self.view (when self.view is nil) trigger loadView
+    // and viewDidLoad which add all our subviews to the root view
+    [self.view addSubview:tabbar.view];
+   	
     //tabbar.tabBar.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth;
     //tabbar.tabBar.autoresizesSubviews = YES;
     
@@ -536,9 +523,23 @@
 	if (tab_to_initial_select >= 0) {
 		tabbar.selectedIndex = tab_to_initial_select;
 	}
-									 
+    
     return self;
 }
+
+- (void)loadView {
+    UIView* root = [[UIView alloc] init];
+    root.frame = rootFrame;
+    
+    root.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    root.autoresizesSubviews = YES;
+	
+    self.view = root;
+	
+    [root release];
+    assert([root retainCount] == 1);
+}
+
 
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
@@ -568,18 +569,6 @@
 }
 
 // RhoMainView implementation
-
-- (UIView*)view {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0"))
-    {
-        return super.view;
-    }
-    else
-    {
-        return tabbar.view;
-    }
-}
-
 - (UIWebView*)detachWebView {
     int n = [self activeTab];
     return [[self subView:n] detachWebView];
