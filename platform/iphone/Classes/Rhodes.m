@@ -471,7 +471,7 @@ static Rhodes *instance = NULL;
         [splashViewController release];
         splashViewController = nil;
 		
-		//[window addSubview:mainView.view];
+		[window addSubview:mainView.view];
         window.rootViewController = mainView;
 		[window bringSubviewToFront:mainView.view];
     }
@@ -518,7 +518,7 @@ static Rhodes *instance = NULL;
 	}
 	
     mainView = [view retain];
-    //[window addSubview:mainView.view];
+    [window addSubview:mainView.view];
     
     //[window setRootViewController:mainView];
     
@@ -662,8 +662,8 @@ static Rhodes *instance = NULL;
 	BOOL is_splash_screen_maked = [self showLoadingPagePre];
 	
 	if (!is_splash_screen_maked) {
+		[window addSubview:mainView.view];
         window.rootViewController = mainView;
-		//[window addSubview:mainView.view];
 	}
 	
     [window makeKeyAndVisible];
