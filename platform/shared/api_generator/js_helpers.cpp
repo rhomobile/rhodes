@@ -45,7 +45,7 @@ rho::String js_entry_point(const char* szJSON)
         return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"Method not found.\"}, \"id\": " + strReqId + "}";
 
     CJSONArray oParams(oEntry.getEntry("params"));
-    return pMethod( oParams, strObjID );
+    return "{\"jsonrpc\": \"2.0\", " + pMethod( oParams, strObjID ) + ", \"id\": " + strReqId + "}";
 }
 
 void rho_http_js_entry_point(void *arg, rho::String const &query )
