@@ -233,16 +233,7 @@ void RhoRubyStart()
 #if !defined(OS_WP8)
 
     Init_strscan(); //+
-#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID) && !defined(OS_MACOSX)
-    Init_sqlite3_api(); //+
-#endif
     Init_GeoLocation(); //+
-#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID)
-    Init_AsyncHttp(); //+
-#endif
-#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID) && !defined(OS_MACOSX)
-    Init_System();
-#endif
 
     Init_Phonebook();
     Init_WebView(); //+
@@ -274,12 +265,8 @@ void RhoRubyStart()
 #endif //RHO_SYMBIAN
 
 #else // OS_WP8 is set
-	//Init_sqlite3_api();
 	Init_strscan();
 	Init_GeoLocation();
-	//Init_AsyncHttp();
-    //TODO: remove Init_System(); 
-	//Init_System();
 	Init_NativeBar();
 	Init_NavBar();
 	Init_RhoSupport();
