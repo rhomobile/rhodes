@@ -40,6 +40,13 @@ public:
     virtual void get( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
     virtual void post( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
     virtual void uploadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
+
+    virtual void hasNetwork(rho::apiGenerator::CMethodResult& oResult);
+    virtual void hasWifiNetwork(rho::apiGenerator::CMethodResult& oResult);
+    virtual void hasCellNetwork(rho::apiGenerator::CMethodResult& oResult);
+    virtual void startStatusNotify( int pollInterval, rho::apiGenerator::CMethodResult& oResult);
+    virtual void stopStatusNotify(rho::apiGenerator::CMethodResult& oResult);
+
 private:
 
     NetRequest& getCurRequest(NetRequest& oNetRequest);
@@ -263,6 +270,43 @@ void CNetworkAccessImpl::createResult( NetResponse& resp, Hashtable<String,Strin
     mapRes["body"].assign( resp.getCharData(), resp.getDataSize() );
 
     oResult.set(mapRes);
+}
+
+static int g_rho_has_network = 1, g_rho_has_cellnetwork = 0;
+
+extern "C" void rho_sysimpl_sethas_network(int nValue)
+{
+    g_rho_has_network = nValue > 1 ? 1 : 0;
+}
+
+extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue)
+{
+    g_rho_has_cellnetwork = nValue;
+}
+
+void CNetworkAccessImpl::hasNetwork(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set(g_rho_has_network!= 0 || g_rho_has_cellnetwork!= 0);
+}
+
+void CNetworkAccessImpl::hasWifiNetwork(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set(g_rho_has_network!= 0);
+}
+
+void CNetworkAccessImpl::hasCellNetwork(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set(g_rho_has_cellnetwork!= 0);
+}
+
+void CNetworkAccessImpl::startStatusNotify( int pollInterval, rho::apiGenerator::CMethodResult& oResult)
+{
+    //TODO: startStatusNotify
+}
+
+void CNetworkAccessImpl::stopStatusNotify(rho::apiGenerator::CMethodResult& oResult)
+{
+    //TODO: stopStatusNotify
 }
 
 ////////////////////////////////////////////////////////////////////////

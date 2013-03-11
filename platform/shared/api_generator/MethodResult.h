@@ -114,6 +114,7 @@ public:
     rho::Hashtable<rho::String, rho::String>& getStringHash(){ return m_hashStrRes; }
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >& getStringHashL2(){ return m_hashStrL2Res; }
     rho::String& getString(){ return m_strRes; }
+    bool getBool(){ return m_bRes; }
 
     rho::String toString();
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}

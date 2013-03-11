@@ -1089,6 +1089,10 @@
 				Name="shared"
 				>
 				<File
+					RelativePath="..\..\shared\System.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\system.xml"
 					>
 					<FileConfiguration
@@ -1283,6 +1287,14 @@
 			<Filter
 				Name="shared"
 				>
+				<File
+					RelativePath="..\..\shared\Network.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\NetworkAccess.rb"
+					>
+				</File>
 				<File
 					RelativePath="..\..\NetworkAccess.xml"
 					>
