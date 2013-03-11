@@ -545,7 +545,7 @@
             </METHOD>
 
             <METHOD name="setNetworkStatusNotify" deprecated="true">
-                <DESC>Use Network.setNotify: set network notification callback.</DESC>
+                <DESC>Use Network.setStatusNotify: set network notification callback.</DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>The url to the user-defined callback method.</DESC>
@@ -557,7 +557,7 @@
             </METHOD>
 
             <METHOD name="clearNetworkStatusNotify" deprecated="true">
-                <DESC>Clear network status callback.</DESC>
+                <DESC>Use Network.clearStatusNotify: Clear network status callback.</DESC>
             </METHOD>
 
             <METHOD name="set_http_proxy_url" deprecated="true">

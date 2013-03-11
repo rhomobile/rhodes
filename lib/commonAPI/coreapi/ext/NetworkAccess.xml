@@ -51,23 +51,29 @@
 
             <METHOD name="cancel" hasCallback="optional" runInThread="none">
                 <DESC>Cancel the request identified by callback. If callback is mossed then all requests will be cancelled.</DESC>
-                <CALLBACK optional="true"/>
             </METHOD>
 
-            <METHOD name="downloadFile" hasCallback="optional"  propertyHash="true">
+            <METHOD name="downloadFile" hasCallback="optional">
                 <DESC>Download a file to the specified filename.</DESC>
                 <PARAMS>
-                    <PARAM name="propertyMap" type="HASH">
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
                         <PARAMS>
                             <PARAM name="filename" type="STRING">
                                 <DESC>The path and name of the file to be uploaded.</DESC>
                             </PARAM>
+                            <PARAM name="overWriteFile" type="BOOLEAN" default="false">
+                                <DESC>overWriteFile will overwrite the destination file if it already exists.</DESC>
+                            </PARAM>
+                            <PARAM name="createFolders" type="BOOLEAN" default="false">
+                                <DESC>createFolders can automatically create the directory path.</DESC>
+                            </PARAM>
+                            
                         </PARAMS>
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK optional="false">
+                <RETURN>
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -82,7 +88,7 @@
                             <DESC>HTTP error code if response code was not 200.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>
+                </RETURN>
 
             </METHOD>
 
@@ -94,7 +100,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK optional="false">
+                <RETURN>
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -109,7 +115,7 @@
                             <DESC>HTTP error code if response code was not 200.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>
+                </RETURN>
 
             </METHOD>
 
@@ -126,7 +132,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK optional="false">
+                <RETURN>
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -141,7 +147,7 @@
                             <DESC>HTTP error code if response code was not 200.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>
+                </RETURN>
 
             </METHOD>
 
@@ -184,7 +190,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK optional="false">
+                <RETURN>
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -199,8 +205,35 @@
                             <DESC>HTTP error code if response code was not 200.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>
+                </RETURN>
 
+            </METHOD>
+
+            <METHOD name="hasNetwork">
+                <DESC>Is device connected to the network.</DESC>
+                <RETURN  type="BOOLEAN"/>
+            </METHOD>
+            <METHOD name="hasWifiNetwork">
+                <DESC>Is device connected to the wifi network</DESC>
+                <RETURN  type="BOOLEAN"/>
+            </METHOD>
+            <METHOD name="hasCellNetwork">
+                <DESC>Is device connected to the cell network.</DESC>
+                <RETURN  type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="startStatusNotify" hasCallback="mandatory" runInThread="none">
+                <DESC>Start network status notifications.</DESC>
+                <PARAMS>
+                    <PARAM name="pollInterval" type="INTEGER" default="20">
+                        <DESC>The network status polling period for systems that can not notify network status change immediately.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="stopStatusNotify">
+                <DESC>Stop network status notifications.</DESC>
             </METHOD>
 
         </METHODS>
