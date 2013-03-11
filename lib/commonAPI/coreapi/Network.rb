@@ -56,44 +56,44 @@ module AsyncHttp
     def self.get(args)
         preprocess_headers(args)
         if ( args[:callback] )
-            Rho::NetworkAccess.get( args, args[:callback], args[:callback_param] )
+            Rho::Network.get( args, args[:callback], args[:callback_param] )
         else
-            Rho::NetworkAccess.get( args )
+            Rho::Network.get( args )
         end    
     end
     
     def self.post(args)
         preprocess_headers(args)
         if ( args[:callback] )
-            Rho::NetworkAccess.post( args, args[:callback], args[:callback_param] )
+            Rho::Network.post( args, args[:callback], args[:callback_param] )
         else
-            Rho::NetworkAccess.post( args )
+            Rho::Network.post( args )
         end    
     end
     
     def self.download_file(args)
         preprocess_headers(args)
         if ( args[:callback] )
-            Rho::NetworkAccess.downloadFile( args, args[:callback], args[:callback_param] )
+            Rho::Network.downloadFile( args, args[:callback], args[:callback_param] )
         else
-            Rho::NetworkAccess.downloadFile( args )
+            Rho::Network.downloadFile( args )
         end    
     end
     
     def self.upload_file(args)
         preprocess_headers(args)
         if ( args[:callback] )
-            Rho::NetworkAccess.uploadFile( args, args[:callback], args[:callback_param] )
+            Rho::Network.uploadFile( args, args[:callback], args[:callback_param] )
         else
-            Rho::NetworkAccess.uploadFile( args )
+            Rho::Network.uploadFile( args )
         end    
     end
 
     def self.cancel(callback='*')
         if !callback || callback == '*'
-            Rho::NetworkAccess.cancel()            
+            Rho::Network.cancel()            
         else
-            Rho::NetworkAccess.cancel(callback)
+            Rho::Network.cancel(callback)
         end
     end
 end
