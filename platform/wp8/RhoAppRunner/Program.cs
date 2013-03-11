@@ -98,7 +98,15 @@ namespace RhoAppRunner
             Console.WriteLine("Sample XAP installed to Windows Phone 8 Emulator...");
 
             Console.WriteLine("Launching sample app on Windows Phone 8 Emulator...");
-            app.Launch();
+            while (true)
+            {
+                if (WP8Device.IsApplicationInstalled(appID))
+                {
+                    app.TerminateRunningInstances();
+                    app.Launch();
+                    break;
+                }
+            }
             Console.WriteLine("Launched sample app on Windows Phone 8 Emulator...");
             //app.TerminateRunningInstances();
             //Console.WriteLine("Relaunching sample app on Windows Phone 8 Emulator...");
