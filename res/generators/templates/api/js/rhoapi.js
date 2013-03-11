@@ -7,8 +7,8 @@ var Rho = Rho || (function ($) {
 
     var RHO_ID_PARAM = '__rhoID';
 
-    var API_CONTROLLER_URL = '/app/RhoJavascriptApi/command_handler';
-    var API_CALLBACK_BASE_URL = '/app/RhoJavascriptApi/callback_handler';
+    var API_CONTROLLER_URL = '/system/js_api_entrypoint';
+    var API_CALLBACK_BASE_URL = '/system/js_api_entrypoint';
 
     // === Private parts ============================================================
 
@@ -98,7 +98,7 @@ var Rho = Rho || (function ($) {
                 throw 'Value callback should be a function!';
         }
 
-        var cmd = { module:params.module, method:params.method, args:params.args };
+        var cmd = { 'module': params.module, 'method': params.method, 'params': params.args };
 
         if ("number" == typeof params.callbackIndex) {
             cmd['callback_index'] = params.callbackIndex;
@@ -116,7 +116,7 @@ var Rho = Rho || (function ($) {
                 async: (null != valueCallback),
                 type: 'post',
                 url: API_CONTROLLER_URL,
-                data:{data: cmdText},
+                data: cmdText,
                 dataType: 'json',
                 headers:{'Accept':'text/plain'}
             }).done(function (data) {
@@ -145,7 +145,7 @@ var Rho = Rho || (function ($) {
     function apiReqFor(module) {
         return function(params) {
             params.args = Array.prototype.slice.call(params.args);
-            if ('getProps' == params.method && 0 < params.args.length) {
+            if ('getProperties' == params.method && 0 < params.args.length) {
                 params.args[0] = namesToProps(params.args[0]);
             }
             params.method = module +'.'+ params.method;
