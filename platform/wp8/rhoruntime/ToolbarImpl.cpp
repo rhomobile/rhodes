@@ -171,7 +171,7 @@ void remove_nativebar()
 
 VALUE nativebar_started() 
 {
-    return rho_ruby_create_boolean(CRhoRuntime::getInstance()->getMainPage()->toolbarGetHeight() > 0 ? 1 : 0);
+    return rho_ruby_create_boolean(CRhoRuntime::getInstance()->getMainPage()->tabbarIsStarted() > 0 ? 1 : 0);
 }
 
 } //extern "C"
