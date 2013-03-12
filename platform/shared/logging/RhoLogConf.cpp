@@ -356,6 +356,14 @@ void LogSettings::setCollectMemoryInfoInterval( unsigned int interval )
     }
 }
 
+unsigned int LogSettings::getCollectMemoryInfoInterval( )
+{ 
+    if ( 0 == m_pMemoryCollectorThread )
+        return 0;
+
+    return m_pMemoryCollectorThread->getCollectMemoryInfoInterval();
+}
+
 void LogSettings::setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector ) 
 {
     if ( 0 == m_pMemoryCollectorThread )

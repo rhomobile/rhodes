@@ -13,19 +13,19 @@
             <PROPERTY name="level" type="INTEGER">
                 <DESC>Logging level.</DESC>
                 <VALUES>
-                    <VALUE constName="LevelTrace" value = "0">
+                    <VALUE constName="LEVEL_TRACE" value = "0">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="LevelInfo" value = "1">
+                    <VALUE constName="LEVEL_INFO" value = "1">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="LevelWarning" value = "2">
+                    <VALUE constName="LEVEL_WARNING" value = "2">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="LevelError" value = "3">
+                    <VALUE constName="LEVEL_ERROR" value = "3">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="LevelFatalError" value = "4">
+                    <VALUE constName="LEVEL_FATAL" value = "4">
                         <DESC></DESC>
                     </VALUE>
                 </VALUES>
@@ -34,24 +34,24 @@
             <PROPERTY name="destination" type="ARRAY">
                 <DESC>List of log destinations</DESC>
                 <VALUES>
-                    <VALUE constName="DestinationFile" value ="file">
+                    <VALUE constName="DEST_FILE" value ="file">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="DestinationOutput" value ="stdio">
+                    <VALUE constName="DEST_OUTPUT" value ="stdio">
                         <DESC></DESC>
                     </VALUE>
-                    <VALUE constName="DestinationURI" value ="uri">
+                    <VALUE constName="DEST_URI" value ="uri">
                         <DESC></DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
 
-            <PROPERTY name="includeCategories" type="ARRAY">
-                <DESC>List of included log categories. Add '*' to loag all categories.</DESC>
+            <PROPERTY name="includeCategories" type="STRING" default="*">
+                <DESC>Comma-separated list of included log categories. Set to '*' to log all categories.</DESC>
             </PROPERTY>
 
-            <PROPERTY name="excludeCategories" type="ARRAY">
-                <DESC>List of excluded log categories</DESC>
+            <PROPERTY name="excludeCategories" type="STRING" default="">
+                <DESC>Comma-separated list of excluded log categories</DESC>
             </PROPERTY>
 
             <PROPERTY name="fileSize" type="INTEGER" default="0">
@@ -80,7 +80,7 @@
             </PROPERTY>
 
             <PROPERTY name="destinationURI" type="STRING" default="">
-                <DESC>Log server URI where log will be posted by using Rho::Log.sendLogFile or from the log view. Log server source code is open and available at http://github.com/rhomobile/rhologs, so you can deploy your own logserver. URI format: 'http://host:port[/path][?logname=appName]'.</DESC>
+                <DESC>Log server URI where log will be posted by using Rho::Log.sendLogFile or from the log view. Log server source code is open and available at http://github.com/rhomobile/rhologs, so you can deploy your own logserver. URI format: 'http://host:port[/path][?log_name=appName]'.</DESC>
             </PROPERTY>
 
         </PROPERTIES>
@@ -157,10 +157,30 @@
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="sendLogFile">
+            <METHOD name="sendLogFile" hasCallback="optional">
                 <DESC>Send log file to destinationURI property.</DESC>
             </METHOD>
-            
+
+            <METHOD name="showLog">
+                <DESC>Display Log view window.</DESC>
+            </METHOD>
+
+            <METHOD name="cleanLogFile">
+                <DESC>Clean log file.</DESC>
+            </METHOD>
+
+            <METHOD name="readLogFile">
+                <DESC>Read log file.</DESC>
+
+                <PARAMS>
+                    <PARAM name="limit" type="INTEGER">
+                        <DESC>Maximum size of the resulting string in symbols.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="STRING"/>
+            </METHOD>
+
         </METHODS>
         
         <USER_OVERVIEW>

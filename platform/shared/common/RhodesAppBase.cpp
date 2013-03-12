@@ -148,22 +148,23 @@ boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
     return String_startsWith(strUrl, m_strHomeUrl);
 }
     
-void rho_do_send_log(const String& strCallback)
+void rho_do_send_log(rho::apiGenerator::CMethodResult& oResult)
 {
-	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+    String strDevicePin, strClientID;
+    net::IRhoSession* pSession = 0;
+	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) 
+    {
+	    strDevicePin = rho::sync::RhoconnectClientManager::clientRegisterGetDevicePin();
+	    strClientID = rho::sync::RhoconnectClientManager::syncEnineReadClientID();
+        pSession = rho::sync::RhoconnectClientManager::getRhoSession();
+    }
 
-//	String strDevicePin = rho::sync::CClientRegister::Get()->getDevicePin();
-//    String strClientID = rho::sync::CSyncThread::getSyncEngine().readClientID();
-		
-	String strDevicePin = rho::sync::RhoconnectClientManager::clientRegisterGetDevicePin();
-	String strClientID = rho::sync::RhoconnectClientManager::syncEnineReadClientID();
-    
     String strLogUrl = RHOCONF().getPath("logserver");
     if ( strLogUrl.length() == 0 )
         strLogUrl = RHOCONF().getPath("syncserver");
     
     String strQuery = strLogUrl + "client_log?" +
-    "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
+        "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
     
     net::CMultipartItem oItem;
     oItem.m_strFilePath = LOGCONF().getLogFilePath();
@@ -174,8 +175,7 @@ void rho_do_send_log(const String& strCallback)
     NetRequest oNetRequest;
     oNetRequest.setSslVerifyPeer(false);
     
-//    NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, &(rho::sync::CSyncThread::getSyncEngine()), null );
-	NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, rho::sync::RhoconnectClientManager::getRhoSession(), null );
+	NetResponse resp = getNetRequest(&oNetRequest).pushMultipartData( strQuery, oItem, pSession, null );
 
     LOGCONF().setLogToFile(bOldSaveToFile);
     
@@ -187,38 +187,33 @@ void rho_do_send_log(const String& strCallback)
         isOK = false;
     }
     
-    if (strCallback.length() > 0) 
-    {
-        const char* body = isOK ? "rho_callback=1&status=ok" : "rho_callback=1&status=error";
-        
-        rho_net_request_with_data(RHODESAPPBASE().canonicalizeRhoUrl(strCallback).c_str(), body);
-    }
+    Hashtable<String, String> hashRes;
+    hashRes["status"] = isOK ? "ok" : "error";
+    oResult.set(hashRes);
     
     RHODESAPPBASE().setSendingLog(false);
-		
-	}
 }
 
 
 class CRhoSendLogCall
 {
-    String m_strCallback;
+    rho::apiGenerator::CMethodResult m_oResult;
 public:
-    CRhoSendLogCall(const String& strCallback): m_strCallback(strCallback){}
+    CRhoSendLogCall(rho::apiGenerator::CMethodResult& oResult): m_oResult(oResult){}
     
     void run(common::CRhoThread &)
     {
-        rho_do_send_log(m_strCallback);
+        rho_do_send_log(m_oResult);
     }
 };
 
-boolean CRhodesAppBase::sendLog( const String& strCallbackUrl) 
+boolean CRhodesAppBase::sendLog( rho::apiGenerator::CMethodResult& oResult ) 
 {
     if ( m_bSendingLog )
         return true;
     
     m_bSendingLog = true;
-    rho_rhodesapp_call_in_thread( new CRhoSendLogCall(strCallbackUrl) );
+    rho_rhodesapp_call_in_thread( new CRhoSendLogCall(oResult) );
     return true;
 }
 
@@ -228,7 +223,8 @@ boolean CRhodesAppBase::sendLogInSameThread()
         return true;
     
     m_bSendingLog = true;
-    rho_do_send_log("");
+    rho::apiGenerator::CMethodResult oResult;
+    rho_do_send_log(oResult);
     return true;
 }
 	
@@ -463,7 +459,9 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
         if (callback_url != NULL) {
             s_callback_url = callback_url;
         }
-        return RHODESAPPBASE().sendLog(s_callback_url);
+        rho::apiGenerator::CMethodResult oResult;
+        oResult.setRubyCallback(s_callback_url);
+        return RHODESAPPBASE().sendLog(oResult);
     }
     
     int rho_conf_send_log_in_same_thread()
