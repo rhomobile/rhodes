@@ -1230,7 +1230,9 @@ namespace "run" do
         rholog = simapp + "/" + $guid + "/Library/Caches/Private Documents/rholog.txt"
 
 
-        simpublic = simapp + "/" + $guid + "/Documents/apps/public"
+        #simpublic = simapp + "/" + $guid + "/Documents/apps/public"
+        simpublic = simapp + "/" + $guid + "/Library/Caches/Private Documents/apps/public"
+      
         apppublic = $app_path + "/sim-public-#{$sdkver}"
 
 
