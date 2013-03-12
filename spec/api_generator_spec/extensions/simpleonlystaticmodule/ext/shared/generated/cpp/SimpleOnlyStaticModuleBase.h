@@ -36,6 +36,10 @@ public:
     }
 
     virtual ISimpleOnlyStaticModule* createModuleByID(const rho::String& strID){ return (ISimpleOnlyStaticModule*)0; };
+    virtual void deleteModuleByID(const rho::String& strID)
+    {
+        m_hashModules.remove(strID);
+    }
 
 };
 

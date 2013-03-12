@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/examples/simpleonlystaticmodule/SimpleOnlyStaticModuleBase.java
+ext/platform/android/generated/src/com/rho/examples/simpleonlystaticmodule/SimpleOnlyStaticModuleFactorySingleton.java
+ext/platform/android/generated/src/com/rho/examples/simpleonlystaticmodule/SimpleOnlyStaticModuleSingletonBase.java
+ext/platform/android/generated/src/com/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModule.java
+ext/platform/android/generated/src/com/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModuleFactory.java
+ext/platform/android/generated/src/com/rho/examples/simpleonlystaticmodule/ISimpleOnlyStaticModuleSingleton.java
+ext/platform/android/src/com/rho/examples/simpleonlystaticmodule/Simpleonlystaticmodule.java
+ext/platform/android/src/com/rho/examples/simpleonlystaticmodule/SimpleonlystaticmoduleFactory.java
+ext/platform/android/src/com/rho/examples/simpleonlystaticmodule/SimpleonlystaticmoduleSingleton.java
