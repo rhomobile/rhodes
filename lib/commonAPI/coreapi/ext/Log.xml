@@ -1,0 +1,176 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Log" parent="Rho">
+        <HELP_OVERVIEW></HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
+        
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <PROPERTIES access="STATIC" generateAccessors="true">
+            
+            <PROPERTY name="level" type="INTEGER">
+                <DESC>Logging level.</DESC>
+                <VALUES>
+                    <VALUE constName="LevelTrace" value = "0">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE constName="LevelInfo" value = "1">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE constName="LevelWarning" value = "2">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE constName="LevelError" value = "3">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE constName="LevelFatalError" value = "4">
+                        <DESC></DESC>
+                    </VALUE>
+                </VALUES>
+            </PROPERTY>
+
+            <PROPERTY name="destination" type="ARRAY">
+                <DESC>List of log destinations</DESC>
+                <VALUES>
+                    <VALUE constName="DestinationFile" value ="file">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE constName="DestinationOutput" value ="stdio">
+                        <DESC></DESC>
+                    </VALUE>
+                    <VALUE constName="DestinationURI" value ="uri">
+                        <DESC></DESC>
+                    </VALUE>
+                </VALUES>
+            </PROPERTY>
+
+            <PROPERTY name="includeCategories" type="ARRAY">
+                <DESC>List of included log categories. Add '*' to loag all categories.</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="excludeCategories" type="ARRAY">
+                <DESC>List of excluded log categories</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="fileSize" type="INTEGER" default="0">
+                <DESC>Maximum log file size in bytes, set 0 to unlimited size; when limit is reached, log wraps to beginning of file</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="filePath" type="STRING" default="rholog.txt">
+                <DESC>Path to the log file including file name. Path related to the platform specific application root or start if from '/'('/mnt/sdcard/myapp.log').</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="memoryPeriod" type="INTEGER" default="0">
+                <DESC>Enables the logging of memory usage in the system; specifies the time interval in milliseconds at which memory logs will be generated periodically.</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="netTrace" type="BOOLEAN" default="false">
+                <DESC>Turn on local http server traces.</DESC>
+                <PLATFORM>Android, iOS, WP8</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="skipPost" type="BOOLEAN" default="false">
+                <DESC>Skip http package body from log(for security reasons).</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="excludeFilter" type="STRING" default="">
+                <DESC>Define exclude parameters log filter(for security reasons) - parameter names separated by comma.</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="destinationURI" type="STRING" default="">
+                <DESC>Log server URI where log will be posted by using Rho::Log.sendLogFile or from the log view. Log server source code is open and available at http://github.com/rhomobile/rhologs, so you can deploy your own logserver. URI format: 'http://host:port[/path][?logname=appName]'.</DESC>
+            </PROPERTY>
+
+        </PROPERTIES>
+
+        <METHODS  access="STATIC">
+            <ALIASES>
+            </ALIASES>
+
+            <METHOD name="trace">
+                <DESC>Log message at the Trace level.</DESC>
+
+                <PARAMS>
+                    <PARAM name="message" type="STRING">
+                        <DESC>Log message.</DESC>
+                    </PARAM>
+                    <PARAM name="category" type="STRING" default="APP">
+                        <DESC>Log category.</DESC>
+                    </PARAM>
+
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="info">
+                <DESC>Log message at the Info level.</DESC>
+
+                <PARAMS>
+                    <PARAM name="message" type="STRING">
+                        <DESC>Log message.</DESC>
+                    </PARAM>
+                    <PARAM name="category" type="STRING" default="APP">
+                        <DESC>Log category.</DESC>
+                    </PARAM>
+
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="warning">
+                <DESC>Log message at the Warning level.</DESC>
+
+                <PARAMS>
+                    <PARAM name="message" type="STRING">
+                        <DESC>Log message.</DESC>
+                    </PARAM>
+                    <PARAM name="category" type="STRING" default="APP">
+                        <DESC>Log category.</DESC>
+                    </PARAM>
+
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="error">
+                <DESC>Log message at the Error level.</DESC>
+
+                <PARAMS>
+                    <PARAM name="message" type="STRING">
+                        <DESC>Log message.</DESC>
+                    </PARAM>
+                    <PARAM name="category" type="STRING" default="APP">
+                        <DESC>Log category.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="fatalError">
+                <DESC>Log message at the FatalError level.</DESC>
+
+                <PARAMS>
+                    <PARAM name="message" type="STRING">
+                        <DESC>Log message.</DESC>
+                    </PARAM>
+                    <PARAM name="category" type="STRING" default="APP">
+                        <DESC>Log category.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="sendLogFile">
+                <DESC>Send log file to destinationURI property.</DESC>
+            </METHOD>
+            
+        </METHODS>
+        
+        <USER_OVERVIEW>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+            <![CDATA[]]>
+    
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+    </MODULE>
+</API>    

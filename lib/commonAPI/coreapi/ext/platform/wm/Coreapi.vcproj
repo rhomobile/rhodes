@@ -1282,7 +1282,7 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="NetworkAccess"
+			Name="Network"
 			>
 			<Filter
 				Name="shared"
@@ -1300,7 +1300,6 @@
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
-						ExcludedFromBuild="true"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1486,6 +1485,35 @@
 							RelativePath="..\..\shared\generated\cpp\WebViewBase.h"
 							>
 						</File>
+					</Filter>
+				</Filter>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Log"
+			>
+			<Filter
+				Name="shared"
+				>
+				<File
+					RelativePath="..\..\Log.xml"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							Outputs="$(InputDir)shared/generated4"
+						/>
+					</FileConfiguration>
+				</File>
+				<Filter
+					Name="generated"
+					>
+					<Filter
+						Name="cpp"
+						>
 					</Filter>
 				</Filter>
 			</Filter>

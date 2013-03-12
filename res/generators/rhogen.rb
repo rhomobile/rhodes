@@ -1177,7 +1177,7 @@ module Rhogen
             str = str + '1, '+name_prefix+'_param'+param_index.to_s
             str = str + ' }'
             tmp_ar = []
-            tmp_ar << param.sub_param
+            tmp_ar << param.sub_param if param.sub_param
             prepare_rho_api_params_structure_line(tmp_ar, name_prefix+'_param'+param_index.to_s, lines)
           else
              if param.type == MethodParam::TYPE_HASH
