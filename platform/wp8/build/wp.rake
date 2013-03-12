@@ -123,10 +123,11 @@ def addbundletoxap()
     appsFiles = FileList.new 
     appsFiles.include(File.join($srcdir, "apps", "*.*"))
 
-    cp_r File.join($srcdir, "public"), tmp_dir
+    #cp_r File.join($srcdir, "public"), tmp_dir
     cp   File.join($srcdir, "RhoBundleMap.txt"), tmp_dir
     cp_r File.join($srcdir, "apps"), rho_dir
     #cp_r appsFiles, File.join(rho_dir, 'apps')
+	cp_r File.join($srcdir, "public"), File.join(rho_dir, 'apps')
     cp_r File.join($srcdir, "lib"), rho_dir
     cp_r File.join($srcdir, "db"), rho_dir
 
@@ -205,9 +206,9 @@ namespace "build" do
         if f.start_with?('db')          ||
            f.end_with?('.rb')           ||
            f.end_with?('.erb')          ||
-           f == "apps/app_manifest.txt" ||
-           f == "apps/rhoconfig.txt"    ||
-           f == "apps/rhoconfig.txt.timestamp" ||
+           #f == "apps/app_manifest.txt" ||
+           #f == "apps/rhoconfig.txt"    ||
+           #f == "apps/rhoconfig.txt.timestamp" ||
            f == "RhoBundleMap.txt"
           next;
         end
