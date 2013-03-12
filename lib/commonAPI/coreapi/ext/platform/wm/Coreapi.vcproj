@@ -1300,6 +1300,7 @@
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
+						ExcludedFromBuild="true"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
@@ -1496,6 +1497,10 @@
 				Name="shared"
 				>
 				<File
+					RelativePath="..\..\..\Log.rb"
+					>
+				</File>
+				<File
 					RelativePath="..\..\Log.xml"
 					>
 					<FileConfiguration
@@ -1508,12 +1513,48 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath="..\..\shared\LogImpl.cpp"
+					>
+				</File>
 				<Filter
 					Name="generated"
 					>
+					<File
+						RelativePath="..\..\shared\generated\log_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\log_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\log_ruby_api.c"
+						>
+					</File>
 					<Filter
 						Name="cpp"
 						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\ILog.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Log_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Log_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\LogBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\LogBase.h"
+							>
+						</File>
 					</Filter>
 				</Filter>
 			</Filter>
