@@ -273,11 +273,11 @@ public class MegamoduleBase extends RhoApiObject {
 
     public static class complicatedTypesTest1Task implements Runnable {
         private IMegamodule mApiObject; 
-        private List<Map<String, String>> paramArray;
+        private List<Map<String, Object>> paramArray;
         private IMethodResult mResult;
 
         public complicatedTypesTest1Task(IMegamodule obj, 
-                List<Map<String, String>> paramArray, 
+                List<Map<String, Object>> paramArray, 
                 IMethodResult result) {
             this.mApiObject = obj; 
             this.paramArray = paramArray;

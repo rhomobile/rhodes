@@ -68,16 +68,16 @@ public class Megamodule extends MegamoduleBase implements IMegamodule {
     }
 
     @Override
-    public void complicatedTypesTest1(List<Map<String, String>> paramArray,
-            IMethodResult result) {
+    public void typesTest(String paramStr, boolean paramBool, int paramInt,
+            double paramFloat, List<Integer> paramArray,
+            Map<String, String> paramHash, IMethodResult result) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void typesTest(String paramStr, boolean paramBool, int paramInt,
-            double paramFloat, List<Integer> paramArray,
-            Map<String, String> paramHash, IMethodResult result) {
+    public void complicatedTypesTest1(List<Map<String, Object>> paramArray,
+            IMethodResult result) {
         // TODO Auto-generated method stub
         
     }
