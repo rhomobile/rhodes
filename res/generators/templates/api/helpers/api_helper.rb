@@ -127,9 +127,8 @@ def api_generator_java_makeMapElementType(sub_params, parent)
     end
 
     res = nil
-    sub_params.each do |name, param|
+    sub_params.each do |param|
         type = api_generator_java_makeNativeType(param, parent)
-        puts "Hash element '#{name}' type: #{type}"
         if res == nil
             res = type
         else
@@ -167,7 +166,6 @@ def api_generator_java_makeNativeType(param, parent=nil)
         return "String" 
     end
 
-    puts "Make java type for: #{param.type}"
     if param.type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
         res = "String"
     elsif param.type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY

@@ -23,5 +23,5 @@ public interface IMegamodule extends IRhoApiObject, IRhoApiPropertyBag {
     void setPeriodicallyCallback(int periodInMilliseconds, IMethodResult result);
     void isPeriodicallyCallbackSetted(IMethodResult result);
     void stopPeriodicallyCallback(IMethodResult result);
-    void complicatedTypesTest1(List<Map<String, String>> paramArray, IMethodResult result);
+    void complicatedTypesTest1(List<Map<String, Object>> paramArray, IMethodResult result);
 };
