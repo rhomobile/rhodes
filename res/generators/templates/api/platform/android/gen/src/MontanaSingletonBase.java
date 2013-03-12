@@ -19,7 +19,7 @@ if $cur_module.is_template_default_instance %>
 
     param_hash = {}
     module_method.params.each do |param|
-        param_hash[param.name] = api_generator_java_makeNativeType(param.type)
+        param_hash[param.name] = api_generator_java_makeNativeType(param)
     end %>
     public static class <%= module_method.native_name %>Task implements Runnable {
         private I<%= $cur_module.name %>Singleton mApiSingleton; <%

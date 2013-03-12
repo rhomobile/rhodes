@@ -20,7 +20,7 @@ public interface I<%= $cur_module.name %>Singleton
     next unless module_method.access == ModuleMethod::ACCESS_STATIC
     params = ''
     module_method.params.each do |param|
-        params += "#{api_generator_java_makeNativeType(param.type)} #{param.name}, "
+        params += "#{api_generator_java_makeNativeType(param)} #{param.name}, "
     end
 
     params += 'IMethodResult result'

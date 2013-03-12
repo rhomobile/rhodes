@@ -2,7 +2,7 @@ entry: Init_SimpleOnlyStaticModule
 javaentry: com.simpleonlystaticmodule.SimpleOnlyStaticModule
 libraries: ["SimpleOnlyStaticModule"]
 android:
-  source_list: ext/platform/android/ext_build.files
+  source_list: ext/platform/android/ext_java.files
 
 project_paths:
   wp8: ext/platform/wp8/SimpleOnlyStaticModule.vcxproj

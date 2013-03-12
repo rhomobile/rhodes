@@ -547,7 +547,7 @@ VALUE rb_s_Megamodule_getObjectByIndex(int argc, VALUE *argv)
 
     ObjectProxy::getObjectByIndex(argumentsAdapter(arguments), result); 
     VALUE res = 
-        result.toRuby();
+        result.enumerateRubyObjects(rho_ruby_get_class_byname("Rho::Examples::Megamodule"));
 
     RAWTRACE(__FUNCTION__);
     return res;
@@ -1256,7 +1256,7 @@ VALUE rb_s_Megamodule_enumerate(int argc, VALUE *argv)
 
     ObjectProxy::enumerate(argumentsAdapter(arguments), result); 
     VALUE res = 
-        result.enumerateRubyObjects(getRuby_Megamodule_Module());
+        result.enumerateRubyObjects(rho_ruby_get_class_byname("Rho::Examples::Megamodule"));
 
     RAWTRACE(__FUNCTION__);
     return res;

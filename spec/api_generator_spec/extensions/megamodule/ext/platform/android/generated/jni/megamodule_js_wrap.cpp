@@ -412,7 +412,7 @@ rho::String js_s_Megamodule_getObjectByIndex(rho::json::CJSONArray& argv, const 
 
     ObjectProxy::getObjectByIndex(argumentsAdapter(argv), result); 
     rho::String res = 
-        result.toJson();
+        result.enumerateJSObjects();
 
     RAWTRACE2("%s(id=%s) end ^^^", __FUNCTION__, strObjID.c_str());
     return res;
