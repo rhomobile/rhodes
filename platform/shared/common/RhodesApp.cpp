@@ -408,9 +408,6 @@ void CRhodesApp::run()
 
 	db::CDBAdapter::closeAll();
 
-#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID)
-    net::CAsyncHttp::Destroy();
-#endif
     RhoRubyStop();
 }
 
