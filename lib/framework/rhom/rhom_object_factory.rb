@@ -1133,18 +1133,18 @@ module Rhom
                 def search(args)
                     if defined?(RHOCONNECT_CLIENT_PRESENT)
                         args[:source_names] = [self.name.to_s]
-                        SyncEngine.search(args)
+                        Rho::RhoConnectClient.search(args)
                     end
                 end
 
                 def sync(callback=nil, callback_data="", show_status_popup=nil, query_params="")
                   if defined?(RHOCONNECT_CLIENT_PRESENT)
                       src_id = get_source_id.to_i()
-                      SyncEngine.set_notification(src_id, callback, callback_data) if callback
+                      Rho::RhoConnectClient.set_notification(src_id, callback, callback_data) if callback
                       if !show_status_popup.nil?
-                        SyncEngine.dosync_source(src_id, show_status_popup, query_params)
+                        Rho::RhoConnectClient.dosync_source(src_id, show_status_popup, query_params)
                       else
-                        SyncEngine.dosync_source(src_id, 1, query_params)
+                        Rho::RhoConnectClient.dosync_source(src_id, 1, query_params)
                       end
                   end                    
                 end
@@ -1166,13 +1166,13 @@ module Rhom
   
                 def set_notification(url,params)
                   if defined?(RHOCONNECT_CLIENT_PRESENT)
-                      SyncEngine.set_notification(get_source_id.to_i,url,params)
+                      Rho::RhoConnectClient.set_notification(get_source_id.to_i,url,params)
                   end
                 end
                 
                 def clear_notification
                   if defined?(RHOCONNECT_CLIENT_PRESENT)
-                      SyncEngine.clear_notification(get_source_id.to_i)
+                      Rho::RhoConnectClient.clear_notification(get_source_id.to_i)
                   end
                 end
 	  

@@ -55,8 +55,8 @@ module Rhom
 		Rho::RHO.load_all_sources
 
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            old_interval = SyncEngine.set_pollinterval(0)
-            SyncEngine.stop_sync
+            old_interval = Rho::RhoConnectClient.set_pollinterval(0)
+            Rho::RhoConnectClient.stop_sync
         end
         
         params = ["", "", 0]
@@ -77,7 +77,7 @@ module Rhom
         ::Rho::RHO.init_schema_sources(hash_migrate) 
         
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            SyncEngine.set_pollinterval(old_interval)
+            Rho::RhoConnectClient.set_pollinterval(old_interval)
         end
       end
 
@@ -117,8 +117,8 @@ module Rhom
 		Rho::RHO.load_all_sources
 
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            old_interval = SyncEngine.set_pollinterval(0)
-            SyncEngine.stop_sync
+            old_interval = Rho::RhoConnectClient.set_pollinterval(0)
+            Rho::RhoConnectClient.stop_sync
         end
         
         ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET reset=1")
@@ -161,7 +161,7 @@ module Rhom
         #::Rho::RHO.init_schema_sources(hash_migrate) 
         
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            SyncEngine.set_pollinterval(old_interval)
+            Rho::RhoConnectClient.set_pollinterval(old_interval)
         end
                         
       end
@@ -173,8 +173,8 @@ module Rhom
 		Rho::RHO.load_all_sources
 
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            old_interval = SyncEngine.set_pollinterval(0)
-            SyncEngine.stop_sync
+            old_interval = Rho::RhoConnectClient.set_pollinterval(0)
+            Rho::RhoConnectClient.stop_sync
         end
         
         ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET reset=1")
@@ -198,21 +198,21 @@ module Rhom
         ::Rho::RHO.init_schema_sources(hash_migrate) 
         
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            SyncEngine.set_pollinterval(old_interval)
+            Rho::RhoConnectClient.set_pollinterval(old_interval)
         end
       end
       
       def database_full_reset_and_logout
         database_full_reset
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            SyncEngine.logout
+            Rho::RhoConnectClient.logout
         end
       end
 
       def database_fullclient_reset_and_logout
         database_full_reset(true)
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            SyncEngine.logout
+            Rho::RhoConnectClient.logout
         end
       end
 	  
@@ -233,21 +233,6 @@ module Rhom
 
         def search(args)
 if defined?(RHOCONNECT_CLIENT_PRESENT)
-          searchParams = ""
-          
-          searchParams += '&offset=' + Rho::RhoSupport.url_encode(args[:offset]) if args[:offset]
-          searchParams += '&max_results=' + Rho::RhoSupport.url_encode(args[:max_results]) if args[:max_results]
-
-          callbackParams = args[:callback_param] ? args[:callback_param] : ""
-          
-          if args[:search_params]
-            args[:search_params].each do |key,value|
-              searchParams += '&' + "conditions[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
-              callbackParams += '&' + "search_params[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
-            end  
-          end
-            
-          #set_notification(args[:callback], args[:callback_param]) if args[:callback]
           src_ar = args[:sources]
           
           #check sources
@@ -256,9 +241,7 @@ if defined?(RHOCONNECT_CLIENT_PRESENT)
              raise ArgumentError, "no sources on search" if Rho::RhoConfig::sources[src_name].nil?
           end
           
-          SyncEngine.dosearch_source(src_ar, args[:from] ? args[:from] : 'search',
-            searchParams, args[:sync_changes] ? args[:sync_changes] : false, args[:progress_step] ? args[:progress_step] : -1,
-            args[:callback], callbackParams )
+          Rho::RhoConnectClient.search(args)
 end
         end
 	  
