@@ -15,7 +15,6 @@
 		5C7652800FD3E3C100CB43FD /* rhosupport.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C76527D0FD3E3C100CB43FD /* rhosupport.c */; };
 		5C7652830FD3E3E000CB43FD /* stringio.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C7652820FD3E3E000CB43FD /* stringio.c */; };
 		5C79894D113BD1D0005F8736 /* geolocation_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C79894C113BD1D0005F8736 /* geolocation_wrap.c */; };
-		5C8EE86511220ED30005C20D /* asynchttp_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C8EE86411220ED30005C20D /* asynchttp_wrap.c */; };
 		5CE99AE71413BECA000DD51D /* dln_find.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CE99AE61413BECA000DD51D /* dln_find.c */; };
 		5CE99AEA1413BEE7000DD51D /* node.c in Sources */ = {isa = PBXBuildFile; fileRef = 5CE99AE81413BEE7000DD51D /* node.c */; };
 		5CE99AEB1413BEE7000DD51D /* node.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE99AE91413BEE7000DD51D /* node.h */; };
@@ -135,7 +134,6 @@
 		5C76527D0FD3E3C100CB43FD /* rhosupport.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhosupport.c; path = ext/rho/rhosupport.c; sourceTree = "<group>"; };
 		5C7652820FD3E3E000CB43FD /* stringio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = stringio.c; path = ext/stringio/stringio.c; sourceTree = "<group>"; };
 		5C79894C113BD1D0005F8736 /* geolocation_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = geolocation_wrap.c; path = ext/geolocation/geolocation_wrap.c; sourceTree = "<group>"; };
-		5C8EE86411220ED30005C20D /* asynchttp_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = asynchttp_wrap.c; path = ext/asynchttp/asynchttp_wrap.c; sourceTree = "<group>"; };
 		5CE99AE61413BECA000DD51D /* dln_find.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dln_find.c; sourceTree = "<group>"; };
 		5CE99AE81413BEE7000DD51D /* node.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = node.c; sourceTree = "<group>"; };
 		5CE99AE91413BEE7000DD51D /* node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = node.h; sourceTree = "<group>"; };
@@ -325,7 +323,6 @@
 		5C8EE86311220EBB0005C20D /* asynchttp */ = {
 			isa = PBXGroup;
 			children = (
-				5C8EE86411220ED30005C20D /* asynchttp_wrap.c */,
 			);
 			name = asynchttp;
 			sourceTree = "<group>";
@@ -805,7 +802,6 @@
 				F5FD0A3D10619E7900B7B8ED /* mapview_wrap.c in Sources */,
 				5CF8DBCA10B1D45C00247AB4 /* socket.c in Sources */,
 				D38F7B5F110647510030B1F4 /* extensions.c in Sources */,
-				5C8EE86511220ED30005C20D /* asynchttp_wrap.c in Sources */,
 				5C79894D113BD1D0005F8736 /* geolocation_wrap.c in Sources */,
 				BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */,
 				BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */,
