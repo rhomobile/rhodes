@@ -29,8 +29,18 @@
 
 @implementation RhoViewController
 
+#if defined(__DEBUG_CONTROLLERS)
+- (id)init
+{
+    NSLog(@"RVC::%@::init",[[self class] description]);
+    return [super init];
+}
+#endif
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
-    //NSLog(@"RVC::%@::shouldAutorotateToInterfaceOrientation",[[self class] description]);
+    #if defined(__DEBUG_CONTROLLERS)
+    NSLog(@"RVC::%@::shouldAutorotateToInterfaceOrientation",[[self class] description]);
+    #endif
     if ([[Rhodes sharedInstance] isRotationLocked])
         return toInterfaceOrientation == UIInterfaceOrientationPortrait;
 	return YES;
@@ -38,7 +48,9 @@
 
 #if defined(__IPHONE_6_0)
 - (BOOL)shouldAutorotate {
-    //NSLog(@"RVC::%@::shouldAutorotate",[[self class] description]);
+    #if defined(__DEBUG_CONTROLLERS)
+    NSLog(@"RVC::%@::shouldAutorotate",[[self class] description]);
+    #endif
     if ([[Rhodes sharedInstance] isRotationLocked])
         return NO;
 	return YES;
@@ -46,7 +58,9 @@
 
 - (NSUInteger)supportedInterfaceOrientations
 {
-    //NSLog(@"RVC::%@::supportedInterfaceOrientations",[[self class] description]);
+    #if defined(__DEBUG_CONTROLLERS)
+    NSLog(@"RVC::%@::supportedInterfaceOrientations",[[self class] description]);
+    #endif
     if ([[Rhodes sharedInstance] isRotationLocked])
          return UIInterfaceOrientationMaskPortrait;
     return UIInterfaceOrientationMaskAll;

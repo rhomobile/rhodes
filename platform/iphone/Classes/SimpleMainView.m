@@ -355,7 +355,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 	self.isBackgroundSetted = YES;
 	self.is_url_after_set_background_redirect = NO;
 	
-    UIView* root = self.view;
+    UIView* root = p;//self.view;
 	if (web_bkg_color != nil) {
 		self.view.backgroundColor = web_bkg_color;
 	}
@@ -375,7 +375,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     webView.frame = wFrame;
     
     webView.autoresizesSubviews = YES;
-    webView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    webView.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 
 	if (web_bkg_color != nil) {
 		self.webView.backgroundColor = web_bkg_color;

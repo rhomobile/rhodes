@@ -172,12 +172,12 @@
     CGRect frame = [[UIScreen mainScreen] bounds];
     splashView = [[RhoSplashImageView alloc] initWithFrame:frame];
 	
-	splashView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	splashView.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	splashView.autoresizesSubviews = YES;
 	self.view = splashView;
     
-    //[parentView addSubview:splashView];
-    ((UIWindow*)parentView).rootViewController = self;
+    [parentView addSubview:splashView];
+    //((UIWindow*)parentView).rootViewController = self;
     
     return self;
 }

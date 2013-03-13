@@ -29,6 +29,10 @@
 
 @interface RhoViewController : UIViewController {}
 
+#if defined(__DEBUG_CONTROLLERS)
+- (id)init;
+#endif
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation;
 
 #if defined(__IPHONE_6_0)

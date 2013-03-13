@@ -40,6 +40,7 @@
 #import "SignatureDelegate.h"
 #import "NVDelegate.h"
 #import "NetworkStatusMonitor.h"
+#import "RhoViewController.h"
 
 @interface Rhodes : NSObject <UIApplicationDelegate,
     UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate>
@@ -62,12 +63,16 @@
 	__block UIBackgroundTaskIdentifier syncBackgroundTask;
 #endif
 	
-    id<RhoMainView,NSObject> mainView;
+    RhoViewController<RhoMainView,NSObject>* mainView;
+    UIView* baseView;
+    RhoViewController* baseViewController;
     BOOL rotationLocked;
     BOOL mBlockExit;
 }
 
 @property (nonatomic, retain) UIWindow *window;
+@property (nonatomic, retain) RhoViewController *baseViewController;
+@property (nonatomic, retain) UIView *baseView;
 @property (nonatomic, retain) AVAudioPlayer *player;
 @property (nonatomic, retain) NSMutableDictionary *cookies;
 @property (nonatomic, copy) SignatureDelegate* signatureDelegate;
@@ -107,11 +112,15 @@
 
 - (void)openFullScreenNativeView:(UIView*)view;
 - (void)closeFullScreenNativeView;
-	
+
+// helper function for platform depend functions
+- (void)setForegroundViewController:(RhoViewController<RhoMainView,NSObject>*)viewController;
+
 // UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
 
 - (void) exit_with_errormessage:(NSString*)title message:(NSString*)message;
+
 
 #ifdef __IPHONE_4_0
 - (EKEventStore*) getEventStore;

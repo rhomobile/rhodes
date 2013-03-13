@@ -28,7 +28,19 @@
 #import "RhoMainView.h"
 #import "RhoViewController.h"
 
-@interface RhoUITabBarController : UITabBarController
+@interface RhoUITabBarControllerBase : UITabBarController
+
+#if defined(__DEBUG_CONTROLLERS)
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation;
+
+// iOS 6.0 support
+- (BOOL)shouldAutorotate;
+- (NSUInteger)supportedInterfaceOrientations;
+#endif
+
+@end
+
+@interface RhoUITabBarController : RhoUITabBarControllerBase
 {
 	int bkgColor;
 }

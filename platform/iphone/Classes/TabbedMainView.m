@@ -71,6 +71,31 @@
 
 @end
 
+@implementation RhoUITabBarControllerBase
+
+#if defined(__DEBUG_CONTROLLERS)
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+    NSLog(@"RTC::%@::shouldAutorotateToInterfaceOrientation",[[self class] description]);
+    return [super shouldAutorotateToInterfaceOrientation:toInterfaceOrientation];
+}
+
+// iOS 6.0 support
+- (BOOL)shouldAutorotate {
+    NSLog(@"RTC::%@::shouldAutorotateToInterfaceOrientation",[[self class] description]);
+    return [super shouldAutorotate];
+    
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    NSLog(@"RTC::%@::shouldAutorotateToInterfaceOrientation",[[self class] description]);
+    return [super supportedInterfaceOrientations];
+}
+#endif
+
+@end
+
 
 
 @implementation RhoUITabBarController
@@ -330,8 +355,6 @@
     return (RhoTabBarData*)[tabbarData objectAtIndex:index];
 }
 
-#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
-
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info {
 	[SimpleMainView disableHiddenOnStart];
     CGRect frame = [[v view] frame];
@@ -355,7 +378,7 @@
 		tabbar = rc;
 	}
 	else {
-		tabbar = [[UITabBarController alloc] initWithNibName:nil bundle:nil];
+		tabbar = [[RhoUITabBarControllerBase alloc] initWithNibName:nil bundle:nil];
     }
     
     tabbar.delegate = [Rhodes sharedInstance];

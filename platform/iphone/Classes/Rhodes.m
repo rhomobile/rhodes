@@ -42,7 +42,6 @@
 #include "InitMemoryInfoCollector.h"
 #include "Reachability.h"
 
-
 /*
 use this non-public code for see level of memory warning 
  
@@ -121,7 +120,7 @@ static BOOL app_created = NO;
 
 @implementation Rhodes
 
-@synthesize window, player, cookies, signatureDelegate, nvDelegate, mBlockExit;
+@synthesize window, player, cookies, signatureDelegate, nvDelegate, mBlockExit, baseViewController, baseView;
 
 
 static Rhodes *instance = NULL;
@@ -273,7 +272,7 @@ static Rhodes *instance = NULL;
 
 - (void)doShowLogOptions {
     if (logOptionsController!=NULL) {
-        [window addSubview:logOptionsController.view];
+        [baseView addSubview:logOptionsController.view];
         logOptionsController.view.hidden = NO;
     }
 }
@@ -284,7 +283,7 @@ static Rhodes *instance = NULL;
 
 - (void)doShowLog {
     if (logViewController!=NULL) {
-        [window addSubview:logViewController.view];
+        [baseView addSubview:logViewController.view];
         logViewController.view.hidden = NO;
     }
 }
@@ -400,10 +399,10 @@ static Rhodes *instance = NULL;
 	[self hideSplash];
 	[signatureDelegate setPostUrl:url];
 	//[signatureDelegate setImageFormat:format];
-	[signatureDelegate setParentView:window];
+	[signatureDelegate setParentView:baseView];
 	[signatureDelegate setPrevView:mainView.view];
 	@try {
-		CGRect rect = window.frame;
+		CGRect rect = baseView.frame;
 		rect.origin.x = 0;
 		rect.origin.y = 0;
 		SignatureViewController* svc = [[SignatureViewController alloc] initWithRect:rect delegate:signatureDelegate];
@@ -426,10 +425,10 @@ static Rhodes *instance = NULL;
     if (!rho_rhodesapp_check_mode())
         return;
 	[self hideSplash];
-	[nvDelegate setParentView:window];
+	[nvDelegate setParentView:baseView];
 	[nvDelegate setPrevView:mainView.view];
 	@try {
-		CGRect rect = window.frame;
+		CGRect rect = baseView.frame;
 		rect.origin.x = 0;
 		rect.origin.y = 0;
 		NVViewController* svc = [[NVViewController alloc] initWithRect:rect nvview:view delegate:nvDelegate];
@@ -437,10 +436,10 @@ static Rhodes *instance = NULL;
 
 		[mainView.view retain];
 		[mainView.view removeFromSuperview];
-		[window addSubview:svc.view];
+		[baseView addSubview:svc.view];
 		
-		[window layoutSubviews];
-		[window setNeedsDisplay];
+		[baseView layoutSubviews];
+		[baseView setNeedsDisplay];
 		
 	} @catch(NSException* theException) {
         RAWLOG_ERROR2("startFullSreeenNativeViewViewController failed(%s): %s", [[theException name] UTF8String], [[theException reason] UTF8String] );
@@ -449,6 +448,27 @@ static Rhodes *instance = NULL;
 
 - (void)closeFullScreenNativeView {
 	[nvDelegate doClose];
+}
+
+- (void)setForegroundViewController:(RhoViewController<RhoMainView,NSObject>*)viewController
+{
+	UIViewController* sv = viewController;
+    [baseView addSubview:sv.view];
+    [baseView layoutSubviews];
+
+    /*
+	BOOL viewAddingHandled = NO;
+    
+#if defined(__IPHONE_6_0)
+	if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0")) {
+		window.rootViewController = sv;
+		viewAddingHandled = YES;
+	}
+#endif
+	if(!viewAddingHandled)
+    {
+    	[window addSubview:sv.view];
+    }*/
 }
 
 
@@ -470,10 +490,10 @@ static Rhodes *instance = NULL;
         [splashViewController hideSplash];
         [splashViewController release];
         splashViewController = nil;
-		
-		[window addSubview:mainView.view];
-        window.rootViewController = mainView;
-		[window bringSubviewToFront:mainView.view];
+        
+        [self setForegroundViewController: mainView];
+       
+		[baseView bringSubviewToFront:mainView.view];
     }
 }
 
@@ -481,14 +501,13 @@ static Rhodes *instance = NULL;
     if (mainView == view)
         return;
 
-	UIViewController* sv = mainView;
 	//[self hideSplash];
     
 	// Special hack for solve problem with VerticalTabBar on iPad
 	// When we switch from VerticalTabBar to any View - autorotation is disabled and application switch to Portrait orientation
 	// But there are no problme on iPhone 4.1 and above
 	//I think this is special iPad 3.2 problem
-    BOOL isVerticalTab = NO;
+    /*BOOL isVerticalTab = NO;
 	if ([mainView isKindOfClass:[SplittedMainView class]]) {
 		BOOL is_iPad = NO;
 		
@@ -498,12 +517,12 @@ static Rhodes *instance = NULL;
 		}
 		
 		isVerticalTab = is_iPad;
-	}
-	
-	CGRect main_frame = mainView.view.frame;
+	}*/
+    
+    UIViewController* sv = mainView;
 	
 	UIWindow* www = window;
-	if (isVerticalTab) {
+	/*if (isVerticalTab) {
 		
 		window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 		window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -512,30 +531,24 @@ static Rhodes *instance = NULL;
 		//view.view.frame = main_frame;
 		mainView = nil;
 	}
-	else {
+	else */{
 		[mainView.view removeFromSuperview];
 		[mainView release];
 	}
 	
     mainView = [view retain];
-    [window addSubview:mainView.view];
     
-    //[window setRootViewController:mainView];
+    [self setForegroundViewController: mainView];
     
-    window.rootViewController = mainView;
-    
-    
-    
-	//[window bringSubviewToFront:mainView.view];
-	
-	if (isVerticalTab) {
+	/*if (isVerticalTab) {
 		[window makeKeyAndVisible];
 
 		[sv.view removeFromSuperview];
 		[sv release];
 		[www release];
-	}
+	}*/
 	[window layoutSubviews];
+    [baseView layoutSubviews];
 	
 }
 
@@ -555,7 +568,7 @@ static Rhodes *instance = NULL;
     NSString *htmPath = [NSString stringWithFormat:@"%@/apps/app/loading.html", resourcePath];
     
     if ([SplashViewController hasLoadingImage]) {
-        splashViewController = [[SplashViewController alloc] initWithParentView:window];
+        splashViewController = [[SplashViewController alloc] initWithParentView:baseView];
     }
     else if ([fileManager fileExistsAtPath:htmPath]) {
         NSError *err;
@@ -636,9 +649,23 @@ static Rhodes *instance = NULL;
     
 }
 
+- (UIWindow*)createWindow {
+    UIWindow* newWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    newWindow.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    newWindow.autoresizesSubviews = YES;
+    return newWindow;
+}
+
+- (RhoViewController<RhoMainView,NSObject>*)createDefaultViewController {
+    RhoViewController<RhoMainView,NSObject>* viewController = [[SimpleMainView alloc] initWithParentView:baseView frame:[Rhodes applicationFrame]];
+    viewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    viewController.view.autoresizesSubviews = YES;
+    
+    return viewController;
+}
+
 - (void)doStartUp {
     NSLog(@"Rhodes starting application...");
-    
     
     [NSThread setThreadPriority:1.0];
     
@@ -647,27 +674,37 @@ static Rhodes *instance = NULL;
     
     NSLog(@"Init all windows");
     
-    
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
     
-    window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    window.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    window.autoresizesSubviews = YES;
-	
-    mainView = nil;
-    mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
-    mainView.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    mainView.view.autoresizesSubviews = YES;
+    window = [self createWindow];
     
+    /************************/
+    baseViewController = [[RhoViewController alloc] init];
+    
+	CGRect wFrame = [Rhodes applicationFrame];
+    wFrame.origin.y = 0;
+    
+    baseView = [[UIView alloc] initWithFrame:wFrame];
+    
+    baseViewController.view = baseView;
+    
+    baseViewController.view.autoresizesSubviews = YES;
+    baseViewController.view.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    
+    /************************/
+    
+    window.rootViewController = baseViewController;
+    
+    mainView = nil;
+    mainView = [self createDefaultViewController];
+	    
 	BOOL is_splash_screen_maked = [self showLoadingPagePre];
 	
 	if (!is_splash_screen_maked) {
-		[window addSubview:mainView.view];
-        window.rootViewController = mainView;
+        [self setForegroundViewController:mainView];
 	}
 	
     [window makeKeyAndVisible];
-
  
 	CGRect rrr = [application statusBarFrame];
 	
@@ -880,14 +917,12 @@ static Rhodes *instance = NULL;
     
     mainView = nil;
     [SimpleMainView enableHiddenOnStart];
-    mainView = [[SimpleMainView alloc] initWithParentView:window frame:[Rhodes applicationFrame]];
-    mainView.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    mainView.view.autoresizesSubviews = YES;
+    mainView = [self createDefaultViewController];
     
 	BOOL is_splash_screen_maked = [self showLoadingPagePre];
 	
 	if (!is_splash_screen_maked) {
-		[window addSubview:mainView.view];
+		[baseView addSubview:mainView.view];
 	}
 	
     NSLog(@"Init cookies");
