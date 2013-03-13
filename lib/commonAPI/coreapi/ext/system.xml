@@ -207,6 +207,7 @@
 
             <METHOD name="applicationUninstall">
                 <DESC>Uninstall the application.</DESC>
+                <PLATFORM>WM, Win32, Android, WP8</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
                         <DESC>The name of the application.</DESC>
