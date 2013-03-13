@@ -819,6 +819,9 @@ def init_extensions(startdir, dest)
           if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
             xml_api_paths = xml_api_paths.split(',')
             
+            puts 'xml_api_paths>>> ' + xml_api_paths.to_s
+            exit 1
+            
             xml_api_paths.each do |xml_api|
                 Jake.run3("#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}")
             end
@@ -1724,11 +1727,6 @@ namespace "run" do
             cmd = 'open'
             $args.unshift($path, '--args')
         else
-            if $config['env']['paths']['rhosimulator'] and $config['env']['paths']['rhosimulator'].length() > 0
-                # $path = File.join( $config['env']['paths']['rhosimulator'], "RhoSimulator" )
-            else
-                # $path = File.join( $startdir, "platform/linux/bin/RhoSimulator/RhoSimulator" )
-            end
             $args << ">/dev/null"
             $args << "2>/dev/null"
         end
@@ -1819,14 +1817,21 @@ namespace "run" do
         
               if File.file? extyml
                 extconf = Jake.config(File.open(extyml))
-                xml_api_paths = extconf["xml_api_paths"]
+                xml_api_paths  = extconf["xml_api_paths"]
+                templates_path = File.join($startdir, "res", "generators", "templates")
+                   
+                last_change_data = find_latest_modified_date(templates_path)
+                puts 'lastest_data>>> ' + last_change_data.to_s
+                
                 if xml_api_paths
                   xml_api_paths = xml_api_paths.split(',')
 
                   xml_api_paths.each do |xml_api|
-                    cmd_line = "#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}"
-                    puts "cmd_line: #{cmd_line}"
-                    system "#{cmd_line}"
+                    if is_need_generate(extpath, last_change_data)
+                      cmd_line = "#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}"
+                      puts "cmd_line: #{cmd_line}"
+                      system "#{cmd_line}"
+                    end                    
                   end
                 end
               end
@@ -1873,6 +1878,87 @@ namespace "run" do
             $path = cmd
         end
     end
+    
+    def is_need_generate(extpath, last_change_data)
+      puts 'is_need_generate params = ' + extpath.to_s() + ' - ' + last_change_data.to_s()
+      
+      puts extpath.to_s 
+      extpath1 = File.absolute_path(extpath)
+      puts extpath1.to_s
+      puts File.dirname(extpath)
+      
+      if !File.directory?(curr_path)
+        
+      end
+      ext_dir = Dir.new(File.dirname(extpath))
+           
+      ext_dir.each { |item|        
+        puts 'item=' + item
+
+        if item == '.' || item == '..' || item == '.git'
+          next        
+        end
+
+        curr_path = File.join(extpath, item)
+
+        next unless !File.directory?(curr_path)
+        
+        if item.to_s == 'generated'
+          gen_dir = Dir.new(curr_path)
+          
+          gen_dir.each { |gen_item|
+            ftime = File.mtime(curr_path)
+            
+            if last_change_data > ftime
+              return true
+            end
+          }
+          
+        else
+          if is_need_generate(curr_path, last_change_data)
+            return true
+          end
+        end                   
+      }
+      
+      exit
+      #C:/MotorolaRhoMobileSuite4.0.0.beta.5/ruby/lib/ruby/gems/1.9.1/gems/rhoconnect-client-4.0.0.beta.5/ext/rhoconnect-client/rhoconnect-client
+      return false
+    end
+          
+    def find_latest_modified_date(path)
+      latest_mod_time = nil      
+      templates_dir   = Dir.new(path)
+      
+      templates_dir.each { |item|       
+        if item == '.' || item == '..'
+          next        
+        end
+
+        full_path = File.join(path, item)
+        mod_time  = nil
+        
+        if File.directory?(full_path)
+          mod_time = find_latest_modified_date(full_path)
+          
+          if mod_time.nil?
+            next
+          end            
+        else
+          mod_time = File.mtime(full_path)
+        end
+        
+        if latest_mod_time.nil?
+          latest_mod_time = mod_time
+        else
+          if latest_mod_time <= mod_time
+            latest_mod_time = mod_time
+          end
+        end
+      }
+      
+      return latest_mod_time
+    end
 
     #desc "Run application on RhoSimulator"
     task :rhosimulator => "run:rhosimulator_base" do
@@ -1885,7 +1971,7 @@ namespace "run" do
         Jake.run2 $path, $args, {:nowait => true}
 
         if RUBY_PLATFORM =~ /darwin/
-	  while 1
+          while 1
           end     
         end
     end
