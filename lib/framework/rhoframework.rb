@@ -153,7 +153,7 @@ begin
         require 'rational'
     end
     
-    require 'rhom/rhom_db_adapter'
+    #require 'rhom/rhom_db_adapter'
 	
     require 'rhom/rhom_object'
     require 'rhofsconnector'

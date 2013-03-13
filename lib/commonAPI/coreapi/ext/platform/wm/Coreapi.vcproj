@@ -1363,6 +1363,24 @@
 				Name="shared"
 				>
 				<File
+					RelativePath="..\..\..\Database.rb"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Database.xml"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							Outputs="$(InputDir)shared/generated3"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
 					RelativePath="..\..\sqlite3.xml"
 					>
 					<FileConfiguration
@@ -1505,10 +1523,11 @@
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
+						ExcludedFromBuild="true"
 						>
 						<Tool
 							Name="VCCustomBuildTool"
-							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
 							Outputs="$(InputDir)shared/generated4"
 						/>
 					</FileConfiguration>

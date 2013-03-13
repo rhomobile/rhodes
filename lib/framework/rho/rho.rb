@@ -31,6 +31,7 @@ require 'rhom'
 require 'rhofsconnector'
 require 'rho/rhoerror'
 require 'rhom/rhom_source'
+require 'rhodes'
 
 module Rho
   def self.get_app

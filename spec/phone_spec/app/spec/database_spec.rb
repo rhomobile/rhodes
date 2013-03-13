@@ -42,7 +42,7 @@ def copy_file(src, dst_dir)
 	end    
     File.open(File.join( dst_dir, File.basename(src) ), "wb"){|f| f.write(content) }
 end
-	  
+=begin	  
 	it "should export database Database spec" do		
 		file_name = File.join(Rho::RhoApplication::get_model_path('app','BlobBulkTest_s'), 'blob_bulk_test_s.png')
 		copy_file(file_name, Rho::RhoApplication::get_blob_folder() )
@@ -85,11 +85,12 @@ end
 		File.delete(exportPath)
 		File.exists?(exportPath).should == false
 	end
+=end
 
 	it "should reset database Database spec" do
 		::Rhom::Rhom.database_full_reset_and_logout
 	end
-
+=begin
 	it "should import database Database spec" do
 		::Rhom::Rhom.database_import('user',File.join(Rho::RhoApplication::get_base_app_path(),'app/Data/valid_import_db.zip')).should == true
 		
@@ -102,7 +103,7 @@ end
 		puts "item = #{item.inspect}"
 		File.exists?(File.join(Rho::RhoApplication::get_blob_folder(),item.image_uri)).should == true
 	end
-
+=end
 	it "should import invalid data and rollback" do
 	end
 
