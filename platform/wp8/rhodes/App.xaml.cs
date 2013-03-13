@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -178,7 +179,9 @@ namespace rhodes
             // Ensure we don't initialize again
             phoneApplicationInitialized = true;
 
-            //CRhoResourceMap.deployContent();//we have to create rho folder before
+            Directory.SetCurrentDirectory(Windows.Storage.ApplicationData.Current.LocalFolder.Path);
+
+            CRhoResourceMap.deployContent();
         }
 
         // Do not add any additional code to this method

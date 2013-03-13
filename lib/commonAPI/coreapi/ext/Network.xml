@@ -1,9 +1,9 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-    <MODULE name="NetworkAccess" parent="Rho">
-        <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
-        <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
+    <MODULE name="Network" parent="Rho">
+        <HELP_OVERVIEW></HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
         
         <TEMPLATES>
         </TEMPLATES>
@@ -43,6 +43,11 @@
             <PROPERTY name="headers" type="HASH">
                 <DESC>Request HTTP headers.</DESC>
             </PROPERTY>
+            
+            <PROPERTY name="responseTimeout" type="INTEGER" default="30">
+                <DESC>Timeout of network requests in seconds.</DESC>
+            </PROPERTY>
+
         </PROPERTIES>
 
         <METHODS  access="STATIC">
@@ -51,23 +56,29 @@
 
             <METHOD name="cancel" hasCallback="optional" runInThread="none">
                 <DESC>Cancel the request identified by callback. If callback is mossed then all requests will be cancelled.</DESC>
-                <CALLBACK optional="true"/>
             </METHOD>
 
-            <METHOD name="downloadFile" hasCallback="optional"  propertyHash="true">
+            <METHOD name="downloadFile" hasCallback="optional">
                 <DESC>Download a file to the specified filename.</DESC>
                 <PARAMS>
-                    <PARAM name="propertyMap" type="HASH">
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
                         <PARAMS>
                             <PARAM name="filename" type="STRING">
                                 <DESC>The path and name of the file to be uploaded.</DESC>
                             </PARAM>
+                            <PARAM name="overWriteFile" type="BOOLEAN" default="false">
+                                <DESC>overWriteFile will overwrite the destination file if it already exists.</DESC>
+                            </PARAM>
+                            <PARAM name="createFolders" type="BOOLEAN" default="false">
+                                <DESC>createFolders can automatically create the directory path.</DESC>
+                            </PARAM>
+                            
                         </PARAMS>
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK optional="false">
+                <RETURN>
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -82,7 +93,7 @@
                             <DESC>HTTP error code if response code was not 200.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>
+                </RETURN>
 
             </METHOD>
 
@@ -94,7 +105,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK optional="false">
+                <RETURN>
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -109,7 +120,7 @@
                             <DESC>HTTP error code if response code was not 200.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>
+                </RETURN>
 
             </METHOD>
 
@@ -126,7 +137,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK optional="false">
+                <RETURN>
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -141,7 +152,7 @@
                             <DESC>HTTP error code if response code was not 200.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>
+                </RETURN>
 
             </METHOD>
 
@@ -184,7 +195,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK optional="false">
+                <RETURN>
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -199,49 +210,42 @@
                             <DESC>HTTP error code if response code was not 200.</DESC>
                         </PARAM>
                     </PARAMS>
-                </CALLBACK>
+                </RETURN>
 
+            </METHOD>
+
+            <METHOD name="hasNetwork">
+                <DESC>Is device connected to the network.</DESC>
+                <RETURN  type="BOOLEAN"/>
+            </METHOD>
+            <METHOD name="hasWifiNetwork">
+                <DESC>Is device connected to the wifi network</DESC>
+                <RETURN  type="BOOLEAN"/>
+            </METHOD>
+            <METHOD name="hasCellNetwork">
+                <DESC>Is device connected to the cell network.</DESC>
+                <RETURN  type="BOOLEAN"/>
+            </METHOD>
+
+            <METHOD name="startStatusNotify" hasCallback="mandatory" runInThread="none">
+                <DESC>Start network status notifications.</DESC>
+                <PARAMS>
+                    <PARAM name="pollInterval" type="INTEGER" default="20">
+                        <DESC>The network status polling period for systems that can not notify network status change immediately.</DESC>
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="stopStatusNotify">
+                <DESC>Stop network status notifications.</DESC>
             </METHOD>
 
         </METHODS>
         
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-            <![CDATA[
-    	The following example sets up the card reader to call a javascript function upon successful decoding. The javascript
-    					function will be called 3 times, once with the raw card data, once with just the pan data extracted
-    					from the raw card data, and once with the encrypted pan data if the pin has been supplied by the
-    					user within 10s.:</DESC>
-    				<html><head>
-    
-    				<script language="javascript" type="text/javascript">
-    					function doTransaction(data, mode)
-    					{
-    						switch(mode) {
-    						case 'CR':
-    							alert('Card: '+data);
-    							break;
-    						case 'ENCDATA':
-    							alert('Encoded data: '+data);
-    							break;
-    						case 'MESSAGE':
-    							alert('Error: '+data);
-    							break;
-    						case 'PAN':
-    							alert('PAN data: '+data);
-    							alert('Please turn the unit over and enter the PIN');
-    							break;
-    						}
-    					}
-    				</script>
-    				</head>
-    				<body>
-    				</body>
-    				</html>
-    
-    				You must have the appropriate drivers installed on your device to use the CardReader.  You will see which drivers are installed in the RhoElements log file after you attempt to use any of the card reader functions in RhoElements.  All necessary drivers should be included as part of the platform for supported devices.
-    
-    				]]>
+            <![CDATA[]]>
     
         </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>

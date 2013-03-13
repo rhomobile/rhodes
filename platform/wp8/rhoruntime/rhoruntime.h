@@ -66,6 +66,7 @@ namespace rhoruntime
 		void tabbarShow(void);
 		void tabbarHide(void);
 		int tabbarGetHeight(void);
+		int tabbarIsStarted(void);
 		void tabbarSwitch(int index);
 		int tabbarGetCurrent();
 		void tabbarAddTab(::Platform::String^ label, ::Platform::String^ icon, ::Platform::String^ action, bool disabled, ::Platform::String^ web_bkg_color, ::Platform::String^ selected_color, bool reload, bool use_current_view_for_tab);

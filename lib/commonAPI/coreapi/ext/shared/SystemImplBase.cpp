@@ -8,6 +8,7 @@
 #include "common/RhoFile.h"
 #include "unzip/zip.h"
 #include "db/DBAdapter.h"
+#include "Network.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
@@ -322,31 +323,29 @@ void CSystemImplBase::setPushNotification( const rho::String& url,  const rho::S
     }
 }
 
-static int g_rho_has_network = 1, g_rho_has_cellnetwork = 0;
-
-extern "C" void rho_sysimpl_sethas_network(int nValue)
-{
-    g_rho_has_network = nValue > 1 ? 1 : 0;
-}
-
-extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue)
-{
-    g_rho_has_cellnetwork = nValue;
-}
-
 void CSystemImplBase::getHasNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
-    oResult.set(g_rho_has_network!= 0 || g_rho_has_cellnetwork!= 0);
+    oResult.set(Network::hasNetwork());
 }
 
 void CSystemImplBase::getHasWifiNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
-    oResult.set(g_rho_has_network!= 0);
+    oResult.set(Network::hasWifiNetwork());
 }
 
 void CSystemImplBase::getHasCellNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
-    oResult.set(g_rho_has_cellnetwork!= 0);
+    oResult.set(Network::hasCellNetwork());
+}
+
+void CSystemImplBase::setNetworkStatusNotify( const rho::String& url, int poll_interval, rho::apiGenerator::CMethodResult& oResult)
+{
+    RHODESAPP().setNetworkStatusNotify( url, (int)poll_interval );
+}
+
+void CSystemImplBase::clearNetworkStatusNotify(rho::apiGenerator::CMethodResult& oResult)
+{
+    RHODESAPP().clearNetworkStatusNotify();
 }
 
 void CSystemImplBase::setScreenRotationNotification( const rho::String& url,  const rho::String& url_params, rho::apiGenerator::CMethodResult& oResult)
@@ -378,16 +377,6 @@ void CSystemImplBase::startTimer( int interval,  const rho::String& url,  const 
 void CSystemImplBase::stopTimer( const rho::String& url, rho::apiGenerator::CMethodResult& oResult)
 {
     RHODESAPP().getTimer().stopTimer( url.c_str());
-}
-
-void CSystemImplBase::setNetworkStatusNotify( const rho::String& url, int poll_interval, rho::apiGenerator::CMethodResult& oResult)
-{
-    RHODESAPP().setNetworkStatusNotify( url, (int)poll_interval );
-}
-
-void CSystemImplBase::clearNetworkStatusNotify(rho::apiGenerator::CMethodResult& oResult)
-{
-    RHODESAPP().clearNetworkStatusNotify();
 }
 
 void CSystemImplBase::set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult)

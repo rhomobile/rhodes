@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/Megamodule.cpp
+ext/platform/android/generated/jni/megamodule_ruby_wrap.cpp
+ext/platform/android/generated/jni/megamodule_js_wrap.cpp
+ext/platform/android/jni/Megamodule_impl.cpp
+ext/shared/generated/megamodule_api_init.cpp
+ext/shared/generated/megamodule_js_api.cpp
+ext/shared/generated/megamodule_ruby_api.c

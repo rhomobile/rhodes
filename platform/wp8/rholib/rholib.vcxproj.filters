@@ -157,9 +157,6 @@
     <ClInclude Include="..\..\shared\statistic\RhoProfiler.h">
       <Filter>statistic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\net\AsyncHttp.h">
-      <Filter>net</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\net\CompatWince.h">
       <Filter>net</Filter>
     </ClInclude>
@@ -266,9 +263,6 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\statistic\RhoProfiler.cpp">
       <Filter>statistic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\net\AsyncHttp.cpp">
-      <Filter>net</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\net\CompatWince.cpp">
       <Filter>net</Filter>

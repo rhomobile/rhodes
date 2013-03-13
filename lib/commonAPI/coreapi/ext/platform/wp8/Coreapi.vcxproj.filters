@@ -92,25 +92,25 @@
     <ClCompile Include="..\..\shared\SQLite3Impl.cpp">
       <Filter>SQLite3\shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\NetworkAccessImpl.cpp">
+    <ClCompile Include="..\..\shared\NetworkImpl.cpp">
       <Filter>NetworkAccess</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\networkaccess_api_init.cpp">
+    <ClCompile Include="..\..\shared\generated\network_api_init.cpp">
       <Filter>NetworkAccess\shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\networkaccess_js_api.cpp">
+    <ClCompile Include="..\..\shared\generated\network_js_api.cpp">
       <Filter>NetworkAccess\shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\networkaccess_ruby_api.c">
+    <ClCompile Include="..\..\shared\generated\network_ruby_api.c">
       <Filter>NetworkAccess\shared\generated</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\cpp\NetworkAccess_js_wrap.cpp">
+    <ClCompile Include="..\..\shared\generated\cpp\NetworkBase.cpp">
       <Filter>NetworkAccess\shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\cpp\NetworkAccess_ruby_wrap.cpp">
+    <ClCompile Include="..\..\shared\generated\cpp\Network_js_wrap.cpp">
       <Filter>NetworkAccess\shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\generated\cpp\NetworkAccessBase.cpp">
+    <ClCompile Include="..\..\shared\generated\cpp\Network_ruby_wrap.cpp">
       <Filter>NetworkAccess\shared\generated\cpp</Filter>
     </ClCompile>
   </ItemGroup>
@@ -127,10 +127,10 @@
     <ClInclude Include="..\..\shared\generated\cpp\SQLite3Base.h">
       <Filter>SQLite3\shared\generated\cpp</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\generated\cpp\INetworkAccess.h">
+    <ClInclude Include="..\..\shared\generated\cpp\INetwork.h">
       <Filter>NetworkAccess\shared\generated\cpp</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\generated\cpp\NetworkAccessBase.h">
+    <ClInclude Include="..\..\shared\generated\cpp\NetworkBase.h">
       <Filter>NetworkAccess\shared\generated\cpp</Filter>
     </ClInclude>
   </ItemGroup>
@@ -141,10 +141,6 @@
     <CustomBuild Include="..\..\sqlite3.xml">
       <Filter>SQLite3\shared</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="..\..\NetworkAccess.xml">
-      <Filter>NetworkAccess\shared</Filter>
-    </Xml>
+    <CustomBuild Include="..\..\Network.xml" />
   </ItemGroup>
 </Project>

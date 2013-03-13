@@ -86,12 +86,19 @@ static VALUE _api_generator_Megamodule_getStringProperty(int argc, VALUE *argv, 
 }
 
 
+
 VALUE rb_Megamodule_getStringProperty(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_getStringProperty(argc, argv, pObj);
+    res = _api_generator_Megamodule_getStringProperty(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -134,12 +141,19 @@ static VALUE _api_generator_Megamodule_getIntegerProperty(int argc, VALUE *argv,
 }
 
 
+
 VALUE rb_Megamodule_getIntegerProperty(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_getIntegerProperty(argc, argv, pObj);
+    res = _api_generator_Megamodule_getIntegerProperty(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -200,12 +214,19 @@ static VALUE _api_generator_Megamodule_setIntegerProperty(int argc, VALUE *argv,
 }
 
 
+
 VALUE rb_Megamodule_setIntegerProperty(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_setIntegerProperty(argc, argv, pObj);
+    res = _api_generator_Megamodule_setIntegerProperty(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -239,7 +260,7 @@ static VALUE _api_generator_Megamodule_typesTest(int argc, VALUE *argv, rho::exa
         {
             arg0 = getStringFromValue(argv[0]);
 
-            oRes.setStringParam(getStringFromValue(argv[0]));
+            oRes.setParamName(getStringFromValue(argv[0]));
 
         }
         else if (!rho_ruby_is_NIL(argv[0]))
@@ -361,12 +382,19 @@ static VALUE _api_generator_Megamodule_typesTest(int argc, VALUE *argv, rho::exa
 }
 
 
+
 VALUE rb_Megamodule_typesTest(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_typesTest(argc, argv, pObj);
+    res = _api_generator_Megamodule_typesTest(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -409,12 +437,19 @@ static VALUE _api_generator_Megamodule_produceArray(int argc, VALUE *argv, rho::
 }
 
 
+
 VALUE rb_Megamodule_produceArray(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_produceArray(argc, argv, pObj);
+    res = _api_generator_Megamodule_produceArray(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -457,12 +492,19 @@ static VALUE _api_generator_Megamodule_produceHash(int argc, VALUE *argv, rho::e
 }
 
 
+
 VALUE rb_Megamodule_produceHash(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_produceHash(argc, argv, pObj);
+    res = _api_generator_Megamodule_produceHash(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -505,12 +547,19 @@ static VALUE _api_generator_Megamodule_produceComplicatedResult(int argc, VALUE 
 }
 
 
+
 VALUE rb_Megamodule_produceComplicatedResult(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_produceComplicatedResult(argc, argv, pObj);
+    res = _api_generator_Megamodule_produceComplicatedResult(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -551,6 +600,7 @@ VALUE rb_s_Megamodule_getObjectsCount(int argc, VALUE *argv)
     }
     return oRes.toRuby();
 }
+
 
 
 
@@ -607,6 +657,7 @@ VALUE rb_s_Megamodule_getObjectByIndex(int argc, VALUE *argv)
 
 
 
+
 static VALUE _api_generator_Megamodule_showAlertFromUIThread(int argc, VALUE *argv, rho::examples::IMegamodule* pObj)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -627,7 +678,7 @@ static VALUE _api_generator_Megamodule_showAlertFromUIThread(int argc, VALUE *ar
         {
             arg0 = getStringFromValue(argv[0]);
 
-            oRes.setStringParam(getStringFromValue(argv[0]));
+            oRes.setParamName(getStringFromValue(argv[0]));
 
         }
         else if (!rho_ruby_is_NIL(argv[0]))
@@ -649,12 +700,19 @@ static VALUE _api_generator_Megamodule_showAlertFromUIThread(int argc, VALUE *ar
 }
 
 
+
 VALUE rb_Megamodule_showAlertFromUIThread(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_showAlertFromUIThread(argc, argv, pObj);
+    res = _api_generator_Megamodule_showAlertFromUIThread(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -738,12 +796,19 @@ static VALUE _api_generator_Megamodule_setPeriodicallyCallback(int argc, VALUE *
 }
 
 
+
 VALUE rb_Megamodule_setPeriodicallyCallback(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_setPeriodicallyCallback(argc, argv, pObj);
+    res = _api_generator_Megamodule_setPeriodicallyCallback(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -809,12 +874,19 @@ static VALUE _api_generator_Megamodule_isPeriodicallyCallbackSetted(int argc, VA
 }
 
 
+
 VALUE rb_Megamodule_isPeriodicallyCallbackSetted(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_isPeriodicallyCallbackSetted(argc, argv, pObj);
+    res = _api_generator_Megamodule_isPeriodicallyCallbackSetted(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -857,12 +929,19 @@ static VALUE _api_generator_Megamodule_stopPeriodicallyCallback(int argc, VALUE 
 }
 
 
+
 VALUE rb_Megamodule_stopPeriodicallyCallback(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_stopPeriodicallyCallback(argc, argv, pObj);
+    res = _api_generator_Megamodule_stopPeriodicallyCallback(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -923,12 +1002,19 @@ static VALUE _api_generator_Megamodule_complicatedTypesTest1(int argc, VALUE *ar
 }
 
 
+
 VALUE rb_Megamodule_complicatedTypesTest1(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_complicatedTypesTest1(argc, argv, pObj);
+    res = _api_generator_Megamodule_complicatedTypesTest1(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -962,7 +1048,7 @@ static VALUE _api_generator_Megamodule_getProperty(int argc, VALUE *argv, rho::e
         {
             arg0 = getStringFromValue(argv[0]);
 
-            oRes.setStringParam(getStringFromValue(argv[0]));
+            oRes.setParamName(getStringFromValue(argv[0]));
 
         }
         else if (!rho_ruby_is_NIL(argv[0]))
@@ -1017,12 +1103,19 @@ static VALUE _api_generator_Megamodule_getProperty(int argc, VALUE *argv, rho::e
 }
 
 
+
 VALUE rb_Megamodule_getProperty(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_getProperty(argc, argv, pObj);
+    res = _api_generator_Megamodule_getProperty(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -1106,12 +1199,19 @@ static VALUE _api_generator_Megamodule_getProperties(int argc, VALUE *argv, rho:
 }
 
 
+
 VALUE rb_Megamodule_getProperties(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_getProperties(argc, argv, pObj);
+    res = _api_generator_Megamodule_getProperties(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -1177,12 +1277,19 @@ static VALUE _api_generator_Megamodule_getAllProperties(int argc, VALUE *argv, r
 }
 
 
+
 VALUE rb_Megamodule_getAllProperties(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_getAllProperties(argc, argv, pObj);
+    res = _api_generator_Megamodule_getAllProperties(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -1216,7 +1323,7 @@ static VALUE _api_generator_Megamodule_setProperty(int argc, VALUE *argv, rho::e
         {
             arg0 = getStringFromValue(argv[0]);
 
-            oRes.setStringParam(getStringFromValue(argv[0]));
+            oRes.setParamName(getStringFromValue(argv[0]));
 
         }
         else if (!rho_ruby_is_NIL(argv[0]))
@@ -1269,12 +1376,19 @@ static VALUE _api_generator_Megamodule_setProperty(int argc, VALUE *argv, rho::e
 }
 
 
+
 VALUE rb_Megamodule_setProperty(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_setProperty(argc, argv, pObj);
+    res = _api_generator_Megamodule_setProperty(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -1335,12 +1449,19 @@ static VALUE _api_generator_Megamodule_setProperties(int argc, VALUE *argv, rho:
 }
 
 
+
 VALUE rb_Megamodule_setProperties(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_setProperties(argc, argv, pObj);
+    res = _api_generator_Megamodule_setProperties(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -1383,12 +1504,19 @@ static VALUE _api_generator_Megamodule_clearAllProperties(int argc, VALUE *argv,
 }
 
 
+
 VALUE rb_Megamodule_clearAllProperties(int argc, VALUE *argv, VALUE obj)
 {
     const char* szID = rho_ruby_get_object_id( obj );
+    if (!szID)
+        rho_ruby_raise_runtime("Object was deleted.");
+
+    VALUE res = 0;
     rho::examples::IMegamodule* pObj =  rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(szID);
 
-    return _api_generator_Megamodule_clearAllProperties(argc, argv, pObj);
+    res = _api_generator_Megamodule_clearAllProperties(argc, argv, pObj);
+
+    return res;
 }
 
 
@@ -1453,6 +1581,7 @@ VALUE rb_s_Megamodule_enumerate(int argc, VALUE *argv)
     }
     return oRes.toRuby();
 }
+
 
 
 

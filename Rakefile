@@ -350,7 +350,7 @@ namespace "config" do
     extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
        $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
     extensions += get_extensions
-    extensions << "coreapi" if $current_platform == "wm" || $current_platform == "wp8" || $current_platform == "win32" || $current_platform == 'android' || $current_platform == 'iphone'
+    extensions << "coreapi" if $current_platform == "wm" || $current_platform == "osx" || $current_platform == "wp8" || $current_platform == "win32" || $current_platform == 'android' || $current_platform == 'iphone'
     extensions << "rhoconnect-client" if $rhosimulator_build
     extensions << "json"
     $app_config["extensions"] = extensions.uniq
@@ -719,11 +719,9 @@ end
 def write_modules_js(filename,modules)
   File.open(filename, "w") do |f|
     f.puts "// Generated #{Time.now.to_s}"
-    f.puts '$(document).ready(function(){'
-    f.puts '    Rho.loadApiModules(['
-    f.puts '        "' + modules.join('","') + '"'
-    f.puts '    ]);'
-    f.puts '});'
+    f.puts 'Rho.loadApiModules(['
+    f.puts '    "' + modules.join('","') + '"'
+    f.puts ']);'
   end
 end
 

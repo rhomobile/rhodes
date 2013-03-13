@@ -91,7 +91,7 @@ else %>
     <%= $cur_module.name.downcase %>.<%= method.native_name %>(argumentsAdapter(argv), result); <%
 end %>
     rho::String res = <%
-if method.is_factory_method %>
+if api_generator_isApiObjectParam(method.result) %>
         result.enumerateJSObjects();
 <%
 else %>

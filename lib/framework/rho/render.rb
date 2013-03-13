@@ -353,14 +353,14 @@ module Rho
 
     def self.start_objectnotify()
       if defined?(RHOCONNECT_CLIENT_PRESENT)
-          SyncEngine::clean_objectnotify()
+          Rho::RhoConnectClient.clean_objectnotify()
       end
 
       return unless @@m_arObjectNotify && @@m_arObjectNotify.length > 0 
 
       if defined?(RHOCONNECT_CLIENT_PRESENT)
           0.upto(@@m_arObjectNotify.length()-1) do |i|
-            SyncEngine::add_objectnotify(@@m_arSrcIDNotify[i], @@m_arObjectNotify[i])
+            Rho::RhoConnectClient::add_objectnotify(@@m_arSrcIDNotify[i], @@m_arObjectNotify[i])
           end
       end
       

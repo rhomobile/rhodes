@@ -73,7 +73,7 @@ module Rhom
 
     def get_lastsync_objectcount
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            SyncEngine.get_lastsync_objectcount(@source_id.to_i)
+            Rho::RhoConnectClient.get_lastsync_objectcount(@source_id.to_i)
         end
     end    
     

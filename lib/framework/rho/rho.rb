@@ -31,6 +31,7 @@ require 'rhom'
 require 'rhofsconnector'
 require 'rho/rhoerror'
 require 'rhom/rhom_source'
+require 'rhodes'
 
 module Rho
   def self.get_app
@@ -451,6 +452,7 @@ end
             end
             
             init_sources()
+
         rescue Exception => e
             puts "Error load_all_sync_sources: #{e}"
             puts "Trace: #{e.backtrace}"
@@ -461,14 +463,14 @@ end
         return nil if !Rho::RhoConfig.sources.has_key?(modelName) || Rho::RhoConfig.sources[modelName][:loaded]
         Rho::RhoConfig.sources[modelName][:loaded] = true
 
-        puts "load_model: #{modelName}"        
-        
+        puts "load_model: #{modelName}"
+
         Rhom::RhomObjectFactory.init_object(modelName)
         require "#{Rho::RhoConfig.sources[modelName][:file_path]}"
 
-        puts "model name: #{modelName}"            
+        puts "model name: #{modelName}"
 
-        modelClass = nil 
+        modelClass = nil
         modelClass = Object.const_get(modelName) if Object.const_defined?(modelName)
         if modelClass
             puts "model class found"                            
@@ -591,7 +593,7 @@ end
         #@db_partitions.each do |partition, db|
         #    SyncEngine.update_blob_attribs(partition, -1 )
         #end
-        
+
         ::Rho::RHO.init_sync_source_properties(uniq_sources)
     end
 
@@ -600,20 +602,20 @@ if defined?(RHOCONNECT_CLIENT_PRESENT)
         uniq_sources.each do|src|
             ['pass_through', 'full_update'].each do |prop|
                 next unless src.has_key?(prop)
-                SyncEngine.set_source_property(src['source_id'], prop, src[prop] ? src[prop].to_s() : '' )
-            end            
+                Rho::RhoConnectClient.set_source_property(src['source_id'], prop, src[prop] ? src[prop].to_s() : '' )
+            end
         end
-        
+    
         uniq_sources.each do|src|
             if src.has_key?('freezed') || !src['schema'].nil?
 				hash_props = !src['schema'].nil? ? src['schema']["property"] : src["property"]
 				if (!hash_props.nil?)
 					str_props = hash_props.keys.join(',')
-					SyncEngine.set_source_property(src['source_id'], 'freezed', str_props )
+					Rho::RhoConnectClient.set_source_property(src['source_id'], 'freezed', str_props )
 				end
             end            
         end
-end        
+end
     end
     
     def self.processIndexes(index_param, src_name, is_unique)
@@ -1328,83 +1330,31 @@ end
     end
       
 end # Rho
-=begin
-module SyncEngine
-    def self.get_user_name
-        Rho::RhoConfig.rho_sync_user        
-    end
-    
-    def self.on_sync_create_error( src_name, objects, action )
-        raise ArgumentError, 'on_sync_create_error src_name should be string' unless src_name.is_a?(String)
-        
-        Object.const_get(src_name).on_sync_create_error(objects, action)
-    end
-
-    def self.push_changes( src_name )
-        raise ArgumentError, 'push_changes src_name should be string' unless src_name.is_a?(String)
-        
-        Object.const_get(src_name).push_changes()
-    end
-
-    def self.on_sync_update_error( src_name, objects, action, rollback_data = nil )
-        raise ArgumentError, 'on_sync_update_error src_name should be string' unless src_name.is_a?(String)
-    
-        Object.const_get(src_name).on_sync_update_error(objects, action, rollback_data)
-    end
-
-    def self.on_sync_delete_error( src_name, objects, action )
-        raise ArgumentError, 'on_sync_delete_error src_name should be string' unless src_name.is_a?(String)
-    
-        Object.const_get(src_name).on_sync_delete_error(objects, action)
-    end
-    
-    def self.search(args)
-        searchParams = ""
-
-        searchParams += '&offset=' + Rho::RhoSupport.url_encode(args[:offset]) if args[:offset]
-        searchParams += '&max_results=' + Rho::RhoSupport.url_encode(args[:max_results]) if args[:max_results]
-
-        callbackParams = args[:callback_param] ? args[:callback_param] : ""
-
-        if args[:search_params]
-            args[:search_params].each do |key,value|
-              searchParams += '&' + "search[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
-              callbackParams += '&' + "search_params[#{Rho::RhoSupport.url_encode(key)}]" + '=' + Rho::RhoSupport.url_encode(value)
-            end  
-        end
-
-        SyncEngine.dosearch( args[:source_names], args[:from] ? args[:from] : 'search',
-            searchParams, args[:sync_changes] ? args[:sync_changes] : false, args[:progress_step] ? args[:progress_step] : -1,
-            args[:callback], callbackParams )
-    end
-end
-=end
 #at_exit do
 	#::Rhom::RhomDbAdapter.close
 #end
 
 begin
-	puts "Looking for SyncEngine"
-	require 'syncengine.rb'
-	Module.const_get("SyncEngine")
-	puts "SyncEngine found. do nothing"
-rescue LoadError, NameError
-	puts "SyncEngine not found. Defining stub module"
-	
-	module SyncEngine
-		def self.respond_to?(method)
-			#raise "SyncEngine won't respond to #{method}. Use 'rhoconnect-client' extension."
-			true
-		end
+	puts "Looking for RhoConnectClient"
+	Rho.const_get('RhoConnectClient')
+	puts "RhoConnectClient found. do nothing"
+rescue LoadError, NameError => e
+	puts "RhoConnectClient not found ( #{e.inspect} ). Defining stub module"
 
+	module Rho
+		class RhoConnectClient
+			def self.method_missing(name, *args, &block)
+				raise "RhoConnectClient call #{name} not supported. Use 'rhoconnect-client' extension."
+			end
+		end
+	end
+
+	class SyncEngine
 		def self.method_missing(name, *args, &block)
 			raise "SyncEngine call #{name} not supported. Use 'rhoconnect-client' extension."
 		end
 	end
-
 end
-
-
 
 
 class Module

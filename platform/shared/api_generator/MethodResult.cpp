@@ -18,10 +18,10 @@ extern "C" int rho_webview_active_tab();
 
 rho::String CMethodResult::toJSON()
 { 
-    rho::String strRes = "{}";
+    rho::String strRes = "\"result\": null";
     if ( m_ResType == eStringArray )
     {
-        strRes = "[";
+		strRes = "\"result\": {\"type\": \"object\", \"value\": [";
         for( int i = 0; i < (int)m_arStrRes.size(); i++ )
         {
             if ( i > 0 )
@@ -30,10 +30,10 @@ rho::String CMethodResult::toJSON()
             strRes += CJSONEntry::quoteValue(m_arStrRes[i]);
         }
         
-        strRes += "]";
+		strRes += "]}";
     }else if ( m_ResType == eStringHash )
     {
-        strRes = "{";
+        strRes = "\"result\": {\"type\": \"object\", \"value\": {";
 
         for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
         {
@@ -61,28 +61,28 @@ rho::String CMethodResult::toJSON()
             strRes += "}";
         }
 
-        strRes += "}";
+		strRes += "}}";
     }else if ( m_ResType == eString)
     {
-        strRes = "{'_RhoValue':" + m_strRes + "}";
+		strRes = "\"result\": {\"type\": \"string\", \"value\": " + CJSONEntry::quoteValue(m_strRes) + "}";
     }else if ( m_ResType == eStringW)
     {
-        strRes = "{'_RhoValue':" + convertToStringA(m_strResW) + "}";
+        strRes = "\"result\": {\"type\": \"string\", \"value\": " + CJSONEntry::quoteValue(convertToStringA(m_strResW)) + "}";
     }else if ( m_ResType == eBool)
     {
-        strRes = "{'_RhoValue':" + convertToStringA(m_bRes?1:0) + "}";
+        strRes = "\"result\": {\"type\": \"boolean\", \"value\": " + convertToStringA(m_bRes?1:0) + "}";
     }else if ( m_ResType == eInt)
     {
-        strRes = "{'_RhoValue':" + convertToStringA(m_nRes) + "}";
+        strRes = "\"result\": {\"type\": \"int\", \"value\": " + convertToStringA(m_nRes) + "}";
     }else if ( m_ResType == eDouble)
     {
-        strRes = "{'_RhoValue':" + convertToStringA(m_dRes) + "}";
+        strRes = "\"result\": {\"type\": \"double\", \"value\": " + convertToStringA(m_dRes) + "}";
     }else if ( m_ResType == eArgError )
     {
-        strRes = "{'_RhoArgError':" + CJSONEntry::quoteValue(m_strError) + "}";
+        strRes = "\"error\": {\"code\": -32600, \"message\": " + CJSONEntry::quoteValue(m_strError) + "}";
     }else if ( m_ResType == eError)
     {
-        strRes = "{'_RhoRuntimeError':" + CJSONEntry::quoteValue(m_strError) + "}";
+        strRes = "\"error\": {\"code\": -32600, \"message\": " + CJSONEntry::quoteValue(m_strError) + "}";
     }
 
     return strRes;

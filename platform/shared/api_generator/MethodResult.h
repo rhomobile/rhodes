@@ -75,10 +75,12 @@ public:
     CMethodResult(bool bCollectionMode=false): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(bCollectionMode), m_strParamName("result"){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
+    const rho::String& getRubyCallback() const { return m_strRubyCallback; }
     void setRubyCallbackProc(unsigned long oRubyCallbackProc);
     void setJSCallback(const rho::String& strCallback){ m_strJSCallback = strCallback; }
     void setCallInUIThread(rho::boolean bUIThread){ m_bCallInUIThread = bUIThread; }
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
+    const rho::String& getCallbackParam() const { return m_strCallbackParam; }
     void setParamName(const rho::String& strParam){m_strParamName = strParam;}
     void setRubyObjectClass(unsigned long val){ m_oRubyObjectClass = val; }
     void setRubyObjectClassPath(const rho::String& strPath){ m_strRubyObjectClassPath = strPath; }
@@ -114,6 +116,7 @@ public:
     rho::Hashtable<rho::String, rho::String>& getStringHash(){ return m_hashStrRes; }
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >& getStringHashL2(){ return m_hashStrL2Res; }
     rho::String& getString(){ return m_strRes; }
+    bool getBool(){ return m_bRes; }
 
     rho::String toString();
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}

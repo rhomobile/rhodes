@@ -969,7 +969,7 @@ module Rhogen
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
     $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread", "deprecated", "generateAPI", "generateDoc"]
     $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName", "deprecated", "generateAPI", "generateDoc", "constructor", "destructor", "generateNativeAPI"]
-    $possible_attributes["PARAM"] = ["name", "nativeName", "type"]
+    $possible_attributes["PARAM"] = ["name", "nativeName", "type", "propertyHash", "default"]
     $possible_attributes["RETURN"] = ["type"]
 
     $possible_children = {}
@@ -1177,7 +1177,7 @@ module Rhogen
             str = str + '1, '+name_prefix+'_param'+param_index.to_s
             str = str + ' }'
             tmp_ar = []
-            tmp_ar << param.sub_param
+            tmp_ar << param.sub_param if param.sub_param
             prepare_rho_api_params_structure_line(tmp_ar, name_prefix+'_param'+param_index.to_s, lines)
           else
              if param.type == MethodParam::TYPE_HASH
@@ -1267,9 +1267,9 @@ module Rhogen
                end
             end
 
-            if param.sub_params == nil
-              puts "WARNING: you use HASH type without specified items ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
-            end
+            #if param.sub_params == nil
+            #  puts "WARNING: you use HASH type without specified items ! Module[#{module_item.name}].method[#{method_name}].param_index[#{param_index.to_s}]"
+            #end
 
           end
 

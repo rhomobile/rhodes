@@ -133,6 +133,7 @@ VALUE rb_s_SimpleOnlyStaticModule_calcSumm(int argc, VALUE *argv)
 
 
 
+
 VALUE rb_s_SimpleOnlyStaticModule_joinStrings(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -206,6 +207,7 @@ VALUE rb_s_SimpleOnlyStaticModule_joinStrings(int argc, VALUE *argv)
 
 
 
+
 VALUE rb_s_SimpleOnlyStaticModule_getPlatform(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -238,6 +240,7 @@ VALUE rb_s_SimpleOnlyStaticModule_getPlatform(int argc, VALUE *argv)
 
 
 
+
 VALUE rb_s_SimpleOnlyStaticModule_showAlertFromUIThread(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -255,6 +258,7 @@ VALUE rb_s_SimpleOnlyStaticModule_showAlertFromUIThread(int argc, VALUE *argv)
     rho_wm_impl_performOnUiThread( pFunctor );
     return oRes.toRuby();
 }
+
 
 
 

@@ -68,6 +68,7 @@ class LogSettings{
         virtual void run();
         
         void setCollectMemoryInfoInterval( unsigned int interval );
+        unsigned int getCollectMemoryInfoInterval(){ return m_collectMemoryIntervalMilliseconds; }
         void setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector );
         
         boolean willCollect() const;
@@ -143,6 +144,7 @@ public:
     
     void setCollectMemoryInfoInterval( unsigned int interval );
     void setMemoryInfoCollector( IMemoryInfoCollector* memInfoCollector );
+    unsigned int getCollectMemoryInfoInterval();
 
     void setExcludeFilter( const String& strExcludeFilter );
     Vector<String>& getExcludeAttribs(){ return m_arExcludeAttribs; }

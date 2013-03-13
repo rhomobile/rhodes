@@ -44,9 +44,9 @@ void CMegamoduleBase::getProperty( const rho::String& propertyName, CMethodResul
     }
 }
 
-void CMegamoduleBase::getProperties( const rho::Vector<::rho::String>& arrayofNames, CMethodResult& oResult)
+void CMegamoduleBase::getProperties( const rho::Vector<rho::String>& arrayofNames, CMethodResult& oResult)
 {
-    rho::Hashtable<::rho::String, rho::String> res;
+    rho::Hashtable<rho::String, rho::String> res;
     oResult.setCollectionMode(true);
     for ( int i = 0; i < (int)arrayofNames.size(); i++ )
     {
@@ -83,7 +83,7 @@ void CMegamoduleBase::setProperty( const rho::String& propertyName,  const rho::
     }
 }
 
-void CMegamoduleBase::setProperties( const rho::Hashtable<::rho::String, rho::String>& propertyMap, CMethodResult& oResult)
+void CMegamoduleBase::setProperties( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult)
 {
     for ( rho::Hashtable<rho::String, rho::String>::const_iterator it = propertyMap.begin();  it != propertyMap.end(); ++it )
     {
