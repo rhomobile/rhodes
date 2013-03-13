@@ -76,12 +76,13 @@ describe("Rho common API", function () {
                 var apiReq = Rho.util.apiReqFor('Rho:System');
                 var result = apiReq({
                     instanceId: '0',
-                    params: [],
+                    args: [],
                     method: 'deviceName'
                 });
                 expect(result).toBeNonEmpty();
                 expect(typeof result).toEqual('string');
-                expect(result).toEqual('Win32');
+                expect(result.length).toBeGreaterThan(0);
+                jasmine.log('platform is: ' +result);
             });
 
             // TODO: fix asynchronous requests
@@ -94,7 +95,7 @@ describe("Rho common API", function () {
 
                 apiReq({
                     instanceId: '12345',
-                    params: ['abc', 1, 2, 3, spy],
+                    args: ['abc', 1, 2, 3, spy],
                     method: 'testMethod',
                     valueCallbackIndex: 4
                 });
@@ -113,7 +114,7 @@ describe("Rho common API", function () {
 
                 var dfr = apiReq({
                     instanceId: '12345',
-                    params: ['abc', 1, 2, 3, function(){}],
+                    args: ['abc', 1, 2, 3, function(){}],
                     method: 'testMethod',
                     valueCallbackIndex: 4
                 });
