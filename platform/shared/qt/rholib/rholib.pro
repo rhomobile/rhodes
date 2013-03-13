@@ -81,7 +81,6 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../logging/RhoLogSink.h\
 ../../common/Tokenizer.h\
 ../../rubyext/GeoLocation.h\
-../../net/AsyncHttp.h\
 ../../common/AutoPointer.h\
 ../../common/InputStream.h\
 ../../common/irhoclassfactory.h\
@@ -121,7 +120,6 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../logging/RhoPlainLog.cpp\
 ../../common/Tokenizer.cpp\
 ../../rubyext/GeoLocation.cpp\
-../../net/AsyncHttp.cpp\
 ../../common/ThreadQueue.cpp\
 ../../net/INetRequest.cpp\
 ../../net/URI.cpp\
