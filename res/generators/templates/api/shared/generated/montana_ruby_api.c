@@ -59,7 +59,10 @@ void Init_RubyAPI_<%= $cur_module.name %>(void)
     rb_mParent = rb_define_module("<%= $cur_module.parents[0] %>");
     <% for i in 1..($cur_module.parents.size-1) %>
     tmpParent = rb_mParent;
-    rb_mParent = rb_define_module_under(tmpParent, "<%= $cur_module.parents[i] %>");
+    if (rb_const_defined_at(tmpParent, rb_intern("<%= $cur_module.parents[i] %>")))
+        rb_mParent = rb_const_get_at(tmpParent, rb_intern("<%= $cur_module.parents[i] %>"));
+    else
+        rb_mParent = rb_define_module_under(tmpParent, "<%= $cur_module.parents[i] %>");
     <% end %>
 
 	rb_m<%= $cur_module.name %> = rb_define_class_under(rb_mParent, "<%= $cur_module.name %>", rb_cObject);

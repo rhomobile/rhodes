@@ -6,8 +6,6 @@
     <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
 
     <ALIASES>
-      <ALIAS new="Database" existing="SQLite3" deprecated="true"/>
-      <ALIAS new="SQLite3" existing="Database" deprecated="true"/>
     </ALIASES>
     
     <TEMPLATES>
@@ -15,12 +13,8 @@
 
     <METHODS>
       <ALIASES>
-        <ALIAS new="start_transaction" existing="startTransaction" deprecated="true"/>
         <ALIAS new="commit" existing="commitTransaction" deprecated="true"/>
         <ALIAS new="rollback" existing="rollbackTransaction" deprecated="true"/>
-        <ALIAS new="lock_db" existing="lockDb" deprecated="true"/>
-        <ALIAS new="unlock_db" existing="unlockDb" deprecated="true"/>
-        <ALIAS new="destroy_tables" existing="destroyTables" deprecated="true"/>
         <ALIAS new="table_exist?" existing="isTableExist" deprecated="true"/>
         <ALIAS new="is_ui_waitfordb" existing="isUiWaitForDb" deprecated="true"/>
       </ALIASES>
