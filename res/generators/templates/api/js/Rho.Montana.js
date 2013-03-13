@@ -32,7 +32,7 @@
         <%= $cur_module.name %>.prototype.<%= actual_method_name %> = function(<%= params %>) {
             return apiReq({
                 instanceId: this.getId(),
-                params: arguments,
+                args: arguments,
                 method: '<%= actual_method_name %>',
                 valueCallbackIndex: <%= module_method.params.size %>
             });
@@ -60,7 +60,7 @@
         <%= $cur_module.name %>['<%= module_method.name %>'] = function(<%= params %>) {
             return apiReq({
                 instanceId: '0',
-                params: arguments,
+                args: arguments,
                 method: '<%= module_method.name %>',
                 valueCallbackIndex: <%= module_method.params.size %>
             });
@@ -75,7 +75,7 @@
             return new <%= $cur_module.name %>(
                 apiReq({
                     instanceId: '0',
-                    params: [],
+                    args: [],
                     method:'getDefaultID'
                 })
             );
@@ -84,7 +84,7 @@
         <%= $cur_module.name %>['getDefaultID'] = function (valueCallback) {
             return apiReq({
                 instanceId: '0',
-                params: arguments,
+                args: arguments,
                 method:'getDefaultID',
                 valueCallbackIndex: 0
             });
@@ -93,7 +93,7 @@
         <%= $cur_module.name %>['setDefaultID'] = function (id) {
             return apiReq({
                 instanceId: '0',
-                params: arguments,
+                args: arguments,
                 method:'setDefaultID'
             });
         };
