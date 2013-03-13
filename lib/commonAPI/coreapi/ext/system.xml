@@ -455,6 +455,7 @@
                     <PARAM name="sourceID" type="INTEGER"/>
                     <PARAM name="attrName" type="STRING"/>
                 </PARAMS>
+                <RETURN type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="updateBlobAttribs" deprecated="true">
