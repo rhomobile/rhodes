@@ -236,11 +236,9 @@ var Rho = Rho || (function ($) {
     }
     //
     function loadApiModules(parts) {
-        setTimeout(function() {
-            $.each(parts, function (idx, part) {
-                loadApiModule(part);
-            });
-        }, 10);
+        for(var i=0; i<parts.length; i++) {
+            loadApiModule(parts[i]);
+        }
     }
 
     // === Callback handler ==========================================================
