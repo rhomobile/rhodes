@@ -93,7 +93,7 @@ public class MegamoduleBase extends RhoApiObject {
         private boolean paramBool;
         private int paramInt;
         private double paramFloat;
-        private List<String> paramArray;
+        private List<Integer> paramArray;
         private Map<String, String> paramHash;
         private IMethodResult mResult;
 
@@ -102,7 +102,7 @@ public class MegamoduleBase extends RhoApiObject {
                 boolean paramBool, 
                 int paramInt, 
                 double paramFloat, 
-                List<String> paramArray, 
+                List<Integer> paramArray, 
                 Map<String, String> paramHash, 
                 IMethodResult result) {
             this.mApiObject = obj; 
@@ -273,11 +273,11 @@ public class MegamoduleBase extends RhoApiObject {
 
     public static class complicatedTypesTest1Task implements Runnable {
         private IMegamodule mApiObject; 
-        private List<String> paramArray;
+        private List<Map<String, Object>> paramArray;
         private IMethodResult mResult;
 
         public complicatedTypesTest1Task(IMegamodule obj, 
-                List<String> paramArray, 
+                List<Map<String, Object>> paramArray, 
                 IMethodResult result) {
             this.mApiObject = obj; 
             this.paramArray = paramArray;

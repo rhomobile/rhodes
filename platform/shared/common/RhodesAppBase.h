@@ -32,6 +32,7 @@
 #include "common/RhoThread.h"
 #include "common/IRhoClassFactory.h"
 #include "push/RhoPushManager.h"
+#include "api_generator/MethodResult.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -80,7 +81,7 @@ public:
     boolean isBaseUrl(const String& strUrl);
     
     void setSendingLog(boolean bSending){m_bSendingLog = bSending; }
-    boolean sendLog(const String& strCallbackUrl);
+    boolean sendLog(rho::apiGenerator::CMethodResult& oResult);
     boolean sendLogInSameThread();
 	
 	// Deprecated

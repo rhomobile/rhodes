@@ -24,19 +24,20 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-require 'rhodes'
-
-module Rhom
-class RhomDbAdapter
+puts "0"
+module Rho
+class Database
     
   @database = nil
   @dbpath = nil  
-      
+
+#-----------------------------------------
+#public API      
   # maintains a single database connection
   def initialize(dbfile, partition)
     unless @database
       @dbpath = dbfile  
-      @database = SQLite3::Database.new(dbfile,partition)
+      @database = SQLite3.new(dbfile,partition)
     end
   end
 
@@ -52,55 +53,62 @@ class RhomDbAdapter
     return true
   end   
 
-  def is_ui_waitfordb
-      @database.is_ui_waitfordb
-  end
 
-  def start_transaction
+  def isUiWaitForDb
+      @database.isUiWaitForDb
+  end
+  alias is_ui_waitfordb :isUiWaitForDb
+
+  def startTransaction
       begin
-        @database.start_transaction
+        @database.startTransaction
       rescue Exception => e
-        puts "exception when start_transaction: #{e}"
+        puts "exception when startTransaction: #{e}"
         raise        
       end
   end
+  alias start_transaction :startTransaction
 
-  def commit
+  def commitTransaction
       begin
-        @database.commit
+        @database.commitTransaction
       rescue Exception => e
         puts "exception when commit transaction : #{e}"
         raise        
       end
   end
-
-  def rollback
+  alias commit :commitTransaction
+  
+  def rollbackTransaction
       begin
-        @database.rollback
+        @database.rollbackTransaction
       rescue Exception => e
         puts "exception when rollback transaction : #{e}"
         raise
       end
   end
-
-  def lock_db
+  alias rollback :rollbackTransaction
+  
+  def lockDb
       begin
-        @database.lock_db
+        @database.lockDb
       rescue Exception => e
-        puts "exception when lock_db: #{e}"
+        puts "exception when lockDb: #{e}"
         raise        
       end
   end
-
-  def unlock_db
+  alias lock_db :lockDb
+  
+  def unlockDb
       begin
-        @database.unlock_db
+        @database.unlockDb
       rescue Exception => e
-        puts "exception when unlock_db: #{e}"
+        puts "exception when unlockDb: #{e}"
         raise        
       end
   end
-	
+  alias unlock_db :unlockDb	
+
   def export
 	  begin
 		@database.export
@@ -122,13 +130,43 @@ class RhomDbAdapter
   # execute a sql statement
   # optionally, disable the factory processing 
   # which returns the result array directly
-  def execute_sql(sql, *args)
+  def executeSql(sql, *args)
     _execute_sql(sql, false, args)
   end
-  def execute_batch_sql(sql, *args)
+  def executeBatchSql(sql, *args)
     _execute_sql(sql, true, args)
   end
+  alias execute_sql :executeSql	
+  alias execute_batch_sql :executeBatchSql	
 
+  def setDoNotBackupAttribute( attr = true )
+    if Rho::System.platform == Rho::System.PLATFORM_IOS
+        Rho::System.setDoNotBackupAttribute(@dbpath, attr)
+        Rho::System.setDoNotBackupAttribute(@dbpath+'.version', attr)
+    end                         
+  end
+  alias set_do_not_bakup_attribute :setDoNotBackupAttribute	
+
+  def isTableExist(table_name)
+    @database.isTableExist(table_name)
+  end
+  alias table_exist? :isTableExist	
+    
+  #destroy one table  
+  def destroyTable(name)
+    destroyTables(:include => [name])
+  end
+  alias destroy_table :destroyTable	
+  
+  # deletes all rows from all tables, except list of given tables by recreating db-file and save all other tables
+  # arguments - :include, :exclude
+  def destroyTables(*args)
+      @database.destroyTables args.first[:include], args.first[:exclude]
+  end
+  alias destroy_tables :destroyTables	
+        
+#----------------------------------------
+#internal API  
   def _execute_sql(sql, is_batch, args)      
     result = []
     if sql
@@ -231,6 +269,7 @@ class RhomDbAdapter
       
     end #self
 
+
   # support for select statements
   # this function takes table name, columns (as a comma-separated list),
   # condition (as a hash), and params (as a hash)
@@ -246,7 +285,7 @@ class RhomDbAdapter
     vals = []
 
     if condition
-        quests,vals = RhomDbAdapter.make_where_params(condition,'AND') 
+        quests,vals = Database.make_where_params(condition,'AND') 
         if params and params['distinct']
             query = "select distinct #{columns} from #{table} where #{quests}"
         elsif params and params['order by']
@@ -296,13 +335,6 @@ class RhomDbAdapter
     return cols,quests,vals
   end
 
-  def set_do_not_bakup_attribute(attr=1)
-       if System::get_property('platform') == 'APPLE'
-              System.set_do_not_bakup_attribute(@dbpath, attr)
-              System.set_do_not_bakup_attribute(@dbpath+'.version', attr)
-       end                         
-  end
-
   # deletes rows from a table which satisfy condition (hash)
   # example usage is the following:
   # delete_from_table('object_values',{"object"=>"some-object"})
@@ -310,7 +342,7 @@ class RhomDbAdapter
   # delete from object_values where object="some-object"
   def delete_from_table(table,condition)
     raise ArgumentError if !table
-    quests,vals = RhomDbAdapter.make_where_params(condition,'AND') 
+    quests,vals = Database.make_where_params(condition,'AND') 
     query = "delete from #{table} where #{quests}"
     execute_sql query, vals
   end
@@ -320,23 +352,8 @@ class RhomDbAdapter
     execute_sql "delete from #{table}"
   end
 
-  def table_exist?(table_name)
-    @database.table_exist?(table_name)
-  end
-
   def delete_table(table)
     execute_sql "DROP TABLE IF EXISTS #{table}"
-  end
-  
-  #destroy one table  
-  def destroy_table(name)
-    destroy_tables(:include => [name])
-  end
-  
-  # deletes all rows from all tables, except list of given tables by recreating db-file and save all other tables
-  # arguments - :include, :exclude
-  def destroy_tables(*args)
-      @database.destroy_tables args.first[:include], args.first[:exclude]
   end
   
   # updates values (hash) in a given table which satisfy condition (hash)
@@ -350,7 +367,7 @@ class RhomDbAdapter
     vals = []
     if condition
         quests_set, vals_set = make_set_params(values)
-        quests_where,vals_where = RhomDbAdapter.make_where_params(condition,'AND') 
+        quests_where,vals_where = Database.make_where_params(condition,'AND') 
         query = "update #{table} set #{quests_set} where #{quests_where}"
         vals = vals_set + vals_where
     else
@@ -378,6 +395,14 @@ class RhomDbAdapter
     
     return quests,vals
   end
+
   
-end # RhomDbAdapter
-end # Rhom
+end # Database
+end # Rho
+
+puts "1"
+module Rhom
+    RhomDbAdapter = Rho::Database
+end
+
+puts "2"

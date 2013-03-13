@@ -268,7 +268,6 @@
     <ClInclude Include="..\..\shared\logging\RhoLogCat.h" />
     <ClInclude Include="..\..\shared\logging\RhoLogConf.h" />
     <ClInclude Include="..\..\shared\logging\RhoLogSink.h" />
-    <ClInclude Include="..\..\shared\net\AsyncHttp.h" />
     <ClInclude Include="..\..\shared\net\CompatWince.h" />
     <ClInclude Include="..\..\shared\net\HttpServer.h" />
     <ClInclude Include="..\..\shared\net\INetRequest.h" />
@@ -304,7 +303,6 @@
     <ClCompile Include="..\..\shared\logging\RhoLogConf.cpp" />
     <ClCompile Include="..\..\shared\logging\RhoLogSink.cpp" />
     <ClCompile Include="..\..\shared\logging\RhoPlainLog.cpp" />
-    <ClCompile Include="..\..\shared\net\AsyncHttp.cpp" />
     <ClCompile Include="..\..\shared\net\CompatWince.cpp" />
     <ClCompile Include="..\..\shared\net\HttpServer.cpp" />
     <ClCompile Include="..\..\shared\net\INetRequest.cpp" />

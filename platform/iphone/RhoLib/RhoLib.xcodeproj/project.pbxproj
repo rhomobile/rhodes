@@ -45,8 +45,6 @@
 		5C7405931064AF1600163569 /* Tokenizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C7405911064AF1600163569 /* Tokenizer.h */; };
 		5C798934113BD148005F8736 /* GeoLocation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C798932113BD148005F8736 /* GeoLocation.cpp */; };
 		5C798935113BD148005F8736 /* GeoLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C798933113BD148005F8736 /* GeoLocation.h */; };
-		5C8EE85C11220E9E0005C20D /* AsyncHttp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5C8EE85A11220E9E0005C20D /* AsyncHttp.cpp */; };
-		5C8EE85D11220E9E0005C20D /* AsyncHttp.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C8EE85B11220E9E0005C20D /* AsyncHttp.h */; };
 		5C98174C0FBC4FCE002597A5 /* AutoPointer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C9817490FBC4FCE002597A5 /* AutoPointer.h */; };
 		5C98174D0FBC4FCE002597A5 /* InputStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174A0FBC4FCE002597A5 /* InputStream.h */; };
 		5C98174E0FBC4FCE002597A5 /* irhoclassfactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */; };
@@ -154,8 +152,6 @@
 		5C7405911064AF1600163569 /* Tokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Tokenizer.h; path = ../../shared/common/Tokenizer.h; sourceTree = SOURCE_ROOT; };
 		5C798932113BD148005F8736 /* GeoLocation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GeoLocation.cpp; path = ../../shared/rubyext/GeoLocation.cpp; sourceTree = SOURCE_ROOT; };
 		5C798933113BD148005F8736 /* GeoLocation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeoLocation.h; path = ../../shared/rubyext/GeoLocation.h; sourceTree = SOURCE_ROOT; };
-		5C8EE85A11220E9E0005C20D /* AsyncHttp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AsyncHttp.cpp; path = ../../shared/net/AsyncHttp.cpp; sourceTree = SOURCE_ROOT; };
-		5C8EE85B11220E9E0005C20D /* AsyncHttp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AsyncHttp.h; path = ../../shared/net/AsyncHttp.h; sourceTree = SOURCE_ROOT; };
 		5C9817490FBC4FCE002597A5 /* AutoPointer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AutoPointer.h; path = ../../shared/common/AutoPointer.h; sourceTree = SOURCE_ROOT; };
 		5C98174A0FBC4FCE002597A5 /* InputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputStream.h; path = ../../shared/common/InputStream.h; sourceTree = SOURCE_ROOT; };
 		5C98174B0FBC4FCE002597A5 /* irhoclassfactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = irhoclassfactory.h; path = ../../shared/common/irhoclassfactory.h; sourceTree = SOURCE_ROOT; };
@@ -378,8 +374,6 @@
 				5CB821AD1312487000778441 /* INetRequest.cpp */,
 				BDFCB13B112EE2B500AE3724 /* ssl.cpp */,
 				BDFCB13C112EE2B500AE3724 /* ssl.h */,
-				5C8EE85A11220E9E0005C20D /* AsyncHttp.cpp */,
-				5C8EE85B11220E9E0005C20D /* AsyncHttp.h */,
 				BD4FC54910BFE4D100D280D0 /* HttpServer.cpp */,
 				BD4FC54A10BFE4D100D280D0 /* HttpServer.h */,
 				BD2CEFCB10ADF10D002356D9 /* CURLNetRequest.cpp */,
@@ -512,7 +506,6 @@
 				BD2CEFD010ADF10D002356D9 /* INetRequest.h in Headers */,
 				BD2C950910AE0D4B008D4692 /* PosixThreadImpl.h in Headers */,
 				BD4FC54C10BFE4D100D280D0 /* HttpServer.h in Headers */,
-				5C8EE85D11220E9E0005C20D /* AsyncHttp.h in Headers */,
 				BDFCB13E112EE2B500AE3724 /* ssl.h in Headers */,
 				BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */,
 				5C798935113BD148005F8736 /* GeoLocation.h in Headers */,
@@ -609,7 +602,6 @@
 				BD2CEFCE10ADF10D002356D9 /* CURLNetRequest.cpp in Sources */,
 				BD2C950810AE0D4B008D4692 /* PosixThreadImpl.cpp in Sources */,
 				BD4FC54B10BFE4D100D280D0 /* HttpServer.cpp in Sources */,
-				5C8EE85C11220E9E0005C20D /* AsyncHttp.cpp in Sources */,
 				BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */,
 				5C798934113BD148005F8736 /* GeoLocation.cpp in Sources */,
 				5CECDBB3113FE3620084A75B /* System.cpp in Sources */,

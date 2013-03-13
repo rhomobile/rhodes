@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/SimpleOnlyStaticModule.cpp
+ext/platform/android/generated/jni/simpleonlystaticmodule_ruby_wrap.cpp
+ext/platform/android/generated/jni/simpleonlystaticmodule_js_wrap.cpp
+ext/platform/android/jni/Simpleonlystaticmodule_impl.cpp
+ext/shared/generated/simpleonlystaticmodule_api_init.cpp
+ext/shared/generated/simpleonlystaticmodule_js_api.cpp
+ext/shared/generated/simpleonlystaticmodule_ruby_api.c

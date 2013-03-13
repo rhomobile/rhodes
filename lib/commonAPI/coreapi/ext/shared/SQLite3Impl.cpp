@@ -1,6 +1,7 @@
 #include "generated/cpp/SQLite3Base.h"
 #include "json/JSONIterator.h"
 #include "db/DBAdapter.h"
+#include "common/RhodesApp.h"
 
 extern "C" {
 int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB);
@@ -149,6 +150,9 @@ public:
 extern "C" void Init_SQLite3()
 {
     rho::database::CSQLite3Factory::setInstance( new rho::database::CSQLite3Factory() );
+
+    RHODESAPP().getExtManager().requireRubyFile("Database");
+
     rho::database::Init_SQLite3_API();
 }
 

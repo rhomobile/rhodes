@@ -105,8 +105,8 @@ else %>
     <%= $cur_module.name.downcase %>.<%= method.native_name %>(argumentsAdapter(arguments), result); <%
 end %>
     VALUE res = <%
-if method.is_factory_method %>
-        result.enumerateRubyObjects(getRuby_<%= $cur_module.name %>_Module());
+if api_generator_isApiObjectParam(method.result) %>
+        result.enumerateRubyObjects(rho_ruby_get_class_byname("<%=api_generator_ruby_makeApiObjectTypeName(method.result, $cur_module)%>"));
 <%
 else %>
         result.toRuby();

@@ -114,7 +114,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleGetInfoString</key>
-	<string>RhoSimulator #{$rhodes_version}, Copyright 2010-2012 Rhomobile, Inc.</string>
+	<string>RhoSimulator #{$rhodes_version}, Copyright 2010-2013 Motorola Solutions, Inc.</string>
 	<key>CFBundleSignature</key>
 	<string>@TYPEINFO@</string>
 	<key>CFBundleExecutable</key>
@@ -129,7 +129,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         chdir $qt_project_dir
         args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro', "QMAKE_MAC_SDK='#{$sdkroot}'"]
         puts Jake.run($qmake,args)
-        puts Jake.run($make, ['clean'])
+        # !!! puts Jake.run($make, ['clean'])
         puts Jake.run($make, ['all'])
 
         unless $? == 0

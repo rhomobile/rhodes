@@ -1,4 +1,4 @@
-#include "generated/cpp/NetworkAccessBase.h"
+#include "generated/cpp/NetworkBase.h"
 #include "net/INetRequest.h"
 #include "common/RhoAppAdapter.h"
 #include "json/JSONIterator.h"
@@ -14,7 +14,7 @@ using namespace apiGenerator;
 using namespace common;
 using namespace json;
 
-class CNetworkAccessImpl: public CNetworkAccessSingletonBase
+class CNetworkImpl: public CNetworkSingletonBase
 {
 public:
 
@@ -31,7 +31,7 @@ public:
         }
     };
 
-    CNetworkAccessImpl(): CNetworkAccessSingletonBase(){}
+    CNetworkImpl(): CNetworkSingletonBase(){}
 
     virtual rho::common::CThreadQueue::IQueueCommand* createQueueCommand(rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor){ return new CHttpCommand(pFunctor); }
 
@@ -40,6 +40,13 @@ public:
     virtual void get( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
     virtual void post( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
     virtual void uploadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
+
+    virtual void hasNetwork(rho::apiGenerator::CMethodResult& oResult);
+    virtual void hasWifiNetwork(rho::apiGenerator::CMethodResult& oResult);
+    virtual void hasCellNetwork(rho::apiGenerator::CMethodResult& oResult);
+    virtual void startStatusNotify( int pollInterval, rho::apiGenerator::CMethodResult& oResult);
+    virtual void stopStatusNotify(rho::apiGenerator::CMethodResult& oResult);
+
 private:
 
     NetRequest& getCurRequest(NetRequest& oNetRequest);
@@ -48,7 +55,7 @@ private:
     void createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult );
 };
 
-NetRequest& CNetworkAccessImpl::getCurRequest(NetRequest& oNetRequest)
+NetRequest& CNetworkImpl::getCurRequest(NetRequest& oNetRequest)
 {
     if (!getCommandQueue())
         return oNetRequest;
@@ -72,7 +79,7 @@ static String getStringProp(const rho::Hashtable<rho::String, rho::String>& prop
     return strRes;
 }
 
-void CNetworkAccessImpl::cancel( rho::apiGenerator::CMethodResult& oResult)
+void CNetworkImpl::cancel( rho::apiGenerator::CMethodResult& oResult)
 {
     if (!getCommandQueue())
         return;
@@ -98,7 +105,7 @@ void CNetworkAccessImpl::cancel( rho::apiGenerator::CMethodResult& oResult)
     }
 }
 
-void CNetworkAccessImpl::get( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+void CNetworkImpl::get( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
     Hashtable<String,String> mapHeaders;                                          
     readHeaders( propertyMap, mapHeaders );
@@ -115,7 +122,7 @@ void CNetworkAccessImpl::get( const rho::Hashtable<rho::String, rho::String>& pr
         createResult( resp, mapHeaders, oResult );
 }
 
-void CNetworkAccessImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+void CNetworkImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
     Hashtable<String,String> mapHeaders;                                          
     readHeaders( propertyMap, mapHeaders );
@@ -131,7 +138,7 @@ void CNetworkAccessImpl::downloadFile( const rho::Hashtable<rho::String, rho::St
         createResult( resp, mapHeaders, oResult );
 }
 
-void CNetworkAccessImpl::post( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
     Hashtable<String,String> mapHeaders;                                          
     readHeaders( propertyMap, mapHeaders );
@@ -148,7 +155,7 @@ void CNetworkAccessImpl::post( const rho::Hashtable<rho::String, rho::String>& p
         createResult( resp, mapHeaders, oResult );
 }
 
-void CNetworkAccessImpl::uploadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+void CNetworkImpl::uploadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
     Hashtable<String,String> mapHeaders;                                          
     readHeaders( propertyMap, mapHeaders );
@@ -208,7 +215,7 @@ void CNetworkAccessImpl::uploadFile( const rho::Hashtable<rho::String, rho::Stri
         createResult( resp, mapHeaders, oResult );
 }
 
-void CNetworkAccessImpl::readHeaders( const rho::Hashtable<rho::String, rho::String>& propertyMap, Hashtable<String,String>& mapHeaders )
+void CNetworkImpl::readHeaders( const rho::Hashtable<rho::String, rho::String>& propertyMap, Hashtable<String,String>& mapHeaders )
 {
     if ( propertyMap.get("headers").length() > 0 )
     {
@@ -235,7 +242,7 @@ void CNetworkAccessImpl::readHeaders( const rho::Hashtable<rho::String, rho::Str
 
 }
 
-void CNetworkAccessImpl::createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult )
+void CNetworkImpl::createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult )
 {
     Hashtable<String,String>& mapRes = oResult.getStringHash();
 
@@ -265,25 +272,62 @@ void CNetworkAccessImpl::createResult( NetResponse& resp, Hashtable<String,Strin
     oResult.set(mapRes);
 }
 
+static int g_rho_has_network = 1, g_rho_has_cellnetwork = 0;
+
+extern "C" void rho_sysimpl_sethas_network(int nValue)
+{
+    g_rho_has_network = nValue > 1 ? 1 : 0;
+}
+
+extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue)
+{
+    g_rho_has_cellnetwork = nValue;
+}
+
+void CNetworkImpl::hasNetwork(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set(g_rho_has_network!= 0 || g_rho_has_cellnetwork!= 0);
+}
+
+void CNetworkImpl::hasWifiNetwork(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set(g_rho_has_network!= 0);
+}
+
+void CNetworkImpl::hasCellNetwork(rho::apiGenerator::CMethodResult& oResult)
+{
+    oResult.set(g_rho_has_cellnetwork!= 0);
+}
+
+void CNetworkImpl::startStatusNotify( int pollInterval, rho::apiGenerator::CMethodResult& oResult)
+{
+    //TODO: startStatusNotify
+}
+
+void CNetworkImpl::stopStatusNotify(rho::apiGenerator::CMethodResult& oResult)
+{
+    //TODO: stopStatusNotify
+}
+
 ////////////////////////////////////////////////////////////////////////
 
-class CNetworkAccessFactory: public CNetworkAccessFactoryBase
+class CNetworkFactory: public CNetworkFactoryBase
 {
 public:
-    ~CNetworkAccessFactory(){}
+    ~CNetworkFactory(){}
 
-    INetworkAccessSingleton* createModuleSingleton()
+    INetworkSingleton* createModuleSingleton()
     { 
-        return new CNetworkAccessImpl(); 
+        return new CNetworkImpl(); 
     }
 };
 
 }
 
-extern "C" void Init_NetworkAccess()                                                                                      
+extern "C" void Init_Network()                                                                                      
 {
-    rho::CNetworkAccessFactory::setInstance( new rho::CNetworkAccessFactory() );
-    rho::Init_NetworkAccess_API();
+    rho::CNetworkFactory::setInstance( new rho::CNetworkFactory() );
+    rho::Init_Network_API();
 
-    RHODESAPP().getExtManager().requireRubyFile("NetworkAccess");
+    RHODESAPP().getExtManager().requireRubyFile("Network");
 }

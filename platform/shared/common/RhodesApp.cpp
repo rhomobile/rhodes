@@ -37,9 +37,6 @@
 
 #include "net/HttpServer.h"
 #include "ruby/ext/rho/rhoruby.h"
-#if !defined(WINDOWS_PLATFORM)
-#include "net/AsyncHttp.h"
-#endif 
 #include "rubyext/WebView.h"
 #include "rubyext/GeoLocation.h"
 #include "common/app_build_configs.h"
@@ -411,9 +408,6 @@ void CRhodesApp::run()
 
 	db::CDBAdapter::closeAll();
 
-#if !defined(WINDOWS_PLATFORM) && !defined(OS_ANDROID)
-    net::CAsyncHttp::Destroy();
-#endif
     RhoRubyStop();
 }
 

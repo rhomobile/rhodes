@@ -152,7 +152,6 @@ rho::String js_s_SimpleOnlyStaticModule_calcSumm(rho::json::CJSONArray& argv, co
 
 }
 
-
 rho::String js_s_SimpleOnlyStaticModule_joinStrings(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -258,7 +257,6 @@ rho::String js_s_SimpleOnlyStaticModule_joinStrings(rho::json::CJSONArray& argv,
 
 }
 
-
 rho::String js_s_SimpleOnlyStaticModule_getPlatform(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -322,7 +320,6 @@ rho::String js_s_SimpleOnlyStaticModule_getPlatform(rho::json::CJSONArray& argv,
 
 }
 
-
 rho::String js_s_SimpleOnlyStaticModule_showAlertFromUIThread(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -374,7 +371,6 @@ rho::String js_s_SimpleOnlyStaticModule_showAlertFromUIThread(rho::json::CJSONAr
     return oRes.toJSON();
 
 }
-
 
 
 

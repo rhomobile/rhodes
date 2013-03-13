@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/examples/megamodule/MegamoduleBase.java
+ext/platform/android/generated/src/com/rho/examples/megamodule/MegamoduleFactorySingleton.java
+ext/platform/android/generated/src/com/rho/examples/megamodule/MegamoduleSingletonBase.java
+ext/platform/android/generated/src/com/rho/examples/megamodule/IMegamodule.java
+ext/platform/android/generated/src/com/rho/examples/megamodule/IMegamoduleFactory.java
+ext/platform/android/generated/src/com/rho/examples/megamodule/IMegamoduleSingleton.java
+ext/platform/android/src/com/rho/examples/megamodule/Megamodule.java
+ext/platform/android/src/com/rho/examples/megamodule/MegamoduleFactory.java
+ext/platform/android/src/com/rho/examples/megamodule/MegamoduleSingleton.java

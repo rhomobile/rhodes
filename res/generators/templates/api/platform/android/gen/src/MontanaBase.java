@@ -27,7 +27,7 @@ unless custom_props.empty? %>
         sCustomAccessNames = new HashMap<String, Class<?> >();
 <%
 custom_props.each do |name, type| %>
-        sCustomAccessNames.put("<%= name %>", <%= api_generator_java_makeNativeType(type) %>.class);
+        sCustomAccessNames.put("<%= name %>", <%= api_generator_java_makeSimpleNativeType(type) %>.class);
 <%
 end %>
     }<%
@@ -57,7 +57,7 @@ end %>
 
     param_hash = {}
     method.params.each do |param|
-        param_hash[param.name] = api_generator_java_makeNativeType(param.type)
+        param_hash[param.name] = api_generator_java_makeNativeType(param)
     end %>
 <%
 if method.generated_by_template == TEMPLATE_PROPERTY_BAG %>

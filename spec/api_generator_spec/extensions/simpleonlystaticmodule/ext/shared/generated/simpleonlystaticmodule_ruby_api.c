@@ -16,6 +16,27 @@ VALUE getRuby_SimpleOnlyStaticModule_Module(){ return rb_mSimpleOnlyStaticModule
 
 
 
+static void _free_class_object(void *p)
+{
+    ruby_xfree(p);
+}
+
+static VALUE _allocate_class_object(VALUE klass)
+{
+    VALUE valObj = 0;
+    char ** ppString = NULL;
+    void* pData = ALLOC(void*);
+    memset( pData, 0, sizeof(pData) );
+    
+	valObj = Data_Wrap_Struct(klass, 0, _free_class_object, pData);
+
+    Data_Get_Struct(valObj, char *, ppString);
+    *ppString = xmalloc(10);
+    sprintf(*ppString, "%X", valObj);
+
+    return valObj;
+}
+
 void Init_RubyAPI_SimpleOnlyStaticModule(void)
 {
 
@@ -28,8 +49,8 @@ void Init_RubyAPI_SimpleOnlyStaticModule(void)
 
 	rb_mSimpleOnlyStaticModule = rb_define_class_under(rb_mParent, "SimpleOnlyStaticModule", rb_cObject);
 
-    //Constructor should be not available
-	//rb_define_alloc_func(rb_cBarcode1, rb_barcode1_allocate);
+	rb_define_alloc_func(rb_mSimpleOnlyStaticModule, _allocate_class_object);
+    //Constructor should be not available in case of static members
     //rb_undef_alloc_func(rb_mSimpleOnlyStaticModule);
 
     rb_define_singleton_method(rb_mSimpleOnlyStaticModule, "calcSumm", rb_s_SimpleOnlyStaticModule_calcSumm, -1);

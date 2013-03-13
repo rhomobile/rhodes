@@ -34,6 +34,7 @@ using rhoruntime;
 using Microsoft.Phone.Shell;
 using System.Windows.Media;
 using System.Windows.Controls;
+using System.IO.IsolatedStorage;
 
 namespace rhodes
 {
@@ -504,6 +505,16 @@ namespace rhodes
             // not needed: TabbarPanel.Visibility = System.Windows.Visibility.Collapsed;
         }
 
+		private int tabbarIsStartedFunc()
+        {
+            return TabbarPivot.Items.Count > 0 ? 1 : 0;
+        }
+
+        public int tabbarIsStarted()
+        {
+            return IntValueReturnAgent(tabbarIsStartedFunc);
+        }
+
 		private int tabbarGetHeightFunc()
         {
             return TabbarPivot.Items.Count > 0 ? (int)(TabbarPivot.ActualHeight - ((WebBrowser)TabbarPivot.SelectedItem).ActualHeight) : 0;
@@ -625,8 +636,8 @@ namespace rhodes
         public void exitCommand()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke( delegate() { exitCommand(); } );  return; }
-            // TODO: App.Current.Terminate(); -- we may terminate all processes instead of crashing app via Exception ?
-            App.Quit();
+            IsolatedStorageSettings.ApplicationSettings.Save();
+            App.Current.Terminate();
         }
 
         public void navigateBackCommand()

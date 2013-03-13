@@ -1089,6 +1089,10 @@
 				Name="shared"
 				>
 				<File
+					RelativePath="..\..\shared\System.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\system.xml"
 					>
 					<FileConfiguration
@@ -1278,13 +1282,21 @@
 			</Filter>
 		</Filter>
 		<Filter
-			Name="NetworkAccess"
+			Name="Network"
 			>
 			<Filter
 				Name="shared"
 				>
 				<File
-					RelativePath="..\..\NetworkAccess.xml"
+					RelativePath="..\..\shared\Network.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\Network.rb"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Network.xml"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -1299,45 +1311,45 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\shared\NetworkAccessImpl.cpp"
+					RelativePath="..\..\shared\NetworkImpl.cpp"
 					>
 				</File>
 				<Filter
 					Name="generated"
 					>
 					<File
-						RelativePath="..\..\shared\generated\networkaccess_api_init.cpp"
+						RelativePath="..\..\shared\generated\network_api_init.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\shared\generated\networkaccess_js_api.cpp"
+						RelativePath="..\..\shared\generated\network_js_api.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\shared\generated\networkaccess_ruby_api.c"
+						RelativePath="..\..\shared\generated\network_ruby_api.c"
 						>
 					</File>
 					<Filter
 						Name="cpp"
 						>
 						<File
-							RelativePath="..\..\shared\generated\cpp\INetworkAccess.h"
+							RelativePath="..\..\shared\generated\cpp\INetwork.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\shared\generated\cpp\NetworkAccess_js_wrap.cpp"
+							RelativePath="..\..\shared\generated\cpp\Network_js_wrap.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\shared\generated\cpp\NetworkAccess_ruby_wrap.cpp"
+							RelativePath="..\..\shared\generated\cpp\Network_ruby_wrap.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\shared\generated\cpp\NetworkAccessBase.cpp"
+							RelativePath="..\..\shared\generated\cpp\NetworkBase.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\shared\generated\cpp\NetworkAccessBase.h"
+							RelativePath="..\..\shared\generated\cpp\NetworkBase.h"
 							>
 						</File>
 					</Filter>
@@ -1350,6 +1362,24 @@
 			<Filter
 				Name="shared"
 				>
+				<File
+					RelativePath="..\..\..\Database.rb"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Database.xml"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)"
+							Outputs="$(InputDir)shared/generated3"
+						/>
+					</FileConfiguration>
+				</File>
 				<File
 					RelativePath="..\..\sqlite3.xml"
 					>
@@ -1472,6 +1502,76 @@
 						</File>
 						<File
 							RelativePath="..\..\shared\generated\cpp\WebViewBase.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Log"
+			>
+			<Filter
+				Name="shared"
+				>
+				<File
+					RelativePath="..\..\..\Log.rb"
+					>
+				</File>
+				<File
+					RelativePath="..\..\Log.xml"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+							CommandLine="$(RHO_ROOT)\bin\rhogen api $(InputPath)&#x0D;&#x0A;"
+							Outputs="$(InputDir)shared/generated4"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\LogImpl.cpp"
+					>
+				</File>
+				<Filter
+					Name="generated"
+					>
+					<File
+						RelativePath="..\..\shared\generated\log_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\log_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\log_ruby_api.c"
+						>
+					</File>
+					<Filter
+						Name="cpp"
+						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\ILog.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Log_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Log_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\LogBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\LogBase.h"
 							>
 						</File>
 					</Filter>

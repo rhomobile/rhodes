@@ -1,0 +1,73 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+	<MODULE name="VideoCapture" parent="Rho">
+		<HELP_OVERVIEW>The VideoCapture Module captures video files from the default camera device.</HELP_OVERVIEW>
+		<MORE_HELP>Use this API to give users the ability to record a video and save it to your phone.</MORE_HELP>
+		
+		<TEMPLATES>
+			<SINGLETON_INSTANCES/>   <!-- produce enumerate() fabric method, all instances is singletones by ID, add ID property -->
+			<DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
+			<PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
+		</TEMPLATES>
+
+		<PROPERTIES usePropertyBag="accessorsViaPropertyBag">
+			<DESC>These properties are used to configure the Video Captue.</DESC>
+			
+			<PROPERTY name="duration" type="INTEGER" generateAccessors="true" default="5000">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>All devices</APPLIES>
+				<DESC>Specifies the number of milliseconds of video to capture. It is the maximum number of milliseconds of video to capture when the 'start' method is called if not interrupted with the 'stop' method.</DESC>
+			</PROPERTY>
+			<PROPERTY name="destination" type="STRING" generateAccessors="true">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>All devices</APPLIES>
+				<DESC>Sets the destination path and name for the captured video file. Fully qualified URL or file name. Supports HTTP, FTP and File protocols.</DESC>
+			</PROPERTY>
+			<PROPERTY name="username" type="STRING" generateAccessors="true" default="">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>All devices</APPLIES>
+				<DESC>The username for the HTTP or FTP server if required.</DESC>
+			</PROPERTY>
+			<PROPERTY name="password" type="STRING" generateAccessors="true" default="">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>All devices</APPLIES>
+				<DESC>The password for the HTTP or FTP server if required.</DESC>
+			</PROPERTY>
+			<PROPERTY name="name" type="STRING" generateAccessors="true">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>All devices</APPLIES>
+				<DESC>When the video capture completes a video file is saved in the root directory of the device (package directory in case of Android). This parameter is used to specify the filename when storing the file locally.</DESC>
+			</PROPERTY>
+			<PROPERTY name="videoSaveEvent" type="STRING" generateAccessors="true">
+				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+				<APPLIES>All devices</APPLIES>
+				<DESC>The Video Save Event is called when the captured video has been successfully transfered to the specified destination. When a capture is started with the HTTP protocol, the destination server message is returned. When it is called with the FTP protocol, either ‘OK: File Sent’, ‘OK: File Received’ or ‘ERROR’ is returned. This tag should be used in conjunction with the Start method.</DESC>
+			</PROPERTY>
+		</PROPERTIES>
+
+		<METHODS>
+			<METHOD name="start" >
+				<DESC>Starts capturing video until either 'stop' is received, or 'duration' is reached. NOTE: On Android this meta tag wouldn't immediately start recording and presents a preview window with controls (Start, stop and cancel) for recording.</DESC>
+			</METHOD>
+			<METHOD name="stop" >
+				<DESC>Stops capturing video and either saves the file locally, or transfers it to a remote server. NOTE: This is not applicable for Android as the video capture window is full screen and displays a stop button. Please note that the file transfer happens as specified even if we dont use the stop meta tag.</DESC>
+			</METHOD>
+			<METHOD name="cancel" >
+				<DESC>Stops capturing video and discards any captured video data. NOTE: This is not applicable for Android as the video capture window is full screen and displays a cancel button.</DESC>
+			</METHOD>
+		</METHODS>
+		
+		<USER_OVERVIEW>
+			<!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+			<![CDATA[
+			
+			]]>
+			
+		</USER_OVERVIEW>
+		<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+		<PLATFORM>
+			<!--  This section is used for the supported platform images at the top -->
+		</PLATFORM>
+	</MODULE>
+</API>    

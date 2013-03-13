@@ -29,23 +29,25 @@
 
 @implementation RhoViewController
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation {
+    //NSLog(@"RVC::%@::shouldAutorotateToInterfaceOrientation",[[self class] description]);
     if ([[Rhodes sharedInstance] isRotationLocked])
-        return interfaceOrientation == UIInterfaceOrientationPortrait;
+        return toInterfaceOrientation == UIInterfaceOrientationPortrait;
 	return YES;
 }
 
-#ifdef __IPHONE_6_0
+#if defined(__IPHONE_6_0)
 - (BOOL)shouldAutorotate {
+    //NSLog(@"RVC::%@::shouldAutorotate",[[self class] description]);
     if ([[Rhodes sharedInstance] isRotationLocked])
         return NO;
 	return YES;
 }
 
-
 - (NSUInteger)supportedInterfaceOrientations
 {
-     if ([[Rhodes sharedInstance] isRotationLocked])
+    //NSLog(@"RVC::%@::supportedInterfaceOrientations",[[self class] description]);
+    if ([[Rhodes sharedInstance] isRotationLocked])
          return UIInterfaceOrientationMaskPortrait;
     return UIInterfaceOrientationMaskAll;
 }

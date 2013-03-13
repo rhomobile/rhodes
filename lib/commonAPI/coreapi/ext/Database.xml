@@ -1,0 +1,165 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+  <MODULE name="Database" parent="Rho" generateUnderscoreRubyNames="true">
+    <HELP_OVERVIEW></HELP_OVERVIEW>
+    <MORE_HELP></MORE_HELP>
+
+    <ALIASES>
+    </ALIASES>
+    
+    <TEMPLATES>
+    </TEMPLATES>
+
+    <METHODS>
+      <ALIASES>
+          <ALIASES>
+              <ALIAS new="commit" existing="commitTransaction" deprecated="true"/>
+              <ALIAS new="rollback" existing="rollbackTransaction" deprecated="true"/>
+              <ALIAS new="table_exist?" existing="isTableExist" deprecated="true"/>
+              <ALIAS new="is_ui_waitfordb" existing="isUiWaitForDb" deprecated="true"/>
+              <ALIAS new="set_do_not_bakup_attribute" existing="setDoNotBackupAttribute" deprecated="true"/>
+          </ALIASES>
+      </ALIASES>
+
+      <METHOD name="initialize" constructor="true" generateAPI="false">
+        <DESC>Open database</DESC>
+        <PARAMS>
+          <PARAM name="dbPath" type="STRING">
+            <DESC>The path to the database</DESC>
+          </PARAM>
+          <PARAM name="dbPartition" type="STRING">
+            <DESC>The database partition</DESC>
+          </PARAM>
+        </PARAMS>
+      </METHOD>
+
+      <METHOD name="close" destructor="true" generateAPI="false">
+        <DESC>Close database</DESC>
+      </METHOD>
+
+      <METHOD name="startTransaction" generateAPI="false">
+        <DESC>Start database transaction</DESC>
+      </METHOD>
+
+      <METHOD name="commitTransaction" generateAPI="false">
+        <DESC>Commit database transaction</DESC>
+      </METHOD>
+
+      <METHOD name="rollbackTransaction" generateAPI="false">
+        <DESC>Rollback database transaction</DESC>
+      </METHOD>
+
+      <METHOD name="lockDb" generateAPI="false">
+        <DESC>Lock database</DESC>
+      </METHOD>
+
+      <METHOD name="unlockDb" generateAPI="false">
+        <DESC>Unlock database</DESC>
+      </METHOD>
+
+        <METHOD name="isUiWaitForDb" generateAPI="false">
+            <DESC>Is UI waiting for DB?></DESC>
+            <RETURN type="BOOLEAN"/>
+        </METHOD>
+
+        <METHOD name="executeSql" generateAPI="false" >
+            <DESC>Execute sql statement</DESC>
+            <PARAMS>
+                <PARAM name="sqlStmt" type="STRING">
+                    <DESC>The SQL statement</DESC>
+                </PARAM>
+                <PARAM name="args" type="ARRAY">
+                    <DESC>Array of the sql expressions</DESC>
+                    <CAN_BE_NIL/>
+                </PARAM>
+            </PARAMS>
+        </METHOD>
+
+        <METHOD name="executeBatchSql" generateAPI="false" >
+            <DESC>Execute sql statement</DESC>
+            <PARAMS>
+                <PARAM name="sqlStmt" type="STRING">
+                    <DESC>The SQL statement</DESC>
+                </PARAM>
+                <PARAM name="args" type="ARRAY">
+                    <DESC>Array of the sql expressions</DESC>
+                    <CAN_BE_NIL/>
+                </PARAM>
+            </PARAMS>
+        </METHOD>
+
+        <METHOD name="import" deprecated="true" generateAPI="false">
+        <DESC>Import db</DESC>
+        <PARAMS>
+          <PARAM name="zipName" type="STRING">
+            <DESC>The name of the zip file</DESC>
+          </PARAM>
+        </PARAMS>
+        <RETURN type="INTEGER"/>
+      </METHOD>
+
+      <METHOD name="export" deprecated="true"  generateAPI="false">
+        <DESC>Export db</DESC>
+        <RETURN type="STRING"/>
+      </METHOD>
+
+      <METHOD name="destroyTable" generateAPI="false">
+          <DESC>Destroy database table</DESC>
+          <PARAMS>
+              <PARAM name="tableName" type="STRING">
+                  <DESC>Table name to destroy</DESC>
+              </PARAM>
+          </PARAMS>
+      </METHOD>
+
+      <METHOD name="destroyTables" generateAPI="false">
+        <DESC>Destroy database tables</DESC>
+        <PARAMS>
+            <PARAM name="propertyMap" type="HASH">
+                <PARAMS>
+                    <PARAM name="include" type="ARRAY">
+                        <DESC>include tables</DESC>
+                    </PARAM>
+                    <PARAM name="exclude" type="ARRAY">
+                        <DESC>exclude tables</DESC>
+                    </PARAM>
+                </PARAMS>
+            </PARAM>
+        </PARAMS>
+      </METHOD>
+
+      <METHOD name="isTableExist" generateAPI="false">
+        <DESC>Does table exist?></DESC>
+        <PARAMS>
+          <PARAM name="tableName" type="STRING">
+            <DESC>The name of the table</DESC>
+          </PARAM>
+        </PARAMS>
+        <RETURN type="BOOLEAN"/>
+      </METHOD>
+
+      <METHOD name="setDoNotBackupAttribute" generateAPI="false" >
+          <DESC>Set do not backup attribute for database file.</DESC>
+          <PLATFORM>iOS</PLATFORM>
+          <PARAMS>
+              <PARAM name="setFlag" type="BOOLEAN">
+                <DESC></DESC>
+              </PARAM>
+          </PARAMS>
+      </METHOD>
+
+        
+    </METHODS>
+
+    <USER_OVERVIEW>
+      <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+      <![CDATA[]]>
+
+    </USER_OVERVIEW>
+    <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+    <PLATFORM>
+      <!--  This section is used for the supported platform images at the top -->
+    </PLATFORM>
+  </MODULE>
+</API>

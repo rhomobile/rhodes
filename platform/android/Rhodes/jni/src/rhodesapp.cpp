@@ -85,7 +85,13 @@ jclass rho_find_class(JNIEnv *env, const char *c)
 {
     jstring className = env->NewStringUTF(c);
     jclass cls = (jclass)env->CallObjectMethod(g_classLoader, g_loadClass, className);
-    env->DeleteLocalRef(className);
+    if(env->ExceptionCheck() == JNI_TRUE) {
+        env->ExceptionClear();
+        cls = 0;
+    } else
+    {
+        env->DeleteLocalRef(className);
+    }
     return cls;
 }
 

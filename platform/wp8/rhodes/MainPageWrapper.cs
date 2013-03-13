@@ -32,6 +32,7 @@ namespace rhodes
         public void toolbarRemoveAllButtons() { _mainPage.toolbarRemoveAllButtons(); }
         public void toolbarShow() { _mainPage.toolbarShow(); }
         public void toolbarHide() { _mainPage.toolbarHide(); }
+        public int tabbarIsStarted() { return _mainPage.tabbarIsStarted(); }
         public int toolbarGetHeight() { return _mainPage.toolbarGetHeight(); }
         public void toolbarAddAction(string text) { _mainPage.toolbarAddAction(text); }
         public void toolbarAddAction(string icon, string text, string action) { _mainPage.toolbarAddAction(icon, text, action); }

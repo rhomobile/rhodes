@@ -1,77 +1,56 @@
 require 'fileutils'
 
+$curdir = pwd
+TARGETDIR = ENV['TARGET_TEMP_DIR']
+raise "TARGET_TEMP_DIR is not set" if TARGETDIR.nil?
+OBJDIR = ENV['TEMP_FILES_DIR']
+raise "TEMP_FILES_DIR is not set" if OBJDIR.nil?
+$rootdir = ENV['RHO_ROOT']
+raise "RHO_ROOT is not set" if $rootdir.nil?
+$appincdir = ENV["RHO_INC"]
+raise "RHO_INC is not set" if $appincdir.nil?
 
-def build_extension(name, arch, src_files)
-  objects = []
-  mkdir_p $tempdir unless File.exists? $tempdir
+TARGETLIB = File.join(TARGETDIR, 'libsimpleonlystaticmodule.a')
 
-  use_own_stlport = false
-  $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
-  unless File.directory? $std_includes
-      $stlport_includes = "#{$rootdir}/platform/shared/stlport/stlport"
-      use_own_stlport = true
-  end
+require File.join($rootdir, 'platform/android/build/androidcommon.rb')
 
-  #Dir.glob("*.c").each do |f|
-  src_files.each do |f|
-    objname = File.join( $tempdir, File.basename( f.gsub(/\.c$/, '.o') ) )
-    objects << ('"'+objname+'"')
+task :config do
+    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+    $sources = get_sources File.join($curdir, 'ext_native.files')
+    $objects = get_objects $sources, OBJDIR
+end
+
+directory TARGETDIR
+directory OBJDIR
+
+task :build => [:config, OBJDIR] do
+
+    $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
 
     args = []
-    args << "-I."
-    args << "-I\"#{$rootdir}/platform/android/Rhodes/jni/include\""
-    args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
-    args << "-I\"#{$rootdir}/platform/shared\""
-    args << "-I\"#{$rootdir}/platform/shared/common\""
-
-    args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
-    args << "-D__NEW__" if use_own_stlport
-    args << "-I\"#{$stlport_includes}\"" if use_own_stlport
-
-    args << "-I\"#{$rootdir}/platform/shared/ruby/android\""
-    args << "-I\"#{$rootdir}/platform/shared/ruby/generated\""
-
-    cc_compile f, $tempdir, args or exit 1
-
-  end
-
-  mkdir_p $targetdir unless File.exist? $targetdir
-
-   cc_ar ('"'+File.join( $targetdir, 'lib' + name + '.a' )+'"'), Dir.glob($tempdir + "/**/*.o").collect{|x| '"'+x+'"'} or exit 1
-
+    args << "-I#{$curdir}/generated/jni"
+    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
+    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details"
+    args << "-I#{$rootdir}/platform/shared/ruby/include"
+    args << "-I#{$rootdir}/platform/shared"
+    args << "-I#{$rootdir}/platform/shared/common"
+    args << "-I#{$rootdir}/platform/shared/api_generator"
+    args << "-I#{$appincdir}"
+    args << "-I#{$std_includes}"
+    args << "-I#{$rootdir}/platform/shared/ruby"
+    args << "-I#{$rootdir}/platform/shared/ruby/android"
+    args << "-I#{$rootdir}/platform/shared/ruby/generated"
+    
+    cd '../../..'
+    puts "pwd: #{pwd} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+    
+    cc_build $sources, OBJDIR, args or raise "Compile is failed"
 end
 
-namespace "build" do
-  task :config do
-    curdir = pwd
-    $simpleonlystaticmoduledir = curdir.gsub('/ext/simpleonlystaticmodule/platform/android','');
-    $targetdir = ENV['TARGET_TEMP_DIR']
-    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
-    $tempdir = ENV['TEMP_FILES_DIR']
-    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
-    $rootdir = ENV['RHO_ROOT']
-    raise "RHO_ROOT is not set" if $rootdir.nil?
-
-    require File.join($rootdir, 'platform/android/build/androidcommon.rb')
-
-    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
-
-  end
-
-  task :all => :config do
-
-    src_files = []
-
-    src_files << $simpleonlystaticmoduledir + '/ext/platform/android/jni/src/simpleonlystaticmodule.cpp'
-    src_files << $simpleonlystaticmoduledir + '/ext/shared/ruby/simpleonlystaticmodule_wrap.c'
-    src_files << $simpleonlystaticmoduledir + '/ext/shared/src/simpleonlystaticmodule.c'
-
-    # build native part
-    build_extension('SimpleOnlyStaticModule', $arch, src_files)
-
-    # java part will be builded automatically (java files should be listed in ext_build.files ans ext. yml should be configured)
-
-  end
+file TARGETLIB => [TARGETDIR, :build] do |t|
+    puts "objects: " + $objects.inspect
+    
+    cc_ar ('"'+t.name+'"'), $objects.collect{|x| '"'+x+'"'} or raise "Static library is failed"
 end
 
-task :default => "build:all"
+task :default => TARGETLIB

@@ -79,7 +79,6 @@ rho::String js_Megamodule_getStringProperty(rho::json::CJSONArray& argv, const r
 
 }
 
-
 rho::String js_Megamodule_getIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -144,7 +143,6 @@ rho::String js_Megamodule_getIntegerProperty(rho::json::CJSONArray& argv, const 
     return oRes.toJSON();
 
 }
-
 
 rho::String js_Megamodule_setIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -250,7 +248,6 @@ rho::String js_Megamodule_setIntegerProperty(rho::json::CJSONArray& argv, const 
 
 }
 
-
 rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -282,7 +279,7 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
         {
             arg0 = argv[0].getString();
 
-            oRes.setStringParam(argv[0].getString());
+            oRes.setParamName(argv[0].getString());
 
         }
         else if (!argv[0].isNull())
@@ -568,7 +565,6 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 
 }
 
-
 rho::String js_Megamodule_produceArray(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -633,7 +629,6 @@ rho::String js_Megamodule_produceArray(rho::json::CJSONArray& argv, const rho::S
     return oRes.toJSON();
 
 }
-
 
 rho::String js_Megamodule_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -700,7 +695,6 @@ rho::String js_Megamodule_produceHash(rho::json::CJSONArray& argv, const rho::St
 
 }
 
-
 rho::String js_Megamodule_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -766,7 +760,6 @@ rho::String js_Megamodule_produceComplicatedResult(rho::json::CJSONArray& argv, 
 
 }
 
-
 rho::String js_s_Megamodule_getObjectsCount(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -829,7 +822,6 @@ rho::String js_s_Megamodule_getObjectsCount(rho::json::CJSONArray& argv, const r
     return oRes.toJSON();
 
 }
-
 
 rho::String js_s_Megamodule_getObjectByIndex(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -933,7 +925,6 @@ rho::String js_s_Megamodule_getObjectByIndex(rho::json::CJSONArray& argv, const 
 
 }
 
-
 rho::String js_Megamodule_showAlertFromUIThread(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -965,7 +956,7 @@ rho::String js_Megamodule_showAlertFromUIThread(rho::json::CJSONArray& argv, con
         {
             arg0 = argv[0].getString();
 
-            oRes.setStringParam(argv[0].getString());
+            oRes.setParamName(argv[0].getString());
 
         }
         else if (!argv[0].isNull())
@@ -1031,7 +1022,6 @@ rho::String js_Megamodule_showAlertFromUIThread(rho::json::CJSONArray& argv, con
     return oRes.toJSON();
 
 }
-
 
 rho::String js_Megamodule_setPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -1128,7 +1118,6 @@ rho::String js_Megamodule_setPeriodicallyCallback(rho::json::CJSONArray& argv, c
 
 }
 
-
 rho::String js_Megamodule_isPeriodicallyCallbackSetted(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -1190,7 +1179,6 @@ rho::String js_Megamodule_isPeriodicallyCallbackSetted(rho::json::CJSONArray& ar
     return oRes.toJSON();
 
 }
-
 
 rho::String js_Megamodule_stopPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -1256,7 +1244,6 @@ rho::String js_Megamodule_stopPeriodicallyCallback(rho::json::CJSONArray& argv, 
     return oRes.toJSON();
 
 }
-
 
 rho::String js_Megamodule_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -1368,7 +1355,6 @@ rho::String js_Megamodule_complicatedTypesTest1(rho::json::CJSONArray& argv, con
 
 }
 
-
 rho::String js_Megamodule_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -1400,7 +1386,7 @@ rho::String js_Megamodule_getProperty(rho::json::CJSONArray& argv, const rho::St
         {
             arg0 = argv[0].getString();
 
-            oRes.setStringParam(argv[0].getString());
+            oRes.setParamName(argv[0].getString());
 
         }
         else if (!argv[0].isNull())
@@ -1474,7 +1460,6 @@ rho::String js_Megamodule_getProperty(rho::json::CJSONArray& argv, const rho::St
     return oRes.toJSON();
 
 }
-
 
 rho::String js_Megamodule_getProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
@@ -1583,7 +1568,6 @@ rho::String js_Megamodule_getProperties(rho::json::CJSONArray& argv, const rho::
 
 }
 
-
 rho::String js_Megamodule_getAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -1646,7 +1630,6 @@ rho::String js_Megamodule_getAllProperties(rho::json::CJSONArray& argv, const rh
 
 }
 
-
 rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -1678,7 +1661,7 @@ rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::St
         {
             arg0 = argv[0].getString();
 
-            oRes.setStringParam(argv[0].getString());
+            oRes.setParamName(argv[0].getString());
 
         }
         else if (!argv[0].isNull())
@@ -1798,7 +1781,6 @@ rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::St
 
 }
 
-
 rho::String js_Megamodule_setProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -1910,7 +1892,6 @@ rho::String js_Megamodule_setProperties(rho::json::CJSONArray& argv, const rho::
 
 }
 
-
 rho::String js_Megamodule_clearAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -1976,7 +1957,6 @@ rho::String js_Megamodule_clearAllProperties(rho::json::CJSONArray& argv, const 
 
 }
 
-
 rho::String js_s_Megamodule_enumerate(rho::json::CJSONArray& argv, const rho::String& strObjID)
 {
     rho::apiGenerator::CMethodResult oRes;
@@ -2036,7 +2016,6 @@ rho::String js_s_Megamodule_enumerate(rho::json::CJSONArray& argv, const rho::St
     return oRes.toJSON();
 
 }
-
 
 
 
