@@ -719,11 +719,9 @@ end
 def write_modules_js(filename,modules)
   File.open(filename, "w") do |f|
     f.puts "// Generated #{Time.now.to_s}"
-    f.puts '$(document).ready(function(){'
-    f.puts '    Rho.loadApiModules(['
-    f.puts '        "' + modules.join('","') + '"'
-    f.puts '    ]);'
-    f.puts '});'
+    f.puts 'Rho.loadApiModules(['
+    f.puts '    "' + modules.join('","') + '"'
+    f.puts ']);'
   end
 end
 
