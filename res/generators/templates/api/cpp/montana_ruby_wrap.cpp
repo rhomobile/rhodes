@@ -66,6 +66,10 @@ end %>
 {
     rho::apiGenerator::CMethodResult oRes;
 <% if module_method.result != nil
+    if module_method.result.sub_param && module_method.result.sub_param.name %>
+    oRes.setParamName( "<%= module_method.result.sub_param.name %>" );<%
+    end
+
     result_type = nil
     if MethodParam::BASE_TYPES.include?(module_method.result.type)
       result_type = module_method.result.item_type
@@ -100,7 +104,7 @@ if param.type == MethodParam::TYPE_STRING %>
         if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
         {
             arg<%= first_arg %> = getStringFromValue(argv[<%= first_arg %>]);
-<% if first_arg == 0 %>
+<% if first_arg == 0 && !( module_method.result && module_method.result.sub_param && module_method.result.sub_param.name)%>
             oRes.setParamName(getStringFromValue(argv[<%= first_arg %>]));
 <% end %>
         }

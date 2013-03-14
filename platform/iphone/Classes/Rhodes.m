@@ -168,11 +168,24 @@ static Rhodes *instance = NULL;
 
 + (void)setStatusBarHidden:(BOOL)v {
 	if (v) {
+        [[Rhodes sharedInstance] setFullScreen:YES];
 		[Rhodes performOnUiThread:[RhoFullScreenEnableTask class] wait:NO];
 	}
 	else {
+        [[Rhodes sharedInstance] setFullScreen:NO];
 		[Rhodes performOnUiThread:[RhoFullScreenDisableTask class] wait:NO];
 	}
+}
+
+- (BOOL)getFullScreen {
+    return mIsFullScreen;
+}
+- (void)setFullScreen:(BOOL)enable {
+    mIsFullScreen = enable;
+}
+
++ (BOOL)getStatusBarHidden {
+    return [[Rhodes sharedInstance] getFullScreen];
 }
 
 
