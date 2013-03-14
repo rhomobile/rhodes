@@ -61,7 +61,7 @@
                     </VALUE>
                 </VALUES>
             </PROPERTY>
-            <PROPERTY name="colorModel" type="STRING" generateAccessors="true" default="RGB">
+            <PROPERTY name="colorModel" type="STRING" generateAccessors="true" default="rgb">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
 				<APPLIES>iOS and Android devices</APPLIES>
 				<DESC>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.</DESC>
