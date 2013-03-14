@@ -98,46 +98,6 @@ end
 
 $application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_license", "motorola_license_company","name"]
 $winxpe_build = false
-
-def create_files_set(extpath, hash, iscollect)
-  #puts 'create_files_set=' + extpath.to_s
-
-  final_extpath = File.absolute_path(extpath)
-  
-  ext_dir = Dir.new(final_extpath)
-
-  ext_dir.each { |item|  
-    #puts 'item=' + item.to_s
-    if item == '.' || item == '..' || item == '.git'
-      next        
-    end
-    
-    curr_path = File.join(final_extpath, item)
-    
-    if File.directory?(curr_path)
-      create_files_set(curr_path, hash, item.to_s == 'generated')
-    end 
-    
-    if iscollect == true
-      hash[curr_path] = File.mtime(curr_path)
-    end
-  }
-  
-  return hash
-end
-
-def compare_date(files_hash, gen_date)
-  
-  files_hash.each do |path, time|
-    
-    if time < gen_date
-      puts 'compare_date path=' + path.to_s + ' time=' + time.to_s + ' gen_date=' + gen_date.to_s  
-      return true
-    end
-  end
-  
-  return false
-end
       
 def find_latest_modified_date(path)
   #puts 'find_latest_modified_date.path=' + path.to_s
@@ -174,9 +134,6 @@ def find_latest_modified_date(path)
   }
   
   rhogen_time = File.mtime(rhogen_path)
-  
-  #puts 'rhogen_time='     + rhogen_time.to_s
-  #puts 'latest_mod_time=' + latest_mod_time.to_s 
   
   if latest_mod_time.nil?
     return rhogen_time
@@ -369,7 +326,7 @@ namespace "config" do
       end
     end
 
-	$app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
+	  $app_path = ENV["RHO_APP_PATH"] if ENV["RHO_APP_PATH"] && $app_path.nil?
 
     if $app_path.nil? #if we are called from the rakefile directly, this wont be set
       #load the apps path and config
@@ -381,7 +338,7 @@ namespace "config" do
       end
     end
 
-	ENV["RHO_APP_PATH"] = $app_path.to_s
+	  ENV["RHO_APP_PATH"] = $app_path.to_s
     ENV["ROOT_PATH"] = $app_path.to_s + '/app/'
     ENV["APP_TYPE"] = "rhodes"
 
@@ -785,7 +742,7 @@ def find_ext_ingems(extname)
   extpath = nil
   begin
     $rhodes_extensions = nil
-	$rhodes_join_ext_name = false
+	  $rhodes_join_ext_name = false
 	
     require extname
     if $rhodes_extensions
@@ -901,25 +858,49 @@ def init_extensions(startdir, dest)
           end
 
           if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
-            xml_api_paths  = xml_api_paths.split(',')
-            templates_path = File.join($startdir, "res", "generators", "templates")
-            
+            xml_api_paths    = xml_api_paths.split(',')
+            templates_path   = File.join($startdir, "res", "generators", "templates")         
             last_change_data = find_latest_modified_date(templates_path)
-                                              
+            time_cache    = File.join($app_path, "bin", "tmp", "rhogen.time")
+            is_run_rhogen = false
+                                                          
             xml_api_paths.each do |xml_api|
-              xml_path = File.join(extpath, xml_api.strip())
-              xml_time = File.mtime(xml_path)                  
-              
-              puts 'xml_time=' + xml_time.to_s 
+              xml_path      = File.join(extpath, xml_api.strip())
+              xml_time      = File.mtime(xml_path)                  
+               
               last_change_data = last_change_data > xml_time ? last_change_data : xml_time
-                                          
-              files_set = Hash.new
-              files_set = create_files_set(extpath, files_set, false)
-                                  
-              if files_set.nil? || compare_date(files_set, last_change_data)
+
+              if File.exist? time_cache
+                time_cache_file = File.new(time_cache)
+                read_time = Time.parse(time_cache_file.gets)
+                time_cache_file.close
+                
+                puts 'read_time=' + read_time.to_s
+                puts 'last_change_data=' + last_change_data.to_s 
+                
+                is_run_rhogen = read_time < last_change_data
+              else
+                is_run_rhogen = true
+              end
+              
+              if is_run_rhogen                 
                 puts 'start running rhogen with api key'
                 Jake.run3("#{$startdir}/bin/rhogen api #{xml_path}")
               end
+            end
+            
+            if is_run_rhogen
+              if !File.exist? File.join($app_path, "bin")
+                FileUtils.mkdir  File.join($app_path, "bin")
+              end
+
+              if !File.exist? File.join($app_path, "bin", "tmp")
+                FileUtils.mkdir  File.join($app_path, "bin", "tmp")
+              end
+              
+              time_cache_file = File.new(time_cache, "w+")
+              time_cache_file.puts Time.new
+              time_cache_file.close
             end
           end
 
@@ -1913,28 +1894,53 @@ namespace "run" do
                 extconf = Jake.config(File.open(extyml))
                 xml_api_paths  = extconf["xml_api_paths"]
                 templates_path = File.join($startdir, "res", "generators", "templates")
-                   
+                
+                is_run_rhogen    = false
+                time_cache       = File.join($app_path, "bin", "tmp", "rhogen.time")
                 last_change_data = find_latest_modified_date(templates_path)
                 
                 if xml_api_paths
                   xml_api_paths = xml_api_paths.split(',')
 
                   xml_api_paths.each do |xml_api|
-                    xml_path = File.join(extpath, xml_api.strip())
-                    xml_time = File.mtime(xml_path)                  
+                    xml_path      = File.join(extpath, xml_api.strip())
+                    xml_time      = File.mtime(xml_path)                  
                     
                     last_change_data = last_change_data > xml_time ? last_change_data : xml_time
-                                                
-                    files_set = Hash.new
-                    files_set = create_files_set(extpath, files_set, false)
-                                        
-                    if files_set.nil? || compare_date(files_set, last_change_data)
-                      puts 'start running rhogen with api key'
-                      cmd_line = "#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}"
+
+                    if File.exist? time_cache
+                      time_cache_file = File.new(time_cache)
+                      read_time = Time.parse(time_cache_file.gets)
+                      time_cache_file.close
+                      
+                      puts 'read_time=' + read_time.to_s
+                      puts 'last_change_data=' + last_change_data.to_s 
+                      
+                      is_run_rhogen = read_time < last_change_data
+                    else
+                      is_run_rhogen = true
+                    end
+                    
+                    if is_run_rhogen
+                      cmd_line = "#{$startdir}/bin/rhogen api #{xml_path}"
                       puts "cmd_line: #{cmd_line}"
                       system "#{cmd_line}"
                     end
                   end
+                end
+                
+                if is_run_rhogen
+                  if !File.exist? File.join($app_path, "bin")
+                    FileUtils.mkdir  File.join($app_path, "bin")
+                  end
+
+                  if !File.exist? File.join($app_path, "bin", "tmp")
+                    FileUtils.mkdir  File.join($app_path, "bin", "tmp")
+                  end
+
+                  time_cache_file = File.new(time_cache, "w+")
+                  time_cache_file.puts Time.new
+                  time_cache_file.close 
                 end
               end
 
