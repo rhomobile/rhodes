@@ -203,7 +203,7 @@ namespace "build" do
       stamp = 0
 
       Dir.glob(File.join("**", '*.*')).each do |f|
-        if f.start_with?('db')          ||
+        if #f.start_with?('db')          ||
            f.end_with?('.rb')           ||
            f.end_with?('.erb')          ||
            #f == "apps/app_manifest.txt" ||
