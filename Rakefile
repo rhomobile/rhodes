@@ -941,8 +941,11 @@ def init_extensions(startdir, dest)
           end
         
           if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
-            xml_api_paths = xml_api_paths.split(',')
-                        
+            xml_api_paths  = xml_api_paths.split(',')
+            templates_path = File.join($startdir, "res", "generators", "templates")
+            
+            last_change_data = find_latest_modified_date(templates_path)
+                                    
             xml_api_paths.each do |xml_api|
               if (is_need_generate(extpath, last_change_data) == true) || (is_generate_folders_exits(extpath) == false)
                 puts 'start running rhogen with api key'
