@@ -236,7 +236,9 @@ void RhoRubyStart()
     Init_GeoLocation(); //+
 
     Init_Phonebook();
+#if !defined(OS_MACOSX)
     Init_WebView(); //+
+#endif
     Init_RhoConf(); //+
     Init_Alert();
 #if defined(WINDOWS_PLATFORM)
@@ -310,6 +312,9 @@ void RhoRubyStart()
 #if defined(OS_WP8) // temporary constant for wp8 development
 		rb_const_set(rb_cObject, rb_intern("RHO_WP8"), Qtrue);
 #endif // OS_WP8
+#if defined(OS_MACOSX) // temporary constant for iOS development
+		rb_const_set(rb_cObject, rb_intern("RHO_MACOSX"), Qtrue);
+#endif // OS_MACOSX
         require_compiled(rb_str_new2("rhoframework"), &framework );
         rho_ruby_enable_gc(res);
     }

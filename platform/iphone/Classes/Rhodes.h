@@ -65,6 +65,7 @@
     id<RhoMainView,NSObject> mainView;
     BOOL rotationLocked;
     BOOL mBlockExit;
+    BOOL mIsFullScreen;
 }
 
 @property (nonatomic, retain) UIWindow *window;
@@ -83,6 +84,10 @@
 
 - (BOOL)isRotationLocked;
 - (void) setRotationLocked:(BOOL)locked;
+
+- (BOOL)getFullScreen;
+- (void)setFullScreen:(BOOL)enable;
++ (BOOL)getStatusBarHidden;
 
 //+ (UIView*)subviewWithTag:(NSInteger)tag ofView:(UIView*)view;
 

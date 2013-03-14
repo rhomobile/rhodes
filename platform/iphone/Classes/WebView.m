@@ -57,13 +57,14 @@ static int getIndex(NSValue *value)
 @end
 
 @interface RhoWebViewNavigateBackTask : NSObject {}
-+ (void)run;
++ (void)run:(NSValue*)value;
 @end
 
 @implementation RhoWebViewNavigateBackTask
-+ (void)run {
++ (void)run:(NSValue*)value {
+    int index = getIndex(value);
     id mainView = [[Rhodes sharedInstance] mainView];
-    [mainView back:[mainView activeTab]];
+    [mainView back:index];
 }
 @end
 
@@ -147,13 +148,19 @@ void rho_webview_set_menu_items(VALUE valMenu) {
     rho_rhodesapp_setViewMenu(valMenu);
 }
 
-void rho_webview_navigate_back()
+void rho_webview_navigate_back_with_tab(int index)
 {
     if (!rho_rhodesapp_check_mode())
         return;
     id runnable = [RhoWebViewNavigateBackTask class];
-    [Rhodes performOnUiThread:runnable wait:NO];
+    id arg = [NSValue valueWithBytes:&index objCType:@encode(int)];
+    [Rhodes performOnUiThread:runnable arg:arg wait:NO];
 }
+
+void rho_webview_navigate_back() {
+    rho_webview_navigate_back_with_tab(-1);
+}
+
 
 void rho_webview_full_screen_mode(int enable)
 {
@@ -161,6 +168,14 @@ void rho_webview_full_screen_mode(int enable)
         return;
     [Rhodes setStatusBarHidden:enable];
 }
+
+BOOL rho_webview_get_full_screen_mode() {
+    if (!rho_rhodesapp_check_mode())
+        return NO;
+    return [Rhodes getStatusBarHidden];
+}
+
+
 
 void rho_webview_set_cookie(const char *u, const char *c)
 {
@@ -177,11 +192,11 @@ void rho_webview_save(const char* format, const char* path, int tab_index)
     RAWLOG_ERROR("rho_webview_save is not implemented at iOS");
 }
 
-VALUE rho_webview_get_current_url(int tab_index) {
+NSString* rho_webview_get_current_url(int tab_index) {
     NSString* str = [[[Rhodes sharedInstance] mainView] get_current_url:tab_index];
     if (str == nil) {
-        return rho_ruby_create_string("");
+        return @"";
     }
-    return rho_ruby_create_string([str UTF8String]);
+    return str;
 }
 

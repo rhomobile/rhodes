@@ -13,13 +13,11 @@
 
     <METHODS>
       <ALIASES>
-          <ALIASES>
               <ALIAS new="commit" existing="commitTransaction" deprecated="true"/>
               <ALIAS new="rollback" existing="rollbackTransaction" deprecated="true"/>
               <ALIAS new="table_exist?" existing="isTableExist" deprecated="true"/>
               <ALIAS new="is_ui_waitfordb" existing="isUiWaitForDb" deprecated="true"/>
               <ALIAS new="set_do_not_bakup_attribute" existing="setDoNotBackupAttribute" deprecated="true"/>
-          </ALIASES>
       </ALIASES>
 
       <METHOD name="initialize" constructor="true" generateAPI="false">

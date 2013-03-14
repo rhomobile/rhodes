@@ -207,6 +207,7 @@
 
             <METHOD name="applicationUninstall">
                 <DESC>Uninstall the application.</DESC>
+                <PLATFORM>WM, Win32, Android, WP8</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
                         <DESC>The name of the application.</DESC>
@@ -454,6 +455,7 @@
                     <PARAM name="sourceID" type="INTEGER"/>
                     <PARAM name="attrName" type="STRING"/>
                 </PARAMS>
+                <RETURN type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="updateBlobAttribs" deprecated="true">
