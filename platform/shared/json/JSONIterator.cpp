@@ -244,7 +244,7 @@ boolean CJSONEntry::isString() const
 boolean CJSONEntry::isNull() const
 {
     if ( isEmpty() )
-        return false;
+        return true;
 
     return json_object_is_type(m_object, json_type_null) ? true : false;
 }

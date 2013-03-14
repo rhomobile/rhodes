@@ -98,7 +98,7 @@ if !param.can_be_nil %>
 end
 
 if param.type == MethodParam::TYPE_STRING %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = "<%= param.default_value ? param.default_value : "" %>";
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_string(argv[<%= first_arg %>]) )
@@ -117,7 +117,7 @@ if param.type == MethodParam::TYPE_STRING %>
 <% end
 
 if param.type == MethodParam::TYPE_INT %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_integer(argv[<%= first_arg %>]) )
@@ -131,7 +131,7 @@ if param.type == MethodParam::TYPE_INT %>
 <% end
 
 if param.type == MethodParam::TYPE_BOOL %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : false %>;
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_boolean(argv[<%= first_arg %>]) )
@@ -145,7 +145,7 @@ if param.type == MethodParam::TYPE_BOOL %>
 <% end
 
 if param.type == MethodParam::TYPE_DOUBLE %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
         if ( rho_ruby_is_double(argv[<%= first_arg %>]) )

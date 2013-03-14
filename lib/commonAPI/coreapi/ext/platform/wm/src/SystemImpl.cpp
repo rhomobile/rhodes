@@ -323,18 +323,6 @@ void CSystemImpl::setShowKeyboard( bool value, CMethodResult& oResult)
 {
     //TODO: setShowKeyboard
 }
-/*
-extern "C" void rho_wmsys_set_full_screen( int nFull );
-extern "C" int rho_wmsys_get_full_screen();
-void CSystemImpl::getFullScreen(CMethodResult& oResult)
-{
-    oResult.set(rho_wmsys_get_full_screen() != 0 ? true : false );
-}
-
-void CSystemImpl::setFullScreen( bool value, CMethodResult& oResult)
-{
-    rho_wmsys_set_full_screen( value ? 1 : 0 );
-}*/
 
 void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult)
 {

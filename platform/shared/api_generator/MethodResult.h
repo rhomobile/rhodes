@@ -42,6 +42,7 @@ class CMethodResult
     rho::String m_strJSCallback;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > m_hashStrL2Res;
+    rho::Vector<rho::Hashtable<rho::String, rho::String> > m_arHashRes;
     rho::String m_strRes;
     rho::StringW m_strResW;
     rho::Vector<rho::String> m_arStrRes;
@@ -52,7 +53,7 @@ class CMethodResult
     rho::String m_strError;
     rho::boolean m_bCallInUIThread;
     
-    enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eBool, eInt, eDouble, eError, eArgError};
+    enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eArrayHash, eBool, eInt, eDouble, eError, eArgError};
     ETypes m_ResType;
 
     unsigned long m_oRubyObjectClass;
@@ -86,6 +87,8 @@ public:
     void setRubyObjectClassPath(const rho::String& strPath){ m_strRubyObjectClassPath = strPath; }
 
     void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; m_ResType = eStringHash; callCallback(); }
+    void set(const rho::Vector<rho::Hashtable<rho::String, rho::String> > res ) { m_arHashRes = res; m_ResType = eArrayHash; callCallback(); }
+
 #ifndef OS_ANDROID
     void set(const rho::StringW& res){ m_strResW = res;  m_ResType = eStringW; callCallback(); }
     void set(rho::StringW::const_pointer res){ m_strResW = res;  m_ResType = eStringW; callCallback(); }

@@ -30,7 +30,7 @@ describe "System" do
    	end
    end
 
-if !defined?(RHO_WP7) && !defined?(RHO_WP8) && System.get_property('platform') != 'Blackberry'
+if System.get_property('platform') != 'WP8' && System.get_property('platform') != 'Blackberry'
     it "should test zip/unzip file" do
 
 		dir_name = Rho::RhoApplication::get_app_path('DataTemp')

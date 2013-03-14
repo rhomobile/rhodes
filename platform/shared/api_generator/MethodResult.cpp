@@ -31,6 +31,30 @@ rho::String CMethodResult::toJSON()
         }
         
 		strRes += "]";
+    }else if ( m_ResType == eArrayHash )
+    {
+		strRes = "\"result\": [";
+        for( int i = 0; i < (int)m_arHashRes.size(); i++ )
+        {
+            if ( i > 0 )
+                strRes += ",";
+
+            strRes += "{";
+            int j = 0;
+            for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_arHashRes[i].begin(); it != m_arHashRes[i].end(); ++it)
+            {
+                if ( j > 1 )
+                    strRes += ",";
+
+                strRes += CJSONEntry::quoteValue(it->first) + ":" + CJSONEntry::quoteValue(it->second);
+                j++;
+            }
+
+            strRes += "}";
+        }
+        
+		strRes += "]";
+
     }else if ( m_ResType == eStringHash )
     {
         strRes = "\"result\": {";
@@ -136,6 +160,29 @@ VALUE CMethodResult::toRuby(bool bForCallback/* = false*/)
         CHoldRubyValue valHash(rho_ruby_createHash());
         addHashToHash( valHash, m_strParamName.c_str(), valArray );
         return valHash;
+    }else if ( m_ResType == eArrayHash )
+    {
+        CHoldRubyValue valArray(rho_ruby_create_array());
+
+        for( int i = 0; i < (int)m_arHashRes.size(); i++ )
+        {
+            CHoldRubyValue valItem(rho_ruby_createHash());
+
+            for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_arHashRes[i].begin(); it != m_arHashRes[i].end(); ++it)
+            {
+                addStrToHash( valItem, it->first.c_str(), it->second.c_str() );
+            }
+            
+            rho_ruby_add_to_array( valArray, valItem );
+        }
+        
+        if (!bForCallback)
+            return valArray;
+
+        CHoldRubyValue valHash(rho_ruby_createHash());
+        addHashToHash( valHash, m_strParamName.c_str(), valArray );
+        return valHash;
+
     }else if ( m_ResType == eStringHash )
     {
         CHoldRubyValue valHash(rho_ruby_createHash());

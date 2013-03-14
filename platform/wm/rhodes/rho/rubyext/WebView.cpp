@@ -50,6 +50,11 @@ void rho_webview_refresh(int index)
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_REFRESH, (LPARAM)index );
 }
 
+void rho_webview_setNavigationTimeout(int nTimeout) 
+{
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVTIMEOUT, (LPARAM)nTimeout );
+}
+
 void rho_webview_navigate(const char* url, int index) 
 {
     if ( !url )
@@ -125,6 +130,11 @@ void rho_webview_set_menu_items(VALUE valMenu)
 void rho_webview_full_screen_mode(int enable)
 {
     ::PostMessage( getMainWnd(), WM_COMMAND, ID_FULLSCREEN, (LPARAM)enable );
+}
+
+int rho_webview_get_full_screen( )
+{
+    return getAppWindow().getFullScreen() ? 1 : 0;
 }
 
 void rho_webview_set_cookie(const char *url, const char *cookie)

@@ -143,7 +143,7 @@ module Rho
       amurl << model.to_s
 
       is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version').split('.')[0].to_i >= 6)
-      if action.nil? or ( !defined?(RHO_WP7) && !is_bb6 && action == 'create' ) or action == 'index'
+      if action.nil? or ( !is_bb6 && action == 'create' ) or action == 'index'
         amurl << query << fragment
       else
         amurl << '/' << (id.nil? ? action : id + '/' + action) << query << fragment          

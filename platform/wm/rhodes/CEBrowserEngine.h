@@ -95,6 +95,7 @@ private:
     virtual BOOL    ZoomTextOnTab(int nZoom, UINT iTab) { return FALSE; }
     virtual int     GetTextZoomOnTab(UINT iTab) { return 2; }   
     virtual void    NotifyEngineOfSipPosition() {}
+    virtual void    setNavigationTimeout(unsigned int dwMilliseconds){}
     virtual void    setBrowserGesturing(bool bEnableGesturing) {}
     virtual void    SetCookie(char* url, char* cookie) {}
 #pragma endregion

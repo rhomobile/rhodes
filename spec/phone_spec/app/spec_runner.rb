@@ -16,9 +16,7 @@ class SpecRunner < MSpecScript
 
     config[:files] << "spec/rho_spec"
 
-if !defined?(RHO_WP7)
     config[:files] << "spec/crypt_spec"
-end
 
     config[:files] << "spec/json_spec"
     config[:files] << "spec/xml_spec"
@@ -36,7 +34,7 @@ end
     # should be enabled as extension
     # config[:files] << "spec/javascriptvm_spec" if System.get_property('platform') == 'APPLE'
 
-if !defined?(RHO_WP7) && System.get_property('platform') != 'WP8'
+if System.get_property('platform') != 'WP8'
     config[:files] << "spec/contacts_spec" unless System.get_property('platform') == 'WINDOWS_DESKTOP'
 
     # Disable events specs on Android because emulator doesn't contain Calendar provider
@@ -53,11 +51,11 @@ end
 
     config[:files] << "spec/xruby_spec" if defined? RHO_ME
 
-if !defined?(RHO_WP7) && !(System.get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/)) && System.get_property('platform') != 'WP8'
+if !(System.get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/)) && System.get_property('platform') != 'WP8'
     config[:files] << "spec/uri_spec"
 end
 
-if !defined?(RHO_WP7) && !defined?( RHO_ME )
+if !defined?( RHO_ME )
     config[:files] << "spec/database_spec" unless System.get_property('platform') == 'WINDOWS' && System.get_property('is_emulator')
 end
 

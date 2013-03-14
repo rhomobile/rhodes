@@ -1009,6 +1009,14 @@ LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     return 0;
 }
 
+LRESULT CMainWindow::OnNavTimeout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    if ( m_pBrowserEng )
+        m_pBrowserEng->setNavigationTimeout((int)hWndCtl);
+
+    return 0;
+}
+
 LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
 	LPTSTR wcurl = (LPTSTR)hWndCtl;

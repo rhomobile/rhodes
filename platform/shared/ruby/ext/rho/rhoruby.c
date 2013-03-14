@@ -230,13 +230,17 @@ void RhoRubyStart()
 
 #endif
 
+#ifdef RHODES_EMULATOR
+    rb_const_set(rb_cObject, rb_intern("RHODES_EMULATOR"), Qtrue);
+#endif
+
 #if !defined(OS_WP8)
 
     Init_strscan(); //+
     Init_GeoLocation(); //+
 
     Init_Phonebook();
-#if !defined(OS_MACOSX)
+#if !defined(OS_MACOSX) && !defined( OS_WINDOWS_DESKTOP ) && !defined(OS_WINCE)
     Init_WebView(); //+
 #endif
     Init_RhoConf(); //+
@@ -302,19 +306,12 @@ void RhoRubyStart()
 #endif
 
 #ifdef RHODES_EMULATOR
-    rb_const_set(rb_cObject, rb_intern("RHODES_EMULATOR"), Qtrue);
     require_compiled(rb_str_new2("rhoframework"), &framework );
     framework = rb_const_get(rb_cObject,rb_intern("RHO_FRAMEWORK"));
 #else
     {
 		VALUE res = rho_ruby_disable_gc();
 
-#if defined(OS_WP8) // temporary constant for wp8 development
-		rb_const_set(rb_cObject, rb_intern("RHO_WP8"), Qtrue);
-#endif // OS_WP8
-#if defined(OS_MACOSX) // temporary constant for iOS development
-		rb_const_set(rb_cObject, rb_intern("RHO_MACOSX"), Qtrue);
-#endif // OS_MACOSX
         require_compiled(rb_str_new2("rhoframework"), &framework );
         rho_ruby_enable_gc(res);
     }

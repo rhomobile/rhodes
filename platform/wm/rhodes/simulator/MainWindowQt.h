@@ -139,6 +139,7 @@ public:
         COMMAND_ID_HANDLER(IDM_SK1_EXIT, OnBackCommand)
         COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
         COMMAND_ID_HANDLER(IDM_REFRESH, OnRefreshCommand)
+        COMMAND_ID_HANDLER(IDM_NAVTIMEOUT, OnNavTimeout)
         COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
         COMMAND_ID_HANDLER(ID_FULLSCREEN, OnFullscreenCommand)
         COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
@@ -165,6 +166,7 @@ private:
     LRESULT OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
+    LRESULT OnNavTimeout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
     LRESULT OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnSetCookieCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

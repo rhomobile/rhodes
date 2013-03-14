@@ -40,7 +40,7 @@ using namespace rho::common;
     <% end %>
 
 <% if param.type == MethodParam::TYPE_STRING %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = "<%= param.default_value ? param.default_value : "" %>";
     if ( argc > <%= first_arg %> )
     {
         if ( argv[<%= first_arg %>].isString() )
@@ -59,7 +59,7 @@ using namespace rho::common;
 <% end %>
 
 <% if param.type == MethodParam::TYPE_INT %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
         if ( argv[<%= first_arg %>].isString() )
@@ -73,7 +73,7 @@ using namespace rho::common;
 <% end %>
 
 <% if param.type == MethodParam::TYPE_BOOL %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : false %>;
     if ( argc > <%= first_arg %> )
     {
         if ( argv[<%= first_arg %>].isString() )
@@ -87,7 +87,7 @@ using namespace rho::common;
 <% end %>
 
 <% if param.type == MethodParam::TYPE_DOUBLE %>
-    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %>;
+    <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
         if ( argv[<%= first_arg %>].isString() )

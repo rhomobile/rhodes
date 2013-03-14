@@ -24,11 +24,7 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-if defined?( RHO_WP7 )
-    RHO_RB_EXT = '.rb'
-    RHO_ERB_EXT = '_erb' + RHO_RB_EXT
-    RHO_APPS_DIR = 'apps/'
-elsif defined?( RHODES_EMULATOR )
+if defined?( RHODES_EMULATOR )
     RHO_RB_EXT = '.rb'
     RHO_ERB_EXT = '.erb'
     RHO_APPS_DIR = ''
@@ -69,44 +65,8 @@ module Rho
   def self.file_exist?(fname)
       return File.exist_injar?(fname) if defined? RHO_ME
 
-	  return __rho_exist_in_resources(fname) if defined? RHO_WP7
-	              
       File.exist?(fname)
   end
-end
-
-if defined? RHO_WP7
-
-module Kernel   
-	def __rhoGetCurrentDir
-		""
-	end
-
-	def __rhoGetRuntimeDir
-		""
-	end
-
-	alias :orig_require :require
-
-	def require(file_name)
-		 file_name += '.rb' unless file_name.end_with?('.rb')
-		 orig_require( file_name )
-	end
-
-	alias :orig_load :load
-
-	def load(file_name)
-		 file_name += '.rb' unless file_name.end_with?('.rb')
-		 orig_load( file_name )
-	end
-
-	def eval_compiled_file(fname, bind)
-	    code = IO.read(fname)
-	    code.force_encoding('utf-8')
-		eval(code, bind)
-	end
-end
-
 end
 
 # Mutex
@@ -139,13 +99,6 @@ module SignatureTool
 end
 
 begin
-    if defined? RHO_WP7
-        require 'rhosystem'
-    end
-
-    #if defined? RHO_WP8
-    #    require 'rhosystem_wp8'
-    #end
 
     if defined? RHO_ME
         require 'rationalME'

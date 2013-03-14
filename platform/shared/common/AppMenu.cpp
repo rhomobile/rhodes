@@ -72,6 +72,21 @@ void CAppMenu::setAppMenu(unsigned long valMenu)
     }
 }
 
+void CAppMenu::setAppMenuEx(const rho::Vector< Hashtable<String, String> >& arMenu)
+{
+    synchronized(m_mxAppMenu) 
+	{
+		m_arAppMenuItems.clear();
+        RHODESAPP().setAppBackUrl("");
+
+        for (int i = 0; i < (int)arMenu.size(); i++ )
+        {
+            Hashtable<String, String>::const_iterator it = arMenu[i].begin();
+            addAppMenuItem( it->first, it->second );
+        }
+    }
+}
+
 void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems)
 {
     synchronized(m_mxAppMenu) 
