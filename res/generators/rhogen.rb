@@ -811,6 +811,7 @@ module Rhogen
         @setter = nil
         @generateAPI = true
         @generateDoc = true
+        @run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
       end
 
       attr_accessor :name
@@ -826,6 +827,7 @@ module Rhogen
       attr_accessor :setter
       attr_accessor :generateAPI
       attr_accessor :generateDoc
+      attr_accessor :run_in_thread
 
     end
 
@@ -967,7 +969,7 @@ module Rhogen
     $possible_attributes["MODULE"] = ["name", "parent", "generateUnderscoreRubyNames"]
     $possible_attributes["CONSTANT"] = ["name", "value", "type"]
     $possible_attributes["PROPERTIES"] = ["usePropertyBag", "readOnly", "writeOnly", "generateAccessors", "limitPropertyBag", "generateAPI", "generateDoc", "access"]
-    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readOnly", "writeOnly", "generateAccessors", "default", "generateAPI", "generateDoc", "access"]
+    $possible_attributes["PROPERTY"] = ["name", "type", "usePropertyBag", "readOnly", "writeOnly", "generateAccessors", "default", "generateAPI", "generateDoc", "access", "runInThread"]
     $possible_attributes["VALUE"] = ["constName", "value", "type"]
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
     $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread", "deprecated", "generateAPI", "generateDoc"]
@@ -1474,6 +1476,35 @@ module Rhogen
                module_property.access = module_item.properties_access
             end
 
+            if xml_module_property.attribute("runInThread") != nil
+               if xml_module_property.attribute("runInThread").to_s.downcase == "none".downcase
+                   module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+               end
+               if xml_module_property.attribute("runInThread").to_s.downcase == "module".downcase
+                   module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_MODULE
+               end
+               if xml_module_property.attribute("runInThread").to_s.downcase == "separate".downcase
+                   module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_SEPARATED
+               end
+               if xml_module_property.attribute("runInThread").to_s.downcase == "ui".downcase
+                   module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
+               end
+            else
+              if xml_properties.attribute("runInThread") != nil
+                 if xml_properties.attribute("runInThread").to_s.downcase == "none".downcase
+                     module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_NONE
+                 end
+                 if xml_properties.attribute("runInThread").to_s.downcase == "module".downcase
+                     module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_MODULE
+                 end
+                 if xml_properties.attribute("runInThread").to_s.downcase == "separate".downcase
+                     module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_SEPARATED
+                 end
+                 if xml_properties.attribute("runInThread").to_s.downcase == "ui".downcase
+                     module_property.run_in_thread = ModuleMethod::RUN_IN_THREAD_UI
+                 end
+               end
+            end
 
             if xml_module_property.attribute("usePropertyBag") != nil
                if xml_module_property.attribute("usePropertyBag").to_s.downcase == "none".downcase
@@ -1537,7 +1568,7 @@ module Rhogen
                 param.can_be_nil = false
                 param.type = module_property.type
                 setter_method.params = [param]
-                setter_method.run_in_thread = ModuleMethod::RUN_IN_THREAD_UNDEFINED
+                setter_method.run_in_thread = module_property.run_in_thread
                 setter_method.is_factory_method = false
                 setter_method.is_return_value = false
                 setter_method.access = module_property.access
