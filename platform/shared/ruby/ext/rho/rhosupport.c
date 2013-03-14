@@ -801,7 +801,7 @@ static void Init_RhoLog(){
     rb_gv_set("$stdout", appStdout);
     rb_gv_set("$stderr", appStdout);
 
-#if !defined( OS_WINDOWS_DESKTOP ) && !defined(OS_WINCE)
+#if !defined( OS_WINDOWS_DESKTOP ) && !defined(OS_WINCE) && !defined(OS_WP8)
     rb_RhoLogModule = rb_define_module("RhoLog");
     rb_define_module_function(rb_RhoLogModule, "info", rb_RhoLogInfo, 2);
     rb_define_module_function(rb_RhoLogModule, "error", rb_RhoLogError, 2);

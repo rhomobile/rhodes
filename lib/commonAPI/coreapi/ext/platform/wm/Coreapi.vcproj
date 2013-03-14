@@ -1284,6 +1284,14 @@
 		<Filter
 			Name="Network"
 			>
+			<File
+				RelativePath=".\src\ConnectionManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\ConnectionManager.h"
+				>
+			</File>
 			<Filter
 				Name="shared"
 				>
@@ -1309,6 +1317,14 @@
 							Outputs="$(InputDir)shared/generated3"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\shared\NetworkDetect.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\NetworkDetect.h"
+					>
 				</File>
 				<File
 					RelativePath="..\..\shared\NetworkImpl.cpp"
