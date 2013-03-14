@@ -1,3 +1,10 @@
+#if (defined WINCE || defined _WP8_LIB)
+#include "NetworkDetect.h"
+#include <list>
+#if (defined WINCE)
+#include "../platform/wm/src/ConnectionManager.h"
+#endif
+#endif
 #include "generated/cpp/NetworkBase.h"
 #include "net/INetRequest.h"
 #include "common/RhoAppAdapter.h"
@@ -31,7 +38,27 @@ public:
         }
     };
 
-    CNetworkImpl(): CNetworkSingletonBase(){}
+    CNetworkImpl(): CNetworkSingletonBase()
+	{
+#if (defined WINCE)
+		CRhoExtData rhodesData = RHODESAPP().getExtManager().makeExtData();
+		if (rhodesData.m_hBrowserWnd)
+		{
+			m_pConnectionManager = new CWAN(rhodesData.m_hBrowserWnd);
+			m_pConnectionManager->Initialise();
+		}
+		else
+			m_pConnectionManager = NULL;
+#endif
+	}
+
+	~CNetworkImpl()
+	{
+#if (defined WINCE)
+		if (m_pConnectionManager)
+			delete m_pConnectionManager;
+#endif
+	}
 
     virtual rho::common::CThreadQueue::IQueueCommand* createQueueCommand(rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor){ return new CHttpCommand(pFunctor); }
 
@@ -46,13 +73,34 @@ public:
     virtual void hasCellNetwork(rho::apiGenerator::CMethodResult& oResult);
     virtual void startStatusNotify( int pollInterval, rho::apiGenerator::CMethodResult& oResult);
     virtual void stopStatusNotify(rho::apiGenerator::CMethodResult& oResult);
-
+    virtual void detectConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
+	virtual void stopDetectingConnection(rho::apiGenerator::CMethodResult& oResult);
+    virtual void connectWan( const rho::String& connectionDestination, rho::apiGenerator::CMethodResult& oResult);
+    virtual void disconnectWan(rho::apiGenerator::CMethodResult& oResult);
+#if (defined WINCE)
+    virtual bool onWndMsg(MSG& oMsg)
+	{
+		if (oMsg.message == WM_USER_CONNECTION_MANGER_STATUS)
+		{
+			if (!m_pConnectionManager) {return FALSE;}
+				m_pConnectionManager->ConnectionManagerStatusUpdate();
+		}
+		return FALSE;
+	}
+#endif
 private:
 
     NetRequest& getCurRequest(NetRequest& oNetRequest);
 
     void readHeaders( const rho::Hashtable<rho::String, rho::String>& propertyMap, Hashtable<String,String>& mapHeaders );
     void createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult );
+	//  RE1 Network API
+#if (defined WINCE || defined _WP8_LIB)
+	std::list<CNetworkDetection*> m_networkPollers;
+#if (defined WINCE)
+	CWAN *m_pConnectionManager;
+#endif
+#endif
 };
 
 NetRequest& CNetworkImpl::getCurRequest(NetRequest& oNetRequest)
@@ -309,6 +357,82 @@ void CNetworkImpl::stopStatusNotify(rho::apiGenerator::CMethodResult& oResult)
     //TODO: stopStatusNotify
 }
 
+
+//  RE1 Network API Implementation
+void CNetworkImpl::detectConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+{
+#if (defined WINCE || defined _WP8_LIB)
+	CNetworkDetection* pNetworkDetection = new CNetworkDetection();
+	pNetworkDetection->Initialise();
+	m_networkPollers.push_back(pNetworkDetection);
+	if (!pNetworkDetection->IsChecking())
+	{
+		typedef std::map<rho::String, rho::String>::const_iterator it_type;
+		for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
+		{
+			if (iterator->first.compare("host") == 0)
+				pNetworkDetection->SetHost(iterator->second);
+			else if (iterator->first.compare("port") == 0)
+				pNetworkDetection->SetPort(atoi(iterator->second.c_str()));
+			else if (iterator->first.compare("pollInterval") == 0)
+				pNetworkDetection->SetNetworkPollInterval(atoi(iterator->second.c_str()));
+			else if (iterator->first.compare("detectionTimeout") == 0)
+				pNetworkDetection->SetConnectionTimeout(atoi(iterator->second.c_str()));
+			else
+				LOG(WARNING) + "Unrecognised parameter passed to detectConnection: " + iterator->first;
+		}
+		pNetworkDetection->SetCallback(&oResult);
+		pNetworkDetection->StartNetworkChecking();
+	}
+	else
+		LOG(WARNING) + "Unable to start checking for a network connection, a check is already in progress.  First stop the in progress connection check";
+#endif
+}
+
+void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oResult)
+{
+#if (defined WINCE || defined _WP8_LIB)
+	//  Find the network detector which matches our callback
+	CNetworkDetection *pNetworkDetection = NULL;
+	std::list<CNetworkDetection*>::iterator i;
+	for (i = m_networkPollers.begin(); i != m_networkPollers.end(); ++i)
+	{
+		if ((*i) && (*i)->GetCallback() && (*i)->GetCallback()->isEqualCallback(oResult))
+		{
+			//  We've found the CNetworkDetection object with the callback we're looking for
+			pNetworkDetection = (*i);
+			break;
+		}
+	}
+	if (pNetworkDetection && pNetworkDetection->IsChecking())
+	{
+		pNetworkDetection->StopNetworkChecking();
+		m_networkPollers.remove(pNetworkDetection);
+		delete pNetworkDetection;
+	}
+	else
+		LOG(WARNING) + "Unable to stop detecting network connection, could not find specified callback";
+#endif
+}
+
+void CNetworkImpl::connectWan( const rho::String& connectionDestination, rho::apiGenerator::CMethodResult& oResult)
+{
+#if (defined WINCE)
+	//  Only applicable to WM/CE, specific to connection manager
+	//  There is only a single object for connection manager access as you can only have
+	//  one physical connection.
+	m_pConnectionManager->SetWanCallback(&oResult);
+	m_pConnectionManager->Connect(convertToStringW(connectionDestination).c_str(), TRUE);
+#endif
+}
+
+void CNetworkImpl::disconnectWan(rho::apiGenerator::CMethodResult& oResult)
+{
+#if (defined WINCE)
+	//  Only applicable to WM/CE, specific to connection manager
+	m_pConnectionManager->Disconnect(TRUE);
+#endif
+}
 ////////////////////////////////////////////////////////////////////////
 
 class CNetworkFactory: public CNetworkFactoryBase
