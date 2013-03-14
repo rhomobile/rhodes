@@ -718,6 +718,7 @@ module Rhogen
         @sub_params = nil
         @can_be_nil = false
         @desc = ''
+        @default_value = nil
       end
 
       attr_accessor :name
@@ -729,8 +730,10 @@ module Rhogen
 
       #for HASH
       attr_accessor :sub_params
+
       attr_accessor :can_be_nil
       attr_accessor :desc
+      attr_accessor :default_value
 
       def type=(value)
         up_value = value.upcase
@@ -800,7 +803,7 @@ module Rhogen
         @writeonly = false
         @generate_accessors = true
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
-        @default_value = ''
+        @default_value = nil
         @access = ModuleMethod::ACCESS_INSTANCE
 
         #used if getter and setter are present - this used with generation of property bag function implementation
@@ -1234,6 +1237,9 @@ module Rhogen
           param.name = xml_param_item.attribute("name").to_s
        else
           param.name = predefined_name
+       end
+       if xml_param_item.attribute("default") != nil
+          param.default_value = xml_param_item.attribute("default").to_s
        end
 
        xml_param_item.elements.each("DESC") do |xml_desc|

@@ -126,7 +126,7 @@
             <METHOD name="refresh">
                 <DESC>Force WebView to refresh the current page.</DESC>
                 <PARAMS>
-                    <PARAM name="tabIndex" type="INTEGER">
+                    <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Refresh active WebView.</DESC>
@@ -143,7 +143,7 @@
                         <DESC>Navigate to this url.</DESC>
                     </PARAM>
 
-                    <PARAM name="tabIndex" type="INTEGER">
+                    <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Refresh active WebView.</DESC>
@@ -155,7 +155,7 @@
             <METHOD name="navigateBack">
                 <DESC>Force WebView to navigate to the previous page using Browser back.</DESC>
                 <PARAMS>
-                    <PARAM name="tabIndex" type="INTEGER">
+                    <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Navigate back in active WebView.</DESC>
@@ -168,25 +168,31 @@
                 <DESC>Returns the url (location) of the current page; the last URL loaded to WebView.</DESC>
                 <MORE_HELP>If you open your page in WebView, and after it makes a few jumps by linking (for example, to outside web adresses for example), currentLocation will still return the initial url opened in WebView. Also, if you use JQMobile, current_location has the initial URL, but does not reflect the actual window.location containing the JQMobile additional address by adding #, etc. See currentUrl.</MORE_HELP>
                 <PARAMS>
-                    <PARAM name="tabIndex" type="INTEGER">
+                    <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Current location of active WebView.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
+                <RETURN type="STRING">
+                    
+                </RETURN>
             </METHOD>
 
             <METHOD name="currentURL">
                 <DESC>Returns the actual URL in WebView. This works the same as the JavaScript window.location.href.</DESC>
                 <PARAMS>
-                    <PARAM name="tabIndex" type="INTEGER">
+                    <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Current url of active WebView.</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
+                <RETURN type="STRING">
+                    
+                </RETURN>
             </METHOD>
 
             <METHOD name="executeJavascript">
@@ -197,7 +203,7 @@
                         <DESC>The call to the JavaScript method on the current page, such as "test();".</DESC>
                     </PARAM>
 
-                    <PARAM name="tabIndex" type="INTEGER">
+                    <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Execute javascript in active WebView.</DESC>
@@ -208,6 +214,9 @@
 
             <METHOD name="active_tab" deprecated="true">
                 <DESC>Use Rho::NativeTabbar.currentTab property: returns the current tab index..</DESC>
+                <RETURN type="INTEGER">
+                    
+                </RETURN>
             </METHOD>
 
             <METHOD name="full_screen_mode" deprecated="true">
@@ -227,7 +236,7 @@
                         <DESC>One or more name/value pairs of the format "NAME=VALUE". Separate multiple name/value pairs with a semicolon, such as "NAME1=VALUE1; NAME2=VALUE2".</DESC>
                     </PARAM>
 
-                    <PARAM name="tabIndex" type="INTEGER">
+                    <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Set cookie to active WebView.</DESC>
@@ -255,7 +264,7 @@
                         <DESC>Path to the file/folder to save the page.</DESC>
                     </PARAM>
 
-                    <PARAM name="tabIndex" type="INTEGER">
+                    <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
                         <CAN_BE_NIL>
                             <DESC>Set cookie to active WebView.</DESC>

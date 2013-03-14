@@ -1380,12 +1380,13 @@ module Kernel
 end    
 
 if !defined?(RHO_WP7) && !defined?(RHO_WP8) && !defined?( RHO_ME )
-module WebView
 
+if defined?(RHO_MACOSX)
+ class WebView
     class << self
         alias_method :orig_execute_js, :execute_js
     end
-
+    
     def self.execute_js(func, index = -1, vals = nil)
         if (vals && 0 < vals.size)
             func += '('
@@ -1395,7 +1396,27 @@ module WebView
             end
             func += ');'
         end
-       orig_execute_js(func, index)                
+        orig_execute_js(func, index)
     end
+ end
+else
+ module WebView
+    class << self
+        alias_method :orig_execute_js, :execute_js
+    end
+    
+    def self.execute_js(func, index = -1, vals = nil)
+        if (vals && 0 < vals.size)
+            func += '('
+            vals.each do |val|
+                func += val
+                func += ',' if val != vals.last
+            end
+            func += ');'
+        end
+        orig_execute_js(func, index)
+    end
+ end
 end
+
 end
