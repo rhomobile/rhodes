@@ -126,7 +126,7 @@ module Rho
         start_url = Rho::RhoConfig.start_path
         start_url = "" unless start_url
 
-        if !defined?( RHO_WP8 )
+        if System.get_property('platform') != 'WP8'
           security_token_not_passed = System.get_property('security_token_not_passed')
           security_token_not_passed = false if security_token_not_passed.nil?
           invalid_security_token_start_path_exist = Rho::RhoConfig.exists? 'invalid_security_token_start_path'

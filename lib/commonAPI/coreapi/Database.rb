@@ -24,7 +24,6 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-puts "0"
 module Rho
 class Database
     
@@ -400,9 +399,8 @@ class Database
 end # Database
 end # Rho
 
-puts "1"
+
 module Rhom
     RhomDbAdapter = Rho::Database
 end
 
-puts "2"

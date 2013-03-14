@@ -256,4 +256,9 @@ void CIEBrowserEngine::NotifyEngineOfSipPosition()
 {
 }
 
+void CIEBrowserEngine::setNavigationTimeout(unsigned int dwMilliseconds)
+{
+
+}
+
 #endif //!defined( OS_PLATFORM_MOTCE )

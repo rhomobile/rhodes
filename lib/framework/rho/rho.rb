@@ -234,9 +234,6 @@ if defined?( RHODES_EMULATOR )
     end
 else
     def load_models_from_file(app_manifest_filename=nil)
-if defined? RHO_WP7    
-		return unless Rho::file_exist?(app_manifest_filename)
-end
         f = File.open(app_manifest_filename)
         _load_models_from_file(f)    
         f.close
@@ -1378,45 +1375,3 @@ module Kernel
     end
     
 end    
-
-if !defined?(RHO_WP7) && !defined?(RHO_WP8) && !defined?( RHO_ME )
-
-if defined?(RHO_MACOSX)
- class WebView
-    class << self
-        alias_method :orig_execute_js, :execute_js
-    end
-    
-    def self.execute_js(func, index = -1, vals = nil)
-        if (vals && 0 < vals.size)
-            func += '('
-            vals.each do |val|
-                func += val
-                func += ',' if val != vals.last
-            end
-            func += ');'
-        end
-        orig_execute_js(func, index)
-    end
- end
-else
- module WebView
-    class << self
-        alias_method :orig_execute_js, :execute_js
-    end
-    
-    def self.execute_js(func, index = -1, vals = nil)
-        if (vals && 0 < vals.size)
-            func += '('
-            vals.each do |val|
-                func += val
-                func += ',' if val != vals.last
-            end
-            func += ');'
-        end
-        orig_execute_js(func, index)
-    end
- end
-end
-
-end

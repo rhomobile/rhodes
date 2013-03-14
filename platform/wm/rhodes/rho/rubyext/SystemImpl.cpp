@@ -53,16 +53,6 @@ void rho_sys_app_exit()
 	::PostMessage(getMainWnd(), WM_COMMAND, MAKEWPARAM(IDM_EXIT,0), (LPARAM )0);
 }
 
-void rho_wmsys_set_full_screen( int nFull )
-{
-    getAppWindow().RhoSetFullScreen( nFull != 0 );
-}
-
-int rho_wmsys_get_full_screen( )
-{
-    return getAppWindow().getFullScreen() ? 1 : 0;
-}
-
 void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
 
 void rho_wmsys_run_app(const char* szPath, const char* szParams )

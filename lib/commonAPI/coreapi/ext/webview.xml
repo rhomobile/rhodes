@@ -24,11 +24,12 @@
             <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
                 <DESC>Use full screen mode.</DESC>
             </PROPERTY>
-            <PROPERTY name="nativeMenu" type="HASH">
-                <DESC>Native Menu items: name to action</DESC>
+            <PROPERTY name="nativeMenu" type="ARRAY">
+                <DESC>Native Menu items: array of hashes(name to action)</DESC>
             </PROPERTY>
             <PROPERTY name="enableZoom" type="BOOLEAN" default="true">
                 <DESC>Enable WebView zoom.</DESC>
+                <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="enablePageLoadingIndication" type="BOOLEAN" default="true">
                 <DESC>Show page loading navigation.</DESC>
@@ -45,7 +46,7 @@
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
 
-            <PROPERTY name="scrollTechnique" type="STRING" default="FingerScroll">
+            <PROPERTY name="scrollTechnique" type="STRING" default="FingerScroll" readOnly="true">
                 <DESC>Specifies the technique used to scroll about the page.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
@@ -61,12 +62,12 @@
                     </VALUE>
                 </VALUES>
             </PROPERTY>
-            <PROPERTY name="fontFamily" type="STRING">
+            <PROPERTY name="fontFamily" type="STRING" readOnly="true">
                 <DESC>Specifies the default font to use when rendering text in web pages. The specified font should be a TrueType font present on the device. On Windows the default font has been set to 'Tahoma' as this is present on all Motorola WM / CE devices, note that Tahoma has no italic or oblique variants. On the Enterprise Tablet the default is Droid Sans Fallback. The font specified must be stored in \Windows for Windows WM / CE devices, or /system/fonts for Enterprise Tablet.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
-            <PROPERTY name="userAgent" type="STRING">
+            <PROPERTY name="userAgent" type="STRING" readOnly="true">
                 <DESC>When visiting a web server the WebKit browser will report its self as the specified user agent. Use the following substitution variables:
                     %p - platform name ("Windows CE " + version number)
                     %w - WebKit version number
@@ -80,17 +81,17 @@
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
 
-            <PROPERTY name="viewportEnabled" type="BOOLEAN" default="true">
+            <PROPERTY name="viewportEnabled" type="BOOLEAN" default="true" readOnly="true">
                 <DESC>Whether to enable or disable viewport meta tag processing.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
-            <PROPERTY name="viewportWidth" type="INTEGER">
+            <PROPERTY name="viewportWidth" type="INTEGER" readOnly="true">
                 <DESC>Default viewport width to use for pages that do not have a viewport meta tag (uses 1:1 scaling if not specified).</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
-            <PROPERTY name="cacheSize" type="INTEGER">
+            <PROPERTY name="cacheSize" type="INTEGER" readOnly="true">
                 <DESC>The browser cache size, in whole MBs.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
@@ -182,6 +183,7 @@
 
             <METHOD name="currentURL">
                 <DESC>Returns the actual URL in WebView. This works the same as the JavaScript window.location.href.</DESC>
+                <PLATFORM>iOS, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
@@ -273,7 +275,7 @@
                 </PARAMS>
             </METHOD>
 
-            <METHOD name="set_menu_items" deprecated="true">
+            <METHOD name="set_menu_items" deprecated="true" generateAPI="false">
                 <DESC>Use Rho::WebView.nativeMenu property: set native menu items.</DESC>
                 <PARAMS>
                     <PARAM name="menuItems" type="HASH">

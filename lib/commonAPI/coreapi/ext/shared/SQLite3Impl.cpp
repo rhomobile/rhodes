@@ -322,8 +322,7 @@ rho::String js_SQLite3_execute(CJSONArray& argv, const rho::String& strObjID)
         return oResult.toJSON();
     }
 
-    //TODO: set result
-    //oResult.set(arRes);
+    oResult.set(arRes);
 
     return oResult.toJSON();
 }

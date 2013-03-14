@@ -65,6 +65,7 @@
 #define IDM_NAVIGATE_BACK               40005
 #define IDM_NAVIGATE_FORWARD            40006
 #define IDM_REFRESH                     40007
+#define IDM_NAVTIMEOUT                  40008
 #define IDM_POPUP_MENU                  40009
 #define ID_SYNC                         40010
 #define ID__OPTIONS                     40014
