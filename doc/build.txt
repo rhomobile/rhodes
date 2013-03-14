@@ -1128,6 +1128,11 @@ To build installer bundle use command:
 	:::term
 	$ rake device:win32:production 
 
+There is separate rake command for Windows XP Embedded platform. To build installer bundle use command:
+
+	:::term
+	$ rake device:winxpe:production 
+
 After the build process is finished you can find the installer bundle named `<application-name>-setup.exe` in `<application-root>/bin/target/win32` folder.
 
 ### Logging
