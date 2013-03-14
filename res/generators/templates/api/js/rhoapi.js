@@ -6,6 +6,7 @@ var Rho = Rho || (function ($) {
     var thisFileName = 'rhoapi.js';
 
     var RHO_ID_PARAM = '__rhoID';
+    var RHO_CLASS_PARAM = '__rhoClass';
 
     var API_CONTROLLER_URL = '/system/js_api_entrypoint';
     var API_CALLBACK_BASE_URL = '/system/js_api_entrypoint';
@@ -40,34 +41,42 @@ var Rho = Rho || (function ($) {
             isPersistent: ('undefined' != typeof isPersistent) && isPersistent
         };
         // store options for pending callback
-        return API_CALLBACK_BASE_URL+id;
+        return API_CALLBACK_BASE_URL + id;
+    }
+
+    function scanForInstances(value) {
+        for (var prop in value) {
+            if (!value.hasOwnProperty(prop)) continue;
+            if ('object' == typeof value[prop]) {
+                value[prop] = createInstance(value[prop]);
+            }
+        }
+
+        return value;
+    }
+
+    function createInstance(value) {
+        if ('object' == typeof value) {
+            if (value[RHO_ID_PARAM] && value[RHO_CLASS_PARAM]) {
+                return objectForClass(value[RHO_CLASS_PARAM], value[RHO_ID_PARAM]);
+            } else {
+                return scanForInstances(value);
+            }
+        }
+        return value;
     }
 
     function jsValue(result) {
-        var value = null;
 
-        switch(result['type']) {
-            case 'instance':
-                if (result['class']) {
-                    var ids = result.value.split(' ');
-                    if (1 == ids.length) {
-                        value = objectForClass(result['class'], ids[0]);
-                    } else {
-                        value = [];
-                        for (var i=0; i<ids.length; i++)
-                            value.push(objectForClass(result['class'], ids[i]));
-                    }
-                }
-                break;
-            case 'default':
-                if (result['class']) {
-                    value = defaultObjectForClass(result['class'], result.value);
-                }
-                break;
-            default:
-                value = result.value;
-        }
-        return value;
+        if ('undefined' == typeof result)
+            throw 'Invalid API JSON response';
+
+        if (null == result || 'object' != typeof result)
+            return result;
+
+        var value = $.extend({}, result);
+
+        return scanForInstances(value);
     }
 
     function namesToProps(names) {
@@ -92,18 +101,22 @@ var Rho = Rho || (function ($) {
             if (params.valueCallbackIndex < params.args.length-1)
                 throw 'Value callback should be a last passed argument!';
 
-            valueCallback = params.args.pop();
+            if (params.valueCallbackIndex == params.args.length-1)
+                valueCallback = params.args.pop();
 
             if (valueCallback && "function" != typeof valueCallback)
                 throw 'Value callback should be a function!';
         }
 
-        var cmd = { 'module': params.module, 'method': params.method, 'params': params.args };
+        var cmd = { 'method': params.method, 'params': params.args };
 
         if ("number" == typeof params.callbackIndex) {
             cmd['callback_index'] = params.callbackIndex;
             cmd['args'][params.callbackIndex] = prepareCallback(params.args[params.callbackIndex]);
         }
+
+        cmd[RHO_CLASS_PARAM] = params.module;
+        cmd[RHO_ID_PARAM] = params.instanceId || null;
         cmd['jsonrpc'] = '2.0';
         cmd['id'] = reqIdCount++;
 
@@ -112,6 +125,11 @@ var Rho = Rho || (function ($) {
 
         var result = null;
         var deferred =  new $.Deferred(function(dfr) {
+            function handleError(errObject) {
+                dfr.reject(errObject.message, errObject.code);
+                throw errObject.message;
+            }
+
             $.ajax({
                 async: (null != valueCallback),
                 type: 'post',
@@ -120,22 +138,17 @@ var Rho = Rho || (function ($) {
                 dataType: 'json',
                 headers:{'Accept':'text/plain'}
             }).done(function (data) {
-                result = jsValue(data['result']);
-                if (valueCallback) {
+                if (data['error']) {
+                    handleError(data['error']);
+                } else {
+                    result = jsValue(data['result']);
                     dfr.resolve(result);
-                    valueCallback(result);
+                    if (valueCallback) {
+                        valueCallback(result);
+                    }
                 }
             }).fail(function (xhr, status, message) {
-                var errObj = null;
-                try {
-                    errObj = $.evalJSON(xhr.responseText);
-                    message = errObj.error.message;
-                } catch (ex) {};
-                result = errObj.error;
-                if (valueCallback) {
-                    dfr.reject(message, result);
-                    valueCallback(result);
-                }
+                handleError({message: message, code: xhr.statusCode()});
             });
         }).promise();
 
@@ -148,7 +161,8 @@ var Rho = Rho || (function ($) {
             if ('getProperties' == params.method && 0 < params.args.length) {
                 params.args[0] = namesToProps(params.args[0]);
             }
-            params.method = module +'.'+ params.method;
+            params.module = module;
+            params.method = params.method;
             return commonReq(params);
         };
     }
