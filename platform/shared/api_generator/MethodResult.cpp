@@ -21,7 +21,7 @@ rho::String CMethodResult::toJSON()
     rho::String strRes = "\"result\": null";
     if ( m_ResType == eStringArray )
     {
-		strRes = "\"result\": {\"type\": \"object\", \"value\": [";
+		strRes = "\"result\": [";
         for( int i = 0; i < (int)m_arStrRes.size(); i++ )
         {
             if ( i > 0 )
@@ -30,22 +30,24 @@ rho::String CMethodResult::toJSON()
             strRes += CJSONEntry::quoteValue(m_arStrRes[i]);
         }
         
-		strRes += "]}";
+		strRes += "]";
     }else if ( m_ResType == eStringHash )
     {
-        strRes = "\"result\": {\"type\": \"object\", \"value\": {";
+        strRes = "\"result\": {";
 
+        int i = 0;
         for ( rho::Hashtable<rho::String, rho::String>::iterator it = m_hashStrRes.begin(); it != m_hashStrRes.end(); ++it)
         {
-            if ( strRes.length() > 1 )
+            if ( i > 1 )
                 strRes += ",";
 
             strRes += CJSONEntry::quoteValue(it->first) + ":" + CJSONEntry::quoteValue(it->second);
+            i++;
         }
 
         for ( rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >::iterator it = m_hashStrL2Res.begin(); it != m_hashStrL2Res.end(); ++it)
         {
-            if ( strRes.length() > 1 )
+            if ( i > 1 )
                 strRes += ",";
 
             strRes += CJSONEntry::quoteValue(it->first) + ":{";
@@ -59,24 +61,25 @@ rho::String CMethodResult::toJSON()
             }
 
             strRes += "}";
+            i++;
         }
 
-		strRes += "}}";
+		strRes += "}";
     }else if ( m_ResType == eString)
     {
-		strRes = "\"result\": {\"type\": \"string\", \"value\": " + CJSONEntry::quoteValue(m_strRes) + "}";
+		strRes = "\"result\": " + CJSONEntry::quoteValue(m_strRes);
     }else if ( m_ResType == eStringW)
     {
-        strRes = "\"result\": {\"type\": \"string\", \"value\": " + CJSONEntry::quoteValue(convertToStringA(m_strResW)) + "}";
+        strRes = "\"result\": " + CJSONEntry::quoteValue(convertToStringA(m_strResW));
     }else if ( m_ResType == eBool)
     {
-        strRes = "\"result\": {\"type\": \"boolean\", \"value\": " + convertToStringA(m_bRes?1:0) + "}";
+        strRes = "\"result\": " + convertToStringA(m_bRes?1:0);
     }else if ( m_ResType == eInt)
     {
-        strRes = "\"result\": {\"type\": \"int\", \"value\": " + convertToStringA(m_nRes) + "}";
+        strRes = "\"result\": " + convertToStringA(m_nRes);
     }else if ( m_ResType == eDouble)
     {
-        strRes = "\"result\": {\"type\": \"double\", \"value\": " + convertToStringA(m_dRes) + "}";
+        strRes = "\"result\": " + convertToStringA(m_dRes);
     }else if ( m_ResType == eArgError )
     {
         strRes = "\"error\": {\"code\": -32600, \"message\": " + CJSONEntry::quoteValue(m_strError) + "}";
