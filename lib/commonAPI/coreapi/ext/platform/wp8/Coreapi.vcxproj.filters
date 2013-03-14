@@ -41,6 +41,18 @@
     <Filter Include="NetworkAccess\shared\generated\cpp">
       <UniqueIdentifier>{994eff05-97f8-410f-bdc6-32dde6f45b6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Log">
+      <UniqueIdentifier>{1c7c8e90-c86b-45d8-8810-1637cd69d37d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\shared">
+      <UniqueIdentifier>{4e62bbda-7fa3-4804-8855-3809f64a3b58}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\shared\generated">
+      <UniqueIdentifier>{7a719eda-a5ca-4470-bda1-51dc8a8c8ad3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log\shared\generated\cpp">
+      <UniqueIdentifier>{3be1faf4-03bc-449d-9433-54c3c3e9d49a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\generated\system_api_init.cpp">
@@ -51,9 +63,6 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\generated\system_ruby_api.c">
       <Filter>System\shared\generated</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SystemImpl.cpp">
-      <Filter>System</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\generated\cpp\System_js_wrap.cpp">
       <Filter>System\shared\generated\cpp</Filter>
@@ -92,9 +101,6 @@
     <ClCompile Include="..\..\shared\SQLite3Impl.cpp">
       <Filter>SQLite3\shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\NetworkImpl.cpp">
-      <Filter>NetworkAccess</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\generated\network_api_init.cpp">
       <Filter>NetworkAccess\shared\generated</Filter>
     </ClCompile>
@@ -112,6 +118,33 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\generated\cpp\Network_ruby_wrap.cpp">
       <Filter>NetworkAccess\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SystemImpl.cpp">
+      <Filter>System\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\NetworkImpl.cpp">
+      <Filter>NetworkAccess\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\LogImpl.cpp">
+      <Filter>Log\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\log_api_init.cpp">
+      <Filter>Log\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\log_js_api.cpp">
+      <Filter>Log\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\log_ruby_api.c">
+      <Filter>Log\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Log_js_wrap.cpp">
+      <Filter>Log\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Log_ruby_wrap.cpp">
+      <Filter>Log\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\LogBase.cpp">
+      <Filter>Log\shared\generated\cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -133,14 +166,25 @@
     <ClInclude Include="..\..\shared\generated\cpp\NetworkBase.h">
       <Filter>NetworkAccess\shared\generated\cpp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\ILog.h">
+      <Filter>Log\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\LogBase.h">
+      <Filter>Log\shared\generated\cpp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\system.xml">
-      <Filter>System\shared</Filter>
+    <CustomBuild Include="..\..\Network.xml">
+      <Filter>NetworkAccess</Filter>
     </CustomBuild>
     <CustomBuild Include="..\..\sqlite3.xml">
-      <Filter>SQLite3\shared</Filter>
+      <Filter>SQLite3</Filter>
     </CustomBuild>
-    <CustomBuild Include="..\..\Network.xml" />
+    <CustomBuild Include="..\..\system.xml">
+      <Filter>System</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\Log.xml">
+      <Filter>Log</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
