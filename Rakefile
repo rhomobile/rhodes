@@ -99,83 +99,43 @@ end
 $application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_license", "motorola_license_company","name"]
 $winxpe_build = false
 
-def is_generate_folders_exits(extpath)
-  #puts 'extpath=' + extpath.to_s
+def create_files_set(extpath, hash, iscollect)
+  #puts 'create_files_set=' + extpath.to_s
+
   final_extpath = File.absolute_path(extpath)
   
   ext_dir = Dir.new(final_extpath)
 
   ext_dir.each { |item|  
-    
+    #puts 'item=' + item.to_s
     if item == '.' || item == '..' || item == '.git'
       next        
     end
     
     curr_path = File.join(final_extpath, item)
     
-    if File.directory?(curr_path) == false
-      next
+    if File.directory?(curr_path)
+      create_files_set(curr_path, hash, item.to_s == 'generated')
     end 
     
-    if item.to_s == 'generated'
-      return true
-    end
-    
-    if is_generate_folders_exits(curr_path) == true
-      return true
+    if iscollect == true
+      hash[curr_path] = File.mtime(curr_path)
     end
   }
   
-  return false
+  return hash
 end
+
+def compare_date(files_hash, gen_date)
   
-def is_need_generate(extpath, last_change_data)
-  #puts 'is_need_generate params = ' + extpath.to_s() + ' - ' + last_change_data.to_s()
-   
-  final_extpath = File.absolute_path(extpath)
-  
-  if !File.directory?(final_extpath)
-    puts final_extpath + ' is not dir'
-    return false
-  end
-
-  ext_dir = Dir.new(final_extpath)
-       
-  ext_dir.each { |item|        
-    #puts 'item=' + final_extpath + '/' + item
-
-    if item == '.' || item == '..' || item == '.git'
-      next        
-    end
-
-    curr_path = File.join(final_extpath, item)
-     
-    if File.directory?(curr_path) == false
-      next
-    end 
+  files_hash.each do |path, time|
     
-    if item.to_s == 'generated'
-      gen_dir = Dir.new(curr_path)
-      
-      gen_dir.each { |gen_item|
-        ftime = File.mtime(curr_path)
-        
-        if last_change_data > ftime
-          #puts 'last_change_data=' + last_change_data.to_s
-          #puts 'ftime=' + ftime.to_s + ' in file=' + curr_path.to_s          
-          #puts 'found not updated generated data. try to run api generator.'
-          return true
-        end
-      }
-      
-    else
-      if is_need_generate(curr_path, last_change_data) == true            
-        return true
-      end
+    if time < gen_date
+      puts 'compare_date path=' + path.to_s + ' time=' + time.to_s + ' gen_date=' + gen_date.to_s  
+      return true
     end
-  }
+  end
   
-  #puts 'all data are have\'t update\'s.'        
   return false
 end
       
@@ -939,17 +899,26 @@ def init_extensions(startdir, dest)
             end
             extlibs += libs
           end
-        
+
           if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
             xml_api_paths  = xml_api_paths.split(',')
             templates_path = File.join($startdir, "res", "generators", "templates")
             
             last_change_data = find_latest_modified_date(templates_path)
-                                    
+                                              
             xml_api_paths.each do |xml_api|
-              if (is_need_generate(extpath, last_change_data) == true) || (is_generate_folders_exits(extpath) == false)
+              xml_path = File.join(extpath, xml_api.strip())
+              xml_time = File.mtime(xml_path)                  
+              
+              puts 'xml_time=' + xml_time.to_s 
+              last_change_data = last_change_data > xml_time ? last_change_data : xml_time
+                                          
+              files_set = Hash.new
+              files_set = create_files_set(extpath, files_set, false)
+                                  
+              if files_set.nil? || compare_date(files_set, last_change_data)
                 puts 'start running rhogen with api key'
-                Jake.run3("#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}")
+                Jake.run3("#{$startdir}/bin/rhogen api #{xml_path}")
               end
             end
           end
@@ -959,12 +928,10 @@ def init_extensions(startdir, dest)
               extjsmodules << f.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
             end
           end
-            
+                      
         end
-      end
-      
-    end
-    
+      end      
+    end    
   end
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
@@ -1952,8 +1919,16 @@ namespace "run" do
                 if xml_api_paths
                   xml_api_paths = xml_api_paths.split(',')
 
-                  xml_api_paths.each do |xml_api|                  
-                    if (is_need_generate(extpath, last_change_data) == true) || (is_generate_folders_exits(extpath) == false)
+                  xml_api_paths.each do |xml_api|
+                    xml_path = File.join(extpath, xml_api.strip())
+                    xml_time = File.mtime(xml_path)                  
+                    
+                    last_change_data = last_change_data > xml_time ? last_change_data : xml_time
+                                                
+                    files_set = Hash.new
+                    files_set = create_files_set(extpath, files_set, false)
+                                        
+                    if files_set.nil? || compare_date(files_set, last_change_data)
                       puts 'start running rhogen with api key'
                       cmd_line = "#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}"
                       puts "cmd_line: #{cmd_line}"
