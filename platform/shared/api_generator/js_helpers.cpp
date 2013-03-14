@@ -31,13 +31,13 @@ rho::String js_entry_point(const char* szJSON)
         return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32700, \"message\": \"Parse error\"}, \"id\": " + strReqId + "}";
     strMethod = oEntry.getString("method");
 
-	if ( oEntry.hasName("module") ) {
-		rho::String strModule = oEntry.getString("module");
+	if ( oEntry.hasName("‘__rhoClass’") ) {
+		rho::String strModule = oEntry.getString("‘__rhoClass’");
 		strMethod = strModule + ":" + strMethod;
 	}
 
-    if ( oEntry.hasName("ObjID") )
-        strObjID = oEntry.getString("ObjID");
+    if ( oEntry.hasName("‘__rhoID’") )
+        strObjID = oEntry.getString("__rhoID");
 
 	String_replace(strMethod, '.', ':');
     Func_JS pMethod = g_hashJSMethods[strMethod];
