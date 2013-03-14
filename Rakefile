@@ -99,6 +99,132 @@ end
 $application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_license", "motorola_license_company","name"]
 $winxpe_build = false
 
+def is_generate_folders_exits(extpath)
+  #puts 'extpath=' + extpath.to_s
+  final_extpath = File.absolute_path(extpath)
+  
+  ext_dir = Dir.new(final_extpath)
+
+  ext_dir.each { |item|  
+    
+    if item == '.' || item == '..' || item == '.git'
+      next        
+    end
+    
+    curr_path = File.join(final_extpath, item)
+    
+    if File.directory?(curr_path) == false
+      next
+    end 
+    
+    if item.to_s == 'generated'
+      return true
+    end
+    
+    if is_generate_folders_exits(curr_path) == true
+      return true
+    end
+  }
+  
+  return false
+end
+  
+def is_need_generate(extpath, last_change_data)
+  #puts 'is_need_generate params = ' + extpath.to_s() + ' - ' + last_change_data.to_s()
+   
+  final_extpath = File.absolute_path(extpath)
+  
+  if !File.directory?(final_extpath)
+    puts final_extpath + ' is not dir'
+    return false
+  end
+
+  ext_dir = Dir.new(final_extpath)
+       
+  ext_dir.each { |item|        
+    #puts 'item=' + final_extpath + '/' + item
+
+    if item == '.' || item == '..' || item == '.git'
+      next        
+    end
+
+    curr_path = File.join(final_extpath, item)
+     
+    if File.directory?(curr_path) == false
+      next
+    end 
+    
+    if item.to_s == 'generated'
+      gen_dir = Dir.new(curr_path)
+      
+      gen_dir.each { |gen_item|
+        ftime = File.mtime(curr_path)
+        
+        if last_change_data > ftime
+          #puts 'last_change_data=' + last_change_data.to_s
+          #puts 'ftime=' + ftime.to_s + ' in file=' + curr_path.to_s          
+          #puts 'found not updated generated data. try to run api generator.'
+          return true
+        end
+      }
+      
+    else
+      if is_need_generate(curr_path, last_change_data) == true            
+        return true
+      end
+    end
+  }
+  
+  #puts 'all data are have\'t update\'s.'        
+  return false
+end
+      
+def find_latest_modified_date(path)
+  #puts 'find_latest_modified_date.path=' + path.to_s
+  
+  rhogen_path     = File.join($startdir, "bin", "rhogen")
+  latest_mod_time = nil      
+  templates_dir   = Dir.new(path)
+  
+  templates_dir.each { |item|       
+    if item == '.' || item == '..'
+      next        
+    end
+
+    full_path = File.join(path, item)
+    mod_time  = nil
+    
+    if File.directory?(full_path)
+      mod_time = find_latest_modified_date(full_path)
+      
+      if mod_time.nil?
+        next
+      end            
+    else
+      mod_time = File.mtime(full_path)
+    end
+    
+    if latest_mod_time.nil?
+      latest_mod_time = mod_time
+    else
+      if latest_mod_time < mod_time
+        latest_mod_time = mod_time
+      end
+    end
+  }
+  
+  rhogen_time = File.mtime(rhogen_path)
+  
+  #puts 'rhogen_time='     + rhogen_time.to_s
+  #puts 'latest_mod_time=' + latest_mod_time.to_s 
+  
+  if latest_mod_time.nil?
+    return rhogen_time
+  end
+  
+  return rhogen_time >= latest_mod_time ? rhogen_time : latest_mod_time
+end
+
 def make_application_build_config_header_file
   f = StringIO.new("", "w+")      
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -816,12 +942,12 @@ def init_extensions(startdir, dest)
         
           if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
             xml_api_paths = xml_api_paths.split(',')
-            
-            puts 'xml_api_paths>>> ' + xml_api_paths.to_s
-            exit 1
-            
+                        
             xml_api_paths.each do |xml_api|
+              if (is_need_generate(extpath, last_change_data) == true) || (is_generate_folders_exits(extpath) == false)
+                puts 'start running rhogen with api key'
                 Jake.run3("#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}")
+              end
             end
           end
 
@@ -1819,17 +1945,17 @@ namespace "run" do
                 templates_path = File.join($startdir, "res", "generators", "templates")
                    
                 last_change_data = find_latest_modified_date(templates_path)
-                puts 'lastest_data>>> ' + last_change_data.to_s
                 
                 if xml_api_paths
                   xml_api_paths = xml_api_paths.split(',')
 
-                  xml_api_paths.each do |xml_api|
-                    if is_need_generate(extpath, last_change_data)
+                  xml_api_paths.each do |xml_api|                  
+                    if (is_need_generate(extpath, last_change_data) == true) || (is_generate_folders_exits(extpath) == false)
+                      puts 'start running rhogen with api key'
                       cmd_line = "#{$startdir}/bin/rhogen api #{File.join(extpath, xml_api.strip())}"
                       puts "cmd_line: #{cmd_line}"
                       system "#{cmd_line}"
-                    end                    
+                    end
                   end
                 end
               end
@@ -1875,87 +2001,6 @@ namespace "run" do
         if not cmd.nil?
             $path = cmd
         end
-    end
-    
-    def is_need_generate(extpath, last_change_data)
-      puts 'is_need_generate params = ' + extpath.to_s() + ' - ' + last_change_data.to_s()
-      
-      puts extpath.to_s 
-      extpath1 = File.absolute_path(extpath)
-      puts extpath1.to_s
-      puts File.dirname(extpath)
-      
-      if !File.directory?(curr_path)
-        
-      end
-      ext_dir = Dir.new(File.dirname(extpath))
-           
-      ext_dir.each { |item|        
-        puts 'item=' + item
-
-        if item == '.' || item == '..' || item == '.git'
-          next        
-        end
-
-        curr_path = File.join(extpath, item)
-
-        next unless !File.directory?(curr_path)
-        
-        if item.to_s == 'generated'
-          gen_dir = Dir.new(curr_path)
-          
-          gen_dir.each { |gen_item|
-            ftime = File.mtime(curr_path)
-            
-            if last_change_data > ftime
-              return true
-            end
-          }
-          
-        else
-          if is_need_generate(curr_path, last_change_data)
-            return true
-          end
-        end                   
-      }
-      
-      exit
-      #C:/MotorolaRhoMobileSuite4.0.0.beta.5/ruby/lib/ruby/gems/1.9.1/gems/rhoconnect-client-4.0.0.beta.5/ext/rhoconnect-client/rhoconnect-client
-      return false
-    end
-          
-    def find_latest_modified_date(path)
-      latest_mod_time = nil      
-      templates_dir   = Dir.new(path)
-      
-      templates_dir.each { |item|       
-        if item == '.' || item == '..'
-          next        
-        end
-
-        full_path = File.join(path, item)
-        mod_time  = nil
-        
-        if File.directory?(full_path)
-          mod_time = find_latest_modified_date(full_path)
-          
-          if mod_time.nil?
-            next
-          end            
-        else
-          mod_time = File.mtime(full_path)
-        end
-        
-        if latest_mod_time.nil?
-          latest_mod_time = mod_time
-        else
-          if latest_mod_time <= mod_time
-            latest_mod_time = mod_time
-          end
-        end
-      }
-      
-      return latest_mod_time
     end
 
     #desc "Run application on RhoSimulator"
