@@ -354,6 +354,11 @@ extern "C" void rho_sysimpl_sethas_network(int nValue)
     g_rho_has_network = nValue > 1 ? 1 : 0;
 }
 
+extern "C" int rho_sysimpl_has_network()
+{
+    return g_rho_has_network;
+}
+
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue)
 {
     g_rho_has_cellnetwork = nValue;
