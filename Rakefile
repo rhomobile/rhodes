@@ -38,6 +38,104 @@ module Rake
   end
 end
 
+#TODO check generate api class
+class GeneratorTimeChecker
+  
+  @@latest_update_time = nil
+  @@app_path           = nil
+  @@is_run_always      = false
+  @@cached_time        = nil
+  
+  def find_latest_modified_date(path)
+    #puts 'find_latest_modified_date.path=' + path.to_s
+    
+    latest_mod_time = nil      
+    templates_dir   = Dir.new(path)
+    
+    templates_dir.each { |item|       
+      if item == '.' || item == '..'
+        next        
+      end
+  
+      full_path = File.join(path, item)
+      mod_time  = nil
+      
+      if File.directory?(full_path)
+        mod_time = find_latest_modified_date(full_path)
+        
+        if mod_time.nil?
+          next
+        end            
+      else
+        mod_time = File.mtime(full_path)
+      end
+      
+      if latest_mod_time.nil?
+        latest_mod_time = mod_time
+      else
+        if latest_mod_time < mod_time
+          latest_mod_time = mod_time
+        end
+      end
+    }
+    
+    return latest_mod_time
+  end
+  
+  def init(startdir, app_path)
+    @@app_path       = app_path
+    templates_path   = File.join(startdir, "res", "generators", "templates", "api")
+    rhogen_path      = File.join(startdir, "res", "generators", "rhogen.rb")
+    
+    api_time         = find_latest_modified_date(templates_path)
+    rhogen_time      = File.mtime(rhogen_path)
+    last_update_time = nil
+    
+    last_change_data = find_latest_modified_date(templates_path)
+    time_cache_path  = File.join(@@app_path, "bin", "tmp", "rhogen.time")
+    
+    if File.exist? time_cache_path
+      time_cache_file = File.new(time_cache_path)
+      @@cached_time   = Time.parse(time_cache_file.gets)
+      time_cache_file.close      
+    else
+      @@is_run_always = true
+    end
+
+    @@latest_update_time = rhogen_time >= api_time ? rhogen_time : api_time    
+    
+    if @@cached_time < @@latest_update_time
+      @@is_run_always = true
+    end 
+
+  end
+  
+  def check(xmlpath)
+    # for generate in first time
+    if @@is_run_always
+      return true
+    end
+    
+    xml_time = File.mtime(File.new(xmlpath))
+    
+    if @@cached_time < xml_time
+      return true
+    end 
+    
+    return false
+  end
+  
+  def update()
+    time_cache_path  = File.join(@@app_path, "bin", "tmp", "rhogen.time")
+    
+    FileUtils.mkdir(  File.join(@@app_path, "bin") ) unless File.exist? File.join(@@app_path, "bin")
+    FileUtils.mkdir(  File.join(@@app_path, "bin", "tmp") ) unless File.exist? File.join(@@app_path, "bin", "tmp")
+    time_cache_file = File.new(time_cache_path, "w+")
+    time_cache_file.puts Time.new
+    time_cache_file.close()
+  end
+end
+
 # Restore process error mode on Windows.
 # Error mode controls wether system error message boxes will be shown to user.
 # Java disables message boxes and we enable them back.
@@ -99,48 +197,7 @@ end
 $application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_license", "motorola_license_company","name"]
 $winxpe_build = false
       
-def find_latest_modified_date(path)
-  #puts 'find_latest_modified_date.path=' + path.to_s
-  
-  rhogen_path     = File.join($startdir, "bin", "rhogen")
-  latest_mod_time = nil      
-  templates_dir   = Dir.new(path)
-  
-  templates_dir.each { |item|       
-    if item == '.' || item == '..'
-      next        
-    end
 
-    full_path = File.join(path, item)
-    mod_time  = nil
-    
-    if File.directory?(full_path)
-      mod_time = find_latest_modified_date(full_path)
-      
-      if mod_time.nil?
-        next
-      end            
-    else
-      mod_time = File.mtime(full_path)
-    end
-    
-    if latest_mod_time.nil?
-      latest_mod_time = mod_time
-    else
-      if latest_mod_time < mod_time
-        latest_mod_time = mod_time
-      end
-    end
-  }
-  
-  rhogen_time = File.mtime(rhogen_path)
-  
-  if latest_mod_time.nil?
-    return rhogen_time
-  end
-  
-  return rhogen_time >= latest_mod_time ? rhogen_time : latest_mod_time
-end
 
 def make_application_build_config_header_file
   f = StringIO.new("", "w+")      
@@ -793,18 +850,11 @@ def init_extensions(startdir, dest)
   end
 
   puts 'init extensions'
-  
-  templates_path   = File.join($startdir, "res", "generators", "templates")         
-  last_change_data = find_latest_modified_date(templates_path)
-  time_cache    = File.join($app_path, "bin", "tmp", "rhogen.time")
-  if File.exist? time_cache
-    time_cache_file = File.new(time_cache)
-    read_time = Time.parse(time_cache_file.gets)
-    time_cache_file.close
-    
-    puts 'read_time=' + read_time.to_s
-  end
-  
+
+  # TODO: checker init
+  gen_checker = GeneratorTimeChecker.new        
+  gen_checker.init($startdir, $app_path)
+
   $app_config["extensions"].each do |extname|  
     puts 'ext - ' + extname
     
@@ -871,22 +921,12 @@ def init_extensions(startdir, dest)
 
           if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
             xml_api_paths    = xml_api_paths.split(',')
-            is_run_rhogen = true
                                                           
             xml_api_paths.each do |xml_api|
-              xml_path      = File.join(extpath, xml_api.strip())
-              xml_time      = File.mtime(xml_path)                  
-               
-              last_change_data2 = last_change_data > xml_time ? last_change_data : xml_time
-
-              #if read_time
-              #  puts 'last_change_data=' + last_change_data2.to_s 
-              #  is_run_rhogen = read_time < last_change_data2
-              #else
-              #  is_run_rhogen = true
-              #end
+              xml_path = File.join(extpath, xml_api.strip())                
               
-              if is_run_rhogen                 
+              #api generator
+              if gen_checker.check(xml_path)      
                 puts 'start running rhogen with api key'
                 Jake.run3("#{$startdir}/bin/rhogen api #{xml_path}")
               end
@@ -903,11 +943,8 @@ def init_extensions(startdir, dest)
     end    
   end
   
-  FileUtils.mkdir(  File.join($app_path, "bin") ) unless File.exist? File.join($app_path, "bin")
-  FileUtils.mkdir(  File.join($app_path, "bin", "tmp") ) unless File.exist? File.join($app_path, "bin", "tmp")
-  time_cache_file = File.new(time_cache, "w+")
-  time_cache_file.puts Time.new
-  time_cache_file.close()
+  #TODO: checker update
+  gen_checker.update
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
   puts "exts " + exts
@@ -1843,6 +1880,10 @@ namespace "run" do
         extjsmodules = []
         rhoapi_js_folder = File.join( $app_path, "public/api/generated" )
 
+        # TODO: checker init
+        gen_checker = GeneratorTimeChecker.new        
+        gen_checker.init($startdir, $app_path)
+        
         $app_config["extensions"].each do |extname|
         
             extpath = nil
@@ -1888,54 +1929,21 @@ namespace "run" do
                 extconf = Jake.config(File.open(extyml))
                 xml_api_paths  = extconf["xml_api_paths"]
                 templates_path = File.join($startdir, "res", "generators", "templates")
-                
-                is_run_rhogen    = true
-                time_cache       = File.join($app_path, "bin", "tmp", "rhogen.time")
-                last_change_data = find_latest_modified_date(templates_path)
-                
+                                
                 if xml_api_paths
                   xml_api_paths = xml_api_paths.split(',')
 
                   xml_api_paths.each do |xml_api|
                     xml_path      = File.join(extpath, xml_api.strip())
-                    xml_time      = File.mtime(xml_path)                  
-                    
-                    last_change_data = last_change_data > xml_time ? last_change_data : xml_time
 
-                    #if File.exist? time_cache
-                    #  time_cache_file = File.new(time_cache)
-                    #  read_time = Time.parse(time_cache_file.gets)
-                    #  time_cache_file.close
-                    #  
-                    #  puts 'read_time=' + read_time.to_s
-                    #  puts 'last_change_data=' + last_change_data.to_s 
-                    #  
-                    #  is_run_rhogen = read_time < last_change_data
-                    #else
-                    #  is_run_rhogen = true
-                    #end
-                    
-                    if is_run_rhogen
+                    #TODO checker check
+                    if gen_checker.check(xml_path)
                       cmd_line = "#{$startdir}/bin/rhogen api #{xml_path}"
                       puts "cmd_line: #{cmd_line}"
                       system "#{cmd_line}"
                     end
                   end
-                end
-                
-                if is_run_rhogen
-                  if !File.exist? File.join($app_path, "bin")
-                    FileUtils.mkdir  File.join($app_path, "bin")
-                  end
-
-                  if !File.exist? File.join($app_path, "bin", "tmp")
-                    FileUtils.mkdir  File.join($app_path, "bin", "tmp")
-                  end
-
-                  time_cache_file = File.new(time_cache, "w+")
-                  time_cache_file.puts Time.new
-                  time_cache_file.close 
-                end
+                end                
               end
 
               js_folder = File.join(extpath, "public/api/generated")
@@ -1948,6 +1956,9 @@ namespace "run" do
             end
         end
 
+        #TODO: checker update
+        gen_checker.update
+        
         # deploy Common API JS implementation
         if extjsmodules.count > 0
           mkdir_p rhoapi_js_folder
