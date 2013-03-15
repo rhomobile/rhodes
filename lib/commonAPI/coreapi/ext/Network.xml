@@ -241,7 +241,6 @@
                 <DESC>Stop network status notifications.</DESC>
             </METHOD>
 
-			<!--  RE1 Network API Methods -->
             <METHOD name="detectConnection" hasCallback="mandatory">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <DESC>Begins polling the specified host on the specified URL to check if there is a network connection available. The connection status is reported back via the provided callback.</DESC>
@@ -344,11 +343,13 @@ When detecting a network connection over WAN bear in mind if you specify a low n
             <REMARK title="Preventing access to the device (WEH / WM)">
                 <DESC>
                     <![CDATA[
-Receiving phone calls or texts whilst running RhoElements will cause the start button to be displayed on Windows Embedded Handheld devices, potentially offering users access to the operating system. It is recommended to set the following registry keys to disable Operating System access on Windows Embedded Handheld as required. The registry keys will be applied after a warm boot, omit them entirely to restore the Start and ‘X’ icons.
+Receiving phone calls or texts whilst running RhoElements will cause the start button to be displayed on Windows Embedded Handheld devices, potentially offering users access to the operating system. It is recommended to set the following registry keys to disable Operating System access on Windows Embedded Handheld as required. The registry keys will be applied after a warm boot, omit them entirely to restore the Start and 'X' icons.
 
+<pre>
 [HKEY_LOCAL_MACHINE\Software\Microsoft\Shell\BubbleTiles]   Location in Registry
 "HardwareStartKeyEnabled"=dword:00000001                    Prevents the Start icon from appearing in the bottom left
 "HardwareDoneKeyEnabled"=dword:00000001                     Prevents the 'X' icon from appearing in the bottom right
+</pre>
 
                     ]]>
 
