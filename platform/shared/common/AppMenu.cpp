@@ -29,6 +29,7 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
 #include "sync/RhoconnectClientManager.h"
+#include "json/JSONIterator.h"
 
 //extern "C" void rho_sync_doSyncAllSources(int show_status_popup, const char* query_params);
 
@@ -85,6 +86,34 @@ void CAppMenu::setAppMenuEx(const rho::Vector< Hashtable<String, String> >& arMe
             addAppMenuItem( it->first, it->second );
         }
     }
+}
+
+void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes)
+{
+    rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
+    copyMenuItems(arAppMenuItems);
+
+    for ( int i = 0; i < (int)arAppMenuItems.size(); i++)
+    {
+        Hashtable<String, String> hash;
+        hash[arAppMenuItems[i].m_strLabel] = arAppMenuItems[i].m_strLink;
+        arRes.addElement(hash);
+    }
+}
+
+void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu )
+{
+    rho::Vector< Hashtable<String, String> > arRes;
+    for (int i = 0; i < (int)arMenu.size(); i++)
+    {
+        rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
+
+        Hashtable<String, String> hash;
+        hash[oIter.getCurKey()] = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
+        arRes.addElement(hash);
+    }
+
+    setAppMenuEx(arRes);
 }
 
 void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems)
