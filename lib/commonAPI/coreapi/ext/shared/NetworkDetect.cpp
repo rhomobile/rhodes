@@ -1,7 +1,5 @@
 #include "NetworkDetect.h"
-#include <iostream>
 #include <sstream>
-
 
 #define DEFAULT_NETWORK_POLL_INTERVAL 30000
 #define DEFAULT_CONNECTION_TIMEOUT_SECONDS 1
@@ -17,13 +15,10 @@ CNetworkDetection::CNetworkDetection()
 {
 	//  Initialise Variables
 	m_szHost = DEFAULT_NETWORK_URL;
-	m_tcProxy = NULL;
-//	m_hNetworkChecker = NULL;
 	m_iPort = DEFAULT_PORT;
 	m_iNetworkPollInterval = DEFAULT_NETWORK_POLL_INTERVAL;
 	m_connectionTimeout.tv_sec = DEFAULT_CONNECTION_TIMEOUT_SECONDS;
 	m_connectionTimeout.tv_usec = 0;
-//	m_bShuttingDown = FALSE;
 	m_szLastError = "";
 }
 
@@ -35,31 +30,8 @@ CNetworkDetection::~CNetworkDetection()
 {
 	//  Terminate separate thread
 	stop(1000);
-//	m_bShuttingDown = TRUE;
-//	SetEvent(m_hStopNetworkCheckerEvent);
-
-	//  and Wait for threads to stop
-//	if (WaitForSingleObjectEx(m_hNetworkChecker, 1000, false) == WAIT_TIMEOUT)
-//	{
-//		//  Terminate Thread if it didn't shut down within a second
-//		TerminateThread(m_hNetworkChecker, 0);
-//	}
-
-	//  Free member variable memory
-	delete[] m_tcProxy;
-
-	//  Close all the Handles
-//	CloseHandle(m_hNetworkChecker);
-//	CloseHandle(m_hStopNetworkCheckerEvent);
-//	CloseHandle(m_hCheckFrequencyChangedEvent);
-
-	//  Set member pointers to null
-//	m_hStopNetworkCheckerEvent = NULL;
-//	m_hCheckFrequencyChangedEvent = NULL;
-//	m_hNetworkChecker = NULL;	
 
 	WSACleanup();
-
 }
 
 /**
@@ -68,26 +40,9 @@ CNetworkDetection::~CNetworkDetection()
 */
 BOOL CNetworkDetection::Initialise() 
 {
-	//  todo - proxy is never used
-//	LPCTSTR pProxySetting = m_pModule->GetAppSettingPtr(m_iInstanceID, L"HTTP_Proxy", L"Value");
-/*	if (pProxySetting && pProxySetting[0])
-	{
-		m_tcProxy = new TCHAR[wcslen(pProxySetting) + 1];
-		if (!m_tcProxy)
-			return FALSE;
-		memset(m_tcProxy, 0, (wcslen(pProxySetting) + 1) * sizeof(TCHAR));
-		wcscpy(m_tcProxy, pProxySetting);
-	}
-*/
-//	m_hStopNetworkCheckerEvent = CreateEventExW(NULL, FALSE, FALSE, NULL);
-//	m_hCheckFrequencyChangedEvent = CreateEventExW(NULL, FALSE, FALSE, NULL);
-
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-//	if (!m_hStopNetworkCheckerEvent)
-//		return FALSE;
-//	else
 	return TRUE;
 }
 
@@ -100,12 +55,6 @@ BOOL CNetworkDetection::SetHost(const rho::String& szHost)
 		m_szHost = szHost.substr(8);
 	else
 		m_szHost = szHost;
-	return TRUE;
-}
-
-BOOL CNetworkDetection::SetPort(int iPort)
-{
-	m_iPort = iPort;
 	return TRUE;
 }
 
@@ -145,11 +94,6 @@ BOOL CNetworkDetection::StartNetworkChecking()
 {
 	m_NetworkState = NETWORK_INITIALISING;
 	start(epNormal);
-//  DCC
-//	if (m_hNetworkChecker == NULL || WaitForSingleObjectEx(m_hNetworkChecker,0, false) == WAIT_OBJECT_0)
-//		m_hNetworkChecker = CreateThread(NULL, 0, 
-//			(LPTHREAD_START_ROUTINE)NetworkChecker, this, 0, NULL);
-//	return (m_hNetworkChecker != NULL);
 	return true;
 }
 
@@ -173,8 +117,6 @@ void CNetworkDetection::SetCallback(rho::apiGenerator::CMethodResult* pCallback)
 {
 	m_pDetectCallback = pCallback;
 }
-
-
 
 //////////////////////////////////
 //
@@ -208,7 +150,6 @@ void CNetworkDetection::CheckConnectivity()
 		m_szLastError = "Attempted to resolve hostname to connect to but did not succeed, return value (" + itos(iResult) + 
 			"), last error (" + itos(iErr) + ")";
 		LOG(INFO) + m_szLastError;
-		
 	}
 	else
 	{
@@ -271,6 +212,7 @@ void CNetworkDetection::CheckConnectivity()
 		}
 	}
 	delete[] szHost;
+	freeaddrinfo(result);
 	if (bConnectSuccessful)
 	{
 		if (m_NetworkState != NETWORK_CONNECTED)

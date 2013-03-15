@@ -350,7 +350,6 @@ BOOL CWAN::Connect(LPCTSTR szConnectionDestination, BOOL bUserRequest)
 			wsprintf(wLog, L"Failed to connect to WAN, Connection Manager error code: %l", hResult);
 			LOG(WARNING) + wLog;
 		}
-//d		ConnectionManagerStatusUpdate();
 	}
 
 	return bReturnValue;
