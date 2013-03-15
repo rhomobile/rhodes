@@ -122,6 +122,8 @@ public:
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >& getStringHashL2(){ return m_hashStrL2Res; }
     const rho::String& getString() const { return m_strRes; }
     const rho::StringW& getStringW() const { return m_strResW; }
+    rho::String& getString() { return m_strRes; }
+    rho::StringW& getStringW() { return m_strResW; }
     bool getBool() const { return m_bRes; }
     int64 getInt() const { return m_nRes; }
     double getDouble() const { return m_dRes; }

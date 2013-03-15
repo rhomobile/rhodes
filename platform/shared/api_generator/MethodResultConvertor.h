@@ -59,7 +59,7 @@ public:
     bool isArray() { return m_oResult.getType() == CMethodResult::eStringArray || m_oResult.getType() == CMethodResult::eArrayHash; }
     bool isHash() { return m_oResult.getType() == CMethodResult::eStringHash; }
     bool isError() { return m_oResult.isError(); }
-
+    bool isNil() { return m_oResult.getType() == CMethodResult::eNone; }
 
     VALUE getBool() { return rho_ruby_create_boolean(m_oResult.getBool() ? 1 : 0); }
     VALUE getInt() { return rho_ruby_create_integer(m_oResult.getInt()); }
@@ -122,13 +122,13 @@ public:
     }
     VALUE getHash()
     {
-        RAWLOGC_INFO("CRubyResultConvertor", "getHash()");
+        //RAWLOGC_INFO("CRubyResultConvertor", "getHash()");
 
         CHoldRubyValue valHash(rho_ruby_createHash());
 
         for(rho::Hashtable<rho::String, rho::String>::iterator it = m_oResult.getStringHash().begin(); it != m_oResult.getStringHash().end(); ++it)
         {
-            RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): %s->%s", it->first.c_str(), it->second.c_str());
+            //RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): %s->%s", it->first.c_str(), it->second.c_str());
             addHashToHash(valHash, it->first.c_str(), getObjectOrString(it->second));
         }
 
@@ -136,11 +136,11 @@ public:
         {
             CHoldRubyValue valHashL2(rho_ruby_createHash());
 
-            RAWLOGC_INFO1("CRubyResultConvertor", "getHash(): %s->L2 HASH", it->first.c_str());
+            //RAWLOGC_INFO1("CRubyResultConvertor", "getHash(): %s->L2 HASH", it->first.c_str());
 
             for(rho::Hashtable<rho::String, rho::String>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
             {
-                RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): L2: %s->%s", it2->first.c_str(), it2->second.c_str());
+                //RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): L2: %s->%s", it2->first.c_str(), it2->second.c_str());
                 addStrToHash(valHashL2, it2->first.c_str(), it2->second.c_str());
             }
 
@@ -348,24 +348,22 @@ public:
     {
         CRubyResultConvertor<RESULT> convertor(result, forCallback);
         rho::common::CAutoPtr<CHoldRubyValue> pRes;
-        if (convertor.isHash())
+        if (convertor.isNil())
+            pRes = new CHoldRubyValue(rho_ruby_get_NIL());
+        else if (convertor.isHash())
             pRes = new CHoldRubyValue(convertor.getHash());
-        if (convertor.isArray())
+        else if (convertor.isArray())
             pRes = new CHoldRubyValue(convertor.getArray());
-        else
-        if (convertor.isBool())
+        else if (convertor.isBool())
             pRes = new CHoldRubyValue(convertor.getBool());
-        else
-        if (convertor.isInt())
+        else if (convertor.isInt())
             pRes = new CHoldRubyValue(convertor.getInt());
-        else
-        if (convertor.isDouble())
+        else if (convertor.isDouble())
             pRes = new CHoldRubyValue(convertor.getDouble());
-        else
-        if (convertor.isString())
+        else if (convertor.isString())
             pRes = new CHoldRubyValue(convertor.getString());
-        else
-        if (convertor.isError()) {
+        else if (convertor.isError()) 
+        {
             VALUE message = convertor.getErrorMessage();
             if(rho_ruby_is_NIL(message))
             {
@@ -373,13 +371,17 @@ public:
             }
             pRes = new CHoldRubyValue(message);
         } else
+        {
+            LOG(ERROR) + "Unknown reulst type.";
             pRes = new CHoldRubyValue(rho_ruby_get_NIL());
-        if(forCallback)
+        }
+
+        if(forCallback && !convertor.isHash())
         {
             CHoldRubyValue resHash(rho_ruby_createHash());
             if(static_cast<CHoldRubyValue*>(pRes) != 0)
             {
-                RAWLOGC_INFO1("CMethodResultConvertor","Create '%s' in result hash", convertor.getResultParamName());
+                //RAWLOGC_INFO1("CMethodResultConvertor","Create '%s' in result hash", convertor.getResultParamName());
                 addHashToHash(resHash, convertor.getResultParamName(), *pRes);
             }
             return resHash;
