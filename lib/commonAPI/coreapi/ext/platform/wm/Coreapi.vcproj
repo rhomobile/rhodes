@@ -1382,11 +1382,11 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\shared\NetworkDetect.cpp"
+					RelativePath=".\src\NetworkDetect.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\shared\NetworkDetect.h"
+					RelativePath=".\src\NetworkDetect.h"
 					>
 				</File>
 				<File

@@ -180,16 +180,11 @@ VALUE rho_sys_makephonecall(const char* callname, int nparams, char** param_name
     return rho_ruby_get_NIL();
 }
 
-static int g_rho_has_network = 1;
-
-void rho_sysimpl_sethas_network(int nValue)
-{
-    g_rho_has_network = nValue;
-}
+int rho_sysimpl_has_network();
 
 VALUE rho_sys_has_network()
 {
-    return rho_ruby_create_boolean(g_rho_has_network!=0);
+    return rho_ruby_create_boolean(rho_sysimpl_has_network()!=0);
 }
 
 void rho_sys_app_exit()
