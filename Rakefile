@@ -97,17 +97,16 @@ class GeneratorTimeChecker
     if File.exist? time_cache_path
       time_cache_file = File.new(time_cache_path)
       @@cached_time   = Time.parse(time_cache_file.gets)
-      time_cache_file.close      
+      time_cache_file.close
+      
+      @@latest_update_time = rhogen_time >= api_time ? rhogen_time : api_time    
+          
+      if @@cached_time < @@latest_update_time
+        @@is_run_always = true
+      end       
     else
       @@is_run_always = true
     end
-
-    @@latest_update_time = rhogen_time >= api_time ? rhogen_time : api_time    
-    
-    if @@cached_time < @@latest_update_time
-      @@is_run_always = true
-    end 
-
   end
   
   def check(xmlpath)
