@@ -38,6 +38,9 @@ namespace apiGenerator
 
 class CMethodResult
 {
+public:
+    enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eArrayHash, eBool, eInt, eDouble, eError, eArgError};
+private:
     rho::String m_strRubyCallback, m_strCallbackParam, m_strParamName;
     rho::String m_strJSCallback;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
@@ -51,9 +54,6 @@ class CMethodResult
     double m_dRes;
 
     rho::String m_strError;
-    rho::boolean m_bCallInUIThread;
-    
-    enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eArrayHash, eBool, eInt, eDouble, eError, eArgError};
     ETypes m_ResType;
 
     unsigned long m_oRubyObjectClass;
@@ -73,13 +73,13 @@ class CMethodResult
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
 public:
 
-    CMethodResult(bool bCollectionMode=false): m_ResType(eNone), m_oRubyObjectClass(0), m_bCallInUIThread(false), m_bCollectionMode(bCollectionMode), m_strParamName("result"){}
+    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     const rho::String& getRubyCallback() const { return m_strRubyCallback; }
     void setRubyCallbackProc(unsigned long oRubyCallbackProc);
     void setJSCallback(const rho::String& strCallback){ m_strJSCallback = strCallback; }
-    void setCallInUIThread(rho::boolean bUIThread){ m_bCallInUIThread = bUIThread; }
+    void setCallInUIThread(rho::boolean bUIThread) {}
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
     const rho::String& getCallbackParam() const { return m_strCallbackParam; }
     void setParamName(const rho::String& strParam){m_strParamName = strParam;}
@@ -113,13 +113,23 @@ public:
         callCallback();
     }
 
-    bool isError(){ return m_ResType == eError || m_ResType == eArgError; }
+    ETypes getType() const { return m_ResType; }
+    bool isError() const { return m_ResType == eError || m_ResType == eArgError; }
 
     rho::Vector<rho::String>& getStringArray(){ return m_arStrRes; }
+    rho::Vector<rho::Hashtable<rho::String, rho::String> >& getHashArray() { return m_arHashRes; }
     rho::Hashtable<rho::String, rho::String>& getStringHash(){ return m_hashStrRes; }
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >& getStringHashL2(){ return m_hashStrL2Res; }
-    rho::String& getString(){ return m_strRes; }
-    bool getBool(){ return m_bRes; }
+    const rho::String& getString() const { return m_strRes; }
+    const rho::StringW& getStringW() const { return m_strResW; }
+    bool getBool() const { return m_bRes; }
+    int64 getInt() const { return m_nRes; }
+    double getDouble() const { return m_dRes; }
+
+    unsigned long getObjectClass() const { return m_oRubyObjectClass; }
+    const rho::String& getObjectClassPath() const { return m_strRubyObjectClassPath; }
+    const rho::String& getParamName() const { return m_strParamName; }
+    const rho::String& getErrorString() const { return m_strError; }
 
     rho::String toString();
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}
