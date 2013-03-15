@@ -1,5 +1,5 @@
 #if (defined WINCE || defined _WP8_LIB)
-#include "NetworkDetect.h"
+#include "../platform/wm/src/NetworkDetect.h"
 #include <list>
 #if (defined WINCE)
 #include "../platform/wm/src/ConnectionManager.h"
