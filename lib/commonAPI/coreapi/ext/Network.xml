@@ -320,14 +320,73 @@
 
         </METHODS>
         
-        <USER_OVERVIEW>
-            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-            <![CDATA[]]>
-    
-        </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
+        <REMARKS>
+            <REMARK title="Detecting a connection through proxies">
+                <DESC>
+                    <![CDATA[
+Because the detectConnection method is protocol agnostic, it will not communicate through HTTP proxies to reach a specified URL. In order to determine if you are connected when sitting behind a proxy you should call the method to attempt to connect to your proxy on the appropriate port. A successful connection to the proxy should be taken to assume the device is connected to a network. When configuring your WAN connection bear in mind that the proxy settings defined in the RhoElements configuration file will take precedence.
+                ]]>
+
+                </DESC>
+            </REMARK>
+            <REMARK title="Detecting a connection over WAN">
+                <DESC>
+                    <![CDATA[
+When detecting a network connection over WAN bear in mind if you specify a low networkPollInterval your device will frequently have an active data connection and may prevent the device occasionally from accepting incoming calls.
+                    ]]>
+
+                </DESC>
+            </REMARK>
+            <REMARK title="Preventing access to the device (WEH / WM)">
+                <DESC>
+                    <![CDATA[
+Receiving phone calls or texts whilst running RhoElements will cause the start button to be displayed on Windows Embedded Handheld devices, potentially offering users access to the operating system. It is recommended to set the following registry keys to disable Operating System access on Windows Embedded Handheld as required. The registry keys will be applied after a warm boot, omit them entirely to restore the Start and ‘X’ icons.
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Shell\BubbleTiles]   Location in Registry
+"HardwareStartKeyEnabled"=dword:00000001                    Prevents the Start icon from appearing in the bottom left
+"HardwareDoneKeyEnabled"=dword:00000001                     Prevents the 'X' icon from appearing in the bottom right
+
+                    ]]>
+
+                </DESC>
+            </REMARK>
+        </REMARKS>
+        <EXAMPLES >
+            <EXAMPLE title="Detecting a Network Connection">
+                <SECTIONS>
+					<SECTION>
+					<DESC>
+						This code example shows how you would detect if your device is connected to an external website
+					</DESC>
+					<CODE lang='ruby'>
+				<![CDATA[
+	#/app/Model
+	def index
+		networkProps = Hash.new
+		networkProps['host'] = 'www.motorolasolutions.com'
+		networkProps['port'] = '80'
+		networkProps['pollInterval'] = 10000
+		networkProps['detectionTimeout'] = 1000	
+		Rho::Network.detectConnection(networkProps, url_for(:action => :connectionEvent))  	
+	end
+
+	 def connectionEvent
+		puts "ConnectionEvent Called #{@params}"
+		if @params['connectionInformation'] == 'Disconnected'
+			Alert.show_popup "Connection Lost"
+		else
+			Alert.show_popup "Connection Restored"
+		end
+	  end
+						]]>
+					</CODE>
+					</SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
     </MODULE>
 </API>    
