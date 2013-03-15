@@ -466,6 +466,19 @@ CJSONEntry CJSONEntry::getEntry(const char* name) const
     return strRes;
 }
 
+/*static*/ String CJSONEntry::toJSON(const Hashtable<String,String>& hash)
+{
+    //TODO: toJSON
+    return "{}";
+}
+
+/*static*/ String CJSONEntry::toJSON(const Vector<String>& ar)
+{
+    //TODO: toJSON
+
+    return "[]";
+}
+
 }
 }
 #ifndef RHO_NO_RUBY

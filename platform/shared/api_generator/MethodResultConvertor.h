@@ -2,6 +2,8 @@
 
 #include "logging/RhoLog.h"
 
+extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
+
 namespace rho {
 namespace apiGenerator {
 
@@ -56,6 +58,7 @@ public:
     bool isInt() { return m_oResult.getType() == CMethodResult::eInt; }
     bool isDouble() { return m_oResult.getType() == CMethodResult::eDouble; }
     bool isString() { return m_oResult.getType() == CMethodResult::eString || m_oResult.getType() == CMethodResult::eStringW; }
+    bool isJSON() { return m_oResult.getType() == CMethodResult::eJSON; }
     bool isArray() { return m_oResult.getType() == CMethodResult::eStringArray || m_oResult.getType() == CMethodResult::eArrayHash; }
     bool isHash() { return m_oResult.getType() == CMethodResult::eStringHash; }
     bool isError() { return m_oResult.isError(); }
@@ -149,6 +152,24 @@ public:
 
         return valHash;
     }
+
+    VALUE getJSON()
+    {
+        char* szError = 0;
+        VALUE valObj = rjson_tokener_parse(m_oResult.getJSON().c_str(), &szError);
+
+        if ( !valObj )
+        {
+            LOG(ERROR) + "Incorrect json body.Error:" + (szError ? szError : "");
+            if ( szError )
+                free(szError);
+
+            valObj = rho_ruby_get_NIL();
+        }
+
+        return valObj;
+    }
+
     const char* getResultParamName()
     {
         switch(m_oResult.getType())
@@ -213,10 +234,12 @@ public:
     bool isBool() { return m_oResult.getType() == CMethodResult::eBool; }
     bool isInt() { return m_oResult.getType() == CMethodResult::eInt; }
     bool isDouble() { return m_oResult.getType() == CMethodResult::eDouble; }
+    bool isJSON() { return m_oResult.getType() == CMethodResult::eJSON; }
     bool isString() { return m_oResult.getType() == CMethodResult::eString || m_oResult.getType() == CMethodResult::eStringW; }
     bool isArray() { return m_oResult.getType() == CMethodResult::eStringArray || m_oResult.getType() == CMethodResult::eArrayHash; }
     bool isHash() { return m_oResult.getType() == CMethodResult::eStringHash; }
     bool isError() { return m_oResult.isError(); }
+    bool isNil() { return m_oResult.getType() == CMethodResult::eNone; }
 
     rho::String getBool() { return m_oResult.getBool() ? "true" : "false"; }
     rho::String getInt()
@@ -325,6 +348,12 @@ public:
 
         return resHash;
     }
+
+    rho::String& getJSON()
+    {
+        return m_oResult.getJSON();
+    }
+
     rho::String getError()
     {
         rho::String resHash = "{\"code\":";
@@ -362,6 +391,8 @@ public:
             pRes = new CHoldRubyValue(convertor.getDouble());
         else if (convertor.isString())
             pRes = new CHoldRubyValue(convertor.getString());
+        else if (convertor.isJSON())
+            pRes = new CHoldRubyValue(convertor.getJSON());
         else if (convertor.isError()) 
         {
             VALUE message = convertor.getErrorMessage();
@@ -376,7 +407,7 @@ public:
             pRes = new CHoldRubyValue(rho_ruby_get_NIL());
         }
 
-        if(forCallback && !convertor.isHash())
+        if(forCallback && !rho_ruby_is_hash(pRes->getValue()) )
         {
             CHoldRubyValue resHash(rho_ruby_createHash());
             if(static_cast<CHoldRubyValue*>(pRes) != 0)
@@ -397,35 +428,36 @@ public:
     {
         CJSONResultConvertor<RESULT> convertor(result);
         rho::String strRes = "\"result\":";
-        if (convertor.isArray())
+        if (convertor.isNil())
+            strRes += "null";
+        else if (convertor.isArray())
         {
             strRes += convertor.getArray();
-        } else
-        if (convertor.isHash())
+        }else if (convertor.isHash())
         {
             strRes += convertor.getHash();
-        } else
-        if (convertor.isString())
+        } else if (convertor.isString())
         {
             strRes += convertor.getString();
-        } else
-        if (convertor.isBool())
+        }else if (convertor.isJSON())
+        {
+            strRes += convertor.getJSON();
+        } else if (convertor.isBool())
         {
             strRes += convertor.getBool();
-        } else
-        if (convertor.isInt())
+        } else if (convertor.isInt())
         {
             strRes += convertor.getInt();
-        } else
-        if (convertor.isDouble())
+        } else  if (convertor.isDouble())
         {
             strRes += convertor.getDouble();
-        } else
-        if (convertor.isError())
+        } else  if (convertor.isError())
         {
             strRes = "\"error\": ";
             strRes += convertor.getError();
-        }
+        }else
+           strRes += "null";
+
         return strRes;
     }
 };

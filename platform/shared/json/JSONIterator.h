@@ -75,6 +75,9 @@ public:
 
     static String quoteValue(const String& strValue);
     static String quoteValueW(const StringW& strValue);
+
+    static String toJSON(const Hashtable<String,String>& hash);
+    static String toJSON(const Vector<String>& ar);
 };
 
 class CJSONArrayIterator

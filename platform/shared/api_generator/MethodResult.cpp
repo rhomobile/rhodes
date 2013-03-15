@@ -28,6 +28,8 @@ rho::String CMethodResult::toString()
 {
     if ( m_ResType == eString)
         return m_strRes;
+    else if ( m_ResType == eJSON)
+        return m_strJSONRes;
     else if ( m_ResType == eBool)
         return convertToStringA(m_bRes?1:0);
     else if ( m_ResType == eInt)
