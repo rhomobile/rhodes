@@ -92,6 +92,8 @@ public:
     }
     VALUE getArray()
     {
+        RAWTRACEC("CRubyResultConvertor", "getArray()");
+
         CHoldRubyValue valArray(rho_ruby_create_array());
 
         if(m_oResult.getType() == CMethodResult::eStringArray)
@@ -120,10 +122,13 @@ public:
     }
     VALUE getHash()
     {
+        RAWLOGC_INFO("CRubyResultConvertor", "getHash()");
+
         CHoldRubyValue valHash(rho_ruby_createHash());
 
         for(rho::Hashtable<rho::String, rho::String>::iterator it = m_oResult.getStringHash().begin(); it != m_oResult.getStringHash().end(); ++it)
         {
+            RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): %s->%s", it->first.c_str(), it->second.c_str());
             addHashToHash(valHash, it->first.c_str(), getObjectOrString(it->second));
         }
 
@@ -131,8 +136,11 @@ public:
         {
             CHoldRubyValue valHashL2(rho_ruby_createHash());
 
+            RAWLOGC_INFO1("CRubyResultConvertor", "getHash(): %s->L2 HASH", it->first.c_str());
+
             for(rho::Hashtable<rho::String, rho::String>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
             {
+                RAWLOGC_INFO2("CRubyResultConvertor", "getHash(): L2: %s->%s", it2->first.c_str(), it2->second.c_str());
                 addStrToHash(valHashL2, it2->first.c_str(), it2->second.c_str());
             }
 
@@ -155,6 +163,8 @@ public:
     }
     VALUE getErrorMessage()
     {
+        RAWTRACEC("CRubyResultConvertor", "getErrorMessage()");
+
         if(m_bForCallback)
         {
             return rho_ruby_create_string(m_oResult.getErrorString().c_str());
@@ -369,7 +379,8 @@ public:
             CHoldRubyValue resHash(rho_ruby_createHash());
             if(static_cast<CHoldRubyValue*>(pRes) != 0)
             {
-                addHashToHash(resHash, convertor.getResultParamName(), pRes->getValue());
+                RAWLOGC_INFO1("CMethodResultConvertor","Create '%s' in result hash", convertor.getResultParamName());
+                addHashToHash(resHash, convertor.getResultParamName(), *pRes);
             }
             return resHash;
         } else
