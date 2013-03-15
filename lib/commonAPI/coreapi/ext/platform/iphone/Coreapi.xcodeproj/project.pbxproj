@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C06A0F0316F21C880065EF81 /* ILog.h in Headers */ = {isa = PBXBuildFile; fileRef = C06A0EC016F21C880065EF81 /* ILog.h */; };
+		C06A0F0A16F21C880065EF81 /* Log_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EC716F21C880065EF81 /* Log_js_wrap.cpp */; };
+		C06A0F0B16F21C880065EF81 /* Log_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EC816F21C880065EF81 /* Log_ruby_wrap.cpp */; };
+		C06A0F0C16F21C880065EF81 /* LogBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EC916F21C880065EF81 /* LogBase.cpp */; };
+		C06A0F0D16F21C880065EF81 /* LogBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C06A0ECA16F21C880065EF81 /* LogBase.h */; };
+		C06A0F2616F21C880065EF81 /* log_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EE316F21C880065EF81 /* log_api_init.cpp */; };
+		C06A0F2716F21C880065EF81 /* log_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EE416F21C880065EF81 /* log_js_api.cpp */; };
+		C06A0F2816F21C880065EF81 /* log_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EE516F21C880065EF81 /* log_ruby_api.c */; };
+		C06A0F3C16F21C880065EF81 /* LogImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EF916F21C880065EF81 /* LogImpl.cpp */; };
 		FA01F1DF16E65FBB00D53D60 /* sqlite3_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1DC16E65FBB00D53D60 /* sqlite3_api_init.cpp */; };
 		FA01F1E016E65FBB00D53D60 /* sqlite3_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1DD16E65FBB00D53D60 /* sqlite3_js_api.cpp */; };
 		FA01F1E116E65FBB00D53D60 /* sqlite3_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1DE16E65FBB00D53D60 /* sqlite3_ruby_api.c */; };
@@ -65,6 +74,15 @@
 
 /* Begin PBXFileReference section */
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C06A0EC016F21C880065EF81 /* ILog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILog.h; sourceTree = "<group>"; };
+		C06A0EC716F21C880065EF81 /* Log_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Log_js_wrap.cpp; sourceTree = "<group>"; };
+		C06A0EC816F21C880065EF81 /* Log_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Log_ruby_wrap.cpp; sourceTree = "<group>"; };
+		C06A0EC916F21C880065EF81 /* LogBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogBase.cpp; sourceTree = "<group>"; };
+		C06A0ECA16F21C880065EF81 /* LogBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogBase.h; sourceTree = "<group>"; };
+		C06A0EE316F21C880065EF81 /* log_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log_api_init.cpp; path = generated/log_api_init.cpp; sourceTree = "<group>"; };
+		C06A0EE416F21C880065EF81 /* log_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log_js_api.cpp; path = generated/log_js_api.cpp; sourceTree = "<group>"; };
+		C06A0EE516F21C880065EF81 /* log_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = log_ruby_api.c; path = generated/log_ruby_api.c; sourceTree = "<group>"; };
+		C06A0EF916F21C880065EF81 /* LogImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogImpl.cpp; path = ../../shared/LogImpl.cpp; sourceTree = "<group>"; };
 		FA01F1DC16E65FBB00D53D60 /* sqlite3_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sqlite3_api_init.cpp; path = ../../shared/generated/sqlite3_api_init.cpp; sourceTree = "<group>"; };
 		FA01F1DD16E65FBB00D53D60 /* sqlite3_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sqlite3_js_api.cpp; path = ../../shared/generated/sqlite3_js_api.cpp; sourceTree = "<group>"; };
 		FA01F1DE16E65FBB00D53D60 /* sqlite3_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3_ruby_api.c; path = ../../shared/generated/sqlite3_ruby_api.c; sourceTree = "<group>"; };
@@ -165,11 +183,12 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				FA340B8116F0E399000094DD /* WebView */,
-				FA01F1D516E65F2D00D53D60 /* SQLLite */,
-				FA7C85C816E412950000EAE6 /* InitExtension.cpp */,
+				C06A0DE416F21BCC0065EF81 /* Log */,
 				FA7C85B216E411C20000EAE6 /* NetworkAccess */,
+				FA01F1D516E65F2D00D53D60 /* SQLLite */,
 				FA7C85B116E411B90000EAE6 /* System */,
+				FA340B8116F0E399000094DD /* WebView */,
+				FA7C85C816E412950000EAE6 /* InitExtension.cpp */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -180,6 +199,56 @@
 				FAD45FD51225FED600141873 /* CoreAPI_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		C06A0DE416F21BCC0065EF81 /* Log */ = {
+			isa = PBXGroup;
+			children = (
+				C06A0F4616F21FD10065EF81 /* Impl */,
+				C06A0DE516F21C0F0065EF81 /* generated */,
+			);
+			name = Log;
+			sourceTree = "<group>";
+		};
+		C06A0DE516F21C0F0065EF81 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C06A0EBF16F21C880065EF81 /* cpp */,
+				C06A0EBD16F21C880065EF81 /* shared */,
+			);
+			path = generated;
+			sourceTree = "<group>";
+		};
+		C06A0EBD16F21C880065EF81 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				C06A0EE316F21C880065EF81 /* log_api_init.cpp */,
+				C06A0EE416F21C880065EF81 /* log_js_api.cpp */,
+				C06A0EE516F21C880065EF81 /* log_ruby_api.c */,
+			);
+			name = shared;
+			path = ../../../shared;
+			sourceTree = "<group>";
+		};
+		C06A0EBF16F21C880065EF81 /* cpp */ = {
+			isa = PBXGroup;
+			children = (
+				C06A0EC016F21C880065EF81 /* ILog.h */,
+				C06A0EC716F21C880065EF81 /* Log_js_wrap.cpp */,
+				C06A0EC816F21C880065EF81 /* Log_ruby_wrap.cpp */,
+				C06A0EC916F21C880065EF81 /* LogBase.cpp */,
+				C06A0ECA16F21C880065EF81 /* LogBase.h */,
+			);
+			name = cpp;
+			path = ../../../shared/generated/cpp;
+			sourceTree = "<group>";
+		};
+		C06A0F4616F21FD10065EF81 /* Impl */ = {
+			isa = PBXGroup;
+			children = (
+				C06A0EF916F21C880065EF81 /* LogImpl.cpp */,
+			);
+			name = Impl;
 			sourceTree = "<group>";
 		};
 		FA01F1D516E65F2D00D53D60 /* SQLLite */ = {
@@ -427,6 +496,8 @@
 				FA340B9816F0E42F000094DD /* WebViewSingletonBase.h in Headers */,
 				FA340BA416F0E455000094DD /* WebView.h in Headers */,
 				FA340BA816F0E455000094DD /* WebViewSingleton.h in Headers */,
+				C06A0F0316F21C880065EF81 /* ILog.h in Headers */,
+				C06A0F0D16F21C880065EF81 /* LogBase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -516,6 +587,13 @@
 				FA340BA616F0E455000094DD /* WebViewFactorySingleton.m in Sources */,
 				FA340BA716F0E455000094DD /* WebViewSetup.m in Sources */,
 				FA340BA916F0E455000094DD /* WebViewSingleton.m in Sources */,
+				C06A0F0A16F21C880065EF81 /* Log_js_wrap.cpp in Sources */,
+				C06A0F0B16F21C880065EF81 /* Log_ruby_wrap.cpp in Sources */,
+				C06A0F0C16F21C880065EF81 /* LogBase.cpp in Sources */,
+				C06A0F2616F21C880065EF81 /* log_api_init.cpp in Sources */,
+				C06A0F2716F21C880065EF81 /* log_js_api.cpp in Sources */,
+				C06A0F2816F21C880065EF81 /* log_ruby_api.c in Sources */,
+				C06A0F3C16F21C880065EF81 /* LogImpl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
