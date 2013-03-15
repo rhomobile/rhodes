@@ -261,4 +261,13 @@ void CIEBrowserEngine::setNavigationTimeout(unsigned int dwMilliseconds)
 
 }
 
+bool CIEBrowserEngine::RegisterForMessage(unsigned int iMsgId)
+{
+	return true;
+}
+
+bool CIEBrowserEngine::DeRegisterForMessage(unsigned int iMsgId)
+{
+	return true;
+}
 #endif //!defined( OS_PLATFORM_MOTCE )
