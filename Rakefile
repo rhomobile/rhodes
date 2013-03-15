@@ -793,6 +793,18 @@ def init_extensions(startdir, dest)
   end
 
   puts 'init extensions'
+  
+  templates_path   = File.join($startdir, "res", "generators", "templates")         
+  last_change_data = find_latest_modified_date(templates_path)
+  time_cache    = File.join($app_path, "bin", "tmp", "rhogen.time")
+  if File.exist? time_cache
+    time_cache_file = File.new(time_cache)
+    read_time = Time.parse(time_cache_file.gets)
+    time_cache_file.close
+    
+    puts 'read_time=' + read_time.to_s
+  end
+  
   $app_config["extensions"].each do |extname|  
     puts 'ext - ' + extname
     
@@ -859,29 +871,20 @@ def init_extensions(startdir, dest)
 
           if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
             xml_api_paths    = xml_api_paths.split(',')
-            templates_path   = File.join($startdir, "res", "generators", "templates")         
-            last_change_data = find_latest_modified_date(templates_path)
-            time_cache    = File.join($app_path, "bin", "tmp", "rhogen.time")
-            is_run_rhogen = false
+            is_run_rhogen = true
                                                           
             xml_api_paths.each do |xml_api|
               xml_path      = File.join(extpath, xml_api.strip())
               xml_time      = File.mtime(xml_path)                  
                
-              last_change_data = last_change_data > xml_time ? last_change_data : xml_time
+              last_change_data2 = last_change_data > xml_time ? last_change_data : xml_time
 
-              if File.exist? time_cache
-                time_cache_file = File.new(time_cache)
-                read_time = Time.parse(time_cache_file.gets)
-                time_cache_file.close
-                
-                puts 'read_time=' + read_time.to_s
-                puts 'last_change_data=' + last_change_data.to_s 
-                
-                is_run_rhogen = read_time < last_change_data
-              else
-                is_run_rhogen = true
-              end
+              #if read_time
+              #  puts 'last_change_data=' + last_change_data2.to_s 
+              #  is_run_rhogen = read_time < last_change_data2
+              #else
+              #  is_run_rhogen = true
+              #end
               
               if is_run_rhogen                 
                 puts 'start running rhogen with api key'
@@ -889,31 +892,22 @@ def init_extensions(startdir, dest)
               end
             end
             
-            if is_run_rhogen
-              if !File.exist? File.join($app_path, "bin")
-                FileUtils.mkdir  File.join($app_path, "bin")
+            unless rhoapi_js_folder.nil?
+              Dir.glob(extpath + "/public/api/generated/Rho.*.js").each do |f|
+                extjsmodules << f.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
               end
-
-              if !File.exist? File.join($app_path, "bin", "tmp")
-                FileUtils.mkdir  File.join($app_path, "bin", "tmp")
-              end
-              
-              time_cache_file = File.new(time_cache, "w+")
-              time_cache_file.puts Time.new
-              time_cache_file.close
             end
           end
-
-          unless rhoapi_js_folder.nil?
-            Dir.glob(extpath + "/public/api/generated/Rho.*.js").each do |f|
-              extjsmodules << f.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
-            end
-          end
-                      
-        end
-      end      
+        end      
+      end  
     end    
   end
+  
+  FileUtils.mkdir(  File.join($app_path, "bin") ) unless File.exist? File.join($app_path, "bin")
+  FileUtils.mkdir(  File.join($app_path, "bin", "tmp") ) unless File.exist? File.join($app_path, "bin", "tmp")
+  time_cache_file = File.new(time_cache, "w+")
+  time_cache_file.puts Time.new
+  time_cache_file.close()
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
   puts "exts " + exts
@@ -1895,7 +1889,7 @@ namespace "run" do
                 xml_api_paths  = extconf["xml_api_paths"]
                 templates_path = File.join($startdir, "res", "generators", "templates")
                 
-                is_run_rhogen    = false
+                is_run_rhogen    = true
                 time_cache       = File.join($app_path, "bin", "tmp", "rhogen.time")
                 last_change_data = find_latest_modified_date(templates_path)
                 
@@ -1908,18 +1902,18 @@ namespace "run" do
                     
                     last_change_data = last_change_data > xml_time ? last_change_data : xml_time
 
-                    if File.exist? time_cache
-                      time_cache_file = File.new(time_cache)
-                      read_time = Time.parse(time_cache_file.gets)
-                      time_cache_file.close
-                      
-                      puts 'read_time=' + read_time.to_s
-                      puts 'last_change_data=' + last_change_data.to_s 
-                      
-                      is_run_rhogen = read_time < last_change_data
-                    else
-                      is_run_rhogen = true
-                    end
+                    #if File.exist? time_cache
+                    #  time_cache_file = File.new(time_cache)
+                    #  read_time = Time.parse(time_cache_file.gets)
+                    #  time_cache_file.close
+                    #  
+                    #  puts 'read_time=' + read_time.to_s
+                    #  puts 'last_change_data=' + last_change_data.to_s 
+                    #  
+                    #  is_run_rhogen = read_time < last_change_data
+                    #else
+                    #  is_run_rhogen = true
+                    #end
                     
                     if is_run_rhogen
                       cmd_line = "#{$startdir}/bin/rhogen api #{xml_path}"
