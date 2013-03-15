@@ -1103,6 +1103,15 @@ int rho_ruby_is_hash(VALUE val)
     return (TYPE(val) == T_HASH) ? 1 : 0;
 }
 
+VALUE rb_require_compiled_safe(VALUE obj, VALUE fname);
+VALUE rho_ruby_safe_require(const char *fname)
+{
+    VALUE fn = rb_str_new2(fname);
+    OBJ_FREEZE(fn);
+
+    return rb_require_compiled_safe( Qnil, fn);
+}
+
 const char* rho_ruby_get_object_id( VALUE valObj )
 {
     char ** ppString = NULL;
