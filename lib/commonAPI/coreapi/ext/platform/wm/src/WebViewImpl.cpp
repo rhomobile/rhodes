@@ -3,7 +3,6 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "rubyext/WebView.h"
-#include "json/JSONIterator.h"
 
 //extern "C" HWND getMainWnd();
 
@@ -38,33 +37,15 @@ public:
 
     virtual void getNativeMenu(rho::apiGenerator::CMethodResult& oResult)
     {
-        rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
-        RHODESAPP().getAppMenu().copyMenuItems(arAppMenuItems);
-
         rho::Vector< Hashtable<String, String> > arRes;
-        for ( int i = 0; i < (int)arAppMenuItems.size(); i++)
-        {
-            Hashtable<String, String> hash;
-            hash[arAppMenuItems[i].m_strLabel] = arAppMenuItems[i].m_strLink;
-            arRes.addElement(hash);
-        }
+        RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
 
         oResult.set(arRes);
     }
 
     virtual void setNativeMenu( const rho::Vector<rho::String>& value, rho::apiGenerator::CMethodResult& oResult)
     {
-        rho::Vector< Hashtable<String, String> > arRes;
-        for (int i = 0; i < (int)value.size(); i++)
-        {
-            rho::json::CJSONStructIterator oIter(value[i].c_str());
-
-            Hashtable<String, String> hash;
-            hash[oIter.getCurKey()] = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
-            arRes.addElement(hash);
-        }
-
-        RHODESAPP().getAppMenu().setAppMenuEx(arRes);
+        RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
     }
 
     //Android only
