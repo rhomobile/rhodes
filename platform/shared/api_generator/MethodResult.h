@@ -39,7 +39,7 @@ namespace apiGenerator
 class CMethodResult
 {
 public:
-    enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eArrayHash, eBool, eInt, eDouble, eError, eArgError};
+    enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eArrayHash, eJSON, eBool, eInt, eDouble, eError, eArgError};
 private:
     rho::String m_strRubyCallback, m_strCallbackParam, m_strParamName;
     rho::String m_strJSCallback;
@@ -47,6 +47,7 @@ private:
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > m_hashStrL2Res;
     rho::Vector<rho::Hashtable<rho::String, rho::String> > m_arHashRes;
     rho::String m_strRes;
+    rho::String m_strJSONRes;
     rho::StringW m_strResW;
     rho::Vector<rho::String> m_arStrRes;
     int64 m_nRes;
@@ -95,6 +96,7 @@ public:
 #endif //OS_ANDROID
 
     void set(const rho::String& res){ m_strRes = res;  m_ResType = eString; callCallback(); }
+    void setJSON(const rho::String& res){ m_strJSONRes = res;  m_ResType = eJSON; callCallback(); }
     void set(rho::String::const_pointer res){ m_strRes = res;  m_ResType = eString; callCallback(); }
 
     void set(const rho::Vector<rho::String>& res){ m_arStrRes = res;  m_ResType = eStringArray; callCallback(); }
@@ -123,6 +125,7 @@ public:
     const rho::String& getString() const { return m_strRes; }
     const rho::StringW& getStringW() const { return m_strResW; }
     rho::String& getString() { return m_strRes; }
+    rho::String& getJSON() { return m_strJSONRes; }
     rho::StringW& getStringW() { return m_strResW; }
     bool getBool() const { return m_bRes; }
     int64 getInt() const { return m_nRes; }

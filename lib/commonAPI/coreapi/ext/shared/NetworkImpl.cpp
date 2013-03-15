@@ -292,6 +292,33 @@ void CNetworkImpl::readHeaders( const rho::Hashtable<rho::String, rho::String>& 
 
 void CNetworkImpl::createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult )
 {
+/*
+    String strJSON = "{";
+    if ( resp.isSuccess() )
+    {
+        strJSON += "\"status\":" + CJSONEntry::quoteValue("ok");
+        if ( resp.isResponseRecieved())
+            strJSON += ",\"http_error\":" + CJSONEntry::quoteValue( convertToStringA(resp.getRespCode()) );
+    }
+    else
+    {
+        strJSON += "\"status\":" + CJSONEntry::quoteValue("error");
+        strJSON += ",\"error_code\":" + CJSONEntry::quoteValue(convertToStringA(RhoAppAdapter.getErrorFromResponse(resp)));
+        if ( resp.isResponseRecieved())
+            strJSON += ",\"http_error\":" + CJSONEntry::quoteValue( convertToStringA(resp.getRespCode()) );
+    }
+
+    String cookies = resp.getCookies();
+    if ( cookies.length() > 0 )
+        strJSON += ",\"cookies\":" + CJSONEntry::quoteValue(cookies);
+
+    strJSON += ",\"headers\":" + CJSONEntry::toJSON(mapHeaders);
+    strJSON += ",\"body\":" + CJSONEntry::quoteValue(String(resp.getCharData(), resp.getDataSize()));
+
+    strJSON += "}";
+
+    oResult.setJSON(strJSON); */
+
     Hashtable<String,String>& mapRes = oResult.getStringHash();
 
     if ( resp.isSuccess() )
