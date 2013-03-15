@@ -45,7 +45,8 @@ class GeneratorTimeChecker
   @@app_path           = nil
   @@is_run_always      = false
   @@cached_time        = nil
-  
+  @@do_cache           = false
+   
   def find_latest_modified_date(path)
     #puts 'find_latest_modified_date.path=' + path.to_s
     
@@ -112,12 +113,14 @@ class GeneratorTimeChecker
   def check(xmlpath)
     # for generate in first time
     if @@is_run_always
+      @@do_cache = true
       return true
     end
     
     xml_time = File.mtime(File.new(xmlpath))
     
     if @@cached_time < xml_time
+      @@do_cache = true
       return true
     end 
     
@@ -125,10 +128,12 @@ class GeneratorTimeChecker
   end
   
   def update()
+    return unless (@@do_cache == false)
+    
     time_cache_path  = File.join(@@app_path, "bin", "tmp", "rhogen.time")
     
-    FileUtils.mkdir(  File.join(@@app_path, "bin") ) unless File.exist? File.join(@@app_path, "bin")
-    FileUtils.mkdir(  File.join(@@app_path, "bin", "tmp") ) unless File.exist? File.join(@@app_path, "bin", "tmp")
+    FileUtils.mkdir(File.join(@@app_path, "bin") ) unless File.exist? File.join(@@app_path, "bin")
+    FileUtils.mkdir(File.join(@@app_path, "bin", "tmp") ) unless File.exist? File.join(@@app_path, "bin", "tmp")
     time_cache_file = File.new(time_cache_path, "w+")
     time_cache_file.puts Time.new
     time_cache_file.close()
