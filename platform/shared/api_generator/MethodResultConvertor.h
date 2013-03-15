@@ -1,8 +1,10 @@
 #pragma once
 
 #include "logging/RhoLog.h"
+#include "json/JSONIterator.h"
 
 extern "C" VALUE rjson_tokener_parse(const char *str, char** pszError );
+using namespace rho::json;
 
 namespace rho {
 namespace apiGenerator {
@@ -216,14 +218,12 @@ class CJSONResultConvertor<CMethodResult>
         {
             res = "{ \"__rhoID\": \"";
             res += str;
-            res += "\", \"__rhoClass\": \"";
-            res += m_oResult.getObjectClassPath();
-            res += "\"}";
+            res += "\", \"__rhoClass\": ";
+            res += CJSONEntry::quoteValue(m_oResult.getObjectClassPath());
+            res += "}";
         } else
         {
-            res = "\"";
-            res += str;
-            res += "\"";
+            res += CJSONEntry::quoteValue(str);
         }
         return res;
     }
@@ -293,11 +293,9 @@ public:
                     if (j > 1)
                         resArray += ",";
 
-                    resArray += "\"";
-                    resArray += it->first;
-                    resArray += "\":\"";
-                    resArray += it->second;
-                    resArray += "\"";
+                    resArray += CJSONEntry::quoteValue(it->first);
+                    resArray += ":";
+                    resArray += CJSONEntry::quoteValue(it->second);
                 }
 
                 resArray += "}";
@@ -318,9 +316,8 @@ public:
             if (i > 0)
                 resHash += ",";
 
-            resHash += "\"";
-            resHash += it->first;
-            resHash += "\": ";
+            resHash += CJSONEntry::quoteValue(it->first);
+            resHash += ": ";
             resHash += getObjectOrString(it->second);
         }
 
@@ -329,19 +326,16 @@ public:
             if (i > 0)
                 resHash += ",";
 
-            resHash += "\"";
-            resHash += it->first;
-            resHash += "\":{";
+            resHash += CJSONEntry::quoteValue(it->first);
+            resHash += ":{";
             for(rho::Hashtable<rho::String, rho::String>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
             {
                 if (it2 != it->second.begin())
                     resHash += ",";
 
-                resHash += "\"";
-                resHash += it2->first;
-                resHash += "\":\"";
-                resHash += it2->second;
-                resHash += "\"";
+                resHash += CJSONEntry::quoteValue(it2->first);
+                resHash += ":";
+                resHash += CJSONEntry::quoteValue(it2->second);
             }
             resHash += "}";
         }
@@ -359,12 +353,11 @@ public:
         rho::String resHash = "{\"code\":";
         if(m_oResult.getType() == CMethodResult::eArgError)
             resHash += "-32602,\"message\":";
-        else
-        if(m_oResult.getType() == CMethodResult::eError)
-            resHash += "-32603,\"message\":\"";
+        else if(m_oResult.getType() == CMethodResult::eError)
+            resHash += "-32603,\"message\":";
 
-        resHash += m_oResult.getErrorString();
-        resHash += "\"}";
+        resHash += CJSONEntry::quoteValue(m_oResult.getErrorString());
+        resHash += "}";
         return resHash;
     }
 };

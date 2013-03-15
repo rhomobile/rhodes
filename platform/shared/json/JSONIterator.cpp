@@ -468,15 +468,38 @@ CJSONEntry CJSONEntry::getEntry(const char* name) const
 
 /*static*/ String CJSONEntry::toJSON(const Hashtable<String,String>& hash)
 {
-    //TODO: toJSON
-    return "{}";
+    String resHash = "{ ";
+    unsigned i = 0;
+    for( rho::Hashtable<rho::String, rho::String>::const_iterator it = hash.begin(); it != hash.end(); ++it, ++i)
+    {
+        if (i > 0)
+            resHash += ",";
+
+        resHash += "\"";
+        resHash += it->first;
+        resHash += "\": ";
+        resHash += CJSONEntry::quoteValue(it->second);
+    }
+
+    resHash += "}";
+
+    return resHash;
 }
 
 /*static*/ String CJSONEntry::toJSON(const Vector<String>& ar)
 {
-    //TODO: toJSON
+	String strRes = "[";
+    for( int i = 0; i < (int)ar.size(); i++ )
+    {
+        if ( i > 0 )
+            strRes += ",";
 
-    return "[]";
+        strRes += CJSONEntry::quoteValue(ar[i]);
+    }
+    
+	strRes += "]";
+
+    return strRes; 
 }
 
 }
