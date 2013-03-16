@@ -32,7 +32,7 @@ namespace rhodes
         public void toolbarRemoveAllButtons() { _mainPage.toolbarRemoveAllButtons(); }
         public void toolbarShow() { _mainPage.toolbarShow(); }
         public void toolbarHide() { _mainPage.toolbarHide(); }
-        public int tabbarIsStarted() { return _mainPage.tabbarIsStarted(); }
+        public int toolbarIsStarted() { return _mainPage.toolbarIsStarted(); }
         public int toolbarGetHeight() { return _mainPage.toolbarGetHeight(); }
         public void toolbarAddAction(string text) { _mainPage.toolbarAddAction(text); }
         public void toolbarAddAction(string icon, string text, string action) { _mainPage.toolbarAddAction(icon, text, action); }
@@ -47,6 +47,7 @@ namespace rhodes
         public void tabbarRemoveAllTabs(bool restore) { _mainPage.tabbarRemoveAllTabs(restore); }
         public void tabbarShow() { _mainPage.tabbarShow(); }
         public void tabbarHide() { _mainPage.tabbarHide(); }
+        public int tabbarIsStarted() { return _mainPage.tabbarIsStarted(); }
         public int tabbarGetHeight() { return _mainPage.tabbarGetHeight(); }
         public void tabbarSwitch(int index) { _mainPage.tabbarSwitch(index); }
         public int tabbarGetCurrent() { return _mainPage.tabbarGetCurrent(); }
