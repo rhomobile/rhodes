@@ -131,9 +131,10 @@ class GeneratorTimeChecker
     return unless (@@do_cache == false)
     
     time_cache_path  = File.join(@@app_path, "bin", "tmp", "rhogen.time")
-    
+
     FileUtils.mkdir(File.join(@@app_path, "bin") ) unless File.exist? File.join(@@app_path, "bin")
     FileUtils.mkdir(File.join(@@app_path, "bin", "tmp") ) unless File.exist? File.join(@@app_path, "bin", "tmp")
+    
     time_cache_file = File.new(time_cache_path, "w+")
     time_cache_file.puts Time.new
     time_cache_file.close()
@@ -361,6 +362,61 @@ def update_rhodefs_header_file
         puts "RhoDefs.h has been modified: RhoProfiler is " + (use_profiler ? "enabled!" : "disabled!")
         File.open( File.join( $startdir, "platform/shared/common/RhoDefs.h" ), 'wb' ){ |f| f.write(content) }
     end
+end
+
+namespace "clean" do
+  task :common do
+    
+    if $config["platform"] == "bb"
+      return
+    end
+    
+    extpaths = $app_config["extpaths"]
+      
+    $app_config["extensions"].each do |extname|
+      puts 'ext - ' + extname
+       
+      extpath = nil
+      extpaths.each do |p|
+         ep = File.join(p, extname)
+         if File.exists?( ep ) && is_ext_supported(ep)
+           extpath = ep
+           break
+         end
+      end    
+
+      if extpath.nil?        
+        extpath = find_ext_ingems(extname) 
+        if extpath
+          extpath = nil unless is_ext_supported(extpath)
+        end    
+      end
+         
+      if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
+        raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
+      end
+           
+      unless extpath.nil?
+        extyml = File.join(extpath, "ext.yml")
+        puts "extyml " + extyml 
+        
+        if File.file? extyml
+          extconf = Jake.config(File.open(extyml))
+          type    = extconf["exttype"]
+       
+          if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"      
+            rm_rf  File.join(extpath, "ext", "shared", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "android", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "iphone", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "osx", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "wm", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "wp8", "generated") 
+            rm_rf  File.join(extpath, "ext", "public", "api", "generated")
+          end
+        end
+      end    
+    end
+  end  
 end
 
 namespace "config" do
@@ -881,8 +937,8 @@ def init_extensions(startdir, dest)
     end
       
     if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
-		raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
-	end
+		  raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
+	  end
 
     $app_extensions_list[extname] = extpath
         
