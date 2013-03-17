@@ -494,7 +494,7 @@ namespace "config" do
                 
             end
             
-            if !$app_config["capabilities"].index('native_browser')
+            if !$app_config["capabilities"].index('native_browser') && $current_platform != "android"
                 $app_config["capabilities"] += ["motorola_browser"] unless $app_config["capabilities"].index('motorola_browser')
             end
         end
@@ -516,14 +516,17 @@ namespace "config" do
         end
     end
 
-    # add rawsensors extension for rhoelements app
-    if $current_platform == "iphone" || $current_platform == "android"
-        if $app_config["app_type"] == 'rhoelements'
+    if $app_config["app_type"] == 'rhoelements'
+    
+        # add rawsensors extension for rhoelements app
+        if $current_platform == "iphone" || $current_platform == "android"
             if !$app_config['extensions'].index('rhoelementsext')
                 $app_config["extensions"] += ["rawsensors"] unless $app_config['extensions'].index('rawsensors')
                 $app_config["extensions"] += ["audiocapture"] unless $app_config['extensions'].index('audiocapture')
             end
         end
+        
+        $app_config["extensions"] += ["barcode"] unless $app_config['extensions'].index('barcode') unless $current_platform == "win32"
     end
 
     if $app_config['extensions'].index('rhoelementsext')
