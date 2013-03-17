@@ -51,6 +51,7 @@ namespace rhoruntime
 		void toolbarRemoveAllButtons(void);
 		void toolbarShow(void);
 		void toolbarHide(void);
+		int toolbarIsStarted(void);
 		int toolbarGetHeight(void);
 		void toolbarAddAction(::Platform::String^ text);
 		void toolbarAddAction(::Platform::String^ icon, ::Platform::String^ text, ::Platform::String^ action);

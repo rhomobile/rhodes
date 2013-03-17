@@ -347,7 +347,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 
     initAppUrls();
 
-    LOGCONF().initRemoteLog();
+    //LOGCONF().initRemoteLog();
 
     initHttpServer();
 
