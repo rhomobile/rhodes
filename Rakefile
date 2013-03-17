@@ -38,7 +38,7 @@ module Rake
   end
 end
 
-#TODO check generate api class
+#TODO check generate api 
 class GeneratorTimeChecker
   
   @@latest_update_time = nil
@@ -94,6 +94,10 @@ class GeneratorTimeChecker
     
     last_change_data = find_latest_modified_date(templates_path)
     time_cache_path  = File.join(@@app_path, "bin", "tmp", "rhogen.time")
+     
+    if last_change_data.nil?
+      @@is_run_always = true
+    end
     
     if File.exist? time_cache_path
       time_cache_file = File.new(time_cache_path)
@@ -101,7 +105,8 @@ class GeneratorTimeChecker
       time_cache_file.close
       
       @@latest_update_time = rhogen_time >= api_time ? rhogen_time : api_time    
-          
+      puts 'cached time=' + @@latest_update_time.to_s
+            
       if @@cached_time < @@latest_update_time
         @@is_run_always = true
       end       
@@ -111,20 +116,31 @@ class GeneratorTimeChecker
   end
   
   def check(xmlpath)
+    @@do_cache = false
+    
     # for generate in first time
     if @@is_run_always
       @@do_cache = true
-      return true
     end
     
+    extpath  = File.dirname(xmlpath)
     xml_time = File.mtime(File.new(xmlpath))
+    
+    if !(File.exist? File.join(extpath, "shared", "generated"))              ||
+       !(File.exist? File.join(extpath, "platform", "android", "generated")) ||
+       !(File.exist? File.join(extpath, "platform", "iphone", "generated"))  ||
+#       !(File.exist? File.join(extpath, "platform", "osx", "generated"))     ||
+#       !(File.exist? File.join(extpath, "platform", "wm", "generated"))      ||
+#       !(File.exist? File.join(extpath, "platform", "wp8", "generated"))     ||
+       !(File.exist? File.join(extpath, "..", "public", "api", "generated"))
+      @@do_cache = true
+    end
     
     if @@cached_time < xml_time
       @@do_cache = true
-      return true
     end 
     
-    return false
+    return @@do_cache
   end
   
   def update()
@@ -204,8 +220,6 @@ end
 $application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_license", "motorola_license_company","name"]
 $winxpe_build = false
       
-
-
 def make_application_build_config_header_file
   f = StringIO.new("", "w+")      
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -255,7 +269,6 @@ def make_application_build_config_header_file
   f.puts ''
   
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_configs.c"), f)
-  
 end
 
 def make_application_build_capabilities_header_file
@@ -343,7 +356,6 @@ def update_rhoprofiler_java_file
         puts "RhoProfiler.java has been modified: RhoProfiler is " + (use_profiler ? "enabled!" : "disabled!")
         File.open( File.join( $startdir, "platform/bb/RubyVM/src/com/rho/RhoProfiler.java" ), 'wb' ){ |f| f.write(content) }
     end
-
 end
 
 def update_rhodefs_header_file
@@ -367,7 +379,7 @@ def update_rhodefs_header_file
 end
 
 namespace "clean" do
-  task :common do
+  task :common => "config:common" do
     
     if $config["platform"] == "bb"
       return
@@ -405,8 +417,9 @@ namespace "clean" do
         if File.file? extyml
           extconf = Jake.config(File.open(extyml))
           type    = extconf["exttype"]
+          wm_type = extconf["wm"]["exttype"] if extconf["wm"]
        
-          if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"      
+          if type != "prebuilt" && wm_type != "prebuilt"      
             rm_rf  File.join(extpath, "ext", "shared", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "android", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "iphone", "generated")
@@ -1996,10 +2009,11 @@ namespace "run" do
                   xml_api_paths = xml_api_paths.split(',')
 
                   xml_api_paths.each do |xml_api|
-                    xml_path      = File.join(extpath, xml_api.strip())
+                    xml_path = File.join(extpath, xml_api.strip())
 
                     #TODO checker check
                     if gen_checker.check(xml_path)
+#                      puts 'ruuuuuuuun generatooooooooooooor'
                       cmd_line = "#{$startdir}/bin/rhogen api #{xml_path}"
                       puts "cmd_line: #{cmd_line}"
                       system "#{cmd_line}"
