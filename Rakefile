@@ -128,7 +128,9 @@ class GeneratorTimeChecker
   end
   
   def update()
-    return unless (@@do_cache == false)
+    if @@do_cache == false
+      return
+    end
     
     time_cache_path  = File.join(@@app_path, "bin", "tmp", "rhogen.time")
 
