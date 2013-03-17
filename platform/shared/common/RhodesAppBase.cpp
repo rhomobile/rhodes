@@ -159,13 +159,25 @@ void rho_do_send_log(rho::apiGenerator::CMethodResult& oResult)
         pSession = rho::sync::RhoconnectClientManager::getRhoSession();
     }
 
-    String strLogUrl = RHOCONF().getPath("logserver");
+    String strQuery;
+    String strLogUrl = RHOCONF().getString("Log.destinationURI");
     if ( strLogUrl.length() == 0 )
-        strLogUrl = RHOCONF().getPath("syncserver");
-    
-    String strQuery = strLogUrl + "client_log?" +
-        "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
-    
+    {
+        strLogUrl = RHOCONF().getPath("logserver");
+        if ( strLogUrl.length() == 0 )
+            strLogUrl = RHOCONF().getPath("syncserver");
+        
+        strQuery = strLogUrl + "client_log?" +
+            "client_id=" + strClientID + "&device_pin=" + strDevicePin + "&log_name=" + RHOCONF().getString("logname");
+    }else
+    {
+        String strSign = "?";
+        if ( strrchr(strLogUrl.c_str(), '?') )
+            strSign = "&";
+
+        strQuery = strLogUrl + strSign + "client_id=" + strClientID + "&device_pin=" + strDevicePin;
+    }
+
     net::CMultipartItem oItem;
     oItem.m_strFilePath = LOGCONF().getLogFilePath();
     oItem.m_strContentType = "application/octet-stream";
