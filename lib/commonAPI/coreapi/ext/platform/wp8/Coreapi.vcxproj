@@ -261,6 +261,7 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
+    <ClCompile Include="..\wm\src\NetworkDetect.cpp" />
     <ClCompile Include="src\SystemImpl.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</CompileAsWinRT>
@@ -284,6 +285,7 @@
     <ClInclude Include="..\..\shared\generated\cpp\NetworkBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SQLite3Base.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h" />
+    <ClInclude Include="..\wm\src\NetworkDetect.h" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="platform.winmd">

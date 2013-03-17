@@ -146,6 +146,9 @@
     <ClCompile Include="..\..\shared\generated\cpp\LogBase.cpp">
       <Filter>Log\shared\generated\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\wm\src\NetworkDetect.cpp">
+      <Filter>NetworkAccess\shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
@@ -171,6 +174,9 @@
     </ClInclude>
     <ClInclude Include="..\..\shared\generated\cpp\LogBase.h">
       <Filter>Log\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\wm\src\NetworkDetect.h">
+      <Filter>NetworkAccess\shared</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

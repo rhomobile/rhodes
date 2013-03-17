@@ -144,7 +144,7 @@ void LogSettings::closeRemoteLog()
 	    m_pSocketSink = 0;
 	}
 }
-
+/*
 void LogSettings::initRemoteLog()
 {
 
@@ -160,14 +160,32 @@ void LogSettings::initRemoteLog()
 
 	if(!m_pSocketSink && m_strLogURL != "")
 		m_pSocketSink = new CLogSocketSink(*this);
-}
+}*/
 
-void LogSettings::reinitRemoteLog() {
+void LogSettings::reinitRemoteLog() 
+{
     closeRemoteLog();
-	if(!m_pSocketSink && m_strLogURL != "")
+	if ( m_strLogURL.length() > 0 && isLogToSocket() )
 		m_pSocketSink = new CLogSocketSink(*this);
 }
 
+void LogSettings::setLogToSocket(bool bLogToSocket)
+{ 
+    if ( m_bLogToSocket != bLogToSocket )
+    {
+        m_bLogToSocket = bLogToSocket;
+        reinitRemoteLog();
+    }
+}
+
+void LogSettings::setLogURL(const char* szLogURL) 
+{ 
+    if ( m_strLogURL != szLogURL )
+    {
+        m_strLogURL = rho::String(szLogURL); 
+        reinitRemoteLog();
+    }
+}
 
 void LogSettings::getLogTextW(StringW& strTextW)
 {
@@ -228,6 +246,8 @@ void LogSettings::loadFromConf(rho::common::RhoSettings& oRhoConf)
         setDisabledCategories( oRhoConf.getString("ExcludeLogCategories").c_str() );
 	if ( oRhoConf.isExist( "LogToSocket") )
 		setLogToSocket( oRhoConf.getBool("LogToSocket") );
+	if ( oRhoConf.isExist( "rhologurl") )
+		setLogURL( oRhoConf.getString("rhologurl").c_str() );
 	if ( oRhoConf.isExist( "log_exclude_filter") )
         setExcludeFilter( oRhoConf.getString("log_exclude_filter") );
 	if ( oRhoConf.isExist( "LogMemPeriod" ) )
@@ -544,9 +564,10 @@ VALUE rho_conf_read_log(int limit)
 }
 
 
-void rho_log_resetup_http_url(const char* http_log_url) {
+void rho_log_resetup_http_url(const char* http_log_url) 
+{
     LOGCONF().setLogURL(http_log_url);
-    LOGCONF().reinitRemoteLog();
+    //LOGCONF().reinitRemoteLog();
 }
 
 #endif //RHO_NO_RUBY

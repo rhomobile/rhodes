@@ -115,7 +115,7 @@ public:
     void setLogToFile(bool bLogToFile){ m_bLogToFile = bLogToFile;}
 
     bool isLogToSocket()const{ return m_bLogToSocket;}
-    void setLogToSocket(bool bLogToSocket){ m_bLogToSocket = bLogToSocket;}
+    void setLogToSocket(bool bLogToSocket);
 
     const String& getLogFilePath()const{ return m_strLogFilePath;}
     void setLogFilePath(const String& logFilePath);
@@ -130,9 +130,9 @@ public:
 	void setLogPrefix(bool bLogPrefix){ m_bLogPrefix = bLogPrefix; }
 
 	const String& getLogURL() const { return m_strLogURL; }
-	void setLogURL(const char* szLogURL) { m_strLogURL = rho::String(szLogURL); }
+	void setLogURL(const char* szLogURL);
 
-	void initRemoteLog();
+	//void initRemoteLog();
     void reinitRemoteLog();
 	void closeRemoteLog();
 
