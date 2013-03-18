@@ -108,6 +108,15 @@ void CSystemImplBase::getPlatform(CMethodResult& oResult)
 #endif
 }
 
+void CSystemImplBase::getIsRhoSimulator(rho::apiGenerator::CMethodResult& oResult)
+{
+#ifdef RHODES_EMULATOR
+    oResult.set(true);
+#else
+    oResult.set(false);
+#endif
+}
+
 void CSystemImplBase::getHasCamera(CMethodResult& oResult)
 {
     oResult.set(true);

@@ -233,7 +233,7 @@ module Rho
         require req['model'] + '/' + undercase #req[:modelpath]+ undercase
         
         is_found = true
-      elsif defined?( RHODES_EMULATOR )
+      elsif Rho::System.isRhoSimulator
         begin
             require req['model'] + '/' + undercase #req[:modelpath]+ undercase
             is_found = true

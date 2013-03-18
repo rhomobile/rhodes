@@ -224,7 +224,7 @@ module Rho
       APPLICATIONS[appname]
     end
     
-if defined?( RHODES_EMULATOR )
+if Rho::System.isRhoSimulator
     def load_models_from_file(app_manifest_filename=nil)
         require 'rhoappmanifest'
         

@@ -183,7 +183,7 @@ public:
         rho_webview_full_screen_mode(enable ? 1 : 0);
     }
 
-    virtual void setCookie( const rho::String& url,  const rho::String& cookie,  int tabIndex, rho::apiGenerator::CMethodResult& oResult)
+    virtual void setCookie( const rho::String& url,  const rho::String& cookie, rho::apiGenerator::CMethodResult& oResult)
     {
         rho_webview_set_cookie( url.c_str(), cookie.c_str() );
     }

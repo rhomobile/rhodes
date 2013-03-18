@@ -44,7 +44,7 @@ module LocalizationSimplified
         init_current_locale()
 
         unless check_exist
-if defined?( RHODES_EMULATOR )        
+if Rho::System.isRhoSimulator
             file = File.join( __rhoGetRhodesDir(), 'lib/framework', file)
 else
             file = File.join( __rhoGetRuntimeDir(), 'lib', file)

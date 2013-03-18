@@ -24,7 +24,7 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-if defined?( RHODES_EMULATOR )
+if Rho::System.isRhoSimulator
     RHO_RB_EXT = '.rb'
     RHO_ERB_EXT = '.erb'
     RHO_APPS_DIR = ''
@@ -128,7 +128,7 @@ begin
     
     require 'rho'
 
-if defined?( RHODES_EMULATOR )
+if Rho::System.isRhoSimulator
     require 'debugger'
 end
 	

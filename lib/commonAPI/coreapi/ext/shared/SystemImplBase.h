@@ -27,6 +27,7 @@ public:
     virtual void getDeviceOwnerName(CMethodResult& oResult);
     virtual void getApplicationIconBadge(CMethodResult& oResult);
     virtual void setApplicationIconBadge( int value, CMethodResult& oResult);
+    virtual void getIsRhoSimulator(rho::apiGenerator::CMethodResult& oResult);
 
     virtual void getStartParams(rho::apiGenerator::CMethodResult& oResult);
     virtual void unzipFile( const rho::String& localPathToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult);

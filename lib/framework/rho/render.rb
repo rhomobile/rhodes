@@ -32,7 +32,7 @@ module Rho
   class RhoController
     begin
       is_translator_exist = true
-      is_translator_exist = Rho::file_exist?( File.join(__rhoGetRuntimeDir(), 'lib/rhodes_translator' + RHO_RB_EXT) ) if !defined?( RHODES_EMULATOR )
+      is_translator_exist = Rho::file_exist?( File.join(__rhoGetRuntimeDir(), 'lib/rhodes_translator' + RHO_RB_EXT) ) if !Rho::System.isRhoSimulator
           
       if is_translator_exist
         require 'rhodes_translator'
