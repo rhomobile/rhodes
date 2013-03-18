@@ -40,6 +40,7 @@
 -(void) setZoomPage:(float)value;
 -(void) getTextZoomLevel:(id<IMethodResult>)methodResult;
 -(void) setTextZoomLevel:(int)value;
+-(void) getActiveTab:(id<IMethodResult>)methodResult;
 -(void) refresh:(int)tabIndex;
 -(void) navigate:(NSString*)url tabIndex:(int)tabIndex;
 -(void) navigateBack:(int)tabIndex;
@@ -48,7 +49,7 @@
 -(void) executeJavascript:(NSString*)javascriptText tabIndex:(int)tabIndex;
 -(void) active_tab:(id<IMethodResult>)methodResult;
 -(void) full_screen_mode:(BOOL)enable;
--(void) setCookie:(NSString*)url cookie:(NSString*)cookie tabIndex:(int)tabIndex;
+-(void) setCookie:(NSString*)url cookie:(NSString*)cookie;
 -(void) save:(NSString*)format path:(NSString*)path tabIndex:(int)tabIndex;
 -(void) set_menu_items:(NSDictionary*)menuItems;
 

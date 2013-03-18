@@ -158,6 +158,10 @@ extern NSString* rho_webview_get_current_url(int tab_index);
     //unsupported on iOS
 }
 
+-(void) getActiveTab:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[NSNumber numberWithInt:rho_webview_active_tab()]];
+}
+
 -(void) refresh:(int)tabIndex {
     rho_webview_refresh(tabIndex);
 }
@@ -183,14 +187,14 @@ extern NSString* rho_webview_get_current_url(int tab_index);
 }
 
 -(void) active_tab:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[NSNumber numberWithInt:rho_webview_active_tab()]];
+    [self getActiveTab:methodResult];
 }
 
 -(void) full_screen_mode:(BOOL)enable {
     [self setFullScreen:enable];
 }
 
--(void) setCookie:(NSString*)url cookie:(NSString*)cookie tabIndex:(int)tabIndex {
+-(void) setCookie:(NSString*)url cookie:(NSString*)cookie {
     rho_webview_set_cookie([url UTF8String], [cookie UTF8String]);
 }
 

@@ -241,13 +241,6 @@
                     <PARAM name="cookie" type="STRING">
                         <DESC>One or more name/value pairs of the format "NAME=VALUE". Separate multiple name/value pairs with a semicolon, such as "NAME1=VALUE1; NAME2=VALUE2".</DESC>
                     </PARAM>
-
-                    <PARAM name="tabIndex" type="INTEGER" default="-1">
-                        <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
-                        <CAN_BE_NIL>
-                            <DESC>Set cookie to active WebView.</DESC>
-                        </CAN_BE_NIL>
-                    </PARAM>
                 </PARAMS>
             </METHOD>
 
