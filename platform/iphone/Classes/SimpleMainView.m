@@ -1033,11 +1033,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
     }
     
     // Retrieve cookie for http url
-    NSString *c = [[Rhodes sharedInstance] cookie:[url absoluteString]];
-    if (c && [request isKindOfClass:[NSMutableURLRequest class]]) {
-        NSMutableURLRequest *r = (NSMutableURLRequest*)request;
-        [r addValue:c forHTTPHeaderField:@"Cookie"];
-    }
+    //NSString *c = [[Rhodes sharedInstance] cookie:[url absoluteString]];
+    //if (c && [request isKindOfClass:[NSMutableURLRequest class]]) {
+    //    NSMutableURLRequest *r = (NSMutableURLRequest*)request;
+    //    [r addValue:c forHTTPHeaderField:@"Cookie"];
+    //}
     [[SignatureDelegate getSharedInstance] hideSignatureInlineView];
     return YES;
 }
