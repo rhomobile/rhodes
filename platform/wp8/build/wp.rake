@@ -205,11 +205,12 @@ namespace "build" do
       Dir.glob(File.join("**", '*.*')).each do |f|
         if #f.start_with?('db')          ||
            f.end_with?('.rb')           ||
-           f.end_with?('.erb')          ||
+           f.end_with?('.erb')         
+		   # ||
            #f == "apps/app_manifest.txt" ||
            #f == "apps/rhoconfig.txt"    ||
            #f == "apps/rhoconfig.txt.timestamp" ||
-           f == "RhoBundleMap.txt"
+           #f == "RhoBundleMap.txt"
           next;
         end
 
