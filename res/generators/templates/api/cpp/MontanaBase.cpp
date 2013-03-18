@@ -135,7 +135,7 @@ void <%= propBaseClass %>::<%= module_method.native_name%>(<%= module_method.cac
 { <% if module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
     getProperty( "<%= module_method.linked_property.native_name %>", oResult); <%
 elsif module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER %>
-    setProperty( "<%= module_method.linked_property.native_name %>", rho::common::convertToStringA(value), oResult );<%
+    setProperty( "<%= module_method.linked_property.native_name %>", rho::common::convertToStringA(<%= module_method.cached_data["cpp_call_params"] %>), oResult );<%
 end %>
 }<% end ; else %>
 <%= propBaseClass %>::<%= propBaseClass %>()
