@@ -593,7 +593,10 @@ namespace "config" do
             end
         end
         
-        $app_config["extensions"] += ["barcode"] unless $app_config['extensions'].index('barcode') unless $current_platform == "win32"
+        if $current_platform == "wm"
+            #TODO: add for another platforms
+            $app_config["extensions"] += ["barcode"] unless $app_config['extensions'].index('barcode')
+        end    
     end
 
     if $app_config['extensions'].index('rhoelementsext')
