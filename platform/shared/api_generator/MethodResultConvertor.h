@@ -244,16 +244,12 @@ public:
     rho::String getBool() { return m_oResult.getBool() ? "true" : "false"; }
     rho::String getInt()
     {
-        char buf[32];
-        sprintf("%d", buf, static_cast<int>(m_oResult.getInt()));
-        return buf;
+        return convertToStringA(m_oResult.getInt());
     }
 
     rho::String getDouble()
     {
-        char buf[32];
-        sprintf("%f", buf, m_oResult.getDouble());
-        return buf;
+        return convertToStringA(m_oResult.getDouble());
     }
     rho::String getString()
     {

@@ -1,10 +1,12 @@
-#if (defined WINCE || defined _WP8_LIB)
-#include "NetworkDetect.h"
+#include "common/RhoPort.h"
+#if (defined OS_WINCE || defined OS_WP8)
+#include "../platform/wm/src/NetworkDetect.h"
 #include <list>
-#if (defined WINCE)
+#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 #include "../platform/wm/src/ConnectionManager.h"
 #endif
 #endif
+
 #include "generated/cpp/NetworkBase.h"
 #include "net/INetRequest.h"
 #include "common/RhoAppAdapter.h"
@@ -40,7 +42,7 @@ public:
 
     CNetworkImpl(): CNetworkSingletonBase()
 	{
-#if (defined WINCE)
+#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 		CRhoExtData rhodesData = RHODESAPP().getExtManager().makeExtData();
 		if (rhodesData.m_hBrowserWnd)
 		{
@@ -54,7 +56,7 @@ public:
 
 	~CNetworkImpl()
 	{
-#if (defined WINCE)
+#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 		if (m_pConnectionManager)
 			delete m_pConnectionManager;
 #endif
@@ -77,7 +79,7 @@ public:
 	virtual void stopDetectingConnection(rho::apiGenerator::CMethodResult& oResult);
     virtual void connectWan( const rho::String& connectionDestination, rho::apiGenerator::CMethodResult& oResult);
     virtual void disconnectWan(rho::apiGenerator::CMethodResult& oResult);
-#if (defined WINCE)
+#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
     virtual bool onWndMsg(MSG& oMsg)
 	{
 		if (oMsg.message == WM_USER_CONNECTION_MANGER_STATUS)
@@ -95,9 +97,9 @@ private:
     void readHeaders( const rho::Hashtable<rho::String, rho::String>& propertyMap, Hashtable<String,String>& mapHeaders );
     void createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult );
 	//  RE1 Network API
-#if (defined WINCE || defined _WP8_LIB)
+#if (defined OS_WINCE || defined OS_WP8)
 	std::list<CNetworkDetection*> m_networkPollers;
-#if (defined WINCE)
+#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 	CWAN *m_pConnectionManager;
 #endif
 #endif
@@ -354,6 +356,11 @@ extern "C" void rho_sysimpl_sethas_network(int nValue)
     g_rho_has_network = nValue > 1 ? 1 : 0;
 }
 
+extern "C" int rho_sysimpl_has_network()
+{
+    return g_rho_has_network;
+}
+
 extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue)
 {
     g_rho_has_cellnetwork = nValue;
@@ -418,7 +425,7 @@ void CNetworkImpl::detectConnection( const rho::Hashtable<rho::String, rho::Stri
 
 void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oResult)
 {
-#if (defined WINCE || defined _WP8_LIB)
+#if (defined OS_WINCE || defined OS_WP8)
 	//  Find the network detector which matches our callback
 	CNetworkDetection *pNetworkDetection = NULL;
 	std::list<CNetworkDetection*>::iterator i;
@@ -444,7 +451,7 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
 
 void CNetworkImpl::connectWan( const rho::String& connectionDestination, rho::apiGenerator::CMethodResult& oResult)
 {
-#if (defined WINCE)
+#if (defined OS_WINCE)&& !defined(OS_PLATFORM_MOTCE) 
 	//  Only applicable to WM/CE, specific to connection manager
 	//  There is only a single object for connection manager access as you can only have
 	//  one physical connection.
@@ -455,7 +462,7 @@ void CNetworkImpl::connectWan( const rho::String& connectionDestination, rho::ap
 
 void CNetworkImpl::disconnectWan(rho::apiGenerator::CMethodResult& oResult)
 {
-#if (defined WINCE)
+#if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 	//  Only applicable to WM/CE, specific to connection manager
 	m_pConnectionManager->Disconnect(TRUE);
 #endif

@@ -173,6 +173,11 @@ public:
         oResult.set( rho_webview_active_tab() );
     }
 
+    virtual void getActiveTab(rho::apiGenerator::CMethodResult& oResult)
+    {
+        oResult.set( rho_webview_active_tab() );
+    }
+
     virtual void full_screen_mode( bool enable, rho::apiGenerator::CMethodResult& oResult)
     {
         rho_webview_full_screen_mode(enable ? 1 : 0);

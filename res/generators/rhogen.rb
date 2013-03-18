@@ -798,6 +798,7 @@ module Rhogen
       def initialize
         @name = ''
         @type = MethodParam::TYPE_STRING
+        @param = nil
         @native_name = ''
         @readonly = false
         @writeonly = false
@@ -816,6 +817,7 @@ module Rhogen
 
       attr_accessor :name
       attr_accessor :type
+      attr_accessor :param
       attr_accessor :native_name
       attr_accessor :readonly
       attr_accessor :writeonly
@@ -1421,6 +1423,7 @@ module Rhogen
             module_property = ModuleProperty.new()
             module_property.name = xml_module_property.attribute("name").to_s
             module_property.native_name = module_property.name.split(/[^a-zA-Z0-9\_]/).map{|w| w}.join("")
+            module_property.param = process_param(xml_module_property, module_property.native_name, module_item, nil, 0)
             if xml_module_property.attribute("generateAccessors") != nil
                module_property.generate_accessors =  xml_module_property.attribute("generateAccessors").to_s.downcase != "false"
             else
@@ -1563,11 +1566,14 @@ module Rhogen
                 setter_method.name = module_property.name + "="
                 setter_method.native_name = 'set' + module_property.native_name[0..0].upcase + module_property.native_name[1..module_property.native_name.length-1]
                 setter_method.desc = 'setter for "'+ module_property.name + '" property'
-                param = MethodParam.new()
-                param.name = "value"
-                param.can_be_nil = false
-                param.type = module_property.type
-                setter_method.params = [param]
+                unless (module_property.param)
+                  param = MethodParam.new()
+                  param.name = "value"
+                  param.can_be_nil = false
+                  param.type = module_property.type
+                  module_property.param = param
+                end
+                setter_method.params = [module_property.param]
                 setter_method.run_in_thread = module_property.run_in_thread
                 setter_method.is_factory_method = false
                 setter_method.is_return_value = false

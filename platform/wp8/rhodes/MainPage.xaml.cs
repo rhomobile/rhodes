@@ -367,7 +367,17 @@ namespace rhodes
             updateAppBarModeAndVisibility(false);
         }
 
-		private int toolbarGetHeightFunc()
+        private int toolbarIsStartedFunc()
+        {
+            return ApplicationBar.Buttons.Count > 0 ? 1 : 0;
+        }
+
+        public int toolbarIsStarted()
+        {
+            return IntValueReturnAgent(toolbarIsStartedFunc);
+        }
+
+        private int toolbarGetHeightFunc()
         {
             return ApplicationBar.IsVisible ? (ApplicationBar.Mode == ApplicationBarMode.Default ? 72 : 30) : 0;
         }

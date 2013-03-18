@@ -167,6 +167,14 @@ __rhoGetCallbackObject(VALUE obj, VALUE valIndex)
     return result;
 }
 
+VALUE rb_require_compiled_safe(VALUE obj, VALUE fname)
+{
+    VALUE result;
+    VALUE res;
+    result = require_compiled(fname, &res, 0);
+    return result;
+}
+
 VALUE
 rb_require_compiled(VALUE obj, VALUE fname)
 {

@@ -347,7 +347,7 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 
     initAppUrls();
 
-    LOGCONF().initRemoteLog();
+    //LOGCONF().initRemoteLog();
 
     initHttpServer();
 
@@ -1852,13 +1852,17 @@ void CRhodesApp::notifyLocalServerStarted()
     m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::local_server_started));
 }
 	
-extern "C" unsigned long rb_require(const char *fname);
 extern "C" int  rho_ruby_is_started();
+extern "C" unsigned long rho_ruby_safe_require(const char *fname);
 
 void CExtManager::requireRubyFile( const char* szFilePath )
 {
     if( rho_ruby_is_started() )
-        rb_require(szFilePath);
+    {
+        unsigned long val = rho_ruby_safe_require(szFilePath);
+        if ( rho_ruby_is_NIL(val) )
+            LOG(INFO) + "requireRubyFile cannot find file: " + szFilePath;
+    }
 }
 	
 	void CRhodesApp::setNetworkStatusNotify(const String& url, int poll_interval)

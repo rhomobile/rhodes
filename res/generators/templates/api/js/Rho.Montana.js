@@ -1,18 +1,37 @@
+<%
+    def js_compatible_name(name)
+        name.end_with?('=') ? 'set' + name[0].upcase + name[1..name.length-2] : name
+    end
+
+    def namespace(a_module)
+        a_module.parents.clone().push(a_module.name).join(".")
+    end
+%>
+
 (function ($, rho, rhoUtil) {
     'use strict';
 
-    var module = null;
-
-    var apiReq = rhoUtil.apiReqFor('<%= $cur_module.parents.clone().push($cur_module.name).join(".") %>');
+    var moduleNS = '<%= namespace $cur_module %>';
+    var apiReq = rhoUtil.apiReqFor(moduleNS);
 
     // === <%= $cur_module.name %> class definition ===
 
-    function <%= $cur_module.name %>(id) {
-        if (!(this instanceof <%= $cur_module.name %>)) return new <%= $cur_module.name %>(id);
+    function <%= $cur_module.name %>() {
+        var id = null;
+        this.getId = function () {return id;};
 
-        this.getId = function () {
-            return id;
-        };
+        if (1 == arguments.length && arguments[0][rhoUtil.rhoIdParam()]) {
+            if (moduleNS != arguments[0][rhoUtil.rhoClassParam()]) {
+                throw "Wrong class instantiation!";
+            }
+            id = arguments[0][rhoUtil.rhoIdParam()];
+        } else {
+            id = rhoUtil.nextId();
+            // constructor methods are following:
+            <% ($cur_module.methods.select{|m| m.is_constructor}).each do |module_method| %>
+                this.<%= js_compatible_name module_method.name %>.apply(this, arguments);
+            <% end %>
+        }
     };
 
     // === <%= $cur_module.name %> instance members ===
@@ -23,17 +42,12 @@
         params = module_method.params.map do |param|
             "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
-
-        actual_method_name = module_method.name
-        if actual_method_name.end_with?('=')
-            actual_method_name = 'set' + actual_method_name[0].upcase + actual_method_name[1..actual_method_name.length-2]
-        end
     %>
-        <%= $cur_module.name %>.prototype.<%= actual_method_name %> = function(<%= params %>) {
+        <%= $cur_module.name %>.prototype.<%= js_compatible_name module_method.name %> = function(<%= params %>) {
             return apiReq({
                 instanceId: this.getId(),
                 args: arguments,
-                method: '<%= actual_method_name %>',
+                method: '<%= module_method.name %>',
                 valueCallbackIndex: <%= module_method.params.size %>
             });
         };
@@ -100,6 +114,6 @@
 
     <% end %>
 
-    rhoUtil.namespace('<%= $cur_module.parents.clone().push($cur_module.name).join(".") %>', <%= $cur_module.name %>);
+    rhoUtil.namespace(moduleNS, <%= $cur_module.name %>);
 
 })(jQuery, Rho, Rho.util);
