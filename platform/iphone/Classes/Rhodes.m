@@ -308,14 +308,34 @@ static Rhodes *instance = NULL;
 
 - (void)setCookie:(NSString*)cookie forUrl:(NSString*)url {
     NSURL *parsed = [NSURL URLWithString:url];
-    NSString *basicUrl = [NSString stringWithFormat:@"%@://%@/%@", parsed.scheme, parsed.host, parsed.path];
-    [cookies setObject:cookie forKey:basicUrl];
+    
+    
+    NSRange range = [cookie rangeOfString:@"="];
+    if (range.location > 0) {
+        NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:5];
+        [dict setObject:parsed.host forKey:NSHTTPCookieDomain];
+        [dict setObject:parsed.path forKey:NSHTTPCookiePath];
+        [dict setObject:[cookie substringToIndex:range.location] forKey:NSHTTPCookieName];
+        [dict setObject:[cookie substringFromIndex:(range.location+1)] forKey:NSHTTPCookieValue];
+        
+        NSHTTPCookie* cook = [NSHTTPCookie cookieWithProperties:dict];
+        
+        [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cook];
+    }
+    //NSString *basicUrl = [NSString stringWithFormat:@"%@://%@/%@", parsed.scheme, parsed.host, parsed.path];
+    //const char* cu = [basicUrl UTF8String];
+    //[cookies setObject:cookie forKey:basicUrl];
 }
 
+//unused now
 - (NSString*)cookie:(NSString*)url {
     NSURL *parsed = [NSURL URLWithString:url];
     NSString *basicUrl = [NSString stringWithFormat:@"%@://%@/%@", parsed.scheme, parsed.host, parsed.path];
     NSString *c = [cookies objectForKey:basicUrl];
+    if (c == nil) {
+        NSString *basicDomainUrl = [NSString stringWithFormat:@"%@://%@/%@", parsed.scheme, parsed.host, @""];
+        c = [cookies objectForKey:basicDomainUrl];
+    }
     return c;
 }
 
@@ -660,6 +680,7 @@ static Rhodes *instance = NULL;
     
     NSLog(@"Init all windows");
     
+    [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:NO];
     
