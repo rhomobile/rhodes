@@ -58,7 +58,7 @@ module Rho
       end
 
       def get_db_fullpathname(postfix)
-if defined?( RHODES_EMULATOR )                  
+if Rho::System.isRhoSimulator
           File.join(__rhoGetCurrentDir(), RHO_EMULATOR_DIR + '/db/syncdb' + postfix + '.sqlite')
 else
           if System::get_property('platform') == 'APPLE'
@@ -71,7 +71,7 @@ end
       end
 
       def get_blob_folder()
-if defined?( RHODES_EMULATOR )                        
+if Rho::System.isRhoSimulator
         File.join(__rhoGetCurrentDir(), RHO_EMULATOR_DIR + '/db/db-files')
 else
           if System::get_property('platform') == 'APPLE'
@@ -95,7 +95,7 @@ end
           if System::get_property('platform') == 'APPLE'
                  cur_dir = __rhoGetDBDir()
           end
-if defined?( RHODES_EMULATOR )
+if Rho::System.isRhoSimulator
         cur_dir = __rhoGetCurrentDir()
         cur_dir = File.join(cur_dir, RHO_EMULATOR_DIR)
 end

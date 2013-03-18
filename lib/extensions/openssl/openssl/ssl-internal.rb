@@ -79,7 +79,7 @@ module OpenSSL
       def initialize(*args)
         require "fcntl"
         flag = File::NONBLOCK
-        if (System::get_property('platform') != 'WINDOWS_DESKTOP') && !defined?( RHODES_EMULATOR )
+        if (System::get_property('platform') != 'WINDOWS_DESKTOP') && !Rho::System.isRhoSimulator
           flag |= @io.fcntl(Fcntl::F_GETFL) if defined?(Fcntl::F_GETFL)
         end
         @io.fcntl(Fcntl::F_SETFL, flag)

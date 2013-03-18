@@ -110,6 +110,10 @@
             <PROPERTY name="isEmulator" type="BOOLEAN" readOnly="true">
                 <DESC>Is application is running on emulator.</DESC>
             </PROPERTY>
+            <PROPERTY name="isRhoSimulator" type="BOOLEAN" readOnly="true">
+                <DESC>Is application is running on RhoSimulator.</DESC>
+            </PROPERTY>
+
             <PROPERTY name="hasCalendar" type="BOOLEAN" readOnly="true">
                 <DESC>Is calendar support is available.</DESC>
             </PROPERTY>
