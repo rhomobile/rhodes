@@ -230,9 +230,10 @@ void RhoRubyStart()
 
 #endif
 
-//#ifdef RHODES_EMULATOR
-//    rb_const_set(rb_cObject, rb_intern("RHODES_EMULATOR"), Qtrue);
-//#endif
+//DO not use it! Keeps for backward compatibility with ruby extensions. Use Rho::System.isRhoSimulator
+#ifdef RHODES_EMULATOR
+    rb_const_set(rb_cObject, rb_intern("RHODES_EMULATOR"), Qtrue);
+#endif
 
 #if !defined(OS_WP8)
 
