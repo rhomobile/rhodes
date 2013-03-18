@@ -115,7 +115,7 @@
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
-            <PROPERTY name="activeTab" type="INTEGER" default="0">
+            <PROPERTY name="activeTab" type="INTEGER" default="0" readOnly="true">
                 <DESC>An active tab index.</DESC>
             </PROPERTY>
 
