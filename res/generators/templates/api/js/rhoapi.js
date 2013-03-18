@@ -22,7 +22,7 @@ var Rho = Rho || (function ($) {
         if ('undefined' == typeof tag || !tag)
             tag = RHO_ID_PARAM;
 
-        return (tag + idCount++);
+        return (tag +'#'+ idCount++);
     }
 
     function prepareCallback(callback, /*opt*/ isPersistent, /*opt*/ id) {
@@ -74,7 +74,7 @@ var Rho = Rho || (function ($) {
         if (null == result || 'object' != typeof result)
             return result;
 
-        var value = $.extend({}, result);
+        var value = $.extend(result instanceof Array ? [] : {}, result);
 
         return scanForInstances(value);
     }
@@ -207,30 +207,11 @@ var Rho = Rho || (function ($) {
 
     // === Factory handling =========================================================
 
-    var objClasses = {};
-
     function objectForClass(className, id) {
-        //var obj = null;
-        //if ("function" == typeof objClasses[className]) {
-        //    obj = new objClasses[className](id);
-        //}
-        return namespace(className)(id);
-    }
-
-    function off_objectForClass(className, id) {
-        var obj = null;
-        if ("function" == typeof objClasses[className]) {
-            obj = new objClasses[className](id);
-        }
-        return obj;
-    }
-
-    function off_defaultObjectForClass(className, id) {
-        var obj = null;
-        if ("function" == typeof objClasses[className]) {
-            obj = new objClasses[className](id);
-        }
-        return obj;
+        var instObject = {};
+        instObject[RHO_CLASS_PARAM] = className;
+        instObject[RHO_ID_PARAM] = id;
+        return new (namespace(className))(instObject);
     }
 
     // === Modules loading implementation ============================================
@@ -296,6 +277,8 @@ var Rho = Rho || (function ($) {
         namespace: namespace,
         apiReqFor: apiReqFor,
         namesToProps: namesToProps,
+        rhoIdParam: function(){return RHO_ID_PARAM},
+        rhoClassParam: function(){return RHO_CLASS_PARAM},
         nextId: nextId
     };
 
