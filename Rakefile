@@ -117,16 +117,14 @@ class GeneratorTimeChecker
   
   def check(xmlpath)
     @@do_cache = false
+
+    extpath  = File.dirname(xmlpath)
+    xml_time = File.mtime(File.new(xmlpath))
     
     # for generate in first time
     if @@is_run_always
       @@do_cache = true
-    end
-    
-    extpath  = File.dirname(xmlpath)
-    xml_time = File.mtime(File.new(xmlpath))
-    
-    if !(File.exist? File.join(extpath, "shared", "generated"))              ||
+    elsif !(File.exist? File.join(extpath, "shared", "generated"))              ||
        !(File.exist? File.join(extpath, "platform", "android", "generated")) ||
        !(File.exist? File.join(extpath, "platform", "iphone", "generated"))  ||
 #       !(File.exist? File.join(extpath, "platform", "osx", "generated"))     ||
@@ -134,9 +132,7 @@ class GeneratorTimeChecker
 #       !(File.exist? File.join(extpath, "platform", "wp8", "generated"))     ||
        !(File.exist? File.join(extpath, "..", "public", "api", "generated"))
       @@do_cache = true
-    end
-    
-    if @@cached_time < xml_time
+    elsif @@cached_time < xml_time
       @@do_cache = true
     end 
     
