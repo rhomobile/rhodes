@@ -165,6 +165,8 @@ int rho_ruby_is_integer(VALUE val);
 int rho_ruby_is_boolean(VALUE val);
 int rho_ruby_is_double(VALUE val);
 
+VALUE rho_ruby_safe_require(const char *fname);
+
 #define RHO_PARAM_UNKNWON 0
 #define RHO_PARAM_STRING 1
 #define RHO_PARAM_ARRAY 2

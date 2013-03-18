@@ -38,6 +38,123 @@ module Rake
   end
 end
 
+#TODO check generate api 
+class GeneratorTimeChecker
+  
+  @@latest_update_time = nil
+  @@app_path           = nil
+  @@is_run_always      = false
+  @@cached_time        = nil
+  @@do_cache           = false
+   
+  def find_latest_modified_date(path)
+    #puts 'find_latest_modified_date.path=' + path.to_s
+    
+    latest_mod_time = nil      
+    templates_dir   = Dir.new(path)
+    
+    templates_dir.each { |item|       
+      if item == '.' || item == '..'
+        next        
+      end
+  
+      full_path = File.join(path, item)
+      mod_time  = nil
+      
+      if File.directory?(full_path)
+        mod_time = find_latest_modified_date(full_path)
+        
+        if mod_time.nil?
+          next
+        end            
+      else
+        mod_time = File.mtime(full_path)
+      end
+      
+      if latest_mod_time.nil?
+        latest_mod_time = mod_time
+      else
+        if latest_mod_time < mod_time
+          latest_mod_time = mod_time
+        end
+      end
+    }
+    
+    return latest_mod_time
+  end
+  
+  def init(startdir, app_path)
+    @@app_path       = app_path
+    templates_path   = File.join(startdir, "res", "generators", "templates", "api")
+    rhogen_path      = File.join(startdir, "res", "generators", "rhogen.rb")
+    
+    api_time         = find_latest_modified_date(templates_path)
+    rhogen_time      = File.mtime(rhogen_path)
+    last_update_time = nil
+    
+    last_change_data = find_latest_modified_date(templates_path)
+    time_cache_path  = File.join(@@app_path, "bin", "tmp", "rhogen.time")
+     
+    if last_change_data.nil?
+      @@is_run_always = true
+    end
+    
+    if File.exist? time_cache_path
+      time_cache_file = File.new(time_cache_path)
+      @@cached_time   = Time.parse(time_cache_file.gets)
+      time_cache_file.close
+      
+      @@latest_update_time = rhogen_time >= api_time ? rhogen_time : api_time    
+      puts 'cached time=' + @@latest_update_time.to_s
+            
+      if @@cached_time < @@latest_update_time
+        @@is_run_always = true
+      end       
+    else
+      @@is_run_always = true
+    end
+  end
+  
+  def check(xmlpath)
+    @@do_cache = false
+
+    extpath  = File.dirname(xmlpath)
+    xml_time = File.mtime(File.new(xmlpath))
+    
+    # for generate in first time
+    if @@is_run_always
+      @@do_cache = true
+    elsif !(File.exist? File.join(extpath, "shared", "generated"))              ||
+       !(File.exist? File.join(extpath, "platform", "android", "generated")) ||
+       !(File.exist? File.join(extpath, "platform", "iphone", "generated"))  ||
+#       !(File.exist? File.join(extpath, "platform", "osx", "generated"))     ||
+#       !(File.exist? File.join(extpath, "platform", "wm", "generated"))      ||
+#       !(File.exist? File.join(extpath, "platform", "wp8", "generated"))     ||
+       !(File.exist? File.join(extpath, "..", "public", "api", "generated"))
+      @@do_cache = true
+    elsif @@cached_time < xml_time
+      @@do_cache = true
+    end 
+    
+    return @@do_cache
+  end
+  
+  def update()
+    if @@do_cache == false
+      return
+    end
+    
+    time_cache_path  = File.join(@@app_path, "bin", "tmp", "rhogen.time")
+
+    FileUtils.mkdir(File.join(@@app_path, "bin") ) unless File.exist? File.join(@@app_path, "bin")
+    FileUtils.mkdir(File.join(@@app_path, "bin", "tmp") ) unless File.exist? File.join(@@app_path, "bin", "tmp")
+    
+    time_cache_file = File.new(time_cache_path, "w+")
+    time_cache_file.puts Time.new
+    time_cache_file.close()
+  end
+end
+
 # Restore process error mode on Windows.
 # Error mode controls wether system error message boxes will be shown to user.
 # Java disables message boxes and we enable them back.
@@ -99,49 +216,6 @@ end
 $application_build_configs_keys = ['security_token', 'encrypt_database', 'android_title', 'iphone_db_in_approot', 'iphone_set_approot', 'iphone_userpath_in_approot', "motorola_license", "motorola_license_company","name"]
 $winxpe_build = false
       
-def find_latest_modified_date(path)
-  #puts 'find_latest_modified_date.path=' + path.to_s
-  
-  rhogen_path     = File.join($startdir, "bin", "rhogen")
-  latest_mod_time = nil      
-  templates_dir   = Dir.new(path)
-  
-  templates_dir.each { |item|       
-    if item == '.' || item == '..'
-      next        
-    end
-
-    full_path = File.join(path, item)
-    mod_time  = nil
-    
-    if File.directory?(full_path)
-      mod_time = find_latest_modified_date(full_path)
-      
-      if mod_time.nil?
-        next
-      end            
-    else
-      mod_time = File.mtime(full_path)
-    end
-    
-    if latest_mod_time.nil?
-      latest_mod_time = mod_time
-    else
-      if latest_mod_time < mod_time
-        latest_mod_time = mod_time
-      end
-    end
-  }
-  
-  rhogen_time = File.mtime(rhogen_path)
-  
-  if latest_mod_time.nil?
-    return rhogen_time
-  end
-  
-  return rhogen_time >= latest_mod_time ? rhogen_time : latest_mod_time
-end
-
 def make_application_build_config_header_file
   f = StringIO.new("", "w+")      
   f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -191,7 +265,6 @@ def make_application_build_config_header_file
   f.puts ''
   
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_configs.c"), f)
-  
 end
 
 def make_application_build_capabilities_header_file
@@ -279,7 +352,6 @@ def update_rhoprofiler_java_file
         puts "RhoProfiler.java has been modified: RhoProfiler is " + (use_profiler ? "enabled!" : "disabled!")
         File.open( File.join( $startdir, "platform/bb/RubyVM/src/com/rho/RhoProfiler.java" ), 'wb' ){ |f| f.write(content) }
     end
-
 end
 
 def update_rhodefs_header_file
@@ -300,6 +372,62 @@ def update_rhodefs_header_file
         puts "RhoDefs.h has been modified: RhoProfiler is " + (use_profiler ? "enabled!" : "disabled!")
         File.open( File.join( $startdir, "platform/shared/common/RhoDefs.h" ), 'wb' ){ |f| f.write(content) }
     end
+end
+
+namespace "clean" do
+  task :common => "config:common" do
+    
+    if $config["platform"] == "bb"
+      return
+    end
+    
+    extpaths = $app_config["extpaths"]
+      
+    $app_config["extensions"].each do |extname|
+      puts 'ext - ' + extname
+       
+      extpath = nil
+      extpaths.each do |p|
+         ep = File.join(p, extname)
+         if File.exists?( ep ) && is_ext_supported(ep)
+           extpath = ep
+           break
+         end
+      end    
+
+      if extpath.nil?        
+        extpath = find_ext_ingems(extname) 
+        if extpath
+          extpath = nil unless is_ext_supported(extpath)
+        end    
+      end
+         
+      if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
+        raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
+      end
+           
+      unless extpath.nil?
+        extyml = File.join(extpath, "ext.yml")
+        puts "extyml " + extyml 
+        
+        if File.file? extyml
+          extconf = Jake.config(File.open(extyml))
+          type    = extconf["exttype"]
+          wm_type = extconf["wm"]["exttype"] if extconf["wm"]
+       
+          if type != "prebuilt" && wm_type != "prebuilt"      
+            rm_rf  File.join(extpath, "ext", "shared", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "android", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "iphone", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "osx", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "wm", "generated")
+            rm_rf  File.join(extpath, "ext", "platform", "wp8", "generated") 
+            rm_rf  File.join(extpath, "ext", "public", "api", "generated")
+          end
+        end
+      end    
+    end
+  end  
 end
 
 namespace "config" do
@@ -433,7 +561,7 @@ namespace "config" do
                 
             end
             
-            if !$app_config["capabilities"].index('native_browser')
+            if !$app_config["capabilities"].index('native_browser') && $current_platform != "android"
                 $app_config["capabilities"] += ["motorola_browser"] unless $app_config["capabilities"].index('motorola_browser')
             end
         end
@@ -455,14 +583,17 @@ namespace "config" do
         end
     end
 
-    # add rawsensors extension for rhoelements app
-    if $current_platform == "iphone" || $current_platform == "android"
-        if $app_config["app_type"] == 'rhoelements'
+    if $app_config["app_type"] == 'rhoelements'
+    
+        # add rawsensors extension for rhoelements app
+        if $current_platform == "iphone" || $current_platform == "android"
             if !$app_config['extensions'].index('rhoelementsext')
                 $app_config["extensions"] += ["rawsensors"] unless $app_config['extensions'].index('rawsensors')
                 $app_config["extensions"] += ["audiocapture"] unless $app_config['extensions'].index('audiocapture')
             end
         end
+        
+        $app_config["extensions"] += ["barcode"] unless $app_config['extensions'].index('barcode') unless $current_platform == "win32"
     end
 
     if $app_config['extensions'].index('rhoelementsext')
@@ -793,18 +924,11 @@ def init_extensions(startdir, dest)
   end
 
   puts 'init extensions'
-  
-  templates_path   = File.join($startdir, "res", "generators", "templates")         
-  last_change_data = find_latest_modified_date(templates_path)
-  time_cache    = File.join($app_path, "bin", "tmp", "rhogen.time")
-  if File.exist? time_cache
-    time_cache_file = File.new(time_cache)
-    read_time = Time.parse(time_cache_file.gets)
-    time_cache_file.close
-    
-    puts 'read_time=' + read_time.to_s
-  end
-  
+
+  # TODO: checker init
+  gen_checker = GeneratorTimeChecker.new        
+  gen_checker.init($startdir, $app_path)
+
   $app_config["extensions"].each do |extname|  
     puts 'ext - ' + extname
     
@@ -827,8 +951,8 @@ def init_extensions(startdir, dest)
     end
       
     if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
-		raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
-	end
+		  raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
+	  end
 
     $app_extensions_list[extname] = extpath
         
@@ -871,22 +995,12 @@ def init_extensions(startdir, dest)
 
           if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
             xml_api_paths    = xml_api_paths.split(',')
-            is_run_rhogen = true
                                                           
             xml_api_paths.each do |xml_api|
-              xml_path      = File.join(extpath, xml_api.strip())
-              xml_time      = File.mtime(xml_path)                  
-               
-              last_change_data2 = last_change_data > xml_time ? last_change_data : xml_time
-
-              #if read_time
-              #  puts 'last_change_data=' + last_change_data2.to_s 
-              #  is_run_rhogen = read_time < last_change_data2
-              #else
-              #  is_run_rhogen = true
-              #end
+              xml_path = File.join(extpath, xml_api.strip())                
               
-              if is_run_rhogen                 
+              #api generator
+              if gen_checker.check(xml_path)      
                 puts 'start running rhogen with api key'
                 Jake.run3("#{$startdir}/bin/rhogen api #{xml_path}")
               end
@@ -903,11 +1017,8 @@ def init_extensions(startdir, dest)
     end    
   end
   
-  FileUtils.mkdir(  File.join($app_path, "bin") ) unless File.exist? File.join($app_path, "bin")
-  FileUtils.mkdir(  File.join($app_path, "bin", "tmp") ) unless File.exist? File.join($app_path, "bin", "tmp")
-  time_cache_file = File.new(time_cache, "w+")
-  time_cache_file.puts Time.new
-  time_cache_file.close()
+  #TODO: checker update
+  gen_checker.update
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
   puts "exts " + exts
@@ -1843,6 +1954,10 @@ namespace "run" do
         extjsmodules = []
         rhoapi_js_folder = File.join( $app_path, "public/api/generated" )
 
+        # TODO: checker init
+        gen_checker = GeneratorTimeChecker.new        
+        gen_checker.init($startdir, $app_path)
+        
         $app_config["extensions"].each do |extname|
         
             extpath = nil
@@ -1888,54 +2003,22 @@ namespace "run" do
                 extconf = Jake.config(File.open(extyml))
                 xml_api_paths  = extconf["xml_api_paths"]
                 templates_path = File.join($startdir, "res", "generators", "templates")
-                
-                is_run_rhogen    = true
-                time_cache       = File.join($app_path, "bin", "tmp", "rhogen.time")
-                last_change_data = find_latest_modified_date(templates_path)
-                
+                                
                 if xml_api_paths
                   xml_api_paths = xml_api_paths.split(',')
 
                   xml_api_paths.each do |xml_api|
-                    xml_path      = File.join(extpath, xml_api.strip())
-                    xml_time      = File.mtime(xml_path)                  
-                    
-                    last_change_data = last_change_data > xml_time ? last_change_data : xml_time
+                    xml_path = File.join(extpath, xml_api.strip())
 
-                    #if File.exist? time_cache
-                    #  time_cache_file = File.new(time_cache)
-                    #  read_time = Time.parse(time_cache_file.gets)
-                    #  time_cache_file.close
-                    #  
-                    #  puts 'read_time=' + read_time.to_s
-                    #  puts 'last_change_data=' + last_change_data.to_s 
-                    #  
-                    #  is_run_rhogen = read_time < last_change_data
-                    #else
-                    #  is_run_rhogen = true
-                    #end
-                    
-                    if is_run_rhogen
+                    #TODO checker check
+                    if gen_checker.check(xml_path)
+#                      puts 'ruuuuuuuun generatooooooooooooor'
                       cmd_line = "#{$startdir}/bin/rhogen api #{xml_path}"
                       puts "cmd_line: #{cmd_line}"
                       system "#{cmd_line}"
                     end
                   end
-                end
-                
-                if is_run_rhogen
-                  if !File.exist? File.join($app_path, "bin")
-                    FileUtils.mkdir  File.join($app_path, "bin")
-                  end
-
-                  if !File.exist? File.join($app_path, "bin", "tmp")
-                    FileUtils.mkdir  File.join($app_path, "bin", "tmp")
-                  end
-
-                  time_cache_file = File.new(time_cache, "w+")
-                  time_cache_file.puts Time.new
-                  time_cache_file.close 
-                end
+                end                
               end
 
               js_folder = File.join(extpath, "public/api/generated")
@@ -1948,6 +2031,9 @@ namespace "run" do
             end
         end
 
+        #TODO: checker update
+        gen_checker.update
+        
         # deploy Common API JS implementation
         if extjsmodules.count > 0
           mkdir_p rhoapi_js_folder

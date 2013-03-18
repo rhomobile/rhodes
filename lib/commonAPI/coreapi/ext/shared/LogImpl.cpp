@@ -28,29 +28,21 @@ public:
 
     virtual void getDestination(rho::apiGenerator::CMethodResult& oResult)
     {
-        String strRes;
+        Vector<String> arRes;
         if (LOGCONF().isLogToFile())
-            strRes += DEST_FILE;
+            arRes.addElement( DEST_FILE );
         if (LOGCONF().isLogToOutput())
-        {
-            if (strRes.length() > 0 )
-                strRes += ",";
-            strRes += DEST_OUTPUT;
-        }
+            arRes.addElement(DEST_OUTPUT);
         if (LOGCONF().isLogToSocket())
-        {
-            if (strRes.length() > 0 )
-                strRes += ",";
-            strRes += DEST_URI;
-        }
+            arRes.addElement(DEST_URI);
 
-        oResult.set(strRes);
+        oResult.set(arRes);
     }
 
     virtual void setDestination( const rho::Vector<rho::String>& ar, rho::apiGenerator::CMethodResult& oResult)
     {
         bool bLogToFile = false, bLogToOutput = false, bLogToURI = false;
-        for( int i = 0; i < ar.size(); i++ )
+        for( int i = 0; i < (int)ar.size(); i++ )
         {
             if ( ar[i] == DEST_FILE )
                 bLogToFile = true;
@@ -62,7 +54,6 @@ public:
 
         LOGCONF().setLogToFile(bLogToFile);
         LOGCONF().setLogToOutput(bLogToOutput);
-        //TODO: support runtime change of log to URI
         LOGCONF().setLogToSocket(bLogToURI);
     }
 
@@ -153,8 +144,8 @@ public:
 
     virtual void setDestinationURI( const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
     {
-        //TODO: support Log.destinationURI
         RHOCONF().setString("Log.destinationURI", value, false);
+        rho_log_resetup_http_url(value.c_str());
     }
 
     virtual void trace( const rho::String& message,  const rho::String& category, rho::apiGenerator::CMethodResult& oResult)

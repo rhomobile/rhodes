@@ -25,6 +25,7 @@
                 <DESC>Use full screen mode.</DESC>
             </PROPERTY>
             <PROPERTY name="nativeMenu" type="ARRAY">
+                <PARAM type="HASH" />
                 <DESC>Native Menu items: array of hashes(name to action)</DESC>
             </PROPERTY>
             <PROPERTY name="enableZoom" type="BOOLEAN" default="true">
@@ -113,6 +114,9 @@
                 <DESC>Sets the font size to be displayed on the page, set to 0 for the smallest font and 4 for the largest font.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
+            </PROPERTY>
+            <PROPERTY name="activeTab" type="INTEGER" default="0" readOnly="true">
+                <DESC>An active tab index.</DESC>
             </PROPERTY>
 
         </PROPERTIES>
@@ -215,7 +219,7 @@
             </METHOD>
 
             <METHOD name="active_tab" deprecated="true">
-                <DESC>Use Rho::NativeTabbar.currentTab property: returns the current tab index..</DESC>
+                <DESC>Use Rho::NativeTabbar.currentTab property: returns the current tab index.</DESC>
                 <RETURN type="INTEGER">
                     
                 </RETURN>
@@ -229,7 +233,7 @@
             </METHOD>
 
             <METHOD name="setCookie">
-                <DESC>When WebView loads the specified url (either by selecting link or from calling WebView.navigate), it will add this cookie to the HTTP request.</DESC>
+                <DESC>When WebView loads the specified url (either by selecting link or from calling WebView.navigate), it will add this cookie to the HTTP request.Not implemented for Motorola Solutions' WebKit.</DESC>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>Set a cookie to be used by WebView for this url.</DESC>
@@ -254,9 +258,6 @@
                     <PARAM name="format" type="STRING">
                         <DESC>Format of the saved page.</DESC>
                         <VALUES>
-                            <VALUE constName="SAVE_FORMAT_HTML" value ="html">
-                                <DESC>Save as html archive</DESC>
-                            </VALUE>
                             <VALUE constName="SAVE_FORMAT_JPEG" value ="jpeg">
                                 <DESC>Save as jpeg image</DESC>
                             </VALUE>

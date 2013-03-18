@@ -27,12 +27,17 @@ end; end; end %>
     next if !module_method.generateNativeAPI
 
     params = ''
+    call_params = ''
     module_method.params.each do |param|
         params += " #{api_generator_cpp_makeNativeTypeArg(param.type)} #{param.name}, "
+
+        call_params += " ," if call_params.length() > 0
+        call_params += "#{param.name}"
     end
 
     params += 'rho::apiGenerator::CMethodResult& oResult'
     module_method.cached_data["cpp_params"] = params
+    module_method.cached_data["cpp_call_params"] = call_params
 %>    virtual void <%= module_method.native_name%>(<%= params%>) = 0;
 <% end %>
 };

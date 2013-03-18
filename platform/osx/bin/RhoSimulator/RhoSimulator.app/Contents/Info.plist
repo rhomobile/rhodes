@@ -7,7 +7,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleGetInfoString</key>
-	<string>RhoSimulator 4.0.0.beta1, Copyright 2010-2012 Rhomobile, Inc.</string>
+	<string>RhoSimulator 4.0.0.beta1, Copyright 2010-2013 Motorola Solutions, Inc.</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
