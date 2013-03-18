@@ -129,7 +129,7 @@ PRE_TARGETDEPS += #{$pre_targetdeps}
         chdir $qt_project_dir
         args = ['-o', 'Makefile', '-r', '-spec', 'macx-g++', 'RhoSimulator.pro', "QMAKE_MAC_SDK='#{$sdkroot}'"]
         puts Jake.run($qmake,args)
-        # !!! puts Jake.run($make, ['clean'])
+        puts Jake.run($make, ['clean'])
         puts Jake.run($make, ['all'])
 
         unless $? == 0
