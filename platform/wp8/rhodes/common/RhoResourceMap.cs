@@ -52,7 +52,7 @@ namespace rho.common
                 {
                     CRhoFile.deleteFile(strFile);
                 }
-            } 
+            }
         }
 
         private static void copyMap(String strMap)
@@ -63,7 +63,7 @@ namespace rho.common
             {
                 String[] values = files[i].Split('|');
 
-                String strFile    = values[0];
+                String strFile = values[0];
                 String strDstFile = values[1];
 
                 System.Diagnostics.Debugger.Log(0, "", strDstFile + "\n");
@@ -75,7 +75,7 @@ namespace rho.common
             CRhoFile.writeStringToFile("RhoBundleMap.txt", strMap);
         }
 
-        public static void deployContent() 
+        public static void deployContent()
         {
             String newMap = CRhoFile.readStringFromResourceFile("RhoBundleMap.txt");
             String curMap = CRhoFile.readStringFromFile("RhoBundleMap.txt");
@@ -84,10 +84,10 @@ namespace rho.common
             {
                 copyMap(newMap);
             }
-            else if (curMap != newMap)
+            else if (curMap != newMap && newMap != "")
             {
                 clearMap(curMap);
-                copyMap(newMap);   
+                copyMap(newMap);
             }
         }
     }
