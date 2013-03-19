@@ -290,12 +290,15 @@ CHttpServer::CHttpServer(int port, String const &root, String const &user_root, 
 #endif
     m_userroot = CFilePath::normalizePath(user_root);
     m_strRhoUserRoot = m_userroot;
+	m_listener = INVALID_SOCKET;
+	m_sock = INVALID_SOCKET;
 }
     
 CHttpServer::CHttpServer(int port, String const &root)
     :m_active(false), m_port(port), verbose(true)
 {
-    m_root = CFilePath::normalizePath(root);
+    
+	m_root = CFilePath::normalizePath(root);
     m_strRuntimeRoot = (m_strRhoRoot = m_root.substr(0, m_root.length()-5)) +
 #ifdef OS_WP8
          "rho";
@@ -312,9 +315,13 @@ CHttpServer::~CHttpServer()
 
 void CHttpServer::close_listener()
 {
-    SOCKET l = m_listener;
-    m_listener = INVALID_SOCKET;
-    closesocket(l);
+    //SOCKET l = m_listener;
+    //m_listener = INVALID_SOCKET;
+	if(m_listener != INVALID_SOCKET)
+	{
+		closesocket(m_listener);
+		m_listener = INVALID_SOCKET;
+	}
 }
 
 void CHttpServer::stop()
@@ -373,15 +380,19 @@ extern "C" void rb_gc(void);
 
 bool CHttpServer::init()
 {
-    RAWTRACE("Open listening socket...");
-    
+    LOG(INFO) + "Start HTTP server2";
+	RAWTRACE("Open listening socket...");
+    LOG(INFO) + "Start HTTP server31";
     close_listener();
+	LOG(INFO) + "Start HTTP server32";
     m_listener = socket(AF_INET, SOCK_STREAM, 0);
+	LOG(INFO) + "Start HTTP server34";
     if (m_listener == INVALID_SOCKET) {
         RAWLOG_ERROR1("Can not create listener: %d", RHO_NET_ERROR_CODE);
+		LOG(INFO) + "Start HTTP server33";
         return false;
     }
-    
+    LOG(INFO) + "Start HTTP server3";
     int enable = 1;
     if (setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (const char *)&enable, sizeof(enable)) == SOCKET_ERROR) {
         RAWLOG_ERROR1("Can not set socket option (SO_REUSEADDR): %d", RHO_NET_ERROR_CODE);
@@ -415,7 +426,7 @@ bool CHttpServer::run()
     LOG(INFO) + "Start HTTP server";
     if (!init())
         return false;
-    
+    LOG(INFO) + "Start HTTP server1";
     m_active = true;
 
 //#if !defined(OS_WP8)
