@@ -380,19 +380,14 @@ extern "C" void rb_gc(void);
 
 bool CHttpServer::init()
 {
-    LOG(INFO) + "Start HTTP server2";
 	RAWTRACE("Open listening socket...");
-    LOG(INFO) + "Start HTTP server31";
     close_listener();
-	LOG(INFO) + "Start HTTP server32";
     m_listener = socket(AF_INET, SOCK_STREAM, 0);
-	LOG(INFO) + "Start HTTP server34";
     if (m_listener == INVALID_SOCKET) {
         RAWLOG_ERROR1("Can not create listener: %d", RHO_NET_ERROR_CODE);
-		LOG(INFO) + "Start HTTP server33";
         return false;
     }
-    LOG(INFO) + "Start HTTP server3";
+
     int enable = 1;
     if (setsockopt(m_listener, SOL_SOCKET, SO_REUSEADDR, (const char *)&enable, sizeof(enable)) == SOCKET_ERROR) {
         RAWLOG_ERROR1("Can not set socket option (SO_REUSEADDR): %d", RHO_NET_ERROR_CODE);
@@ -426,7 +421,7 @@ bool CHttpServer::run()
     LOG(INFO) + "Start HTTP server";
     if (!init())
         return false;
-    LOG(INFO) + "Start HTTP server1";
+
     m_active = true;
 
 //#if !defined(OS_WP8)
