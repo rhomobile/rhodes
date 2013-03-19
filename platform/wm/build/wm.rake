@@ -509,7 +509,12 @@ namespace "build" do
                 ENV['PWD'] = $startdir
                 ENV['RHO_ROOT'] = $startdir
                 ENV['SDK'] = $sdk
-                ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+                if ext.downcase() == "coreapi" && $rhosimulator_build
+                    ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
+                else    
+                    ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+                end
+                    
                 ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
                 ENV['VCBUILD'] = $vcbuild
                 ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)

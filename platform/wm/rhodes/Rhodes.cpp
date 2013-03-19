@@ -676,9 +676,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		NULL, 
 		&g_hNotifyCell);
 
-#elif !defined( OS_PLATFORM_MOTCE )
-    if (RHOCONF().getString("test_push_client").length() > 0 ) 
-	    rho_clientregister_create(RHOCONF().getString("test_push_client").c_str());//"win32_client");
 #endif
 
     return S_OK;
