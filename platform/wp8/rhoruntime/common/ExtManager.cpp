@@ -427,6 +427,18 @@ void CExtManager::OnWindowChanged(LPVOID lparam)
     }
 }
 
+bool CExtManager::RegisterForMessageCallback(unsigned int iMsgId)
+{
+    //return getAppWindow().getWebKitEngine()->RegisterForMessage(iMsgId);
+	return true;
+}
+
+bool CExtManager::DeRegisterForMessageCallback(unsigned int iMsgId)
+{
+    //return getAppWindow().getWebKitEngine()->DeRegisterForMessage(iMsgId);
+	return true;
+}
+
 //DWORD CExtManager::getProcessId()
 //{
 //#if !defined(OS_WINDOWS_DESKTOP)
