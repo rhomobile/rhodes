@@ -1335,6 +1335,8 @@ module Rhogen
           end
       end
 
+      # those property types could be mapped to corresponding constants
+      supported_simple_types = [ "BOOLEAN", "INTEGER", "FLOAT", "STRING" ].map(&:upcase)
 
       xml_api_root.elements.each("MODULE") do |xml_module_item|
          module_item = ModuleItem.new()
@@ -1378,19 +1380,31 @@ module Rhogen
             module_item.constants << module_constant
          end
 
-         #constants in properties
-         xml_module_item.elements.each("PROPERTIES/PROPERTY/VALUES/VALUE") do |xml_property_value|
+        #constants in properties
+
+        xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_property|
+          default_type = nil
+          if xml_property.attribute("type") != nil
+            type = xml_property.attribute("type").to_s.upcase
+            if supported_simple_types.include?( type )
+              default_type = type
+            end
+          end
+          xml_property.elements.each("VALUES/VALUE") do |xml_property_value|
             module_constant = ModuleConstant.new()
             module_constant.name = xml_property_value.attribute("constName").to_s
             module_constant.value = xml_property_value.attribute("value").to_s
             if xml_property_value.attribute("type") != nil
-               module_constant.type = xml_property_value.attribute("type").to_s.upcase
+              module_constant.type = xml_property_value.attribute("type").to_s.upcase
+            elsif default_type != nil
+              module_constant.type = default_type
             end
             xml_property_value.elements.each("DESC") do |xml_desc|
-               module_constant.desc = xml_desc.text
+              module_constant.desc = xml_desc.text
             end
             module_item.constants << module_constant
-         end
+          end
+        end
 
          #constants in param
          xml_module_item.elements.each("*/PARAM/VALUES/VALUE") do |xml_param_value|
