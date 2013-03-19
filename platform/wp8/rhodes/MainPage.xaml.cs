@@ -192,13 +192,18 @@ namespace rhodes
                 ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url));
         }
 
-        public void executeScript(string script, int index)
+        public string executeScriptFunc(string script, int index)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { executeScript(script, index); }); return; }
+            string[] codeString = { script };
             if (isDefaultBrowser())
-                RhodesWebBrowser.InvokeScript(script);
+                return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
             else
-                ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript(script);
+                return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
+        }
+
+        public string executeScript(string script, int index)
+        {
+            return StringValueByStringIntReturnAgent(executeScriptFunc, script, index);
         }
 
 		public void GoBack()
@@ -769,6 +774,32 @@ namespace rhodes
                 try
                 {
                     return_value = func(index);
+                }
+                catch (Exception ex)
+                {
+                    exception = ex;
+                }
+                waitEvent.Set();
+            });
+            waitEvent.WaitOne();
+            if (exception != null)
+                throw exception;
+            return return_value;
+        }
+
+        private string StringValueByStringIntReturnAgent(Func<string, int, string> func, string str, int index)
+        {
+            if (isUIThread)
+                return func(str, index);
+
+            Exception exception = null;
+            var waitEvent = new System.Threading.ManualResetEvent(false);
+            string return_value = "";
+            Dispatcher.BeginInvoke(() =>
+            {
+                try
+                {
+                    return_value = func(str, index);
                 }
                 catch (Exception ex)
                 {

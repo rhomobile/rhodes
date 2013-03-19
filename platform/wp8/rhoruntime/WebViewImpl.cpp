@@ -26,10 +26,8 @@ extern "C" const char* rho_webview_execute_js(const char* js, int index)
 {
 	rho::StringW jsW;
 	rho::common::convertToStringW(js, jsW);
-	CRhoRuntime::getInstance()->getMainPage()->executeScript(ref new String(jsW.c_str()), index);
-	// TODO: implement return value of rho_webview_execute_js
-	// return strdup(...);
-    return "";
+	rho::String urlA = rho::common::convertToStringA(CRhoRuntime::getInstance()->getMainPage()->executeScript(ref new String(jsW.c_str()), index)->Data());
+    return strdup(urlA.c_str());
 }
 
 extern "C" const char* rho_webview_current_location(int index)
