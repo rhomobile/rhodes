@@ -1,0 +1,25 @@
+#sdk: "C:/devRoom/ruby/Ruby193/lib/ruby/gems/1.9.1/gems/rhodes-3.5.1.12"
+sdk: "/devRoom/rho/rhodes/"
+sdkversion: 3.5.0
+name: jsPhoneSpec
+version: 1.0
+vendor: rhomobile
+build: debug
+bbver: 4.6
+applog: rholog.txt
+iphone:
+  configuration: Release
+  sdk: iphonesimulator5.0
+  provisionprofile:
+  codesignidentity:
+  entitlements:
+  BundleIdentifier: com.rhomobile.jsphonespec
+  BundleURLScheme: jsphonespec
+wp:
+  productid: '0b698de0-7218-0130-547c-001a925f2369'
+symbian:
+  uid: '0xef6036c4'
+android:
+  version: 2.1
+
+extensions: ["json"]
