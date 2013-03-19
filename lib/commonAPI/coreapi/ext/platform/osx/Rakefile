@@ -34,6 +34,7 @@ def build_extension(name, arch)
     args << "-I\"#{$rootdir}/platform/shared\""
     args << "-D_XOPEN_SOURCE"
     args << "-D_DARWIN_C_SOURCE"
+    args << "-DRHODES_EMULATOR"
     args << "-isysroot \"#{$sdkroot}\""
     args << "-fno-common"
     args << "-arch #{arch}"
