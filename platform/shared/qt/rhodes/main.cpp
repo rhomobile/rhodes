@@ -56,6 +56,11 @@ extern "C" {
     {
         return m_strRootPath.c_str();
     }
+
+    const char* rho_sys_get_http_proxy_url()
+    {
+        return m_strHttpProxy.c_str();
+    }
 }
 
 char* parseToken(const char* start)
