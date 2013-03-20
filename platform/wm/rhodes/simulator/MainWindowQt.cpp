@@ -46,7 +46,7 @@
 #include <QtNetwork/QNetworkProxyFactory>
 #include "qt/rhodes/QtMainWindow.h"
 
-IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
+IMPLEMENT_LOGCLASS(CMainWindowQt,"MainWindow");
 
 #include "DateTimePicker.h"
 
@@ -57,39 +57,39 @@ using namespace rho::common;
 
 extern "C" void rho_geoimpl_turngpsoff();
 
-int CMainWindow::m_screenWidth;
-int CMainWindow::m_screenHeight;
+int CMainWindowQt::m_screenWidth;
+int CMainWindowQt::m_screenHeight;
 
-bool CMainWindow::mainWindowClosed = false;
-HINSTANCE CMainWindow::rhoApplicationHINSTANCE = 0;
+bool CMainWindowQt::mainWindowClosed = false;
+HINSTANCE CMainWindowQt::rhoApplicationHINSTANCE = 0;
 
-CMainWindow::CMainWindow():
+CMainWindowQt::CMainWindowQt():
     m_started(true),
     qtApplication(NULL),
     qtMainWindow(NULL)
 {
 }
 
-CMainWindow::~CMainWindow()
+CMainWindowQt::~CMainWindowQt()
 {
     if (qtMainWindow) delete (QtMainWindow*)qtMainWindow;
     if (qtApplication) delete (QApplication*)qtApplication;
 }
 
-void CMainWindow::updateSizeProperties(int width, int height)
+void CMainWindowQt::updateSizeProperties(int width, int height)
 {
     m_screenWidth = width;
     m_screenHeight = height;
     LOGCONF().setLogView(&m_logView);
 }
 
-void CMainWindow::onWebViewUrlChanged(const ::std::string& url)
+void CMainWindowQt::onWebViewUrlChanged(const ::std::string& url)
 {
     rho::String sUrl = url;
     RHODESAPP().keepLastVisitedUrl(sUrl);
 }
 
-void CMainWindow::Navigate2(BSTR URL, int index) {
+void CMainWindowQt::Navigate2(BSTR URL, int index) {
     String cleared_url = convertToStringA(OLE2CT(URL));
     if (!cleared_url.empty()) {
         StringW cw = convertToStringW(cleared_url);
@@ -97,7 +97,7 @@ void CMainWindow::Navigate2(BSTR URL, int index) {
     }
 }
 
-HWND CMainWindow::Initialize(const wchar_t* title)
+HWND CMainWindowQt::Initialize(const wchar_t* title)
 {
     HWND hWnd = (HWND)init(this, title);
     SubclassWindow(hWnd);
@@ -107,19 +107,13 @@ HWND CMainWindow::Initialize(const wchar_t* title)
     return hWnd;
 }
 
-HWND CMainWindow::getWebViewHWND(int index)
-{
-    // TODO
-    return 0;
-}
-
-void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*= false*/)
+void CMainWindowQt::RhoSetFullScreen(bool bFull, bool bDestroy /*= false*/)
 {
     if (qtMainWindow)
         ((QtMainWindow*)qtMainWindow)->fullscreenCommand(bFull ? 1 : 0);
 }
 
-bool CMainWindow::getFullScreen()
+bool CMainWindowQt::getFullScreen()
 {
     if (qtMainWindow)
         return ((QtMainWindow*)qtMainWindow)->getFullScreen();
@@ -127,12 +121,12 @@ bool CMainWindow::getFullScreen()
     return false;
 }
 
-void CMainWindow::MessageLoop(void)
+void CMainWindowQt::MessageLoop(void)
 {
     messageLoop();
 }
 
-void CMainWindow::createCustomMenu(void)
+void CMainWindowQt::createCustomMenu(void)
 {
     RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
     //createCustomMenu();
@@ -157,7 +151,7 @@ void CMainWindow::createCustomMenu(void)
     }
 }
 
-void CMainWindow::onCustomMenuItemCommand(int nItemPos)
+void CMainWindowQt::onCustomMenuItemCommand(int nItemPos)
 {    
     if ( nItemPos < 0 || nItemPos >= (int)m_arAppMenuItems.size() )
         return;
@@ -181,12 +175,12 @@ void CMainWindow::onCustomMenuItemCommand(int nItemPos)
     oMenuItem.processCommand();
 }
 
-void CMainWindow::DestroyUi(void)
+void CMainWindowQt::DestroyUi(void)
 {
     rho_rhodesapp_callUiDestroyedCallback();
 }
 
-void CMainWindow::onWindowClose(void)
+void CMainWindowQt::onWindowClose(void)
 {
      mainWindowClosed = true;
 }
@@ -198,18 +192,18 @@ void CMainWindow::onWindowClose(void)
 //
 // **************************************************************************
 
-void CMainWindow::navigate(const wchar_t* url, int index)
+void CMainWindowQt::navigate(const wchar_t* url, int index)
 {
     LOG(INFO) + "navigate: '"+url+"'";
     ((QtMainWindow*)qtMainWindow)->navigate(QString::fromWCharArray(url), index);
 }
 
-void CMainWindow::setCallback(IMainWindowCallback* callback)
+void CMainWindowQt::setCallback(IMainWindowCallback* callback)
 {
     ((QtMainWindow*)qtMainWindow)->setCallback(callback);
 }
 
-void* CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
+void* CMainWindowQt::init(IMainWindowCallback* callback, const wchar_t* title)
 {
     int argc = 0;
     QCoreApplication::setOrganizationName("Rhomobile");
@@ -227,45 +221,45 @@ void* CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
     return (void*)((QtMainWindow*)qtMainWindow)->winId();
 }
 
-void CMainWindow::messageLoop(void)
+void CMainWindowQt::messageLoop(void)
 {
     qApp->exec();
 }
 
-void CMainWindow::GoBack(void)
+void CMainWindowQt::GoBack(void)
 {
     LOG(INFO) + "back";
     ((QtMainWindow*)qtMainWindow)->GoBack();
 }
 
-void CMainWindow::GoForward(void)
+void CMainWindowQt::GoForward(void)
 {
     LOG(INFO) + "forward";
     ((QtMainWindow*)qtMainWindow)->GoForward();
 }
 
-void CMainWindow::Refresh(int index)
+void CMainWindowQt::Refresh(int index)
 {
     LOG(INFO) + "refresh";
     ((QtMainWindow*)qtMainWindow)->Refresh(index);
 }
 
-bool CMainWindow::isStarted()
+bool CMainWindowQt::isStarted()
 {
     return ((QtMainWindow*)qtMainWindow)->isStarted();
 }
 
-int CMainWindow::getToolbarHeight()
+int CMainWindowQt::getToolbarHeight()
 {
     return ((QtMainWindow*)qtMainWindow)->toolbarGetHeight();
 }
 
-void CMainWindow::removeToolbar()
+void CMainWindowQt::removeToolbar()
 {
     ((QtMainWindow*)qtMainWindow)->toolbarHide();
 }
 
-void CMainWindow::removeAllButtons()
+void CMainWindowQt::removeAllButtons()
 {
     ((QtMainWindow*)qtMainWindow)->toolbarRemoveAllButtons();
 }
@@ -284,7 +278,7 @@ static QColor getColorFromString(const char* szColor)
     return QColor(cR, cG, cB);
 }
 
-void CMainWindow::createToolbar(rho_param *p)
+void CMainWindowQt::createToolbar(rho_param *p)
 {
     if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
         return;
@@ -444,7 +438,7 @@ bool charToBool(const char* str)
     return str && ((stricmp(str,"true")==0) || (stricmp(str,"yes")==0) || (atoi(str)==1));
 }
 
-void CMainWindow::createTabbar(int bar_type, rho_param *p)
+void CMainWindowQt::createTabbar(int bar_type, rho_param *p)
 {
     // TODO: implement tabbar creation
 
@@ -585,69 +579,69 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
     m_started = true;
 }
 
-int CMainWindow::getTabbarHeight()
+int CMainWindowQt::getTabbarHeight()
 {
     return ((QtMainWindow*)qtMainWindow)->tabbarGetHeight();
 }
 
-void CMainWindow::removeTabbar()
+void CMainWindowQt::removeTabbar()
 {
     ((QtMainWindow*)qtMainWindow)->tabbarHide();
 }
 
-void CMainWindow::removeAllTabs(bool restore)
+void CMainWindowQt::removeAllTabs(bool restore)
 {
     ((QtMainWindow*)qtMainWindow)->tabbarRemoveAllTabs(restore);
 }
 
-void CMainWindow::tabbarSwitch(int index)
+void CMainWindowQt::tabbarSwitch(int index)
 {
     ((QtMainWindow*)qtMainWindow)->tabbarSwitch(index);
 }
 
-void CMainWindow::tabbarBadge(int index, char* badge)
+void CMainWindowQt::tabbarBadge(int index, char* badge)
 {
     ((QtMainWindow*)qtMainWindow)->tabbarSetBadge(index, badge);
 }
 
-int CMainWindow::tabbarGetCurrent()
+int CMainWindowQt::tabbarGetCurrent()
 {
 	return ((QtMainWindow*)qtMainWindow)->tabbarGetCurrent();
 }
 
 // Menu
-void CMainWindow::menuClear()
+void CMainWindowQt::menuClear()
 {
     ((QtMainWindow*)qtMainWindow)->menuClear();
 }
 
-void CMainWindow::menuAddSeparator()
+void CMainWindowQt::menuAddSeparator()
 {
     ((QtMainWindow*)qtMainWindow)->menuAddSeparator();
 }
 
-void CMainWindow::menuAddAction(const char* label, int item)
+void CMainWindowQt::menuAddAction(const char* label, int item)
 {
     ((QtMainWindow*)qtMainWindow)->menuAddAction(QString(label), item);
 }
 
 // Window frame
-void CMainWindow::setFrame(int x, int y, int width, int height)
+void CMainWindowQt::setFrame(int x, int y, int width, int height)
 {
 	((QtMainWindow*)qtMainWindow)->setFrame(x, y, width, height);
 }
 
-void CMainWindow::setPosition(int x, int y)
+void CMainWindowQt::setPosition(int x, int y)
 {
     ((QtMainWindow*)qtMainWindow)->setPosition(x, y);
 }
 
-void CMainWindow::setSize(int width, int height)
+void CMainWindowQt::setSize(int width, int height)
 {
 	((QtMainWindow*)qtMainWindow)->setSize(width, height);
 }
 
-void CMainWindow::lockSize(int locked)
+void CMainWindowQt::lockSize(int locked)
 {
 	((QtMainWindow*)qtMainWindow)->lockSize(locked);
 }
@@ -659,11 +653,11 @@ void CMainWindow::lockSize(int locked)
 //
 // **************************************************************************
 
-void CMainWindow::performOnUiThread(rho::common::IRhoRunnable* pTask)
+void CMainWindowQt::performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
     PostMessage(WM_EXECUTE_RUNNABLE, 0, (LPARAM)pTask);
 }
-LRESULT CMainWindow::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) 
+LRESULT CMainWindowQt::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) 
 {
     rho::common::IRhoRunnable* pTask = (rho::common::IRhoRunnable*)lParam;
     if (pTask)
@@ -674,7 +668,7 @@ LRESULT CMainWindow::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
     return 0;
 }
 
-LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CMainWindowQt::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
     if(m_logView.IsWindow()) {
         m_logView.DestroyWindow();
@@ -692,7 +686,7 @@ LRESULT CMainWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     return 0;
 }
 
-void CMainWindow::onActivate(int active)
+void CMainWindowQt::onActivate(int active)
 {
     rho_rhodesapp_callAppActiveCallback(active);
     if (!active)
@@ -706,31 +700,31 @@ void CMainWindow::onActivate(int active)
 //
 // **************************************************************************
 
-LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     SendMessage(WM_CLOSE);
     return 0;
 }
 
-LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     GoBack();
     return 0;
 }
 
-LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     GoForward();
     return 0;
 }
 
-LRESULT CMainWindow::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     RHODESAPP().navigateBack();
     return 0;
 }
 
-LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     if ( !m_logView.IsWindow() ) {
         LoadLibrary(_T("riched20.dll"));
@@ -740,18 +734,18 @@ LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
     return 0;
 }
 
-LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     Refresh((int)hWndCtl);
     return 0;
 }
 
-LRESULT CMainWindow::OnNavTimeout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnNavTimeout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     return 0;
 }
 
-LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     TNavigateData* nd = (TNavigateData*)hWndCtl;
     if (nd) {
@@ -765,7 +759,7 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     return 0;
 }
 
-LRESULT CMainWindow::OnExecuteJS(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnExecuteJS(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     TNavigateData* nd = (TNavigateData*)hWndCtl;
     if (nd) {
@@ -786,14 +780,14 @@ LRESULT CMainWindow::OnExecuteJS(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCt
     return 0;
 }
 
-LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     LOG(INFO) + "OnFullscreenCommand";
     ((QtMainWindow*)qtMainWindow)->fullscreenCommand((int)hWndCtl);
     return 0;
 };
 
-LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     TCookieData* cd = (TCookieData*)hWndCtl;
     if (cd) {
@@ -807,7 +801,7 @@ LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     return 0;
 }
 
-LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+LRESULT CMainWindowQt::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 {
     TCHAR image_uri[MAX_PATH];
     HRESULT status;
@@ -822,7 +816,7 @@ LRESULT CMainWindow::OnTakePicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
     return 0;
 }
 
-LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+LRESULT CMainWindowQt::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 {
     TCHAR image_uri[MAX_PATH];
     HRESULT status = S_OK;
@@ -837,7 +831,7 @@ LRESULT CMainWindow::OnSelectPicture(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
     return 0;
 }
 
-LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     /* TODO */
     StringW strAppName = RHODESAPP().getAppNameW();
@@ -889,7 +883,7 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     return 0;
 }
 
-LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     /* TODO */
     if (m_alertDialog != NULL) {
@@ -900,7 +894,7 @@ LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     return 0;
 }
 
-LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT CMainWindowQt::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
     RhoNativeViewRunnable* command = (RhoNativeViewRunnable*)wParam;
     if (command != NULL) {
         command->run();
@@ -908,7 +902,7 @@ LRESULT CMainWindow::OnExecuteCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
     return 0;
 }    
 
-LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     CDateTimeMessage *msg = (CDateTimeMessage *)lParam;
     int retCode    = -1;
@@ -933,7 +927,7 @@ LRESULT CMainWindow::OnDateTimePicker (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     return 0;
 }
 
-LRESULT CMainWindow::OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CMainWindowQt::OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ::MessageBoxW( m_hWnd, L"Please provide RhoElements license key.", L"Motorola License", MB_ICONERROR | MB_OK);
 
@@ -994,7 +988,7 @@ public:
 };
 CRhodesProxyFactory* CRhodesProxyFactory::_instance = NULL;
 
-void CMainWindow::setProxy(const rho::String& host, const rho::String& port, const rho::String& login, const rho::String& password)
+void CMainWindowQt::setProxy(const rho::String& host, const rho::String& port, const rho::String& login, const rho::String& password)
 {
 	if (host.length()) {
 		QNetworkProxy proxy;
@@ -1010,7 +1004,27 @@ void CMainWindow::setProxy(const rho::String& host, const rho::String& port, con
 	}
 }
 
-void CMainWindow::setProxy()
+void CMainWindowQt::setProxy()
 {
 	CRhodesProxyFactory::getInstance()->unsetProxy();
+}
+
+bool CMainWindowQt::Initialize(const wchar_t* title, DWORD dwStyle)
+{
+
+}
+
+HWND CMainWindowQt::getWebViewHWND(int tabIdx)
+{
+
+}
+
+HWND CMainWindowQt::GetMainWindowHWND()
+{
+
+}
+
+void CMainWindowQt::UpdateWindow(int showCmd)
+{
+    ShowWindow(nShowCmd);
 }

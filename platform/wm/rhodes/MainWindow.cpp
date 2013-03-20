@@ -1723,6 +1723,29 @@ LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID
     return 0;
 }
 
+
+// IMainWindow implementation
+bool CMainWindow::Initialize(const wchar_t* title, DWORD dwStyle)
+{
+
+}
+
+HWND CMainWindow::getWebViewHWND(int tabIdx)
+{
+
+}
+
+HWND CMainWindow::GetMainWindowHWND()
+{
+
+}
+
+void CMainWindow::UpdateWindow(int showCmd)
+{
+    InvalidateRect(NULL, TRUE);
+    UpdateWindow();
+}
+
 extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 {
     LOG(INFO) + "PAINT";

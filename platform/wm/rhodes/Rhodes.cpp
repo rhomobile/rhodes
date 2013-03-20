@@ -166,32 +166,24 @@ struct CBarcodeInit{};
 class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
     static HINSTANCE m_hInstance;
-    CMainWindow m_appWindow;
-    rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath, m_strAppName;//, m_strDebugHost, m_strDebugPort;*/
-	int m_nRestarting;
-	bool m_isRhoConnectPush;
-#ifndef RHODES_EMULATOR
-	HANDLE m_hMutex;
-#endif
+
+    IMainWindow* m_appWindow;
+    rho::String  m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath, m_strAppName;
+	int          m_nRestarting;
+	bool         m_isRhoConnectPush;
 
 #ifdef OS_WINDOWS_DESKTOP
     String m_strHttpProxy;
 #endif
 
 public :
-    static HINSTANCE GetModuleInstance(){return m_hInstance;}
-    static void SetModuleInstance(HINSTANCE hInstance){m_hInstance = hInstance;}
-    HWND GetMainWindow() { return m_appWindow.m_hWnd;}
+    static HINSTANCE GetModuleInstance(){ return m_hInstance; }
+    static void SetModuleInstance(HINSTANCE hInstance) { m_hInstance = hInstance; }
+    HWND GetMainWindow() { return m_appWindow->GetMainWindowHWND(); }
 	CMainWindow* GetMainWindowObject() { return &m_appWindow;}
 	CMainWindow& GetAppWindow() { return m_appWindow; }
-	HWND GetWebViewWindow(int index) {	return m_appWindow.getWebViewHWND(
-#if defined(OS_WINDOWS_DESKTOP)
-            index
-#endif
-        );
-	}
-
-    bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( );
+	HWND GetWebViewWindow(int index) {	return m_appWindow->getWebViewHWND(index); }
+    bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw();
     HRESULT PreMessageLoop(int nShowCmd) throw();
     void RunMessageLoop( ) throw( );
     const rho::String& getRhoRootPath();
@@ -219,39 +211,52 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 }
 #endif //!OS_WINDOWS_DESKTOP
 
-rho::IMainWindow* rho_wmimpl_createMainWindow(HWND hwndParent)
+rho::IMainWindow* rho_wmimpl_createMainWindow(HWND hwndParent, const StringW& wndTitle, DWORD dwStyle, EMainWindowType type)
 {
+    if (type == EMainWindowType::eQtWindow)
+    {
+        rho::IMainWindow *mainWindow = new CMainWindowQt();
+        mainWindow->Initialize(wndTitle.c_str());
+        return mainWindow;
+    }
+    else if (type == EMainWindowType::eNativeWindow)
+    {
+        CMainWindow* mainWindow = new CMainWindow();
+        mainWindow->Create(NULL, CWindow::rcDefault, wndTitle.c_str(), dwStyle);
+        return mainWindow;
+    }
 
+    return 0;
 }
 
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( )
 {
-	m_nRestarting = 1;
-	LPCTSTR lpszToken = lpCmdLine;
-	LPCTSTR nextToken;
+    m_nRestarting = 1;
+    LPCTSTR lpszToken = lpCmdLine;
+    LPCTSTR nextToken;
     getRhoRootPath();
 
-	m_logPort = "";
-	m_isRhoConnectPush = false;
+    m_logPort = "";
+    m_isRhoConnectPush = false;
 
-	while (lpszToken != NULL)
-	{
-		// skip leading spaces and double-quote (if present)
-	    bool doubleQuote = false;
-		while ((*lpszToken != 0) && ((*lpszToken==' ') || ((!doubleQuote) && (*lpszToken=='"')))) {
-			if (*lpszToken=='"')
-				doubleQuote = true;
-			lpszToken++;
-		}
-		// skip leading spaces and check for leading '/' or '-' of command line option
-		bool isCmdLineOpt = false;
-		while ((*lpszToken != 0) && ((*lpszToken==' ') || ((!isCmdLineOpt) && ((*lpszToken=='/') || (*lpszToken=='-'))))) {
-			if ((*lpszToken=='/') || (*lpszToken=='-'))
-				isCmdLineOpt = true;
-			lpszToken++;
-		}
-		// finish command line processing on EOL
-		if (*lpszToken == 0) break;
+    while (lpszToken != NULL)
+    {
+        // skip leading spaces and double-quote (if present)
+        bool doubleQuote = false;
+        while ((*lpszToken != 0) && ((*lpszToken==' ') || ((!doubleQuote) && (*lpszToken=='"')))) {
+            if (*lpszToken=='"')
+                doubleQuote = true;
+            lpszToken++;
+        }
+        // skip leading spaces and check for leading '/' or '-' of command line option
+        bool isCmdLineOpt = false;
+        while ((*lpszToken != 0) && ((*lpszToken==' ') || ((!isCmdLineOpt) && ((*lpszToken=='/') || (*lpszToken=='-'))))) {
+		    if ((*lpszToken=='/') || (*lpszToken=='-'))
+			    isCmdLineOpt = true;
+		    lpszToken++;
+	    }
+	    // finish command line processing on EOL
+	    if (*lpszToken == 0) break;
 
 		// if option starts with double-quote, find its end by next double-quote;
 		// otherwise the end will be found automatically
@@ -492,9 +497,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         SetEnvironmentVariableA("rho_debug_port", RHOSIMCONF().getString("debug_port").c_str() );
 #endif
 
-    //::SetThreadPriority(GetCurrentThread(),10);
-
-	//Check for bundle directory is exists.
+    //Check for bundle directory is exists.
 	HANDLE hFind;
 	WIN32_FIND_DATA wfd;
 	
@@ -546,51 +549,31 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     dwStyle |= WS_OVERLAPPEDWINDOW;
 #endif
     // Create the main application window
-#if defined(OS_WINDOWS_DESKTOP)
+
 #ifdef RHODES_EMULATOR
     StringW windowTitle = convertToStringW(RHOSIMCONF().getString("app_name"));
 #else
     StringW windowTitle = convertToStringW(RHODESAPP().getAppTitle());
+#endif //RHODES_EMULATOR
+
+#if defined(OS_WINDOWS_DESKTOP)
+    m_appWindow =rho_wmimpl_createMainWindow(NULL, windowTitle, dwStyle, eQtWindow);
+#else //OS_WINDOWS_DESKTOP
+    m_appWindow = rho_wmimpl_createMainWindow(NULL, windowTitle, dwStyle, eNativeWindow);
 #endif
-    m_appWindow.Initialize(windowTitle.c_str());
-    if (NULL == m_appWindow.m_hWnd)
+
+    if (NULL == m_appWindow->GetMainWindowHWND())
     {
         return S_FALSE;
     }
-    m_appWindow.ShowWindow(nShowCmd);
+
+    m_appWindow->UpdateWindow(nShowCmd);
 
 #ifndef RHODES_EMULATOR
     rho_wm_impl_CheckLicense();
 #endif
 
-#else
-    String strTitle = RHODESAPP().getAppTitle();
-    m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
-
-	//if( m_isRhoConnectPush )
-	//	m_appWindow.ShowWindow(SW_MINIMIZE);
-
-    if (NULL == m_appWindow.m_hWnd)
-    {
-        return S_FALSE;
-    }
-
-/*#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    {
-        CBarcodeInit oBarcodeInit;
-
-        if (!rho_wmimpl_get_webkitbrowser( (HWND)m_appWindow.m_hWnd, rho_wmimpl_get_appinstance() )) {
-            MessageBox(NULL, L"Failed to initialize WebKit engine.", convertToStringW(strTitle).c_str(), MB_ICONERROR | MB_OK);
-	        return S_FALSE;
-        }
-    }
-#endif
-*/
-    m_appWindow.InvalidateRect(NULL, TRUE);
-    m_appWindow.UpdateWindow();
-
-    m_appWindow.initBrowserWindow();
-#endif
+    m_appWindow->initBrowserWindow();
 
     bool bRE1App = false;
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
@@ -702,10 +685,6 @@ void CRhodesModule::RunMessageLoop( ) throw( )
     rho::common::CRhodesApp::Destroy();
 
     net::CNetRequestImpl::deinitConnection();
-
-#if !defined(OS_WINDOWS_DESKTOP)
-//	ReleaseMutex(m_hMutex);
-#endif
 }
 
 const rho::String& CRhodesModule::getRhoRootPath()

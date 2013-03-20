@@ -29,9 +29,19 @@
 namespace rho
 {
 
+enum EMainWindowType
+{
+    eQtWindow,
+    eNativeWindow
+};
+
 class IMainWindow
 {
-
+    virtual bool Initialize(const wchar_t* title, DWORD dwStyle) = 0;
+    virtual HWND getWebViewHWND(int tabIdx) = 0;
+    virtual HWND GetMainWindowHWND() = 0;
+    virtual void UpdateWindow(int showCmd) = 0;
+    virtual void initBrowserWindow() = 0;
 };
 
 }

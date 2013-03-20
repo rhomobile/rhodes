@@ -141,8 +141,9 @@ class CMainWindow :
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >
 #endif
 #if !defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) && !defined(OS_PLATFORM_MOTCE)
-    ,public IDispEventImpl<ID_BROWSER, CMainWindow>
+    , public IDispEventImpl<ID_BROWSER, CMainWindow>
 #endif
+    , public IMainWindow
 {
     DEFINE_LOGCLASS;
 public:
@@ -173,7 +174,7 @@ public:
 							NativeView* nativeView,
 							String nativeViewType);
 	void closeNativeView();
-    rho::IBrowserEngine* getWebKitEngine(){return m_pBrowserEng; }
+    rho::IBrowserEngine* getWebKitEngine(){ return m_pBrowserEng; }
 
 #if defined(OS_WINDOWS_DESKTOP)
     DECLARE_WND_CLASS(TEXT("Rhodes.MainWindow"))
@@ -368,17 +369,19 @@ private:
 	void hideWebView();
 	void showWebView();
 
+    // IMainWindow implementation
+    virtual bool Initialize(const wchar_t* title, DWORD dwStyle);
+    virtual HWND getWebViewHWND(int tabIdx);
+    virtual HWND GetMainWindowHWND();
+    virtual void UpdateWindow(int showCmd);
+
 private:
 	NativeViewFactory* mNativeViewFactory;
 	NativeView* mNativeView;
 	String mNativeViewType;
 	bool mIsOpenedByURL;
-
-
-private:
     bool mIsBrowserViewHided;
 	bool m_isMinimized;
-
     rho::IBrowserEngine* m_pBrowserEng;
 
 #if defined(_WIN32_WCE)

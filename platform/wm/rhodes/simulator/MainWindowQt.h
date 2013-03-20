@@ -41,6 +41,7 @@
 #endif
 #include "LogView.h"
 #include "qt/rhodes/MainWindowCallback.h"
+#include "../IMainWindow.h"
 
 static UINT WM_TAKEPICTURE             = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
 static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
@@ -62,14 +63,15 @@ typedef struct _TCookieData {
     char* cookie;
 } TCookieData;
 
-class CMainWindow :
-    public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
-    public IMainWindowCallback
+class CMainWindowQt :
+    public CWindowImpl<CMainWindowQt, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
+    public IMainWindowCallback,
+    public IMainWindow
 {
     DEFINE_LOGCLASS;
 public:
-    CMainWindow();
-    ~CMainWindow();
+    CMainWindowQt();
+    ~CMainWindowQt();
     // IMainWindowCallback
     virtual void updateSizeProperties(int width, int height);
     virtual void onActivate(int active);
@@ -77,6 +79,11 @@ public:
     virtual void onCustomMenuItemCommand(int nItemPos);
 	virtual void onWindowClose(void);
     virtual void onWebViewUrlChanged(const ::std::string& url);
+    // IMainWindow implementation
+    virtual bool Initialize(const wchar_t* title, DWORD dwStyle);
+    virtual HWND getWebViewHWND(int tabIdx);
+    virtual HWND GetMainWindowHWND();
+    virtual void UpdateWindow();
     // public methods:
     void Navigate2(BSTR URL, int index);
     HWND Initialize(const wchar_t* title);
@@ -85,7 +92,6 @@ public:
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
     CNativeToolbar& getToolbar(){ return m_toolbar; }
     CNativeTabbar& getTabbar(){ return m_tabbar; }
-    HWND getWebViewHWND(int index);
 	void setProxy();
 	void setProxy(const rho::String& host, const rho::String& port, const rho::String& login, const rho::String& password);
 	// for 'main_window_closed' System property
