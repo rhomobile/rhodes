@@ -26,8 +26,6 @@
 
 #pragma once
 
-#if !defined(OS_WINDOWS_DESKTOP)
-
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE )
 #include <exdispid.h>
 #include <exdisp.h>
@@ -429,10 +427,4 @@ private:
 
 #if !defined(_WIN32_WCE) || defined( OS_PLATFORM_MOTCE ) 
 HBITMAP SHLoadImageFile (  LPCTSTR pszFileName );
-#endif
-
-#else
-
-#include "simulator\MainWindowQt.h"
-
 #endif

@@ -128,7 +128,7 @@ HREGNOTIFY g_hNotify = NULL, g_hNotifyCell = NULL;
 #define SN_CELLSYSTEMCONNECTED_PATH TEXT("System\\State\\Phone")
 #define SN_CELLSYSTEMCONNECTED_VALUE TEXT("Cellular System Connected")
 
-#endif
+#endif //_WIN32_WCE && !OS_PLATFORM_MOTCE
 
 //This is hack. MC4900 device failed to enable barcode after webkit initialization. So we enable it before.
 #if defined(APP_BUILD_CAPABILITY_BARCODE) && defined(APP_BUILD_CAPABILITY_MOTOROLA) && defined (OS_PLATFORM_MOTCE)
@@ -218,6 +218,11 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 }
 #endif //!OS_WINDOWS_DESKTOP
+
+rho::IMainWindow* rho_wmimpl_createMainWindow(HWND hwndParent)
+{
+
+}
 
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( )
 {
@@ -407,18 +412,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         SetForegroundWindow( hWnd );
 		return S_FALSE;
 	}
-
-	// creating mutex
-/*	m_hMutex = CreateMutex(NULL, TRUE, CMainWindow::GetWndClassInfo().m_wc.lpszClassName);
-	if (m_hMutex==NULL) {
-		// Failed to create mutex
-		return S_FALSE;
-	}
-	if ((GetLastError() == ERROR_ALREADY_EXISTS) && (WaitForSingleObject(m_hMutex, 60000L) != WAIT_OBJECT_0)) {
-        rho_sys_impl_exit_with_errormessage( "Initialization", "Another instance of the application is running. Please, exit it or use Task Manager to terminate it.");
-        return S_FALSE;
-	}*/
-#endif
+#endif //!OS_WINDOWS_DESKTOP
 
     if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
     {
@@ -700,10 +694,6 @@ void CRhodesModule::RunMessageLoop( ) throw( )
     pGPS->DeleteInstance();
 #endif
     rho_ringtone_manager_stop();
-
-//#if !defined(_WIN32_WCE)
-//    rho::sync::CClientRegister::Destroy();
-//#endif
 
 #if defined(OS_WINDOWS_DESKTOP)
     m_appWindow.DestroyUi();
