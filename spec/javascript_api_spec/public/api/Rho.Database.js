@@ -118,8 +118,8 @@
         Database.prototype.setDoNotBackupAttribute = function(/* bool */ setFlag, /* optional function */ oResult) {
             setFlag = (setFlag === undefined) ? true : setFlag;
             if (Rho.System.getProperty('platform') === 'APPLE') {
-                Rho.System.setDoNotBackupAttribute(this.dbpath             , setFlag);
-                Rho.System.setDoNotBackupAttribute(this.dbpath + '.version', setFlag);
+                Rho.System.setDoNotBackupAttribute(this.dbPath             , setFlag);
+                Rho.System.setDoNotBackupAttribute(this.dbPath + '.version', setFlag);
             }                         
         };
 
