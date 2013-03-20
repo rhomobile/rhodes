@@ -42,6 +42,8 @@
 #include "InitMemoryInfoCollector.h"
 #include "Reachability.h"
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+
 /*
 use this non-public code for see level of memory warning 
  
@@ -657,8 +659,9 @@ static Rhodes *instance = NULL;
 }
 
 - (RhoViewController<RhoMainView,NSObject>*)createDefaultViewController {
-    RhoViewController<RhoMainView,NSObject>* viewController = [[SimpleMainView alloc] initWithParentView:baseView frame:[Rhodes applicationFrame]];
-    viewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    CGRect rect = baseView.frame;
+    RhoViewController<RhoMainView,NSObject>* viewController = [[SimpleMainView alloc] initWithParentView:baseView frame:rect];
+    viewController.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     viewController.view.autoresizesSubviews = YES;
     
     return viewController;
@@ -682,6 +685,7 @@ static Rhodes *instance = NULL;
     baseViewController = [[RhoViewController alloc] init];
     
 	CGRect wFrame = [Rhodes applicationFrame];
+    wFrame.origin.x = 0;
     wFrame.origin.y = 0;
     
     baseView = [[UIView alloc] initWithFrame:wFrame];
@@ -705,7 +709,7 @@ static Rhodes *instance = NULL;
 	}
 	
     [window makeKeyAndVisible];
- 
+
 	CGRect rrr = [application statusBarFrame];
 	
     NSLog(@"Init cookies");
@@ -728,6 +732,9 @@ static Rhodes *instance = NULL;
      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeSound)];
 #endif //__IPHONE_3_0
 #endif //APP_BUILD_CAPABILITY_PUSH
+
+    [baseView layoutSubviews];
+    [window layoutSubviews];
         
     NSLog(@"Initialization finished");
 }

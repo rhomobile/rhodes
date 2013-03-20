@@ -75,6 +75,8 @@
 		int image_height = (int)([img size].height*img_scale);
 		
 		CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
+        appFrame.origin.x = 0;
+        appFrame.origin.y = 0;
 		CGRect srcrnBounds = [[UIScreen mainScreen] bounds];
 		CGRect sbFrame = [[UIApplication sharedApplication] statusBarFrame];
 		
@@ -172,7 +174,7 @@
     CGRect frame = [[UIScreen mainScreen] bounds];
     splashView = [[RhoSplashImageView alloc] initWithFrame:frame];
 	
-	splashView.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	splashView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	splashView.autoresizesSubviews = YES;
 	self.view = splashView;
     

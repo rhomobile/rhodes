@@ -530,7 +530,7 @@
     tabbar.viewControllers = views;
     tabbar.customizableViewControllers = nil;
     tabbar.view.hidden = NO;
-    tabbar.view.autoresizingMask = /*UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin |*/ UIViewAutoresizingFlexibleWidth |
+    tabbar.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleWidth |
         UIViewAutoresizingFlexibleHeight;
     tabbar.view.autoresizesSubviews = YES;
     
