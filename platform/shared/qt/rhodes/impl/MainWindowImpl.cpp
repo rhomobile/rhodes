@@ -235,6 +235,11 @@ void CMainWindow::messageLoop(void)
     ((QApplication*)qtApplication)->exec();
 }
 
+bool CMainWindow::getFullScreen()
+{
+    return ((QtMainWindow*)qtMainWindow)->getFullScreen();
+}
+
 void CMainWindow::GoBack(void)
 {
     LOG(INFO) + "back";
