@@ -136,6 +136,7 @@ public:
     void executeRunnable(rho::common::IRhoRunnable*);
     void takeSignature(void*); //TODO: Signature::Params*
     void fullscreenCommand(int);
+    bool getFullScreen();
     void setCookie(const char*, const char*);
     void bringToFront();
     void setFrame(int x, int y, int width, int height);
