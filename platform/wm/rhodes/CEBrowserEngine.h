@@ -86,6 +86,8 @@ private:
     virtual bool    isExistJavascript(const wchar_t* szJSFunction, int index);
     virtual void    executeJavascript(const wchar_t* szJSFunction, int index);     
     virtual void    OnDocumentComplete(LPCTSTR url);  
+    virtual bool    RegisterForMessage(unsigned int iMsgId);
+    virtual bool    DeRegisterForMessage(unsigned int iMsgId);
 
 #pragma region not_implemented_virtual_functions
     virtual BOOL    NavigateToHtml(LPCTSTR szHtml) { return FALSE; }
