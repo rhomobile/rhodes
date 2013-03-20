@@ -1,4 +1,4 @@
-sdk: ../..
+#sdk: ../..
 sdkversion: 4.0.0
 name: javascript_api_spec
 version: 1.0
