@@ -476,7 +476,7 @@
             </METHOD>
 
             <METHOD name="set_locale" deprecated="true" generateAPI="false" access="STATIC">
-                <DESC>Use Application.locale property: set application specific locale</DESC>
+                <DESC>Use Application.setLocale method: set application specific locale</DESC>
                 <PARAMS>
                     <PARAM name="locale_code" type="STRING"/>
                     <PARAM name="country_code" type="STRING"/>
