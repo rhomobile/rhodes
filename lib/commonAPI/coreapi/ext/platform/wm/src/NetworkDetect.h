@@ -32,8 +32,8 @@ public:
 	BOOL StartNetworkChecking();
 	BOOL StopNetworkChecking();
 	BOOL IsChecking();
-	void SetCallback(rho::apiGenerator::CMethodResult* pCallback);
-	rho::apiGenerator::CMethodResult* GetCallback() {return m_pDetectCallback;}
+	void SetCallback(rho::apiGenerator::CMethodResult pCallback);
+	rho::apiGenerator::CMethodResult GetCallback() {return m_pDetectCallback;}
 
 private:  //  Methods
 	void CheckConnectivity();
@@ -44,7 +44,7 @@ private:  //  Threads
 
 private:  //  Attributes
 	timeval			m_connectionTimeout;
-	rho::apiGenerator::CMethodResult*	m_pDetectCallback;
+	rho::apiGenerator::CMethodResult	m_pDetectCallback;
 	rho::String m_szHost;
 	int m_iPort;
 	int m_iNetworkPollInterval;
