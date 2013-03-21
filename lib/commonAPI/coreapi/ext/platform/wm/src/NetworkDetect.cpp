@@ -113,7 +113,7 @@ BOOL CNetworkDetection::IsChecking()
 	return isAlive();
 }
 
-void CNetworkDetection::SetCallback(rho::apiGenerator::CMethodResult* pCallback)
+void CNetworkDetection::SetCallback(rho::apiGenerator::CMethodResult pCallback)
 {
 	m_pDetectCallback = pCallback;
 }
@@ -221,7 +221,7 @@ void CNetworkDetection::CheckConnectivity()
 			rho::Hashtable<rho::String, rho::String> detectedCallbackData;
 			detectedCallbackData.put("connectionInformation", "Connected");
 			detectedCallbackData.put("failureMessage", "Connected");
-			m_pDetectCallback->set(detectedCallbackData);
+			m_pDetectCallback.set(detectedCallbackData);
 		}
 	}
 	else
@@ -233,7 +233,7 @@ void CNetworkDetection::CheckConnectivity()
 			rho::Hashtable<rho::String, rho::String> detectedCallbackData;
 			detectedCallbackData.put("connectionInformation", "Disconnected");
 			detectedCallbackData.put("failureMessage", m_szLastError);
-			m_pDetectCallback->set(detectedCallbackData);
+			m_pDetectCallback.set(detectedCallbackData);
 		}
 	}
 }

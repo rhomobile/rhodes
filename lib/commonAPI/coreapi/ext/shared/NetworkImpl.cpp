@@ -415,7 +415,7 @@ void CNetworkImpl::detectConnection( const rho::Hashtable<rho::String, rho::Stri
 			else
 				LOG(WARNING) + "Unrecognised parameter passed to detectConnection: " + iterator->first;
 		}
-		pNetworkDetection->SetCallback(&oResult);
+		pNetworkDetection->SetCallback(oResult);
 		pNetworkDetection->StartNetworkChecking();
 	}
 	else
@@ -431,7 +431,7 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
 	std::list<CNetworkDetection*>::iterator i;
 	for (i = m_networkPollers.begin(); i != m_networkPollers.end(); ++i)
 	{
-		if ((*i) && (*i)->GetCallback() && (*i)->GetCallback()->isEqualCallback(oResult))
+		if ((*i) && (*i)->GetCallback().isEqualCallback(oResult))
 		{
 			//  We've found the CNetworkDetection object with the callback we're looking for
 			pNetworkDetection = (*i);
@@ -449,13 +449,14 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
 #endif
 }
 
+
 void CNetworkImpl::connectWan( const rho::String& connectionDestination, rho::apiGenerator::CMethodResult& oResult)
 {
 #if (defined OS_WINCE)&& !defined(OS_PLATFORM_MOTCE) 
 	//  Only applicable to WM/CE, specific to connection manager
 	//  There is only a single object for connection manager access as you can only have
 	//  one physical connection.
-	m_pConnectionManager->SetWanCallback(&oResult);
+	m_pConnectionManager->SetWanCallback(oResult);
 	m_pConnectionManager->Connect(convertToStringW(connectionDestination).c_str(), TRUE);
 #endif
 }
@@ -467,6 +468,8 @@ void CNetworkImpl::disconnectWan(rho::apiGenerator::CMethodResult& oResult)
 	m_pConnectionManager->Disconnect(TRUE);
 #endif
 }
+
+
 ////////////////////////////////////////////////////////////////////////
 
 class CNetworkFactory: public CNetworkFactoryBase
