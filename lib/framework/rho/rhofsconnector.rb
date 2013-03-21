@@ -23,7 +23,7 @@
 # 
 # http://rhomobile.com
 #------------------------------------------------------------------------
-if !Rho::System.isRhoSimulator() && Rho::System.platform != Rho::System::PLATFORM_WM_CE && Rho::System.platform != Rho::System::PLATFORM_WINDOWS_DESKTOP
+if !Rho::System.isRhoSimulator() && Rho::System.platform != Rho::System::PLATFORM_WM_CE && Rho::System.platform != Rho::System::PLATFORM_WINDOWS_DESKTOP && Rho::System.platform != Rho::System::PLATFORM_IOS
 module Rho
   class RhoFSConnector
 

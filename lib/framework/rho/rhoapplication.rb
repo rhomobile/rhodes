@@ -181,7 +181,7 @@ module Rho
   	  WebView.set_menu_items(disp_menu)
     end
     
-if !Rho::System.isRhoSimulator() && Rho::System.platform != Rho::System::PLATFORM_WM_CE && Rho::System.platform != Rho::System::PLATFORM_WINDOWS_DESKTOP
+if !Rho::System.isRhoSimulator() && Rho::System.platform != Rho::System::PLATFORM_WM_CE && Rho::System.platform != Rho::System::PLATFORM_WINDOWS_DESKTOP && Rho::System.platform != Rho::System::PLATFORM_IOS
     class << self
       def get_app_path(appname)
         Rho::RhoFSConnector::get_app_path(appname)
