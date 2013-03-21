@@ -32,6 +32,8 @@ macx {
   exists("../../../osx/bin/extensions/extensions.pri") {
     include("../../../osx/bin/extensions/extensions.pri")
   }
+  SOURCES += ../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CSystemImpl.cpp\
+../../../../lib/commonAPI/coreapi/ext/platform/osx/src/CWebViewImpl.cpp
 }
 
 win32 {

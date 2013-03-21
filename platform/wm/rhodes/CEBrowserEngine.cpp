@@ -865,4 +865,14 @@ void CEBrowserEngine::OnDocumentComplete(LPCTSTR url)
     }
 }
 
+bool CEBrowserEngine::RegisterForMessage(unsigned int iMsgId)
+{
+    return true;
+}
+
+bool CEBrowserEngine::DeRegisterForMessage(unsigned int iMsgId)
+{
+    return true;
+}
+
 #endif //!defined( OS_WINCE )

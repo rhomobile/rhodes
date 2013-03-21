@@ -9,7 +9,7 @@ static const char* keys[] = { ""
 };
 
 static const char* values[] = { ""
-,"SuperApi"
+,"javascript_api_spec"
 };
 
 #define APP_BUILD_CONFIG_COUNT 2

@@ -241,4 +241,10 @@ describe("Rho common API", function () {
 
     });
 
+    describe('Database module', function () {
+        it('exists', function () {
+            expect(Rho.Database.test()).toEqual(1);
+        });
+    });
+
 });

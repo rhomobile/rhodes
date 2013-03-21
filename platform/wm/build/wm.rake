@@ -513,13 +513,13 @@ namespace "build" do
                     ENV['RHO_BUILD_CONFIG'] = 'SimulatorRelease'
                 else    
                     ENV['RHO_BUILD_CONFIG'] = $rhosimulator_build ? 'Release' : $buildcfg
+                    ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
                 end
                     
                 ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "extensions", ext)
                 ENV['VCBUILD'] = $vcbuild
                 ENV['RHO_PROJECT_PATH'] = File.join(commin_ext_path, project_path)
   	            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", ENV['RHO_BUILD_CONFIG'])
-                ENV['TARGET_EXT_DIR_SIM'] = File.join($startdir, "platform", 'wm', "bin", $sdk, "rhodes", $rhosimulator_build ? "SimulatorRelease" : $buildcfg)
                 
                 ENV['RHO_EXT_NAME']=ext                
 

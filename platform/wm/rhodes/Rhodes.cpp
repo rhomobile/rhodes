@@ -608,14 +608,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     else
     {
         RHODESAPP().startApp();
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+//#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         // Navigate to the "loading..." page
 	    m_appWindow.Navigate2(_T("about:blank")
     #if defined(OS_WINDOWS_DESKTOP)
             , -1
     #endif
         );
-#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+//#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     }
     // Show the main application window
     //m_appWindow.ShowWindow(nShowCmd);

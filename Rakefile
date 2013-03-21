@@ -894,13 +894,13 @@ def find_ext_ingems(extname)
 end
 
 def write_modules_js(filename, modules)
-  f = StringIO.new("", "w+")
-  f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-  f.puts 'Rho.loadApiModules(['
-  f.puts '    "' + extjsmodules.join('","') + '"'
-  f.puts ']);'
-
-  Jake.modify_file_if_content_changed( File.join(rhoapi_js_folder, "rhoapi-modules.js"), f )
+    f = StringIO.new("", "w+")
+    f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+    f.puts 'Rho.loadApiModules(['
+    f.puts '    "' + modules.join('","') + '"'
+    f.puts ']);'
+  
+    Jake.modify_file_if_content_changed(filename, f)
 end
 
 def is_ext_supported(extpath)
@@ -1038,7 +1038,7 @@ def init_extensions(startdir, dest)
 
     f = StringIO.new("", "w+")          
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-    #f.puts "// Generated #{Time.now.to_s}"
+
     if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
       # Add libraries through pragma
       extlibs.each do |lib|
