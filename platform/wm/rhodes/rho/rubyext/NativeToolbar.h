@@ -29,7 +29,9 @@
 #include "common/IRhoThreadImpl.h"
 #include "ruby/ext/rho/rhoruby.h"
 
-class CNativeToolbar : public CWindowImpl<CNativeToolbar, CToolBarCtrl>
+#include "../IToolbar.h"
+
+class CNativeToolbar : public CWindowImpl<CNativeToolbar, CToolBarCtrl>, public IToolbar
 {
     DEFINE_LOGCLASS;
 

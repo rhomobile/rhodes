@@ -41,8 +41,11 @@
 #endif
 #include "LogView.h"
 #include "qt/rhodes/MainWindowCallback.h"
-#include "../IMainWindow.h"
 
+#include "../IMainWindow.h"
+#include "../IToolbar.h"
+
+/*
 static UINT WM_TAKEPICTURE             = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
 static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
 //static UINT WM_TAKESIGNATURE           = ::RegisterWindowMessage(L"RHODES_WM_TAKESIGNATURE");
@@ -52,6 +55,7 @@ static UINT WM_DATETIME_PICKER         = ::RegisterWindowMessage(L"RHODES_WM_DAT
 static UINT WM_EXECUTE_COMMAND         = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_COMMAND");
 static UINT WM_EXECUTE_RUNNABLE        = ::RegisterWindowMessage(L"RHODES_WM_EXECUTE_RUNNABLE");
 static UINT WM_SHOW_LICENSE_WARNING	   = ::RegisterWindowMessage(L"RHOELEMENTS_WM_LICENSE_WARNING");
+*/
 
 #define ID_CUSTOM_MENU_ITEM_FIRST (WM_APP+3)
 #define ID_CUSTOM_MENU_ITEM_LAST  (ID_CUSTOM_MENU_ITEM_FIRST + (APP_MENU_ITEMS_MAX) - 1)
@@ -90,8 +94,8 @@ public:
     void MessageLoop(void);
 	void DestroyUi(void);
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
-    CNativeToolbar& getToolbar(){ return m_toolbar; }
-    CNativeTabbar& getTabbar(){ return m_tabbar; }
+    IToolbar& getToolbar(){ return static_cast<IToolbar&>(m_toolbar); }
+    CNativeTabbarQt& getTabbar(){ return m_tabbar; }
 	void setProxy();
 	void setProxy(const rho::String& host, const rho::String& port, const rho::String& login, const rho::String& password);
 	// for 'main_window_closed' System property
@@ -188,12 +192,12 @@ private:
     LRESULT OnLicenseWarning (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
 private:
-    CLogView m_logView;
-    CNativeToolbar m_toolbar;
-	CNativeTabbar m_tabbar;
-    bool m_started;
-    void* qtMainWindow;
-    void* qtApplication;
+    CLogView         m_logView;
+    CNativeToolbarQt m_toolbar;
+	CNativeTabbarQt  m_tabbar;
+    bool             m_started;
+    void*            qtMainWindow;
+    void*            qtApplication;
 
 private:
     static int m_screenWidth;

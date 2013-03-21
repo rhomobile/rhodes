@@ -31,61 +31,62 @@
 #include "MainWindow.h"
 #include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
+#include "NativeTabbarQt.h"
 #undef null
 #include <QString>
 #include <QApplication>
 #include <QtGui/QAction>
 
 extern CMainWindow& getAppWindow();
-IMPLEMENT_LOGCLASS(CNativeTabbar,"NativeTabbar");
+IMPLEMENT_LOGCLASS(CNativeTabbarQt,"NativeTabbar");
 
 using namespace rho;
 using namespace rho::common;
 
-CNativeTabbar::CNativeTabbar(void)
+CNativeTabbarQt::CNativeTabbarQt(void)
 {
 }
 
-CNativeTabbar::~CNativeTabbar(void)
+CNativeTabbarQt::~CNativeTabbarQt(void)
 {
 }
 
-void CNativeTabbar::OnFinalMessage(HWND /*hWnd*/)
+void CNativeTabbarQt::OnFinalMessage(HWND /*hWnd*/)
 {
     getAppWindow().removeAllTabs(false);
 }
 
-/*static*/ CNativeTabbar& CNativeTabbar::getInstance()
+/*static*/ CNativeTabbarQt& CNativeTabbarQt::getInstance()
 {
     return getAppWindow().getTabbar();
 }
 
-void CNativeTabbar::createTabbar(int bar_type, rho_param *p)
+void CNativeTabbarQt::createTabbar(int bar_type, rho_param *p)
 {
     getAppWindow().createTabbar(bar_type, p);
 }
 
-void CNativeTabbar::removeTabbar()
+void CNativeTabbarQt::removeTabbar()
 {
     getAppWindow().removeTabbar();
 }
 
-int CNativeTabbar::getHeight()
+int CNativeTabbarQt::getHeight()
 {
     return getAppWindow().getTabbarHeight();
 }
 
-bool CNativeTabbar::isStarted()
+bool CNativeTabbarQt::isStarted()
 {
     return getAppWindow().isStarted();
 }
 
-void CNativeTabbar::tabbarSwitch(int index)
+void CNativeTabbarQt::tabbarSwitch(int index)
 {
     getAppWindow().tabbarSwitch(index);
 }
 
-void CNativeTabbar::tabbarBadge(int index, char* badge)
+void CNativeTabbarQt::tabbarBadge(int index, char* badge)
 {
     getAppWindow().tabbarBadge(index, badge);
 }

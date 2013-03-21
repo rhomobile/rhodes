@@ -36,47 +36,47 @@
 #include <QApplication>
 #include <QtGui/QAction>
 
-extern CMainWindow& getAppWindow();
-IMPLEMENT_LOGCLASS(CNativeToolbar,"NativeToolbar");
+extern IMainWindow& getAppWindow();
+IMPLEMENT_LOGCLASS(CNativeToolbarQt,"NativeToolbar");
 
 using namespace rho;
 using namespace rho::common;
 
-CNativeToolbar::CNativeToolbar(void)
+CNativeToolbarQt::CNativeToolbarQt(void)
 {
 }
 
-CNativeToolbar::~CNativeToolbar(void)
+CNativeToolbarQt::~CNativeToolbarQt(void)
 {
 }
 
-void CNativeToolbar::OnFinalMessage(HWND /*hWnd*/)
+void CNativeToolbarQt::OnFinalMessage(HWND /*hWnd*/)
 {
     getAppWindow().removeAllButtons();
 }
 
-/*static*/ CNativeToolbar& CNativeToolbar::getInstance()
+/*static*/ CNativeToolbarQt& CNativeToolbarQt::getInstance()
 {
     return getAppWindow().getToolbar();
 }
 
-void CNativeToolbar::createToolbar(rho_param *p)
+void CNativeToolbarQt::createToolbar(rho_param *p)
 {
     getAppWindow().createToolbar(p);
 }
 
 
-void CNativeToolbar::removeToolbar()
+void CNativeToolbarQt::removeToolbar()
 {
     getAppWindow().removeToolbar();
 }
 
-int CNativeToolbar::getHeight()
+int CNativeToolbarQt::getHeight()
 {
     return getAppWindow().getToolbarHeight();
 }
 
-bool CNativeToolbar::isStarted()
+bool CNativeToolbarQt::isStarted()
 {
     return getAppWindow().isStarted();
 }

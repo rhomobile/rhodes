@@ -66,6 +66,7 @@ class Jake
     res = self.config_parse(conf)
     res
   end
+  
   def self.set_bbver(bbver)
     @@bbver = bbver
   end
@@ -534,7 +535,7 @@ class Jake
     args << 'library=' + output if library
     args << output + '.rapc'
     args << files
-  
+
     cmd.gsub!(/\//,"\\")
     outputstring = run(cmd, args)
     puts outputstring unless $? == 0

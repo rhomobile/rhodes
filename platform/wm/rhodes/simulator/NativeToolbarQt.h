@@ -35,7 +35,9 @@
 #include <atldlgs.h>
 #include <atlmisc.h>
 
-class CNativeToolbar
+#include "IToolbar.h"
+
+class CNativeToolbarQt : public IToolbar
 {
     DEFINE_LOGCLASS;
 
@@ -50,22 +52,23 @@ public:
         CCreateTask(rho_param *p) : m_param(rho_param_dup(p)){ }
         ~CCreateTask(){ rho_param_free(m_param); }
         virtual void runObject(){
-            CNativeToolbar::getInstance().createToolbar(m_param);
+            CNativeToolbarQt::getInstance().createToolbar(m_param);
         }
     };
+
     class CRemoveTask: public rho::common::IRhoRunnable
     {
     public:
         virtual void runObject(){
-            CNativeToolbar::getInstance().removeToolbar(); 
+            CNativeToolbarQt::getInstance().removeToolbar(); 
         }
     };
 
 public:
-    CNativeToolbar(void);
-    ~CNativeToolbar(void);
+    CNativeToolbarQt(void);
+    ~CNativeToolbarQt(void);
 
-    static CNativeToolbar& getInstance();
+    static CNativeToolbarQt& getInstance();
 
     virtual void OnFinalMessage(HWND /*hWnd*/);
 

@@ -42,6 +42,7 @@
 #include "common/RhoFilePath.h"
 #include "common/app_build_capabilities.h"
 #include "common/app_build_configs.h"
+#include "simulator/MainWindowQt.h"
 
 using namespace rho;
 using namespace rho::common;
@@ -177,11 +178,14 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 #endif
 
 public :
+    CRhodesModule() : m_appWindow(0) {}
+
     static HINSTANCE GetModuleInstance(){ return m_hInstance; }
     static void SetModuleInstance(HINSTANCE hInstance) { m_hInstance = hInstance; }
+
     HWND GetMainWindow() { return m_appWindow->GetMainWindowHWND(); }
-	CMainWindow* GetMainWindowObject() { return &m_appWindow;}
-	CMainWindow& GetAppWindow() { return m_appWindow; }
+	IMainWindow* GetMainWindowObject() { return m_appWindow;}
+	IMainWindow& GetAppWindow() { return *m_appWindow; }
 	HWND GetWebViewWindow(int index) {	return m_appWindow->getWebViewHWND(index); }
     bool ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw();
     HRESULT PreMessageLoop(int nShowCmd) throw();
@@ -772,24 +776,28 @@ extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
     mainWnd->performOnUiThread(pTask);    
 }
 
-extern "C" HWND getMainWnd() {
+extern "C" HWND getMainWnd() 
+{
 	return _AtlModule.GetMainWindow();
 }
 
-CMainWindow& getAppWindow() 
+IMainWindow& getAppWindow() 
 {
 	return _AtlModule.GetAppWindow();
 }
 
-extern "C" HWND getWebViewWnd(int index) {
+extern "C" HWND getWebViewWnd(int index) 
+{
 	return _AtlModule.GetWebViewWindow(index);
 }
 
-CMainWindow* Rhodes_getMainWindow() {
+IMainWindow* Rhodes_getMainWindow() 
+{
 	return _AtlModule.GetMainWindowObject();
 }
 
 extern "C" void rho_wmsys_run_app(const char* szPath, const char* szParams );
+
 void rho_platform_restart_application() 
 {
 	char module[MAX_PATH];
@@ -813,6 +821,7 @@ extern "C" void rho_wm_impl_CheckLicense()
 {
     int nRes = 0;
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
+
     if(hLicenseInstance)
     {
 #ifdef OS_WINDOWS_DESKTOP
