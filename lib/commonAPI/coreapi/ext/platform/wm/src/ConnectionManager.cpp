@@ -15,7 +15,6 @@ CWAN::CWAN(HWND hParentWnd)
 	m_hConnectionManagerWatchdog = NULL;
 	m_hStopConnectionManagerWatchdog = NULL;
 	m_szLastRequestedConnectionDestionation = NULL;
-	m_pStatusCallback = NULL;
 }
 
 CWAN::~CWAN()
@@ -392,7 +391,7 @@ BOOL CWAN::Disconnect(BOOL bUserRequest)
 }
 
 
-BOOL CWAN::SetWanCallback(rho::apiGenerator::CMethodResult* pCallback)
+BOOL CWAN::SetWanCallback(rho::apiGenerator::CMethodResult pCallback)
 {
 	m_pStatusCallback = pCallback;
 	ConnectionManagerStatusUpdate();
@@ -403,7 +402,7 @@ BOOL CWAN::SetWanCallback(rho::apiGenerator::CMethodResult* pCallback)
 void CWAN::ReportWANStatus()
 {
 	//  Only report the signal status to the user if there is a registered callback
-	if (m_pStatusCallback)
+	if (m_pStatusCallback.hasCallback())
 	{
 		//Make sure Values are up to date
 		Sleep(200);
@@ -422,7 +421,7 @@ void CWAN::ReportWANStatus()
 		callbackData.put("connectionTypeAvailable", convertToStringA(m_szCellularSystemAvailable));
 		callbackData.put("connectionTypeConnected", convertToStringA(m_szCellularSystemConnected));
 		callbackData.put("connectionManagerMessage", convertToStringA(m_szConnectionManagerStatus));
-		m_pStatusCallback->set(callbackData);
+		m_pStatusCallback.set(callbackData);
 	}
 }
 

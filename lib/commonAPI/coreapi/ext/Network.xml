@@ -241,7 +241,7 @@
                 <DESC>Stop network status notifications.</DESC>
             </METHOD>
 
-            <METHOD name="detectConnection" hasCallback="mandatory">
+            <METHOD name="detectConnection" hasCallback="mandatory" runInThread="none">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <DESC>Begins polling the specified host on the specified URL to check if there is a network connection available. The connection status is reported back via the provided callback.</DESC>
                 <PARAMS>

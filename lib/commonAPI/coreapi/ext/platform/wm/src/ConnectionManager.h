@@ -136,7 +136,7 @@ public:
 	*  \param szNavURI The Navigation String to be sent when invoking SendPBNavigate
 	*  \return Whether or not the Navigation URI was successfully set.
 	*/
-	BOOL SetWanCallback(rho::apiGenerator::CMethodResult* pCallback);
+	BOOL SetWanCallback(rho::apiGenerator::CMethodResult pCallback);
 
 	/**
 	*  Accessor for m_hConnManDLL
@@ -253,7 +253,7 @@ private:
 	HMODULE m_hConnManDLL;					///<  HMODULE for the dynamically loaded Connection Manager DLL
 	HANDLE m_hStopConnectionManagerWatchdog;///<  Handle to event signaled to indicate the connection manager watchdog should stop
 	HANDLE m_hConnectionManagerWatchdog;	///<  Handle to thread which monitors the Connection Manager connection
-	rho::apiGenerator::CMethodResult* m_pStatusCallback;	///<  Callback when WAN status changes
+	rho::apiGenerator::CMethodResult m_pStatusCallback;	///<  Callback when WAN status changes
 
 	LPFN_CONMGR_ESTABLISHCONNECTION_T	lpfn_ConMgr_EstablishConnection;	///< Fn Ptr for Connection Manager Establish Connection
 	LPFN_CONMGR_ENUMDESTINATIONS_T		lpfn_ConMgr_EnumDestinations;		///< Fn Ptr for Connection Manager Enum Destinations
