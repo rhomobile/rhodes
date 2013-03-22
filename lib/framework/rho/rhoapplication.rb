@@ -34,7 +34,7 @@ require 'rho/rhotoolbar'
 ::System::set_locale(nil, nil)
 
 module Rho
-  class RhoApplication
+  class Application
   	attr_accessor :default_menu
   	
   	TOOLBAR_TYPE = 0
@@ -179,8 +179,9 @@ module Rho
       disp_menu['Back'] = back_action if back_action
       #puts "RhoApplication: Using menu - #{disp_menu.inspect}"
   	  WebView.set_menu_items(disp_menu)
-	  end
-	
+    end
+    
+if !Rho::System.isRhoSimulator() && Rho::System.platform != Rho::System::PLATFORM_WM_CE && Rho::System.platform != Rho::System::PLATFORM_WINDOWS_DESKTOP && Rho::System.platform != Rho::System::PLATFORM_IOS
     class << self
       def get_app_path(appname)
         Rho::RhoFSConnector::get_app_path(appname)
@@ -211,6 +212,7 @@ module Rho
       end
       
     end
+end
 
     @@current_controller = nil
     def self.current_controller()
@@ -250,5 +252,10 @@ module Rho
       res['request-body'] = @@current_controller.send :serve, self, @rhom, req, res
     end
 
-  end # RhoApplication
+  end # Application
 end # Rho
+
+module Rho
+    RhoApplication = Rho::Application
+end
+

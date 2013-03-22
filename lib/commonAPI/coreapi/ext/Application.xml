@@ -1,0 +1,180 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Application" parent="Rho">
+        <HELP_OVERVIEW></HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
+        
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <PROPERTIES access="STATIC" generateAccessors="true">
+            <PROPERTY name="appBundleFolder" type="STRING" readOnly="true">
+                <DESC>Path to apps/app folder inside application bundle.</DESC>
+            </PROPERTY>
+            <PROPERTY name="appsBundleFolder" type="STRING" readOnly="true">
+                <DESC>Path to apps folder inside application bundle.</DESC>
+            </PROPERTY>
+            <PROPERTY name="userFolder" type="STRING" readOnly="true">
+                <DESC>Path to folder where application can write files and create subfolders.</DESC>
+            </PROPERTY>
+            <PROPERTY name="configPath" type="STRING" readOnly="true">
+                <DESC>Path to configuration file.</DESC>
+            </PROPERTY>
+            <PROPERTY name="modelsManifestPath" type="STRING" readOnly="true">
+                <DESC>Path to file with model list.</DESC>
+            </PROPERTY>
+            <PROPERTY name="databaseBlobFolder" type="STRING" readOnly="true">
+                <DESC>Path to folder where database blob files are stored.</DESC>
+            </PROPERTY>             
+            <PROPERTY name="publicFolder" type="STRING" readOnly="true">
+                <DESC>Path to application public folder.</DESC>
+            </PROPERTY>
+            
+            <PROPERTY name="startURI" type="STRING">
+                <DESC>Startup page for your application.</DESC>
+            </PROPERTY>
+            <PROPERTY name="settingsPageURI" type="STRING">
+                <DESC>Settings page URI.</DESC>
+            </PROPERTY>
+            <PROPERTY name="splash" type="STRING" readOnly="true">
+                <DESC>Splash screen image display options. This a string with several parameters divided by ';': delay=5;center;hcenter;vcenter;vzoom;hzoom;zoom</DESC>
+            </PROPERTY>
+            <PROPERTY name="version" type="STRING" readOnly="true">
+                <DESC>Version from build time configuration file.</DESC>
+            </PROPERTY>
+            <PROPERTY name="title" type="STRING">
+                <DESC>Define Window caption text.If missed - caption from page used.</DESC>
+                <PLATFORM>WM, Win32</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="name" type="STRING" readOnly="true">
+                <DESC>Application name.</DESC>
+            </PROPERTY>
+            <PROPERTY name="locale" type="STRING" readOnly="true" generateAPI="false">
+                <DESC>Current application locale.Like 'en', 'ru' etc.</DESC>
+            </PROPERTY>
+            <PROPERTY name="country" type="STRING" readOnly="true" generateAPI="false">
+                <DESC>Current application country code.</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="badLinkURI" type="STRING">
+                <DESC>Bad link URI to navigate in browser.</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
+                <APPLIES>Motorola Solutions' WebKit</APPLIES>
+                <MORE_HELP>
+                    <![CDATA[ Navigates to the specified badlink uri when one of the following occurs:
+
+    * There is an error attempting to navigate to the page, e.g. the device has no network connection.
+    * The timeout occurs when navigating to the page. You can adjust the value of the timeout using the NavTimeout setting.
+    * The user presses the stop button.
+
+    The browser will automatically append the querystring value "badlink" containing the url of the page which could not be reached and "stop=true" if the page was loaded because the user pressed the stop button. The page specified in the badlink setting should be an offline file using the file:// protocol, this way the browser can always access the file. ]]></MORE_HELP>
+            </PROPERTY>
+
+        </PROPERTIES>
+
+        <METHODS  access="STATIC">
+            <ALIASES>
+            </ALIASES>
+
+            <METHOD name="modelFolderPath">
+                <DESC>Folder of the model by name.</DESC>
+
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Model name.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="databaseFilePath">
+                <DESC>Path to database file by partition name.</DESC>
+
+                <PARAMS>
+                    <PARAM name="partitionName" type="STRING">
+                        <DESC>Partition name.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="expandDatabaseBlobFilePath">
+                <DESC>Make absolute path to database blob file.</DESC>
+
+                <PARAMS>
+                    <PARAM name="relativePath" type="STRING">
+                        <DESC>Relative path to database blob file.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="STRING"/>
+            </METHOD>
+
+            <METHOD name="quit">
+                <DESC>Quit the application.</DESC>
+            </METHOD>
+
+            <METHOD name="minimize">
+                <DESC>Minimize or move application to background.</DESC>
+            </METHOD>
+            <METHOD name="restore">
+                <DESC>Restore application on the screen.</DESC>
+            </METHOD>
+
+            <METHOD name="setActivationNotify" hasCallback="mandatory" runInThread="none">
+                <DESC>Set application activation/deactivation callback.</DESC>
+                <CALLBACK>
+                    <DESC>Information related to the activation/deactivation of application.</DESC>
+                    <PARAMS>
+                        <PARAM name="applicationState" type="STRING">
+                            <DESC>Either 'Activated' or 'Deactivated'.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="getRhoPlatformVersion" hasCallback="mandatory">
+                <DESC>The version of RhoMobile platform installed on the device.</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
+                <CALLBACK>
+                    <DESC>Information related to the activation/deactivation of application.</DESC>
+                    <PARAMS>
+                        <PARAM name="productVersion" type="STRING">
+                            <DESC>The released version running on the device, this will be in the form v.w.x.y. E.g. 1.0.0.0.</DESC>
+                        </PARAM>
+                        <PARAM name="hotFixes" type="ARRAY">
+                            <DESC>Contains the hot fixes applied. There may have been multiple hot fixes applied, e.g. ['1','3'].</DESC>
+                        </PARAM>
+                        <PARAM name="componentVersions" type="ARRAY">
+                            <DESC>A 2 dimensional array of strings which defined a mapping between each of the installed plugins' name and their version.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="setLocale" generateAPI="false" access="STATIC">
+                <DESC>Set application specific locale</DESC>
+                <PARAMS>
+                    <PARAM name="localeCode" type="STRING"/>
+                    <PARAM name="countryCode" type="STRING">
+                        <CAN_BE_NIL/>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+        </METHODS>
+        
+        <USER_OVERVIEW>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+            <![CDATA[]]>
+    
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+    </MODULE>
+</API>    

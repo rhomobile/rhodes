@@ -893,13 +893,14 @@ def find_ext_ingems(extname)
   extpath
 end
 
-def write_modules_js(filename,modules)
-  File.open(filename, "w") do |f|
-    f.puts "// Generated #{Time.now.to_s}"
+def write_modules_js(filename, modules)
+    f = StringIO.new("", "w+")
+    f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     f.puts 'Rho.loadApiModules(['
     f.puts '    "' + modules.join('","') + '"'
     f.puts ']);'
-  end
+  
+    Jake.modify_file_if_content_changed(filename, f)
 end
 
 def is_ext_supported(extpath)
@@ -1029,49 +1030,36 @@ def init_extensions(startdir, dest)
   # deploy Common API JS implementation
   if extjsmodules.count > 0
     mkdir_p rhoapi_js_folder
-    cp_r "#{$startdir}/res/generators/templates/api/js/rhoapi.js", "#{rhoapi_js_folder}/rhoapi.js" # if File.exist? rhoapi_js_folder
+    cp_r "#{$startdir}/res/generators/templates/api/js/rhoapi.js", "#{rhoapi_js_folder}/rhoapi.js"
     write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodules)
   end
 
   if $config["platform"] != "bb"
-    #exists = []
-      
-    #if ( File.exists?(exts) )
-    #  File.new(exts, "r").read.split("\n").each do |line|
-    #    next if line !~ /^\s*extern\s+void\s+([A-Za-z_][A-Za-z0-9_]*)/
-    #    exists << $1
-    #  end
-    #end
-  
-    #if (exists.sort! != extentries.sort! ) || (!File.exists?(exts))
-      #File.open(exts, "w") do |f|
-      #  puts "MODIFY : #{exts}"
-        f = StringIO.new("", "w+")          
-        f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-        #f.puts "// Generated #{Time.now.to_s}"
-        if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
-          # Add libraries through pragma
-          extlibs.each do |lib|
-            f.puts "#pragma comment(lib, \"#{lib}\")"
-          end
+    f = StringIO.new("", "w+")          
+    f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
 
-          nativelib.each do |lib|
-            f.puts "#pragma comment(lib, \"#{lib}\")"
-          end
-        end
-          
-        extentries.each do |entry|
-          f.puts "extern void #{entry}(void);"
-        end
-    
-        f.puts "void Init_Extensions(void) {"
-        extentries.each do |entry|
-          f.puts "    #{entry}();"
-        end
-        f.puts "}"
-      #end
-        Jake.modify_file_if_content_changed( exts, f )
-    #end
+    if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
+      # Add libraries through pragma
+      extlibs.each do |lib|
+        f.puts "#pragma comment(lib, \"#{lib}\")"
+      end
+
+      nativelib.each do |lib|
+        f.puts "#pragma comment(lib, \"#{lib}\")"
+      end
+    end
+      
+    extentries.each do |entry|
+      f.puts "extern void #{entry}(void);"
+    end
+
+    f.puts "void Init_Extensions(void) {"
+    extentries.each do |entry|
+      f.puts "    #{entry}();"
+    end
+    f.puts "}"
+
+    Jake.modify_file_if_content_changed( exts, f )
 
     extlibs.each { |lib| add_linker_library(lib) }
     nativelib.each { |lib| add_linker_library(lib) }

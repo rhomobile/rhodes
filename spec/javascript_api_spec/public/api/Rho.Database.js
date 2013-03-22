@@ -1,14 +1,13 @@
 
-
 (function ($, rho, rhoUtil) {
     'use strict';
 
-    var moduleNS = 'Rho.Database';
-    var apiReq = rhoUtil.apiReqFor(moduleNS);
+    var moduleNS = 'Rho.Database_';
 
-    var _execute_sql = function(db, sql, is_batch, args) {
-        return (sql === undefined) ? [] : db.execute(sql, is_batch, args);
+    var executeSql = function(db, sqlStmt, isBatch, args) {
+        return (sqlStmt === undefined) ? [] : db.execute(sqlStmt, isBatch, args);
     }
+
 
     // === Database class definition ===
 
@@ -24,116 +23,112 @@
         } else {
             id = rhoUtil.nextId();
             // constructor methods are following:
-            
-                this.initialize.apply(this, arguments);
-            
+
+            this.initialize.apply(this, arguments);
+
         }
     };
 
     // === Database instance members ===
 
-    
-        Database.prototype.initialize = function(/* const rho::String& */ dbPath, /* const rho::String& */ dbPartition, /* optional function */ oResult) {
-            this.dbPath = dbPath;
-            this.database = new Rho.Database.SQLite3(dbPath, dbPartition);
-        };
 
-    
-        Database.prototype.close = function(/* optional function */ oResult) {
-            if (this.database === null) {
-                return false;
-            }
-            this.database.close();
-            this.dbPath = null;
-            this.database = null;
-            return true;
-        };
+    Database.prototype.initialize = function(/* const rho::String& */ dbPath, /* const rho::String& */ dbPartition) {
+        this.dbPath = dbPath;
+        this.db = new Rho.Database.SQLite3(dbPath, dbPartition);
+    };
 
-    
-        Database.prototype.startTransaction = function(/* optional function */ oResult) {
-            this.database.startTransaction();
-        };
 
-    
-        Database.prototype.commitTransaction = function(/* optional function */ oResult) {
-            this.database.commitTransaction();
-        };
+    Database.prototype.close = function() {
+        if (this.db === null) {
+            return false;
+        }
+        this.db.close();
+        this.dbPath = null;
+        this.db = null;
+        return true;
+    };
 
-    
-        Database.prototype.rollbackTransaction = function(/* optional function */ oResult) {
-            this.database.rollbackTransaction();
-        };
+    Database.prototype.startTransaction = function() {
+        this.db.startTransaction();
+    };
 
-    
-        Database.prototype.lockDb = function(/* optional function */ oResult) {
-            this.database.lockDb();
-        };
 
-    
-        Database.prototype.unlockDb = function(/* optional function */ oResult) {
-            this.database.unlockDb();
-        };
+    Database.prototype.commitTransaction = function() {
+        this.db.commitTransaction();
+    };
 
-    
-        Database.prototype.isUiWaitForDb = function(/* optional function */ oResult) {
-            return this.database.isUiWaitForDb();
-        };
 
-    
-        Database.prototype.executeSql = function(/* const rho::String& */ sqlStmt, /* const rho::Vector<rho::String>& */ args, /* optional function */ oResult) {
-            return _execute_sql(this.database, sqlStmt, false, args);
-        };
+    Database.prototype.rollbackTransaction = function() {
+        this.db.rollbackTransaction();
+    };
 
-    
-        Database.prototype.executeBatchSql = function(/* const rho::String& */ sqlStmt, /* const rho::Vector<rho::String>& */ args, /* optional function */ oResult) {
-            return _execute_sql(this.database, sqlStmt, true, args);
-        };
 
-    
-        Database.prototype.import = function(/* const rho::String& */ zipName, /* optional function */ oResult) {
-            this.database.import(zipName);
-        };
+    Database.prototype.lockDb = function() {
+        this.db.lockDb();
+    };
 
-    
-        Database.prototype.export = function(/* optional function */ oResult) {
-            this.database.export();
-        };
 
-    
-        Database.prototype.destroyTable = function(/* const rho::String& */ tableName, /* optional function */ oResult) {
-            this.destroyTables({'include': tableName});
-        };
+    Database.prototype.unlockDb = function() {
+        this.db.unlockDb();
+    };
 
-    
-        Database.prototype.destroyTables = function(/* const rho::Hashtable<rho::String, rho::String>& */ propertyMap, /* optional function */ oResult) {
-            this.database.destroyTables(propertyMap['include'], propertyMap['exclude']);
-        };
 
-    
-        Database.prototype.isTableExist = function(/* const rho::String& */ tableName, /* optional function */ oResult) {
-            return this.database.isTableExist(tableName);
-        };
+    Database.prototype.isUiWaitForDb = function() {
+        return this.db.isUiWaitForDb();
+    };
 
-    
-        Database.prototype.setDoNotBackupAttribute = function(/* bool */ setFlag, /* optional function */ oResult) {
-            setFlag = (setFlag === undefined) ? true : setFlag;
-            if (Rho.System.getProperty('platform') === 'APPLE') {
-                Rho.System.setDoNotBackupAttribute(this.dbPath             , setFlag);
-                Rho.System.setDoNotBackupAttribute(this.dbPath + '.version', setFlag);
-            }                         
-        };
 
-    
+    Database.prototype.executeSql = function(/* const rho::String& */ sqlStmt, /* const rho::Vector<rho::String>& */ args) {
+        return executeSql(this.db, sqlStmt, false, args);
+    };
+
+
+    Database.prototype.executeBatchSql = function(/* const rho::String& */ sqlStmt, /* const rho::Vector<rho::String>& */ args) {
+        return executeSql(this.db, sqlStmt, true, args);
+    };
+
+
+    Database.prototype.import = function(/* const rho::String& */ zipName) {
+        this.db.import(zipName);
+    };
+
+
+    Database.prototype.export = function() {
+        this.db.export();
+    };
+
+
+    Database.prototype.destroyTable = function(/* const rho::String& */ tableName) {
+        this.destroyTables({'include': tableName});
+    };
+
+
+    Database.prototype.destroyTables = function(/* const rho::Hashtable<rho::String, rho::String>& */ propertyMap) {
+        this.db.destroyTables(propertyMap['include'], propertyMap['exclude']);
+    };
+
+
+    Database.prototype.isTableExist = function(/* const rho::String& */ tableName) {
+        return this.db.isTableExist(tableName);
+    };
+
+
+    Database.prototype.setDoNotBackupAttribute = function(/* bool */ setFlag) {
+        setFlag = (setFlag === undefined) ? true : setFlag;
+        if (Rho.System.getProperty('platform') === 'APPLE') {
+            Rho.System.setDoNotBackupAttribute(this.dbPath             , setFlag);
+            Rho.System.setDoNotBackupAttribute(this.dbPath + '.version', setFlag);
+        }                         
+    };
+
 
     // === Database static members ===
 
-    
 
-    
 
     // === Database default instance support ===
 
-    
+
 
     rhoUtil.namespace(moduleNS, Database);
 

@@ -241,10 +241,162 @@ describe("Rho common API", function () {
 
     });
 
-    describe('Database module', function () {
-        it('exists', function () {
-            expect(Rho.Database.test()).toEqual(1);
+    describe('Rho.Database.SQLite3 module', function () {
+        var db = null;
+
+        beforeEach(function() {
+            db = new Rho.Database.SQLite3('path', 'local');
         });
+
+        afterEach(function() {
+            db.close();
+            db = null;
+        });
+
+
+        // function SQLite3()
+        // SQLite3.prototype.close = function(/* optional function */ oResult)
+        it('creates SQLite3 object and closes it', function() {
+            // look at beforeEach (creates database object) and afterEach (closes it)
+        });
+
+        // SQLite3.prototype.startTransaction = function(/* optional function */ oResult)
+        // SQLite3.prototype.commitTransaction = function(/* optional function */ oResult)
+        it('starts and commits transaction', function() {
+            db.startTransaction();
+            db.commitTransaction();
+        });
+
+        // SQLite3.prototype.startTransaction = function(/* optional function */ oResult)
+        // SQLite3.prototype.rollbackTransaction = function(/* optional function */ oResult)
+        it('starts and rollbacks transaction', function() {
+            db.startTransaction();
+            db.rollbackTransaction();
+        });
+
+        // SQLite3.prototype.lockDb = function(/* optional function */ oResult)
+        // SQLite3.prototype.unlockDb = function(/* optional function */ oResult)
+        it('locks and unlocks database', function() {
+            db.lockDb();
+            db.unlockDb();
+        });
+
+        // SQLite3.prototype.import = function(/* const rho::String& */ zipName, /* optional function */ oResult)
+        it('imports zip', function() {
+            db.import('');
+        });
+
+        // SQLite3.prototype.export = function(/* optional function */ oResult)
+        it('exports zip', function() {
+            db.export();
+        });
+
+        // SQLite3.prototype.destroyTables = function(/* const rho::Vector<rho::String>& */ include, /* const rho::Vector<rho::String>& */ exclude, /* optional function */ oResult)
+        it('destroys tables', function() {
+            db.destroyTables('', '');
+        });
+
+        // SQLite3.prototype.isTableExist = function(/* const rho::String& */ tableName, /* optional function */ oResult)
+        it('checks for table existence', function() {
+            expect(db.isTableExist('')).toBe(false);
+        });
+
+        // SQLite3.prototype.isUiWaitForDb = function(/* optional function */ oResult)
+        it('checks something strange', function() {
+            expect(db.isUiWaitForDb('')).toBe(false);
+        });
+
+        // SQLite3.prototype.execute = function(/* const rho::String& */ sqlStmt, /* bool */ isBatch, /* const rho::Vector<rho::String>& */ args, /* optional function */ oResult)
+        it('executes SQL statements', function() {
+            db.execute('select * from table;');
+        });
+
+    });
+
+    describe('Rho.Database module', function() {
+        var db = null;
+
+        beforeEach(function() {
+            db = new Rho.Database_('path', 'local');
+        });
+
+        afterEach(function() {
+            db.close();
+            db = null;
+        });
+
+
+        // function Database()
+        // Database.prototype.close = function()
+        it('creates Database object and closes it', function() {
+        });
+
+        // Database.prototype.startTransaction = function()
+        // Database.prototype.commitTransaction = function()
+        it('starts and commits transaction', function() {
+            db.startTransaction();
+            db.commitTransaction();
+        });
+
+        // Database.prototype.startTransaction = function()
+        // Database.prototype.rollbackTransaction = function()
+        it('starts and rollbacks transaction', function() {
+            db.startTransaction();
+            db.rollbackTransaction();
+        });
+
+        // Database.prototype.lockDb = function()
+        // Database.prototype.unlockDb = function()
+        it('locks and unlocks database', function() {
+            db.lockDb();
+            db.unlockDb();
+        });
+
+        // Database.prototype.isUiWaitForDb = function()
+        it('calls isUiWaitForDb', function() {
+            db.isUiWaitForDb();
+        });
+
+        // Database.prototype.executeSql = function(/* const rho::String& */ sqlStmt, /* const rho::Vector<rho::String>& */ args)
+        it('executes SQL statements', function() {
+            db.executeSql('select * from table;');
+        });
+
+        // Database.prototype.executeBatchSql = function(/* const rho::String& */ sqlStmt, /* const rho::Vector<rho::String>& */ args)
+        it('executes SQL statements as batch', function() {
+            db.executeBatchSql ('select * from table;');
+        });
+
+        // Database.prototype.import = function(/* const rho::String& */ zipName)
+        it('imports zip', function() {
+            db.import('');
+        });
+
+        // Database.prototype.export = function()
+        it('exports zip', function() {
+            db.export();
+        });
+
+        // Database.prototype.destroyTable = function(/* const rho::String& */ tableName)
+        it('destroys table', function() {
+            db.destroyTable('');
+        });
+
+        // Database.prototype.destroyTables = function(/* const rho::Hashtable<rho::String, rho::String>& */ propertyMap)
+        it('destroys multiple tables', function() {
+            db.destroyTable({'include': ''});
+        });
+
+        // Database.prototype.isTableExist = function(/* const rho::String& */ tableName)
+        it('check for table existence', function() {
+            expect(db.isTableExist('')).toEqual(true);
+        });
+
+        // Database.prototype.setDoNotBackupAttribute = function(/* bool */ setFlag)
+        it('sets "don\'t backup attribute"', function() {
+            db.setDoNotBackupAttribute(true);
+        });
+
     });
 
 });

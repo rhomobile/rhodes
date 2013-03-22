@@ -22,6 +22,10 @@ module LocalizationSimplified
   def self.get_cur_locale
     @@cur_locale  
   end
+
+  def self.get_cur_country
+    @@cur_country  
+  end
   
   def self.set_cur_locale(loc, country)
     @@cur_locale = loc
@@ -70,9 +74,7 @@ end
 
 #LocalizationSimplified.requre_loc('rholang/lang_',false)
 
-systemClass = Module.const_get("System")
-
-if systemClass && systemClass.instance_of?( Class )
+module Rho
 class System
     def self.set_locale(locale_code, country_code = nil)
         LocalizationSimplified::set_cur_locale(locale_code, country_code)
@@ -83,17 +85,26 @@ class System
         LocalizationSimplified.requre_loc('rholang/rhomsg_',false)    
     end
 end
-else
-module System
-    def self.set_locale(locale_code, country_code = nil)
-        LocalizationSimplified::set_cur_locale(locale_code, country_code)
 
-        LocalizationSimplified.requre_loc('rholang/lang_',false)
-        LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
-        LocalizationSimplified.requre_loc('rholang/rhoerror_',false)
-        LocalizationSimplified.requre_loc('rholang/rhomsg_',false)    
+if Rho::System.isRhoSimulator() || Rho::System.platform == Rho::System::PLATFORM_WM_CE || Rho::System.platform == Rho::System::PLATFORM_WINDOWS_DESKTOP
+
+class Application
+    def self.setLocale(locale_code, country_code = nil)
+        System::set_locale(locale_code, country_code = nil)
     end
+
+    def self.locale()
+        LocalizationSimplified::get_cur_locale    
+    end
+
+    def self.country()
+        LocalizationSimplified::get_cur_country    
+    end
+    
 end
+
+end
+
 end
 
 class Hash

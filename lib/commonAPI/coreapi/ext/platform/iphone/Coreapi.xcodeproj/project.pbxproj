@@ -26,6 +26,15 @@
 		FA01F1EB16E65FD100D53D60 /* SQLite3Base.h in Headers */ = {isa = PBXBuildFile; fileRef = FA01F1E616E65FD100D53D60 /* SQLite3Base.h */; };
 		FA01F1EE16E65FED00D53D60 /* SQLite3Impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1EC16E65FED00D53D60 /* SQLite3Impl.cpp */; };
 		FA01F1EF16E65FED00D53D60 /* SQLite3ImplRuby.c in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1ED16E65FED00D53D60 /* SQLite3ImplRuby.c */; };
+		FA1C7FA416FBCAC50024FB5C /* application_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA1C7FA116FBCAC50024FB5C /* application_api_init.cpp */; };
+		FA1C7FA516FBCAC50024FB5C /* application_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA1C7FA216FBCAC50024FB5C /* application_js_api.cpp */; };
+		FA1C7FA616FBCAC50024FB5C /* application_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA1C7FA316FBCAC50024FB5C /* application_ruby_api.c */; };
+		FA1C7FAC16FBCAF00024FB5C /* Application_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA1C7FA716FBCAF00024FB5C /* Application_js_wrap.cpp */; };
+		FA1C7FAD16FBCAF00024FB5C /* Application_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA1C7FA816FBCAF00024FB5C /* Application_ruby_wrap.cpp */; };
+		FA1C7FAE16FBCAF00024FB5C /* ApplicationBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA1C7FA916FBCAF00024FB5C /* ApplicationBase.cpp */; };
+		FA1C7FAF16FBCAF00024FB5C /* ApplicationBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA1C7FAA16FBCAF00024FB5C /* ApplicationBase.h */; };
+		FA1C7FB016FBCAF00024FB5C /* IApplication.h in Headers */ = {isa = PBXBuildFile; fileRef = FA1C7FAB16FBCAF00024FB5C /* IApplication.h */; };
+		FA1C7FB216FBCAFE0024FB5C /* ApplicationImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA1C7FB116FBCAFE0024FB5C /* ApplicationImpl.cpp */; };
 		FA340B8916F0E3FE000094DD /* webview_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA340B8616F0E3FE000094DD /* webview_api_init.cpp */; };
 		FA340B8A16F0E3FE000094DD /* webview_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA340B8716F0E3FE000094DD /* webview_js_api.cpp */; };
 		FA340B8B16F0E3FE000094DD /* webview_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA340B8816F0E3FE000094DD /* webview_ruby_api.c */; };
@@ -93,6 +102,15 @@
 		FA01F1E616E65FD100D53D60 /* SQLite3Base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SQLite3Base.h; path = ../../shared/generated/cpp/SQLite3Base.h; sourceTree = "<group>"; };
 		FA01F1EC16E65FED00D53D60 /* SQLite3Impl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SQLite3Impl.cpp; path = ../../shared/SQLite3Impl.cpp; sourceTree = "<group>"; };
 		FA01F1ED16E65FED00D53D60 /* SQLite3ImplRuby.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = SQLite3ImplRuby.c; path = ../../shared/SQLite3ImplRuby.c; sourceTree = "<group>"; };
+		FA1C7FA116FBCAC50024FB5C /* application_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = application_api_init.cpp; path = ../../shared/generated/application_api_init.cpp; sourceTree = "<group>"; };
+		FA1C7FA216FBCAC50024FB5C /* application_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = application_js_api.cpp; path = ../../shared/generated/application_js_api.cpp; sourceTree = "<group>"; };
+		FA1C7FA316FBCAC50024FB5C /* application_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = application_ruby_api.c; path = ../../shared/generated/application_ruby_api.c; sourceTree = "<group>"; };
+		FA1C7FA716FBCAF00024FB5C /* Application_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Application_js_wrap.cpp; path = ../../shared/generated/cpp/Application_js_wrap.cpp; sourceTree = "<group>"; };
+		FA1C7FA816FBCAF00024FB5C /* Application_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Application_ruby_wrap.cpp; path = ../../shared/generated/cpp/Application_ruby_wrap.cpp; sourceTree = "<group>"; };
+		FA1C7FA916FBCAF00024FB5C /* ApplicationBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ApplicationBase.cpp; path = ../../shared/generated/cpp/ApplicationBase.cpp; sourceTree = "<group>"; };
+		FA1C7FAA16FBCAF00024FB5C /* ApplicationBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApplicationBase.h; path = ../../shared/generated/cpp/ApplicationBase.h; sourceTree = "<group>"; };
+		FA1C7FAB16FBCAF00024FB5C /* IApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IApplication.h; path = ../../shared/generated/cpp/IApplication.h; sourceTree = "<group>"; };
+		FA1C7FB116FBCAFE0024FB5C /* ApplicationImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ApplicationImpl.cpp; path = ../../shared/ApplicationImpl.cpp; sourceTree = "<group>"; };
 		FA340B8616F0E3FE000094DD /* webview_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = webview_api_init.cpp; path = ../../shared/generated/webview_api_init.cpp; sourceTree = "<group>"; };
 		FA340B8716F0E3FE000094DD /* webview_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = webview_js_api.cpp; path = ../../shared/generated/webview_js_api.cpp; sourceTree = "<group>"; };
 		FA340B8816F0E3FE000094DD /* webview_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = webview_ruby_api.c; path = ../../shared/generated/webview_ruby_api.c; sourceTree = "<group>"; };
@@ -183,6 +201,7 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FA1C7F9A16FBCA740024FB5C /* Application */,
 				C06A0DE416F21BCC0065EF81 /* Log */,
 				FA7C85B216E411C20000EAE6 /* NetworkAccess */,
 				FA01F1D516E65F2D00D53D60 /* SQLLite */,
@@ -304,6 +323,62 @@
 				FA01F1DC16E65FBB00D53D60 /* sqlite3_api_init.cpp */,
 				FA01F1DD16E65FBB00D53D60 /* sqlite3_js_api.cpp */,
 				FA01F1DE16E65FBB00D53D60 /* sqlite3_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FA1C7F9A16FBCA740024FB5C /* Application */ = {
+			isa = PBXGroup;
+			children = (
+				FA1C7F9C16FBCA870024FB5C /* CPP */,
+			);
+			name = Application;
+			sourceTree = "<group>";
+		};
+		FA1C7F9C16FBCA870024FB5C /* CPP */ = {
+			isa = PBXGroup;
+			children = (
+				FA1C7F9E16FBCA9B0024FB5C /* impl */,
+				FA1C7F9D16FBCA940024FB5C /* generated */,
+			);
+			name = CPP;
+			sourceTree = "<group>";
+		};
+		FA1C7F9D16FBCA940024FB5C /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FA1C7FA016FBCAAF0024FB5C /* shared */,
+				FA1C7F9F16FBCAA70024FB5C /* CPP */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FA1C7F9E16FBCA9B0024FB5C /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA1C7FB116FBCAFE0024FB5C /* ApplicationImpl.cpp */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FA1C7F9F16FBCAA70024FB5C /* CPP */ = {
+			isa = PBXGroup;
+			children = (
+				FA1C7FA716FBCAF00024FB5C /* Application_js_wrap.cpp */,
+				FA1C7FA816FBCAF00024FB5C /* Application_ruby_wrap.cpp */,
+				FA1C7FA916FBCAF00024FB5C /* ApplicationBase.cpp */,
+				FA1C7FAA16FBCAF00024FB5C /* ApplicationBase.h */,
+				FA1C7FAB16FBCAF00024FB5C /* IApplication.h */,
+			);
+			name = CPP;
+			sourceTree = "<group>";
+		};
+		FA1C7FA016FBCAAF0024FB5C /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA1C7FA116FBCAC50024FB5C /* application_api_init.cpp */,
+				FA1C7FA216FBCAC50024FB5C /* application_js_api.cpp */,
+				FA1C7FA316FBCAC50024FB5C /* application_ruby_api.c */,
 			);
 			name = shared;
 			sourceTree = "<group>";
@@ -498,6 +573,8 @@
 				FA340BA816F0E455000094DD /* WebViewSingleton.h in Headers */,
 				C06A0F0316F21C880065EF81 /* ILog.h in Headers */,
 				C06A0F0D16F21C880065EF81 /* LogBase.h in Headers */,
+				FA1C7FAF16FBCAF00024FB5C /* ApplicationBase.h in Headers */,
+				FA1C7FB016FBCAF00024FB5C /* IApplication.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -594,6 +671,13 @@
 				C06A0F2716F21C880065EF81 /* log_js_api.cpp in Sources */,
 				C06A0F2816F21C880065EF81 /* log_ruby_api.c in Sources */,
 				C06A0F3C16F21C880065EF81 /* LogImpl.cpp in Sources */,
+				FA1C7FA416FBCAC50024FB5C /* application_api_init.cpp in Sources */,
+				FA1C7FA516FBCAC50024FB5C /* application_js_api.cpp in Sources */,
+				FA1C7FA616FBCAC50024FB5C /* application_ruby_api.c in Sources */,
+				FA1C7FAC16FBCAF00024FB5C /* Application_js_wrap.cpp in Sources */,
+				FA1C7FAD16FBCAF00024FB5C /* Application_ruby_wrap.cpp in Sources */,
+				FA1C7FAE16FBCAF00024FB5C /* ApplicationBase.cpp in Sources */,
+				FA1C7FB216FBCAFE0024FB5C /* ApplicationImpl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
