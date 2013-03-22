@@ -1548,10 +1548,12 @@ void CRhodesApp::navigateBack()
 String CRhodesApp::getAppName()
 {
     String strAppName;
-#ifdef WINDOWS_PLATFORM
+
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
     strAppName = rho_native_get_appname();
 #else
-    strAppName = "Rhodes";
+    //TODO: Android - get app name for shared runtime app
+    strAppName = get_app_build_config_item("name");
 #endif
 
     return strAppName;

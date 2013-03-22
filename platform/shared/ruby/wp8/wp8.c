@@ -136,6 +136,19 @@ BOOL WINAPI TerminateProcess(
 
 DWORD
 WINAPI
+GetFileAttributesA(
+    _In_ LPCSTR lpFileName
+    )
+{
+	WIN32_FILE_ATTRIBUTE_DATA fileInformation; 
+	if(GetFileAttributesEx(lpFileName, GetFileExInfoStandard, &fileInformation))
+		return fileInformation.dwFileAttributes;
+	else
+		return INVALID_FILE_ATTRIBUTES;
+}
+
+DWORD
+WINAPI
 GetModuleFileNameA(
     _In_opt_ HMODULE hModule,
     _Out_writes_to_(nSize, ((return < nSize) ? (return + 1) : nSize)) LPSTR lpFilename,
