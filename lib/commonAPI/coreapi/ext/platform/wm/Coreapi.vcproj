@@ -1212,6 +1212,14 @@
 			Name="System"
 			>
 			<File
+				RelativePath=".\src\Registry.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\Registry.h"
+				>
+			</File>
+			<File
 				RelativePath=".\src\SystemImpl.cpp"
 				>
 			</File>

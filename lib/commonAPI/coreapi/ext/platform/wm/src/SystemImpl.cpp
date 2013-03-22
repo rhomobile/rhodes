@@ -8,6 +8,22 @@
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
+#include "rcmcapi.h"
+#include "Registry.h"
+
+//  Defines for Unique Device ID (not present in MC3000c50b)
+#ifndef _GETDEVICEUNIQUEID_INC
+#define _GETDEVICEUNIQUEID_INC
+#define GETDEVICEUNIQUEID_V1                1
+#define GETDEVICEUNIQUEID_V1_MIN_APPDATA    8
+#define GETDEVICEUNIQUEID_V1_OUTPUT         20
+HRESULT
+GetDeviceUniqueID(LPBYTE pbApplicationData, 
+                  DWORD cbApplicationData, 
+                  DWORD dwDeviceIDVersion,
+                  LPBYTE pbDeviceIDOutput, 
+                  DWORD *pcbDeviceIDOutput);
+#endif
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
@@ -24,6 +40,9 @@ void rho_wmsys_run_appW(const wchar_t* szPath, const wchar_t* szParams );
 int rho_sys_get_screen_width();
 int rho_sys_get_screen_height();
 const char* rho_sys_win32_getWebviewFramework();
+
+typedef DWORD (*RCM_GETUNIQUEUNITIDEX)(LPUNITID_EX);
+RCM_GETUNIQUEUNITIDEX lpfnRCM_GetUniqueUnitIdEx = NULL; ///< pointer to the RCM get uuid function
 
 #if defined(OS_WINDOWS_DESKTOP)
 void rho_sys_set_window_frame(int x0, int y0, int width, int height);
@@ -59,6 +78,8 @@ public:
     virtual void getHasCamera(CMethodResult& oResult);
     virtual void getOemInfo(CMethodResult& oResult);
     virtual void getUuid(CMethodResult& oResult);
+			bool populateUUID(UNITID_EX* uuid);
+			void bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize);
     virtual void getHttpProxyURI(CMethodResult& oResult);
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
@@ -75,9 +96,10 @@ public:
     virtual void isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult);
     virtual void applicationUninstall( const rho::String& applicationName, CMethodResult& oResult);
     virtual void openUrl( const rho::String& url, CMethodResult& oResult);
-    virtual void setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult);
-    virtual void getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
-    virtual void setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult);
+    virtual void setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
+    virtual void deleteRegistrySetting(const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
+	virtual void setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult);
     virtual void setWindowPosition( int x,  int y, CMethodResult& oResult);
     virtual void setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult);
     virtual void getWebviewFramework(rho::apiGenerator::CMethodResult& oResult);
@@ -297,12 +319,133 @@ void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
 
 void CSystemImpl::getOemInfo(CMethodResult& oResult)
 {
-    //TODO: getOemInfo - copy from RE1
+	WCHAR info [64];
+	if (SystemParametersInfo (SPI_GETOEMINFO, 64, info, 0))
+		oResult.set(info);
+	else
+		oResult.set(L"unknown");
 }
 
 void CSystemImpl::getUuid(CMethodResult& oResult)
 {
-    //TODO: getUuid - copy from RE1
+	UNITID_EX uuid;
+    memset(&uuid, 0, sizeof uuid);
+    uuid.StructInfo.dwAllocated = sizeof uuid;
+	if (populateUUID(&uuid))
+	{
+		//  RCM Library successfully loaded and uuid populated
+		WCHAR tcUUID[33];
+		memset(tcUUID, 0, 33 * sizeof(WCHAR));
+	    if (uuid.StructInfo.dwUsed)
+		{
+		    bytesToHexStr(tcUUID, uuid.byUUID, uuid.StructInfo.dwUsed - sizeof(STRUCT_INFO)); 
+			if(tcUUID[16] == 0)
+			{
+				WCHAR tc1[17], tc2[17];
+				wcsncpy(tc1, tcUUID, 8);
+				wcsncpy(&tc1[8], L"00000000", 8);
+				wcsncpy(tc2, &tcUUID[8], 8);
+				wcscpy(&tc2[8], L"00000000");
+				wcsncpy(tcUUID, tc1, 16);
+				tcUUID[16] = L'\0';
+				wcsncat(tcUUID, tc2, 16);
+			}
+			oResult.set(tcUUID);
+		}
+	}
+	else
+	{
+		//  RCM Library could not be loaded and all other attempts to ascertain the uuid failed
+		LOG(WARNING) + "UUID could not be obtained for this device";
+		oResult.set(L"GetSerialNumber: not supported");
+	}
+}
+
+bool CSystemImpl::populateUUID(UNITID_EX* uuid)
+{
+	//  For Motorola devices the UUID is obtained from the RCM library.  For non-motorola devices the UUID is 
+	//  obtained from a system call.
+	bool bRetVal = false;
+	//link to the keyboard dll for the alpha key
+	HMODULE hLib = LoadLibrary(TEXT("Rcm2API32.dll"));
+	if (hLib != NULL)
+	{
+		lpfnRCM_GetUniqueUnitIdEx = (RCM_GETUNIQUEUNITIDEX)GetProcAddress(hLib,L"RCM_GetUniqueUnitIdEx");
+		uuid->StructInfo.dwAllocated = sizeof uuid;
+		DWORD dwRes = (*lpfnRCM_GetUniqueUnitIdEx) (uuid);
+		if( dwRes == E_RCM_NOTSUPPORTED )
+		{
+			FreeLibrary (hLib);
+			hLib = LoadLibrary(TEXT("RcmAPI32.dll"));
+			if (hLib != NULL)
+			{
+				lpfnRCM_GetUniqueUnitIdEx = (RCM_GETUNIQUEUNITIDEX)GetProcAddress(hLib,L"RCM_GetUniqueUnitIdEx");
+				if(	lpfnRCM_GetUniqueUnitIdEx )
+				{
+					DWORD dwRes = (*lpfnRCM_GetUniqueUnitIdEx) (uuid);
+					if (dwRes == E_RCM_SUCCESS)
+						bRetVal = true;
+				}
+			}
+		}
+		else if (dwRes == E_RCM_SUCCESS)
+			bRetVal = true;
+	}
+	else
+	{
+		//  Unable to load Rcm2API32.dll, it is possible we are running on a Non Motorola 
+		//  WM / CE device, use the Windows function for retrieving UUID:
+		//  Load CoreDLL
+		typedef HRESULT (WINAPI* GET_DEVICE_ID_T)(LPBYTE pbApplicationData, 
+												  DWORD cbApplicationData, 
+												  DWORD dwDeviceIDVersion,
+												  LPBYTE pbDeviceIDOutput, 
+												  DWORD *pcbDeviceIDOutput);
+		GET_DEVICE_ID_T lpfn_device_id = NULL; 
+		hLib = LoadLibrary(TEXT("CoreDLL.dll"));
+		if (hLib)
+		{
+			lpfn_device_id = (GET_DEVICE_ID_T)GetProcAddress(hLib, L"GetDeviceUniqueID");
+			if (lpfn_device_id != NULL)
+			{
+				BYTE            rgDeviceId[GETDEVICEUNIQUEID_V1_OUTPUT];
+				DWORD           cbDeviceId      = sizeof(rgDeviceId);
+				HRESULT hr = lpfn_device_id(reinterpret_cast<PBYTE>("RhoElements"), 
+					wcslen(L"RhoElements"), GETDEVICEUNIQUEID_V1, 
+					rgDeviceId,
+					&cbDeviceId);
+				
+				if (hr == S_OK)
+				{
+					//  Got UUID, populate m_UUID
+					uuid->StructInfo.dwUsed = 24;	//  24 is used by EMDK device ID, even though 
+													//  the Windows ID has only 20 digits.  Rest are 0's
+					for (int i = 0; i < GETDEVICEUNIQUEID_V1_OUTPUT; i++)
+					{
+						uuid->byUUID[i] = rgDeviceId[i];
+					}
+					bRetVal = true;
+				}
+			}
+			//  Failed to load CoreDLL
+		}
+	}
+	if (hLib)
+		FreeLibrary (hLib);
+	return bRetVal;
+}
+
+void CSystemImpl::bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize)
+{
+	//this function is lifted from the EMDK and converts the UUID into a sensible HEX string
+	int		i;
+	TCHAR	szByteStr[5];
+	lpHexStr[0] = 0;
+	for (i=0; i<nSize && (i < sizeof(UNITID_EX) - sizeof(STRUCT_INFO)); i++)
+	{
+		wsprintf(szByteStr, TEXT("%02X"), lpBytes[i]);
+		_tcscat(lpHexStr, szByteStr);
+	}
 }
 
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
@@ -557,15 +700,88 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
     }
 }
 
-void CSystemImpl::setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
-    //TODO: setRegistrySetting - copy from RE1
+    bool bRetVal = false;
+	bool bPersistent = false;
+	rho::String szHive = "";
+	rho::String szType = "";
+	rho::String szSubkey = "";
+	rho::String szSetting = "";
+	rho::String szValue = "";
+	typedef std::map<rho::String, rho::String>::const_iterator it_type;
+	for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
+	{
+		if (iterator->first.compare("persistent") == 0)
+			bPersistent = true;
+		else if (iterator->first.compare("hive") == 0)
+			szHive = iterator->second;
+		else if (iterator->first.compare("type") == 0)
+			szType = iterator->second;
+		else if (iterator->first.compare("key") == 0)
+			szSubkey = iterator->second;
+		else if (iterator->first.compare("setting") == 0)
+			szSetting = iterator->second;
+		else if (iterator->first.compare("value") == 0)
+			szValue = iterator->second;
+		else
+			LOG(WARNING) + "Unrecognised parameter passed to setRegistrySetting: " + iterator->first;
+	}
+
+	bRetVal = WriteRegHandler(szHive, rho::common::convertToStringW(szSubkey).c_str(), 
+		rho::common::convertToStringW(szSetting).c_str(), szType, 
+		rho::common::convertToStringW(szValue).c_str(), bPersistent);
+
+	oResult.set(bRetVal);
 }
 
-void CSystemImpl::getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::getRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
-    //TODO: getRegistrySetting - copy from RE1
-    oResult.set("");
+	rho::String szHive = "";
+	rho::String szSubkey = "";
+	rho::String szSetting = "";
+	typedef std::map<rho::String, rho::String>::const_iterator it_type;
+	for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
+	{
+		if (iterator->first.compare("hive") == 0)
+			szHive = iterator->second;
+		else if (iterator->first.compare("key") == 0)
+			szSubkey = iterator->second;
+		else if (iterator->first.compare("setting") == 0)
+			szSetting = iterator->second;
+		else
+			LOG(WARNING) + "Unrecognised parameter passed to getRegistrySetting: " + iterator->first;
+	}
+
+	GetRegistrySetting(szHive, szSubkey, szSetting, oResult);
+}
+
+void CSystemImpl::deleteRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+{
+	bool bRetVal = false;
+	bool bPersistent = false;
+	rho::String szHive = "";
+	rho::String szSubkey = "";
+	rho::String szSetting = "";
+	typedef std::map<rho::String, rho::String>::const_iterator it_type;
+	for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
+	{
+		if (iterator->first.compare("persistent") == 0)
+			bPersistent = true;
+		else if (iterator->first.compare("hive") == 0)
+			szHive = iterator->second;
+		else if (iterator->first.compare("key") == 0)
+			szSubkey = iterator->second;
+		else if (iterator->first.compare("setting") == 0)
+			szSetting = iterator->second;
+		else
+			LOG(WARNING) + "Unrecognised parameter passed to deleteRegistrySetting: " + iterator->first;
+	}
+	
+		bRetVal = DeleteRegHandler(szHive, 
+			rho::common::convertToStringW(szSubkey).c_str(),
+			rho::common::convertToStringW(szSetting).c_str(), bPersistent, false);
+	oResult.set(bRetVal);
 }
 
 void CSystemImpl::setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult)
