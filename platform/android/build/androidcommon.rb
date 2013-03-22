@@ -38,11 +38,13 @@ USE_TRACES = Rake.application.options.trace
 if RUBY_PLATFORM =~ /(win|w)32$/
   $bat_ext = ".bat"
   $exe_ext = ".exe"
-  $ndkhost = "windows"
+  $ndkhostvariants = []
+  $ndkhostvariants << 'windows-x86_64' if `wmic OS get OSArchitecture`.split[1] == '64-bit'
+  $ndkhostvariants << 'windows'
 else
   $bat_ext = ""
   $exe_ext = ""
-  $ndkhost = `uname -s`.downcase!.chomp! + "-x86"
+  $ndkhostvariants = [`uname -s`.downcase!.chomp! + "-" + `uname -m`.chomp!, `uname -s`.downcase!.chomp! + '-x86']
 end
 
 def num_cpus
@@ -65,28 +67,35 @@ def get_sources(name)
     File.read(File.join($builddir, name + '_build.files')).split("\n")
 end
 
-def setup_ndk(ndkpath,apilevel)
-  puts "setup_ndk(#{ndkpath}, #{apilevel})" if USE_TRACES
-
+def detect_toolchain(ndkpath)
   $ndktools = nil
   $ndkabi = "unknown"
   $ndkgccver = "unknown"
-  ["arm-linux-androideabi-4.4.3", "arm-eabi-4.4.0", "arm-eabi-4.2.1"].each do |abi|
+  ["arm-linux-androideabi-4.6", "arm-linux-androideabi-4.4.3", "arm-eabi-4.4.0", "arm-eabi-4.2.1"].each do |abi|
     variants = []
-    variants << File.join(ndkpath, "toolchains", abi, "prebuilt", $ndkhost)
-    variants << File.join(ndkpath, "build/prebuilt", $ndkhost, abi)
-    variants.each do |variant|
-      next unless File.directory? variant
-      $ndktools = variant
-      $ndkabi = abi.gsub(/^(.*)-([^-]*)$/, '\1')
-      $ndkgccver = abi.gsub(/^(.*)-([^-]*)$/, '\2')
-      break
+    $ndkhostvariants.each do |ndkhost|
+      variants << File.join(ndkpath,'build','prebuilt',ndkhost,abi)
+      variants << File.join(ndkpath,'toolchains',abi,'prebuilt',ndkhost)
+      variants.each do |variant|
+        puts "Check toolchain path: #{variant}" if USE_TRACES    
+        next unless File.directory? variant
+        $ndktools = variant
+        $ndkabi = abi.gsub(/^(.*)-([^-]*)$/, '\1')
+        $ndkgccver = abi.gsub(/^(.*)-([^-]*)$/, '\2')
+        return
+      end
     end
     break unless $ndktools.nil?
   end
   if $ndktools.nil?
     raise "Can't detect NDK toolchain path (corrupted NDK installation?)"
   end
+end
+
+def setup_ndk(ndkpath,apilevel)
+  puts "setup_ndk(#{ndkpath}, #{apilevel})" if USE_TRACES
+
+  detect_toolchain ndkpath
 
   variants = []
   variants << "platforms"
