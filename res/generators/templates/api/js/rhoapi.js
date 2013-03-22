@@ -167,7 +167,16 @@ var Rho = Rho || (function ($) {
         };
     }
 
-    function extendSafely(dst, src) {
+    function extendSafely(destination, source) {
+        var src = source;
+        var dst = destination;
+        if ('function' == typeof src) {
+            if ('function' == typeof dst)
+                throw "Namespace definition conflict!";
+
+            src = destination;
+            dst = source;
+        }
         for (var prop in src) {
             if (dst.hasOwnProperty(prop))
                 continue;
@@ -195,7 +204,7 @@ var Rho = Rho || (function ($) {
 
             if(i == parts.length-1) {
                 if (ns[nsProp])
-                    extendSafely(ns[nsProp], membersObj);
+                    ns[nsProp] = extendSafely(ns[nsProp], membersObj);
                 else
                     ns[nsProp] = membersObj;
             }
