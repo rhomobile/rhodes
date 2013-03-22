@@ -291,16 +291,16 @@
 								<DESC>The hive name</DESC>
 								<VALUES>
 									<VALUE constName="HKEY_CLASSES_ROOT" value ="HKCR">
-										<DESC></DESC>
+										<DESC>Set the property in the HKEY_CLASSES_ROOT hive</DESC>
 									</VALUE>
 									<VALUE constName="HKEY_CURRENT_USER" value ="HKCU">
-										<DESC></DESC>
+										<DESC>Set the property in the HKEY_CURRENT_USER hive</DESC>
 									</VALUE>
 									<VALUE constName="HKEY_LOCAL_MACHINE" value ="HKLM">
-										<DESC></DESC>
+										<DESC>Set the property in the HKEY_LOCAL_MACHINE hive</DESC>
 									</VALUE>
 									<VALUE constName="HKEY_USERS" value ="HKU">
-										<DESC></DESC>
+										<DESC>Set the property in the HKEY_USERS hive</DESC>
 									</VALUE>
 								</VALUES>
 							</PARAM>
@@ -308,27 +308,27 @@
 								<DESC>The type</DESC>
 								<VALUES>
 									<VALUE constName="REG_SZ" value ="String">
-										<DESC></DESC>
+										<DESC>The type of the value being set is a string</DESC>
 									</VALUE>
 									<VALUE constName="REG_BINARY" value ="Binary">
-										<DESC></DESC>
+										<DESC>The type of the value being set is a binary number</DESC>
 									</VALUE>
 									<VALUE constName="REG_DWORD" value ="DWORD">
-										<DESC></DESC>
+										<DESC>The type of the value being set is a natural number (DWORD)</DESC>
 									</VALUE>
 									<VALUE constName="REG_MULTI_SZ" value ="MultiSZ">
-										<DESC></DESC>
+										<DESC>The type of the value being set is a multi line string.  Separate your lines with \n (\\n in Javascript)</DESC>
 									</VALUE>
 								</VALUES>
 							</PARAM>
 							<PARAM name="key" type="STRING">
-								<DESC>The name of the sub key to set</DESC>
+								<DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
 							</PARAM>
 							<PARAM name="setting" type="STRING">
-								<DESC>The name of the setting within the sub key</DESC>
+								<DESC>The name of the setting to be set</DESC>
 							</PARAM>
 							<PARAM name="value" type="STRING">
-								<DESC>The string value to be set</DESC>
+								<DESC>The value to be set</DESC>
 							</PARAM>
 							<PARAM name="persistent" type="BOOLEAN">
 								<DESC>Whether or not to create a corresponding merge file, setting to true will cause your value to persist across a device clean boot.  A .reg file is written to the \Application folder on the device to persist the setting.</DESC>
@@ -351,24 +351,24 @@
 								<DESC>The hive name</DESC>
 								<VALUES>
 									<VALUE constName="HKEY_CLASSES_ROOT" value ="HKCR">
-										<DESC></DESC>
+										<DESC>Get the property from the HKEY_CLASSES_ROOT hive</DESC>
 									</VALUE>
 									<VALUE constName="HKEY_CURRENT_USER" value ="HKCU">
-										<DESC></DESC>
+										<DESC>Get the property from the HKEY_CURRENT_USER hive</DESC>
 									</VALUE>
 									<VALUE constName="HKEY_LOCAL_MACHINE" value ="HKLM">
-										<DESC></DESC>
+										<DESC>Get the property from the HKEY_LOCAL_MACHINE hive</DESC>
 									</VALUE>
 									<VALUE constName="HKEY_USERS" value ="HKU">
-										<DESC></DESC>
+										<DESC>Get the property from the HKEY_USERS hive</DESC>
 									</VALUE>
 								</VALUES>
 							</PARAM>
 							<PARAM name="key" type="STRING">
-								<DESC>The name of the sub key to be retrieved</DESC>
+								<DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
 							</PARAM>
 							<PARAM name="setting" type="STRING">
-								<DESC>The name of the setting within the sub key</DESC>
+								<DESC>The name of the setting to be retrieved</DESC>
 							</PARAM>
 						</PARAMS>
 					</PARAM>
@@ -388,24 +388,24 @@
 								<DESC>The hive name</DESC>
 								<VALUES>
 									<VALUE constName="HKEY_CLASSES_ROOT" value ="HKCR">
-										<DESC></DESC>
+										<DESC>Delete the property from the HKEY_CLASSES_ROOT hive</DESC>
 									</VALUE>
 									<VALUE constName="HKEY_CURRENT_USER" value ="HKCU">
-										<DESC></DESC>
+										<DESC>Delete the property from the HKEY_CURRENT_USER hive</DESC>
 									</VALUE>
 									<VALUE constName="HKEY_LOCAL_MACHINE" value ="HKLM">
-										<DESC></DESC>
+										<DESC>Delete the property from the HKEY_LOCAL_MACHINE hive</DESC>
 									</VALUE>
 									<VALUE constName="HKEY_USERS" value ="HKU">
-										<DESC></DESC>
+										<DESC>Delete the property from the HKEY_USERS hive</DESC>
 									</VALUE>
 								</VALUES>
 							</PARAM>
 							<PARAM name="key" type="STRING">
-								<DESC>The name of the sub key to set</DESC>
+								<DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
 							</PARAM>
 							<PARAM name="setting" type="STRING">
-								<DESC>The name of the setting within the sub key</DESC>
+								<DESC>The name of the setting to be deleted</DESC>
 							</PARAM>
 							<PARAM name="persistent" type="BOOLEAN">
 								<DESC>If the registry value was set to be persistent, ie a corresponding .reg file was created in the \Application folder then setting true here will delete that .reg file.</DESC>
@@ -655,14 +655,43 @@
 
         </METHODS>
         
-        <USER_OVERVIEW>
-            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-            <![CDATA[]]>
-    
-        </USER_OVERVIEW>
         <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
+        <EXAMPLES >
+            <EXAMPLE title="Working with the Windows Registry">
+                <SECTIONS>
+					<SECTION>
+					<DESC>
+						On devices running Windows Mobile, Windows CE, Windows Embedded Handheld and Windows Embedded CE it is possible to interact with the registry, this example shows how to do that.
+					</DESC>
+					<CODE lang='ruby'>
+<![CDATA[
+#/app/Model
+
+#  Retrieve a value from the Registry
+def get_registry_sync
+	theRegSetting = Rho::System.getRegistrySetting({hive:'HKLM', key:'software', Setting:'RhoElementsTest'})
+	puts "Registry Setting retrieved: #{theRegSetting}"
+end
+
+#  Set a value in the registry which will persist across a clean boot of the device  
+def set_registry_sync
+	theRegSetting = Rho::System.setRegistrySetting({hive:'HKLM', type:'String', key:'Software', setting:'RhoElementsTest', value:'MVC ftw', persistent:true})
+	puts "Registry Setting Success?: #{theRegSetting}"
+end
+	  
+#  Delete a value from the registry
+def delete_registry_sync
+	theRegSetting = Rho::System.deleteRegistrySetting({hive:'HKLM', key:'Software', setting:'RhoElementsTest', persistent:true})
+	puts "Registry Deleting Success?: #{theRegSetting}"
+end						]]>
+
+					</CODE>
+					</SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
     </MODULE>
 </API>    
