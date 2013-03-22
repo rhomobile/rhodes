@@ -290,16 +290,24 @@ void CSystemImplBase::setDoNotBackupAttribute( const rho::String& pathToFile,  b
     //iOS only
 }
 
-void CSystemImplBase::setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImplBase::setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
     //Windows only
+	oResult.set(false);
 }
 
-void CSystemImplBase::getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImplBase::getRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
     //Windows only
     oResult.set("");
 }
+
+void CSystemImplBase::deleteRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+{
+    //Windows only
+	oResult.set(false);
+}
+
 
 //TODO: move to Database
 void CSystemImplBase::isBlobAttr( const rho::String& partition,  int sourceID,  const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult)

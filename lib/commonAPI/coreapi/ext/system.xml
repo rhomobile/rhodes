@@ -282,95 +282,142 @@
             </METHOD>
 
             <METHOD name="setRegistrySetting">
-                <DESC>setRegistrySetting</DESC>
+                <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
                 <PARAMS>
-                    <PARAM name="hive" type="INTEGER">
-                        <DESC>The hive name</DESC>
-                        <VALUES>
-                            <VALUE constName="HKEY_CLASSES_ROOT" value ="0">
-                                <DESC></DESC>
-                            </VALUE>
-                            <VALUE constName="HKEY_CURRENT_USER" value ="1">
-                                <DESC></DESC>
-                            </VALUE>
-                            <VALUE constName="HKEY_LOCAL_MACHINE" value ="2">
-                                <DESC></DESC>
-                            </VALUE>
-                            <VALUE constName="HKEY_USERS" value ="3">
-                                <DESC></DESC>
-                            </VALUE>
-                        </VALUES>
-                    </PARAM>
-                    <PARAM name="type" type="INTEGER">
-                        <DESC>The hive name</DESC>
-                        <VALUES>
-                            <VALUE constName="REG_SZ" value ="1">
-                                <DESC></DESC>
-                            </VALUE>
-                            <VALUE constName="REG_BINARY" value ="3">
-                                <DESC></DESC>
-                            </VALUE>
-                            <VALUE constName="REG_DWORD" value ="4">
-                                <DESC></DESC>
-                            </VALUE>
-                            <VALUE constName="REG_MULTI_SZ" value ="7">
-                                <DESC></DESC>
-                            </VALUE>
-                        </VALUES>
-
-                    </PARAM>
-                    <PARAM name="subKey" type="STRING">
-                        <DESC>The name of the sub key to set</DESC>
-                    </PARAM>
-
-                    <PARAM name="setting" type="STRING">
-                        <DESC>The name of the setting within the sub key</DESC>
-                    </PARAM>
-
-                    <PARAM name="value" type="STRING">
-                        <DESC>The string value to be set</DESC>
-                    </PARAM>
-
+					<PARAM name="propertyMap" type="HASH" propertyHash="true">
+						<DESC>Map of properties associated with the registry key being set</DESC>
+						<PARAMS>
+							<PARAM name="hive" type="STRING">
+								<DESC>The hive name</DESC>
+								<VALUES>
+									<VALUE constName="HKEY_CLASSES_ROOT" value ="HKCR">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="HKEY_CURRENT_USER" value ="HKCU">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="HKEY_LOCAL_MACHINE" value ="HKLM">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="HKEY_USERS" value ="HKU">
+										<DESC></DESC>
+									</VALUE>
+								</VALUES>
+							</PARAM>
+							<PARAM name="type" type="STRING">
+								<DESC>The type</DESC>
+								<VALUES>
+									<VALUE constName="REG_SZ" value ="String">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="REG_BINARY" value ="Binary">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="REG_DWORD" value ="DWORD">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="REG_MULTI_SZ" value ="MultiSZ">
+										<DESC></DESC>
+									</VALUE>
+								</VALUES>
+							</PARAM>
+							<PARAM name="key" type="STRING">
+								<DESC>The name of the sub key to set</DESC>
+							</PARAM>
+							<PARAM name="setting" type="STRING">
+								<DESC>The name of the setting within the sub key</DESC>
+							</PARAM>
+							<PARAM name="value" type="STRING">
+								<DESC>The string value to be set</DESC>
+							</PARAM>
+							<PARAM name="persistent" type="BOOLEAN">
+								<DESC>Whether or not to create a corresponding merge file, setting to true will cause your value to persist across a device clean boot.  A .reg file is written to the \Application folder on the device to persist the setting.</DESC>
+							</PARAM>
+						</PARAMS>
+					</PARAM>
                 </PARAMS>
-            </METHOD>
+                <RETURN type="BOOLEAN">
+                    <DESC>Whether or not the registry key was successfully set.</DESC>
+                </RETURN>
+			</METHOD>
 
             <METHOD name="getRegistrySetting">
-                <DESC>getRegistrySetting</DESC>
+                <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
                 <PARAMS>
-                    <PARAM name="hive" type="INTEGER">
-                        <DESC>The hive name</DESC>
-                        <VALUES>
-                            <VALUE constName="HKEY_CLASSES_ROOT" value ="0">
-                                <DESC></DESC>
-                            </VALUE>
-                            <VALUE constName="HKEY_CURRENT_USER" value ="1">
-                                <DESC></DESC>
-                            </VALUE>
-                            <VALUE constName="HKEY_LOCAL_MACHINE" value ="2">
-                                <DESC></DESC>
-                            </VALUE>
-                            <VALUE constName="HKEY_USERS" value ="3">
-                                <DESC></DESC>
-                            </VALUE>
-                        </VALUES>
-
-                    </PARAM>
-
-                    <PARAM name="subKey" type="STRING">
-                        <DESC>The name of the sub key to be retrieved</DESC>
-                    </PARAM>
-
-                    <PARAM name="setting" type="STRING">
-                        <DESC>The name of the setting within the sub key</DESC>
-                    </PARAM>
-
+					<PARAM name="propertyMap" type="HASH" propertyHash="true">
+						<DESC>Map of properties associated with the registry key being set</DESC>
+						<PARAMS>
+							<PARAM name="hive" type="STRING">
+								<DESC>The hive name</DESC>
+								<VALUES>
+									<VALUE constName="HKEY_CLASSES_ROOT" value ="HKCR">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="HKEY_CURRENT_USER" value ="HKCU">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="HKEY_LOCAL_MACHINE" value ="HKLM">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="HKEY_USERS" value ="HKU">
+										<DESC></DESC>
+									</VALUE>
+								</VALUES>
+							</PARAM>
+							<PARAM name="key" type="STRING">
+								<DESC>The name of the sub key to be retrieved</DESC>
+							</PARAM>
+							<PARAM name="setting" type="STRING">
+								<DESC>The name of the setting within the sub key</DESC>
+							</PARAM>
+						</PARAMS>
+					</PARAM>
                 </PARAMS>
-
                 <RETURN type="STRING">
                     <DESC>Regsitry value of the key.</DESC>
                 </RETURN>
-
             </METHOD>
+			
+            <METHOD name="deleteRegistrySetting">
+                <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
+                <PARAMS>
+					<PARAM name="propertyMap" type="HASH" propertyHash="true">
+						<DESC>Map of properties associated with the registry key being set</DESC>
+						<PARAMS>
+							<PARAM name="hive" type="STRING">
+								<DESC>The hive name</DESC>
+								<VALUES>
+									<VALUE constName="HKEY_CLASSES_ROOT" value ="HKCR">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="HKEY_CURRENT_USER" value ="HKCU">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="HKEY_LOCAL_MACHINE" value ="HKLM">
+										<DESC></DESC>
+									</VALUE>
+									<VALUE constName="HKEY_USERS" value ="HKU">
+										<DESC></DESC>
+									</VALUE>
+								</VALUES>
+							</PARAM>
+							<PARAM name="key" type="STRING">
+								<DESC>The name of the sub key to set</DESC>
+							</PARAM>
+							<PARAM name="setting" type="STRING">
+								<DESC>The name of the setting within the sub key</DESC>
+							</PARAM>
+							<PARAM name="persistent" type="BOOLEAN">
+								<DESC>If the registry value was set to be persistent, ie a corresponding .reg file was created in the \Application folder then setting true here will delete that .reg file.</DESC>
+							</PARAM>
+						</PARAMS>
+					</PARAM>
+                </PARAMS>
+                <RETURN type="BOOLEAN">
+                    <DESC>Whether or not the registry key was successfully deleted.</DESC>
+                </RETURN>
+			</METHOD>			
+			
             <METHOD name="setWindowFrame">
                 <DESC>Change application window position and size. Implemented only for Windows desktop.</DESC>
                 <PARAMS>
