@@ -53,8 +53,8 @@ public:
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
-    virtual void getShowKeyboard(CMethodResult& oResult);
-    virtual void setShowKeyboard( bool value, CMethodResult& oResult);
+    virtual void getKeyboardState(CMethodResult& oResult);
+    virtual void setKeyboardState( const rho::String& value, CMethodResult& oResult);
     virtual void getFullScreen(CMethodResult& oResult);
     virtual void setFullScreen( bool value, CMethodResult& oResult);
     virtual void getScreenAutoRotate(CMethodResult& oResult);
@@ -189,11 +189,11 @@ void CSystemImpl::getUuid(CMethodResult& oResult)
 
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
 void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult){}
-void CSystemImpl::getShowKeyboard(CMethodResult& oResult)
+void CSystemImpl::getKeyboardState(CMethodResult& oResult)
 {
 	//seems it's unsupported
 }
-void CSystemImpl::setShowKeyboard( bool value, CMethodResult& oResult)
+void CSystemImpl::setKeyboardState( const rho::String& value, CMethodResult& oResult)
 {
 	//seems it's unsupported
 	//to show SIP on WP8 we firstly have to focus text box element
