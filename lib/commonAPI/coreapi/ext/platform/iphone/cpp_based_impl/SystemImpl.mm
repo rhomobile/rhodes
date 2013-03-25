@@ -165,12 +165,12 @@ namespace rho {
         result.setError("not implemented at iOS platform");
     }
     
-    void SystemImplIphone::getShowKeyboard(rho::apiGenerator::CMethodResult& result)
+    void SystemImplIphone::getKeyboardState(rho::apiGenerator::CMethodResult& result)
     {
         result.setError("not implemented at iOS platform");
     }
     
-    void SystemImplIphone::setShowKeyboard(bool, rho::apiGenerator::CMethodResult& result)
+    void SystemImplIphone::setKeyboardState(const rho::String&, rho::apiGenerator::CMethodResult& result)
     {
         result.setError("not implemented at iOS platform");
     }

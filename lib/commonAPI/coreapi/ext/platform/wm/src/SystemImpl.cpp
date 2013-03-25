@@ -10,6 +10,12 @@
 #include "common/RhoFile.h"
 #include "rcmcapi.h"
 #include "Registry.h"
+#include "Keyboard.h"
+
+#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
+#include <cfgmgrapi.h>
+#include <getdeviceuniqueid.h>
+#endif
 
 //  Defines for Unique Device ID (not present in MC3000c50b)
 #ifndef _GETDEVICEUNIQUEID_INC
@@ -28,10 +34,6 @@ GetDeviceUniqueID(LPBYTE pbApplicationData,
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "System"
 
-#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
-#include <cfgmgrapi.h>
-#include <getdeviceuniqueid.h>
-#endif
 
 extern "C"
 {
@@ -59,8 +61,10 @@ using namespace common;
 
 class CSystemImpl: public CSystemImplBase
 {
+private:
+	CSIP* m_pSip;
 public:
-    CSystemImpl(): CSystemImplBase(){}
+    CSystemImpl(): CSystemImplBase(){m_pSip = NULL;}
 
     virtual void getScreenWidth(CMethodResult& oResult);
     virtual void getScreenHeight(CMethodResult& oResult);
@@ -84,8 +88,8 @@ public:
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
-    virtual void getShowKeyboard(CMethodResult& oResult);
-    virtual void setShowKeyboard( bool value, CMethodResult& oResult);
+    virtual void getKeyboardState(CMethodResult& oResult);
+	virtual void setKeyboardState( const rho::String &, CMethodResult& oResult);
     virtual void getScreenAutoRotate(CMethodResult& oResult);
     virtual void setScreenAutoRotate( bool value, CMethodResult& oResult);
     virtual void getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult);
@@ -108,7 +112,13 @@ public:
 
     virtual void set_http_proxy_url( const rho::String& proxyURI, rho::apiGenerator::CMethodResult& oResult);
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
-
+	virtual long OnSIPState(bool bSIPState, const CRhoExtData& oExtData)
+	{
+		if (!m_pSip)
+			m_pSip = new CSIP();
+		m_pSip->ToggleSIPReliably(bSIPState);
+		return S_OK;
+	}
 };
 
 void CSystemImpl::getOsVersion(CMethodResult& oResult)
@@ -366,7 +376,6 @@ bool CSystemImpl::populateUUID(UNITID_EX* uuid)
 	//  For Motorola devices the UUID is obtained from the RCM library.  For non-motorola devices the UUID is 
 	//  obtained from a system call.
 	bool bRetVal = false;
-	//link to the keyboard dll for the alpha key
 	HMODULE hLib = LoadLibrary(TEXT("Rcm2API32.dll"));
 	if (hLib != NULL)
 	{
@@ -457,14 +466,61 @@ void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult)
 #endif
 }
 
-void CSystemImpl::getShowKeyboard(CMethodResult& oResult)
+void CSystemImpl::getKeyboardState(CMethodResult& oResult)
 {
-    //TODO: getShowKeyboard
+	if (!m_pSip)
+		m_pSip = new CSIP();
+	if (m_pSip->getCurrentStatus() == SIP_CONTROL_AUTOMATIC)
+		oResult.set("automatic");
+	else
+	{
+		bool bSIPVisible = false;
+		HWND sipHWND = FindWindow(L"SipWndClass", NULL);
+		if (sipHWND && IsWindowVisible(sipHWND))
+			bSIPVisible = true;
+		if (bSIPVisible)
+			oResult.set("shown");
+		else
+			oResult.set("hidden");
+	}
 }
 
-void CSystemImpl::setShowKeyboard( bool value, CMethodResult& oResult)
+void CSystemImpl::setKeyboardState( const rho::String & value, CMethodResult& oResult)
 {
-    //TODO: setShowKeyboard
+	if (!m_pSip)
+		m_pSip = new CSIP();
+	
+	//  User has instructed the keyboard to show / hide, now assume the control is manual
+	bool bUserRequestToShow = false;
+	bool bSuccess = true;
+	if (value.compare("shown") == 0)
+	{
+		//  Show the keyboard
+		bUserRequestToShow = true;
+		m_pSip->setCurrentStatus(SIP_CONTROL_MANUAL);
+	}
+	else if (value.compare("hidden") == 0)
+	{
+		//  Hide the keyboard
+		bUserRequestToShow = false;
+		m_pSip->setCurrentStatus(SIP_CONTROL_MANUAL);
+	}
+	else if (value.compare("automatic") == 0)
+	{
+		//  Respond to WebKit requests to show / hide the SIP automatically
+		m_pSip->setCurrentStatus(SIP_CONTROL_AUTOMATIC);
+	}
+	else
+	{
+		bSuccess = false;
+		LOG(WARNING) + "Unrecognised keyboard state: " + value;
+	}
+
+	if (m_pSip->getCurrentStatus() == SIP_CONTROL_MANUAL)
+	{
+		m_pSip->ToggleSIPReliably(bUserRequestToShow);
+	}
+	oResult.set(bSuccess);
 }
 
 void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult)

@@ -135,8 +135,19 @@
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
                 <DESC>Lock/unlock the window size change by the user. Implemented only for Windows desktop.</DESC>
             </PROPERTY>
-            <PROPERTY name="showKeyboard" type="BOOLEAN">
-                <DESC>Display\hide software keyboard.</DESC>
+            <PROPERTY name="keyboardState" type="STRING">
+                <DESC>For Windows Mobile and Windows CE the keyboard can be manually shown or hidden as required.  All other platforms only support 'Automatic'.</DESC>
+                <VALUES>
+                    <VALUE constName="KEYBOARD_SHOWN" value ="shown">
+                        <DESC>Shows the on screen keyboard, after setting the keyboard to shown or hidden it will no longer appear / disappear automatically until you set this property to automatic.</DESC>
+                    </VALUE>
+                    <VALUE constName="KEYBOARD_HIDDEN" value ="hidden">
+                        <DESC>Hides the on screen keyboard, after setting the keyboard to shown or hidden it will no longer appear / disappear automatically until you set this property to automatic.  This is most useful if your device has a hardware keyboard or you are scanning / capturing data to an input field.</DESC>
+                    </VALUE>
+                    <VALUE constName="KEYBOARD_AUTOMATIC" value ="automatic">
+                        <DESC>Automatically shows or hides the keyboard as needed by the application</DESC>
+                    </VALUE>
+                </VALUES>
             </PROPERTY>
             <PROPERTY name="localServerPort" type="INTEGER" default="8080">
                 <DESC>Port of the local (embedded) HTTP server. This parameter is mainly for debug purposes. If not specified, application will use dynamically selected one.</DESC>
