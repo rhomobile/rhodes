@@ -31,7 +31,7 @@
 
 #include "../IToolbar.h"
 
-class CNativeToolbar : public CWindowImpl<CNativeToolbar, CToolBarCtrl>, public IToolbar
+class CNativeToolbar : public CWindowImpl<CNativeToolbar, CToolBarCtrl>, public rho::IToolbar
 {
     DEFINE_LOGCLASS;
 
@@ -66,18 +66,18 @@ public:
     public:
         CCreateTask(rho_param *p) : m_param(rho_param_dup(p)){ }
         ~CCreateTask(){ rho_param_free(m_param); }
-        virtual void runObject(){ CNativeToolbar::getInstance().createToolbar(m_param); }
+        virtual void runObject(){ CNativeToolbar::getInstance()->createToolbar(m_param); }
     };
     class CRemoveTask: public rho::common::IRhoRunnable
     {
     public:
-        virtual void runObject(){ CNativeToolbar::getInstance().removeToolbar(); }
+        virtual void runObject(){ CNativeToolbar::getInstance()->removeToolbar(); }
     };
 
     CNativeToolbar(void);
     ~CNativeToolbar(void);
 
-    static CNativeToolbar& getInstance();
+    static IToolbar* getInstance();
 
 	BEGIN_MSG_MAP(CNativeToolbar)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)

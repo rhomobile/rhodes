@@ -42,6 +42,8 @@
 #include "IBrowserEngine.h"
 #include "common/app_build_capabilities.h"
 #include "IMainWindow.h"
+#include "ITabbar.h"
+#include "IToolbar.h"
 
 #if defined(OS_WINDOWS_DESKTOP)
 #include "menubar.h"
@@ -91,10 +93,7 @@ static const UINT ID_BROWSER = 1;
 
 extern UINT WM_LICENSE_SCREEN;
 
-typedef struct _TCookieData {
-    char* url;
-    char* cookie;
-} TCookieData;
+
 
 namespace rho
 {
@@ -139,12 +138,9 @@ public:
 	void Navigate2(BSTR URL);
     void Navigate(BSTR URL);
 
-	HWND getWebViewHWND();
-    CNativeToolbar& getToolbar(){ return m_toolbar; }
-    void performOnUiThread(rho::common::IRhoRunnable* pTask);
+	HWND getWebViewHWND();   
 
     void calculateMainWindowRect(RECT& rcMainWindow);
-    void initBrowserWindow();
     void resizeWindow( int xSize, int ySize);
 
     // Required to forward messages to the PIEWebBrowser control
@@ -153,7 +149,6 @@ public:
 #if defined(OS_WINCE)
 	bool m_bFullScreen, m_bFullScreenBeforeLicense;
    	void RhoSetFullScreen(bool bFull, bool bDestroy = false);
-    bool getFullScreen(){ return m_bFullScreen; }
 #endif
 
 	void openNativeView(	NativeViewFactory* nativeViewFactory, 
@@ -355,12 +350,30 @@ private:
 	void hideWebView();
 	void showWebView();
 
+public:
     // IMainWindow implementation
-    virtual bool Initialize(const wchar_t* title, DWORD dwStyle);
-    virtual HWND getWebViewHWND(int tabIdx);
-    virtual HWND GetMainWindowHWND();
-    virtual void UpdateWindow(int showCmd);
+    virtual bool      Initialize(const wchar_t* title, DWORD dwStyle);
+    virtual HWND      getWebViewHWND(int tabIdx);
+    virtual HWND      GetMainWindowHWND();
+    virtual void      UpdateWindow(int showCmd);
+    virtual void      initBrowserWindow();
+    virtual void      removeAllButtons();
+    virtual IToolbar* getToolbar();
+    virtual ITabbar*  getTabbar();
+    virtual int       tabbarGetCurrent();
+    virtual void      setProxy();
+    virtual void      setProxy(const rho::String& host, const rho::String& port, 
+        const rho::String& login, const rho::String& password);
 
+    virtual void performOnUiThread(rho::common::IRhoRunnable* pTask);
+    virtual void Navigate2(BSTR URL, int index);
+    virtual void DestroyUi();
+    virtual void MessageLoop();
+    virtual bool getFullScreen();
+    virtual void windowSetFrame(int x, int y, int w, int h);
+    virtual void windowSetPosition(int x, int y);
+    virtual void windowSetSize(int width, int  height);
+    virtual void windowLockSize(int x);
 private:
 	NativeViewFactory* mNativeViewFactory;
 	NativeView* mNativeView;
@@ -380,8 +393,8 @@ private:
 #endif //_WIN32_WCE
 
 // #if defined( OS_PLATFORM_MOTCE )
-    int m_menuBarHeight;
-    HWND				g_hWndCommandBar;	// command bar handle
+    int  m_menuBarHeight;
+    HWND g_hWndCommandBar;	// command bar handle
 // #endif
 
 #if defined(_WIN32_WCE)
@@ -389,7 +402,7 @@ private:
     SHACTIVATEINFO m_sai;
 #endif
 
-	bool m_bLoading;
+	bool           m_bLoading;
     CNativeToolbar m_toolbar;
 
 #if !defined(_WIN32_WCE)

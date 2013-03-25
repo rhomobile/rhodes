@@ -28,7 +28,7 @@
 
 #include "NativeToolbarQt.h"
 #include "common/rhoparams.h"
-#include "MainWindow.h"
+#include "MainWindowQt.h"
 #include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
 #undef null
@@ -37,6 +37,8 @@
 #include <QtGui/QAction>
 
 extern IMainWindow& getAppWindow();
+extern IMainWindow* getMainWindowObject();
+
 IMPLEMENT_LOGCLASS(CNativeToolbarQt,"NativeToolbar");
 
 using namespace rho;
@@ -55,28 +57,36 @@ void CNativeToolbarQt::OnFinalMessage(HWND /*hWnd*/)
     getAppWindow().removeAllButtons();
 }
 
-/*static*/ CNativeToolbarQt& CNativeToolbarQt::getInstance()
+IToolbar* CNativeToolbarQt::getInstance()
 {
-    return getAppWindow().getToolbar();
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    return qtMainWnd->getToolbar();
 }
 
 void CNativeToolbarQt::createToolbar(rho_param *p)
 {
-    getAppWindow().createToolbar(p);
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    qtMainWnd->createToolbar(p);
+    //getAppWindow().createToolbar(p);
 }
-
 
 void CNativeToolbarQt::removeToolbar()
 {
-    getAppWindow().removeToolbar();
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    qtMainWnd->removeToolbar();
+    //getAppWindow().removeToolbar();
 }
 
 int CNativeToolbarQt::getHeight()
 {
-    return getAppWindow().getToolbarHeight();
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    return qtMainWnd->getTabbarHeight();
+    //return getAppWindow().getToolbarHeight();
 }
 
 bool CNativeToolbarQt::isStarted()
 {
-    return getAppWindow().isStarted();
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    return qtMainWnd->isStarted();
+    //return getAppWindow().isStarted();
 }

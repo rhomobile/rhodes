@@ -680,16 +680,14 @@ void CMainWindow::openNativeView(	NativeViewFactory* nativeViewFactory,
 	hideWebView();
 }
 
-void CMainWindow::closeNativeView() {
+void CMainWindow::closeNativeView() 
+{
 	restoreWebView();
 }
 
-
-
-
 // return true if NativeView was created
-String CMainWindow::processForNativeView(String _url) {
-
+String CMainWindow::processForNativeView(String _url) 
+{
 	String url = _url.c_str();
 	String callback_prefix = "call_stay_native";
 
@@ -759,7 +757,8 @@ String CMainWindow::processForNativeView(String _url) {
 }
 
 
-void CMainWindow::restoreWebView() {
+void CMainWindow::restoreWebView() 
+{
 	if (mNativeView != NULL) {
 		mNativeViewFactory->destroyNativeView(mNativeView);
 		mNativeView = NULL;
@@ -795,7 +794,9 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 #endif
 
 	//} else if (wParam == SPI_SIPMOVE) {
-	} else if (rho_wmimpl_get_resize_on_sip() && (wParam == SPI_SETSIPINFO)) {
+	} 
+    else if (rho_wmimpl_get_resize_on_sip() && (wParam == SPI_SETSIPINFO)) 
+    {
 		SIPINFO pSipInfo;
 		memset(&pSipInfo, 0, sizeof(SIPINFO));
 		pSipInfo.cbSize = sizeof(SIPINFO);
@@ -882,6 +883,7 @@ LRESULT CMainWindow::OnHotKey (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     return 1;
 }
 extern "C" HWND getMainWnd();
+
 BOOL EnumChildProc(HWND hwnd,LPARAM lParam)
 {
     if ( getMainWnd() != ::GetParent(hwnd) )
@@ -918,6 +920,7 @@ LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 	        return 0;
 	}
 
+#if !defined(OS_WINDOWS_DESKTOP)
     //Look for popup window
     HWND hChildPopUp = hWndLostFocus;
     EnumWindows( EnumChildProc, (LPARAM)&hChildPopUp);
@@ -926,6 +929,7 @@ LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
         ::SetFocus(hChildPopUp);
         return 0;
     }
+#endif
 
     HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND() : NULL;
     if (hBrowserWnd && ::IsWindowVisible(m_hWnd) ) //!::IsIconic(m_hWnd))
@@ -1716,6 +1720,7 @@ LRESULT CMainWindow::OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD  wID, H
 
     return 0;
 }
+
 LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {	
     int nItemPos = wID-ID_CUSTOM_TOOLBAR_ITEM_FIRST;
@@ -1723,28 +1728,99 @@ LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID
     return 0;
 }
 
-
 // IMainWindow implementation
 bool CMainWindow::Initialize(const wchar_t* title, DWORD dwStyle)
 {
-
+    return true;
 }
 
 HWND CMainWindow::getWebViewHWND(int tabIdx)
 {
-
+    return getWebViewHWND();
 }
 
 HWND CMainWindow::GetMainWindowHWND()
 {
-
+    return m_hWnd;
 }
 
 void CMainWindow::UpdateWindow(int showCmd)
 {
     InvalidateRect(NULL, TRUE);
-    UpdateWindow();
+    ::UpdateWindow(GetMainWindowHWND());
 }
+
+void CMainWindow::removeAllButtons()
+{
+}
+
+IToolbar* CMainWindow::getToolbar()
+{
+    return static_cast<IToolbar*>(&m_toolbar);
+}
+
+ITabbar* CMainWindow::getTabbar()
+{
+    return 0;
+}
+
+void CMainWindow::setProxy()
+{
+}
+
+void CMainWindow::setProxy(const rho::String& host, const rho::String& port, 
+        const rho::String& login, const rho::String& password)
+{
+}
+
+void CMainWindow::Navigate2(BSTR URL, int index)
+{
+    Navigate2(URL);
+}
+
+void CMainWindow::DestroyUi()
+{
+
+}
+
+void CMainWindow::MessageLoop()
+{
+    getWebKitEngine()->RunMessageLoop(*this);
+}
+
+int CMainWindow::tabbarGetCurrent()
+{
+    return 0;
+}
+
+bool getFullScreen()
+{
+#if defined(OS_WINCE)
+    return m_bFullScreen;
+#else
+    return false;
+#endif    
+}
+
+void CMainWindow::windowSetFrame(int x, int y, int w, int h)
+{
+    MoveWindow(x, y, w, h);
+}
+
+void CMainWindow::windowSetPosition(int x, int y)
+{
+}
+
+void CMainWindow::windowSetSize(int width, int  height)
+{
+    ResizeClient(width, height);
+}
+
+void CMainWindow::windowLockSize(int x)
+{
+}
+
+//////////////////////////////////////////////////////////////////////////
 
 extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 {

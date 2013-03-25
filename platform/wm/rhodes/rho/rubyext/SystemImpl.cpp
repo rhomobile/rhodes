@@ -36,7 +36,9 @@
 using namespace rho;
 using namespace rho::common;
 extern "C" HWND getMainWnd();
-CMainWindow& getAppWindow();
+
+IMainWindow& getAppWindow();
+IMainWindow* getMainWindowObject();
 
 extern "C"
 {
@@ -165,26 +167,29 @@ public:
     static void setFrame(CParams* params)
 	{
 	    CParams& frame = *((CParams*)params);
-		CMainWindow& mainWin = getAppWindow();
-		mainWin.setFrame(frame.getX(), frame.getY(), frame.getWidth(), frame.getHeight());
+		IMainWindow* mainWin = getMainWindowObject();
+		mainWin->windowSetFrame(frame.getX(), frame.getY(), frame.getWidth(), frame.getHeight());
 	}
+    
     static void setPosition(CParams* params)
 	{
 	    CParams& frame = *((CParams*)params);
-		CMainWindow& mainWin = getAppWindow();
-		mainWin.setPosition(frame.getX(), frame.getY());
+		IMainWindow* mainWin = getMainWindowObject();
+		mainWin->windowSetPosition(frame.getX(), frame.getY());
 	}
+    
     static void setSize(CParams* params)
 	{
 	    CParams& frame = *((CParams*)params);
-		CMainWindow& mainWin = getAppWindow();
-		mainWin.setSize(frame.getWidth(), frame.getHeight());
+		IMainWindow* mainWin = getMainWindowObject();
+		mainWin->windowSetSize(frame.getWidth(), frame.getHeight());
 	}
+
 	static void lockSize(CParams* params)
 	{
 	    CParams& p = *((CParams*)params);
-		CMainWindow& mainWin = getAppWindow();
-		mainWin.lockSize(p.getX());
+		IMainWindow* mainWin = getMainWindowObject();
+		mainWin->windowLockSize(p.getX());
 	}
 };
 

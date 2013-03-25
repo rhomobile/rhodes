@@ -35,7 +35,9 @@
 #include <atldlgs.h>
 #include <atlmisc.h>
 
-class CNativeTabbarQt
+#include "ITabbar.h"
+
+class CNativeTabbarQt : public rho::ITabbar
 {
     DEFINE_LOGCLASS;
 
@@ -51,14 +53,14 @@ public:
         CCreateTask(int bar_type, rho_param *p) : m_bartype(bar_type), m_param(rho_param_dup(p)){ }
         ~CCreateTask(){ rho_param_free(m_param); }
         virtual void runObject(){
-            CNativeTabbarQt::getInstance().createTabbar(m_bartype, m_param);
+            CNativeTabbarQt::getInstance()->createTabbar(m_bartype, m_param);
         }
     };
     class CRemoveTask: public rho::common::IRhoRunnable
     {
     public:
         virtual void runObject(){
-            CNativeTabbarQt::getInstance().removeTabbar(); 
+            CNativeTabbarQt::getInstance()->removeTabbar(); 
         }
     };
     class CSwitchTask: public rho::common::IRhoRunnable
@@ -68,18 +70,18 @@ public:
         CSwitchTask(int index) : m_index(index){ }
         ~CSwitchTask(){ }
         virtual void runObject(){
-            CNativeTabbarQt::getInstance().tabbarSwitch(m_index);
+            CNativeTabbarQt::getInstance()->tabbarSwitch(m_index);
         }
     };
     class CBadgeTask: public rho::common::IRhoRunnable
     {
-        int m_index;
+        int   m_index;
 		char* m_badge;
     public:
         CBadgeTask(int idx, char* badge) : m_index(idx), m_badge(badge) { }
         ~CBadgeTask(){ }
         virtual void runObject(){
-            CNativeTabbarQt::getInstance().tabbarBadge(m_index, m_badge);
+            CNativeTabbarQt::getInstance()->tabbarBadge(m_index, m_badge);
         }
     };
 
@@ -87,7 +89,7 @@ public:
     CNativeTabbarQt(void);
     ~CNativeTabbarQt(void);
 
-    static CNativeTabbarQt& getInstance();
+    static ITabbar* getInstance();
 
     virtual void OnFinalMessage(HWND /*hWnd*/);
 

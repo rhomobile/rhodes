@@ -286,7 +286,7 @@ void CMainWindowQt::createToolbar(rho_param *p)
     int bar_type = TOOLBAR_TYPE;
 	std::auto_ptr<QColor> m_rgbBackColor (NULL);
     std::auto_ptr<QColor> m_rgbMaskColor (NULL);
-    int m_nHeight = CNativeToolbar::MIN_TOOLBAR_HEIGHT;
+    int m_nHeight = CNativeToolbarQt::MIN_TOOLBAR_HEIGHT;
 
     rho_param *params = NULL;
     switch (p->type) 
@@ -990,16 +990,19 @@ CRhodesProxyFactory* CRhodesProxyFactory::_instance = NULL;
 
 void CMainWindowQt::setProxy(const rho::String& host, const rho::String& port, const rho::String& login, const rho::String& password)
 {
-	if (host.length()) {
+	if (host.length()) 
+    {
 		QNetworkProxy proxy;
 		proxy.setType(QNetworkProxy::HttpCachingProxy);
 		proxy.setHostName(host.c_str());
-		if (port.length())
+		
+        if (port.length())
 			proxy.setPort(atoi(port.c_str()));
 		if (login.length())
 			proxy.setUser(login.c_str());
 		if (password.length())
 			proxy.setPassword(password.c_str());
+
 		CRhodesProxyFactory::getInstance()->setProxy(proxy);
 	}
 }
@@ -1011,20 +1014,54 @@ void CMainWindowQt::setProxy()
 
 bool CMainWindowQt::Initialize(const wchar_t* title, DWORD dwStyle)
 {
-
+    return true;
 }
 
 HWND CMainWindowQt::getWebViewHWND(int tabIdx)
-{
-
+{    
+    return 0;
 }
 
 HWND CMainWindowQt::GetMainWindowHWND()
 {
-
+    return 0;
 }
 
 void CMainWindowQt::UpdateWindow(int showCmd)
 {
-    ShowWindow(nShowCmd);
+    ShowWindow(showCmd);
+}
+
+void CMainWindowQt::initBrowserWindow()
+{
+}
+
+IToolbar* CMainWindowQt::getToolbar()
+{
+    return static_cast<IToolbar*>(&m_toolbar);
+}
+
+ITabbar*  CMainWindowQt::getTabbar()
+{
+    return static_cast<ITabbar*>(&m_tabbar);
+}
+
+void CMainWindowQt::windowSetFrame(int x, int y, int w, int h)
+{
+    setFrame(x, y, w, h);
+}
+
+void CMainWindowQt::windowSetPosition(int x, int y)
+{
+    setPosition(x, y);
+}
+
+void CMainWindowQt::windowSetSize(int width, int  height)
+{
+    setSize(width, height);
+}
+
+void CMainWindowQt::windowLockSize(int x)
+{
+    lockSize(x);
 }

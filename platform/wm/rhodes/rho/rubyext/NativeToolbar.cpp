@@ -37,10 +37,10 @@
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
 #endif
 
-extern CMainWindow& getAppWindow();
-
 IMPLEMENT_LOGCLASS(CNativeToolbar,"NativeToolbar");
-extern "C" int rho_wmsys_has_touchscreen();
+
+extern     CMainWindow& getAppWindow();
+extern "C" int          rho_wmsys_has_touchscreen();
 
 CNativeToolbar::CNativeToolbar(void)
 {
@@ -55,7 +55,7 @@ void CNativeToolbar::OnFinalMessage(HWND /*hWnd*/)
     removeAllButtons();
 }
 
-/*static*/ CNativeToolbar& CNativeToolbar::getInstance()
+IToolbar* CNativeToolbar::getInstance()
 {
     return getAppWindow().getToolbar();
 }

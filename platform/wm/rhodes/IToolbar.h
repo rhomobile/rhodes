@@ -26,56 +26,16 @@
 
 #pragma once
 
-#include "common/IRhoThreadImpl.h"
-#include "ruby/ext/rho/rhoruby.h"
-
-#include <atlbase.h>
-#include <atlapp.h>
-#include <atlctrls.h>
-#include <atldlgs.h>
-#include <atlmisc.h>
-
-#include "IToolbar.h"
-
-class CNativeToolbarQt : public rho::IToolbar
+namespace rho
 {
-    DEFINE_LOGCLASS;
 
+class IToolbar
+{
 public:
-    static const int  MIN_TOOLBAR_HEIGHT = 60;
-
-public:
-    class CCreateTask: public rho::common::IRhoRunnable
-    {
-        rho_param *m_param;
-    public:
-        CCreateTask(rho_param *p) : m_param(rho_param_dup(p)){ }
-        ~CCreateTask(){ rho_param_free(m_param); }
-        virtual void runObject(){
-            CNativeToolbarQt::getInstance()->createToolbar(m_param);
-        }
-    };
-
-    class CRemoveTask: public rho::common::IRhoRunnable
-    {
-    public:
-        virtual void runObject(){
-            CNativeToolbarQt::getInstance()->removeToolbar(); 
-        }
-    };
-
-public:
-    CNativeToolbarQt(void);
-    ~CNativeToolbarQt(void);
-
-    static IToolbar* getInstance();
-
-    virtual void OnFinalMessage(HWND /*hWnd*/);
-
-    int getHeight();
-    bool isStarted();
-
-private:
-    virtual void createToolbar(rho_param *param);
-    virtual void removeToolbar();
+    virtual int  getHeight() = 0;
+    virtual bool isStarted() = 0; 
+    virtual void createToolbar(rho_param *param) = 0;
+    virtual void removeToolbar() = 0;
 };
+
+}

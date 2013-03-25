@@ -215,15 +215,15 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 }
 #endif //!OS_WINDOWS_DESKTOP
 
-rho::IMainWindow* rho_wmimpl_createMainWindow(HWND hwndParent, const StringW& wndTitle, DWORD dwStyle, EMainWindowType type)
+rho::IMainWindow* rho_wmimpl_createMainWindow(HWND hwndParent, const StringW& wndTitle, DWORD dwStyle, rho::EMainWindowType type)
 {
-    if (type == EMainWindowType::eQtWindow)
+    if (type == rho::eQtWindow)
     {
         rho::IMainWindow *mainWindow = new CMainWindowQt();
-        mainWindow->Initialize(wndTitle.c_str());
+        mainWindow->Initialize(wndTitle.c_str(), dwStyle);
         return mainWindow;
     }
-    else if (type == EMainWindowType::eNativeWindow)
+    else if (type == rho::eNativeWindow)
     {
         CMainWindow* mainWindow = new CMainWindow();
         mainWindow->Create(NULL, CWindow::rcDefault, wndTitle.c_str(), dwStyle);
@@ -610,7 +610,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         RHODESAPP().startApp();
 //#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         // Navigate to the "loading..." page
-	    m_appWindow.Navigate2(_T("about:blank")
+	    m_appWindow->Navigate2(_T("about:blank")
     #if defined(OS_WINDOWS_DESKTOP)
             , -1
     #endif
@@ -665,7 +665,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 void CRhodesModule::RunMessageLoop( ) throw( )
 {
 #if defined(OS_WINDOWS_DESKTOP)
-    m_appWindow.MessageLoop();
+    m_appWindow->MessageLoop();
 #else
     m_appWindow.getWebKitEngine()->RunMessageLoop(m_appWindow);
 #endif
@@ -683,7 +683,7 @@ void CRhodesModule::RunMessageLoop( ) throw( )
     rho_ringtone_manager_stop();
 
 #if defined(OS_WINDOWS_DESKTOP)
-    m_appWindow.DestroyUi();
+    m_appWindow->DestroyUi();
 #endif
 
     rho::common::CRhodesApp::Destroy();
@@ -772,7 +772,7 @@ extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/
 
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask) 
 {
-    CMainWindow* mainWnd = _AtlModule.GetMainWindowObject();
+    IMainWindow* mainWnd = _AtlModule.GetMainWindowObject();
     mainWnd->performOnUiThread(pTask);    
 }
 
@@ -784,6 +784,11 @@ extern "C" HWND getMainWnd()
 IMainWindow& getAppWindow() 
 {
 	return _AtlModule.GetAppWindow();
+}
+
+IMainWindow* getMainWindowObject() 
+{
+    return _AtlModule.GetMainWindowObject();
 }
 
 extern "C" HWND getWebViewWnd(int index) 

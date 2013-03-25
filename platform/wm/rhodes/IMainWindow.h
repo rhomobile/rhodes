@@ -26,6 +26,8 @@
 
 #pragma once
 
+#include "qt/rhodes/MainWindowCallback.h"
+
 static UINT WM_TAKEPICTURE             = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
 static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
 //static UINT WM_TAKESIGNATURE           = ::RegisterWindowMessage(L"RHODES_WM_TAKESIGNATURE");
@@ -42,8 +44,17 @@ static UINT WM_EXECUTE_RUNNABLE		   = ::RegisterWindowMessage(L"RHODES_WM_EXECUT
 static UINT WM_WINDOW_MINIMIZE 		   = ::RegisterWindowMessage(L"RHODES_WM_MINIMIZE");
 static UINT WM_SHOW_LICENSE_WARNING	   = ::RegisterWindowMessage(L"RHOELEMENTS_WM_LICENSE_WARNING");
 
+
+typedef struct _TCookieData {
+    char* url;
+    char* cookie;
+} TCookieData;
+
 namespace rho
 {
+
+class ITabbar;
+class IToolbar;
 
 enum EMainWindowType
 {
@@ -59,8 +70,25 @@ public:
     virtual HWND GetMainWindowHWND() = 0;
     virtual void UpdateWindow(int showCmd) = 0;
     virtual void initBrowserWindow() = 0;
-
     virtual void removeAllButtons() = 0;
+
+    virtual IToolbar* getToolbar() = 0;
+    virtual ITabbar*  getTabbar() = 0;
+    virtual int       tabbarGetCurrent() = 0;
+
+    virtual void setProxy() = 0;
+    virtual void setProxy(const rho::String& host, const rho::String& port, const rho::String& login, const rho::String& password) = 0;
+
+    virtual void performOnUiThread(rho::common::IRhoRunnable* pTask) = 0;
+    virtual void Navigate2(BSTR URL, int index) = 0;
+    virtual void DestroyUi() = 0;
+    virtual void MessageLoop() = 0;
+    virtual bool getFullScreen() = 0;
+
+    virtual void windowSetFrame(int x, int y, int w, int h) = 0;
+    virtual void windowSetPosition(int x, int y) = 0;
+    virtual void windowSetSize(int width, int  height) = 0;
+    virtual void windowLockSize(int x) = 0;
 };
 
 }

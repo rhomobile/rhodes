@@ -28,16 +28,20 @@
 
 #include "NativeTabbarQt.h"
 #include "common/rhoparams.h"
-#include "MainWindow.h"
+#include "MainWindowQt.h"
 #include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
 #include "NativeTabbarQt.h"
+#include "IMainWindow.h"
+
 #undef null
 #include <QString>
 #include <QApplication>
 #include <QtGui/QAction>
 
-extern CMainWindow& getAppWindow();
+extern IMainWindow& getAppWindow();
+extern IMainWindow* getMainWindowObject();
+
 IMPLEMENT_LOGCLASS(CNativeTabbarQt,"NativeTabbar");
 
 using namespace rho;
@@ -53,40 +57,56 @@ CNativeTabbarQt::~CNativeTabbarQt(void)
 
 void CNativeTabbarQt::OnFinalMessage(HWND /*hWnd*/)
 {
-    getAppWindow().removeAllTabs(false);
+    //getAppWindow().removeAllTabs(false);
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());    
+    qtMainWnd->removeAllTabs(false);
 }
 
-/*static*/ CNativeTabbarQt& CNativeTabbarQt::getInstance()
+ITabbar* CNativeTabbarQt::getInstance()
 {
-    return getAppWindow().getTabbar();
+    //return getAppWindow().getTabbar();
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());    
+    return qtMainWnd->getTabbar();
 }
 
 void CNativeTabbarQt::createTabbar(int bar_type, rho_param *p)
 {
-    getAppWindow().createTabbar(bar_type, p);
+    //getAppWindow().createTabbar(bar_type, p);
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    qtMainWnd->createTabbar(bar_type, p);
 }
 
 void CNativeTabbarQt::removeTabbar()
 {
-    getAppWindow().removeTabbar();
+    //getAppWindow().removeTabbar();
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    qtMainWnd->removeTabbar();
 }
 
 int CNativeTabbarQt::getHeight()
 {
-    return getAppWindow().getTabbarHeight();
+    //return getAppWindow().getTabbarHeight();
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    return qtMainWnd->getTabbarHeight();
 }
 
 bool CNativeTabbarQt::isStarted()
 {
-    return getAppWindow().isStarted();
+    //return getAppWindow().isStarted();
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    return qtMainWnd->isStarted();
 }
 
 void CNativeTabbarQt::tabbarSwitch(int index)
 {
-    getAppWindow().tabbarSwitch(index);
+    //getAppWindow().tabbarSwitch(index);
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    qtMainWnd->tabbarSwitch(index);
 }
 
 void CNativeTabbarQt::tabbarBadge(int index, char* badge)
 {
-    getAppWindow().tabbarBadge(index, badge);
+    //getAppWindow().tabbarBadge(index, badge);
+    CMainWindowQt *qtMainWnd = static_cast<CMainWindowQt*>(getMainWindowObject());
+    qtMainWnd->tabbarBadge(index, badge);
 }

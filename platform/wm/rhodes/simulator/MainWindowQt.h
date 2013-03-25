@@ -62,11 +62,6 @@ static UINT WM_SHOW_LICENSE_WARNING	   = ::RegisterWindowMessage(L"RHOELEMENTS_W
 #define ID_CUSTOM_TOOLBAR_ITEM_FIRST (ID_CUSTOM_MENU_ITEM_LAST+1)
 #define ID_CUSTOM_TOOLBAR_ITEM_LAST  (ID_CUSTOM_TOOLBAR_ITEM_FIRST + 20 - 1)
 
-typedef struct _TCookieData {
-    char* url;
-    char* cookie;
-} TCookieData;
-
 class CMainWindowQt :
     public CWindowImpl<CMainWindowQt, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
     public IMainWindowCallback,
@@ -84,18 +79,25 @@ public:
 	virtual void onWindowClose(void);
     virtual void onWebViewUrlChanged(const ::std::string& url);
     // IMainWindow implementation
-    virtual bool Initialize(const wchar_t* title, DWORD dwStyle);
-    virtual HWND getWebViewHWND(int tabIdx);
-    virtual HWND GetMainWindowHWND();
-    virtual void UpdateWindow();
+    virtual bool      Initialize(const wchar_t* title, DWORD dwStyle);
+    virtual HWND      getWebViewHWND(int tabIdx);
+    virtual HWND      GetMainWindowHWND();
+    virtual void      UpdateWindow(int showCmd);
+    virtual void      initBrowserWindow();
+    virtual void      removeAllButtons(); // for toolbar
+    virtual IToolbar* getToolbar();
+    virtual ITabbar*  getTabbar();
+    virtual void      windowSetFrame(int x, int y, int w, int h);
+    virtual void      windowSetPosition(int x, int y);
+    virtual void      windowSetSize(int width, int  height);
+    virtual void      windowLockSize(int x);
+
     // public methods:
     void Navigate2(BSTR URL, int index);
     HWND Initialize(const wchar_t* title);
     void MessageLoop(void);
 	void DestroyUi(void);
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
-    IToolbar& getToolbar(){ return static_cast<IToolbar&>(m_toolbar); }
-    CNativeTabbarQt& getTabbar(){ return m_tabbar; }
 	void setProxy();
 	void setProxy(const rho::String& host, const rho::String& port, const rho::String& login, const rho::String& password);
 	// for 'main_window_closed' System property
@@ -117,7 +119,6 @@ public:
     int getToolbarHeight();
     void createToolbar(rho_param *p);
     void removeToolbar();
-    void removeAllButtons();
     // menu proxy
     void menuClear();
     void menuAddSeparator();
@@ -209,8 +210,8 @@ public:
 
 private:
     rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
-    CAlertDialog *m_alertDialog;
-    CSyncStatusDlg *m_SyncStatusDlg;
+    CAlertDialog*   m_alertDialog;
+    CSyncStatusDlg* m_SyncStatusDlg;
 };
 
 #if !defined(_WIN32_WCE)

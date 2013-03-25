@@ -126,7 +126,6 @@ void rho_webview_set_menu_items(VALUE valMenu)
     rho_rhodesapp_setViewMenu(valMenu); 
 }
 
-
 void rho_webview_full_screen_mode(int enable)
 {
     ::PostMessage( getMainWnd(), WM_COMMAND, ID_FULLSCREEN, (LPARAM)enable );
