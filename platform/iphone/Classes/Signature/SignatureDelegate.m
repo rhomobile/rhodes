@@ -131,7 +131,7 @@ SignatureDelegate* ourSD = nil;
 } 
 
 -(void)doDone:(UIImage*)image {
-	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissModalViewControllerAnimated:YES]; 
+	[[[Rhodes sharedInstance] baseViewController] dismissModalViewControllerAnimated:YES]; 
     [self useImage:image]; 
     //[signatureViewController.view removeFromSuperview];
     [signatureViewController release];
@@ -143,7 +143,7 @@ SignatureDelegate* ourSD = nil;
 }
 
 -(void)doCancel {
-	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissModalViewControllerAnimated:YES]; 
+	[[[Rhodes sharedInstance] baseViewController] dismissModalViewControllerAnimated:YES]; 
     rho_rhodesapp_callSignatureCallback([postUrl UTF8String], "", "", 1);
     //[signatureViewController.view removeFromSuperview];
     [signatureViewController release];

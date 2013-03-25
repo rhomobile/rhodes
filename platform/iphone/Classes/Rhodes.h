@@ -97,7 +97,7 @@
 
 +(void)restart_app;
 
-- (UIWindow*)rootWindow;
+- (UIView*)rootView;
 
 - (void)playStart:(NSString*)fileName mediaType:(NSString*)type;
 - (void)playStop;

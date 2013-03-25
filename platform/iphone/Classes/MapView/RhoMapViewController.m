@@ -51,7 +51,7 @@ static RhoMapViewController *mc = nil;
     }
     RhoMapViewController* map = [[RhoMapViewController alloc] init];
     [map setParams:[value pointerValue]];
-    UIWindow *window = [[Rhodes sharedInstance] rootWindow];
+    UIView *rootView = [[Rhodes sharedInstance] rootView];
 	map.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	map.view.autoresizesSubviews = YES;
 	
@@ -59,7 +59,8 @@ static RhoMapViewController *mc = nil;
 	map.savedMainView = v;
 	[map.savedMainView retain];
     [map.savedMainView removeFromSuperview];
-	[window addSubview:map.view];
+	[rootView addSubview:map.view];
+    [rootView layoutSubviews];
     mc = map;
 }
 @end
@@ -104,11 +105,11 @@ static RhoMapViewController *mc = nil;
 - (void)close {
     [self dismissModalViewControllerAnimated:YES]; 
     
-	UIWindow *window = [[Rhodes sharedInstance] rootWindow];
+	UIView *rootView = [[Rhodes sharedInstance] rootView];
 
-
-	[window addSubview:self.savedMainView];
+	[rootView addSubview:self.savedMainView];
 	[self.view removeFromSuperview];
+    [rootView layoutSubviews];
 
 	[self.savedMainView release];
 	self.savedMainView = nil;

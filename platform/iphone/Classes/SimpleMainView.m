@@ -48,9 +48,6 @@
 #define RHO_TAG_TOOLBAR 2
 #define RHO_TAG_NAVBAR 3
 
-int rho_sys_get_screen_width();
-int rho_sys_get_screen_height();
-
 @interface RhoToolbarButtonItemAction : NSObject
 {
     NSString *url;
@@ -425,96 +422,6 @@ static BOOL makeHiddenUntilLoadContent = YES;
     assert([root retainCount] == 1);
 }
 
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    UIInterfaceOrientation current_orientation = [[UIApplication sharedApplication] statusBarOrientation];
-	if (current_orientation == fromInterfaceOrientation) {
-		return;
-	}
-	int width = rho_sys_get_screen_width();
-	int height = rho_sys_get_screen_height();
-	// send after rotate message
-	//CGRect wFrame = [webView frame];
-	int angle = 0;
-	switch (fromInterfaceOrientation) {
-		case UIInterfaceOrientationPortrait: {
-			switch (current_orientation) {
-				case UIInterfaceOrientationLandscapeLeft: {
-					angle = 90;
-				}
-					break;
-				case UIInterfaceOrientationPortraitUpsideDown: {
-					angle = 180;
-				}
-					break;
-				case UIInterfaceOrientationLandscapeRight: {
-					angle = -90;
-				}
-					break;
-			}
-		}
-		break;
-		case UIInterfaceOrientationLandscapeLeft: {
-			switch (current_orientation) {
-				case UIInterfaceOrientationPortrait: {
-					angle = -90;
-				}
-					break;
-				case UIInterfaceOrientationPortraitUpsideDown: {
-					angle = 90;
-				}
-					break;
-				case UIInterfaceOrientationLandscapeRight: {
-					angle = 180;
-				}
-					break;
-			}
-		}
-		break;
-		case UIInterfaceOrientationPortraitUpsideDown: {
-			switch (current_orientation) {
-				case UIInterfaceOrientationPortrait: {
-					angle = 180;
-				}
-					break;
-				case UIInterfaceOrientationLandscapeLeft: {
-					angle = -90;
-				}
-					break;
-				case UIInterfaceOrientationLandscapeRight: {
-					angle = 90;
-				}
-					break;
-			}
-		}
-		break;
-		case UIInterfaceOrientationLandscapeRight: {
-			switch (current_orientation) {
-				case UIInterfaceOrientationPortrait: {
-					angle = 90;
-				}
-					break;
-				case UIInterfaceOrientationLandscapeLeft: {
-					angle = 180;
-				}
-					break;
-				case UIInterfaceOrientationPortraitUpsideDown: {
-					angle = -90;
-				}
-					break;
-			}
-		}
-		break;
-	}
-	//if ((current_orientation == UIInterfaceOrientationLandscapeLeft) || (current_orientation == UIInterfaceOrientationLandscapeRight)) {
-	//	int t = width;
-	//	width = height;
-	//	height = t;
-	//}
-	//rho_rhodesapp_callScreenRotationCallback((int)wFrame.size.width, (int)wFrame.size.height, angle);
-	rho_rhodesapp_callScreenRotationCallback(width, height, angle);
-}
-
 - (id)initWithParentView:(UIView *)p frame:(CGRect)frame bar_info:(NSDictionary*)bar_info {
     return [self init:p webView:nil frame:frame bar_info:bar_info web_bkg_color:nil];
 }
@@ -704,6 +611,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		
 		webView.frame = rect;
 		[root addSubview:webView];
+        [root layoutSubviews];
 	}
 	if (nativeView != nil) {
 		[RhoNativeViewManagerOC destroyNativeView:nativeView];
@@ -722,6 +630,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		nativeViewView.clipsToBounds = NO;
 		nativeViewView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 		[self.view addSubview:nativeViewView];
+        [self.view layoutSubviews];
+
 		self.urlBasedNativeView = NO;
 	}
 }
@@ -776,6 +686,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
 						//w.delegate = self;
 						nativeViewView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 						[root addSubview:nativeViewView];
+                        [root layoutSubviews];
 						self.urlBasedNativeView = YES;
 					}
 					[nativeView navigate:navto];

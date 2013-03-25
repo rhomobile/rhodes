@@ -41,3 +41,7 @@
 #endif
 
 @end
+
+@interface RhoRootViewController : RhoViewController {}
+
+@end

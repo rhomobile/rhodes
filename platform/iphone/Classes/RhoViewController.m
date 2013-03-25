@@ -26,6 +26,7 @@
 
 #import "Rhodes.h"
 #import "RhoViewController.h"
+#include "common/RhodesApp.h"
 
 @implementation RhoViewController
 
@@ -66,5 +67,116 @@
     return UIInterfaceOrientationMaskAll;
 }
 #endif
+
+@end
+
+
+int rho_sys_get_screen_width();
+int rho_sys_get_screen_height();
+
+
+@implementation RhoRootViewController
+
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    UIInterfaceOrientation current_orientation = [[UIApplication sharedApplication] statusBarOrientation];
+	if (current_orientation == fromInterfaceOrientation) {
+		return;
+	}
+	int width = rho_sys_get_screen_width();
+	int height = rho_sys_get_screen_height();
+	// send after rotate message
+	//CGRect wFrame = [webView frame];
+	int angle = 0;
+	switch (fromInterfaceOrientation) {
+		case UIInterfaceOrientationPortrait: {
+			switch (current_orientation) {
+				case UIInterfaceOrientationLandscapeLeft: {
+					angle = 90;
+				}
+					break;
+				case UIInterfaceOrientationPortraitUpsideDown: {
+					angle = 180;
+				}
+					break;
+				case UIInterfaceOrientationLandscapeRight: {
+					angle = -90;
+				}
+					break;
+                    
+                default:
+                    angle = 0;
+			}
+		}
+            break;
+		case UIInterfaceOrientationLandscapeLeft: {
+			switch (current_orientation) {
+				case UIInterfaceOrientationPortrait: {
+					angle = -90;
+				}
+					break;
+				case UIInterfaceOrientationPortraitUpsideDown: {
+					angle = 90;
+				}
+					break;
+				case UIInterfaceOrientationLandscapeRight: {
+					angle = 180;
+				}
+					break;
+                    
+                default:
+                    angle = 0;
+			}
+		}
+            break;
+		case UIInterfaceOrientationPortraitUpsideDown: {
+			switch (current_orientation) {
+				case UIInterfaceOrientationPortrait: {
+					angle = 180;
+				}
+					break;
+				case UIInterfaceOrientationLandscapeLeft: {
+					angle = -90;
+				}
+					break;
+				case UIInterfaceOrientationLandscapeRight: {
+					angle = 90;
+				}
+					break;
+                
+                default:
+                    angle = 0;
+			}
+		}
+            break;
+		case UIInterfaceOrientationLandscapeRight: {
+			switch (current_orientation) {
+				case UIInterfaceOrientationPortrait: {
+					angle = 90;
+				}
+					break;
+				case UIInterfaceOrientationLandscapeLeft: {
+					angle = 180;
+				}
+					break;
+				case UIInterfaceOrientationPortraitUpsideDown: {
+					angle = -90;
+				}
+					break;
+                    
+                default:
+                    angle = 0;
+			}
+		}
+            break;
+	}
+	//if ((current_orientation == UIInterfaceOrientationLandscapeLeft) || (current_orientation == UIInterfaceOrientationLandscapeRight)) {
+	//	int t = width;
+	//	width = height;
+	//	height = t;
+	//}
+	//rho_rhodesapp_callScreenRotationCallback((int)wFrame.size.width, (int)wFrame.size.height, angle);
+	rho_rhodesapp_callScreenRotationCallback(width, height, angle);
+}
 
 @end

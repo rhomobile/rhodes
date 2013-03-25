@@ -55,7 +55,7 @@ static MapViewController *mc = nil;
     }
     MapViewController* map = [[MapViewController alloc] init];
     [map setParams:[value pointerValue]];
-    UIWindow *window = [[Rhodes sharedInstance] rootWindow];
+    UIView* rootView = [[Rhodes sharedInstance] rootView];
 	map.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
 	map.view.autoresizesSubviews = YES;
 	
@@ -63,9 +63,9 @@ static MapViewController *mc = nil;
 	map.savedMainView = v;
 	[map.savedMainView retain];
     [map.savedMainView removeFromSuperview];
-	[window addSubview:map.view];
-    //window.autoresizesSubviews = YES;
-	//[window layoutSubviews];
+	[rootView addSubview:map.view];
+    //rootView.autoresizesSubviews = YES;
+	//[rootView layoutSubviews];
     
     mc = map;
 }
@@ -115,10 +115,11 @@ static MapViewController *mc = nil;
 - (void)close {
     [self dismissModalViewControllerAnimated:YES]; 
     
-	UIWindow *window = [[Rhodes sharedInstance] rootWindow];
+	UIView* rootView = [[Rhodes sharedInstance] rootView];
 
 
-	[window addSubview:self.savedMainView];
+	[rootView addSubview:self.savedMainView];
+    [rootView layoutSubviews];
 	[self.view removeFromSuperview];
 
 	[self.savedMainView release];

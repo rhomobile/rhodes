@@ -428,7 +428,7 @@ BOOL isPathIsSymLink(NSFileManager *fileManager, NSString* path) {
 
 - (UIViewController *) documentInteractionControllerViewControllerForPreview: (UIDocumentInteractionController *) controller {
     
-    return [[Rhodes sharedInstance] mainView]; 
+    return [[Rhodes sharedInstance] baseViewController];
     
 }
 
