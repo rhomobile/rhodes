@@ -286,7 +286,7 @@ public:
                 int j = 0;
                 for(rho::Hashtable<rho::String, rho::String>::iterator it = m_oResult.getHashArray()[i].begin(); it != m_oResult.getHashArray()[i].end(); ++it, ++j)
                 {
-                    if (j > 1)
+                    if (j > 0)
                         resArray += ",";
 
                     resArray += CJSONEntry::quoteValue(it->first);
