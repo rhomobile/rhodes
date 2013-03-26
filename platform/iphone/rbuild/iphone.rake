@@ -491,7 +491,7 @@ namespace "config" do
     $builddir = iphonepath + "/rbuild"
     $bindir = Jake.get_absolute(iphonepath) + "/bin"
     $srcdir =  $bindir + "/RhoBundle"
-    $targetdir = $app_path + "/bin/target/iphone" 
+    $targetdir = $app_path + "/bin/target/iOS" 
     $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
     $tmpdir =  $bindir +"/tmp"
 
@@ -710,13 +710,17 @@ namespace "build" do
     end    
 
 
+    def build_extension_lib(extpath, sdk, target_dir)
+     if sdk =~ /iphonesimulator/
+        $sdkver = sdk.gsub(/iphonesimulator/,"")
+        $sdkroot = $devroot + "/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator" + $sdkver + ".sdk"
+      else
+        $sdkver = sdk.gsub(/iphoneos/,"")
+        $sdkroot = $devroot + "/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS" + $sdkver + ".sdk"
+      end
 
-
-
-
-    task :extensions => "config:iphone" do
       ENV['RHO_PLATFORM'] = 'iphone'
-      simulator = $sdk =~ /iphonesimulator/
+      simulator = sdk =~ /iphonesimulator/
       ENV["PLATFORM_DEVELOPER_BIN_DIR"] ||= $devroot + "/Platforms/" + ( simulator ? "iPhoneSimulator" : "iPhoneOS" ) +
         ".platform/Developer/usr/bin"
       ENV["SDKROOT"] = $sdkroot
@@ -725,8 +729,7 @@ namespace "build" do
 
 
       ENV["BUILD_DIR"] ||= $startdir + "/platform/iphone/build"
-      ENV["TARGET_TEMP_DIR"] ||= $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
-        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+      ENV["TARGET_TEMP_DIR"] ||= target_dir
       ENV["TEMP_FILES_DIR"] ||= ENV["TARGET_TEMP_DIR"]
 
       ENV["ARCHS"] ||= simulator ? "i386" : "armv6"
@@ -735,45 +738,186 @@ namespace "build" do
       # added by dmitrys
       ENV["XCODEBUILD"] = $xcodebuild
       ENV["CONFIGURATION"] ||= $configuration
-      ENV["SDK_NAME"] ||= $sdk
+      ENV["SDK_NAME"] ||= sdk
  
+
+      build_script = File.join(extpath, 'build')
+      
+      # modify executable attribute
+      if File.exists? build_script
+          if !File.executable? build_script
+               #puts 'change executable attribute for build script in extension : '+build_script
+               begin
+                   #File.chmod 0700, build_script
+                   #puts 'executable attribute was writed for : '+build_script
+               rescue Exception => e
+                   puts 'ERROR: can not change attribute for build script in extension ! Try to run build command with sudo: prefix.' 
+               end    
+          else
+               puts 'build script in extension already executable : '+build_script
+          end
+          #puts '$$$$$$$$$$$$$$$$$$     START'
+          currentdir = Dir.pwd()      
+          Dir.chdir extpath 
+          sh %{$SHELL ./build}
+          Dir.chdir currentdir 
+          #puts '$$$$$$$$$$$$$$$$$$     FINISH'
+          #if File.executable? build_script
+               #puts Jake.run('./build', [], extpath)
+               #exit 1 unless $? == 0
+          #else
+          #     puts 'ERROR: build script in extension is not executable !' 
+          #end
+        else
+          puts 'build script in extension not found => pure ruby extension'
+      end
+    end  
+
+
+    def build_extension_libs(sdk, target_dir)
+
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
           extpath = File.join(p, ext, 'ext')
-          build_script = File.join(extpath, 'build')
-          
-          # modify executable attribute
-          if File.exists? build_script
-              if !File.executable? build_script
-                   #puts 'change executable attribute for build script in extension : '+build_script
-                   begin
-                       #File.chmod 0700, build_script
-                       #puts 'executable attribute was writed for : '+build_script
-                   rescue Exception => e
-                       puts 'ERROR: can not change attribute for build script in extension ! Try to run build command with sudo: prefix.' 
-                   end    
+
+          prebuilt_copy = false
+
+          extyml = File.join(p, ext,"ext.yml")
+          if File.file? extyml
+            extconf = Jake.config(File.open(extyml))
+            extconf_iphone = extconf['iphone']
+            exttype = 'build'
+            exttype = extconf_iphone['exttype'] if extconf_iphone and extconf_iphone['exttype']
+            if exttype == 'prebuilt'
+              prebuiltpath = Dir.glob(File.join(extpath, '**', 'iphone')) 
+              if prebuiltpath.count > 0
+                prebuiltpath = prebuiltpath.first
               else
-                   puts 'build script in extension already executable : '+build_script
+                raise "iphone:exttype is 'prebuilt' but prebuilt path is not found #{prebuiltpath.inspect}"
               end
-              #puts '$$$$$$$$$$$$$$$$$$     START'
-              currentdir = Dir.pwd()      
-              Dir.chdir extpath 
-              sh %{$SHELL ./build}
-              Dir.chdir currentdir 
-              #puts '$$$$$$$$$$$$$$$$$$     FINISH'
-              #if File.executable? build_script
-                   #puts Jake.run('./build', [], extpath)
-                   #exit 1 unless $? == 0
-              #else
-              #     puts 'ERROR: build script in extension is not executable !' 
-              #end
-            else
-              puts 'build script in extension not found => pure ruby extension'
+
+              libes = extconf["libraries"]
+              if libes != nil
+                libname = libes.first 
+                libpath = File.join(prebuiltpath, "lib"+libname+".a")
+                if File.file? libpath
+                   targetlibpath = File.join(target_dir, "lib"+libname+".a")
+                   cp libpath, targetlibpath
+                   prebuilt_copy = true
+                else
+                  raise "iphone:exttype is 'prebuilt' but lib path is not found #{libpath.inspect}"
+                end  
+
+              end  
+            end  
+
+          end
+            
+          if ! prebuilt_copy
+            build_extension_lib(extpath, sdk, target_dir) 
+          end 
+        end
+      end
+
+    end  
+
+
+    task :extension_libs => "config:iphone" do
+      chdir 'platform/iphone'
+      rm_rf 'bin'
+      rm_rf 'build/Debug-*'
+      rm_rf 'build/Release-*'
+      
+      chdir $startdir
+
+      if $sdk =~ /iphonesimulator/
+        $sdkver = $sdk.gsub(/iphonesimulator/,"")
+      else
+        $sdkver = $sdk.gsub(/iphoneos/,"")
+      end
+
+      if $configuration.to_s.downcase == "Release"
+        $confdir = "release"
+      else
+        $confdir = "debug"
+      end
+      $app_builddir = File.join($targetdir, $confdir)
+
+      simsdk = "iphonesimulator"+$sdkver
+      devsdk = "iphoneos"+$sdkver
+
+      sim_target_dir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
+          "iphonesimulator" + "/rhorunner.build"
+      dev_target_dir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
+          "iphoneos" + "/rhorunner.build"
+
+
+      puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
+      $stdout.flush
+      $app_config["extensions"].each do |ext|
+        $app_config["extpaths"].each do |p|
+          extpath = File.join(p, ext, 'ext')
+          extyml = File.join(p, ext,"ext.yml")
+          if File.file? extyml
+            extconf = Jake.config(File.open(extyml))
+            #extconf_iphone = extconf['iphone']
+            libes = extconf["libraries"]
+            if libes != nil
+              libname = libes.first
+              prebuiltpath = Dir.glob(File.join(extpath, '**', 'iphone'))
+              if prebuiltpath != nil && prebuiltpath.count > 0
+                 prebuiltpath = prebuiltpath.first
+                 
+                 libpath = File.join(prebuiltpath, "lib"+libname+".a")
+                 libsimpath = File.join(prebuiltpath, "lib"+libname+"386.a")
+                 libdevpath = File.join(prebuiltpath, "lib"+libname+"ARM.a")
+                 libbinpath = File.join($app_builddir, "extensions", ext, "lib"+libname+".a")
+
+                 ENV["TARGET_TEMP_DIR"] = prebuiltpath
+                 ENV["ARCHS"] = "i386"
+                 ENV["SDK_NAME"] = simsdk
+
+                 build_extension_lib(extpath, simsdk, prebuiltpath) 
+                 cp libpath, libsimpath
+                 rm_f libpath
+
+                 ENV["ARCHS"] = "armv6"
+                 ENV["SDK_NAME"] = devsdk
+                 build_extension_lib(extpath, devsdk, prebuiltpath) 
+                 cp libpath, libdevpath
+                 rm_f libpath
+
+                 args = []
+                 args << "-create" 
+                 args << "-output" 
+                 args << libpath 
+                 args << libsimpath 
+                 args << libdevpath
+                 Jake.run("lipo",args)
+
+                 mkdir_p File.join($app_builddir, ext)
+                 cp libpath, libbinpath
+
+                 rm_f libsimpath
+                 rm_f libdevpath
+
+              end
+            end 
           end
         end
       end
+
+
+    end  
+
+
+    task :extensions => "config:iphone" do
+      simulator = $sdk =~ /iphonesimulator/
+      target_dir = $startdir + "/platform/iphone/build/rhorunner.build/#{$configuration}-" +
+        ( simulator ? "iphonesimulator" : "iphoneos") + "/rhorunner.build"
+      build_extension_libs($sdk, target_dir)
     end
 
     task :restore_xcode_project => ["config:iphone"] do
