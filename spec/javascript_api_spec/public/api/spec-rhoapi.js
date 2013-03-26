@@ -242,6 +242,18 @@ describe("Rho common API", function () {
     });
 
     describe('Rho.Database.SQLite3 module', function () {
+        it('passes test by Dmitry P.', function() {
+            var queryInit = 'DROP TABLE IF EXISTS todo ; CREATE TABLE todo (id INT, task VARCHAR(128))';
+
+            var db = new Rho.Database.SQLite3("path", "local");
+            db.execute(queryInit, true, []);
+            db.close();
+
+            dbInit();
+        });
+    });
+
+    describe('Rho.Database.SQLite3 module', function () {
         var db = null;
 
         beforeEach(function() {
@@ -252,7 +264,6 @@ describe("Rho common API", function () {
             db.close();
             db = null;
         });
-
 
         // function SQLite3()
         // SQLite3.prototype.close = function(/* optional function */ oResult)
@@ -309,6 +320,36 @@ describe("Rho common API", function () {
         // SQLite3.prototype.execute = function(/* const rho::String& */ sqlStmt, /* bool */ isBatch, /* const rho::Vector<rho::String>& */ args, /* optional function */ oResult)
         it('executes SQL statements', function() {
             db.execute('select * from table;');
+        });
+
+        // SQLite3.prototype.import = function(/* const rho::String& */ zipName, /* optional function */ oResult)
+        it('imports zip', function() {
+            db.import('');
+        });
+
+        // SQLite3.prototype.export = function(/* optional function */ oResult)
+        it('exports zip', function() {
+            db.export();
+        });
+
+        // SQLite3.prototype.destroyTables = function(/* const rho::Vector<rho::String>& */ include, /* const rho::Vector<rho::String>& */ exclude, /* optional function */ oResult)
+        it('destroys tables', function() {
+            db.destroyTables('', '');
+        });
+
+        // SQLite3.prototype.isTableExist = function(/* const rho::String& */ tableName, /* optional function */ oResult)
+        it('checks for table existence', function() {
+            expect(db.isTableExist('')).toBe(false);
+        });
+
+        // SQLite3.prototype.isUiWaitForDb = function(/* optional function */ oResult)
+        it('checks something strange', function() {
+            expect(db.isUiWaitForDb('')).toBe(false);
+        });
+
+        // SQLite3.prototype.execute = function(/* const rho::String& */ sqlStmt, /* bool */ isBatch, /* const rho::Vector<rho::String>& */ args, /* optional function */ oResult)
+        it('executes SQL statements', function() {
+            db.execute('DROP TABLE IF EXISTS todo', true, []);
         });
 
     });
