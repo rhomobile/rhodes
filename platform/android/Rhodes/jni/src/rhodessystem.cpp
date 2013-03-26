@@ -213,12 +213,15 @@ RHO_GLOBAL void *rho_nativethread_start()
 {
     JNIEnv *env;
     jvm()->AttachCurrentThread(&env, NULL);
+    RAWTRACE2("Starting new thread - env: 0x%.8x, functions: 0x%.8x ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^", env, env->functions);
     store_thr_jnienv(env);
     return NULL;
 }
 //--------------------------------------------------------------------------------------------------
 RHO_GLOBAL void rho_nativethread_end(void *)
 {
+    RAWTRACE1("Thread ended - env: 0x%.8x ===================================================", jnienv());
     jvm()->DetachCurrentThread();
+    store_thr_jnienv(0);
 }
 //--------------------------------------------------------------------------------------------------

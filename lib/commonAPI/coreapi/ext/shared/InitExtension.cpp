@@ -19,7 +19,7 @@ extern "C" void Init_CoreAPI_Extension()
 #if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8)
     Init_Log();
 #endif
-#if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
+#if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_ANDROID)
     Init_WebView();
 #endif
 

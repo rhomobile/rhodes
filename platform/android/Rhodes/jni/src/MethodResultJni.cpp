@@ -11,176 +11,262 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MethodResultJNI"
 
-namespace rhoelements {
+namespace rho {
+namespace apiGenerator {
 
 const char * const MethodResultJni::METHOD_RESULT_CLASS = "com.rhomobile.rhodes.api.MethodResult";
 
 jclass MethodResultJni::s_methodResultClass = 0;
 jmethodID MethodResultJni::s_midMethodResult;
-jmethodID MethodResultJni::s_midSetCallBack;
+jmethodID MethodResultJni::s_midGetJson;
 jmethodID MethodResultJni::s_midGetResultType;
 jmethodID MethodResultJni::s_midReset;
+
 jfieldID MethodResultJni::s_fidBoolean;
 jfieldID MethodResultJni::s_fidInteger;
 jfieldID MethodResultJni::s_fidDouble;
 jfieldID MethodResultJni::s_fidString;
-jfieldID MethodResultJni::s_fidStringList;
-jfieldID MethodResultJni::s_fidStringMap;
+jfieldID MethodResultJni::s_fidList;
+jfieldID MethodResultJni::s_fidMap;
+
+jfieldID MethodResultJni::s_fidStrCallback;
+jfieldID MethodResultJni::s_fidStrCallbackData;
+jfieldID MethodResultJni::s_fidRubyProcCallback;
+jfieldID MethodResultJni::s_fidResultParamName;
+jfieldID MethodResultJni::s_fidObjectClassPath;
+jfieldID MethodResultJni::s_fidRubyObjectClass;
 //----------------------------------------------------------------------------------------------------------------------
 
 //template <>
-CallbackSelector<VALUE>::CallbackSelector(MethodResultJni& result, JNIEnv* env, jstring jUrl, jstring jData) {
-    result.setRubyCallBack(env, jUrl, jData);
-}
-
-//template <>
-CallbackSelector<rho::json::CJSONEntry>::CallbackSelector(MethodResultJni& result, JNIEnv* env, jstring jUrl, jstring jData) {
-    result.setJSCallBack(env, jUrl, jData);
-}
+//CallbackSelector<VALUE>::CallbackSelector(MethodResultJni& result, JNIEnv* env, jstring jUrl, jstring jData) {
+//    result.setCallBack(env, jUrl, jData);
+//}
+//
+////template <>
+//CallbackSelector<rho::json::CJSONEntry>::CallbackSelector(MethodResultJni& result, JNIEnv* env, jstring jUrl, jstring jData) {
+//    result.setJSCallBack(env, jUrl, jData);
+//}
 //----------------------------------------------------------------------------------------------------------------------
 
-JNIEnv* MethodResultJni::jniInit()
+JNIEnv* MethodResultJni::jniInit(JNIEnv *env)
 {
-    JNIEnv *env = jnienv();
+    RAWTRACE3("%s - env: 0x%.8x, functions: 0x%.8x", __FUNCTION__, env, env->functions);
     if(env && !s_methodResultClass)
     {
-        jclass cls = rho_find_class(env, METHOD_RESULT_CLASS);
-        if(!cls)
+        String exceptionMessage;
+        s_methodResultClass = getJNIClass(RHODES_JAVA_CLASS_METHODRESULT);
+        if(!s_methodResultClass)
         {
             RAWLOG_ERROR1("Failed to find java class: %s", METHOD_RESULT_CLASS);
             s_methodResultClass = 0;
             return NULL;
         }
-        s_methodResultClass = static_cast<jclass>(env->NewGlobalRef(cls));
-        env->DeleteLocalRef(cls);
+        RAWTRACE("<init>");
 
-        s_midMethodResult = env->GetMethodID(s_methodResultClass, "<init>", "()V");
-        if(!s_midMethodResult)
+        s_midMethodResult = env->GetMethodID(s_methodResultClass, "<init>", "(Z)V");
+        //s_midMethodResult = getJNIClassMethod(env, s_methodResultClass, "<init>", "(Z)V");
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get constructor for java class %s", METHOD_RESULT_CLASS);
+            RAWLOG_ERROR2("Failed to get %s constructor: $s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
-        s_midSetCallBack = env->GetMethodID(s_methodResultClass, "setCallBack", "(Ljava/lang/String;Ljava/lang/String;)V");
-        if(!s_midSetCallBack)
+        RAWTRACE("getJson");
+        s_midGetJson = env->GetMethodID(s_methodResultClass, "getJson", "()Ljava/lang/String;");
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get method 'setCallback' for java class %s", METHOD_RESULT_CLASS);
+            RAWLOG_ERROR2("Failed to get method %s.getJson: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
+        RAWTRACE("getResultType");
         s_midGetResultType = env->GetMethodID(s_methodResultClass, "getResultType", "()I");
-        if(!s_midGetResultType)
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get method 'getResultType' for java class %s", METHOD_RESULT_CLASS);
+            RAWLOG_ERROR2("Failed to get method %s.getResultType: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
+        RAWTRACE("reset");
         s_midReset = env->GetMethodID(s_methodResultClass, "reset", "()V");
-        if(!s_midReset)
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get method 'reset' for java class %s", METHOD_RESULT_CLASS);
+            RAWLOG_ERROR2("Failed to get method %s.reset: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
+        RAWTRACE("mBooleanResult");
         s_fidBoolean = env->GetFieldID(s_methodResultClass, "mBooleanResult", "Z");
-        if(!s_fidBoolean)
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get 'mBooleanResult' field for java class %s", METHOD_RESULT_CLASS);
+            RAWLOG_ERROR2("Failed to get field %s.mBooleanResult: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
+        RAWTRACE("mIntegerResult");
         s_fidInteger = env->GetFieldID(s_methodResultClass, "mIntegerResult", "I");
-        if(!s_fidInteger)
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get 'mIntegerResult' field for java class %s", METHOD_RESULT_CLASS);
+            RAWLOG_ERROR2("Failed to get field %s.mIntegerResult: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
+        RAWTRACE("mDoubleResult");
         s_fidDouble = env->GetFieldID(s_methodResultClass, "mDoubleResult", "D");
-        if(!s_fidDouble)
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get 'mDoubleResult' field for java class %s", METHOD_RESULT_CLASS);
+            RAWLOG_ERROR2("Failed to get fiekd %s.mDoubleResult: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
+        RAWTRACE("mStrResult");
         s_fidString = env->GetFieldID(s_methodResultClass, "mStrResult", "Ljava/lang/String;");
-        if(!s_fidString)
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get 'mStrResult' field for java class %s", METHOD_RESULT_CLASS);
+            RAWLOG_ERROR2("Failed to get field %s.mStrResult: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
-        s_fidStringList = env->GetFieldID(s_methodResultClass, "mListResult", "Ljava/util/List;");
-        if(!s_fidStringList)
+        RAWTRACE("mListResult");
+        s_fidList = env->GetFieldID(s_methodResultClass, "mListResult", "Ljava/util/List;");
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get 'mListResult' field for java class %s", METHOD_RESULT_CLASS);
+            RAWLOG_ERROR2("Failed to get field %s.mListResult: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
-        s_fidStringMap = env->GetFieldID(s_methodResultClass, "mMapResult", "Ljava/util/Map;");
-        if(!s_fidStringMap)
+        RAWTRACE("mMapResult");
+        s_fidMap = env->GetFieldID(s_methodResultClass, "mMapResult", "Ljava/util/Map;");
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get 'mMapResult' field for java class %s", METHOD_RESULT_CLASS);
+            RAWLOG_ERROR2("Failed to get field %s.mMapResult: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
+        RAWTRACE("mStrCallback");
+        s_fidStrCallback = env->GetFieldID(s_methodResultClass, "mStrCallback", "Ljava/lang/String;");
+        if(env->ExceptionCheck() == JNI_TRUE)
+        {
+            RAWLOG_ERROR2("Failed to get field %s.mStrCallback: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
+            s_methodResultClass = 0;
+            return NULL;
+        }
+        RAWTRACE("mStrCallbackData");
+        s_fidStrCallbackData = env->GetFieldID(s_methodResultClass, "mStrCallbackData", "Ljava/lang/String;");
+        if(env->ExceptionCheck() == JNI_TRUE)
+        {
+            RAWLOG_ERROR2("Failed to get %s.mStrCallbackData field: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
+            s_methodResultClass = 0;
+            return NULL;
+        }
+        RAWTRACE("mResultParamName");
+        s_fidResultParamName = env->GetFieldID(s_methodResultClass, "mResultParamName", "Ljava/lang/String;");
+        if(env->ExceptionCheck() == JNI_TRUE)
+        {
+            RAWLOG_ERROR2("Failed to get %s.mResultParamName field: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
+            s_methodResultClass = 0;
+            return NULL;
+        }
+        RAWTRACE("mRubyProcCallback");
+        s_fidRubyProcCallback = env->GetFieldID(s_methodResultClass, "mRubyProcCallback", "J");
+        if(env->ExceptionCheck() == JNI_TRUE)
+        {
+            RAWLOG_ERROR2("Failed to get field  %s.mRubyProcCallback: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
+            s_methodResultClass = 0;
+            return NULL;
+        }
+        RAWTRACE("mObjectClassPath");
+        s_fidObjectClassPath = env->GetFieldID(s_methodResultClass, "mObjectClassPath", "Ljava/lang/String;");
+        if(env->ExceptionCheck() == JNI_TRUE)
+        {
+            RAWLOG_ERROR2("Failed to get field %s.mObjectClassPath: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
+            s_methodResultClass = 0;
+            return NULL;
+        }
+        RAWTRACE("mRubyObjectClass");
+        s_fidRubyObjectClass = env->GetFieldID(s_methodResultClass, "mRubyObjectClass", "J");
+        if(env->ExceptionCheck() == JNI_TRUE)
+        {
+            RAWLOG_ERROR2("Failed to get field %s.mRubyObjectClass: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
+            s_methodResultClass = 0;
+            return NULL;
+        }
+        RAWTRACE(__FUNCTION__);
 
     }
     return env;
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jboolean MethodResultJni::getBooleanResult(JNIEnv* env)
+jboolean MethodResultJni::getBooleanResult(JNIEnv* env) const
 {
+    RAWTRACE(__FUNCTION__);
     return env->GetBooleanField(m_jhResult.get(), s_fidBoolean);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jint MethodResultJni::getIntegerResult(JNIEnv* env)
+jint MethodResultJni::getIntegerResult(JNIEnv* env) const
 {
+    RAWTRACE(__FUNCTION__);
     return env->GetIntField(m_jhResult.get(), s_fidInteger);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jdouble MethodResultJni::getDoubleResult(JNIEnv* env)
+jdouble MethodResultJni::getDoubleResult(JNIEnv* env) const
 {
+    RAWTRACE(__FUNCTION__);
     return env->GetDoubleField(m_jhResult.get(), s_fidDouble);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jstring MethodResultJni::getStringResult(JNIEnv* env)
+jstring MethodResultJni::getStringResult(JNIEnv* env) const
 {
+    RAWTRACE(__FUNCTION__);
     return static_cast<jstring>(env->GetObjectField(m_jhResult.get(), s_fidString));
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jobject MethodResultJni::getListResult(JNIEnv* env)
+jobject MethodResultJni::getListResult(JNIEnv* env) const
 {
-    return env->GetObjectField(m_jhResult.get(), s_fidStringList);
+    RAWTRACE(__FUNCTION__);
+    return env->GetObjectField(m_jhResult.get(), s_fidList);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-jobject MethodResultJni::getMapResult(JNIEnv* env)
+jobject MethodResultJni::getMapResult(JNIEnv* env) const
 {
-    return env->GetObjectField(m_jhResult.get(), s_fidStringMap);
+    RAWTRACE(__FUNCTION__);
+    return env->GetObjectField(m_jhResult.get(), s_fidMap);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-int MethodResultJni::getResultType(JNIEnv* env)
+jstring MethodResultJni::getJSONResult(JNIEnv* env) const
 {
-    if(m_resType == typeNone)
+    RAWTRACE(__FUNCTION__);
+    return static_cast<jstring>(env->CallObjectMethod(m_jhResult.get(), s_midGetJson));
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+int MethodResultJni::getResultType(JNIEnv* env) const
+{
+    RAWTRACE(__FUNCTION__);
+    if(m_resType == typeNone && m_jhResult)
     {
-        return env->CallIntMethod(m_jhResult.get(), s_midGetResultType);
+        int res = env->CallIntMethod(m_jhResult.get(), s_midGetResultType);
+        RAWTRACE1("Java result type: %d", res);
+        return res;
     } else
     {
+        RAWTRACE1("Native result type: %d", m_resType);
         return m_resType;
     }
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-rho::String MethodResultJni::getErrorMessage(JNIEnv* env)
+rho::String MethodResultJni::getErrorMessage(JNIEnv* env) const
 {
-    if(m_resType == typeNone)
+    RAWTRACE(__FUNCTION__);
+    if(m_resType == typeNone && m_jhResult)
     {
         jhstring jhMessage = getStringResult(env);
         return rho_cast<std::string>(env, jhMessage.get());
@@ -191,6 +277,48 @@ rho::String MethodResultJni::getErrorMessage(JNIEnv* env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
+jstring MethodResultJni::getStrCallback(JNIEnv* env) const
+{
+    RAWTRACE(__FUNCTION__);
+    return static_cast<jstring>(env->GetObjectField(m_jhResult.get(), s_fidStrCallback));
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+jstring MethodResultJni::getStrCallbackData(JNIEnv* env) const
+{
+    RAWTRACE(__FUNCTION__);
+    return static_cast<jstring>(env->GetObjectField(m_jhResult.get(), s_fidStrCallbackData));
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+jlong MethodResultJni::getRubyProcCallback(JNIEnv* env) const
+{
+    RAWTRACE(__FUNCTION__);
+    return env->GetLongField(m_jhResult.get(), s_fidRubyProcCallback);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+jlong MethodResultJni::getRubyObjectClass(JNIEnv* env) const
+{
+    RAWTRACE(__FUNCTION__);
+    return env->GetLongField(m_jhResult.get(), s_fidRubyObjectClass);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+jstring MethodResultJni::getObjectClassPath(JNIEnv* env) const
+{
+    RAWTRACE(__FUNCTION__);
+    return static_cast<jstring>(env->GetObjectField(m_jhResult.get(), s_fidObjectClassPath));
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+jstring MethodResultJni::getResultParamName(JNIEnv* env) const
+{
+    RAWTRACE(__FUNCTION__);
+    return static_cast<jstring>(env->GetObjectField(m_jhResult.get(), s_fidResultParamName));
+}
+//----------------------------------------------------------------------------------------------------------------------
+
 void MethodResultJni::reset(JNIEnv* env)
 {
     m_resType = typeNone;
@@ -198,356 +326,192 @@ void MethodResultJni::reset(JNIEnv* env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni() : m_jhResult(0), m_hasCallbackUrl(false), m_resType(typeNone)
+MethodResultJni::MethodResultJni(bool isRuby) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_hasCallback(false), m_resType(typeNone)
 {
-    JNIEnv *env = jniInit();
-    if (!env) {
+    m_env = jniInit();
+    if (!m_env) {
         RAWLOG_ERROR("ctor - JNI initialization failed");
         return;
     }
 
-    m_jhResult = env->NewObject(s_methodResultClass, s_midMethodResult);
+    m_jhResult = m_env->NewObject(s_methodResultClass, s_midMethodResult, static_cast<jboolean>(isRuby));
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void MethodResultJni::setRubyCallBack(JNIEnv* env, jstring jUrl, jstring jData)
+MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_jhResult(jResult), m_bGlobalRef(false), m_hasCallback(false), m_resType(typeNone)
 {
-    RAWTRACE("setRubyCallBack");
-
-    env->CallVoidMethod(m_jhResult.get(), s_midSetCallBack, jUrl, jData);
-    m_hasCallbackUrl = true;
-
-    RAWTRACE("Callback has set");
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-void MethodResultJni::setJSCallBack(JNIEnv* env, jstring jUrl, jstring jData)
-{
-    RAWTRACE("setJSCallBack");
-
-    //TODO: Implement setJSCallBack()
-//    env->CallVoidMethod(m_jhResult.get(), s_midSetCallBack, jUrl, jData);
-//    m_hasCallbackUrl = true;
-//
-//    RAWTRACE("Callback has set");
-
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-void MethodResultJni::setRubyProcCallBack(unsigned long value)
-{
-    //TODO: Implement
-    RAWLOG_ERROR("Only URL is supported as call back handler");
-    setArgError("Only URL is supported as call back handler");
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-VALUE MethodResultJni::enumerateRubyObjects(VALUE klass)
-{
-    RAWTRACE("enumerateRubyObjects");
-
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_ERROR("JNI initialization failed");
-        rb_raise(rb_eRuntimeError,"JNI initialization failed");
-        return Qnil;;
+    m_env = jniInit(env);
+    if (!m_env) {
+        RAWLOG_ERROR("ctor - JNI initialization failed");
+        return;
     }
+}
+//----------------------------------------------------------------------------------------------------------------------
 
-    if(getResultType(env) == typeList)
+MethodResultJni::MethodResultJni(const MethodResultJni& result) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_hasCallback(false), m_resType(typeNone)
+{
+    JNIEnv* env = result.m_env;
+    m_jhResult = env->NewWeakGlobalRef(result.m_jhResult.get());
+    m_bGlobalRef = true;
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+MethodResultJni::~MethodResultJni()
+{
+    if(m_bGlobalRef)
     {
-        CHoldRubyValue valArray(rho_ruby_create_array());
+        m_jhResult.release();
+    }
+}
+//----------------------------------------------------------------------------------------------------------------------
 
-        HStringVector pIDs = rho_cast<HStringVector>(env, getListResult(env));
+void MethodResultJni::setCallback(JNIEnv* env, jstring jUrl, jstring jData)
+{
+    RAWTRACE(__FUNCTION__);
 
-        for(HStringVector::element_type::size_type i = 0; i < pIDs->size(); ++i)
-        {
-            VALUE valObj = rho_ruby_create_object_with_id( klass, (*pIDs)[i].c_str() );
-            rho_ruby_add_to_array(valArray, valObj);
-        }
+    env->SetObjectField(m_jhResult.get(), s_fidStrCallback, jUrl);
+    if(jData)
+    {
+        env->SetObjectField(m_jhResult.get(), s_fidStrCallbackData, jData);
+    }
+    m_hasCallback = true;
 
-        RAWTRACE("has enumerated");
-        reset(env);
-        return valArray;
+    RAWTRACE("Callback has been set ^^^");
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+void MethodResultJni::setRubyProcCallback(JNIEnv* env, jlong jRubyProc)
+{
+    RAWTRACE(__FUNCTION__);
+
+    env->SetLongField(m_jhResult.get(), s_fidRubyProcCallback, jRubyProc);
+
+    RAWTRACE("Callback has been set ^^^");
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+void MethodResultJni::setRubyObjectClass(JNIEnv* env, jlong jClass)
+{
+    RAWTRACE(__FUNCTION__);
+
+    env->SetLongField(m_jhResult.get(), s_fidRubyObjectClass, jClass);
+
+    RAWTRACE("Ruby object class has been set ^^^");
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+void MethodResultJni::setObjectClassPath(JNIEnv* env, jstring jClassPath)
+{
+    RAWTRACE(__FUNCTION__);
+
+    env->SetObjectField(m_jhResult.get(), s_fidObjectClassPath, jClassPath);
+
+    RAWTRACE("Object class path has been set ^^^");
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+void MethodResultJni::setResultParamName(JNIEnv* env, jstring jName)
+{
+    RAWTRACE(__FUNCTION__);
+
+    env->SetObjectField(m_jhResult.get(), s_fidResultParamName, jName);
+
+    RAWTRACE("Result param name has been set ^^^");
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+void MethodResultJni::disconnect(JNIEnv* env)
+{
+    if(m_bGlobalRef)
+    {
+        RAWTRACE("Disconnect from global JNI reference");
+        jobject jObj = m_jhResult.release();
+        env->DeleteGlobalRef(jObj);
     } else
     {
-        return toRuby();
+        RAWTRACE("Disconnect from local JNI reference");
+        m_jhResult.deleteRef();
     }
 
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-rho::String MethodResultJni::enumerateJSObjects()
+void MethodResultJni::callRubyBack(bool releaseCallback)
 {
-    return rho::String();
-}
-//----------------------------------------------------------------------------------------------------------------------
+    RAWTRACE(__FUNCTION__);
 
-VALUE MethodResultJni::toRuby()
-{
-    RAWTRACE("toRuby");
-
-    VALUE res = Qnil;
-
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_FATAL("JNI initialization failed");
-        rb_raise(rb_eRuntimeError,"JNI initialization failed");
-        return Qnil;
+    m_env = jniInit();
+    if (!m_env) {
+        RAWLOG_ERROR("ctor - JNI initialization failed");
+        return;
     }
 
-    int type = getResultType(env);
-    switch(type)
+    rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<MethodResultJni>(*this), "__rho_inline");
+
+    jhstring jhStrCallback = getStrCallback(m_env);
+    jhstring jhStrCallbackData = getStrCallbackData(m_env);
+    jlong jRubyProc = getRubyProcCallback(m_env);
+
+    if(!m_env->IsSameObject(jhStrCallback.get(), 0))
     {
-    case typeNone:
-        break;
-    case typeBoolean:
-        {
-            bool booleanResult = static_cast<bool>(getBooleanResult(env));
-            res = booleanResult ? Qtrue : Qfalse;
-        }
-        break;
-    case typeInteger:
+        RHODESAPP().callCallbackWithData(rho_cast<rho::String>(m_env, jhStrCallback.get()), strResBody, rho_cast<rho::String>(m_env, jhStrCallbackData.get()), true);
+    }else if (jRubyProc != 0)
     {
-        int intResult = static_cast<int>(getIntegerResult(env));
-        res = rho_ruby_create_integer(intResult);
+        VALUE oProc = static_cast<VALUE>(jRubyProc);
+
+        RHODESAPP().callCallbackProcWithData( oProc, strResBody, rho_cast<rho::String>(m_env, jhStrCallbackData.get()), true);
+
+        if(releaseCallback)
+        {
+            releaseRubyProcCallback(oProc);
+        }
     }
-    break;
-    case typeDouble:
+
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+void MethodResultJni::callJSBack()
+{
+    RAWTRACE(__FUNCTION__);
+
+//    rho::String strRes = CMethodResultConvertor().toJSON(*this);
+
+
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+void MethodResultJni::releaseRubyProcCallback(unsigned long rubyProc)
+{
+    RAWTRACE(__FUNCTION__);
+    rho_ruby_releaseValue(rubyProc);
+}
+//----------------------------------------------------------------------------------------------------------------------
+
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeCallBack
+  (JNIEnv * env, jobject jResult, jboolean jIsRuby, jboolean jReleaseCallback)
+{
+    RAWTRACE("nativeCallBack");
+
+    MethodResultJni result(env, jResult);
+    if (static_cast<bool>(jIsRuby))
     {
-        double doubleResult = static_cast<double>(getDoubleResult(env));
-        res = rho_ruby_create_double(doubleResult);
-    }
-    break;
-    case typeString:
-        {
-            jhstring jhStrResult = getStringResult(env);
-            res = rho_cast<VALUE>(env, jhStrResult);
-        }
-        break;
-    case typeList:
-        {
-            jhobject jhListResult = getListResult(env);
-            res = rho_cast<VALUE>(env, jhListResult);
-        }
-        break;
-    case typeMap:
-        {
-            jhobject jhMapResult = getMapResult(env);
-            res = rho_cast<VALUE>(env, jhMapResult);
-        }
-        break;
-    case typeArgError:
-        rho_ruby_raise_argerror(getErrorMessage(env).c_str());
-        break;
-    case typeError:
-        rb_raise(rb_eRuntimeError, getErrorMessage(env).c_str());
-        break;
-    default:
-        RAWLOG_FATAL("Unknown runtime error in MethodResultJni class");
-        rb_raise(rb_eRuntimeError,"Unknown runtime error in MethodResultJni class");
-    }
-
-    reset(env);
-    return res;
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-std::string MethodResultJni::toJson()
-{
-    std::string res = "{}";
-    JNIEnv *env = jniInit();
-    if (!env) {
-        RAWLOG_FATAL("JNI initialization failed");
-        rb_raise(rb_eRuntimeError,"JNI initialization failed");
-        return res;
-    }
-
-    int type = getResultType(env);
-    switch(type)
+        result.callRubyBack(static_cast<bool>(jReleaseCallback));
+    } else
     {
-    case typeNone:
-        break;
-    case typeBoolean:
-//        {
-//            bool booleanResult = static_cast<bool>(getBooleanResult(env));
-//            res = booleanResult ? Qtrue : Qfalse;
-//        }
-        break;
-    case typeInteger:
-//        {
-//            int intResult = static_cast<int>(getIntegerResult(env));
-//            res = rho_ruby_create_integer(intResult);
-//        }
-        break;
-    case typeDouble:
-//        {
-//            double doubleResult = static_cast<double>(getDoubleResult(env));
-//            res = rho_ruby_create_double(doubleResult);
-//        }
-        break;
-    case typeString:
-//        {
-//            jhstring jhStrResult = getStringResult(env);
-//            res = rho_cast<VALUE>(env, jhStrResult);
-//        }
-        break;
-    case typeList:
-//        {
-//            jhobject jhListResult = getListResult(env);
-//            res = rho_cast<VALUE>(env, jhListResult);
-//        }
-        break;
-    case typeMap:
-//        {
-//            jhobject jhMapResult = getMapResult(env);
-//            res = rho_cast<VALUE>(env, jhMapResult);
-//        }
-        break;
-    case typeArgError:
-    case typeError:
-        {
-            res = "{'error' : { 'message' : '";
-            res += getErrorMessage(env) + "' } }";
-        }
-        break;
-    default:
-        RAWLOG_ERROR("Unknown runtime error in MethodResultJni class");
-        res = "{'error' : { 'message' : 'Unknown runtime error in MethodResultJni class' } }";
+        result.callJSBack();
     }
-
-    reset(env);
-    return res;
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetBoolean
-  (JNIEnv * env, jclass, jboolean jRes, jstring jUrl, jstring jUrlData)
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeReleaseRubyProcCallback
+  (JNIEnv * env, jclass , jlong jProcCallback)
 {
-    RAWTRACE("nativeSetBoolean");
+    RAWTRACE("nativeReleaseRubyProcCallback");
 
-    bool res = static_cast<bool>(jRes);
-    rho::String url = rho_cast<rho::String>(env, jUrl);
-    rho::String data = rho_cast<rho::String>(env, jUrlData);
-
-    rho::apiGenerator::CMethodResult result;
-    result.setRubyCallback(url);
-    result.setCallbackParam(data);
-    result.set(res);
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetInteger
-  (JNIEnv * env, jclass, jint jRes, jstring jUrl, jstring jUrlData)
-{
-    RAWTRACE("nativeSetInteger");
-
-    int res = static_cast<int>(jRes);
-    rho::String url = rho_cast<rho::String>(env, jUrl);
-    rho::String data = rho_cast<rho::String>(env, jUrlData);
-
-    rho::apiGenerator::CMethodResult result;
-    result.setRubyCallback(url);
-    result.setCallbackParam(data);
-    result.set(res);
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetDouble
-  (JNIEnv * env, jclass, jdouble jRes, jstring jUrl, jstring jUrlData)
-{
-    RAWTRACE("nativeSetDouble");
-
-    double res = static_cast<double>(jRes);
-    rho::String url = rho_cast<rho::String>(env, jUrl);
-    rho::String data = rho_cast<rho::String>(env, jUrlData);
-
-    rho::apiGenerator::CMethodResult result;
-    result.setRubyCallback(url);
-    result.setCallbackParam(data);
-    result.set(res);
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetString
-  (JNIEnv * env, jclass, jstring jRes, jstring jUrl, jstring jUrlData)
-{
-    RAWTRACE("nativeSetString");
-
-    rho::String res = rho_cast<rho::String>(env, jRes);
-    rho::String url = rho_cast<rho::String>(env, jUrl);
-    rho::String data = rho_cast<rho::String>(env, jUrlData);
-
-    rho::apiGenerator::CMethodResult result;
-    result.setRubyCallback(url);
-    result.setCallbackParam(data);
-    result.set(res);
-
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStringList
-  (JNIEnv * env, jclass, jobject jRes, jstring jUrl, jstring jUrlData)
-{
-    RAWTRACE("nativeSetStringList");
-
-    HStringVector pRes = rho_cast<HStringVector>(env, jRes);
-    rho::String url = rho_cast<rho::String>(env, jUrl);
-    rho::String data = rho_cast<rho::String>(env, jUrlData);
-
-    rho::apiGenerator::CMethodResult result;
-    result.setRubyCallback(url);
-    result.setCallbackParam(data);
-    result.set(*pRes);
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetStringMap
-  (JNIEnv * env, jclass, jobject jRes, jstring jUrl, jstring jUrlData)
-{
-    RAWTRACE("nativeSetStringMap");
-
-    HStringMap pRes = rho_cast<HStringMap>(env, jRes);
-    rho::String url = rho_cast<rho::String>(env, jUrl);
-    rho::String data = rho_cast<rho::String>(env, jUrlData);
-
-    rho::apiGenerator::CMethodResult result;
-    result.setRubyCallback(url);
-    result.setCallbackParam(data);
-    result.set(*pRes);
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetArgError
-  (JNIEnv * env, jclass, jstring jRes, jstring jUrl, jstring jUrlData)
-{
-    RAWTRACE("nativeSetArgError");
-
-    rho::String res = rho_cast<rho::String>(env, jRes);
-    rho::String url = rho_cast<rho::String>(env, jUrl);
-    rho::String data = rho_cast<rho::String>(env, jUrlData);
-
-    rho::apiGenerator::CMethodResult result;
-    result.setRubyCallback(url);
-    result.setCallbackParam(data);
-    result.setArgError(res);
-}
-//----------------------------------------------------------------------------------------------------------------------
-
-RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeSetError
-  (JNIEnv * env, jclass, jstring jRes, jstring jUrl, jstring jUrlData)
-{
-    RAWTRACE("nativeSetError");
-
-    rho::String res = rho_cast<rho::String>(env, jRes);
-    rho::String url = rho_cast<rho::String>(env, jUrl);
-    rho::String data = rho_cast<rho::String>(env, jUrlData);
-
-    rho::apiGenerator::CMethodResult result;
-    result.setRubyCallback(url);
-    result.setCallbackParam(data);
-    result.setError(res);
+    MethodResultJni::releaseRubyProcCallback(static_cast<unsigned long>(jProcCallback));
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 
-}
+
+}}
