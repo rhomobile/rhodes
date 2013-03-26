@@ -2,7 +2,8 @@
 
 #include "rhodes/JNIRhodes.h"
 
-namespace rhoelements {
+namespace rho {
+namespace apiGenerator {
 
 class MethodResultJni;
 
@@ -26,4 +27,4 @@ public:
     virtual ~MethodExecutorJni() {}
 };
 
-}
+}}

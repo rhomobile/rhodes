@@ -1,5 +1,4 @@
-#sdk: "C:/devRoom/ruby/Ruby193/lib/ruby/gems/1.9.1/gems/rhodes-3.5.1.12"
-sdk: "/devRoom/rho/rhodes/"
+sdk: "../../.."
 sdkversion: 3.5.0
 name: jsPhoneSpec
 version: 1.0
@@ -9,7 +8,7 @@ bbver: 4.6
 applog: rholog.txt
 iphone:
   configuration: Release
-  sdk: iphonesimulator5.0
+  sdk: iphonesimulator6.1
   provisionprofile:
   codesignidentity:
   entitlements:

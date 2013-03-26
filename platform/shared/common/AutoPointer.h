@@ -213,8 +213,8 @@ public:
     }
 
 protected:
-    FUNCTYPE m_pFunc;
     OBJTYPE   m_obj;
+    FUNCTYPE m_pFunc;
 };
 
 template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE>
@@ -239,9 +239,9 @@ public:
     }
 
 protected:
+    OBJTYPE   m_obj;
     FUNCTYPE m_pFunc;
     PARAMTYPE1 m_param1;
-    OBJTYPE   m_obj;
 };
 
 template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2>
@@ -266,10 +266,10 @@ public:
     }
 
 protected:
+    OBJTYPE   m_obj;
     FUNCTYPE m_pFunc;
     PARAMTYPE1 m_param1;
     PARAMTYPE2 m_param2;
-    OBJTYPE   m_obj;
 };
 
 template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2, typename PARAMTYPE3>
@@ -294,11 +294,11 @@ public:
     }
 
 protected:
+    OBJTYPE   m_obj;
     FUNCTYPE m_pFunc;
     PARAMTYPE1 m_param1;
     PARAMTYPE2 m_param2;
     PARAMTYPE3 m_param3;
-    OBJTYPE   m_obj;
 };
 
 template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2, typename PARAMTYPE3, typename PARAMTYPE4>
@@ -323,12 +323,12 @@ public:
     }
 
 protected:
+    OBJTYPE   m_obj;
     FUNCTYPE m_pFunc;
     PARAMTYPE1 m_param1;
     PARAMTYPE2 m_param2;
     PARAMTYPE3 m_param3;
     PARAMTYPE4 m_param4;
-    OBJTYPE   m_obj;
 };
 
 template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2, typename PARAMTYPE3, typename PARAMTYPE4, typename PARAMTYPE5>
@@ -353,13 +353,13 @@ public:
     }
 
 protected:
+    OBJTYPE   m_obj;
     FUNCTYPE m_pFunc;
     PARAMTYPE1 m_param1;
     PARAMTYPE2 m_param2;
     PARAMTYPE3 m_param3;
     PARAMTYPE4 m_param4;
     PARAMTYPE5 m_param5;
-    OBJTYPE   m_obj;
 };
 
 template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2, typename PARAMTYPE3, typename PARAMTYPE4, typename PARAMTYPE5, typename PARAMTYPE6>

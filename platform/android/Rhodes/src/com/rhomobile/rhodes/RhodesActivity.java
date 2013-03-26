@@ -128,6 +128,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         
         mSplashScreen = new SplashScreen(this, mMainView, this);
         mMainView = mSplashScreen;
+        
+        mAppMenu = new RhoMenu();
 
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
@@ -308,20 +310,27 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		
 		return super.onKeyDown(keyCode, event);
 	}
-	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		super.onPrepareOptionsMenu(menu);
-		mAppMenu = new RhoMenu(menu);
-		return true;
-	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		if (mAppMenu == null)
-			return false;
-		return mAppMenu.onMenuItemSelected(item);
-	}
+    public RhoMenu getMenu() {
+        return mAppMenu;
+    }
+    
+    public void setMenu(RhoMenu menu) {
+        mAppMenu = menu;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        mAppMenu.enumerateMenu(menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mAppMenu.onMenuItemSelected(item);
+    }
 
     @Override
     public void onSplashScreenGone(SplashScreen splashScreen) {
