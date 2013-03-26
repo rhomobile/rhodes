@@ -7,10 +7,12 @@ public class MethodExecutor {
     private static final String TAG = MethodExecutor.class.getSimpleName();
     
     public static void run(Runnable task) {
+        Logger.T(TAG, "Run in current thread");
         task.run();
     }
 
     public static void runWithSeparateThread(Runnable task) {
+        Logger.T(TAG, "Run in new thread");
         //try {
             Thread thr = new Thread(task);
             thr.start();
@@ -21,6 +23,7 @@ public class MethodExecutor {
     }
 
     public static void runWithUiThread(Runnable task) {
+        Logger.T(TAG, "Run in UI thread");
         PerformOnUiThread.exec(task);
     }
 }

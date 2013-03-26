@@ -2,6 +2,9 @@ entry: Init_CoreAPI_Extension
 javaentry: com.coreapi.CoreAPI
 libraries: ["CoreAPI"]
 
+android:
+  source_list: /ext/platform/android/ext_java.files
+
 project_paths:
   wp8: ext/platform/wp8/CoreAPI.vcxproj
   wm: ext/platform/wm/CoreAPI.vcproj

@@ -45,7 +45,7 @@ class SystemImplIphone: public CSystemImplBase {
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
-    virtual void setKeyboardState(CMethodResult& oResult);
+    virtual void getKeyboardState(CMethodResult& oResult);
     virtual void setKeyboardState( const rho::String&, CMethodResult& oResult);
     virtual void getScreenAutoRotate(CMethodResult& oResult);
     virtual void setScreenAutoRotate( bool value, CMethodResult& oResult);

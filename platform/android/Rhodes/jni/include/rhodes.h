@@ -71,6 +71,13 @@ public:
         return ret;
     }
 
+    void deleteRef()
+    {
+        if (m_object)
+            jnienv()->DeleteLocalRef(m_object);
+        m_object = 0;
+    }
+
     operator bool () const { return m_object != 0; }
     bool operator!() const { return !m_object; }
 

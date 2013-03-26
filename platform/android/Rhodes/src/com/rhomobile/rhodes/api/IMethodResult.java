@@ -8,9 +8,19 @@ public interface IMethodResult {
     void set(int res);
     void set(double res);
     void set(String res);
-    void set(List<String> res);
-    void set(Map<String, String> res);
+    void set(List<Object> res);
+    void set(Map<String, Object> res);
     
+    void collect(Object value);
+    void collect(String key, Object value);
+    void set();
+    
+    void setSelf(IMethodResult globalResult);
+    void collectSelf(IMethodResult globalResult);
+    void collectSelf(String key, IMethodResult globalResult);
+    void mergeSelf(IMethodResult result);
+
     void setError(String mesage);
     void setArgError(String message);
+
 }

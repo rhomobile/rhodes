@@ -91,14 +91,23 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 		}
 	}
 
-	private void loadLogText(){
-        String strLog = RhoLogConf.getLogText();
-        findCurLine(strLog);
-        
-        logContent.setText(strLog);
-	}
-	
-	void findCurLine(String strLog){
+    private void loadLogText(){
+        String strLog;
+        try {
+            strLog = RhoLogConf.getLogText();
+            findCurLine(strLog);
+        } catch(Throwable err) {
+            strLog = err.getMessage();
+            if(strLog == null) {
+                strLog = err.toString();
+            }
+        }
+        if (strLog != null) {
+            logContent.setText(strLog);
+        }
+    }
+
+    void findCurLine(String strLog){
         int nPos = RhoLogConf.getLogTextPos();
         curLine = 0;
         

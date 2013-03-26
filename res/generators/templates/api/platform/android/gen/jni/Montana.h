@@ -5,16 +5,16 @@
 #include "rhodes/JNIRhodes.h"
 #include "MethodExecutorJni.h"
 
-namespace rhoelements {
+namespace rho { namespace apiGenerator {
   class MethodResultJni;
-}
+}}
 
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
 end %>
 
-using rhoelements::MethodResultJni;
-using rhoelements::MethodExecutorJni;
+using rho::apiGenerator::MethodResultJni;
+using rho::apiGenerator::MethodExecutorJni;
 
 class C<%= $cur_module.name %>Base : public MethodExecutorJni
 {
@@ -124,13 +124,17 @@ end %>
                     static_cast<jobject>(result));
 
         run(env, jhTask.get(), result, <%=
-if method.run_in_thread == ModuleMethod::RUN_IN_THREAD_NONE
+if method.run_in_thread == ModuleMethod::RUN_IN_THREAD_NONE or method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UNDEFINED
     "false, false"
 elsif method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI
-    "true, false"
+    "false, true"
 else
     "true, true"
-end%>);
+end %>);
+        if(env->ExceptionCheck() == JNI_TRUE)
+        {
+            LOG(ERROR) + rho::common::clearException(env);
+        }
     }
 <%
 end %>

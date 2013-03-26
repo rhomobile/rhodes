@@ -22,3 +22,11 @@ ext/shared/generated/cpp/SQLite3_js_wrap.cpp
 ext/shared/generated/cpp/SQLite3Base.cpp
 ext/shared/SQLite3Impl.cpp
 ext/shared/SQLite3ImplRuby.c
+ext/shared/generated/webview_api_init.cpp
+ext/shared/generated/webview_js_api.cpp
+ext/shared/generated/webview_ruby_api.c
+ext/platform/android/generated/jni/webview_js_wrap.cpp
+ext/platform/android/generated/jni/webview_ruby_wrap.cpp
+ext/platform/android/generated/jni/WebView.cpp
+ext/platform/android/jni/WebViewInit.cpp
+

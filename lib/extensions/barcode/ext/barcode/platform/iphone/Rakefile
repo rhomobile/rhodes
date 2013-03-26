@@ -1,5 +1,7 @@
 require 'fileutils'
-require '../../../../../../build/jake.rb'
+#require '../../../../../../build/jake.rb'
+require ENV['RHO_ROOT']+'/lib/build/jake.rb'
+
 
 USE_STLPORT = true
 
@@ -38,6 +40,7 @@ namespace "build" do
   end
 
   task :all => :config do
+
     iphone_path = ENV['RHO_ROOT'] + '/lib/extensions/barcode/ext/barcode/platform/iphone'
 
 
