@@ -8,7 +8,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MethodExecutorJNI"
 
-namespace rhoelements {
+namespace rho {
+namespace apiGenerator {
 
 const char * const MethodExecutorJni::METHOD_EXECUTOR_CLASS = "com.rhomobile.rhodes.api.MethodExecutor";
 
@@ -39,23 +40,23 @@ JNIEnv* MethodExecutorJni::jniInit(JNIEnv* env)
             return 0;
 
         s_midRun = env->GetStaticMethodID(s_MethodExecutorClass, "run", "(Ljava/lang/Runnable;)V");
-        if(!s_midRun)
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get method 'run' for java class %s", METHOD_EXECUTOR_CLASS);
+            RAWLOG_ERROR2("Failed to get method %s.run: %s", METHOD_EXECUTOR_CLASS, clearException(env).c_str());
             s_MethodExecutorClass = 0;
             return NULL;
         }
         s_midRunWithSeparateThread = env->GetStaticMethodID(s_MethodExecutorClass, "runWithSeparateThread", "(Ljava/lang/Runnable;)V");
-        if(!s_midRunWithSeparateThread)
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get method 'runWithSeparateThread' for java class %s", METHOD_EXECUTOR_CLASS);
+            RAWLOG_ERROR2("Failed to get method %s.runWithSeparateThread: %s", METHOD_EXECUTOR_CLASS, clearException(env).c_str());
             s_MethodExecutorClass = 0;
             return NULL;
         }
         s_midRunWithUiThread = env->GetStaticMethodID(s_MethodExecutorClass, "runWithUiThread", "(Ljava/lang/Runnable;)V");
-        if(!s_midRunWithUiThread)
+        if(env->ExceptionCheck() == JNI_TRUE)
         {
-            RAWLOG_ERROR1("Failed to get method 'runWithUiThread' for java class %s", METHOD_EXECUTOR_CLASS);
+            RAWLOG_ERROR2("Failed to get method %s.runWithUiThread: %s", METHOD_EXECUTOR_CLASS, clearException(env).c_str());
             s_MethodExecutorClass = 0;
             return NULL;
         }
@@ -83,17 +84,23 @@ void MethodExecutorJni::run(JNIEnv* env, jobject jTask, MethodResultJni& result,
 {
     if(uiThread)
     {
+        RAWTRACE("Run in UI thread -----> ");
         env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithUiThread, jTask);
     }
-    else if(result.hasCallBackUrl() || thread)
+    else if(result.hasCallback() || thread)
     {
+        RAWTRACE("Run in thread -----> ");
         env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithSeparateThread, jTask);
+        result.disconnect(env);
     }
     else
     {
+        RAWTRACE("Run in current thread -----> ");
         env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRun, jTask);
+        result.disconnect(env);
     }
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-}
+}}
+

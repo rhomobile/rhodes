@@ -119,7 +119,7 @@ public:
     }
 };
 
-
+String clearException(JNIEnv* env);
 
 } // namespace common
 } // namespace rho

@@ -28,7 +28,8 @@ task :build => [:config, OBJDIR] do
     $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
 
     args = []
-    args << "-I#{$curdir}/../../shared"
+    args << "-I#{$curdir}/generated/jni"
+    args << "-I#{$curdir}/../../shared" 
     args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
     args << "-I#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details"
     args << "-I#{$rootdir}/platform/shared/ruby/include"
