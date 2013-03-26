@@ -43,7 +43,20 @@ public class RhoApiPropertyBag implements
 
     @Override
     public void getAllProperties(IMethodResult result) {
-        result.set(getPropertiesMap());
+        if (mAllowedNames == null) {
+            for (String key: getPropertiesMap().keySet()) {
+                MethodResult propResult = new MethodResult(false);
+                getProperty(key, propResult);
+                result.collect(propResult);
+            }
+        } else {
+            for (String key: mAllowedNames) {
+                MethodResult propResult = new MethodResult(false);
+                getProperty(key, propResult);
+                propResult.collectSelf(key, result);
+            }
+        }
+        result.set();
     }
 
     @Override
@@ -57,16 +70,17 @@ public class RhoApiPropertyBag implements
 
     @Override
     public void getProperties(List<String> names, IMethodResult result) {
-        Map<String, String> subset = new HashMap<String, String>();
         for(String name: names) {
             if (isAllowed(name)) {
-                subset.put(name, getPropertiesMap().get(name));
+                MethodResult propResult = new MethodResult(false);
+                getProperty(name, propResult);
+                propResult.collectSelf(name, result);
             } else {
                 result.setArgError("Unknown property: '" + name + "'");
                 return;
             }
         }
-        result.set(subset);
+        result.set();
     }
 
     @Override
@@ -82,7 +96,9 @@ public class RhoApiPropertyBag implements
     public void setProperties(Map<String, String> props, IMethodResult result) {
         Set<String> names = props.keySet();
         if (isAllAllowed(names)) {
-            getPropertiesMap().putAll(props);
+            for(String name: names) {
+                setProperty(name, props.get(name), result);
+            }
         } else {
             names.removeAll(getPropertiesMap().keySet());
             StringBuffer strNames = new StringBuffer();
@@ -104,7 +120,7 @@ public class RhoApiPropertyBag implements
                 if (prop.getValue().isPrimitive()) {
                     Logger.W(TAG, "Cannot clear value for property of primitive type (" + prop.getValue().getSimpleName() + "): '" + prop.getKey() + "', object id: " + apiObject.getId());
                 } else {
-                    MethodResult propResult = new MethodResult();
+                    MethodResult propResult = new MethodResult(false);
                     Method method = clazz.getMethod(makeAccessorName("set", prop.getKey()), prop.getValue(), IMethodResult.class);
                     method.invoke(apiObject, null, propResult);
                     if (propResult.getResultType() == MethodResult.ResultType.typeArgError.ordinal()) {
@@ -136,13 +152,15 @@ public class RhoApiPropertyBag implements
     }
 
     public void getAllProperties(Map<String, Class<?> > customProps, RhoApiObject apiObject, IMethodResult result) {
-        Map<String, String> props = new HashMap<String, String>();
-        props.putAll(getPropertiesMap());
+        
+        MethodResult propsResult = new MethodResult(false);
+        getAllProperties(propsResult);
+        propsResult.mergeSelf(result);
 
         for(Map.Entry<String, Class<?> > prop: customProps.entrySet()) {
             Class<? extends RhoApiObject> clazz = apiObject.getClass().asSubclass(RhoApiObject.class);
             try {
-                MethodResult propResult = new MethodResult();
+                MethodResult propResult = new MethodResult(false);
                 Method method = clazz.getMethod(makeAccessorName("get", prop.getKey()), IMethodResult.class);
                 method.invoke(apiObject, propResult);
                 if (propResult.getResultType() == MethodResult.ResultType.typeArgError.ordinal()) {
@@ -152,7 +170,7 @@ public class RhoApiPropertyBag implements
                     result.setError(propResult.getString());
                     return;
                 } else {
-                    props.put(prop.getKey(), propResult.asString());
+                    propResult.collectSelf(prop.getKey(), result);
                 }
             } catch (NoSuchMethodException e) {
                 Logger.E(TAG, e);
@@ -173,7 +191,7 @@ public class RhoApiPropertyBag implements
             }
         }
 
-        result.set(props);
+        result.set();
     }
 
     public void getProperty(String name, Map<String, Class<?> > customProps, RhoApiObject apiObject, IMethodResult result) {
@@ -181,7 +199,7 @@ public class RhoApiPropertyBag implements
             if (customProps.keySet().contains(name)) {
                 Class<? extends RhoApiObject> clazz = apiObject.getClass().asSubclass(RhoApiObject.class);
                 try {
-                    MethodResult propResult = new MethodResult();
+                    MethodResult propResult = new MethodResult(false);
                     Method method = clazz.getMethod(makeAccessorName("get", name), IMethodResult.class);
                     method.invoke(apiObject, propResult);
                     if (propResult.getResultType() == MethodResult.ResultType.typeArgError.ordinal()) {
@@ -191,7 +209,7 @@ public class RhoApiPropertyBag implements
                         result.setError(propResult.getString());
                         return;
                     } else {
-                        result.set(propResult.asString());
+                        propResult.setSelf(result);
                     }
                 } catch (NoSuchMethodException e) {
                     Logger.E(TAG, e);
@@ -211,7 +229,7 @@ public class RhoApiPropertyBag implements
                     return;
                 }
             } else {
-                result.set(getPropertiesMap().get(name));
+                getProperty(name, result);
             }
         } else {
             result.setArgError("Unknown property: '" + name + "'");
@@ -219,9 +237,8 @@ public class RhoApiPropertyBag implements
     }
 
     public void getProperties(List<String> names, Map<String, Class<?> > customProps, RhoApiObject apiObject, IMethodResult result) {
-        Map<String, String> subset = new HashMap<String, String>();
         for(String name: names) {
-            MethodResult propResult = new MethodResult();
+            MethodResult propResult = new MethodResult(false);
             getProperty(name, customProps, apiObject, propResult);
             if (propResult.getResultType() == MethodResult.ResultType.typeArgError.ordinal()) {
                 result.setArgError(propResult.getString());
@@ -230,10 +247,10 @@ public class RhoApiPropertyBag implements
                 result.setError(propResult.getString());
                 return;
             } else {
-                subset.put(name, propResult.asString());
+                propResult.collectSelf(name, result);
             }
         }
-        result.set(subset);
+        result.set();
     }
 
     public void setProperty(String name, String value, Map<String, Class<?> > customProps, RhoApiObject apiObject, IMethodResult result) {
@@ -286,7 +303,7 @@ public class RhoApiPropertyBag implements
                     return;
                 }
             } else {
-                result.set(getPropertiesMap().get(name));
+                getProperty(name, result);
             }
         } else {
             result.setArgError("Unknown property: '" + name + "'");
@@ -295,7 +312,7 @@ public class RhoApiPropertyBag implements
 
     public void setProperties(Map<String, String> props, Map<String, Class<?> > customProps, RhoApiObject apiObject, IMethodResult result) {
         for(Map.Entry<String, String> prop: props.entrySet()) {
-            MethodResult propResult = new MethodResult();
+            MethodResult propResult = new MethodResult(false);
             setProperty(prop.getKey(), prop.getValue(), customProps, apiObject, propResult);
             if (propResult.getResultType() == MethodResult.ResultType.typeArgError.ordinal()) {
                 result.setArgError(propResult.getString());

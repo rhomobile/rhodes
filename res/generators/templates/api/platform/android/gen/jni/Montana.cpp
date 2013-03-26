@@ -8,8 +8,6 @@ end %>
 
 IMPLEMENT_LOGCLASS(C<%= $cur_module.name %>Base, "<%= $cur_module.name %>JNI");
 
-using rhoelements::MethodExecutorJni;
-
 //<%= $cur_module.name %>FactorySingleton staff
 const char* const C<%= $cur_module.name %>Base::FACTORY_SINGLETON_CLASS = "<%= api_generator_java_makePackageName($cur_module) %>.<%= $cur_module.name %>FactorySingleton";
 jclass C<%= $cur_module.name %>Base::s_clsFactorySingleton = 0;

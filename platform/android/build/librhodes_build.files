@@ -31,5 +31,3 @@ platform/android/Rhodes/jni/src/rhocryptimpl.cpp
 platform/android/Rhodes/jni/src/extmanager.cpp
 platform/android/Rhodes/jni/src/MethodExecutorJni.cpp
 platform/android/Rhodes/jni/src/MethodResultJni.cpp
-platform/shared/api_generator/MethodResult.cpp
-platform/shared/api_generator/js_helpers.cpp

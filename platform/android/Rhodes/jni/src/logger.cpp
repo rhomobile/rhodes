@@ -34,35 +34,56 @@
 #define DEFAULT_LOGCATEGORY "Logger"
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_E
-  (JNIEnv *env, jclass, jstring tag, jstring msg)
+  (JNIEnv *env, jclass, jstring jTag, jstring jMsg)
 {
-    RAWLOGC_ERROR(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
+    //RAWTRACE("Error");
+    RAWLOGC_ERROR(rho_cast<std::string>(env, jTag).c_str(), rho_cast<std::string>(env, jMsg).c_str());
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_W
-  (JNIEnv *env, jclass, jstring tag, jstring msg)
+  (JNIEnv *env, jclass, jstring jTag, jstring jMsg)
 {
-    RAWLOGC_WARNING(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
+    //RAWTRACE("Warning");
+    const char *tag = env->GetStringUTFChars(jTag, 0);
+    const char *msg = env->GetStringUTFChars(jMsg, 0);
+    RAWLOGC_WARNING(tag, msg);
+    env->ReleaseStringUTFChars(jTag, tag);
+    env->ReleaseStringUTFChars(jMsg, msg);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_I
-  (JNIEnv *env, jclass, jstring tag, jstring msg)
+  (JNIEnv *env, jclass, jstring jTag, jstring jMsg)
 {
-    RAWLOGC_INFO(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
+    //RAWTRACE("Info");
+    const char *tag = env->GetStringUTFChars(jTag, 0);
+    const char *msg = env->GetStringUTFChars(jMsg, 0);
+    RAWLOGC_INFO(tag, msg);
+    env->ReleaseStringUTFChars(jTag, tag);
+    env->ReleaseStringUTFChars(jMsg, msg);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_D
-  (JNIEnv *env, jclass, jstring tag, jstring msg)
+  (JNIEnv *env, jclass, jstring jTag, jstring jMsg)
 {
 #ifdef _DEBUG
-    RAWLOGC_INFO(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
+    //RAWTRACE("Debug");
+    const char *tag = env->GetStringUTFChars(jTag, 0);
+    const char *msg = env->GetStringUTFChars(jMsg, 0);
+    RAWLOGC_INFO(tag, msg);
+    env->ReleaseStringUTFChars(jTag, tag);
+    env->ReleaseStringUTFChars(jMsg, msg);
 #endif
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_T
-  (JNIEnv *env, jclass, jstring tag, jstring msg)
+  (JNIEnv *env, jclass, jstring jTag, jstring jMsg)
 {
-    RAWTRACEC(rho_cast<std::string>(env, tag).c_str(), rho_cast<std::string>(env, msg).c_str());
+    //RAWTRACE("Trace");
+    const char *tag = env->GetStringUTFChars(jTag, 0);
+    const char *msg = env->GetStringUTFChars(jMsg, 0);
+    RAWTRACEC(tag, msg);
+    env->ReleaseStringUTFChars(jTag, tag);
+    env->ReleaseStringUTFChars(jMsg, msg);
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_Logger_profStart

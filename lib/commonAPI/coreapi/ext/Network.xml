@@ -78,7 +78,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <RETURN>
+                <RETURN type="HASH">
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -105,7 +105,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <RETURN>
+                <RETURN type="HASH">
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -137,7 +137,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <RETURN>
+                <RETURN type="HASH">
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>
@@ -195,7 +195,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <RETURN>
+                <RETURN type="HASH">
                     <PARAMS>
                         <PARAM name="body" type="STRING">
                             <DESC>The body of the HTTP response.</DESC>

@@ -1,5 +1,4 @@
 #include "SystemImplBase.h"
-#include "MethodResultJni.h"
 
 RHO_GLOBAL int rho_sysimpl_get_property(const char* szPropName, rho::apiGenerator::CMethodResult& result);
 RHO_GLOBAL int rho_sys_set_sleeping(int sleeping);
