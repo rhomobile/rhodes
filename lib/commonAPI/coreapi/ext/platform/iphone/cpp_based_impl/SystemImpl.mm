@@ -62,7 +62,8 @@ namespace rho {
     
     void SystemImplIphone::getApplicationIconBadge(CMethodResult& oResult)
     {
-        oResult.setError("supported only set IconBadge !");
+        //oResult.setError("supported only set IconBadge !");
+        //oResult.set(0);
     }
     
     void SystemImplIphone::setApplicationIconBadge( int value, CMethodResult& oResult)
@@ -79,12 +80,13 @@ namespace rho {
     
     void SystemImplIphone::getHttpProxyURI(rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        //result.setError("not implemented at iOS platform");
+        result.set("");
     }
     
     void SystemImplIphone::setHttpProxyURI(const rho::String&, rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        //result.setError("not implemented at iOS platform");
     }
     
     
@@ -146,33 +148,37 @@ namespace rho {
     
     void SystemImplIphone::getOemInfo(rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        result.set("");
+        //result.setError("not implemented at iOS platform");
     }
     
     void SystemImplIphone::getUuid(rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        result.set("");
+        //result.setError("not implemented at iOS platform");
     }
     
     
     void SystemImplIphone::getLockWindowSize(rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        result.set(false);
+        //result.setError("not implemented at iOS platform");
     }
     
     void SystemImplIphone::setLockWindowSize(bool, rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        //result.setError("not implemented at iOS platform");
     }
     
     void SystemImplIphone::getKeyboardState(rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        result.set("");
+        //result.setError("not implemented at iOS platform");
     }
     
     void SystemImplIphone::setKeyboardState(const rho::String&, rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        //result.setError("not implemented at iOS platform");
     }
     
     void SystemImplIphone::getScreenAutoRotate(rho::apiGenerator::CMethodResult& result)
@@ -199,7 +205,8 @@ namespace rho {
     
     void SystemImplIphone::getScreenSleeping(rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        result.set(false);
+        //result.setError("not implemented at iOS platform");
     }
     //----------------------------------------------------------------------------------------------------------------------
     
@@ -236,25 +243,25 @@ namespace rho {
     
     void SystemImplIphone::setWindowFrame(int, int, int, int, rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        //result.setError("not implemented at iOS platform");
     }
     //----------------------------------------------------------------------------------------------------------------------
     
     void SystemImplIphone::setWindowPosition(int, int, rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        //result.setError("not implemented at iOS platform");
     }
     //----------------------------------------------------------------------------------------------------------------------
     
     void SystemImplIphone::setWindowSize(int, int, rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("not implemented at iOS platform");
+        //result.setError("not implemented at iOS platform");
     }
     //----------------------------------------------------------------------------------------------------------------------
     
     void SystemImplIphone::bringToFront(rho::apiGenerator::CMethodResult& result)
     {
-        result.setError("unsupported at iOS platform");
+        //result.setError("unsupported at iOS platform");
     }
     //----------------------------------------------------------------------------------------------------------------------
     
@@ -273,6 +280,7 @@ namespace rho {
     
     void SystemImplIphone::getPhoneNumber(CMethodResult& result)
     {
+        result.set("");
         //result.setError("unsupported at iOS platform");
     }
     //----------------------------------------------------------------------------------------------------------------------
@@ -295,12 +303,14 @@ namespace rho {
     
     void SystemImplIphone::getDeviceOwnerName(rho::apiGenerator::CMethodResult& result)
     {
+        result.set("");
         //result.setError("unsupported at iOS platform");
     }
     //----------------------------------------------------------------------------------------------------------------------
     
     void SystemImplIphone::getDeviceOwnerEmail(rho::apiGenerator::CMethodResult& result)
     {
+        result.set("");
         //result.setError("unsupported at iOS platform");
     }
     //----------------------------------------------------------------------------------------------------------------------
