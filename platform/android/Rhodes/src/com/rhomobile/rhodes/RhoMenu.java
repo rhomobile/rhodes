@@ -26,77 +26,179 @@
 
 package com.rhomobile.rhodes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.rhomobile.rhodes.mainview.MainView;
 
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class RhoMenu {
-	
-	private static final String TAG = "Menu";
-	
-	private static class Item
-	{
-		public String type;
-		public String url;
-		
-		public Item(String t, String u) {
-			type = t;
-			url = u;
-		}
-	};
-	
-	private Map<MenuItem, Item> items;
+    
+    private static enum ItemType {
+        ItemTypeBack("Back") {
+            @Override public boolean action() {
+                WebView.navigateBack();
+                return true;
+            }
+        },
+        ItemTypeHome("Home") {
+            @Override public boolean action() {
+                WebView.navigateHome();
+                return true;
+            }
+        },
+        ItemTypeRefresh("Refresh") {
+            @Override public boolean action() {
+                WebView.refresh();
+                return true;
+            }
+        },
+        ItemTypeSync("Sync") {
+            @Override public boolean action() {
+                RhodesService.getInstance().doSyncAllSources(true);
+                return true;
+            }
+        },
+        ItemTypeOptions("Options") {
+            @Override public boolean action() {
+                WebView.navigateOptions();
+                return true;
+            }
+        },
+        ItemTypeExit("Exit") {
+            @Override public boolean action() {
+                RhodesService.exit();
+                return true;
+            }
+        },
+        ItemTypeClose("Close") {
+            @Override public boolean action() {
+                RhodesService.exit();
+                return true;
+            }
+        },
+        ItemTypeFullScreen("FullScreen") {
+            @Override public boolean action() {
+                RhodesActivity.setFullScreenMode(!RhodesActivity.getFullScreenMode());
+                return true;
+            }
+        },
+        ItemTypeLog("Log") {
+            @Override public boolean action() {
+                RhodesService.showLogView();
+                return true;
+            }
+        },
+        ItemTypeUrl("URL");
+        
+        private String mStrType;
+        
+        private ItemType(String type) {
+            mStrType = type;
+        }
+        @Override
+        public String toString() {
+            return mStrType;
+        }
+        
+        public boolean action() {
+            return false;
+        }
+    }
 
-	private native long allocMenu();
-	private native void deallocMenu(long menu);
-	
-	private native int getMenuSize(long menu);
-	private native String getMenuItemLabel(long menu, int index);
-	private native String getMenuItemType(long menu, int index);
-	private native String getMenuItemUrl(long menu, int index);
-	
-	public RhoMenu(Menu menu) {
-		menu.clear();
-		items = new HashMap<MenuItem, Item>();
-		
-		long m = allocMenu();
-		for (int i = 0, lim = getMenuSize(m); i < lim; ++i) {
-			String type = getMenuItemType(m, i);
-			String url = getMenuItemUrl(m, i);
-			String label = getMenuItemLabel(m, i);
-			if (type.equalsIgnoreCase("unknown"))
-				continue;
-			
-			MenuItem item = menu.add(label);
-			items.put(item, new Item(type, url));
-		}
-		deallocMenu(m);
-	}
-	
-	public boolean onMenuItemSelected(MenuItem item) {
-		Object obj = items.get(item);
-		if (obj == null || !(obj instanceof Item)) {
-			Logger.E(TAG, "Unknown MenuItem");
-			return false;
-		}
-		
-		Item ri = (Item)obj;
-		
-		String type = ri.type;
-		if (type.equalsIgnoreCase("log"))
-			RhodesService.showLogView();
-		else if (type.equalsIgnoreCase("logOptions"))
-			RhodesService.showLogOptions();
-		else {
-			String url = ri.type;
-			if (url.equalsIgnoreCase("url"))
-				url = ri.url;
-			RhodesService.loadUrl(url);
-		}
-		
-		return true;
-	}
-	
+    private static final String TAG = "Menu";
+
+    private static class Item
+    {
+        public String title;
+        public String url;
+        public ItemType type;
+
+        public Item(String title, String url, ItemType type) {
+            this.title = title;
+            this.url = url;
+            this.type = type;
+        }
+    };
+    
+    private static ItemType getItemType(String str) {
+        if (str.equalsIgnoreCase(ItemType.ItemTypeBack.toString())) {
+            return ItemType.ItemTypeBack;
+        } else if (str.equalsIgnoreCase(ItemType.ItemTypeHome.toString())) {
+            return ItemType.ItemTypeHome;
+        } else if (str.equalsIgnoreCase(ItemType.ItemTypeRefresh.toString())) {
+            return ItemType.ItemTypeRefresh;
+        } else if (str.equalsIgnoreCase(ItemType.ItemTypeSync.toString())) {
+            return ItemType.ItemTypeSync;
+        } else if (str.equalsIgnoreCase(ItemType.ItemTypeOptions.toString())) {
+            return ItemType.ItemTypeOptions;
+        } else if (str.equalsIgnoreCase(ItemType.ItemTypeExit.toString())) {
+            return ItemType.ItemTypeExit;
+        } else if (str.equalsIgnoreCase(ItemType.ItemTypeClose.toString())) {
+            return ItemType.ItemTypeClose;
+        } else if (str.equalsIgnoreCase(ItemType.ItemTypeLog.toString())) {
+            return ItemType.ItemTypeLog;
+        }
+        return ItemType.ItemTypeUrl;
+    }
+
+    private boolean mNewMenu = false;
+    private List<Item> mItems = null;
+    private Map<MenuItem, Item> mItemMap = new HashMap<MenuItem, Item>();
+
+    public synchronized List<Object> getMenuDescription() {
+        List<Object> menuDescr = new ArrayList<Object>();
+        if (mItems != null) {
+            for (Item item: mItems) {
+                Map<String, Object> itemDescr = new HashMap<String, Object>();
+                itemDescr.put(item.title, item.url);
+                menuDescr.add(itemDescr);
+            }
+        }
+        return menuDescr;
+    }
+
+    public synchronized void setMenu(List<Map<String, String>> items) {
+        mNewMenu = true;
+        mItems = new ArrayList<Item>();
+
+        for(Map<String, String> itemDescription: items) {
+            Map.Entry<String, String> entry = (Map.Entry<String, String>)itemDescription.entrySet().toArray()[0];
+            if (entry.getKey().equalsIgnoreCase("separator"))
+                continue;
+
+            Item item = new Item(entry.getKey(), entry.getValue(), getItemType(entry.getKey()));
+            mItems.add(item);
+        }
+    }
+
+    public synchronized void enumerateMenu(Menu menu) {
+        if (mNewMenu) {
+            menu.clear();
+            mItemMap.clear();
+            for(Item item: mItems) {
+                MenuItem menuItem = menu.add(item.title);
+                mItemMap.put(menuItem, item);
+            }
+        }
+    }
+
+    public synchronized boolean onMenuItemSelected(MenuItem menuItem) {
+        Item item = mItemMap.get(menuItem);
+        if (item == null) {
+            Logger.E(TAG, "Unknown MenuItem");
+            return false;
+        }
+
+        ItemType type = item.type;
+        if (!type.action()){
+            MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+            mainView.navigate(item.url, mainView.activeTab());
+        }
+        return true;
+    }
 }

@@ -163,25 +163,29 @@ public class WebView {
             }
         }
     };
-	
-	public static void navigate(String url, int index) {
-		try {
-			PerformOnUiThread.exec(new NavigateTask(url, index));
-		}
-		catch (Exception e) {
+
+    public static void navigate(String url, int index) {
+        try {
+            PerformOnUiThread.exec(new NavigateTask(RhodesService.getInstance().normalizeUrl(url), index));
+        }
+        catch (Exception e) {
             Logger.E(TAG, e);
-		}
-	}
-	
-	public static void navigateBack() {
-		try {
-			PerformOnUiThread.exec(new NavigateBackTask(activeTab()));
-		}
-		catch (Exception e) {
+        }
+    }
+
+    public static void navigateBack(int index) {
+        try {
+            PerformOnUiThread.exec(new NavigateBackTask(index));
+        }
+        catch (Exception e) {
             Logger.E(TAG, e);
-		}
-	}
-	
+        }
+    }
+
+    public static void navigateBack() {
+        navigateBack(activeTab());
+    }
+
     public static void navigateForward() {
         try {
             PerformOnUiThread.exec(new NavigateForwardTask(activeTab()));
@@ -190,15 +194,37 @@ public class WebView {
             Logger.E(TAG, e);
         }
     }
-    
-	public static void refresh(int index) {
-		try {
-			PerformOnUiThread.exec(new RefreshTask(index));
-		}
-		catch (Exception e) {
+
+    public static void navigateHome(int index) {
+        String url = RhoConf.getString("start_path");
+        navigate(url, index);
+    }
+
+    public static void navigateHome() {
+        navigateHome(activeTab());
+    }
+
+    public static void navigateOptions(int index) {
+        String url = RhoConf.getString("options_path");
+        navigate(url, index);
+    }
+
+    public static void navigateOptions() {
+        navigateOptions(activeTab());
+    }
+
+    public static void refresh(int index) {
+        try {
+            PerformOnUiThread.exec(new RefreshTask(index));
+        }
+        catch (Exception e) {
             Logger.E(TAG, e);
-		}
-	}
+        }
+    }
+
+    public static void refresh() {
+        refresh(activeTab());
+    }
 
     public static int activeTab() {
         try {
@@ -278,8 +304,6 @@ public class WebView {
         catch (Exception e) {
             Logger.E(TAG, e);
         }
-
         return "";
-    	
     }
 }

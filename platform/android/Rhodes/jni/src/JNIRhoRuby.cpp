@@ -145,19 +145,19 @@ VALUE rho_cast_helper<VALUE, jobject>::convertJavaCollectionToRubyArray(jobject 
 extern "C"
 {
 
-static void ruby_array_each(const char* val, void* param)
+static void ruby_array_each(VALUE val, void* param)
 {
     rho_cast_helper<jobject, VALUE>* pThis = reinterpret_cast<rho_cast_helper<jobject, VALUE>* >(param);
-    jhstring jhVal = rho_cast<jstring>(pThis->m_env, val);
+    jhobject jhVal = rho_cast<jobject>(pThis->m_env, val);
 
     pThis->m_env->CallBooleanMethod(pThis->m_jObject, RhoJniConvertor::midArrayListAdd, jhVal.get());
 }
 
-static void ruby_hash_each(const char* key, const char* val, void* param)
+static void ruby_hash_each(const char* key, VALUE val, void* param)
 {
     rho_cast_helper<jobject, VALUE>* pThis = reinterpret_cast<rho_cast_helper<jobject, VALUE>* >(param);
     jhstring jhKey = rho_cast<jstring>(pThis->m_env, key);
-    jhstring jhVal = rho_cast<jstring>(pThis->m_env, val);
+    jhobject jhVal = rho_cast<jobject>(pThis->m_env, val);
 
     jhobject jhPrev = pThis->m_env->CallObjectMethod(pThis->m_jObject, RhoJniConvertor::midHashMapPut, jhKey.get(), jhVal.get());
 }
@@ -168,7 +168,7 @@ jobject rho_cast_helper<jobject, VALUE>::convertRubyArrayToJavaCollection(VALUE 
     m_jObject = m_env->NewObject(clsArrayList, midArrayList);
     if (!m_jObject) return m_jObject;
 
-    rho_ruby_enum_strary(array, ruby_array_each, this);
+    rho_ruby_enum_ary(array, ruby_array_each, this);
 
     return m_jObject;
 }
@@ -178,7 +178,7 @@ jobject rho_cast_helper<jobject, VALUE>::convertRubyHashToJavaMap(VALUE hash)
     m_jObject = m_env->NewObject(clsHashMap, midHashMap);
     if (!m_jObject) return m_jObject;
 
-    rho_ruby_enum_strhash(hash, ruby_hash_each, this);
+    rho_ruby_enum_hash(hash, ruby_hash_each, this);
 
     return m_jObject;
 }
@@ -196,15 +196,28 @@ jobject rho_cast_helper<jobject, VALUE>::operator()(JNIEnv *env, VALUE value)
 
     switch(TYPE(value))
     {
+    case T_SYMBOL:
+        value = rb_funcall(value, rb_intern("to_s"), 0);
     case T_STRING:
+        RAWTRACE("Convert to string");
         return env->NewStringUTF(RSTRING_PTR(value));
     case T_ARRAY:
+        RAWTRACE("Convert to collection");
         return convertRubyArrayToJavaCollection(value);
     case T_HASH:
+        RAWTRACE("Convert to map");
         return convertRubyHashToJavaMap(value);
+//    case T_TRUE:
+//        return static_cast<jboolean>(true);
+//    case T_FALSE:
+//        return static_cast<jboolean>(false);
+//    case T_FIXNUM:
+//        return static_cast<jlong>(rho_ruby_get_int(value));
+//    case T_FLOAT:
+//        return static_cast<jdouble>(rho_ruby_get_double(value));
     }
 
-    RAWLOG_ERROR("rho_cast<jobject, VALUE>: wrong type of VALUE");
+    RAWLOG_ERROR1("rho_cast<jobject, VALUE>: wrong type of VALUE: %d", TYPE(value));
     return 0;
 }
 
@@ -289,7 +302,7 @@ jobjectArray rho_cast_helper<jobjectArray, VALUE>::operator()(JNIEnv *env, VALUE
         return jArray;
     }
 
-    RAWLOG_ERROR("rho_cast<jobjectArray, VALUE>: wrong type of VALUE");
+    RAWLOG_ERROR1("rho_cast<jobjectArray, VALUE>: wrong type of VALUE: %d", TYPE(value));
     return 0;
 }
 
@@ -308,8 +321,11 @@ jboolean rho_cast_helper<jboolean, VALUE>::operator()(JNIEnv *env, VALUE value)
     {
         return static_cast<jboolean>(false);
     }
-
-    RAWLOG_ERROR("rho_cast<jboolean, VALUE>: wrong type of VALUE");
+    if(TYPE(value) == T_FIXNUM)
+    {
+        return static_cast<jboolean>(rho_ruby_get_int(value) != 0);
+    }
+    RAWLOG_ERROR1("rho_cast<jboolean, VALUE>: wrong type of VALUE: %d", TYPE(value));
     return 0;
 }
 
@@ -325,7 +341,7 @@ jint rho_cast_helper<jint, VALUE>::operator()(JNIEnv *env, VALUE value)
         return static_cast<jint>(NUM2LONG(value));
     }
 
-    RAWLOG_ERROR("rho_cast<jint, VALUE>: wrong type of VALUE");
+    RAWLOG_ERROR1("rho_cast<jint, VALUE>: wrong type of VALUE: %d", TYPE(value));
     return 0;
 }
 
@@ -341,7 +357,23 @@ jdouble rho_cast_helper<jdouble, VALUE>::operator()(JNIEnv *env, VALUE value)
         return static_cast<jdouble>(RFLOAT_VALUE(value));
     }
 
-    RAWLOG_ERROR("rho_cast<jint, VALUE>: wrong type of VALUE");
+    RAWLOG_ERROR1("rho_cast<jdouble, VALUE>: wrong type of VALUE: %d", TYPE(value));
     return 0;
 }
+
+VALUE rho_cast_helper<VALUE, jboolean>::operator ()(JNIEnv *env, jboolean jValue)
+{
+    return rho_ruby_create_boolean(static_cast<bool>(jValue));
+}
+
+VALUE rho_cast_helper<VALUE, jint>::operator ()(JNIEnv *env, jint jValue)
+{
+    return rho_ruby_create_integer(static_cast<int>(jValue));
+}
+
+VALUE rho_cast_helper<VALUE, jdouble>::operator ()(JNIEnv *env, jdouble jValue)
+{
+    return rho_ruby_create_double(static_cast<double>(jValue));
+}
+
 }

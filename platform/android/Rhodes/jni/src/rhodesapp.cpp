@@ -83,6 +83,7 @@ static jmethodID g_loadClass = NULL;
 
 jclass rho_find_class(JNIEnv *env, const char *c)
 {
+    RAWTRACE2("%s - %s", __FUNCTION__, c);
     jstring className = env->NewStringUTF(c);
     jclass cls = (jclass)env->CallObjectMethod(g_classLoader, g_loadClass, className);
     if(env->ExceptionCheck() == JNI_TRUE) {
