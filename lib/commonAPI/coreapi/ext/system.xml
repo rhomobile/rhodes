@@ -4,24 +4,19 @@
     <MODULE name="System" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
         <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
-
         <ALIASES>
             <ALIAS new="System" deprecated="true"/>
         </ALIASES>
-
         <TEMPLATES>
             <!-- <DEFAULT_INSTANCE/> -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
-
         <PROPERTIES usePropertyBag="PropertyBagViaAccessors" limitPropertyBag="true" access="STATIC">
             <DESC>object supports this properties bla bla bla :</DESC>
-
             <ALIASES>
                 <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
                 <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
             </ALIASES>
-
             <PROPERTY name="platform" type="STRING" readOnly="true">
                 <DESC>Platform where application is running.</DESC>
                 <VALUES>         
@@ -43,7 +38,6 @@
 
                 </VALUES>
             </PROPERTY>
-            
             <PROPERTY name="hasCamera" type="BOOLEAN" readOnly="true">
                 <DESC>Is camera available on the device.</DESC>
             </PROPERTY>
@@ -59,7 +53,6 @@
             <PROPERTY name="realScreenHeight" type="INTEGER" readOnly="true">
                 <DESC>Screen height in real pixels.</DESC>
             </PROPERTY>
-
             <PROPERTY name="screenOrientation" type="STRING" readOnly="true">
                 <DESC>Current screen orientation.</DESC>
                 <VALUES>
@@ -72,22 +65,22 @@
 
                 </VALUES>
             </PROPERTY>
-
             <PROPERTY name="ppiX" type="INTEGER" readOnly="true">
                 <DESC>Horizontal PPI (Pixels Per Inch).</DESC>
             </PROPERTY>
             <PROPERTY name="ppiY" type="INTEGER" readOnly="true">
                 <DESC>Vertical PPI (Pixels Per Inch).</DESC>
             </PROPERTY>
-
             <PROPERTY name="phoneNumber" type="STRING" readOnly="true">
                 <DESC>Device phone number.</DESC>
             </PROPERTY>
             <PROPERTY name="deviceOwnerEmail" type="STRING" readOnly="true">
-                <DESC>Primary email of phone owner (works only on Android).</DESC>
+                <DESC>Primary email of phone owner.</DESC>
+                <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceOwnerName" type="STRING" readOnly="true">
-                <DESC>Name(account name) of phone owner (works only on Android).</DESC>
+                <DESC>Name(account name) of phone owner.</DESC>
+              <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="devicePushId" type="STRING" readOnly="true">
                 <DESC>Push notifications device ID which may be used to receive push messages.</DESC>
@@ -113,7 +106,6 @@
             <PROPERTY name="isRhoSimulator" type="BOOLEAN" readOnly="true">
                 <DESC>Is application is running on RhoSimulator.</DESC>
             </PROPERTY>
-
             <PROPERTY name="hasCalendar" type="BOOLEAN" readOnly="true">
                 <DESC>Is calendar support is available.</DESC>
             </PROPERTY>
@@ -127,15 +119,17 @@
                 <DESC>The Unique Unit IDentifier for the terminal.</DESC>
             </PROPERTY>
             <PROPERTY name="applicationIconBadge" type="INTEGER">
-                <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
+                <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.</DESC>
+              <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
                 <DESC>Client HTTP proxy.</DESC>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
-                <DESC>Lock/unlock the window size change by the user. Implemented only for Windows desktop.</DESC>
+                <DESC>Lock/unlock the window size change by the user.</DESC>
+                <PLATFORM>Win32</PLATFORM>
             </PROPERTY>
-            <PROPERTY name="keyboardState" type="STRING">
+           <PROPERTY name="keyboardState" type="STRING">
                 <DESC>For Windows Mobile and Windows CE the keyboard can be manually shown or hidden as required.  All other platforms only support 'Automatic'.</DESC>
                 <VALUES>
                     <VALUE constName="KEYBOARD_SHOWN" value ="shown">
@@ -182,9 +176,7 @@
             <PROPERTY name="hasSqlite" type="BOOLEAN" readOnly="true" deprecated="true">
                 <DESC>Does sqlite used on this platform.</DESC>
             </PROPERTY>
-
         </PROPERTIES>
-    
         <METHODS  access="STATIC">
             <ALIASES>
                 <ALIAS new="get_property" existing="getProperty" deprecated="true">
@@ -198,7 +190,6 @@
                 <ALIAS new="set_do_not_bakup_attribute" existing="setDoNotBackupAttribute" deprecated="true"/>
                 
             </ALIASES>
-
             <METHOD name="applicationInstall">
                 <DESC>Install an application.</DESC>
                 <PARAMS>
@@ -207,7 +198,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="isApplicationInstalled">
                 <DESC>Is application installed on the device?</DESC>
                 <PARAMS>
@@ -219,7 +209,6 @@
                 <RETURN type="BOOLEAN"/>
 
             </METHOD>
-
             <METHOD name="applicationUninstall">
                 <DESC>Uninstall the application.</DESC>
                 <PLATFORM>WM, Win32, Android, WP8</PLATFORM>
@@ -229,12 +218,10 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="getStartParams">
                 <DESC>Return the command line parameters.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
-
             <METHOD name="openUrl">
                 <DESC>Open the application associated with the URL.</DESC>
                 <PARAMS>
@@ -243,7 +230,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="unzipFile">
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
@@ -256,7 +242,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="zipFile">
                 <DESC>Zip one file.</DESC>
                 <PARAMS>
@@ -272,7 +257,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="zipFiles">
                 <DESC>Zip list of files.</DESC>
                 <PARAMS>
@@ -291,7 +275,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="setRegistrySetting">
                 <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
                 <PARAMS>
@@ -427,10 +410,10 @@
                 <RETURN type="BOOLEAN">
                     <DESC>Whether or not the registry key was successfully deleted.</DESC>
                 </RETURN>
-			</METHOD>			
-			
+			</METHOD>	
             <METHOD name="setWindowFrame">
-                <DESC>Change application window position and size. Implemented only for Windows desktop.</DESC>
+                <DESC>Change application window position and size</DESC>
+                <PLATFORM>Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="x" type="INTEGER">
                         <DESC>Left corner of window.</DESC>
@@ -447,9 +430,9 @@
 
                 </PARAMS>
             </METHOD>
-
             <METHOD name="setWindowPosition">
-                <DESC>Change application window position. Implemented only for Windows desktop.</DESC>
+                <DESC>Change application window position</DESC>
+                <PLATFORM>Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="x" type="INTEGER">
                         <DESC>Left corner of window.</DESC>
@@ -459,9 +442,9 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="setWindowSize">
-                <DESC>Change application window size. Implemented only for Windows desktop.</DESC>
+                <DESC>Change application window size</DESC>
+                <PLATFORM>Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="width" type="INTEGER">
                         <DESC>Width of the window.</DESC>
@@ -471,11 +454,9 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="bringToFront">
                 <DESC>Bring application window to the top of the screen.</DESC>
             </METHOD>
-
             <METHOD name="replaceCurrentBundle">
                 <DESC>Replace application bundle.</DESC>
                 <PARAMS>
@@ -487,7 +468,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="deleteFolder">
                 <DESC>Delete folder.</DESC>
                 <PARAMS>
@@ -496,7 +476,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="setDoNotBackupAttribute">
                 <DESC>Set do not backup attribute for file.</DESC>
                 <PLATFORM>iOS</PLATFORM>
@@ -509,7 +488,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="isBlobAttr" deprecated="true">
                 <DESC>Use Database.isBlobAttr: is model attribute is blob.</DESC>
                 <PARAMS>
@@ -519,7 +497,6 @@
                 </PARAMS>
                 <RETURN type="BOOLEAN"/>
             </METHOD>
-
             <METHOD name="updateBlobAttribs" deprecated="true">
                 <DESC>Use Database.updateBlobAttribs: update model blob attributes list.</DESC>
                 <PARAMS>
@@ -527,12 +504,10 @@
                     <PARAM name="sourceID" type="INTEGER"/>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="get_locale" deprecated="true">
                 <DESC>Use System.locale property: Current device locale.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
-
             <METHOD name="set_locale" deprecated="true" generateAPI="false" access="STATIC">
                 <DESC>Use Application.setLocale method: set application specific locale</DESC>
                 <PARAMS>
@@ -540,7 +515,6 @@
                     <PARAM name="country_code" type="STRING"/>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="setPushNotification" deprecated="true">
                 <DESC>Use Push.setPushNotification: Register push callback, the method to call upon receiving a push message.</DESC>
                 <PARAMS>
@@ -560,7 +534,6 @@
                 </PARAMS>
 
             </METHOD>
-
             <METHOD name="setScreenRotationNotification" deprecated="true">
                 <DESC>Use ScreenOrientation.setNotification: Notify (call a callback method) when the screen rotates.</DESC>
                 <PARAMS>
@@ -573,18 +546,15 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="exit" deprecated="true">
                 <DESC>Use Application.quit: exit application.</DESC>
             </METHOD>
-
             <METHOD name="set_sleeping" deprecated="true">
                 <DESC>Use System.screenSleeping property: enable/disable phone sleeping.</DESC>
                 <PARAMS>
                     <PARAM name="enable" type="BOOLEAN"/>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="startTimer" deprecated="true">
                 <DESC>Use Timer.start: start timer.</DESC>
                 <PARAMS>
@@ -600,7 +570,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="stopTimer" deprecated="true">
                 <DESC>Use Timer.stop: stop timer.</DESC>
                 <PARAMS>
@@ -609,7 +578,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="setNetworkStatusNotify" deprecated="true">
                 <DESC>Use Network.setStatusNotify: set network notification callback.</DESC>
                 <PARAMS>
@@ -621,29 +589,25 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="clearNetworkStatusNotify" deprecated="true">
                 <DESC>Use Network.clearStatusNotify: Clear network status callback.</DESC>
             </METHOD>
-
             <METHOD name="set_http_proxy_url" deprecated="true">
                 <DESC>Use System.httpProxyURI property: To use client with the HTTP proxy</DESC>
                 <PARAMS>
                     <PARAM name="proxyURI" type="STRING"/>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="unset_http_proxy" deprecated="true">
                 <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
             </METHOD>
-
             <METHOD name="set_application_icon_badge" deprecated="true">
                 <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
-                <PARAMS>
+               <PLATFORM>iOS</PLATFORM>
+		<PARAMS>
                     <PARAM name="badgeNumber" type="INTEGER"/>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="runApplication" deprecated="true">
                 <DESC>Use System.Process.runApplication: Run an application.</DESC>
                 <PARAMS>
@@ -663,10 +627,8 @@
                 </PARAMS>
 
             </METHOD>
-
         </METHODS>
-        
-        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+ 	<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
