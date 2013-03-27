@@ -83,6 +83,7 @@
 		FA0E908D16B7FE000094CCDE /* CJSConverter.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA0E908C16B7FE000094CCDE /* CJSConverter.mm */; };
 		FA5F58DF12ADDA6D00C7613A /* app_build_configs.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */; };
 		FA5F58E012ADDA6D00C7613A /* app_build_configs.h in Headers */ = {isa = PBXBuildFile; fileRef = FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */; };
+		FA6B222617026477009D1398 /* MethodResultConvertor.h in Headers */ = {isa = PBXBuildFile; fileRef = FA6B222517026477009D1398 /* MethodResultConvertor.h */; };
 		FAC6EE5B143B1FC800B8E352 /* BaseMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */; };
 		FAC6EE5C143B1FC800B8E352 /* BaseMapEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE50143B1FC800B8E352 /* BaseMapEngine.h */; };
 		FAC6EE5D143B1FC800B8E352 /* ESRIMapEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE51143B1FC800B8E352 /* ESRIMapEngine.cpp */; };
@@ -193,6 +194,7 @@
 		FA0E908C16B7FE000094CCDE /* CJSConverter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CJSConverter.mm; sourceTree = "<group>"; };
 		FA5F58DD12ADDA6D00C7613A /* app_build_configs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = app_build_configs.c; path = ../../shared/common/app_build_configs.c; sourceTree = SOURCE_ROOT; };
 		FA5F58DE12ADDA6D00C7613A /* app_build_configs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app_build_configs.h; path = ../../shared/common/app_build_configs.h; sourceTree = SOURCE_ROOT; };
+		FA6B222517026477009D1398 /* MethodResultConvertor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MethodResultConvertor.h; path = ../../shared/api_generator/MethodResultConvertor.h; sourceTree = "<group>"; };
 		FAC6EE4F143B1FC800B8E352 /* BaseMapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BaseMapEngine.cpp; path = ../../shared/common/map/BaseMapEngine.cpp; sourceTree = "<group>"; };
 		FAC6EE50143B1FC800B8E352 /* BaseMapEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseMapEngine.h; path = ../../shared/common/map/BaseMapEngine.h; sourceTree = "<group>"; };
 		FAC6EE51143B1FC800B8E352 /* ESRIMapEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ESRIMapEngine.cpp; path = ../../shared/common/map/ESRIMapEngine.cpp; sourceTree = "<group>"; };
@@ -442,6 +444,7 @@
 		FAEF1DB716AED9B700E22B05 /* api_generator */ = {
 			isa = PBXGroup;
 			children = (
+				FA6B222517026477009D1398 /* MethodResultConvertor.h */,
 				FAEF1DB916AED9D200E22B05 /* BaseClasses.h */,
 				FAEF1DBA16AED9D200E22B05 /* GeneratorQueue.h */,
 				FAEF1DBB16AED9D200E22B05 /* iphone */,
@@ -537,6 +540,7 @@
 				FAEF1DD316AED9D200E22B05 /* RubyCallbackHelper.h in Headers */,
 				FAEF1DD616AED9D200E22B05 /* js_helpers.h in Headers */,
 				FAEF1DD816AED9D200E22B05 /* MethodResult.h in Headers */,
+				FA6B222617026477009D1398 /* MethodResultConvertor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,9 +8,12 @@
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
+#include "common/RhoDefs.h"
+#if !defined( OS_WINDOWS_DESKTOP )
 #include "rcmcapi.h"
 #include "Registry.h"
 #include "Keyboard.h"
+#endif
 
 #if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
 #include <cfgmgrapi.h>
@@ -43,8 +46,10 @@ int rho_sys_get_screen_width();
 int rho_sys_get_screen_height();
 const char* rho_sys_win32_getWebviewFramework();
 
+#if !defined( OS_WINDOWS_DESKTOP )
 typedef DWORD (*RCM_GETUNIQUEUNITIDEX)(LPUNITID_EX);
 RCM_GETUNIQUEUNITIDEX lpfnRCM_GetUniqueUnitIdEx = NULL; ///< pointer to the RCM get uuid function
+#endif
 
 #if defined(OS_WINDOWS_DESKTOP)
 void rho_sys_set_window_frame(int x0, int y0, int width, int height);
@@ -62,9 +67,16 @@ using namespace common;
 class CSystemImpl: public CSystemImplBase
 {
 private:
+#if !defined( OS_WINDOWS_DESKTOP )
 	CSIP* m_pSip;
+#endif
 public:
-    CSystemImpl(): CSystemImplBase(){m_pSip = NULL;}
+    CSystemImpl(): CSystemImplBase()
+	{
+#if !defined( OS_WINDOWS_DESKTOP )
+	m_pSip = NULL;
+#endif
+	}
 
     virtual void getScreenWidth(CMethodResult& oResult);
     virtual void getScreenHeight(CMethodResult& oResult);
@@ -82,8 +94,10 @@ public:
     virtual void getHasCamera(CMethodResult& oResult);
     virtual void getOemInfo(CMethodResult& oResult);
     virtual void getUuid(CMethodResult& oResult);
+#if !defined( OS_WINDOWS_DESKTOP )
 			bool populateUUID(UNITID_EX* uuid);
 			void bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize);
+#endif
     virtual void getHttpProxyURI(CMethodResult& oResult);
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
@@ -114,9 +128,11 @@ public:
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
 	virtual long OnSIPState(bool bSIPState, const CRhoExtData& oExtData)
 	{
+#if !defined( OS_WINDOWS_DESKTOP )
 		if (!m_pSip)
 			m_pSip = new CSIP();
 		m_pSip->ToggleSIPReliably(bSIPState);
+#endif
 		return S_OK;
 	}
 };
@@ -329,12 +345,16 @@ void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
 
 void CSystemImpl::getOemInfo(CMethodResult& oResult)
 {
+#if !defined( OS_WINDOWS_DESKTOP )
 	WCHAR info [64];
 	if (SystemParametersInfo (SPI_GETOEMINFO, 64, info, 0))
 		oResult.set(info);
 	else
 		oResult.set(L"unknown");
+#endif
 }
+
+#if !defined( OS_WINDOWS_DESKTOP )
 
 void CSystemImpl::getUuid(CMethodResult& oResult)
 {
@@ -441,6 +461,7 @@ bool CSystemImpl::populateUUID(UNITID_EX* uuid)
 	}
 	if (hLib)
 		FreeLibrary (hLib);
+
 	return bRetVal;
 }
 
@@ -456,6 +477,7 @@ void CSystemImpl::bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize)
 		_tcscat(lpHexStr, szByteStr);
 	}
 }
+#endif
 
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
 
@@ -468,6 +490,7 @@ void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult)
 
 void CSystemImpl::getKeyboardState(CMethodResult& oResult)
 {
+#if !defined( OS_WINDOWS_DESKTOP )
 	if (!m_pSip)
 		m_pSip = new CSIP();
 	if (m_pSip->getCurrentStatus() == SIP_CONTROL_AUTOMATIC)
@@ -483,10 +506,12 @@ void CSystemImpl::getKeyboardState(CMethodResult& oResult)
 		else
 			oResult.set("hidden");
 	}
+#endif
 }
 
 void CSystemImpl::setKeyboardState( const rho::String & value, CMethodResult& oResult)
 {
+#if !defined( OS_WINDOWS_DESKTOP )
 	if (!m_pSip)
 		m_pSip = new CSIP();
 	
@@ -521,6 +546,7 @@ void CSystemImpl::setKeyboardState( const rho::String & value, CMethodResult& oR
 		m_pSip->ToggleSIPReliably(bUserRequestToShow);
 	}
 	oResult.set(bSuccess);
+#endif
 }
 
 void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult)
@@ -758,6 +784,8 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
 
 void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
+#if !defined( OS_WINDOWS_DESKTOP )
+
     bool bRetVal = false;
 	bool bPersistent = false;
 	rho::String szHive = "";
@@ -789,10 +817,12 @@ void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::Str
 		rho::common::convertToStringW(szValue).c_str(), bPersistent);
 
 	oResult.set(bRetVal);
+#endif
 }
 
 void CSystemImpl::getRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
+#if !defined( OS_WINDOWS_DESKTOP )
 	rho::String szHive = "";
 	rho::String szSubkey = "";
 	rho::String szSetting = "";
@@ -810,10 +840,12 @@ void CSystemImpl::getRegistrySetting( const rho::Hashtable<rho::String, rho::Str
 	}
 
 	GetRegistrySetting(szHive, szSubkey, szSetting, oResult);
+#endif
 }
 
 void CSystemImpl::deleteRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
+#if !defined( OS_WINDOWS_DESKTOP )
 	bool bRetVal = false;
 	bool bPersistent = false;
 	rho::String szHive = "";
@@ -838,6 +870,7 @@ void CSystemImpl::deleteRegistrySetting( const rho::Hashtable<rho::String, rho::
 			rho::common::convertToStringW(szSubkey).c_str(),
 			rho::common::convertToStringW(szSetting).c_str(), bPersistent, false);
 	oResult.set(bRetVal);
+#endif
 }
 
 void CSystemImpl::setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult)
