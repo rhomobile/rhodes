@@ -5,7 +5,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONStringer;
+
+import com.rhomobile.rhodes.util.JSONGenerator;
+
 public class MethodResult implements IMethodResult {
+    
+    private class JSONObjectResultGenerator extends JSONGenerator {
+        private String mObjectClassPath;
+        public JSONObjectResultGenerator(Object obj, String objectClassPath) {
+            super(obj);
+            mObjectClassPath = objectClassPath;
+        }
+        @Override
+        protected void parse(Object obj) throws JSONException {
+            if(String.class.isInstance(obj)) {
+                getStringer().object();
+                getStringer().key("__rhoID").value(obj);
+                getStringer().key("__rhoClass").value(mObjectClassPath);
+                getStringer().endObject();
+            } else {
+                super.parse(obj);
+            }
+        }
+    }
+    
     public enum ResultType { typeNone, typeBoolean, typeInteger, typeDouble, typeString, typeList, typeMap, typeError, typeArgError }
     
     private boolean mIsRuby;
@@ -33,7 +58,7 @@ public class MethodResult implements IMethodResult {
     private void reset() {
         mResultType = ResultType.typeNone;
     }
-
+    
     public MethodResult(boolean isRuby) {
         mIsRuby = isRuby;
     }
@@ -58,7 +83,7 @@ public class MethodResult implements IMethodResult {
         } else if (mResultType == ResultType.typeDouble) {
             res = Double.toString(mDoubleResult);
         } else if (mResultType == ResultType.typeString) {
-            res = mStrResult;
+            res = '"' + mStrResult + '"';
         } else if (mResultType == ResultType.typeList) {
             res = mListResult.toString();
         } else if (mResultType == ResultType.typeMap) {
@@ -72,7 +97,41 @@ public class MethodResult implements IMethodResult {
     public String getString() { return mStrResult; }
     public List<Object> getList() { return mListResult; }
     public Map<String, Object> getMap() { return mMapResult; }
-    public String getJson() { return ""; }
+    public String getJson() throws JSONException {
+        JSONGenerator json;
+        switch(mResultType) {
+        case typeList:
+            if(getObjectClassPath() != null)
+                json = new JSONObjectResultGenerator(getList(), getObjectClassPath());
+            else
+                json =  new JSONGenerator(getList());
+            break;
+        case typeMap:
+            if(getObjectClassPath() != null)
+                json = new JSONObjectResultGenerator(getMap(), getObjectClassPath());
+            else
+                json =  new JSONGenerator(getMap());
+            break;
+        case typeBoolean:
+            json =  new JSONGenerator(Boolean.valueOf(getBoolean()));
+            break;
+        case typeInteger:
+            json = new JSONGenerator(Integer.valueOf(getInteger()));
+            break;
+        case typeDouble:
+            json = new JSONGenerator(Double.valueOf(getDouble()));
+            break;
+        case typeString:
+            if(getObjectClassPath() != null)
+                json = new JSONObjectResultGenerator(getString(), getObjectClassPath());
+            else
+                json =  new JSONGenerator(getString());
+            break;
+        default:
+            json = new JSONGenerator(null);
+        }
+        return json.toString();
+    }
 
     public String getResultParamName() {
         return mResultParamName;

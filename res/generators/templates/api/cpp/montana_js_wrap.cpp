@@ -20,17 +20,13 @@ using namespace rho::common;
     rho::apiGenerator::CMethodResult oRes;
 
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
     <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>* pObj = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(strObjID);
 <%end%>
 
 <% functor_params = ""; first_arg = 0;
    module_method.params.each do |param| %>
-    nCallbackArg = <%= first_arg + 1 %>;
-
     <% if !param.can_be_nil %>
     if ( argc == <%= first_arg %> )
     {
@@ -149,33 +145,11 @@ using namespace rho::common;
 <% first_arg = first_arg+1 %>
 <% end %>
 
-    if ( argc > nCallbackArg )
-    {
 <% if module_method.has_callback == ModuleMethod::CALLBACK_NONE %>
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(<%= module_method.params.size() %>) );
-        return oRes.toJSON();
+    oRes.setCallInUIThread(<%= (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) ? "true" : "false" %>);
+    oRes.setJSCallback( strCallbackID );
+    oRes.setCallbackParam( strJsVmID );
 <% end %>
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(<%= (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) ? "true" : "false" %>);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
     pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &<%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>::<%= module_method.native_name %>, <%= functor_params %> oRes );
@@ -189,7 +163,7 @@ using namespace rho::common;
     <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
 <% else if module_method.run_in_thread != ModuleMethod::RUN_IN_THREAD_NONE %>
 
-    if ( bUseCallback )
+    if ( oRes.hasCallback() )
         <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
     else <%
 end %>

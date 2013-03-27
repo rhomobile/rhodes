@@ -13,6 +13,13 @@ using namespace rho::json;
 
 static rho::Hashtable<rho::String,Func_JS> g_hashJSMethods;
 
+static const String ID("id");
+static const String METHOD("method");
+static const String RHO_CLASS("__rhoClass");
+static const String RHO_ID("__rhoID");
+static const String RHO_CALLBACK("__rhoCallback");
+static const String VM_ID("vmID");
+
 void js_define_method(const char* szMethodPath, Func_JS pFunc )
 {
     g_hashJSMethods[szMethodPath] = pFunc;
@@ -20,32 +27,42 @@ void js_define_method(const char* szMethodPath, Func_JS pFunc )
 
 rho::String js_entry_point(const char* szJSON)
 {
-    rho::String strReqId, strMethod, strObjID;
+    rho::String strReqId, strMethod, strObjID, strCallbackID, strJsVmID;
     CJSONEntry oEntry(szJSON);
 
-	if ( !oEntry.hasName("id") )
+	if ( !oEntry.hasName(ID) )
         return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32700, \"message\": \"Parse error\"}, \"id\": null}";
-	strReqId = oEntry.getString("id");
+	strReqId = oEntry.getString(ID.c_str());
 
-	if ( !oEntry.hasName("method") )
+	if ( !oEntry.hasName(METHOD) )
         return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32700, \"message\": \"Parse error\"}, \"id\": " + strReqId + "}";
-    strMethod = oEntry.getString("method");
+    strMethod = oEntry.getString(METHOD.c_str());
 
-	if ( oEntry.hasName("__rhoClass") ) {
-		rho::String strModule = oEntry.getString("__rhoClass");
+	if ( oEntry.hasName(RHO_CLASS) ) {
+		rho::String strModule = oEntry.getString(RHO_CLASS.c_str());
 		strMethod = strModule + ":" + strMethod;
 	}
 
-    if ( oEntry.hasName("__rhoID") )
-        strObjID = oEntry.getString("__rhoID");
+    if ( oEntry.hasName(RHO_ID) )
+        strObjID = oEntry.getString(RHO_ID.c_str());
 
-	String_replace(strMethod, '.', ':');
+    if ( oEntry.hasName(RHO_CALLBACK) ) {
+        CJSONEntry oCallback = oEntry.getEntry(RHO_CALLBACK.c_str());
+
+        if (!oCallback.hasName(ID) || !oCallback.hasName(VM_ID))
+            return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32700, \"message\": \"Parse error\"}, \"id\": " + strReqId + "}";
+
+        strCallbackID = oCallback.getString(ID.c_str());
+        strJsVmID = oCallback.getString(VM_ID.c_str());
+    }
+
+    String_replace(strMethod, '.', ':');
     Func_JS pMethod = g_hashJSMethods[strMethod];
     if (!pMethod)
         return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"Method not found.\"}, \"id\": " + strReqId + "}";
 
     CJSONArray oParams(oEntry.getEntry("params"));
-    return "{\"jsonrpc\": \"2.0\", " + pMethod( oParams, strObjID ) + ", \"id\": " + strReqId + "}";
+    return "{\"jsonrpc\": \"2.0\", " + pMethod( strObjID, oParams, strCallbackID, strJsVmID ) + ", \"id\": " + strReqId + "}";
 }
 
 void rho_http_js_entry_point(void *arg, rho::String const &query )

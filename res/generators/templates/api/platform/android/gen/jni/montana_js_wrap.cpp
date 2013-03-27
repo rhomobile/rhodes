@@ -51,17 +51,18 @@ unless method.access == ModuleMethod::ACCESS_STATIC %>
     ObjectProxy <%= $cur_module.name.downcase %>(strObjID);<%
 end
 min_params = 0
-max_params = method.params.size + 2
+max_params = method.params.size
 method.params.each_index do |idx|
   param = method.params[idx]
   next if param.can_be_nil
   min_params = idx + 1
 end
-if method.has_callback == ModuleMethod::CALLBACK_MANDATORY
-  min_params = method.params.size + 1
-elsif method.has_callback == ModuleMethod::CALLBACK_NONE
-  max_params = method.params.size
-end %>
+#if method.has_callback == ModuleMethod::CALLBACK_MANDATORY
+#  min_params = method.params.size + 1
+#elsif method.has_callback == ModuleMethod::CALLBACK_NONE
+#  max_params = method.params.size
+#end
+%>
 
     int argc = argv.getSize();
     if((argc < <%= min_params %>) || (argc > <%= max_params %>))
@@ -71,20 +72,16 @@ end %>
         return CMethodResultConvertor().toJSON(result);
     }
     
-    if(argc > <%= method.params.size %>)
+    result.setCallBack(strCallbackID, strJsVmID);
+
+<% if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
+    if(!result.hasCallback())
     {
-        if(argc > <%= method.params.size+1 %>)
-            result.setCallBack(argv[<%= method.params.size %>], argv[<%= method.params.size+1 %>]);
-        else
-            result.setCallBack(argv[<%= method.params.size %>]);
-    
-        if(!result.hasCallback())
-        {
-            RAWLOG_ERROR("Error setting callback ^^^");
-            return CMethodResultConvertor().toJSON(result);
-        }
+        RAWLOG_ERROR("Error setting callback ^^^");
+        return CMethodResultConvertor().toJSON(result);
     }
 <%
+end
 if method.access == ModuleMethod::ACCESS_STATIC %>
     ObjectProxy::<%= method.native_name %>(argumentsAdapter(argv), result); <%
 else %>
