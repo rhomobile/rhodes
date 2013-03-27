@@ -463,7 +463,13 @@ public:
 
     rho::String getJSON()
     {
-        return rho_cast<rho::String>(m_oResult.getJSONResult());
+        rho::String strRes = rho_cast<rho::String>(m_oResult.getJSONResult());
+        if(jnienv()->ExceptionCheck())
+        {
+            m_oResult.setError(clearException(jnienv()).c_str());
+            return "null";
+        }
+        return strRes;
     }
 
     const char* getResultParamName() const

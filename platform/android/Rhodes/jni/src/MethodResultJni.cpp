@@ -1,4 +1,5 @@
 #include "common/RhoStd.h"
+#include "common/StringConverter.h"
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/JNIRhoRuby.h"
 #include "rhodes/jni/com_rhomobile_rhodes_api_MethodResult.h"
@@ -37,17 +38,6 @@ jfieldID MethodResultJni::s_fidObjectClassPath;
 jfieldID MethodResultJni::s_fidRubyObjectClass;
 //----------------------------------------------------------------------------------------------------------------------
 
-//template <>
-//CallbackSelector<VALUE>::CallbackSelector(MethodResultJni& result, JNIEnv* env, jstring jUrl, jstring jData) {
-//    result.setCallBack(env, jUrl, jData);
-//}
-//
-////template <>
-//CallbackSelector<rho::json::CJSONEntry>::CallbackSelector(MethodResultJni& result, JNIEnv* env, jstring jUrl, jstring jData) {
-//    result.setJSCallBack(env, jUrl, jData);
-//}
-//----------------------------------------------------------------------------------------------------------------------
-
 JNIEnv* MethodResultJni::jniInit(JNIEnv *env)
 {
     RAWTRACE3("%s - env: 0x%.8x, functions: 0x%.8x", __FUNCTION__, env, env->functions);
@@ -64,7 +54,6 @@ JNIEnv* MethodResultJni::jniInit(JNIEnv *env)
         RAWTRACE("<init>");
 
         s_midMethodResult = env->GetMethodID(s_methodResultClass, "<init>", "(Z)V");
-        //s_midMethodResult = getJNIClassMethod(env, s_methodResultClass, "<init>", "(Z)V");
         if(env->ExceptionCheck() == JNI_TRUE)
         {
             RAWLOG_ERROR2("Failed to get %s constructor: $s", METHOD_RESULT_CLASS, clearException(env).c_str());
@@ -440,12 +429,6 @@ void MethodResultJni::callRubyBack(bool releaseCallback)
 {
     RAWTRACE(__FUNCTION__);
 
-    m_env = jniInit();
-    if (!m_env) {
-        RAWLOG_ERROR("ctor - JNI initialization failed");
-        return;
-    }
-
     rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<MethodResultJni>(*this), "__rho_inline");
 
     jhstring jhStrCallback = getStrCallback(m_env);
@@ -474,9 +457,29 @@ void MethodResultJni::callJSBack()
 {
     RAWTRACE(__FUNCTION__);
 
-//    rho::String strRes = CMethodResultConvertor().toJSON(*this);
+    jhstring jhStrCallbackID = getStrCallback(m_env);
+    String strCallbackID = rho_cast<String>(m_env, jhStrCallbackID.get());
 
+    jhstring jhJsVmID = getStrCallbackData(m_env);
+    String strJsVmID = rho_cast<String>(m_env, jhJsVmID.get());
+    int tabIndex = -1;
+    common::convertFromStringA(strJsVmID.c_str(), tabIndex);
 
+    String strRes(CMethodResultConvertor().toJSON(*this));
+
+    String strCallback("Rho.callbackHandler( \"");
+    strCallback += strCallbackID;
+    strCallback += "\", ";
+    strCallback += strRes;
+    strCallback += ")";
+
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
+    if (!cls) return;
+    static jmethodID mid = getJNIClassStaticMethod(m_env, cls, "executeJs", "(Ljava/lang/String;I)V");
+    if (!mid) return;
+
+    jhstring jhCallback = rho_cast<jstring>(m_env, strCallback);
+    m_env->CallStaticVoidMethod(cls, mid, jhCallback.get(), static_cast<jint>(tabIndex));
 }
 //----------------------------------------------------------------------------------------------------------------------
 

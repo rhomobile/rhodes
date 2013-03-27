@@ -48,7 +48,7 @@ public:
     ~CJSONEntry();
 
     boolean isEmpty() const;
-	boolean hasName(String name) const;
+	boolean hasName(const String& name) const;
     boolean isString() const;
     boolean isArray() const;
     boolean isObject() const;
