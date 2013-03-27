@@ -10,7 +10,7 @@ extern "C" void Init_CoreAPI_Extension()
 {
     Init_System();
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_MACOSX)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_MACOSX) || defined(OS_WP8)
     Init_Application();
 #endif
 

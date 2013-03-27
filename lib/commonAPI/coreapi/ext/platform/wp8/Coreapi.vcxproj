@@ -150,6 +150,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\shared\ApplicationImpl.cpp" />
+    <ClCompile Include="..\..\shared\generated\application_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\application_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\application_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\cpp\ApplicationBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Application_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\Application_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\LogBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Log_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Log_ruby_wrap.cpp" />
@@ -277,6 +284,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\shared\generated\cpp\ApplicationBase.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\IApplication.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ILog.h" />
     <ClInclude Include="..\..\shared\generated\cpp\INetwork.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ISQLite3.h" />
@@ -309,6 +318,13 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\Log.xml">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\Application.xml">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
