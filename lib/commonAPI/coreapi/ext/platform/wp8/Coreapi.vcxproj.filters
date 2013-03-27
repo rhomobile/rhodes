@@ -53,6 +53,18 @@
     <Filter Include="Log\shared\generated\cpp">
       <UniqueIdentifier>{3be1faf4-03bc-449d-9433-54c3c3e9d49a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Application">
+      <UniqueIdentifier>{68dba4f8-5431-4647-b2f2-75bd07518707}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\shared">
+      <UniqueIdentifier>{3c97d9a1-6c28-4ca4-adf8-1e6915909ab4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\shared\generated">
+      <UniqueIdentifier>{be7f8488-1286-4995-8bf5-ba6c68e51341}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Application\shared\generated\cpp">
+      <UniqueIdentifier>{bff6005b-7570-4feb-96d5-25d710087ea5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\generated\system_api_init.cpp">
@@ -149,6 +161,27 @@
     <ClCompile Include="..\wm\src\NetworkDetect.cpp">
       <Filter>NetworkAccess\shared</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\ApplicationImpl.cpp">
+      <Filter>Application\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\application_api_init.cpp">
+      <Filter>Application\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\application_js_api.cpp">
+      <Filter>Application\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\application_ruby_api.c">
+      <Filter>Application\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Application_js_wrap.cpp">
+      <Filter>Application\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\Application_ruby_wrap.cpp">
+      <Filter>Application\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\ApplicationBase.cpp">
+      <Filter>Application\shared\generated\cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
@@ -178,6 +211,12 @@
     <ClInclude Include="..\wm\src\NetworkDetect.h">
       <Filter>NetworkAccess\shared</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\ApplicationBase.h">
+      <Filter>Application\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\IApplication.h">
+      <Filter>Application\shared\generated\cpp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\Network.xml">
@@ -192,5 +231,10 @@
     <CustomBuild Include="..\..\Log.xml">
       <Filter>Log</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\Application.xml">
+      <Filter>Application</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
