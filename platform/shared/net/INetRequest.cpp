@@ -28,6 +28,8 @@
 
 #include "common/RhoFile.h"
 #include "common/RhodesAppBase.h"
+#include "common/RhoFilePath.h"
+#include "net/URI.h"
 
 namespace rho {
 namespace net {
@@ -131,14 +133,54 @@ INetResponse* CNetRequestWrapper::pushMultipartData(const String& strUrl, CMulti
 
 INetResponse* CNetRequestWrapper::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
 {
-    common::CRhoFile oFile;
-    if ( !oFile.open(strFilePath.c_str(),common::CRhoFile::OpenForAppend) ) 
+    String tmpfilename = strFilePath + ".rhodownload";
+    String modfilename = strFilePath + ".modtime";
+    
+    common::CRhoFile tmpFile;
+    common::CRhoFile::EOpenModes openMode = common::CRhoFile::OpenForWrite;
+    
+    Hashtable<String, String> h;
+    ::getNetRequest().doRequest("HEAD", strUrl, "", oSession, &h );
+    
+    if ( h.containsKey("last-modified") )
     {
-        LOGC(ERROR, "Net") + "pullFile: cannot create file :" + strFilePath;
+        if ( common::CRhoFile::isFileExist(modfilename.c_str()) ) {
+            String modDate;
+            common::CRhoFile fModDate;
+            if ( fModDate.open(modfilename.c_str(), common::CRhoFile::OpenReadOnly)) {
+                fModDate.readString(modDate);
+                if (modDate == h.get("last-modified")) {
+                    openMode = common::CRhoFile::OpenForAppend;
+                }
+            }
+        } else {
+            common::CRhoFile fModDate;
+            if ( fModDate.open(modfilename.c_str(), common::CRhoFile::OpenForWrite) ) {
+                const String& modDate = h.get("last-modified");
+                fModDate.write((void*)modDate.c_str(), modDate.length());
+            }
+        }
+    }
+    
+    if ( !tmpFile.open(tmpfilename.c_str(),openMode) )
+    {
+        LOGC(ERROR, "Net") + "pullFile: cannot create file :" + tmpfilename;
         return m_pReqImpl->createEmptyNetResponse();
     }
-
-    return m_pReqImpl->pullFile( strUrl, oFile, oSession, pHeaders );
+    
+    INetResponse* pResp = m_pReqImpl->pullFile( strUrl, tmpFile, oSession, pHeaders );
+    
+    tmpFile.close();
+    
+    if ( (pResp->getRespCode() == 200) || (pResp->getRespCode() == 206) ) {
+        if ( common::CRhoFile::renameFile( tmpfilename.c_str(), strFilePath.c_str() ) != 0 ) {
+            LOGC(ERROR, "Net") + "pullFile: cannot rename file :" + tmpfilename + " to " + strFilePath;
+        }
+        
+        common::CRhoFile::deleteFile(modfilename.c_str());
+    }
+    
+    return pResp;
 }
 
 String CNetRequestWrapper::resolveUrl(const String& strUrl)
