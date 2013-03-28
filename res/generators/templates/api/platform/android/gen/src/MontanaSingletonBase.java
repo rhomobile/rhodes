@@ -23,25 +23,25 @@ if $cur_module.is_template_default_instance %>
     end %>
     public static class <%= module_method.native_name %>Task implements Runnable {
         private I<%= $cur_module.name %>Singleton mApiSingleton; <%
-param_hash.each do |name, type| %>
-        private <%= type %> <%= name %>; <% end %>
+module_method.params.each do |param| %>
+        private <%= param_hash[param.name] %> <%= param.name %>; <% end %>
         private IMethodResult mResult;
 
         public <%= module_method.native_name %>Task(I<%= $cur_module.name %>Singleton obj, <%
-param_hash.each do |name, type| %>
-                <%= type %> <%= name %>, <% end %>        
+module_method.params.each do |param| %>
+                <%= param_hash[param.name] %> <%= param.name %>, <% end %>        
                 IMethodResult result) {
             this.mApiSingleton = obj; <%
-param_hash.each do |name, type| %>
-            this.<%= name %> = <%= name %>;<% end %>        
+module_method.params.each do |param| %>
+            this.<%= param.name %> = <%= param.name %>;<% end %>        
             this.mResult = result;
         }
 
         @Override
         public void run() {
             mApiSingleton.<%= module_method.native_name %>(<%
-param_hash.each do |name, type| %>
-                <%= name %>, <% end %> mResult);
+module_method.params.each do |param| %>
+                <%= param.name %>, <% end %> mResult);
         }
     }
 <% end %>
