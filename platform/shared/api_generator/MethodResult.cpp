@@ -88,7 +88,20 @@ void CMethodResult::callCallback()
         m_ResType = eNone;
     }else if ( m_ResType != eNone && m_strJSCallback.length() != 0 )
     {
-        rho_webview_execute_js( m_strJSCallback.c_str(), rho_webview_active_tab() );
+
+        int tabIndex = -1;
+        common::convertFromStringA(m_strCallbackParam.c_str(), tabIndex);
+
+        String strRes(CMethodResultConvertor().toJSON(*this));
+
+        String strCallback("Rho.callbackHandler( \"");
+        strCallback += m_strJSCallback;
+        strCallback += "\", ";
+        strCallback += strRes;
+        strCallback += ")";
+
+        rho_webview_execute_js(strCallback.c_str(), tabIndex);
+
         m_ResType = eNone;
     }
 }

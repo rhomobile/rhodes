@@ -14,6 +14,8 @@ class SpecRunner < MSpecScript
     config[:files] << "spec/string/slice_spec"
     config[:files] << "spec/array/pack_spec"
 
+    config[:files] << "spec/log_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
+
     config[:files] << "spec/rho_spec"
 
     config[:files] << "spec/crypt_spec"

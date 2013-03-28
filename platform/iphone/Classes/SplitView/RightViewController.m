@@ -121,6 +121,7 @@
 			//subController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
             
 			td.view = subController;
+            subController.thisTabIndex = [tabs count];
             
             [tabs addObject:td];
             

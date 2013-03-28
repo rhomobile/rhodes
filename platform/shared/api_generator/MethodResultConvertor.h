@@ -17,7 +17,7 @@ class CMethodResultConvertor
 {
 public:
     template <typename RESULT>
-    VALUE toRuby(RESULT& result, bool forCallback)
+    VALUE toRuby(RESULT& result, bool forCallback = false)
     {
         CRubyResultConvertor<RESULT> convertor(result, forCallback);
         CAutoPtr<CHoldRubyValue> pRes;
@@ -68,39 +68,60 @@ public:
     }
 
     template <typename RESULT>
-    rho::String toJSON(RESULT& result)
+    rho::String toJSON(RESULT& result/*, bool forCallback = false*/)
     {
+        String strRes;
         CJSONResultConvertor<RESULT> convertor(result);
-        rho::String strRes = "\"result\":";
-        if (convertor.isNil())
-            strRes += "null";
-        else if (convertor.isArray())
-        {
-            strRes += convertor.getArray();
-        }else if (convertor.isHash())
-        {
-            strRes += convertor.getHash();
-        } else if (convertor.isString())
-        {
-            strRes += convertor.getString();
-        }else if (convertor.isJSON())
-        {
-            strRes += convertor.getJSON();
-        } else if (convertor.isBool())
-        {
-            strRes += convertor.getBool();
-        } else if (convertor.isInt())
-        {
-            strRes += convertor.getInt();
-        } else  if (convertor.isDouble())
-        {
-            strRes += convertor.getDouble();
-        } else  if (convertor.isError())
+        if (convertor.isError())
         {
             strRes = "\"error\": ";
             strRes += convertor.getError();
-        }else
-           strRes += "null";
+            return strRes;
+        } else
+        {
+            strRes = "\"result\":";
+            if (convertor.isNil())
+            {
+                strRes += "null";
+            }else if (convertor.isArray())
+            {
+                strRes += convertor.getArray();
+            }else if (convertor.isHash())
+            {
+                strRes += convertor.getHash();
+            } else if (convertor.isString())
+            {
+                strRes += convertor.getString();
+            }else if (convertor.isJSON())
+            {
+                strRes += convertor.getJSON();
+            } else if (convertor.isBool())
+            {
+                strRes += convertor.getBool();
+            } else if (convertor.isInt())
+            {
+                strRes += convertor.getInt();
+            } else  if (convertor.isDouble())
+            {
+                strRes += convertor.getDouble();
+            } else  if (convertor.isError())
+            {
+            }else
+            {
+               strRes += "null";
+            }
+
+            //Double check for error during conversion
+            if (convertor.isError())
+            {
+                strRes = "\"error\": " + convertor.getError();
+            }
+        }
+
+        //if(forCallback)
+        //{
+        //    strRes = String("{ \"jsonrpc\": \"2.0\", ") + strRes + "}";
+        //}
 
         return strRes;
     }
@@ -112,10 +133,7 @@ class CRubyCallbackResult : public rho::ICallbackObject
     RESULT m_oResult;
 public:
     CRubyCallbackResult(const RESULT& oResult) : m_oResult(oResult){}
-    virtual ~CRubyCallbackResult()
-    {
-        int i = 0;
-    }
+    virtual ~CRubyCallbackResult() { }
 
     virtual unsigned long getObjectValue()
     {

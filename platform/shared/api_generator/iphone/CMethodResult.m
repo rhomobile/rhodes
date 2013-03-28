@@ -1,9 +1,14 @@
 
 #import "CMethodResult.h"
 
+
 #import "CRubyConverter.h"
 #import "CJSConverter.h"
 #import "RubyCallbackHelper.h"
+
+
+
+extern const char* rho_webview_execute_js(const char* js, int index);
 
 
 @implementation CMethodResultError
@@ -127,7 +132,7 @@
 
 -(NSString*) toJSON {
     NSString* res = [CJSConverter convertToJS:mValue level:0];
-    const char* ttt = [res UTF8String];
+    //const char* ttt = [res UTF8String];
     return res;
 }
 
@@ -144,8 +149,9 @@
     mRubyCallbackURL = [url retain];
 }
 
--(void) setJSCallback:(NSString*)uid {
+-(void) setJSCallback:(NSString*)uid webViewUID:(NSString*)webViewUID {
     mJSCallbackUID = [uid retain];
+    mJSWebViewUID = [webViewUID retain];
 }
 
 -(void) setCallbackParam:(NSString*)param {
@@ -167,7 +173,13 @@
 
 
 -(void) callJSCallback:(NSString*)uid {
-    //TODO:
+    NSString* jscode = [NSString stringWithFormat:@"Rho.callbackHandler(‘%@’,{%@})", mJSCallbackUID, [self toJSON]];
+    int tabIndex = -1;
+    if (mJSWebViewUID != nil) {
+        tabIndex = [mJSWebViewUID intValue];
+    }
+    //[[[Rhodes sharedInstance] mainView] executeJs:jscode tab:tabIndex];
+    rho_webview_execute_js([jscode UTF8String], tabIndex);
 }
 
 -(void) callCallback {

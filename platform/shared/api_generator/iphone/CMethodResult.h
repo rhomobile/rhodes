@@ -48,6 +48,7 @@
     NSObject* mValue;
     NSString* mRubyCallbackURL;
     NSString* mJSCallbackUID;
+    NSString* mJSWebViewUID;
     NSString* mCallbackParam;
     NSString* mRubyModulePath;
     id<IMethodResult_RubyObjectFactory> mRubyFactory;
@@ -66,7 +67,7 @@
 -(NSString*) toJSON;
 
 -(void) setRubyCallback:(NSString*)url;
--(void) setJSCallback:(NSString*)uid;
+-(void) setJSCallback:(NSString*)uid webViewUID:(NSString*)webViewUID;
 -(void) setCallbackParam:(NSString*)param;
 -(void) setRubyFactory:(id<IMethodResult_RubyObjectFactory>)factory;
 -(void) enableObjectCreationModeWithRubyClassPath:(NSString*)classPath;
