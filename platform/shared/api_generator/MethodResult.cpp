@@ -1,11 +1,11 @@
 #include "MethodResult.h"
-#include "json/JSONIterator.h"
-#include "ruby/ext/rho/rhoruby.h"
 
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
 
 #include "MethodResultConvertor.h"
+#include "RubyResultConvertor.h"
+#include "JSONResultConvertor.h"
 
 namespace rho
 {
@@ -46,23 +46,6 @@ VALUE CMethodResult::toRuby(bool bForCallback/* = false*/)
     return valRes;
 }
 
-class CRubyCallbackResult : public rho::ICallbackObject
-{
-    CMethodResult m_oResult;
-public:
-    CRubyCallbackResult(const CMethodResult& oResult) : m_oResult(oResult){}
-    ~CRubyCallbackResult()
-    {
-        int i = 0;
-    }
-
-    virtual unsigned long getObjectValue()
-    {
-        return m_oResult.toRuby(true);
-    }
-
-};
-
 bool CMethodResult::hasCallback()
 {
     return m_strRubyCallback.length() != 0 || m_pRubyCallbackProc || m_strJSCallback.length() != 0;
@@ -90,7 +73,7 @@ void CMethodResult::callCallback()
 
     if ( m_ResType != eNone && m_strRubyCallback.length() != 0 )
     {
-        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "__rho_inline");
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "__rho_inline");
 
         RHODESAPP().callCallbackWithData( m_strRubyCallback, strResBody, m_strCallbackParam, true);
 
@@ -98,7 +81,7 @@ void CMethodResult::callCallback()
     }else if ( m_ResType != eNone && m_pRubyCallbackProc)
     {
         VALUE oProc = m_pRubyCallbackProc->getValue();
-        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult( *this ), "__rho_inline");
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "__rho_inline");
 
         RHODESAPP().callCallbackProcWithData( oProc, strResBody, m_strCallbackParam, true);
 

@@ -206,6 +206,13 @@ public:
     {
         m_hashExtensions.clear();
     }
+    
+    virtual void minimizeApp() {
+        //UNSUPPORTED
+    }
+    virtual void restoreApp() {
+        //UNSUPPORTED
+    }
 
     virtual void requireRubyFile( const char* szFilePath );
 };

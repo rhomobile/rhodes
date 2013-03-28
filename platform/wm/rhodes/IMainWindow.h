@@ -89,6 +89,8 @@ public:
     virtual void windowSetPosition(int x, int y) = 0;
     virtual void windowSetSize(int width, int  height) = 0;
     virtual void windowLockSize(int x) = 0;
+
+    virtual void closeNativeView() = 0;
 };
 
 }

@@ -53,8 +53,8 @@ public:
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
-    virtual void getShowKeyboard(CMethodResult& oResult);
-    virtual void setShowKeyboard( bool value, CMethodResult& oResult);
+    virtual void getKeyboardState(CMethodResult& oResult);
+    virtual void setKeyboardState( const rho::String& value, CMethodResult& oResult);
     virtual void getFullScreen(CMethodResult& oResult);
     virtual void setFullScreen( bool value, CMethodResult& oResult);
     virtual void getScreenAutoRotate(CMethodResult& oResult);
@@ -67,8 +67,9 @@ public:
     virtual void isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult);
     virtual void applicationUninstall( const rho::String& applicationName, CMethodResult& oResult);
     virtual void openUrl( const rho::String& url, CMethodResult& oResult);
-    virtual void setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult);
-    virtual void getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
+    virtual void setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
+    virtual void deleteRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
     virtual void setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult);
     virtual void setWindowPosition( int x,  int y, CMethodResult& oResult);
     virtual void setWindowSize( int width,  int height, rho::apiGenerator::CMethodResult& oResult);
@@ -188,11 +189,11 @@ void CSystemImpl::getUuid(CMethodResult& oResult)
 
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
 void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult){}
-void CSystemImpl::getShowKeyboard(CMethodResult& oResult)
+void CSystemImpl::getKeyboardState(CMethodResult& oResult)
 {
 	//seems it's unsupported
 }
-void CSystemImpl::setShowKeyboard( bool value, CMethodResult& oResult)
+void CSystemImpl::setKeyboardState( const rho::String& value, CMethodResult& oResult)
 {
 	//seems it's unsupported
 	//to show SIP on WP8 we firstly have to focus text box element
@@ -272,12 +273,17 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
 	}while(it->MoveNext());
 }
 
-void CSystemImpl::setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
 	//unsupported
 }
 
-void CSystemImpl::getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
+void CSystemImpl::getRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+{
+	//unsupported
+}
+
+void CSystemImpl::deleteRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
 	//unsupported
 }

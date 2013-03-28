@@ -44,7 +44,7 @@
 
 extern "C" HWND getWebViewWnd();
 extern "C" HWND getMainWnd();
-CMainWindow* Rhodes_getMainWindow();
+IMainWindow* Rhodes_getMainWindow();
 
 
 class RhoNativeViewHolder{
@@ -95,8 +95,9 @@ public:
 	RhoNativeViewRunnable_OpenViewCommand(RhoOpenedNativeView* view) {
 		mView = view;
 	}
-	virtual void run() {
-		CMainWindow* mw = Rhodes_getMainWindow();
+	virtual void run() 
+    {
+		IMainWindow* mw = Rhodes_getMainWindow();
 		String sn(mView->factory_holder->viewtype);
 #if !defined(OS_WINDOWS_DESKTOP)
 		mw->openNativeView(mView->factory_holder->factory, mView->n_view, sn);
@@ -113,7 +114,7 @@ public:
 	RhoNativeViewRunnable_CloseViewCommand() {
 	}
 	virtual void run() {
-		CMainWindow* mw = Rhodes_getMainWindow();
+		IMainWindow* mw = Rhodes_getMainWindow();
 #if !defined(OS_WINDOWS_DESKTOP)
 		mw->closeNativeView();
 #endif

@@ -7,7 +7,7 @@
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
-			<triggers>clean,incremental,</triggers>
+			<triggers>clean,full,incremental,</triggers>
 			<arguments>
 				<dictionary>
 					<key>?name?</key>
@@ -19,7 +19,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildArguments</key>
-					<value></value>
+					<value>-j8</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.buildCommand</key>
@@ -55,7 +55,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.useDefaultBuildCmd</key>
-					<value>true</value>
+					<value>false</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>
@@ -105,14 +105,44 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>Implementation</name>
+			<type>2</type>
+			<location>/Users/lexis_tikh/rhomobile/Neon_04.00.00.04/Helium/HeliumForAndroid/Implementation</location>
+		</link>
+		<link>
 			<name>Motorola-Extensions</name>
 			<type>2</type>
 			<location>/Users/lexis_tikh/rhomobile/Motorola-Extensions</location>
 		</link>
 		<link>
+			<name>api_generator_spec</name>
+			<type>2</type>
+			<location>/Users/lexis_tikh/rhomobile/rhodes/spec/api_generator_spec</location>
+		</link>
+		<link>
+			<name>barcode</name>
+			<type>2</type>
+			<location>/Users/lexis_tikh/rhomobile/rhodes/spec/api_generator_spec/extensions/barcode</location>
+		</link>
+		<link>
+			<name>barcode1</name>
+			<type>2</type>
+			<location>/Users/lexis_tikh/rhomobile/rhodes/spec/api_generator_spec/extensions/barcode1</location>
+		</link>
+		<link>
+			<name>commonAPI</name>
+			<type>2</type>
+			<location>/Users/lexis_tikh/rhomobile/rhodes/lib/commonAPI</location>
+		</link>
+		<link>
 			<name>extensions</name>
 			<type>2</type>
 			<locationURI>PARENT-3-PROJECT_LOC/lib/extensions</locationURI>
+		</link>
+		<link>
+			<name>rhoelementsext</name>
+			<type>2</type>
+			<location>/Users/lexis_tikh/rhomobile/Neon_04.00.00.04/R2D1/RhoElementsOneExtension/extensions/rhoelementsext</location>
 		</link>
 		<link>
 			<name>shared</name>

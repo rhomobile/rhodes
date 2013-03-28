@@ -1065,3 +1065,7 @@ void CMainWindowQt::windowLockSize(int x)
 {
     lockSize(x);
 }
+
+void CMainWindowQt::closeNativeView()
+{
+}

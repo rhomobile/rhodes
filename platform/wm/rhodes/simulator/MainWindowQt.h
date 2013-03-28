@@ -91,6 +91,7 @@ public:
     virtual void      windowSetPosition(int x, int y);
     virtual void      windowSetSize(int width, int  height);
     virtual void      windowLockSize(int x);
+    virtual void      closeNativeView();
 
     // public methods:
     void Navigate2(BSTR URL, int index);
@@ -139,7 +140,7 @@ public:
 	void lockSize(int locked);
 
    	void RhoSetFullScreen(bool bFull, bool bDestroy = false);
-    bool getFullScreen();
+    virtual bool getFullScreen();
 
     BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)

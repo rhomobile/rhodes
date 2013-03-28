@@ -39,7 +39,7 @@
 using namespace rho;
 using namespace rho::common;
 
-extern CMainWindow& getAppWindow();
+extern IMainWindow& getAppWindow();
 
 extern "C" {
 HWND getMainWnd();

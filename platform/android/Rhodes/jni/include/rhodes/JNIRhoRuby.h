@@ -131,5 +131,24 @@ struct rho_cast_helper<jdouble, VALUE>
     jdouble operator()(JNIEnv *env, VALUE value);
 };
 
+template <>
+struct rho_cast_helper<VALUE, jboolean>
+{
+    VALUE operator()(JNIEnv *env, jboolean jValue);
+};
+
+template <>
+struct rho_cast_helper<VALUE, jint>
+{
+    VALUE operator()(JNIEnv *env, jint jValue);
+};
+
+template <>
+struct rho_cast_helper<VALUE, jdouble>
+{
+    VALUE operator()(JNIEnv *env, jdouble jValue);
+};
+
+
 }
 #endif // JNIRHORUBY_H_INCLUDED

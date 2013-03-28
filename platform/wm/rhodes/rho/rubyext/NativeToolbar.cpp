@@ -39,7 +39,7 @@
 
 IMPLEMENT_LOGCLASS(CNativeToolbar,"NativeToolbar");
 
-extern     CMainWindow& getAppWindow();
+extern     IMainWindow& getAppWindow();
 extern "C" int          rho_wmsys_has_touchscreen();
 
 CNativeToolbar::CNativeToolbar(void)
@@ -155,7 +155,7 @@ void CNativeToolbar::createToolbar(rho_param *p)
         rcToolbar.right = 0;
         rcToolbar.top = 0;
         rcToolbar.bottom = m_nHeight;
-        Create(getAppWindow().m_hWnd, rcToolbar, NULL, WS_CHILD|CCS_NOPARENTALIGN|CCS_NORESIZE|CCS_NOMOVEY|CCS_BOTTOM|CCS_NODIVIDER |
+        Create(getAppWindow().GetMainWindowHWND(), rcToolbar, NULL, WS_CHILD|CCS_NOPARENTALIGN|CCS_NORESIZE|CCS_NOMOVEY|CCS_BOTTOM|CCS_NODIVIDER |
             TBSTYLE_FLAT |TBSTYLE_LIST|TBSTYLE_TRANSPARENT ); //TBSTYLE_AUTOSIZE
 
         SetButtonStructSize();
@@ -226,14 +226,14 @@ void CNativeToolbar::createToolbar(rho_param *p)
 
     ShowWindow(SW_SHOW);
 
-#if defined (OS_WINDOWS_DESKTOP)
-    RECT rcWnd;
-    getAppWindow().GetWindowRect(&rcWnd);
-    getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left-1,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
-    getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
-#else
-    getAppWindow().SetWindowPos( 0, 0,0,0,0, SWP_NOMOVE|SWP_NOZORDER|SWP_NOSIZE|SWP_FRAMECHANGED);
-#endif
+//#if defined (OS_WINDOWS_DESKTOP)
+//    RECT rcWnd;
+//    getAppWindow().GetWindowRect(&rcWnd);
+//    getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left-1,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
+//    getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
+//#else
+//    getAppWindow().SetWindowPos( 0, 0,0,0,0, SWP_NOMOVE|SWP_NOZORDER|SWP_NOSIZE|SWP_FRAMECHANGED);
+//#endif
 }
 
 void CNativeToolbar::alignSeparatorWidth()
@@ -258,7 +258,7 @@ void CNativeToolbar::alignSeparatorWidth()
     GetItemRect(0,&rcFirstBtn);
     GetItemRect(m_arButtons.size()-1,&rcLastBtn);
     GetItemRect(nSepPos,&rcSep);
-    getAppWindow().GetClientRect(&rcToolbar);
+//    getAppWindow().GetClientRect(&rcToolbar);
     int nAdd = rcToolbar.Width() - 2*rcFirstBtn.left - rcLastBtn.right;
     int nSepWidth = rcSep.Width();
     nSepWidth += nAdd;
@@ -447,14 +447,14 @@ void CNativeToolbar::removeToolbar()
         ShowWindow(SW_HIDE);
         m_nHeight = 0;
 
-#if defined (OS_WINDOWS_DESKTOP)
-        RECT rcWnd;
-        getAppWindow().GetWindowRect(&rcWnd);
-        getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left-1,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
-        getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
-#else
-        getAppWindow().SetWindowPos( 0, 0,0,0,0, SWP_NOMOVE|SWP_NOZORDER|SWP_NOSIZE|SWP_FRAMECHANGED);
-#endif
+//#if defined (OS_WINDOWS_DESKTOP)
+//        RECT rcWnd;
+//        getAppWindow().GetWindowRect(&rcWnd);
+//        getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left-1,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
+//        getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
+//#else
+//        getAppWindow().SetWindowPos( 0, 0,0,0,0, SWP_NOMOVE|SWP_NOZORDER|SWP_NOSIZE|SWP_FRAMECHANGED);
+//#endif
     }
 }
 

@@ -85,6 +85,8 @@ int CMainWindow::m_screenHeight;
 extern "C" bool rho_wmimpl_get_resize_on_sip();
 #endif
 
+extern "C" int rho_wm_impl_CheckLicense();
+
 CMainWindow::CMainWindow()
 {
     mIsBrowserViewHided = false;
@@ -550,6 +552,7 @@ LRESULT CMainWindow::OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     Rhodes_WM_ProcessBeforeNavigate((LPCTSTR)lParam);
+    rho_wm_impl_CheckLicense();
     return 0;
 }
 

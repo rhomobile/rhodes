@@ -2,7 +2,7 @@
 (function ($, rho, rhoUtil) {
     'use strict';
 
-    var moduleNS = 'Rho.Database';
+    var moduleNS = 'Rho.Database_';
 
     var executeSql = function(db, sqlStmt, isBatch, args) {
         return (sqlStmt === undefined) ? [] : db.execute(sqlStmt, isBatch, args);

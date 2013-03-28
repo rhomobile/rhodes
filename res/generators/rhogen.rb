@@ -1570,6 +1570,7 @@ module Rhogen
                 getter_method.has_callback = ModuleMethod::CALLBACK_NONE
                 getter_method.linked_property = module_property
                 getter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
+                getter_method.generateAPI = module_property.generateAPI
                 module_property.getter = getter_method
                 module_item.methods << getter_method
               end
@@ -1595,6 +1596,7 @@ module Rhogen
                 setter_method.has_callback = ModuleMethod::CALLBACK_NONE
                 setter_method.linked_property = module_property
                 setter_method.special_behaviour = ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
+                setter_method.generateAPI = module_property.generateAPI
                 module_property.setter = setter_method
 
                 module_item.methods << setter_method

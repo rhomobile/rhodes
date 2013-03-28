@@ -241,7 +241,7 @@ void RhoRubyStart()
     Init_GeoLocation(); //+
 
     Init_Phonebook();
-#if !defined(OS_MACOSX) && !defined( OS_WINDOWS_DESKTOP ) && !defined(OS_WINCE)
+#if !defined(OS_MACOSX) && !defined( OS_WINDOWS_DESKTOP ) && !defined(OS_WINCE) && !defined(OS_ANDROID)
     Init_WebView(); //+
 #endif
     Init_RhoConf(); //+
@@ -448,14 +448,20 @@ void RhoRubyStop()
 char* makeControllerCall(char* classname, char* methodname);
 
 //typedef void rho_eachstr_func(const char*, const char*, void*);
-struct CHashEnumData
+struct CHashEnumStrData
 {
     void* data;
     rho_hash_eachstr_func *func;
 };
 
+struct CHashEnumData
+{
+    void* data;
+    rho_hash_each_func *func;
+};
+
 static int
-hash_each(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
+hash_each_str(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
 {
     const char* szValue = "";
     const char* szKey = "";
@@ -477,7 +483,7 @@ hash_each(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
 
 void rho_ruby_enum_strhash(VALUE hash, rho_hash_eachstr_func * func, void* data)
 {
-    struct CHashEnumData enumData;
+    struct CHashEnumStrData enumData;
 
     if ( !hash || hash ==Qnil )
         return;
@@ -485,11 +491,11 @@ void rho_ruby_enum_strhash(VALUE hash, rho_hash_eachstr_func * func, void* data)
     enumData.data = data;
     enumData.func = func;
 
-    rb_hash_foreach(hash, hash_each, (VALUE)(&enumData));
+    rb_hash_foreach(hash, hash_each_str, (VALUE)(&enumData));
 }
 
 static int
-hash_each_json(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
+hash_each_json(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
 {
     const char* szValue = "";
     const char* szKey = "";
@@ -517,7 +523,7 @@ hash_each_json(VALUE key, VALUE value, struct CHashEnumData* pEnumData)
 
 void rho_ruby_enum_strhash_json(VALUE hash, rho_hash_eachstr_func *func, void* data)
 {
-    struct CHashEnumData enumData;
+    struct CHashEnumStrData enumData;
 
     if ( !hash || hash ==Qnil )
         return;
@@ -526,6 +532,34 @@ void rho_ruby_enum_strhash_json(VALUE hash, rho_hash_eachstr_func *func, void* d
     enumData.func = func;
 
     rb_hash_foreach(hash, hash_each_json, (VALUE)(&enumData));
+}
+
+static int
+hash_each(VALUE key, VALUE value, struct CHashEnumStrData* pEnumData)
+{
+    const char* szKey = "";
+
+    if ( key != 0 && key != Qnil )
+    {
+        VALUE strKey = rb_funcall(key, rb_intern("to_s"), 0);
+        szKey = RSTRING_PTR(strKey);
+    }
+
+    (*pEnumData->func)(szKey, value, pEnumData->data);
+    return ST_CONTINUE;
+}
+
+void rho_ruby_enum_hash(VALUE hash, rho_hash_each_func * func, void* data)
+{
+    struct CHashEnumStrData enumData;
+
+    if ( !hash || hash == Qnil )
+        return;
+
+    enumData.data = data;
+    enumData.func = func;
+
+    rb_hash_foreach(hash, hash_each, (VALUE)(&enumData));
 }
 
 void rho_ruby_enum_strary(VALUE ary, rho_ary_eachstr_func * func, void* data)
@@ -573,6 +607,20 @@ void rho_ruby_enum_strary_json(VALUE ary, rho_ary_eachstr_func * func, void* dat
         }
 
         (*func)(szValue, data );
+    }
+}
+
+void rho_ruby_enum_ary(VALUE ary, rho_ary_each_func * func, void* data)
+{
+    int i = 0;
+
+    if ( ary ==0 || ary == Qnil )
+        return;
+
+    for (i=0; i<RARRAY_LEN(ary); i++)
+    {
+        VALUE value = RARRAY_PTR(ary)[i];
+        (*func)(value, data );
     }
 }
 

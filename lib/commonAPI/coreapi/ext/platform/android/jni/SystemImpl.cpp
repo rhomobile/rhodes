@@ -1,5 +1,4 @@
 #include "SystemImplBase.h"
-#include "MethodResultJni.h"
 
 RHO_GLOBAL int rho_sysimpl_get_property(const char* szPropName, rho::apiGenerator::CMethodResult& result);
 RHO_GLOBAL int rho_sys_set_sleeping(int sleeping);
@@ -41,8 +40,8 @@ public:
     virtual void setHttpProxyURI(const rho::String&, rho::apiGenerator::CMethodResult& result);
     virtual void getLockWindowSize(rho::apiGenerator::CMethodResult& result);
     virtual void setLockWindowSize(bool, rho::apiGenerator::CMethodResult& result);
-    virtual void getShowKeyboard(rho::apiGenerator::CMethodResult& result);
-    virtual void setShowKeyboard(bool, rho::apiGenerator::CMethodResult& result);
+    virtual void getKeyboardState(rho::apiGenerator::CMethodResult& result);
+    virtual void setKeyboardState(const rho::String&, rho::apiGenerator::CMethodResult& result);
     virtual void getFullScreen(rho::apiGenerator::CMethodResult& result);
     virtual void setFullScreen(bool, rho::apiGenerator::CMethodResult& result);
     virtual void getScreenAutoRotate(rho::apiGenerator::CMethodResult& result);
@@ -178,13 +177,13 @@ void CSystemImpl::setLockWindowSize(bool, rho::apiGenerator::CMethodResult& resu
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void CSystemImpl::getShowKeyboard(rho::apiGenerator::CMethodResult& result)
+void CSystemImpl::getKeyboardState(rho::apiGenerator::CMethodResult& result)
 {
     result.setError("not implemented at Android platform");
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void CSystemImpl::setShowKeyboard(bool, rho::apiGenerator::CMethodResult& result)
+void CSystemImpl::setKeyboardState(const rho::String&, rho::apiGenerator::CMethodResult& result)
 {
     result.setError("not implemented at Android platform");
 }

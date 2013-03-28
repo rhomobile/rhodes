@@ -402,26 +402,22 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     // Note: In this sample, we don't respond differently to different hr success codes.
 
 #if !defined(OS_WINDOWS_DESKTOP)
-    // Allow only one instance of the application.
-    // the "| 0x01" activates the correct owned window of the previous instance's main window
-	HWND hWnd = NULL;
-	for (int wait = 0; wait < m_nRestarting; wait++) {
-		hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
-		if (hWnd && m_nRestarting > 1) {
-			Sleep(1000);
-		} else {
-			break;
-		}
-	}
-	//EnumWindows(EnumRhodesWindowsProc, (LPARAM)&hWnd);
+    SetLastError(0);
+    HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
 
-	if (hWnd)
-	{
-        SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
-        SetForegroundWindow( hWnd );
-		return S_FALSE;
-	}
-#endif //!OS_WINDOWS_DESKTOP
+    if ( hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+        // Rho Running so could bring to foreground
+        HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
+
+        if (hWnd)
+        {
+            SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
+            SetForegroundWindow( hWnd );
+        }
+        return S_FALSE;
+    }
+#endif
 
     if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
     {
@@ -432,21 +428,21 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     rho_logconf_Init((rho_wmimpl_get_logpath()[0]==0 ? m_strRootPath.c_str() : rho_wmimpl_get_logpath()), m_strRootPath.c_str(), m_logPort.c_str());
     if (rho_wmimpl_get_logurl()[0]!=0)
-		LOGCONF().setLogURL(rho_wmimpl_get_logurl());
-	if (rho_wmimpl_get_logmaxsize())
-		LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
+        LOGCONF().setLogURL(rho_wmimpl_get_logurl());
+    if (rho_wmimpl_get_logmaxsize())
+        LOGCONF().setMaxLogFileSize(*rho_wmimpl_get_logmaxsize());
     if (rho_wmimpl_get_loglevel())
-		LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
+        LOGCONF().setMinSeverity(*rho_wmimpl_get_loglevel());
     if (rho_wmimpl_get_fullscreen())
         RHOCONF().setBool("full_screen", true, false);
-	if (rho_wmimpl_get_logmemperiod())
-		LOGCONF().setCollectMemoryInfoInterval(*rho_wmimpl_get_logmemperiod());
+    if (rho_wmimpl_get_logmemperiod())
+        LOGCONF().setCollectMemoryInfoInterval(*rho_wmimpl_get_logmemperiod());
 #else
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
 //#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
-	LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
+    LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
 //#endif // RHODES_EMULATOR
 
 #ifdef RHODES_EMULATOR

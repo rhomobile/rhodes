@@ -856,17 +856,18 @@ def add_extension(path,dest)
   
   start = pwd
   chdir path if File.directory?(path)
-
-  Dir.glob("*").each do |f| 
+  puts 'chdir path=' + path.to_s
+   
+  Dir.glob("*").each do |f|
     cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
   end  
 
   if $current_platform == "bb"
-    cp_r 'app', File.join( dest, "apps/app" ) if File.exist? 'app'
-    cp_r 'public', File.join( dest, "apps/public" ) if File.exist? 'public'
+    FileUtils.cp_r 'app', File.join( dest, "apps/app" ) if File.exist? 'app'
+    FileUtils.cp_r 'public', File.join( dest, "apps/public" ) if File.exist? 'public'
   else
-    cp_r 'app', File.join( File.dirname(dest), "apps/app" ) if File.exist? 'app'
-    cp_r 'public', File.join( File.dirname(dest), "apps/public" ) if File.exist? 'public'
+    FileUtils.cp_r('app', File.join( File.dirname(dest), "apps/app" ).to_s) if File.exist? 'app'
+    FileUtils.cp_r('public', File.join( File.dirname(dest), "apps").to_s) if File.exist? 'public'
   end
   
   chdir start
@@ -892,7 +893,6 @@ def find_ext_ingems(extname)
   
   extpath
 end
-
 def write_modules_js(filename, modules)
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -937,9 +937,7 @@ def init_extensions(startdir, dest)
     puts 'ext - ' + extname
     
     extpath = nil
-    extpaths.each do |p|
-      #next if p.index("rhodes") && extname.downcase() == "barcode" && $current_platform == "wm"
-      
+    extpaths.each do |p|    
       ep = File.join(p, extname)
       if File.exists?( ep ) && is_ext_supported(ep)
         extpath = ep
@@ -950,18 +948,18 @@ def init_extensions(startdir, dest)
     if extpath.nil?        
         extpath = find_ext_ingems(extname) 
         if extpath
-            extpath = nil unless is_ext_supported(extpath)
+          extpath = nil unless is_ext_supported(extpath)
         end    
     end
       
     if (extpath.nil?) && (extname != 'rhoelements-license') && (extname != 'motoapi')
-		  raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
-	  end
+      raise "Can't find extension '#{extname}'. Aborting build.\nExtensions search paths are:\n#{extpaths}"
+    end
 
     $app_extensions_list[extname] = extpath
-        
+   
     unless extpath.nil?      
-      add_extension(extpath, dest) unless dest.nil?
+      puts 'iter=' + extpath.to_s    
 
       if $config["platform"] != "bb"
         extyml = File.join(extpath, "ext.yml")
@@ -974,7 +972,7 @@ def init_extensions(startdir, dest)
           type = extconf["exttype"]
           wm_type = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths = extconf["xml_api_paths"]
-            
+        
           if nlib != nil
             nlib.each do |libname|
               nativelib << libname
@@ -982,7 +980,7 @@ def init_extensions(startdir, dest)
           end
           
           extentries << entry unless entry.nil?
-          
+         
           if type.to_s() != "nativelib"
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
@@ -1016,11 +1014,15 @@ def init_extensions(startdir, dest)
               end
             end
           end
-        end      
-      end  
+        end 
+      end
+      
+      add_extension(extpath, dest) unless dest.nil?  
     end    
   end
-  
+
+  puts 'extjsmodules=' + extjsmodules.to_s
+
   #TODO: checker update
   gen_checker.update
   
@@ -1083,7 +1085,12 @@ def init_extensions(startdir, dest)
       chdir dest
       $excludeextlib.each {|e| Dir.glob(e).each {|f| rm f}}
   end
+<<<<<<< HEAD
   #puts "end of init extension"
+=======
+  puts "end of init extension"
+  #exit
+>>>>>>> master
 end
 
 def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)

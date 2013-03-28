@@ -11,7 +11,7 @@
 
 typedef <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>Proxy<ArgumentsAdapter<std::vector<VALUE> > > ObjectProxy;
 
-using namespace rhoelements;
+using namespace rho::apiGenerator;
 extern "C"
 {
 
@@ -40,19 +40,21 @@ $cur_module.methods.each do |method|
 if method.access == ModuleMethod::ACCESS_STATIC %>
 <%= api_generator_MakeRubyMethodDecl($cur_module.name, method, true)%>
 {
-    RAWTRACE(__FUNCTION__);<%
+    RAWTRACE2("%s - argc: %d", __FUNCTION__, argc);<%
 else %>
 static VALUE <%= $cur_module.name %>_<%= method.native_name %>(int argc, VALUE *argv, const rho::String& id)
 {
     RAWTRACE2("%s(id=%s)", __FUNCTION__, id.c_str());<%
 end %>
-    MethodResultJni result;
+    MethodResultJni result(true);
     if(!result)
     {
-        result.setError("JNI error: failed to initialize MethodResult java object");
         RAWLOG_ERROR("JNI error: failed to initialize MethodResult java object ^^^");
-        return result.toRuby();
+        result.setError("JNI error: failed to initialize MethodResult java object");
+        return CMethodResultConvertor().toRuby(result, false);
     }
+    
+    RAWTRACE("MethodResultJni instance is created");
 <%
 unless method.access == ModuleMethod::ACCESS_STATIC %>
     ObjectProxy <%= $cur_module.name.downcase %>(id);<%
@@ -72,46 +74,55 @@ end %>
 
     if((argc < <%= min_params %>) || (argc > <%= max_params %>))
     {
-        result.setArgError("Wrong number of arguments");
         RAWLOG_ERROR1("Wrong number of arguments: %d ^^^", argc);
-        return result.toRuby();
+        result.setArgError("Wrong number of arguments");
+        return CMethodResultConvertor().toRuby(result, false);
     }
     
     unsigned realParamCount = (argc < <%= method.params.size %>) ? argc : <%= method.params.size %>;
     std::vector<VALUE> arguments(argv, argv + realParamCount);
+    
+    RAWTRACE1("Final arguments count: %d", arguments.size());
+    
     if(argc > <%= method.params.size %>)
     {
         if (rho_ruby_is_proc(argv[<%= method.params.size %>]) || rho_ruby_is_method(argv[<%= method.params.size %>]))
         {
             result.setRubyProcCallBack(argv[<%= method.params.size %>]);
+            RAWTRACE("Ruby proc callback is set");
         } else
         {
             if(argc > <%= method.params.size+1 %>)
                 result.setCallBack(argv[<%= method.params.size %>], argv[<%= method.params.size+1 %>]);
             else
                 result.setCallBack(argv[<%= method.params.size %>]);
-    
+            
+            RAWTRACE("Callback URL is set");
         }
-        if(!result.hasCallBackUrl())
+        if(!result.hasCallback())
         {
             RAWLOG_ERROR("Error setting callback ^^^");
-            return result.toRuby();
+            return CMethodResultConvertor().toRuby(result, false);
         }
     }
 <%
+
+if api_generator_isApiObjectParam(method.result)
+  if method.result.type == MethodParam::TYPE_SELF %>
+    result.setRubyObjectClass(getRuby_<%= $cur_module.name %>_Module());
+    RAWTRACE("Ruby object class is set");<%
+  else %>
+    result.setObjectClassPath("<%= api_generator_ruby_makeApiObjectTypeName(method.result, $cur_module) %>");
+    RAWTRACE("Object class path is set");
+<% end
+end
 if method.access == ModuleMethod::ACCESS_STATIC %>
     ObjectProxy::<%= method.native_name %>(argumentsAdapter(arguments), result); <%
 else %>
     <%= $cur_module.name.downcase %>.<%= method.native_name %>(argumentsAdapter(arguments), result); <%
 end %>
-    VALUE res = <%
-if api_generator_isApiObjectParam(method.result) %>
-        result.enumerateRubyObjects(rho_ruby_get_class_byname("<%=api_generator_ruby_makeApiObjectTypeName(method.result, $cur_module)%>"));
-<%
-else %>
-        result.toRuby();
-<%
-end %>
+    RAWTRACE("Native metod has invoked, converting result");
+    VALUE res = CMethodResultConvertor().toRuby(result, false);
     RAWTRACE(__FUNCTION__);
     return res;
 }<%

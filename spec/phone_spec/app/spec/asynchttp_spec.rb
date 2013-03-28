@@ -10,7 +10,7 @@ describe "AsyncHttp" do
         File.delete(file_name) if File.exists?(file_name)		
         
     end
-    
+
     it "should http get" do
         res = Rho::AsyncHttp.get(
           :url => 'http://www.apache.org/licenses/LICENSE-2.0' )
@@ -35,6 +35,7 @@ describe "AsyncHttp" do
         
         #TODO: post_test
     end
+
 if !defined?(RHO_WP7)
     it "should http download" do
 
@@ -88,56 +89,56 @@ if !defined?(RHO_WP7)
     end
 
     it "should http partial download" do
-        file_name_source = File.join(Rho::RhoApplication::get_base_app_path(), 'testA')
-        file_name_dest = File.join(Rho::RhoApplication::get_base_app_path(), 'testB')
+        
+        host = SPEC_LOCAL_SERVER_HOST
+        port = SPEC_LOCAL_SERVER_PORT
+        url = "http://#{host}:#{port}/resume_download"
+        
+        
+        filename = File.join(Rho::RhoApplication::get_base_app_path(), 'test')
+        tmpFilename = filename + '.rhodownload'
+        modtimeFile = filename + '.modtime'
+        
+        File.delete(filename) if File.exists?(filename)
+        File.delete(tmpFilename) if File.exists?(tmpFilename)
+        File.delete(modtimeFile) if File.exists?(modtimeFile)
 
-        File.delete(file_name_source) if File.exists?(file_name_source)
-        File.delete(file_name_dest) if File.exists?(file_name_dest)
-
-        reference_url = 'http://yandex.st/jquery/cookie/1.0/jquery.cookie.min.js'
-        reference_size = 732
-        part_size = 366
-
-        res = Rho::AsyncHttp.download_file(
-          :url => reference_url,
-          :headers => {"Accept-Encoding"=>""}, #disable any compression
-          :filename => file_name_source )
+        res = Rho::AsyncHttp.download_file(:url => url, :filename => filename )
+        
         puts "res : #{res}"  
         
-        res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should == reference_size
-        res['headers']['content-type'].should == 'application/x-javascript'
+        res['status'].should == 'error'
+        res['http_error'].should == '503'
+        res['headers']['content-length'].to_i.should == 10
 
-        File.exists?(file_name_source).should == true
-        orig_len = File.size(file_name_source)
-        orig_len.should == res['headers']['content-length'].to_i
+        File.exists?(filename).should == false
+        File.exists?(tmpFilename).should == true
+        File.exists?(modtimeFile).should == true
 
-        #if file was downloaded succesfully leave only part of it for a next test
-        if orig_len == File.size(file_name_source)
-          orig_part = open(file_name_source, "rb") {|io| io.read(part_size) }
-          open(file_name_dest, "wb+") {|io| io.write(orig_part) }
-          File.size(file_name_dest).should == part_size
-        end
-
-        #check that in case of re-download files are the same        
-        res = Rho::AsyncHttp.download_file(
-          :url => reference_url,
-          :headers => {"Accept-Encoding"=>""}, #disable any compression
-          :filename => file_name_dest )
-        puts "res : #{res}"  
+        File.size(tmpFilename).should == 5
+        
+        content = open(tmpFilename,'rb').read        
+        content.should == '12345'
+        
+        res = Rho::AsyncHttp.download_file( :url => url, :filename => filename )
+        
+        puts "res : #{res}"
         
         res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should == (reference_size - part_size)
-        res['http_error'].should == '206'
-
-        File.exists?(file_name_dest).should == true
-        File.size(file_name_dest).should == orig_len
-
-        file_a = open(file_name_source, "rb") {|io| io.read() }
-        file_b = open(file_name_dest, "rb") {|io| io.read() }
-
-        (file_a <=> file_b).should == 0
+        res['headers']['content-length'].to_i.should == 5
+        res['http_error'].should == '206'        
+        
+        File.exists?(filename).should == true
+        File.exists?(tmpFilename).should == false
+        File.exists?(modtimeFile).should == false
+        
+        File.size(filename).should == 10
+        
+        content = open(filename,'rb').read
+        content.should == '1234567890'
     end
+    
+
 end
     it "should http upload" do
         

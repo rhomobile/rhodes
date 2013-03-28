@@ -78,6 +78,15 @@ String AndroidMemoryInfoCollector::collect()
     return rho_cast<String>(env,jStr);
 }
 
+String clearException(JNIEnv* env)
+{
+    jholder<jthrowable> jhexc = env->ExceptionOccurred();
+    jholder<jclass> jhclass = env->GetObjectClass(jhexc.get());
+    jmethodID mid = env->GetMethodID(jhclass.get(), "toString", "()Ljava/lang/String;");
+    env->ExceptionClear();
+    jhstring jhmsg = (jstring)env->CallObjectMethod(jhexc.get(), mid);
+    return rho_cast<rho::String>(env, jhmsg);
+}
 
 } // namespace common
 } // namespace rho
@@ -191,6 +200,7 @@ std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstri
         const char *ts = env->GetStringUTFChars(s, JNI_FALSE);
         std::string ret(ts);
         env->ReleaseStringUTFChars(s, ts);
+        RAWTRACE1("rho_cast<string, jstring>: %s", ret.c_str());
         return ret;
     }
 }

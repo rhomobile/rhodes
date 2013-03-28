@@ -10,16 +10,16 @@ extern "C" void Init_CoreAPI_Extension()
 {
     Init_System();
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_MACOSX)
     Init_Application();
 #endif
 
 	Init_Network();
     Init_SQLite3();
-#if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_WP8)
+#if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_ANDROID) || defined(OS_WP8)
     Init_Log();
 #endif
-#if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
+#if defined(OS_MACOSX) || defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || defined(OS_ANDROID)
     Init_WebView();
 #endif
 
