@@ -272,9 +272,9 @@ describe("Rho common API", function () {
 
             db.startTransaction();
             db.execute('INSERT INTO t (x, y, z) VALUES (?, ?, ?);', false, [10, 'ten', 'TEN']);
-            expect(db.execute('SELECT * FROM t;')).toEqual([{x: '10', y: 'ten', z: 'TEN'}]);
+            expect(db.execute('SELECT * FROM t;')).toEqual([{x: 10, y: 'ten', z: 'TEN'}]);
             db.commitTransaction();
-            expect(db.execute('SELECT * FROM t;')).toEqual([{x: '10', y: 'ten', z: 'TEN'}]);
+            expect(db.execute('SELECT * FROM t;')).toEqual([{x: 10, y: 'ten', z: 'TEN'}]);
         });
 
         // SQLite3.prototype.startTransaction = function(/* optional function */ oResult)
@@ -284,7 +284,7 @@ describe("Rho common API", function () {
 
             db.startTransaction();
             db.execute('INSERT INTO t (x, y, z) VALUES (?, ?, ?);', false, [10, 'ten', 'TEN']);
-            expect(db.execute('SELECT * FROM t;')).toEqual([{x: '10', y: 'ten', z: 'TEN'}]);
+            expect(db.execute('SELECT * FROM t;')).toEqual([{x: 10, y: 'ten', z: 'TEN'}]);
             db.rollbackTransaction();
             expect(db.execute('SELECT * FROM t;')).toEqual([]);
         });
@@ -296,7 +296,7 @@ describe("Rho common API", function () {
             db.execute('DROP TABLE IF EXISTS t; CREATE TABLE t(x INTEGER, y TEXT, z VARCHAR(10));', true);
             db.execute('INSERT INTO t (x, y, z) VALUES (?, ?, ?);', false, [10, 'ten', 'TEN']);
             db.unlockDb();
-            expect(db.execute('SELECT * FROM t;')).toEqual([{x: '10', y: 'ten', z: 'TEN'}]);
+            expect(db.execute('SELECT * FROM t;')).toEqual([{x: 10, y: 'ten', z: 'TEN'}]);
         });
 
         // SQLite3.prototype.destroyTables = function(/* const rho::Vector<rho::String>& */ include, /* const rho::Vector<rho::String>& */ exclude, /* optional function */ oResult)
@@ -387,9 +387,9 @@ describe("Rho common API", function () {
 
             db.startTransaction();
             db.executeSql('INSERT INTO t (x, y, z) VALUES (?, ?, ?);', [10, 'ten', 'TEN']);
-            expect(db.executeSql('SELECT * FROM t;')).toEqual([{x: '10', y: 'ten', z: 'TEN'}]);
+            expect(db.executeSql('SELECT * FROM t;')).toEqual([{x: 10, y: 'ten', z: 'TEN'}]);
             db.commitTransaction();
-            expect(db.executeSql('SELECT * FROM t;')).toEqual([{x: '10', y: 'ten', z: 'TEN'}]);
+            expect(db.executeSql('SELECT * FROM t;')).toEqual([{x: 10, y: 'ten', z: 'TEN'}]);
         });
 
         // Database.prototype.startTransaction = function()
@@ -399,7 +399,7 @@ describe("Rho common API", function () {
 
             db.startTransaction();
             db.executeSql('INSERT INTO t (x, y, z) VALUES (?, ?, ?);', [10, 'ten', 'TEN']);
-            expect(db.executeSql('SELECT * FROM t;')).toEqual([{x: '10', y: 'ten', z: 'TEN'}]);
+            expect(db.executeSql('SELECT * FROM t;')).toEqual([{x: 10, y: 'ten', z: 'TEN'}]);
             db.rollbackTransaction();
             expect(db.executeSql('SELECT * FROM t;')).toEqual([]);
         });
@@ -411,7 +411,7 @@ describe("Rho common API", function () {
             db.executeBatchSql('DROP TABLE IF EXISTS t; CREATE TABLE t(x INTEGER, y TEXT, z VARCHAR(10));');
             db.executeSql('INSERT INTO t (x, y, z) VALUES (?, ?, ?);', [10, 'ten', 'TEN']);
             db.unlockDb();
-            expect(db.executeSql('SELECT * FROM t;')).toEqual([{x: '10', y: 'ten', z: 'TEN'}]);
+            expect(db.executeSql('SELECT * FROM t;')).toEqual([{x: 10, y: 'ten', z: 'TEN'}]);
         });
 
         // Database.prototype.isUiWaitForDb = function()
@@ -425,7 +425,7 @@ describe("Rho common API", function () {
             db.executeSql('CREATE TABLE t(x INTEGER, y TEXT, z VARCHAR(10));');
             db.executeSql('INSERT INTO t (x, y, z) VALUES (?, ?, ?);', [10, 'ten', 'TEN']);
             db.executeSql('INSERT INTO t (x, y, z) VALUES (?, ?, ?);', [11, 'eleven', 'ELEVEN']);
-            expect(db.executeSql('SELECT * FROM t ORDER BY x DESC;')).toEqual([{x: '11', y: 'eleven', z: 'ELEVEN'}, {x: '10', y: 'ten', z: 'TEN'}]);
+            expect(db.executeSql('SELECT * FROM t ORDER BY x DESC;')).toEqual([{x: 11, y: 'eleven', z: 'ELEVEN'}, {x: 10, y: 'ten', z: 'TEN'}]);
         });
 
         // Database.prototype.executeBatchSql = function(/* const rho::String& */ sqlStmt, /* const rho::Vector<rho::String>& */ args)
