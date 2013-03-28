@@ -1793,7 +1793,7 @@ int CMainWindow::tabbarGetCurrent()
     return 0;
 }
 
-bool getFullScreen()
+bool CMainWindow::getFullScreen()
 {
 #if defined(OS_WINCE)
     return m_bFullScreen;

@@ -202,7 +202,7 @@ HINSTANCE CRhodesModule::m_hInstance;
 CRhodesModule _AtlModule;
 bool g_restartOnExit = false;
 
-#if !defined(OS_WINDOWS_DESKTOP)
+//#if !defined(OS_WINDOWS_DESKTOP)
 rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 {
 #if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER)
@@ -213,7 +213,7 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
     return new CIEBrowserEngine(hwndParent, rho_wmimpl_get_appinstance());
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 }
-#endif //!OS_WINDOWS_DESKTOP
+//#endif //!OS_WINDOWS_DESKTOP
 
 rho::IMainWindow* rho_wmimpl_createMainWindow(HWND hwndParent, const StringW& wndTitle, DWORD dwStyle, rho::EMainWindowType type)
 {
