@@ -181,7 +181,12 @@ public class SplashScreen implements MainView{
     public IRhoWebView getWebView(Object hdl) {
         return mBackendView.getWebView(hdl);
     }
-	
+
+    @Override
+    public int getWebViewTab(Object hdl) {
+        return mBackendView.getWebViewTab(hdl);
+    }
+
 	@Override
 	public void goBack() {
 		mBackendView.goBack();

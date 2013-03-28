@@ -363,7 +363,16 @@ public class TabbedMainView implements MainView {
         throw new IllegalArgumentException("Wrong WebView handle: " + handle );
     }
 
-	private void processTabHostColors(TabHost tabHost, int SelectedColor, boolean useSelectedColor) {
+    private int getTab(Object handle) throws IllegalArgumentException {
+        for(int i=0; i < tabData.size(); ++i) {
+            if (tabData.get(i).view.getWebView(-1).getView() == handle) {
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("Wrong WebView handle: " + handle );
+    }
+
+    private void processTabHostColors(TabHost tabHost, int SelectedColor, boolean useSelectedColor) {
 		
 		for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) { 
 			if ((i == tabHost.getCurrentTab()) && useSelectedColor) {
@@ -876,6 +885,11 @@ public class TabbedMainView implements MainView {
     }
 
     @Override
+    public int getWebViewTab(Object handle) {
+        return getTab(handle);
+    }
+
+    @Override
     public IRhoWebView detachWebView() {
         return getTabMainView(activeTab()).detachWebView();
     }
@@ -896,12 +910,10 @@ public class TabbedMainView implements MainView {
 	}
 	
 	public void navigate(String url, int index) {
-		//Utils.platformLog("TabbedMainView", "navigate( "+url+" , "+String.valueOf(index)+" )");
 		getTabMainView(index).navigate(url, 0);
 	}
 	
 	public void reload(int index) {
-		//Utils.platformLog("TabbedMainView", "reload( "+String.valueOf(index)+" )");
 		getTabMainView(index).reload(0);
 	}
 	
@@ -910,7 +922,6 @@ public class TabbedMainView implements MainView {
 	}
 
 	public void switchTab(int index) {
-		//Utils.platformLog("TabbedMainView", "switchTab( "+String.valueOf(index)+" )");
 		host.setCurrentTab(index);
 		tabIndex = index;
 	}
