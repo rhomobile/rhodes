@@ -142,13 +142,28 @@ public class GoogleWebView implements IRhoWebView {
     }
 
     @Override
-    public void setZoom(int scale) {
-        // TODO Auto-generated method stub
+    public void setZoom(double scale) {
+        mWebView.setInitialScale((int)(scale * 100));
     }
 
     @Override
     public void setTextZoom(int scale) {
-        //mWebView.getSettings().setTextZoom(scale);
+        int googleScale = 100;
+        switch(scale) {
+        case 0:
+            googleScale = 33;
+            break;
+        case 1:
+            googleScale = 66;
+            break;
+        case 3:
+            googleScale = 150;
+            break;
+        case 4:
+            googleScale = 200;
+            break;
+        }
+        mWebView.getSettings().setTextZoom(googleScale);
     }
 
     @Override

@@ -333,10 +333,11 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     
     public void onSetPropertiesData(View view,String propId, String data, int position, int total) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onSetPropertiesData(this, propId, data, position, total, makeDefExtData(view), res);
+                res = ext.onSetPropertiesData(this, propId, data, position, total, rhoWebView, res);
             }
         }
     }
@@ -351,6 +352,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
 
     public void onBeforeNavigate(View view, String url) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         if (isFirstNavigate()) {
             Logger.T(TAG, "onBeforeNavigate first time");
             firstNavigate();
@@ -359,16 +361,19 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onBeforeNavigate(this, url, makeDefExtData(view), res);
+                res = ext.onBeforeNavigate(this, url, rhoWebView, res);
             }
         }
     }
 
     public void onNavigateComplete(View view, String url) {
+        int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
+        IRhoWebView rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
+        rhoWebView.loadUrl("javascript:window['__rhoJsVmID'] = '" + String.valueOf(tabIndex) + "'");
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onNavigateComplete(this, url, makeDefExtData(view), res);
+                res = ext.onNavigateComplete(this, url, rhoWebView, res);
             }
         }
     }
@@ -385,136 +390,153 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     public void onAlert(View view, String msg) {
         Logger.T(TAG, "onAlert");
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onAlert(this, msg, makeDefExtData(view), res);
+                res = ext.onAlert(this, msg, rhoWebView, res);
             }
         }
     }
 
     public void onConfirm(View view, String msg) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onConfirm(this, msg, makeDefExtData(view), res);
+                res = ext.onConfirm(this, msg, rhoWebView, res);
             }
         }
     }
 
     public void onConsole(View view, String msg) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onConsole(this, msg, makeDefExtData(view), res);
+                res = ext.onConsole(this, msg, rhoWebView, res);
             }
         }
     }
 
     public void onInputMethod(View view, boolean enabled, String type, Rect area) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onInputMethod(this, enabled, type, area, makeDefExtData(view), res);
+                res = ext.onInputMethod(this, enabled, type, area, rhoWebView, res);
             }
         }
     }
 
     public void onLoadEnd(View view, String url, long arg2, long arg3) {
+        int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
+        IRhoWebView rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
+        rhoWebView.loadUrl("javascript:window['__rhoJsVmID'] = '" + String.valueOf(tabIndex) + "'");
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onNavigateComplete(this, url, makeDefExtData(view), res);
+                res = ext.onNavigateComplete(this, url, rhoWebView, res);
             }
         }
     }
 
     public void onLoadError(View view, IRhoExtension.LoadErrorReason reason) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onNavigateError(this, "", reason, makeDefExtData(view), res);
+                res = ext.onNavigateError(this, "", reason, rhoWebView, res);
             }
         }
     }
 
     public void onLoadProgress(View view, int val, int total) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onNavigateProgress(this, "", val, total, makeDefExtData(view), res);
+                res = ext.onNavigateProgress(this, "", val, total, rhoWebView, res);
             }
         }
     }
 
     public void onMetaEnd(View view) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onSetPropertiesDataEnd(this, makeDefExtData(view), res);
+                res = ext.onSetPropertiesDataEnd(this, rhoWebView, res);
             }
         }
     }
 
     public void onPrompt(View view, String prompt, String defaultResponse) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onPrompt(this, prompt, defaultResponse, makeDefExtData(view), res);
+                res = ext.onPrompt(this, prompt, defaultResponse, rhoWebView, res);
             }
         }
     }
 
     public void onSelect(View view, String[] lines, int pos) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
                 boolean res = false;
-                res = ext.onSelect(this, lines, pos, makeDefExtData(view), res);
+                res = ext.onSelect(this, lines, pos, rhoWebView, res);
             }
         }
     }
 
     public void onStatus(View view, String msg) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onStatus(this, msg, makeDefExtData(view), res);
+                res = ext.onStatus(this, msg, rhoWebView, res);
             }
         }
     }
 
     public void onTitle(View view, String title) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onStatus(this, title, makeDefExtData(view), res);
+                res = ext.onStatus(this, title, rhoWebView, res);
             }
         }
     }
     
     public void onAuthRequired(View view, String type, String url, String realm) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.onAuthRequired(this, type, url, realm, makeDefExtData(view), res);
+                res = ext.onAuthRequired(this, type, url, realm, rhoWebView, res);
             }
         }
     }
 
     public void startLocationUpdates(View view, boolean val) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.startLocationUpdates(this, val, makeDefExtData(view), res);
+                res = ext.startLocationUpdates(this, val, rhoWebView, res);
             }
         }
     }
 
     public void stopLocationUpdates(View view) {
+        IRhoWebView rhoWebView = makeDefExtData(view);
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
-                res = ext.stopLocationUpdates(this, makeDefExtData(view), res);
+                res = ext.stopLocationUpdates(this, rhoWebView, res);
             }
         }
     }

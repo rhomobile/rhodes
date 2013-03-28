@@ -66,16 +66,16 @@ public class RhoWebViewClient extends WebViewClient
     
     @Override
     public void onPageFinished(WebView view, String url) {
-        
+
         Logger.profStop("BROWSER_PAGE");
-        
+
         // Set title
         String title = view.getTitle();
         RhodesActivity.safeGetInstance().setTitle(title);
         RhodesActivity.safeGetInstance().getWindow().setFeatureInt(
                     Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
-        
-        RhoExtManager.getImplementationInstance().onLoadEnd(view, url, 0, 0);
+
+        RhoExtManager.getImplementationInstance().onNavigateComplete(view, url);
         
         super.onPageFinished(view, url);
     }

@@ -158,7 +158,7 @@ public class WebViewSingleton extends WebViewSingletonBase implements
 
     @Override
     public void setZoomPage(double value, IMethodResult result) {
-        //RhodesActivity.safeGetInstance().getMainView().getWebView(-1).setZoom(scale);
+        RhodesActivity.safeGetInstance().getMainView().getWebView(-1).setZoom(value);
 
     }
 
@@ -170,8 +170,7 @@ public class WebViewSingleton extends WebViewSingletonBase implements
 
     @Override
     public void setTextZoomLevel(int value, IMethodResult result) {
-        //RhodesActivity.safeGetInstance().getMainView().getWebView(-1).setTextZoom(scale);
-
+        RhodesActivity.safeGetInstance().getMainView().getWebView(-1).setTextZoom(value);
     }
 
     @Override

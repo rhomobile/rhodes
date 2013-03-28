@@ -167,9 +167,13 @@ public class SimpleMainView implements MainView {
 	}
 
     @Override
-    public IRhoWebView getWebView(Object nativeWebView)
-    {
+    public IRhoWebView getWebView(Object nativeWebView) {
         return webView;
+    }
+    
+    @Override
+    public int getWebViewTab(Object nativeWebView) {
+        return 0;
     }
 
     public void setCustomView(IRhoCustomView customView) {
