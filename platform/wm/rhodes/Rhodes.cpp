@@ -441,9 +441,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-//#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
     LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
-//#endif // RHODES_EMULATOR
 
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
@@ -473,22 +471,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 
 	LOG(INFO) + "Rhodes started";
-#ifdef OS_WINDOWS_DESKTOP
-	if (m_strHttpProxy.length() > 0) {
-		parseHttpProxyURI(m_strHttpProxy);
-	} else
-#endif
-	{
-		if (RHOCONF().isExist("http_proxy_url")) {
-			parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-		} else {
-			// it's important to call this method from here to perform
-			// a proper initialization of proxy implementation for Win32
-			GetAppWindow().setProxy();
-#endif
-		}
-	}
 
 #ifdef RHODES_EMULATOR
     if (RHOSIMCONF().getString("debug_host").length() > 0)
@@ -502,9 +484,12 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	WIN32_FIND_DATA wfd;
 	
 	// rootpath + "rho/"
-	if (m_strRootPath.at(m_strRootPath.length()-1) == '/') {
+	if (m_strRootPath.at(m_strRootPath.length()-1) == '/') 
+    {
 		hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, m_strRootPath.find_last_of('/'))).c_str(), &wfd);
-	} else if (m_strRootPath.at(m_strRootPath.length()-1) == '\\') {
+	}
+    else if (m_strRootPath.at(m_strRootPath.length()-1) == '\\') 
+    {
 		//delete all '\' from the end of the pathname
 		int i = m_strRootPath.length();
 		for ( ; i != 1; i--) {
@@ -514,7 +499,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, i)).c_str(), &wfd);
 	}
 
-	if (INVALID_HANDLE_VALUE == hFind || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+	if (INVALID_HANDLE_VALUE == hFind || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) 
+    {
 		int last = 0, pre_last = 0;
 		last = getRhoRootPath().find_last_of('\\');
 		pre_last = getRhoRootPath().substr(0, last).find_last_of('\\');
@@ -529,8 +515,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 									convertToStringW(messageText).c_str(),
 									convertToStringW(appName).c_str(),
 									MB_ICONERROR | MB_OK);
-
-
 		return S_FALSE;
     }
 
@@ -557,7 +541,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif //RHODES_EMULATOR
 
 #if defined(OS_WINDOWS_DESKTOP)
-    m_appWindow =rho_wmimpl_createMainWindow(NULL, windowTitle, dwStyle, eQtWindow);
+    m_appWindow = rho_wmimpl_createMainWindow(NULL, windowTitle, dwStyle, eQtWindow);
 #else //OS_WINDOWS_DESKTOP
     m_appWindow = rho_wmimpl_createMainWindow(NULL, windowTitle, dwStyle, eNativeWindow);
 #endif
@@ -565,6 +549,24 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     if (NULL == m_appWindow->GetMainWindowHWND())
     {
         return S_FALSE;
+    }
+
+#ifdef OS_WINDOWS_DESKTOP
+    if (m_strHttpProxy.length() > 0) {
+        parseHttpProxyURI(m_strHttpProxy);
+    } else
+#endif
+    {
+        if (RHOCONF().isExist("http_proxy_url"))
+        {
+            parseHttpProxyURI(RHOCONF().getString("http_proxy_url"));
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+        } else {
+            // it's important to call this method from here to perform
+            // a proper initialization of proxy implementation for Win32
+            //	GetAppWindow().setProxy();
+#endif
+        }
     }
 
     m_appWindow->UpdateWindow(nShowCmd);

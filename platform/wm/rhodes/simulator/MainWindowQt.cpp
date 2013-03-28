@@ -1014,17 +1014,18 @@ void CMainWindowQt::setProxy()
 
 bool CMainWindowQt::Initialize(const wchar_t* title, DWORD dwStyle)
 {
-    return true;
+    return Initialize(title);
 }
 
 HWND CMainWindowQt::getWebViewHWND(int tabIdx)
 {    
+    //((QtMainWindow*)qtMainWindow)->main_webView->handle()
     return 0;
 }
 
 HWND CMainWindowQt::GetMainWindowHWND()
 {
-    return 0;
+    return this->m_hWnd;
 }
 
 void CMainWindowQt::UpdateWindow(int showCmd)
