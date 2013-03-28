@@ -1,3 +1,4 @@
+#if !defined( RHODES_EMULATOR )
 #include "common/RhodesApp.h"
 #include "logging/RhoLog.h"
 
@@ -11,3 +12,4 @@ BOOL CreateDeleteRegFile (HKEY hroot, LPCWSTR psubkey, LPCWSTR psetting);
 void GetRegistrySetting(const rho::String& hKey, const rho::String& subKey, const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
 HKEY ConvertToHKEY(rho::String neonKey);
 DWORD ConvertToType(rho::String neonType);
+#endif
