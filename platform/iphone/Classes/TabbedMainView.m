@@ -457,6 +457,7 @@
             
 			
             subController.title = label;
+            subController.thisTabIndex = [views count];
             NSString *imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:icon];
 			
 			
