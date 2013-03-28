@@ -2,7 +2,7 @@
 (function ($, rho, rhoUtil) {
     'use strict';
 
-    var moduleNS = 'Rho.Database_';
+    var moduleNS = 'Rho.Database';
 
     var executeSql = function(db, sqlStmt, isBatch, args) {
         return (sqlStmt === undefined) ? [] : db.execute(sqlStmt, isBatch, args);
@@ -99,7 +99,7 @@
 
 
     Database.prototype.destroyTable = function(/* const rho::String& */ tableName) {
-        this.destroyTables({'include': tableName});
+        this.db.destroyTables([tableName], []);
     };
 
 

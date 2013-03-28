@@ -145,14 +145,13 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
 @end
 
 
-<%= "rho::String js_"+$cur_module.name+"_"+module_method.native_name+"_Obj(rho::json::CJSONArray& argv, id<#{interface_name}>objItem) {" %>
+<%= "rho::String js_"+$cur_module.name+"_"+module_method.native_name+"_Obj(rho::json::CJSONArray& argv, id<#{interface_name}>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID) {" %>
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[<%= module_method.params.size %>+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     <%
      lines = prepare_rho_api_params_structure_lines(module_method.params, 'rho_api_params')
@@ -202,29 +201,14 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     }
 
     <% if is_callback_possible %>
-    // check callback
-    if (argc >= (<%= module_method.params.size %>+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(<%= module_method.params.size %>);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (<%= module_method.params.size %>+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(<%= module_method.params.size %>+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     <% end %>
 
-    if (callbackURL != nil) {
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
         <% if module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI %>
         [<%= $cur_module.name %>_<%= module_method.native_name %>_caller <%= module_method.native_name %>_in_UI_thread:[<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         <% else %>
@@ -245,8 +229,8 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
         <% end
         end%>
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
@@ -257,10 +241,10 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
 <% if module_method.access == ModuleMethod::ACCESS_STATIC %>
     id<I<%= $cur_module.name %>Factory> factory = [<%= $cur_module.name %>FactorySingleton get<%= $cur_module.name %>FactoryInstance];
     id<I<%= $cur_module.name %>Singleton> singleton = [factory get<%= $cur_module.name %>Singleton];
-    return <%= "js_"+$cur_module.name+"_"+module_method.native_name %>_Obj(argv, singleton);
+    return <%= "js_"+$cur_module.name+"_"+module_method.native_name %>_Obj(argv, singleton, strCallbackID, strJsVmID);
 <% else %>
     id<I<%= $cur_module.name %>> item = <%= $cur_module.name %>_makeInstanceByJSObject(strObjID);
-    return <%= "js_"+$cur_module.name+"_"+module_method.native_name %>_Obj(argv, item);
+    return <%= "js_"+$cur_module.name+"_"+module_method.native_name %>_Obj(argv, item, strCallbackID, strJsVmID);
 <% end %>
 }
 
@@ -272,7 +256,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     NSString* defID = [singleton getDefaultID];
 
     id<I<%= $cur_module.name %>> item = [factory get<%= $cur_module.name %>ByID:defID];
-    return <%= "js_"+$cur_module.name+"_"+module_method.native_name %>_Obj(argv, item);
+    return <%= "js_"+$cur_module.name+"_"+module_method.native_name %>_Obj(argv, item, strCallbackID, strJsVmID);
 }
 
 <% end %>
@@ -281,7 +265,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
 
 
 <% if $cur_module.is_template_default_instance %>
-rho::String js_s_<%= $cur_module.name %>_getDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_<%= $cur_module.name %>_getDefaultID(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID)
 {
     id<I<%= $cur_module.name %>Factory> factory = [<%= $cur_module.name %>FactorySingleton get<%= $cur_module.name %>FactoryInstance];
     id<I<%= $cur_module.name %>Singleton> singleton = [factory get<%= $cur_module.name %>Singleton];
@@ -293,7 +277,7 @@ rho::String js_s_<%= $cur_module.name %>_getDefaultID(rho::json::CJSONArray& arg
     return res;
 }
 
-rho::String js_s_<%= $cur_module.name %>_setDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_<%= $cur_module.name %>_setDefaultID(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID)
 {
     id<I<%= $cur_module.name %>Factory> factory = [<%= $cur_module.name %>FactorySingleton get<%= $cur_module.name %>FactoryInstance];
     id<I<%= $cur_module.name %>Singleton> singleton = [factory get<%= $cur_module.name %>Singleton];

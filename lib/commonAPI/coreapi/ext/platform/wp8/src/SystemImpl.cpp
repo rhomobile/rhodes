@@ -62,6 +62,10 @@ public:
     virtual void getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult);
     virtual void getScreenSleeping(rho::apiGenerator::CMethodResult& oResult);
     virtual void setScreenSleeping( bool value, rho::apiGenerator::CMethodResult& oResult);
+	virtual void getShowKeyboard(rho::apiGenerator::CMethodResult& oResult);
+    virtual void setShowKeyboard( bool showKeyboard, rho::apiGenerator::CMethodResult& oResult);
+	virtual void setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult);
+    virtual void getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult);
 
     virtual void applicationInstall( const rho::String& applicationUrl, CMethodResult& oResult);
     virtual void isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult);
@@ -103,6 +107,22 @@ void CSystemImpl::getOsVersion(CMethodResult& oResult)
         oResult.set(StringW(buf));
     }
 #endif
+}
+
+void CSystemImpl::getShowKeyboard(rho::apiGenerator::CMethodResult& oResult)
+{
+}
+
+void CSystemImpl::setShowKeyboard( bool showKeyboard, rho::apiGenerator::CMethodResult& oResult)
+{
+}
+
+void CSystemImpl::setRegistrySetting( int hive,  int type,  const rho::String& subKey,  const rho::String& setting,  const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
+{
+}
+
+void CSystemImpl::getRegistrySetting( int hive,  const rho::String& subKey,  const rho::String& setting, rho::apiGenerator::CMethodResult& oResult)
+{
 }
 
 void CSystemImpl::getIsEmulator(CMethodResult& oResult)

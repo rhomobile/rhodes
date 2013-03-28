@@ -45,6 +45,7 @@
 	NSString* url_after_set_background;
 	BOOL is_url_after_set_background_redirect;
 	BOOL isBackgroundSetted;
+    int thisTabIndex;
 }
 
 @property (nonatomic,retain) UIWebView *webView;
@@ -57,6 +58,7 @@
 @property (assign) BOOL isBackgroundSetted;
 @property (assign) BOOL is_url_after_set_background_redirect;
 @property (nonatomic,retain) NSString* url_after_set_background;
+@property (assign) int thisTabIndex;
 
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p;

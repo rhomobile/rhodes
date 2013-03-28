@@ -23,7 +23,7 @@ function run_test_showAlert() {
 }
 
 function run_test_calcSumm() {
-       $.post('/system/js_api_entrypoint', JSON.stringify({"jsonrpc": "2.0","__rhoID": null,"__rhoClass": "Rho:Examples:SimpleOnlyStaticModule", "method": "calcSumm", "params": [23,32] ,"id": 1}), function(data) {
+       $.post('/system/js_api_entrypoint', JSON.stringify({"jsonrpc": "2.0","__rhoID": null,"__rhoClass": "Rho:Examples:SimpleOnlyStaticModule", "method": "calcSumm", "params": [23,32] ,"__rhoCallback": {"id": "some_id_#123", "vmID": "0"},"id": 1}), function(data) {
   alert("Data Loaded: " + data);
 } );
 }

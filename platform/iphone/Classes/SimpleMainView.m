@@ -87,7 +87,7 @@ int rho_sys_get_screen_height();
 
 @implementation SimpleMainView
 
-@synthesize webView, toolbar, navbar, nativeViewType, nativeViewView, mTabBarCallback, urlBasedNativeView, url_after_set_background, isBackgroundSetted, is_url_after_set_background_redirect;
+@synthesize webView, toolbar, navbar, nativeViewType, nativeViewView, mTabBarCallback, urlBasedNativeView, url_after_set_background, isBackgroundSetted, is_url_after_set_background_redirect, thisTabIndex;
 
 
 static BOOL makeHiddenUntilLoadContent = YES;
@@ -350,6 +350,8 @@ static BOOL makeHiddenUntilLoadContent = YES;
     rootFrame = frame;
 	
 	self.urlBasedNativeView = NO;
+    
+    self.thisTabIndex = 0;
     
 	self.url_after_set_background = nil;
 	self.isBackgroundSetted = YES;
@@ -1086,7 +1088,15 @@ static BOOL makeHiddenUntilLoadContent = YES;
 			}
 		}
 	}
-	self.url_after_set_background = nil;	
+	self.url_after_set_background = nil;
+    
+    
+    NSString* jscode = [NSString stringWithFormat:@"window['__rhoJsVmID']='%@'", [NSNumber numberWithInt:self.thisTabIndex]];
+    //[self executeJs:@"alert('hello')" tab:self.thisTabIndex];
+    [self executeJs:jscode tab:self.thisTabIndex];
+    //[self executeJs:@"alert(window['__rhoJsVmID'])" tab:self.thisTabIndex];
+
+    
     
 	// TODO
     /*
