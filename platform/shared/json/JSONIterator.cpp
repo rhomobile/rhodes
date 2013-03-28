@@ -289,7 +289,7 @@ boolean CJSONEntry::isBoolean() const
     return json_object_is_type(m_object, json_type_boolean) ? true : false;
 }
 
-boolean CJSONEntry::hasName(String name) const
+boolean CJSONEntry::hasName(const String& name) const
 {
     return json_object_object_get(m_object,const_cast<char*>(name.c_str())) != null;
 }

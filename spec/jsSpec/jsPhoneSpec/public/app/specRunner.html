@@ -13,7 +13,7 @@
   <script type="text/javascript" src="/public/jasmine/jasmine-1.3.1/jasmine.js"></script>
   <script type="text/javascript" src="/public/jasmine/jasmine-1.3.1/jasmine-html.js"></script>
 
-    <script type="text/javascript" src="consoleReporter.js"></script>
+    <script type="text/javascript" src="rhologReporter.js"></script>
   <script type="text/javascript" src="jasmine-extensions.js"></script>
 
   <!-- include source files here... -->
@@ -29,7 +29,7 @@
     (function() {
       var jasmineEnv = jasmine.getEnv();
       jasmineEnv.updateInterval = 1000;
-      jasmine.getEnv().addReporter(new jasmine.ConsoleReporter(console.log));
+      jasmine.getEnv().addReporter(new jasmine.RhologReporter());
 
       var htmlReporter = new jasmine.HtmlReporter();
 
