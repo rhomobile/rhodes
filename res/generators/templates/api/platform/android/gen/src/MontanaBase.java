@@ -86,19 +86,19 @@ end %>
 
     public static class <%= method.native_name %>Task implements Runnable {
         private I<%= $cur_module.name %> mApiObject; <%
-param_hash.each do |name, type| %>
-        private <%= type %> <%= name %>;<%
+method.params.each do |param| %>
+        private <%= param_hash[param.name] %> <%= param.name %>;<%
 end %>
         private IMethodResult mResult;
 
         public <%= method.native_name %>Task(I<%= $cur_module.name %> obj, <%
-param_hash.each do |name, type| %>
-                <%= type %> <%= name %>, <%
+method.params.each do |param| %>
+                <%= param_hash[param.name] %> <%= param.name %>, <%
 end %>
                 IMethodResult result) {
             this.mApiObject = obj; <%
-param_hash.each do |name, type| %>
-            this.<%= name %> = <%= name %>;<%
+method.params.each do |param| %>
+            this.<%= param.name %> = <%= param.name %>;<%
 end %>
             this.mResult = result;
         }
@@ -106,8 +106,8 @@ end %>
         @Override
         public void run() {
             mApiObject.<%= method.native_name %>(<%
-param_hash.each do |name, type| %>
-                <%= name %>, <% end %>mResult);
+method.params.each do |param| %>
+                <%= param.name %>, <% end %>mResult);
         }
     }
 <% end %>
