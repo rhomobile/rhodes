@@ -63,7 +63,7 @@ min_params = 0
 max_params = method.params.size + 2
 method.params.each_index do |idx|
   param = method.params[idx]
-  next if param.can_be_nil
+  next if param.can_be_nil or param.default_value
   min_params = idx + 1
 end
 if method.has_callback == ModuleMethod::CALLBACK_MANDATORY
@@ -82,7 +82,7 @@ end %>
     unsigned realParamCount = (argc < <%= method.params.size %>) ? argc : <%= method.params.size %>;
     std::vector<VALUE> arguments(argv, argv + realParamCount);
     
-    RAWTRACE1("Final arguments count: %d", arguments.size());
+    RAWTRACE1("Count of passed arguments: %d", arguments.size());
     
     if(argc > <%= method.params.size %>)
     {

@@ -230,11 +230,19 @@ public:
     operator jobject () { return m_jhResult.get(); }
     operator bool () const { return jobject(this) != 0; }
 
+    void setError(const String& msg) {
+        m_resType = typeError;
+        m_errMsg = msg;
+    }
     void setError(const char* msg) {
         m_resType = typeError;
         m_errMsg = msg;
     }
-    void setArgError(const char *msg) {
+    void setArgError(const String& msg) {
+        m_resType = typeArgError;
+        m_errMsg = msg;
+    }
+    void setArgError(const char* msg) {
         m_resType = typeArgError;
         m_errMsg = msg;
     }

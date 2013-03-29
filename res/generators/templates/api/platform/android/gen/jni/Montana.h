@@ -4,10 +4,7 @@
 #include "logging/RhoLog.h"
 #include "rhodes/JNIRhodes.h"
 #include "MethodExecutorJni.h"
-
-namespace rho { namespace apiGenerator {
-  class MethodResultJni;
-}}
+#include "MethodResultJni.h"
 
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
@@ -100,8 +97,6 @@ end %>
             return;
         }
 
-        RHO_ASSERT(argsAdapter.size() <= <%= method.params.size + 2 %>);
-
         jhobject jhObject = <%
 if method.access == ModuleMethod::ACCESS_STATIC %>
             getSingleton(env); <%
@@ -110,12 +105,32 @@ else %>
 end
 
 method.params.each_index do |index| 
-param = method.params[index] %>
+param = method.params[index]
+  if param.default_value || param.can_be_nil
+    def_val = '0';
+    if(param.default_value)
+      if(param.type == MethodParam::TYPE_STRING)
+        def_val = "\"#{param.default_value}\""
+      else
+        def_val = param.default_value
+      end
+    end %>
 
         jholder< <%=api_generator_jni_makeJNIType(param.type) %> > jh<%= param.name %> = (argsAdapter.size() <= <%= index %>) ?
-            static_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(0) :
+            rho_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(env, <%= def_val %>) :
                 rho_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(env, argsAdapter[<%= index %>]);<%
+  else %>
+
+        if(argsAdapter.size() <= <%= index %>)
+        {
+            LOG(ERROR) + "Wrong number of arguments: '<%= param.name %>' must be set ^^^";
+            result.setArgError("Wrong number of arguments: '<%= param.name %>' must be set");
+            return;
+        }
+        jholder< <%=api_generator_jni_makeJNIType(param.type) %> > jh<%= param.name %> = rho_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(env, argsAdapter[<%= index %>]);<%
+  end
 end %>
+
         jhobject jhTask = env->NewObject(s_cls<%= method.native_name%>Task, s_mid<%= method.native_name%>Task,
                     jhObject.get(), <%
 method.params.each do |param| %>
@@ -133,7 +148,9 @@ else
 end %>);
         if(env->ExceptionCheck() == JNI_TRUE)
         {
-            LOG(ERROR) + rho::common::clearException(env);
+            rho::String message = rho::common::clearException(env);
+            LOG(ERROR) + message;
+            result.setError(message);
         }
     }
 <%
