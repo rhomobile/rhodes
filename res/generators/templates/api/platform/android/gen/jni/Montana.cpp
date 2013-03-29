@@ -1,7 +1,5 @@
 #include "<%= $cur_module.name %>.h"
 
-#include "MethodResultJni.h"
-
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase %> {<%
 end %>
