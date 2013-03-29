@@ -1,4 +1,3 @@
-#if !defined( RHODES_EMULATOR )
 #pragma once
 /**
 *  \file SIP.h
@@ -7,7 +6,7 @@
 * also prepares it for use within PB
 */
 
-
+#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP)
 #include "windows.h"
 #include "keybd.h"
 #include "kbdapi.h"

@@ -1,4 +1,6 @@
-#if !defined( RHODES_EMULATOR )
+#include "RhoDefs.h"
+
+#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP)
 #include <windows.h>
 #include <string>
 #include <atlbase.h>
