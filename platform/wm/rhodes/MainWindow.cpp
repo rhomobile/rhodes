@@ -1026,12 +1026,23 @@ LRESULT CMainWindow::OnNavTimeout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndC
 
 LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-	LPTSTR wcurl = (LPTSTR)hWndCtl;
-	if (wcurl) 
-    {
-		Navigate2(wcurl);
-		free(wcurl);
-	}
+	//LPTSTR wcurl = (LPTSTR)hWndCtl;
+	//if (wcurl) 
+ //   {
+	//	Navigate2(wcurl);
+	//	free(wcurl);
+	//}
+ //   return 0;
+
+    TNavigateData* nd = (TNavigateData*)hWndCtl;
+    if (nd) {
+        LPTSTR wcurl = (LPTSTR)(nd->url);
+        if (wcurl) {
+            Navigate2(wcurl, nd->index);
+            free(wcurl);
+        }
+        free(nd);
+    }
     return 0;
 }
 
@@ -1821,6 +1832,16 @@ void CMainWindow::windowSetSize(int width, int  height)
 
 void CMainWindow::windowLockSize(int x)
 {
+}
+
+rho::common::IRhoRunnable* CMainWindow::makeCreateToolbarTask(rho_param *p)
+{
+    return new CNativeToolbar::CCreateTask(p);
+}
+
+rho::common::IRhoRunnable* CMainWindow::makeRemoveToolbarTask()
+{
+    return new CNativeToolbar::CRemoveTask();
 }
 
 //////////////////////////////////////////////////////////////////////////

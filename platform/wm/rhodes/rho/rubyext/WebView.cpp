@@ -64,14 +64,10 @@ void rho_webview_navigate(const char* url, int index)
     }
 
     String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
-#if defined(OS_WINDOWS_DESKTOP)
     TNavigateData* nd = (TNavigateData*)malloc(sizeof(TNavigateData));
     nd->index = index;
     nd->url = _tcsdup(convertToStringW(strUrl).c_str());
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)nd );
-#else
-    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)_tcsdup(convertToStringW(strUrl).c_str()) );
-#endif
 }
 
 void rho_webview_navigate_back()

@@ -646,7 +646,6 @@ void CMainWindowQt::lockSize(int locked)
 	((QtMainWindow*)qtMainWindow)->lockSize(locked);
 }
 
-
 // **************************************************************************
 //
 // WM_xxx handlers
@@ -657,6 +656,7 @@ void CMainWindowQt::performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
     PostMessage(WM_EXECUTE_RUNNABLE, 0, (LPARAM)pTask);
 }
+
 LRESULT CMainWindowQt::OnExecuteRunnable(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) 
 {
     rho::common::IRhoRunnable* pTask = (rho::common::IRhoRunnable*)lParam;
@@ -673,6 +673,7 @@ LRESULT CMainWindowQt::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     if(m_logView.IsWindow()) {
         m_logView.DestroyWindow();
     }
+    
     LOGCONF().setLogView(NULL);
 
     if (m_alertDialog && m_alertDialog->IsWindow() )
@@ -1069,4 +1070,14 @@ void CMainWindowQt::windowLockSize(int x)
 
 void CMainWindowQt::closeNativeView()
 {
+}
+
+rho::common::IRhoRunnable* CMainWindowQt::makeCreateToolbarTask(rho_param *p)
+{
+    return new CNativeToolbarQt::CCreateTask(p);
+}
+
+rho::common::IRhoRunnable* CMainWindowQt::makeRemoveToolbarTask()
+{
+    return new CNativeToolbarQt::CRemoveTask();
 }

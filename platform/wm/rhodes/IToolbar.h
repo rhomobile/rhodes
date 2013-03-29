@@ -26,6 +26,8 @@
 
 #pragma once
 
+#include "common/IRhoThreadImpl.h"
+
 namespace rho
 {
 

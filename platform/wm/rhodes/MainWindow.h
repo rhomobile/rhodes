@@ -374,6 +374,10 @@ public:
     virtual void windowSetPosition(int x, int y);
     virtual void windowSetSize(int width, int  height);
     virtual void windowLockSize(int x);
+
+    virtual rho::common::IRhoRunnable* makeCreateToolbarTask(rho_param *p);
+    virtual rho::common::IRhoRunnable* makeRemoveToolbarTask();
+
 private:
 	NativeViewFactory* mNativeViewFactory;
 	NativeView* mNativeView;

@@ -541,6 +541,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif //RHODES_EMULATOR
 
 #if defined(OS_WINDOWS_DESKTOP)
+    //m_appWindow = rho_wmimpl_createMainWindow(NULL, windowTitle, dwStyle, eNativeWindow);
     m_appWindow = rho_wmimpl_createMainWindow(NULL, windowTitle, dwStyle, eQtWindow);
 #else //OS_WINDOWS_DESKTOP
     m_appWindow = rho_wmimpl_createMainWindow(NULL, windowTitle, dwStyle, eNativeWindow);
@@ -564,7 +565,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         } else {
             // it's important to call this method from here to perform
             // a proper initialization of proxy implementation for Win32
-            //	GetAppWindow().setProxy();
+            GetAppWindow().setProxy();
 #endif
         }
     }
@@ -597,11 +598,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
         rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
-/*    	m_appWindow.Navigate2( convertToStringW( RHOCONF().getString("start_path") ).c_str()
-#if defined(OS_WINDOWS_DESKTOP)
-            , -1
-#endif
-        );*/
     }
     else
     {
@@ -609,9 +605,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 //#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         // Navigate to the "loading..." page
 	    m_appWindow->Navigate2(_T("about:blank")
-    #if defined(OS_WINDOWS_DESKTOP)
+#if defined(OS_WINDOWS_DESKTOP)
             , -1
-    #endif
+#endif
         );
 //#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     }
@@ -654,7 +650,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		0, 
 		NULL, 
 		&g_hNotifyCell);
-
 #endif
 
     return S_OK;

@@ -27,6 +27,7 @@
 #pragma once
 
 #include "qt/rhodes/MainWindowCallback.h"
+#include "common/IRhoThreadImpl.h"
 
 static UINT WM_TAKEPICTURE             = ::RegisterWindowMessage(L"RHODES_WM_TAKEPICTURE");
 static UINT WM_SELECTPICTURE           = ::RegisterWindowMessage(L"RHODES_WM_SELECTPICTURE");
@@ -91,6 +92,9 @@ public:
     virtual void windowLockSize(int x) = 0;
 
     virtual void closeNativeView() = 0;
+
+    virtual rho::common::IRhoRunnable* makeCreateToolbarTask(rho_param *p) = 0;
+    virtual rho::common::IRhoRunnable* makeRemoveToolbarTask() = 0;
 };
 
 }

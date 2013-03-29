@@ -92,6 +92,8 @@ public:
     virtual void      windowSetSize(int width, int  height);
     virtual void      windowLockSize(int x);
     virtual void      closeNativeView();
+    virtual rho::common::IRhoRunnable* makeCreateToolbarTask(rho_param *p);
+    virtual rho::common::IRhoRunnable* makeRemoveToolbarTask();
 
     // public methods:
     void Navigate2(BSTR URL, int index);
