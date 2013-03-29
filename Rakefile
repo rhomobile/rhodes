@@ -1002,10 +1002,10 @@ def init_extensions(startdir, dest)
               xml_path = File.join(extpath, xml_api.strip())                
               
               #api generator
-              if gen_checker.check(xml_path)      
+              #if gen_checker.check(xml_path)      
                 puts 'start running rhogen with api key'
                 Jake.run3("#{$startdir}/bin/rhogen api #{xml_path}")
-              end
+              #end
             end
             
             unless rhoapi_js_folder.nil?
@@ -1085,12 +1085,8 @@ def init_extensions(startdir, dest)
       chdir dest
       $excludeextlib.each {|e| Dir.glob(e).each {|f| rm f}}
   end
-<<<<<<< HEAD
-  #puts "end of init extension"
-=======
   puts "end of init extension"
   #exit
->>>>>>> master
 end
 
 def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
