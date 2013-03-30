@@ -901,7 +901,11 @@ module Rhogen
       attr_accessor :is_constructor
       attr_accessor :is_destructor
       attr_accessor :generateNativeAPI
-      
+
+      def is_accessor
+          (@special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER) || (@special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER)
+      end
+
     end
 
     class ModuleItem
