@@ -1,6 +1,36 @@
 
 #import "<%= $cur_module.name %>Base.h"
 
+
+<% if $cur_module.property_aliases.size > 0
+%>
+static NSDictionary* ourPropertyAliases= nil;
+
+static NSString* applyAliasesToPropertyName(NSString* prop_name) {
+    if (ourPropertyAliases == nil) {
+        ourPropertyAliases = [NSDictionary dictionaryWithObjectsAndKeys:<%
+                               $cur_module.property_aliases.each do |palias|
+                                  line = '@"'+palias.existing_name+'", @"'+palias.new_name+'",' %>
+                              <%= line %><%
+                               end %>
+                              nil];
+    }
+    NSObject* resNameObj = [ourPropertyAliases objectForKey:prop_name];
+    if (resNameObj != nil) {
+        return (NSString*)resNameObj;
+    }
+    return prop_name;
+}
+<%
+    else
+
+%>#define applyAliasesToPropertyName(name)  (name)
+<%
+
+    end
+%>
+
+
 @implementation <%= $cur_module.name %>Base
 
 
@@ -8,6 +38,13 @@
     self = [super init];
 <% if $cur_module.is_template_propertybag %>
     mProperties = [NSMutableDictionary dictionary];
+    <% $cur_module.properties.each do |prop|
+          if prop.default_value != nil
+             line = '[self setProperty:@"'+prop.native_name+'" propertyValue:@"'+prop.default_value.to_s+'"];' %>
+    <%= line %><%
+          end
+       end
+     %>
 <% end %>
     return self;
 }
@@ -15,24 +52,43 @@
 <% if $cur_module.is_template_propertybag %>
 
 -(void) getProperty:(NSString*)propertyName methodResult:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[mProperties objectForKey:propertyName]];
+    [methodResult setResult:[mProperties objectForKey:applyAliasesToPropertyName(propertyName)]];
 }
 
 -(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue {
-   [mProperties setObject:propertyValue forKey:propertyName];
+   [mProperties setObject:propertyValue forKey:applyAliasesToPropertyName(propertyName)];
 }
 
 -(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[mProperties dictionaryWithValuesForKeys:arrayofNames]];
+    NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:[arrayofNames count]];
+    NSArray* keys = arrayofNames;
+    CMethodResult_SimpleHolder* resultHolder = [CMethodResult_SimpleHolder makeEmptyHolder];
+    int i;
+    for (i = 0; i < [keys count]; i++) {
+        NSString* key = (NSString*)[keys objectAtIndex:i];
+        [resultHolder setResult:nil];
+        [self getProperty:key methodResult:resultHolder];
+        if ([resultHolder getResult] != nil) {
+            NSString* value = (NSString*)[resultHolder getResult];
+            [dict setObject:value forKey:key];
+        }
+    }
+    [methodResult setResult:dict];
 }
 
 -(void) getAllProperties:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[mProperties dictionaryWithValuesForKeys:[[mProperties keyEnumerator] allObjects]]];
+    [self getProperties:[mProperties allKeys] methodResult:methodResult];
 }
 
 
 -(void) setProperties:(NSDictionary*)propertyMap {
-   [mProperties addEntriesFromDictionary:propertyMap];
+    NSArray* keys = [propertyMap allKeys];
+    int i;
+    for (i = 0; i < [keys count]; i++) {
+        NSString* key = (NSString*)[keys objectAtIndex:i];
+        NSString* value = (NSString*)[propertyMap objectForKey:key];
+        [self setProperty:key propertyValue:value];
+    }
 }
 
 -(void) clearAllProperties {
@@ -43,6 +99,29 @@
 
 
 <% end %>
+
+
+<%
+
+$iphone_pb_getter_conversion = {}
+$iphone_pb_getter_conversion["BOOLEAN"] = 'NSNumber* typedResult = [NSNumber numberWithBool:[strResult boolValue]];'
+$iphone_pb_getter_conversion["INTEGER"] = 'NSNumber* typedResult = [NSNumber numberWithInt:[strResult intValue]];'
+$iphone_pb_getter_conversion["FLOAT"] = 'NSNumber* typedResult = [NSNumber numberWithFloat:[strResult floatValue]];'
+$iphone_pb_getter_conversion["STRING"] = 'NSString* typedResult = strResult;'
+
+$iphone_pb_setter_conversion_pre = {}
+$iphone_pb_setter_conversion_pre["BOOLEAN"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithBool:'
+$iphone_pb_setter_conversion_pre["INTEGER"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithInt:'
+$iphone_pb_setter_conversion_pre["FLOAT"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithFloat:'
+$iphone_pb_setter_conversion_pre["STRING"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", '
+
+$iphone_pb_setter_conversion_post = {}
+$iphone_pb_setter_conversion_post["BOOLEAN"] = ']];'
+$iphone_pb_setter_conversion_post["INTEGER"] = ']];'
+$iphone_pb_setter_conversion_post["FLOAT"] = ']];'
+$iphone_pb_setter_conversion_post["STRING"] = '];'
+
+%>
 
 
 <% $cur_module.methods.each do |module_method|
@@ -57,12 +136,22 @@
      add_method = false
   end
   if add_method
-%><%= module_method.cached_data["iphone_line"] %>; {
+%><%= module_method.cached_data["iphone_line"] %> {
 <% if module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
-    [self getProperty:@"<%= module_method.linked_property.native_name %>" methodResult:methodResult];
+    CMethodResult_SimpleHolder* resultHolder = [CMethodResult_SimpleHolder makeEmptyHolder];
+    [self getProperty:@"<%= module_method.linked_property.native_name %>" methodResult:resultHolder];
+    if ([resultHolder getResult] != nil) {
+        NSString* strResult = (NSString*)[resultHolder getResult];
+        <%= $iphone_pb_getter_conversion[module_method.linked_property.type] %>
+        [methodResult setResult:typedResult];
+    }
+    else {
+        [methodResult setResult:nil];
+    }
 <% end
  if module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER %>
-    [self setProperty:@"<%= module_method.linked_property.native_name %>" propertyValue:value];
+    <%= $iphone_pb_setter_conversion_pre[module_method.linked_property.type] + module_method.linked_property.native_name + $iphone_pb_setter_conversion_post[module_method.linked_property.type] %>
+    [self setProperty:@"<%= module_method.linked_property.native_name %>" propertyValue:strValue];
 <% end %>
 }
 

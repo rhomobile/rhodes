@@ -30,7 +30,7 @@
 					</VALUE>
 				</VALUES>
 			</PROPERTY>
-			<PROPERTY name="IntegerProperty" type="INTEGER" usePropertyBag="none">
+			<PROPERTY name="IntegerProperty" type="INTEGER" usePropertyBag="accessorsViaPropertyBag" default="12345">
 				<DESC>int property</DESC>
 			</PROPERTY>
 			<ALIASES>

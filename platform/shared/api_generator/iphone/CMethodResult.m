@@ -222,3 +222,32 @@ extern const char* rho_webview_execute_js(const char* js, int index);
 
 
 @end
+
+
+@implementation CMethodResult_SimpleHolder
+
+-(id) init {
+    self = [super init];
+    resultObject = nil;
+    return self;
+}
+
++(CMethodResult_SimpleHolder*) makeEmptyHolder {
+    CMethodResult_SimpleHolder* obj = [[CMethodResult_SimpleHolder alloc] init];
+    return obj;
+}
+
+- (void) setResult:(NSObject*)value {
+    resultObject = [value retain];
+}
+
+- (NSObject*) getResult {
+    return resultObject;
+}
+
+- (void)dealloc {
+    [resultObject release];
+}
+
+@end
+
