@@ -14,6 +14,7 @@
 }
 
 
+/*
 -(void) getIntegerProperty:(id<IMethodResult>)methodResult {
     [methodResult setResult:[NSNumber numberWithInt:intProp]];
 }
@@ -21,6 +22,7 @@
 -(void) setIntegerProperty:(int)value {
     intProp = value;
 }
+ */
      
 -(void) typesTest:(NSString*)paramStr paramBool:(BOOL)paramBool paramInt:(int)paramInt paramFloat:(float)paramFloat paramArray:(NSArray*)paramArray paramHash:(NSDictionary*)paramHash methodResult:(id<IMethodResult>)methodResult {
     

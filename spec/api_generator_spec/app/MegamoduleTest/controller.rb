@@ -60,7 +60,20 @@ class MegamoduleTestController < Rho::RhoController
      )
   end
 
-
+  def run_get_int_prop_test
+    res = Rho::Examples::Megamodule.IntegerProperty
+     title = "Test ERROR:"
+     if res.class.to_s == "Fixnum" 
+          if res == 12345
+                title = "Test OK:"
+          end
+     end	
+     Alert.show_popup(
+        :message=>("integer_property = "+res.to_s + "\n result.class = "+res.class.to_s),
+        :title=>title,
+        :buttons => ["Ok"]
+     )
+     render :action => :index, :back => '/app'  end
 
   def run_show_alert_test
     Rho::Examples::Megamodule.showAlertFromUIThread "message text from Ruby controller !"
