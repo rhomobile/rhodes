@@ -806,6 +806,7 @@ module Rhogen
         @use_property_bag_mode = USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG
         @default_value = nil
         @access = ModuleMethod::ACCESS_INSTANCE
+        @is_deprecated = false
 
         #used if getter and setter are present - this used with generation of property bag function implementation
         @getter = nil
@@ -830,6 +831,7 @@ module Rhogen
       attr_accessor :generateAPI
       attr_accessor :generateDoc
       attr_accessor :run_in_thread
+      attr_accessor :is_deprecated
 
     end
 
