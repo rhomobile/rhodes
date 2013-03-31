@@ -231,10 +231,8 @@
     <CustomBuild Include="..\..\Log.xml">
       <Filter>Log</Filter>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="..\..\Application.xml">
+    <CustomBuild Include="..\..\Application.xml">
       <Filter>Application</Filter>
-    </Xml>
+    </CustomBuild>
   </ItemGroup>
 </Project>
