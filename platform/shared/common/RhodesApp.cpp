@@ -368,13 +368,11 @@ void CRhodesApp::run()
 
     //rho_db_init_attr_manager();
 	
-#if !defined(OS_WP8)
 	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
 		LOG(INFO) + "Starting sync engine...";
 //		sync::CSyncThread::Create();
 		sync::RhoconnectClientManager::syncThreadCreate();
 	}
-#endif
 
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
