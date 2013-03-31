@@ -386,10 +386,13 @@ module Rhogen
     template :ext do |template|
       template.source = 'extensions/montana/ext.yml'
       template.destination = "extensions/#{name}/ext.yml"
-	  puuid = UUID.new
+      puuid = UUID.new
       generated_uuid = puuid.generate
       @productid = generated_uuid
-	  @@noapp = noapp
+      @wp8LibGUID = puuid.generate
+      @wp8RuntimeGUID = puuid.generate
+      @wp8StubImplGUID = puuid.generate
+      @@noapp = noapp
     end
 
 #    template :extension_ruby do |template|
@@ -530,15 +533,93 @@ module Rhogen
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}.props"
     end
 
-	template :extension_wp8_vcprojectfilters do |template|
+    template :extension_wp8_vcprojectfilters do |template|
         template.source = 'extensions/montana/ext/platform/wp8/montana.vcxproj.filters'
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}.vcxproj.filters"
     end
 
-	template :extension_wp8_impl_cpp do |template|
+    template :extension_wp8_impl_cpp do |template|
         template.source = 'extensions/montana/ext/platform/wp8/src/montana_impl.cpp'
         template.destination = "extensions/#{name}/ext/platform/wp8/src/#{namecamelcase}_impl.cpp"
     end
+
+    # wp8: c++ -> c# bridging
+
+    template :extension_wp8_impl_csproj do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/MontanaImpl.csproj'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Impl.csproj"
+    end
+
+    template :extension_wp8_impl_props do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/MontanaImpl.props'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Impl.props"
+    end
+
+    template :extension_wp8_impl_cs do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/src/Montana_impl.cs'
+        template.destination = "extensions/#{name}/ext/platform/wp8/src/#{namecamelcase}_impl.cs"
+    end
+
+    template :extension_wp8_impl_assemblyinfo do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/src/Properties/AssemblyInfo.cs'
+        template.destination = "extensions/#{name}/ext/platform/wp8/src/Properties/AssemblyInfo.cs"
+    end
+
+    template :extension_wp8_runtime_vcxproj do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/MontanaRuntime.vcxproj'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Runtime.vcxproj"
+    end
+
+    template :extension_wp8_runtime_vcxproj_filters do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/MontanaRuntime.vcxproj.filters'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Runtime.vcxproj.filters"
+    end
+
+    template :extension_wp8_runtime_props do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/MontanaRuntime.props'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Runtime.props"
+    end
+
+    template :extension_wp8_runtime_h do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/runtime/MontanaRuntime.h'
+        template.destination = "extensions/#{name}/ext/platform/wp8/runtime/#{namecamelcase}Runtime.h"
+    end
+
+    template :extension_wp8_runtime_cpp do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/runtime/MontanaRuntime.cpp'
+        template.destination = "extensions/#{name}/ext/platform/wp8/runtime/#{namecamelcase}Runtime.cpp"
+    end
+
+    template :extension_wp8_lib_vcxproj do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/MontanaLib.vcxproj'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Lib.vcxproj"
+    end
+
+    template :extension_wp8_lib_vcxproj_filters do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/MontanaLib.vcxproj.filters'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Lib.vcxproj.filters"
+    end
+
+    template :extension_wp8_lib_props do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/MontanaLib.props'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Lib.props"
+    end
+
+    template :extension_wp8_lib_methodresult_h do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/lib/MethodResultImpl.h'
+        template.destination = "extensions/#{name}/ext/platform/wp8/lib/MethodResultImpl.h"
+    end
+
+    template :extension_wp8_lib_methodresult_cpp do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/lib/MethodResultImpl.cpp'
+        template.destination = "extensions/#{name}/ext/platform/wp8/lib/MethodResultImpl.cpp"
+    end
+
+    template :extension_wp8_lib_impl_cpp do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/lib/Montana_impl.cpp'
+        template.destination = "extensions/#{name}/ext/platform/wp8/lib/#{namecamelcase}_impl.cpp"
+    end
+
 
     template :extension_bb_files do |template|
         template.source = 'extensions/montana/ext/platform/bb/Montana.files'
@@ -2096,6 +2177,8 @@ module Rhogen
       template.source = 'platform/android/gen/jni/montana_js_wrap.cpp'
       template.destination = "platform/android/generated/jni/#{$cur_module.name.downcase}_js_wrap.cpp"
     end
+
+    # wp8
 
     template :public_api_module do |template|
       template.source = 'js/Rho.Montana.js'
