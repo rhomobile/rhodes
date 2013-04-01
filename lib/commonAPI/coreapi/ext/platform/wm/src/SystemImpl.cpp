@@ -13,6 +13,7 @@
 #include "rcmcapi.h"
 #include "Registry.h"
 #include "Keyboard.h"
+#include <algorithm>
 #endif
 
 #if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
@@ -796,20 +797,23 @@ void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::Str
 	rho::String szSubkey = "";
 	rho::String szSetting = "";
 	rho::String szValue = "";
+	rho::String comparitor;
 	typedef std::map<rho::String, rho::String>::const_iterator it_type;
 	for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
 	{
-		if (iterator->first.compare("persistent") == 0)
+		comparitor.assign(iterator->first);
+		std::transform(comparitor.begin(), comparitor.end(), comparitor.begin(), ::tolower);
+		if (comparitor.compare("persistent") == 0)
 			bPersistent = true;
-		else if (iterator->first.compare("hive") == 0)
+		else if (comparitor.compare("hive") == 0)
 			szHive = iterator->second;
-		else if (iterator->first.compare("type") == 0)
+		else if (comparitor.compare("type") == 0)
 			szType = iterator->second;
-		else if (iterator->first.compare("key") == 0)
+		else if (comparitor.compare("key") == 0)
 			szSubkey = iterator->second;
-		else if (iterator->first.compare("setting") == 0)
+		else if (comparitor.compare("setting") == 0)
 			szSetting = iterator->second;
-		else if (iterator->first.compare("value") == 0)
+		else if (comparitor.compare("value") == 0)
 			szValue = iterator->second;
 		else
 			LOG(WARNING) + "Unrecognised parameter passed to setRegistrySetting: " + iterator->first;
@@ -829,14 +833,17 @@ void CSystemImpl::getRegistrySetting( const rho::Hashtable<rho::String, rho::Str
 	rho::String szHive = "";
 	rho::String szSubkey = "";
 	rho::String szSetting = "";
+	rho::String comparitor;
 	typedef std::map<rho::String, rho::String>::const_iterator it_type;
 	for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
 	{
-		if (iterator->first.compare("hive") == 0)
+		comparitor.assign(iterator->first);
+		std::transform(comparitor.begin(), comparitor.end(), comparitor.begin(), ::tolower);
+		if (comparitor.compare("hive") == 0)
 			szHive = iterator->second;
-		else if (iterator->first.compare("key") == 0)
+		else if (comparitor.compare("key") == 0)
 			szSubkey = iterator->second;
-		else if (iterator->first.compare("setting") == 0)
+		else if (comparitor.compare("setting") == 0)
 			szSetting = iterator->second;
 		else
 			LOG(WARNING) + "Unrecognised parameter passed to getRegistrySetting: " + iterator->first;
@@ -854,16 +861,19 @@ void CSystemImpl::deleteRegistrySetting( const rho::Hashtable<rho::String, rho::
 	rho::String szHive = "";
 	rho::String szSubkey = "";
 	rho::String szSetting = "";
+	rho::String comparitor;
 	typedef std::map<rho::String, rho::String>::const_iterator it_type;
 	for (it_type iterator = propertyMap.begin(); iterator != propertyMap.end(); iterator++)
 	{
-		if (iterator->first.compare("persistent") == 0)
+		comparitor.assign(iterator->first);
+		std::transform(comparitor.begin(), comparitor.end(), comparitor.begin(), ::tolower);
+		if (comparitor.compare("persistent") == 0)
 			bPersistent = true;
-		else if (iterator->first.compare("hive") == 0)
+		else if (comparitor.compare("hive") == 0)
 			szHive = iterator->second;
-		else if (iterator->first.compare("key") == 0)
+		else if (comparitor.compare("key") == 0)
 			szSubkey = iterator->second;
-		else if (iterator->first.compare("setting") == 0)
+		else if (comparitor.compare("setting") == 0)
 			szSetting = iterator->second;
 		else
 			LOG(WARNING) + "Unrecognised parameter passed to deleteRegistrySetting: " + iterator->first;
