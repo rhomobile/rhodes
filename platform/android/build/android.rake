@@ -1969,7 +1969,7 @@ namespace "run" do
 
     task :phone_spec => "phone_spec:emulator"
 
-    task :jsSpec => "jsSpec:emulator"
+    task :js_spec => "js_spec:emulator"
 
     task :framework_spec => "framework_spec:emulator"
 
