@@ -2,8 +2,8 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="System" parent="Rho" generateUnderscoreRubyNames="true">
-        <HELP_OVERVIEW>is used to either navigate to a URL or call a javascript function when an attached card reader decodes data.</HELP_OVERVIEW>
-        <MORE_HELP>Only the foreground RhoElements application is given access to the card reader hardware, when an application is sent to the background its state will be saved and it will automatically relinquish control of the card reader.  When brought back to the foreground, an application previously using the card reader will have its previous configuration (eg. pinTimeout) reapplied to the card reader automatically.</MORE_HELP>
+        <HELP_OVERVIEW>The System API is used to control and modify core aspects of the device such as the screen, OS and device capabilities.</HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
         <ALIASES>
             <ALIAS new="System" deprecated="true"/>
         </ALIASES>
@@ -12,7 +12,7 @@
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
         <PROPERTIES usePropertyBag="PropertyBagViaAccessors" limitPropertyBag="true" access="STATIC">
-            <DESC>object supports this properties bla bla bla :</DESC>
+            <DESC>The System API supports the following properties</DESC>
             <ALIASES>
                 <ALIAS new="http_proxy_url" existing="httpProxyURI" deprecated="true"/>
                 <ALIAS new="deviceId" existing="devicePushId" deprecated="true"/>
@@ -95,16 +95,16 @@
                 <DESC>Version OS of device. Examples: '4.6.0.192' (BB), '3.0' (iPhone), '1.6' (Android).</DESC>
             </PROPERTY>
             <PROPERTY name="locale" type="STRING" readOnly="true">
-                <DESC>Current device locale.Like 'en', 'ru' etc.</DESC>
+                <DESC>Current device locale Like 'en', 'ru' etc.</DESC>
             </PROPERTY>
             <PROPERTY name="country" type="STRING" readOnly="true">
                 <DESC>Current device country code.</DESC>
             </PROPERTY>
             <PROPERTY name="isEmulator" type="BOOLEAN" readOnly="true">
-                <DESC>Is application is running on emulator.</DESC>
+                <DESC>Returns whether or not the application is running on emulator.</DESC>
             </PROPERTY>
             <PROPERTY name="isRhoSimulator" type="BOOLEAN" readOnly="true">
-                <DESC>Is application is running on RhoSimulator.</DESC>
+                <DESC>Returns whether or not the application is running on RhoSimulator.</DESC>
             </PROPERTY>
             <PROPERTY name="hasCalendar" type="BOOLEAN" readOnly="true">
                 <DESC>Is calendar support is available.</DESC>
@@ -319,10 +319,10 @@
 								<DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
 							</PARAM>
 							<PARAM name="setting" type="STRING">
-								<DESC>The name of the setting to be set</DESC>
+								<DESC>The name of the registry setting to be set</DESC>
 							</PARAM>
 							<PARAM name="value" type="STRING">
-								<DESC>The value to be set</DESC>
+								<DESC>The registry value to be set</DESC>
 							</PARAM>
 							<PARAM name="persistent" type="BOOLEAN">
 								<DESC>Whether or not to create a corresponding merge file, setting to true will cause your value to persist across a device clean boot.  A .reg file is written to the \Application folder on the device to persist the setting.</DESC>
@@ -484,7 +484,7 @@
                         <DESC>Path to file.</DESC>
                     </PARAM>
                     <PARAM name="doNotBackup" type="BOOLEAN">
-                        <DESC>true set doNotBakup attribute to file (exlude this file from bakup), false for remove doNotBakup attribute from file</DESC>
+                        <DESC>true set doNotBackup attribute to file (exlude this file from backup), false for remove doNotBackup attribute from file</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
