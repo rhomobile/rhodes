@@ -217,18 +217,21 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 
 rho::IMainWindow* rho_wmimpl_createMainWindow(HWND hwndParent, const StringW& wndTitle, DWORD dwStyle, rho::EMainWindowType type)
 {
-    if (type == rho::eQtWindow)
+
+    if (type == rho::eNativeWindow)
+    {
+        CMainWindow* mainWindow = new CMainWindow();
+        mainWindow->Create(NULL, CWindow::rcDefault, wndTitle.c_str(), dwStyle);
+        return mainWindow;
+    }    
+#if defined(OS_WINDOWS_DESKTOP)
+    else if (type == rho::eQtWindow)
     {
         rho::IMainWindow *mainWindow = new CMainWindowQt();
         mainWindow->Initialize(wndTitle.c_str(), dwStyle);
         return mainWindow;
     }
-    else if (type == rho::eNativeWindow)
-    {
-        CMainWindow* mainWindow = new CMainWindow();
-        mainWindow->Create(NULL, CWindow::rcDefault, wndTitle.c_str(), dwStyle);
-        return mainWindow;
-    }
+#endif
 
     return 0;
 }
@@ -604,11 +607,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         RHODESAPP().startApp();
 //#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
         // Navigate to the "loading..." page
-	    m_appWindow->Navigate2(_T("about:blank")
-#if defined(OS_WINDOWS_DESKTOP)
-            , -1
-#endif
-        );
+	    m_appWindow->Navigate2(_T("about:blank") , -1);
 //#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     }
     // Show the main application window
@@ -636,7 +635,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
 		SN_CONNECTIONSNETWORKCOUNT_PATH, 
 		SN_CONNECTIONSNETWORKCOUNT_VALUE, 
-		m_appWindow.m_hWnd, 
+		m_appWindow->GetMainWindowHWND(), 
 		WM_CONNECTIONSNETWORKCOUNT, 
 		0, 
 		NULL, 
@@ -645,7 +644,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	hr = RegistryNotifyWindow(SN_CONNECTIONSNETWORKCOUNT_ROOT,
 		SN_CELLSYSTEMCONNECTED_PATH, 
 		SN_CELLSYSTEMCONNECTED_VALUE, 
-		m_appWindow.m_hWnd, 
+		m_appWindow->GetMainWindowHWND(), 
 		WM_CONNECTIONSNETWORKCELL, 
 		0, 
 		NULL, 
@@ -657,11 +656,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
 void CRhodesModule::RunMessageLoop( ) throw( )
 {
-#if defined(OS_WINDOWS_DESKTOP)
     m_appWindow->MessageLoop();
-#else
-    m_appWindow.getWebKitEngine()->RunMessageLoop(m_appWindow);
-#endif
 
 #if defined(OS_WINCE)&& !defined( OS_PLATFORM_MOTCE )
     if (g_hNotify)

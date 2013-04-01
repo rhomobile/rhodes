@@ -33,7 +33,9 @@
 #include "MainWindow.h"
 #include "common/app_build_capabilities.h"
 
-extern CMainWindow& getAppWindow();
+extern IMainWindow& getAppWindow();
+extern IMainWindow* getMainWindowObject();
+
 //#define IDM_NAVIGATE                    40022
 //#define IDM_EXECUTEJS                   40033
 //#define IDM_STOPNAVIGATE                40034
@@ -65,7 +67,7 @@ CRhoExtData CExtManager::makeExtData()
     oData.m_hWnd = getMainWnd();
     oData.m_hInstance = rho_wmimpl_get_appinstance();
 #if !defined(OS_WINDOWS_DESKTOP)
-    oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND();
+    oData.m_hBrowserWnd = getMainWindowObject()->getWebViewHWND(-1);
 #endif
 
     oData.m_iTabIndex = rho_webview_active_tab();
@@ -149,7 +151,8 @@ void CExtManager::navigate(const wchar_t* szUrl)
 bool CExtManager::existsJavascript(const wchar_t* szJSFunction)
 {
 #if !defined(OS_WINDOWS_DESKTOP)
-    return getAppWindow().getWebKitEngine()->isExistJavascript(szJSFunction, rho_webview_active_tab());
+    CMainWindow* mw = static_cast<CMainWindow*>(getMainWindowObject());
+    return mw->getWebKitEngine()->isExistJavascript(szJSFunction, rho_webview_active_tab());
 #else
     return true;
 #endif
@@ -158,7 +161,8 @@ bool CExtManager::existsJavascript(const wchar_t* szJSFunction)
 void CExtManager::setBrowserGesturing(bool bEnableGesturing)
 {
 #if !defined(OS_WINDOWS_DESKTOP)
-    getAppWindow().getWebKitEngine()->setBrowserGesturing(bEnableGesturing);
+    CMainWindow* mw = static_cast<CMainWindow*>(getMainWindowObject());
+    mw->getWebKitEngine()->setBrowserGesturing(bEnableGesturing);
 #endif
 
 }
@@ -166,14 +170,16 @@ void CExtManager::setBrowserGesturing(bool bEnableGesturing)
 void CExtManager::passSipPositionToEngine()
 {
 #if !defined(OS_WINDOWS_DESKTOP)
-    getAppWindow().getWebKitEngine()->NotifyEngineOfSipPosition();
+    CMainWindow* mw = static_cast<CMainWindow*>(getMainWindowObject());
+    mw->getWebKitEngine()->NotifyEngineOfSipPosition();
 #endif
 }
 
 bool CExtManager::RegisterForMessageCallback(unsigned int iMsgId)
 {
 #if !defined(OS_WINDOWS_DESKTOP)
-    return getAppWindow().getWebKitEngine()->RegisterForMessage(iMsgId);
+    CMainWindow* mw = static_cast<CMainWindow*>(getMainWindowObject());
+    return mw->getWebKitEngine()->RegisterForMessage(iMsgId);
 #else
 	return true;
 #endif
@@ -182,7 +188,8 @@ bool CExtManager::RegisterForMessageCallback(unsigned int iMsgId)
 bool CExtManager::DeRegisterForMessageCallback(unsigned int iMsgId)
 {
 #if !defined(OS_WINDOWS_DESKTOP)
-    return getAppWindow().getWebKitEngine()->DeRegisterForMessage(iMsgId);
+    CMainWindow* mw = static_cast<CMainWindow*>(getMainWindowObject());
+    return mw->getWebKitEngine()->DeRegisterForMessage(iMsgId);
 #else
 	return true;
 #endif
@@ -260,7 +267,8 @@ void CExtManager::zoomText(int nZoom)
 int CExtManager::getTextZoom() //Enum (0 to 4)
 {
 #if !defined(OS_WINDOWS_DESKTOP)
-    return getAppWindow().getWebKitEngine()->GetTextZoomOnTab(rho_webview_active_tab());
+    CMainWindow* mw = static_cast<CMainWindow*>(getMainWindowObject());
+    return mw->getWebKitEngine()->GetTextZoomOnTab(rho_webview_active_tab());
 #else
     return 2;
 #endif
@@ -280,7 +288,8 @@ StringW CExtManager::getPageTitle(UINT iTab)
 #if !defined(OS_WINDOWS_DESKTOP)
     wchar_t szBuf[1025];
     szBuf[0]=0;
-    getAppWindow().getWebKitEngine()->GetTitleOnTab( szBuf, 1024, iTab );    
+    CMainWindow* mw = static_cast<CMainWindow*>(getMainWindowObject());
+    mw->getWebKitEngine()->GetTitleOnTab( szBuf, 1024, iTab );    
     return szBuf ? szBuf : L"";
 #else
     return L"";

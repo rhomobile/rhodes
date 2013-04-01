@@ -100,7 +100,8 @@ public:
 		IMainWindow* mw = Rhodes_getMainWindow();
 		String sn(mView->factory_holder->viewtype);
 #if !defined(OS_WINDOWS_DESKTOP)
-		mw->openNativeView(mView->factory_holder->factory, mView->n_view, sn);
+        CMainWindow *nw = static_cast<CMainWindow*>(mw);
+		nw->openNativeView(mView->factory_holder->factory, mView->n_view, sn);
 #endif
 		//delete this;
 	}
@@ -122,20 +123,8 @@ public:
 	}
 };
 
-
-
-
-
 static RhoNativeViewHolder* first = NULL;
 static RhoOpenedNativeView* first_opened = NULL;
-
-
-
-
-
-
-
-
 
 static void addRhoNativeViewHolder(RhoNativeViewHolder* holder) {
 	if (first == NULL) {
@@ -167,8 +156,6 @@ static void removeRhoNativeViewHolder(RhoNativeViewHolder* holder) {
 	}
 }
 
-
-
 static RhoNativeViewHolder* getHolderByViewTypeName(const char* name) {
 	RhoNativeViewHolder* p = first;
 	while (p != NULL) {
@@ -179,12 +166,6 @@ static RhoNativeViewHolder* getHolderByViewTypeName(const char* name) {
 	}
 	return NULL;
 }
-
-
-
-
-
-
 
 static void addRhoNativeOpenedView(RhoOpenedNativeView* view) {
 	if (first_opened == NULL) {
@@ -216,8 +197,6 @@ static void removeRhoNativeOpenedView(RhoOpenedNativeView* view) {
 	}
 }
 
-
-
 static RhoOpenedNativeView* getOpenedViewByID(int v_id) {
 	RhoOpenedNativeView* p = first_opened;
 	while (p != NULL) {
@@ -229,7 +208,6 @@ static RhoOpenedNativeView* getOpenedViewByID(int v_id) {
 	return NULL;
 }
 
-
 static RhoOpenedNativeView* getOpenedViewByNativeView(NativeView* nv) {
 	RhoOpenedNativeView* p = first_opened;
 	while (p != NULL) {
@@ -240,16 +218,6 @@ static RhoOpenedNativeView* getOpenedViewByNativeView(NativeView* nv) {
 	}
 	return NULL;
 }
-
-
-
-
-
-
-
-
-
-
 
 void RhoNativeViewManager::registerViewType(const char* viewType, NativeViewFactory* factory) {
 	RhoNativeViewHolder* holder = new RhoNativeViewHolder();
@@ -288,8 +256,8 @@ void RhoNativeViewUtil::executeInUIThread_WM(RhoNativeViewRunnable* command) {
 
 }
 
-
-extern "C" int rho_native_view_manager_create_native_view(const char* viewtype, int tab_index, VALUE params) {
+extern "C" int rho_native_view_manager_create_native_view(const char* viewtype, int tab_index, VALUE params)
+{
 	RhoNativeViewHolder* h = getHolderByViewTypeName(viewtype);
 	if (h == NULL) {
 		return -1;
@@ -331,9 +299,6 @@ extern "C" void rho_native_view_manager_destroy_native_view(int native_view_id) 
 	}
 }
 
-
-
-
 // destroy native view (opened with URL prefix or in separated full-screen window)
 // this function can executed from your native code (from NativeView code, for example)
 // instead of this function you can execute destroy() for Ruby NativeView object
@@ -349,8 +314,8 @@ int RhoNativeViewManager::openNativeView(const char* viewType, int tab_index, VA
 	return rho_native_view_manager_create_native_view(viewType, tab_index, params);
 }
 
-
-void RhoNativeViewManager::closeNativeView(int v_id) {
+void RhoNativeViewManager::closeNativeView(int v_id) 
+{
 	rho_native_view_manager_destroy_native_view(v_id);
 }
 

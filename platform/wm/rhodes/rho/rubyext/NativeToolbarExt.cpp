@@ -44,7 +44,7 @@ void create_native_toolbar(int bar_type, rho_param *p)
         remove_native_toolbar();
     else if ( bar_type == TOOLBAR_TYPE )
     {
-        getMainWindowObject()->performOnUiThread(getMainWindowObject()->makeCreateToolbarTask(p));
+        getMainWindowObject()->makeCreateToolbarTask(p);
     }
     else
     {
@@ -60,7 +60,7 @@ void create_nativebar(int bar_type, rho_param *p)
 
 void remove_native_toolbar() 
 {
-    getMainWindowObject()->performOnUiThread(getMainWindowObject()->makeRemoveToolbarTask());
+    getMainWindowObject()->makeRemoveToolbarTask();
 }
 
 void remove_nativebar() 
@@ -84,9 +84,9 @@ VALUE nativebar_started()
 //Tabbar
 void remove_native_tabbar()
 {
-//#if defined(OS_WINDOWS_DESKTOP)
-//    getAppWindow().performOnUiThread(new CNativeTabbarQt::CRemoveTask() );
-//#endif
+#if defined(OS_WINDOWS_DESKTOP)
+    getMainWindowObject()->makeRemoveTabbarTask();
+#endif
 }
 
 void create_native_tabbar(int bar_type, rho_param *p)
@@ -101,8 +101,9 @@ void create_native_tabbar(int bar_type, rho_param *p)
         remove_native_tabbar();
     else if ( bar_type == TABBAR_TYPE )
     {
-        getMainWindowObject()->performOnUiThread(new CNativeTabbarQt::CCreateTask(bar_type, p) );
-    } else
+        getMainWindowObject()->makeCreateTabbarTask(bar_type, p);
+    }
+    else
     {
     	RAWLOGC_ERROR("NativeTabbar", "Only Tabbar control is supported.");
     }
@@ -111,16 +112,16 @@ void create_native_tabbar(int bar_type, rho_param *p)
 
 void native_tabbar_switch_tab(int index)
 {
-//#if defined(OS_WINDOWS_DESKTOP)
-//    getAppWindow().performOnUiThread(new CNativeTabbarQt::CSwitchTask(index) );
-//#endif
+#if defined(OS_WINDOWS_DESKTOP)
+    getMainWindowObject()->makeSwitchTabbarTask(index);
+#endif
 }
 
 void native_tabbar_set_tab_badge(int index,char *val)
 {
-//#if defined(OS_WINDOWS_DESKTOP)
-//    getAppWindow().performOnUiThread(new CNativeTabbarQt::CBadgeTask(index, val) );
-//#endif
+#if defined(OS_WINDOWS_DESKTOP)
+    getMainWindowObject()->makeBadgeTabbarTask(index, val);
+#endif
 }
 
 void nativebar_set_tab_badge(int index,char* val)
