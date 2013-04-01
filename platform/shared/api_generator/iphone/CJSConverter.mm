@@ -103,6 +103,10 @@
     }
     //if (level == 0)
     //    strRes = [strRes stringByAppendingString:@",\"id\": 1}"];
+    
+    if ([strRes length] <= 0) {
+        return @"null";
+    }
     return strRes;
     
     
