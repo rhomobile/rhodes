@@ -838,7 +838,7 @@ namespace "build" do
         $sdkver = $sdk.gsub(/iphoneos/,"")
       end
 
-      if $configuration.to_s.downcase == "Release"
+      if $configuration.to_s.downcase == "release"
         $confdir = "release"
       else
         $confdir = "debug"
