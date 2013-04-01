@@ -1,4 +1,4 @@
-describe("<application specs>", function(){
+ describe("<application specs>", function(){
 
 	it("Path to apps/app folder inside application bundle.", function(){
 		expect(Rho.Application.appBundleFolder()).isNotEmptyString();
@@ -12,7 +12,7 @@ describe("<application specs>", function(){
 		expect(Rho.Application.userFolder()).isNotEmptyString();
 	});
 
-	it("Path to configuration file.", function(){
+	xit("Path to configuration file.", function(){
 		expect(Rho.Application.configPath()).isNotEmptyString();
 	});
 

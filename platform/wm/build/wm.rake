@@ -1205,6 +1205,12 @@ namespace "run" do
       exit $failed.to_i
     end
 
+    task :jsSpec do
+      Jake.run_spec_app('win32','jsSpec')
+      exit 1 if $total.to_i==0
+      exit $failed.to_i
+    end
+
     task :framework_spec do
       Jake.run_spec_app('win32','framework_spec')
       exit 1 if $total.to_i==0

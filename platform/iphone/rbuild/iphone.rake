@@ -1179,6 +1179,10 @@ namespace "run" do
       Jake.run_spec_app('iphone','phone_spec')
     end
 
+    task :jsSpec do
+      Jake.run_spec_app('iphone','jsSpec')
+    end
+
     task :framework_spec do
       Jake.run_spec_app('iphone','framework_spec')
     end

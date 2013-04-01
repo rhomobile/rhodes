@@ -30,57 +30,57 @@ namespace "config" do
   end
 
   #task :set_wp8_app_path do
-#	ENV['RHO_APP_PATH'] = $app_path
- # end
+  #	ENV['RHO_APP_PATH'] = $app_path
+  # end
 
   task :wp8_ARM_Release do
-      $sdk = 'ARM'
-	  $build_config = 'Release'
+    $sdk = 'ARM'
+    $build_config = 'Release'
   end
 
   task :wp8_ARM_Debug do
-      $sdk = 'ARM'
-	  $build_config = 'Debug'
+    $sdk = 'ARM'
+    $build_config = 'Debug'
   end
 
   task :wp8_Win32_Release do
-      $sdk = 'Win32'
-	  $build_config = 'Release'
+    $sdk = 'Win32'
+    $build_config = 'Release'
   end
 
   task :wp8_Win32_Debug do
-      $sdk = 'Win32'
-	  $build_config = 'Debug'
+    $sdk = 'Win32'
+    $build_config = 'Debug'
   end
 
   task :wp8 => [:set_wp8_platform, "config:common"] do
-  	
-	#if ENV['RHO_APP_PATH'] != nil
-	#	$app_path = ENV['RHO_APP_PATH']
-	#end
 
-    $rubypath     = "res/build-tools/RhoRuby.exe"
-    $zippath      = "res/build-tools/7za.exe"
-    $wp7runner    = "res/build-tools/RhoAppRunnerWP8.exe"
+    #if ENV['RHO_APP_PATH'] != nil
+    #	$app_path = ENV['RHO_APP_PATH']
+    #end
+
+    $rubypath = "res/build-tools/RhoRuby.exe"
+    $zippath = "res/build-tools/7za.exe"
+    $wp7runner = "res/build-tools/RhoAppRunnerWP8.exe"
     $wp7logserver = "res/build-tools/RhoLogserver.exe"
-    $builddir     = $config["build"]["wp8path"] + "/build"
-    $vcbindir     = $config["build"]["wp8path"] + "/bin"
-    $appname      = $app_config["name"].nil? ? "Rhodes" : $app_config["name"] 
-    $bindir       = $app_path + "/bin"
+    $builddir = $config["build"]["wp8path"] + "/build"
+    $vcbindir = $config["build"]["wp8path"] + "/bin"
+    $appname = $app_config["name"].nil? ? "Rhodes" : $app_config["name"]
+    $bindir = $app_path + "/bin"
     $rhobundledir = $app_path + "/RhoBundle"
-    $srcdir       = $bindir   + "/RhoBundle"
-    $targetdir    = $bindir   + "/target/wp8"
-    $tmpdir       = $bindir   +"/tmp"
-    
-    $msbuild      = $config["env"]["paths"]["msbuild"]
-    $msbuild      = "msbuild" if $msbuild.nil?
+    $srcdir = $bindir + "/RhoBundle"
+    $targetdir = $bindir + "/target/wp8"
+    $tmpdir = $bindir +"/tmp"
+
+    $msbuild = $config["env"]["paths"]["msbuild"]
+    $msbuild = "msbuild" if $msbuild.nil?
 
     #$sdk          = "Windows Phone 8 SDK"
     #$sdk          = $app_config["wpsdk"] unless $app_config["wpsdk"].nil?
 
-	$rhodes_bin_dir = "#{$startdir}/#{$vcbindir}/#{$sdk}/rhodes/#{$build_config}"
+    $rhodes_bin_dir = "#{$startdir}/#{$vcbindir}/#{$sdk}/rhodes/#{$build_config}"
 
-    $excludelib = ['**/builtinME.rb','**/ServeME.rb','**/dateME.rb','**/rationalME.rb']
+    $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
 
     if !$app_config["wp"] || !$app_config["wp"]["productid"]
       puts "Add wp:productid to application build.yml"
@@ -90,8 +90,8 @@ namespace "config" do
       puts "  productid: 'fd55c4d0-51fa-012e-7844-3caec51bd50e'"
 
       exit 1
-		end		
-	end
+    end
+  end
 end
 
 def addRhobundleFilesToCacheFile()
@@ -100,7 +100,7 @@ def addRhobundleFilesToCacheFile()
   chdir $srcdir
 
   Dir.glob(File.join("**", '*.*')).each do |f|
-    doc.root[1,0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'" 
+    doc.root[1, 0] = REXML::Element.new "file lastWriteTime='" + File.mtime(f).strftime("%m/%d/%Y %I:%M:%S %p") + "' source='" + $srcdir.gsub("/", "\\") + "\\" + f.gsub("/", "\\") + "' archivePath='rho\\" + f.gsub("/", "\\") + "'"
   end
 
   File.open(xml_path, "w") { |f| doc.write f, 2; f.close }
@@ -112,35 +112,35 @@ def addRhobundleFilesToCacheFile()
 end
 
 def addbundletoxap()
-	tmp_dir = File.join($srcdir, "tmp")
-    rho_dir = File.join(tmp_dir, "rho")
-      
-    rm_rf tmp_dir
-    mkdir tmp_dir
-    mkdir File.join(tmp_dir, 'rho')
-    mkdir File.join(tmp_dir, 'rho', 'apps')
+  tmp_dir = File.join($srcdir, "tmp")
+  rho_dir = File.join(tmp_dir, "rho")
 
-    appsFiles = FileList.new 
-    appsFiles.include(File.join($srcdir, "apps", "*.*"))
+  rm_rf tmp_dir
+  mkdir tmp_dir
+  mkdir File.join(tmp_dir, 'rho')
+  mkdir File.join(tmp_dir, 'rho', 'apps')
 
-    #cp_r File.join($srcdir, "public"), tmp_dir
-    cp   File.join($srcdir, "RhoBundleMap.txt"), tmp_dir
-    cp_r File.join($srcdir, "apps"), rho_dir
-    #cp_r appsFiles, File.join(rho_dir, 'apps')
-	cp_r File.join($srcdir, "public"), File.join(rho_dir, 'apps')
-    cp_r File.join($srcdir, "lib"), rho_dir
-    cp_r File.join($srcdir, "db"), rho_dir
+  appsFiles = FileList.new
+  appsFiles.include(File.join($srcdir, "apps", "*.*"))
 
-    chdir $startdir
-    args = []
-    args << "a"
-    args << "-tzip"
-    args << File.join($rhodes_bin_dir, "rhodes.xap")
-    args << tmp_dir + "/*"
-    puts Jake.run($zippath, args)
+  #cp_r File.join($srcdir, "public"), tmp_dir
+  cp File.join($srcdir, "RhoBundleMap.txt"), tmp_dir
+  cp_r File.join($srcdir, "apps"), rho_dir
+  #cp_r appsFiles, File.join(rho_dir, 'apps')
+  cp_r File.join($srcdir, "public"), File.join(rho_dir, 'apps')
+  cp_r File.join($srcdir, "lib"), rho_dir
+  cp_r File.join($srcdir, "db"), rho_dir
+
+  chdir $startdir
+  args = []
+  args << "a"
+  args << "-tzip"
+  args << File.join($rhodes_bin_dir, "rhodes.xap")
+  args << tmp_dir + "/*"
+  puts Jake.run($zippath, args)
 end
 
- 
+
 namespace "build" do
   namespace "wp8" do
 
@@ -148,36 +148,36 @@ namespace "build" do
       $app_config["extensions"].each do |ext|
         $app_config["extpaths"].each do |p|
 
-			project_path = nil
-		    extpath = File.join(p, ext)
-			extyml = File.join(extpath, "ext.yml")
-			if File.file? extyml
-			  extconf = Jake.config(File.open(extyml))
-			  project_paths = extconf["project_paths"]
-			  project_path = project_paths[$current_platform] if (project_paths && project_paths[$current_platform])
-		    end
+          project_path = nil
+          extpath = File.join(p, ext)
+          extyml = File.join(extpath, "ext.yml")
+          if File.file? extyml
+            extconf = Jake.config(File.open(extyml))
+            project_paths = extconf["project_paths"]
+            project_path = project_paths[$current_platform] if (project_paths && project_paths[$current_platform])
+          end
 
-            ENV['RHO_PLATFORM'] = $current_platform
-            ENV['RHO_ROOT'] = $startdir
-		    ENV['SDK'] = $sdk
-		    ENV['RHO_BUILD_CONFIG'] = $build_config
-            ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext)
-            ENV['VCBUILD'] = $msbuild
-			ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
+          ENV['RHO_PLATFORM'] = $current_platform
+          ENV['RHO_ROOT'] = $startdir
+          ENV['SDK'] = $sdk
+          ENV['RHO_BUILD_CONFIG'] = $build_config
+          ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext)
+          ENV['VCBUILD'] = $msbuild
+          ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
 
-			if ( project_path )
-	          ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
+          if (project_path)
+            ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
 
-			  puts Jake.run( "rake", [], File.join($startdir, "lib/build/extensions") )
-			  break
-			else
-			  extpath = File.join(p, ext, 'ext')
-			  next unless File.exists? File.join(extpath, "build.bat")
+            puts Jake.run("rake", [], File.join($startdir, "lib/build/extensions"))
+            break
+          else
+            extpath = File.join(p, ext, 'ext')
+            next unless File.exists? File.join(extpath, "build.bat")
 
-			  puts Jake.run("build.bat", [], extpath)
-			  break
+            puts Jake.run("build.bat", [], extpath)
+            break
 
-			end
+          end
 
         end
       end
@@ -186,9 +186,9 @@ namespace "build" do
     desc "Build WP8 rhobundle"
     task :rhobundle_noext => ["config:wp8", "build:bundle:noxruby", :rhobundlemap] do
       #move public folder to root
-	  confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
-	  confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
-	  File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) }  if confpath_content && confpath_content.length()>0
+      confpath_content = File.read($srcdir + "/apps/rhoconfig.txt") if File.exists?($srcdir + "/apps/rhoconfig.txt")
+      confpath_content += "\r\n" + "rhologurl=http://" + $rhologhostaddr + ":" + $rhologhostport.to_s() if !confpath_content.include?("rhologurl=")
+      File.open($srcdir + "/apps/rhoconfig.txt", "w") { |f| f.write(confpath_content) } if confpath_content && confpath_content.length()>0
 
       cp_r $srcdir + "/apps/public", $srcdir + "/public"
       rm_r $srcdir + "/apps/public"
@@ -204,9 +204,9 @@ namespace "build" do
 
       Dir.glob(File.join("**", '*.*')).each do |f|
         if #f.start_with?('db')          ||
-           f.end_with?('.rb')           ||
-           f.end_with?('.erb')         
-		   # ||
+        f.end_with?('.rb') ||
+            f.end_with?('.erb')
+           # ||
            #f == "apps/app_manifest.txt" ||
            #f == "apps/rhoconfig.txt"    ||
            #f == "apps/rhoconfig.txt.timestamp" ||
@@ -215,11 +215,11 @@ namespace "build" do
         end
 
         if f.include?("app") ||
-           f.include?("db")  ||
-           f.include?("lib")
-           dst_dir = File.join('rho', f) 
+            f.include?("db") ||
+            f.include?("lib")
+          dst_dir = File.join('rho', f)
         else
-           dst_dir = File.join('rho', f) 
+          dst_dir = File.join('rho', f)
         end
 
         file.puts dst_dir + "|" + dst_dir + "|"+ File.mtime(f).to_i.to_s
@@ -230,18 +230,18 @@ namespace "build" do
     end
 
     # build native code
-    task :rhodes => ["config:wp8"]do
+    task :rhodes => ["config:wp8"] do
       chdir $startdir
 
       out_dir = $startdir + "/"+ $config["build"]["wp8path"] +"/rhodes"
-      cp $app_path + "/icon/icon.png", out_dir if File.exists? $app_path + "/icon/icon.ico"     
+      cp $app_path + "/icon/icon.png", out_dir if File.exists? $app_path + "/icon/icon.ico"
 
       chdir $config["build"]["wp8path"]
 
       doc = REXML::Document.new(File.open($startdir+"/"+$config["build"]["wp8path"]+"/rhodes/Properties/WMAppManifest.xml"))
-      doc.elements.each("Deployment/App") { |element| 
+      doc.elements.each("Deployment/App") { |element|
         element.attributes["ProductID"] = "{"+$app_config["wp"]["productid"]+"}"
-        element.attributes["Title"]     = $app_config["name"]
+        element.attributes["Title"] = $app_config["name"]
       }
 
       File.open($startdir + "/"+$config["build"]["wp8path"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
@@ -250,48 +250,48 @@ namespace "build" do
 
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       Jake.run($msbuild, args)
-      unless $? == 0 
+      unless $? == 0
         puts "Error building"
         exit 1
       end
 
       chdir $startdir
-    end 
+    end
 
     task :package => [:rhobundle_noext, :extensions, :rhodes] do
-	  #addbundletoxap()
+      #addbundletoxap()
 
-      cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
+      cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
 
       mkdir_p $bindir if not File.exists? $bindir
       mkdir_p $targetdir if not File.exists? $targetdir
-      mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
+      mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
 
     end
 
-	task :package_rhobundle, [:sdk, :configuration] do |t,args|
-	  throw "You must pass in sdk(x86, ARM)" if args.sdk.nil?
-	  throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
+    task :package_rhobundle, [:sdk, :configuration] do |t, args|
+      throw "You must pass in sdk(x86, ARM)" if args.sdk.nil?
+      throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
 
       $sdk = args.sdk == 'x86' ? 'Win32' : args.sdk
-	  $build_config = args.configuration
+      $build_config = args.configuration
 
-	  Rake::Task["build:wp8:rhobundle_noext"].invoke
+      Rake::Task["build:wp8:rhobundle_noext"].invoke
 
       addRhobundleFilesToCacheFile()
       addbundletoxap()
 
-	end
+    end
 
-	task :devrhobundle, [:sdk, :configuration] do |t,args|
-	  throw "You must pass in sdk(Win32, ARM)" if args.sdk.nil?
-	  throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
+    task :devrhobundle, [:sdk, :configuration] do |t, args|
+      throw "You must pass in sdk(Win32, ARM)" if args.sdk.nil?
+      throw "You must pass in configuration(Debug, Release)" if args.configuration.nil?
 
       $sdk = args.sdk
-	  $build_config = args.configuration
-	  
-	  Rake::Task["build:wp8:rhobundle_noext"].invoke
-	  Rake::Task["build:wp8:extensions"].invoke
+      $build_config = args.configuration
+
+      Rake::Task["build:wp8:rhobundle_noext"].invoke
+      Rake::Task["build:wp8:extensions"].invoke
     end
 
   end
@@ -313,7 +313,7 @@ end
 def run_rho_log_server()
   system("START rake run:wp:rhologserver[#{$app_path}]")
 end
- 
+
 namespace "device" do
   namespace "wp8" do
 
@@ -329,7 +329,7 @@ namespace "emulator" do
 
     desc "Build production for device"
     task :production => ["config:wp8_Win32_Release", "build:wp8:package"] do
-	  addRhobundleFilesToCacheFile()
+      addRhobundleFilesToCacheFile()
     end
 
   end
@@ -351,7 +351,7 @@ end
 namespace "run" do
 
   def getLogPath
-    log_file_path =  File.join($app_path, $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"] )
+    log_file_path = File.join($app_path, $app_config["applog"].nil? ? "applog.txt" : $app_config["applog"])
     return log_file_path
   end
 
@@ -364,14 +364,14 @@ namespace "run" do
       Jake.run_rho_log_server($app_path)
       puts "RhoLogServer is starting"
 
-      while(1)
+      while (1)
         if File.exists?($app_path + "/started")
           break
         end
       end
 
-	  cp  File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
-      mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
+      cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
+      mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
 
       args = []
       args << $app_config["wp"]["productid"]
@@ -389,7 +389,7 @@ namespace "run" do
       puts "productid must be set in build.yml"
       puts "productid's format is xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     end
-  end     
+  end
 
   namespace "wp8" do
 
@@ -397,15 +397,15 @@ namespace "run" do
       puts "log_file=" + getLogPath
     end
 
-    desc "Run application on RhoSimulator"    
-    task :rhosimulator => ["config:set_wp8_platform", "config:common"] do    
+    desc "Run application on RhoSimulator"
+    task :rhosimulator => ["config:set_wp8_platform", "config:common"] do
       $rhosim_config = "platform='wp8'\r\n"
-      Rake::Task["run:rhosimulator"].invoke            
+      Rake::Task["run:rhosimulator"].invoke
     end
 
-    task :rhosimulator_debug => ["config:set_wp8_platform", "config:common"] do    
+    task :rhosimulator_debug => ["config:set_wp8_platform", "config:common"] do
       $rhosim_config = "platform='wp8'\r\n"
-      Rake::Task["run:rhosimulator_debug"].invoke            
+      Rake::Task["run:rhosimulator_debug"].invoke
     end
 
     task :spec do
@@ -427,16 +427,16 @@ namespace "run" do
       if !File.exist?(log_file)
         puts "Can not read log file: " + log_file
         exit(1)
-       end
+      end
 
-       puts "start read log"
+      puts "start read log"
 
-       io = File.new(log_file, "r")
-       waiting_count = 0
-       end_spec = false
+      io = File.new(log_file, "r")
+      waiting_count = 0
+      end_spec = false
 
-       while !end_spec do
-         line_count = 0
+      while !end_spec do
+        line_count = 0
 
         io.each do |line|
           end_spec = !Jake.process_spec_output(line)
@@ -467,7 +467,13 @@ namespace "run" do
     end
 
     task :phone_spec do
-      Jake.run_spec_app('wp8','phone_spec')
+      Jake.run_spec_app('wp8', 'phone_spec')
+      exit 1 if $total.to_i==0
+      exit $failed.to_i
+    end
+
+    task :jsSpec do
+      Jake.run_spec_app('wp8', 'jsSpec')
       exit 1 if $total.to_i==0
       exit $failed.to_i
     end
@@ -478,18 +484,18 @@ namespace "run" do
 
       if $app_config["wp"] && $app_config["wp"]["productid"] != nil
         #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
-        File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+        File.delete($app_path + "/started") if File.exists?($app_path + "/started")
         Jake.run_rho_log_server($app_path)
 
         puts "RhoLogServer is starting"
-        while(1)
+        while (1)
           if File.exists?($app_path + "/started")
             break
           end
         end
 
-        cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join( $rhodes_bin_dir, $appname + ".xap")
-        mv File.join( $rhodes_bin_dir, $appname + ".xap"), $targetdir
+        cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
+        mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
 
         args = []
         args << $app_config["wp"]["productid"]
