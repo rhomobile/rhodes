@@ -10,7 +10,11 @@
 #include "common/RhoFile.h"
 #include "common/RhoDefs.h"
 #if !defined( RHODES_EMULATOR )
-//#include "rcmcapi.h"
+
+#if defined(OS_PLATFORM_MOTCE)
+#include "rcmcapi.h"
+#endif
+
 #include "Registry.h"
 #include "Keyboard.h"
 #endif
@@ -46,7 +50,7 @@ int rho_sys_get_screen_width();
 int rho_sys_get_screen_height();
 const char* rho_sys_win32_getWebviewFramework();
 
-#if !defined( OS_WINDOWS_DESKTOP )
+#if !defined( OS_WINDOWS_DESKTOP ) && defined(OS_PLATFORM_MOTCE)
 typedef DWORD (*RCM_GETUNIQUEUNITIDEX)(LPUNITID_EX);
 RCM_GETUNIQUEUNITIDEX lpfnRCM_GetUniqueUnitIdEx = NULL; ///< pointer to the RCM get uuid function
 #endif
@@ -67,13 +71,13 @@ using namespace common;
 class CSystemImpl: public CSystemImplBase
 {
 private:
-#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 	CSIP* m_pSip;
 #endif
 public:
     CSystemImpl(): CSystemImplBase()
 	{
-#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 	m_pSip = NULL;
 #endif
 	}
@@ -94,10 +98,12 @@ public:
     virtual void getHasCamera(CMethodResult& oResult);
     virtual void getOemInfo(CMethodResult& oResult);
     virtual void getUuid(CMethodResult& oResult);
-#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP)
-			bool populateUUID(UNITID_EX* uuid);
-			void bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize);
+
+#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
+	bool populateUUID(UNITID_EX* uuid);
+	void bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize);
 #endif
+
     virtual void getHttpProxyURI(CMethodResult& oResult);
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
@@ -128,7 +134,7 @@ public:
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
 	virtual long OnSIPState(bool bSIPState, const CRhoExtData& oExtData)
 	{
-#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 		if (!m_pSip)
 			m_pSip = new CSIP();
 		m_pSip->ToggleSIPReliably(bSIPState);
@@ -345,7 +351,7 @@ void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
 
 void CSystemImpl::getOemInfo(CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 	WCHAR info [64];
 	if (SystemParametersInfo (SPI_GETOEMINFO, 64, info, 0))
 		oResult.set(info);
@@ -357,7 +363,7 @@ void CSystemImpl::getOemInfo(CMethodResult& oResult)
 
 void CSystemImpl::getUuid(CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 	UNITID_EX uuid;
     memset(&uuid, 0, sizeof uuid);
     uuid.StructInfo.dwAllocated = sizeof uuid;
@@ -392,7 +398,7 @@ void CSystemImpl::getUuid(CMethodResult& oResult)
 #endif
 }
 
-#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 
 bool CSystemImpl::populateUUID(UNITID_EX* uuid)
 {
@@ -493,7 +499,7 @@ void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult)
 
 void CSystemImpl::getKeyboardState(CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 	if (!m_pSip)
 		m_pSip = new CSIP();
 	if (m_pSip->getCurrentStatus() == SIP_CONTROL_AUTOMATIC)
@@ -514,7 +520,7 @@ void CSystemImpl::getKeyboardState(CMethodResult& oResult)
 
 void CSystemImpl::setKeyboardState( const rho::String & value, CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined (OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 	if (!m_pSip)
 		m_pSip = new CSIP();
 	
@@ -566,7 +572,7 @@ void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult)
 
 extern "C" int rho_wmsys_has_touchscreen()
 {
-#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
+#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE ) && defined(OS_PLATFORM_MOTCE)
         return 1;
 #else
         BOOL bRet;
@@ -787,7 +793,7 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
 
 void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 
     bool bRetVal = false;
 	bool bPersistent = false;
@@ -825,7 +831,7 @@ void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::Str
 
 void CSystemImpl::getRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 	rho::String szHive = "";
 	rho::String szSubkey = "";
 	rho::String szSetting = "";
@@ -848,7 +854,7 @@ void CSystemImpl::getRegistrySetting( const rho::Hashtable<rho::String, rho::Str
 
 void CSystemImpl::deleteRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 	bool bRetVal = false;
 	bool bPersistent = false;
 	rho::String szHive = "";

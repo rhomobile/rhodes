@@ -6,7 +6,7 @@
 * also prepares it for use within PB
 */
 
-#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP)
+#if !defined( RHODES_EMULATOR ) && !defined(OS_WINDOWS_DESKTOP) && defined(OS_PLATFORM_MOTCE)
 #include "windows.h"
 #include "keybd.h"
 #include "kbdapi.h"
