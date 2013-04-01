@@ -86,6 +86,7 @@ void MethodExecutorJni::run(JNIEnv* env, jobject jTask, MethodResultJni& result,
     {
         RAWTRACE("Run in UI thread -----> ");
         env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRunWithUiThread, jTask);
+        result.disconnect(env);
     }
     else if(result.hasCallback() || thread)
     {
@@ -97,7 +98,6 @@ void MethodExecutorJni::run(JNIEnv* env, jobject jTask, MethodResultJni& result,
     {
         RAWTRACE("Run in current thread -----> ");
         env->CallStaticVoidMethod(s_MethodExecutorClass, s_midRun, jTask);
-        result.disconnect(env);
     }
 }
 //----------------------------------------------------------------------------------------------------------------------

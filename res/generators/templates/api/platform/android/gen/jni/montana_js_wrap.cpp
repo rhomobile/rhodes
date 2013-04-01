@@ -72,7 +72,8 @@ end
         return CMethodResultConvertor().toJSON(result);
     }
     
-    result.setCallBack(strCallbackID, strJsVmID);
+    if(strCallbackID.length() != 0)
+        result.setCallBack(strCallbackID, strJsVmID);
 
 <% if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
     if(!result.hasCallback())
@@ -88,6 +89,7 @@ else %>
     <%= $cur_module.name.downcase %>.<%= method.native_name %>(argumentsAdapter(argv), result); <%
 end %>
     rho::String res = CMethodResultConvertor().toJSON(result);
+    RAWTRACE(res.c_str());
     RAWTRACE2("%s(id=%s) end ^^^", __FUNCTION__, strObjID.c_str());
     return res;
 }<%

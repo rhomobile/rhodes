@@ -25,6 +25,7 @@ public class JSONGenerator {
             if(mStringer == null) {
                 mStringer = new JSONStringer();
             }
+            //Logger.T(TAG, "Java toString(): " + mObject.toString());
             parse(mObject);
         } catch(Throwable exc) {
             throw new RuntimeException(exc);
@@ -34,15 +35,15 @@ public class JSONGenerator {
     }
     
     protected void parse(Object obj) throws JSONException {
-        if(Map.class.isInstance(mObject)) {
+        if(Map.class.isInstance(obj)) {
             Logger.T(TAG, "Parsing Map instance >>>");
-            parse((Map<String, ?>)mObject);
+            parseMap((Map<String, ?>)obj);
             Logger.T(TAG, "Finishing Map instance <<<");
             return;
         }
-        if(Collection.class.isInstance(mObject)) {
+        if(Collection.class.isInstance(obj)) {
             Logger.T(TAG, "Parsing Collection instance >>>");
-            parse((Collection<?>)mObject);
+            parseCollection((Collection<?>)obj);
             Logger.T(TAG, "Finishing Collection instance <<<");
             return;
         }
@@ -50,7 +51,8 @@ public class JSONGenerator {
         mStringer.value(obj);
     }
     
-    protected void parse(Map<String, ?> map) throws JSONException {
+    protected void parseMap(Map<String, ?> map) throws JSONException {
+        Logger.D(TAG, map.toString());
         mStringer.object();
         for(Map.Entry<String, ?> entry: map.entrySet()) {
             mStringer.key(entry.getKey());
@@ -59,7 +61,8 @@ public class JSONGenerator {
         mStringer.endObject();
     }
 
-    protected void parse(Collection<?> list) throws JSONException {
+    protected void parseCollection(Collection<?> list) throws JSONException {
+        Logger.D(TAG, list.toString());
         mStringer.array();
         for(Object item: list) {
             parse(item);
