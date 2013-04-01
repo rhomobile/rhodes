@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.JSONException;
-import org.json.JSONStringer;
 
+import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.util.JSONGenerator;
 
 public class MethodResult implements IMethodResult {
+    
+    private static final String TAG = MethodResult.class.getSimpleName();
     
     private class JSONObjectResultGenerator extends JSONGenerator {
         private String mObjectClassPath;
@@ -130,7 +132,9 @@ public class MethodResult implements IMethodResult {
         default:
             json = new JSONGenerator(null);
         }
-        return json.toString();
+        String res = json.toString();
+        Logger.D(TAG, res);
+        return res;
     }
 
     public String getResultParamName() {
