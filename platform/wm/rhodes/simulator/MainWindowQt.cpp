@@ -1072,12 +1072,32 @@ void CMainWindowQt::closeNativeView()
 {
 }
 
-rho::common::IRhoRunnable* CMainWindowQt::makeCreateToolbarTask(rho_param *p)
+void CMainWindowQt::makeCreateToolbarTask(rho_param *p)
 {
-    return new CNativeToolbarQt::CCreateTask(p);
+    performOnUiThread(new CNativeToolbarQt::CCreateTask(p));
 }
 
-rho::common::IRhoRunnable* CMainWindowQt::makeRemoveToolbarTask()
+void CMainWindowQt::makeRemoveToolbarTask()
 {
-    return new CNativeToolbarQt::CRemoveTask();
+    performOnUiThread(new CNativeToolbarQt::CRemoveTask());
+}
+
+void CMainWindowQt::makeCreateTabbarTask(int bar_type, rho_param *p)
+{
+    performOnUiThread(new CNativeTabbarQt::CCreateTask(bar_type, p));
+}
+
+void CMainWindowQt::makeRemoveTabbarTask()
+{
+    performOnUiThread(new CNativeTabbarQt::CRemoveTask());
+}
+
+void CMainWindowQt::makeSwitchTabbarTask(int index)
+{
+    performOnUiThread(new CNativeTabbarQt::CSwitchTask(index));
+}
+
+void CMainWindowQt::makeBadgeTabbarTask(int idx, char* badge)
+{
+    performOnUiThread(new CNativeTabbarQt::CBadgeTask(idx, badge));
 }

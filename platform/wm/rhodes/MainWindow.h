@@ -375,8 +375,13 @@ public:
     virtual void windowSetSize(int width, int  height);
     virtual void windowLockSize(int x);
 
-    virtual rho::common::IRhoRunnable* makeCreateToolbarTask(rho_param *p);
-    virtual rho::common::IRhoRunnable* makeRemoveToolbarTask();
+    virtual void makeCreateToolbarTask(rho_param *p);
+    virtual void makeRemoveToolbarTask();
+
+    virtual void makeCreateTabbarTask(int bar_type, rho_param *p) {}
+    virtual void makeRemoveTabbarTask() {}
+    virtual void makeSwitchTabbarTask(int index) {}
+    virtual void makeBadgeTabbarTask(int idx, char* badge) {}
 
 private:
 	NativeViewFactory* mNativeViewFactory;

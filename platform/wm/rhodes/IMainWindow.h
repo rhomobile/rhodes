@@ -93,8 +93,13 @@ public:
 
     virtual void closeNativeView() = 0;
 
-    virtual rho::common::IRhoRunnable* makeCreateToolbarTask(rho_param *p) = 0;
-    virtual rho::common::IRhoRunnable* makeRemoveToolbarTask() = 0;
+    virtual void makeCreateToolbarTask(rho_param *p) = 0;
+    virtual void makeRemoveToolbarTask() = 0;
+
+    virtual void makeCreateTabbarTask(int bar_type, rho_param *p) = 0;
+    virtual void makeRemoveTabbarTask() = 0;
+    virtual void makeSwitchTabbarTask(int index) = 0;
+    virtual void makeBadgeTabbarTask(int idx, char* badge) = 0;
 };
 
 }

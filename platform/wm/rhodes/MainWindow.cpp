@@ -657,35 +657,35 @@ LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     return 0;
 }
 
-void CMainWindow::openNativeView(	NativeViewFactory* nativeViewFactory, 
-					NativeView* nativeView,
-					String nativeViewType) 
+void CMainWindow::openNativeView(NativeViewFactory* nativeViewFactory, 
+                                 NativeView* nativeView,
+                                String nativeViewType) 
 {
-	mNativeView = nativeView;
-	mNativeViewFactory = nativeViewFactory;
-	mNativeViewType = nativeViewType;
+    mNativeView = nativeView;
+    mNativeViewFactory = nativeViewFactory;
+    mNativeViewType = nativeViewType;
 
-	HWND nvh = (HWND)mNativeView->getView();
+    HWND nvh = (HWND)mNativeView->getView();
 
-	::SetParent(nvh, m_hWnd);
+    ::SetParent(nvh, m_hWnd);
 
-	RECT rect;
-	::GetWindowRect(getWebViewHWND(),&rect);
+    RECT rect;
+    ::GetWindowRect(getWebViewHWND(),&rect);
 
-	int x = 0;
-	int y = 0;
-	int w = rect.right - rect.left;
-	int h = rect.bottom - rect.top;
+    int x = 0;
+    int y = 0;
+    int w = rect.right - rect.left;
+    int h = rect.bottom - rect.top;
 
-	::SetWindowPos(nvh, HWND_TOP, x, y, w, h, SWP_SHOWWINDOW);
+    ::SetWindowPos(nvh, HWND_TOP, x, y, w, h, SWP_SHOWWINDOW);
 
-	::ShowWindow(nvh, SW_SHOWNORMAL);
-	hideWebView();
+    ::ShowWindow(nvh, SW_SHOWNORMAL);
+    hideWebView();
 }
 
 void CMainWindow::closeNativeView() 
 {
-	restoreWebView();
+    restoreWebView();
 }
 
 // return true if NativeView was created
@@ -796,16 +796,16 @@ LRESULT CMainWindow::OnSettingChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
         MoveWindow( rcMain.left, rcMain.top, rcMain.right-rcMain.left, rcMain.bottom-rcMain.top, TRUE );
 #endif
 
-	//} else if (wParam == SPI_SIPMOVE) {
-	} 
+    //} else if (wParam == SPI_SIPMOVE) {
+    } 
     else if (rho_wmimpl_get_resize_on_sip() && (wParam == SPI_SETSIPINFO)) 
     {
-		SIPINFO pSipInfo;
-		memset(&pSipInfo, 0, sizeof(SIPINFO));
-		pSipInfo.cbSize = sizeof(SIPINFO);
-		pSipInfo.dwImDataSize = 0;
-		if (SipGetInfo(&pSipInfo)) {
-			bool isHiding = (pSipInfo.fdwFlags & SIPF_ON) == 0;
+        SIPINFO pSipInfo;
+        memset(&pSipInfo, 0, sizeof(SIPINFO));
+        pSipInfo.cbSize = sizeof(SIPINFO);
+        pSipInfo.dwImDataSize = 0;
+        if (SipGetInfo(&pSipInfo)) {
+            bool isHiding = (pSipInfo.fdwFlags & SIPF_ON) == 0;
 
             if ( isHiding && !m_bFullScreen )
             {
@@ -900,14 +900,14 @@ BOOL EnumChildProc(HWND hwnd,LPARAM lParam)
     DWORD dwStyles = GetWindowLong(hwnd, GWL_STYLE);    
     //LOG(INFO) + "Child: " + szBuf + "Styles: " + LOGFMT("0x%X") + dwStyles + "Popup: " + (((dwStyles&WS_POPUP) != 0) ? "1" : "0");
 
-	if ( *((HWND*)lParam) != hwnd && (dwStyles&WS_POPUP) != 0 )
-	{
-		HWND* pWnd = (HWND*)lParam;
-		*pWnd = hwnd;
-		return FALSE;
-	}
+    if ( *((HWND*)lParam) != hwnd && (dwStyles&WS_POPUP) != 0 )
+    {
+        HWND* pWnd = (HWND*)lParam;
+        *pWnd = hwnd;
+        return FALSE;
+    }
 
-	return TRUE;
+    return TRUE;
 }
 
 LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -959,7 +959,7 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	restoreWebView();
+    restoreWebView();
 
     if ( m_pBrowserEng )
         m_pBrowserEng->BackOnTab(0, 1);
@@ -1794,7 +1794,6 @@ void CMainWindow::Navigate2(BSTR URL, int index)
 
 void CMainWindow::DestroyUi()
 {
-
 }
 
 void CMainWindow::MessageLoop()
@@ -1834,14 +1833,14 @@ void CMainWindow::windowLockSize(int x)
 {
 }
 
-rho::common::IRhoRunnable* CMainWindow::makeCreateToolbarTask(rho_param *p)
+void CMainWindow::makeCreateToolbarTask(rho_param *p)
 {
-    return new CNativeToolbar::CCreateTask(p);
+    performOnUiThread(new CNativeToolbar::CCreateTask(p));
 }
 
-rho::common::IRhoRunnable* CMainWindow::makeRemoveToolbarTask()
+void CMainWindow::makeRemoveToolbarTask()
 {
-    return new CNativeToolbar::CRemoveTask();
+    performOnUiThread(new CNativeToolbar::CRemoveTask());
 }
 
 //////////////////////////////////////////////////////////////////////////
