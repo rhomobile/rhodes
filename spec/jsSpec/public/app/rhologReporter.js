@@ -18,11 +18,11 @@
 
     RhologReporter.prototype = {
         reportRunnerResults: function (runner) {
-            var dur = (new Date()).getTime() - this.startTime;
-            var failed = this.executedSpecs - this.passedSpecs;
-            var specStr = this.executedSpecs + (this.executedSpecs === 1 ? " spec, " : " specs, ");
-            var failStr = failed + (failed === 1 ? " failure in " : " failures in ");
-            this.log("I'm finished : " + specStr + failStr + (dur / 1000) + "s.");
+
+
+            this.log("***Total: " + this.executedSpecs);
+            this.log("***Passed: " + this.passedSpecs);
+            this.log("***Failed: " + (this.executedSpecs -  this.passedSpecs));
             this.finished = true;
         },
 
