@@ -446,8 +446,8 @@ namespace "run" do
       exit $failed.to_i
     end
 
-    task :jsSpec do
-      Jake.run_spec_app('wp', 'jsSpec')
+    task :js_spec do
+      Jake.run_spec_app('wp', 'js_spec')
       exit 1 if $total.to_i==0
       exit $failed.to_i
     end
