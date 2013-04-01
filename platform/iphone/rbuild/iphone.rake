@@ -897,7 +897,7 @@ namespace "build" do
                  args << libdevpath
                  Jake.run("lipo",args)
 
-                 mkdir_p File.join($app_builddir, ext)
+                 mkdir_p File.join($app_builddir, "extensions", ext)
                  cp libpath, libbinpath
 
                  rm_f libsimpath
