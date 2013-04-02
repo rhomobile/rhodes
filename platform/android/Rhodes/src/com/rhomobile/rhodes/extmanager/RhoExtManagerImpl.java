@@ -369,7 +369,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     public void onNavigateComplete(View view, String url) {
         int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
         IRhoWebView rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
-        rhoWebView.loadUrl("javascript:window['__rhoJsVmID'] = '" + String.valueOf(tabIndex) + "'");
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {
@@ -432,7 +431,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     public void onLoadEnd(View view, String url, long arg2, long arg3) {
         int tabIndex = RhodesActivity.safeGetInstance().getMainView().getWebViewTab(view);
         IRhoWebView rhoWebView = RhodesActivity.safeGetInstance().getMainView().getWebView(tabIndex);
-        rhoWebView.loadUrl("javascript:window['__rhoJsVmID'] = '" + String.valueOf(tabIndex) + "'");
         synchronized (mExtensions) {
             boolean res = false;
             for (IRhoExtension ext : mExtensions.values()) {

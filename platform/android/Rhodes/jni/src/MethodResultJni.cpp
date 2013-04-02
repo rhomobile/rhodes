@@ -463,7 +463,7 @@ void MethodResultJni::callJSBack()
     jhstring jhJsVmID = getStrCallbackData(m_env);
     String strJsVmID = rho_cast<String>(m_env, jhJsVmID.get());
     int tabIndex = -1;
-    common::convertFromStringA(strJsVmID.c_str(), tabIndex);
+    //common::convertFromStringA(strJsVmID.c_str(), tabIndex);
 
     String strRes(CMethodResultConvertor().toJSON(*this));
 
