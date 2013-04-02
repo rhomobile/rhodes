@@ -90,7 +90,7 @@ void CMethodResult::callCallback()
     {
 
         int tabIndex = -1;
-        common::convertFromStringA(m_strCallbackParam.c_str(), tabIndex);
+        //common::convertFromStringA(m_strCallbackParam.c_str(), tabIndex);
 
         String strRes(CMethodResultConvertor().toJSON(*this));
 
