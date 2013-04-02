@@ -1,6 +1,6 @@
 sdk: "../.."
 sdkversion: 3.5.0
-name: jsPhoneSpec
+name: js_spec
 version: 1.0
 vendor: rhomobile
 build: debug
@@ -12,8 +12,6 @@ iphone:
   provisionprofile:
   codesignidentity:
   entitlements:
-  BundleIdentifier: com.rhomobile.jsphonespec
-  BundleURLScheme: jsphonespec
 wp:
   productid: '0b698de0-7218-0130-547c-001a925f2369'
 symbian:
