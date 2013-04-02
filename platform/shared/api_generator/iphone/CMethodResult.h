@@ -49,6 +49,7 @@
     NSString* mRubyCallbackURL;
     NSString* mJSCallbackUID;
     NSString* mJSWebViewUID;
+    int mJSTabIndex;
     NSString* mCallbackParam;
     NSString* mRubyModulePath;
     id<IMethodResult_RubyObjectFactory> mRubyFactory;

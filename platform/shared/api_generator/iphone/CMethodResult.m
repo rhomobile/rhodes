@@ -10,6 +10,8 @@
 
 extern const char* rho_webview_execute_js(const char* js, int index);
 
+extern int rho_webview_active_tab();
+
 
 @implementation CMethodResultError
 
@@ -86,6 +88,7 @@ extern const char* rho_webview_execute_js(const char* js, int index);
     mCallbackParam = nil;
     mRubyFactory = nil;
     mRubyModulePath = nil;
+    mJSTabIndex = -1;
     return self;
 }
 
@@ -152,6 +155,7 @@ extern const char* rho_webview_execute_js(const char* js, int index);
 -(void) setJSCallback:(NSString*)uid webViewUID:(NSString*)webViewUID {
     mJSCallbackUID = [uid retain];
     mJSWebViewUID = [webViewUID retain];
+    mJSTabIndex = rho_webview_active_tab();
 }
 
 -(void) setCallbackParam:(NSString*)param {
@@ -174,10 +178,10 @@ extern const char* rho_webview_execute_js(const char* js, int index);
 
 -(void) callJSCallback:(NSString*)uid {
     NSString* jscode = [NSString stringWithFormat:@"Rho.callbackHandler(‘%@’,{%@})", mJSCallbackUID, [self toJSON]];
-    int tabIndex = -1;
-    if (mJSWebViewUID != nil) {
-        tabIndex = [mJSWebViewUID intValue];
-    }
+    int tabIndex = mJSTabIndex;
+    //if (mJSWebViewUID != nil) {
+    //    tabIndex = [mJSWebViewUID intValue];
+    //}
     //[[[Rhodes sharedInstance] mainView] executeJs:jscode tab:tabIndex];
     rho_webview_execute_js([jscode UTF8String], tabIndex);
 }
