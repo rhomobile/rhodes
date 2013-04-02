@@ -73,8 +73,10 @@ Platform::String^ A2PS(char* str)
 			if(res == -1)
 				return CURLE_SSL_CONNECT_ERROR;
 
-			Platform::String^ host = A2PS(inet_ntoa(adr_inet.sin_addr));
-			Platform::String^ port = A2PS(itoa(adr_inet.sin_port, buffer, 10));
+			struct hostent *remoteHost;
+			remoteHost = gethostbyaddr((char *)&(adr_inet.sin_addr), 4, AF_INET);
+			Platform::String^ host = A2PS(remoteHost->h_name);
+			Platform::String^ port = A2PS("https");
 
 			task<void>(Storage->m_sslSocket->ConnectAsync(ref new HostName(host), port, Sockets::SocketProtectionLevel::Ssl)).then([this, Storage, &retCode] (task<void> previousTask) {
 				try
@@ -92,6 +94,7 @@ Platform::String^ A2PS(char* str)
 
 			}).wait();
 
+			*done = 1;
 			return retCode;
 		}
 
@@ -170,13 +173,15 @@ Platform::String^ A2PS(char* str)
 		
 			auto reader = ref new DataReader(is);
 
-			auto data = ref new Platform::Array<uint8>(size);
+			reader->InputStreamOptions = InputStreamOptions::Partial;
 
-			task<unsigned int>(reader->LoadAsync(size)).then([this, reader, &retCode, data] (task<unsigned int> bytesLoaded) {
+			task<unsigned int>(reader->LoadAsync(size)).then([this, reader, &retCode, buf] (task<unsigned int> bytesLoaded) {
 				try
 				{
 					retCode = bytesLoaded.get();	
+					auto data = ref new Platform::Array<uint8>(retCode);
 			        reader->ReadBytes(data);
+					memcpy(buf, data->Data, retCode);
 				}
 				catch (Platform::Exception^ exception)
 				{
