@@ -5,12 +5,14 @@
         <HELP_OVERVIEW>The Camera API provides access to your device's Camera(s)</HELP_OVERVIEW>
         <MORE_HELP>Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application.  Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.</MORE_HELP>
     
-        <TEMPLATES>
+    	<ALIASES>
+    		<ALIAS new="Camera" deprecated="true"/>
+    	</ALIASES>
+    	<TEMPLATES>
             <!-- <SINGLETON_INSTANCES/>   produce enumerate() fabric method, all instances is singletones by ID, add ID property -->
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
-
         <PROPERTIES usePropertyBag="accessorsViaPropertyBag">
             <DESC>These properties are used to configure the Camera.</DESC>
 			<ALIASES>
@@ -23,8 +25,29 @@
 				<ALIAS new="save_to_shared_gallery" existing="saveToSharedGallery" deprecated="true"/>
 				<ALIAS new="left" existing="previewLeft" deprecated="true"/>
 				<ALIAS new="top" existing="previewTop" deprecated="true"/>
+				<ALIAS new="camera_type" existing="cameraType" deprecated="true"/>
 			</ALIASES>
-			
+        	
+        	<PROPERTY name="cameraType" type="STRING" default="main" readOnly="true">
+        		<DESC>camera type: back/main, front etc.</DESC>
+        		<VALUES>
+        			<VALUE constName="CAMERA_TYPE_MAIN" value="main">
+        				<DESC>main/back camera</DESC>
+        			</VALUE>
+        			<VALUE constName="CAMERA_TYPE_FRONT" value="front">
+        				<DESC>front camera</DESC>
+        			</VALUE>
+        		</VALUES>
+        	</PROPERTY>
+        	<PROPERTY name="maxWidth" type="INTEGER" generateAccessors="true" readOnly="true">
+         		<APPLIES>iOS and Android only</APPLIES>
+        		<DESC>The maximum width of images which can be captured.</DESC>
+        	</PROPERTY>
+        	<PROPERTY name="maxHeight" type="INTEGER" generateAccessors="true" readOnly="true">
+        		<APPLIES>iOS and Android only</APPLIES>
+        		<DESC>The maximum height of images which can be captured.</DESC>
+        	</PROPERTY>
+        	
             <PROPERTY name="desiredWidth" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
 				<APPLIES>All devices</APPLIES>
@@ -135,9 +158,6 @@
 
         <METHODS>
             <ALIASES>
-                <ALIAS new="get_camera_info" existing="getCameraInfo" deprecated="true" />
-                <ALIAS new="choose_picture" existing="choosePicture" deprecated="true"/>
-                <ALIAS new="take_picture" existing="takePicture" deprecated="true"/>
                 <ALIAS new="save_image_to_device_gallery" existing="saveImageToDeviceGallery" deprecated="true"/>
             </ALIASES>
 
@@ -149,8 +169,18 @@
                     <PARAM name="cameraArray" type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
-
-			
+        	
+        	<METHOD name="getCameraByType" access="STATIC" hasCallback="optional">
+        		<DESC>Returns the camera of requested type if that camera exist - else return nil</DESC>
+        		<PARAMS>
+        			<PARAM name="cameraType" type="STRING">
+        				<DESC>cameraType: main or front</DESC>
+        			</PARAM>	
+        		</PARAMS>		
+        		<RETURN type="SELF_INSTANCE">
+        			<DESC>Camera with requested type or nil if not have requested type camera</DESC>
+        		</RETURN>
+			</METHOD>
             <METHOD name="takePicture" hasCallback="mandatory">
                 <DESC>Start the camera appliction to take a picture.  The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use.</DESC>
                 <PARAMS>
@@ -197,21 +227,7 @@
 				</CALLBACK>
 			</METHOD>
 
-            <METHOD name="getCameraInfo" hasCallback="mandatory">
-                <DESC>Retrieves camera information, this will return the maximum resolution supported by the camera hardware, or nil if there is no camera.  This information can be used as the desiredWidth and desiredHeight parameters.</DESC>
-				<CALLBACK>
-					<PARAMS>
-						<PARAM name="maxHeight" type="INTEGER">
-							<DESC>The maximum height of images which can be captured.</DESC>
-						</PARAM>
-						<PARAM name="maxWidth" type="INTEGER">
-							<DESC>The maximum width of images which can be captured.</DESC>
-						</PARAM>
-					</PARAMS>
-				</CALLBACK>
-			</METHOD>
-    
-            <METHOD name="choosePicture" runInThread="module">
+        	<METHOD name="choosePicture" runInThread="module" hasCallback="mandatory">
                 <DESC>Choose a picture from the album</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH">

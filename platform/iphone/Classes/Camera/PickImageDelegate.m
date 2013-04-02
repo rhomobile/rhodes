@@ -31,17 +31,17 @@
 #import "common/RhodesApp.h"
 
 
-#include "ruby/ext/rho/rhoruby.h"
+//#include "ruby/ext/rho/rhoruby.h"
 
 
 
 
 @implementation RhoCameraSettings
 
-@synthesize callback_url, camera_type, color_model, format, width, height, enable_editing, enable_editing_setted, save_to_shared_gallery;
+@synthesize callback, camera_type, color_model, format, width, height, enable_editing, enable_editing_setted, save_to_shared_gallery;
 
-- (id)init:(void*)data url:(NSString*)url{
-    self.callback_url = url;
+- (id)init:(NSDictionary*)data callback_api:(id<IMethodResult>)callback_api {
+    self.callback = callback_api;
     self.camera_type = CAMERA_SETTINGS_TYPE_MAIN;
     self.color_model = CAMERA_SETTINGS_COLOR_MODEL_RGB;
     self.format = CAMERA_SETTINGS_FORMAT_NOT_SETTED;
@@ -50,67 +50,58 @@
     self.enable_editing = 1;
     self.enable_editing_setted = 0;
     self.save_to_shared_gallery = false;
-        
-    if (data != NULL) {
-        rho_param* p =(rho_param*)data; 
-        
-        if (p->type == RHO_PARAM_HASH) {
-            for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
-                const char *name = p->v.hash->name[i];
-                rho_param *value = p->v.hash->value[i];
-                
-                if (strcasecmp(name, "camera_type") == 0) {
-                    if (strcasecmp(value->v.string, "front") == 0) {
-                        self.camera_type = CAMERA_SETTINGS_TYPE_FRONT;
-                    }
-                }
-                if (strcasecmp(name, "color_model") == 0) {
-                    if (strcasecmp(value->v.string, "Grayscale") == 0) {
-                        self.color_model = CAMERA_SETTINGS_COLOR_MODEL_GRAY;
-                    }
-                }
-                if (strcasecmp(name, "format") == 0) {
-                    if (strcasecmp(value->v.string, "png") == 0) {
-                        self.format = CAMERA_SETTINGS_FORMAT_PNG;
-                    }
-                    else {
-                        self.format = CAMERA_SETTINGS_FORMAT_JPG;
-                    }
-                    
-                }
-                if (strcasecmp(name, "desired_width") == 0) {
-                    NSString* s = [NSString stringWithUTF8String:value->v.string];
-                    self.width = [s intValue];
-                }
-                if (strcasecmp(name, "desired_height") == 0) {
-                    NSString* s = [NSString stringWithUTF8String:value->v.string];
-                    self.height = [s intValue];
-                }
-                if (strcasecmp(name, "enable_editing") == 0) {
-                    self.enable_editing = 1;
-                    self.enable_editing_setted = 1;
-                    if (strcasecmp(value->v.string, "false") == 0) {
-                        self.enable_editing = 0;
-                    }
-                }
-                if (strcasecmp(name, "save_to_shared_gallery") == 0 ) {
-                    if ( strcasecmp(value->v.string, "true") == 0 ) {
-                        self.save_to_shared_gallery = true;
-                    }
-                }
-                
-            }
-            
+    
+    if ([data objectForKey:@"cameraType"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"cameraType"];
+        if(strcasecmp([value UTF8String], "front") == 0 ) {
+            self.camera_type = CAMERA_SETTINGS_TYPE_FRONT;
         }
-    
     }
-    
+    if ([data objectForKey:@"colorModel"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"colorModel"];
+        if(strcasecmp([value UTF8String], "Grayscale") == 0 ) {
+            self.color_model = CAMERA_SETTINGS_COLOR_MODEL_GRAY;
+        }
+    }
+    if ([data objectForKey:@"compressionFormat"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"compressionFormat"];
+        if(strcasecmp([value UTF8String], "png") == 0 ) {
+            self.format = CAMERA_SETTINGS_FORMAT_PNG;
+        }
+        else {
+            self.format = CAMERA_SETTINGS_FORMAT_JPG;
+        }
+    }
+    if ([data objectForKey:@"desiredWidth"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"desiredWidth"];
+        self.width = [value intValue];
+    }
+    if ([data objectForKey:@"desiredHeight"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"desiredHeight"];
+        self.height = [value intValue];
+    }
+    if ([data objectForKey:@"saveToSharedGallery"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"saveToSharedGallery"];
+        if( (strcasecmp([value UTF8String], [[NSString stringWithFormat:@"%@", [NSNumber numberWithBool:YES]] UTF8String]) == 0) ||
+           (strcasecmp([value UTF8String], "true") == 0) ) {
+            self.save_to_shared_gallery = true;
+        }
+    }
+    if ([data objectForKey:@"enableEditing"] != nil) {
+        NSString* value = (NSString*)[data objectForKey:@"enableEditing"];
+        self.enable_editing = 1;
+        self.enable_editing_setted = 1;
+        if( (strcasecmp([value UTF8String], [[NSString stringWithFormat:@"%@", [NSNumber numberWithBool:NO]] UTF8String]) == 0) ||
+           (strcasecmp([value UTF8String], "false") == 0) ) {
+            self.enable_editing = 0;
+        }
+    }
     return self;
 }
 
 
 - (void)dealloc {
-    [callback_url release];
+    //[callback_url release];
     [super dealloc];
 }
 
@@ -122,6 +113,15 @@
 @implementation PickImageDelegate
 
 @synthesize settings;
+
+
+-(void) sendCancelCallback {
+    NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:10];
+    [dict setObject:@"cancel" forKey:@"status"];
+    [dict setObject:@"User canceled operation." forKey:@"message"];
+    [ self.settings.callback setResult:dict];
+}
+
 
 - (void)useImage:(UIImage*)theImage { 
     NSString *folder = [[AppManager getDbPath] stringByAppendingPathComponent:@"/db-files"];
@@ -305,32 +305,40 @@
         //[img release];
     }
     
-    
 	NSString* strBody = @"&rho_callback=1";
     if (isError) {
-        strBody = [strBody stringByAppendingString:@"&status=error&message=Can't write image to the storage"];
+        NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:10];
+        [dict setObject:@"error" forKey:@"status"];
+        [dict setObject:@"Can't write image to the storage" forKey:@"message"];
+        [ self.settings.callback setResult:dict];
     }
     else {
-        strBody = [strBody stringByAppendingString:@"&status=ok&image_uri=db%2Fdb-files%2F"];
-        strBody = [strBody stringByAppendingString:filename];
-        strBody = [strBody stringByAppendingString:@"&image_width="];
-        strBody = [strBody stringByAppendingString:[NSString stringWithFormat:@"%d", imageWidth]];
-        strBody = [strBody stringByAppendingString:@"&image_height="];
-        strBody = [strBody stringByAppendingString:[NSString stringWithFormat:@"%d", imageHeight]];
-        strBody = [strBody stringByAppendingString:@"&image_format="];
+        NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:10];
+        [dict setObject:@"ok" forKey:@"status"];
+        NSString* str = @"";
+        str = [str stringByAppendingString:@"db%2Fdb-files%2F"];
+        str = [str stringByAppendingString:filename];
+        [dict setObject:str forKey:@"image_uri"];
+
+        [dict setObject:[NSString stringWithFormat:@"%d", imageWidth] forKey:@"image_width"];
+        [dict setObject:[NSString stringWithFormat:@"%d", imageHeight] forKey:@"image_height"];
+        
         if (settings.format == CAMERA_SETTINGS_FORMAT_JPG) {
-            strBody = [strBody stringByAppendingString:@"jpg"];
+            [dict setObject:@"jpg" forKey:@"image_format"];
         }
         else {
-            strBody = [strBody stringByAppendingString:@"png"];
+            [dict setObject:@"png" forKey:@"image_format"];
         }
+        
+        [ self.settings.callback setResult:dict];
+
     }
     
-	const char* cb = [postUrl UTF8String];
-	const char* b = [strBody UTF8String];
-    char* norm_url = rho_http_normalizeurl(cb);
-    rho_net_request_with_data(norm_url, b);
-    rho_http_free(norm_url);
+	//const char* cb = [postUrl UTF8String];
+	//const char* b = [strBody UTF8String];
+    //char* norm_url = rho_http_normalizeurl(cb);
+    //rho_net_request_with_data(norm_url, b);
+    //rho_http_free(norm_url);
     
     //rho_rhodesapp_callCameraCallback([postUrl UTF8String], [filename UTF8String],
     //        isError ? "Can't write image to the storage." : "", 0 );
@@ -368,7 +376,8 @@
         [self useImage:image];
     }
     else {
-        rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
+        //rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
+        [self sendCancelCallback];
     }
     // Remove the picker interface and release the picker object. 
     [picker dismissModalViewControllerAnimated:YES];
@@ -406,7 +415,8 @@
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker 
 { 
     // Notify view about cancel
-    rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
+    //rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
+    [self sendCancelCallback];
     
     // Remove the picker interface and release the picker object. 
     [picker dismissModalViewControllerAnimated:YES]; 
@@ -421,7 +431,8 @@
 #ifdef __IPHONE_3_2
 // UIPopoverControllerDelegate implementation
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController {
-    rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
+    //rho_rhodesapp_callCameraCallback([postUrl UTF8String], "", "", 1);
+    [self sendCancelCallback];
 }
 #endif // __IPHONE_3_2
 
@@ -433,6 +444,7 @@
 
 @end
 
+/*
 void take_picture(char* callback_url, rho_param *options_hash) {
     NSString *url = [NSString stringWithUTF8String:callback_url];
     RhoCameraSettings* settings = [[RhoCameraSettings alloc] init:options_hash url:url];
@@ -453,8 +465,33 @@ void choose_picture(char* callback_url, rho_param *options_hash) {
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(choosePicture:)
                                               withObject:settings waitUntilDone:NO];
 }
+*/
 
-void save_image_to_device_gallery(const char* image_path, rho_param* options_hash) {
+
+void camera_take_picture(NSDictionary* options, id<IMethodResult> callback_api) {
+    RhoCameraSettings* settings = [[RhoCameraSettings alloc] init:options callback_api:callback_api];
+    if (settings.format == CAMERA_SETTINGS_FORMAT_NOT_SETTED) {
+        settings.format = CAMERA_SETTINGS_FORMAT_JPG;
+    }
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(takePicture:)
+                                              withObject:settings waitUntilDone:NO];
+    
+}
+
+void camera_choose_picture(NSDictionary* options, id<IMethodResult> callback_api) {
+    RhoCameraSettings* settings = [[RhoCameraSettings alloc] init:options callback_api:callback_api];
+    if (!settings.enable_editing_setted) {
+        settings.enable_editing = 1;
+    }
+    settings.camera_type = CAMERA_SETTINGS_TYPE_CHOOSE_IMAGE;
+    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(choosePicture:)
+                                              withObject:settings waitUntilDone:NO];
+    
+}
+
+
+//void save_image_to_device_gallery(const char* image_path, rho_param* options_hash) {
+void save_image_to_device_gallery(const char* image_path) {
 	NSString* path = [NSString stringWithUTF8String:image_path];
 	UIImage* img = [UIImage imageWithContentsOfFile:path];
 	
@@ -464,7 +501,9 @@ void save_image_to_device_gallery(const char* image_path, rho_param* options_has
 }
 
 
-VALUE get_camera_info(const char* camera_type) {
+
+
+void get_camera_info(const char* camera_type, int* res_w, int* res_h) {
     
     int w = 0;
     int h = 0;
@@ -605,19 +644,38 @@ VALUE get_camera_info(const char* camera_type) {
         }
     }
     
-    if ((w <= 0) || (h <= 0)) {
-        return rho_ruby_get_NIL();
-    }
+    *res_w = w;
+    *res_h = h;
     
-    VALUE hash = rho_ruby_createHash();
+    //if ((w <= 0) || (h <= 0)) {
+    //    return rho_ruby_get_NIL();
+    //}
     
-    VALUE hash_max_resolution = rho_ruby_createHash();
+    //VALUE hash = rho_ruby_createHash();
     
-    rho_ruby_add_to_hash(hash_max_resolution, rho_ruby_create_string("width"), rho_ruby_create_integer(w));
-    rho_ruby_add_to_hash(hash_max_resolution, rho_ruby_create_string("height"), rho_ruby_create_integer(h));
+    //VALUE hash_max_resolution = rho_ruby_createHash();
     
-    rho_ruby_add_to_hash(hash, rho_ruby_create_string("max_resolution"), hash_max_resolution);
+    //rho_ruby_add_to_hash(hash_max_resolution, rho_ruby_create_string("width"), rho_ruby_create_integer(w));
+    //rho_ruby_add_to_hash(hash_max_resolution, rho_ruby_create_string("height"), rho_ruby_create_integer(h));
     
-    return hash;
+    //rho_ruby_add_to_hash(hash, rho_ruby_create_string("max_resolution"), hash_max_resolution);
+    
+    //return hash;
     
 }
+
+int get_camera_max_width(const char* camera_type) {
+    int w;
+    int h;
+    get_camera_info(camera_type, &w, &h);
+    return w;
+}
+
+int get_camera_max_height (const char* camera_type) {
+    int w;
+    int h;
+    get_camera_info(camera_type, &w, &h);
+    return h;
+}
+
+

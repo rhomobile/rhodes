@@ -27,6 +27,7 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "RhoDelegate.h"
+#import "api_generator/iphone/IMethodResult.h"
 
 
 //#import "ruby/rho/rhoruby.h"
@@ -50,7 +51,7 @@
 
 @interface RhoCameraSettings : NSObject {
 @public
-    NSString* callback_url;
+    id<IMethodResult> callback;
     int camera_type;
     int color_model;
     int format;
@@ -61,7 +62,7 @@
     bool save_to_shared_gallery;
 }
 
-@property (retain) NSString* callback_url;
+@property (retain) id<IMethodResult> callback;
 @property (assign) int camera_type;
 @property (assign) int color_model;
 @property (assign) int format;
@@ -71,7 +72,7 @@
 @property (assign) int enable_editing_setted;
 @property (assign) bool save_to_shared_gallery;
 
-- (id)init:(void*)data url:(NSString*)url;
+- (id)init:(NSDictionary*)data callback_api:(id<IMethodResult>)callback_api;
 
 @end
 

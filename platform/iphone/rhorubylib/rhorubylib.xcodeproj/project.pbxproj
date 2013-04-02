@@ -30,7 +30,6 @@
 		D38F7B5F110647510030B1F4 /* extensions.c in Sources */ = {isa = PBXBuildFile; fileRef = D38F7B5E110647510030B1F4 /* extensions.c */; };
 		F51668800FFD39D80079F023 /* alert_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F516687F0FFD39D80079F023 /* alert_wrap.c */; };
 		F58E7FE80F008AA600E46829 /* phonebook_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F58E7FE70F008AA600E46829 /* phonebook_wrap.c */; };
-		F5B8FACF0F44E92700C9AF85 /* camera_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5B8FACE0F44E92700C9AF85 /* camera_wrap.c */; };
 		F5E360690EB6A62A00226287 /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360220EB6A62A00226287 /* array.c */; };
 		F5E3606A0EB6A62A00226287 /* bignum.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360230EB6A62A00226287 /* bignum.c */; };
 		F5E3606C0EB6A62A00226287 /* class.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E360250EB6A62A00226287 /* class.c */; };
@@ -789,7 +788,6 @@
 				F5E363050EB79F8400226287 /* lgamma_r.c in Sources */,
 				F5E363080EB7A0DB00226287 /* newline.c in Sources */,
 				F58E7FE80F008AA600E46829 /* phonebook_wrap.c in Sources */,
-				F5B8FACF0F44E92700C9AF85 /* camera_wrap.c in Sources */,
 				5C76527E0FD3E3C100CB43FD /* rhoruby.c in Sources */,
 				5C7652800FD3E3C100CB43FD /* rhosupport.c in Sources */,
 				5C7652830FD3E3E000CB43FD /* stringio.c in Sources */,
