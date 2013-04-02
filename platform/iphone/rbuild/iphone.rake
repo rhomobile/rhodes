@@ -824,7 +824,7 @@ namespace "build" do
     end  
 
 
-    task :extension_libs => "config:iphone" do
+    task :extension_libs => ["config:iphone", "build:bundle:noxruby"] do
       chdir 'platform/iphone'
       rm_rf 'bin'
       rm_rf 'build/Debug-*'
