@@ -86,7 +86,7 @@ class System
     end
 end
 
-if Rho::System.isRhoSimulator() || Rho::System.platform == Rho::System::PLATFORM_WM_CE || Rho::System.platform == Rho::System::PLATFORM_WINDOWS_DESKTOP
+if Rho::System.isRhoSimulator() || Rho::System.platform == Rho::System::PLATFORM_WM_CE || Rho::System.platform == Rho::System::PLATFORM_WINDOWS_DESKTOP || Rho::System.platform == Rho::System::PLATFORM_ANDROID
 
 class Application
     def self.setLocale(locale_code, country_code = nil)
