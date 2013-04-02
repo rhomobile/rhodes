@@ -421,7 +421,7 @@ static Rhodes *instance = NULL;
 - (void)takePicture:(RhoCameraSettings*) settings {
     if (!rho_rhodesapp_check_mode())
         return;
-    [pickImageDelegate setPostUrl:settings.callback_url];
+    //[pickImageDelegate setPostUrl:settings.callback_url];
     pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 
                  sourceType:UIImagePickerControllerSourceTypeCamera];
@@ -488,7 +488,7 @@ static Rhodes *instance = NULL;
 - (void)choosePicture:(RhoCameraSettings*) settings {
     if (!rho_rhodesapp_check_mode())
         return;
-    [pickImageDelegate setPostUrl:settings.callback_url];
+    //[pickImageDelegate setPostUrl:settings.callback_url];
     pickImageDelegate.settings = settings;
     [self startCameraPicker:pickImageDelegate 
                  sourceType:UIImagePickerControllerSourceTypePhotoLibrary];

@@ -1824,12 +1824,18 @@ module Rhogen
                module_method.desc = xml_desc.text
             end
 
-            if xml_module_method.elements["RETURN"] != nil
+            if (xml_module_method.elements["RETURN"] != nil) || xml_module_method.elements["CALLBACK"] != nil
+
+                ret_el = xml_module_method.elements["RETURN"]
+                if ret_el == nil
+                   ret_el = xml_module_method.elements["CALLBACK"]
+                end
+
                 module_method.is_return_value = true
                 method_result = MethodResult.new()
-                result_type = xml_module_method.elements["RETURN"].attribute("type").to_s
+                result_type = ret_el.attribute("type").to_s
                 #result_item_type = xml_module_method.elements["RETURN"].attribute("itemType").to_s
-                xml_module_method.elements["RETURN"].elements.each("DESC") do |xml_desc|
+                ret_el.elements.each("DESC") do |xml_desc|
                    method_result.desc = xml_desc.text
                 end
                 if result_type != nil
@@ -1852,6 +1858,15 @@ module Rhogen
                    end
                 end
                 xml_module_method.elements.each("RETURN/PARAMS") do |return_params_xml|
+                   method_result.sub_params = process_params(return_params_xml, module_item, module_method.name+'_RETURN')
+                end
+                xml_module_method.elements.each("CALLBACK/PARAM") do |return_param_xml|
+                   method_result.sub_param = process_param(return_param_xml, "result", module_item, module_method.name+'_RETURN', 0)
+                   if method_result.sub_param != nil
+                      method_result.item_type = method_result.sub_param.type
+                   end
+                end
+                xml_module_method.elements.each("CALLBACK/PARAMS") do |return_params_xml|
                    method_result.sub_params = process_params(return_params_xml, module_item, module_method.name+'_RETURN')
                 end
 
