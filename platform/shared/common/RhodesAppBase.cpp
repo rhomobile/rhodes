@@ -145,7 +145,12 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
 
 boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
 {
-    return String_startsWith(strUrl, m_strHomeUrl);
+#ifdef OS_WP8
+	//work around for crash when we use socket log
+	//TO DO: redesign it
+	return String_startsWith(strUrl, "http://127.0.0.1:");
+#endif
+	return String_startsWith(strUrl, m_strHomeUrl);
 }
     
 void rho_do_send_log(rho::apiGenerator::CMethodResult& oResult)
@@ -274,9 +279,6 @@ extern "C" {
 //TODO: use System.unzip_file
 int rho_sys_unzip_file(const char* szZipPath, const char* psw)
 {
-#ifdef OS_WP8
-	return -1;
-#endif
     rho::common::CFilePath oPath(szZipPath);
     rho::String strBaseDir = oPath.getFolderName();
 #if defined(UNICODE) && defined(WIN32)
