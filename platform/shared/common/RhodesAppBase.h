@@ -50,7 +50,13 @@ protected:
     static CRhodesAppBase* m_pInstance;
 
     String m_strRhoRootPath, m_strBlobsDirPath, m_strDBDirPath, m_strAppRootPath, m_strAppUserPath, m_strRuntimePath;//, m_strRhodesPath;
-    String m_strHomeUrl, m_strHomeUrlLocalHost;
+#ifdef OS_WP8
+	static String m_strHomeUrl;
+#else
+	String m_strHomeUrl;
+#endif
+	String m_strHomeUrlLocalHost;
+
     boolean m_bSendingLog;
 	
 	mutable common::CMutex m_mxPushCallback;
