@@ -43,6 +43,7 @@ public:
 private:
     rho::String m_strRubyCallback, m_strCallbackParam, m_strParamName;
     rho::String m_strJSCallback;
+    int m_iTabId;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > m_hashStrL2Res;
     rho::Vector<rho::Hashtable<rho::String, rho::String> > m_arHashRes;
@@ -74,12 +75,12 @@ private:
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
 public:
 
-    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode){}
+    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_iTabId(-1), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     const rho::String& getRubyCallback() const { return m_strRubyCallback; }
     void setRubyCallbackProc(unsigned long oRubyCallbackProc);
-    void setJSCallback(const rho::String& strCallback){ m_strJSCallback = strCallback; }
+    void setJSCallback(const rho::String& strCallback);
     void setCallInUIThread(rho::boolean bUIThread) {}
     void setCallbackParam(const rho::String& strCallbackParam){ m_strCallbackParam = strCallbackParam; }
     const rho::String& getCallbackParam() const { return m_strCallbackParam; }
