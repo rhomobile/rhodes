@@ -331,7 +331,7 @@ var Rho = Rho || (function ($) {
     return {
         loadApiModules: loadApiModules,
         util: util,
-        callback_handler: callbackHandler
+        callbackHandler: callbackHandler
     };
 
 })(jQuery);
