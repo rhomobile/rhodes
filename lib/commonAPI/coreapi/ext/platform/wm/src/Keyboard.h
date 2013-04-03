@@ -1,4 +1,3 @@
-#if !defined( RHODES_EMULATOR )
 #pragma once
 /**
 *  \file SIP.h
@@ -172,4 +171,3 @@ private:
 
 }
 
-#endif

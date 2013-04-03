@@ -1,4 +1,3 @@
-#if !defined( RHODES_EMULATOR )
 #include "Keyboard.h"
 #include "sipapi.h"
 #include "keybd.h"
@@ -621,4 +620,3 @@ void CSIP::ToggleSIPReliably(bool bUserRequestToShow)
 }
 
 }
-#endif

@@ -9,12 +9,12 @@
 #include "common/RhoFilePath.h"
 #include "common/RhoFile.h"
 #include "common/RhoDefs.h"
-#if !defined( RHODES_EMULATOR )
+#if defined( OS_WINCE )
 #include "rcmcapi.h"
-#include "Registry.h"
 #include "Keyboard.h"
-#include <algorithm>
 #endif
+#include <algorithm>
+#include "Registry.h"
 
 #if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
 #include <cfgmgrapi.h>
@@ -68,13 +68,13 @@ using namespace common;
 class CSystemImpl: public CSystemImplBase
 {
 private:
-#if !defined( RHODES_EMULATOR )
+#if defined( OS_WINCE )
 	CSIP* m_pSip;
 #endif
 public:
     CSystemImpl(): CSystemImplBase()
 	{
-#if !defined( RHODES_EMULATOR )
+#if defined( OS_WINCE )
 	m_pSip = NULL;
 #endif
 	}
@@ -95,9 +95,9 @@ public:
     virtual void getHasCamera(CMethodResult& oResult);
     virtual void getOemInfo(CMethodResult& oResult);
     virtual void getUuid(CMethodResult& oResult);
-#if !defined( RHODES_EMULATOR )
-			bool populateUUID(UNITID_EX* uuid);
-			void bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize);
+#if defined( OS_WINCE )
+	bool populateUUID(UNITID_EX* uuid);
+	void bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize);
 #endif
     virtual void getHttpProxyURI(CMethodResult& oResult);
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
@@ -129,7 +129,7 @@ public:
     virtual void unset_http_proxy(rho::apiGenerator::CMethodResult& oResult);
 	virtual long OnSIPState(bool bSIPState, const CRhoExtData& oExtData)
 	{
-#if !defined( RHODES_EMULATOR )
+#if defined( OS_WINCE )
 		if (!m_pSip)
 			m_pSip = new CSIP();
 		m_pSip->ToggleSIPReliably(bSIPState);
@@ -346,19 +346,21 @@ void CSystemImpl::getIsMotorolaDevice(CMethodResult& oResult)
 
 void CSystemImpl::getOemInfo(CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR )
+#if defined( OS_WINCE )
 	WCHAR info [64];
 	if (SystemParametersInfo (SPI_GETOEMINFO, 64, info, 0))
 		oResult.set(info);
 	else
 		oResult.set(L"unknown");
+#else
+    oResult.set(L"unknown");
 #endif
 }
 
 
 void CSystemImpl::getUuid(CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR )
+#if defined( OS_WINCE )
 	UNITID_EX uuid;
     memset(&uuid, 0, sizeof uuid);
     uuid.StructInfo.dwAllocated = sizeof uuid;
@@ -393,7 +395,7 @@ void CSystemImpl::getUuid(CMethodResult& oResult)
 #endif
 }
 
-#if !defined( RHODES_EMULATOR )
+#if defined( OS_WINCE )
 
 bool CSystemImpl::populateUUID(UNITID_EX* uuid)
 {
@@ -494,7 +496,7 @@ void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult)
 
 void CSystemImpl::getKeyboardState(CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR )
+#if defined( OS_WINCE )
 	if (!m_pSip)
 		m_pSip = new CSIP();
 	if (m_pSip->getCurrentStatus() == SIP_CONTROL_AUTOMATIC)
@@ -515,7 +517,7 @@ void CSystemImpl::getKeyboardState(CMethodResult& oResult)
 
 void CSystemImpl::setKeyboardState( const rho::String & value, CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR )
+#if defined( OS_WINCE )
 	if (!m_pSip)
 		m_pSip = new CSIP();
 	
@@ -788,8 +790,6 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
 
 void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR )
-
     bool bRetVal = false;
 	bool bPersistent = false;
 	rho::String szHive = "";
@@ -824,12 +824,11 @@ void CSystemImpl::setRegistrySetting( const rho::Hashtable<rho::String, rho::Str
 		rho::common::convertToStringW(szValue).c_str(), bPersistent);
 
 	oResult.set(bRetVal);
-#endif
+
 }
 
 void CSystemImpl::getRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR )
 	rho::String szHive = "";
 	rho::String szSubkey = "";
 	rho::String szSetting = "";
@@ -850,12 +849,11 @@ void CSystemImpl::getRegistrySetting( const rho::Hashtable<rho::String, rho::Str
 	}
 
 	GetRegistrySetting(szHive, szSubkey, szSetting, oResult);
-#endif
+
 }
 
 void CSystemImpl::deleteRegistrySetting( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
-#if !defined( RHODES_EMULATOR )
 	bool bRetVal = false;
 	bool bPersistent = false;
 	rho::String szHive = "";
@@ -883,7 +881,6 @@ void CSystemImpl::deleteRegistrySetting( const rho::Hashtable<rho::String, rho::
 			rho::common::convertToStringW(szSubkey).c_str(),
 			rho::common::convertToStringW(szSetting).c_str(), bPersistent, false);
 	oResult.set(bRetVal);
-#endif
 }
 
 void CSystemImpl::setWindowFrame( int x,  int y,  int width,  int height, CMethodResult& oResult)
