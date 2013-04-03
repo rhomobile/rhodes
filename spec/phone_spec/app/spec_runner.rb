@@ -48,7 +48,7 @@ end
 
     config[:files] << "spec/bundle_update_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID' || System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'
 
-    config[:files] << "spec/nativebar_spec" if System.get_property('platform') != 'Blackberry'
+    config[:files] << "spec/nativebar_spec" if System.get_property('platform') != 'Blackberry' && System.get_property('platform') != 'WP8'
     config[:files] << "spec/navbar_spec" if System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'ANDROID'
 
     config[:files] << "spec/xruby_spec" if defined? RHO_ME
