@@ -93,9 +93,9 @@ void CMethodResult::callCallback()
 
         String strCallback("Rho.callbackHandler( \"");
         strCallback += m_strJSCallback;
-        strCallback += "\", ";
+        strCallback += "\", {";
         strCallback += strRes;
-        strCallback += ")";
+        strCallback += "})";
 
         rho_webview_execute_js(strCallback.c_str(), m_iTabId);
 
