@@ -209,4 +209,47 @@ describe 'Log' do
     log.scan(/log_ok/).length.should == messageCounter
   end
 
+  it 'should filter by excludeFilter' do
+    Rho::Log.level = Rho::Log::LEVEL_TRACE
+    Rho::Log.cleanLogFile
+
+    puts Rho::Log.excludeFilter
+
+    Rho::Log.excludeFilter = ",,,password ,key, zombie ,,,  ,    "
+    filter_value = Rho::Log.excludeFilter
+    filter_value.should == "password,key,zombie,  ,    "
+
+    puts "Filter = '#{Rho::Log.excludeFilter}'"
+
+    struct = {
+      "alpha" => "log_ok",
+      "beta" => "log_ok",
+      "password" => "log_fail",
+      "key" => "log_fail",
+      "secretkey" => "log_fail",
+      "zombie" => "log_fail",
+      "key" => 128,
+      "PaSsWoRd" => "log_ok",
+      "zombies" => "wtf"
+    };
+
+    ok_counter = 0
+
+    struct.each do |key, val|
+      Rho::Log.trace("#{key}=#{val}","APP")
+      ok_counter += 1 if val == "log_ok"
+    end
+
+    Rho::Log.trace(struct.to_s,"APP")
+    
+    messageCounter = ok_counter*2 #key=val and struct.to_s
+
+    #read log and check if there are any exeptions
+    log = Rho::Log.readLogFile(1024*1024*16)
+    log.length.should_not == 0
+    log.index("log_fail").should == nil
+    log.scan(/log_ok/).length.should == messageCounter
+  end
+
+
 end
