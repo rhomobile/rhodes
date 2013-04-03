@@ -3,6 +3,8 @@
 #include "common/RhodesApp.h"
 #include "common/StringConverter.h"
 
+#include "rubyext/WebView.h"
+
 #include "MethodResultConvertor.h"
 #include "RubyResultConvertor.h"
 #include "JSONResultConvertor.h"
@@ -15,8 +17,11 @@ namespace apiGenerator
 using namespace rho::json;
 using namespace rho::common;
 
-extern "C" const char* rho_webview_execute_js(const char* js, int index);
-extern "C" int rho_webview_active_tab();
+void CMethodResult::setJSCallback(const rho::String& strCallback)
+{
+    m_strJSCallback = strCallback;
+    m_iTabId = rho_webview_active_tab();
+}
 
 rho::String CMethodResult::toJSON()
 {
@@ -88,10 +93,6 @@ void CMethodResult::callCallback()
         m_ResType = eNone;
     }else if ( m_ResType != eNone && m_strJSCallback.length() != 0 )
     {
-
-        int tabIndex = -1;
-        //common::convertFromStringA(m_strCallbackParam.c_str(), tabIndex);
-
         String strRes(CMethodResultConvertor().toJSON(*this));
 
         String strCallback("Rho.callbackHandler( \"");
@@ -100,7 +101,7 @@ void CMethodResult::callCallback()
         strCallback += strRes;
         strCallback += ")";
 
-        rho_webview_execute_js(strCallback.c_str(), tabIndex);
+        rho_webview_execute_js(strCallback.c_str(), m_iTabId);
 
         m_ResType = eNone;
     }
