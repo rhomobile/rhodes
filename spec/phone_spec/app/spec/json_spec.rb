@@ -80,6 +80,7 @@ describe "Json" do
         end
     end
 
+if  System.get_property('platform') != 'WP8'  
     it "should webservice" do
 
         res = Rho::AsyncHttp.get( :url => 'http://rhostore.herokuapp.com/products.json' )
@@ -94,6 +95,7 @@ end
         parsed.is_a?(Array).should ==  true
         parsed[0].is_a?(Hash).should ==  true
     end
+end
 
     it "should generate" do
         require 'json'
