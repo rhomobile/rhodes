@@ -7,9 +7,11 @@ var Rho = Rho || (function ($) {
 
     var RHO_ID_PARAM = '__rhoID';
     var RHO_CLASS_PARAM = '__rhoClass';
+    var RHO_CALLBACK_PARAM = '__rhoCallback';
 
     var API_CONTROLLER_URL = '/system/js_api_entrypoint';
-    var API_CALLBACK_BASE_URL = '/system/js_api_entrypoint';
+    //var API_CALLBACK_BASE_URL = '/system/js_api_entrypoint';
+    var API_CALLBACK_BASE_URL = '';
 
     // === Private parts ============================================================
 
@@ -51,7 +53,6 @@ var Rho = Rho || (function ($) {
                 value[prop] = createInstance(value[prop]);
             }
         }
-
         return value;
     }
 
@@ -97,9 +98,10 @@ var Rho = Rho || (function ($) {
     function commonReq(params) {
 
         var valueCallback = null;
+
         if ("number" == typeof params.valueCallbackIndex) {
             if (params.valueCallbackIndex < params.args.length-1)
-                throw 'Value callback should be a last passed argument!';
+                throw 'Generated API method error: wrong position for value callback argument!';
 
             if (params.valueCallbackIndex == params.args.length-1)
                 valueCallback = params.args.pop();
@@ -108,17 +110,46 @@ var Rho = Rho || (function ($) {
                 throw 'Value callback should be a function!';
         }
 
-        var cmd = { 'method': params.method, 'params': params.args };
+        var persistentCallback = null;
+        var persistentCallbackOptParams = null;
 
-        if ("number" == typeof params.callbackIndex) {
-            cmd['callback_index'] = params.callbackIndex;
-            cmd['args'][params.callbackIndex] = prepareCallback(params.args[params.callbackIndex]);
+        if ("number" == typeof params.persistentCallbackIndex) {
+            if (params.persistentCallbackIndex < params.args.length-2
+                || params.persistentCallbackIndex >= params.args.length)
+                throw 'Generated API method error: wrong position for persistent callback argument!';
+
+            if (params.persistentCallbackIndex == params.args.length-2) {
+                persistentCallbackOptParams = params.args.pop();
+                persistentCallback = params.args.pop();
+            } else {
+                persistentCallback = params.args.pop();
+            }
+
+            if (persistentCallback && 'function' != typeof persistentCallback)
+                throw 'Persistent callback should be a function!';
+
+            if (persistentCallbackOptParams && 'string' != typeof persistentCallbackOptParams)
+                throw 'Persistent callback optional parameters should be a string!';
+            
+            var persistentCallbackOptParams = persistentCallbackOptParams || null;
+
+            persistentCallback = prepareCallback(persistentCallback, true);
         }
+
+        var cmd = { 'method': params.method, 'params': params.args };
 
         cmd[RHO_CLASS_PARAM] = params.module;
         cmd[RHO_ID_PARAM] = params.instanceId || null;
         cmd['jsonrpc'] = '2.0';
         cmd['id'] = reqIdCount++;
+
+        if (persistentCallback) {
+            cmd[RHO_CALLBACK_PARAM] = {
+                id: persistentCallback,
+                vmID: window['__rhoJsVmID'],
+                optParams: persistentCallbackOptParams
+            };
+        }
 
         var cmdText = $.toJSON(cmd);
         console.log(cmdText);

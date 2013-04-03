@@ -81,8 +81,9 @@
             return apiReq({
                 instanceId: this.getId(),
                 args: arguments,
-                method: '<%= module_method.name %>'<% if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>,
-                valueCallbackIndex: <%= module_method.params.size %><% end %>
+                method: '<%= module_method.name %>',
+                <%= "persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>
+                valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>
             });
         };
 
@@ -143,8 +144,9 @@
             return apiReq({
                 instanceId: '0',
                 args: arguments,
-                method: '<%= module_method.name %>'<% if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>,
-                valueCallbackIndex: <%= module_method.params.size %><% end %>
+                method: '<%= module_method.name %>',
+                <%= "persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>
+                valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>
             });
         };
     <% end %>
