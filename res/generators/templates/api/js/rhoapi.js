@@ -18,6 +18,10 @@ var Rho = Rho || (function ($) {
     var idCount = 0;
     var pendingCallbacks = {};
 
+    function getVmID() {
+        return window['__rhoJsVmID'] || null;
+    }
+
     function defaultEmptyCallback() {}
 
     function nextId(tag) {
@@ -146,7 +150,7 @@ var Rho = Rho || (function ($) {
         if (persistentCallback) {
             cmd[RHO_CALLBACK_PARAM] = {
                 id: persistentCallback,
-                vmID: window['__rhoJsVmID'],
+                vmID: getVmID(),
                 optParams: persistentCallbackOptParams
             };
         }
