@@ -778,13 +778,13 @@ namespace "build" do
 
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
-      $app_config["extensions"].each do |ext|
-        $app_config["extpaths"].each do |p|
-          extpath = File.join(p, ext, 'ext')
+      $app_extensions_list.each do |ext, commin_ext_path | 
+
+          extpath = File.join( commin_ext_path, 'ext')
 
           prebuilt_copy = false
 
-          extyml = File.join(p, ext,"ext.yml")
+          extyml = File.join(commin_ext_path,"ext.yml")
           if File.file? extyml
             extconf = Jake.config(File.open(extyml))
             extconf_iphone = extconf['iphone']
@@ -818,7 +818,7 @@ namespace "build" do
           if ! prebuilt_copy
             build_extension_lib(extpath, sdk, target_dir) 
           end 
-        end
+        
       end
 
     end  
@@ -856,15 +856,18 @@ namespace "build" do
 
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
-      $app_config["extensions"].each do |ext|
-        $app_config["extpaths"].each do |p|
-          extpath = File.join(p, ext, 'ext')
-          extyml = File.join(p, ext,"ext.yml")
+      $app_extensions_list.each do |ext, commin_ext_path | 
+
+          extpath = File.join( commin_ext_path, 'ext')
+          extyml = File.join( commin_ext_path, "ext.yml")
           if File.file? extyml
             extconf = Jake.config(File.open(extyml))
             #extconf_iphone = extconf['iphone']
+            exttype = 'build'
+            extconf_iphone = extconf['iphone']
+            exttype = extconf_iphone['exttype'] if extconf_iphone and extconf_iphone['exttype']
             libes = extconf["libraries"]
-            if libes != nil
+            if (libes != nil) && (exttype != 'prebuilt')
               libname = libes.first
               prebuiltpath = Dir.glob(File.join(extpath, '**', 'iphone'))
               if prebuiltpath != nil && prebuiltpath.count > 0
@@ -906,7 +909,7 @@ namespace "build" do
               end
             end 
           end
-        end
+        
       end
 
 
