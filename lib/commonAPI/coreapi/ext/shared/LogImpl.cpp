@@ -129,7 +129,27 @@ public:
 
     virtual void getExcludeFilter(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set( RHOCONF().getString("log_exclude_filter") );
+        const Vector<rho::String>& log_attr = LOGCONF().getExcludeAttribs();
+
+        size_t len = 0;
+        for(Vector<rho::String>::const_iterator iter = log_attr.begin(); iter != log_attr.end(); iter++)
+        {
+            len += (*iter).length() + 1; // including separator
+        }
+        
+        rho::String str;
+        str.reserve(len);
+  
+        for(Vector<rho::String>::const_iterator iter = log_attr.begin(); iter != log_attr.end(); iter++)
+        {
+            if (iter != log_attr.begin())
+            {
+                str += ",";
+            }
+            str += *iter;
+        }
+        
+        oResult.set( str );
     }
 
     virtual void setExcludeFilter( const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
