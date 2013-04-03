@@ -57,15 +57,16 @@
 	it("Application name", function(){
 		expect(Rho.Application.getName()).isNotEmptyString();
 	});
-    //TODO: This method not generated - ???
-	it("Current application locale.Like 'en', 'ru' etc", function(){
-		expect(Rho.Application.getLocale()).isNotEmptyString();
-	});
+	
+    //TODO: Implement Localization for Javascript app
+	//it("Current application locale.Like 'en', 'ru' etc", function(){
+	//	expect(Rho.Application.getLocale()).isNotEmptyString();
+	//});
 
-     //TODO: This method not generated - ???
-	it("Current application country code", function(){
-		expect(Rho.Application.getCountry()).isNotEmptyString();
-	});
+    //TODO: Implement Localization for Javascript app
+	//it("Current application country code", function(){
+	//	expect(Rho.Application.getCountry()).isNotEmptyString();
+	//});
 
      //TODO: Move to platform dependent tests
 	it("Bad link URI to navigate in browser", function(){

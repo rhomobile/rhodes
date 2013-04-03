@@ -60,7 +60,7 @@ using namespace rho::common;
     <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
-        if ( argv[<%= first_arg %>].isString() )
+        if ( argv[<%= first_arg %>].isInteger() )
             arg<%= first_arg %> = argv[<%= first_arg %>].getInt();
         else if (!argv[<%= first_arg %>].isNull())
         {
@@ -74,8 +74,8 @@ using namespace rho::common;
     <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : false %>;
     if ( argc > <%= first_arg %> )
     {
-        if ( argv[<%= first_arg %>].isString() )
-            arg<%= first_arg %> = argv[<%= first_arg %>].getInt() ? true : false;
+        if ( argv[<%= first_arg %>].isBoolean() )
+            arg<%= first_arg %> = argv[<%= first_arg %>].getBoolean();
         else if (!argv[<%= first_arg %>].isNull())
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );
@@ -88,7 +88,7 @@ using namespace rho::common;
     <%= api_generator_cpp_makeNativeType(param.type) %> arg<%= first_arg %> = <%= param.default_value ? param.default_value : 0 %>;
     if ( argc > <%= first_arg %> )
     {
-        if ( argv[<%= first_arg %>].isString() )
+        if ( argv[<%= first_arg %>].isFloat() )
             arg<%= first_arg %> = argv[<%= first_arg %>].getDouble();
         else if (!argv[<%= first_arg %>].isNull())
         {

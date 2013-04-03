@@ -28,6 +28,8 @@ public:
     virtual void getApplicationIconBadge(CMethodResult& oResult);
     virtual void setApplicationIconBadge( int value, CMethodResult& oResult);
     virtual void getIsRhoSimulator(rho::apiGenerator::CMethodResult& oResult);
+    virtual void getKeyboardState(CMethodResult& oResult);
+	virtual void setKeyboardState( const rho::String &, CMethodResult& oResult);
 
     virtual void getStartParams(rho::apiGenerator::CMethodResult& oResult);
     virtual void unzipFile( const rho::String& localPathToZip,  const rho::String& password, rho::apiGenerator::CMethodResult& oResult);

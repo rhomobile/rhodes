@@ -11,15 +11,15 @@ describe("<WebView specs>", function () {
     });
 
     it("Setting full screen mode", function () {
-        Rho.WebView.getFullScreen(true);
+        Rho.WebView.setFullScreen(true);
         expect(Rho.WebView.getFullScreen()).toEqual(true);
 
-        Rho.WebView.getFullScreen(false);
+        Rho.WebView.setFullScreen(false);
         expect(Rho.WebView.getFullScreen()).toEqual(false);
     });
 
     it("Reporting native menu items", function () {
-        expect(Rho.WebView.getNativeMenu()).isNotEmptyString();
+        expect(Rho.WebView.getNativeMenu()).isNotEmptyArray();
     });
 
     //TODO: move to platform dependent test (android)
@@ -105,7 +105,6 @@ describe("<WebView specs>", function () {
         expect(Rho.WebView.getCacheSize()).isNumberGreaterThenZero();
     });
 
-    enableCache
     it("Browser cache is enabled by default", function () {
         expect(Rho.WebView.getEnableCache()).toEqual(true);
     });
