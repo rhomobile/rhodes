@@ -17,6 +17,8 @@ using namespace rho::common;
    if module_method.generateNativeAPI %>
 <%= api_generator_MakeJSMethodDecl($cur_module.name, module_method.native_name, module_method.access == ModuleMethod::ACCESS_STATIC)%>
 {
+    RAWTRACE3("<%=module_method.native_name%>(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
@@ -145,7 +147,7 @@ using namespace rho::common;
 <% first_arg = first_arg+1 %>
 <% end %>
 
-<% if module_method.has_callback == ModuleMethod::CALLBACK_NONE %>
+<% if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>
     oRes.setCallInUIThread(<%= (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) ? "true" : "false" %>);
     oRes.setJSCallback( strCallbackID );
     oRes.setCallbackParam( strJsVmID );

@@ -17,11 +17,7 @@ namespace apiGenerator
 using namespace rho::json;
 using namespace rho::common;
 
-void CMethodResult::setJSCallback(const rho::String& strCallback)
-{
-    m_strJSCallback = strCallback;
-    m_iTabId = rho_webview_active_tab();
-}
+IMPLEMENT_LOGCLASS(CMethodResult, "MethodResult");
 
 rho::String CMethodResult::toJSON()
 {
@@ -118,8 +114,18 @@ CMethodResult::CMethodRubyValue::~CMethodRubyValue()
 }
 
 void CMethodResult::setRubyCallbackProc(unsigned long oRubyCallbackProc)
-{ 
+{
+    LOG(TRACE) + "setRubyCallbackProc";
+
     m_pRubyCallbackProc = new CMethodRubyValue(oRubyCallbackProc);
+}
+
+void CMethodResult::setJSCallback(const rho::String& strCallback)
+{
+    LOG(TRACE) + "setJSCallback: " + strCallback;
+
+    m_strJSCallback = strCallback;
+    m_iTabId = rho_webview_active_tab();
 }
 
 }

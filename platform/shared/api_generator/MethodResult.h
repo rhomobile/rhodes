@@ -2,6 +2,7 @@
 
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
+#include "logging/RhoLog.h"
 /*
 template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2 >
 class CObjCallbackFunctor2 : public rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>
@@ -38,6 +39,8 @@ namespace apiGenerator
 
 class CMethodResult
 {
+    DEFINE_LOGCLASS
+
 public:
     enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eArrayHash, eJSON, eBool, eInt, eDouble, eError, eArgError};
 private:
