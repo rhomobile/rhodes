@@ -1,8 +1,8 @@
-#if !defined( RHODES_EMULATOR )
 #include <windows.h>
 #include <string>
 #include <atlbase.h>
 #include <algorithm>
+#include <Strsafe.h>
 #include "Registry.h"
 //bool WriteRegHandler (HKEY proot, LPCTSTR psubkey, LPCTSTR psetting, DWORD ptype, LPCTSTR pvalue_string, bool persistent)
 bool WriteRegHandler (rho::String proot, LPCTSTR psubkey, LPCTSTR psetting, rho::String ptype, LPCTSTR pvalue_string, bool persistent)
@@ -597,4 +597,3 @@ DWORD ConvertToType(rho::String neonType)
 		return 1;
 	}
 }
-#endif
