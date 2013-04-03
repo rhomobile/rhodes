@@ -406,4 +406,15 @@ void CSystemImplBase::unset_http_proxy(rho::apiGenerator::CMethodResult& oResult
     //windows only
 }
 
+void CSystemImplBase::getKeyboardState(CMethodResult& oResult)
+{
+    //windows only
+    oResult.set("automatic");
+}
+
+void CSystemImplBase::setKeyboardState( const rho::String & value, CMethodResult& oResult)
+{
+    //windows only
+}
+
 }

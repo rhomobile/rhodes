@@ -71,12 +71,14 @@ private:
 #if defined( OS_WINCE )
 	CSIP* m_pSip;
 #endif
+    bool m_bLockedWindowSize;
 public:
     CSystemImpl(): CSystemImplBase()
 	{
 #if defined( OS_WINCE )
-	m_pSip = NULL;
+	    m_pSip = NULL;
 #endif
+        m_bLockedWindowSize = false;
 	}
 
     virtual void getScreenWidth(CMethodResult& oResult);
@@ -485,17 +487,23 @@ void CSystemImpl::bytesToHexStr(LPTSTR lpHexStr, LPBYTE lpBytes, int nSize)
 }
 #endif
 
-void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
+void CSystemImpl::getLockWindowSize(CMethodResult& oResult)
+{
+    oResult.set(m_bLockedWindowSize);
+}
 
 void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult)
 {
 #if defined(OS_WINDOWS_DESKTOP)
+    m_bLockedWindowSize = value;
     rho_sys_lock_window_size(value?1:0);
 #endif
 }
 
 void CSystemImpl::getKeyboardState(CMethodResult& oResult)
 {
+    oResult.set("automatic");
+
 #if defined( OS_WINCE )
 	if (!m_pSip)
 		m_pSip = new CSIP();
@@ -604,7 +612,7 @@ void CSystemImpl::getHasTouchscreen(CMethodResult& oResult)
 
 void CSystemImpl::getScreenSleeping(rho::apiGenerator::CMethodResult& oResult)
 {
-    oResult.set(true);
+    oResult.set(false);
 }
 
 void CSystemImpl::setScreenSleeping( bool value, rho::apiGenerator::CMethodResult& oResult)

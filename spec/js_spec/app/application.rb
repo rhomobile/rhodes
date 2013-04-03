@@ -9,8 +9,5 @@ class AppApplication < Rho::RhoApplication
     #@@toolbar = nil
     super
 
-    # Uncomment to set sync notification callback to /app/Settings/sync_notify.
-    # SyncEngine::set_objectnotify_url("/app/Settings/sync_notify")
-    SyncEngine.set_notification(-1, "/app/Settings/sync_notify", '')
   end
 end
