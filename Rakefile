@@ -596,7 +596,7 @@ namespace "config" do
         
         if $current_platform == "wm"
             #TODO: add for another platforms
-            $app_config['extensions'] = $app_config['extensions'] | ['barcode', 'indicators']
+            $app_config['extensions'] = $app_config['extensions'] | ['barcode']
         end    
     end
 
