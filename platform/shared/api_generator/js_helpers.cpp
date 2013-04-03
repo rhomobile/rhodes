@@ -2,6 +2,10 @@
 
 #include "common/RhodesApp.h"
 #include "net/URI.h"
+#include "logging/RhoLog.h"
+
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "js_helper"
 
 namespace rho
 {
@@ -27,41 +31,69 @@ void js_define_method(const char* szMethodPath, Func_JS pFunc )
 
 rho::String js_entry_point(const char* szJSON)
 {
+    RAWTRACE(szJSON);
+
     rho::String strReqId, strMethod, strObjID, strCallbackID, strJsVmID;
     CJSONEntry oEntry(szJSON);
 
-	if ( !oEntry.hasName(ID) )
+    if ( !oEntry.hasName(ID) )
+    {
+        RAWLOG_ERROR1("There is no %s string in JSON request", ID.c_str());
         return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32700, \"message\": \"Parse error\"}, \"id\": null}";
-	strReqId = oEntry.getString(ID.c_str());
+    }
+    strReqId = oEntry.getString(ID.c_str());
 
-	if ( !oEntry.hasName(METHOD) )
+    if ( !oEntry.hasName(METHOD) )
+    {
+        RAWLOG_ERROR1("There is no %s string in JSON request object", METHOD.c_str());
         return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32700, \"message\": \"Parse error\"}, \"id\": " + strReqId + "}";
+    }
     strMethod = oEntry.getString(METHOD.c_str());
 
-	if ( oEntry.hasName(RHO_CLASS) ) {
-		rho::String strModule = oEntry.getString(RHO_CLASS.c_str());
-		strMethod = strModule + ":" + strMethod;
-	}
+    if ( oEntry.hasName(RHO_CLASS) )
+    {
+        RAWTRACE("Parsing module class");
+        rho::String strModule = oEntry.getString(RHO_CLASS.c_str());
+        strMethod = strModule + ":" + strMethod;
+    }
 
     if ( oEntry.hasName(RHO_ID) )
         strObjID = oEntry.getString(RHO_ID.c_str());
 
     if ( oEntry.hasName(RHO_CALLBACK) ) {
+        RAWTRACE("Parsing callback");
+
         CJSONEntry oCallback = oEntry.getEntry(RHO_CALLBACK.c_str());
 
-        if (!oCallback.hasName(ID) || !oCallback.hasName(VM_ID))
-            return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32700, \"message\": \"Parse error\"}, \"id\": " + strReqId + "}";
+        RAWTRACE1("Got %s JSON object", RHO_CALLBACK.c_str());
 
-        strCallbackID = oCallback.getString(ID.c_str());
-        strJsVmID = oCallback.getString(VM_ID.c_str());
+        if ( !oCallback.hasName(ID) )
+        {
+            RAWLOG_ERROR1("There is no %s string in __rhoCallback request", ID.c_str());
+            return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32700, \"message\": \"Parse error\"}, \"id\": " + strReqId + "}";
+        }
+
+        const char* pcszCallbackID = oCallback.getString(ID.c_str());
+        const char* pcszJsVmID = oCallback.getString(VM_ID.c_str());
+
+        if (pcszCallbackID)
+            strCallbackID = pcszCallbackID;
+
+        if (pcszJsVmID)
+            strJsVmID = oCallback.getString(pcszJsVmID);
     }
 
     String_replace(strMethod, '.', ':');
     Func_JS pMethod = g_hashJSMethods[strMethod];
     if (!pMethod)
+    {
+        RAWLOG_ERROR1("API method does not found: %s", strMethod.c_str());
         return "{\"jsonrpc\": \"2.0\", \"error\": {\"code\": -32601, \"message\": \"Method not found.\"}, \"id\": " + strReqId + "}";
+    }
 
     CJSONArray oParams(oEntry.getEntry("params"));
+
+    RAWTRACE3("Calling API: object: %s, method: %s, callback id: %s", strObjID.c_str(), strMethod.c_str(), strCallbackID.c_str());
     return "{\"jsonrpc\": \"2.0\", " + pMethod( strObjID, oParams, strCallbackID, strJsVmID ) + ", \"id\": " + strReqId + "}";
 }
 
