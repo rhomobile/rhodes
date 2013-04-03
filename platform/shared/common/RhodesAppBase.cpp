@@ -39,6 +39,9 @@ namespace common{
 
 IMPLEMENT_LOGCLASS(CRhodesAppBase,"RhodesApp");
 CRhodesAppBase* CRhodesAppBase::m_pInstance = 0;
+#ifdef OS_WP8
+	String CRhodesAppBase::m_strHomeUrl = "";
+#endif
 
 /*static*/ CRhodesAppBase* CRhodesAppBase::Create(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
 {
@@ -145,11 +148,6 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
 
 boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
 {
-#ifdef OS_WP8
-	//work around for crash when we use socket log
-	//TO DO: redesign it
-	return String_startsWith(strUrl, "http://127.0.0.1:");
-#endif
 	return String_startsWith(strUrl, m_strHomeUrl);
 }
     
