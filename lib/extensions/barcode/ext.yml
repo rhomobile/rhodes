@@ -6,4 +6,4 @@ android:
   adds: ext/barcode/platform/android/additional_files
   source_list: ext/barcode/platform/android/ext_build.files
 libraries: ["Barcode"]
-platforms: ["iphone", "android"]
+platforms: ["android"]
