@@ -134,7 +134,8 @@ public:
 
     virtual void setExcludeFilter( const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
     {
-        RHOCONF().setString("log_exclude_filter", value, false);
+        //RHOCONF().setString("log_exclude_filter", value, false);
+        LOGCONF().setExcludeFilter(value);
     }
 
     virtual void getDestinationURI(rho::apiGenerator::CMethodResult& oResult)
