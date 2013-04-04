@@ -1,13 +1,16 @@
 #include "<%= $cur_module.name %>.h"
 
 #include "MethodResultJni.h"
+<%if $cur_module.is_template_default_instance %>
 #include "api_generator/MethodResult.h"
+#include "api_generator/MethodResultConvertor.h"
+#include "api_generator/JSONResultConvertor.h"
+<% end %>
+#include "rhodes/JNIRhoJS.h"
 
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>JS"
-
-#include "rhodes/JNIRhoJS.h"
 
 typedef <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>Proxy<ArgumentsAdapter<rho::json::CJSONArray> > ObjectProxy;
 
@@ -78,7 +81,11 @@ end
 <% if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
     if(!result.hasCallback())
     {
-        RAWLOG_ERROR("Error setting callback ^^^");
+        if(!result.isError())
+        {
+            result.setArgError("No callback handler provided");
+        }
+        RAWLOG_ERROR1("Error setting callback: %s", result.getErrorMessage().c_str());
         return CMethodResultConvertor().toJSON(result);
     }
 <%

@@ -107,6 +107,7 @@ public:
     jobject getMapResult() const { return getMapResult(m_env); }
     jstring getJSONResult() const { return getJSONResult(m_env); }
     int getResultType() const { return getResultType(m_env); }
+    bool isError() const { ResultType resType = static_cast<ResultType>(getResultType()); return resType == typeError || resType == typeArgError; }
     rho::String getErrorMessage() const { return getErrorMessage(m_env); }
     void reset() { reset(m_env); }
     void callRubyBack(bool releaseCallback);

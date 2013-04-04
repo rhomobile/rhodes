@@ -110,14 +110,14 @@ param = method.params[index]
     def_val = '0';
     if(param.default_value)
       if(param.type == MethodParam::TYPE_STRING)
-        def_val = "\"#{param.default_value}\""
+        def_val = "rho_cast<#{api_generator_jni_makeJNIType(param.type)}>(env, \"#{param.default_value}\")"
       else
-        def_val = param.default_value
+        def_val = "rho_cast<#{api_generator_jni_makeJNIType(param.type)}>(env, #{param.default_value})"
       end
     end %>
 
         jholder< <%=api_generator_jni_makeJNIType(param.type) %> > jh<%= param.name %> = (argsAdapter.size() <= <%= index %>) ?
-            rho_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(env, <%= def_val %>) :
+            <%= def_val %> :
                 rho_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(env, argsAdapter[<%= index %>]);<%
   else %>
 

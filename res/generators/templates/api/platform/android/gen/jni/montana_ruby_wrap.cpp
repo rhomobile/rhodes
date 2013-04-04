@@ -2,12 +2,13 @@
 
 #include "MethodResultJni.h"
 
+#include "ext/rho/rhoruby.h"
+#include "rhodes/JNIRhoRuby.h"
+
 #include "logging/RhoLog.h"
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "<%= $cur_module.name %>RUBY"
 
-#include "ext/rho/rhoruby.h"
-#include "rhodes/JNIRhoRuby.h"
 
 typedef <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>Proxy<ArgumentsAdapter<std::vector<VALUE> > > ObjectProxy;
 
