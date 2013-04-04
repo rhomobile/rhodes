@@ -82,7 +82,7 @@ extern int rho_webview_active_tab();
 
 -(id) init {
     self = [super init];
-    mValue = nil;
+    mValue = [NSNull null];
     mRubyCallbackURL = nil;
     mJSCallbackUID = nil;
     mCallbackParam = nil;
