@@ -123,7 +123,7 @@ public:
 
     virtual void databaseFilePath( const rho::String& partitionName, rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set( CFilePath::join( rho_native_rhodbpath(), RHO_EMULATOR_DIR"db/syncdb" + partitionName + ".sqlite") );
+        oResult.set( CFilePath::join( rho_native_rhodbpath(), RHO_EMULATOR_DIR"/db/syncdb" + partitionName + ".sqlite") );
     }
 
     virtual void expandDatabaseBlobFilePath( const rho::String& relativePath, rho::apiGenerator::CMethodResult& oResult)
