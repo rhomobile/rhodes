@@ -81,7 +81,11 @@ end
 <% if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
     if(!result.hasCallback())
     {
-        RAWLOG_ERROR("Error setting callback ^^^");
+        if(!result.isError())
+        {
+            result.setArgError("No callback handler provided");
+        }
+        RAWLOG_ERROR1("Error setting callback: %s", result.getErrorMessage().c_str());
         return CMethodResultConvertor().toJSON(result);
     }
 <%
