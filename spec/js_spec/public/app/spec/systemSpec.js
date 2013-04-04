@@ -1,4 +1,4 @@
-describe("<system specs>", function () {
+describe("<System specs>", function () {
 
     /* System property specs */
 
@@ -37,11 +37,11 @@ describe("<system specs>", function () {
     it("Vertical PPI (Pixels Per Inch)", function () {
         expect(Rho.System.getPpiY()).isNumberGreaterThenZero();
     });
-if (['WINDOWS', 'WINDOWS_DESKTOP', 'WP8'].indexOf(Rho.System.getPlatform()) == -1) {
-    it("Push notifications device ID which may be used to receive push messages", function () {
-        expect(Rho.System.getDevicePushId()).isNotEmptyString();
-    });
-}
+    if (['WINDOWS', 'WINDOWS_DESKTOP', 'WP8'].indexOf(Rho.System.getPlatform()) == -1) {
+        it("Push notifications device ID which may be used to receive push messages", function () {
+            expect(Rho.System.getDevicePushId()).isNotEmptyString();
+        });
+    }
     it("Hardware based ID", function () {
         expect(Rho.System.getPhoneId()).isNotEmptyString();
     });
@@ -74,15 +74,15 @@ if (['WINDOWS', 'WINDOWS_DESKTOP', 'WP8'].indexOf(Rho.System.getPlatform()) == -
         expect(Rho.System.getIsMotorolaDevice()).isBoolean();
     });
 
-if (['WINDOWS'].indexOf(Rho.System.getPlatform()) != -1) {
-    it("The OEM Information string for the terminal", function () {
-        expect(Rho.System.getOemInfo()).isNotEmptyString();
-    });
+    if (['WINDOWS'].indexOf(Rho.System.getPlatform()) != -1) {
+        it("The OEM Information string for the terminal", function () {
+            expect(Rho.System.getOemInfo()).isNotEmptyString();
+        });
 
-    it("The Unique Unit IDentifier for the terminal", function () {
-        expect(Rho.System.getUuid()).isNotEmptyString();
-    });
-}
+        it("The Unique Unit IDentifier for the terminal", function () {
+            expect(Rho.System.getUuid()).isNotEmptyString();
+        });
+    }
 
     it("Setting HTTP proxy URI", function () {
         Rho.System.setHttpProxyURI('http://localhost');
@@ -106,14 +106,14 @@ if (['WINDOWS'].indexOf(Rho.System.getPlatform()) != -1) {
         expect(Rho.System.getScreenAutoRotate()).toEqual(true);
     });
 
-if (['WINDOWS', 'WINDOWS_DESKTOP', 'WP8'].indexOf(Rho.System.getPlatform()) == -1) {
-    it("Setting screen auto rotate", function () {
-        expect(Rho.System.getScreenAutoRotate()).toEqual(true);
+    if (['WINDOWS', 'WINDOWS_DESKTOP', 'WP8'].indexOf(Rho.System.getPlatform()) == -1) {
+        it("Setting screen auto rotate", function () {
+            expect(Rho.System.getScreenAutoRotate()).toEqual(true);
 
-        Rho.System.setScreenAutoRotate(false);
-        expect(Rho.System.getScreenAutoRotate()).toEqual(false);
-    });
-}
+            Rho.System.setScreenAutoRotate(false);
+            expect(Rho.System.getScreenAutoRotate()).toEqual(false);
+        });
+    }
     it("Is device has touch screen", function () {
         expect(Rho.System.getHasTouchscreen()).toEqual(true);
     });
@@ -130,17 +130,16 @@ if (['WINDOWS', 'WINDOWS_DESKTOP', 'WP8'].indexOf(Rho.System.getPlatform()) == -
         expect(Rho.System.getScreenSleeping()).toEqual(false);
     });
 
-if (['WINDOWS', 'WINDOWS_DESKTOP', 'WP8'].indexOf(Rho.System.getPlatform()) == -1) {
-    it("Setting screen sleeping", function () {
-        Rho.System.setScreenSleeping(true);
-        expect(Rho.System.getScreenSleeping()).toEqual(true);
+    if (['WINDOWS', 'WINDOWS_DESKTOP', 'WP8'].indexOf(Rho.System.getPlatform()) == -1) {
+        it("Setting screen sleeping", function () {
+            Rho.System.setScreenSleeping(true);
+            expect(Rho.System.getScreenSleeping()).toEqual(true);
 
-        Rho.System.setScreenSleeping(false);
-        expect(Rho.System.getScreenSleeping()).toEqual(false);
-    });
-}
+            Rho.System.setScreenSleeping(false);
+            expect(Rho.System.getScreenSleeping()).toEqual(false);
+        });
+    }
 
-    /* System method specs */
 
     it("Command line parameters", function () {
         expect(typeof Rho.System.getStartParams()).toEqual('string');
@@ -151,7 +150,8 @@ if (['WINDOWS', 'WINDOWS_DESKTOP', 'WP8'].indexOf(Rho.System.getPlatform()) == -
     });
 
 
-    /* Specs for Android platform */
+    /* ----------          platform dependent specs          ---------- */
+
 
     if ('ANDROID' == Rho.System.getPlatform()) {
         it("Primary email of phone owner (works only on Android)", function () {
@@ -161,27 +161,19 @@ if (['WINDOWS', 'WINDOWS_DESKTOP', 'WP8'].indexOf(Rho.System.getPlatform()) == -
         it("Name(account name) of phone owner (works only on Android)", function () {
             expect(Rho.System.deviceOwnerName()).isNotEmptyString();
         });
+
     }
 
-    /* Specs for Windows family platforms */
 
     if (['WINDOWS_DESKTOP', 'WINDOWS'].indexOf(Rho.System.getPlatform()) != -1) {
+
         it("Writing and reading registry value", function () {
             Rho.System.deleteRegistrySetting({hive: 'HKCU', key: 'phone_spec', setting: 'phone_spec_registry_key'})
-            
-            Rho.System.setRegistrySetting( {hive: 'HKCU', type: 'String', key: 'phone_spec', setting: 'phone_spec_registry_key', value: 'test'} );
+
+            Rho.System.setRegistrySetting({hive: 'HKCU', type: 'String', key: 'phone_spec', setting: 'phone_spec_registry_key', value: 'test'});
             expect(Rho.System.getRegistrySetting({hive: 'HKCU', key: 'phone_spec', setting: 'phone_spec_registry_key'})).toEqual('test')
         });
 
-        if (['WINDOWS'].indexOf(Rho.System.getPlatform()) != -1) {
-            it("Setting keyboard state", function () {
-                Rho.System.setKeyboardState('shown');
-                expect(Rho.System.getKeyboardState()).toEqual('shown');
-
-                Rho.System.setKeyboardState('hidden');
-                expect(Rho.System.getKeyboardState()).toEqual('hidden');
-            });
-        }
     }
 
     /* Specs for Windows desktop platfform */
