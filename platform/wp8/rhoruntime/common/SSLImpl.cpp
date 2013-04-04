@@ -35,13 +35,13 @@ namespace rho
 	namespace net
 	{
 
-Platform::String^ A2PS(char* str)
-{
-	std::string s_str = std::string(str);
-	std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
-	const wchar_t* w_char = wid_str.c_str();
-	return ref new Platform::String(w_char);
-}
+		Platform::String^ A2PS(char* str)
+		{
+			std::string s_str = std::string(str);
+			std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
+			const wchar_t* w_char = wid_str.c_str();
+			return ref new Platform::String(w_char);
+		}
 
 		void * SSLImpl::createStorage()
 		{
@@ -57,7 +57,7 @@ Platform::String^ A2PS(char* str)
 			}
 		}
 
-		CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
+		CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage, char* host_name)
 		{
 			struct sockaddr_in adr_inet= {0};
 			int len_inet = sizeof(adr_inet);
@@ -73,9 +73,9 @@ Platform::String^ A2PS(char* str)
 			if(res == -1)
 				return CURLE_SSL_CONNECT_ERROR;
 
-			struct hostent *remoteHost;
-			remoteHost = gethostbyaddr((char *)&(adr_inet.sin_addr), 4, AF_INET);
-			Platform::String^ host = A2PS(remoteHost->h_name);
+			//struct hostent *remoteHost;
+			//remoteHost = gethostbyaddr((char *)&(adr_inet.sin_addr), 4, AF_INET);
+			Platform::String^ host = A2PS(host_name);//remoteHost->h_name);
 			Platform::String^ port = A2PS("https");
 
 			task<void>(Storage->m_sslSocket->ConnectAsync(ref new HostName(host), port, Sockets::SocketProtectionLevel::Ssl)).then([this, Storage, &retCode] (task<void> previousTask) {

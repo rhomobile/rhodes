@@ -341,6 +341,21 @@ namespace "device" do
     task :production => ["config:wp8_ARM_Release", "build:wp8:package"] do
     end
 
+	task :getlog => ["config:wp8"] do
+		args = []
+		args << $app_config["wp"]["productid"]
+		args << $app_config["name"]
+		args << $app_path + "/icon/icon.png"
+		args << $targetdir + "/" + $appname + ".xap"
+		args << "dev"
+		$path = $app_path+"/rholog.txt"
+		$path.gsub!('/', '\\')
+		args << $path
+		puts Jake.run($wp7runner, args)
+
+		cc_run($wp7runner, args) or return false
+		puts "RhoLog.txt stored to " + $app_path
+	end
   end
 end
 
@@ -351,6 +366,22 @@ namespace "emulator" do
     task :production => ["config:wp8_Win32_Release", "build:wp8:package"] do
       addRhobundleFilesToCacheFile()
     end
+
+	task :getlog => ["config:wp8"] do
+		args = []
+		args << $app_config["wp"]["productid"]
+		args << $app_config["name"]
+		args << $app_path + "/icon/icon.png"
+		args << $targetdir + "/" + $appname + ".xap"
+		args << "emu"
+		$path = $app_path+"/rholog.txt"
+		$path.gsub!('/', '\\')
+		args << $path
+		puts Jake.run($wp7runner, args)
+
+		cc_run($wp7runner, args) or return false
+		puts "RhoLog.txt stored to " + $app_path
+	end
 
   end
 end
@@ -380,17 +411,17 @@ namespace "run" do
 
     if $app_config["wp"] && $app_config["wp"]["productid"] != nil
 
-      File.delete($app_path + "/started") if File.exists?($app_path + "/started")
-      Jake.run_rho_log_server($app_path)
-      puts "RhoLogServer is starting"
+      #File.delete($app_path + "/started") if File.exists?($app_path + "/started")
+      #Jake.run_rho_log_server($app_path)
+      #puts "RhoLogServer is starting"
 
-      while (1)
-        if File.exists?($app_path + "/started")
-          break
-        end
-      end
+      #while (1)
+      #  if File.exists?($app_path + "/started")
+      #    break
+      #  end
+      #end
 
-	  addconfigtoxap()
+	  #addconfigtoxap()
 
       cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
       mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
@@ -506,17 +537,17 @@ namespace "run" do
 
       if $app_config["wp"] && $app_config["wp"]["productid"] != nil
         #system("START " + $wp7logserver + " " + $app_path + "/rholog.txt")
-        File.delete($app_path + "/started") if File.exists?($app_path + "/started")
-        Jake.run_rho_log_server($app_path)
+        #File.delete($app_path + "/started") if File.exists?($app_path + "/started")
+        #Jake.run_rho_log_server($app_path)
 
-        puts "RhoLogServer is starting"
-        while (1)
-          if File.exists?($app_path + "/started")
-            break
-          end
-        end
+        #puts "RhoLogServer is starting"
+        #while (1)
+        #  if File.exists?($app_path + "/started")
+        #    break
+        #  end
+        #end
 
-		addconfigtoxap()
+		#addconfigtoxap()
 
         cp File.join($rhodes_bin_dir, "rhodes.xap"), File.join($rhodes_bin_dir, $appname + ".xap")
         mv File.join($rhodes_bin_dir, $appname + ".xap"), $targetdir
