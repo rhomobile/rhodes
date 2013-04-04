@@ -170,7 +170,7 @@ void CExtManager::passSipPositionToEngine()
 #endif
 }
 
-bool CExtManager::RegisterForBrowserMessage(unsigned int iMsgId)
+bool CExtManager::RegisterForMessageCallback(unsigned int iMsgId)
 {
 #if !defined(OS_WINDOWS_DESKTOP)
     return getAppWindow().getWebKitEngine()->RegisterForMessage(iMsgId);
@@ -179,7 +179,7 @@ bool CExtManager::RegisterForBrowserMessage(unsigned int iMsgId)
 #endif
 }
 
-bool CExtManager::DeRegisterForBrowserMessage(unsigned int iMsgId)
+bool CExtManager::DeRegisterForMessageCallback(unsigned int iMsgId)
 {
 #if !defined(OS_WINDOWS_DESKTOP)
     return getAppWindow().getWebKitEngine()->DeRegisterForMessage(iMsgId);

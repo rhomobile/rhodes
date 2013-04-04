@@ -169,8 +169,8 @@ public:
     virtual StringW getConfigPath();
     virtual void setBrowserGesturing(bool bEnableGesturing);
     virtual void passSipPositionToEngine();
-	virtual bool RegisterForBrowserMessage(unsigned int iMsgId);
-	virtual bool DeRegisterForBrowserMessage(unsigned int iMsgId);
+	virtual bool RegisterForMessageCallback(unsigned int iMsgId);
+	virtual bool DeRegisterForMessageCallback(unsigned int iMsgId);
 };
 	
 } //namespace common
