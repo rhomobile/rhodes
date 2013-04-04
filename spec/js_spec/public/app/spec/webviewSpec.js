@@ -1,144 +1,157 @@
+//TODO: restore default webview settings after each test?
+
 describe("<WebView specs>", function () {
 
-    /* System property specs */
-
-    it("Browser framework identity string", function () {
+    it("Test framework property", function () {
         expect(Rho.WebView.getFramework()).isNotEmptyString();
     });
 
-    it("Full screen is false by default", function () {
+    it("Test default value of fullScreen property", function () {
         expect(Rho.WebView.getFullScreen()).toEqual(false);
     });
 
-    it("Setting full screen mode", function () {
+    it("Test fullScreen property", function () {
         Rho.WebView.setFullScreen(true);
         expect(Rho.WebView.getFullScreen()).toEqual(true);
-
-        Rho.WebView.setFullScreen(false);
-        expect(Rho.WebView.getFullScreen()).toEqual(false);
     });
 
-    it("Reporting native menu items", function () {
-        expect(Rho.WebView.getNativeMenu()).isNotEmptyArray();
-    });
-
-    //TODO: move to platform dependent test (android)
-    it("Zoom is enabled by default", function () {
-        expect(Rho.WebView.getEnableZoom()).toEqual(true);
-    });
-
-    //TODO: move to platform dependent test (android)
-    it("Setting enablement WebView zoom", function () {
-        Rho.WebView.setEnableZoom(false);
-        expect(Rho.WebView.getEnableZoom()).toEqual(false);
-
-        Rho.WebView.setEnableZoom(true);
-        expect(Rho.WebView.getEnableZoom()).toEqual(true);
-    });
-
-    //TODO: move to platform dependent test (android)
-    it("Showing page loading navigation is true by default", function () {
-        expect(Rho.WebView.getEnablePageLoadingIndication()).toEqual(true);
-    });
-
-    //TODO: move to platform dependent test (android)
-    it("Setting show page loading navigation", function () {
-        Rho.WebView.setEnablePageLoadingIndication(false);
-        expect(Rho.WebView.getEnablePageLoadingIndication()).toEqual(false);
-
-        Rho.WebView.setEnablePageLoadingIndication(true);
-        expect(Rho.WebView.getEnablePageLoadingIndication()).toEqual(true);
-    });
-
-    //TODO: move to platform dependent test (android)
-    it("Web plugin enabled by default", function () {
-        expect(Rho.WebView.getEnableWebPlugins()).toEqual(true);
-    });
-
-    //TODO: move to platform dependent test (android)
-    it("Setting enablement web plugins", function () {
-        Rho.WebView.setEnableWebPlugins(false);
-        expect(Rho.WebView.getEnableWebPlugins()).toEqual(false);
-
-        Rho.WebView.setEnableWebPlugins(true);
-        expect(Rho.WebView.getEnableWebPlugins()).toEqual(true);
-    });
-
-    //TODO: move to platform dependent test (wm)
-    it("Navigation timeout is zero milliseconds by default", function () {
-        expect(Rho.WebView.getNavigationTimeout()).toEqual(0);
-    });
-
-    //TODO: move to platform dependent test (wm)
-    it("Setting navigation timeout", function () {
-        Rho.WebView.setNavigationTimeout(100);
-        expect(Rho.WebView.getNavigationTimeout()).toEqual(100);
-    });
-
-    //TODO: move to platform dependent test (wm)
-    it("Scroll page technique is FingerScroll by default", function () {
-        expect(Rho.WebView.getScrollTechnique()).toEqual("FingerScroll");
-    });
-
-    //TODO: move to platform dependent test (wm)
-    it("Reporting  default font to use when rendering text in web pages", function () {
-        expect(Rho.WebView.getFontFamily()).isNotEmptyString();
-    });
-
-    //TODO: move to platform dependent test (wm)
-    it("Reporting  user agent", function () {
-        expect(Rho.WebView.getUserAgent()).isNotEmptyString();
-    });
-
-    //TODO: move to platform dependent test (wm)
-    it("Viewport meta tag processing is enabled by default", function () {
-        expect(Rho.WebView.getViewportEnabled()).toEqual(true);
-    });
-
-    //TODO: move to platform dependent test (wm)
-    it("Reporting default viewport width", function () {
-        expect(Rho.WebView.getViewportWidth()).isNumberGreaterThenZero();
-    });
-
-    //TODO: move to platform dependent test (wm)
-    it("Reporting browser cache size  in whole MBs", function () {
-        expect(Rho.WebView.getCacheSize()).isNumberGreaterThenZero();
-    });
-
-    it("Browser cache is enabled by default", function () {
+    it("Test default value of enableCache property", function () {
         expect(Rho.WebView.getEnableCache()).toEqual(true);
     });
 
-    it("Setting enablement browser cache", function () {
+    it("Test enableCache property", function () {
         Rho.WebView.setEnableCache(false);
         expect(Rho.WebView.getEnableCache()).toEqual(false);
-
-        Rho.WebView.setEnableCache(true);
-        expect(Rho.WebView.getEnableCache()).toEqual(true);
     });
 
-    //TODO: move to platform dependent test (wm)
-    it("Setting accept language at HTTP header", function () {
-        Rho.WebView.setAcceptLanguage('ru');
-        expect(Rho.WebView.getAcceptLanguage()).toEqual('ru');
-    });
-
-    //TODO: move to platform dependent test (wm)
-    it("Setting zoom page", function () {
-        Rho.WebView.setZoomPage(1.5);
-        expect(Rho.WebView.getZoomPage()).toEqual(1.5);
-    });
-
-
-    //TODO: move to platform dependent test (wm)
-    it("Setting text zoom level", function () {
-        Rho.WebView.setTextZoomLevel(1.5);
-        expect(Rho.WebView.getTextZoomLevel()).toEqual(1.5);
-    });
-
-    it("Reporting active tab index (Zero by default)", function () {
+    it("Test default value of activeTab property", function () {
         expect(Rho.WebView.getActiveTab()).toEqual(0);
     });
 
-    //TODO: write specs for module methods
-})
+    xit("Test refresh method", function () {
+        expect(Rho.WebView.refresh(-1));
+    });
+
+    xit("Test navigate method", function () {
+        expect(Rho.WebView.navigate("http://localhost", -1));
+    });
+
+    xit("Test navigateBack method", function () {
+        expect(Rho.WebView.navigateBack(-1));
+    });
+
+    it("Test currentLocation method", function () {
+        expect(Rho.WebView.currentLocation(-1)).isNotEmptyString();
+    });
+
+    //TODO: can we use result executed js in spec
+    xit("Test executeJavascript method", function () {
+        expect(Rho.WebView.executeJavascript("function(){ var a = 10;}"));
+    });
+
+    //TODO: not implemented for motorola solutions webkit
+    it("Test setCookie method", function () {
+        expect(Rho.WebView.setCookie("http://localhost", "specCookie=123"));
+    });
+
+
+    /* ----------          platform dependent specs          ---------- */
+
+
+    if ('ANDROID' == Rho.System.getPlatform()) {
+
+        it("Test default value of enableZoom property", function () {
+            expect(Rho.WebView.getEnableZoom()).toEqual(true);
+        });
+
+        it("Test enablePageLoadingIndication property", function () {
+            Rho.WebView.setEnablePageLoadingIndication(false);
+            expect(Rho.WebView.getEnablePageLoadingIndication()).toEqual(false);
+        });
+
+        it("Test default value of enableWebPlugins property", function () {
+            expect(Rho.WebView.getEnableWebPlugins()).toEqual(true);
+        });
+
+        it("Test enableWebPlugins property", function () {
+            Rho.WebView.setEnableWebPlugins(false);
+            expect(Rho.WebView.getEnableWebPlugins()).toEqual(false);
+        });
+
+        //TODO: add check on existing saved file
+        it("Test save method", function () {
+            expect(Rho.WebView.save("jpeg", "someFilename", -1));
+        });
+
+    }
+
+    if (['ANDROID', 'APPLE'].indexOf(Rho.System.getPlatform()) != -1) {
+
+        it("Test currentURL method", function () {
+            expect(Rho.WebView.currentURL(-1)).isNotEmptyString();
+        });
+
+    }
+
+    if ('WINDOWS' == Rho.System.getPlatform()) {
+
+        it("Test default value of navigationTimeout property", function () {
+            expect(Rho.WebView.getNavigationTimeout()).toEqual(0);
+        });
+
+        it("Test navigationTimeout property", function () {
+            Rho.WebView.setNavigationTimeout(100);
+            expect(Rho.WebView.getNavigationTimeout()).toEqual(100);
+        });
+
+        it("Test default value of scrollTechnique property", function () {
+            expect(Rho.WebView.getScrollTechnique()).toEqual("FingerScroll");
+        });
+
+        it("Test fontFamily property", function () {
+            expect(Rho.WebView.getFontFamily()).isNotEmptyString();
+        });
+
+        it("Test userAgent property", function () {
+            expect(Rho.WebView.getUserAgent()).isNotEmptyString();
+        });
+
+        it("Test default value of viewportEnabled property", function () {
+            expect(Rho.WebView.getViewportEnabled()).toEqual(true);
+        });
+
+        it("Test default value of viewportWidth property", function () {
+            expect(Rho.WebView.getViewportWidth()).isNumberGreaterThenZero();
+        });
+
+        it("Test cacheSize property", function () {
+            expect(Rho.WebView.getCacheSize()).isNumberGreaterThenZero();
+        });
+
+        it("Test acceptLanguage property", function () {
+            Rho.WebView.setAcceptLanguage('ru');
+            expect(Rho.WebView.getAcceptLanguage()).toEqual('ru');
+        });
+
+        it("Test zoomPage property", function () {
+            Rho.WebView.setZoomPage(1.5);
+            expect(Rho.WebView.getZoomPage()).toEqual(1.5);
+        });
+
+        it("Test textZoomLevel property", function () {
+            Rho.WebView.setTextZoomLevel(1.5);
+            expect(Rho.WebView.getTextZoomLevel()).toEqual(1.5);
+        });
+
+    }
+
+    if (['ANDROID', 'WINDOWS', 'WINDOWS_DESKTOP'].indexOf(Rho.System.getPlatform()) != -1) {
+
+        it("Test nativeMenu property", function () {
+            expect(typeof Rho.WebView.getNativeMenu()).toEqual("object") ;
+        });
+
+    }
+
+});
+

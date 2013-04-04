@@ -1,4 +1,4 @@
- describe("<application specs>", function(){
+ describe("<Application specs>", function(){
 
 	it("Path to apps/app folder inside application bundle", function(){
 		expect(Rho.Application.getAppBundleFolder()).isNotEmptyString();
