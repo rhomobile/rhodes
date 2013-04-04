@@ -45,10 +45,10 @@ void rho_ssl_free_storage(void *ptr)
     return GETSSL->freeStorage(ptr);
 }
 
-CURLcode rho_ssl_connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
+CURLcode rho_ssl_connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage, char* host_name)
 {
     RAWTRACEC("rho_ssl", "rho_ssl_connect");
-    return GETSSL->connect(sockfd, nonblocking, done, ssl_verify_peer, storage);
+    return GETSSL->connect(sockfd, nonblocking, done, ssl_verify_peer, storage, host_name);
 }
 
 void rho_ssl_shutdown(void *storage)
