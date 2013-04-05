@@ -44,7 +44,7 @@
                 <DESC>Request HTTP headers.</DESC>
             </PROPERTY>
             
-            <PROPERTY name="responseTimeout" type="INTEGER" default="30">
+            <PROPERTY name="responseTimeout" type="INTEGER" default="30" generateAccessors="true">
                 <DESC>Timeout of network requests in seconds.</DESC>
             </PROPERTY>
 
@@ -67,7 +67,7 @@
                             <PARAM name="filename" type="STRING">
                                 <DESC>The path and name of the file to be uploaded.</DESC>
                             </PARAM>
-                            <PARAM name="overWriteFile" type="BOOLEAN" default="false">
+                            <PARAM name="overwriteFile" type="BOOLEAN" default="false">
                                 <DESC>overWriteFile will overwrite the destination file if it already exists.</DESC>
                             </PARAM>
                             <PARAM name="createFolders" type="BOOLEAN" default="false">

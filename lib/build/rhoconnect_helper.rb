@@ -51,6 +51,7 @@ module RhoconnectHelper
 	@@server_pid = nil
 	@@resque_pid = nil
 	@@rhoconnect_push_pid = nil
+    @@redis_pid = nil
 	
 	@@rc_out = $stdout
 	def self.set_rc_out(rc_out)
@@ -108,11 +109,12 @@ module RhoconnectHelper
 	end
 
 	def self.start_redis
-		execute_rhoconnect(@@server_path,"redis-startbg")
+        @@redis_pid = Kernel.spawn("redis-server", :out => @@redis_out )
 	end
 
 	def self.stop_redis
-		execute_rhoconnect(@@server_path,"redis-stop")
+        Process.kill('INT', @@redis_pid) if @@redis_pid
+        @@redis_pid = nil
 	end
 
 	def self.start_resque
