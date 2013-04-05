@@ -40,6 +40,7 @@ public class MethodResult implements IMethodResult {
     private String mStrCallback;
     private String mStrCallbackData;
     private long mRubyProcCallback;
+    private int mTabId;
 
     private String mResultParamName = "result";
     
@@ -54,7 +55,7 @@ public class MethodResult implements IMethodResult {
     private List<Object> mListResult;
     private Map<String, Object> mMapResult;
 
-    private native void nativeCallBack(boolean isRuby, boolean releaseCallback);
+    private native void nativeCallBack(int tabId, boolean isRuby, boolean releaseCallback);
     private native static void nativeReleaseRubyProcCallback(long rubyProc);
 
     private void reset() {
@@ -63,6 +64,7 @@ public class MethodResult implements IMethodResult {
     
     public MethodResult(boolean isRuby) {
         mIsRuby = isRuby;
+        mTabId = -1;
     }
     
     public void keepAlive() { mSingleShot = false; }
@@ -160,7 +162,7 @@ public class MethodResult implements IMethodResult {
         mBooleanResult = res;
         mResultType = ResultType.typeBoolean;
         if (mStrCallback != null || mRubyProcCallback != 0) {
-            nativeCallBack(mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
     @Override
@@ -168,7 +170,7 @@ public class MethodResult implements IMethodResult {
         mIntegerResult = res;
         mResultType = ResultType.typeInteger;
         if (mStrCallback != null || mRubyProcCallback != 0) {
-            nativeCallBack(mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
     @Override
@@ -176,7 +178,7 @@ public class MethodResult implements IMethodResult {
         mDoubleResult = res;
         mResultType = ResultType.typeDouble;
         if (mStrCallback != null || mRubyProcCallback != 0) {
-            nativeCallBack(mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
     @Override
@@ -184,7 +186,7 @@ public class MethodResult implements IMethodResult {
         mStrResult = res;
         mResultType = ResultType.typeString;
         if (mStrCallback != null || mRubyProcCallback != 0) {
-            nativeCallBack(mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
 
@@ -193,7 +195,7 @@ public class MethodResult implements IMethodResult {
         mListResult = res;
         mResultType = ResultType.typeList;
         if (mStrCallback != null || mRubyProcCallback != 0) {
-            nativeCallBack(mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
 
@@ -202,7 +204,7 @@ public class MethodResult implements IMethodResult {
         mMapResult = res;
         mResultType = ResultType.typeMap;
         if (mStrCallback != null || mRubyProcCallback != 0) {
-            nativeCallBack(mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
 
@@ -365,7 +367,7 @@ public class MethodResult implements IMethodResult {
     @Override
     public void set() {
         if (mStrCallback != null || mRubyProcCallback != 0) {
-            nativeCallBack(mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
 
@@ -374,7 +376,7 @@ public class MethodResult implements IMethodResult {
         mStrResult = message;
         mResultType = ResultType.typeArgError;
         if (mStrCallback != null || mRubyProcCallback != 0) {
-            nativeCallBack(mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
 
@@ -383,7 +385,7 @@ public class MethodResult implements IMethodResult {
         mStrResult = message;
         mResultType = ResultType.typeError;
         if (mStrCallback != null || mRubyProcCallback != 0) {
-            nativeCallBack(mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
 }
