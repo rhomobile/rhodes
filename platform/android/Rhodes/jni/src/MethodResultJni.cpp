@@ -429,7 +429,7 @@ void MethodResultJni::callRubyBack(bool releaseCallback)
 {
     RAWTRACE(__FUNCTION__);
 
-    rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<MethodResultJni>(*this), "__rho_inline");
+    rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<MethodResultJni>(*this), (jRubyProc != 0 ? "body" : "__rho_inline") );
 
     jhstring jhStrCallback = getStrCallback(m_env);
     jhstring jhStrCallbackData = getStrCallbackData(m_env);
