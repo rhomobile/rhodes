@@ -114,11 +114,11 @@
             </PROPERTY>
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
                 <DESC>The OEM Information string for the terminal.</DESC>
-                <PLATFORM>WM</PLATFORM>
+                <PLATFORM>WM,Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="uuid" type="STRING" readOnly="true">
                 <DESC>The Unique Unit IDentifier for the terminal.</DESC>
-                <PLATFORM>WM</PLATFORM>
+                <PLATFORM>WM,Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="applicationIconBadge" type="INTEGER">
                 <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.</DESC>
