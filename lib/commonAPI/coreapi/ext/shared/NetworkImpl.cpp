@@ -490,5 +490,5 @@ extern "C" void Init_Network()
     rho::CNetworkFactory::setInstance( new rho::CNetworkFactory() );
     rho::Init_Network_API();
 
-    RHODESAPP().getExtManager().requireRubyFile("Network");
+    RHODESAPP().getExtManager().requireRubyFile("RhoNetworkApi");
 }

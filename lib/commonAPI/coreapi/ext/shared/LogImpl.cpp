@@ -274,5 +274,5 @@ extern "C" void Init_Log()
     rho::CLogFactory::setInstance( new rho::CLogFactory() );
     rho::Init_Log_API();
 
-    RHODESAPP().getExtManager().requireRubyFile("Log");
+    RHODESAPP().getExtManager().requireRubyFile("RhoLogApi");
 }
