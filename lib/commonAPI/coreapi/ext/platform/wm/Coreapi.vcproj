@@ -1606,10 +1606,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\Network.rb"
-					>
-				</File>
-				<File
 					RelativePath="..\..\Network.xml"
 					>
 					<FileConfiguration
@@ -1634,6 +1630,10 @@
 				</File>
 				<File
 					RelativePath="..\..\shared\NetworkImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\RhoNetworkApi.rb"
 					>
 				</File>
 				<Filter
@@ -1685,10 +1685,6 @@
 				Name="shared"
 				>
 				<File
-					RelativePath="..\..\..\Database.rb"
-					>
-				</File>
-				<File
 					RelativePath="..\..\Database.xml"
 					>
 					<FileConfiguration
@@ -1701,6 +1697,10 @@
 							Outputs="$(InputDir)shared/generated3"
 						/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\..\RhoDatabaseApi.rb"
+					>
 				</File>
 				<File
 					RelativePath="..\..\sqlite3.xml"
@@ -1778,7 +1778,7 @@
 				Name="shared"
 				>
 				<File
-					RelativePath="..\..\..\WebView.rb"
+					RelativePath="..\..\..\RhoWebViewApi.rb"
 					>
 				</File>
 				<File
@@ -1845,10 +1845,6 @@
 				Name="shared"
 				>
 				<File
-					RelativePath="..\..\..\Log.rb"
-					>
-				</File>
-				<File
 					RelativePath="..\..\Log.xml"
 					>
 					<FileConfiguration
@@ -1864,6 +1860,10 @@
 				</File>
 				<File
 					RelativePath="..\..\shared\LogImpl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\RhoLogApi.rb"
 					>
 				</File>
 				<Filter
