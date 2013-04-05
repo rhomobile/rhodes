@@ -29,6 +29,8 @@ rho::String CMethodResult::toString()
 {
     if ( m_ResType == eString)
         return m_strRes;
+    if ( m_ResType == eStringW)
+        return convertToStringA(m_strResW);
     else if ( m_ResType == eJSON)
         return m_strJSONRes;
     else if ( m_ResType == eBool)
