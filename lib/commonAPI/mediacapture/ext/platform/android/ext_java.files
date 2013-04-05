@@ -5,4 +5,5 @@ ext/platform/android/generated/src/com/rho/camera/CameraBase.java
 ext/platform/android/generated/src/com/rho/camera/CameraSingletonBase.java
 ext/platform/android/generated/src/com/rho/camera/CameraFactorySingleton.java
 ext/platform/android/src/com/rho/camera/Camera.java
+ext/platform/android/src/com/rho/camera/CameraSingleton.java
 ext/platform/android/src/com/rho/camera/CameraFactory.java

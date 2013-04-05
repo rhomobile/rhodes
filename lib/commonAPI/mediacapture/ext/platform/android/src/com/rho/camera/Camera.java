@@ -6,11 +6,16 @@ import java.util.Map;
 import com.rhomobile.rhodes.api.IMethodResult;
 
 public class Camera implements ICamera {
+  
+    private String mId;
+    
+    Camera(String id) {
+        mId = id;
+    }
 
     @Override
     public String getId() {
-        // TODO Auto-generated method stub
-        return null;
+        return mId;
     }
 
     @Override
