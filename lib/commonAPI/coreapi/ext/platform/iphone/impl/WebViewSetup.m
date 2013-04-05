@@ -10,6 +10,6 @@ void Init_WebView()
 {
     Init_WebView_API();
 #ifndef RHO_NO_RUBY_API
-    rb_require("WebView");
+    rb_require("RhoWebViewApi");
 #endif
 }
