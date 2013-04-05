@@ -63,7 +63,7 @@ void LogSettings::MemoryInfoCollectorThread::run()
             continue;   
         }
         
-        wait(toWait / 1000);
+        wait(toWait);
 
         if (!isStopping())
         {

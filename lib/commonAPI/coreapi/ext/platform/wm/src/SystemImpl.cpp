@@ -631,7 +631,7 @@ void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethod
 		LOG(ERROR) + "rho_sys_app_install() file delete failed: " + filename;
 	} else {
 		NetRequest NetRequest;
-		NetResponse resp = getNetRequest(&NetRequest).pullFile(sUrl, filename, NULL, NULL);
+		NetResponse resp = getNetRequest(&NetRequest).pullFile(sUrl, filename, NULL, NULL,true,false);
 		if (resp.isOK()) {
 			StringW filenameW = convertToStringW(filename);
 			LOG(INFO) + "Downloaded " + sUrl + " to " + filename;

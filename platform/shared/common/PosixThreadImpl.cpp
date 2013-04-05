@@ -93,7 +93,7 @@ void CPosixThreadImpl::start(IRhoRunnable *pRunnable, IRhoRunnable::EPriority eP
     RHO_ASSERT(thread_error==0);
 }
 
-void CPosixThreadImpl::stop(unsigned int nTimeoutToKill)
+void CPosixThreadImpl::stop(unsigned int nTimeoutToKillMs)
 {
     stopWait();
 
@@ -102,13 +102,14 @@ void CPosixThreadImpl::stop(unsigned int nTimeoutToKill)
     pthread_join(m_thread,&status);
 }
 
-int CPosixThreadImpl::wait(unsigned int nTimeout)
+int CPosixThreadImpl::wait(unsigned int nTimeoutMs)
 {
     struct timeval    tp;
     struct timespec   ts;
     unsigned long long max;
-    bool timed_wait = (int)nTimeout >= 0;
-    
+    bool timed_wait = (int)nTimeoutMs >= 0;
+    unsigned int nTimeout = nTimeoutMs/1000;
+
     if (timed_wait)
     {
         gettimeofday(&tp, NULL);
@@ -139,9 +140,9 @@ int CPosixThreadImpl::wait(unsigned int nTimeout)
     return nRet;
 }
 
-void CPosixThreadImpl::sleep(unsigned int nTimeout)
+void CPosixThreadImpl::sleep(unsigned int nTimeoutMs)
 {
-    ::usleep(1000*nTimeout);
+    ::usleep(1000*nTimeoutMs);
 }
 
 void CPosixThreadImpl::stopWait()
