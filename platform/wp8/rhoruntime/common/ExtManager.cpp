@@ -427,13 +427,13 @@ void CExtManager::OnWindowChanged(LPVOID lparam)
     }
 }
 
-bool CExtManager::RegisterForMessageCallback(unsigned int iMsgId)
+bool CExtManager::RegisterForBrowserMessage(unsigned int iMsgId)
 {
     //return getAppWindow().getWebKitEngine()->RegisterForMessage(iMsgId);
 	return true;
 }
 
-bool CExtManager::DeRegisterForMessageCallback(unsigned int iMsgId)
+bool CExtManager::DeRegisterForBrowserMessage(unsigned int iMsgId)
 {
     //return getAppWindow().getWebKitEngine()->DeRegisterForMessage(iMsgId);
 	return true;
