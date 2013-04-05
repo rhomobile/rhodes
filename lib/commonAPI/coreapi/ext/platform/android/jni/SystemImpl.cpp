@@ -143,13 +143,13 @@ void CSystemImpl::getHasCalendar(rho::apiGenerator::CMethodResult& result)
 
 void CSystemImpl::getOemInfo(rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+	rho_sysimpl_get_property("oem_info", result);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 void CSystemImpl::getUuid(rho::apiGenerator::CMethodResult& result)
 {
-    result.setError("not implemented at Android platform");
+	rho_sysimpl_get_property("uuid", result);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
