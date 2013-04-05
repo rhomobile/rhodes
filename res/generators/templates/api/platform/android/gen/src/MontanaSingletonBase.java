@@ -11,7 +11,7 @@ public abstract class <%= $cur_module.name %>SingletonBase <%
 if $cur_module.is_template_default_instance %>
     extends RhoApiDefaultId<I<%= $cur_module.name %>, I<%= $cur_module.name %>Factory> <% end %> {
 <% if $cur_module.is_template_default_instance %>
-    public <%= $cur_module.name %>SingletonBase(<%= $cur_module.name %>Factory factory) {
+    public <%= $cur_module.name %>SingletonBase(I<%= $cur_module.name %>Factory factory) {
         super(factory);
     } <% end %>
 <% $cur_module.methods.each do |module_method|

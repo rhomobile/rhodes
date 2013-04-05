@@ -78,7 +78,7 @@ if method.linked_property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_
 if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
         getProperty("<%= method.linked_property.name %>", result);<%
 else %>
-        setProperty("<%= method.linked_property.name %>", <%= method.params.first.name %>, result);<%
+        setProperty("<%= method.linked_property.name %>", String.valueOf(<%= method.params.first.name %>), result);<%
 end %>
     }<%
 end

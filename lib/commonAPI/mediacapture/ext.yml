@@ -1,6 +1,5 @@
 entry: Init_Mediacapture_extension	
-javaentry: com.mediacapture.Mediacapture
-libraries: ["Mediacapture"]
+libraries: ["mediacapture"]
 android:
   source_list: ext/platform/android/ext_java.files
 
