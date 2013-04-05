@@ -282,6 +282,7 @@
             </METHOD>
             <METHOD name="setRegistrySetting">
                 <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
+                <PLATFORMS>WM, Win32</PLATFORMS>
                 <PARAMS>
 					<PARAM name="propertyMap" type="HASH" propertyHash="true">
 						<DESC>Map of properties associated with the registry key being set</DESC>
@@ -342,6 +343,7 @@
 
             <METHOD name="getRegistrySetting">
                 <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
+                <PLATFORMS>WM, Win32</PLATFORMS>
                 <PARAMS>
 					<PARAM name="propertyMap" type="HASH" propertyHash="true">
 						<DESC>Map of properties associated with the registry key being set</DESC>
@@ -379,6 +381,7 @@
 			
             <METHOD name="deleteRegistrySetting">
                 <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
+                <PLATFORMS>WM, Win32</PLATFORMS>
                 <PARAMS>
 					<PARAM name="propertyMap" type="HASH" propertyHash="true">
 						<DESC>Map of properties associated with the registry key being set</DESC>
