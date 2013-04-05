@@ -278,7 +278,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
             nAttempts = 0;
 		}
         else {
-			if (oFile) {
+			if (oFile && (statusCode == 206 || statusCode == 200) ) {
 				if ( respChunk.size() > 0 )
 				{
 					oFile->movePosToStart();
