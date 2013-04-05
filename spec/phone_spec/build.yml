@@ -8,11 +8,11 @@ vendor: rhomobile
 sdkversion: 3.4
 wmsdk: "Windows Mobile 6 Professional SDK (ARMV4I)"
 iphone: 
-  sdk: iphonesimulator6.0
+  sdk: iphonesimulator6.1
   entitlements: ""
   codesignidentity: ""
   configuration: Release
-  extensions: ["barcode"]
+#  extensions: ["barcode"]
   
 #wm:
 #  extensions: ["barcode"]
@@ -25,8 +25,9 @@ capabilities:
   - push
   - calendar
   - gps
+  - motorola_browser
    
-extensions: ["json", "rhoxml", "rhospec", "crypt"]  
+extensions: ["json", "rhoxml", "rhospec", "crypt", "fileutils"]  
 
 wp:
   productid: 'fd55c4d0-51fa-012e-7844-6caec51bd50e'

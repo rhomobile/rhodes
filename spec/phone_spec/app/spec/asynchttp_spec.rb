@@ -288,5 +288,84 @@ if System.get_property('platform') != 'WP8'
         
     end
 end
+    
+    it "should overwrite existing file on download, overwriteFile=true" do
+        targetFile = File.join(Rho::RhoApplication::get_base_app_path(), 'test.png')
+        refFile = File.join(Rho::RhoApplication::get_base_app_path(), 'reference.dat')
+        refUrl = 'http://www.google.com/images/icons/product/chrome-48.png'
+        refSize = 1834
+        
+        File.delete(refFile) if File.exists?(refFile)
+        Rho::Network::downloadFile( :url => refUrl, :filename => refFile )
+        File.exists?(refFile).should == true
+        File.size(refFile).should == refSize
+        
+        stamp = "#{Time.now}"
+        
+        File.delete(targetFile) if File.exists?(targetFile)
+        File.open(targetFile,'w') { |outf| outf.write(stamp) }
+        
+        Rho::Network::downloadFile( :url => refUrl, :filename => targetFile, :overwriteFile => true )
+        
+        File.exists?(targetFile).should == true
+        File.read(targetFile).should_not == stamp
+        
+        File.size(targetFile).should == refSize
+        File.read(targetFile).should == File.read(refFile)
+        
+        File.delete(refFile)
+        File.delete(targetFile)
+    end
+    
+    it "should not download if file exists, overwriteFile=false" do
+        
+        refUrl = 'http://www.google.com/images/icons/product/chrome-48.png'
+        targetFile = File.join(Rho::RhoApplication::get_base_app_path(), 'test.png')
+        
+        stamp = "#{Time.now}"
+        
+        File.delete(targetFile) if File.exists?(targetFile)
+        File.open(targetFile,'w') { |outf| outf.write(stamp) }
+        
+        Rho::Network::downloadFile( :url => refUrl, :filename => targetFile, :overwriteFile => false )
+        
+        File.exists?(targetFile).should == true
+        File.size(targetFile).should == stamp.length
+        File.read(targetFile).should == stamp
+        
+        File.delete(targetFile)
+    end
+    
+    require 'fileutils'
+    
+    it "should create full path on download, createFolders=true" do
+        
+        refUrl = 'http://www.google.com/images/icons/product/chrome-48.png'
+        targetDir = File.join(Rho::RhoApplication::get_base_app_path(), 'new_dir')
+        targetFile = File.join(targetDir, 'test.png')
+        refSize = 1834
+        
+        FileUtils.rm_rf(targetDir) if File.exists?(targetDir)
+        
+        Rho::Network::downloadFile( :url => refUrl, :filename => targetFile, :createFolders => true )
+        
+        File.exists?(targetFile).should == true
+        File.size(targetFile).should == refSize
+        
+        FileUtils.rm_rf(targetDir)
+    end
+    
+    it "should not download if path not exists, createFolders=false" do
+        refUrl = 'http://www.google.com/images/icons/product/chrome-48.png'
+        targetDir = File.join(Rho::RhoApplication::get_base_app_path(), 'new_dir')
+        targetFile = File.join(targetDir, 'test.png')
+        
+        FileUtils.rm_rf(targetDir) if File.exists?(targetDir)
+        
+        Rho::Network::downloadFile( :url => refUrl, :filename => targetFile, :createFolders => false )
+        
+        File.exists?(targetFile).should == false
+        File.exists?(targetDir).should == false
+    end
 
 end    
