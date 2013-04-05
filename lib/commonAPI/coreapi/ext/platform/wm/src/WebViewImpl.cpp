@@ -213,6 +213,6 @@ extern "C" void Init_WebView()
     rho::CWebViewFactory::setInstance( new rho::CWebViewFactory() );
     rho::Init_WebView_API();
 
-    RHODESAPP().getExtManager().requireRubyFile("WebView");
+    RHODESAPP().getExtManager().requireRubyFile("RhoWebViewApi");
 
 }

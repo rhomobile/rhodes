@@ -46,7 +46,7 @@ extern "C" void Init_WebView(void)
         RAWTRACE("Initializing API");
 
         Init_WebView_API();
-        RHODESAPP().getExtManager().requireRubyFile("WebView");
+        RHODESAPP().getExtManager().requireRubyFile("RhoWebViewApi");
 
         RAWTRACE1("%s succeeded", __FUNCTION__);
     }

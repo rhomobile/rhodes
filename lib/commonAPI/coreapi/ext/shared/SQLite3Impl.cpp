@@ -157,7 +157,7 @@ extern "C" void Init_SQLite3()
 {
     rho::database::CSQLite3Factory::setInstance( new rho::database::CSQLite3Factory() );
 
-    RHODESAPP().getExtManager().requireRubyFile("Database");
+    RHODESAPP().getExtManager().requireRubyFile("RhoDatabaseApi");
 
     rho::database::Init_SQLite3_API();
 }
