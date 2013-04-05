@@ -65,7 +65,7 @@ void SSLImpl::freeStorage(void *ptr)
         free(ptr);
 }
     
-CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
+CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage, char* host_name)
 {
     ssl_data_t *data = (ssl_data_t*)storage;
     

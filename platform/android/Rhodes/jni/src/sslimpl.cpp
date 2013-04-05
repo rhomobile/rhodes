@@ -126,7 +126,7 @@ void SSLImpl::freeStorage(void *ptr)
     jnienv()->DeleteGlobalRef(obj);
 }
 
-CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage)
+CURLcode SSLImpl::connect(int sockfd, int nonblocking, int *done, int ssl_verify_peer, void *storage, char* host_name)
 {
     if (!storage) return CURLE_SSL_CONNECT_ERROR;
 
