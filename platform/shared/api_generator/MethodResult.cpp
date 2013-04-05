@@ -84,7 +84,7 @@ void CMethodResult::callCallback()
     }else if ( m_ResType != eNone && m_pRubyCallbackProc)
     {
         VALUE oProc = m_pRubyCallbackProc->getValue();
-        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "__rho_inline");
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "body");
 
         RHODESAPP().callCallbackProcWithData( oProc, strResBody, m_strCallbackParam, true);
 
