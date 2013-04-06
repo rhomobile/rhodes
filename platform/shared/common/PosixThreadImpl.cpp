@@ -115,7 +115,7 @@ int CPosixThreadImpl::wait(unsigned int nTimeoutMs)
         gettimeofday(&tp, NULL);
         /* Convert from timeval to timespec */
         ts.tv_sec  = tp.tv_sec;
-        ts.tv_nsec = tp.tv_usec * 1000;
+        ts.tv_nsec = tp.tv_usec * 1000 + ((unsigned long long)(nTimeoutMs - nTimeout*1000))*1000000;
         ts.tv_sec += nTimeout;
         max = ((unsigned long long)tp.tv_sec + nTimeout)*1000000 + tp.tv_usec;
     }
