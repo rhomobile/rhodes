@@ -59,7 +59,7 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
     stopWait();
     if ( m_Thread ) {
         m_Thread->quit();
-        m_Thread->wait(nTimeoutToKill);
+        //m_Thread->wait(nTimeoutToKill);
         if (!m_Thread->isRunning()) {
             m_Thread->terminate();
             m_Thread->wait();
@@ -70,13 +70,13 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
     }
 }
 
-int CRhoThreadImpl::wait(unsigned int nTimeout)
+int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 {
     if (m_waitThread)
         stopWait();
     m_waitThread = new QThread();
     m_waitThread->start();
-    bool result = m_waitThread->wait(1000000UL*nTimeout) ? 0 : 1;
+    bool result = m_waitThread->wait(1000UL*nTimeoutMs) ? 0 : 1;
     delete m_waitThread;
     m_waitThread = 0;
     return result;
