@@ -173,7 +173,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\lib\MethodResultImpl.h" />
+    <ClInclude Include="lib\MethodResultImpl.h" />
     <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

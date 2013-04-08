@@ -28,6 +28,7 @@ public interface IRhoWebView {
     void onPause();
     void onResume();
     void destroy();
+    void addJSInterface(Object obj, String name);
     
     void capture(CaptureFormat format, String path);
 }

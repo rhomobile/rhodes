@@ -10,7 +10,7 @@
 #include "common/RhoFile.h"
 #include "common/RhoDefs.h"
 #if defined( OS_WINCE )
-#include "rcmcapi.h"
+#include "EmdkDefines.h"
 #include "Keyboard.h"
 #endif
 #include <algorithm>
