@@ -1,4 +1,4 @@
-describe("<log specs>", function () {
+describe("<log module specs>", function () {
 
     //TODO: add initialing log system before executing each test?
 

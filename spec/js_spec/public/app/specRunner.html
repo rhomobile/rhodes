@@ -15,6 +15,7 @@
 
     <script type="text/javascript" src="rhologReporter.js"></script>
     <script type="text/javascript" src="jasmine-extensions.js"></script>
+    <script type="text/javascript" src="specHelpers.js"></script>
 
     <!-- include source files here... -->
     <script type="text/javascript" charset="utf-8" src="/public/api/generated/rhoapi.js"></script>
@@ -25,10 +26,14 @@
     <script type="text/javascript" src="spec/applicationSpec.js"></script>
     <script type="text/javascript" src="spec/webviewSpec.js"></script>
     <script type="text/javascript" src="spec/logSpec.js"></script>
+    <script type="text/javascript" src="spec/databaseSpec.js"></script>
+    <script type="text/javascript" src="spec/rhoapiSpec.js"></script>
 
 
     <script type="text/javascript">
         (function () {
+             /* Rho.util.setServiceURL('http://localhost'); */
+
             var jasmineEnv = jasmine.getEnv();
             jasmineEnv.updateInterval = 1000;
             jasmine.getEnv().addReporter(new jasmine.RhologReporter());

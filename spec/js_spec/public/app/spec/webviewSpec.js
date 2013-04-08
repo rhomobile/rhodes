@@ -1,6 +1,6 @@
 //TODO: restore default webview settings after each test?
 
-describe("<WebView specs>", function () {
+describe("<webview module specs>", function () {
 
     it("Test framework property", function () {
         expect(Rho.WebView.getFramework()).isNotEmptyString();
