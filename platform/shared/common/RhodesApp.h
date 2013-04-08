@@ -38,6 +38,7 @@
 #include "SplashScreen.h"
 #include "AppMenu.h"
 #include "ExtManager.h"
+#include "api_generator/MethodResult.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "RhodesApp"
@@ -70,13 +71,13 @@ namespace common {
     {
     private:
 		enNetworkStatus m_prevStatus;
-        String m_callbackUrl;
 		common::CMutex& m_mxAccess;
+        apiGenerator::CMethodResult m_result;
 		
     public:
 		NetworkStatusReceiver( common::CMutex& mxAccess );
         virtual void onNetworkStatusChanged(enNetworkStatus currentStatus);
-        void setCallbackUrl( const String& url ) { m_callbackUrl = url; }
+        void setMethodResult( const apiGenerator::CMethodResult& oResult) { m_result = oResult; }
 		
 	private:
 		static String networkStatusToString( enNetworkStatus status );
@@ -211,7 +212,7 @@ public:
     const char* getFreeListeningPort();
     int determineFreeListeningPort();
 	
-    void setNetworkStatusNotify(const String& url, int poll_interval);
+    void setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval);
     void clearNetworkStatusNotify();
     void setNetworkStatusMonitor(INetworkStatusMonitor* netMonitor);
 

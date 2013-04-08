@@ -131,8 +131,21 @@ INetResponse* CNetRequestWrapper::pushMultipartData(const String& strUrl, CMulti
     return pResp;
 }
 
-INetResponse* CNetRequestWrapper::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders)
+INetResponse* CNetRequestWrapper::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders,bool overwriteFile,bool createFolders)
 {
+    if (!overwriteFile && common::CRhoFile::isFileExist(strFilePath.c_str())) {
+        LOGC(WARNING,"Net") + "pullFile: " + strFilePath + " already exists, won't download since overwrite flag is not set";
+        return m_pReqImpl->createEmptyNetResponse();
+    }
+    
+    if ( createFolders ) {
+        String targetDir = common::CFilePath(strFilePath).getFolderName();
+        
+        if ( !common::CRhoFile::isDirectory(targetDir.c_str()) ) {
+            common::CRhoFile::recursiveCreateDir(targetDir.c_str(), "");
+        }
+    }
+    
     String tmpfilename = strFilePath + ".rhodownload";
     String modfilename = strFilePath + ".modtime";
     

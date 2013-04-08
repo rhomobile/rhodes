@@ -13,6 +13,7 @@
 #include "json/JSONIterator.h"
 #include "common/RhodesApp.h"
 #include "System.h"
+#include "common/RhoConf.h"
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NetworkAcceess"
@@ -63,6 +64,9 @@ public:
 	}
 
     virtual rho::common::CThreadQueue::IQueueCommand* createQueueCommand(rho::common::CInstanceClassFunctorBase<CMethodResult>* pFunctor){ return new CHttpCommand(pFunctor); }
+    
+    virtual void getResponseTimeout(rho::apiGenerator::CMethodResult& oResult);
+    virtual void setResponseTimeout( int responseTimeout, rho::apiGenerator::CMethodResult& oResult);
 
     virtual void cancel( rho::apiGenerator::CMethodResult& oResult);
     virtual void downloadFile( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
@@ -128,6 +132,17 @@ static String getStringProp(const rho::Hashtable<rho::String, rho::String>& prop
 
     return strRes;
 }
+    
+void CNetworkImpl::getResponseTimeout(rho::apiGenerator::CMethodResult& oResult) {
+    int timeout = RHOCONF().getInt("net_timeout");
+    if (0==timeout) timeout=30;
+    oResult.set(timeout);
+} 
+    
+void CNetworkImpl::setResponseTimeout( int responseTimeout, rho::apiGenerator::CMethodResult& oResult) {
+    RHOCONF().setInt("net_timeout",responseTimeout,false);
+}
+
 
 void CNetworkImpl::cancel( rho::apiGenerator::CMethodResult& oResult)
 {
@@ -178,11 +193,14 @@ void CNetworkImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>&
     readHeaders( propertyMap, mapHeaders );
 
     NetRequest oNetRequest;
+    
+    bool overwriteFile = propertyMap.containsKey("overwriteFile") && (propertyMap.get("overwriteFile")=="true");
+    bool createFolders = propertyMap.containsKey("createFolders") && (propertyMap.get("createFolders")=="true");
 
     if ( propertyMap.containsKey("verifyPeerCertificate") )
         getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
 
-    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).pullFile( propertyMap.get("url"), propertyMap.get("filename"), null, &mapHeaders);
+    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).pullFile( propertyMap.get("url"), propertyMap.get("filename"), null, &mapHeaders,overwriteFile,createFolders);
 
     if ( !getCurRequest(oNetRequest).isCancelled())
         createResult( resp, mapHeaders, oResult );
@@ -383,12 +401,12 @@ void CNetworkImpl::hasCellNetwork(rho::apiGenerator::CMethodResult& oResult)
 
 void CNetworkImpl::startStatusNotify( int pollInterval, rho::apiGenerator::CMethodResult& oResult)
 {
-    //TODO: startStatusNotify
+    RHODESAPP().setNetworkStatusNotify(oResult,pollInterval);
 }
 
 void CNetworkImpl::stopStatusNotify(rho::apiGenerator::CMethodResult& oResult)
 {
-    //TODO: stopStatusNotify
+    RHODESAPP().clearNetworkStatusNotify();
 }
 
 
@@ -490,5 +508,5 @@ extern "C" void Init_Network()
     rho::CNetworkFactory::setInstance( new rho::CNetworkFactory() );
     rho::Init_Network_API();
 
-    RHODESAPP().getExtManager().requireRubyFile("Network");
+    RHODESAPP().getExtManager().requireRubyFile("RhoNetworkApi");
 }

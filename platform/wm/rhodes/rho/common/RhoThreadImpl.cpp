@@ -69,12 +69,12 @@ void CRhoThreadImpl::setThreadPriority(IRhoRunnable::EPriority ePriority)
     ::SetThreadPriority(m_hThread,nPriority);
 }
 
-void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
+void CRhoThreadImpl::stop(unsigned int nTimeoutToKillMs)
 {
     stopWait();
     if ( m_hThread )
     {
-        DWORD dwRes = ::WaitForSingleObject( m_hThread, nTimeoutToKill*1000 );
+        DWORD dwRes = ::WaitForSingleObject( m_hThread, nTimeoutToKillMs );
         if ( dwRes != WAIT_OBJECT_0 )
         {
             LOG(INFO) + "Terminate thread. ID: " + ::GetCurrentThreadId() + "; Result: " + dwRes;
@@ -85,9 +85,9 @@ void CRhoThreadImpl::stop(unsigned int nTimeoutToKill)
     }
 }
 
-int CRhoThreadImpl::wait(unsigned int nTimeout)
+int CRhoThreadImpl::wait(unsigned int nTimeoutMs)
 {
-    DWORD dwRes = ::WaitForSingleObject( m_hAwakeEvent, nTimeout*1000 );
+    DWORD dwRes = ::WaitForSingleObject( m_hAwakeEvent, nTimeoutMs );
     if ( dwRes == WAIT_FAILED )
         LOG(ERROR) + "WaitForSingleObject failed. ID: " + ::GetCurrentThreadId() + "; Result: " + dwRes;
 
@@ -99,9 +99,9 @@ void CRhoThreadImpl::stopWait()
     ::SetEvent(m_hAwakeEvent);
 }
 
-void CRhoThreadImpl::sleep(unsigned int nTimeout)
+void CRhoThreadImpl::sleep(unsigned int nTimeoutMs)
 {
-    ::Sleep(nTimeout);
+    ::Sleep(nTimeoutMs);
 }
 
 }

@@ -24,6 +24,7 @@ describe "Json" do
         parsed[2]['object_value'].is_a?(Hash).should ==  true
         parsed[2]['object_value']['attrib'].should ==  "xform"
     end
+    
     it "should parse big json" do
         file_name = File.join(Rho::RhoApplication::get_model_path('app','Data'), 'big_test.json')
         content = File.read(file_name)
@@ -80,22 +81,16 @@ describe "Json" do
         end
     end
 
-if  System.get_property('platform') != 'WP8'  
     it "should webservice" do
 
         res = Rho::AsyncHttp.get( :url => 'http://rhostore.herokuapp.com/products.json' )
         puts "res : #{res}"
         res['status'].should == 'ok'
 
-if System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP' || System.get_property('platform') == 'APPLE'
         parsed = Rho::JSON.parse( res['body'] )
-else
-        parsed = res['body']
-end
         parsed.is_a?(Array).should ==  true
         parsed[0].is_a?(Hash).should ==  true
     end
-end
 
     it "should generate" do
         require 'json'

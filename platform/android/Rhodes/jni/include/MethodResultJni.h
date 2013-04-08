@@ -25,6 +25,9 @@ struct CallbackSelector<rho::json::CJSONEntry> {
     CallbackSelector(MethodResultJni& result, JNIEnv* env, jstring jUrl, jstring jData);
 };
 
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeCallBack(JNIEnv * env, jobject jResult, jint jTabId, jboolean jIsRuby, jboolean jReleaseCallback);
+RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeReleaseRubyProcCallback(JNIEnv * env, jclass , jlong jProcCallback);
+
 class MethodResultJni
 {
     static const char * const METHOD_RESULT_CLASS;
@@ -39,6 +42,7 @@ class MethodResultJni
     static jfieldID s_fidStrCallback;
     static jfieldID s_fidStrCallbackData;
     static jfieldID s_fidRubyProcCallback;
+    static jfieldID s_fidTabId;
     static jfieldID s_fidResultParamName;
     static jfieldID s_fidObjectClassPath;
     static jfieldID s_fidRubyObjectClass;
@@ -57,6 +61,9 @@ public:
     enum ResultType { typeNone = 0, typeBoolean, typeInteger, typeDouble, typeString, typeList, typeMap, typeError, typeArgError };
 
 private:
+
+    friend void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeCallBack(JNIEnv*, jobject, jint, jboolean, jboolean);
+    friend void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeReleaseRubyProcCallback(JNIEnv*, jclass, jlong);
 
     mutable JNIEnv* m_env;
     jhobject m_jhResult;
@@ -93,6 +100,12 @@ private:
 
     void setCallback(JNIEnv* env, jstring jUrl, jstring jData);
     void setRubyProcCallback(JNIEnv* env, jlong jRubyProc);
+
+    void callRubyBack(jboolean jReleaseCallback);
+    void callJSBack(jint jTabIndex);
+
+    static void releaseRubyProcCallback(jlong jRubyProc);
+
 public:
     MethodResultJni(bool isRuby);
     MethodResultJni(JNIEnv* env, jobject jResult);
@@ -110,9 +123,6 @@ public:
     bool isError() const { ResultType resType = static_cast<ResultType>(getResultType()); return resType == typeError || resType == typeArgError; }
     rho::String getErrorMessage() const { return getErrorMessage(m_env); }
     void reset() { reset(m_env); }
-    void callRubyBack(bool releaseCallback);
-    void callJSBack();
-    static void releaseRubyProcCallback(unsigned long rubyProc);
     unsigned long getRubyObjectClass() const
     {
         JNIEnv* env = jniInit();

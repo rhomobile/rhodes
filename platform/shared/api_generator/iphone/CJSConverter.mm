@@ -105,6 +105,9 @@
     //    strRes = [strRes stringByAppendingString:@",\"id\": 1}"];
     
     if ([strRes length] <= 0) {
+        if (level == 0) {
+                return @"\"result\":null";
+        }
         return @"null";
     }
     return strRes;
