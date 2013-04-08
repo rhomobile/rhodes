@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "../../../shared/generated/cpp/I<%= $cur_module.name %>.h"
 

@@ -1,4 +1,4 @@
-﻿// <%= $cur_module.name %>Runtime.cpp
+// <%= $cur_module.name %>Runtime.cpp
 #include "<%= $cur_module.name %>Runtime.h"
 
 using namespace <%= $cur_module.name %>Runtime;
