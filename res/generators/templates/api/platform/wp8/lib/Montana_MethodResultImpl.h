@@ -4,7 +4,6 @@
 
 namespace <%= $cur_module.name %>Runtime
 {
-
     public ref class CMethodResultImpl sealed: public IMethodResult
     {
         rho::apiGenerator::CMethodResult* oResult;
@@ -15,5 +14,4 @@ namespace <%= $cur_module.name %>Runtime
         virtual void set(Windows::Foundation::Collections::IVectorView<Platform::String^>^ res);
         virtual void set(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ res);
     };
-
 }

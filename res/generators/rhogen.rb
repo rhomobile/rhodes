@@ -2220,10 +2220,10 @@ module Rhogen
       template.destination = "platform/wp8/lib/#{$cur_module.name}_MethodResultImpl.cpp"
     end
 
-    #template :wp8_lib_montana_impl do |template|
-    #  template.source = 'platform/wp8/lib/Montana_impl.cpp'
-    #  template.destination = "platform/wp8/lib/#{$cur_module.name}_impl.cpp"
-    #end
+    template :wp8_lib_montana_impl do |template|
+      template.source = 'platform/wp8/lib/Montana_impl.cpp'
+      template.destination = "platform/wp8/lib/#{$cur_module.name}_impl.cpp"
+    end
 
 
     template :public_api_module do |template|

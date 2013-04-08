@@ -8,14 +8,13 @@ using namespace rho::apiGenerator;
 <%= $cur_module.name %>RuntimeComponent::<%= $cur_module.name %>RuntimeComponent(I<%= $cur_module.name %>Impl^ impl):
     _impl(impl)
 {
-    // TODO: it's temporary code for testing only => commented out
-    //C<%= $cur_module.name %>FactoryBase::getInstance()->createModuleByID(rho::common::convertToString(L"test"))->registerRuntime(this);
+    // TODO: implement runtime component constructor
 }
 
 <%= $cur_module.name %>SingletonComponent::<%= $cur_module.name %>SingletonComponent(I<%= $cur_module.name %>Singleton^ impl):
     _impl(impl)
 {
-    // TODO: implement
+    // TODO: implement singleton component constructor
 }<% $cur_module.methods.each do |module_method|
     component_name = module_method.access == ModuleMethod::ACCESS_STATIC ? 'Singleton' : 'Runtime';
     next if (!module_method.generateNativeAPI) && (module_method.access != ModuleMethod::ACCESS_STATIC)
