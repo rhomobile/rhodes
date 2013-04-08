@@ -43,7 +43,7 @@ namespace <%= $cur_module.name %>Impl
         }
 <%= dynamic_methods%>    }
 
-    public class <%= $cur_module.name %>Singleton : <%= $cur_module.name %>Runtime.I<%= $cur_module.name %>Singleton
+    public class <%= $cur_module.name %>Singleton : <%= $cur_module.name %>Runtime.I<%= $cur_module.name %>SingletonImpl
     {
         public <%= $cur_module.name %>Singleton()
         {
