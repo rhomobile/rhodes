@@ -203,32 +203,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         readRhoElementsConfig();
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
-        mMainView.setWebView(createWebView(0), -1);
-
         notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
-    }
-
-    public IRhoWebView createWebView(int tabIndex) {
-        IRhoWebView view = RhoExtManager.getImplementationInstance().createWebView(tabIndex);
-        if (view == null) {
-            Logger.T(TAG, "Creating Google web view");
-            final GoogleWebView googleWebView = new GoogleWebView(this);
-            view = googleWebView;
-            RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
-                @Override
-                public void run()
-                {
-                    googleWebView.applyWebSettings();
-                }
-            });
-        }
-        AbsoluteLayout containerView = new AbsoluteLayout(this);
-        containerView.addView(view.getView(), new AbsoluteLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0, 0));
-        view.setContainerView(containerView);
-        view.setWebClient(this);
-
-        return view;
     }
 
     public MainView switchToSimpleMainView(MainView currentView) {

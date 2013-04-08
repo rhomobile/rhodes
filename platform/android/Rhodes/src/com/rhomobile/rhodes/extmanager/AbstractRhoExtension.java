@@ -8,6 +8,11 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     public IRhoWebView onCreateWebView(IRhoExtManager extManager, int tabIndex) {
         return null;
     }
+    
+    @Override
+    public boolean onWebViewCreated(IRhoExtManager extManager, IRhoWebView ext, boolean res) {
+        return res;
+    }
 
     @Override
     public boolean onSetPropertiesData(IRhoExtManager extManager, String propId,
