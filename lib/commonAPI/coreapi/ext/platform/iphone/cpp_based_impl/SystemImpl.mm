@@ -1,4 +1,6 @@
 
+#import <UIKit/UIKit.h>
+
 #include "SystemImpl.h"
 
 #import "api_generator/iphone/CRubyConverter.h"
@@ -63,7 +65,7 @@ namespace rho {
     void SystemImplIphone::getApplicationIconBadge(CMethodResult& oResult)
     {
         //oResult.setError("supported only set IconBadge !");
-        //oResult.set(0);
+        oResult.set([UIApplication sharedApplication].applicationIconBadgeNumber);
     }
     
     void SystemImplIphone::setApplicationIconBadge( int value, CMethodResult& oResult)
@@ -118,7 +120,8 @@ namespace rho {
     
     void SystemImplIphone::getPhoneId(rho::apiGenerator::CMethodResult& result)
     {
-        getIphoneProperty("phone_id", result);
+        //getIphoneProperty("phone_id", result);
+        result.set("");
     }
     
     void SystemImplIphone::getDeviceName(rho::apiGenerator::CMethodResult& result)
