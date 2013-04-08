@@ -429,7 +429,7 @@ INetResponse* CNetRequestImpl::pullFile(const String& strUrl, common::CRhoFile& 
         if ( isError() )
             break;
 
-        //if ( oFile.size() > 0 )
+        if ( oFile.size() > 0 )
         {
             CAtlStringW strHeaders = L"Range: bytes=";
             strHeaders += common::convertToStringW(oFile.size()).c_str();
@@ -479,7 +479,9 @@ INetResponse* CNetRequestImpl::pullFile(const String& strUrl, common::CRhoFile& 
                 pDownloadBuffer = new char[nDownloadBufferSize];
 
             readInetFile(m_hRequest,pNetResp, &oFile, pDownloadBuffer, nDownloadBufferSize);
-        }
+        }else
+            readInetFile(m_hRequest,pNetResp);
+
     }while(0);
 
     if (pDownloadBuffer)

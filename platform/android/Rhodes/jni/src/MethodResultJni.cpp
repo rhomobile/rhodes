@@ -12,6 +12,8 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "MethodResultJNI"
 
+RHO_GLOBAL int rho_webview_active_tab();
+
 namespace rho {
 namespace apiGenerator {
 
@@ -33,6 +35,7 @@ jfieldID MethodResultJni::s_fidMap;
 jfieldID MethodResultJni::s_fidStrCallback;
 jfieldID MethodResultJni::s_fidStrCallbackData;
 jfieldID MethodResultJni::s_fidRubyProcCallback;
+jfieldID MethodResultJni::s_fidTabId;
 jfieldID MethodResultJni::s_fidResultParamName;
 jfieldID MethodResultJni::s_fidObjectClassPath;
 jfieldID MethodResultJni::s_fidRubyObjectClass;
@@ -161,6 +164,14 @@ JNIEnv* MethodResultJni::jniInit(JNIEnv *env)
         if(env->ExceptionCheck() == JNI_TRUE)
         {
             RAWLOG_ERROR2("Failed to get field  %s.mRubyProcCallback: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
+            s_methodResultClass = 0;
+            return NULL;
+        }
+        RAWTRACE("mTabId");
+        s_fidTabId = env->GetFieldID(s_methodResultClass, "mTabId", "I");
+        if(env->ExceptionCheck() == JNI_TRUE)
+        {
+            RAWLOG_ERROR2("Failed to get field  %s.mTabId: %s", METHOD_RESULT_CLASS, clearException(env).c_str());
             s_methodResultClass = 0;
             return NULL;
         }
@@ -359,6 +370,7 @@ void MethodResultJni::setCallback(JNIEnv* env, jstring jUrl, jstring jData)
     RAWTRACE(__FUNCTION__);
 
     env->SetObjectField(m_jhResult.get(), s_fidStrCallback, jUrl);
+    env->SetIntField(m_jhResult.get(), s_fidTabId, rho_webview_active_tab());
     if(jData)
     {
         env->SetObjectField(m_jhResult.get(), s_fidStrCallbackData, jData);
@@ -425,35 +437,35 @@ void MethodResultJni::disconnect(JNIEnv* env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void MethodResultJni::callRubyBack(bool releaseCallback)
+void MethodResultJni::callRubyBack(jboolean jReleaseCallback)
 {
     RAWTRACE(__FUNCTION__);
-
-    rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<MethodResultJni>(*this), "__rho_inline");
 
     jhstring jhStrCallback = getStrCallback(m_env);
     jhstring jhStrCallbackData = getStrCallbackData(m_env);
     jlong jRubyProc = getRubyProcCallback(m_env);
 
-    if(!m_env->IsSameObject(jhStrCallback.get(), 0))
-    {
-        RHODESAPP().callCallbackWithData(rho_cast<rho::String>(m_env, jhStrCallback.get()), strResBody, rho_cast<rho::String>(m_env, jhStrCallbackData.get()), true);
-    }else if (jRubyProc != 0)
+    if (jRubyProc != 0)
     {
         VALUE oProc = static_cast<VALUE>(jRubyProc);
 
+        rho::String strResBody = RHODESAPP().addCallbackObject(new CRubyCallbackResult<MethodResultJni>(*this), "body");
         RHODESAPP().callCallbackProcWithData( oProc, strResBody, rho_cast<rho::String>(m_env, jhStrCallbackData.get()), true);
 
-        if(releaseCallback)
+        if(static_cast<bool>(jReleaseCallback))
         {
-            releaseRubyProcCallback(oProc);
+            releaseRubyProcCallback(jRubyProc);
         }
     }
-
+    else if(!m_env->IsSameObject(jhStrCallback.get(), 0))
+    {
+        rho::String strResBody = RHODESAPP().addCallbackObject(new CRubyCallbackResult<MethodResultJni>(*this), "__rho_inline");
+        RHODESAPP().callCallbackWithData(rho_cast<rho::String>(m_env, jhStrCallback.get()), strResBody, rho_cast<rho::String>(m_env, jhStrCallbackData.get()), true);
+    }
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void MethodResultJni::callJSBack()
+void MethodResultJni::callJSBack(jint jTabIndex)
 {
     RAWTRACE(__FUNCTION__);
 
@@ -462,8 +474,6 @@ void MethodResultJni::callJSBack()
 
     jhstring jhJsVmID = getStrCallbackData(m_env);
     String strJsVmID = rho_cast<String>(m_env, jhJsVmID.get());
-    int tabIndex = -1;
-    //common::convertFromStringA(strJsVmID.c_str(), tabIndex);
 
     String strRes(CMethodResultConvertor().toJSON(*this));
 
@@ -479,29 +489,29 @@ void MethodResultJni::callJSBack()
     if (!mid) return;
 
     jhstring jhCallback = rho_cast<jstring>(m_env, strCallback);
-    m_env->CallStaticVoidMethod(cls, mid, jhCallback.get(), static_cast<jint>(tabIndex));
+    m_env->CallStaticVoidMethod(cls, mid, jhCallback.get(), jTabIndex);
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-void MethodResultJni::releaseRubyProcCallback(unsigned long rubyProc)
+void MethodResultJni::releaseRubyProcCallback(jlong jRubyProc)
 {
     RAWTRACE(__FUNCTION__);
-    rho_ruby_releaseValue(rubyProc);
+    rho_ruby_releaseValue(static_cast<VALUE>(jRubyProc));
 }
 //----------------------------------------------------------------------------------------------------------------------
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeCallBack
-  (JNIEnv * env, jobject jResult, jboolean jIsRuby, jboolean jReleaseCallback)
+  (JNIEnv * env, jobject jResult, jint jTabId, jboolean jIsRuby, jboolean jReleaseCallback)
 {
     RAWTRACE("nativeCallBack");
 
     MethodResultJni result(env, jResult);
     if (static_cast<bool>(jIsRuby))
     {
-        result.callRubyBack(static_cast<bool>(jReleaseCallback));
+        result.callRubyBack(jReleaseCallback);
     } else
     {
-        result.callJSBack();
+        result.callJSBack(jTabId);
     }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -511,7 +521,7 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeRelease
 {
     RAWTRACE("nativeReleaseRubyProcCallback");
 
-    MethodResultJni::releaseRubyProcCallback(static_cast<unsigned long>(jProcCallback));
+    MethodResultJni::releaseRubyProcCallback(jProcCallback);
 }
 //----------------------------------------------------------------------------------------------------------------------
 

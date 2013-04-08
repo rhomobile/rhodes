@@ -357,7 +357,8 @@ void CSystemImplBase::getHasCellNetwork(rho::apiGenerator::CMethodResult& oResul
 
 void CSystemImplBase::setNetworkStatusNotify( const rho::String& url, int poll_interval, rho::apiGenerator::CMethodResult& oResult)
 {
-    RHODESAPP().setNetworkStatusNotify( url, (int)poll_interval );
+    oResult.setRubyCallback(url);
+    RHODESAPP().setNetworkStatusNotify( oResult, (int)poll_interval );
 }
 
 void CSystemImplBase::clearNetworkStatusNotify(rho::apiGenerator::CMethodResult& oResult)

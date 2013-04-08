@@ -36,7 +36,6 @@ describe "AsyncHttp" do
         #TODO: post_test
     end
 
-if !defined?(RHO_WP7)
     it "should http download" do
 
         file_name = File.join(Rho::RhoApplication::get_base_app_path(), 'test.png')
@@ -87,7 +86,8 @@ if !defined?(RHO_WP7)
         File.exists?(file_name).should == true
         File.size(file_name).should == orig_len
     end
-
+#TODO: server should not return 503, it should just drop the connection somehow after writing part of the data    
+=begin
     it "should http partial download" do
         
         host = SPEC_LOCAL_SERVER_HOST
@@ -95,7 +95,7 @@ if !defined?(RHO_WP7)
         url = "http://#{host}:#{port}/resume_download"
         
         
-        filename = File.join(Rho::RhoApplication::get_base_app_path(), 'test')
+        filename = File.join(Rho::RhoApplication::get_base_app_path(), 'test.txt')
         tmpFilename = filename + '.rhodownload'
         modtimeFile = filename + '.modtime'
         
@@ -103,6 +103,10 @@ if !defined?(RHO_WP7)
         File.delete(tmpFilename) if File.exists?(tmpFilename)
         File.delete(modtimeFile) if File.exists?(modtimeFile)
 
+        File.exists?(filename).should == false
+        File.exists?(tmpFilename).should == false
+        File.exists?(modtimeFile).should == false
+        
         res = Rho::AsyncHttp.download_file(:url => url, :filename => filename )
         
         puts "res : #{res}"  
@@ -117,7 +121,9 @@ if !defined?(RHO_WP7)
 
         File.size(tmpFilename).should == 5
         
-        content = open(tmpFilename,'rb').read        
+        #content = open(tmpFilename,'rb').read
+        content = File.read(tmpFilename)
+        
         content.should == '12345'
         
         res = Rho::AsyncHttp.download_file( :url => url, :filename => filename )
@@ -134,12 +140,12 @@ if !defined?(RHO_WP7)
         
         File.size(filename).should == 10
         
-        content = open(filename,'rb').read
+        #content = open(filename,'rb').read
+        content = File.read(filename)
         content.should == '1234567890'
     end
+=end
     
-
-end
     it "should http upload" do
         
         server = 'http://rhologs.heroku.com'
@@ -177,6 +183,7 @@ end
         File.exists?(file_name).should ==  true
     end
 
+#TODO: There are issues with connecting to localhost from WP8 emulator
 if System.get_property('platform') != 'WP8'
     it "should decode chunked body" do
 
@@ -261,6 +268,7 @@ end
         res['status'].should == 'ok'
         File.exists?(file_name).should == true
     end
+    
 if System.get_property('platform') != 'WP8'
     it "should send https request" do
             
@@ -280,5 +288,84 @@ if System.get_property('platform') != 'WP8'
         
     end
 end
+    
+    it "should overwrite existing file on download, overwriteFile=true" do
+        targetFile = File.join(Rho::RhoApplication::get_base_app_path(), 'test.png')
+        refFile = File.join(Rho::RhoApplication::get_base_app_path(), 'reference.dat')
+        refUrl = 'http://www.google.com/images/icons/product/chrome-48.png'
+        refSize = 1834
+        
+        File.delete(refFile) if File.exists?(refFile)
+        Rho::Network::downloadFile( :url => refUrl, :filename => refFile )
+        File.exists?(refFile).should == true
+        File.size(refFile).should == refSize
+        
+        stamp = "#{Time.now}"
+        
+        File.delete(targetFile) if File.exists?(targetFile)
+        File.open(targetFile,'w') { |outf| outf.write(stamp) }
+        
+        Rho::Network::downloadFile( :url => refUrl, :filename => targetFile, :overwriteFile => true )
+        
+        File.exists?(targetFile).should == true
+        File.read(targetFile).should_not == stamp
+        
+        File.size(targetFile).should == refSize
+        File.read(targetFile).should == File.read(refFile)
+        
+        File.delete(refFile)
+        File.delete(targetFile)
+    end
+    
+    it "should not download if file exists, overwriteFile=false" do
+        
+        refUrl = 'http://www.google.com/images/icons/product/chrome-48.png'
+        targetFile = File.join(Rho::RhoApplication::get_base_app_path(), 'test.png')
+        
+        stamp = "#{Time.now}"
+        
+        File.delete(targetFile) if File.exists?(targetFile)
+        File.open(targetFile,'w') { |outf| outf.write(stamp) }
+        
+        Rho::Network::downloadFile( :url => refUrl, :filename => targetFile, :overwriteFile => false )
+        
+        File.exists?(targetFile).should == true
+        File.size(targetFile).should == stamp.length
+        File.read(targetFile).should == stamp
+        
+        File.delete(targetFile)
+    end
+    
+    require 'fileutils'
+    
+    it "should create full path on download, createFolders=true" do
+        
+        refUrl = 'http://www.google.com/images/icons/product/chrome-48.png'
+        targetDir = File.join(Rho::RhoApplication::get_base_app_path(), 'new_dir')
+        targetFile = File.join(targetDir, 'test.png')
+        refSize = 1834
+        
+        FileUtils.rm_rf(targetDir) if File.exists?(targetDir)
+        
+        Rho::Network::downloadFile( :url => refUrl, :filename => targetFile, :createFolders => true )
+        
+        File.exists?(targetFile).should == true
+        File.size(targetFile).should == refSize
+        
+        FileUtils.rm_rf(targetDir)
+    end
+    
+    it "should not download if path not exists, createFolders=false" do
+        refUrl = 'http://www.google.com/images/icons/product/chrome-48.png'
+        targetDir = File.join(Rho::RhoApplication::get_base_app_path(), 'new_dir')
+        targetFile = File.join(targetDir, 'test.png')
+        
+        FileUtils.rm_rf(targetDir) if File.exists?(targetDir)
+        
+        Rho::Network::downloadFile( :url => refUrl, :filename => targetFile, :createFolders => false )
+        
+        File.exists?(targetFile).should == false
+        File.exists?(targetDir).should == false
+    end
 
 end    

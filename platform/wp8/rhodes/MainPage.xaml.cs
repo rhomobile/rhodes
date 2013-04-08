@@ -49,12 +49,17 @@ namespace rhodes
         private double _screenHeight;
         private double _screenPhysicalWidth;
         private double _screenPhysicalHeight;
+        private bool _isBrowserInitialized = false;
         private PageOrientation _screenOrientation = PageOrientation.None;
         // menu items hash table
         private Dictionary<string, int> menuItems = new Dictionary<string, int>();
         // toolbar items hash table
         private Dictionary<string, string> toolbarItems = new Dictionary<string, string>();
         private List<ApplicationBarMenuItem> toolbarMenuItems = new List<ApplicationBarMenuItem>();
+        public bool isBrowserInitialized()
+        {
+            return _isBrowserInitialized;
+        }
 
         private bool isUIThread
         {
@@ -296,12 +301,15 @@ namespace rhodes
         private void RhodesWebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
             CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
+            if (!_isBrowserInitialized)
+                _isBrowserInitialized = true;
         }
 
         private void RhodesWebBrowser_Loaded(object sender, RoutedEventArgs e)
         {
             CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
         }
+
 
         private void RhodesWebBrowser_Unloaded(object sender, RoutedEventArgs e)
         {

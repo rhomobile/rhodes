@@ -1865,15 +1865,11 @@ void CExtManager::requireRubyFile( const char* szFilePath )
     }
 }
 	
-	void CRhodesApp::setNetworkStatusNotify(const String& url, int poll_interval)
+	void CRhodesApp::setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval)
 	{
 		synchronized(m_mxNetworkStatus)
 		{
-			String s = url;
-			if (s.length() > 0) {
-				s = canonicalizeRhoUrl(url);
-			}
-			m_networkStatusReceiver.setCallbackUrl(s);
+			m_networkStatusReceiver.setMethodResult(oResult);
 			if ( m_pNetworkStatusMonitor != 0 )
 			{
 				if ( poll_interval <= 0 ) {
@@ -1888,7 +1884,7 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 	{
 		synchronized(m_mxNetworkStatus)
 		{
-			m_networkStatusReceiver.setCallbackUrl("");
+			m_networkStatusReceiver.setMethodResult(apiGenerator::CMethodResult());
 		}
 	}
 	
@@ -1920,18 +1916,17 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 		
 		synchronized(m_mxAccess)
 		{
-			if ( !m_callbackUrl.empty() && (m_prevStatus != currentStatus) )
+			if ( m_prevStatus != currentStatus )
 			{
-				String strBody = "";
-				strBody += "current_status=" + networkStatusToString(currentStatus);
-				strBody += "&prev_status=" + networkStatusToString(m_prevStatus);
-			
-				NetResponse resp = getNetRequest().pushData( m_callbackUrl, strBody, null );
-			
-				if ( !resp.isOK() )
-				{
-					LOG(ERROR) + "Fire notification failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-				}
+                String sCurrentStatus = networkStatusToString(currentStatus);
+                String sPrevStatus = networkStatusToString(m_prevStatus);
+                
+                Hashtable<String, String> ret;
+                
+                ret.put("current_status", sCurrentStatus);
+                ret.put("prev_status", sPrevStatus);
+                
+                m_result.set(ret);
 			}
 			m_prevStatus = currentStatus;
 		}

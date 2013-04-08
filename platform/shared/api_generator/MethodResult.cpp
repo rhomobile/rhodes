@@ -29,6 +29,8 @@ rho::String CMethodResult::toString()
 {
     if ( m_ResType == eString)
         return m_strRes;
+    if ( m_ResType == eStringW)
+        return convertToStringA(m_strResW);
     else if ( m_ResType == eJSON)
         return m_strJSONRes;
     else if ( m_ResType == eBool)
@@ -82,7 +84,7 @@ void CMethodResult::callCallback()
     }else if ( m_ResType != eNone && m_pRubyCallbackProc)
     {
         VALUE oProc = m_pRubyCallbackProc->getValue();
-        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "__rho_inline");
+        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "body");
 
         RHODESAPP().callCallbackProcWithData( oProc, strResBody, m_strCallbackParam, true);
 

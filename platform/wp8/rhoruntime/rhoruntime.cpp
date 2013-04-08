@@ -143,17 +143,10 @@ void CRhoRuntime::createCustomMenu()
 	IMainPage^ mainPage = CRhoRuntime::getInstance()->getMainPage();
 	rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
     RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
-#ifdef ENABLE_DYNAMIC_RHOBUNDLE
-	rho::String index = "index"RHO_ERB_EXT;
-    rho::String strIndexPage = rho::common::CFilePath::join(RHODESAPP().getStartUrl(), index);
-    if ( RHODESAPP().getCurrentUrl().compare(RHODESAPP().getStartUrl()) == 0 ||
-         RHODESAPP().getCurrentUrl().compare(strIndexPage) == 0 )
-        m_arAppMenuItems.addElement(rho::common::CAppMenuItem("Reload RhoBundle","reload_rhobundle"));
-#endif //ENABLE_DYNAMIC_RHOBUNDLE
 
     //update UI with custom menu items
 	mainPage->menuClear();
-	RHODESAPP().setAppBackUrl("");
+	//RHODESAPP().setAppBackUrl("");
     for ( unsigned int i = 0; i < m_arAppMenuItems.size(); i++)
     {
         rho::common::CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
@@ -162,8 +155,8 @@ void CRhoRuntime::createCustomMenu()
         else {
  			rho::StringW labelW;
 			rho::common::convertToStringW(oItem.m_strLabel.c_str(), labelW);
-			if ((oItem.m_eType == rho::common::CAppMenuItem::emtBack) && (oItem.m_strLink.compare("back") != 0))
-				RHODESAPP().setAppBackUrl(oItem.m_strLink);
+			//if ((oItem.m_eType == rho::common::CAppMenuItem::emtBack) && (oItem.m_strLink.compare("back") != 0))
+			//	RHODESAPP().setAppBackUrl(oItem.m_strLink);
 			mainPage->menuAddAction((oItem.m_eType == rho::common::CAppMenuItem::emtClose ? "Exit" : ref new Platform::String(labelW.c_str())), i);
         }
     }
@@ -178,21 +171,6 @@ void CRhoRuntime::onCustomMenuItemCommand(int nItemPos)
         return;
 
     rho::common::CAppMenuItem& oMenuItem = m_arAppMenuItems.elementAt(nItemPos);
-    if ( oMenuItem.m_eType == rho::common::CAppMenuItem::emtUrl )
-    {
-		// TODO: implement ReloadRhoBundle
-        if ( oMenuItem.m_strLink == "reload_rhobundle" )
-        {
-			#ifdef ENABLE_DYNAMIC_RHOBUNDLE
-            //if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
-            //    CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
-            //} else {
-            //    MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
-            //}
-			#endif
-			return;
-        }
-    }
     oMenuItem.processCommand();
 }
 
@@ -254,7 +232,11 @@ void CRhoRuntime::DestroyUi(void)
 
 extern "C" void rho_sys_app_exit()
 {
-	// exit application
+	rho_rhodesapp_callUiDestroyedCallback();
+
+	//TODO: fix issue with stop thread - stopWait does not wakeup sleeping thread
+	//rho::common::CRhodesApp::Destroy();
+
 	CRhoRuntime::getInstance()->getMainPage()->exitCommand();
 }
 

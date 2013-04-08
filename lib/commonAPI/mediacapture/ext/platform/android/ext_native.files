@@ -1,7 +1,7 @@
-ext/platform/android/generated/jni/Mediacapture.cpp
-ext/platform/android/generated/jni/mediacapture_ruby_wrap.cpp
-ext/platform/android/generated/jni/mediacapture_js_wrap.cpp
-ext/platform/android/jni/Mediacapture_impl.cpp
-ext/shared/generated/mediacapture_api_init.cpp
-ext/shared/generated/mediacapture_js_api.cpp
-ext/shared/generated/mediacapture_ruby_api.c
+ext/platform/android/generated/jni/Camera.cpp
+ext/platform/android/generated/jni/camera_ruby_wrap.cpp
+ext/platform/android/generated/jni/camera_js_wrap.cpp
+ext/shared/generated/camera_api_init.cpp
+ext/shared/generated/camera_js_api.cpp
+ext/shared/generated/camera_ruby_api.c
+ext/shared/MediacaptureInit.cpp

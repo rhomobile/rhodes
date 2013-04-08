@@ -58,12 +58,28 @@ extern "C" void rho_webview_set_cookie(const char *url, const char *cookie)
 	CRhoRuntime::getInstance()->getMainPage()->setCookie(ref new String(urlW.c_str()), ref new String(cookieW.c_str()));
 }
 
+extern "C" void waitForBrowserInitialized()
+{
+	while(true)
+	{
+		
+		if(CRhoRuntime::getInstance()->getMainPage()->isBrowserInitialized())
+			return;
+		else
+			Sleep(100);
+	}
+}
+
 extern "C" void rho_webview_navigate(const char* url, int index)
 { 
 	rho::StringW urlW;
-	
+
+	waitForBrowserInitialized();
+
 	rho::String fullUrl = RHODESAPPBASE().canonicalizeRhoUrl(url);
 	rho::common::convertToStringW(fullUrl.c_str(), urlW);
+
+	LOG(INFO) + urlW.c_str();
 
 	CRhoRuntime::getInstance()->getMainPage()->navigate(ref new String(urlW.c_str()), index);
 }
