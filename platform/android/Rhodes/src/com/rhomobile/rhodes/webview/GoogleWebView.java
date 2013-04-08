@@ -222,4 +222,10 @@ public class GoogleWebView implements IRhoWebView {
             Logger.E(TAG, e);
         }
     }
+
+    @Override
+    public void addJSInterface(Object obj, String name) {
+        Logger.I(TAG, "Adding new JS interface: " + name);
+        mWebView.addJavascriptInterface(obj, name);
+    }
 }
