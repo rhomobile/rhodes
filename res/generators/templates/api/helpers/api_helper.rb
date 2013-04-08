@@ -60,6 +60,48 @@ def api_generator_cpp_makeNativeTypeArg(gen_type)
     res
 end
 
+def api_generator_cli_makeNativeTypeArg(gen_type)
+    
+    if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
+        res = "Platform::String^"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
+        res = "Windows::Foundation::Collections::IVectorView<Platform::String^>^"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
+        res = "Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
+        res = "int"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
+        res = "bool"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
+        res = "double"
+    else
+        res = "Platform::String^"
+    end
+    
+    res
+end
+
+def api_generator_cs_makeNativeTypeArg(gen_type)
+    
+    if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
+        res = "string"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
+        res = "IReadOnlyList<string>"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
+        res = "IReadOnlyDictionary<string, string>"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
+        res = "int"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
+        res = "bool"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
+        res = "double"
+    else
+        res = "string"
+    end
+    
+    res
+end
+
 def api_generator_jni_makeHashTableElementType(sub_params)
     return "rho::String" unless sub_params
 
