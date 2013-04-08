@@ -1,5 +1,7 @@
 package com.rho.camera;
 
+import java.util.Map;
+
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.api.IMethodResult;
 
@@ -67,5 +69,11 @@ public class CameraSingleton implements ICameraSingleton {
                 return;
             }
         }
+    }
+
+    @Override
+    public void choosePicture(Map<String, String> propertyMap, IMethodResult result) {
+        // TODO Auto-generated method stub
+        
     }
 }
