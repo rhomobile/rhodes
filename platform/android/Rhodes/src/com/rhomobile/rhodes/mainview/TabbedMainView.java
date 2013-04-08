@@ -33,6 +33,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
 
@@ -635,7 +636,7 @@ public class TabbedMainView implements MainView {
                 view = new SimpleMainView(webView);
             }
             if (view == null) {
-                view = new SimpleMainView(activity.createWebView(i));
+                view = new SimpleMainView(RhoExtManager.getImplementationInstance().createWebView(activity, i));
             }
 
 			// Set view factory
