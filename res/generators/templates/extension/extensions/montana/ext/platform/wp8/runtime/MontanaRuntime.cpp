@@ -9,7 +9,7 @@ using namespace rho::apiGenerator;
     _impl(impl)
 {
     // TODO: it's temporary code for testing only => commented out
-    //C<%= name.camel_case() %>FactoryBase::getInstance()->createModuleByID(rho::common::convertToStringW(L"test"))->registerRuntime(this);
+    //C<%= name.camel_case() %>FactoryBase::getInstance()->createModuleByID(rho::common::convertToString(L"test"))->registerRuntime(this);
 }
 
 void <%= name.camel_case() %>RuntimeComponent::enable(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ propertyMap, IMethodResult^ oResult)
