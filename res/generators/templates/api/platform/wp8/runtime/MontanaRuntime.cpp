@@ -11,7 +11,7 @@ using namespace rho::apiGenerator;
     // TODO: implement runtime component constructor
 }
 
-<%= $cur_module.name %>SingletonComponent::<%= $cur_module.name %>SingletonComponent(I<%= $cur_module.name %>Singleton^ impl):
+<%= $cur_module.name %>SingletonComponent::<%= $cur_module.name %>SingletonComponent(I<%= $cur_module.name %>SingletonImpl^ impl):
     _impl(impl)
 {
     // TODO: implement singleton component constructor

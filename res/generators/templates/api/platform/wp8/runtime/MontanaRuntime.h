@@ -45,7 +45,7 @@ namespace <%= $cur_module.name %>Runtime
     {
 <%= dynamic_methods%>    };
 
-    public interface class I<%= $cur_module.name %>Singleton
+    public interface class I<%= $cur_module.name %>SingletonImpl
     {
 <%= static_methods%>    };
 
@@ -61,14 +61,14 @@ namespace <%= $cur_module.name %>Runtime
         I<%= $cur_module.name %>Impl^ _impl;
     };
 
-    public ref class <%= $cur_module.name %>SingletonComponent sealed: public I<%= $cur_module.name %>Singleton
+    public ref class <%= $cur_module.name %>SingletonComponent sealed: public I<%= $cur_module.name %>SingletonImpl
     {
     public:
-        <%= $cur_module.name %>SingletonComponent(I<%= $cur_module.name %>Singleton^ impl);
+        <%= $cur_module.name %>SingletonComponent(I<%= $cur_module.name %>SingletonImpl^ impl);
 <% $cur_module.methods.each do |module_method|
     next if module_method.access != ModuleMethod::ACCESS_STATIC
 %>        virtual void <%= module_method.native_name%>(<%= module_method.cached_data["cli_params"]%>);
 <% end %>    private:
-        I<%= $cur_module.name %>Singleton^ _impl;
+        I<%= $cur_module.name %>SingletonImpl^ _impl;
     };
 }

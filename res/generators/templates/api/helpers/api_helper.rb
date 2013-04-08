@@ -63,9 +63,9 @@ end
 def api_generator_cli_conversion(gen_type, var_name)
     
     if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
-        res = "Windows::Foundation::Collections::IVectorView<Platform::String^> _#{var_name}; // TODO: convert value\n"
+        res = "Windows::Foundation::Collections::IVectorView<Platform::String^>^ _#{var_name}; // TODO: convert value\n"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
-        res = "Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^> _#{var_name}; // TODO: convert value\n"
+        res = "Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ _#{var_name}; // TODO: convert value\n"
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
         res = ''
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
@@ -73,7 +73,7 @@ def api_generator_cli_conversion(gen_type, var_name)
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
         res = ''
     else # elif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
-        res = "Platform::String _#{var_name}; // TODO: convert value\n"
+        res = "Platform::String^ _#{var_name}; // TODO: convert value\n"
     end
     
     res

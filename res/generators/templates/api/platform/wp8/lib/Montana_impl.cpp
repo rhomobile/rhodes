@@ -1,3 +1,4 @@
+#include "common/RhodesApp.h"
 #include "../../../shared/generated/cpp/<%= $cur_module.name %>Base.h"
 #include "<%= $cur_module.name %>_MethodResultImpl.h"
 
@@ -28,7 +29,7 @@ namespace <%= parent.downcase() %> {<%
     end
 
     params += 'CMethodResult& oResult'
-    call_params += 'ref new CMethodResultImpl((int64)&oResult)'
+    call_params += "ref new C#{$cur_module.name}MethodResultImpl((int64)&oResult)"
     module_method.cached_data["cpp2cs_params"] = params
     module_method.cached_data["cpp2cs_call_params"] = call_params
 
@@ -58,11 +59,11 @@ public:
 
 class C<%= $cur_module.name %>Singleton: public C<%= $cur_module.name %>SingletonBase
 {
-    I<%= $cur_module.name %>Singleton^ _runtime;
+    I<%= $cur_module.name %>SingletonImpl^ _runtime;
 public:
     ~C<%= $cur_module.name %>Singleton(){}
 
-    virtual void registerRuntime(I<%= $cur_module.name %>Singleton^ runtime)
+    virtual void registerRuntime(I<%= $cur_module.name %>SingletonImpl^ runtime)
     {
         _runtime = runtime;
     }
