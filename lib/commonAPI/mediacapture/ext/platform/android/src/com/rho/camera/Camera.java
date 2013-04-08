@@ -164,8 +164,7 @@ public class Camera implements ICamera {
     }
 
     @Override
-    public void setSaveToSharedGallery(boolean saveToSharedGallery,
-            IMethodResult result) {
+    public void setSaveToSharedGallery(boolean saveToSharedGallery, IMethodResult result) {
         // TODO Auto-generated method stub
 
     }
@@ -231,22 +230,13 @@ public class Camera implements ICamera {
     }
 
     @Override
-    public void takePicture(Map<String, String> propertyMap,
-            IMethodResult result) {
+    public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void choosePicture(Map<String, String> propertyMap,
-            IMethodResult result) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void saveImageToDeviceGallery(String pathToImage,
-            IMethodResult result) {
+    public void saveImageToDeviceGallery(String pathToImage, IMethodResult result) {
         // TODO Auto-generated method stub
 
     }

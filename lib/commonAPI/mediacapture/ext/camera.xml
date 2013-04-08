@@ -40,10 +40,12 @@
         		</VALUES>
         	</PROPERTY>
         	<PROPERTY name="maxWidth" type="INTEGER" generateAccessors="true" readOnly="true">
+        	    <PLATFORM>Android,iOS</PLATFORM>
          		<APPLIES>iOS and Android only</APPLIES>
         		<DESC>The maximum width of images which can be captured.</DESC>
         	</PROPERTY>
         	<PROPERTY name="maxHeight" type="INTEGER" generateAccessors="true" readOnly="true">
+        	    <PLATFORM>Android,iOS</PLATFORM>
         		<APPLIES>iOS and Android only</APPLIES>
         		<DESC>The maximum height of images which can be captured.</DESC>
         	</PROPERTY>
@@ -86,6 +88,7 @@
             </PROPERTY>
             <PROPERTY name="colorModel" type="STRING" generateAccessors="true" default="rgb">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+        	    <PLATFORM>Android,iOS</PLATFORM>
 				<APPLIES>iOS and Android devices</APPLIES>
 				<DESC>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.</DESC>
 				<VALUES>
@@ -99,11 +102,13 @@
             </PROPERTY>
             <PROPERTY name="enableEditing" type="BOOLEAN" generateAccessors="true" default="true">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+        	    <PLATFORM>iOS</PLATFORM>
 				<APPLIES>iPhone only</APPLIES>
 				<DESC>Enables post photo capture image customizing; image will captured reduced to screen size (not full size).</DESC>
             </PROPERTY>
             <PROPERTY name="flashMode" type="STRING" generateAccessors="true">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+        	    <PLATFORM>Android</PLATFORM>
 				<APPLIES>Android only</APPLIES>
 				<DESC>Specifies the flash behaviour when taking a picture</DESC>
 				<VALUES>
@@ -126,6 +131,7 @@
 			</PROPERTY>
             <PROPERTY name="saveToSharedGallery" type="BOOLEAN" generateAccessors="true" default="false">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
+        	    <PLATFORM>iOS</PLATFORM>
 				<APPLIES>iOS only</APPLIES>
 				<DESC>If true, the picture you take will be added to the camera roll. </DESC>
             </PROPERTY>
@@ -136,21 +142,25 @@
             </PROPERTY>
             <PROPERTY name="previewLeft" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+        	    <PLATFORM>WM</PLATFORM>
 				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
             <PROPERTY name="previewTop" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+        	    <PLATFORM>WM</PLATFORM>
 				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
             <PROPERTY name="previewWidth" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+        	    <PLATFORM>WM</PLATFORM>
 				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
             <PROPERTY name="previewHeight" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+        	    <PLATFORM>WM</PLATFORM>
 				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
@@ -191,7 +201,7 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK>
+				<CALLBACK type="HASH">
 					<PARAMS>
 						<PARAM name="status" type="STRING">
 							<DESC>Whether or not the image was successfully captured.  The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
@@ -227,7 +237,7 @@
 				</CALLBACK>
 			</METHOD>
 
-        	<METHOD name="choosePicture" runInThread="module" hasCallback="mandatory">
+        	<METHOD name="choosePicture" runInThread="module" hasCallback="mandatory" access="static">
                 <DESC>Choose a picture from the album</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH">
@@ -237,7 +247,7 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK>
+				<CALLBACK type="HASH">
 					<PARAMS>
 						<PARAM name="status" type="STRING">
 							<DESC>Whether or not the image was successfully chosen from the gallery.  The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
