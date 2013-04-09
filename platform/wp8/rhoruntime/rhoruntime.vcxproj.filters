@@ -51,6 +51,9 @@
     <ClCompile Include="common\AlertImpl.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="common\RhoConvertWP8.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />
@@ -68,6 +71,9 @@
       <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="common\SSLImpl.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="common\RhoConvertWP8.h">
       <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
