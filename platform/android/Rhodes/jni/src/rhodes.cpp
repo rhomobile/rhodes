@@ -207,7 +207,7 @@ std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstri
 
 jstring rho_cast_helper<jstring, char const *>::operator()(JNIEnv *env, char const *s)
 {
-    RAWTRACE("rho_cast<jstring, string>");
+    RAWTRACE1("rho_cast<jstring, string>: %s", s);
 
     return s ? env->NewStringUTF(s) : (jstring)0;
 }

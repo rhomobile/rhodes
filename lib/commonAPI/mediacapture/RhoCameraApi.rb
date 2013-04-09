@@ -25,7 +25,7 @@
 #------------------------------------------------------------------------
 
 
-if System.get_property('platform') == 'APPLE'
+if Rho::System.getProperty('platform') == 'APPLE' || Rho::System.getProperty('platform') == 'ANDROID'
 
    class Camera
 	
@@ -89,7 +89,5 @@ if System.get_property('platform') == 'APPLE'
             end
             return nil	
        end
-
    end
-
 end
