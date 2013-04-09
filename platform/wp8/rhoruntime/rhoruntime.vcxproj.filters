@@ -48,6 +48,9 @@
     <ClCompile Include="common\SSLImpl.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="common\AlertImpl.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />

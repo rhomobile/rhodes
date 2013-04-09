@@ -243,6 +243,7 @@
     <ClCompile Include="..\..\shared\ruby\enumerator.c" />
     <ClCompile Include="..\..\shared\ruby\error.c" />
     <ClCompile Include="..\..\shared\ruby\eval.c" />
+    <ClCompile Include="..\..\shared\ruby\ext\alert\alert_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\nativebar\nativebar_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\navbar\navbar_wrap.c" />
