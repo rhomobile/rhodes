@@ -1,4 +1,5 @@
 #include "common/RhodesApp.h"
+#include "../wp8/rhoruntime/common/RhoConvertWP8.h"
 #include "../../../shared/generated/cpp/<%= $cur_module.name %>Base.h"
 #include "<%= $cur_module.name %>_MethodResultImpl.h"
 
