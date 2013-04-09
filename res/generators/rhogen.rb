@@ -545,6 +545,11 @@ module Rhogen
 
     # wp8: c++ -> c# bridging
 
+    template :extension_wp8_solution do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/Montana.sln'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}.sln"
+    end
+
     template :extension_wp8_impl_csproj do |template|
         template.source = 'extensions/montana/ext/platform/wp8/MontanaImpl.csproj'
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Impl.csproj"
@@ -580,16 +585,6 @@ module Rhogen
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Runtime.props"
     end
 
-    template :extension_wp8_runtime_h do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/runtime/MontanaRuntime.h'
-        template.destination = "extensions/#{name}/ext/platform/wp8/runtime/#{namecamelcase}Runtime.h"
-    end
-
-    template :extension_wp8_runtime_cpp do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/runtime/MontanaRuntime.cpp'
-        template.destination = "extensions/#{name}/ext/platform/wp8/runtime/#{namecamelcase}Runtime.cpp"
-    end
-
     template :extension_wp8_lib_vcxproj do |template|
         template.source = 'extensions/montana/ext/platform/wp8/MontanaLib.vcxproj'
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Lib.vcxproj"
@@ -603,21 +598,6 @@ module Rhogen
     template :extension_wp8_lib_props do |template|
         template.source = 'extensions/montana/ext/platform/wp8/MontanaLib.props'
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Lib.props"
-    end
-
-    template :extension_wp8_lib_methodresult_h do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/lib/MethodResultImpl.h'
-        template.destination = "extensions/#{name}/ext/platform/wp8/lib/MethodResultImpl.h"
-    end
-
-    template :extension_wp8_lib_methodresult_cpp do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/lib/MethodResultImpl.cpp'
-        template.destination = "extensions/#{name}/ext/platform/wp8/lib/MethodResultImpl.cpp"
-    end
-
-    template :extension_wp8_lib_impl_cpp do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/lib/Montana_impl.cpp'
-        template.destination = "extensions/#{name}/ext/platform/wp8/lib/#{namecamelcase}_impl.cpp"
     end
 
 
