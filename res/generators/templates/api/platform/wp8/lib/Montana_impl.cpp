@@ -71,7 +71,7 @@ public:
 <%= static_methods%>
 <% if $cur_module.is_template_default_instance %>
     virtual rho::String getDefaultID(){return "1";} // TODO: implement getDefaultID
-    virtual rho::String getInitialDefaultID(){return L"1";} // TODO: implement getInitialDefaultID
+    virtual rho::String getInitialDefaultID(){return "1";} // TODO: implement getInitialDefaultID
     virtual void setDefaultID(const rho::String& strID){} // TODO: implement setDefaultID
 <% end %>    virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor){} // TODO: implement addCommandToQueue
     virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor){} // TODO: implement callCommandInThread
