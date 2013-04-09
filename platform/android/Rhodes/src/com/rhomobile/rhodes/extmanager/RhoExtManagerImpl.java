@@ -218,7 +218,27 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     @Override
     public void zoomText(int nZoom) {
-        WebView.setTextZoom(nZoom);
+	switch (nZoom)
+	{
+	case 0:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.SMALLEST);
+	    break;
+	case 1:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.SMALLER);
+	    break;
+	case 2:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.NORMAL);
+	    break;
+	case 3:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.LARGER);
+	    break;
+	case 4:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.LARGEST);
+	    break;
+	default:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.NORMAL);
+	    break;
+	}
     }
 
     @Override
