@@ -26,6 +26,7 @@
 
 package com.rhomobile.rhodes;
 
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
@@ -151,13 +152,13 @@ public class WebView {
     ///*** SetTextZoomTask ***
     ///
     private static class SetTextZoomTask implements Runnable {
-        private int zoom;
+        private IRhoWebView.TextZoom textZoom;
         private int index;
-        SetTextZoomTask(int z, int i) {zoom = z; index = i;}
+        SetTextZoomTask(IRhoWebView.TextZoom z, int i) {textZoom = z; index = i;}
         @Override
         public void run() {
             try {
-                RhodesActivity.safeGetInstance().getMainView().getWebView(index).setTextZoom(zoom);
+                RhodesActivity.safeGetInstance().getMainView().getWebView(index).setTextZoom(textZoom);
             } catch (Throwable e) {
                 Logger.E(TAG, e);
             }
@@ -274,9 +275,9 @@ public class WebView {
         }
     }
 
-    public static void setTextZoom(int zoom) {
+    public static void setTextZoom(IRhoWebView.TextZoom textZoom) {
         try {
-            PerformOnUiThread.exec(new SetTextZoomTask(zoom, activeTab()));
+            PerformOnUiThread.exec(new SetTextZoomTask(textZoom, activeTab()));
         }
         catch (Exception e) {
             Logger.E(TAG, e);
