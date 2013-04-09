@@ -5,29 +5,8 @@
 <% if $cur_module.property_aliases.size > 0
 %>
 static NSDictionary* ourPropertyAliases= nil;
-
-static NSString* applyAliasesToPropertyName(NSString* prop_name) {
-    if (ourPropertyAliases == nil) {
-        ourPropertyAliases = [NSDictionary dictionaryWithObjectsAndKeys:<%
-                               $cur_module.property_aliases.each do |palias|
-                                  line = '@"'+palias.existing_name+'", @"'+palias.new_name+'",' %>
-                              <%= line %><%
-                               end %>
-                              nil];
-    }
-    NSObject* resNameObj = [ourPropertyAliases objectForKey:prop_name];
-    if (resNameObj != nil) {
-        return (NSString*)resNameObj;
-    }
-    return prop_name;
-}
 <%
-    else
-
-%>#define applyAliasesToPropertyName(name)  (name)
-<%
-
-    end
+   end
 %>
 
 
@@ -51,12 +30,61 @@ static NSString* applyAliasesToPropertyName(NSString* prop_name) {
 
 <% if $cur_module.is_template_propertybag %>
 
++(NSString*) applyAliasesToPropertyName:(NSString*)prop_name {
+<% if $cur_module.property_aliases.size > 0
+%>
+    if (ourPropertyAliases == nil) {
+        ourPropertyAliases = [NSDictionary dictionaryWithObjectsAndKeys:<%
+                               $cur_module.property_aliases.each do |palias|
+                                  line = '@"'+palias.existing_name+'", @"'+palias.new_name+'",' %>
+                              <%= line %><%
+                               end %>
+                              nil];
+    }
+    NSObject* resNameObj = [ourPropertyAliases objectForKey:prop_name];
+    if (resNameObj != nil) {
+        return (NSString*)resNameObj;
+    }
+    return prop_name;
+<%
+    else
+
+%>return prop_name;
+<%
+   end
+%>
+}
+
++(NSDictionary*) applyAliasesToDictionary:(NSDictionary*)dict {
+<% if $cur_module.property_aliases.size > 0
+%>
+    NSArray* keys = [dict allKeys];
+    int i;
+    NSMutableDictionary* resDict = [NSMutableDictionary dictionaryWithCapacity:[keys count]];
+    for (i = 0; i < [keys count]; i++) {
+        NSString* key = (NSString*)[keys objectAtIndex:i];
+        NSObject* value = [dict objectForKey:key];
+        [resDict setObject:value forKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:key]];
+    }
+    return resDict;
+<%
+    else
+
+%>return dict;
+<%
+   end
+%>
+}
+
+
+
+
 -(void) getProperty:(NSString*)propertyName methodResult:(id<IMethodResult>)methodResult {
-    [methodResult setResult:[mProperties objectForKey:applyAliasesToPropertyName(propertyName)]];
+    [methodResult setResult:[mProperties objectForKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:propertyName]]];
 }
 
 -(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue {
-   [mProperties setObject:propertyValue forKey:applyAliasesToPropertyName(propertyName)];
+   [mProperties setObject:propertyValue forKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:propertyName]];
 }
 
 -(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult {

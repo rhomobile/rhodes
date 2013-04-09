@@ -6,7 +6,6 @@
 }
 
 -(void) takePicture:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;
--(void) choosePicture:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult;
 -(void) saveImageToDeviceGallery:(NSString*)pathToImage;
 
 
