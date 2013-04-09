@@ -53,6 +53,7 @@ import org.json.JSONTokener;
 import com.rhomobile.rhodes.alert.Alert;
 import com.rhomobile.rhodes.alert.StatusNotification;
 import com.rhomobile.rhodes.event.EventStore;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
 import com.rhomobile.rhodes.mainview.MainView;
@@ -767,8 +768,6 @@ public class RhodesService extends Service {
 				else
 					return "portrait";
 			}
-//			else if (name.equalsIgnoreCase("has_camera"))
-//				return Boolean.valueOf(mCameraAvailable);
 			else if (name.equalsIgnoreCase("has_network"))
 				return Boolean.valueOf(hasNetwork());
 			else if (name.equalsIgnoreCase("has_wifi_network"))
@@ -816,21 +815,24 @@ public class RhodesService extends Service {
                 } else {
                     return "";
                 }
-			}
-			else if (name.equalsIgnoreCase("webview_framework")) {
-				//return "WEBKIT/" + Build.VERSION.RELEASE;
-			    return RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId();
-			}
+            }
+            else if (name.equalsIgnoreCase("webview_framework")) {
+                //return "WEBKIT/" + Build.VERSION.RELEASE;
+                return RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId();
+            }
             else if (name.equalsIgnoreCase("is_motorola_device")) {
                 return isMotorolaDevice();
             }
-			else if (name.equalsIgnoreCase("oem_info")) {
+            else if (name.equalsIgnoreCase("oem_info")) {
                 return Build.PRODUCT;
             }
-			else if (name.equalsIgnoreCase("uuid")) {
+            else if (name.equalsIgnoreCase("uuid")) {
                 return fetchUUID();
             }
-		}
+            else {
+                RhoExtManager.getImplementationInstance().getProperty(name);
+            }
+        }
 		catch (Exception e) {
 			Logger.E(TAG, "Can't get property \"" + name + "\": " + e);
 		}

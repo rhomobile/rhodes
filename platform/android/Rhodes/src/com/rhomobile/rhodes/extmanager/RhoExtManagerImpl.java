@@ -561,6 +561,18 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         }
     }
 
+    public String getProperty(String name) {
+        synchronized (mExtensions) {
+            for (IRhoExtension ext : mExtensions.values()) {
+                String res = ext.onGetProperty(this, name);
+                if (res != null) {
+                    return res;
+                }
+            }
+        }
+        return null;
+    }
+    
     public void createRhoListeners() {
         for (String classname: RhodesStartupListeners.ourRunnableList) {
             if (classname.length() == 0) continue;

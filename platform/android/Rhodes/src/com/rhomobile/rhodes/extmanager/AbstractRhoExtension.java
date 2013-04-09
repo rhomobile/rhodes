@@ -121,4 +121,10 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     public boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config, String name, boolean res) {
         return res;
     }
+    
+    @Override
+    public String onGetProperty(IRhoExtManager extManager, String name) {
+        return null;
+    }
+
 }
