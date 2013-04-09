@@ -3,7 +3,7 @@ package com.rhomobile.rhodes.extmanager;
 import android.graphics.Rect;
 
 public interface IRhoExtension {
-    
+
     public enum LoadErrorReason { STOP, INTERNAL_ERROR, BAD_LICENSE }
 
     IRhoWebView onCreateWebView(IRhoExtManager extManager, int tabIndex);
@@ -34,5 +34,6 @@ public interface IRhoExtension {
 
     boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config, String name, boolean res);
 
+    String onGetProperty(IRhoExtManager extManager, String name);
 }
 

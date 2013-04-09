@@ -242,8 +242,14 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 
     for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
         Vector<char> respChunk;
-        
-        curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h);
+		curl_slist *hdrs;
+#ifdef OS_WP8
+		if(strcasecmp(method, "POST") == 0 && strBody.length() == 0 )
+			hdrs = m_curl.set_options(method, strUrl, " ", oSession, &h);
+		else 
+#endif
+		hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h);
+
         CURL *curl = m_curl.curl();
         if (pHeaders) {
             curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);
