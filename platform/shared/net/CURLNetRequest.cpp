@@ -249,6 +249,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 		else 
 #endif
 		hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h);
+
         CURL *curl = m_curl.curl();
         if (pHeaders) {
             curl_easy_setopt(curl, CURLOPT_HEADERDATA, pHeaders);

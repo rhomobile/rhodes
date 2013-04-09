@@ -228,6 +228,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\shared\net\CURLNetRequest.cpp" />
     <ClCompile Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.cpp" />
+    <ClCompile Include="common\AlertImpl.cpp" />
     <ClCompile Include="common\ExtManager.cpp" />
     <ClCompile Include="common\RhoClassFactory.cpp" />
     <ClCompile Include="common\RhoCryptImpl.cpp" />
