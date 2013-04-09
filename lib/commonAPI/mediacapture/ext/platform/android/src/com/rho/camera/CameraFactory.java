@@ -4,6 +4,7 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
 import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 public class CameraFactory extends AbstractRhoListener implements ICameraFactory, IRhoListener {
     private static final String TAG = CameraFactory.class.getSimpleName();
@@ -14,17 +15,12 @@ public class CameraFactory extends AbstractRhoListener implements ICameraFactory
     @Override
     public void onCreateApplication(IRhoExtManager extManager) {
         CameraFactorySingleton.setInstance(this);
+        RhoExtManager.getInstance().registerExtension("RhoCameraApi", new CameraExtension());
     }
 
     @Override
     public ICameraSingleton getApiSingleton() {
-        if (mSingleton == null) {
-            mSingleton = new CameraSingleton();
-            
-            int count = mSingleton.getCameraCount();
-            mCameraList = new Camera[count];
-        }
-        return mSingleton;
+        return getApiSingletonImplementation();
     }
 
     @Override
@@ -40,6 +36,16 @@ public class CameraFactory extends AbstractRhoListener implements ICameraFactory
             mCameraList[idx] = new Camera(id);
         }
         return mCameraList[idx];
+    }
+    
+    CameraSingleton getApiSingletonImplementation() {
+        if (mSingleton == null) {
+            mSingleton = new CameraSingleton();
+            
+            int count = mSingleton.getCameraCount();
+            mCameraList = new Camera[count];
+        }
+        return mSingleton;
     }
 
 }

@@ -150,8 +150,6 @@ public class RhodesService extends Service {
 	
 	private NotificationManager mNM;
 	
-	//private static boolean mCameraAvailable;
-	
 	private boolean mNeedGeoLocationRestart = false;
 	
 	class PowerWakeLock {
@@ -321,9 +319,6 @@ public class RhodesService extends Service {
         }
 
 		initForegroundServiceApi();
-
-		// TODO: detect camera availability
-		//mCameraAvailable = true;
 
 		// Register custom uri handlers here
 		mUriHandlers.addElement(new ExternalHttpHandler(context));
@@ -830,7 +825,7 @@ public class RhodesService extends Service {
                 return fetchUUID();
             }
             else {
-                RhoExtManager.getImplementationInstance().getProperty(name);
+                return RhoExtManager.getImplementationInstance().getProperty(name);
             }
         }
 		catch (Exception e) {

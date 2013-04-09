@@ -563,9 +563,10 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     public String getProperty(String name) {
         synchronized (mExtensions) {
-            for (IRhoExtension ext : mExtensions.values()) {
-                String res = ext.onGetProperty(this, name);
+            for (Map.Entry<String, IRhoExtension> entry : mExtensions.entrySet()) {
+                String res = entry.getValue().onGetProperty(this, name);
                 if (res != null) {
+                    Logger.T(TAG, "Property from '" + entry.getKey() + "' extension - " + name + ": " + res);
                     return res;
                 }
             }
