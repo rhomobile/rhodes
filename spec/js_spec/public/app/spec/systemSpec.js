@@ -38,10 +38,6 @@ describe("<system module specs>", function () {
         expect(Rho.System.getPpiY()).isNumberGreaterThenZero();
     });
 
-    it("Test phoneId property", function () {
-        expect(Rho.System.getPhoneId()).isNotEmptyString();
-    });
-
     it("Test deviceName property", function () {
         expect(Rho.System.getDeviceName()).isNotEmptyString();
     });
@@ -68,15 +64,6 @@ describe("<system module specs>", function () {
 
     it("Test isMotorolaDevice property", function () {
         expect(Rho.System.getIsMotorolaDevice()).isBoolean();
-    });
-
-    it("Test httpProxyURI property", function () {
-        Rho.System.setHttpProxyURI('http://localhost');
-        expect(Rho.System.getHttpProxyURI()).toEqual('http://localhost');
-    });
-
-    it("Test keyboardState property", function () {
-        expect(Rho.System.getKeyboardState()).toEqual('automatic');
     });
 
     it("Test default value of localServerPort property", function () {
@@ -119,8 +106,23 @@ describe("<system module specs>", function () {
     /* ----------          platform dependent specs          ---------- */
 
 
-    if (isAndroidPlatform()) {
+    if (isAnyButApplePlatform()) {
+        it("Test phoneId property", function () {
+            expect(Rho.System.getPhoneId()).isNotEmptyString();
+        });
 
+        it("Test httpProxyURI property", function () {
+            Rho.System.setHttpProxyURI('http://localhost');
+            expect(Rho.System.getHttpProxyURI()).toEqual('http://localhost');
+        });
+
+        it("Test keyboardState property", function () {
+            expect(Rho.System.getKeyboardState()).toEqual('automatic');
+        });
+
+    }
+
+    if (isAndroidPlatform()) {
         it("Test deviceOwnerEmail property", function () {
             expect(Rho.System.deviceOwnerEmail()).isNotEmptyString();
         });
@@ -128,7 +130,6 @@ describe("<system module specs>", function () {
         it("Test deviceOwnerName property", function () {
             expect(Rho.System.deviceOwnerName()).isNotEmptyString();
         });
-
     }
 
     if (isApplePlatform()) {
@@ -136,11 +137,9 @@ describe("<system module specs>", function () {
             Rho.System.setApplicationIconBadge(1);
             expect(Rho.System.getApplicationIconBadge()).toEqual(1);
         });
-
     }
 
-    if (isNotAnyWindowsPlatform()) {
-
+    if (isAnyButWindowsFamilyPlatform()) {
         it("Test devicePushId property", function () {
             expect(Rho.System.getDevicePushId()).isNotEmptyString();
         });
@@ -151,10 +150,9 @@ describe("<system module specs>", function () {
             Rho.System.setScreenAutoRotate(false);
             expect(Rho.System.getScreenAutoRotate()).toEqual(false);
         });
-
     }
 
-    if ('WINDOWS' != Rho.System.getPlatform()) {
+    if (isAnyButAppleAndWindowsMobilePlatform()) {
         it("Test oemInfo property", function () {
             expect(Rho.System.getOemInfo()).isNotEmptyString();
         });
@@ -164,9 +162,8 @@ describe("<system module specs>", function () {
         });
     }
 
-    if (['WINDOWS_DESKTOP', 'WINDOWS'].indexOf(Rho.System.getPlatform()) != -1) {
-
-        it("Test deleteRegistrySetting property", function () {
+    if (isWindowsMobileOrWindowsDesktopPlatform()) {
+       it("Test deleteRegistrySetting property", function () {
             Rho.System.deleteRegistrySetting({hive: 'HKCU', key: 'phone_spec', setting: 'phone_spec_registry_key'})
 
             Rho.System.setRegistrySetting({hive: 'HKCU', type: 'String', key: 'phone_spec', setting: 'phone_spec_registry_key', value: 'test'});
@@ -180,11 +177,9 @@ describe("<system module specs>", function () {
             Rho.System.setScreenSleeping(false);
             expect(Rho.System.getScreenSleeping()).toEqual(false);
         });
-
     }
 
     if (isWindowsDesktopPlatform()) {
-
         it("Test default value of lockWindowSize property", function () {
             expect(Rho.System.getLockWindowSize()).toEqual(false);
         });
@@ -205,7 +200,6 @@ describe("<system module specs>", function () {
         it("Test windowSize method", function () {
             Rho.System.setWindowSize(100, 100);
         });
-
     }
 
-})
+});

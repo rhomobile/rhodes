@@ -15,15 +15,6 @@ describe("<webview module specs>", function () {
         expect(Rho.WebView.getFullScreen()).toEqual(true);
     });
 
-    it("Test default value of enableCache property", function () {
-        expect(Rho.WebView.getEnableCache()).toEqual(true);
-    });
-
-    it("Test enableCache property", function () {
-        Rho.WebView.setEnableCache(false);
-        expect(Rho.WebView.getEnableCache()).toEqual(false);
-    });
-
     it("Test default value of activeTab property", function () {
         expect(Rho.WebView.getActiveTab()).toEqual(0);
     });
@@ -58,8 +49,7 @@ describe("<webview module specs>", function () {
     /* ----------          platform dependent specs          ---------- */
 
 
-    if ('ANDROID' == Rho.System.getPlatform()) {
-
+    if (isAndroidPlatform()) {
         it("Test default value of enableZoom property", function () {
             expect(Rho.WebView.getEnableZoom()).toEqual(true);
         });
@@ -82,19 +72,15 @@ describe("<webview module specs>", function () {
         it("Test save method", function () {
             expect(Rho.WebView.save("jpeg", "someFilename", -1));
         });
-
     }
 
-    if (['ANDROID', 'APPLE'].indexOf(Rho.System.getPlatform()) != -1) {
-
+    if (isAndroidOrApplePlatform()) {
         it("Test currentURL method", function () {
             expect(Rho.WebView.currentURL(-1)).isNotEmptyString();
         });
-
     }
 
-    if ('WINDOWS' == Rho.System.getPlatform()) {
-
+    if (isWindowsMobilePlatform()) {
         it("Test default value of navigationTimeout property", function () {
             expect(Rho.WebView.getNavigationTimeout()).toEqual(0);
         });
@@ -142,16 +128,23 @@ describe("<webview module specs>", function () {
             Rho.WebView.setTextZoomLevel(1.5);
             expect(Rho.WebView.getTextZoomLevel()).toEqual(1.5);
         });
-
     }
 
     if (['ANDROID', 'WINDOWS', 'WINDOWS_DESKTOP'].indexOf(Rho.System.getPlatform()) != -1) {
-
         it("Test nativeMenu property", function () {
             expect(typeof Rho.WebView.getNativeMenu()).toEqual("object") ;
         });
+    }
 
+    if (isAnyButApplePlatform()){
+        it("Test default value of enableCache property", function () {
+            expect(Rho.WebView.getEnableCache()).toEqual(true);
+        });
+
+        it("Test enableCache property", function () {
+            Rho.WebView.setEnableCache(false);
+            expect(Rho.WebView.getEnableCache()).toEqual(false);
+        });
     }
 
 });
-
