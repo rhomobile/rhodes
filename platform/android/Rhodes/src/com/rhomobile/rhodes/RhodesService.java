@@ -149,7 +149,7 @@ public class RhodesService extends Service {
 	
 	private NotificationManager mNM;
 	
-	private static boolean mCameraAvailable;
+	//private static boolean mCameraAvailable;
 	
 	private boolean mNeedGeoLocationRestart = false;
 	
@@ -322,7 +322,7 @@ public class RhodesService extends Service {
 		initForegroundServiceApi();
 
 		// TODO: detect camera availability
-		mCameraAvailable = true;
+		//mCameraAvailable = true;
 
 		// Register custom uri handlers here
 		mUriHandlers.addElement(new ExternalHttpHandler(context));
@@ -767,8 +767,8 @@ public class RhodesService extends Service {
 				else
 					return "portrait";
 			}
-			else if (name.equalsIgnoreCase("has_camera"))
-				return Boolean.valueOf(mCameraAvailable);
+//			else if (name.equalsIgnoreCase("has_camera"))
+//				return Boolean.valueOf(mCameraAvailable);
 			else if (name.equalsIgnoreCase("has_network"))
 				return Boolean.valueOf(hasNetwork());
 			else if (name.equalsIgnoreCase("has_wifi_network"))
