@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Windows;
@@ -40,6 +40,49 @@ namespace <%= name.camel_case() %>Impl
         }
 
         public void take(IReadOnlyDictionary<string, string> propertyMap, <%= name.camel_case() %>Runtime.IMethodResult oResult)
+        {
+            // implement this method in C# here
+        }
+
+        public void getProperty(string propertyName, <%= name.camel_case() %>Runtime.IMethodResult oResult)
+        {
+            // implement this method in C# here
+        }
+
+        public void getProperties(IReadOnlyList<string> arrayofNames, <%= name.camel_case() %>Runtime.IMethodResult oResult)
+        {
+            // implement this method in C# here
+        }
+
+        public void getAllProperties(<%= name.camel_case() %>Runtime.IMethodResult oResult)
+        {
+            // implement this method in C# here
+        }
+
+        public void setProperty(string propertyName, string propertyValue, <%= name.camel_case() %>Runtime.IMethodResult oResult)
+        {
+            // implement this method in C# here
+        }
+
+        public void setProperties(IReadOnlyDictionary<string, string> propertyMap, <%= name.camel_case() %>Runtime.IMethodResult oResult)
+        {
+            // implement this method in C# here
+        }
+
+        public void clearAllProperties(<%= name.camel_case() %>Runtime.IMethodResult oResult)
+        {
+            // implement this method in C# here
+        }
+    }
+
+    public class <%= name.camel_case() %>Singleton : <%= name.camel_case() %>Runtime.I<%= name.camel_case() %>SingletonImpl
+    {
+        public <%= name.camel_case() %>Singleton()
+        {
+            var _runtime = new <%= name.camel_case() %>Runtime.<%= name.camel_case() %>SingletonComponent(this);
+        }
+
+        public void enumerate(<%= name.camel_case() %>Runtime.IMethodResult oResult)
         {
             // implement this method in C# here
         }

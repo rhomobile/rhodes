@@ -220,6 +220,7 @@
     <ClInclude Include="..\..\shared\net\CURLNetRequest.h" />
     <ClInclude Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.h" />
     <ClInclude Include="common\RhoClassFactory.h" />
+    <ClInclude Include="common\RhoConvertWP8.h" />
     <ClInclude Include="common\RhoCryptImpl.h" />
     <ClInclude Include="common\SSLImpl.h" />
     <ClInclude Include="rhoruntime.h" />
@@ -228,8 +229,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\shared\net\CURLNetRequest.cpp" />
     <ClCompile Include="..\..\wm\rhodes\rho\common\RhoThreadImpl.cpp" />
+    <ClCompile Include="common\AlertImpl.cpp" />
     <ClCompile Include="common\ExtManager.cpp" />
     <ClCompile Include="common\RhoClassFactory.cpp" />
+    <ClCompile Include="common\RhoConvertWP8.cpp" />
     <ClCompile Include="common\RhoCryptImpl.cpp" />
     <ClCompile Include="common\SSLImpl.cpp" />
     <ClCompile Include="TabbarImpl.cpp" />

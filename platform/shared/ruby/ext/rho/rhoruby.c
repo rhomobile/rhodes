@@ -245,7 +245,6 @@ void RhoRubyStart()
     Init_WebView(); //+
 #endif
     Init_RhoConf(); //+
-    Init_Alert();
 #if defined(WINDOWS_PLATFORM)
     init_rhoext_Signature();
 #else
@@ -254,7 +253,7 @@ void RhoRubyStart()
 
     Init_RhoBluetooth();
 	Init_RhodesNativeViewManager();
-#if !defined(OS_MACOSX)
+#if !defined(OS_MACOSX) && !defined(OS_ANDROID)
     Init_Camera();
 #endif
     Init_stringio(); //+
@@ -281,6 +280,7 @@ void RhoRubyStart()
 	Init_RhoSupport();
 	Init_RhoConf();
 	Init_WebView();
+    Init_Alert();
 
 	Init_socket();
 	Init_stringio();

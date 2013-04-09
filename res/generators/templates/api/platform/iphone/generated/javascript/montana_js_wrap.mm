@@ -181,6 +181,37 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
         params[i] = [CJSConverter getObjectiveCNULL];
     }
 
+    <% for i in 0..(module_method.params.size-1)
+          if module_method.params[i].default_value != nil
+             if module_method.params[i].type == MethodParam::TYPE_STRING
+                line = 'params['+i.to_s+']= @"'+module_method.params[i].default_value.to_s+'";'
+                %>
+                <%= line %><%
+             end
+             if module_method.params[i].type == MethodParam::TYPE_INT
+                line = 'params['+i.to_s+']= [NSNumber numberWithInt:'+module_method.params[i].default_value.to_s+'];'
+                %>
+                <%= line %><%
+             end
+             if module_method.params[i].type == MethodParam::TYPE_DOUBLE
+                line = 'params['+i.to_s+']= [NSNumber numberWithFloat:'+module_method.params[i].default_value.to_s+'];'
+                %>
+                <%= line %><%
+             end
+             if module_method.params[i].type == MethodParam::TYPE_BOOL
+                line = ''
+                if module_method.params[i].default_value.to_s.downcase != "false"
+                     line = 'params['+i.to_s+']= [NSNumber numberWithBool:YES];'
+                else
+                     line = 'params['+i.to_s+']= [NSNumber numberWithBool:NO];'
+                end
+                %>
+                <%= line %><%
+             end
+          end
+       end
+    %>
+
     // enumerate params
     for (int i = 0; i < (<%= module_method.params.size %>); i++) {
         if (argc > i) {
