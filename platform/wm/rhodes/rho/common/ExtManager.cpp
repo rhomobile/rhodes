@@ -182,7 +182,31 @@ bool CExtManager::RegisterForBrowserMessage(unsigned int iMsgId)
 bool CExtManager::DeRegisterForBrowserMessage(unsigned int iMsgId)
 {
 #if !defined(OS_WINDOWS_DESKTOP)
-    return getAppWindow().getWebKitEngine()->DeRegisterForMessage(iMsgId);
+    rho::IBrowserEngine* pEng = getAppWindow().getWebKitEngine();
+    if (pEng)
+        return pEng->DeRegisterForMessage(iMsgId);
+    return false;
+#else
+	return true;
+#endif
+}
+
+bool CExtManager::RegisterForPrimaryBrowserMessage(unsigned int iMsgId)
+{
+#if !defined(OS_WINDOWS_DESKTOP)
+    return getAppWindow().getWebKitEngine()->RegisterForPrimaryMessage(iMsgId);
+#else
+	return true;
+#endif
+}
+
+bool CExtManager::DeRegisterForPrimaryBrowserMessage(unsigned int iMsgId)
+{
+#if !defined(OS_WINDOWS_DESKTOP)
+    rho::IBrowserEngine* pEng = getAppWindow().getWebKitEngine();
+    if (pEng)
+        return pEng->DeRegisterForPrimaryMessage(iMsgId);
+    return false;
 #else
 	return true;
 #endif

@@ -270,4 +270,14 @@ bool CIEBrowserEngine::DeRegisterForMessage(unsigned int iMsgId)
 {
 	return true;
 }
+
+bool CIEBrowserEngine::RegisterForPrimaryMessage(unsigned int iMsgId)
+{
+	return true;
+}
+
+bool CIEBrowserEngine::DeRegisterForPrimaryMessage(unsigned int iMsgId)
+{
+	return true;
+}
 #endif //!defined( OS_PLATFORM_MOTCE )
