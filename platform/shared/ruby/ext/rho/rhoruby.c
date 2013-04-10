@@ -266,6 +266,7 @@ void RhoRubyStart()
     Init_NavBar();
     Init_RhoEvent();
     Init_Calendar();
+    Init_Alert();
 
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)
