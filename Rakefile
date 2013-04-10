@@ -903,10 +903,15 @@ end
 def write_modules_js(filename, modules)
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-    f.puts 'Rho.loadApiModules(['
-    f.puts '    "' + modules.join('","') + '"'
-    f.puts ']);'
-  
+
+    if modules
+        modules.each do |m|
+            modulename = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+            f.puts( "// Module #{modulename}\n\n" )
+            f.write(File.read(m))
+        end
+    end
+    
     Jake.modify_file_if_content_changed(filename, f)
 end
 
@@ -926,7 +931,7 @@ def init_extensions(startdir, dest)
   extentries = []
   nativelib = []
   extlibs = []
-  extjsmodules = []
+  extjsmodulefiles = []
   extpaths = $app_config["extpaths"]  
 
   rhoapi_js_folder = nil
@@ -1017,7 +1022,7 @@ def init_extensions(startdir, dest)
             
             unless rhoapi_js_folder.nil?
               Dir.glob(extpath + "/public/api/generated/Rho.*.js").each do |f|
-                extjsmodules << f.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+                  extjsmodulefiles << f
               end
             end
           end
@@ -1028,7 +1033,7 @@ def init_extensions(startdir, dest)
     end    
   end
 
-  puts 'extjsmodules=' + extjsmodules.to_s
+  puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
 
   #TODO: checker update
   gen_checker.update
@@ -1037,10 +1042,10 @@ def init_extensions(startdir, dest)
   puts "exts " + exts
 
   # deploy Common API JS implementation
-  if extjsmodules.count > 0
+  if extjsmodulefiles.count > 0
     mkdir_p rhoapi_js_folder
-    cp_r "#{$startdir}/res/generators/templates/api/js/rhoapi.js", "#{rhoapi_js_folder}/rhoapi.js"
-    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodules)
+    extjsmodulefiles.unshift("#{$startdir}/res/generators/templates/api/js/rhoapi.js");
+    write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
   end
 
   if $config["platform"] != "bb"
