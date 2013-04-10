@@ -1,7 +1,7 @@
 
 #import "Camera.h"
 
-extern void save_image_to_device_gallery(const char* image_path);
+
 void camera_take_picture(NSDictionary* options, id<IMethodResult> callback_api);
 
 
@@ -21,9 +21,7 @@ void camera_take_picture(NSDictionary* options, id<IMethodResult> callback_api);
     camera_take_picture([self constructProperties:propertyMap], methodResult);
 }
 
--(void) saveImageToDeviceGallery:(NSString*)pathToImage {
-    save_image_to_device_gallery([pathToImage UTF8String]);
-}
+
 
 
 

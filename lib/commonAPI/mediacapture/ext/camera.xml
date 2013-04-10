@@ -283,7 +283,7 @@
 				</CALLBACK>
 			</METHOD>
 
-            <METHOD name="saveImageToDeviceGallery">
+        	<METHOD name="saveImageToDeviceGallery" access="static">
                 <DESC>Save an image to the device gallery</DESC>
                 <PARAMS>
                     <PARAM name="pathToImage" type="STRING">
