@@ -29,12 +29,13 @@
 #import "RhoDelegate.h"
 #import "SignatureView.h"
 #import "SignatureViewController.h"
+#include "SignatureParam.h"
 
 @interface SignatureDelegate : RhoDelegate {
 	SignatureViewController* signatureViewController;
 	UIView* parentView;
 	UIView* prevView;
-	NSString* imageFormat;
+	unsigned int imageFormat;
     unsigned int penColor;
     float penWidth;
     unsigned int bgColor;
@@ -50,7 +51,7 @@
 -(void)setParentView:(UIView*)parent_view;
 -(void)setPrevView:(UIView*)prev_view;
 
--(void)setImageFormat:(NSString*)format;
+-(void)setImageFormat:(unsigned int)format;
 -(void)setPenColor:(unsigned int)value;
 -(void)setPenWidth:(float)value;
 -(void)setBgColor:(unsigned int)value;
@@ -58,3 +59,5 @@
 -(void)hideSignatureInlineView;
 
 @end
+
+void init_signature_param( struct SignatureParam* sigparam );
