@@ -13,6 +13,8 @@ var Rho = Rho || (function ($) {
     //var API_CALLBACK_BASE_URL = '/system/js_api_entrypoint';
     var API_CALLBACK_BASE_URL = '';
 
+    var NOT_INSTANCE_ID = '0';
+
     // === Private parts ============================================================
 
     var idCount = 0;
@@ -134,7 +136,7 @@ var Rho = Rho || (function ($) {
 
             if (persistentCallbackOptParams && 'string' != typeof persistentCallbackOptParams)
                 throw 'Persistent callback optional parameters should be a string!';
-            
+
             var persistentCallbackOptParams = persistentCallbackOptParams || null;
 
             persistentCallback = prepareCallback(persistentCallback, true);
@@ -229,7 +231,7 @@ var Rho = Rho || (function ($) {
         var nsLog = '';
 
         for (var i=0; i<parts.length; i++) {
-            var nsProp = parts[i]; 
+            var nsProp = parts[i];
             nsLog = nsLog +(i==0 ? '' : '.')+ nsProp;
 
             var subNs = ns[nsProp];
@@ -247,6 +249,144 @@ var Rho = Rho || (function ($) {
             ns = ns[nsProp];
         }
         return ns;
+    }
+
+    // === Property proxy support ====================================================
+
+    var propsSupport = {
+        ffHackKeywords: false,
+        ffHackMethod: false,
+        js185: false
+    };
+
+    (function propertySupportCheck() {
+        propsSupport.ffHackKeywords = (function supported_firefoxHack_keywords() {
+            var testObj = {};
+            var okGet = false;
+            var okSet = false;
+            try {
+                testObj = {
+                    get propGet ()    { okGet = true; return okGet; },
+                    set propSet (val) { okSet = val; }
+                };
+                testObj.propSet = testObj.propGet;
+            } catch(ex){};
+            return okGet && okSet;
+        })();
+
+        propsSupport.ffHackMethod = (function supported_firefoxHack_method() {
+            var testObj = {};
+            var okGet = false;
+            var okSet = false;
+            try {
+                testObj.__defineGetter__('propGet', function()    { okGet = true; return okGet; });
+                testObj.__defineSetter__('propSet', function(val) { okSet = val; });
+
+                testObj.propSet = testObj.propGet;
+            } catch(ex){};
+            return okGet && okSet;
+        })();
+
+        propsSupport.js185 = (function supported_js185_standard() {
+            var testObj = {};
+            var okGet = false;
+            var okSet = false;
+            try {
+                Object.defineProperty(testObj, 'propGet', {
+                    get: function() { okGet = true; return okGet; }
+                });
+                Object.defineProperty(testObj, 'propSet', {
+                    set: function(val) { okSet = val; }
+                });
+                testObj.propSet = testObj.propGet;
+            } catch(ex){};
+            return okGet && okSet;
+        })();
+    })();
+    // at this point we have property support level already detected
+
+
+    function propAccessReqFunc(apiReqFunc, propName, rw) {
+        var isSet = ('w' == rw);
+        return function() {
+            return apiReqFunc({
+                instanceId: ('function' == typeof this.getId) ? this.getId() : NOT_INSTANCE_ID,
+                args: arguments,
+                method: propName + (isSet ? '=' : ''),
+                valueCallbackIndex: (isSet ? 1 : 0)
+            });
+        };
+    }
+
+    // Here is default (fallback option) implementation of property using explicit accessors.
+    // It will be used in case we have no any support for natural props syntax in a browser.
+    // Usage sample: obj.setSomething(123), var abc = obj.getSomething()
+    // ====================================================================================
+    var createPropProxy_fallback = function(obj, propName, propAccess, apiReqFunc) {
+        function accessorName(accessor, name) {
+            return accessor + name.charAt(0).toUpperCase() + name.slice(1);
+        }
+
+        if (0 >= propAccess.indexOf('w')) {
+            obj[accessorName('set', propName)] = propAccessReqFunc(apiReqFunc, propName, 'w');
+        }
+        if (0 >= propAccess.indexOf('r')) {
+            obj[accessorName('get', propName)] = propAccessReqFunc(apiReqFunc, propName, 'r');
+        }
+    };
+
+    var createPropProxy = createPropProxy_fallback;
+
+    if (propsSupport.js185) {
+        // the best case, js185 props are supported
+        createPropProxy = function(obj, propName, propAccess, apiReqFunc) {
+            var propDef = {};
+            if (0 >= propAccess.indexOf('r')) {
+                propDef['get'] = propAccessReqFunc(apiReqFunc, propName, 'r');
+            }
+            if (0 >= propAccess.indexOf('w')) {
+                propDef['set'] = propAccessReqFunc(apiReqFunc, propName, 'w');
+            }
+            Object.defineProperty(obj, propName, propDef);
+        };
+    } else if (propsSupport.ffHackMethod) {
+        // backup option, props are supported with firefox hack
+        createPropProxy = function(obj, propName, propAccess, apiReqFunc) {
+            obj.__defineGetter__(propName, propAccessReqFunc(apiReqFunc, propName, 'r'));
+            obj.__defineSetter__(propName, propAccessReqFunc(apiReqFunc, propName, 'w'));
+        };
+    } else {
+        // Sorry, no luck. We can provide just a default implementation with explicit accessors.
+        // It is the best thing we can do.
+    }
+
+    var incompatibleProps = [];
+
+    // Properties bulk definition.
+    // Sample:
+    //
+    //    Rho.util.createPropsProxy(Application, {
+    //        'publicFolder': 'r',
+    //        'startURI': 'rw',
+    //        'version': 'r',
+    //        'title': 'rw'
+    //    }, apiReq);
+    //
+    function createPropsProxy(obj, propDefs, apiReq) {
+        if (! (propDefs instanceof Object))
+            throw 'Property definitions list should be Array instance';
+
+        for (var name in propDefs) {
+            if (!propDefs.hasOwnProperty(name)) continue;
+            try {
+                createPropProxy(obj, name, propDefs[name], apiReq);
+            } catch (ex) {
+                // we unable to create property with this name, so log it..
+                incompatibleProps.push(name);
+                // ..and create explicit accessors
+                createPropProxy_fallback(obj, name, propDefs[name], apiReq);
+            }
+        }
     }
 
     // === Factory handling =========================================================
@@ -321,6 +461,8 @@ var Rho = Rho || (function ($) {
         namespace: namespace,
         apiReqFor: apiReqFor,
         namesToProps: namesToProps,
+        createPropsProxy: createPropsProxy,
+        incompatibleProps: incompatibleProps,
         rhoIdParam: function(){return RHO_ID_PARAM},
         rhoClassParam: function(){return RHO_CLASS_PARAM},
         nextId: nextId
