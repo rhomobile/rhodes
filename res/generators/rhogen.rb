@@ -2177,32 +2177,32 @@ module Rhogen
     # wp8
     template :wp8_stub_impl_montana_impl do |template|
       template.source = 'platform/wp8/stub_impl/Montana_impl.cs'
-      template.destination = "platform/wp8/stub_impl/#{$cur_module.name}_impl.cs"
+      template.destination = "platform/wp8/generated/stub_impl/#{$cur_module.name}_impl.cs"
     end
 
     template :wp8_runtime_montana_runtime_h do |template|
       template.source = 'platform/wp8/runtime/MontanaRuntime.h'
-      template.destination = "platform/wp8/runtime/#{$cur_module.name}Runtime.h"
+      template.destination = "platform/wp8/generated/runtime/#{$cur_module.name}Runtime.h"
     end
 
     template :wp8_runtime_montana_runtime_cpp do |template|
       template.source = 'platform/wp8/runtime/MontanaRuntime.cpp'
-      template.destination = "platform/wp8/runtime/#{$cur_module.name}Runtime.cpp"
+      template.destination = "platform/wp8/generated/runtime/#{$cur_module.name}Runtime.cpp"
     end
 
     template :wp8_lib_montana_methodresultimpl_h do |template|
       template.source = 'platform/wp8/lib/Montana_MethodResultImpl.h'
-      template.destination = "platform/wp8/lib/#{$cur_module.name}_MethodResultImpl.h"
+      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_MethodResultImpl.h"
     end
 
     template :wp8_lib_montana_methodresultimpl_cpp do |template|
       template.source = 'platform/wp8/lib/Montana_MethodResultImpl.cpp'
-      template.destination = "platform/wp8/lib/#{$cur_module.name}_MethodResultImpl.cpp"
+      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_MethodResultImpl.cpp"
     end
 
     template :wp8_lib_montana_impl do |template|
       template.source = 'platform/wp8/lib/Montana_impl.cpp'
-      template.destination = "platform/wp8/lib/#{$cur_module.name}_impl.cpp"
+      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_impl.cpp"
     end
 
 

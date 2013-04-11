@@ -37,10 +37,10 @@
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_ruby_wrap.cpp">
       <Filter>shared\generated\cpp</Filter>
     </ClCompile>
-    <ClCompile Include="lib\<%= name.camel_case() %>_impl.cpp">
+    <ClCompile Include="generated\lib\<%= name.camel_case() %>_impl.cpp">
       <Filter>wp8\lib</Filter>
     </ClCompile>
-    <ClCompile Include="lib\MethodResultImpl.cpp">
+    <ClCompile Include="generated\lib\MethodResultImpl.cpp">
       <Filter>wp8\lib</Filter>
     </ClCompile>
   </ItemGroup>
@@ -48,7 +48,7 @@
     <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h">
       <Filter>shared\generated\cpp</Filter>
     </ClInclude>
-    <ClInclude Include="lib\MethodResultImpl.h">
+    <ClInclude Include="generated\lib\MethodResultImpl.h">
       <Filter>wp8\lib</Filter>
     </ClInclude>
   </ItemGroup>
