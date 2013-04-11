@@ -88,6 +88,7 @@ extern int rho_webview_active_tab();
     mCallbackParam = nil;
     mRubyFactory = nil;
     mRubyModulePath = nil;
+    mRubyCallbackMethod = 0;
     mJSTabIndex = -1;
     return self;
 }
@@ -152,6 +153,16 @@ extern int rho_webview_active_tab();
     mRubyCallbackURL = [url retain];
 }
 
+-(void) setRubyCallbackMethod:(unsigned long)methodValue {
+    if (mRubyCallbackMethod != 0) {
+        RubyCallbackHelper_releaseRubyValue(mRubyCallbackMethod);
+    }
+    if (methodValue != 0) {
+        mRubyCallbackMethod = methodValue;
+        RubyCallbackHelper_holdRubyValue(mRubyCallbackMethod);
+    }
+}
+
 -(void) setJSCallback:(NSString*)uid webViewUID:(NSString*)webViewUID {
     mJSCallbackUID = [uid retain];
     mJSWebViewUID = [webViewUID retain];
@@ -162,8 +173,8 @@ extern int rho_webview_active_tab();
     mCallbackParam = [param retain];
 }
 
--(void) callRubyCallback:(NSString*)url {
-    RubyCallbackHelper_callCallback(mRubyCallbackURL, self, mCallbackParam);
+-(void) callRubyCallback {
+    RubyCallbackHelper_callCallback(mRubyCallbackURL, mRubyCallbackMethod, self, mCallbackParam);
 }
 
 -(void) setRubyFactory:(id<IMethodResult_RubyObjectFactory>)factory {
@@ -187,8 +198,8 @@ extern int rho_webview_active_tab();
 }
 
 -(void) callCallback {
-    if (mRubyCallbackURL != nil) {
-        [self callRubyCallback:mRubyCallbackURL];
+    if ((mRubyCallbackURL != nil) || (mRubyCallbackMethod != 0)) {
+        [self callRubyCallback];
     }
     else if (mJSCallbackUID != nil) {
         [self callJSCallback:mJSCallbackUID];
@@ -221,6 +232,9 @@ extern int rho_webview_active_tab();
     [mCallbackParam release];
     [mValue release];
     [mRubyModulePath release];
+    if (mRubyCallbackMethod != 0) {
+        RubyCallbackHelper_releaseRubyValue(mRubyCallbackMethod);
+    }
     [super dealloc];
 }
 

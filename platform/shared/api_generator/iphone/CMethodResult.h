@@ -47,6 +47,7 @@
 @interface CMethodResult : NSObject<IMethodResult> {
     NSObject* mValue;
     NSString* mRubyCallbackURL;
+    unsigned long mRubyCallbackMethod;
     NSString* mJSCallbackUID;
     NSString* mJSWebViewUID;
     int mJSTabIndex;
@@ -68,6 +69,7 @@
 -(NSString*) toJSON;
 
 -(void) setRubyCallback:(NSString*)url;
+-(void) setRubyCallbackMethod:(unsigned long)methodValue;
 -(void) setJSCallback:(NSString*)uid webViewUID:(NSString*)webViewUID;
 -(void) setCallbackParam:(NSString*)param;
 -(void) setRubyFactory:(id<IMethodResult_RubyObjectFactory>)factory;
