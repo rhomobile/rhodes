@@ -80,7 +80,7 @@ rho::String js_entry_point(const char* szJSON)
             strCallbackID = pcszCallbackID;
 
         if (pcszJsVmID)
-            strJsVmID = oCallback.getString(pcszJsVmID);
+            strJsVmID = pcszJsVmID;//oCallback.getString(pcszJsVmID);
     }
 
     String_replace(strMethod, '.', ':');
