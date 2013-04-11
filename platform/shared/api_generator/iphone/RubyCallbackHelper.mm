@@ -35,16 +35,21 @@ extern "C" {
 
 
 void RubyCallbackHelper_callCallback(NSString* callbackURL,
+                                     unsigned long callbackMethod,
                                         CMethodResult* methodResult,
                                         NSString* callbackParam
                                     ) {
     
     
-	NSString* strBody = @"&rho_callback=1";
+	NSString* strBody = @"";//@"&rho_callback=1";
 	
+    const char* param_name = "result";
+    if (callbackMethod != 0) {
+        param_name = "body";
+    }
     
     
-    if ([methodResult isHash]) {
+    if ([methodResult isHash] && (callbackMethod == 0)) {
         NSDictionary* hash = [methodResult getHashResult];
         NSArray* keys = [hash allKeys];
         int i;
@@ -60,28 +65,47 @@ void RubyCallbackHelper_callCallback(NSString* callbackURL,
         [methodResult release];
     }
     else {
-        NSString* strParam = [NSString stringWithUTF8String:( RHODESAPP().addCallbackObject( new BarcodeRhoCallbackResultContainer(methodResult), "result").c_str() ) ];
-        strBody = [strBody stringByAppendingString:@"&"];
+        NSString* strParam = [NSString stringWithUTF8String:( RHODESAPP().addCallbackObject( new BarcodeRhoCallbackResultContainer(methodResult), param_name).c_str() ) ];
+        //strBody = [strBody stringByAppendingString:@"&"];
         strBody = [strBody stringByAppendingString:strParam];
     }
     
+    //if (callbackParam != nil) {
+    //    strBody = [strBody stringByAppendingString:callbackParam];
+    //}
+    
+    rho::String callbackParamStr = "";
     if (callbackParam != nil) {
-        strBody = [strBody stringByAppendingString:callbackParam];
+        callbackParamStr = [callbackParam UTF8String];
     }
-    
-    const char* cb = [callbackURL UTF8String];
-	const char* b = [strBody UTF8String];
-    char* norm_url = rho_http_normalizeurl(cb);
-    
-	rho_net_request_with_data(rho_http_normalizeurl(cb), b);
-    
-    rho_http_free(norm_url);
-    
+
+    if (callbackMethod != 0) {
+        VALUE oProc = callbackMethod;
+        RHODESAPP().callCallbackProcWithData( oProc, [strBody UTF8String], callbackParamStr, true);
+        
+    }
+    else {
+        RHODESAPP().callCallbackWithData( [callbackURL UTF8String], [strBody UTF8String], callbackParamStr, true);
+        //const char* cb = [callbackURL UTF8String];
+        //const char* b = [strBody UTF8String];
+        //char* norm_url = rho_http_normalizeurl(cb);
+        
+        //rho_net_request_with_data(rho_http_normalizeurl(cb), b);
+        
+        //rho_http_free(norm_url);
+    }
     
     
     
 }
     
+    void RubyCallbackHelper_holdRubyValue(unsigned long value) {
+        rho_ruby_holdValue(value);
+    }
+    
+    void RubyCallbackHelper_releaseRubyValue(unsigned long value) {
+        rho_ruby_releaseValue(value);
+    }
    
 	
 #ifdef __cplusplus

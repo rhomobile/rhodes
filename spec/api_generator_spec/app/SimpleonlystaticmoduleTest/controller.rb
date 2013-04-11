@@ -96,5 +96,22 @@ class SimpleonlystaticmoduleTestController < Rho::RhoController
       render :action => :index, :back => '/app'
   end
 
+  def test_proc(arg)
+    puts "$$$$$ test_proc : #{arg}"
+  end
+
+  def test_callback
+    puts "$$$$$ test_callback : #{@params}"
+  end
+
+
+  def run_lambda_test
+    Rho::Examples::SimpleOnlyStaticModule.calcSumm(1,1, (url_for :action => :test_callback))
+    Rho::Examples::SimpleOnlyStaticModule.calcSumm(10,10, lambda{|args| puts "$$$$$ lamda: #{args} "} )
+    Rho::Examples::SimpleOnlyStaticModule.calcSumm(100,100, method(:test_proc) )
+    Rho::Examples::SimpleOnlyStaticModule.calcSumm(1000,1000, Proc.new{|args| puts "$$$$$ proc: #{args}"} )  
+    render :action => :index, :back => '/app'
+  end
+
 
 end
