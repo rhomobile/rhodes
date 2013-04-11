@@ -9,6 +9,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+<% $cur_module.parents.each do |parent| %>
+namespace <%= parent.downcase() %> {<%
+end %>
 <%
   dynamic_methods = ''
   static_methods = ''
@@ -51,3 +54,6 @@ namespace <%= $cur_module.name %>Impl
         }
 <%= static_methods%>    }
 }
+<% $cur_module.parents.each do |parent| %>
+}<%
+end %>

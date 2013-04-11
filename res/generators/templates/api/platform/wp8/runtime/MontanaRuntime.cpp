@@ -1,9 +1,13 @@
 // <%= $cur_module.name %>Runtime.cpp
 #include "<%= $cur_module.name %>Runtime.h"
 
-using namespace <%= $cur_module.name %>Runtime;
 using namespace Platform;
 using namespace rho::apiGenerator;
+<% $cur_module.parents.each do |parent| %>
+namespace <%= parent.downcase() %> {<%
+end %>
+
+using namespace <%= $cur_module.name %>Runtime;
 
 <%= $cur_module.name %>RuntimeComponent::<%= $cur_module.name %>RuntimeComponent(I<%= $cur_module.name %>Impl^ impl):
     _impl(impl)
@@ -24,3 +28,6 @@ void <%= $cur_module.name %><%= component_name%>Component::<%= module_method.nat
 {
     _impl-><%= module_method.native_name%>(<%= module_method.cached_data["cli_call_params"]%>);
 }<% end %>
+<% $cur_module.parents.each do |parent| %>
+}<%
+end %>

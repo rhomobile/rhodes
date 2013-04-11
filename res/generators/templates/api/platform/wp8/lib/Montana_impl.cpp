@@ -3,12 +3,13 @@
 #include "../../../../shared/generated/cpp/<%= $cur_module.name %>Base.h"
 #include "<%= $cur_module.name %>_MethodResultImpl.h"
 
-using namespace <%= $cur_module.name %>Runtime;
 using namespace rho::apiGenerator;
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
-  end
+end%>
 
+using namespace <%= $cur_module.name %>Runtime;
+<%
   dynamic_methods = ''
   static_methods = ''
 
@@ -42,7 +43,6 @@ namespace <%= parent.downcase() %> {<%
     end
   end
 %>
-
 class C<%= $cur_module.name %>Impl: public C<%= $cur_module.name %>Base
 {
     I<%= $cur_module.name %>Impl^ _runtime;
