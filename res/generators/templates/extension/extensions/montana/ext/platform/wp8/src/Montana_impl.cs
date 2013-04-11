@@ -10,6 +10,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
+namespace rho {
+
 namespace <%= name.camel_case() %>Impl
 {
     public class <%= name.camel_case() %> : <%= name.camel_case() %>Runtime.I<%= name.camel_case() %>Impl
@@ -87,4 +89,6 @@ namespace <%= name.camel_case() %>Impl
             // implement this method in C# here
         }
     }
+}
+
 }

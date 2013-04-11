@@ -1,4 +1,7 @@
 #include "<%= $cur_module.name %>_MethodResultImpl.h"
+<% $cur_module.parents.each do |parent| %>
+namespace <%= parent.downcase() %> {<%
+end %>
 
 using namespace <%= $cur_module.name %>Runtime;
 
@@ -21,3 +24,7 @@ void C<%= $cur_module.name %>MethodResultImpl::set(Windows::Foundation::Collecti
 {
     // TODO: implement types/class conversion
 }
+
+<% $cur_module.parents.each do |parent| %>
+}<%
+end %>

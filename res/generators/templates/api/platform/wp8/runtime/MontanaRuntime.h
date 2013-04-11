@@ -1,6 +1,9 @@
 #pragma once
 
 #include "../../../../shared/generated/cpp/I<%= $cur_module.name %>.h"
+<% $cur_module.parents.each do |parent| %>
+namespace <%= parent.downcase() %> {<%
+end %>
 <%
   dynamic_methods = ''
   static_methods = ''
@@ -72,3 +75,6 @@ namespace <%= $cur_module.name %>Runtime
         I<%= $cur_module.name %>SingletonImpl^ _impl;
     };
 }
+<% $cur_module.parents.each do |parent| %>
+}<%
+end %>
