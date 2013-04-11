@@ -155,10 +155,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="runtime\<%= name.camel_case() %>Runtime.h" />
+    <ClInclude Include="generated\runtime\<%= name.camel_case() %>Runtime.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="runtime\<%= name.camel_case() %>Runtime.cpp" />
+    <ClCompile Include="generated\runtime\<%= name.camel_case() %>Runtime.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="<%= name.camel_case() %>Lib.vcxproj">

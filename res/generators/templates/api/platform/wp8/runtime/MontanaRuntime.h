@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../shared/generated/cpp/I<%= $cur_module.name %>.h"
+#include "../../../../shared/generated/cpp/I<%= $cur_module.name %>.h"
 <%
   dynamic_methods = ''
   static_methods = ''
