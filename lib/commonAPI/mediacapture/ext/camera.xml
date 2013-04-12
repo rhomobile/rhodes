@@ -40,24 +40,20 @@
         		</VALUES>
         	</PROPERTY>
         	<PROPERTY name="maxWidth" type="INTEGER" generateAccessors="true" readOnly="true">
-        	    <PLATFORM>Android,iOS</PLATFORM>
-         		<APPLIES>iOS and Android only</APPLIES>
+        	    <PLATFORM>Android, iOS, WM</PLATFORM>
         		<DESC>The maximum width of images which can be captured.</DESC>
         	</PROPERTY>
         	<PROPERTY name="maxHeight" type="INTEGER" generateAccessors="true" readOnly="true">
-        	    <PLATFORM>Android,iOS</PLATFORM>
-        		<APPLIES>iOS and Android only</APPLIES>
+        	    <PLATFORM>Android, iOS, WM</PLATFORM>
         		<DESC>The maximum height of images which can be captured.</DESC>
         	</PROPERTY>
         	
             <PROPERTY name="desiredWidth" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<APPLIES>All devices</APPLIES>
 				<DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc.  Specifying a desiredWidth will request to take the photo with the specified width but if it is not supported by the hardware then the closest match will be selected.  The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
             </PROPERTY>
             <PROPERTY name="desiredHeight" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<APPLIES>All devices</APPLIES>
 				<DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc.  Specifying a desiredHeight will request to take the photo with the specified height but if it is not supported by the hardware then the closest match will be selected.  The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
             </PROPERTY>
             <PROPERTY name="compressionFormat" type="STRING" generateAccessors="true" default="jpg">
@@ -75,7 +71,6 @@
 			</PROPERTY>
             <PROPERTY name="outputFormat" type="STRING" generateAccessors="true" default="image">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<APPLIES>All devices</APPLIES>
 				<DESC>Specifies the way to return the captured image to the application</DESC>
 				<VALUES>
                     <VALUE constName="OUTPUT_FORMAT_IMAGE" value="image">
@@ -88,8 +83,7 @@
             </PROPERTY>
             <PROPERTY name="colorModel" type="STRING" generateAccessors="true" default="rgb">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-        	    <PLATFORM>Android,iOS</PLATFORM>
-				<APPLIES>iOS and Android devices</APPLIES>
+        	    <PLATFORM>Android, iOS</PLATFORM>
 				<DESC>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.</DESC>
 				<VALUES>
                     <VALUE constName="COLOR_MODEL_RGB" value="rgb">
@@ -103,13 +97,11 @@
             <PROPERTY name="enableEditing" type="BOOLEAN" generateAccessors="true" default="true">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
         	    <PLATFORM>iOS</PLATFORM>
-				<APPLIES>iPhone only</APPLIES>
 				<DESC>Enables post photo capture image customizing; image will captured reduced to screen size (not full size).</DESC>
             </PROPERTY>
             <PROPERTY name="flashMode" type="STRING" generateAccessors="true">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
         	    <PLATFORM>Android</PLATFORM>
-				<APPLIES>Android only</APPLIES>
 				<DESC>Specifies the flash behaviour when taking a picture</DESC>
 				<VALUES>
                     <VALUE constName="FLASH_ON" value="on">
@@ -132,36 +124,31 @@
             <PROPERTY name="saveToSharedGallery" type="BOOLEAN" generateAccessors="true" default="false">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
         	    <PLATFORM>iOS</PLATFORM>
-				<APPLIES>iOS only</APPLIES>
 				<DESC>If true, the picture you take will be added to the camera roll. </DESC>
             </PROPERTY>
             <PROPERTY name="captureSound" type="STRING" generateAccessors="true">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<APPLIES>All devices except iOS</APPLIES>
+				<PLATFORM>Android, WM, WP8</PLATFORM>
 				<DESC>Path to a sound file resident on the device which will be played when the image is captured.</DESC>
             </PROPERTY>
             <PROPERTY name="previewLeft" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
         	    <PLATFORM>WM</PLATFORM>
-				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
             <PROPERTY name="previewTop" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
         	    <PLATFORM>WM</PLATFORM>
-				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
             <PROPERTY name="previewWidth" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
         	    <PLATFORM>WM</PLATFORM>
-				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
             <PROPERTY name="previewHeight" type="INTEGER" generateAccessors="true">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
         	    <PLATFORM>WM</PLATFORM>
-				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
         </PROPERTIES>

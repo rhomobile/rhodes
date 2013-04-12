@@ -114,11 +114,11 @@
             </PROPERTY>
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
                 <DESC>The OEM Information string for the terminal.</DESC>
-                <PLATFORM>WM,Android</PLATFORM>
+                <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="uuid" type="STRING" readOnly="true">
                 <DESC>The Unique Unit IDentifier for the terminal.</DESC>
-                <PLATFORM>WM,Android</PLATFORM>
+                <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="applicationIconBadge" type="INTEGER">
                 <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.</DESC>
@@ -282,7 +282,7 @@
             </METHOD>
             <METHOD name="setRegistrySetting">
                 <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
-                <PLATFORMS>WM, Win32</PLATFORMS>
+                <PLATFORM>WM, Win32</PLATFORM>
                 <PARAMS>
 					<PARAM name="propertyMap" type="HASH" propertyHash="true">
 						<DESC>Map of properties associated with the registry key being set</DESC>
@@ -343,7 +343,7 @@
 
             <METHOD name="getRegistrySetting">
                 <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
-                <PLATFORMS>WM, Win32</PLATFORMS>
+                <PLATFORM>WM, Win32</PLATFORM>
                 <PARAMS>
 					<PARAM name="propertyMap" type="HASH" propertyHash="true">
 						<DESC>Map of properties associated with the registry key being set</DESC>
@@ -381,7 +381,7 @@
 			
             <METHOD name="deleteRegistrySetting">
                 <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
-                <PLATFORMS>WM, Win32</PLATFORMS>
+                <PLATFORM>WM, Win32</PLATFORM>
                 <PARAMS>
 					<PARAM name="propertyMap" type="HASH" propertyHash="true">
 						<DESC>Map of properties associated with the registry key being set</DESC>
