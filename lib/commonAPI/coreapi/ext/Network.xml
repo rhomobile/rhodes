@@ -283,6 +283,7 @@
 			
 			<METHOD name="connectWan" hasCallback="mandatory">
                 <DESC>Connects RhoElements through a Wide Area Network. The connection destination must be first configured through the Connection Manager and the destination name provided to this method. If a connection is already established, you must first call disconnectWan before attempting another connection. A list of available connection destinations is written to the log file when either connectWan or disconnectWan are first specified. Specify the connection as 'Internet' to use the default internet connection defined on the device. If the specified destination does not exist no connection attempt will be made and an entry will be made in the log file.</DESC>
+				<PLATFORM>WM</PLATFORM>
 				<APPLIES>This method only applies to platforms with the Windows connection manager</APPLIES>
                 <VER_INTRODUCED>1.0.3</VER_INTRODUCED>
 				<PARAMS>
@@ -315,6 +316,8 @@
 			<METHOD name="disconnectWan" hasCallback="none" runInThread="separate">
                 <VER_INTRODUCED>1.0.3</VER_INTRODUCED>
                 <DESC>Disconnects the current WAN connection. DisconnectWan will only affect connections established by RhoElements so if you have not previously called connectWan this function will have no effect.</DESC>
+				<PLATFORM>WM</PLATFORM>
+				<APPLIES>This method only applies to platforms with the Windows connection manager</APPLIES>
 			</METHOD>
 
         </METHODS>
