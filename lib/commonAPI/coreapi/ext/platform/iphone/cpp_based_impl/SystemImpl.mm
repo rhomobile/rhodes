@@ -208,14 +208,17 @@ namespace rho {
     
     void SystemImplIphone::getScreenSleeping(rho::apiGenerator::CMethodResult& result)
     {
-        result.set(false);
+        
+        boolean ret = [[UIApplication sharedApplication] isIdleTimerDisabled] ? false : true;
+        result.set(ret);
         //result.setError("not implemented at iOS platform");
     }
     //----------------------------------------------------------------------------------------------------------------------
     
     void SystemImplIphone::setScreenSleeping(bool flag, rho::apiGenerator::CMethodResult& result)
     {
-        rho_sys_set_sleeping(flag?1:0);
+        [[UIApplication sharedApplication] setIdleTimerDisabled: (!flag ? YES : NO)];
+        //rho_sys_set_sleeping(flag?1:0);
     }
     //----------------------------------------------------------------------------------------------------------------------
     
