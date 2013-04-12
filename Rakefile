@@ -1956,7 +1956,7 @@ namespace "run" do
         #check gem extensions
         config_ext_paths = ""
         extpaths = $app_config["extpaths"]
-        extjsmodules = []
+        extjsmodulefiles = []
         rhoapi_js_folder = File.join( $app_path, "public/api/generated" )
 
         # TODO: checker init
@@ -2030,8 +2030,7 @@ namespace "run" do
               # TODO: RhoSimulator should look for 'public' at all extension folders!
               Dir.glob(js_folder + "/Rho.*.js").each do |f|
                 mkdir_p rhoapi_js_folder
-                cp f, "#{rhoapi_js_folder}/"
-                extjsmodules << f.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
+                  extjsmodulefiles << f
               end
             end
         end
@@ -2040,10 +2039,10 @@ namespace "run" do
         gen_checker.update
         
         # deploy Common API JS implementation
-        if extjsmodules.count > 0
+        if extjsmodulefiles.count > 0
           mkdir_p rhoapi_js_folder
-          cp_r "#{$startdir}/res/generators/templates/api/js/rhoapi.js", "#{rhoapi_js_folder}/rhoapi.js"
-          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodules)
+          extjsmodulefiles.unshift("#{$startdir}/res/generators/templates/api/js/rhoapi.js");
+          write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
         end
 
         sim_conf += "ext_path=#{config_ext_paths}\r\n" if config_ext_paths && config_ext_paths.length() > 0 
