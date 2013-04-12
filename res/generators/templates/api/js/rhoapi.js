@@ -327,10 +327,10 @@ var Rho = Rho || (function ($) {
             return accessor + name.charAt(0).toUpperCase() + name.slice(1);
         }
 
-        if (0 >= propAccess.indexOf('w')) {
+        if (0 <= propAccess.indexOf('w')) {
             obj[accessorName('set', propName)] = propAccessReqFunc(apiReqFunc, propName, 'w');
         }
-        if (0 >= propAccess.indexOf('r')) {
+        if (0 <= propAccess.indexOf('r')) {
             obj[accessorName('get', propName)] = propAccessReqFunc(apiReqFunc, propName, 'r');
         }
     };
@@ -341,10 +341,10 @@ var Rho = Rho || (function ($) {
         // the best case, js185 props are supported
         createPropProxy = function(obj, propName, propAccess, apiReqFunc) {
             var propDef = {};
-            if (0 >= propAccess.indexOf('r')) {
+            if (0 <= propAccess.indexOf('r')) {
                 propDef['get'] = propAccessReqFunc(apiReqFunc, propName, 'r');
             }
-            if (0 >= propAccess.indexOf('w')) {
+            if (0 <= propAccess.indexOf('w')) {
                 propDef['set'] = propAccessReqFunc(apiReqFunc, propName, 'w');
             }
             Object.defineProperty(obj, propName, propDef);
@@ -384,8 +384,8 @@ var Rho = Rho || (function ($) {
                 // we unable to create property with this name, so log it..
                 incompatibleProps.push(name);
                 // ..and create explicit accessors
-                createPropProxy_fallback(obj, name, propDefs[name], apiReq);
             }
+            createPropProxy_fallback(obj, name, propDefs[name], apiReq);
         }
     }
 
