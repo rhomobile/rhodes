@@ -6,6 +6,7 @@ describe("<system module specs>", function () {
         expect(Rho.System.getPlatform()).isNotEmptyString();
     });
 
+
     it("Test hasCamera property", function () {
         expect(typeof Rho.System.getHasCamera()).toEqual('boolean');
     });
@@ -102,6 +103,34 @@ describe("<system module specs>", function () {
         Rho.System.bringToFront();
     });
 
+    it("Test callback", function () {
+
+        var flag, value;
+
+        var callbackFunction = function () {
+            value = 10;
+            flag = true
+        };
+
+        runs(function () {
+            value = 0;
+            flag = false;
+            Rho.System.getStartParams(callbackFunction);
+        });
+
+        waitsFor(
+            function () {
+                return flag;
+            },
+            "Timeout",
+            500
+        );
+
+        runs(function () {
+            expect(value).toEqual(10)
+        })
+    });
+
 
     /* ----------          platform dependent specs          ---------- */
 
@@ -135,7 +164,7 @@ describe("<system module specs>", function () {
     if (isApplePlatform()) {
         it("Test applicationIconBadge property", function () {
             Rho.System.setApplicationIconBadge(1);
-            expect(Rho.System.getApplicationIconBadge()).toEqual(1);
+            expect(Rho.System.applicationIconBadge()).toEqual(1);
         });
     }
 
@@ -163,7 +192,7 @@ describe("<system module specs>", function () {
     }
 
     if (isWindowsMobileOrWindowsDesktopPlatform()) {
-       it("Test deleteRegistrySetting property", function () {
+        it("Test deleteRegistrySetting property", function () {
             Rho.System.deleteRegistrySetting({hive: 'HKCU', key: 'phone_spec', setting: 'phone_spec_registry_key'})
 
             Rho.System.setRegistrySetting({hive: 'HKCU', type: 'String', key: 'phone_spec', setting: 'phone_spec_registry_key', value: 'test'});
@@ -202,4 +231,5 @@ describe("<system module specs>", function () {
         });
     }
 
-});
+})
+;
