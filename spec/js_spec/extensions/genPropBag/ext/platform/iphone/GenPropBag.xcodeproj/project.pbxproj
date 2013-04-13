@@ -7,21 +7,49 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA75E38F1719FF9A00F10788 /* IGenPropBag.h in Headers */ = {isa = PBXBuildFile; fileRef = FA75E38E1719FF9A00F10788 /* IGenPropBag.h */; };
+		FA75E3941719FFA600F10788 /* genpropbag_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3911719FFA600F10788 /* genpropbag_js_wrap.mm */; };
+		FA75E3951719FFA600F10788 /* genpropbag_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3931719FFA600F10788 /* genpropbag_ruby_wrap.m */; };
+		FA75E39C1719FFB400F10788 /* GenPropBagBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA75E3961719FFB400F10788 /* GenPropBagBase.h */; };
+		FA75E39D1719FFB400F10788 /* GenPropBagBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3971719FFB400F10788 /* GenPropBagBase.m */; };
+		FA75E39E1719FFB400F10788 /* GenPropBagFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA75E3981719FFB400F10788 /* GenPropBagFactoryBase.h */; };
+		FA75E39F1719FFB400F10788 /* GenPropBagFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3991719FFB400F10788 /* GenPropBagFactoryBase.m */; };
+		FA75E3A01719FFB400F10788 /* GenPropBagSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA75E39A1719FFB400F10788 /* GenPropBagSingletonBase.h */; };
+		FA75E3A11719FFB400F10788 /* GenPropBagSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA75E39B1719FFB400F10788 /* GenPropBagSingletonBase.m */; };
+		FA75E3A51719FFC800F10788 /* genpropbag_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3A21719FFC800F10788 /* genpropbag_api_init.cpp */; };
+		FA75E3A61719FFC800F10788 /* genpropbag_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3A31719FFC800F10788 /* genpropbag_js_api.cpp */; };
+		FA75E3A71719FFC800F10788 /* genpropbag_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3A41719FFC800F10788 /* genpropbag_ruby_api.c */; };
+		FA75E3AE1719FFD300F10788 /* GenPropBag.h in Headers */ = {isa = PBXBuildFile; fileRef = FA75E3A81719FFD300F10788 /* GenPropBag.h */; };
+		FA75E3AF1719FFD300F10788 /* GenPropBag.m in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3A91719FFD300F10788 /* GenPropBag.m */; };
+		FA75E3B01719FFD300F10788 /* GenPropBagFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3AA1719FFD300F10788 /* GenPropBagFactorySingleton.m */; };
+		FA75E3B11719FFD300F10788 /* GenPropBagSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3AB1719FFD300F10788 /* GenPropBagSetup.m */; };
+		FA75E3B21719FFD300F10788 /* GenPropBagSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FA75E3AC1719FFD300F10788 /* GenPropBagSingleton.h */; };
+		FA75E3B31719FFD300F10788 /* GenPropBagSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA75E3AD1719FFD300F10788 /* GenPropBagSingleton.m */; };
 		FAC155E7145855CF0016F3BD /* genPropBag_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* genPropBag_Prefix.pch */; };
-		FAC155E8145855CF0016F3BD /* genPropBag.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC155E01458523C0016F3BD /* genPropBag.h */; };
-		FAC155EA145855CF0016F3BD /* genpropbag_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FAC155D614584FD80016F3BD /* genpropbag_wrap.c */; };
-		FAC155EB145855CF0016F3BD /* genpropbag.c in Sources */ = {isa = PBXBuildFile; fileRef = FAC155D814584FE20016F3BD /* genpropbag.c */; };
-		FAC155EC145855CF0016F3BD /* genPropBag.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC155DE145851440016F3BD /* genPropBag.m */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		FAC155D614584FD80016F3BD /* genpropbag_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = genpropbag_wrap.c; path = ../../shared/ruby/genpropbag_wrap.c; sourceTree = "<group>"; };
-		FAC155D814584FE20016F3BD /* genpropbag.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = genpropbag.c; path = ../../shared/src/genpropbag.c; sourceTree = "<group>"; };
-		FAC155DE145851440016F3BD /* genPropBag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = genPropBag.m; path = Classes/genPropBag.m; sourceTree = "<group>"; };
-		FAC155E01458523C0016F3BD /* genPropBag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = genPropBag.h; path = Classes/genPropBag.h; sourceTree = "<group>"; };
+		FA75E38E1719FF9A00F10788 /* IGenPropBag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IGenPropBag.h; path = generated/IGenPropBag.h; sourceTree = "<group>"; };
+		FA75E3911719FFA600F10788 /* genpropbag_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = genpropbag_js_wrap.mm; sourceTree = "<group>"; };
+		FA75E3931719FFA600F10788 /* genpropbag_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = genpropbag_ruby_wrap.m; sourceTree = "<group>"; };
+		FA75E3961719FFB400F10788 /* GenPropBagBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenPropBagBase.h; path = generated/base_impl/GenPropBagBase.h; sourceTree = "<group>"; };
+		FA75E3971719FFB400F10788 /* GenPropBagBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GenPropBagBase.m; path = generated/base_impl/GenPropBagBase.m; sourceTree = "<group>"; };
+		FA75E3981719FFB400F10788 /* GenPropBagFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenPropBagFactoryBase.h; path = generated/base_impl/GenPropBagFactoryBase.h; sourceTree = "<group>"; };
+		FA75E3991719FFB400F10788 /* GenPropBagFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GenPropBagFactoryBase.m; path = generated/base_impl/GenPropBagFactoryBase.m; sourceTree = "<group>"; };
+		FA75E39A1719FFB400F10788 /* GenPropBagSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenPropBagSingletonBase.h; path = generated/base_impl/GenPropBagSingletonBase.h; sourceTree = "<group>"; };
+		FA75E39B1719FFB400F10788 /* GenPropBagSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GenPropBagSingletonBase.m; path = generated/base_impl/GenPropBagSingletonBase.m; sourceTree = "<group>"; };
+		FA75E3A21719FFC800F10788 /* genpropbag_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = genpropbag_api_init.cpp; path = ../../shared/generated/genpropbag_api_init.cpp; sourceTree = "<group>"; };
+		FA75E3A31719FFC800F10788 /* genpropbag_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = genpropbag_js_api.cpp; path = ../../shared/generated/genpropbag_js_api.cpp; sourceTree = "<group>"; };
+		FA75E3A41719FFC800F10788 /* genpropbag_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = genpropbag_ruby_api.c; path = ../../shared/generated/genpropbag_ruby_api.c; sourceTree = "<group>"; };
+		FA75E3A81719FFD300F10788 /* GenPropBag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenPropBag.h; path = impl/GenPropBag.h; sourceTree = "<group>"; };
+		FA75E3A91719FFD300F10788 /* GenPropBag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GenPropBag.m; path = impl/GenPropBag.m; sourceTree = "<group>"; };
+		FA75E3AA1719FFD300F10788 /* GenPropBagFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GenPropBagFactorySingleton.m; path = impl/GenPropBagFactorySingleton.m; sourceTree = "<group>"; };
+		FA75E3AB1719FFD300F10788 /* GenPropBagSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GenPropBagSetup.m; path = impl/GenPropBagSetup.m; sourceTree = "<group>"; };
+		FA75E3AC1719FFD300F10788 /* GenPropBagSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GenPropBagSingleton.h; path = impl/GenPropBagSingleton.h; sourceTree = "<group>"; };
+		FA75E3AD1719FFD300F10788 /* GenPropBagSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GenPropBagSingleton.m; path = impl/GenPropBagSingleton.m; sourceTree = "<group>"; };
 		FAC155F3145855CF0016F3BD /* libgenPropBag.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgenPropBag.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD45FD51225FED600141873 /* genPropBag_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genPropBag_Prefix.pch; sourceTree = "<group>"; };
 		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -71,8 +99,8 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155DD1458511E0016F3BD /* iOS_specific */,
-				FAC155DA145850EB0016F3BD /* Shared */,
+				FA75E3891719FF7100F10788 /* impl */,
+				FA75E3881719FF6A00F10788 /* generated */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -85,38 +113,86 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
-		FAC155DA145850EB0016F3BD /* Shared */ = {
+		FA75E3881719FF6A00F10788 /* generated */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155DC145851020016F3BD /* src */,
-				FAC155DB145850F80016F3BD /* Ruby */,
+				FA75E38D1719FF9100F10788 /* api */,
+				FA75E38C1719FF8A00F10788 /* shared */,
+				FA75E38B1719FF8300F10788 /* wrappers */,
+				FA75E38A1719FF7A00F10788 /* base_impl */,
 			);
-			name = Shared;
+			name = generated;
 			sourceTree = "<group>";
 		};
-		FAC155DB145850F80016F3BD /* Ruby */ = {
+		FA75E3891719FF7100F10788 /* impl */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155D614584FD80016F3BD /* genpropbag_wrap.c */,
+				FA75E3A81719FFD300F10788 /* GenPropBag.h */,
+				FA75E3A91719FFD300F10788 /* GenPropBag.m */,
+				FA75E3AA1719FFD300F10788 /* GenPropBagFactorySingleton.m */,
+				FA75E3AB1719FFD300F10788 /* GenPropBagSetup.m */,
+				FA75E3AC1719FFD300F10788 /* GenPropBagSingleton.h */,
+				FA75E3AD1719FFD300F10788 /* GenPropBagSingleton.m */,
 			);
-			name = Ruby;
+			name = impl;
 			sourceTree = "<group>";
 		};
-		FAC155DC145851020016F3BD /* src */ = {
+		FA75E38A1719FF7A00F10788 /* base_impl */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155D814584FE20016F3BD /* genpropbag.c */,
+				FA75E3961719FFB400F10788 /* GenPropBagBase.h */,
+				FA75E3971719FFB400F10788 /* GenPropBagBase.m */,
+				FA75E3981719FFB400F10788 /* GenPropBagFactoryBase.h */,
+				FA75E3991719FFB400F10788 /* GenPropBagFactoryBase.m */,
+				FA75E39A1719FFB400F10788 /* GenPropBagSingletonBase.h */,
+				FA75E39B1719FFB400F10788 /* GenPropBagSingletonBase.m */,
 			);
-			name = src;
+			name = base_impl;
 			sourceTree = "<group>";
 		};
-		FAC155DD1458511E0016F3BD /* iOS_specific */ = {
+		FA75E38B1719FF8300F10788 /* wrappers */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155E01458523C0016F3BD /* genPropBag.h */,
-				FAC155DE145851440016F3BD /* genPropBag.m */,
+				FA75E3901719FFA600F10788 /* javascript */,
+				FA75E3921719FFA600F10788 /* ruby */,
 			);
-			name = iOS_specific;
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		FA75E38C1719FF8A00F10788 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA75E3A21719FFC800F10788 /* genpropbag_api_init.cpp */,
+				FA75E3A31719FFC800F10788 /* genpropbag_js_api.cpp */,
+				FA75E3A41719FFC800F10788 /* genpropbag_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FA75E38D1719FF9100F10788 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FA75E38E1719FF9A00F10788 /* IGenPropBag.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+		FA75E3901719FFA600F10788 /* javascript */ = {
+			isa = PBXGroup;
+			children = (
+				FA75E3911719FFA600F10788 /* genpropbag_js_wrap.mm */,
+			);
+			name = javascript;
+			path = generated/javascript;
+			sourceTree = "<group>";
+		};
+		FA75E3921719FFA600F10788 /* ruby */ = {
+			isa = PBXGroup;
+			children = (
+				FA75E3931719FFA600F10788 /* genpropbag_ruby_wrap.m */,
+			);
+			name = ruby;
+			path = generated/ruby;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,7 +203,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAC155E7145855CF0016F3BD /* genPropBag_Prefix.pch in Headers */,
-				FAC155E8145855CF0016F3BD /* genPropBag.h in Headers */,
+				FA75E38F1719FF9A00F10788 /* IGenPropBag.h in Headers */,
+				FA75E39C1719FFB400F10788 /* GenPropBagBase.h in Headers */,
+				FA75E39E1719FFB400F10788 /* GenPropBagFactoryBase.h in Headers */,
+				FA75E3A01719FFB400F10788 /* GenPropBagSingletonBase.h in Headers */,
+				FA75E3AE1719FFD300F10788 /* GenPropBag.h in Headers */,
+				FA75E3B21719FFD300F10788 /* GenPropBagSingleton.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,7 +237,7 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "genPropBag" */;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "GenPropBag" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -181,9 +262,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAC155EA145855CF0016F3BD /* genpropbag_wrap.c in Sources */,
-				FAC155EB145855CF0016F3BD /* genpropbag.c in Sources */,
-				FAC155EC145855CF0016F3BD /* genPropBag.m in Sources */,
+				FA75E3941719FFA600F10788 /* genpropbag_js_wrap.mm in Sources */,
+				FA75E3951719FFA600F10788 /* genpropbag_ruby_wrap.m in Sources */,
+				FA75E39D1719FFB400F10788 /* GenPropBagBase.m in Sources */,
+				FA75E39F1719FFB400F10788 /* GenPropBagFactoryBase.m in Sources */,
+				FA75E3A11719FFB400F10788 /* GenPropBagSingletonBase.m in Sources */,
+				FA75E3A51719FFC800F10788 /* genpropbag_api_init.cpp in Sources */,
+				FA75E3A61719FFC800F10788 /* genpropbag_js_api.cpp in Sources */,
+				FA75E3A71719FFC800F10788 /* genpropbag_ruby_api.c in Sources */,
+				FA75E3AF1719FFD300F10788 /* GenPropBag.m in Sources */,
+				FA75E3B01719FFD300F10788 /* GenPropBagFactorySingleton.m in Sources */,
+				FA75E3B11719FFD300F10788 /* GenPropBagSetup.m in Sources */,
+				FA75E3B31719FFD300F10788 /* GenPropBagSingleton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,8 +349,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				DSTROOT = /tmp/genPropBag.dst;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /tmp/genPropBag.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = genPropBag_Prefix.pch;
@@ -276,7 +366,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "genPropBag" */ = {
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "GenPropBag" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB922308733DC00010E9CD /* Debug */,
