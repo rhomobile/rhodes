@@ -932,11 +932,15 @@ def init_extensions(startdir, dest)
   nativelib = []
   extlibs = []
   extjsmodulefiles = []
+  startJSModules = []
+  endJSModules = []
+  
   extpaths = $app_config["extpaths"]  
 
   rhoapi_js_folder = nil
   unless dest.nil?
-    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api/generated" )
+    rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
+    puts "rhoapi_js_folder: #{rhoapi_js_folder}"
   end
 
   puts 'init extensions'
@@ -1020,20 +1024,30 @@ def init_extensions(startdir, dest)
               end
             end
             
-            unless rhoapi_js_folder.nil?
-              Dir.glob(extpath + "/public/api/generated/Rho.*.js").each do |f|
-                  extjsmodulefiles << f
-              end
-            end
           end
         end 
+        
+        unless rhoapi_js_folder.nil?
+          Dir.glob(extpath + "/public/api/*.js").each do |f|
+              if f.downcase().end_with?("rhoapi.js")
+                startJSModules << f
+              elsif f.downcase().end_with?("rho.database.js")
+                #endJSModules << f
+              else
+                extjsmodulefiles << f
+              end  
+          end
+          Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
+              extjsmodulefiles << f
+          end
+              
+        end
+        
       end
       
       add_extension(extpath, dest) unless dest.nil?  
     end    
   end
-
-  puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
 
   #TODO: checker update
   gen_checker.update
@@ -1041,10 +1055,15 @@ def init_extensions(startdir, dest)
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
   puts "exts " + exts
 
+  extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
+  extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
+
   # deploy Common API JS implementation
   if extjsmodulefiles.count > 0
+    puts 'extjsmodulefiles=' + extjsmodulefiles.to_s
+  
+    rm_rf rhoapi_js_folder if Dir.exist?(rhoapi_js_folder)
     mkdir_p rhoapi_js_folder
-    extjsmodulefiles.unshift("#{$startdir}/res/generators/templates/api/js/rhoapi.js");
     write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
   end
 
@@ -1957,8 +1976,12 @@ namespace "run" do
         config_ext_paths = ""
         extpaths = $app_config["extpaths"]
         extjsmodulefiles = []
-        rhoapi_js_folder = File.join( $app_path, "public/api/generated" )
-
+        startJSModules = []
+        endJSModules = []
+        
+        rhoapi_js_folder = File.join( $app_path, "public/api" )
+        puts "rhoapi_js_folder: #{rhoapi_js_folder}"
+        
         # TODO: checker init
         gen_checker = GeneratorTimeChecker.new        
         gen_checker.init($startdir, $app_path)
@@ -2026,12 +2049,24 @@ namespace "run" do
                 end                
               end
 
-              js_folder = File.join(extpath, "public/api/generated")
               # TODO: RhoSimulator should look for 'public' at all extension folders!
-              Dir.glob(js_folder + "/Rho.*.js").each do |f|
-                mkdir_p rhoapi_js_folder
-                  extjsmodulefiles << f
-              end
+                unless rhoapi_js_folder.nil?
+                  Dir.glob(extpath + "/public/api/*.js").each do |f|
+                      #puts "f: #{f}"
+                      if f.downcase().end_with?("rhoapi.js")
+                        startJSModules << f
+                      elsif f.downcase().end_with?("rho.database.js")
+                        #endJSModules << f
+                      else
+                        extjsmodulefiles << f
+                      end  
+                  end
+                  Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
+                      extjsmodulefiles << f
+                  end
+
+                end
+              
             end
         end
 
@@ -2039,9 +2074,12 @@ namespace "run" do
         gen_checker.update
         
         # deploy Common API JS implementation
+        extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
+        extjsmodulefiles = extjsmodulefiles.concat(endJSModules)
         if extjsmodulefiles.count > 0
           mkdir_p rhoapi_js_folder
-          extjsmodulefiles.unshift("#{$startdir}/res/generators/templates/api/js/rhoapi.js");
+          
+          puts "extjsmodulefiles: #{extjsmodulefiles}"
           write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
         end
 
