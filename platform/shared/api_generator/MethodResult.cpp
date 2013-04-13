@@ -66,10 +66,12 @@ void CMethodResult::convertToType(ETypes eType)
                 convertFromStringA(m_strRes.c_str(), m_bRes);
                 m_ResType = eBool;
                 break;
+#if defined(WINDOWS_PLATFORM)
             case eStringW:
                 convertFromStringW(m_strResW.c_str(), m_bRes);
                 m_ResType = eBool;
                 break;
+#endif
             case eInt:
                 m_bRes = m_nRes != 0;
                 m_ResType = eBool;
@@ -90,10 +92,12 @@ void CMethodResult::convertToType(ETypes eType)
                 convertFromStringA(m_strRes.c_str(), m_nRes);
                 m_ResType = eInt;
                 break;
+#if defined(WINDOWS_PLATFORM)
             case eStringW:
                 convertFromStringW(m_strResW.c_str(), m_nRes);
                 m_ResType = eInt;
                 break;
+#endif
             case eBool:
                 m_nRes = m_bRes ? 1 :0;
                 m_ResType = eInt;
@@ -109,10 +113,12 @@ void CMethodResult::convertToType(ETypes eType)
                 convertFromStringA(m_strRes.c_str(), m_dRes);
                 m_ResType = eDouble;
                 break;
+#if defined(WINDOWS_PLATFORM)
             case eStringW:
                 convertFromStringW(m_strResW.c_str(), m_dRes);
                 m_ResType = eDouble;
                 break;
+#endif
             case eBool:
                 m_dRes = m_bRes ? 1 :0;
                 m_ResType = eDouble;
