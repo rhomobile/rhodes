@@ -60,6 +60,27 @@ def api_generator_cpp_makeNativeTypeArg(gen_type)
     res
 end
 
+def api_generator_cpp_makeMethodResultType(gen_type)
+    
+    if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_STRING
+        res = "CMethodResult::eString"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
+        res = "CMethodResult::eStringArray"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_HASH
+        res = "CMethodResult::eStringHash"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_INT
+        res = "CMethodResult::eInt"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_BOOL
+        res = "CMethodResult::eBool"
+    elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
+        res = "CMethodResult::eDouble"
+    else
+        res = "CMethodResult::eString"
+    end
+    
+    res
+end
+
 def api_generator_cli_conversion(gen_type, var_name)
     
     if gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_ARRAY
