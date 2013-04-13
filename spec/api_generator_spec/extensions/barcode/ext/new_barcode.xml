@@ -34,10 +34,16 @@
             <PROPERTY name="test" type="STRING" />
             <PROPERTY name="test2" type="BOOLEAN" />
 
-            <PROPERTY name="boolProp" type="BOOLEAN"  />
-            <PROPERTY name="intProp" type="INTEGER"  />
-            <PROPERTY name="floatProp" type="FLOAT"  />
-            <PROPERTY name="stringProp" type="STRING"  />
+            <PROPERTY name="boolPropDef" type="BOOLEAN" default="false" />
+            <PROPERTY name="intPropDef" type="INTEGER"  default="555"/>
+            <PROPERTY name="floatPropDef" type="FLOAT"  default="3.141"/>
+            <PROPERTY name="stringPropDef" type="STRING" default="Bla-Bla-Bla" />
+            
+            <PROPERTY name="boolProp" type="BOOLEAN"/>
+            <PROPERTY name="intProp" type="INTEGER"/>
+            <PROPERTY name="floatProp" type="FLOAT"/>
+            <PROPERTY name="stringProp" type="STRING"/>
+            
 
         </PROPERTIES>
 
