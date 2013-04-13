@@ -3,34 +3,6 @@
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
 #include "logging/RhoLog.h"
-/*
-template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2 >
-class CObjCallbackFunctor2 : public rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>
-{
-public:
-    CObjCallbackFunctor2( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2 ) : CInstanceClassFunctor2( obj, pFunc, param1, param2 ){}
-
-    virtual void runObject()
-    { 
-        rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>::runObject();
-
-        m_param2.callCallback();
-    }
-};
-
-template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE >
-class CObjCallbackFunctor1 : public rho::common::CInstanceClassFunctor1<OBJTYPE, FUNCTYPE, PARAMTYPE>
-{
-public:
-    CObjCallbackFunctor1( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE param ) : CInstanceClassFunctor1( obj, pFunc, param ){}
-
-    virtual void runObject()
-    { 
-        rho::common::CInstanceClassFunctor1<OBJTYPE, FUNCTYPE, PARAMTYPE>::runObject();
-
-        m_param.callCallback();
-    }
-};*/
 
 namespace rho
 {
@@ -78,7 +50,8 @@ private:
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
 public:
 
-    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_iTabId(-1), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode){}
+    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_iTabId(-1), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode),
+        m_nRes(0), m_bRes(false), m_dRes(0){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     const rho::String& getRubyCallback() const { return m_strRubyCallback; }
@@ -141,6 +114,8 @@ public:
     const rho::String& getErrorString() const { return m_strError; }
 
     rho::String toString();
+    void convertToType(ETypes eType);
+
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}
 
     unsigned long toRuby(bool bForCallback = false);

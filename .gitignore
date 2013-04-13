@@ -107,11 +107,25 @@ lib/extensions/fcntl/ext/iphone/build/*
 lib/commonAPI/javascriptvm/ext/platform/iphone/build/*
 
 spec/api_generator_spec/extensions/*/ext/platform/*/build/
-spec/api_generator_spec/extensions/barcode/ext/platform/android/generated/*
-spec/api_generator_spec/extensions/barcode/ext/platform/iphone/generated/*
-spec/api_generator_spec/extensions/barcode/ext/shared/generated/*
-spec/api_generator_spec/public/api/generated/
 spec/api_generator_spec/rhosimulator/
+
+spec/api_generator_spec/**/generated/
+spec/api_generator_spec/*/*/generated/
+spec/api_generator_spec/*/*/*/generated/
+spec/api_generator_spec/*/*/*/generated/
+spec/api_generator_spec/*/*/*/*/generated/
+spec/api_generator_spec/*/*/*/*/*/generated/
+spec/api_generator_spec/*/*/*/*/*/*/generated/
+spec/api_generator_spec/*/*/*/*/*/*/*/generated/
+
+spec/js_spec/**/generated/
+spec/js_spec/*/*/generated/
+spec/js_spec/*/*/*/generated/
+spec/js_spec/*/*/*/generated/
+spec/js_spec/*/*/*/*/generated/
+spec/js_spec/*/*/*/*/*/generated/
+spec/js_spec/*/*/*/*/*/*/generated/
+spec/js_spec/*/*/*/*/*/*/*/generated/
 
 spec/bin/*
 spec/**/bin/*

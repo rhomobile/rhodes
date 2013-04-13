@@ -13,7 +13,32 @@ class BarcodeTestController < Rho::RhoController
   
   #@@test_proc = lambda{|args| puts "lamda: #{args}"}
   def index
+    #Rho::Barcode.enumerate( lambda{|args| puts "lamda: #{args}"});
+
+    puts "Before Rho::Barcode.boolProp : #{Rho::Barcode.boolProp}"
+    Rho::Barcode.boolProp = true
+    puts "After Rho::Barcode.boolProp : #{Rho::Barcode.boolProp}"
+    
+    puts "Before Rho::Barcode.intProp : #{Rho::Barcode.intProp}"
+    Rho::Barcode.intProp = 123
+    puts "After Rho::Barcode.intProp : #{Rho::Barcode.intProp}"
+
+    puts "Before Rho::Barcode.floatProp : #{Rho::Barcode.floatProp}"
+    Rho::Barcode.floatProp = 123.78
+    puts "After Rho::Barcode.floatProp : #{Rho::Barcode.floatProp}"
+
+    puts "Before Rho::Barcode.stringProp : #{Rho::Barcode.stringProp}"
+    Rho::Barcode.stringProp = "geny"
+    puts "After Rho::Barcode.stringProp : #{Rho::Barcode.stringProp}"
+    
 =begin
+ 
+    Rho::Barcode.setProperties :autoEnter => 'enabled', :code128 => 'enabled', :code39 => 'enabled'
+    Rho::Barcode.setProperties code128: 'enabled', code39: 'enabled' 
+    Rho::Barcode.enable( {:code128 => 'enabled', :code39 => 'enabled'}, "" )
+    Rho::Barcode.enable( {code128: 'enabled', code39: 'enabled'}, "" )
+    
+
     str1 = ""
     #Rho::Barcode.myTest(str1)
     Rho::Barcode.test    

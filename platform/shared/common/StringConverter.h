@@ -185,13 +185,13 @@ CONVERT_TYPE_A( char, "%c" );
 CONVERT_TYPE_A( unsigned char, "%c" );
 CONVERT_TYPE_A( short, "%hd" );
 //CONVERT_TYPE_A( unsigned short, "%u" );
-//CONVERT_TYPE_A( bool, "%d" );
+CONVERT_TYPE_A( bool, "%d" );
 CONVERT_TYPE_A( float, "%f" );
 CONVERT_TYPE_A( double, "%lf" );
 
 CONVERT_TYPE_A( uint64, FMTU64 );
 CONVERT_TYPE_A( int64, FMTI64 );
-
+/*
 // Special case for bool
 template<> inline void convertFromStringA<bool>( const char* szValue, bool& value )
 { char c; sscanf( szValue, "%c", &c ); value = c ? true:false; }
@@ -201,7 +201,7 @@ template<> inline String convertToStringA<bool>( const bool& value )
     sprintf( buf, "%c", (char)value );
     return String(buf);
 }
-
+*/
 
 }
 }
