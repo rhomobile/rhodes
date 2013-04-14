@@ -1,49 +1,49 @@
 describe("<application module specs>", function () {
 
     it("Test appBundleFolder property", function () {
-        expect(Rho.Application.getAppBundleFolder()).isNotEmptyString();
+        expect(Rho.Application.appBundleFolder).isNotEmptyString();
     });
 
     it("Test appsBundleFolder proeprty", function () {
-        expect(Rho.Application.getAppsBundleFolder()).isNotEmptyString();
+        expect(Rho.Application.appsBundleFolder).isNotEmptyString();
     });
 
     it("Test userFolder property", function () {
-        expect(Rho.Application.getUserFolder()).isNotEmptyString();
+        expect(Rho.Application.userFolder).isNotEmptyString();
     });
 
     xit("Test configPath property", function () {
-        expect(Rho.Application.getConfigPath()).isNotEmptyString();
+        expect(Rho.Application.configPath).isNotEmptyString();
     });
 
     it("Test modelsManifestPath property", function () {
-        expect(Rho.Application.getModelsManifestPath()).isNotEmptyString(0);
+        expect(Rho.Application.modelsManifestPath).isNotEmptyString(0);
     });
 
     it("Test databaseBlobFolder property", function () {
-        expect(Rho.Application.getDatabaseBlobFolder()).isNotEmptyString(0);
+        expect(Rho.Application.databaseBlobFolder).isNotEmptyString(0);
     });
 
     it("Test publicFolder property", function () {
-        expect(Rho.Application.getPublicFolder()).isNotEmptyString();
+        expect(Rho.Application.publicFolder).isNotEmptyString();
     });
 
     it("Test startURI property", function () {
-        Rho.Application.setStartURI('index.html');
-        expect(Rho.Application.getStartURI()).toEqual('index.html');
+        Rho.Application.startURI = 'index.html';
+        expect(Rho.Application.startURI).toEqual('index.html');
     });
 
     it("Test settingsPageURI property", function () {
-        Rho.Application.setSettingsPageURI('settings.html');
-        expect(Rho.Application.getSettingsPageURI()).toEqual('settings.html');
+        Rho.Application.settingsPageURI = 'settings.html';
+        expect(Rho.Application.settingsPageURI).toEqual('settings.html');
     });
 
     it("Test splash property", function () {
-        expect(Rho.Application.getSplash()).isNotEmptyString();
+        expect(Rho.Application.splash).isNotEmptyString();
     });
 
     it("Test version property", function () {
-        expect(Rho.Application.getVersion()).isNotEmptyString();
+        expect(Rho.Application.version).isNotEmptyString();
     });
 
     it("Test name property", function () {
@@ -86,21 +86,19 @@ describe("<application module specs>", function () {
 
 
     if(isWindowsMobileOrAndroidPlatform()){
-
         it("Bad link URI to navigate in browser", function () {
-            Rho.Application.setBadLinkURI('badLink.html');
-            expect(Rho.Application.getBadLinkURI()).toEqual('badLink.html');
+            Rho.Application.badLinkURI = 'badLink.html';
+            expect(Rho.Application.badLinkURI).toEqual('badLink.html');
         });
-
     }
 
-    if (['WINDOWS_DESKTOP', 'WINDOWS'].indexOf(Rho.System.getPlatform()) != -1) {
+    if (['WINDOWS_DESKTOP', 'WINDOWS'].indexOf(Rho.System.platform) != -1) {
 
         it("Test title property", function () {
-            expect(Rho.Application.getTitle()).isNotEmptyString();
+            expect(Rho.Application.title()).isNotEmptyString();
 
-            Rho.Application.setTitle('Title');
-            expect(Rho.Application.getTitle()).toEqual('Title');
+            Rho.Application.title = 'Title';
+            expect(Rho.Application.title).toEqual('Title');
         });
 
     }
