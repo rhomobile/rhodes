@@ -1032,7 +1032,7 @@ def init_extensions(startdir, dest)
               if f.downcase().end_with?("rhoapi.js")
                 startJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
-                #endJSModules << f
+                endJSModules << f
               else
                 extjsmodulefiles << f
               end  
@@ -2056,7 +2056,7 @@ namespace "run" do
                       if f.downcase().end_with?("rhoapi.js")
                         startJSModules << f
                       elsif f.downcase().end_with?("rho.database.js")
-                        #endJSModules << f
+                        endJSModules << f
                       else
                         extjsmodulefiles << f
                       end  
