@@ -3,96 +3,92 @@ describe("<system module specs>", function () {
     /* System property specs */
 
     it("Test platform property", function () {
-        expect(Rho.System.getPlatform()).isNotEmptyString();
+        expect(Rho.System.platform).isNotEmptyString();
     });
 
 
     it("Test hasCamera property", function () {
-        expect(typeof Rho.System.getHasCamera()).toEqual('boolean');
+        expect(typeof Rho.System.hasCamera).toEqual('boolean');
     });
 
     it("Test screenWidth property", function () {
-        expect(Rho.System.getScreenWidth()).isNumberGreaterThenZero();
+        expect(Rho.System.screenWidth).isNumberGreaterThenZero();
     });
 
     it("Test screenHeight property", function () {
-        expect(Rho.System.getScreenHeight()).isNumberGreaterThenZero();
+        expect(Rho.System.screenHeight).isNumberGreaterThenZero();
     });
 
     it("Test realScreenWidth property", function () {
-        expect(Rho.System.getRealScreenWidth()).isNumberGreaterThenZero();
+        expect(Rho.System.realScreenWidth).isNumberGreaterThenZero();
     });
 
     it("Test realScreenHeight property", function () {
-        expect(Rho.System.getRealScreenHeight()).isNumberGreaterThenZero();
+        expect(Rho.System.realScreenHeight).isNumberGreaterThenZero();
     });
 
     it("Test screen orientation property", function () {
-        expect(Rho.System.getScreenOrientation()).isNotEmptyString();
+        expect(Rho.System.screenOrientation).isNotEmptyString();
     });
 
     it("Test ppiX property", function () {
-        expect(Rho.System.getPpiX()).isNumberGreaterThenZero();
+        expect(Rho.System.ppiX).isNumberGreaterThenZero();
     });
 
     it("Test ppiY property", function () {
-        expect(Rho.System.getPpiY()).isNumberGreaterThenZero();
+        expect(Rho.System.ppiY).isNumberGreaterThenZero();
     });
 
     it("Test deviceName property", function () {
-        expect(Rho.System.getDeviceName()).isNotEmptyString();
+        expect(Rho.System.deviceName).isNotEmptyString();
     });
 
     it("Test OsVersion property", function () {
-        expect(Rho.System.getOsVersion()).isNotEmptyString();
+        expect(Rho.System.osVersion).isNotEmptyString();
     });
 
     it("Test locale property", function () {
-        expect(Rho.System.getLocale()).isNotEmptyString();
+        expect(Rho.System.locale).isNotEmptyString();
     });
 
     it("Test country property", function () {
-        expect(Rho.System.getCountry()).isNotEmptyString();
+        expect(Rho.System.country).isNotEmptyString();
     });
 
     it("Test isSimulator property", function () {
-        expect(Rho.System.getIsEmulator()).isBoolean;
+        expect(Rho.System.isEmulator).isBoolean;
     });
 
     it("Test hasCalendar property", function () {
-        expect(Rho.System.getHasCalendar()).isBoolean();
+        expect(Rho.System.hasCalendar).isBoolean();
     });
 
     it("Test isMotorolaDevice property", function () {
-        expect(Rho.System.getIsMotorolaDevice()).isBoolean();
+        expect(Rho.System.isMotorolaDevice).isBoolean();
     });
 
     it("Test default value of localServerPort property", function () {
-        expect(Rho.System.getLocalServerPort()).isNumberGreaterThenZero();
+        expect(Rho.System.localServerPort).isNumberGreaterThenZero();
     });
 
     it("Test freeServerPort property", function () {
-        expect(Rho.System.getFreeServerPort()).isNumberGreaterThenZero();
+        expect(Rho.System.freeServerPort).isNumberGreaterThenZero();
     });
 
     it("Test screenAutoRotate property", function () {
-        expect(Rho.System.getScreenAutoRotate()).toEqual(true);
+        expect(Rho.System.screenAutoRotate).toEqual(true);
     });
 
     it("Test hasTouchscreen property", function () {
-        expect(Rho.System.getHasTouchscreen()).toEqual(true);
+        expect(Rho.System.hasTouchscreen).toEqual(true);
     });
 
     it("Test securityTokenNotPased property", function () {
-        expect(Rho.System.getSecurityTokenNotPassed()).isBoolean();
+        expect(Rho.System.securityTokenNotPassed).isBoolean();
     });
 
     it("Test webviewFramework property", function () {
-        expect(Rho.System.getWebviewFramework()).isNotEmptyString();
-    });
-
-    it("Test screenSpleeping property", function () {
-        expect(Rho.System.getScreenSleeping()).toEqual(false);
+        expect(Rho.System.webviewFramework).isNotEmptyString();
     });
 
     it("Test startParams method", function () {
@@ -137,57 +133,58 @@ describe("<system module specs>", function () {
 
     if (isAnyButApplePlatform()) {
         it("Test phoneId property", function () {
-            expect(Rho.System.getPhoneId()).isNotEmptyString();
+            expect(Rho.System.phoneId).isNotEmptyString();
         });
 
         it("Test httpProxyURI property", function () {
-            Rho.System.setHttpProxyURI('http://localhost');
-            expect(Rho.System.getHttpProxyURI()).toEqual('http://localhost');
+            Rho.System.setHttpProxyURI = 'http://localhost';
+            expect(Rho.System.httpProxyURI).toEqual('http://localhost');
         });
 
         it("Test keyboardState property", function () {
-            expect(Rho.System.getKeyboardState()).toEqual('automatic');
+            expect(Rho.System.keyboardState).toEqual('automatic');
         });
 
     }
 
     if (isAndroidPlatform()) {
         it("Test deviceOwnerEmail property", function () {
-            expect(Rho.System.deviceOwnerEmail()).isNotEmptyString();
+            expect(Rho.System.deviceOwnerEmail).isNotEmptyString();
         });
 
         it("Test deviceOwnerName property", function () {
-            expect(Rho.System.deviceOwnerName()).isNotEmptyString();
+            expect(Rho.System.deviceOwnerName).isNotEmptyString();
         });
     }
 
     if (isApplePlatform()) {
         it("Test applicationIconBadge property", function () {
-            Rho.System.setApplicationIconBadge(1);
-            expect(Rho.System.applicationIconBadge()).toEqual(1);
+            Rho.System.applicationIconBadge = 1;
+            expect(Rho.System.applicationIconBadge).toEqual(1);
         });
     }
 
     if (isAnyButWindowsFamilyPlatform()) {
         it("Test devicePushId property", function () {
-            expect(Rho.System.getDevicePushId()).isNotEmptyString();
+            expect(Rho.System.devicePushId).isNotEmptyString();
         });
 
         it("Test screenAutoRotate property", function () {
-            expect(Rho.System.getScreenAutoRotate()).toEqual(true);
+            Rho.System.screenSleeping = true;
+            expect(Rho.System.screenSleeping).toEqual(true);
 
-            Rho.System.setScreenAutoRotate(false);
-            expect(Rho.System.getScreenAutoRotate()).toEqual(false);
+            Rho.System.screenSleeping = false;
+            expect(Rho.System.screenSleeping).toEqual(false);
         });
     }
 
-    if (isAnyButAppleAndWindowsMobilePlatform()) {
+    if (isWindowsMobileOrAndroidPlatform()) {
         it("Test oemInfo property", function () {
-            expect(Rho.System.getOemInfo()).isNotEmptyString();
+            expect(Rho.System.oemInfo).isNotEmptyString();
         });
 
         it("Test uuid property", function () {
-            expect(Rho.System.getUuid()).isNotEmptyString();
+            expect(Rho.System.uuid).isNotEmptyString();
         });
     }
 
@@ -198,24 +195,16 @@ describe("<system module specs>", function () {
             Rho.System.setRegistrySetting({hive: 'HKCU', type: 'String', key: 'phone_spec', setting: 'phone_spec_registry_key', value: 'test'});
             expect(Rho.System.getRegistrySetting({hive: 'HKCU', key: 'phone_spec', setting: 'phone_spec_registry_key'})).toEqual('test')
         });
-
-        it("Test screenSleeping property", function () {
-            Rho.System.setScreenSleeping(true);
-            expect(Rho.System.getScreenSleeping()).toEqual(true);
-
-            Rho.System.setScreenSleeping(false);
-            expect(Rho.System.getScreenSleeping()).toEqual(false);
-        });
     }
 
     if (isWindowsDesktopPlatform()) {
         it("Test default value of lockWindowSize property", function () {
-            expect(Rho.System.getLockWindowSize()).toEqual(false);
+            expect(Rho.System.lockWindowSize).toEqual(false);
         });
 
         it("Test lockWindowsSize property", function () {
-            Rho.System.setLockWindowSize(false);
-            expect(Rho.System.getLockWindowSize()).toEqual(false);
+            Rho.System.lockWindowSize = false;
+            expect(Rho.System.lockWindowSize).toEqual(false);
         });
 
         it("Test windowFrame method", function () {

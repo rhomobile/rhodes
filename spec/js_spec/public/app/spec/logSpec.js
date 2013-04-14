@@ -3,94 +3,94 @@ describe("<log module specs>", function () {
     //TODO: add initialing log system before executing each test?
 
     it("Tests log level property", function () {
-        Rho.Log.setLevel(1);
-        expect(Rho.Log.getLevel()).toEqual(1);
+        Rho.Log.level = 1;
+        expect(Rho.Log.level).toEqual(1);
     });
 
     it("Tests destination property", function () {
-        expect(Rho.Log.setDestination(["file"]));
-        expect(Rho.Log.getDestination()).toEqual(["file"]);
+        expect(Rho.Log.destination = ["file"]);
+        expect(Rho.Log.destination).toEqual(["file"]);
     });
 
     xit("Test default value of including categories property", function () {
-        expect(Rho.Log.getIncludeCategories()).toEqual("*");
+        expect(Rho.Log.includeCategories).toEqual("*");
     });
 
     it("Test includingCategories property", function () {
-        Rho.Log.setIncludeCategories("abc, def");
-        expect(Rho.Log.getIncludeCategories()).toEqual("abc, def");
+        Rho.Log.includeCategories = "abc, def";
+        expect(Rho.Log.includeCategories).toEqual("abc, def");
     });
 
     it("Test excludeCategories property", function () {
-        Rho.Log.setExcludeCategories("abc, def");
-        expect(Rho.Log.getExcludeCategories()).toEqual("abc, def");
+        Rho.Log.excludeCategories = "abc, def";
+        expect(Rho.Log.excludeCategories).toEqual("abc, def");
     });
 
     xit("Test default value of fileSize property", function () {
-        expect(Rho.Log.getFileSize()).toEqual(0);
+        expect(Rho.Log.fileSize()).toEqual(0);
     });
 
     it("Test fileSize property", function () {
-        Rho.Log.setFileSize(1000);
-        expect(Rho.Log.getFileSize()).toEqual(1000);
+        Rho.Log.fileSize = 1000;
+        expect(Rho.Log.fileSize).toEqual(1000);
     });
 
     it("Test default value of filePath property", function () {
-        expect(Rho.Log.getFilePath()).toEqual("rholog.txt");
+        expect(Rho.Log.filePath).toEqual("rholog.txt");
     });
 
     xit("Test filePath property", function () {
-        Rho.Log.setFilePath("someFilename.log");
-        expect(Rho.Log.getFilePath()).toEqual("someFilename.log");
+        Rho.Log.filePath = "someFilename.log";
+        expect(Rho.Log.filePath).toEqual("someFilename.log");
     });
 
     xit("Test default value of memoryPeriod property", function () {
-        expect(Rho.Log.getMemoryPeriod()).toEqual(0);
+        expect(Rho.Log.memoryPeriod).toEqual(0);
     });
 
     xit("Test memoryPeriod property", function () {
-        Rho.Log.setMemoryPeriod(1000);
-        expect(Rho.Log.getMemoryPeriod()).toEqual(1000);
+        Rho.Log.memoryPeriod = 1000;
+        expect(Rho.Log.memoryPeriod).toEqual(1000);
     });
 
     xit("Test default value of netTrace property", function () {
-        expect(Rho.Log.getNetTrace()).toEqual(false);
+        expect(Rho.Log.netTrace).toEqual(false);
     });
 
     //TODO: move to platform dependent tests
     xit("Test netTrace property", function () {
-        Rho.Log.setNetTrace(true);
-        expect(Rho.Log.getNetTrace()).toEqual(true);
+        Rho.Log.netTrace = true;
+        expect(Rho.Log.netTrace).toEqual(true);
     });
 
    xit("Test default value of skipPost property", function() {
-       expect(Rho.Log.getSkipPost()).toEqual(false);
+       expect(Rho.Log.skipPost).toEqual(false);
    });
 
     xit("Test skipPost property", function() {
-        Rho.Log.setSkipPost(true);
-        expect(Rho.Log.getSkipPost()).toEqual(true);
+        Rho.Log.skipPost = true;
+        expect(Rho.Log.skipPost()).toEqual(true);
     });
 
     xit("Test default value of excludeFilter property", function(){
-        expect(Rho.Log.getExcludeFilter()).toEqual("");
+        expect(Rho.Log.excludeFilter).toEqual("");
     });
 
     xit("Test excludeFilter property", function(){
-        Rho.Log.setExcludeFilter("abc");
-        expect(Rho.Log.getExcludeFilter()).toEqual("abc");
+        Rho.Log.excludeFilter = "abc";
+        expect(Rho.Log.excludeFilter).toEqual("abc");
 
-        Rho.Log.setExcludeFilter("def");
-        expect(Rho.Log.getExcludeFilter()).toEqual("abc,def");
+        Rho.Log.excludeFilter = "def";
+        expect(Rho.Log.excludeFilter).toEqual("abc,def");
     });
 
     xit("Test default value of destinationURI property", function (){
-        expect(Rho.Log.getDestinationURI()).toEqual("");
+        expect(Rho.Log.destinationURI).toEqual("");
     });
 
     xit("Test destinationURI property", function (){
-        Rho.Log.setDestinationURI("http://localhost");
-        expect(Rho.Log.getDestinationURI()).toEqual("http://localhost");
+        Rho.Log.destinationURI = "http://localhost";
+        expect(Rho.Log.destinationURI).toEqual("http://localhost");
     });
 
     //TODO: test log file contains the string

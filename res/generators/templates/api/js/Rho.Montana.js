@@ -13,7 +13,7 @@
     end
 %>
 (function ($, rho, rhoUtil) {
-    //'use strict';
+    'use strict';
 
     var moduleNS = '<%= namespace $cur_module %>';
     var apiReq = rhoUtil.apiReqFor(moduleNS);
