@@ -26,6 +26,16 @@ if $cur_module.is_template_default_instance %>
     return CMethodResultConvertor().toJSON(result);
 }
 
+<%= api_generator_MakeJSMethodDecl($cur_module.name, "getDefault", true) %>
+{
+    RAWTRACE(__FUNCTION__);
+    
+    rho::apiGenerator::CMethodResult result(false);
+    result.setJSObjectClassPath("<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>");
+    result.set(ObjectProxy::getDefaultID());
+    return CMethodResultConvertor().toJSON(result);
+}
+
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "setDefaultID", true) %>
 {
     RAWTRACE(__FUNCTION__);
