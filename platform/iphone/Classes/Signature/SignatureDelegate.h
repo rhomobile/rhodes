@@ -40,6 +40,7 @@
     float penWidth;
     unsigned int bgColor;
     SignatureView* signatureInlineView;
+    id<IMethodResult> callbackHolder;
 }
 
 
@@ -55,6 +56,7 @@
 -(void)setPenColor:(unsigned int)value;
 -(void)setPenWidth:(float)value;
 -(void)setBgColor:(unsigned int)value;
+-(void)setCallback:(id<IMethodResult>)value;
 
 -(void)hideSignatureInlineView;
 

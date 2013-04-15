@@ -55,6 +55,7 @@ SignatureDelegate* ourSD = nil;
         parentView = nil;
         prevView = nil;
         imageFormat = nil;
+        callbackHolder = nil;
         penColor = 0;
         penWidth = 0;
         bgColor = 0;
@@ -97,6 +98,12 @@ SignatureDelegate* ourSD = nil;
     bgColor = value;
 }
 
+-(void)setCallback:(NSObject<IMethodResult>*)value;
+{
+    callbackHolder = value;
+}
+
+
 
 - (void)useImage:(UIImage*)theImage { 
     NSString *folder = [[AppManager getDbPath] stringByAppendingPathComponent:@"/db-files"];
@@ -125,15 +132,33 @@ SignatureDelegate* ourSD = nil;
     }
 
     int isError = ![pngImage writeToFile:fullname atomically:YES];
-    rho_rhodesapp_callSignatureCallback([postUrl UTF8String], [filename UTF8String],
+    
+    if (callbackHolder)
+    {
+        NSMutableDictionary* result;
+        
+        if (isError) {
+            result = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"error", @"status", @"" , @"imageUri", @"Can't write image to the storage.", @"message", nil];
+        } else{
+            NSString* extpath = [NSString stringWithFormat:@"db%%2Fdb-files%%2F%@", filename];
+            // imageUri for new commonAPI, signature_uri for legacy support
+            result = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"ok", @"status", extpath , @"imageUri", extpath, @"signature_uri", nil];
+        }
+
+        [callbackHolder setResult:result];
+        callbackHolder = nil;
+    }
+    else
+    {
+        rho_rhodesapp_callSignatureCallback([postUrl UTF8String], [filename UTF8String],
             isError ? "Can't write image to the storage." : "", 0 );
+    }
 } 
 
 -(void)doDone:(UIImage*)image {
 	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissModalViewControllerAnimated:YES]; 
     [self useImage:image]; 
     //[signatureViewController.view removeFromSuperview];
-    [signatureViewController release];
     signatureViewController = nil;
 	//[parentView addSubview:prevView];
 	//[prevView release];
@@ -142,8 +167,18 @@ SignatureDelegate* ourSD = nil;
 }
 
 -(void)doCancel {
-	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissModalViewControllerAnimated:YES]; 
-    rho_rhodesapp_callSignatureCallback([postUrl UTF8String], "", "", 1);
+	[[[[Rhodes sharedInstance] mainView] getMainViewController] dismissModalViewControllerAnimated:YES];
+    if (callbackHolder)
+    {
+        NSMutableDictionary* result = [NSMutableDictionary dictionaryWithObjectsAndKeys: @"cancel", @"status", @"", @"imageUri", @"User canceled operation.", @"message", nil];
+        
+        [callbackHolder setResult:result];
+        callbackHolder = nil;
+    }
+    else
+    {
+        rho_rhodesapp_callSignatureCallback([postUrl UTF8String], "", "", 1);
+    }
     //[signatureViewController.view removeFromSuperview];
     [signatureViewController release];
     signatureViewController = nil;
@@ -355,8 +390,8 @@ void rho_signature_take(char* callback_url, rho_param* p) {
                                               withObject:url waitUntilDone:NO];
 }
 
-void rho_signature_take_ex(char* callback_url, struct SignatureParam* sig_params) {
-    NSString *url = [NSString stringWithUTF8String:callback_url];
+void rho_signature_take_ex( id<IMethodResult> callback, struct SignatureParam* sig_params) {
+    NSString *url = @"";
     
 	Rhodes* rho = [Rhodes sharedInstance];
 	SignatureDelegate* deleg = rho.signatureDelegate;
@@ -364,6 +399,7 @@ void rho_signature_take_ex(char* callback_url, struct SignatureParam* sig_params
     [deleg setPenColor:(sig_params->penColor | 0xFF000000)];
     [deleg setPenWidth:sig_params->penWidth];
     [deleg setBgColor:(sig_params->bgColor | 0xFF000000)];
+    [deleg setCallback:callback];
     [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(takeSignature:)
                                               withObject:url waitUntilDone:NO];
 }
@@ -438,7 +474,21 @@ void rho_signature_capture(const char* callback_url)
     [deleg captureInlineSignature];
 }
 
-void rho_signature_clear() 
+void rho_signature_capture_ex(id<IMethodResult> callback)
+{
+    // check for RhoElements :
+    if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
+        RAWLOG_ERROR("Rho::SignatureCapture.capture() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
+    }
+    
+	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance];
+    
+    [deleg setCallback:callback];
+    
+    [deleg captureInlineSignature];
+}
+
+void rho_signature_clear()
 {
     // check for RhoElements :
     if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
