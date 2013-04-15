@@ -177,13 +177,13 @@ boolean CAppMenuItem::processCommand()
         break;
 
     case CAppMenuItem::emtHome:
-        rho_webview_navigate(RHODESAPP().getStartUrl().c_str(), 0);
+        rho_webview_navigate(RHODESAPP().getStartUrl().c_str(), -1);
         break;
     case CAppMenuItem::emtBack:
         RHODESAPP().navigateBack();
         break;
     case CAppMenuItem::emtOptions:
-        rho_webview_navigate(RHODESAPP().getOptionsUrl().c_str(), 0);
+        rho_webview_navigate(RHODESAPP().getOptionsUrl().c_str(), -1);
         break;
 
     case CAppMenuItem::emtFullscreen:
