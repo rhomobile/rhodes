@@ -735,7 +735,8 @@ bool CHttpServer::process(SOCKET sock)
         return false;
     }
 
-    RAWLOG_INFO1("Process URI: '%s'", uri.c_str());
+    if ( !String_endsWith( uri, "js_api_entrypoint" ) )
+        RAWLOG_INFO1("Process URI: '%s'", uri.c_str());
 
     return decide(method, uri, query, headers, body);
 }
