@@ -34,10 +34,10 @@ if Rho::System.getProperty('platform') == 'APPLE' || Rho::System.getProperty('pl
                res_opt = {}
                opt.each do |key,value|
                     if value == true
-                          value = '1'
+                          value = 'true'
                     end
                     if value == false
-                          value = '0'
+                          value = 'false'
                     end
                     if key == 'camera_type' and value == 'main'
                         value = 'back'
@@ -77,7 +77,7 @@ if Rho::System.getProperty('platform') == 'APPLE' || Rho::System.getProperty('pl
             if options == nil
                 options = {}
             end
-            Camera.choosePicture(convert_options(options), callback_url)
+            Camera.choosePicture(callback_url)
        end
 
        def self.get_camera_info(cam_type)

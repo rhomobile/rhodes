@@ -10,14 +10,14 @@ extern void save_image_to_device_gallery(const char* image_path);
 
 
 -(NSString*)getInitialDefaultID {
-    return CAMERA_TYPE_MAIN;
+    return CAMERA_TYPE_BACK;
 }
 
 
 -(void) enumerate:(id<IMethodResult>)methodResult {
     NSMutableArray* ar = [NSMutableArray arrayWithCapacity:2];
-    if (get_camera_max_width([CAMERA_TYPE_MAIN UTF8String]) > 0) {
-        [ar addObject:CAMERA_TYPE_MAIN];
+    if (get_camera_max_width([CAMERA_TYPE_BACK UTF8String]) > 0) {
+        [ar addObject:CAMERA_TYPE_BACK];
     }
     if (get_camera_max_width([CAMERA_TYPE_FRONT UTF8String]) > 0) {
         [ar addObject:CAMERA_TYPE_FRONT];
@@ -32,8 +32,8 @@ extern void save_image_to_device_gallery(const char* image_path);
 }
 
 
--(void) choosePicture:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
-    camera_choose_picture([CameraBase applyAliasesToDictionary:propertyMap], methodResult);    
+-(void) choosePicture:(id<IMethodResult>)methodResult {
+    camera_choose_picture([NSMutableDictionary dictionaryWithCapacity:1], methodResult);
 }
 
 -(void) saveImageToDeviceGallery:(NSString*)pathToImage {

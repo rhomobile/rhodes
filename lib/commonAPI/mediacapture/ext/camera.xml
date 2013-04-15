@@ -48,7 +48,7 @@
         	    <PLATFORM>Android, iOS, WM</PLATFORM>
         		<DESC>The maximum height of images which can be captured.</DESC>
         	</PROPERTY>
-        	<PROPERTY name="supportedSizeList" type="ARRAY" readOnly="true">
+        	<PROPERTY name="supportedSizeList" type="ARRAY" readOnly="true" usePropertyBag="none" >
         	    <PROPERTY type="HASH">
         	        <PROPERTIES>
         	            <PROPEPRTY name="width" type="INTEGER"/>
