@@ -87,8 +87,8 @@ end
     
     if(strCallbackID.length() != 0)
         result.setCallBack(strCallbackID, strJsVmID);
-
-<% if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
+<%
+if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
     if(!result.hasCallback())
     {
         if(!result.isError())
@@ -99,6 +99,15 @@ end
         return CMethodResultConvertor().toJSON(result);
     }
 <%
+end
+if api_generator_isApiObjectParam(method.result)
+  if method.result.type == MethodParam::TYPE_SELF %>
+    result.setObjectClassPath("<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>");
+    RAWTRACE("Object class path is set");
+  else %>
+    result.setObjectClassPath("<%= api_generator_getJSModuleName(api_generator_ruby_makeApiObjectTypeName(method.result, $cur_module)) %>");
+    RAWTRACE("Object class path is set");
+<% end
 end
 if method.access == ModuleMethod::ACCESS_STATIC %>
     ObjectProxy::<%= method.native_name %>(argumentsAdapter(argv), result); <%
