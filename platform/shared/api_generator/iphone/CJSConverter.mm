@@ -19,7 +19,8 @@
         NSString* objString = (NSString*)objectiveC_value;
         
         if (level == 0)
-            strRes = [strRes stringByAppendingString:@"\"result\":\""];
+            strRes = [strRes stringByAppendingString:@"\"result\":"];
+        strRes = [strRes stringByAppendingString:@"\""];
         strRes = [strRes stringByAppendingString:objString];
         strRes = [strRes stringByAppendingString:@"\""];
     }
