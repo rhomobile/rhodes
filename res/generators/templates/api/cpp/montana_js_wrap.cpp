@@ -21,6 +21,24 @@ using namespace rho::common;
 
     rho::apiGenerator::CMethodResult oRes;
 
+<% if module_method.result != nil
+    if module_method.result.sub_param && module_method.result.sub_param.name %>
+    oRes.setParamName( "<%= module_method.result.sub_param.name %>" );<%
+    end
+
+    result_type = nil
+    if MethodParam::BASE_TYPES.include?(module_method.result.type)
+      result_type = module_method.result.item_type
+    else
+      result_type = module_method.result.type;
+    end
+
+if api_generator_isSelfModule( $cur_module, result_type) %>
+    oRes.setJSObjectClassPath( "<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>" );<%
+elsif result_type && result_type.length()>0 && !MethodParam::BASE_TYPES.include?(result_type) %>
+    oRes.setJSObjectClassPath( "<%= api_generator_getJSModuleName(result_type) %>" );<%
+end; end %>
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     int argc = argv.getSize();
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
@@ -44,9 +62,6 @@ using namespace rho::common;
         if ( argv[<%= first_arg %>].isString() )
         {
             arg<%= first_arg %> = argv[<%= first_arg %>].getString();
-<% if first_arg == 0 %>
-            oRes.setParamName(argv[<%= first_arg %>].getString());
-<% end %>
         }
         else if (!argv[<%= first_arg %>].isNull())
         {

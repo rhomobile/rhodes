@@ -410,6 +410,10 @@ def api_generator_getRubyModuleFullName(cur_module)
     module_name.gsub('.', '::')
 end
 
+def api_generator_getJSModuleName(module_name)
+    module_name.gsub('::', '.')    
+end
+
 def api_generator_isSelfModule(cur_module, type)
     return false unless type
     return true if type == Rhogen::ApiGenerator::MethodParam::TYPE_SELF
