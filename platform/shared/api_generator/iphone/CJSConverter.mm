@@ -113,8 +113,6 @@
     }
     return strRes;
     
-    
- return nil;
 }
 
 + (NSObject*) convertFromJSentry:(rho::json::CJSONEntry*)json_entry rho_api_param:(RHO_API_PARAM*)rho_api_param {

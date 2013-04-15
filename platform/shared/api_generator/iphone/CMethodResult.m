@@ -185,6 +185,9 @@ extern int rho_webview_active_tab();
     mRubyModulePath = [classPath stringByReplacingOccurrencesOfString:@"." withString:@"::"];
 }
 
+-(void) enableObjectCreationModeWithJSClassPath:(NSString*)classPath {
+    mRubyModulePath = classPath;//[classPath stringByReplacingOccurrencesOfString:@"." withString:@"::"];
+}
 
 
 -(void) callJSCallback:(NSString*)uid {

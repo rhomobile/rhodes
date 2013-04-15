@@ -241,11 +241,11 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
         if MethodParam::BASE_TYPES.include?(module_method.result.type)
             if module_method.result.type == MethodParam::TYPE_ARRAY
                 if !MethodParam::BASE_TYPES.include?(module_method.result.item_type)
-            %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.item_type %>"];<%
+            %>[methodResult enableObjectCreationModeWithJSClassPath:@"<%= api_generator_getJSModuleName(module_method.result.item_type) %>"];<%
                 end
             end
         else
-            %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.type %>"];<%
+            %>[methodResult enableObjectCreationModeWithJSClassPath:@"<%= api_generator_getJSModuleName(module_method.result.type) %>"];<%
         end
     end %>
 
@@ -315,7 +315,19 @@ rho::String js_s_<%= $cur_module.name %>_getDefaultID(const rho::String& strObjI
 
     NSString* defID = [singleton getDefaultID];
 
-    rho::String res =  [defID UTF8String];
+    rho::String res =  [[CJSConverter convertToJS:defID level:0] UTF8String];
+
+    return res;
+}
+
+rho::String js_s_<%= $cur_module.name %>_getDefault(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID)
+{
+    id<I<%= $cur_module.name %>Factory> factory = [<%= $cur_module.name %>FactorySingleton get<%= $cur_module.name %>FactoryInstance];
+    id<I<%= $cur_module.name %>Singleton> singleton = [factory get<%= $cur_module.name %>Singleton];
+
+    NSString* defID = [singleton getDefaultID];
+
+    rho::String res =  [[CJSConverter convertToJS:[CRhoAPIClassInstance rubyClassByName:@"<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>" instanceID:defID] level:0] UTF8String];
 
     return res;
 }
@@ -327,7 +339,7 @@ rho::String js_s_<%= $cur_module.name %>_setDefaultID(const rho::String& strObjI
 
     [singleton setDefaultID:[NSString stringWithUTF8String:(strObjID.c_str())]];
 
-    return "";
+    [[CJSConverter convertToJS:nil level:0] UTF8String];
 }
 <% end %>
 
