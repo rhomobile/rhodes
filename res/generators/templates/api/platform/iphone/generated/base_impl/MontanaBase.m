@@ -132,19 +132,19 @@ static NSDictionary* ourPropertyAliases= nil;
 <%
 
 $iphone_pb_getter_conversion = {}
-$iphone_pb_getter_conversion["BOOLEAN"] = 'NSNumber* typedResult = [NSNumber numberWithBool:[strResult boolValue]];'
+$iphone_pb_getter_conversion["BOOLEAN"] = 'NSNumber* typedResult = [NSNumber numberWithBool:(([@"true" caseInsensitiveCompare:strResult] == NSOrderedSame)?YES:NO)];'
 $iphone_pb_getter_conversion["INTEGER"] = 'NSNumber* typedResult = [NSNumber numberWithInt:[strResult intValue]];'
 $iphone_pb_getter_conversion["FLOAT"] = 'NSNumber* typedResult = [NSNumber numberWithFloat:[strResult floatValue]];'
 $iphone_pb_getter_conversion["STRING"] = 'NSString* typedResult = strResult;'
 
 $iphone_pb_setter_conversion_pre = {}
-$iphone_pb_setter_conversion_pre["BOOLEAN"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithBool:'
+$iphone_pb_setter_conversion_pre["BOOLEAN"] = 'NSString* strValue = '
 $iphone_pb_setter_conversion_pre["INTEGER"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithInt:'
 $iphone_pb_setter_conversion_pre["FLOAT"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", [NSNumber numberWithFloat:'
 $iphone_pb_setter_conversion_pre["STRING"] = 'NSString* strValue = [NSString stringWithFormat:@"%@", '
 
 $iphone_pb_setter_conversion_post = {}
-$iphone_pb_setter_conversion_post["BOOLEAN"] = ']];'
+$iphone_pb_setter_conversion_post["BOOLEAN"] = '?@"true":@"false";'
 $iphone_pb_setter_conversion_post["INTEGER"] = ']];'
 $iphone_pb_setter_conversion_post["FLOAT"] = ']];'
 $iphone_pb_setter_conversion_post["STRING"] = '];'
