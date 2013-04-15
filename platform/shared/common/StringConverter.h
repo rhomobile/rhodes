@@ -168,12 +168,18 @@ CONVERT_TYPE_W( char, L"%c" );
 CONVERT_TYPE_W( unsigned char, L"%c" );
 CONVERT_TYPE_W( short, L"%hd" );
 //CONVERT_TYPE_W( unsigned short, _T("%u") );
-CONVERT_TYPE_W( bool, L"%d" );
+//CONVERT_TYPE_W( bool, L"%d" );
 CONVERT_TYPE_W( float, L"%f" );
 CONVERT_TYPE_W( double, L"%lf" );
 
 CONVERT_TYPE_W( uint64, L"%I64u" );
 CONVERT_TYPE_W( int64, L"%I64d" );
+
+// Special case for bool
+template<> inline void convertFromStringW<bool>( const wchar_t* szValue, bool& value )
+{ value = wcsicmp(szValue, L"true") ==0 ? true:false; }
+template<> inline StringW convertToStringW<bool>( const bool& value )
+{  return value ? StringW(L"true") : StringW(L"false"); }
 
 #endif
 CONVERT_TYPE_A( unsigned int, "%u" );
@@ -185,14 +191,20 @@ CONVERT_TYPE_A( char, "%c" );
 CONVERT_TYPE_A( unsigned char, "%c" );
 CONVERT_TYPE_A( short, "%hd" );
 //CONVERT_TYPE_A( unsigned short, "%u" );
-CONVERT_TYPE_A( bool, "%d" );
+//CONVERT_TYPE_A( bool, "%d" );
 CONVERT_TYPE_A( float, "%f" );
 CONVERT_TYPE_A( double, "%lf" );
 
 CONVERT_TYPE_A( uint64, FMTU64 );
 CONVERT_TYPE_A( int64, FMTI64 );
-/*
+
 // Special case for bool
+template<> inline void convertFromStringA<bool>( const char* szValue, bool& value )
+{ value = strcmpi(szValue, "true") ==0 ? true:false; }
+template<> inline String convertToStringA<bool>( const bool& value )
+{  return value ? String("true") : String("false"); }
+
+/*
 template<> inline void convertFromStringA<bool>( const char* szValue, bool& value )
 { char c; sscanf( szValue, "%c", &c ); value = c ? true:false; }
 template<> inline String convertToStringA<bool>( const bool& value )
