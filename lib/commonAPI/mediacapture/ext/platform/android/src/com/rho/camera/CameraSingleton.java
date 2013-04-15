@@ -81,7 +81,7 @@ public class CameraSingleton implements ICameraSingleton {
     }
 
     @Override
-    public void choosePicture(IMethodResult result) {
+    public void choosePicture(Map<String, String> propertyMap, IMethodResult result) {
         ((CameraFactory)CameraFactorySingleton.getInstance()).setMethodResult(result);
 
         RhodesActivity ra = RhodesActivity.safeGetInstance();
