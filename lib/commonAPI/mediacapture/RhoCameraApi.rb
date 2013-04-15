@@ -39,6 +39,9 @@ if Rho::System.getProperty('platform') == 'APPLE' || Rho::System.getProperty('pl
                     if value == false
                           value = '0'
                     end
+                    if key == 'camera_type' and value == 'main'
+                        value = 'back'
+                    end
                     res_opt[key.to_s] = value.to_s
                end	
                return res_opt
@@ -50,7 +53,7 @@ if Rho::System.getProperty('platform') == 'APPLE' || Rho::System.getProperty('pl
             if options == nil
                 options = {}
             end
-            cam_type = 'main'
+            cam_type = 'back'
             if options != nil
                  if options['camera_type'] != nil
                       cam_type =  options['camera_type']
@@ -78,6 +81,7 @@ if Rho::System.getProperty('platform') == 'APPLE' || Rho::System.getProperty('pl
        end
 
        def self.get_camera_info(cam_type)
+            cam_type = 'back' if cam_type == 'main'
             cams = Camera.enumerate
             if cams != nil
                 cams.each do |cam|
