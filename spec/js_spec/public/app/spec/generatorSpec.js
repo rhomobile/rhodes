@@ -1,23 +1,25 @@
 
 describe("<generator API specs>", function () {
 
-<!--
+/*
     it("Test bool property", function () {
         expect(Rho.GenPropBag.boolProp).toEqual(false);
         Rho.GenPropBag.boolProp = true;
         expect(Rho.GenPropBag.boolProp).toEqual(true);
     });
-
+*/
     it("Test bool default property", function () {
-        expect(Rho.GenPropBag.default().boolProp).toEqual(false);
-        Rho.GenPropBag.default().boolProp = true;
-        expect(Rho.GenPropBag.default().boolProp).toEqual(true);
+        expect(Rho.GenPropBag.getDefault().boolProp).toEqual(false);
+        Rho.GenPropBag.getDefault().boolProp = true;
+        expect(Rho.GenPropBag.getDefault().boolProp).toEqual(true);
     });
--->
 
     it("Test enumerate", function () {
-        Rho.GenPropBag.enumerate();
+        var objs = Rho.GenPropBag.enumerate();
+        
+        expect(objs[0].boolProp).toEqual(false);
+        objs[0].boolProp = true;
+        expect(objs[0].boolProp).toEqual(true);
     });
     
-<!-- TODO: enumerate -->
 });
