@@ -146,8 +146,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 RhoConf.setString("CAPath", CAPath);
 
         } catch (Throwable e) {
-            Logger.E(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
-            Logger.E(TAG, e);
+            Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
+            //Logger.W(TAG, e);
         } finally {
             if (configIs != null) {
                 try {
