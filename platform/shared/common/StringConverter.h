@@ -200,7 +200,11 @@ CONVERT_TYPE_A( int64, FMTI64 );
 
 // Special case for bool
 template<> inline void convertFromStringA<bool>( const char* szValue, bool& value )
+#if defined(WINDOWS_PLATFORM)
 { value = strcmpi(szValue, "true") ==0 ? true:false; }
+#else
+    { value = strcasecmp(szValue, "true") ==0 ? true:false; }
+#endif
 template<> inline String convertToStringA<bool>( const bool& value )
 {  return value ? String("true") : String("false"); }
 
