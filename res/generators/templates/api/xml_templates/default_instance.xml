@@ -3,7 +3,7 @@
 
 <DEFAULT_INSTANCE>
 	<METHODS>
-	    <METHOD name="default" access="STATIC" factory="true" nativeName="getDefaultID">
+	    <METHOD name="getDefault" access="STATIC" factory="true" nativeName="getDefaultID">
 			<DESC>This is documentation</DESC>
             <RETURN type="SELF_INSTANCE">
                 <DESC>Default object of Module.</DESC>
