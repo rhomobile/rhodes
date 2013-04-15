@@ -212,6 +212,16 @@ end %>
     return oRes.toJSON();
 }
 
+<%= api_generator_MakeJSMethodDecl($cur_module.name, "getDefault", true)%>
+{
+    rho::apiGenerator::CMethodResult oRes;
+    rho::String strDefaultID = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
+    oRes.set(strDefaultID);
+    oRes.setJSObjectClassPath("<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>");
+
+    return oRes.toJSON();
+}
+
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "setDefaultID", true)%>
 {
     rho::apiGenerator::CMethodResult oRes;

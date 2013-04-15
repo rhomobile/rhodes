@@ -123,12 +123,12 @@
 
     <% if $cur_module.is_template_default_instance %>
 
-        <%= $cur_module.name %>['default'] = function () {
+        <%= $cur_module.name %>['getDefault'] = function () {
             return new <%= $cur_module.name %>(
                 apiReq({
                     instanceId: '0',
                     args: [],
-                    method:'getDefaultID'
+                    method:'getDefault'
                 })
             );
         };
