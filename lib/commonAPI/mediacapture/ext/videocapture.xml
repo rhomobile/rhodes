@@ -4,6 +4,7 @@
 	<MODULE name="VideoCapture" parent="Rho">
 		<HELP_OVERVIEW>The VideoCapture Module captures video files from the default camera device.</HELP_OVERVIEW>
 		<MORE_HELP>Use this API to give users the ability to record a video and save it to your phone.</MORE_HELP>
+                <PLATFORM>Android, iOS, WM</PLATFORM>
 		
 		<TEMPLATES>
 			<SINGLETON_INSTANCES/>   <!-- produce enumerate() fabric method, all instances is singletones by ID, add ID property -->
