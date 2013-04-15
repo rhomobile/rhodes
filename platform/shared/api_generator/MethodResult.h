@@ -63,7 +63,7 @@ public:
     void setParamName(const rho::String& strParam){m_strParamName = strParam;}
     void setRubyObjectClass(unsigned long val){ m_oRubyObjectClass = val; }
     void setRubyObjectClassPath(const rho::String& strPath){ m_strRubyObjectClassPath = strPath; }
-
+    void setJSObjectClassPath(const rho::String& strPath){m_strRubyObjectClassPath = strPath;}
     void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; m_ResType = eStringHash; callCallback(); }
     void set(const rho::Vector<rho::Hashtable<rho::String, rho::String> > res ) { m_arHashRes = res; m_ResType = eArrayHash; callCallback(); }
 
