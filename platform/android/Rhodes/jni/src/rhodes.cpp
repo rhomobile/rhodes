@@ -104,6 +104,14 @@ JNIEnv *jnienv()
     return env;
 }
 
+void initjnienv(JNIEnv* env)
+{
+    if(!pthread_getspecific(g_thrkey))
+    {
+        store_thr_jnienv(env);
+    }
+}
+
 std::vector<jclass> g_classes;
 
 jclass& getJNIClass(int n)

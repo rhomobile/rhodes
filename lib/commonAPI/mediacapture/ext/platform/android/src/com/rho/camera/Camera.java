@@ -1,11 +1,24 @@
 package com.rho.camera;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+
+import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.util.ContextFactory;
 
 public class Camera implements ICamera {
+    private static final String TAG = Camera.class.getSimpleName();
   
     private String mId;
     
@@ -56,20 +69,49 @@ public class Camera implements ICamera {
 
     @Override
     public void getCameraType(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(Integer.valueOf(mId).intValue(), info);
+        switch (info.facing) {
+        case android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK:
+            result.set("back");
+            break;
+        case android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT:
+            result.set("front");
+            break;
+        default:
+            result.setError("Camera with unknown type: " + info.facing);
+            break;
+        }
     }
 
     @Override
     public void getMaxWidth(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        android.hardware.Camera hwCamera = android.hardware.Camera.open(Integer.valueOf(mId).intValue());
+        List<android.hardware.Camera.Size> listSize = hwCamera.getParameters().getSupportedPictureSizes();
+        int maxWidth = 0;
+        for(android.hardware.Camera.Size curSize: listSize) {
+            Logger.D(TAG, "Possible picture width: " + curSize.width);
+            if (curSize.width > maxWidth) {
+                maxWidth = curSize.width;
+            }
+        }
+        hwCamera.release();
+        result.set(maxWidth);
     }
 
     @Override
     public void getMaxHeight(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        android.hardware.Camera hwCamera = android.hardware.Camera.open(Integer.valueOf(mId).intValue());
+        List<android.hardware.Camera.Size> listSize = hwCamera.getParameters().getSupportedPictureSizes();
+        int maxHeight = 0;
+        for(android.hardware.Camera.Size curSize: listSize) {
+            Logger.D(TAG, "Possible picture height: " + curSize.height);
+            if (curSize.height > maxHeight) {
+                maxHeight = curSize.height;
+            }
+        }
+        hwCamera.release();
+        result.set(maxHeight);
     }
 
     @Override
@@ -98,15 +140,15 @@ public class Camera implements ICamera {
 
     @Override
     public void getCompressionFormat(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        result.set("jpg");
     }
 
     @Override
-    public void setCompressionFormat(String compressionFormat,
-            IMethodResult result) {
-        // TODO Auto-generated method stub
-
+    public void setCompressionFormat(String compressionFormat, IMethodResult result) {
+        if (!compressionFormat.equalsIgnoreCase("jpg")) {
+            Logger.E(TAG, "Android does not support the compression format: " + compressionFormat);
+            result.setError("Android does not support the compression format: " + compressionFormat);
+        }
     }
 
     @Override
@@ -135,14 +177,12 @@ public class Camera implements ICamera {
 
     @Override
     public void getEnableEditing(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        //iOS only
     }
 
     @Override
     public void setEnableEditing(boolean enableEditing, IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        //iOS only
     }
 
     @Override
@@ -158,15 +198,13 @@ public class Camera implements ICamera {
     }
 
     @Override
-    public void getSaveToSharedGallery(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+    public void getSaveToDeviceGallery(IMethodResult result) {
+        //iOS only
     }
 
     @Override
-    public void setSaveToSharedGallery(boolean saveToSharedGallery, IMethodResult result) {
-        // TODO Auto-generated method stub
-
+    public void setSaveToDeviceGallery(boolean saveToSharedGallery, IMethodResult result) {
+        //iOS only
     }
 
     @Override
@@ -183,26 +221,22 @@ public class Camera implements ICamera {
 
     @Override
     public void getPreviewLeft(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        //WM only
     }
 
     @Override
     public void setPreviewLeft(int previewLeft, IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        //WM only
     }
 
     @Override
     public void getPreviewTop(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        //WM only
     }
 
     @Override
     public void setPreviewTop(int previewTop, IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        //WM only
     }
 
     @Override
@@ -231,14 +265,37 @@ public class Camera implements ICamera {
 
     @Override
     public void takePicture(Map<String, String> propertyMap, IMethodResult result) {
-        // TODO Auto-generated method stub
+        ((CameraFactory)CameraFactorySingleton.getInstance()).setMethodResult(result);
+        
+        SimpleDateFormat timeStampFormat = new SimpleDateFormat("yyyyMMddHHmmssSS");
+        String filename = "Image_" + timeStampFormat.format(new Date()) + ".jpg";
 
+        File file = new File(Environment.getExternalStorageDirectory(), filename);
+        
+        //String dir = RhodesAppOptions.getBlobPath();
+        
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
+        RhodesActivity.safeGetInstance().startActivityForResult(intent, Integer.valueOf(mId).intValue());
     }
 
     @Override
-    public void saveImageToDeviceGallery(String pathToImage, IMethodResult result) {
+    public void getSupportedSizeList(IMethodResult result) {
         // TODO Auto-generated method stub
+        
+    }
 
+    @Override
+    public void getUseSystemViewfinder(IMethodResult result) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void setUseSystemViewfinder(boolean useSystemViewfinder,
+            IMethodResult result) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

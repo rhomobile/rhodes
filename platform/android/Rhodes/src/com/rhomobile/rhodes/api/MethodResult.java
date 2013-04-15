@@ -37,8 +37,8 @@ public class MethodResult implements IMethodResult {
     
     private boolean mIsRuby;
     private boolean mSingleShot = true;
-    private String mStrCallback;
-    private String mStrCallbackData;
+    private String mStrCallback = "";
+    private String mStrCallbackData = "";
     private long mRubyProcCallback;
     private int mTabId;
 
@@ -75,25 +75,56 @@ public class MethodResult implements IMethodResult {
     }
     
     public int getResultType() {
+        Logger.T(TAG, "getResultType: " + mResultType.name() + " - " + mResultType.ordinal());
         return mResultType.ordinal();
     }
 
     public String toString() {
-        String res = "";
-        if (mResultType == ResultType.typeBoolean) {
-            res = Boolean.toString(mBooleanResult);
-        } else if (mResultType == ResultType.typeInteger) {
-            res = Integer.toString(mIntegerResult);
-        } else if (mResultType == ResultType.typeDouble) {
-            res = Double.toString(mDoubleResult);
-        } else if (mResultType == ResultType.typeString) {
-            res = '"' + mStrResult + '"';
-        } else if (mResultType == ResultType.typeList) {
-            res = mListResult.toString();
-        } else if (mResultType == ResultType.typeMap) {
-            res = mMapResult.toString();
+        StringBuilder res = new StringBuilder();
+        
+        if (mRubyProcCallback != 0) {
+            res.append("RubyProc: ").append(mRubyProcCallback);
+        } else if (mStrCallback != null){
+            res.append("Callback: ").append(mStrCallback);
         }
-        return res;
+        if (mStrCallbackData != null) {
+            res.append(", data: ").append(mStrCallbackData);
+        }
+        if (mRubyObjectClass != 0) {
+            res.append("; RubyClass: ").append(mRubyObjectClass);
+        } else if (mObjectClassPath != null){
+            res.append("; Class path: ").append(mObjectClassPath);
+        }
+        
+        res.append("; Tab id: ").append(mTabId);
+        res.append("; resultType: ").append(mResultType.name());
+        res.append("; ").append(mResultParamName).append(": ");
+        
+        switch (mResultType) {
+        case typeBoolean:
+            res.append(mBooleanResult);
+            break;
+        case typeInteger:
+            res.append(mIntegerResult);
+            break;
+        case typeDouble:
+            res.append(mDoubleResult);
+            break;
+        case typeString:
+            res.append('"').append(mStrResult).append('"');
+            break;
+        case typeList:
+            res.append(mListResult.toString());
+            break;
+        case typeMap:
+            res.append(mMapResult.toString());
+            break;
+        case typeError:
+        case typeArgError:
+            res.append("error: ").append(mStrResult);
+            break;
+        }
+        return res.toString();
     }
     public boolean getBoolean() { return mBooleanResult; }
     public int getInteger() { return mIntegerResult; }
@@ -159,51 +190,63 @@ public class MethodResult implements IMethodResult {
     }
     @Override
     public void set(boolean res) {
+        Logger.T(TAG, toString());
         mBooleanResult = res;
         mResultType = ResultType.typeBoolean;
-        if (mStrCallback != null || mRubyProcCallback != 0) {
+        if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
+            Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
     @Override
     public void set(int res) {
+        Logger.T(TAG, toString());
         mIntegerResult = res;
         mResultType = ResultType.typeInteger;
-        if (mStrCallback != null || mRubyProcCallback != 0) {
+        if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
+            Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
     @Override
     public void set(double res) {
+        Logger.T(TAG, toString());
         mDoubleResult = res;
         mResultType = ResultType.typeDouble;
-        if (mStrCallback != null || mRubyProcCallback != 0) {
+        if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
+            Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
     @Override
     public void set(String res) {
+        Logger.T(TAG, toString());
         mStrResult = res;
         mResultType = ResultType.typeString;
-        if (mStrCallback != null || mRubyProcCallback != 0) {
+        if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
+            Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
 
     @Override
     public void set(List<Object> res) {
+        Logger.T(TAG, toString());
         mListResult = res;
         mResultType = ResultType.typeList;
-        if (mStrCallback != null || mRubyProcCallback != 0) {
+        if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
+            Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
 
     @Override
     public void set(Map<String, Object> res) {
+        Logger.T(TAG, toString());
         mMapResult = res;
         mResultType = ResultType.typeMap;
-        if (mStrCallback != null || mRubyProcCallback != 0) {
+        if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
+            Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
@@ -366,25 +409,31 @@ public class MethodResult implements IMethodResult {
 
     @Override
     public void set() {
-        if (mStrCallback != null || mRubyProcCallback != 0) {
+        Logger.T(TAG, toString());
+        if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
+            Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
 
     @Override
     public void setArgError(String message) {
+        Logger.T(TAG, toString());
         mStrResult = message;
         mResultType = ResultType.typeArgError;
-        if (mStrCallback != null || mRubyProcCallback != 0) {
+        if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
+            Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
 
     @Override
     public void setError(String message) {
+        Logger.T(TAG, toString());
         mStrResult = message;
         mResultType = ResultType.typeError;
-        if (mStrCallback != null || mRubyProcCallback != 0) {
+        if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
+            Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }

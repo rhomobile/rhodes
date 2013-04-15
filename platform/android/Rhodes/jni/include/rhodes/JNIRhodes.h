@@ -47,6 +47,7 @@ static int const RHO_FD_BASE = 512;
 
 JavaVM *jvm();
 void store_thr_jnienv(JNIEnv *env);
+void initjnienv(JNIEnv* env);
 
 extern "C" {
   void android_set_path(const rho::String& root, const rho::String& sqlite, const rho::String& shared);

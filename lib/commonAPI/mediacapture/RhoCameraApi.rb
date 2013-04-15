@@ -73,10 +73,7 @@ if Rho::System.getProperty('platform') == 'APPLE' || Rho::System.getProperty('pl
             end
        end
 
-       def self.choose_picture(callback_url, options = nil)
-            if options == nil
-                options = {}
-            end
+       def self.choose_picture(callback_url)
             Camera.choosePicture(callback_url)
        end
 
