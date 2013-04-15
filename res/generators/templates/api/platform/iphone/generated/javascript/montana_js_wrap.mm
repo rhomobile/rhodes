@@ -237,6 +237,18 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
         }
     <% end %>
 
+    <% if module_method.result != nil
+        if MethodParam::BASE_TYPES.include?(module_method.result.type)
+            if module_method.result.type == MethodParam::TYPE_ARRAY
+                if !MethodParam::BASE_TYPES.include?(module_method.result.item_type)
+            %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.item_type %>"];<%
+                end
+            end
+        else
+            %>[methodResult enableObjectCreationModeWithRubyClassPath:@"<%= module_method.result.type %>"];<%
+        end
+    end %>
+
     if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
         [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
