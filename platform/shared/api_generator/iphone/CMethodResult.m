@@ -191,7 +191,7 @@ extern int rho_webview_active_tab();
 
 
 -(void) callJSCallback:(NSString*)uid {
-    NSString* jscode = [NSString stringWithFormat:@"Rho.callbackHandler(‘%@’,{%@})", mJSCallbackUID, [self toJSON]];
+    NSString* jscode = [NSString stringWithFormat:@"Rho.callbackHandler(\"%@\",{%@})", mJSCallbackUID, [self toJSON]];
     int tabIndex = mJSTabIndex;
     //if (mJSWebViewUID != nil) {
     //    tabIndex = [mJSWebViewUID intValue];
