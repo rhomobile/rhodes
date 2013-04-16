@@ -577,8 +577,8 @@ namespace "config" do
             $app_config["extensions"].delete("webkit-browser")
         end
         
-        if  $app_config["capabilities"].index("webkit_browser") || $app_config["capabilities"].index("motorola")
-            #contains wm code for webkit browser support
+        if  $app_config["capabilities"].index("webkit_browser") || ($app_config["capabilities"].index("motorola") && $current_platform != "android")
+            #contains wm and android libs for webkit browser
             $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
         end
     end
