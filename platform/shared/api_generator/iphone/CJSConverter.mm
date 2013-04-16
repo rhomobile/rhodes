@@ -75,7 +75,7 @@
     else if ([objectiveC_value isKindOfClass:[NSDictionary class]]) {
         // dictionary
         if (level == 0)
-            strRes = [strRes stringByAppendingString:@",\"result\":"];
+            strRes = [strRes stringByAppendingString:@"\"result\":"];
         strRes = [strRes stringByAppendingString:@"{"];
         NSDictionary* objDictionary = (NSDictionary*)objectiveC_value;
         NSEnumerator* enumerator = [objDictionary keyEnumerator];
