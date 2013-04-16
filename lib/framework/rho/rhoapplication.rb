@@ -128,7 +128,8 @@ module Rho
 
         if System.get_property('platform') != 'WP8'
           security_token_not_passed = System.get_property('security_token_not_passed')
-          security_token_not_passed = false if security_token_not_passed.nil?
+          security_token_not_passed = security_token_not_passed == "true"
+          
           invalid_security_token_start_path_exist = Rho::RhoConfig.exists? 'invalid_security_token_start_path'
           invalid_security_token_start_path = Rho::RhoConfig.invalid_security_token_start_path
         

@@ -45,7 +45,7 @@ rho::String CMethodResult::toString()
 
 void CMethodResult::convertToType(ETypes eType)
 {
-    if ( eType == m_ResType )
+    if ( eType == m_ResType || eType == eNone )
         return;
 
     switch(eType)

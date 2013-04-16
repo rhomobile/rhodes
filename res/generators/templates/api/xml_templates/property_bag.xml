@@ -13,7 +13,6 @@
             <RETURN type="STRING">
                 <DESC>The one property that I want to know about</DESC>
             </RETURN>
-            <CALLBACK optional="true"/>
         </METHOD>
 
         <METHOD name="getProperties" hasCallback="optional">
@@ -31,8 +30,6 @@
                 </PARAMS>
             </RETURN>
 
-            <CALLBACK optional="true"/>
-            
         </METHOD>
 
         <METHOD name="getAllProperties" hasCallback="optional">
@@ -44,7 +41,6 @@
                 </PARAMS>
             </RETURN>
 
-            <CALLBACK optional="true"/>
         </METHOD>
 
         <METHOD name="setProperty">
