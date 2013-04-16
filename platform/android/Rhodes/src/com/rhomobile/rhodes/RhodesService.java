@@ -812,7 +812,6 @@ public class RhodesService extends Service {
                 }
             }
             else if (name.equalsIgnoreCase("webview_framework")) {
-                //return "WEBKIT/" + Build.VERSION.RELEASE;
                 return RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId();
             }
             else if (name.equalsIgnoreCase("is_motorola_device")) {
