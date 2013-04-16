@@ -14,7 +14,7 @@ public class CameraExtension extends AbstractRhoExtension implements IRhoExtensi
     public String onGetProperty(IRhoExtManager extManager, String name) {
         if (name.equalsIgnoreCase("has_camera")) {
             if (((CameraFactory)(CameraFactorySingleton.getInstance())).getCameraSingleton().getCameraCount() > 0) {
-                return "1";
+                return "true";
             }
         }
         return null;
