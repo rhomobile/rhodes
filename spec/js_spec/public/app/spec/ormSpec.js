@@ -102,32 +102,32 @@ describe("<ORM module specs>", function() {
 
     it('creates object in database', function() {
         var Model = Rho.ORM.addModel('Model');
-        var before = Model.find('all').length;
+        var before = Model.count();
         Model.create({'key': 'value'});
-        var after = Model.find('all').length;
+        var after = Model.count();
         expect(after).toBe(before + 1);
     });
 
     it('does not create empty object in database', function() {
         var Model = Rho.ORM.addModel('Model');
-        var before = Model.find('all').length;
+        var before = Model.count();
         Model.create();
-        expect(Model.find('all').length).toBe(before);
+        expect(Model.count()).toBe(before);
     });
 
     it('does not create object with the only empty property in database', function() {
         var Model = Rho.ORM.addModel('Model');
-        var before = Model.find('all').length;
+        var before = Model.count();
         Model.create({'': 'value'});
-        expect(Model.find('all').length).toBe(before);
+        expect(Model.count()).toBe(before);
     });
 
     it('deletes all objects in database', function() {
         var Model = Rho.ORM.addModel('Model');
         Model.create({'key': 'value'});
-        expect(Model.find('all').length).toBeGreaterThan(0);
+        expect(Model.count()).toBeGreaterThan(0);
         Model.deleteAll();
-        expect(Model.find('all').length).toBe(0);
+        expect(Model.count()).toBe(0);
     });
 
     it('deletes all objects of specific model in database', function() {
@@ -137,15 +137,15 @@ describe("<ORM module specs>", function() {
         Model1.create({'key': 'value'});
         Model2.create({'key': 'value'});
 
-        expect(Model1.find('all').length).toBeGreaterThan(0);
-        expect(Model2.find('all').length).toBeGreaterThan(0);
+        expect(Model1.count()).toBeGreaterThan(0);
+        expect(Model2.count()).toBeGreaterThan(0);
 
-        var before1 = Model1.find('all').length;
+        var before1 = Model1.count();
         Model2.deleteAll();
-        var after1 = Model1.find('all').length;
+        var after1 = Model1.count();
 
         expect(after1).toBe(before1);
-        expect(Model2.find('all').length).toBe(0);
+        expect(Model2.count()).toBe(0);
     });
 
     it('reads object from database', function() {
@@ -164,5 +164,20 @@ describe("<ORM module specs>", function() {
         var found = Model.find('all');
         expect(found.length).toBe(1);
         expect(cleanVars(found[0])).toEqual({'key': 'value'});
+    });
+
+    it('counts objects in database', function() {
+        var Model1 = Rho.ORM.addModel('Model1');
+        var Model2 = Rho.ORM.addModel('Model2');
+
+        var before1 = Model1.count();
+
+        Model1.create({'key': 'value'});
+        Model1.create({'key': 'value'});
+        Model2.create({'key': 'value'});
+
+        var after1 = Model1.count();
+
+        expect(after1).toBe(before1 + 2);
     });
 });
