@@ -70,7 +70,7 @@
         NSString* rubyClass = [rubyModule getClassName];
         if (level == 0)
             strRes = [strRes stringByAppendingString:@"\"result\":"];
-        strRes = [strRes stringByAppendingString:[NSString stringWithFormat:@"{\“__rhoID\”: \“%@\”,\“__rhoClass\”:\“%@\”}", rubyID, rubyClass]];
+        strRes = [strRes stringByAppendingString:[NSString stringWithFormat:@"{\"__rhoID\": \"%@\",\"__rhoClass\":\"%@\"}", rubyID, rubyClass]];
     }
     else if ([objectiveC_value isKindOfClass:[NSDictionary class]]) {
         // dictionary
