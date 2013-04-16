@@ -10,6 +10,7 @@
 
 using namespace rho;
 using namespace rho::common;
+using namespace rho::apiGenerator;
 
 extern "C"
 {
@@ -81,7 +82,13 @@ if api_generator_isSelfModule( $cur_module, result_type) %>
     oRes.setRubyObjectClass( getRuby_<%= $cur_module.name %>_Module() );<%
 elsif result_type && result_type.length()>0 && !MethodParam::BASE_TYPES.include?(result_type) %>
     oRes.setRubyObjectClassPath( "<%= result_type %>" );<%
-end; end %>
+end; end
+
+if module_method.linked_property && module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
+    oRes.setRequestedType(<%= api_generator_cpp_makeMethodResultType(module_method.linked_property.type) %>);<%
+elsif module_method.result && module_method.result.type %>
+    oRes.setRequestedType(<%= api_generator_cpp_makeMethodResultType(module_method.result.type) %>);<%
+end %>
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;<%

@@ -19,5 +19,6 @@ symbian:
   uid: '0xef6036c4'
 android:
   version: 2.1
+  extensions: ["mediacapture"]
 
-extensions: ["genPropBag", "mediacapture"]
+extensions: ["genPropBag"] 

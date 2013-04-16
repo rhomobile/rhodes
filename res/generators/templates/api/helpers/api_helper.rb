@@ -75,7 +75,7 @@ def api_generator_cpp_makeMethodResultType(gen_type)
     elsif gen_type == Rhogen::ApiGenerator::MethodParam::TYPE_DOUBLE
         res = "CMethodResult::eDouble"
     else
-        res = "CMethodResult::eString"
+        res = "CMethodResult::eNone"
     end
     
     res

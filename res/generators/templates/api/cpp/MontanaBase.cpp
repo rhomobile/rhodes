@@ -70,16 +70,6 @@ void <%= propBaseClass %>::getProperty( const rho::String& propertyName, CMethod
     }
 }
 
-void <%= propBaseClass %>::getPropertyT( const rho::String& propertyName, CMethodResult::ETypes propType, CMethodResult& oResult)
-{
-    oResult.setCollectionMode(true);
-    getProperty( propertyName, oResult); 
-    oResult.convertToType(propType);
-
-    oResult.setCollectionMode(false);
-    oResult.callCallback();
-}
-
 void <%= propBaseClass %>::getProperties( const rho::Vector<rho::String>& arrayofNames, CMethodResult& oResult)
 {
     rho::Hashtable<rho::String, rho::String> res;
@@ -143,7 +133,7 @@ next if module_method.linked_property.use_property_bag_mode != ModuleProperty::U
 
 void <%= propBaseClass %>::<%= module_method.native_name%>(<%= module_method.cached_data["cpp_params"] %>)
 { <% if module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
-    getPropertyT( "<%= module_method.linked_property.native_name %>", <%= api_generator_cpp_makeMethodResultType(module_method.linked_property.type) %>, oResult); <%
+    getProperty( "<%= module_method.linked_property.native_name %>", oResult); <%
 elsif module_method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER %>
     setProperty( "<%= module_method.linked_property.native_name %>", rho::common::convertToStringA(<%= module_method.cached_data["cpp_call_params"] %>), oResult );<%
 end %>
