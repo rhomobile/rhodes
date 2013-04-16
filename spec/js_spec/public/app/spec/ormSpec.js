@@ -32,7 +32,13 @@ describe("<ORM module specs>", function() {
     });
 
     it('makes empty object', function() {
-        expect(cleanVars(Rho.ORM.addModel('Model').make())).toEqual({});
+        var empty = Rho.ORM.addModel('Model').make();
+        expect(cleanVars(empty)).toEqual({});
+        var keySet = {};
+        for (var key in empty.vars()) {
+            keySet[key] = 0;
+        }
+        expect(keySet).toEqual({'object': 0, 'source_id': 0});
     });
 
     it('makes object', function() {
@@ -140,5 +146,23 @@ describe("<ORM module specs>", function() {
 
         expect(after1).toBe(before1);
         expect(Model2.find('all').length).toBe(0);
+    });
+
+    it('reads object from database', function() {
+        var Model = Rho.ORM.addModel('Model');
+        Model.deleteAll();
+        var original = Model.create({'key': 'value'});
+        var found = Model.find('all');
+        expect(found.length).toBe(1);
+        expect(cleanVars(found[0])).toEqual({'key': 'value'});
+    });
+
+    it('does not write empty property to database', function() {
+        var Model = Rho.ORM.addModel('Model');
+        Model.deleteAll();
+        var original = Model.create({'key': 'value', '': 'empty'});
+        var found = Model.find('all');
+        expect(found.length).toBe(1);
+        expect(cleanVars(found[0])).toEqual({'key': 'value'});
     });
 });
