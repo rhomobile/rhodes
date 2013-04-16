@@ -516,7 +516,7 @@ namespace "config" do
     end
     
     extensions = []
-    extensions << "coreapi" if $current_platform == "wm" || $current_platform == "osx" || $current_platform == "wp8" || $current_platform == "win32" || $current_platform == 'android' || $current_platform == 'iphone'
+    extensions << "coreapi" unless $app_config['re_buildstub']
     extensions += $app_config["extensions"] if $app_config["extensions"] and
        $app_config["extensions"].is_a? Array
     extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
