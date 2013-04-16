@@ -48,9 +48,10 @@ public class MethodResult implements IMethodResult {
     private long mRubyObjectClass;
 
     private ResultType mResultType = ResultType.typeNone;
-    private boolean mBooleanResult;
-    private int mIntegerResult;
-    private double mDoubleResult;
+    private ResultType mForceType = ResultType.typeNone;
+    private boolean mBooleanResult = false;
+    private int mIntegerResult = 0;
+    private double mDoubleResult = 0.0;
     private String mStrResult;
     private List<Object> mListResult;
     private Map<String, Object> mMapResult;
@@ -68,6 +69,22 @@ public class MethodResult implements IMethodResult {
     }
     
     public void keepAlive() { mSingleShot = false; }
+    
+    @Override
+    public void forceBooleanType() {
+        mForceType = ResultType.typeBoolean;
+    }
+    
+    @Override
+    public void forceIntegerType() {
+        mForceType = ResultType.typeInteger;
+    }
+    
+    @Override
+    public void forceDoubleType() {
+        mForceType = ResultType.typeDouble;
+    }
+    
     public void release() {
         if (mRubyProcCallback != 0) {
             nativeReleaseRubyProcCallback(mRubyProcCallback);
@@ -190,9 +207,10 @@ public class MethodResult implements IMethodResult {
     }
     @Override
     public void set(boolean res) {
-        Logger.T(TAG, toString());
+        Logger.T(TAG, "set("+res+")");
         mBooleanResult = res;
         mResultType = ResultType.typeBoolean;
+        Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
@@ -200,9 +218,10 @@ public class MethodResult implements IMethodResult {
     }
     @Override
     public void set(int res) {
-        Logger.T(TAG, toString());
+        Logger.T(TAG, "set("+res+")");
         mIntegerResult = res;
         mResultType = ResultType.typeInteger;
+        Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
@@ -210,9 +229,10 @@ public class MethodResult implements IMethodResult {
     }
     @Override
     public void set(double res) {
-        Logger.T(TAG, toString());
+        Logger.T(TAG, "set("+res+")");
         mDoubleResult = res;
         mResultType = ResultType.typeDouble;
+        Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
@@ -220,9 +240,40 @@ public class MethodResult implements IMethodResult {
     }
     @Override
     public void set(String res) {
-        Logger.T(TAG, toString());
+        Logger.T(TAG, "set(\""+res+"\")");
+        try {
+            switch(mForceType) {
+            case typeNone:
+            case typeString:
+                break;
+            case typeBoolean:
+                set(Boolean.valueOf(res).booleanValue());
+                return;
+            case typeInteger:
+                if (res != null) {
+                    set(Integer.valueOf(res).intValue());
+                } else {
+                    set(0);
+                }
+                return;
+            case typeDouble:
+                if (res != null) {
+                    set(Double.valueOf(res).doubleValue());
+                } else {
+                    set(0.0);
+                }
+                return;
+            default:
+                Logger.W(TAG, "Cannot force string result to type: " + mForceType.name() + ". Returning string result: " + res);
+                break;
+            }
+        } catch (NumberFormatException ex) {
+            Logger.E(TAG, ex);
+            Logger.W(TAG, "Returning string result: " + res);
+        }
         mStrResult = res;
         mResultType = ResultType.typeString;
+        Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
@@ -231,9 +282,10 @@ public class MethodResult implements IMethodResult {
 
     @Override
     public void set(List<Object> res) {
-        Logger.T(TAG, toString());
+        Logger.T(TAG, "set("+res+")");
         mListResult = res;
         mResultType = ResultType.typeList;
+        Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
@@ -242,9 +294,10 @@ public class MethodResult implements IMethodResult {
 
     @Override
     public void set(Map<String, Object> res) {
-        Logger.T(TAG, toString());
+        Logger.T(TAG, "set("+res+")");
         mMapResult = res;
         mResultType = ResultType.typeMap;
+        Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
@@ -415,7 +468,7 @@ public class MethodResult implements IMethodResult {
             nativeCallBack(mTabId, mSingleShot, mIsRuby);
         }
     }
-
+    
     @Override
     public void setArgError(String message) {
         Logger.T(TAG, toString());

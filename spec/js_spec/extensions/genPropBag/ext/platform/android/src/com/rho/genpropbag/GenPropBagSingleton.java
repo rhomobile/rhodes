@@ -11,11 +11,13 @@ class GenPropBagSingleton extends GenPropBagSingletonBase implements IGenPropBag
     }
     @Override
     protected String getInitialDefaultID() {
-        return "0";
+        return "ID1";
     }
     @Override
     public void enumerate(IMethodResult result) {
-        // TODO Auto-generated method stub
+        result.collect("ID1");
+        result.collect("ID2");
+        result.set();
         
     }
 

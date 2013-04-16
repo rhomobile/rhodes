@@ -98,16 +98,16 @@ if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
         RAWLOG_ERROR1("Error setting callback: %s", result.getErrorMessage().c_str());
         return CMethodResultConvertor().toJSON(result);
     }
-<%
-end
+<% end
+
 if api_generator_isApiObjectParam(method.result)
   if method.result.type == MethodParam::TYPE_SELF %>
     result.setObjectClassPath("<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>");
-    RAWTRACE("Object class path is set");
+    RAWTRACE("Object class path is set");<%
   else %>
     result.setObjectClassPath("<%= api_generator_getJSModuleName(api_generator_ruby_makeApiObjectTypeName(method.result, $cur_module)) %>");
-    RAWTRACE("Object class path is set");
-<% end
+    RAWTRACE("Object class path is set");<%
+  end
 end
 if method.access == ModuleMethod::ACCESS_STATIC %>
     ObjectProxy::<%= method.native_name %>(argumentsAdapter(argv), result); <%

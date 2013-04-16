@@ -14,6 +14,12 @@ describe("<generator API specs>", function () {
         expect(Rho.GenPropBag.getDefault().boolProp).toEqual(true);
     });
 
+    it("Test int default property", function () {
+        expect(Rho.GenPropBag.getDefault().intProp).toEqual(0);
+        Rho.GenPropBag.getDefault().intProp = 15;
+        expect(Rho.GenPropBag.getDefault().intProp).toEqual(15);
+    });
+
     it("Test enumerate", function () {
         var objs = Rho.GenPropBag.enumerate();
         
@@ -23,5 +29,5 @@ describe("<generator API specs>", function () {
         objs[1].boolProp = true;
         expect(objs[1].boolProp).toEqual(true);
     });
-    
+
 });
