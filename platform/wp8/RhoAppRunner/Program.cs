@@ -45,7 +45,7 @@ namespace RhoAppRunner
             bool useEmulator = true;
             Device WP8Device = null;
 
-            if (args.Length < 4)
+            if (args.Length < 5)
             {
                 Console.WriteLine("Invalid parameters");
                 return;
@@ -58,7 +58,7 @@ namespace RhoAppRunner
            //     WP8Device = WP8SDK.GetDevices().First(d => d.Name.StartsWith("Windows Phone Emulator") || d.Name.StartsWith("Windows Phone 8 Emulator"));
                 WP8Device = WP8SDK.GetDevices().First(d => d.Name.StartsWith("Emulator WVGA"));
             else
-                WP8Device = WP8SDK.GetDevices().First(d => d.Name.StartsWith("Device"));
+                WP8Device = WP8SDK.GetDevices().First(d => d.Name.StartsWith("Windows Phone Device") || d.Name.StartsWith("Windows Phone 8 Device") || d.Name.StartsWith("Device"));
 
             Console.WriteLine("Connecting to Windows Phone 8 Emulator/Device...");
             WP8Device.Connect();
@@ -72,18 +72,30 @@ namespace RhoAppRunner
 
                 app = WP8Device.GetApplication(appID);
 
-                //app.Uninstall();
-                app.UpdateApplication(args[1],
+                if (args.Length == 6)
+                {
+                    var remoteIso = app.GetIsolatedStore();
+                    string targetDesktopFilePath = @args[5];
+                    remoteIso.ReceiveFile("rho/rholog.txt", targetDesktopFilePath, true);
+                    return;
+                }
+
+                app.Uninstall();
+               /* app.UpdateApplication(args[1],
                                       args[2],
                                       args[3]);
 
                 Console.WriteLine("Sample XAP Updated on Windows Phone 8 Emulator/Device...");
 
                 Console.WriteLine("Launching sample app on Windows Phone 8 Emulator...");
-                app.Launch();
-                Console.WriteLine("Launched sample app on Windows Phone 8 Emulator...");
+                //app.Launch();
+                Console.WriteLine("Launched sample app on Windows Phone 8 Emulator...");*/
 
-                return;
+                //var remoteIso = app.GetIsolatedStore();
+                //bool result = remoteIso.FileExists("rholog.txt");
+                //result = remoteIso.FileExists("rho/apps/app/loading.png");
+
+                //return;
             }            
 
             Console.WriteLine("Installing sample XAP to Windows Phone 8 Emulator/Device...");
@@ -98,19 +110,8 @@ namespace RhoAppRunner
             Console.WriteLine("Sample XAP installed to Windows Phone 8 Emulator...");
 
             Console.WriteLine("Launching sample app on Windows Phone 8 Emulator...");
-            while (true)
-            {
-                if (WP8Device.IsApplicationInstalled(appID))
-                {
-                    app.TerminateRunningInstances();
-                    app.Launch();
-                    break;
-                }
-            }
+            app.Launch();
             Console.WriteLine("Launched sample app on Windows Phone 8 Emulator...");
-            //app.TerminateRunningInstances();
-            //Console.WriteLine("Relaunching sample app on Windows Phone 8 Emulator...");
-            //app.Launch();
         }
     }
 }
