@@ -56,14 +56,18 @@ namespace common
 
 IVectorView<Platform::String^>^ convertArrayWP8(const Vector<String>& arr)
 {
-    // TODO: convert string array
-    return ref new Platform::Collections::VectorView<Platform::String^>();
+	IVector<Platform::String^>^ res = ref new Platform::Collections::Vector<Platform::String^>();
+	for (Vector<String>::const_iterator i = arr.begin(); i != arr.end(); ++i)
+		res->Append(convertStringToWP8(*i));
+	return res->GetView();
 }
 
 IMapView<Platform::String^, Platform::String^>^ convertHashWP8(const Hashtable<String, String>& hash)
 {
-    // TODO: convert string hash
-    return ref new Platform::Collections::MapView<Platform::String^, Platform::String^>();
+	IMap<Platform::String^, Platform::String^>^ res = ref new Platform::Collections::Map<Platform::String^, Platform::String^>();
+	for(Hashtable<String, String>::const_iterator i = hash.begin(); i != hash.end(); ++i)
+		res->Insert(convertStringToWP8(i->first), convertStringToWP8(i->second));
+	return res->GetView();
 }
 
 String convertStringAFromWP8(::Platform::String^ str)
@@ -76,17 +80,19 @@ StringW convertStringWFromWP8(::Platform::String^ str)
     return rho::common::convertToStringW(str->Data());
 }
 
-Vector<rho::String> convertArrayFromWP8(::Windows::Foundation::Collections::IVectorView<Platform::String^>^ arr)
+Vector<rho::String> convertArrayFromWP8(IVectorView<Platform::String^>^ arr)
 {
     Vector<rho::String> vec;
-    // TODO: convert string array from C#
+	for (IIterator<Platform::String^>^ i = arr->First(); i->HasCurrent; i->MoveNext())
+		vec.addElement(convertStringAFromWP8(i->Current));
     return vec;
 }
 
-Hashtable<rho::String, rho::String> convertHashFromWP8(::Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ hash)
+Hashtable<rho::String, rho::String> convertHashFromWP8(IMapView<Platform::String^, Platform::String^>^ hash)
 {
     Hashtable<rho::String, rho::String> ht;
-    // TODO: convert string hash from C#
+	for (IIterator<IKeyValuePair<Platform::String^, Platform::String^>^>^ i = hash->First(); i->HasCurrent; i->MoveNext())
+		ht.emplace(convertStringAFromWP8(i->Current->Key), convertStringAFromWP8(i->Current->Value));
     return ht;
 }
 
