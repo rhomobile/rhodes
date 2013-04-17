@@ -145,13 +145,11 @@ void create_native_tabbar(int bar_type, rho_param *p)
             return;
         }
         if (!skip_item) {
-			rho::StringW bgcolor = background_color ? rho::common::convertToStringW(background_color) : rho::StringW();
-			rho::StringW selcolor = selected_color ? rho::common::convertToStringW(selected_color) : rho::StringW();
-			rho::StringW callback = on_change_tab_callback ? rho::common::convertToStringW(on_change_tab_callback) : rho::StringW();
+			// TODO: on_change_tab_callback
 			rho::String strIconPath = icon ? rho::common::CFilePath::join( RHODESAPP().getAppRootPath(), icon) : rho::String();
 			CRhoRuntime::getInstance()->getMainPage()->tabbarAddTab(
 				rho::common::convertStringToWP8(label), rho::common::convertStringToWP8(strIconPath), rho::common::convertStringToWP8(action),
-				charToBool(disabled), rho::common::convertStringWToWP8(bgcolor), rho::common::convertStringWToWP8(selcolor),
+				charToBool(disabled), rho::common::convertStringCToWP8(background_color), rho::common::convertStringCToWP8(selected_color),
 				charToBool(reload), charToBool(use_current_view_for_tab));
         }
     }

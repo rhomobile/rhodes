@@ -145,7 +145,7 @@ void create_native_toolbar(int bar_type, rho_param *p)
     }
 	//TODO: setToolbarStyle
 	//TODO: toolbarShow
-	CRhoRuntime::getInstance()->getMainPage()->setToolbarStyle(false, rho::common::convertStringToWP8(rgbBackColor));
+	CRhoRuntime::getInstance()->getMainPage()->setToolbarStyle(false, rho::common::convertStringCToWP8(rgbBackColor));
     CRhoRuntime::getInstance()->getMainPage()->toolbarShow();
     //m_started = true;
 }

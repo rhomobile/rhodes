@@ -33,7 +33,7 @@ namespace rho
 namespace common
 {
 
-::Platform::String^ convertStringCToWP8(char* str);
+::Platform::String^ convertStringCToWP8(const char* str);
 ::Platform::String^ convertStringToWP8(const rho::String& str);
 ::Platform::String^ convertStringWToWP8(const rho::StringW& str);
 ::Windows::Foundation::Collections::IVectorView<Platform::String^>^ convertArrayToWP8(const rho::Vector<rho::String>& arr);

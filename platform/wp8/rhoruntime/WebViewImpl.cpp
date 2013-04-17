@@ -25,7 +25,7 @@ extern "C" void rho_webview_navigate_forward()
 
 extern "C" const char* rho_webview_execute_js(const char* js, int index) 
 {
-	rho::String urlA = rho::common::convertStringAFromWP8(CRhoRuntime::getInstance()->getMainPage()->executeScript(rho::common::convertStringCToWP8((char*)js), index));
+	rho::String urlA = rho::common::convertStringAFromWP8(CRhoRuntime::getInstance()->getMainPage()->executeScript(rho::common::convertStringCToWP8(js), index));
     return strdup(urlA.c_str());
 }
 
