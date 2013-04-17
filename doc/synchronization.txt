@@ -92,6 +92,13 @@ If the `SyncEngine` already knows about a logged-in user and a new user logs in,
 	  super
 	  Rhom::Rhom.database_local_reset
 	end
+
+If you would like to re-cycle the device license (client_id) across user sessions, override the `on_sync_user_changed` method with the following:
+
+    :::ruby
+    def on_sync_user_changed
+      Rhom::Rhom.database_full_reset(false,false)
+    end
 	
 Other auth-related methods are described in the [`SyncEngine` API section](/rhodes/synchronization#syncengine-api).
 
