@@ -155,7 +155,7 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 			public void run() {
 				reportMsg(" $$$ Start make of Signature View");
 				
-				Object webView_obj = extManager.getWebView();
+				Object webView_obj = extManager.getWebView().getView();
 				if (webView_obj instanceof ViewGroup) {
 					ViewGroup wv = (ViewGroup)webView_obj;
 					if ((wv != null) && (ourInlineSignatureView != null)) {
@@ -248,7 +248,7 @@ public class Signature extends AbstractRhoExtension implements IRhoExtension {
 			public void run() {
 				if (ourInlineSignatureView != null) {
 					
-					Object webView_obj = extManager.getWebView();
+					Object webView_obj = extManager.getWebView().getView();
 					if (webView_obj instanceof ViewGroup) {
 						ViewGroup wv = (ViewGroup)webView_obj;
 						if ((wv != null) && (ourInlineSignatureView != null)) {
