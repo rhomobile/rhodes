@@ -3,6 +3,7 @@
 #include "common/StringConverter.h"
 #include "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
+#include "common/RhoConvertWP8.h"
 
 using namespace rhoruntime;
 using namespace Platform;
@@ -24,15 +25,13 @@ extern "C" void rho_webview_navigate_forward()
 
 extern "C" const char* rho_webview_execute_js(const char* js, int index) 
 {
-	rho::StringW jsW;
-	rho::common::convertToStringW(js, jsW);
-	rho::String urlA = rho::common::convertToStringA(CRhoRuntime::getInstance()->getMainPage()->executeScript(ref new String(jsW.c_str()), index)->Data());
+	rho::String urlA = rho::common::convertStringAFromWP8(CRhoRuntime::getInstance()->getMainPage()->executeScript(rho::common::convertStringCToWP8((char*)js), index));
     return strdup(urlA.c_str());
 }
 
 extern "C" const char* rho_webview_current_location(int index)
 {
-	rho::String urlA = rho::common::convertToStringA(CRhoRuntime::getInstance()->getMainPage()->getCurrentURL(index)->Data());
+	rho::String urlA = rho::common::convertStringAFromWP8(CRhoRuntime::getInstance()->getMainPage()->getCurrentURL(index));
 	return strdup(urlA.c_str());
 }
 
@@ -48,14 +47,8 @@ extern "C" void rho_webview_full_screen_mode(int enable)
 
 extern "C" void rho_webview_set_cookie(const char *url, const char *cookie)
 {
-	rho::StringW urlW;
-	rho::StringW cookieW;
-
 	rho::String fullUrl = RHODESAPPBASE().canonicalizeRhoUrl(url);
-	rho::common::convertToStringW(fullUrl.c_str(), urlW);
-	rho::common::convertToStringW(cookie, cookieW);
-
-	CRhoRuntime::getInstance()->getMainPage()->setCookie(ref new String(urlW.c_str()), ref new String(cookieW.c_str()));
+	CRhoRuntime::getInstance()->getMainPage()->setCookie(rho::common::convertStringToWP8(fullUrl), rho::common::convertStringToWP8(cookie));
 }
 
 extern "C" void waitForBrowserInitialized()
@@ -72,16 +65,10 @@ extern "C" void waitForBrowserInitialized()
 
 extern "C" void rho_webview_navigate(const char* url, int index)
 { 
-	rho::StringW urlW;
-
 	waitForBrowserInitialized();
-
 	rho::String fullUrl = RHODESAPPBASE().canonicalizeRhoUrl(url);
-	rho::common::convertToStringW(fullUrl.c_str(), urlW);
-
-	LOG(INFO) + urlW.c_str();
-
-	CRhoRuntime::getInstance()->getMainPage()->navigate(ref new String(urlW.c_str()), index);
+	LOG(INFO) + fullUrl.c_str();
+	CRhoRuntime::getInstance()->getMainPage()->navigate(rho::common::convertStringToWP8(fullUrl), index);
 }
 
 extern "C" void rho_webview_refresh(int index)

@@ -32,27 +32,63 @@ using namespace Windows::Foundation::Collections;
 
 namespace rho
 {
+namespace common
+{
 
-extern "C" {
+::Platform::String^ convertStringCToWP8(char* str)
+{
+    std::string s_str = std::string(str);
+    std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
+    const wchar_t* w_char = wid_str.c_str();
+    return ref new Platform::String(w_char);
+}
 
-::Platform::String^ convertStringWP8(const rho::String& str)
+::Platform::String^ convertStringToWP8(const String& str)
 {
     rho::StringW strW = rho::common::convertToStringW(str);
     return ref new ::Platform::String(strW.c_str());
 }
 
-IVectorView<Platform::String^>^ convertArrayWP8(const rho::Vector<rho::String>& arr)
+::Platform::String^ convertStringWToWP8(const StringW& str)
 {
-	// TODO: convert string array
-	return ref new Platform::Collections::VectorView<Platform::String^>();
+    return ref new ::Platform::String(str.c_str());
 }
 
-IMapView<Platform::String^, Platform::String^>^ convertHashWP8(const rho::Hashtable<rho::String, rho::String>& hash)
+IVectorView<Platform::String^>^ convertArrayWP8(const Vector<String>& arr)
 {
-	// TODO: convert string hash
-	return ref new Platform::Collections::MapView<Platform::String^, Platform::String^>();
+    // TODO: convert string array
+    return ref new Platform::Collections::VectorView<Platform::String^>();
+}
+
+IMapView<Platform::String^, Platform::String^>^ convertHashWP8(const Hashtable<String, String>& hash)
+{
+    // TODO: convert string hash
+    return ref new Platform::Collections::MapView<Platform::String^, Platform::String^>();
+}
+
+String convertStringAFromWP8(::Platform::String^ str)
+{
+    return rho::common::convertToStringA(str->Data());
+}
+
+StringW convertStringWFromWP8(::Platform::String^ str)
+{
+    return rho::common::convertToStringW(str->Data());
+}
+
+Vector<rho::String> convertArrayFromWP8(::Windows::Foundation::Collections::IVectorView<Platform::String^>^ arr)
+{
+    Vector<rho::String> vec;
+    // TODO: convert string array from C#
+    return vec;
+}
+
+Hashtable<rho::String, rho::String> convertHashFromWP8(::Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ hash)
+{
+    Hashtable<rho::String, rho::String> ht;
+    // TODO: convert string hash from C#
+    return ht;
 }
 
 }
-
 }
