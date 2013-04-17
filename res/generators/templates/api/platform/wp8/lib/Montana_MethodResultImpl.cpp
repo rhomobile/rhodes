@@ -26,11 +26,6 @@ void C<%= $cur_module.name %>MethodResultImpl::set(int res)
     oResult->set(res);
 }
 
-void C<%= $cur_module.name %>MethodResultImpl::set(unsigned long res)
-{
-    oResult->set(res);
-}
-
 void C<%= $cur_module.name %>MethodResultImpl::set(double res)
 {
     oResult->set(res);

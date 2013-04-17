@@ -15,7 +15,6 @@ namespace <%= $cur_module.name %>Runtime {
         virtual void set(bool res);
         virtual void set(int64 res);
         virtual void set(int res);
-        virtual void set(unsigned long res);
         virtual void set(double res);
         virtual void set(Platform::String^ res);
         virtual void set(Windows::Foundation::Collections::IVectorView<Platform::String^>^ res);
