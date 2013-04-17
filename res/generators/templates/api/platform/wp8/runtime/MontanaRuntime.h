@@ -43,7 +43,6 @@ namespace <%= $cur_module.name %>Runtime
         void set(bool res);
         void set(int64 res);
         void set(int res);
-        void set(unsigned long res);
         void set(double res);
         void set(Platform::String^ res);
         void set(Windows::Foundation::Collections::IVectorView<Platform::String^>^ res);
