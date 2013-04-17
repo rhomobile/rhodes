@@ -51,8 +51,11 @@ void CMethodResult::convertToType(ETypes eType)
     switch(eType)
     {
     case eString:
-        m_strRes = toString();
-        m_ResType = eString;
+        if ( m_ResType != eJSON )
+        {
+            m_strRes = toString();
+            m_ResType = eString;
+        }
         break;
     case eStringW:
         m_strResW = convertToStringW(toString());
