@@ -878,7 +878,7 @@ namespace "build" do
                  libpath = File.join(prebuiltpath, "lib"+libname+".a")
                  libsimpath = File.join(prebuiltpath, "lib"+libname+"386.a")
                  libdevpath = File.join(prebuiltpath, "lib"+libname+"ARM.a")
-                 libbinpath = File.join($app_builddir, "extensions", ext, "lib"+libname+".a")
+                 libbinpath = File.join($app_builddir, "extensions", ext, "lib", "lib"+libname+".a")
 
                  ENV["TARGET_TEMP_DIR"] = prebuiltpath
                  ENV["ARCHS"] = "i386"
@@ -902,11 +902,18 @@ namespace "build" do
                  args << libdevpath
                  Jake.run("lipo",args)
 
-                 mkdir_p File.join($app_builddir, "extensions", ext)
+                 mkdir_p File.join($app_builddir, "extensions", ext, "lib")
                  cp libpath, libbinpath
 
                  rm_f libsimpath
                  rm_f libdevpath
+
+                 # copy all files from extension folder to extension binary folder
+                 Dir.glob(File.join(commin_ext_path,'*')).each do |artefact|
+                    if (artefact != extpath) && (artefact != extyml) && ((File.file? artefact) || (File.directory? artefact))
+                        cp_r artefact, File.join($app_builddir, "extensions", ext)
+                    end 
+                 end 
 
               end
             end 
