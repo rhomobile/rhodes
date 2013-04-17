@@ -154,7 +154,7 @@
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_ruby_wrap.cpp" />
     <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h" />
-	<ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>Base.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>Base.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\<%= name.camel_case() %>_impl.cpp" />

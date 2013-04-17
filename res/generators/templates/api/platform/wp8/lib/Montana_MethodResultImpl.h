@@ -12,6 +12,11 @@ namespace <%= $cur_module.name %>Runtime {
     public:
         C<%= $cur_module.name %>MethodResultImpl(int64 native);
 
+        virtual void set(bool res);
+        virtual void set(int64 res);
+        virtual void set(int res);
+        virtual void set(unsigned long res);
+        virtual void set(double res);
         virtual void set(Platform::String^ res);
         virtual void set(Windows::Foundation::Collections::IVectorView<Platform::String^>^ res);
         virtual void set(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ res);
