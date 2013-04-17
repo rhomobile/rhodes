@@ -152,25 +152,28 @@ INetResponse* CNetRequestWrapper::pullFile(const String& strUrl, const String& s
     common::CRhoFile tmpFile;
     common::CRhoFile::EOpenModes openMode = common::CRhoFile::OpenForWrite;
     
-    Hashtable<String, String> h;
-    ::getNetRequest().doRequest("HEAD", strUrl, "", oSession, &h );
+    //don't request headers of will overwrite anyway
+    if (!overwriteFile) {
+        Hashtable<String, String> h;
+        ::getNetRequest().doRequest("HEAD", strUrl, "", oSession, &h );
     
-    if ( h.containsKey("last-modified") )
-    {
-        if ( common::CRhoFile::isFileExist(modfilename.c_str()) ) {
-            String modDate;
-            common::CRhoFile fModDate;
-            if ( fModDate.open(modfilename.c_str(), common::CRhoFile::OpenReadOnly)) {
-                fModDate.readString(modDate);
-                if (modDate == h.get("last-modified")) {
-                    openMode = common::CRhoFile::OpenForAppend;
+        if ( h.containsKey("last-modified") )
+        {
+            if ( common::CRhoFile::isFileExist(modfilename.c_str()) ) {
+                String modDate;
+                common::CRhoFile fModDate;
+                if ( fModDate.open(modfilename.c_str(), common::CRhoFile::OpenReadOnly)) {
+                    fModDate.readString(modDate);
+                    if (modDate == h.get("last-modified")) {
+                        openMode = common::CRhoFile::OpenForAppend;
+                    }
                 }
-            }
-        } else {
-            common::CRhoFile fModDate;
-            if ( fModDate.open(modfilename.c_str(), common::CRhoFile::OpenForWrite) ) {
-                const String& modDate = h.get("last-modified");
-                fModDate.write((void*)modDate.c_str(), modDate.length());
+            } else {
+                common::CRhoFile fModDate;
+                if ( fModDate.open(modfilename.c_str(), common::CRhoFile::OpenForWrite) ) {
+                    const String& modDate = h.get("last-modified");
+                    fModDate.write((void*)modDate.c_str(), modDate.length());
+                }
             }
         }
     }
