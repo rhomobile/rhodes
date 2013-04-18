@@ -233,7 +233,7 @@ extern int rho_webview_active_tab();
     //[mRubyCallbackURL release];
     //[mJSCallbackUID release];
     //[mCallbackParam release];
-    [mValue release];
+    //[mValue release];
     //[mRubyModulePath release];
     if (mRubyCallbackMethod != 0) {
         RubyCallbackHelper_releaseRubyValue(mRubyCallbackMethod);
