@@ -248,7 +248,9 @@ void RhoRubyStart()
 #if defined(WINDOWS_PLATFORM)
     init_rhoext_Signature();
 #else
-    Init_SignatureCapture();
+#if !defined(OS_MACOSX)
+        Init_SignatureCapture();
+#endif
 #endif
 
     Init_RhoBluetooth();
