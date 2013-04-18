@@ -413,8 +413,9 @@ namespace "clean" do
         if File.file? extyml
           extconf = Jake.config(File.open(extyml))
           type    = extconf["exttype"]
+          wm_type = extconf["wm"]["exttype"] if extconf["wm"]
        
-          if type != "prebuilt"
+          if type != "prebuilt" && wm_type != "prebuilt"      
             rm_rf  File.join(extpath, "ext", "shared", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "android", "generated")
             rm_rf  File.join(extpath, "ext", "platform", "iphone", "generated")
@@ -985,6 +986,7 @@ def init_extensions(startdir, dest)
           entry = extconf["entry"]
           nlib = extconf["nativelibs"]
           type = extconf["exttype"]
+          wm_type = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths = extconf["xml_api_paths"]
         
           if nlib != nil
@@ -1009,7 +1011,7 @@ def init_extensions(startdir, dest)
             extlibs += libs
           end
 
-          if xml_api_paths && type != "prebuilt"
+          if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
             xml_api_paths    = xml_api_paths.split(',')
                                                           
             xml_api_paths.each do |xml_api|
