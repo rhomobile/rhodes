@@ -27,7 +27,6 @@
 package com.rhomobile.rhodes.ui;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +34,6 @@ import java.util.List;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
-import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.util.Utils;
 
 import android.content.Intent;

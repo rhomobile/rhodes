@@ -168,7 +168,7 @@ public class ImageCapture extends BaseActivity implements SurfaceHolder.Callback
 			return true;
 		case KeyEvent.KEYCODE_BACK:
 			// send "cancel" callback
-			com.rhomobile.rhodes.camera.Camera.doCancelCallback(callbackUrl);
+			com.rhomobile.rhodes.camera.Camera.doCancelCallback();
 			return super.onKeyDown(keyCode, event);
 		default:
 			return false;
