@@ -66,6 +66,10 @@ describe("<ORM module specs>", function() {
             expect(cleanVars(object)).toEqual({'key': 'value'});
         });
 
+        it('retrieves object id', function() {
+            expect(object.object()).toBe(object.get('object'));
+        });
+
         it('gets existing property', function() {
             expect(object.get('key')).toBe('value');
         });
@@ -97,6 +101,11 @@ describe("<ORM module specs>", function() {
         it('sets property with empty name', function() {
             object.set('', 'another value');
             expect(cleanVars(object)).toEqual({'key': 'value', '': 'another value'});
+        });
+
+        it('has properties', function() {
+            expect(object.has('key')).toBe(true);
+            expect(object.has('absent key')).toBe(false);
         });
     });
 
@@ -151,7 +160,7 @@ describe("<ORM module specs>", function() {
     it('reads object from database', function() {
         var Model = Rho.ORM.addModel('Model');
         Model.deleteAll();
-        var original = Model.create({'key': 'value'});
+        Model.create({'key': 'value'});
         var found = Model.find('all');
         expect(found.length).toBe(1);
         expect(cleanVars(found[0])).toEqual({'key': 'value'});
@@ -160,7 +169,7 @@ describe("<ORM module specs>", function() {
     it('does not write empty property to database', function() {
         var Model = Rho.ORM.addModel('Model');
         Model.deleteAll();
-        var original = Model.create({'key': 'value', '': 'empty'});
+        Model.create({'key': 'value', '': 'empty'});
         var found = Model.find('all');
         expect(found.length).toBe(1);
         expect(cleanVars(found[0])).toEqual({'key': 'value'});
@@ -180,4 +189,44 @@ describe("<ORM module specs>", function() {
 
         expect(after1).toBe(before1 + 2);
     });
+
+    it('finds all objects in database', function() {
+        var Model1 = Rho.ORM.addModel('Model1');
+        var Model2 = Rho.ORM.addModel('Model2');
+
+        Model1.deleteAll();
+
+        Model1.create({'key1': 'value1'});
+        Model2.create({'key2': 'value2'});
+        Model1.create({'key3': 'value3'});
+
+        var found = Model1.find('all');
+
+        expect(found.length).toBe(2);
+        var i = (found[0].has('key1')) ? 0 : 1;
+        expect(cleanVars(found[i    ])).toEqual({'key1': 'value1'});
+        expect(cleanVars(found[1 - i])).toEqual({'key3': 'value3'});
+    });
+
+    it('finds specific object', function() {
+        var Model = Rho.ORM.addModel('Model');
+
+        var original = Model.create({'key1': 'value1'});
+        Model.create({'key2': 'value2'});
+
+        expect(Model.find(original.object()).vars()).toEqual(original.vars());
+    });
+
+    it('finds first object in database', function() {
+        var Model = Rho.ORM.addModel('Model');
+
+        Model.deleteAll();
+
+        var originals = [Model.create({'key1': 'value1'}), Model.create({'key3': 'value3'})];
+
+        var found = Model.find('first');
+
+        expect(found.vars()).toEqual(originals[(found.has('key1')) ? 0 : 1].vars());
+    });
+
 });
