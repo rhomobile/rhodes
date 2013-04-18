@@ -142,9 +142,9 @@ describe("<log module specs>", function () {
     });
 
     //TODO: test log file contains the string
-    it("Test fatalError method", function () {
-        Rho.Log.fatalError("test fatal error message", "test");
-    });
+    //it("Test fatalError method", function () {
+    //    Rho.Log.fatalError("test fatal error message", "test");
+    //});
 
     //TODO: add test on receiving file
     //TODO: add test on callback
