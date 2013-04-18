@@ -602,6 +602,7 @@ namespace "config" do
         
         if $current_platform == "iphone"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
+            $app_config['extensions'] = $app_config['extensions'] | ['signature']
         end    
         
     end
@@ -644,6 +645,9 @@ namespace "config" do
     if $app_config['extensions'].index('audiocapture')
         #$app_config['extensions'].delete('audiocapture')
         $rhoelements_features += "- Audio Capture\n"
+    end
+    if $app_config['extensions'].index('signature') && ($current_platform == "iphone")
+        $rhoelements_features += "- Signature Capture\n"
     end
     
     if $current_platform == "wm"
