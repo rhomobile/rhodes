@@ -823,6 +823,9 @@ public class RhodesService extends Service {
             else if (name.equalsIgnoreCase("uuid")) {
                 return fetchUUID();
             }
+            else if (name.equalsIgnoreCase("has_camera")) {
+                return Boolean.TRUE;
+            }
             else {
                 return RhoExtManager.getImplementationInstance().getProperty(name);
             }
