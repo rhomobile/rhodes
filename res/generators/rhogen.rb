@@ -1615,6 +1615,21 @@ module Rhogen
                  end
               end
             end
+            # if default is not setted - set it to default for types
+            if module_property.default_value == nil
+               if module_property.type == MethodParam::TYPE_BOOL
+                  module_property.default_value = "false"
+               end
+               if module_property.type == MethodParam::TYPE_INT
+                  module_property.default_value = "0"
+               end
+               if module_property.type == MethodParam::TYPE_DOUBLE
+                  module_property.default_value = "0"
+               end
+               if module_property.type == MethodParam::TYPE_STRING
+                  module_property.default_value = ""
+               end
+            end
 
             module_item.properties << module_property
 
