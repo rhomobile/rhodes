@@ -64,7 +64,8 @@ describe("<log module specs>", function () {
     });
 
     it("Test default value of filePath property", function () {
-        expect(Rho.Log.filePath).toEqual("rholog.txt");
+        var pathPieces = Rho.Log.filePath.split("/");
+        expect(pathPieces[pathPieces.length - 1]).toEqual("rholog.txt");
     });
 
     it("Test filePath property", function () {
@@ -79,16 +80,6 @@ describe("<log module specs>", function () {
     it("Test memoryPeriod property", function () {
         Rho.Log.memoryPeriod = 1000;
         expect(Rho.Log.memoryPeriod).toEqual(1000);
-    });
-
-    it("Test default value of netTrace property", function () {
-        expect(Rho.Log.netTrace).toEqual(false);
-    });
-
-    //TODO: move to platform dependent tests
-    it("Test netTrace property", function () {
-        Rho.Log.netTrace = true;
-        expect(Rho.Log.netTrace).toEqual(true);
     });
 
     it("Test default value of skipPost property", function () {
@@ -165,4 +156,17 @@ describe("<log module specs>", function () {
     it("Test readLogFile method", function () {
         expect(Rho.Log.readLogFile(1000).length).toEqual(1000);
     });
+
+
+    if (isAndroidOrApplePlatform() || isWindowsPhone8Platform()) {
+        it("Test default value of netTrace property", function () {
+            expect(Rho.Log.netTrace).toEqual(false);
+        });
+
+        it("Test netTrace property", function () {
+            Rho.Log.netTrace = true;
+            expect(Rho.Log.netTrace).toEqual(true);
+        });
+
+    }
 });
