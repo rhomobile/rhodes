@@ -326,7 +326,7 @@
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
-<REMARKS>
+        <REMARKS>
             <REMARK title="Detecting a connection through proxies">
                 <DESC>
                     <![CDATA[
