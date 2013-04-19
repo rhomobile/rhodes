@@ -1,9 +1,12 @@
+
+/* Basic test methods */
+
 function isAndroidPlatform() {
-    return ["ANDROID"] == (Rho.System.platform);
+    return "ANDROID" == Rho.System.platform;
 }
 
 function isApplePlatform() {
-    return ["APPLE"] == (Rho.System.platform);
+    return "APPLE" == Rho.System.platform;
 }
 
 function isWindowsMobilePlatform() {
@@ -14,32 +17,39 @@ function isWindowsDesktopPlatform() {
     return "WINDOWS_DESKTOP" == Rho.System.platform;
 }
 
+function isWindowsPhone8Platform() {
+    return "WP8" == Rho.System.platform;
+}
+
+/* Complex test methods */
+
 function isAnyWindowsFamilyPlatform() {
-    return ["WINDOWS", "WINDOWS_DESKTOP", "WP8"].indexOf(Rho.System.platform) != -1;
+    return isWindowsMobilePlatform() || isWindowsDesktopPlatform() || isWindowsPhone8Platform();
 }
 
 function isWindowsMobileOrWindowsDesktopPlatform() {
-    return ["WINDOWS", "WINDOWS_DESKTOP"].indexOf(Rho.System.platform) != -1;
+    return isWindowsMobilePlatform() || isWindowsDesktopPlatform();
 }
 
 function isAnyButWindowsFamilyPlatform() {
-    return !isAnyWindowsFamilyPlatform();
-}
-
-function isAnyButAppleAndWindowsMobilePlatform() {
-    return ["APPLE", "WINDOWS"].indexOf(Rho.System.platform) == -1;
-}
-
-function isWindowsMobileOrAndroidPlatform() {
-    return ["WINDOWS", "ANDROID"].indexOf(Rho.System.platform) != -1;
+     return !isAnyWindowsFamilyPlatform();
 }
 
 function isAnyButApplePlatform() {
-    return ["APPLE"] != (Rho.System.platform);
+    return !isApplePlatform();
+}
+
+function isAnyButAppleAndWindowsMobilePlatform() {
+    return !(isApplePlatform() || isWindowsMobilePlatform());
+}
+
+function isWindowsMobileOrAndroidPlatform() {
+    return isAndroidPlatform() || isWindowsMobilePlatform();
 }
 
 function isAndroidOrApplePlatform() {
-    return ["ANDROID", "APPLE"].indexOf(Rho.System.platform) != -1;
+    return isAndroidPlatform() || isApplePlatform();
 }
+
 
 
