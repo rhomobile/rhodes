@@ -647,10 +647,10 @@
             <EXAMPLE title="Working with the Windows Registry">
                 <SECTIONS>
                     <SECTION>
-                    <DESC>
-                        On devices running Windows Mobile, Windows CE, Windows Embedded Handheld and Windows Embedded CE it is possible to interact with the registry, this example shows how to do that.
-                    </DESC>
-                    <CODE lang='ruby'>
+                        <DESC>
+                            On devices running Windows Mobile, Windows CE, Windows Embedded Handheld and Windows Embedded CE it is possible to interact with the registry, this example shows how to do that.
+                        </DESC>
+                        <CODE lang='ruby'>
 <![CDATA[
 #/app/Model
 
@@ -671,8 +671,7 @@ def delete_registry_sync
     theRegSetting = Rho::System.deleteRegistrySetting({hive:'HKLM', key:'Software', setting:'RhoElementsTest', persistent:true})
     puts "Registry Deleting Success?: #{theRegSetting}"
 end                     ]]>
-
-                    </CODE>
+                        </CODE>
                     </SECTION>
                 </SECTIONS>
             </EXAMPLE>
