@@ -13,11 +13,11 @@
 
     <METHODS>
       <ALIASES>
-              <ALIAS new="commit" existing="commitTransaction" deprecated="true"/>
-              <ALIAS new="rollback" existing="rollbackTransaction" deprecated="true"/>
-              <ALIAS new="table_exist?" existing="isTableExist" deprecated="true"/>
-              <ALIAS new="is_ui_waitfordb" existing="isUiWaitForDb" deprecated="true"/>
-              <ALIAS new="set_do_not_bakup_attribute" existing="setDoNotBackupAttribute" deprecated="true"/>
+        <ALIAS new="commit" existing="commitTransaction" deprecated="true"/>
+        <ALIAS new="rollback" existing="rollbackTransaction" deprecated="true"/>
+        <ALIAS new="table_exist?" existing="isTableExist" deprecated="true"/>
+        <ALIAS new="is_ui_waitfordb" existing="isUiWaitForDb" deprecated="true"/>
+        <ALIAS new="set_do_not_bakup_attribute" existing="setDoNotBackupAttribute" deprecated="true"/>
       </ALIASES>
 
       <METHOD name="initialize" constructor="true" generateAPI="false">
@@ -56,38 +56,38 @@
         <DESC>Unlock database</DESC>
       </METHOD>
 
-        <METHOD name="isUiWaitForDb" generateAPI="false">
-            <DESC>Is UI waiting for DB?></DESC>
-            <RETURN type="BOOLEAN"/>
-        </METHOD>
+      <METHOD name="isUiWaitForDb" generateAPI="false">
+        <DESC>Is UI waiting for DB?></DESC>
+        <RETURN type="BOOLEAN"/>
+      </METHOD>
 
-        <METHOD name="executeSql" generateAPI="false" >
-            <DESC>Execute sql statement</DESC>
-            <PARAMS>
-                <PARAM name="sqlStmt" type="STRING">
-                    <DESC>The SQL statement</DESC>
-                </PARAM>
-                <PARAM name="args" type="ARRAY">
-                    <DESC>Array of the sql expressions</DESC>
-                    <CAN_BE_NIL/>
-                </PARAM>
-            </PARAMS>
-        </METHOD>
+      <METHOD name="executeSql" generateAPI="false" >
+        <DESC>Execute sql statement</DESC>
+        <PARAMS>
+          <PARAM name="sqlStmt" type="STRING">
+            <DESC>The SQL statement</DESC>
+          </PARAM>
+          <PARAM name="args" type="ARRAY">
+            <DESC>Array of the sql expressions</DESC>
+            <CAN_BE_NIL/>
+          </PARAM>
+        </PARAMS>
+      </METHOD>
 
-        <METHOD name="executeBatchSql" generateAPI="false" >
-            <DESC>Execute sql statement</DESC>
-            <PARAMS>
-                <PARAM name="sqlStmt" type="STRING">
-                    <DESC>The SQL statement</DESC>
-                </PARAM>
-                <PARAM name="args" type="ARRAY">
-                    <DESC>Array of the sql expressions</DESC>
-                    <CAN_BE_NIL/>
-                </PARAM>
-            </PARAMS>
-        </METHOD>
+      <METHOD name="executeBatchSql" generateAPI="false" >
+        <DESC>Execute sql statement</DESC>
+        <PARAMS>
+          <PARAM name="sqlStmt" type="STRING">
+            <DESC>The SQL statement</DESC>
+          </PARAM>
+          <PARAM name="args" type="ARRAY">
+            <DESC>Array of the sql expressions</DESC>
+            <CAN_BE_NIL/>
+          </PARAM>
+        </PARAMS>
+      </METHOD>
 
-        <METHOD name="import" deprecated="true" generateAPI="false">
+      <METHOD name="import" deprecated="true" generateAPI="false">
         <DESC>Import db</DESC>
         <PARAMS>
           <PARAM name="zipName" type="STRING">
@@ -103,27 +103,27 @@
       </METHOD>
 
       <METHOD name="destroyTable" generateAPI="false">
-          <DESC>Destroy database table</DESC>
-          <PARAMS>
-              <PARAM name="tableName" type="STRING">
-                  <DESC>Table name to destroy</DESC>
-              </PARAM>
-          </PARAMS>
+        <DESC>Destroy database table</DESC>
+        <PARAMS>
+          <PARAM name="tableName" type="STRING">
+            <DESC>Table name to destroy</DESC>
+          </PARAM>
+        </PARAMS>
       </METHOD>
 
       <METHOD name="destroyTables" generateAPI="false">
         <DESC>Destroy database tables</DESC>
         <PARAMS>
-            <PARAM name="propertyMap" type="HASH">
-                <PARAMS>
-                    <PARAM name="include" type="ARRAY">
-                        <DESC>include tables</DESC>
-                    </PARAM>
-                    <PARAM name="exclude" type="ARRAY">
-                        <DESC>exclude tables</DESC>
-                    </PARAM>
-                </PARAMS>
-            </PARAM>
+          <PARAM name="propertyMap" type="HASH">
+            <PARAMS>
+              <PARAM name="include" type="ARRAY">
+                <DESC>include tables</DESC>
+              </PARAM>
+              <PARAM name="exclude" type="ARRAY">
+                <DESC>exclude tables</DESC>
+              </PARAM>
+            </PARAMS>
+          </PARAM>
         </PARAMS>
       </METHOD>
 
@@ -138,16 +138,16 @@
       </METHOD>
 
       <METHOD name="setDoNotBackupAttribute" generateAPI="false" >
-          <DESC>Set do not backup attribute for database file.</DESC>
-          <PLATFORM>iOS</PLATFORM>
-          <PARAMS>
-              <PARAM name="setFlag" type="BOOLEAN">
-                <DESC></DESC>
-              </PARAM>
-          </PARAMS>
+        <DESC>Set do not backup attribute for database file.</DESC>
+        <PLATFORM>iOS</PLATFORM>
+        <PARAMS>
+          <PARAM name="setFlag" type="BOOLEAN">
+            <DESC></DESC>
+          </PARAM>
+        </PARAMS>
       </METHOD>
 
-        
+      
     </METHODS>
 
     <USER_OVERVIEW>
