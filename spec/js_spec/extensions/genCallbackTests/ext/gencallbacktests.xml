@@ -15,14 +15,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK>
-                    <PARAMS>
-                        <PARAM name="result" type="STRING">
-                            <DESC></DESC>
-                        </PARAM>
-                    </PARAMS>
-                </CALLBACK>
-
+                <CALLBACK type="STRING"/>
             </METHOD>
             <METHOD name="testBool" hasCallback="mandatory" runInThread="ui">
                 <DESC>Should negate boolean value</DESC>
@@ -32,13 +25,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK>
-                    <PARAMS>
-                        <PARAM name="result" type="BOOLEAN">
-                            <DESC></DESC>
-                        </PARAM>
-                    </PARAMS>
-                </CALLBACK>
+                <CALLBACK type="BOOLEAN"/>
             </METHOD>
             <METHOD name="testInt" hasCallback="mandatory" runInThread="ui">
                 <DESC>Should increment integer by one</DESC>
@@ -48,13 +35,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK>
-                    <PARAMS>
-                        <PARAM name="result" type="INTEGER">
-                            <DESC></DESC>
-                        </PARAM>
-                    </PARAMS>
-                </CALLBACK>
+                <CALLBACK type="INTEGER"/>
             </METHOD>
             <METHOD name="testFloat" hasCallback="mandatory" runInThread="ui">
                 <DESC>Should decrement float by 0.5</DESC>
@@ -64,13 +45,7 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK>
-                    <PARAMS>
-                        <PARAM name="result" type="FLOAT">
-                            <DESC></DESC>
-                        </PARAM>
-                    </PARAMS>
-                </CALLBACK>
+                <CALLBACK type="FLOAT"/>
             </METHOD>
             <METHOD name="testArray" hasCallback="mandatory" runInThread="ui">
                 <DESC>Should sort strings in alphabetical order</DESC>
@@ -80,13 +55,9 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK>
-                    <PARAMS>
-                        <PARAM name="result" type="ARRAY">
-                            <PARAM type="STRING"/>
-                            <DESC>Sorted strings</DESC>
-                        </PARAM>
-                    </PARAMS>
+                <CALLBACK type="ARRAY">
+                    <PARAM type="STRING"/>
+                    <DESC>Sorted strings</DESC>
                 </CALLBACK>
             </METHOD>
             <METHOD name="testHash" hasCallback="mandatory" runInThread="ui">
@@ -96,22 +67,12 @@
                     </PARAM>
                 </PARAMS>
 
-                <CALLBACK>
-                    <PARAMS>
-                        <PARAM name="result" type="HASH">
-                        </PARAM>
-                    </PARAMS>
-                </CALLBACK>
+                <CALLBACK type="HASH"/>
             </METHOD>
 
             <METHOD name="testNull" hasCallback="mandatory" runInThread="ui">
                 <DESC>Should return null</DESC>
-                <CALLBACK>
-                    <PARAMS>
-                        <PARAM name="result" type="String">
-                        </PARAM>
-                    </PARAMS>
-                </CALLBACK>
+                <CALLBACK type="String"/>
             </METHOD>
         </METHODS>
 
