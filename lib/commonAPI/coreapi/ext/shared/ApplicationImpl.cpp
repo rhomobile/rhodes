@@ -106,6 +106,19 @@ public:
         oResult.set( RHODESAPP().getAppName() );
     }
 
+    virtual void getNativeMenu(rho::apiGenerator::CMethodResult& oResult)
+    {
+        rho::Vector< Hashtable<String, String> > arRes;
+        RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
+
+        oResult.set(arRes);
+    }
+
+    virtual void setNativeMenu( const rho::Vector<rho::String>& value, rho::apiGenerator::CMethodResult& oResult)
+    {
+        RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
+    }
+
     virtual void getBadLinkURI(rho::apiGenerator::CMethodResult& oResult)
     {
         //TODO: getBadLinkURI

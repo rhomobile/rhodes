@@ -1841,16 +1841,19 @@ void CRhodesApp::loadUrl(String url)
         return;
     }
 
-    url = canonicalizeRhoUrl(url);
     if (callback)
     {
+        url = canonicalizeRhoUrl(url);
         if ( rho_ruby_is_started() )
             getNetRequest().pushData( url,  "rho_callback=1", null );
     }
     else if (js_callback)
         rho_webview_execute_js(url.c_str(), -1);
     else
+    {
+        url = canonicalizeRhoUrl(url);
         navigateToUrl(url);
+    }
 }
 
 void CRhodesApp::notifyLocalServerStarted()
