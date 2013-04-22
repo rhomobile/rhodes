@@ -168,21 +168,6 @@ void CSystemImplBase::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResul
     oResult.set(true);
 }
 
-void CSystemImplBase::getSecurityTokenNotPassed(rho::apiGenerator::CMethodResult& oResult)
-{
-    oResult.set( RHODESAPP().isSecurityTokenNotPassed() );
-}
-
-void CSystemImplBase::getInvalidSecurityTokenStartPath(rho::apiGenerator::CMethodResult& oResult)
-{
-    oResult.set( RHOCONF().getString("invalid_security_token_start_path") );
-}
-
-void CSystemImplBase::setInvalidSecurityTokenStartPath( const rho::String& invalidSecurityTokenStartPath, rho::apiGenerator::CMethodResult& oResult)
-{
-    RHOCONF().setString("invalid_security_token_start_path", invalidSecurityTokenStartPath, false );
-}
-
 void CSystemImplBase::getHasSqlite(rho::apiGenerator::CMethodResult& oResult)
 {
     oResult.set(true);
