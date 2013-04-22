@@ -1615,6 +1615,21 @@ module Rhogen
                  end
               end
             end
+            # if default is not setted - set it to default for types
+            if module_property.default_value == nil
+               if module_property.type == MethodParam::TYPE_BOOL
+                  module_property.default_value = "false"
+               end
+               if module_property.type == MethodParam::TYPE_INT
+                  module_property.default_value = "0"
+               end
+               if module_property.type == MethodParam::TYPE_DOUBLE
+                  module_property.default_value = "0"
+               end
+               if module_property.type == MethodParam::TYPE_STRING
+                  module_property.default_value = ""
+               end
+            end
 
             module_item.properties << module_property
 
@@ -1813,7 +1828,17 @@ module Rhogen
 
                 module_method.is_return_value = true
                 method_result = MethodResult.new()
-                result_type = ret_el.attribute("type").to_s
+                result_type = ret_el.attribute("type")
+                if result_type == nil
+                    puts "you use RETURN/CALLBACK without specified type - use default STRING type ! Module[#{module_item.name}].method[#{module_method.name}]"
+                    result_type = MethodParam::TYPE_STRING
+                else
+                   result_type = result_type.to_s
+                end
+                if result_type == ""
+                    puts "you use RETURN/CALLBACK with invalid type - use default STRING type ! Module[#{module_item.name}].method[#{module_method.name}]"
+                    result_type = MethodParam::TYPE_STRING
+                end
                 #result_item_type = xml_module_method.elements["RETURN"].attribute("itemType").to_s
                 ret_el.elements.each("DESC") do |xml_desc|
                    method_result.desc = xml_desc.text

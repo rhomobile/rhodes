@@ -24,10 +24,6 @@
             <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
                 <DESC>Use full screen mode.</DESC>
             </PROPERTY>
-            <PROPERTY name="nativeMenu" type="ARRAY">
-                <PARAM type="HASH" />
-                <DESC>Native Menu items: array of hashes(name to action)</DESC>
-            </PROPERTY>
             <PROPERTY name="enableZoom" type="BOOLEAN" default="true">
                 <DESC>Enable WebView zoom.</DESC>
                 <PLATFORM>Android</PLATFORM>
@@ -270,7 +266,7 @@
             </METHOD>
 
             <METHOD name="set_menu_items" deprecated="true" generateAPI="false">
-                <DESC>Use Rho::WebView.nativeMenu property: set native menu items.</DESC>
+                <DESC>Use Rho::Application.nativeMenu property: set native menu items.</DESC>
                 <PARAMS>
                     <PARAM name="menuItems" type="HASH">
                         <DESC>Map of menu items: name to action.</DESC>

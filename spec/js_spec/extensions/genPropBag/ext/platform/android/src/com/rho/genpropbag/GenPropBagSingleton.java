@@ -9,21 +9,16 @@ class GenPropBagSingleton extends GenPropBagSingletonBase implements IGenPropBag
     public GenPropBagSingleton(GenPropBagFactory factory) {
         super(factory);
     }
-
-    List<String> getIDs() {
-        List<String> ids = new LinkedList<String>();
-        ids.add("SCN1");
-        ids.add("SCN2");
-        return ids;
-    }
-    
     @Override
     protected String getInitialDefaultID() {
-        return getIDs().get(0);
+        return "ID1";
+    }
+    @Override
+    public void enumerate(IMethodResult result) {
+        result.collect("ID1");
+        result.collect("ID2");
+        result.set();
+        
     }
 
-    @Override
-    public void enumerate(IMethodResult res) {
-        res.set(getIDs());
-    }
 }

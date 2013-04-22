@@ -114,6 +114,8 @@ RHO_GLOBAL int rho_net_ping_network(const char* szHost)
 
 RHO_GLOBAL int rho_sysimpl_get_property(const char* szPropName, rho::apiGenerator::CMethodResult& result)
 {
+    RAWTRACE1("getProperty: %s", szPropName);
+
     JNIEnv *env = jnienv();
 
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);

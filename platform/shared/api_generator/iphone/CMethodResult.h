@@ -74,7 +74,7 @@
 -(void) setCallbackParam:(NSString*)param;
 -(void) setRubyFactory:(id<IMethodResult_RubyObjectFactory>)factory;
 -(void) enableObjectCreationModeWithRubyClassPath:(NSString*)classPath;
-
+-(void) enableObjectCreationModeWithJSClassPath:(NSString*)classPath;
 
 + (NSObject*) getObjectiveCNULL;
 

@@ -146,8 +146,8 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 RhoConf.setString("CAPath", CAPath);
 
         } catch (Throwable e) {
-            Logger.E(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
-            Logger.E(TAG, e);
+            Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
+            //Logger.W(TAG, e);
         } finally {
             if (configIs != null) {
                 try {
@@ -255,6 +255,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.T(TAG, "onActivityResult");
 
         RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
+        com.rhomobile.rhodes.camera.Camera.onActivityResult(requestCode, resultCode, data);
 
         RhoExtManager.getImplementationInstance().onActivityResult(this, requestCode, resultCode, data);
     }

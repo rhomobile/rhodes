@@ -50,7 +50,7 @@ if Rho::System.isRhoSimulator || System.get_property('platform') == 'APPLE' || S
             ar << {key=>value}
         end
         
-        WebView.nativeMenu = ar
+        Rho::Application.nativeMenu = ar
     end
  end
 else

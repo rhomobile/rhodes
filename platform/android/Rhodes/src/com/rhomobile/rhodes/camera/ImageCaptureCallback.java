@@ -71,7 +71,7 @@ public class ImageCaptureCallback implements PictureCallback {
 			osOwn.flush();
 			osOwn.close();
 
-			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, filePath, mImgWidth, mImgHeight, mImgFormat);
+			com.rhomobile.rhodes.camera.Camera.doCallback(filePath, mImgWidth, mImgHeight, mImgFormat);
 			mOwner.finish();
 
 		} catch (Exception e) {

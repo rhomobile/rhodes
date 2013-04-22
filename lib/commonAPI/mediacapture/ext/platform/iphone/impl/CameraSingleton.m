@@ -32,8 +32,8 @@ extern void save_image_to_device_gallery(const char* image_path);
 }
 
 
--(void) choosePicture:(id<IMethodResult>)methodResult {
-    camera_choose_picture([NSMutableDictionary dictionaryWithCapacity:1], methodResult);
+-(void) choosePicture:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
+    camera_choose_picture([CameraBase applyAliasesToDictionary:propertyMap], methodResult);
 }
 
 -(void) saveImageToDeviceGallery:(NSString*)pathToImage {

@@ -13,14 +13,6 @@
             <RETURN type="STRING">
                 <DESC>The one property that I want to know about</DESC>
             </RETURN>
-            <CALLBACK optional="true">
-                <PARAMS>
-                    <PARAM name="value" type="STRING">
-                        <DESC>The one property that I want to know about</DESC>
-                    </PARAM>
-                </PARAMS>
-            </CALLBACK>
-            
         </METHOD>
 
         <METHOD name="getProperties" hasCallback="optional">
@@ -33,19 +25,22 @@
             </PARAMS>
             <RETURN type="HASH">
                 <DESC>Map of properties I want to know about</DESC>
+                <PARAMS>
+                    <PARAM type="STRING"/>
+                </PARAMS>
             </RETURN>
 
-            <CALLBACK optional="true"/>
-            
         </METHOD>
 
         <METHOD name="getAllProperties" hasCallback="optional">
             <DESC>This is documentation</DESC>
             <RETURN type="HASH">
-                <DESC>Map of properties I want to know about</DESC>
+                <DESC>Map of all available properties</DESC>
+                <PARAMS>
+                    <PARAM type="STRING"/>
+                </PARAMS>
             </RETURN>
 
-            <CALLBACK optional="true"/>
         </METHOD>
 
         <METHOD name="setProperty">
