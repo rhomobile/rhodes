@@ -34,7 +34,7 @@ rho::String CMethodResult::toString()
     else if ( m_ResType == eJSON)
         return m_strJSONRes;
     else if ( m_ResType == eBool)
-        return convertToStringA(m_bRes?1:0);
+        return convertToStringA(m_bRes);
     else if ( m_ResType == eInt)
         return convertToStringA(m_nRes);
     else if ( m_ResType == eDouble)

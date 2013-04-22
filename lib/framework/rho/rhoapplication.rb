@@ -134,11 +134,10 @@ module Rho
           security_token_not_passed = System.get_property('security_token_not_passed')
           security_token_not_passed = security_token_not_passed == "true"
           
-          invalid_security_token_start_path_exist = Rho::RhoConfig.exists? 'invalid_security_token_start_path'
-          invalid_security_token_start_path = Rho::RhoConfig.invalid_security_token_start_path
+          invalid_security_token_start_path = System.get_property('invalid_security_token_start_path')
         
           if security_token_not_passed
-            if invalid_security_token_start_path_exist
+            if invalid_security_token_start_path && invalid_security_token_start_path.length() > 0
                 start_url = invalid_security_token_start_path
             else
                 # exit from application - old way
