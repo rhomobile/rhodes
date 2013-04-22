@@ -320,9 +320,6 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         delete m_pInstance;
 
     m_pInstance = 0;
-    
-    
-
 }
 
 CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, const String& strRuntimePath)
@@ -359,24 +356,30 @@ void CRhodesApp::startApp()
     start(epNormal);
 }
 
+extern "C" void Init_Extensions(void);
+
 void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
+
+#if !defined(RHO_NO_RUBY)
     RhoRubyStart();
-
     rubyext::CGeoLocation::Create();
+#else
+    Init_Extensions();
+#endif
 
-    //rho_db_init_attr_manager();
-	
 	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
 		LOG(INFO) + "Starting sync engine...";
-//		sync::CSyncThread::Create();
-		sync::RhoconnectClientManager::syncThreadCreate();
+		//sync::RhoconnectClientManager::syncThreadCreate();
 	}
 
+#if !defined(RHO_NO_RUBY)
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
     rho_ruby_call_config_conflicts();
+#endif
+    
     RHOCONF().conflictsResolved();
 
     while (!m_bExit) {
@@ -394,19 +397,21 @@ void CRhodesApp::run()
 
     LOG(INFO) + "RhodesApp thread shutdown";
 
+#if !defined(RHO_NO_RUBY)
     getExtManager().close();
     rubyext::CGeoLocation::Destroy();
-	
+#endif
+
 	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
-//    sync::CClientRegister::Destroy();
-//    sync::CSyncThread::Destroy();
-		sync::RhoconnectClientManager::clientRegisterDestroy();
-		sync::RhoconnectClientManager::syncThreadDestroy();
+		//sync::RhoconnectClientManager::clientRegisterDestroy();
+		//sync::RhoconnectClientManager::syncThreadDestroy();
 	}
 
 	db::CDBAdapter::closeAll();
 
+#if !defined(RHO_NO_RUBY)
     RhoRubyStop();
+#endif
 }
 
 CRhodesApp::~CRhodesApp(void)
@@ -418,7 +423,6 @@ CRhodesApp::~CRhodesApp(void)
 #ifdef OS_WINCE
     WSACleanup();
 #endif
-
 }
 
 boolean CRhodesApp::callTimerCallback(const String& strUrl, const String& strData)

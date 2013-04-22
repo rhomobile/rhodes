@@ -244,7 +244,11 @@ void RhoRubyStart()
 #if !defined(OS_MACOSX) && !defined( OS_WINDOWS_DESKTOP ) && !defined(OS_WINCE) && !defined(OS_ANDROID)
     Init_WebView(); //+
 #endif
+
+#if !defined(RHO_NO_RUBY)
     Init_RhoConf(); //+
+#endif
+    
     Init_Alert();
 #if defined(WINDOWS_PLATFORM)
     init_rhoext_Signature();
@@ -382,6 +386,8 @@ void RhoRubyInitApp()
     rb_funcall(framework, initApp_mid, 0);
 }
 
+#ifndef RHO_NO_RUBY
+
 VALUE rho_conf_get_conflicts();
 void rho_ruby_call_config_conflicts()
 {
@@ -391,6 +397,8 @@ void rho_ruby_call_config_conflicts()
 
     rb_funcall(framework, onConfigConflicts_mid, 1, hashConflicts);
 }
+
+#endif
 
 void rho_ruby_activateApp()
 {
