@@ -34,16 +34,6 @@ public class WebViewSingleton extends WebViewSingletonBase implements
     }
 
     @Override
-    public void getNativeMenu(IMethodResult result) {
-        result.set(RhodesActivity.safeGetInstance().getMenu().getMenuDescription());
-    }
-
-    @Override
-    public void setNativeMenu(List<Map<String, String>> nativeMenu, IMethodResult result) {
-        RhodesActivity.safeGetInstance().getMenu().setMenu(nativeMenu);
-    }
-
-    @Override
     public void getEnableZoom(IMethodResult result) {
         //RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getZoom());
 
