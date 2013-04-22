@@ -387,4 +387,22 @@ rho_cast_helper<HStringVector, jobject>::operator ()(JNIEnv *env, jobject jList)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
+jobject rho_cast_helper<jobject, rho::Vector<std::string> >::operator()(JNIEnv* env, const rho::Vector<std::string>& stringVector)
+{
+    RAWTRACE("rho_cast<jobject, HStringVector>");
+
+    if (!initConvertor(env)) return 0;
+
+    jobject jArray = env->NewObject(clsArrayList, midArrayList);
+    if(!jArray) return 0;
+
+    for(std::vector<std::string>::const_iterator iter = stringVector.begin(); iter != stringVector.end(); ++iter)
+    {
+        jhstring jhItem = rho_cast<jstring>(env, *iter);
+        env->CallBooleanMethod(jArray, midArrayListAdd, jhItem.get());
+    }
+    return jArray;
+}
+//----------------------------------------------------------------------------------------------------------------------
+
 } // namespace details

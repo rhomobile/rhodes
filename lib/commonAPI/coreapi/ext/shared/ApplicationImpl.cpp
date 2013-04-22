@@ -13,6 +13,13 @@ extern "C" void rho_sys_app_exit();
 
 namespace rho {
 
+#ifdef OS_ANDROID
+
+void rho_impl_setNativeMenu(const Vector<String>& menu);
+String rho_impl_getNativeMenu();
+
+#endif
+
 using namespace apiGenerator;
 using namespace common;
 
@@ -108,15 +115,23 @@ public:
 
     virtual void getNativeMenu(rho::apiGenerator::CMethodResult& oResult)
     {
+#ifdef OS_ANDROID
+        oResult.setJSON(rho_impl_getNativeMenu());
+#else
         rho::Vector< Hashtable<String, String> > arRes;
         RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
 
         oResult.set(arRes);
+#endif
     }
 
     virtual void setNativeMenu( const rho::Vector<rho::String>& value, rho::apiGenerator::CMethodResult& oResult)
     {
+#ifdef OS_ANDROID
+        rho_impl_setNativeMenu(value);
+#else
         RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
+#endif
     }
 
     virtual void getBadLinkURI(rho::apiGenerator::CMethodResult& oResult)
