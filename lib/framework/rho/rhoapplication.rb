@@ -127,7 +127,7 @@ module Rho
     end
 
     def on_ui_created
-        start_url = Rho::RhoConfig.start_path
+        start_url = Rho::Application.startURI
         start_url = "" unless start_url
 
         if System.get_property('platform') != 'WP8'
