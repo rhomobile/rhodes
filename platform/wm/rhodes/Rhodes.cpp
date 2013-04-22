@@ -612,13 +612,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
         registerRhoExtension();
 #endif
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && defined(OS_WINCE)
 	    m_appWindow.Navigate2(_T("about:blank")
 #if defined(OS_WINDOWS_DESKTOP)
             , -1
 #endif
         );
-#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#endif //!APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
         rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
 /*    	m_appWindow.Navigate2( convertToStringW( RHOCONF().getString("start_path") ).c_str()
@@ -630,14 +631,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     else
     {
         RHODESAPP().startApp();
-//#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && defined(OS_WINCE)
         // Navigate to the "loading..." page
 	    m_appWindow.Navigate2(_T("about:blank")
     #if defined(OS_WINDOWS_DESKTOP)
             , -1
     #endif
         );
-//#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     }
     // Show the main application window
     //m_appWindow.ShowWindow(nShowCmd);
@@ -863,9 +864,14 @@ typedef int (WINAPI *FUNC_IsLicenseOK)();
 typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
 
 extern "C" void rho_wm_impl_CheckLicense()
-{
+{   
+    return;
     int nRes = 0;
+    LOG(INFO) + "Start license_rc.dll";
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
+    LOG(INFO) + "Stop license_rc.dll";
+    
+
     if(hLicenseInstance)
     {
 #ifdef OS_WINDOWS_DESKTOP
