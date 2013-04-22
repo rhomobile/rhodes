@@ -140,7 +140,7 @@
 
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">
                 <DESC>Set application activation/deactivation callback.</DESC>
-                <CALLBACK>
+                <CALLBACK type="HASH">
                     <DESC>Information related to the activation/deactivation of application.</DESC>
                     <PARAMS>
                         <PARAM name="applicationEvent" type="STRING">
@@ -192,7 +192,7 @@
             <METHOD name="getRhoPlatformVersion" hasCallback="mandatory">
                 <DESC>The version of RhoMobile platform installed on the device.</DESC>
                 <PLATFORM>WM, Android</PLATFORM>
-                <CALLBACK>
+                <CALLBACK  type="HASH">
                     <DESC>Information related to the activation/deactivation of application.</DESC>
                     <PARAMS>
                         <PARAM name="productVersion" type="STRING">
