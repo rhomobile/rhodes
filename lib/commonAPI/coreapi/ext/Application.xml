@@ -64,6 +64,12 @@
                 <PARAM type="HASH" />
                 <DESC>Default Native Menu items: array of hashes(name to action)</DESC>
             </PROPERTY>
+            <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
+                <DESC>Is the security token check was failed.</DESC>
+            </PROPERTY>
+            <PROPERTY name="invalidSecurityTokenStartPath" type="STRING">
+                <DESC>Page to navigate in case of check of SecurityToken was failed.</DESC>
+            </PROPERTY>
 
             <PROPERTY name="badLinkURI" type="STRING">
                 <DESC>Bad link URI to navigate in browser.</DESC>

@@ -165,6 +165,21 @@ public:
         RHODESAPP().getExtManager().restoreApp();
     }
 
+    virtual void getSecurityTokenNotPassed(rho::apiGenerator::CMethodResult& oResult)
+    {
+        oResult.set( RHODESAPP().isSecurityTokenNotPassed() );
+    }
+
+    virtual void getInvalidSecurityTokenStartPath(rho::apiGenerator::CMethodResult& oResult)
+    {
+        oResult.set( RHOCONF().getString("invalid_security_token_start_path") );
+    }
+
+    virtual void setInvalidSecurityTokenStartPath( const rho::String& invalidSecurityTokenStartPath, rho::apiGenerator::CMethodResult& oResult)
+    {
+        RHOCONF().setString("invalid_security_token_start_path", invalidSecurityTokenStartPath, false );
+    }
+
     virtual void setApplicationNotify(rho::apiGenerator::CMethodResult& oResult)
     {
         //TODO: setActivationNotify
