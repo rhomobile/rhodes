@@ -131,5 +131,12 @@ typedef int LogSeverity;
 #define RHO_EMULATOR_DIR ""
 #endif
 
+#include "common/app_build_capabilities.h"
+#include "common/app_build_configs.h"
+
+#if defined(RHO_NO_RUBY)
+#define RHO_NO_RUBY_API
+#endif
+
 #endif //_RHODEFS_H_
 
