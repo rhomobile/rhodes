@@ -20,6 +20,8 @@ public:
     virtual void getFreeServerPort(rho::apiGenerator::CMethodResult& oResult);
     virtual void getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult);
     virtual void getSecurityTokenNotPassed(rho::apiGenerator::CMethodResult& oResult);
+    virtual void getInvalidSecurityTokenStartPath(rho::apiGenerator::CMethodResult& oResult);
+    virtual void setInvalidSecurityTokenStartPath( const rho::String& invalidSecurityTokenStartPath, rho::apiGenerator::CMethodResult& oResult);
     virtual void getHasSqlite(rho::apiGenerator::CMethodResult& oResult);
     virtual void getRealScreenWidth(CMethodResult& oResult);
     virtual void getRealScreenHeight(CMethodResult& oResult);

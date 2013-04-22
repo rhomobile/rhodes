@@ -165,6 +165,9 @@
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
                 <DESC>Is the security token check was failed.</DESC>
             </PROPERTY>
+            <PROPERTY name="invalidSecurityTokenStartPath" type="STRING">
+                <DESC>Page to navigate in case of check of SecurityToken was failed.</DESC>
+            </PROPERTY>
             <PROPERTY name="webviewFramework" type="STRING" readOnly="true">
                 <DESC>Browser framework identity string.</DESC>
             </PROPERTY>
