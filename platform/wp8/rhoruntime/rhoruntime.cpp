@@ -34,6 +34,8 @@
 #include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
 
+#include "api_generator\js_helpers.h"
+
 using namespace rhoruntime;
 using namespace Platform;
 
@@ -126,11 +128,7 @@ void CRhoRuntime::updateSizeProperties(int width, int height)
 
 void CRhoRuntime::onActivate(int active)
 {
-	//rho_webview_navigate("system/uicreated", 0); //HOTFIX, should remove after threadqueue fix  
 	RHODESAPP().callUiCreatedCallback();
-    //rho_rhodesapp_callAppActiveCallback(active);
-    //if (!active)
-    //    rho_geoimpl_turngpsoff();
 }
 
 void CRhoRuntime::logEvent(::Platform::String^ message)
@@ -217,6 +215,11 @@ bool CRhoRuntime::onBackKeyPress()
 	return true;
 }
 
+::Platform::String^ CRhoRuntime::onJSInvoke(::Platform::String^ inJSON)
+{
+	rho::String ret = rho::apiGenerator::js_entry_point(rho::common::convertToStringA(inJSON->Data()).c_str());
+	return ref new ::Platform::String(rho::common::convertToStringW(ret).c_str());
+}
 
 // *** PUBLIC METHODS ***
 
@@ -262,16 +265,11 @@ extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
 
 extern "C" const char* rho_native_rhopath()
 {
-	//static rho::String rhoPath;
-	//if ( rhoPath.length() == 0 )
-	//	rhoPath = GetLocalFolderFullPath() + "\\rho\\";
-
     return "rho/";
 }
 
 extern "C" const char* rho_native_get_appname()
 {
-	//TODO: app_name
     return "Rhodes";
 }
 

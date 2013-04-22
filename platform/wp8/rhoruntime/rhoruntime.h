@@ -117,6 +117,7 @@ namespace rhoruntime
 		void onWindowClose(void);
 		void onWebViewUrlChanged(::Platform::String^ url);
 		bool onBackKeyPress(void);
+		::Platform::String^ onJSInvoke(::Platform::String^ inJSON);
 
 		// public methods:
 		bool Initialize(::Platform::String^ title);
