@@ -352,7 +352,7 @@ class Database
   end
 
   def delete_table(table)
-    execute_sql "DROP TABLE IF EXISTS #{table}"
+    execute_sql "DROP TABLE IF EXISTS \"#{table}\""
   end
   
   # updates values (hash) in a given table which satisfy condition (hash)
