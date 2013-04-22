@@ -106,6 +106,19 @@ public:
         oResult.set( RHODESAPP().getAppName() );
     }
 
+    virtual void getNativeMenu(rho::apiGenerator::CMethodResult& oResult)
+    {
+        rho::Vector< Hashtable<String, String> > arRes;
+        RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
+
+        oResult.set(arRes);
+    }
+
+    virtual void setNativeMenu( const rho::Vector<rho::String>& value, rho::apiGenerator::CMethodResult& oResult)
+    {
+        RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
+    }
+
     virtual void getBadLinkURI(rho::apiGenerator::CMethodResult& oResult)
     {
         //TODO: getBadLinkURI
@@ -152,14 +165,29 @@ public:
         RHODESAPP().getExtManager().restoreApp();
     }
 
-    virtual void setActivationNotify(rho::apiGenerator::CMethodResult& oResult)
+    virtual void getSecurityTokenNotPassed(rho::apiGenerator::CMethodResult& oResult)
+    {
+        oResult.set( RHODESAPP().isSecurityTokenNotPassed() );
+    }
+
+    virtual void getInvalidSecurityTokenStartPath(rho::apiGenerator::CMethodResult& oResult)
+    {
+        oResult.set( RHOCONF().getString("invalid_security_token_start_path") );
+    }
+
+    virtual void setInvalidSecurityTokenStartPath( const rho::String& invalidSecurityTokenStartPath, rho::apiGenerator::CMethodResult& oResult)
+    {
+        RHOCONF().setString("invalid_security_token_start_path", invalidSecurityTokenStartPath, false );
+    }
+
+    virtual void setApplicationNotify(rho::apiGenerator::CMethodResult& oResult)
     {
         //TODO: setActivationNotify
     }
 
     virtual void getRhoPlatformVersion(rho::apiGenerator::CMethodResult& oResult)
     {
-        //TODO: setActivationNotify
+        //TODO: getRhoPlatformVersion
     }
 };
 

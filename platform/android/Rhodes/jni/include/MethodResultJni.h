@@ -68,6 +68,7 @@ private:
     mutable JNIEnv* m_env;
     jhobject m_jhResult;
     bool m_bGlobalRef;
+    mutable bool m_bSlaveRef;
 
     bool m_hasCallback;
 
@@ -112,17 +113,17 @@ public:
     MethodResultJni(const MethodResultJni& result);
     ~MethodResultJni();
 
-    jboolean getBooleanResult() const { return getBooleanResult(m_env); }
-    jint getIntegerResult() const { return getIntegerResult(m_env); }
-    jdouble getDoubleResult() const { return getDoubleResult(m_env); }
-    jstring getStringResult() const { return getStringResult(m_env); }
-    jobject getListResult() const { return getListResult(m_env); }
-    jobject getMapResult() const { return getMapResult(m_env); }
-    jstring getJSONResult() const { return getJSONResult(m_env); }
-    int getResultType() const { return getResultType(m_env); }
+    jboolean getBooleanResult() const { return getBooleanResult(jniInit()); }
+    jint getIntegerResult() const { return getIntegerResult(jniInit()); }
+    jdouble getDoubleResult() const { return getDoubleResult(jniInit()); }
+    jstring getStringResult() const { return getStringResult(jniInit()); }
+    jobject getListResult() const { return getListResult(jniInit()); }
+    jobject getMapResult() const { return getMapResult(jniInit()); }
+    jstring getJSONResult() const { return getJSONResult(jniInit()); }
+    int getResultType() const { return getResultType(jniInit()); }
     bool isError() const { ResultType resType = static_cast<ResultType>(getResultType()); return resType == typeError || resType == typeArgError; }
-    rho::String getErrorMessage() const { return getErrorMessage(m_env); }
-    void reset() { reset(m_env); }
+    rho::String getErrorMessage() const { return getErrorMessage(jniInit()); }
+    void reset() { reset(jniInit()); }
     unsigned long getRubyObjectClass() const
     {
         JNIEnv* env = jniInit();
@@ -200,7 +201,6 @@ public:
             return;
         }
 
-        //CallbackSelector<T>(*this, env, jhUrl.get(), 0);
         setCallback(env, jhUrl.get(), (jstring)0);
     }
 
@@ -225,7 +225,6 @@ public:
             return;
         }
 
-        //CallbackSelector<T>(*this, env, jhUrl.get(), jhData.get());
         setCallback(env, jhUrl.get(), jhData.get());
     }
     void setRubyProcCallBack(unsigned long rubyProc)

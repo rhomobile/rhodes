@@ -24,9 +24,9 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-package com.rhomobile.rhodes.camera;
+package com.rhomobile.rhodes.ui;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -34,13 +34,13 @@ import java.util.List;
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
-import com.rhomobile.rhodes.RhodesAppOptions;
-import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.util.Utils;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
@@ -55,9 +55,8 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class FileList extends BaseActivity implements OnClickListener{
 
-	private static final String TAG = "FileList";
+	private static final String TAG = FileList.class.getSimpleName();
 	
-	private String callbackUrl;
 	private List<String> files;
 	private String selectedFile = "";
 	private ImageView imagePreview;
@@ -87,9 +86,6 @@ public class FileList extends BaseActivity implements OnClickListener{
 
 		setContentView(AndroidR.layout.directory_list);
 		
-		Bundle extras = getIntent().getExtras();
-		callbackUrl = extras.getString(Camera.INTENT_EXTRA_PREFIX + "callback");
-
 		imagePreview = (ImageView) findViewById(AndroidR.id.preview);
 
 		ListView filesList = (ListView) findViewById(AndroidR.id.filesList);
@@ -97,11 +93,10 @@ public class FileList extends BaseActivity implements OnClickListener{
 		files = getImages();
 		List<String> names = new ArrayList<String>();
 		Iterator<String> it = files.iterator();
-		while (it.hasNext())
+		while (it.hasNext()) {
 			names.add(Utils.getBaseName(it.next()));
-		filesList.setAdapter(new ArrayAdapter<String>(this,
-				AndroidR.layout.file_row, names));
-		
+		}
+		filesList.setAdapter(new ArrayAdapter<String>(this, AndroidR.layout.file_row, names));
 
 		Button okButton = (Button) findViewById(AndroidR.id.okButton);
 		Button cancelButton = (Button) findViewById(AndroidR.id.cancelButton);
@@ -135,31 +130,28 @@ public class FileList extends BaseActivity implements OnClickListener{
 			
 		});
 	}
-	
-	private void doCallback(String file) {
-		try {
-			String dst = null;
-			if (file != null && file.length() > 0) {
-				dst = RhodesAppOptions.getBlobPath() + "/" + Utils.getBaseName(file);
-				Utils.copy(file, dst);
-			}
-			com.rhomobile.rhodes.camera.Camera.doCallback(callbackUrl, dst == null ? "" : dst, 0, 0, "");
-		}
-		catch (IOException e) {
-			Logger.E(TAG, e);
-		}
-	}
 
-	public void onClick(View view) {
-		switch (view.getId()) {
-		case AndroidR.id.okButton:
-			doCallback(selectedFile);
-			break;
-		case AndroidR.id.cancelButton:
-			doCallback(null);
-			break;
-		}
-		finish();
-	}
-	
+    private void doCallback(int status, String filename) {
+        Intent intent = new Intent();
+//            String dst = null;
+            if (filename != null && filename.length() > 0) {
+                //dst = RhodesAppOptions.getBlobPath() + "/" + Utils.getBaseName(filename);
+                //Utils.copy(filename, dst);
+                Logger.T(TAG, "Selected file: " + Uri.fromFile(new File(filename)));
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(filename)));
+            }
+            setResult(status, intent);
+    }
+
+    public void onClick(View view) {
+        switch (view.getId()) {
+        case AndroidR.id.okButton:
+            doCallback(RESULT_OK, selectedFile);
+            break;
+        case AndroidR.id.cancelButton:
+            doCallback(RESULT_CANCELED, null);
+            break;
+        }
+        finish();
+    }
 }

@@ -240,7 +240,9 @@ def make_application_build_config_header_file
 
   f.puts 'static const char* values[] = { ""'
   $application_build_configs.keys.each do |key|
-    f.puts ',"'+$application_build_configs[key].to_s().gsub('\\', "\\\\\\")+'"'
+    value = $application_build_configs[key].to_s().gsub('\\', "\\\\\\")
+    value = value.gsub('"', "\\\"")
+    f.puts ',"'+ value +'"'
     count = count + 1
   end
   f.puts '};'
@@ -516,7 +518,7 @@ namespace "config" do
     end
     
     extensions = []
-    extensions << "coreapi" if $current_platform == "wm" || $current_platform == "osx" || $current_platform == "wp8" || $current_platform == "win32" || $current_platform == 'android' || $current_platform == 'iphone'
+    extensions << "coreapi" #unless $app_config['re_buildstub']
     extensions += $app_config["extensions"] if $app_config["extensions"] and
        $app_config["extensions"].is_a? Array
     extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
@@ -577,8 +579,8 @@ namespace "config" do
             $app_config["extensions"].delete("webkit-browser")
         end
         
-        if  $app_config["capabilities"].index("webkit_browser") || $app_config["capabilities"].index("motorola")
-            #contains wm code for webkit browser support
+        if  $app_config["capabilities"].index("webkit_browser") || ($app_config["capabilities"].index("motorola") && $current_platform != "android")
+            #contains wm and android libs for webkit browser
             $app_config["extensions"] += ["rhoelements"] unless $app_config['extensions'].index('rhoelements')
         end
     end
@@ -602,6 +604,7 @@ namespace "config" do
         
         if $current_platform == "iphone"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
+            $app_config['extensions'] = $app_config['extensions'] | ['signature']
         end    
         
     end
@@ -644,6 +647,9 @@ namespace "config" do
     if $app_config['extensions'].index('audiocapture')
         #$app_config['extensions'].delete('audiocapture')
         $rhoelements_features += "- Audio Capture\n"
+    end
+    if $app_config['extensions'].index('signature') && ($current_platform == "iphone")
+        $rhoelements_features += "- Signature Capture\n"
     end
     
     if $current_platform == "wm"

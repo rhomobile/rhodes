@@ -34,7 +34,7 @@ rho::String CMethodResult::toString()
     else if ( m_ResType == eJSON)
         return m_strJSONRes;
     else if ( m_ResType == eBool)
-        return convertToStringA(m_bRes?1:0);
+        return convertToStringA(m_bRes);
     else if ( m_ResType == eInt)
         return convertToStringA(m_nRes);
     else if ( m_ResType == eDouble)
@@ -45,14 +45,17 @@ rho::String CMethodResult::toString()
 
 void CMethodResult::convertToType(ETypes eType)
 {
-    if ( eType == m_ResType )
+    if ( eType == m_ResType || eType == eNone )
         return;
 
     switch(eType)
     {
     case eString:
-        m_strRes = toString();
-        m_ResType = eString;
+        if ( m_ResType != eJSON )
+        {
+            m_strRes = toString();
+            m_ResType = eString;
+        }
         break;
     case eStringW:
         m_strResW = convertToStringW(toString());

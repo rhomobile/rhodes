@@ -14,12 +14,20 @@ describe("<generator API specs>", function () {
         expect(Rho.GenPropBag.getDefault().boolProp).toEqual(true);
     });
 
+    it("Test int default property", function () {
+        expect(Rho.GenPropBag.getDefault().intProp).toEqual(0);
+        Rho.GenPropBag.getDefault().intProp = 15;
+        expect(Rho.GenPropBag.getDefault().intProp).toEqual(15);
+    });
+
     it("Test enumerate", function () {
         var objs = Rho.GenPropBag.enumerate();
         
-        expect(objs[0].boolProp).toEqual(false);
-        objs[0].boolProp = true;
-        expect(objs[0].boolProp).toEqual(true);
+        Rho.Log.info(objs.toString(), "test" );
+        
+        expect(objs[1].boolProp).toEqual(false);
+        objs[1].boolProp = true;
+        expect(objs[1].boolProp).toEqual(true);
     });
-    
+
 });

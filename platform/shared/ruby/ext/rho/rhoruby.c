@@ -244,16 +244,24 @@ void RhoRubyStart()
 #if !defined(OS_MACOSX) && !defined( OS_WINDOWS_DESKTOP ) && !defined(OS_WINCE) && !defined(OS_ANDROID)
     Init_WebView(); //+
 #endif
+
+#if !defined(RHO_NO_RUBY)
     Init_RhoConf(); //+
+#endif
+    
+    Init_Alert();
+
 #if defined(WINDOWS_PLATFORM)
     init_rhoext_Signature();
 #else
-    Init_SignatureCapture();
+#if !defined(OS_MACOSX)
+        Init_SignatureCapture();
+#endif
 #endif
 
     Init_RhoBluetooth();
 	Init_RhodesNativeViewManager();
-#if !defined(OS_MACOSX) && !defined(OS_ANDROID)
+#if !defined(OS_MACOSX)
     Init_Camera();
 #endif
     Init_stringio(); //+
@@ -289,14 +297,11 @@ void RhoRubyStart()
 	Init_Extensions();
 #endif //OS_WP8
  
-
 	extensions_loaded = 1;
-
 
     if ( rho_rcclient_have_rhoconnect_client() ) {
         rb_const_set(rb_cObject, rb_intern("RHOCONNECT_CLIENT_PRESENT"), Qtrue);
     }
-
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     rb_require("rhomotoapi");
@@ -383,6 +388,8 @@ void RhoRubyInitApp()
     rb_funcall(framework, initApp_mid, 0);
 }
 
+#ifndef RHO_NO_RUBY
+
 VALUE rho_conf_get_conflicts();
 void rho_ruby_call_config_conflicts()
 {
@@ -392,6 +399,8 @@ void rho_ruby_call_config_conflicts()
 
     rb_funcall(framework, onConfigConflicts_mid, 1, hashConflicts);
 }
+
+#endif
 
 void rho_ruby_activateApp()
 {

@@ -33,6 +33,7 @@
 #include "common/RhodesApp.h"
 #include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
+#include "common/RhoConvertWP8.h"
 
 #include "api_generator\js_helpers.h"
 
@@ -85,17 +86,13 @@ void CRhoRuntime::Execute()
 	rho::StringW iconW;
 	m_MainPage->toolbarRemoveAllButtons();
 	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "/public/images/bar/back_btn.png");
-	iconW = rho::common::convertToStringW(strImagePath);
-	m_MainPage->toolbarAddAction(ref new String(iconW.c_str()), ref new String(L"Back"), ref new String(L"back"));
+	m_MainPage->toolbarAddAction(rho::common::convertStringToWP8(strImagePath), ref new String(L"Back"), ref new String(L"back"));
 	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "public/images/bar/forward_btn.png");
-	iconW = rho::common::convertToStringW(strImagePath);
-	m_MainPage->toolbarAddAction(ref new String(iconW.c_str()), ref new String(L"Forward"), ref new String(L"forward"));
+	m_MainPage->toolbarAddAction(rho::common::convertStringToWP8(strImagePath), ref new String(L"Forward"), ref new String(L"forward"));
 	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "/public/images/bar/home_btn.png");
-	iconW = rho::common::convertToStringW(strImagePath);
-	m_MainPage->toolbarAddAction(ref new String(iconW.c_str()), ref new String(L"Home"), ref new String(L"home"));
+	m_MainPage->toolbarAddAction(rho::common::convertStringToWP8(strImagePath), ref new String(L"Home"), ref new String(L"home"));
 	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "public/images/bar/gears.png");
-	iconW = rho::common::convertToStringW(strImagePath);
-	m_MainPage->toolbarAddAction(ref new String(iconW.c_str()), ref new String(L"Options"), ref new String(L"options"));
+	m_MainPage->toolbarAddAction(rho::common::convertStringToWP8(strImagePath), ref new String(L"Options"), ref new String(L"options"));
 	m_MainPage->toolbarAddAction(nullptr, ref new String(L"Refresh"), ref new String(L"refresh"));
 	m_MainPage->toolbarShow();
 	*/
@@ -133,7 +130,7 @@ void CRhoRuntime::onActivate(int active)
 
 void CRhoRuntime::logEvent(::Platform::String^ message)
 {
-	LOG(INFO) + rho::common::convertToStringW(message->Data());
+	LOG(INFO) + rho::common::convertStringWFromWP8(message);
 }
 
 void CRhoRuntime::createCustomMenu()
@@ -151,11 +148,9 @@ void CRhoRuntime::createCustomMenu()
         if (oItem.m_eType == rho::common::CAppMenuItem::emtSeparator) 
             mainPage->menuAddSeparator();
         else {
- 			rho::StringW labelW;
-			rho::common::convertToStringW(oItem.m_strLabel.c_str(), labelW);
 			//if ((oItem.m_eType == rho::common::CAppMenuItem::emtBack) && (oItem.m_strLink.compare("back") != 0))
 			//	RHODESAPP().setAppBackUrl(oItem.m_strLink);
-			mainPage->menuAddAction((oItem.m_eType == rho::common::CAppMenuItem::emtClose ? "Exit" : ref new Platform::String(labelW.c_str())), i);
+			mainPage->menuAddAction((oItem.m_eType == rho::common::CAppMenuItem::emtClose ? "Exit" : rho::common::convertStringToWP8(oItem.m_strLabel)), i);
         }
     }
 }
@@ -177,7 +172,7 @@ void CRhoRuntime::onToolbarAction(::Platform::String^ action)
 	if ( action->Equals("forward") )
 		rho_webview_navigate_forward();
 	else
-		RHODESAPP().loadUrl(rho::common::convertToStringA(action->Data()));
+		RHODESAPP().loadUrl(rho::common::convertStringAFromWP8(action));
 }
 
 void CRhoRuntime::onTabbarCurrentChanged(int index, ::Platform::String^ action)
@@ -193,7 +188,7 @@ void CRhoRuntime::onTabbarCurrentChanged(int index, ::Platform::String^ action)
 	//}
 
     //if (tbrp["reload"].toBool() || (ui->webView && (ui->webView->history()->count()==0))) {
-	RHODESAPP().loadUrl(rho::common::convertToStringA(action->Data()));
+	RHODESAPP().loadUrl(rho::common::convertStringAFromWP8(action));
     //}
 }
 
@@ -205,7 +200,7 @@ void CRhoRuntime::onWindowClose(void)
 
 void CRhoRuntime::onWebViewUrlChanged(::Platform::String^ url)
 {
-	RHODESAPP().keepLastVisitedUrl(rho::common::convertToStringA(url->Data()));
+	RHODESAPP().keepLastVisitedUrl(rho::common::convertStringAFromWP8(url));
 }
 
 bool CRhoRuntime::onBackKeyPress()

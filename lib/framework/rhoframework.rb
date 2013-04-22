@@ -109,7 +109,7 @@ begin
     #require 'rhom/rhom_db_adapter'
 	
     require 'rhom/rhom_object'
-    require 'rhofsconnector'
+    #require 'rhofsconnector'
 
     require 'json'	
     require 'rhom/rhom_object_factory'

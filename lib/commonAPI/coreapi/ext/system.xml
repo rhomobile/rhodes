@@ -162,9 +162,6 @@
             <PROPERTY name="hasTouchscreen" type="BOOLEAN" readOnly="true">
                 <DESC>Is device has touch screen.</DESC>
             </PROPERTY>
-            <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
-                <DESC>Is the security token check was failed.</DESC>
-            </PROPERTY>
             <PROPERTY name="webviewFramework" type="STRING" readOnly="true">
                 <DESC>Browser framework identity string.</DESC>
             </PROPERTY>

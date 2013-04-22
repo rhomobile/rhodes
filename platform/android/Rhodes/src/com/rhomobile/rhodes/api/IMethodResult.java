@@ -19,6 +19,10 @@ public interface IMethodResult {
     void collectSelf(IMethodResult globalResult);
     void collectSelf(String key, IMethodResult globalResult);
     void mergeSelf(IMethodResult result);
+    
+    void forceBooleanType();
+    void forceIntegerType();
+    void forceDoubleType();
 
     void setError(String mesage);
     void setArgError(String message);

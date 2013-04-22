@@ -35,19 +35,6 @@ public:
         rho_webview_full_screen_mode(value ? 1 : 0);
     }
 
-    virtual void getNativeMenu(rho::apiGenerator::CMethodResult& oResult)
-    {
-        rho::Vector< Hashtable<String, String> > arRes;
-        RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
-
-        oResult.set(arRes);
-    }
-
-    virtual void setNativeMenu( const rho::Vector<rho::String>& value, rho::apiGenerator::CMethodResult& oResult)
-    {
-        RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
-    }
-
     //Android only
     virtual void getEnableZoom(rho::apiGenerator::CMethodResult& oResult)
     {

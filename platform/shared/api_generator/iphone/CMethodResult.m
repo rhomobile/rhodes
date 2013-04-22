@@ -185,10 +185,13 @@ extern int rho_webview_active_tab();
     mRubyModulePath = [classPath stringByReplacingOccurrencesOfString:@"." withString:@"::"];
 }
 
+-(void) enableObjectCreationModeWithJSClassPath:(NSString*)classPath {
+    mRubyModulePath = classPath;//[classPath stringByReplacingOccurrencesOfString:@"." withString:@"::"];
+}
 
 
 -(void) callJSCallback:(NSString*)uid {
-    NSString* jscode = [NSString stringWithFormat:@"Rho.callbackHandler(‘%@’,{%@})", mJSCallbackUID, [self toJSON]];
+    NSString* jscode = [NSString stringWithFormat:@"Rho.callbackHandler(\"%@\",{%@})", mJSCallbackUID, [self toJSON]];
     int tabIndex = mJSTabIndex;
     //if (mJSWebViewUID != nil) {
     //    tabIndex = [mJSWebViewUID intValue];
@@ -227,11 +230,11 @@ extern int rho_webview_active_tab();
 
 
 -(void) dealloc {
-    [mRubyCallbackURL release];
-    [mJSCallbackUID release];
-    [mCallbackParam release];
-    [mValue release];
-    [mRubyModulePath release];
+    //[mRubyCallbackURL release];
+    //[mJSCallbackUID release];
+    //[mCallbackParam release];
+    //[mValue release];
+    //[mRubyModulePath release];
     if (mRubyCallbackMethod != 0) {
         RubyCallbackHelper_releaseRubyValue(mRubyCallbackMethod);
     }

@@ -30,9 +30,19 @@
 
 namespace rho
 {
+namespace common
+{
 
-extern "C" ::Platform::String^ convertStringWP8(const rho::String& str);
-extern "C" ::Windows::Foundation::Collections::IVectorView<Platform::String^>^ convertArrayWP8(const rho::Vector<rho::String>& arr);
-extern "C" ::Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ convertHashWP8(const rho::Hashtable<rho::String, rho::String>& hash);
+::Platform::String^ convertStringCToWP8(const char* str);
+::Platform::String^ convertStringToWP8(const rho::String& str);
+::Platform::String^ convertStringWToWP8(const rho::StringW& str);
+::Windows::Foundation::Collections::IVectorView<Platform::String^>^ convertArrayToWP8(const rho::Vector<rho::String>& arr);
+::Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ convertHashToWP8(const rho::Hashtable<rho::String, rho::String>& hash);
 
+rho::String convertStringAFromWP8(::Platform::String^ str);
+rho::StringW convertStringWFromWP8(::Platform::String^ str);
+rho::Vector<rho::String> convertArrayFromWP8(::Windows::Foundation::Collections::IVectorView<Platform::String^>^ arr);
+rho::Hashtable<rho::String, rho::String> convertHashFromWP8(::Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ hash);
+
+}
 }

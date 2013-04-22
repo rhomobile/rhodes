@@ -26,6 +26,16 @@ if $cur_module.is_template_default_instance %>
     return CMethodResultConvertor().toJSON(result);
 }
 
+<%= api_generator_MakeJSMethodDecl($cur_module.name, "getDefault", true) %>
+{
+    RAWTRACE(__FUNCTION__);
+    
+    rho::apiGenerator::CMethodResult result(false);
+    result.setJSObjectClassPath("<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>");
+    result.set(ObjectProxy::getDefaultID());
+    return CMethodResultConvertor().toJSON(result);
+}
+
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "setDefaultID", true) %>
 {
     RAWTRACE(__FUNCTION__);
@@ -77,8 +87,8 @@ end
     
     if(strCallbackID.length() != 0)
         result.setCallBack(strCallbackID, strJsVmID);
-
-<% if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
+<%
+if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
     if(!result.hasCallback())
     {
         if(!result.isError())
@@ -88,7 +98,16 @@ end
         RAWLOG_ERROR1("Error setting callback: %s", result.getErrorMessage().c_str());
         return CMethodResultConvertor().toJSON(result);
     }
-<%
+<% end
+
+if api_generator_isApiObjectParam(method.result)
+  if method.result.type == MethodParam::TYPE_SELF %>
+    result.setObjectClassPath("<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>");
+    RAWTRACE("Object class path is set");<%
+  else %>
+    result.setObjectClassPath("<%= api_generator_getJSModuleName(api_generator_ruby_makeApiObjectTypeName(method.result, $cur_module)) %>");
+    RAWTRACE("Object class path is set");<%
+  end
 end
 if method.access == ModuleMethod::ACCESS_STATIC %>
     ObjectProxy::<%= method.native_name %>(argumentsAdapter(argv), result); <%
