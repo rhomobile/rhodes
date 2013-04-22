@@ -61,7 +61,7 @@
                 </CALLBACK>
             </METHOD>
             <METHOD name="testHash" hasCallback="mandatory" runInThread="ui">
-                <DESC>Should remove all hashes starting with vowels and sort value characters</DESC>
+                <DESC>Should remove all hashes starting with vowels and reverse value characters</DESC>
                 <PARAMS>
                     <PARAM name="value" type="HASH">
                     </PARAM>
