@@ -275,6 +275,12 @@ struct rho_cast_helper<HStringVector, jobject>: public RhoJniConvertor
     value_type operator()(JNIEnv *env, jobject jList);
 };
 
+template <>
+struct rho_cast_helper<jobject, rho::Vector<std::string> >: public RhoJniConvertor
+{
+    jobject operator()(JNIEnv* env, const rho::Vector<std::string>& stringVector);
+};
+
 } // namespace details
 
 template <typename T, typename U>

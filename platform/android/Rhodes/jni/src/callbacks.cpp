@@ -33,6 +33,8 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "MethodResult.h"
 
+#include "json/JSONIterator.h"
+
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Callbacks"
 
@@ -324,3 +326,33 @@ RHO_GLOBAL void rho_sys_get_screen_auto_rotate_mode(rho::apiGenerator::CMethodRe
     result.set(static_cast<bool>(env->CallStaticBooleanMethod(cls, mid)));
 }
 
+
+namespace rho {
+
+void rho_impl_setNativeMenu(const rho::Vector<rho::String>& menu)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "setNativeMenu", "(Ljava/util/List;)V");
+    if (!mid) return;
+
+    jhobject jhMenuItems = rho_cast<jobject>(env, menu);
+
+    env->CallStaticVoidMethod(cls, mid, jhMenuItems.get());
+}
+
+String rho_impl_getNativeMenu()
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return "";
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "getNativeMenu", "()Ljava/lang/String;");
+    if (!mid) return "";
+
+    jhstring jhMenuItems = static_cast<jstring>(env->CallStaticObjectMethod(cls, mid));
+
+    return rho_cast<String>(env, jhMenuItems.get());
+}
+
+}
