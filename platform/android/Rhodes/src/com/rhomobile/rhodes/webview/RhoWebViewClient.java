@@ -47,7 +47,11 @@ public class RhoWebViewClient extends WebViewClient
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Logger.I(TAG, "Loading URL: " + url);
-        return RhodesService.getInstance().handleUrlLoading(url);
+        boolean res = RhodesService.getInstance().handleUrlLoading(url);
+        if (!res) {
+            RhoExtManager.getImplementationInstance().onBeforeNavigate(view, url);
+        }
+        return res;
     }
     
     @Override
@@ -60,8 +64,6 @@ public class RhoWebViewClient extends WebViewClient
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
         else
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
-
-        RhoExtManager.getImplementationInstance().onBeforeNavigate(view, url);
     }
     
     @Override
