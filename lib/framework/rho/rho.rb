@@ -28,7 +28,7 @@
 require 'rho/render'
 require 'rho/rhoapplication'
 require 'rhom'
-require 'rhofsconnector'
+#require 'rhofsconnector'
 require 'rho/rhoerror'
 require 'rhom/rhom_source'
 require 'rhodes'

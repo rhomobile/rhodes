@@ -424,14 +424,13 @@ bool CHttpServer::run()
 
     m_active = true;
 
-//#if !defined(OS_WP8)
     RHODESAPP().notifyLocalServerStarted();
-//#endif
 
     for(;;) {
         RAWTRACE("Waiting for connections...");
+#if !defined(RHO_NO_RUBY)
         rho_ruby_start_threadidle();
-
+#endif
         fd_set readfds;
         FD_ZERO(&readfds);
         FD_SET(m_listener, &readfds);
@@ -442,7 +441,10 @@ bool CHttpServer::run()
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
 
+#if !defined(RHO_NO_RUBY)
         rho_ruby_stop_threadidle();
+#endif
+
         bool bProcessed = false;
         if (ret > 0) 
         {
@@ -466,12 +468,17 @@ bool CHttpServer::run()
 
                 RAWTRACE("Connection accepted, process it...");
                 VALUE val;
-                if ( !RHOCONF().getBool("enable_gc_while_request") )
+                
+#if !defined(RHO_NO_RUBY)
+                if ( !RHOCONF().getBool("enable_gc_while_request") )                
                     val = rho_ruby_disable_gc();
+#endif
                 bProcessed = process(conn);
+
+#if !defined(RHO_NO_RUBY)
                 if ( !RHOCONF().getBool("enable_gc_while_request") )
                     rho_ruby_enable_gc(val);
-                
+#endif                
                 RAWTRACE("Close connected socket");
                 closesocket(conn);
             }
@@ -484,12 +491,14 @@ bool CHttpServer::run()
             return false;
         }
 
+#if !defined(RHO_NO_RUBY)
         if ( bProcessed )
         {
             LOG(INFO) + "GC Start.";
             rb_gc();
             LOG(INFO) + "GC End.";
         }
+#endif
     }
 }
 
@@ -754,8 +763,6 @@ bool CHttpServer::parse_request(String &method, String &uri, String &query, Head
     bool parsing_headers = true;
     size_t content_length = 0;
 
-//	int attempt = 0;
-//#define receive_request(request) receive_request_test(request, attempt++)
     for (;;) {
         if (!receive_request(request))
             return false;

@@ -19,7 +19,6 @@ public:
     virtual void setLocalServerPort( int value, CMethodResult& oResult);
     virtual void getFreeServerPort(rho::apiGenerator::CMethodResult& oResult);
     virtual void getHasTouchscreen(rho::apiGenerator::CMethodResult& oResult);
-    virtual void getSecurityTokenNotPassed(rho::apiGenerator::CMethodResult& oResult);
     virtual void getHasSqlite(rho::apiGenerator::CMethodResult& oResult);
     virtual void getRealScreenWidth(CMethodResult& oResult);
     virtual void getRealScreenHeight(CMethodResult& oResult);

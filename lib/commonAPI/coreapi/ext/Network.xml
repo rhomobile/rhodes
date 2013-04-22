@@ -263,7 +263,7 @@
                         </PARAMS>
                     </PARAM>
 				</PARAMS>
-				<CALLBACK>
+				<CALLBACK  type="HASH">
 					<DESC>Information related to the connection to the specified URL.</DESC>
 					<PARAMS>
 						<PARAM name="connectionInformation" type="STRING">
@@ -291,7 +291,7 @@
 						<DESC>The connection in the Windows Connection manager to use, specify 'Internet' to use the default internet connection.</DESC>
 					</PARAM>                     
 				</PARAMS>
-				<CALLBACK>
+				<CALLBACK  type="HASH">
 					<DESC>Notifies the user whenever any parameter associated with data connectivity changes.  This callback is called when the connectWan method is first called (for the initial state) and again whenever any of the associated parameters change.</DESC>
 					<PARAMS>
 						<PARAM name="phoneSignalStrength" type="STRING">

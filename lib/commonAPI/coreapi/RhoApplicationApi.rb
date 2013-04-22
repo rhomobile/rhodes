@@ -24,8 +24,6 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-if Rho::System.isRhoSimulator() || Rho::System.platform == Rho::System::PLATFORM_WM_CE || Rho::System.platform == Rho::System::PLATFORM_WINDOWS_DESKTOP || Rho::System.platform == Rho::System::PLATFORM_IOS || Rho::System.platform == Rho::System::PLATFORM_WP8 || Rho::System.platform == Rho::System::PLATFORM_ANDROID
-
 module Rho
   class Application
 
@@ -56,6 +54,10 @@ module Rho
       
       def get_blob_path(relative_path)
         Rho::Application.expandDatabaseBlobFilePath(relative_path)
+      end
+      
+      def defaultNativeMenu()
+        make_default_native_menu()        
       end
       
     end
@@ -110,5 +112,3 @@ module Rho
     end
   end # RhoApplication
 end # Rho
-
-end
