@@ -286,14 +286,14 @@ class Database
     if condition
         quests,vals = Database.make_where_params(condition,'AND') 
         if params and params['distinct']
-            query = "select distinct #{columns} from #{table} where #{quests}"
+            query = "SELECT DISTINCT #{columns} FROM \"#{table}\" WHERE #{quests}"
         elsif params and params['order by']
-            query = "select #{columns} from #{table} where #{quests} order by #{params['order by']}"
+            query = "SELECT #{columns} FROM \"#{table}\" WHERE #{quests} ORDER BY #{params['order by']}"
         else
-            query = "select #{columns} from #{table} where #{quests}"
+            query = "SELECT #{columns} FROM \"#{table}\" WHERE #{quests}"
         end
     else
-        query = "select #{columns} from #{table}"
+        query = "SELECT #{columns} FROM \"#{table}\""
     end
     
     execute_sql query, vals
