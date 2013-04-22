@@ -13,6 +13,7 @@ end %>
 
 <% if $cur_module.is_template_default_instance %>
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "getDefaultID", true) %>;
+<%= api_generator_MakeJSMethodDecl($cur_module.name, "getDefault", true) %>;
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "setDefaultID", true) %>;
 <% end %>
 
@@ -40,6 +41,7 @@ extern "C" void Init_JSAPI_<%= $cur_module.name %>(void)
 end %>
 <% if $cur_module.is_template_default_instance %>
 <%= api_generator_MakeJSMethodDef("getDefaultID", "getDefaultID", true) %>
+<%= api_generator_MakeJSMethodDef("getDefault", "getDefault", true) %>
 <%= api_generator_MakeJSMethodDef("setDefaultID", "setDefaultID", true) %>
 <% end %>
 }

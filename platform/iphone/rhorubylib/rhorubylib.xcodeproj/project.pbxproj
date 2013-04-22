@@ -114,7 +114,6 @@
 		F5E363050EB79F8400226287 /* lgamma_r.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E363040EB79F8400226287 /* lgamma_r.c */; };
 		F5E363080EB7A0DB00226287 /* newline.c in Sources */ = {isa = PBXBuildFile; fileRef = F5E363070EB7A0DB00226287 /* newline.c */; };
 		F5FD0A3D10619E7900B7B8ED /* mapview_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = F5FD0A3C10619E7900B7B8ED /* mapview_wrap.c */; };
-		FA291E8911FF2BF90096AC39 /* signature_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FA291E8811FF2BF90096AC39 /* signature_wrap.c */; };
 		FA522E5112DEA22800AB55CC /* nativeviewmanager_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FA522E5012DEA22800AB55CC /* nativeviewmanager_wrap.c */; };
 		FA5AC04E14681D5900B147A2 /* encdb.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04B14681D5900B147A2 /* encdb.c */; };
 		FA5AC04F14681D5900B147A2 /* iso_8859_9.c in Sources */ = {isa = PBXBuildFile; fileRef = FA5AC04C14681D5900B147A2 /* iso_8859_9.c */; };
@@ -801,7 +800,6 @@
 				5C79894D113BD1D0005F8736 /* geolocation_wrap.c in Sources */,
 				BD28516111608C9A003DE4E9 /* ringtones_wrap.c in Sources */,
 				BD9E5E101186B44B0053049C /* navbar_wrap.c in Sources */,
-				FA291E8911FF2BF90096AC39 /* signature_wrap.c in Sources */,
 				FACC2099123A5F300088A447 /* bluetooth_wrap.c in Sources */,
 				BD807BB01259E25A00A4E4B2 /* calendar_wrap.c in Sources */,
 				BD807BC31259E37900A4E4B2 /* event_wrap.c in Sources */,

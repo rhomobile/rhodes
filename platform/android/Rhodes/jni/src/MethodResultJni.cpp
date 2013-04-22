@@ -253,6 +253,7 @@ int MethodResultJni::getResultType(JNIEnv* env) const
     if(m_resType == typeNone && m_jhResult)
     {
         int res = env->CallIntMethod(m_jhResult.get(), s_midGetResultType);
+
         RAWTRACE1("Java result type: %d", res);
         return res;
     } else
@@ -326,7 +327,7 @@ void MethodResultJni::reset(JNIEnv* env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni(bool isRuby) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_hasCallback(false), m_resType(typeNone)
+MethodResultJni::MethodResultJni(bool isRuby) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone)
 {
     m_env = jniInit();
     if (!m_env) {
@@ -338,7 +339,7 @@ MethodResultJni::MethodResultJni(bool isRuby) : m_env(0), m_jhResult(0), m_bGlob
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_jhResult(jResult), m_bGlobalRef(false), m_hasCallback(false), m_resType(typeNone)
+MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_jhResult(jResult), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone)
 {
     m_env = jniInit(env);
     if (!m_env) {
@@ -348,10 +349,17 @@ MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_jhResult(jRes
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni(const MethodResultJni& result) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_hasCallback(false), m_resType(typeNone)
+MethodResultJni::MethodResultJni(const MethodResultJni& result) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone)
 {
     JNIEnv* env = result.m_env;
-    m_jhResult = env->NewWeakGlobalRef(result.m_jhResult.get());
+    if(result.m_bGlobalRef) {
+        RAWTRACE1("Copying MethodResult with global JNI reference: 0x%.8x ---------------------------------------", result.m_jhResult.get());
+        m_jhResult = result.m_jhResult.get();
+        result.m_bSlaveRef = true;
+    } else {
+        m_jhResult = env->NewGlobalRef(result.m_jhResult.get());
+        RAWTRACE1("Copying MethodResult creating global JNI reference: 0x%.8x >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", m_jhResult.get());
+    }
     m_bGlobalRef = true;
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -360,7 +368,12 @@ MethodResultJni::~MethodResultJni()
 {
     if(m_bGlobalRef)
     {
-        m_jhResult.release();
+        jobject jResult = m_jhResult.release();
+        if(!m_bSlaveRef)
+        {
+            RAWTRACE1("Deleting MethodResult global JNI reference: 0x%.8x ==========================================", jResult);
+            m_env->DeleteGlobalRef(jResult);
+        }
     }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -440,16 +453,18 @@ void MethodResultJni::disconnect(JNIEnv* env)
 void MethodResultJni::callRubyBack(jboolean jReleaseCallback)
 {
     RAWTRACE(__FUNCTION__);
+    RAWTRACE(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
-    jhstring jhStrCallback = getStrCallback(m_env);
     jhstring jhStrCallbackData = getStrCallbackData(m_env);
     jlong jRubyProc = getRubyProcCallback(m_env);
 
     if (jRubyProc != 0)
     {
         VALUE oProc = static_cast<VALUE>(jRubyProc);
-
         rho::String strResBody = RHODESAPP().addCallbackObject(new CRubyCallbackResult<MethodResultJni>(*this), "body");
+
+        RAWTRACE1("Call Ruby proc by address: 0x%.8x", oProc);
+
         RHODESAPP().callCallbackProcWithData( oProc, strResBody, rho_cast<rho::String>(m_env, jhStrCallbackData.get()), true);
 
         if(static_cast<bool>(jReleaseCallback))
@@ -457,10 +472,17 @@ void MethodResultJni::callRubyBack(jboolean jReleaseCallback)
             releaseRubyProcCallback(jRubyProc);
         }
     }
-    else if(!m_env->IsSameObject(jhStrCallback.get(), 0))
+    else
     {
-        rho::String strResBody = RHODESAPP().addCallbackObject(new CRubyCallbackResult<MethodResultJni>(*this), "__rho_inline");
-        RHODESAPP().callCallbackWithData(rho_cast<rho::String>(m_env, jhStrCallback.get()), strResBody, rho_cast<rho::String>(m_env, jhStrCallbackData.get()), true);
+        jhstring jhStrCallback = getStrCallback(m_env);
+        String strCallback = rho_cast<String>(m_env, jhStrCallback.get());
+        if(strCallback.length())
+        {
+            RAWTRACE1("Call Ruby controller by URL: %s", rho_cast<rho::String>(jhStrCallback.get()).c_str());
+
+            rho::String strResBody = RHODESAPP().addCallbackObject(new CRubyCallbackResult<MethodResultJni>(*this), "__rho_inline");
+            RHODESAPP().callCallbackWithData(rho_cast<rho::String>(m_env, jhStrCallback.get()), strResBody, rho_cast<rho::String>(m_env, jhStrCallbackData.get()), true);
+        }
     }
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -503,7 +525,9 @@ void MethodResultJni::releaseRubyProcCallback(jlong jRubyProc)
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeCallBack
   (JNIEnv * env, jobject jResult, jint jTabId, jboolean jIsRuby, jboolean jReleaseCallback)
 {
-    RAWTRACE("nativeCallBack");
+    RAWTRACE1("nativeCallBack - env: 0x%.8x", env);
+
+    initjnienv(env);
 
     MethodResultJni result(env, jResult);
     if (static_cast<bool>(jIsRuby))
@@ -524,7 +548,6 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeRelease
     MethodResultJni::releaseRubyProcCallback(jProcCallback);
 }
 //----------------------------------------------------------------------------------------------------------------------
-
 
 
 }}

@@ -28,14 +28,18 @@ package com.rhomobile.rhodes.camera;
 
 import java.io.File;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.ui.FileList;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
@@ -51,6 +55,7 @@ public class Camera {
 	private static int mFrontCamera_max_Height = 0;
 	
 	private static CameraService ourCameraService = null;
+	private static String mURL = null;
 	
 	public static CameraService getCameraService() {
 		if (ourCameraService == null) {
@@ -81,10 +86,6 @@ public class Camera {
 		if (ENABLE_DEBUG_LOGGING) {
 			Utils.platformLog(tag, message);
 		}
-	}
-	
-	private static void reportFail(String name, Exception e) {
-		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 	
 	public static void init_from_UI_Thread() {
@@ -125,6 +126,7 @@ public class Camera {
 		
 		public Picture(String u, Class<?> c, Object settingsObj) {
 			url = u;
+			mURL = u;
 			klass = c;
 			settings = new CameraSettings(settingsObj);
 		}
@@ -136,7 +138,7 @@ public class Camera {
 		        Intent intent = new Intent(ra, klass);
 		        intent.putExtra(INTENT_EXTRA_PREFIX + "callback", url);
 		        intent.putExtra(INTENT_EXTRA_PREFIX + "settings", settings);
-		        ra.startActivity(intent);
+		        ra.startActivityForResult(intent, 0);
 		    } catch (Exception e) {
 		        Logger.E(TAG, e);
 		    }
@@ -150,7 +152,7 @@ public class Camera {
 			PerformOnUiThread.exec(runnable);
 		}
 		catch (Exception e) {
-			reportFail("takePicture", e);
+			Logger.E(TAG, e);
 		}
 	}
 
@@ -159,26 +161,26 @@ public class Camera {
 			PerformOnUiThread.exec(new Picture(url, FileList.class, null));
 		}
 		catch (Exception e) {
-			reportFail("choosePicture", e);
+			Logger.E(TAG, e);
 		}
 	}
 	
-	public static void doCallback(String callbackUrl, String filePath, int w, int h, String format) {
+	public static void doCallback(String filePath, int w, int h, String format) {
 		String fp = filePath == null ? "" : filePath;
 		int idx = fp.lastIndexOf('/');
 		if (idx != -1)
 			fp = fp.substring(idx + 1);
-		execute_callback(callbackUrl, fp, "", fp.length() == 0, w, h, format);
-		
+		execute_callback(mURL, fp, "", fp.length() == 0, w, h, format);
+		mURL = null;
 	}
 
-	public static void doCancelCallback(String callbackUrl) {
-		execute_callback(callbackUrl, null, null, true, 0, 0, null);
+	public static void doCancelCallback() {
+		execute_callback(mURL, null, null, true, 0, 0, null);
 		
 	}
 	
-	public static void doErrorCallback(String callbackUrl, String errorMsg) {
-		execute_callback(callbackUrl, null, errorMsg, false, 0, 0, null);
+	public static void doErrorCallback(String errorMsg) {
+		execute_callback(mURL, null, errorMsg, false, 0, 0, null);
 		
 	}
 	
@@ -273,4 +275,37 @@ public class Camera {
 		return 0;
 	}
 	
+    public static void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (mURL != null) {
+            try {
+                if (resultCode == Activity.RESULT_OK) {
+                    Uri uri = (Uri)intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+                    if (uri != null) {
+                        Logger.T(TAG, "Photo is capltured: " + uri);
+                        String curPath = uri.getPath();
+                        File curFile = new File(curPath);
+                        String filename = Utils.getBaseName(curPath);
+                        if (!curFile.isFile()) {
+                            Logger.E(TAG, "Captured photo file does not exist: " + curPath);
+                            doErrorCallback("Captured photo file does not exist: " + curPath);
+                        } else {
+                            if (!curPath.startsWith(RhodesAppOptions.getBlobPath())) {
+                                String dstPath = RhodesAppOptions.getBlobPath() + "/" + filename;
+                                Utils.copy(curPath, dstPath);
+                                Logger.T(TAG, "File copied to " + dstPath);
+                            }
+                            doCallback(filename, 0, 0, "jpg");
+                        }
+                    }
+                } else if (resultCode == Activity.RESULT_CANCELED) {
+                    doCancelCallback();
+                } else {
+                    doErrorCallback("Unknown error");
+                }
+            } catch (Throwable err) {
+                Logger.E(TAG, err);
+                doErrorCallback(err.getMessage());
+            }
+        }
+    }
 }

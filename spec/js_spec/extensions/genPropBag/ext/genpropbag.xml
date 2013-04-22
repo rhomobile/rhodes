@@ -1,0 +1,39 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="GenPropBag" parent="Rho">
+    
+        <TEMPLATES>
+            <DEFAULT_INSTANCE/>  object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
+            <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
+        </TEMPLATES>
+
+        <!-- <PROPERTIES usePropertyBag="accessorsViaPropertyBag"> -->
+        <!-- <PROPERTIES usePropertyBag="PropertyBagViaAccessors"> -->
+        <PROPERTIES usePropertyBag="accessorsViaPropertyBag" generateAccessors="true">
+            <PROPERTY name="boolProp" type="BOOLEAN"  />
+            <PROPERTY name="intProp" type="INTEGER"  />
+            <PROPERTY name="floatProp" type="FLOAT"  />
+            <PROPERTY name="stringProp" type="STRING"  />
+            
+        </PROPERTIES>
+
+        <METHODS>
+            <METHOD name="enumerate" access="STATIC">
+                <RETURN type="ARRAY">
+                    <PARAM type="SELF_INSTANCE"/>
+                </RETURN>
+            </METHOD>
+
+            <!-- <METHOD name="testMethod1" access="STATIC">
+            </METHOD>  -->
+
+        </METHODS>
+        
+        <USER_OVERVIEW>
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+        </PLATFORM>
+    </MODULE>
+</API>    

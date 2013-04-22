@@ -230,10 +230,11 @@ void CSystemImpl::setFullScreen( bool value, CMethodResult& oResult)
 
 void CSystemImpl::getScreenAutoRotate(CMethodResult& oResult)
 {
-	if(DisplayProperties::AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::None)
+	//not supported in XAML apps
+	/*if(DisplayProperties::AutoRotationPreferences == Windows::Graphics::Display::DisplayOrientations::None)
 		oResult.set(false);
-	else 
-		oResult.set(true);
+	else */
+	oResult.set(true);
 }
 
 void CSystemImpl::setScreenAutoRotate( bool value, CMethodResult& oResult)

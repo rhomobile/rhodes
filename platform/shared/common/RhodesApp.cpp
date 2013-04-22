@@ -371,7 +371,7 @@ void CRhodesApp::run()
 
 	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
 		LOG(INFO) + "Starting sync engine...";
-		//sync::RhoconnectClientManager::syncThreadCreate();
+		sync::RhoconnectClientManager::syncThreadCreate();
 	}
 
 #if !defined(RHO_NO_RUBY)
@@ -402,9 +402,10 @@ void CRhodesApp::run()
     rubyext::CGeoLocation::Destroy();
 #endif
 
-	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
-		//sync::RhoconnectClientManager::clientRegisterDestroy();
-		//sync::RhoconnectClientManager::syncThreadDestroy();
+	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) 
+    {
+		sync::RhoconnectClientManager::clientRegisterDestroy();
+		sync::RhoconnectClientManager::syncThreadDestroy();
 	}
 
 	db::CDBAdapter::closeAll();
@@ -1806,22 +1807,26 @@ void CRhodesApp::loadUrl(String url)
     if ( url.length() == 0 )
         return;
 
-    boolean callback = false;
+    boolean callback = false, js_callback = false;
     if (String_startsWith(url, "callback:") )
     {
         callback = true;
         url = url.substr(9);
+    }else if (String_startsWith(url, "javascript:") )
+    {
+        js_callback = true;
+        url = url.substr(11);
     }else if ( strcasecmp(url.c_str(), "exit")==0 || strcasecmp(url.c_str(), "close") == 0 )
     {
         rho_sys_app_exit();
         return;
     }else if ( strcasecmp(url.c_str(), "options")==0 )
     {
-        rho_webview_navigate(getOptionsUrl().c_str(), 0);
+        rho_webview_navigate(getOptionsUrl().c_str(), -1);
         return;
     }else if ( strcasecmp(url.c_str(), "home")==0 )
     {
-        rho_webview_navigate(getStartUrl().c_str(), 0);
+        rho_webview_navigate(getStartUrl().c_str(), -1);
         return;
     }else if ( strcasecmp(url.c_str(), "refresh")==0 )
     {
@@ -1841,14 +1846,19 @@ void CRhodesApp::loadUrl(String url)
         return;
     }
 
-    url = canonicalizeRhoUrl(url);
     if (callback)
     {
+        url = canonicalizeRhoUrl(url);
         if ( rho_ruby_is_started() )
             getNetRequest().pushData( url,  "rho_callback=1", null );
     }
+    else if (js_callback)
+        rho_webview_execute_js(url.c_str(), -1);
     else
+    {
+        url = canonicalizeRhoUrl(url);
         navigateToUrl(url);
+    }
 }
 
 void CRhodesApp::notifyLocalServerStarted()

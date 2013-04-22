@@ -779,46 +779,47 @@ namespace "build" do
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
       $app_extensions_list.each do |ext, commin_ext_path | 
+          if commin_ext_path != nil 
+            #puts '########################  ext='+ext.to_s+'        path='+commin_ext_path.to_s 
+            extpath = File.join( commin_ext_path, 'ext')
 
-          extpath = File.join( commin_ext_path, 'ext')
+            prebuilt_copy = false
 
-          prebuilt_copy = false
-
-          extyml = File.join(commin_ext_path,"ext.yml")
-          if File.file? extyml
-            extconf = Jake.config(File.open(extyml))
-            extconf_iphone = extconf['iphone']
-            exttype = 'build'
-            exttype = extconf_iphone['exttype'] if extconf_iphone and extconf_iphone['exttype']
-            if exttype == 'prebuilt'
-              prebuiltpath = Dir.glob(File.join(extpath, '**', 'iphone')) 
-              if prebuiltpath.count > 0
-                prebuiltpath = prebuiltpath.first
-              else
-                raise "iphone:exttype is 'prebuilt' but prebuilt path is not found #{prebuiltpath.inspect}"
-              end
-
-              libes = extconf["libraries"]
-              if libes != nil
-                libname = libes.first 
-                libpath = File.join(prebuiltpath, "lib"+libname+".a")
-                if File.file? libpath
-                   targetlibpath = File.join(target_dir, "lib"+libname+".a")
-                   cp libpath, targetlibpath
-                   prebuilt_copy = true
+            extyml = File.join(commin_ext_path,"ext.yml")
+            if File.file? extyml
+              extconf = Jake.config(File.open(extyml))
+              extconf_iphone = extconf['iphone']
+              exttype = 'build'
+              exttype = extconf_iphone['exttype'] if extconf_iphone and extconf_iphone['exttype']
+              if exttype == 'prebuilt'
+                prebuiltpath = Dir.glob(File.join(extpath, '**', 'iphone')) 
+                if prebuiltpath.count > 0
+                  prebuiltpath = prebuiltpath.first
                 else
-                  raise "iphone:exttype is 'prebuilt' but lib path is not found #{libpath.inspect}"
+                  raise "iphone:exttype is 'prebuilt' but prebuilt path is not found #{prebuiltpath.inspect}"
+                end
+
+                libes = extconf["libraries"]
+                if libes != nil
+                  libname = libes.first 
+                  libpath = File.join(prebuiltpath, "lib"+libname+".a")
+                  if File.file? libpath
+                     targetlibpath = File.join(target_dir, "lib"+libname+".a")
+                     cp libpath, targetlibpath
+                     prebuilt_copy = true
+                  else
+                    raise "iphone:exttype is 'prebuilt' but lib path is not found #{libpath.inspect}"
+                  end  
+
                 end  
-
               end  
-            end  
 
-          end
-            
-          if ! prebuilt_copy
-            build_extension_lib(extpath, sdk, target_dir) 
-          end 
-        
+
+            end
+            if ! prebuilt_copy
+              build_extension_lib(extpath, sdk, target_dir) 
+            end 
+          end        
       end
 
     end  
@@ -857,6 +858,7 @@ namespace "build" do
       puts "extpaths: #{$app_config["extpaths"].inspect.to_s}"
       $stdout.flush
       $app_extensions_list.each do |ext, commin_ext_path | 
+        if commin_ext_path != nil 
 
           extpath = File.join( commin_ext_path, 'ext')
           extyml = File.join( commin_ext_path, "ext.yml")
@@ -876,7 +878,7 @@ namespace "build" do
                  libpath = File.join(prebuiltpath, "lib"+libname+".a")
                  libsimpath = File.join(prebuiltpath, "lib"+libname+"386.a")
                  libdevpath = File.join(prebuiltpath, "lib"+libname+"ARM.a")
-                 libbinpath = File.join($app_builddir, "extensions", ext, "lib"+libname+".a")
+                 libbinpath = File.join($app_builddir, "extensions", ext, "lib", "lib"+libname+".a")
 
                  ENV["TARGET_TEMP_DIR"] = prebuiltpath
                  ENV["ARCHS"] = "i386"
@@ -900,16 +902,23 @@ namespace "build" do
                  args << libdevpath
                  Jake.run("lipo",args)
 
-                 mkdir_p File.join($app_builddir, "extensions", ext)
+                 mkdir_p File.join($app_builddir, "extensions", ext, "lib")
                  cp libpath, libbinpath
 
                  rm_f libsimpath
                  rm_f libdevpath
 
+                 # copy all files from extension folder to extension binary folder
+                 Dir.glob(File.join(commin_ext_path,'*')).each do |artefact|
+                    if (artefact != extpath) && (artefact != extyml) && ((File.file? artefact) || (File.directory? artefact))
+                        cp_r artefact, File.join($app_builddir, "extensions", ext)
+                    end 
+                 end 
+
               end
             end 
           end
-        
+        end
       end
 
 

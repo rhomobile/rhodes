@@ -85,7 +85,7 @@ void CRhoCryptImpl::readKeyFromStorage(DATA_BLOB& blobKey)
     strKey += RHODESAPP().getAppNameW() + L"\\Storage\\" + m_strDBPartition;
 
     CRegKey oKey;
-    LONG res = oKey.Open(HKEY_LOCAL_MACHINE, strKey.c_str(), KEY_READ);
+    LONG res = oKey.Open(HKEY_CURRENT_USER, strKey.c_str(), KEY_READ);
     if ( res != ERROR_SUCCESS )
         return;
 
@@ -107,11 +107,11 @@ void CRhoCryptImpl::saveKeyToStorage(DATA_BLOB& blobKey)
 
     {
         CRegKey oKey;
-        res = oKey.Create(HKEY_LOCAL_MACHINE, strKey.c_str() );
+        res = oKey.Create(HKEY_CURRENT_USER, strKey.c_str() );
     }
 
     CRegKey oKey;
-    res = oKey.Open(HKEY_LOCAL_MACHINE, strKey.c_str(), KEY_WRITE);
+    res = oKey.Open(HKEY_CURRENT_USER, strKey.c_str(), KEY_WRITE);
     if ( res != ERROR_SUCCESS )
         return;
 

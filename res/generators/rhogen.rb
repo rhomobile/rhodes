@@ -523,7 +523,7 @@ module Rhogen
         template.destination = "extensions/#{name}/ext/platform/wm/src/#{namecamelcase}_impl.cpp"
     end
 
-	template :extension_wp8_vcproject do |template|
+    template :extension_wp8_vcproject do |template|
         template.source = 'extensions/montana/ext/platform/wp8/Montana.vcxproj'
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}.vcxproj"
     end
@@ -544,6 +544,11 @@ module Rhogen
     end
 
     # wp8: c++ -> c# bridging
+
+    template :extension_wp8_solution do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/Montana.sln'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}.sln"
+    end
 
     template :extension_wp8_impl_csproj do |template|
         template.source = 'extensions/montana/ext/platform/wp8/MontanaImpl.csproj'
@@ -580,16 +585,6 @@ module Rhogen
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Runtime.props"
     end
 
-    template :extension_wp8_runtime_h do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/runtime/MontanaRuntime.h'
-        template.destination = "extensions/#{name}/ext/platform/wp8/runtime/#{namecamelcase}Runtime.h"
-    end
-
-    template :extension_wp8_runtime_cpp do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/runtime/MontanaRuntime.cpp'
-        template.destination = "extensions/#{name}/ext/platform/wp8/runtime/#{namecamelcase}Runtime.cpp"
-    end
-
     template :extension_wp8_lib_vcxproj do |template|
         template.source = 'extensions/montana/ext/platform/wp8/MontanaLib.vcxproj'
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Lib.vcxproj"
@@ -603,21 +598,6 @@ module Rhogen
     template :extension_wp8_lib_props do |template|
         template.source = 'extensions/montana/ext/platform/wp8/MontanaLib.props'
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Lib.props"
-    end
-
-    template :extension_wp8_lib_methodresult_h do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/lib/MethodResultImpl.h'
-        template.destination = "extensions/#{name}/ext/platform/wp8/lib/MethodResultImpl.h"
-    end
-
-    template :extension_wp8_lib_methodresult_cpp do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/lib/MethodResultImpl.cpp'
-        template.destination = "extensions/#{name}/ext/platform/wp8/lib/MethodResultImpl.cpp"
-    end
-
-    template :extension_wp8_lib_impl_cpp do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/lib/Montana_impl.cpp'
-        template.destination = "extensions/#{name}/ext/platform/wp8/lib/#{namecamelcase}_impl.cpp"
     end
 
 
@@ -1635,6 +1615,21 @@ module Rhogen
                  end
               end
             end
+            # if default is not setted - set it to default for types
+            if module_property.default_value == nil
+               if module_property.type == MethodParam::TYPE_BOOL
+                  module_property.default_value = "false"
+               end
+               if module_property.type == MethodParam::TYPE_INT
+                  module_property.default_value = "0"
+               end
+               if module_property.type == MethodParam::TYPE_DOUBLE
+                  module_property.default_value = "0"
+               end
+               if module_property.type == MethodParam::TYPE_STRING
+                  module_property.default_value = ""
+               end
+            end
 
             module_item.properties << module_property
 
@@ -1833,7 +1828,17 @@ module Rhogen
 
                 module_method.is_return_value = true
                 method_result = MethodResult.new()
-                result_type = ret_el.attribute("type").to_s
+                result_type = ret_el.attribute("type")
+                if result_type == nil
+                    puts "you use RETURN/CALLBACK without specified type - use default STRING type ! Module[#{module_item.name}].method[#{module_method.name}]"
+                    result_type = MethodParam::TYPE_STRING
+                else
+                   result_type = result_type.to_s
+                end
+                if result_type == ""
+                    puts "you use RETURN/CALLBACK with invalid type - use default STRING type ! Module[#{module_item.name}].method[#{module_method.name}]"
+                    result_type = MethodParam::TYPE_STRING
+                end
                 #result_item_type = xml_module_method.elements["RETURN"].attribute("itemType").to_s
                 ret_el.elements.each("DESC") do |xml_desc|
                    method_result.desc = xml_desc.text
@@ -2193,7 +2198,38 @@ module Rhogen
       template.destination = "platform/android/generated/jni/#{$cur_module.name.downcase}_js_wrap.cpp"
     end
 
+
     # wp8
+    template :wp8_stub_impl_montana_impl do |template|
+      template.source = 'platform/wp8/stub_impl/Montana_impl.cs'
+      template.destination = "platform/wp8/generated/stub_impl/#{$cur_module.name}_impl.cs"
+    end
+
+    template :wp8_runtime_montana_runtime_h do |template|
+      template.source = 'platform/wp8/runtime/MontanaRuntime.h'
+      template.destination = "platform/wp8/generated/runtime/#{$cur_module.name}Runtime.h"
+    end
+
+    template :wp8_runtime_montana_runtime_cpp do |template|
+      template.source = 'platform/wp8/runtime/MontanaRuntime.cpp'
+      template.destination = "platform/wp8/generated/runtime/#{$cur_module.name}Runtime.cpp"
+    end
+
+    template :wp8_lib_montana_methodresultimpl_h do |template|
+      template.source = 'platform/wp8/lib/Montana_MethodResultImpl.h'
+      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_MethodResultImpl.h"
+    end
+
+    template :wp8_lib_montana_methodresultimpl_cpp do |template|
+      template.source = 'platform/wp8/lib/Montana_MethodResultImpl.cpp'
+      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_MethodResultImpl.cpp"
+    end
+
+    template :wp8_lib_montana_impl do |template|
+      template.source = 'platform/wp8/lib/Montana_impl.cpp'
+      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_impl.cpp"
+    end
+
 
     template :public_api_module do |template|
       template.source = 'js/Rho.Montana.js'

@@ -65,6 +65,11 @@ extern "C" void rho_webview_navigate(const char* url, int index);
 class CEng;
 extern rho::IBrowserEngine* rho_wmimpl_get_webkitBrowserEngine(HWND hwndParent, HINSTANCE rhoAppInstance);
 extern "C" CEng* rho_wmimpl_get_webkitbrowser(HWND hParentWnd, HINSTANCE hInstance);
+
+#if !defined(APP_BUILD_CAPABILITY_MOTOROLA)
+extern "C" LRESULT	rho_wm_appmanager_ProcessOnTopMostWnd(WPARAM wParam, LPARAM lParam){ return 0;}
+#endif
+
 #else
 /*extern "C" void rho_wm_impl_SetApplicationLicenseObj(void* pAppLicenseObj)
 {
@@ -169,6 +174,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     CMainWindow m_appWindow;
     rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath, m_strAppName;//, m_strDebugHost, m_strDebugPort;*/
 	int m_nRestarting;
+    bool m_bMinimized;
 	bool m_isRhoConnectPush;
 #ifndef RHODES_EMULATOR
 	HANDLE m_hMutex;
@@ -197,6 +203,7 @@ public :
     const rho::String& getRhoRootPath();
     const rho::String& getRhoRuntimePath();
     const rho::String& getAppName();
+    void createAutoStartShortcut();
 };
 
 void parseHttpProxyURI(const rho::String &http_proxy);
@@ -222,6 +229,7 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( )
 {
 	m_nRestarting = 1;
+    m_bMinimized = false;
 	LPCTSTR lpszToken = lpCmdLine;
 	LPCTSTR nextToken;
     getRhoRootPath();
@@ -258,6 +266,10 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 		if (isCmdLineOpt) {
 			if (WordCmpI(lpszToken, _T("Restarting"))==0) {
 				m_nRestarting = 10;
+			}
+
+            if (WordCmpI(lpszToken, _T("minimized"))==0) {
+				m_bMinimized = true;
 			}
 
 			if (WordCmpI(lpszToken, _T("rhoconnectpush"))==0) {
@@ -518,6 +530,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 		return S_FALSE;
     }
 
+    if (RHOCONF().getBool("Application.autoStart"))
+        createAutoStartShortcut();
+
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
 
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
@@ -544,6 +559,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     {
         return S_FALSE;
     }
+    if (m_bMinimized)
+        nShowCmd = SW_MINIMIZE;
+
     m_appWindow.ShowWindow(nShowCmd);
 
 #ifndef RHODES_EMULATOR
@@ -569,6 +587,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
 
     bool bRE1App = false;
+
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     if (!rho_wmimpl_get_is_version2())
         bRE1App = true;
@@ -579,28 +598,29 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
         registerRhoExtension();
 #endif
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && defined(OS_WINCE)
 	    m_appWindow.Navigate2(_T("about:blank")
 #if defined(OS_WINDOWS_DESKTOP)
             , -1
 #endif
         );
-#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-
-        //RHODESAPP().startApp();
+#endif //!APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
         rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0 );
     }
     else
     {
         RHODESAPP().startApp();
+
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && defined(OS_WINCE)
         // Navigate to the "loading..." page
 	    m_appWindow.Navigate2(_T("about:blank")
 #if defined(OS_WINDOWS_DESKTOP)
             , -1
 #endif
         );
-
+#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     }
 
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
@@ -745,6 +765,24 @@ const rho::String& CRhodesModule::getRhoRuntimePath()
     return m_strRuntimePath; 
 }
 
+void CRhodesModule::createAutoStartShortcut()
+{
+#ifdef OS_WINCE
+    StringW strLnk = L"\\Windows\\StartUp\\";
+    strLnk += convertToStringW(getAppName());
+    strLnk += L".lnk";
+
+    StringW strAppPath = L"\"";
+    char rootpath[MAX_PATH];
+    GetModuleFileNameA(NULL,rootpath,MAX_PATH);
+    strAppPath += convertToStringW(rootpath);
+    strAppPath += L" -minimized\"";
+
+    DWORD dwRes = SHCreateShortcut( (LPTSTR)strLnk.c_str(), (LPTSTR)strAppPath.c_str());
+#endif
+
+}
+
 extern "C" int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/,
                                 LPTSTR lpCmdLine, int nShowCmd)
 {
@@ -806,9 +844,14 @@ typedef int (WINAPI *FUNC_IsLicenseOK)();
 typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
 
 extern "C" void rho_wm_impl_CheckLicense()
-{
+{   
+    return;
     int nRes = 0;
+    LOG(INFO) + "Start license_rc.dll";
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
+    LOG(INFO) + "Stop license_rc.dll";
+    
+
     if(hLicenseInstance)
     {
 #ifdef OS_WINDOWS_DESKTOP

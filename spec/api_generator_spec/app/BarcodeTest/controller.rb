@@ -13,7 +13,51 @@ class BarcodeTestController < Rho::RhoController
   
   #@@test_proc = lambda{|args| puts "lamda: #{args}"}
   def index
+    #Rho::Barcode.enumerate( lambda{|args| puts "lamda: #{args}"});
+
+    
+
+    puts "Before Rho::Barcode.boolProp : #{Rho::Barcode.boolProp} type:#{Rho::Barcode.boolProp.class.to_s}"
+    Rho::Barcode.boolProp = true
+    puts "After Rho::Barcode.boolProp : #{Rho::Barcode.boolProp} type:#{Rho::Barcode.boolProp.class.to_s}"
+    
+    puts "Before Rho::Barcode.intProp : #{Rho::Barcode.intProp} type:#{Rho::Barcode.intProp.class.to_s}"
+    Rho::Barcode.intProp = 123
+    puts "After Rho::Barcode.intProp : #{Rho::Barcode.intProp} type:#{Rho::Barcode.intProp.class.to_s}"
+
+    puts "Before Rho::Barcode.floatProp : #{Rho::Barcode.floatProp} type:#{Rho::Barcode.floatProp.class.to_s}"
+    Rho::Barcode.floatProp = 123.78
+    puts "After Rho::Barcode.floatProp : #{Rho::Barcode.floatProp} type:#{Rho::Barcode.floatProp.class.to_s}"
+
+    puts "Before Rho::Barcode.stringProp : #{Rho::Barcode.stringProp} type:#{Rho::Barcode.stringProp.class.to_s}"
+    Rho::Barcode.stringProp = "geny"
+    puts "After Rho::Barcode.stringProp : #{Rho::Barcode.stringProp} type:#{Rho::Barcode.stringProp.class.to_s}"
+
+    puts "Before Rho::Barcode.boolPropDef : #{Rho::Barcode.boolPropDef} type:#{Rho::Barcode.boolPropDef.class.to_s}"
+    Rho::Barcode.boolPropDef = true
+    puts "After Rho::Barcode.boolPropDef : #{Rho::Barcode.boolPropDef} type:#{Rho::Barcode.boolPropDef.class.to_s}"
+    
+    puts "Before Rho::Barcode.intPropDef : #{Rho::Barcode.intPropDef} type:#{Rho::Barcode.intPropDef.class.to_s}"
+    Rho::Barcode.intPropDef = 123
+    puts "After Rho::Barcode.intPropDef : #{Rho::Barcode.intPropDef} type:#{Rho::Barcode.intPropDef.class.to_s}"
+
+    puts "Before Rho::Barcode.floatPropDef : #{Rho::Barcode.floatPropDef} type:#{Rho::Barcode.floatPropDef.class.to_s}"
+    Rho::Barcode.floatPropDef = 123.78
+    puts "After Rho::Barcode.floatPropDef : #{Rho::Barcode.floatPropDef} type:#{Rho::Barcode.floatPropDef.class.to_s}"
+
+    puts "Before Rho::Barcode.stringPropDef : #{Rho::Barcode.stringPropDef} type:#{Rho::Barcode.stringPropDef.class.to_s}"
+    Rho::Barcode.stringPropDef = "geny"
+    puts "After Rho::Barcode.stringPropDef : #{Rho::Barcode.stringPropDef} type:#{Rho::Barcode.stringPropDef.class.to_s}"
+
+    
 =begin
+ 
+    Rho::Barcode.setProperties :autoEnter => 'enabled', :code128 => 'enabled', :code39 => 'enabled'
+    Rho::Barcode.setProperties code128: 'enabled', code39: 'enabled' 
+    Rho::Barcode.enable( {:code128 => 'enabled', :code39 => 'enabled'}, "" )
+    Rho::Barcode.enable( {code128: 'enabled', code39: 'enabled'}, "" )
+    
+
     str1 = ""
     #Rho::Barcode.myTest(str1)
     Rho::Barcode.test    

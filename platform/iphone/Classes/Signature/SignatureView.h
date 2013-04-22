@@ -25,22 +25,13 @@
 *------------------------------------------------------------------------*/
 
 #import <UIKit/UIKit.h>
+#include "SignatureParam.h"
 
+@interface  SignatureViewProperties : NSObject
 
-@interface SignatureViewProperties : NSObject {
-}
-
-@property (nonatomic, assign) unsigned int penColor;
-@property (nonatomic, assign) float penWidth;
-@property (nonatomic, assign) unsigned int bgColor;
-@property (nonatomic, assign) int left;
-@property (nonatomic, assign) int top;
-@property (nonatomic, assign) unsigned int width;
-@property (nonatomic, assign) unsigned int height;
-
+@property(nonatomic, assign) struct SignatureParam params;
 
 @end
-
 
 @interface SignatureView : UIView {
 
@@ -51,7 +42,6 @@
     unsigned int bgColor;
 	
 }
-
 
 - (void)doClear;
 - (UIImage*)makeUIImage;
@@ -64,6 +54,5 @@
 -(void)setPenColor:(unsigned int)value;
 -(void)setPenWidth:(float)value;
 -(void)setBgColor:(unsigned int)value;
-
 
 @end

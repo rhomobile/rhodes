@@ -3,34 +3,6 @@
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
 #include "logging/RhoLog.h"
-/*
-template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE1, typename PARAMTYPE2 >
-class CObjCallbackFunctor2 : public rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>
-{
-public:
-    CObjCallbackFunctor2( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE1 param1, PARAMTYPE2 param2 ) : CInstanceClassFunctor2( obj, pFunc, param1, param2 ){}
-
-    virtual void runObject()
-    { 
-        rho::common::CInstanceClassFunctor2<OBJTYPE, FUNCTYPE, PARAMTYPE1, PARAMTYPE2>::runObject();
-
-        m_param2.callCallback();
-    }
-};
-
-template <typename OBJTYPE, typename FUNCTYPE, typename PARAMTYPE >
-class CObjCallbackFunctor1 : public rho::common::CInstanceClassFunctor1<OBJTYPE, FUNCTYPE, PARAMTYPE>
-{
-public:
-    CObjCallbackFunctor1( OBJTYPE obj, FUNCTYPE pFunc, PARAMTYPE param ) : CInstanceClassFunctor1( obj, pFunc, param ){}
-
-    virtual void runObject()
-    { 
-        rho::common::CInstanceClassFunctor1<OBJTYPE, FUNCTYPE, PARAMTYPE>::runObject();
-
-        m_param.callCallback();
-    }
-};*/
 
 namespace rho
 {
@@ -59,7 +31,7 @@ private:
     double m_dRes;
 
     rho::String m_strError;
-    ETypes m_ResType;
+    ETypes m_ResType, m_eRequestedType;
 
     unsigned long m_oRubyObjectClass;
     rho::String   m_strRubyObjectClassPath;
@@ -76,9 +48,13 @@ private:
     };
 
     rho::common::CAutoPtr<CMethodRubyValue> m_pRubyCallbackProc;
+
+    void setType(ETypes eType){ m_ResType = eType; convertToType(m_eRequestedType); callCallback(); }
+
 public:
 
-    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_iTabId(-1), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode){}
+    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_iTabId(-1), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode),
+        m_nRes(0), m_bRes(false), m_dRes(0), m_eRequestedType(eNone){}
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     const rho::String& getRubyCallback() const { return m_strRubyCallback; }
@@ -90,33 +66,34 @@ public:
     void setParamName(const rho::String& strParam){m_strParamName = strParam;}
     void setRubyObjectClass(unsigned long val){ m_oRubyObjectClass = val; }
     void setRubyObjectClassPath(const rho::String& strPath){ m_strRubyObjectClassPath = strPath; }
+    void setJSObjectClassPath(const rho::String& strPath){m_strRubyObjectClassPath = strPath;}
+    void setRequestedType( ETypes eRequestedType ){ m_eRequestedType = eRequestedType;}
 
-    void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; m_ResType = eStringHash; callCallback(); }
-    void set(const rho::Vector<rho::Hashtable<rho::String, rho::String> > res ) { m_arHashRes = res; m_ResType = eArrayHash; callCallback(); }
+    void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; setType(eStringHash); }
+    void set(const rho::Vector<rho::Hashtable<rho::String, rho::String> > res ) { m_arHashRes = res; setType(eArrayHash); }
 
 #ifndef OS_ANDROID
-    void set(const rho::StringW& res){ m_strResW = res;  m_ResType = eStringW; callCallback(); }
-    void set(rho::StringW::const_pointer res){ m_strResW = res;  m_ResType = eStringW; callCallback(); }
+    void set(const rho::StringW& res){ m_strResW = res;  setType(eStringW); }
+    void set(rho::StringW::const_pointer res){ m_strResW = res;  setType(eStringW); }
 #endif //OS_ANDROID
 
-    void set(const rho::String& res){ m_strRes = res;  m_ResType = eString; callCallback(); }
-    void setJSON(const rho::String& res){ m_strJSONRes = res;  m_ResType = eJSON; callCallback(); }
-    void set(rho::String::const_pointer res){ m_strRes = res;  m_ResType = eString; callCallback(); }
+    void set(const rho::String& res){ m_strRes = res;  setType(eString); }
+    void setJSON(const rho::String& res){ m_strJSONRes = res;  setType(eJSON);}
+    void set(rho::String::const_pointer res){ m_strRes = res;  setType(eString); }
 
-    void set(const rho::Vector<rho::String>& res){ m_arStrRes = res;  m_ResType = eStringArray; callCallback(); }
-    void set(bool res){ m_bRes = res;  m_ResType = eBool; callCallback(); }
-    void set(int64 res){ m_nRes = res;  m_ResType = eInt; callCallback(); }
-    void set(int res){ m_nRes = res;  m_ResType = eInt; callCallback(); }
-    void set(unsigned long res){ m_nRes = res;  m_ResType = eInt; callCallback(); }
-    void set(double res){ m_dRes = res;  m_ResType = eDouble; callCallback(); }
+    void set(const rho::Vector<rho::String>& res){ m_arStrRes = res;  setType(eStringArray); }
+    void set(bool res){ m_bRes = res;  setType(eBool); }
+    void set(int64 res){ m_nRes = res;  setType(eInt);  }
+    void set(int res){ m_nRes = res;  setType(eInt); }
+    void set(unsigned long res){ m_nRes = res;  setType(eInt); }
+    void set(double res){ m_dRes = res;  setType(eDouble);  }
 
-    void setError(const rho::String& res){ m_strError = res; m_ResType = eError; callCallback(); }
+    void setError(const rho::String& res){ m_strError = res; setType(eError); }
     void setArgError(const rho::String& fmt, ...)
     {
         //TODO: support sprintf
         m_strError = fmt;
-        m_ResType = eArgError;
-        callCallback();
+        setType(eArgError);
     }
 
     ETypes getType() const { return m_ResType; }
@@ -141,6 +118,8 @@ public:
     const rho::String& getErrorString() const { return m_strError; }
 
     rho::String toString();
+    void convertToType(ETypes eType);
+
     void setCollectionMode(bool bMode){m_bCollectionMode = bMode;}
 
     unsigned long toRuby(bool bForCallback = false);

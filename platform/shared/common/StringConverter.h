@@ -168,12 +168,22 @@ CONVERT_TYPE_W( char, L"%c" );
 CONVERT_TYPE_W( unsigned char, L"%c" );
 CONVERT_TYPE_W( short, L"%hd" );
 //CONVERT_TYPE_W( unsigned short, _T("%u") );
-CONVERT_TYPE_W( bool, L"%d" );
+//CONVERT_TYPE_W( bool, L"%d" );
 CONVERT_TYPE_W( float, L"%f" );
 CONVERT_TYPE_W( double, L"%lf" );
 
 CONVERT_TYPE_W( uint64, L"%I64u" );
 CONVERT_TYPE_W( int64, L"%I64d" );
+
+// Special case for bool
+template<> inline void convertFromStringW<bool>( const wchar_t* szValue, bool& value )
+#ifdef OS_WP8
+{ value = _wcsicmp(szValue, L"true") ==0 ? true:false; }
+#else
+{ value = wcsicmp(szValue, L"true") ==0 ? true:false; }
+#endif
+template<> inline StringW convertToStringW<bool>( const bool& value )
+{  return value ? StringW(L"true") : StringW(L"false"); }
 
 #endif
 CONVERT_TYPE_A( unsigned int, "%u" );
@@ -194,6 +204,16 @@ CONVERT_TYPE_A( int64, FMTI64 );
 
 // Special case for bool
 template<> inline void convertFromStringA<bool>( const char* szValue, bool& value )
+#if defined(WINDOWS_PLATFORM)
+{ value = _stricmp(szValue, "true") ==0 ? true:false; }
+#else
+    { value = strcasecmp(szValue, "true") ==0 ? true:false; }
+#endif
+template<> inline String convertToStringA<bool>( const bool& value )
+{  return value ? String("true") : String("false"); }
+
+/*
+template<> inline void convertFromStringA<bool>( const char* szValue, bool& value )
 { char c; sscanf( szValue, "%c", &c ); value = c ? true:false; }
 template<> inline String convertToStringA<bool>( const bool& value )
 {
@@ -201,7 +221,7 @@ template<> inline String convertToStringA<bool>( const bool& value )
     sprintf( buf, "%c", (char)value );
     return String(buf);
 }
-
+*/
 
 }
 }

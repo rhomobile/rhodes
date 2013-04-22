@@ -28,6 +28,12 @@ package com.rhomobile.rhodes;
 
 import java.lang.reflect.Constructor;
 import java.util.Set;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.security.InvalidParameterException;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
@@ -36,6 +42,8 @@ import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.SplashScreen;
+import com.rhomobile.rhodes.util.PerformOnUiThread;
+import com.rhomobile.rhodes.util.Config;
 import com.rhomobile.rhodes.webview.GoogleWebView;
 
 import android.app.Dialog;
@@ -45,15 +53,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AbsoluteLayout;
 
 public class RhodesActivity extends BaseActivity implements SplashScreen.SplashScreenListener {
@@ -93,10 +105,67 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 		return mIsInsideStartStop;
 	}
 	
+	//------------------------------------------------------------------------------------------------------------------
+	// Read SSL settings from config.xml
 	
-	//public void removeRhodesActivityListener(IRhoListener listener) {
-	//	mListeners.remove(listener);
-	//}
+    private ApplicationInfo getAppInfo() {
+        String pkgName = getPackageName();
+        try {
+            ApplicationInfo info = getPackageManager().getApplicationInfo(pkgName, 0);
+            return info;
+        } catch (NameNotFoundException e) {
+            throw new RuntimeException("Internal error: package " + pkgName + " not found: " + e.getMessage());
+        }
+    }
+
+    private void initConfig(String path) {
+        InputStream configIs = null;
+        Config config = new Config();
+        ApplicationInfo appInfo = getAppInfo();
+        try {
+            String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + appInfo.packageName;
+            Logger.I(TAG, "Config path: " + path);
+            File configXmlFile = new File(path);
+            if (configXmlFile.exists()) {
+                Logger.I(TAG, "Loading Config.xml from " + configXmlFile.getAbsolutePath());
+                configIs = new FileInputStream(configXmlFile);
+                config.load(configIs, configXmlFile.getParent());
+            }
+            else {
+                Logger.I(TAG, "Loading Config.xml from resources");
+                configIs = getResources().openRawResource(RhoExtManager.getResourceId("raw", "config"));
+                config.load(configIs, externalSharedPath);
+            }
+
+            String CAFile = config.getValue("CAFile");
+            if (CAFile != null && CAFile.length() > 0)
+                RhoConf.setString("CAFile", CAFile);
+
+            String CAPath = config.getValue("CAPath");
+            if (CAPath != null && CAPath.length() > 0)
+                RhoConf.setString("CAPath", CAPath);
+
+        } catch (Throwable e) {
+            Logger.W(TAG, "Error loading RhoElements configuraiton ("+e.getClass().getSimpleName()+"): " + e.getMessage());
+            //Logger.W(TAG, e);
+        } finally {
+            if (configIs != null) {
+                try {
+                    configIs.close();
+                } catch (IOException e) {
+                    // just nothing to do
+                }
+            }
+        }
+    }
+
+    private void readRhoElementsConfig() {
+        String externalSharedPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Android/data/" + getAppInfo().packageName;
+        String configPath = new File(externalSharedPath, "Config.xml").getAbsolutePath();
+        initConfig(configPath);
+    }
+    
+    //------------------------------------------------------------------------------------------------------------------
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -131,34 +200,11 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         
         mAppMenu = new RhoMenu();
 
+        readRhoElementsConfig();
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
-
-        mMainView.setWebView(createWebView(0), -1);
 
         notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
-    }
-
-    public IRhoWebView createWebView(int tabIndex) {
-        IRhoWebView view = RhoExtManager.getImplementationInstance().createWebView(tabIndex);
-        if (view == null) {
-            Logger.T(TAG, "Creating Google web view");
-            final GoogleWebView googleWebView = new GoogleWebView(this);
-            view = googleWebView;
-            RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
-                @Override
-                public void run()
-                {
-                    googleWebView.applyWebSettings();
-                }
-            });
-        }
-        AbsoluteLayout containerView = new AbsoluteLayout(this);
-        containerView.addView(view.getView(), new AbsoluteLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0, 0));
-        view.setContainerView(containerView);
-        view.setWebClient(this);
-
-        return view;
     }
 
     public MainView switchToSimpleMainView(MainView currentView) {
@@ -209,6 +255,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.T(TAG, "onActivityResult");
 
         RhoBluetoothManager.onActivityResult(requestCode, resultCode, data);
+        com.rhomobile.rhodes.camera.Camera.onActivityResult(requestCode, resultCode, data);
 
         RhoExtManager.getImplementationInstance().onActivityResult(this, requestCode, resultCode, data);
     }

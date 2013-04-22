@@ -1,0 +1,12 @@
+entry: Init_GenPropBag_extension	
+javaentry: com.genpropbag.GenPropBag
+libraries: ["GenPropBag"]
+android:
+  source_list: ext/platform/android/ext_java.files
+
+project_paths:
+  wp8: ext/platform/wp8/GenPropBag.vcxproj
+  wm: ext/platform/wm/GenPropBag.vcproj
+  win32: ext/platform/wm/GenPropBag.vcproj
+  
+xml_api_paths: ext/GenPropBag.xml

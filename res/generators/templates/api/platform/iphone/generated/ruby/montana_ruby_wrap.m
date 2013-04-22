@@ -192,6 +192,7 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
 
     NSObject* params[<%= module_method.params.size %>+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     <%
@@ -270,6 +271,9 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (<%= module_method.params.size %>+2)) {
@@ -297,9 +301,12 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
     end %>
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -324,7 +331,7 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
         end%>
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;

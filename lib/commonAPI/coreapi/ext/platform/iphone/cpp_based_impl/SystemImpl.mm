@@ -1,4 +1,6 @@
 
+#import <UIKit/UIKit.h>
+
 #include "SystemImpl.h"
 
 #import "api_generator/iphone/CRubyConverter.h"
@@ -63,7 +65,7 @@ namespace rho {
     void SystemImplIphone::getApplicationIconBadge(CMethodResult& oResult)
     {
         //oResult.setError("supported only set IconBadge !");
-        //oResult.set(0);
+        oResult.set([UIApplication sharedApplication].applicationIconBadgeNumber);
     }
     
     void SystemImplIphone::setApplicationIconBadge( int value, CMethodResult& oResult)
@@ -118,7 +120,8 @@ namespace rho {
     
     void SystemImplIphone::getPhoneId(rho::apiGenerator::CMethodResult& result)
     {
-        getIphoneProperty("phone_id", result);
+        //getIphoneProperty("phone_id", result);
+        result.set("");
     }
     
     void SystemImplIphone::getDeviceName(rho::apiGenerator::CMethodResult& result)
@@ -205,14 +208,17 @@ namespace rho {
     
     void SystemImplIphone::getScreenSleeping(rho::apiGenerator::CMethodResult& result)
     {
-        result.set(false);
+        
+        boolean ret = [[UIApplication sharedApplication] isIdleTimerDisabled] ? false : true;
+        result.set(ret);
         //result.setError("not implemented at iOS platform");
     }
     //----------------------------------------------------------------------------------------------------------------------
     
     void SystemImplIphone::setScreenSleeping(bool flag, rho::apiGenerator::CMethodResult& result)
     {
-        rho_sys_set_sleeping(flag?1:0);
+        [[UIApplication sharedApplication] setIdleTimerDisabled: (!flag ? YES : NO)];
+        //rho_sys_set_sleeping(flag?1:0);
     }
     //----------------------------------------------------------------------------------------------------------------------
     

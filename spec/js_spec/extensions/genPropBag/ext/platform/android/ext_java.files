@@ -1,0 +1,9 @@
+ext/platform/android/generated/src/com/rho/genpropbag/GenPropBagBase.java
+ext/platform/android/generated/src/com/rho/genpropbag/GenPropBagFactorySingleton.java
+ext/platform/android/generated/src/com/rho/genpropbag/GenPropBagSingletonBase.java
+ext/platform/android/generated/src/com/rho/genpropbag/IGenPropBag.java
+ext/platform/android/generated/src/com/rho/genpropbag/IGenPropBagFactory.java
+ext/platform/android/generated/src/com/rho/genpropbag/IGenPropBagSingleton.java
+ext/platform/android/src/com/rho/genpropbag/GenPropBag.java
+ext/platform/android/src/com/rho/genpropbag/GenPropBagFactory.java
+ext/platform/android/src/com/rho/genpropbag/GenPropBagSingleton.java

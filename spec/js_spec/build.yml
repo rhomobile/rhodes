@@ -4,6 +4,7 @@ name: js_spec
 version: 1.0
 vendor: rhomobile
 build: debug
+debug: 1
 bbver: 4.6
 applog: rholog.txt
 iphone:
@@ -18,5 +19,6 @@ symbian:
   uid: '0xef6036c4'
 android:
   version: 2.1
+  extensions: ["mediacapture"]
 
-extensions: ["json"]
+extensions: ["genPropBag"] 

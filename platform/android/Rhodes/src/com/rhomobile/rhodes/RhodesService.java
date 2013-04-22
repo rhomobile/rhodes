@@ -30,6 +30,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
@@ -51,6 +53,7 @@ import org.json.JSONTokener;
 import com.rhomobile.rhodes.alert.Alert;
 import com.rhomobile.rhodes.alert.StatusNotification;
 import com.rhomobile.rhodes.event.EventStore;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.geolocation.GeoLocation;
 import com.rhomobile.rhodes.mainview.MainView;
@@ -90,6 +93,8 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
@@ -144,8 +149,6 @@ public class RhodesService extends Service {
 	private Method mSetForeground;
 	
 	private NotificationManager mNM;
-	
-	private static boolean mCameraAvailable;
 	
 	private boolean mNeedGeoLocationRestart = false;
 	
@@ -316,9 +319,6 @@ public class RhodesService extends Service {
         }
 
 		initForegroundServiceApi();
-
-		// TODO: detect camera availability
-		mCameraAvailable = true;
 
 		// Register custom uri handlers here
 		mUriHandlers.addElement(new ExternalHttpHandler(context));
@@ -763,8 +763,6 @@ public class RhodesService extends Service {
 				else
 					return "portrait";
 			}
-			else if (name.equalsIgnoreCase("has_camera"))
-				return Boolean.valueOf(mCameraAvailable);
 			else if (name.equalsIgnoreCase("has_network"))
 				return Boolean.valueOf(hasNetwork());
 			else if (name.equalsIgnoreCase("has_wifi_network"))
@@ -812,15 +810,26 @@ public class RhodesService extends Service {
                 } else {
                     return "";
                 }
-			}
-			else if (name.equalsIgnoreCase("webview_framework")) {
-				//return "WEBKIT/" + Build.VERSION.RELEASE;
-			    return RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId();
-			}
+            }
+            else if (name.equalsIgnoreCase("webview_framework")) {
+                return RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getEngineId();
+            }
             else if (name.equalsIgnoreCase("is_motorola_device")) {
                 return isMotorolaDevice();
             }
-		}
+            else if (name.equalsIgnoreCase("oem_info")) {
+                return Build.PRODUCT;
+            }
+            else if (name.equalsIgnoreCase("uuid")) {
+                return fetchUUID();
+            }
+            else if (name.equalsIgnoreCase("has_camera")) {
+                return Boolean.TRUE;
+            }
+            else {
+                return RhoExtManager.getImplementationInstance().getProperty(name);
+            }
+        }
 		catch (Exception e) {
 			Logger.E(TAG, "Can't get property \"" + name + "\": " + e);
 		}
@@ -1396,6 +1405,54 @@ public class RhodesService extends Service {
 			}
 		}
 		return wasEnabled;
+	}
+	
+	private static String fetchUUID()
+	{
+		String uuid = "";
+		// Get serial number from UUID file built into image
+		try
+		{
+		    if (isMotorolaDevice())
+		    {
+				BufferedReader reader = new BufferedReader(new FileReader("/sys/hardware_id/uuid"));
+				uuid = reader.readLine();
+				Logger.E(TAG, "uuid: " + uuid);
+		    }
+		    else
+		    {
+				uuid = computeUUID();
+				Logger.E(TAG, "uuid: " + uuid);
+		    }
+		}
+		catch (Exception e)
+		{
+		    Logger.E(TAG, "Cannot determine device UUID");
+		}
+		finally
+		{
+			return uuid;
+		}
+	}
+	
+	/**
+	 * This method is used only for non-Motorola devices as the UUID needs to be computed by other parameters.
+	 * @return 32-byte long UUID
+	 */
+	private static String computeUUID()
+	{
+	    RhodesService srv = RhodesService.getInstance();
+        if (srv == null)
+			throw new IllegalStateException("No rhodes service instance at this moment");
+		String res="";
+	    WifiManager wifi = (WifiManager) srv.getSystemService(Context.WIFI_SERVICE);
+	    // Get WiFi status
+	    WifiInfo wifiInfo = wifi.getConnectionInfo();
+	    String macAddress = wifiInfo.getMacAddress();
+	    macAddress = macAddress.replaceAll(":", "");
+	    UUID localUuid = UUID.nameUUIDFromBytes(macAddress.getBytes());
+	    res = localUuid.toString().replaceAll("-", "");
+	    return res.toUpperCase();
 	}
 	
 	void handleAppActivation() {

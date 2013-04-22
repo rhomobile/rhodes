@@ -250,10 +250,13 @@ void RhoRubyStart()
 #endif
     
     Init_Alert();
+
 #if defined(WINDOWS_PLATFORM)
     init_rhoext_Signature();
 #else
-    Init_SignatureCapture();
+#if !defined(OS_MACOSX)
+        Init_SignatureCapture();
+#endif
 #endif
 
     Init_RhoBluetooth();
@@ -271,6 +274,7 @@ void RhoRubyStart()
     Init_NavBar();
     Init_RhoEvent();
     Init_Calendar();
+    Init_Alert();
 
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)
@@ -285,6 +289,7 @@ void RhoRubyStart()
 	Init_RhoSupport();
 	Init_RhoConf();
 	Init_WebView();
+    Init_Alert();
 
 	Init_socket();
 	Init_stringio();
@@ -292,14 +297,11 @@ void RhoRubyStart()
 	Init_Extensions();
 #endif //OS_WP8
  
-
 	extensions_loaded = 1;
-
 
     if ( rho_rcclient_have_rhoconnect_client() ) {
         rb_const_set(rb_cObject, rb_intern("RHOCONNECT_CLIENT_PRESENT"), Qtrue);
     }
-
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
     rb_require("rhomotoapi");

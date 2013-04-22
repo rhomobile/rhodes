@@ -13,7 +13,10 @@ public:
         m_hashProps.put( "sound", "Dolby");
     }
 
-    virtual void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult){}
+    virtual void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult)
+    {
+        int i = 0;
+    }
     virtual void start(CMethodResult& oResult){}
     virtual void stop(CMethodResult& oResult){}
     virtual void disable(CMethodResult& oResult){}
