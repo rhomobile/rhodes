@@ -12,7 +12,7 @@ describe('<database module spes>', function() {
 
 
     // Database.prototype.startTransaction = function()
-    // Database.prototype.commitTransaction = function()
+    // Database.progtotype.commitTransaction = function()
     it('starts and commits transaction', function() {
         db.executeBatchSql('DROP TABLE IF EXISTS t; CREATE TABLE t(x INTEGER, y TEXT, z VARCHAR(10));');
 
@@ -128,7 +128,7 @@ describe('<database module spes>', function() {
     });
 
     // Database.prototype.setDoNotBackupAttribute = function(/* bool */ setFlag)
-    it('sets "don\'t backup attribute"', function() {
+    xit('sets "don\'t backup attribute"', function() {
         db.setDoNotBackupAttribute(true);
     });
 });

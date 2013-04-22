@@ -439,9 +439,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     rho_logconf_Init(m_strRootPath.c_str(), m_strRootPath.c_str(), m_logPort.c_str());
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-//#if !defined(RHODES_EMULATOR) && !defined(OS_WINDOWS_DESKTOP)
     LOGCONF().setMemoryInfoCollector(CLogMemory::getInstance());
-//#endif // RHODES_EMULATOR
 
 #ifdef RHODES_EMULATOR
     RHOSIMCONF().setAppConfFilePath(CFilePath::join( m_strRootPath, RHO_EMULATOR_DIR"/rhosimconfig.txt").c_str());
@@ -494,8 +492,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     if (RHOSIMCONF().getString("debug_port").length() > 0)
         SetEnvironmentVariableA("rho_debug_port", RHOSIMCONF().getString("debug_port").c_str() );
 #endif
-
-    //::SetThreadPriority(GetCurrentThread(),10);
 
 	//Check for bundle directory is exists.
 	HANDLE hFind;
@@ -584,17 +580,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         return S_FALSE;
     }
 
-/*#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    {
-        CBarcodeInit oBarcodeInit;
-
-        if (!rho_wmimpl_get_webkitbrowser( (HWND)m_appWindow.m_hWnd, rho_wmimpl_get_appinstance() )) {
-            MessageBox(NULL, L"Failed to initialize WebKit engine.", convertToStringW(strTitle).c_str(), MB_ICONERROR | MB_OK);
-	        return S_FALSE;
-        }
-    }
-#endif
-*/
     m_appWindow.InvalidateRect(NULL, TRUE);
     m_appWindow.UpdateWindow();
 
@@ -602,6 +587,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
 
     bool bRE1App = false;
+
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     if (!rho_wmimpl_get_is_version2())
         bRE1App = true;
@@ -612,35 +598,30 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
         registerRhoExtension();
 #endif
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && defined(OS_WINCE)
+	    m_appWindow.Navigate2(_T("about:blank")
+#if defined(OS_WINDOWS_DESKTOP)
+            , -1
+#endif
+        );
+#endif //!APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+
+        rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0 );
+    }
+    else
+    {
+        RHODESAPP().startApp();
+
+#if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && defined(OS_WINCE)
+        // Navigate to the "loading..." page
 	    m_appWindow.Navigate2(_T("about:blank")
 #if defined(OS_WINDOWS_DESKTOP)
             , -1
 #endif
         );
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-
-        rho_webview_navigate( RHOCONF().getString("start_path").c_str(), 0 );
-/*    	m_appWindow.Navigate2( convertToStringW( RHOCONF().getString("start_path") ).c_str()
-#if defined(OS_WINDOWS_DESKTOP)
-            , -1
-#endif
-        );*/
     }
-    else
-    {
-        RHODESAPP().startApp();
-//#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-        // Navigate to the "loading..." page
-	    m_appWindow.Navigate2(_T("about:blank")
-    #if defined(OS_WINDOWS_DESKTOP)
-            , -1
-    #endif
-        );
-//#endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
-    }
-    // Show the main application window
-    //m_appWindow.ShowWindow(nShowCmd);
 
 #if defined(_WIN32_WCE)&& !defined( OS_PLATFORM_MOTCE )
 
@@ -714,7 +695,7 @@ void CRhodesModule::RunMessageLoop( ) throw( )
 
     rho::common::CRhodesApp::Destroy();
 
-    net::CNetRequestImpl::deinitConnection();
+//    net::CNetRequestImpl::deinitConnection();
 
 #if !defined(OS_WINDOWS_DESKTOP)
 //	ReleaseMutex(m_hMutex);
@@ -863,9 +844,13 @@ typedef int (WINAPI *FUNC_IsLicenseOK)();
 typedef void* (WINAPI *FUNC_GetAppLicenseObj)();
 
 extern "C" void rho_wm_impl_CheckLicense()
-{
+{   
     int nRes = 0;
+    LOG(INFO) + "Start license_rc.dll";
     HINSTANCE hLicenseInstance = LoadLibrary(L"license_rc.dll");
+    LOG(INFO) + "Stop license_rc.dll";
+    
+
     if(hLicenseInstance)
     {
 #ifdef OS_WINDOWS_DESKTOP
@@ -1109,42 +1094,10 @@ LPTSTR parseToken (LPCTSTR start, LPCTSTR* next_token) {
 	return value;
 }
 
-#if defined(OS_WINDOWS_DESKTOP)
-/*
-// char -> wchar_t 
-wchar_t* wce_mbtowc(const char* a)
-{
-	int length;
-	wchar_t *wbuf;
-
-	length = MultiByteToWideChar(CP_UTF8, 0, 
-		a, -1, NULL, 0);
-	wbuf = (wchar_t*)malloc( (length+1)*sizeof(wchar_t) );
-	MultiByteToWideChar(CP_UTF8, 0,
-		a, -1, wbuf, length);
-
-	return wbuf;
-}
-
-// wchar_t -> char
-char* wce_wctomb(const wchar_t* w)
-{
-	DWORD charlength;
-	char* pChar;
-
-	charlength = WideCharToMultiByte(CP_UTF8, 0, w,
-					-1, NULL, 0, NULL, NULL);
-	pChar = (char*)malloc(charlength+1);
-	WideCharToMultiByte(CP_UTF8, 0, w,
-		-1, pChar, charlength, NULL, NULL);
-
-	return pChar;
-}*/
-
-#endif
-
 #if defined( OS_PLATFORM_MOTCE )
+
 #include <Imaging.h>
+
 HBITMAP SHLoadImageFile(  LPCTSTR pszFileName )
 {
     if ( !pszFileName || !*pszFileName )

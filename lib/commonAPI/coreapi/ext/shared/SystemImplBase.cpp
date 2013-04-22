@@ -168,11 +168,6 @@ void CSystemImplBase::getHasTouchscreen(rho::apiGenerator::CMethodResult& oResul
     oResult.set(true);
 }
 
-void CSystemImplBase::getSecurityTokenNotPassed(rho::apiGenerator::CMethodResult& oResult)
-{
-    oResult.set( RHODESAPP().isSecurityTokenNotPassed() );
-}
-
 void CSystemImplBase::getHasSqlite(rho::apiGenerator::CMethodResult& oResult)
 {
     oResult.set(true);

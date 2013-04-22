@@ -86,25 +86,6 @@ class System
     end
 end
 
-if Rho::System.isRhoSimulator() || Rho::System.platform == Rho::System::PLATFORM_WM_CE || Rho::System.platform == Rho::System::PLATFORM_WINDOWS_DESKTOP || Rho::System.platform == Rho::System::PLATFORM_ANDROID
-
-class Application
-    def self.setLocale(locale_code, country_code = nil)
-        System::set_locale(locale_code, country_code = nil)
-    end
-
-    def self.locale()
-        LocalizationSimplified::get_cur_locale    
-    end
-
-    def self.country()
-        LocalizationSimplified::get_cur_country    
-    end
-    
-end
-
-end
-
 end
 
 class Hash

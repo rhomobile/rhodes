@@ -631,10 +631,13 @@ void Init_RhoSupport()
 	rb_define_global_function("__rhoGetCallbackObject", __rhoGetCallbackObject, 1);
 
     rb_define_method(rb_mKernel, "rhom_init", rb_obj_rhom_init, 1);	
-
-	Init_RhoLog();
+	
 	Init_RhoBlobs();
+
+#if !defined(RHO_NO_RUBY)
+    Init_RhoLog();
     Init_RhoJSON();
+#endif
 }
 
 static void Init_RhoBlobs()

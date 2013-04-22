@@ -517,7 +517,9 @@ LRESULT CMainWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 {
     bHandled = TRUE;
 
+    LOG(INFO) + "START load png";
     rho_wmimpl_draw_splash_screen(m_hWnd);
+    LOG(INFO) + "END load png";
 
     return 0;
 }
@@ -1728,7 +1730,6 @@ LRESULT CMainWindow::OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD  wID
 
 extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 {
-    LOG(INFO) + "PAINT";
   	CSplashScreen& splash = RHODESAPP().getSplashScreen();
     splash.start();
 
