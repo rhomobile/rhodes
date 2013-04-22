@@ -94,7 +94,7 @@
             <DESC>The name of the zip file</DESC>
           </PARAM>
         </PARAMS>
-        <RETURN type="INTEGER"/>
+        <RETURN type="BOOLEAN"/>
       </METHOD>
 
       <METHOD name="export" deprecated="true"  generateAPI="false">

@@ -240,7 +240,9 @@ def make_application_build_config_header_file
 
   f.puts 'static const char* values[] = { ""'
   $application_build_configs.keys.each do |key|
-    f.puts ',"'+$application_build_configs[key].to_s().gsub('\\', "\\\\\\")+'"'
+    value = $application_build_configs[key].to_s().gsub('\\', "\\\\\\")
+    value = value.gsub('"', "\\\"")
+    f.puts ',"'+ value +'"'
     count = count + 1
   end
   f.puts '};'
