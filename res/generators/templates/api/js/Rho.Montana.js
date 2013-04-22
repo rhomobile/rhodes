@@ -40,31 +40,15 @@
 
     // === <%= $cur_module.name %> instance properties ===
 
-    <% $cur_module.properties.each do |module_property|
-        next if module_property.access == ModuleMethod::ACCESS_STATIC
-        next if module_property.is_deprecated
-    %>
-        <% if !module_property.readonly %>
-        <%= $cur_module.name %>.prototype['set<%= capitalize_safely module_property.name %>'] = function(/* any valid value */ value, /* optional function */ oResult) {
-            return apiReq({
-                instanceId: this.getId(),
-                args: arguments,
-                method: '<%= module_property.name + "=" %>',
-                valueCallbackIndex: 1
-            });
-        };
-        <% end %>
-        <% if !module_property.writeonly %>
-        <%= $cur_module.name %>.prototype['get<%= capitalize_safely module_property.name %>'] = function(/* optional function */ oResult) {
-            return apiReq({
-                instanceId: this.getId(),
-                args: arguments,
-                method: '<%= module_property.name %>',
-                valueCallbackIndex: 0
-            });
-        };
-        <% end %>
-    <% end %>
+    rhoUtil.createPropsProxy(<%= $cur_module.name %>.prototype, {
+    <% first_prop = true
+       $cur_module.properties.each do |module_property|
+         next if module_property.access == ModuleMethod::ACCESS_STATIC
+         next if module_property.is_deprecated
+         next if module_property.readonly && module_property.writeonly
+    %>  <%= ',' if !first_prop %> '<%= module_property.name %>': '<%= 'r' if !module_property.writeonly %><%= 'w' if !module_property.readonly %>'
+    <% first_prop = false
+       end %>}, apiReq);
 
     // === <%= $cur_module.name %> instance methods ===
 
@@ -103,31 +87,15 @@
 
     // === <%= $cur_module.name %> static properties ===
 
-    <% $cur_module.properties.each do |module_property|
+    rhoUtil.createPropsProxy(<%= $cur_module.name %>, {
+    <% first_prop = true
+       $cur_module.properties.each do |module_property|
         next if module_property.access != ModuleMethod::ACCESS_STATIC
-        # next if module_property.is_deprecated
-    %>
-        <% if !module_property.readonly %>
-        <%= $cur_module.name %>['set<%= capitalize_safely module_property.name %>'] = function(/* any valid value */ value, /* optional function */ oResult) {
-            return apiReq({
-                instanceId: '0',
-                args: arguments,
-                method: '<%= module_property.name + "=" %>',
-                valueCallbackIndex: 1
-            });
-        };
-        <% end %>
-        <% if !module_property.writeonly %>
-        <%= $cur_module.name %>['get<%= capitalize_safely module_property.name %>'] = function(/* optional function */ oResult) {
-            return apiReq({
-                instanceId: '0',
-                args: arguments,
-                method: '<%= module_property.name %>',
-                valueCallbackIndex: 0
-            });
-        };
-        <% end %>
-    <% end %>
+        next if module_property.is_deprecated
+        next if module_property.readonly && module_property.writeonly
+    %>  <%= ',' if !first_prop %> '<%= module_property.name %>': '<%= 'r' if !module_property.writeonly %><%= 'w' if !module_property.readonly %>'
+    <% first_prop = false
+       end %>}, apiReq);
 
     // === <%= $cur_module.name %> static methods ===
 
@@ -155,12 +123,12 @@
 
     <% if $cur_module.is_template_default_instance %>
 
-        <%= $cur_module.name %>['default'] = function () {
+        <%= $cur_module.name %>['getDefault'] = function () {
             return new <%= $cur_module.name %>(
                 apiReq({
                     instanceId: '0',
                     args: [],
-                    method:'getDefaultID'
+                    method:'getDefault'
                 })
             );
         };

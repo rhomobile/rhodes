@@ -5,6 +5,7 @@
 #include "common/RhoFilePath.h"
 #include "logging/RhoLog.h"
 #include "rubyext/NativeToolbarExt.h"
+#include "common/RhoConvertWP8.h"
 
 using namespace rhoruntime;
 using namespace Platform;
@@ -144,18 +145,11 @@ void create_native_tabbar(int bar_type, rho_param *p)
             return;
         }
         if (!skip_item) {
-			rho::StringW labelW;
-			rho::common::convertToStringW(label, labelW);
-			rho::StringW actionW;
-			rho::common::convertToStringW(action, actionW);
-			rho::StringW bgcolor = background_color ? rho::common::convertToStringW(background_color) : rho::StringW();
-			rho::StringW selcolor = selected_color ? rho::common::convertToStringW(selected_color) : rho::StringW();
-			rho::StringW callback = on_change_tab_callback ? rho::common::convertToStringW(on_change_tab_callback) : rho::StringW();
+			// TODO: on_change_tab_callback
 			rho::String strIconPath = icon ? rho::common::CFilePath::join( RHODESAPP().getAppRootPath(), icon) : rho::String();
-			rho::StringW iconW = rho::common::convertToStringW(strIconPath);
 			CRhoRuntime::getInstance()->getMainPage()->tabbarAddTab(
-				ref new String(labelW.c_str()), ref new String(iconW.c_str()), ref new String(actionW.c_str()),
-				charToBool(disabled), ref new String(bgcolor.c_str()), ref new String(selcolor.c_str()),
+				rho::common::convertStringToWP8(label), rho::common::convertStringToWP8(strIconPath), rho::common::convertStringToWP8(action),
+				charToBool(disabled), rho::common::convertStringCToWP8(background_color), rho::common::convertStringCToWP8(selected_color),
 				charToBool(reload), charToBool(use_current_view_for_tab));
         }
     }
@@ -170,9 +164,7 @@ void native_tabbar_switch_tab(int index)
 
 void native_tabbar_set_tab_badge(int index, char *val)
 {
-	rho::StringW valW;
-	rho::common::convertToStringW(val, valW);
-	CRhoRuntime::getInstance()->getMainPage()->tabbarSetBadge(index, ref new String(valW.c_str()));
+	CRhoRuntime::getInstance()->getMainPage()->tabbarSetBadge(index, rho::common::convertStringCToWP8(val));
 }
 
 void nativebar_set_tab_badge(int index, char* val)

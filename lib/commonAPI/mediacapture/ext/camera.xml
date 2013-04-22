@@ -4,6 +4,7 @@
     <MODULE name="Camera" parent="Rho">
         <HELP_OVERVIEW>The Camera API provides access to your device's Camera(s)</HELP_OVERVIEW>
         <MORE_HELP>Use this API to give users the ability to take a photo via one of the device's cameras and return it to the application.  Photos can either be stored on the device and optionally transfered to an online server using the Network API or can be returned as a DataURI object for storing or display.</MORE_HELP>
+        <PLATFORM>Android, iOS, WM</PLATFORM>
     
     	<ALIASES>
     		<ALIAS new="Camera" deprecated="true"/>
@@ -13,7 +14,7 @@
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
             <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
-        <PROPERTIES usePropertyBag="accessorsViaPropertyBag">
+        <PROPERTIES usePropertyBag="accessorsViaPropertyBag" generateAccessors="true">
             <DESC>These properties are used to configure the Camera.</DESC>
 			<ALIASES>
 				<ALIAS new="format" existing="compressionFormat" deprecated="true"/>
@@ -22,17 +23,17 @@
 				<ALIAS new="color_model" existing="colorModel" deprecated="true"/>
 				<ALIAS new="enable_editing" existing="enableEditing" deprecated="true"/>
 				<ALIAS new="flash_mode" existing="flashMode" deprecated="true"/>
-				<ALIAS new="save_to_shared_gallery" existing="saveToSharedGallery" deprecated="true"/>
+				<ALIAS new="save_to_shared_gallery" existing="saveToDeviceGallery" deprecated="true"/>
 				<ALIAS new="left" existing="previewLeft" deprecated="true"/>
 				<ALIAS new="top" existing="previewTop" deprecated="true"/>
 				<ALIAS new="camera_type" existing="cameraType" deprecated="true"/>
 			</ALIASES>
         	
         	<PROPERTY name="cameraType" type="STRING" default="main" readOnly="true">
-        		<DESC>camera type: back/main, front etc.</DESC>
+        		<DESC>camera type: back or front.</DESC>
         		<VALUES>
-        			<VALUE constName="CAMERA_TYPE_MAIN" value="main">
-        				<DESC>main/back camera</DESC>
+        			<VALUE constName="CAMERA_TYPE_BACK" value="back">
+        				<DESC>back camera</DESC>
         			</VALUE>
         			<VALUE constName="CAMERA_TYPE_FRONT" value="front">
         				<DESC>front camera</DESC>
@@ -40,27 +41,34 @@
         		</VALUES>
         	</PROPERTY>
         	<PROPERTY name="maxWidth" type="INTEGER" generateAccessors="true" readOnly="true">
-         		<APPLIES>iOS and Android only</APPLIES>
+        	    <PLATFORM>Android, iOS, WM</PLATFORM>
         		<DESC>The maximum width of images which can be captured.</DESC>
         	</PROPERTY>
         	<PROPERTY name="maxHeight" type="INTEGER" generateAccessors="true" readOnly="true">
-        		<APPLIES>iOS and Android only</APPLIES>
+        	    <PLATFORM>Android, iOS, WM</PLATFORM>
         		<DESC>The maximum height of images which can be captured.</DESC>
         	</PROPERTY>
-        	
-            <PROPERTY name="desiredWidth" type="INTEGER" generateAccessors="true">
+        	<PROPERTY name="supportedSizeList" type="ARRAY" readOnly="true" usePropertyBag="none" >
+        	    <PROPERTY type="HASH">
+        	        <PROPERTIES>
+        	            <PROPEPRTY name="width" type="INTEGER"/>
+        	            <PROPEPRTY name="height" type="INTEGER"/>
+        	        </PROPERTIES>
+        	    </PROPERTY>
+        	    <PLATFORM>Android</PLATFORM>
+        	    <DESC></DESC>
+        	</PROPERTY>      	
+            <PROPERTY name="desiredWidth" type="INTEGER">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<APPLIES>All devices</APPLIES>
 				<DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc.  Specifying a desiredWidth will request to take the photo with the specified width but if it is not supported by the hardware then the closest match will be selected.  The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
             </PROPERTY>
-            <PROPERTY name="desiredHeight" type="INTEGER" generateAccessors="true">
+            <PROPERTY name="desiredHeight" type="INTEGER">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<APPLIES>All devices</APPLIES>
 				<DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc.  Specifying a desiredHeight will request to take the photo with the specified height but if it is not supported by the hardware then the closest match will be selected.  The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
             </PROPERTY>
-            <PROPERTY name="compressionFormat" type="STRING" generateAccessors="true" default="jpg">
+            <PROPERTY name="compressionFormat" type="STRING" default="jpg">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<APPLIES>JPG is supported on all devices, Windows Mobile does not support PNG images</APPLIES>
+				<APPLIES>JPG is supported on all devices, Android and Windows Mobile does not support PNG images</APPLIES>
 				<DESC>The format of the captured image in subsequent calls to takePicture().  If you do not define this property when you use choose_picture with iOS, the type of image in Gallery will be recognized, and the same format will be used for saving the image to applications data.</DESC>
 				<VALUES>
                     <VALUE constName="COMPRESSION_FORMAT_JPG" value="jpg">
@@ -71,9 +79,8 @@
                     </VALUE>
                 </VALUES>
 			</PROPERTY>
-            <PROPERTY name="outputFormat" type="STRING" generateAccessors="true" default="image">
+            <PROPERTY name="outputFormat" type="STRING" default="image">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<APPLIES>All devices</APPLIES>
 				<DESC>Specifies the way to return the captured image to the application</DESC>
 				<VALUES>
                     <VALUE constName="OUTPUT_FORMAT_IMAGE" value="image">
@@ -84,9 +91,9 @@
                     </VALUE>
                 </VALUES>
             </PROPERTY>
-            <PROPERTY name="colorModel" type="STRING" generateAccessors="true" default="rgb">
+            <PROPERTY name="colorModel" type="STRING" default="rgb">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<APPLIES>iOS and Android devices</APPLIES>
+        	    <PLATFORM>Android,iOS</PLATFORM>
 				<DESC>Where supported by the hardware this property can be used to select whether to capture a color or a grayscale image.</DESC>
 				<VALUES>
                     <VALUE constName="COLOR_MODEL_RGB" value="rgb">
@@ -97,14 +104,14 @@
                     </VALUE>
                 </VALUES>
             </PROPERTY>
-            <PROPERTY name="enableEditing" type="BOOLEAN" generateAccessors="true" default="true">
+            <PROPERTY name="enableEditing" type="BOOLEAN" default="true">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<APPLIES>iPhone only</APPLIES>
+        	    <PLATFORM>iOS</PLATFORM>
 				<DESC>Enables post photo capture image customizing; image will captured reduced to screen size (not full size).</DESC>
             </PROPERTY>
-            <PROPERTY name="flashMode" type="STRING" generateAccessors="true">
+            <PROPERTY name="flashMode" type="STRING">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<APPLIES>Android only</APPLIES>
+        	    <PLATFORM>Android</PLATFORM>
 				<DESC>Specifies the flash behaviour when taking a picture</DESC>
 				<VALUES>
                     <VALUE constName="FLASH_ON" value="on">
@@ -124,35 +131,40 @@
                     </VALUE>
                 </VALUES>   
 			</PROPERTY>
-            <PROPERTY name="saveToSharedGallery" type="BOOLEAN" generateAccessors="true" default="false">
+            <PROPERTY name="saveToDeviceGallery" type="BOOLEAN" default="false">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
-				<APPLIES>iOS only</APPLIES>
-				<DESC>If true, the picture you take will be added to the camera roll. </DESC>
+        	    <PLATFORM>iOS,Android</PLATFORM>
+				<DESC>If true, the picture you take will be added to the device photo gallery. At Android default value is true.</DESC>
             </PROPERTY>
-            <PROPERTY name="captureSound" type="STRING" generateAccessors="true">
+            <PROPERTY name="captureSound" type="STRING">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<APPLIES>All devices except iOS</APPLIES>
+				<PLATFORM>Android, WM, WP8</PLATFORM>
 				<DESC>Path to a sound file resident on the device which will be played when the image is captured.</DESC>
             </PROPERTY>
-            <PROPERTY name="previewLeft" type="INTEGER" generateAccessors="true">
+            <PROPERTY name="previewLeft" type="INTEGER">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
+        	    <PLATFORM>WM</PLATFORM>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
-            <PROPERTY name="previewTop" type="INTEGER" generateAccessors="true">
+            <PROPERTY name="previewTop" type="INTEGER">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
+        	    <PLATFORM>WM</PLATFORM>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
-            <PROPERTY name="previewWidth" type="INTEGER" generateAccessors="true">
+            <PROPERTY name="previewWidth" type="INTEGER">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
+        	    <PLATFORM>WM</PLATFORM>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
             </PROPERTY>
-            <PROPERTY name="previewHeight" type="INTEGER" generateAccessors="true">
+            <PROPERTY name="previewHeight" type="INTEGER">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-				<APPLIES>Windows Embedded Handheld 6.5 devices only</APPLIES>
+        	    <PLATFORM>WM</PLATFORM>
 				<DESC>In cases where the resident camera application on the device is not used this API is used to control the position of the viewfinder preview window when taking a photo.</DESC>
+            </PROPERTY>
+            <PROPERTY name="useSystemViewfinder" type="BOOLEAN" default="false">
+				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+        	    <PLATFORM>ANDROID</PLATFORM>
+				<DESC>Uses system Camera application to take a picture instead of rhodes camera. System Camera does not accept most rhodes camera settings and can be adjusted by UI.</DESC>
             </PROPERTY>
         </PROPERTIES>
 
@@ -184,14 +196,14 @@
             <METHOD name="takePicture" hasCallback="mandatory">
                 <DESC>Start the camera appliction to take a picture.  The user can capture the displayed image either by interacting with the resident camera app or pressing the trigger or enter key, depending on the device in use.</DESC>
                 <PARAMS>
-                    <PARAM name="propertyMap" type="HASH">
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Provide a set of properties to configure the camera, for example to specify the flashMode or compressionFormat</DESC>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previlusly set on the Camera instance</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK>
+				<CALLBACK type="HASH">
 					<PARAMS>
 						<PARAM name="status" type="STRING">
 							<DESC>Whether or not the image was successfully captured.  The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
@@ -227,17 +239,17 @@
 				</CALLBACK>
 			</METHOD>
 
-        	<METHOD name="choosePicture" runInThread="module" hasCallback="mandatory">
+        	<METHOD name="choosePicture" runInThread="module" hasCallback="mandatory" access="static">
                 <DESC>Choose a picture from the album</DESC>
                 <PARAMS>
-                    <PARAM name="propertyMap" type="HASH">
-                        <DESC>Provide a set of properties to configure the camera, for example to specify the flashMode or compressionFormat</DESC>
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
+                        <DESC>Provide a set of properties to configure an image, for example to specify the image size or color mode</DESC>
                         <CAN_BE_NIL>
                             <DESC>Not providing properties to this function will use the Camera's default properties, or those previlusly set on the Camera instance</DESC>
                         </CAN_BE_NIL>
                     </PARAM>
-                </PARAMS>
-				<CALLBACK>
+                </PARAMS>               
+				<CALLBACK type="HASH">
 					<PARAMS>
 						<PARAM name="status" type="STRING">
 							<DESC>Whether or not the image was successfully chosen from the gallery.  The returned string will be one of 'ok', 'cancel' or 'error'.</DESC>
@@ -273,7 +285,8 @@
 				</CALLBACK>
 			</METHOD>
 
-            <METHOD name="saveImageToDeviceGallery">
+        	<METHOD name="saveImageToDeviceGallery" access="static">
+        	    <PLATFORM>iOS, Android</PLATFORM>
                 <DESC>Save an image to the device gallery</DESC>
                 <PARAMS>
                     <PARAM name="pathToImage" type="STRING">
@@ -281,8 +294,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-    
-    
         </METHODS>
         
         <USER_OVERVIEW>

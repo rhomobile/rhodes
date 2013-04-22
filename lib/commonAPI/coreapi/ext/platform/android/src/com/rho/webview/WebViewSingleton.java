@@ -8,6 +8,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 import com.rhomobile.rhodes.api.IMethodResult;
+import com.rhomobile.rhodes.extmanager.IRhoWebView;
 
 public class WebViewSingleton extends WebViewSingletonBase implements
         IWebViewSingleton {
@@ -170,7 +171,29 @@ public class WebViewSingleton extends WebViewSingletonBase implements
 
     @Override
     public void setTextZoomLevel(int value, IMethodResult result) {
-        RhodesActivity.safeGetInstance().getMainView().getWebView(-1).setTextZoom(value);
+		IRhoWebView.TextZoom textZoom;
+		switch (value)
+		{
+		case 0:
+			textZoom = IRhoWebView.TextZoom.SMALLEST;
+			break;
+		case 1:
+			textZoom = IRhoWebView.TextZoom.SMALLER;
+			break;
+		case 2:
+			textZoom = IRhoWebView.TextZoom.NORMAL;
+			break;
+		case 3:
+			textZoom = IRhoWebView.TextZoom.LARGER;
+			break;
+		case 4:
+			textZoom = IRhoWebView.TextZoom.LARGEST;
+			break;
+		default:
+			textZoom = IRhoWebView.TextZoom.NORMAL;
+			break;
+		}
+        RhodesActivity.safeGetInstance().getMainView().getWebView(-1).setTextZoom(textZoom);
     }
 
     @Override

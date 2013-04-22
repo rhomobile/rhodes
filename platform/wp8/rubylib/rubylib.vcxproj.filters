@@ -68,6 +68,9 @@
     <Filter Include="ext\navbar">
       <UniqueIdentifier>{f9f6ea52-f6f3-4da9-acbb-c48443f05c01}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ext\alert">
+      <UniqueIdentifier>{0ba48dc6-d823-44ea-ae87-ac68303af22a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\ruby\debug.h" />
@@ -226,9 +229,6 @@
       <Filter>ext\rho</Filter>
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\random.c" />
-    <ClCompile Include="..\..\shared\ruby\ext\webview\webview_wrap.c">
-      <Filter>ext\webview</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c">
       <Filter>ext\geo</Filter>
     </ClCompile>
@@ -257,6 +257,12 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\navbar\navbar_wrap.c">
       <Filter>ext\navbar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\webview\webview_wrap.c">
+      <Filter>ext\webview</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\ruby\ext\alert\alert_wrap.c">
+      <Filter>ext\alert</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

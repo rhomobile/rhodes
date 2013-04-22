@@ -75,7 +75,14 @@ if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER or method.
 if method.linked_property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG %>
     public void <%= method.native_name %>(<% param_hash.each do |name, type| %><%= type %> <%= name %>, <% end %>IMethodResult result) {
 <%
-if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER %>
+if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
+  if method.linked_property.type == MethodParam::TYPE_BOOL %>
+        result.forceBooleanType();<%
+  elsif method.linked_property.type == MethodParam::TYPE_INT %>
+        result.forceIntegerType();<%
+  elsif method.linked_property.type == MethodParam::TYPE_DOUBLE %>
+        result.forceDoubleType();<%
+  end %> 
         getProperty("<%= method.linked_property.name %>", result);<%
 else %>
         setProperty("<%= method.linked_property.name %>", String.valueOf(<%= method.params.first.name %>), result);<%

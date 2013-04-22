@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -154,7 +154,7 @@
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_ruby_wrap.cpp" />
     <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h" />
-	<ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>Base.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>Base.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\<%= name.camel_case() %>_impl.cpp" />

@@ -7,3 +7,4 @@ ext/platform/android/generated/src/com/rho/camera/CameraFactorySingleton.java
 ext/platform/android/src/com/rho/camera/Camera.java
 ext/platform/android/src/com/rho/camera/CameraSingleton.java
 ext/platform/android/src/com/rho/camera/CameraFactory.java
+ext/platform/android/src/com/rho/camera/CameraExtension.java

@@ -5,24 +5,26 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsoluteLayout;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.util.ContextFactory;
 import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.webview.GoogleWebView;
 
 public class RhoExtManagerImpl implements IRhoExtManager {
     private static final String TAG = RhoExtManagerImpl.class.getSimpleName();
@@ -216,7 +218,27 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     @Override
     public void zoomText(int nZoom) {
-        WebView.setTextZoom(nZoom);
+	switch (nZoom)
+	{
+	case 0:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.SMALLEST);
+	    break;
+	case 1:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.SMALLER);
+	    break;
+	case 2:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.NORMAL);
+	    break;
+	case 3:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.LARGER);
+	    break;
+	case 4:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.LARGEST);
+	    break;
+	default:
+	    WebView.setTextZoom(IRhoWebView.TextZoom.NORMAL);
+	    break;
+	}
     }
 
     @Override
@@ -269,7 +291,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     //-----------------------------------------------------------------------------------------------------------------
     // Rhodes implementation related methods are below
 
-    public IRhoWebView createWebView(int tabIndex) {
+    public IRhoWebView createWebView(RhodesActivity activity, int tabIndex) {
         IRhoWebView res = null;
         synchronized (mExtensions) {
             for (IRhoExtension ext : mExtensions.values()) {
@@ -280,6 +302,26 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                     }
                     res = view;
                 }
+            }
+            if (res == null) {
+                Logger.T(TAG, "Creating Google web view");
+                final GoogleWebView googleWebView = new GoogleWebView(activity);
+                res = googleWebView;
+                RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
+                    @Override
+                    public void run()
+                    {
+                        googleWebView.applyWebSettings();
+                    }
+                });
+            }
+            AbsoluteLayout containerView = new AbsoluteLayout(activity);
+            containerView.addView(res.getView(), new AbsoluteLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0, 0));
+            res.setContainerView(containerView);
+            res.setWebClient(activity);
+            boolean handled = false;
+            for (IRhoExtension ext : mExtensions.values()) {
+                handled = ext.onWebViewCreated(this, res, handled);
             }
         }
         return res;
@@ -539,6 +581,19 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         }
     }
 
+    public String getProperty(String name) {
+        synchronized (mExtensions) {
+            for (Map.Entry<String, IRhoExtension> entry : mExtensions.entrySet()) {
+                String res = entry.getValue().onGetProperty(this, name);
+                if (res != null) {
+                    Logger.T(TAG, "Property from '" + entry.getKey() + "' extension - " + name + ": " + res);
+                    return res;
+                }
+            }
+        }
+        return null;
+    }
+    
     public void createRhoListeners() {
         for (String classname: RhodesStartupListeners.ourRunnableList) {
             if (classname.length() == 0) continue;
@@ -572,6 +627,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         for (IRhoListener listener: mListeners) {
             listener.onCreate(activity, intent);
         }
+        activity.getMainView().setWebView(createWebView(activity, 0), 0);
     }
     public void onStartActivity(RhodesActivity activity) {
         for (IRhoListener listener: mListeners) {

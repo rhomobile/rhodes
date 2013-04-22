@@ -181,6 +181,37 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
         params[i] = [CJSConverter getObjectiveCNULL];
     }
 
+    <% for i in 0..(module_method.params.size-1)
+          if module_method.params[i].default_value != nil
+             if module_method.params[i].type == MethodParam::TYPE_STRING
+                line = 'params['+i.to_s+']= @"'+module_method.params[i].default_value.to_s+'";'
+                %>
+                <%= line %><%
+             end
+             if module_method.params[i].type == MethodParam::TYPE_INT
+                line = 'params['+i.to_s+']= [NSNumber numberWithInt:'+module_method.params[i].default_value.to_s+'];'
+                %>
+                <%= line %><%
+             end
+             if module_method.params[i].type == MethodParam::TYPE_DOUBLE
+                line = 'params['+i.to_s+']= [NSNumber numberWithFloat:'+module_method.params[i].default_value.to_s+'];'
+                %>
+                <%= line %><%
+             end
+             if module_method.params[i].type == MethodParam::TYPE_BOOL
+                line = ''
+                if module_method.params[i].default_value.to_s.downcase != "false"
+                     line = 'params['+i.to_s+']= [NSNumber numberWithBool:YES];'
+                else
+                     line = 'params['+i.to_s+']= [NSNumber numberWithBool:NO];'
+                end
+                %>
+                <%= line %><%
+             end
+          end
+       end
+    %>
+
     // enumerate params
     for (int i = 0; i < (<%= module_method.params.size %>); i++) {
         if (argc > i) {
@@ -205,6 +236,18 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
             method_receive_callback = YES;
         }
     <% end %>
+
+    <% if module_method.result != nil
+        if MethodParam::BASE_TYPES.include?(module_method.result.type)
+            if module_method.result.type == MethodParam::TYPE_ARRAY
+                if !MethodParam::BASE_TYPES.include?(module_method.result.item_type)
+            %>[methodResult enableObjectCreationModeWithJSClassPath:@"<%= api_generator_getJSModuleName(module_method.result.item_type) %>"];<%
+                end
+            end
+        else
+            %>[methodResult enableObjectCreationModeWithJSClassPath:@"<%= api_generator_getJSModuleName(module_method.result.type) %>"];<%
+        end
+    end %>
 
     if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
@@ -272,7 +315,19 @@ rho::String js_s_<%= $cur_module.name %>_getDefaultID(const rho::String& strObjI
 
     NSString* defID = [singleton getDefaultID];
 
-    rho::String res =  [defID UTF8String];
+    rho::String res =  [[CJSConverter convertToJS:defID level:0] UTF8String];
+
+    return res;
+}
+
+rho::String js_s_<%= $cur_module.name %>_getDefault(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID)
+{
+    id<I<%= $cur_module.name %>Factory> factory = [<%= $cur_module.name %>FactorySingleton get<%= $cur_module.name %>FactoryInstance];
+    id<I<%= $cur_module.name %>Singleton> singleton = [factory get<%= $cur_module.name %>Singleton];
+
+    NSString* defID = [singleton getDefaultID];
+
+    rho::String res =  [[CJSConverter convertToJS:[CRhoAPIClassInstance rubyClassByName:@"<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>" instanceID:defID] level:0] UTF8String];
 
     return res;
 }
@@ -284,7 +339,7 @@ rho::String js_s_<%= $cur_module.name %>_setDefaultID(const rho::String& strObjI
 
     [singleton setDefaultID:[NSString stringWithUTF8String:(strObjID.c_str())]];
 
-    return "";
+    [[CJSConverter convertToJS:nil level:0] UTF8String];
 }
 <% end %>
 

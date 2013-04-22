@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -155,10 +155,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="runtime\<%= name.camel_case() %>Runtime.h" />
+    <ClInclude Include="generated\runtime\<%= name.camel_case() %>Runtime.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="runtime\<%= name.camel_case() %>Runtime.cpp" />
+    <ClCompile Include="generated\runtime\<%= name.camel_case() %>Runtime.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="<%= name.camel_case() %>Lib.vcxproj">

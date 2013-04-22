@@ -8,8 +8,7 @@
 
 
 #include "windows.h"
-#include "keybd.h"
-#include "kbdapi.h"
+#include "EmdkDefines.h"
 
 #define ESCAPE_CHAR L'\\'	///< Definition of the escape character
 const int SIP_TITLE_HEIGHT = 26;

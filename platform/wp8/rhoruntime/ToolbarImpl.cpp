@@ -6,6 +6,7 @@
 #include "common/RhoFilePath.h"
 #include "logging/RhoLog.h"
 #include "rubyext/NativeToolbarExt.h"
+#include "common/RhoConvertWP8.h"
 
 using namespace rhoruntime;
 using namespace Platform;
@@ -138,21 +139,13 @@ void create_native_toolbar(int bar_type, rho_param *p)
                     strImagePath = "res/forward_btn.png";
                 strImagePath = strImagePath.length() > 0 ? rho::common::CFilePath::join( rho_native_reruntimepath(), "lib/" + strImagePath) : rho::String();
             }
-			rho::StringW iconW = rho::common::convertToStringW(strImagePath);
-			rho::StringW labelW;
-			rho::common::convertToStringW(label, labelW);
-			rho::StringW actionW;
-			rho::common::convertToStringW(action, actionW);
-
 			//TODO: toolbarAddAction
-			CRhoRuntime::getInstance()->getMainPage()->toolbarAddAction(ref new String(iconW.c_str()), ref new String(labelW.c_str()), ref new String(actionW.c_str()));
+			CRhoRuntime::getInstance()->getMainPage()->toolbarAddAction(rho::common::convertStringToWP8(strImagePath), rho::common::convertStringToWP8(label), rho::common::convertStringToWP8(action));
 		}
     }
-	rho::StringW rgbBackColorW;
-	rho::common::convertToStringW(rgbBackColor, rgbBackColorW);
 	//TODO: setToolbarStyle
 	//TODO: toolbarShow
-	CRhoRuntime::getInstance()->getMainPage()->setToolbarStyle(false, ref new String(rgbBackColorW.c_str()));
+	CRhoRuntime::getInstance()->getMainPage()->setToolbarStyle(false, rho::common::convertStringCToWP8(rgbBackColor));
     CRhoRuntime::getInstance()->getMainPage()->toolbarShow();
     //m_started = true;
 }

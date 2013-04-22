@@ -15,6 +15,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 
 public class GoogleWebView implements IRhoWebView {
@@ -26,6 +27,7 @@ public class GoogleWebView implements IRhoWebView {
 
     private android.webkit.WebView mWebView;
     private ViewGroup mContainerView;
+    private TextZoom mTextZoom = TextZoom.NORMAL;
 
     public GoogleWebView(Activity activity) {
         synchronized(mInitialized) {
@@ -147,23 +149,41 @@ public class GoogleWebView implements IRhoWebView {
     }
 
     @Override
-    public void setTextZoom(int scale) {
-        int googleScale = 100;
-        switch(scale) {
-        case 0:
-            googleScale = 33;
-            break;
-        case 1:
-            googleScale = 66;
-            break;
-        case 3:
-            googleScale = 150;
-            break;
-        case 4:
-            googleScale = 200;
-            break;
+    public void setTextZoom(TextZoom zoom) {
+        WebSettings.TextSize googleTextZoom = WebSettings.TextSize.NORMAL;
+        mTextZoom = TextZoom.NORMAL;
+        if (zoom == TextZoom.SMALLEST)
+        {
+            googleTextZoom = WebSettings.TextSize.SMALLEST;
+            mTextZoom = TextZoom.SMALLEST;
         }
-        mWebView.getSettings().setTextZoom(googleScale);
+        else if (zoom == TextZoom.SMALLER)
+        {
+            googleTextZoom = WebSettings.TextSize.SMALLER;
+            mTextZoom = TextZoom.SMALLER;
+        }
+        else if (zoom == IRhoWebView.TextZoom.NORMAL)
+        {
+            googleTextZoom = WebSettings.TextSize.NORMAL;
+            mTextZoom = TextZoom.NORMAL;
+        }
+        else if (zoom == IRhoWebView.TextZoom.LARGER)
+        {
+            googleTextZoom = WebSettings.TextSize.LARGER;
+            mTextZoom = TextZoom.LARGER;
+        }
+        else if (zoom == IRhoWebView.TextZoom.LARGEST)
+        {
+            googleTextZoom = WebSettings.TextSize.LARGEST;
+            mTextZoom = TextZoom.LARGEST;
+        }
+        mWebView.getSettings().setTextSize(googleTextZoom);
+    }
+    
+    @Override
+    public TextZoom getTextZoom()
+    {
+	return mTextZoom;
     }
 
     @Override
@@ -221,5 +241,11 @@ public class GoogleWebView implements IRhoWebView {
         catch (Throwable e){
             Logger.E(TAG, e);
         }
+    }
+
+    @Override
+    public void addJSInterface(Object obj, String name) {
+        Logger.I(TAG, "Adding new JS interface: " + name);
+        mWebView.addJavascriptInterface(obj, name);
     }
 }

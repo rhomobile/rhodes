@@ -241,6 +241,7 @@
 		BDFBD9A210B1B9E500BAAFAB /* forward_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward_btn.png; sourceTree = "<group>"; };
 		BDFBD9A310B1B9E500BAAFAB /* home_btn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = home_btn.png; sourceTree = "<group>"; };
 		BDFBD9A610B1BA2000BAAFAB /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
+		C063701517158253003F1EE6 /* SignatureParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureParam.h; path = Signature/SignatureParam.h; sourceTree = "<group>"; };
 		C5D0D0BF153F279300B8BF21 /* InitMemoryInfoCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitMemoryInfoCollector.h; sourceTree = "<group>"; };
 		C5D0D0C0153F279A00B8BF21 /* InitMemoryInfoCollector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InitMemoryInfoCollector.mm; sourceTree = "<group>"; };
 		C5D90EF615F4F58D005F7C86 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -722,6 +723,7 @@
 				FA291E9511FF2EF70096AC39 /* SignatureDelegate.m */,
 				FA291E9611FF2EF70096AC39 /* SignatureViewController.h */,
 				FA291E9711FF2EF70096AC39 /* SignatureViewController.m */,
+				C063701517158253003F1EE6 /* SignatureParam.h */,
 			);
 			name = Signature;
 			sourceTree = "<group>";

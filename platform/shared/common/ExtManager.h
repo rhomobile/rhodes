@@ -171,6 +171,8 @@ public:
     virtual void passSipPositionToEngine();
 	virtual bool RegisterForBrowserMessage(unsigned int iMsgId);
 	virtual bool DeRegisterForBrowserMessage(unsigned int iMsgId);
+	virtual bool RegisterForPrimaryBrowserMessage(unsigned int iMsgId);
+	virtual bool DeRegisterForPrimaryBrowserMessage(unsigned int iMsgId);
 };
 	
 } //namespace common

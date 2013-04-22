@@ -46,4 +46,6 @@ public:
     virtual void setNavigationTimeout(unsigned int dwMilliseconds);
 	virtual bool RegisterForMessage(unsigned int iMsgId);
 	virtual bool DeRegisterForMessage(unsigned int iMsgId);
+	virtual bool RegisterForPrimaryMessage(unsigned int iMsgId);
+	virtual bool DeRegisterForPrimaryMessage(unsigned int iMsgId);
 };

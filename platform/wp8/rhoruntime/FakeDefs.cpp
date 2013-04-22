@@ -42,10 +42,6 @@ RHO_GLOBAL HWND getMainWnd()
 }
 
 
-RHO_GLOBAL void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
-{
-}
-
 RHO_GLOBAL void rho_platform_restart_application()
 {
 }

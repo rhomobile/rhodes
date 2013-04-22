@@ -34,13 +34,106 @@ rho::String CMethodResult::toString()
     else if ( m_ResType == eJSON)
         return m_strJSONRes;
     else if ( m_ResType == eBool)
-        return convertToStringA(m_bRes?1:0);
+        return convertToStringA(m_bRes);
     else if ( m_ResType == eInt)
         return convertToStringA(m_nRes);
     else if ( m_ResType == eDouble)
         return convertToStringA(m_dRes);
 
     return rho::String();
+}
+
+void CMethodResult::convertToType(ETypes eType)
+{
+    if ( eType == m_ResType || eType == eNone )
+        return;
+
+    switch(eType)
+    {
+    case eString:
+        if ( m_ResType != eJSON )
+        {
+            m_strRes = toString();
+            m_ResType = eString;
+        }
+        break;
+    case eStringW:
+        m_strResW = convertToStringW(toString());
+        m_ResType = eStringW;
+        break;
+    case eBool:
+        {
+            switch(m_ResType)
+            {
+            case eString:
+                convertFromStringA(m_strRes.c_str(), m_bRes);
+                m_ResType = eBool;
+                break;
+#if defined(WINDOWS_PLATFORM)
+            case eStringW:
+                convertFromStringW(m_strResW.c_str(), m_bRes);
+                m_ResType = eBool;
+                break;
+#endif
+            case eInt:
+                m_bRes = m_nRes != 0;
+                m_ResType = eBool;
+                break;
+            case eDouble:
+                m_bRes = m_dRes != 0;
+                m_ResType = eBool;
+                break;
+            }
+        }
+        break;
+
+    case eInt:
+        {
+            switch(m_ResType)
+            {
+            case eString:
+                convertFromStringA(m_strRes.c_str(), m_nRes);
+                m_ResType = eInt;
+                break;
+#if defined(WINDOWS_PLATFORM)
+            case eStringW:
+                convertFromStringW(m_strResW.c_str(), m_nRes);
+                m_ResType = eInt;
+                break;
+#endif
+            case eBool:
+                m_nRes = m_bRes ? 1 :0;
+                m_ResType = eInt;
+                break;
+            }
+        }
+        break;
+    case eDouble:
+        {
+            switch(m_ResType)
+            {
+            case eString:
+                convertFromStringA(m_strRes.c_str(), m_dRes);
+                m_ResType = eDouble;
+                break;
+#if defined(WINDOWS_PLATFORM)
+            case eStringW:
+                convertFromStringW(m_strResW.c_str(), m_dRes);
+                m_ResType = eDouble;
+                break;
+#endif
+            case eBool:
+                m_dRes = m_bRes ? 1 :0;
+                m_ResType = eDouble;
+                break;
+            case eInt:
+                m_dRes = static_cast<double>(m_nRes);
+                m_ResType = eDouble;
+                break;
+            }
+        }
+        break;
+    }
 }
 
 VALUE CMethodResult::toRuby(bool bForCallback/* = false*/)

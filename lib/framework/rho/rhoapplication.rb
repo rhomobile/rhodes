@@ -25,7 +25,7 @@
 #------------------------------------------------------------------------
 
 require 'rhom'
-require 'rhofsconnector'
+#require 'rhofsconnector'
 require 'rholang/localization_simplified'
 require 'rho/rhomsg'
 require 'rho/rhotabbar'
@@ -44,6 +44,11 @@ module Rho
   	
   	@@toolbar = [{:action => :back}, {:action => :forward}, {:action => :separator},
       {:action => :home}, {:action => :refresh}, {:action => :options} ]
+    
+    def self.make_default_native_menu
+        { Rho::RhoMessages.get_message('home_menu') => :home, Rho::RhoMessages.get_message('refresh_menu') => :refresh, 
+      		Rho::RhoMessages.get_message('sync_menu') => :sync, Rho::RhoMessages.get_message('options_menu') => :options, Rho::RhoMessages.get_message('log_menu') => :log, :separator => nil, Rho::RhoMessages.get_message('close_menu') => :close }
+    end
     	
     def initialize
       #LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
@@ -52,8 +57,7 @@ module Rho
         @rhom = Rhom::Rhom.new
       end
       unless @default_menu
-      	@default_menu = { Rho::RhoMessages.get_message('home_menu') => :home, Rho::RhoMessages.get_message('refresh_menu') => :refresh, 
-      		Rho::RhoMessages.get_message('sync_menu') => :sync, Rho::RhoMessages.get_message('options_menu') => :options, Rho::RhoMessages.get_message('log_menu') => :log, :separator => nil, Rho::RhoMessages.get_message('close_menu') => :close }
+      	@default_menu = Rho::Application::make_default_native_menu()
   	  end
 
       if @vtabs != nil
@@ -123,17 +127,15 @@ module Rho
     end
 
     def on_ui_created
-        start_url = Rho::RhoConfig.start_path
+        start_url = Rho::Application.startURI
         start_url = "" unless start_url
 
         if System.get_property('platform') != 'WP8'
-          security_token_not_passed = System.get_property('security_token_not_passed')
-          security_token_not_passed = false if security_token_not_passed.nil?
-          invalid_security_token_start_path_exist = Rho::RhoConfig.exists? 'invalid_security_token_start_path'
-          invalid_security_token_start_path = Rho::RhoConfig.invalid_security_token_start_path
+         
+          invalid_security_token_start_path = Rho::Application.invalidSecurityTokenStartPath
         
-          if security_token_not_passed
-            if invalid_security_token_start_path_exist
+          if Rho::Application.securityTokenNotPassed
+            if invalid_security_token_start_path && invalid_security_token_start_path.length() > 0
                 start_url = invalid_security_token_start_path
             else
                 # exit from application - old way
@@ -152,7 +154,7 @@ module Rho
 
     def on_sync_user_changed
         Rhom::Rhom.database_full_reset(false, false)    
-        ::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET client_id=?", "")
+        #::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET client_id=?", "")
     end
     
     def on_reinstall_config_update(conflicts)
@@ -180,39 +182,6 @@ module Rho
       #puts "RhoApplication: Using menu - #{disp_menu.inspect}"
   	  WebView.set_menu_items(disp_menu)
     end
-    
-if !Rho::System.isRhoSimulator() && Rho::System.platform != Rho::System::PLATFORM_WM_CE && Rho::System.platform != Rho::System::PLATFORM_WINDOWS_DESKTOP && Rho::System.platform != Rho::System::PLATFORM_IOS && Rho::System.platform != Rho::System::PLATFORM_ANDROID
-    class << self
-      def get_app_path(appname)
-        Rho::RhoFSConnector::get_app_path(appname)
-      end
-      
-      def get_base_app_path
-        Rho::RhoFSConnector::get_base_app_path
-      end
-
-      def get_user_path
-          Rho::RhoFSConnector::get_user_path
-      end
-      
-      def get_model_path(appname, modelname)
-        Rho::RhoFSConnector::get_model_path(appname, modelname)
-      end
-      
-      def get_blob_folder()
-        Rho::RhoFSConnector::get_blob_folder()
-      end
-
-      def get_public_folder()
-        Rho::RhoFSConnector::get_public_folder()
-      end
-      
-      def get_blob_path(relative_path)
-        Rho::RhoFSConnector::get_blob_path(relative_path)      
-      end
-      
-    end
-end
 
     @@current_controller = nil
     def self.current_controller()

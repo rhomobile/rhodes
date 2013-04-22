@@ -26,10 +26,9 @@
 
 #import "SignatureView.h"
 
-
 @implementation SignatureViewProperties
 
-@synthesize penColor, penWidth, bgColor, left, top, width, height;
+@synthesize params;
 @end
 
 
