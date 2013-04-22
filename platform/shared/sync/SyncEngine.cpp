@@ -207,6 +207,77 @@ void CSyncEngine::doSyncAllSources(const String& strQueryParams, boolean bSyncOn
     if ( getState() != esExit )
         setState(esNone);
 }
+    
+    bool CSyncEngine::recoverSearch( const String& url, const String& query, int& errorCode, String& strError, int nProgressStep ) {
+        
+        LOG(INFO) + "Call search on server for previous request. Url: " + (url+query);
+        
+        NetResponse resp = getNet().pullData(url+query, this);
+        
+        if ( !resp.isOK() )
+        {
+            errorCode = RhoAppAdapter.getErrorFromResponse(resp);
+            strError = resp.getCharData();
+            return false;
+        }
+        
+        const char* szData = resp.getCharData();
+        
+        CJSONArrayIterator oJsonArr(szData);
+        
+        for( ; !oJsonArr.isEnd() ; oJsonArr.next() )
+        {
+            CJSONArrayIterator oSrcArr(oJsonArr.getCurItem());
+            if (oSrcArr.isEnd())
+                break;
+            
+            int nVersion = 0;
+            if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("version") )
+            {
+                nVersion = oSrcArr.getCurItem().getInt("version");
+                oSrcArr.next();
+            }
+            
+            if ( nVersion != getProtocol().getVersion() )
+            {
+                LOG(ERROR) + "Sync server send search data with incompatible version. Client version: " + convertToStringA(getProtocol().getVersion()) +
+                "; Server response version: " + convertToStringA(nVersion);
+                errorCode = RhoAppAdapter.ERR_SYNCVERSION;
+                return false;
+            }
+            
+            if ( !oSrcArr.isEnd() && oSrcArr.getCurItem().hasName("token"))
+            {
+                oSrcArr.next();
+            }
+            
+            if ( !oSrcArr.getCurItem().hasName("source") )
+            {
+                LOG(ERROR) + "Sync server send search data without source name.";
+                errorCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
+                strError = szData;
+                return false;
+            }
+            
+            String strSrcName = oSrcArr.getCurItem().getString("source");
+            CSyncSource* pSrc = findSourceByName(strSrcName);
+            if ( pSrc == null )
+            {
+                LOG(ERROR) + "Sync server send search data for unknown source name:" + strSrcName;
+                errorCode = RhoAppAdapter.ERR_UNEXPECTEDSERVERRESPONSE;
+                strError = szData;
+                return false;
+            }
+            
+            oSrcArr.reset(0);
+            pSrc->setProgressStep(nProgressStep);
+            
+            pSrc->processServerResponse_ver3(oSrcArr,true);
+        }
+        
+        return true;
+    }
+
 
 void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams, String strAction, boolean bSearchSyncChanges, int nProgressStep)
 {
@@ -235,27 +306,53 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
     {
         int nSearchCount = 0;
         String strUrl = getProtocol().getServerQueryUrl(strAction);
+        
+        /* Recover state if previous search request wasn't successful. */
+        if ( (RHOCONF().isExist("search_query")) && (RHOCONF().getString("search_query").length()>0) ) {
+            String strError = "";
+            int errorCode = 0;
+            if (!recoverSearch(strUrl,RHOCONF().getString("search_query"),errorCode,strError,nProgressStep)) {
+                stopSync();
+                m_nErrCode = errorCode;
+                m_strError = strError;
+                continue;
+            }
+            
+            RHOCONF().setString("search_query", "", true);
+        }
+        
+        
         String strQuery = getProtocol().getServerQueryBody("", getClientID(), getSyncPageSize());
 
         if ( strParams.length() > 0 )
             strQuery += strParams.at(0) == '&' ? strParams : "&" + strParams;
 
         String strTestResp = "";
+        
+        String strRecoverQuery = strQuery;
+
         for ( int i = 0; i < (int)arSources.size(); i++ )
         {
             CSyncSource* pSrc = findSourceByName(arSources.elementAt(i));
             if ( pSrc != null )
             {
                 strQuery += "&sources[][name]=" + pSrc->getName();
+                strRecoverQuery += "&sources[][name]=" + pSrc->getName();                
+                
 
                 if ( !pSrc->isTokenFromDB() && pSrc->getToken() > 1 )
                     strQuery += "&sources[][token]=" + convertToStringA(pSrc->getToken());
+                
+                strRecoverQuery += "&sources[][token]=1";
 
                 strTestResp = getSourceOptions().getProperty(pSrc->getID(), "rho_server_response");
             }
         }
+        
+        strRecoverQuery += "&resend=1";
 
 	    LOG(INFO) + "Call search on server. Url: " + (strUrl+strQuery);
+        RHOCONF().setString("search_query", strRecoverQuery, true);
         NetResponse resp = getNet().pullData(strUrl+strQuery, this);
 
         if ( !resp.isOK() )
@@ -265,6 +362,8 @@ void CSyncEngine::doSearch(rho::Vector<rho::String>& arSources, String strParams
             m_strError = resp.getCharData();
             continue;
         }
+        
+        RHOCONF().setString("search_query", "", true);
 
         const char* szData = null;
         if ( strTestResp.length() > 0 )

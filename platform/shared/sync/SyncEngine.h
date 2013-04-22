@@ -160,6 +160,7 @@ public:
 
     void applyChangedValues(db::CDBAdapter& db);
 private:
+    bool recoverSearch( const String& url, const String& query, int& errorCode, String& strError, int nProgressStep );
  
     CSyncSource* findSource(const CSourceID& oSrcID);
 

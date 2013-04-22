@@ -144,7 +144,7 @@ public:
     int  getCurPageCount(){return m_nCurPageCount;}
     int  getTotalCount(){return m_nTotalCount;}
 
-    void processServerResponse_ver3(json::CJSONArrayIterator& oJsonArr);
+    void processServerResponse_ver3(json::CJSONArrayIterator& oJsonArr, bool isRecoveryMode = false);
     void processServerCmd_Ver3(const String& strCmd, const String& strObject, const String& strAttrib, const String& strValue, boolean bCheckUIRequest);//throws Exception
 
     String makeFileName(const CAttrValue& value);//throws Exception
