@@ -37,9 +37,15 @@ import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Calendar;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -52,6 +58,7 @@ import org.json.JSONTokener;
 
 import com.rhomobile.rhodes.alert.Alert;
 import com.rhomobile.rhodes.alert.StatusNotification;
+import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.event.EventStore;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
@@ -70,6 +77,7 @@ import com.rhomobile.rhodes.uri.TelUriHandler;
 import com.rhomobile.rhodes.uri.UriHandler;
 import com.rhomobile.rhodes.uri.VideoUriHandler;
 import com.rhomobile.rhodes.util.ContextFactory;
+import com.rhomobile.rhodes.util.JSONGenerator;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.PhoneId;
 import com.rhomobile.rhodes.util.Utils;
@@ -1550,4 +1558,38 @@ public class RhodesService extends Service {
         srv.startActivity(intent);
     }
 
+    public static String getNativeMenu() {
+        List<Object> menuItems = RhodesActivity.safeGetInstance().getMenu().getMenuDescription();
+        String menuJson = new JSONGenerator(menuItems).toString();
+
+        Logger.T(TAG, "Menu: " + menuJson);
+
+        return menuJson;
+    }
+
+    public static void setNativeMenu(List<String> jsonMenu) {
+        List<Map<String, String>> nativeMenu = new ArrayList<Map<String, String>>();
+
+        Iterator<String> iter = jsonMenu.iterator();
+        while(iter.hasNext()) {
+            try {
+                String jsonItem = iter.next();
+                Map<String, String> menuItem = new HashMap<String, String>();
+                JSONObject json = new JSONObject(jsonItem);
+                Iterator<String> itemIter = json.keys();
+                while(itemIter.hasNext()) {
+                    String itemKey = itemIter.next();
+                    String itemDescr = json.getString(itemKey);
+
+                    Logger.T(TAG, "Add menu item: " + itemKey + "->" + itemDescr);
+
+                    menuItem.put(itemKey, itemDescr);
+                }
+                nativeMenu.add(menuItem);
+            } catch (JSONException e) {
+                Logger.E(TAG, e);
+            }
+        }
+        RhodesActivity.safeGetInstance().getMenu().setMenu(nativeMenu);
+    }
 }
