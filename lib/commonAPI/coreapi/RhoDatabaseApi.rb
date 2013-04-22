@@ -342,7 +342,7 @@ class Database
   def delete_from_table(table,condition)
     raise ArgumentError if !table
     quests,vals = Database.make_where_params(condition,'AND') 
-    query = "delete from #{table} where #{quests}"
+    query = "DELETE FROM \"#{table}\" WHERE #{quests}"
     execute_sql query, vals
   end
 
