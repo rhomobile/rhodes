@@ -165,14 +165,14 @@ public:
         RHODESAPP().getExtManager().restoreApp();
     }
 
-    virtual void setActivationNotify(rho::apiGenerator::CMethodResult& oResult)
+    virtual void setApplicationNotify(rho::apiGenerator::CMethodResult& oResult)
     {
         //TODO: setActivationNotify
     }
 
     virtual void getRhoPlatformVersion(rho::apiGenerator::CMethodResult& oResult)
     {
-        //TODO: setActivationNotify
+        //TODO: getRhoPlatformVersion
     }
 };
 
