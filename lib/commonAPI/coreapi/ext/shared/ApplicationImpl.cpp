@@ -161,8 +161,22 @@ public:
         else
         {
             String dbRootFolder = CFilePath::join( rho_native_rhodbpath(), RHO_EMULATOR_DIR);
-            oResult.set( CFilePath::join( dbRootFolder, relativePath ) );
+            if ( !String_startsWith(relativePath, dbRootFolder) )
+                oResult.set( CFilePath::join( dbRootFolder, relativePath ) );
         }
+    }
+
+    virtual void relativeDatabaseBlobFilePath( const rho::String& absolutePath, rho::apiGenerator::CMethodResult& oResult)
+    {
+        String dbRootFolder = CFilePath::join( rho_native_rhodbpath(), RHO_EMULATOR_DIR);
+
+        if ( String_startsWith(absolutePath, "file://") )
+            dbRootFolder = "file://" + dbRootFolder;
+
+        if ( String_startsWith(absolutePath, dbRootFolder) )
+            oResult.set( absolutePath.substr( dbRootFolder.length(), absolutePath.length()-dbRootFolder.length()) );
+        else
+            oResult.set( absolutePath );
     }
 
     virtual void quit(rho::apiGenerator::CMethodResult& oResult)

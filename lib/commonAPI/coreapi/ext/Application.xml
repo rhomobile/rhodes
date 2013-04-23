@@ -127,6 +127,18 @@
                 <RETURN type="STRING"/>
             </METHOD>
 
+            <METHOD name="relativeDatabaseBlobFilePath">
+                <DESC>Make relative path to database blob file.</DESC>
+
+                <PARAMS>
+                    <PARAM name="absolutePath" type="STRING">
+                        <DESC>Absolute path to database blob file.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+                <RETURN type="STRING"/>
+            </METHOD>
+
             <METHOD name="quit">
                 <DESC>Quit the application.</DESC>
             </METHOD>
