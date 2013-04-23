@@ -66,6 +66,10 @@
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>
 				<DESC>Camera hardware is limited to taking photos in a finite number of resolutions, eg 2048x1536, 640x480 etc.  Specifying a desiredHeight will request to take the photo with the specified height but if it is not supported by the hardware then the closest match will be selected.  The callback received when a photo is taken contains the actual resolution of the captured photo.</DESC>
             </PROPERTY>
+            <PROPERTY name="fileName" type="STRING">
+				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+				<DESC>The path without filename extension to store captured image in subsequent calls to takePicture(). The filename extension will be added automatically according to compressionFormat property value.</DESC>
+            </PROPERTY>
             <PROPERTY name="compressionFormat" type="STRING" default="jpg">
 				<VER_INTRODUCED>4.0.0</VER_INTRODUCED>
 				<APPLIES>JPG is supported on all devices, Android and Windows Mobile does not support PNG images</APPLIES>
