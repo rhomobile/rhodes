@@ -197,7 +197,7 @@ public:
 
     virtual void setApplicationNotify(rho::apiGenerator::CMethodResult& oResult)
     {
-        //TODO: setActivationNotify
+        RHODESAPP().setApplicationEventHandler(oResult);
     }
 
     virtual void getRhoPlatformVersion(rho::apiGenerator::CMethodResult& oResult)

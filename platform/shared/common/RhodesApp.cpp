@@ -76,7 +76,19 @@ void rho_file_set_fs_mode(int mode);
 #endif
 
 }
-    
+
+static const char APP_EVENT_ACTIVATED[] = "Activated";
+static const char APP_EVENT_DEACTIVATED[] = "Deactivated";
+static const char APP_EVENT_UICREATED[] = "UICreated";
+static const char APP_EVENT_UIDESTROYED[] = "UIDestroyed";
+static const char APP_EVENT_SYNCUSERCHANGED[] = "SyncUserChanged";
+static const char APP_EVENT_CONFIGCONFLICT[] = "ConfigConflict";
+static const char APP_EVENT_DBMIGRATESOURCE[] = "DBMigrateSource";
+static const char APP_EVENT_UNINITIALIZED[] = "Uninitialized";
+
+static const char APP_EVENT[] = "applicationEvent";
+static const char APP_EVENT_DATA[] = "eventData";
+
 namespace rho {
 namespace common{
 
@@ -489,27 +501,39 @@ void CRhodesApp::runCallbackInThread(const String& strCallback, const String& st
 
 static void callback_activateapp(void *arg, String const &strQuery)
 {
-    rho_ruby_activateApp();
+    if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateActivated))
+    {
+        rho_ruby_activateApp();
+    }
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
 static void callback_deactivateapp(void *arg, String const &strQuery)
 {
-    rho_ruby_deactivateApp();
+    if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateDeactivated))
+    {
+        rho_ruby_deactivateApp();
+    }
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
 static void callback_uicreated(void *arg, String const &strQuery)
 {
-    rho_ruby_uiCreated();
+    if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
+    {
+        rho_ruby_uiCreated();
+    }
     rho_http_sendresponse(arg, "");
 }
 
 static void callback_uidestroyed(void *arg, String const &strQuery)
 {
-    rho_ruby_uiDestroyed();
+    if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
+    {
+        rho_ruby_uiDestroyed();
+    }
     rho_http_sendresponse(arg, "");
 }
 
@@ -1921,6 +1945,21 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 		m_mxAccess(mxAccess)
 	{
 	}
+    
+    void CRhodesApp::setApplicationEventHandler(const apiGenerator::CMethodResult& oResult)
+    {
+        m_applicationEventReceiver.setCallback(oResult);
+    }
+    
+    void CRhodesApp::clearApplicationEventHandler()
+    {
+        m_applicationEventReceiver.setCallback(apiGenerator::CMethodResult());
+    }
+    
+    IApplicationEventReceiver* CRhodesApp::getApplicationEventReceiver()
+    {
+        return &m_applicationEventReceiver;
+    }
 	
 	
 	void NetworkStatusReceiver::onNetworkStatusChanged( enNetworkStatus currentStatus )
@@ -1962,6 +2001,91 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 		}
 		return "";
 	}
+    
+    ApplicationEventReceiver::ApplicationEventReceiver() :
+        m_app_state(applicationStateUninitialized),
+        m_ui_state(UIStateUninitialized)
+    {
+        
+    }
+    
+    bool ApplicationEventReceiver::onAppStateChange(const enApplicationState& newState)
+    {
+        if (m_app_state != newState)
+        {
+            m_app_state = newState;
+            if (m_result.hasCallback())
+            {
+                rho::Hashtable<rho::String, rho::String> callbackData;
+                const char* state = APP_EVENT_UNINITIALIZED;
+                switch (newState) {
+                    case applicationStateActivated:
+                        state = APP_EVENT_ACTIVATED;
+                        break;
+                    case applicationStateDeactivated:
+                        state = APP_EVENT_DEACTIVATED;
+                        break;
+                    default:
+                        state = APP_EVENT_UNINITIALIZED;
+                        break;
+                }
+                callbackData.put(APP_EVENT, state);
+                callbackData.put(APP_EVENT_DATA, "null");
+                m_result.set(callbackData);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    bool ApplicationEventReceiver::onUIStateChange(const enUIState& newState)
+    {
+        if (m_ui_state != newState)
+        {
+            m_ui_state = newState;
+            if (m_result.hasCallback())
+            {
+                rho::Hashtable<rho::String, rho::String> callbackData;
+                const char* state = APP_EVENT_UNINITIALIZED;
+                switch (newState) {
+                    case UIStateCreated:
+                        state = APP_EVENT_UICREATED;
+                        break;
+                    case UIStateDestroyed:
+                        state = APP_EVENT_UIDESTROYED;
+                        break;
+                    default:
+                        state = APP_EVENT_UNINITIALIZED;
+                        break;
+                }
+                callbackData.put(APP_EVENT, state);
+                callbackData.put(APP_EVENT_DATA, "null");
+                m_result.set(callbackData);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    bool ApplicationEventReceiver::onSyncUserChanged(){
+        return false;
+    }
+    
+    bool ApplicationEventReceiver::onReinstallConfigUpdate(){
+        return false;
+    }
+    
+    bool ApplicationEventReceiver::onMigrateSource(){
+        return false;
+    }
+        
+    bool ApplicationEventReceiver::isCallbackSet(){
+        return m_result.hasCallback();
+    }
+    
+    void ApplicationEventReceiver::setCallback(const apiGenerator::CMethodResult& oResult){
+        m_result = oResult;
+    }
 
 	
 
