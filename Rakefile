@@ -2127,6 +2127,7 @@ namespace "run" do
 
         if RUBY_PLATFORM =~ /darwin/
           while 1
+            sleep 1
           end     
         end
     end
