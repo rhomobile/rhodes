@@ -20,7 +20,10 @@ end %>
 public class <%= $cur_module.name %>Base extends RhoApiObject {
 <%
 if $cur_module.is_template_propertybag %>
-    private RhoApiPropertyBag mPropertyBag;<%
+    private RhoApiPropertyBag mPropertyBag;
+    public Map<String, String> getPropertiesMap() {
+        return mPropertyBag.getPropertiesMap();
+    }<%
 unless custom_props.empty? %>
     private static Map<String, Class<?> > sCustomAccessNames;
     static {
