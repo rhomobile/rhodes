@@ -808,7 +808,9 @@ void CRhodesModule::createAutoStartShortcut()
     StringW strAppPath = L"\"";
     char rootpath[MAX_PATH];
     GetModuleFileNameA(NULL,rootpath,MAX_PATH);
-    strAppPath += convertToStringW(rootpath);
+    StringW strRootPath;
+    convertToStringW(rootpath, strRootPath);
+    strAppPath += strRootPath;
     strAppPath += L" -minimized\"";
 
     DWORD dwRes = SHCreateShortcut( (LPTSTR)strLnk.c_str(), (LPTSTR)strAppPath.c_str());
