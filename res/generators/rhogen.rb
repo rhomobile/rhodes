@@ -1474,7 +1474,7 @@ module Rhogen
         end
 
          #constants in param
-         xml_module_item.elements.each("*/PARAM/VALUES/VALUE") do |xml_param_value|
+         xml_module_item.elements.each(".//PARAM/VALUES/VALUE") do |xml_param_value|
             module_constant = ModuleConstant.new()
             module_constant.name = xml_param_value.attribute("constName").to_s
             module_constant.value = xml_param_value.attribute("value").to_s
