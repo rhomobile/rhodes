@@ -943,6 +943,7 @@ def init_extensions(startdir, dest)
   extjsmodulefiles = []
   startJSModules = []
   endJSModules = []
+  extcsharpentries = []
   
   extpaths = $app_config["extpaths"]  
 
@@ -997,6 +998,7 @@ def init_extensions(startdir, dest)
           type = extconf["exttype"]
           wm_type = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths = extconf["xml_api_paths"]
+          csharp_impl = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) && (!extconf['wp8']['csharp_impl'].nil?) ? true : false
         
           if nlib != nil
             nlib.each do |libname|
@@ -1004,8 +1006,9 @@ def init_extensions(startdir, dest)
             end
           end
           
+          # ? if csharp_impl ... extcsharpentries ...
           extentries << entry unless entry.nil?
-         
+
           if type.to_s() != "nativelib"
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
@@ -1013,7 +1016,7 @@ def init_extensions(startdir, dest)
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
             if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
-              libs.map! { |lib| lib + ".lib" }
+              libs.map! { |lib| lib + (csharp_impl ? "Lib" : "") + ".lib" }
             else
               libs.map! { |lib| "lib" + lib + ".a" }
             end
@@ -1062,6 +1065,7 @@ def init_extensions(startdir, dest)
   gen_checker.update
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
+  extscsharp = $config["platform"] == "wp8" ? File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.cs") : nil
   puts "exts " + exts
 
   extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
@@ -1077,8 +1081,13 @@ def init_extensions(startdir, dest)
   end
 
   if $config["platform"] != "bb"
-    f = StringIO.new("", "w+")          
+    f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+
+    if !extscsharp.nil?
+      f_csharp = StringIO.new("", "w+")
+      f_csharp.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+    end
 
     if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
       # Add libraries through pragma
@@ -1090,7 +1099,7 @@ def init_extensions(startdir, dest)
         f.puts "#pragma comment(lib, \"#{lib}\")"
       end
     end
-      
+
     extentries.each do |entry|
       f.puts "extern void #{entry}(void);"
     end
@@ -1102,6 +1111,19 @@ def init_extensions(startdir, dest)
     f.puts "}"
 
     Jake.modify_file_if_content_changed( exts, f )
+
+    if !extscsharp.nil?
+      f_csharp.puts "namespace rhodes {"
+      f_csharp.puts "    public static class CSharpExtensions {"
+      f_csharp.puts "        public static void InitializeExtenstions() {"
+      extcsharpentries.each do |entry|
+        f_csharp.puts "            #{entry}();"
+      end
+      f_csharp.puts "        }"
+      f_csharp.puts "    }"
+      f_csharp.puts "}"
+      Jake.modify_file_if_content_changed( extscsharp, f_csharp )
+    end
 
     extlibs.each { |lib| add_linker_library(lib) }
     nativelib.each { |lib| add_linker_library(lib) }
