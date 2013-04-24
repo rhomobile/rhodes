@@ -410,6 +410,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
         if (hWnd)
         {
+            ShowWindow(hWnd, SW_SHOW);
             SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
             SetForegroundWindow( hWnd );
         }
@@ -542,7 +543,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
-    DWORD dwStyle = WS_VISIBLE;
+    DWORD dwStyle = m_bMinimized ? 0 : WS_VISIBLE;
 
 #if !defined(_WIN32_WCE)
     dwStyle |= WS_OVERLAPPEDWINDOW;
