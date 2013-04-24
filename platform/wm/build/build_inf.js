@@ -66,7 +66,7 @@ function get_copyfiles_sections(es) {
 }
 
 function get_source_disks_names(es) {
-    var disk = 5;
+    var disk = 6;
 
     for (var i in es) {
         es[i].disk = disk;
@@ -218,7 +218,8 @@ function fill_registry_keys() {
 	}
 }
 
-function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,rhogempath,usereruntime,include_motocaps,is_custom_config) {
+function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
+                rhogempath,usereruntime,include_motocaps,is_custom_config,autorun,autorun_path) {
     p("[Version]");
     p("Signature=\"$Windows NT$\"");
     p("Provider=\""+vendor+"\"");
@@ -252,11 +253,21 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("2=,\"\",," + rhogempath + "\"\\\"");
             p("3=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
             p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
-        }else
+
+           if (autorun) 
+           {
+              p("5=,\"\",," + autorun_path + "\"\\\"");           
+           }
+        }
+        else
         {
             if(include_motocaps)
             {
                 p("2=,\"\",," + rhogempath + "\"\\Config\\\"");
+            }
+ 
+            if (autorun) {
+              p("3=,\"\",," + autorun_path + "\"\\\"");           
             }
         }
     }
@@ -266,6 +277,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
     if (usereruntime) {
         p("\"" + name + ".lnk\"=1");
     } else {
+        if (autorun) {
+          p("\"" + name + ".lnk\"=5");
+        }
         p("\"" + name + ".exe\"=1");
         if (webkit) {
             p("\"eklibrary.dll\"=2");
@@ -319,6 +333,10 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
     if (usereruntime) {
         p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
     } else {
+        if (autorun) {
+          p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
+        }
+
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
         p("\"license_rc.dll\",\"license_rc.dll\",,0");
         if (webkit) {
@@ -367,6 +385,10 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,r
             p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
         else
             p("\""+name+"\",0,\"" + name + ".exe\",%CE11%");
+
+         if (autorun) {
+            p("\""+name+".lnk\",0,\""+name+".lnk\",%CE4%");
+         }
     }
     p("");
     p("[RegKeys]");
@@ -386,7 +408,9 @@ function main() {
     // args(7) = rhoelements gem folder path
     // args(8) = use RhoElements runtime?
     // args(9) = use Motorola extextension?
-    // args(10)... = additional files
+    // args(10)= run on system startup 
+    // args(11)= path to autorun link file
+    // args(12)... = additional files
 
     var args = WScript.Arguments;
     fso = new ActiveXObject("Scripting.FileSystemObject");
@@ -398,6 +422,8 @@ function main() {
     var usereruntime = (args(8) == "1");
     var include_motocaps = (args(9) == "1");
     var is_custom_config = fso.FileExists(srcdir+"/apps/Config.xml");
+    var is_autorun = (args(10) == "1");
+    var autorun_path = args(11);
 
     var sources = new Object();
     sources['db'] = ["db","..\\..\\..\\platform\\shared\\db\\res\\db"];
@@ -406,11 +432,12 @@ function main() {
         sources['lib']= ["lib",srcdir+"/lib"];
     else if (is_icon)
         sources['icon']= ["icon",srcdir+"/icon"];
+
     sources['apps']= ["apps",srcdir+"/apps"];
 
     var es = expand_sources_rho(sources);
     
-    for (var idx = 10; idx < args.length; idx++)
+    for (var idx = 12; idx < args.length; idx++)
     {
     	if (args(idx) == null)
     		break;
@@ -424,7 +451,9 @@ function main() {
     if (!usereruntime) {
         exts = expand_extensions(args(1));
     }
-    pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,is_icon,include_webkit,args(7),usereruntime,include_motocaps,is_custom_config);
+
+    pinf(args(1),es,exts,args(2),args(3),srcdir,show_shortcut,
+             is_icon,include_webkit,args(7),usereruntime,include_motocaps,is_custom_config,is_autorun,autorun_path);
 
     output_file.Close();
 }
