@@ -1016,11 +1016,14 @@ def init_extensions(startdir, dest)
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
             if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
-              libs.map! { |lib| lib + (csharp_impl ? "Lib" : "") + ".lib" }
+              libs.each do |lib|
+                extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
+                extlibs << lib + "Runtime.lib" if csharp_impl
+              end
             else
               libs.map! { |lib| "lib" + lib + ".a" }
+              extlibs += libs
             end
-            extlibs += libs
           end
 
           if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
