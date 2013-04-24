@@ -1,8 +1,10 @@
-entry: Init_<%= namecamelcase %>_extension	
+entry: Init_<%= namecamelcase %>_extension
 javaentry: com.<%= namefixed %>.<%= namecamelcase %>
 libraries: ["<%= namecamelcase %>"]
 android:
   source_list: ext/platform/android/ext_java.files
+wp8:
+  csharp_impl: yes
 
 project_paths:
   wp8: ext/platform/wp8/<%= namecamelcase %>.vcxproj

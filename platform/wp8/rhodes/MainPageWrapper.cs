@@ -11,14 +11,14 @@ namespace rhodes
         private MainPage _mainPage;
         public MainPageWrapper(MainPage mainPage) { _mainPage = mainPage; }
 
+        public void InitializeCSharpExtensions() { _mainPage.InitializeCSharpExtensions(); }
+
         public int getLogicalDpiX() { return _mainPage.getLogicalDpiX(); }
         public int getLogicalDpiY() { return _mainPage.getLogicalDpiY(); }
         public int getScreenWidth() { return _mainPage.getScreenWidth();  }
         public int getScreenHeight() { return _mainPage.getScreenHeight();  }
         public string getScreenOrientation() { return _mainPage.getScreenOrientation(); }
         public bool isBrowserInitialized() { return _mainPage.isBrowserInitialized(); }
-
-
         public void bringToFront() { _mainPage.bringToFront(); }
 
 		// webview
