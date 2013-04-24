@@ -177,6 +177,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     bool m_bMinimized;
 	bool m_isRhoConnectPush;
     bool m_startAtBoot;
+
 #ifndef RHODES_EMULATOR
 	HANDLE m_hMutex;
 #endif
@@ -274,8 +275,8 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				m_bMinimized = true;
 			}
 
-            if (wcsncmp(lpszToken, _T("startAtBoot"), 11)) {
-                m_startAtBoot = true;
+            if (wcsncmp(lpszToken, _T("startAtBoot"), 11) == 0) {
+                m_bMinimized = true;
             }
 
 			if (WordCmpI(lpszToken, _T("rhoconnectpush"))==0) {
