@@ -2,8 +2,8 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
   <MODULE name="Database" parent="Rho" generateUnderscoreRubyNames="true">
-    <HELP_OVERVIEW></HELP_OVERVIEW>
-    <MORE_HELP></MORE_HELP>
+    <HELP_OVERVIEW>Database is low-level API to acceess SQLite local database.</HELP_OVERVIEW>
+    <MORE_HELP>This API used internally by RHOM. To use RHOM, just define your models and partition databases will be created automatically.</MORE_HELP>
 
     <ALIASES>
     </ALIASES>
@@ -21,13 +21,13 @@
       </ALIASES>
 
       <METHOD name="initialize" constructor="true" generateAPI="false">
-        <DESC>Open database</DESC>
+        <DESC>Open or create database. If database file does not exist it will be created using SQL scheme : rhodes\platform\shared\db\res\db\syncdb.schema.</DESC>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
-            <DESC>The path to the database</DESC>
+            <DESC>The path to the database. Databases stored at the path provided by Rho::Application.databaseFilePath</DESC>
           </PARAM>
           <PARAM name="dbPartition" type="STRING">
-            <DESC>The database partition</DESC>
+            <DESC>The database partition. Used as a file name for database and when connecting to RhoConnect server.</DESC>
           </PARAM>
         </PARAMS>
       </METHOD>
