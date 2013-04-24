@@ -286,14 +286,14 @@ class Database
     if condition
         quests,vals = Database.make_where_params(condition,'AND') 
         if params and params['distinct']
-            query = "select distinct #{columns} from #{table} where #{quests}"
+            query = "SELECT DISTINCT #{columns} FROM \"#{table}\" WHERE #{quests}"
         elsif params and params['order by']
-            query = "select #{columns} from #{table} where #{quests} order by #{params['order by']}"
+            query = "SELECT #{columns} FROM \"#{table}\" WHERE #{quests} ORDER BY #{params['order by']}"
         else
-            query = "select #{columns} from #{table} where #{quests}"
+            query = "SELECT #{columns} FROM \"#{table}\" WHERE #{quests}"
         end
     else
-        query = "select #{columns} from #{table}"
+        query = "SELECT #{columns} FROM \"#{table}\""
     end
     
     execute_sql query, vals
@@ -308,7 +308,7 @@ class Database
   def insert_into_table(table=nil,values=nil, excludes=nil)
     raise ArgumentError if !table
     cols,quests,vals = make_insert_params(values, excludes)
-    query = "insert into #{table} (#{cols}) values (#{quests})"
+    query = "INSERT INTO \"#{table}\" (#{cols}) VALUES (#{quests})"
     execute_sql query, vals
   end
 
@@ -342,17 +342,17 @@ class Database
   def delete_from_table(table,condition)
     raise ArgumentError if !table
     quests,vals = Database.make_where_params(condition,'AND') 
-    query = "delete from #{table} where #{quests}"
+    query = "DELETE FROM \"#{table}\" WHERE #{quests}"
     execute_sql query, vals
   end
 
   # deletes all rows from a given table
   def delete_all_from_table(table)
-    execute_sql "delete from #{table}"
+    execute_sql "DELETE FROM \"#{table}\""
   end
 
   def delete_table(table)
-    execute_sql "DROP TABLE IF EXISTS #{table}"
+    execute_sql "DROP TABLE IF EXISTS \"#{table}\""
   end
   
   # updates values (hash) in a given table which satisfy condition (hash)
@@ -367,11 +367,11 @@ class Database
     if condition
         quests_set, vals_set = make_set_params(values)
         quests_where,vals_where = Database.make_where_params(condition,'AND') 
-        query = "update #{table} set #{quests_set} where #{quests_where}"
+        query = "UPDATE \"#{table}\" SET #{quests_set} WHERE #{quests_where}"
         vals = vals_set + vals_where
     else
         quests, vals = make_set_params(values)
-        query = "update #{table} set #{quests}"
+        query = "UPDATE \"#{table}\" SET #{quests}"
     end
     
     execute_sql query, vals

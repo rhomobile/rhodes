@@ -290,16 +290,16 @@
 							<PARAM name="hive" type="STRING">
 								<DESC>The hive name</DESC>
 								<VALUES>
-									<VALUE constName="HKEY_CLASSES_ROOT" value ="HKCR">
+									<VALUE constName="REGKEY_CLASSES_ROOT" value ="HKCR">
 										<DESC>Set the property in the HKEY_CLASSES_ROOT hive</DESC>
 									</VALUE>
-									<VALUE constName="HKEY_CURRENT_USER" value ="HKCU">
+									<VALUE constName="REGKEY_CURRENT_USER" value ="HKCU">
 										<DESC>Set the property in the HKEY_CURRENT_USER hive</DESC>
 									</VALUE>
-									<VALUE constName="HKEY_LOCAL_MACHINE" value ="HKLM">
+									<VALUE constName="REGKEY_LOCAL_MACHINE" value ="HKLM">
 										<DESC>Set the property in the HKEY_LOCAL_MACHINE hive</DESC>
 									</VALUE>
-									<VALUE constName="HKEY_USERS" value ="HKU">
+									<VALUE constName="REGKEY_USERS" value ="HKU">
 										<DESC>Set the property in the HKEY_USERS hive</DESC>
 									</VALUE>
 								</VALUES>
@@ -307,16 +307,16 @@
 							<PARAM name="type" type="STRING">
 								<DESC>The type</DESC>
 								<VALUES>
-									<VALUE constName="REG_SZ" value ="String">
+									<VALUE constName="REGTYPE_SZ" value ="String">
 										<DESC>The type of the value being set is a string</DESC>
 									</VALUE>
-									<VALUE constName="REG_BINARY" value ="Binary">
+									<VALUE constName="REGTYPE_BINARY" value ="Binary">
 										<DESC>The type of the value being set is a binary number</DESC>
 									</VALUE>
-									<VALUE constName="REG_DWORD" value ="DWORD">
+									<VALUE constName="REGTYPE_DWORD" value ="DWORD">
 										<DESC>The type of the value being set is a natural number (DWORD)</DESC>
 									</VALUE>
-									<VALUE constName="REG_MULTI_SZ" value ="MultiSZ">
+									<VALUE constName="REGTYPE_MULTI_SZ" value ="MultiSZ">
 										<DESC>The type of the value being set is a multi line string.  Separate your lines with \n (\\n in Javascript)</DESC>
 									</VALUE>
 								</VALUES>
@@ -349,21 +349,7 @@
 						<DESC>Map of properties associated with the registry key being set</DESC>
 						<PARAMS>
 							<PARAM name="hive" type="STRING">
-								<DESC>The hive name</DESC>
-								<VALUES>
-									<VALUE constName="HKEY_CLASSES_ROOT" value ="HKCR">
-										<DESC>Get the property from the HKEY_CLASSES_ROOT hive</DESC>
-									</VALUE>
-									<VALUE constName="HKEY_CURRENT_USER" value ="HKCU">
-										<DESC>Get the property from the HKEY_CURRENT_USER hive</DESC>
-									</VALUE>
-									<VALUE constName="HKEY_LOCAL_MACHINE" value ="HKLM">
-										<DESC>Get the property from the HKEY_LOCAL_MACHINE hive</DESC>
-									</VALUE>
-									<VALUE constName="HKEY_USERS" value ="HKU">
-										<DESC>Get the property from the HKEY_USERS hive</DESC>
-									</VALUE>
-								</VALUES>
+								<DESC>The hive name, see setRegistrySetting</DESC>
 							</PARAM>
 							<PARAM name="key" type="STRING">
 								<DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
@@ -387,21 +373,7 @@
 						<DESC>Map of properties associated with the registry key being set</DESC>
 						<PARAMS>
 							<PARAM name="hive" type="STRING">
-								<DESC>The hive name</DESC>
-								<VALUES>
-									<VALUE constName="HKEY_CLASSES_ROOT" value ="HKCR">
-										<DESC>Delete the property from the HKEY_CLASSES_ROOT hive</DESC>
-									</VALUE>
-									<VALUE constName="HKEY_CURRENT_USER" value ="HKCU">
-										<DESC>Delete the property from the HKEY_CURRENT_USER hive</DESC>
-									</VALUE>
-									<VALUE constName="HKEY_LOCAL_MACHINE" value ="HKLM">
-										<DESC>Delete the property from the HKEY_LOCAL_MACHINE hive</DESC>
-									</VALUE>
-									<VALUE constName="HKEY_USERS" value ="HKU">
-										<DESC>Delete the property from the HKEY_USERS hive</DESC>
-									</VALUE>
-								</VALUES>
+								<DESC>The hive name, setRegistrySetting</DESC>
 							</PARAM>
 							<PARAM name="key" type="STRING">
 								<DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>

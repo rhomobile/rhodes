@@ -252,7 +252,7 @@ void RhoRubyStart()
     Init_Alert();
 
 #if defined(WINDOWS_PLATFORM)
-    init_rhoext_Signature();
+    //init_rhoext_Signature();
 #else
 #if !defined(OS_MACOSX)
         Init_SignatureCapture();
@@ -268,7 +268,7 @@ void RhoRubyStart()
     Init_DateTimePicker();
     Init_NativeBar();
     Init_RhoSupport(); //+
-    Init_MapView();
+    Init_MapView();                         
     Init_RingtoneManager();
     Init_socket(); //+
     Init_NavBar();

@@ -596,7 +596,6 @@ namespace "config" do
         end
         
         if $current_platform == "wm"
-            #TODO: add for another platforms
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
             $app_config['extensions'] = $app_config['extensions'] | ['indicators']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
@@ -605,6 +604,10 @@ namespace "config" do
         if $current_platform == "iphone"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
             $app_config['extensions'] = $app_config['extensions'] | ['signature']
+        end    
+
+        if $current_platform == "android"
+            $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
         end    
         
     end
@@ -2127,6 +2130,7 @@ namespace "run" do
 
         if RUBY_PLATFORM =~ /darwin/
           while 1
+            sleep 1
           end     
         end
     end

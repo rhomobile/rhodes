@@ -1,4 +1,4 @@
-<CALLBACK>
+<CALLBACK  type="HASH">
 	<METHODS>
 		<METHOD>
 			<PARAM name="callback">

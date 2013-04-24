@@ -54,8 +54,9 @@ namespace rhodes
         // menu items hash table
         private Dictionary<string, int> menuItems = new Dictionary<string, int>();
         // toolbar items hash table
-        private Dictionary<string, string> toolbarItems = new Dictionary<string, string>();
+        private Dictionary<string, string>   toolbarItems     = new Dictionary<string, string>();
         private List<ApplicationBarMenuItem> toolbarMenuItems = new List<ApplicationBarMenuItem>();
+
         public bool isBrowserInitialized()
         {
             return _isBrowserInitialized;
@@ -149,10 +150,11 @@ namespace rhodes
 
         private void updateScreenSize()
         {
-            _screenWidth = Application.Current.Host.Content.ActualWidth;
+            _screenWidth  = Application.Current.Host.Content.ActualWidth;
             _screenHeight = Application.Current.Host.Content.ActualHeight;
             _screenPhysicalHeight = 4; // assuming 4 inches
             _screenPhysicalWidth = (_screenPhysicalHeight / _screenHeight) * _screenWidth; // assuming square pixels
+
             if ((_screenOrientation == PageOrientation.Landscape) || (_screenOrientation == PageOrientation.LandscapeLeft) || (_screenOrientation == PageOrientation.LandscapeRight))
             {
                 double w = _screenWidth;
@@ -166,13 +168,11 @@ namespace rhodes
 
         private void PhoneApplicationPage_OrientationChanged(object sender, OrientationChangedEventArgs e)
         {
-            // TODO: implement OrientationChanged handler
             updateOrientation(e.Orientation);
         }
 
         private void PhoneApplicationPage_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            // TODO: implement application window size changed event hanlder ?
             updateScreenSize();
         }
 
@@ -656,7 +656,7 @@ namespace rhodes
         // *** COMMANDS ***
 
         // this method is an example of application exit technique (see Quit method in App.xaml.cs)
-        public void exitCommand()
+         public void exitCommand()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke( delegate() { exitCommand(); } );  return; }
             IsolatedStorageSettings.ApplicationSettings.Save();
@@ -678,7 +678,6 @@ namespace rhodes
 		public void logCommand()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { logCommand(); }); return; }
-            // TODO: implement
         }
 
 		public void refreshCommand(int tab_index)
@@ -692,13 +691,11 @@ namespace rhodes
         public void takePicture(string callbackUrl)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { takePicture(callbackUrl); }); return; }
-            // TODO: implement
         }
 
-		public void selectPicture(string callbackUrl)
+		 public void selectPicture(string callbackUrl)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { selectPicture(callbackUrl); }); return; }
-            // TODO: implement
         }
 
 		//public void alertShowPopup(CAlertParams *) {}
@@ -706,7 +703,6 @@ namespace rhodes
 		public void alertHidePopup()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { alertHidePopup(); }); return; }
-            // TODO: implement
         }
 
 		//public void dateTimePicker(CDateTimeMessage *) {}
@@ -763,9 +759,11 @@ namespace rhodes
                 }
                 waitEvent.Set();
             });
+            
             waitEvent.WaitOne();
             if (exception != null)
                 throw exception;
+            
             return return_value;
         }
 
@@ -789,9 +787,11 @@ namespace rhodes
                 }
                 waitEvent.Set();
             });
+
             waitEvent.WaitOne();
             if (exception != null)
                 throw exception;
+            
             return return_value;
         }
 
@@ -815,10 +815,19 @@ namespace rhodes
                 }
                 waitEvent.Set();
             });
+            
             waitEvent.WaitOne();
             if (exception != null)
                 throw exception;
+
             return return_value;
+        }
+
+        private void RhodesWebBrowser_JSNotify(object sender, NotifyEventArgs e)
+        {
+            String answer = CRhoRuntime.getInstance().onJSInvoke(e.Value);
+            RhodesWebBrowser.IsScriptEnabled = true;
+            RhodesWebBrowser.InvokeScript("nativeCallback", new string[] { answer});
         }
     }
 }
