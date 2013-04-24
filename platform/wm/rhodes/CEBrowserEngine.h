@@ -88,6 +88,8 @@ private:
     virtual void    OnDocumentComplete(LPCTSTR url);  
     virtual bool    RegisterForMessage(unsigned int iMsgId);
     virtual bool    DeRegisterForMessage(unsigned int iMsgId);
+    virtual bool RegisterForPrimaryMessage(unsigned int iMsgId);
+    virtual bool DeRegisterForPrimaryMessage(unsigned int iMsgId);
 
 #pragma region not_implemented_virtual_functions
     virtual BOOL    NavigateToHtml(LPCTSTR szHtml) { return FALSE; }
