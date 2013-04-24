@@ -91,6 +91,11 @@ namespace rhodes
             }
         }
 
+        public void InitializeCSharpExtensions()
+        {
+            CSharpExtensions.InitializeExtenstions();
+        }
+
 		public int getLogicalDpiX()
         {
             return (int)(_screenWidth / _screenPhysicalWidth);
