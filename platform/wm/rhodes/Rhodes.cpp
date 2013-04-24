@@ -171,10 +171,11 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 {
     static HINSTANCE m_hInstance;
     CMainWindow m_appWindow;
-    rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath, m_strAppName;//, m_strDebugHost, m_strDebugPort;*/
+    rho::String m_strRootPath, m_strRhodesPath, m_logPort, m_strRuntimePath, m_strAppName;
 	int m_nRestarting;
     bool m_bMinimized;
 	bool m_isRhoConnectPush;
+    bool m_startAtBoot;
 #ifndef RHODES_EMULATOR
 	HANDLE m_hMutex;
 #endif
@@ -226,14 +227,15 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 
 bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( )
 {
-	m_nRestarting = 1;
-    m_bMinimized = false;
-	LPCTSTR lpszToken = lpCmdLine;
+	m_nRestarting      = 1;
+    m_bMinimized       = false;
+    m_startAtBoot      = false;
+    m_logPort          = "";
+    m_isRhoConnectPush = false;
+    LPCTSTR lpszToken  = lpCmdLine;
 	LPCTSTR nextToken;
-    getRhoRootPath();
 
-	m_logPort = "";
-	m_isRhoConnectPush = false;
+    getRhoRootPath();
 
 	while (lpszToken != NULL)
 	{
@@ -269,6 +271,10 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
             if (WordCmpI(lpszToken, _T("minimized"))==0) {
 				m_bMinimized = true;
 			}
+
+            if (wcsncmp(lpszToken, _T("startAtBoot"), 11)) {
+                m_startAtBoot = true;
+            }
 
 			if (WordCmpI(lpszToken, _T("rhoconnectpush"))==0) {
 				m_isRhoConnectPush = true;
@@ -398,37 +404,23 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     // Note: In this sample, we don't respond differently to different hr success codes.
 
 #if !defined(OS_WINDOWS_DESKTOP)
-    // Allow only one instance of the application.
-    // the "| 0x01" activates the correct owned window of the previous instance's main window
-	HWND hWnd = NULL;
-	for (int wait = 0; wait < m_nRestarting; wait++) {
-		hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
-		if (hWnd && m_nRestarting > 1) {
-			Sleep(1000);
-		} else {
-			break;
-		}
-	}
-	//EnumWindows(EnumRhodesWindowsProc, (LPARAM)&hWnd);
+    SetLastError(0);
+    HANDLE hEvent = CreateEvent( NULL, false, false, CMainWindow::GetWndClassInfo().m_wc.lpszClassName );
 
-	if (hWnd)
-	{
-        ShowWindow(hWnd, SW_SHOW);
-        SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
-        SetForegroundWindow( hWnd );
-		return S_FALSE;
-	}
+    if ( hEvent != NULL && GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+        // Rho Running so could bring to foreground
+        HWND hWnd = FindWindow(CMainWindow::GetWndClassInfo().m_wc.lpszClassName, NULL);
 
-	// creating mutex
-/*	m_hMutex = CreateMutex(NULL, TRUE, CMainWindow::GetWndClassInfo().m_wc.lpszClassName);
-	if (m_hMutex==NULL) {
-		// Failed to create mutex
-		return S_FALSE;
-	}
-	if ((GetLastError() == ERROR_ALREADY_EXISTS) && (WaitForSingleObject(m_hMutex, 60000L) != WAIT_OBJECT_0)) {
-        rho_sys_impl_exit_with_errormessage( "Initialization", "Another instance of the application is running. Please, exit it or use Task Manager to terminate it.");
+        if (hWnd)
+        {
+            ShowWindow(hWnd, SW_SHOW);
+            SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
+            SetForegroundWindow( hWnd );
+        }
+
         return S_FALSE;
-	}*/
+    }
 #endif
 
     if ( !rho_sys_check_rollback_bundle(rho_native_rhopath()) )
@@ -516,19 +508,24 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 	WIN32_FIND_DATA wfd;
 	
 	// rootpath + "rho/"
-	if (m_strRootPath.at(m_strRootPath.length()-1) == '/') {
+	if (m_strRootPath.at(m_strRootPath.length()-1) == '/') 
+    {
 		hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, m_strRootPath.find_last_of('/'))).c_str(), &wfd);
-	} else if (m_strRootPath.at(m_strRootPath.length()-1) == '\\') {
+	} 
+    else if (m_strRootPath.at(m_strRootPath.length()-1) == '\\') 
+    {
 		//delete all '\' from the end of the pathname
 		int i = m_strRootPath.length();
 		for ( ; i != 1; i--) {
 			if (m_strRootPath.at(i-1) != '\\')
 				break;
 		}
+
 		hFind = FindFirstFile(convertToStringW(m_strRootPath.substr(0, i)).c_str(), &wfd);
 	}
 
-	if (INVALID_HANDLE_VALUE == hFind || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+	if (INVALID_HANDLE_VALUE == hFind || !(wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) 
+    {
 		int last = 0, pre_last = 0;
 		last = getRhoRootPath().find_last_of('\\');
 		pre_last = getRhoRootPath().substr(0, last).find_last_of('\\');
@@ -591,9 +588,6 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     String strTitle = RHODESAPP().getAppTitle();
     m_appWindow.Create(NULL, CWindow::rcDefault, convertToStringW(strTitle).c_str(), dwStyle);
 
-	//if( m_isRhoConnectPush )
-	//	m_appWindow.ShowWindow(SW_MINIMIZE);
-
     if (NULL == m_appWindow.m_hWnd)
     {
         return S_FALSE;
@@ -642,7 +636,11 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
     else
     {
+        const char* a = RHOCONF().getString("start_path").c_str();
+
         RHODESAPP().startApp();
+        
+       // rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0 );
 
         // Navigate to the "loading..." page
 	    m_appWindow.Navigate2(_T("about:blank")
