@@ -875,4 +875,14 @@ bool CEBrowserEngine::DeRegisterForMessage(unsigned int iMsgId)
     return true;
 }
 
+bool CEBrowserEngine::RegisterForPrimaryMessage(unsigned int iMsgId)
+{
+    return true;
+}
+
+bool CEBrowserEngine::DeRegisterForPrimaryMessage(unsigned int iMsgId)
+{
+    return true;
+}
+
 #endif //!defined( OS_WINCE )
