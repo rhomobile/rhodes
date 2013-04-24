@@ -131,6 +131,7 @@
     </Compile>
     <Compile Include="common\IInputStream.cs" />
     <Compile Include="common\RhoResourceMap.cs" />
+    <Compile Include="CSharpExtensions.cs" />
     <Compile Include="LocalizedStrings.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
