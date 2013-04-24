@@ -17,6 +17,7 @@
 
     var moduleNS = '<%= namespace $cur_module %>';
     var apiReq = rhoUtil.apiReqFor(moduleNS);
+    var currentDefaultID = null;
 
     // === <%= $cur_module.name %> class definition ===
 
@@ -38,21 +39,25 @@
         }
     };
 
+    <%= $cur_module.name %>.getId = function() { return currentDefaultID; }
+
     // === <%= $cur_module.name %> instance properties ===
 
-    rhoUtil.createPropsProxy(<%= $cur_module.name %>.prototype, {
+    rhoUtil.createPropsProxy(<%= $cur_module.name %>.prototype, [
     <% first_prop = true
        $cur_module.properties.each do |module_property|
          next if module_property.access == ModuleMethod::ACCESS_STATIC
          next if module_property.is_deprecated
          next if module_property.readonly && module_property.writeonly
-    %>  <%= ',' if !first_prop %> '<%= module_property.name %>': '<%= 'r' if !module_property.writeonly %><%= 'w' if !module_property.readonly %>'
+    %>  <%= first_prop ? '  ' : ', ' %>{ propName: '<%= module_property.name %>', propAccess: '<%= 'r' if !module_property.writeonly %><%= 'w' if !module_property.readonly %>' }
     <% first_prop = false
-       end %>}, apiReq);
+       end %>], apiReq, function(){ return this.getId(); });
 
     // === <%= $cur_module.name %> instance methods ===
 
-    <% $cur_module.methods.each do |module_method|
+    rhoUtil.createMethodsProxy(<%= $cur_module.name %>.prototype, [
+    <%  first_method = true
+        $cur_module.methods.each do |module_method|
         next if module_method.access == ModuleMethod::ACCESS_STATIC
         next if module_method.is_accessor
         next if module_method.is_deprecated
@@ -61,17 +66,11 @@
             "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
     %>
-        <%= $cur_module.name %>.prototype['<%= js_compatible_name module_method.name %>'] = function(<%= params %>) {
-            return apiReq({
-                instanceId: this.getId(),
-                args: arguments,
-                method: '<%= module_method.name %>',
-                <%= "persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>
-                valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>
-            });
-        };
-
-    <% end %>
+          // function(<%= params %>)
+        <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.name %>', nativeName: '<%= module_method.name %>',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
+    <% first_method = false
+       end %>
+    ], apiReq, function(){ return this.getId(); });
 
     // === <%= $cur_module.name %> constants ===
 
@@ -87,19 +86,21 @@
 
     // === <%= $cur_module.name %> static properties ===
 
-    rhoUtil.createPropsProxy(<%= $cur_module.name %>, {
+    rhoUtil.createPropsProxy(<%= $cur_module.name %>, [
     <% first_prop = true
        $cur_module.properties.each do |module_property|
         next if module_property.access != ModuleMethod::ACCESS_STATIC
         next if module_property.is_deprecated
         next if module_property.readonly && module_property.writeonly
-    %>  <%= ',' if !first_prop %> '<%= module_property.name %>': '<%= 'r' if !module_property.writeonly %><%= 'w' if !module_property.readonly %>'
+    %>  <%= first_prop ? '  ' : ', ' %>{ propName: '<%= module_property.name %>', propAccess: '<%= 'r' if !module_property.writeonly %><%= 'w' if !module_property.readonly %>' }
     <% first_prop = false
-       end %>}, apiReq);
+       end %>], apiReq);
 
     // === <%= $cur_module.name %> static methods ===
 
-    <% $cur_module.methods.each do |module_method|
+    rhoUtil.createMethodsProxy(<%= $cur_module.name %>, [
+    <%  first_method = true
+        $cur_module.methods.each do |module_method|
         next if module_method.access != ModuleMethod::ACCESS_STATIC
         next if module_method.is_accessor
         next if module_method.is_deprecated
@@ -108,23 +109,58 @@
             "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
         end.push("/* optional function */ oResult").join(', ')
     %>
-        <%= $cur_module.name %>['<%= module_method.name %>'] = function(<%= params %>) {
-            return apiReq({
-                instanceId: '0',
-                args: arguments,
-                method: '<%= module_method.name %>',
-                <%= "persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>
-                valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %>
-            });
-        };
-    <% end %>
+          // function(<%= params %>)
+        <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.name %>', nativeName: '<%= module_method.name %>',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
+    <% first_method = false
+       end %>
+    ], apiReq);
 
     // === <%= $cur_module.name %> default instance support ===
     <% if $cur_module.is_template_default_instance %>
-        rhoUtil.createPropsProxy(<%= $cur_module.name %>, {
-            'default:getDefault': 'r'
-          , 'defaultID:getDefaultID::setDefaultID': 'rw'
-        }, apiReq);
+
+        rhoUtil.createPropsProxy(<%= $cur_module.name %>, [
+            { propName: 'default:getDefault', propAccess: 'r' }
+          , { propName: 'defaultID:getDefaultID::setDefaultID', propAccess: 'rw', customSet: function(id) {currentDefaultID = id;} }
+        ], apiReq);
+
+        <%= $cur_module.name %>.getId = function() {
+            if (null == currentDefaultID) {
+                currentDefaultID = <%= $cur_module.name %>.getDefaultID();
+            }
+            return currentDefaultID;
+        }
+
+        // === <%= $cur_module.name %> default instance properties ===
+
+        rhoUtil.createPropsProxy(<%= $cur_module.name %>, [
+        <% first_prop = true
+           $cur_module.properties.each do |module_property|
+             next if module_property.access == ModuleMethod::ACCESS_STATIC
+             next if module_property.is_deprecated
+             next if module_property.readonly && module_property.writeonly
+        %>  <%= first_prop ? '  ' : ', ' %>{ propName: '<%= module_property.name %>', propAccess: '<%= 'r' if !module_property.writeonly %><%= 'w' if !module_property.readonly %>' }
+        <% first_prop = false
+           end %>], apiReq, function(){ return this.getId(); });
+
+        // === <%= $cur_module.name %> default instance methods ===
+
+        rhoUtil.createMethodsProxy(<%= $cur_module.name %>, [
+        <%  first_method = true
+            $cur_module.methods.each do |module_method|
+            next if module_method.access == ModuleMethod::ACCESS_STATIC
+            next if module_method.is_accessor
+            next if module_method.is_deprecated
+
+            params = module_method.params.map do |param|
+                "/* #{api_generator_cpp_makeNativeTypeArg(param.type)} */ #{param.name}"
+            end.push("/* optional function */ oResult").join(', ')
+        %>
+              // function(<%= params %>)
+            <%= first_method ? '  ' : ', ' %>{ methodName: '<%= js_compatible_name module_method.name %>', nativeName: '<%= module_method.name %>',<%= " persistentCallbackIndex: #{module_method.params.size}," if module_method.has_callback != ModuleMethod::CALLBACK_NONE %> valueCallbackIndex: <%= module_method.params.size + (module_method.has_callback == ModuleMethod::CALLBACK_NONE ? 0 : 2) %> }
+        <% first_method = false
+           end %>
+        ], apiReq, function(){ return this.getId(); });
+
     <% end %>
 
     rhoUtil.namespace(moduleNS, <%= $cur_module.name %>);
