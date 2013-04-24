@@ -120,36 +120,38 @@ module Rho
     end
 
     def on_activate_app
-      processApplicationEvent('Activated')
+      processApplicationEvent({'applicationEvent'=>'Activated'})
     end
 
     def on_deactivate_app
-      processApplicationEvent('Deactivated')
+      processApplicationEvent({'applicationEvent'=>'Deactivated'})
     end
 
     def on_ui_created
-      processApplicationEvent('UICreated')
+      processApplicationEvent({'applicationEvent'=>'UICreated'})
     end
 
     def on_ui_destroyed
-      processApplicationEvent('UIDestroyed')
+      processApplicationEvent({'applicationEvent'=>'UIDestroyed'})
     end
 
     def on_sync_user_changed
-      processApplicationEvent('SyncUserChanged')
+      processApplicationEvent({'applicationEvent'=>'SyncUserChanged'})
     end
 
     def on_reinstall_config_update(conflicts)
-      processApplicationEvent('ConfigConflict',{ 'conflicts' => conflicts})
+      processApplicationEvent({'applicationEvent'=>'ConfigConflict','eventData'=>{ 'conflicts' => conflicts}})
     end
 
     # works for schema sources
     #return true to run script creating table    
     def on_migrate_source(old_version, new_src)
-      processApplicationEvent('DBMigrateSource',{ 'old_version' => old_version, 'new_src' =>  new_src})
+      processApplicationEvent({'applicationEvent'=>'DBMigrateSource','eventData'=>{ 'old_version' => old_version, 'new_src' =>  new_src}})
     end
 
-    def processApplicationEvent(applicationEvent, eventData = nil)
+    def processApplicationEvent(params)
+      applicationEvent = params['applicationEvent'] 
+      eventData = params['eventData']
       eventData = {} unless eventData
 
       case applicationEvent

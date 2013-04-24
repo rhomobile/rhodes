@@ -299,13 +299,19 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         case ui_created:
             {
-                callCallback("/system/uicreated");
+                if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
+                {
+                    callCallback("/system/uicreated");
+                }
                 m_expected = app_activated;
             }
             break;
         case app_activated:
             {
-                callCallback("/system/activateapp");
+                if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateActivated))
+                {
+                    callCallback("/system/activateapp");
+                }
                 m_expected = app_deactivated;
             }
             break;
@@ -389,6 +395,22 @@ void CRhodesApp::run()
 #if !defined(RHO_NO_RUBY)
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
+    /*
+    CHoldRubyValue hashConflicts(rho_ruby_createHash());
+
+    HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
+    for ( HashtablePtr<String,Vector<String>* >::iterator it=mapConflicts.begin() ; it != mapConflicts.end(); it++ ) 
+    {
+        Vector<String>& values = *(it->second);
+        CHoldRubyValue arValues(rho_ruby_create_array());
+        for( int i = 0; i < (int)values.size(); i++)
+            rho_ruby_add_to_array(arValues, rho_ruby_create_string(values.elementAt(i).c_str()) );
+
+        addHashToHash(hashConflicts, it->first.c_str(), arValues);
+    }
+
+    return hashConflicts;
+    */
     rho_ruby_call_config_conflicts();
 #endif
     
@@ -501,39 +523,31 @@ void CRhodesApp::runCallbackInThread(const String& strCallback, const String& st
 
 static void callback_activateapp(void *arg, String const &strQuery)
 {
-    if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateActivated))
-    {
-        rho_ruby_activateApp();
-    }
+    rho_ruby_activateApp();
+
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
 static void callback_deactivateapp(void *arg, String const &strQuery)
 {
-    if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateDeactivated))
-    {
-        rho_ruby_deactivateApp();
-    }
+    rho_ruby_deactivateApp();
+    
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
 static void callback_uicreated(void *arg, String const &strQuery)
 {
-    if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
-    {
-        rho_ruby_uiCreated();
-    }
+    rho_ruby_uiCreated();
+
     rho_http_sendresponse(arg, "");
 }
 
 static void callback_uidestroyed(void *arg, String const &strQuery)
 {
-    if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
-    {
-        rho_ruby_uiDestroyed();
-    }
+    rho_ruby_uiDestroyed();
+    
     rho_http_sendresponse(arg, "");
 }
 
@@ -567,12 +581,15 @@ void CRhodesApp::callUiDestroyedCallback()
 {
     if ( m_bExit || !rho_ruby_is_started() )
         return;
-
-    String strUrl = m_strHomeUrl + "/system/uidestroyed";
-    NetResponse resp = getNetRequest().pullData( strUrl, null );
-    if ( !resp.isOK() )
+    
+    if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateDestroyed))
     {
-        LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        String strUrl = m_strHomeUrl + "/system/uidestroyed";
+        NetResponse resp = getNetRequest().pullData( strUrl, null );
+        if ( !resp.isOK() )
+        {
+            LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        }
     }
 }
 	
@@ -607,25 +624,29 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // All such operation will throw exception in ruby code when calling in 'deactivate' mode.
         m_bDeactivationMode = true;
         m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::app_deactivated));
-
-        if ( rho_ruby_is_started() )
+        
+        
+        if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateDeactivated))
         {
-            String strUrl = m_strHomeUrl + "/system/deactivateapp";
-            NetResponse resp = getNetRequest().pullData( strUrl, null );
-            if ( !resp.isOK() )
+            if ( rho_ruby_is_started() )
             {
-                LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-            }else
-            {
-                const char* szData = resp.getCharData();
-                boolean bStop = szData && strcmp(szData,"stop_local_server") == 0;
-
-                if (bStop)
+                String strUrl = m_strHomeUrl + "/system/deactivateapp";
+                NetResponse resp = getNetRequest().pullData( strUrl, null );
+                if ( !resp.isOK() )
                 {
-    #if !defined( WINDOWS_PLATFORM )
-                    LOG(INFO) + "Stopping local server.";
-                    m_httpServer->stop();
-    #endif
+                    LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+                }else
+                {
+                    const char* szData = resp.getCharData();
+                    boolean bStop = szData && strcmp(szData,"stop_local_server") == 0;
+
+                    if (bStop)
+                    {
+        #if !defined( WINDOWS_PLATFORM )
+                        LOG(INFO) + "Stopping local server.";
+                        m_httpServer->stop();
+        #endif
+                    }
                 }
             }
         }
