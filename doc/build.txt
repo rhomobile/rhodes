@@ -1181,11 +1181,19 @@ Now when you build your application the usual way, the HTTPS protocol support wi
 * Visual Studio 2012 installed or VS Express 2012 for Windows Phone
     * [Windows Phone SDK 8.0](http://dev.windowsphone.com/en-us/downloadsdk)
     
-* Add path to `msbuild` to `rhobuild.yml` in rhodes folder. For example:
+* Add path to `msbuild` to `rhobuild.yml` in rhodes folder. 
+
+For Windows 8 32 bit:
 
 	    env:
 	      paths:
 	        msbuild: C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe
+
+For Windows 8 64 bit:
+
+	    env:
+	      paths:
+	        msbuild: C:/Windows/Microsoft.NET/Framework64/v4.0.30319/MSBuild.exe
 
 ### Application changes
     
