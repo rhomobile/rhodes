@@ -554,7 +554,7 @@ namespace "device" do
         File.open($srcdir + '/../' + $appname + ".lnk", "w") { |f| f.write(shortcut_content) }
       end
 
-      if $run_on_startup.nil? == false
+      if $run_on_startup == true
         shortcut_content = '"\\Program Files\\' + $appname + "\\" + $appname + '.exe" -startAtBoot=""'
         if File.exists? wm_icon then
           shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
@@ -590,7 +590,7 @@ namespace "device" do
               $wk_data_dir,                             #7
               (($use_shared_runtime.nil?) ? "0" : "1"), #8
               ($motorola_capability ? "1" : "0"),       #9
-              (($run_on_startup.nil?) ? "0" : "1"),     #10
+              ($run_on_startup == false ? "0" : "1"),   #10
               $srcdir ]                                 #11
 
       if $use_shared_runtime.nil? then
