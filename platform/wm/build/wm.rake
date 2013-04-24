@@ -115,6 +115,11 @@ namespace "config" do
     $additional_dlls_path = nil
     $additional_regkeys = nil
     $use_direct_deploy = "yes"
+    $run_on_startup = false
+
+    if !$app_config["wm"].nil? && $app_config["wm"]["startAtBoot"]
+      $run_on_startup = true
+    end
 
     begin
       if $webkit_capability || $motorola_capability
@@ -301,10 +306,6 @@ namespace "build" do
     end
     
     task :upgrade_package_partial => ["build:wm:rhobundle"] do
-        #puts '$$$$$$$$$$$$$$$$$$'
-        #puts 'targetdir = '+$targetdir.to_s
-        #puts 'bindir = '+$bindir.to_s
-
         # process partial update
       
         add_list_full_name = File.join($app_path, 'upgrade_package_add_files.txt')
@@ -553,6 +554,15 @@ namespace "device" do
         File.open($srcdir + '/../' + $appname + ".lnk", "w") { |f| f.write(shortcut_content) }
       end
 
+      if $run_on_startup.nil? == false
+        shortcut_content = '"\\Program Files\\' + $appname + "\\" + $appname + '.exe" -startAtBoot=""'
+        if File.exists? wm_icon then
+          shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
+        end
+        shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
+        File.open(File.join($srcdir, $appname + ".lnk"), "w") { |f| f.write(shortcut_content) } 
+      end
+
       chdir $builddir
 
       build_platform = 'wm6'
@@ -569,8 +579,19 @@ namespace "device" do
         end
       end
 
-      args = ['build_inf.js', $appname + ".inf", build_platform, '"' + $app_config["name"] +'"', $app_config["vendor"], '"' + $srcdir + '"', $hidden_app, 
-        ($webkit_capability ? "1" : "0"), $wk_data_dir, (($use_shared_runtime.nil?) ? "0" : "1"), ($motorola_capability ? "1" : "0")]
+      args = ['build_inf.js',                           
+              $appname + ".inf",                        #0
+              build_platform,                           #1
+              '"' + $app_config["name"] +'"',           #2
+              $app_config["vendor"],                    #3
+              '"' + $srcdir + '"',                      #4
+              $hidden_app,                              #5
+              ($webkit_capability ? "1" : "0"),         #6
+              $wk_data_dir,                             #7
+              (($use_shared_runtime.nil?) ? "0" : "1"), #8
+              ($motorola_capability ? "1" : "0"),       #9
+              (($run_on_startup.nil?) ? "0" : "1"),     #10
+              $srcdir ]                                 #11
 
       if $use_shared_runtime.nil? then
          $additional_dlls_paths.each do |path|
