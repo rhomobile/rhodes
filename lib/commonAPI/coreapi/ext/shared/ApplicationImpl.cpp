@@ -13,6 +13,13 @@ extern "C" void rho_sys_app_exit();
 
 namespace rho {
 
+#ifdef OS_ANDROID
+
+void rho_impl_setNativeMenu(const Vector<String>& menu);
+String rho_impl_getNativeMenu();
+
+#endif
+
 using namespace apiGenerator;
 using namespace common;
 
@@ -108,15 +115,23 @@ public:
 
     virtual void getNativeMenu(rho::apiGenerator::CMethodResult& oResult)
     {
+#ifdef OS_ANDROID
+        oResult.setJSON(rho_impl_getNativeMenu());
+#else
         rho::Vector< Hashtable<String, String> > arRes;
         RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
 
         oResult.set(arRes);
+#endif
     }
 
     virtual void setNativeMenu( const rho::Vector<rho::String>& value, rho::apiGenerator::CMethodResult& oResult)
     {
+#ifdef OS_ANDROID
+        rho_impl_setNativeMenu(value);
+#else
         RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
+#endif
     }
 
     virtual void getBadLinkURI(rho::apiGenerator::CMethodResult& oResult)
@@ -146,8 +161,22 @@ public:
         else
         {
             String dbRootFolder = CFilePath::join( rho_native_rhodbpath(), RHO_EMULATOR_DIR);
-            oResult.set( CFilePath::join( dbRootFolder, relativePath ) );
+            if ( !String_startsWith(relativePath, dbRootFolder) )
+                oResult.set( CFilePath::join( dbRootFolder, relativePath ) );
         }
+    }
+
+    virtual void relativeDatabaseBlobFilePath( const rho::String& absolutePath, rho::apiGenerator::CMethodResult& oResult)
+    {
+        String dbRootFolder = CFilePath::join( rho_native_rhodbpath(), RHO_EMULATOR_DIR);
+
+        if ( String_startsWith(absolutePath, "file://") )
+            dbRootFolder = "file://" + dbRootFolder;
+
+        if ( String_startsWith(absolutePath, dbRootFolder) )
+            oResult.set( absolutePath.substr( dbRootFolder.length(), absolutePath.length()-dbRootFolder.length()) );
+        else
+            oResult.set( absolutePath );
     }
 
     virtual void quit(rho::apiGenerator::CMethodResult& oResult)

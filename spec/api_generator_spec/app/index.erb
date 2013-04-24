@@ -1,16 +1,17 @@
 <div data-role="page" data-url="<%= Rho::RhoConfig.start_path %>/">
 
-  <div data-role="header" data-position="inline">
+  <div data-role="header">
     <h1>ApiGeneratorSpec</h1>
+  </div>
+
   <div data-role="content">
     <ul data-role="listview">
       <li><a href="<%= url_for :controller => :BarcodeTest, :action => :index %>">BarcodeTest</a></li>
       <li><a href="<%= url_for :controller => :MegamoduleTest, :action => :index %>">MegamoduleTest</a></li>
       <li><a href="<%= url_for :controller => :SimpleonlystaticmoduleTest, :action => :index %>">SimpleonlystaticmoduleTest</a></li>
       <li><a href="<%= url_for :controller => :SimpleonlystaticmoduleJSTest, :action => :index %>">SimpleonlystaticmoduleTest JS</a></li>
-      <br>
       <li><a href="<%= url_for :controller => :SpecRunner, :action => :index %>">run fully automatic MSPEC tests ...</a></li>
-
+      <li><a href="/public/app/default-instance.html" data-ajax="false">Default instance test..</a></li>
     </ul>
   </div>
 

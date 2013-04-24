@@ -1448,7 +1448,6 @@ module Rhogen
          end
 
         #constants in properties
-
         xml_module_item.elements.each("PROPERTIES/PROPERTY") do |xml_property|
           default_type = nil
           if xml_property.attribute("type") != nil
@@ -1474,7 +1473,7 @@ module Rhogen
         end
 
          #constants in param
-         xml_module_item.elements.each("*/PARAM/VALUES/VALUE") do |xml_param_value|
+         xml_module_item.elements.each(".//PARAM/VALUES/VALUE") do |xml_param_value|
             module_constant = ModuleConstant.new()
             module_constant.name = xml_param_value.attribute("constName").to_s
             module_constant.value = xml_param_value.attribute("value").to_s
@@ -1486,6 +1485,9 @@ module Rhogen
             end
             module_item.constants << module_constant
          end
+
+         #leave only unique consants 
+         module_item.constants.uniq! { |x| x.name  }
 
          #properties
          xml_properties = xml_module_item.elements["PROPERTIES"]

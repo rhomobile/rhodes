@@ -120,36 +120,11 @@
     <% end %>
 
     // === <%= $cur_module.name %> default instance support ===
-
     <% if $cur_module.is_template_default_instance %>
-
-        <%= $cur_module.name %>['getDefault'] = function () {
-            return new <%= $cur_module.name %>(
-                apiReq({
-                    instanceId: '0',
-                    args: [],
-                    method:'getDefault'
-                })
-            );
-        };
-
-        <%= $cur_module.name %>['getDefaultID'] = function (valueCallback) {
-            return apiReq({
-                instanceId: '0',
-                args: arguments,
-                method:'getDefaultID',
-                valueCallbackIndex: 0
-            });
-        };
-
-        <%= $cur_module.name %>['setDefaultID'] = function (id) {
-            return apiReq({
-                instanceId: '0',
-                args: arguments,
-                method:'setDefaultID'
-            });
-        };
-
+        rhoUtil.createPropsProxy(<%= $cur_module.name %>, {
+            'default:getDefault': 'r'
+          , 'defaultID:getDefaultID::setDefaultID': 'rw'
+        }, apiReq);
     <% end %>
 
     rhoUtil.namespace(moduleNS, <%= $cur_module.name %>);
