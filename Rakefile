@@ -943,8 +943,10 @@ def init_extensions(startdir, dest)
   extjsmodulefiles = []
   startJSModules = []
   endJSModules = []
+  extcsharplibs = []
   extcsharpentries = []
-  
+  extscsharp = nil
+
   extpaths = $app_config["extpaths"]  
 
   rhoapi_js_folder = nil
@@ -1019,6 +1021,8 @@ def init_extensions(startdir, dest)
               libs.each do |lib|
                 extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
                 extlibs << lib + "Runtime.lib" if csharp_impl
+                extcsharplibs << lib + (csharp_impl ? "Lib" : "") + ".lib" if csharp_impl
+                extcsharplibs << lib + "Runtime.lib" if csharp_impl
               end
             else
               libs.map! { |lib| "lib" + lib + ".a" }
@@ -1068,7 +1072,10 @@ def init_extensions(startdir, dest)
   gen_checker.update
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
-  extscsharp = $config["platform"] == "wp8" ? File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.cs") : nil
+  if $config["platform"] == "wp8"
+    extscsharp = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.cs")
+    extscsharpcpp = File.join($startdir, "platform", "wp8", "rhoruntime", "CSharpExtensions.cpp")
+  end
   puts "exts " + exts
 
   extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
@@ -1090,6 +1097,8 @@ def init_extensions(startdir, dest)
     if !extscsharp.nil?
       f_csharp = StringIO.new("", "w+")
       f_csharp.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+      f_csharp_cpp = StringIO.new("", "w+")
+      f_csharp_cpp.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
     end
 
     if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
@@ -1116,6 +1125,7 @@ def init_extensions(startdir, dest)
     Jake.modify_file_if_content_changed( exts, f )
 
     if !extscsharp.nil?
+      # C# extensions initialization
       f_csharp.puts "namespace rhodes {"
       f_csharp.puts "    public static class CSharpExtensions {"
       f_csharp.puts "        public static void InitializeExtenstions() {"
@@ -1126,6 +1136,11 @@ def init_extensions(startdir, dest)
       f_csharp.puts "    }"
       f_csharp.puts "}"
       Jake.modify_file_if_content_changed( extscsharp, f_csharp )
+      # C++ runtime libraries linking
+      extcsharplibs.each do |lib|
+        f_csharp_cpp.puts "#pragma comment(lib, \"#{lib}\")"
+      end
+      Jake.modify_file_if_content_changed( extscsharpcpp, f_csharp_cpp )
     end
 
     extlibs.each { |lib| add_linker_library(lib) }
