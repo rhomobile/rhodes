@@ -101,7 +101,7 @@ namespace common {
         virtual bool onAppStateChange(const enApplicationState& newState) = 0;
         virtual bool onUIStateChange(const enUIState& newState) = 0;
         virtual bool onSyncUserChanged() = 0;
-        virtual bool onReinstallConfigUpdate() = 0;
+        virtual bool onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts) = 0;
         virtual bool onMigrateSource() = 0;
     };
     
@@ -117,7 +117,7 @@ namespace common {
         virtual bool onAppStateChange(const enApplicationState& newState);
         virtual bool onUIStateChange(const enUIState& newState);
         virtual bool onSyncUserChanged();
-        virtual bool onReinstallConfigUpdate();
+        virtual bool onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts);
         virtual bool onMigrateSource();
         
         virtual bool isCallbackSet();

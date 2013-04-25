@@ -47,7 +47,7 @@ public:
     bool isJSON() { return m_oResult.getType() == CMethodResult::eJSON; }
     bool isString() { return m_oResult.getType() == CMethodResult::eString || m_oResult.getType() == CMethodResult::eStringW; }
     bool isArray() { return m_oResult.getType() == CMethodResult::eStringArray || m_oResult.getType() == CMethodResult::eArrayHash; }
-    bool isHash() { return m_oResult.getType() == CMethodResult::eStringHash; }
+    bool isHash() { return m_oResult.getType() == CMethodResult::eStringHash || m_oResult.getType() == CMethodResult::eStringHashVector; }
     bool isError() { return m_oResult.isError(); }
     bool isNil() { return m_oResult.getType() == CMethodResult::eNone; }
 
@@ -74,78 +74,79 @@ public:
     }
     rho::String getArray()
     {
-        rho::String resArray = "[";
-
+        rho::String resArray;
+        // preallocate a bit of memory
+        resArray.reserve(127);
+        
+        resArray = "[";
         if(m_oResult.getType() == CMethodResult::eStringArray)
         {
             for(size_t i = 0; i < m_oResult.getStringArray().size(); ++i)
             {
-                if(i > 0)
+                if(resArray.length() > 0)
                     resArray += ",";
                 resArray += getObjectOrString(m_oResult.getStringArray()[i]);
             }
         } else
         if(m_oResult.getType() == CMethodResult::eArrayHash)
         {
+            rho::String buffer;
+            
             for(size_t i = 0; i < m_oResult.getHashArray().size(); ++i)
             {
-                if (i > 0)
+                if (resArray.length() > 0)
                     resArray += ",";
 
-                resArray += "{";
-                int j = 0;
-                for(rho::Hashtable<rho::String, rho::String>::iterator it = m_oResult.getHashArray()[i].begin(); it != m_oResult.getHashArray()[i].end(); ++it, ++j)
-                {
-                    if (j > 0)
-                        resArray += ",";
-
-                    resArray += CJSONEntry::quoteValue(it->first);
-                    resArray += ":";
-                    resArray += CJSONEntry::quoteValue(it->second);
-                }
-
-                resArray += "}";
+                toString(m_oResult.getHashArray()[i],buffer);
+                resArray += buffer;
             }
         }
-
         resArray += "]";
 
         return resArray;
     }
+    
     rho::String getHash()
     {
-        rho::String resHash = "{ ";
-        unsigned i = 0;
-
-        for(rho::Hashtable<rho::String, rho::String>::iterator it = m_oResult.getStringHash().begin(); it != m_oResult.getStringHash().end(); ++it, ++i)
+        rho::String resHash;
+        // preallocate a bit of memory
+        resHash.reserve(127);
+        rho::String buffer;
+        
+        resHash = "{";
+        for(rho::Hashtable<rho::String, rho::String>::const_iterator it = m_oResult.getStringHash().begin(); it != m_oResult.getStringHash().end(); ++it)
         {
-            if (i > 0)
+            if (resHash.length() > 0)
                 resHash += ",";
 
             resHash += CJSONEntry::quoteValue(it->first);
-            resHash += ": ";
+            resHash += ":";
             resHash += getObjectOrString(it->second);
         }
 
-        for(rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >::iterator it = m_oResult.getStringHashL2().begin(); it != m_oResult.getStringHashL2().end(); ++it, ++i)
+        for(rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >::const_iterator it = m_oResult.getStringHashL2().begin(); it != m_oResult.getStringHashL2().end(); ++it)
         {
-            if (i > 0)
+            if (resHash.length() > 0)
                 resHash += ",";
 
             resHash += CJSONEntry::quoteValue(it->first);
-            resHash += ":{";
-            for(rho::Hashtable<rho::String, rho::String>::iterator it2 = it->second.begin(); it2 != it->second.end(); ++it2)
-            {
-                if (it2 != it->second.begin())
-                    resHash += ",";
-
-                resHash += CJSONEntry::quoteValue(it2->first);
-                resHash += ":";
-                resHash += CJSONEntry::quoteValue(it2->second);
-            }
-            resHash += "}";
+            toString(it->second, buffer);
+            resHash += ":";
+            resHash += buffer;
         }
-
+        
+        for(rho::Hashtable<rho::String, rho::Vector<rho::String> >::const_iterator it = m_oResult.getStringHashVector().begin(); it != m_oResult.getStringHashVector().end(); ++it)
+        {
+            if (resHash.length() > 0)
+                resHash += ",";
+            
+            resHash += CJSONEntry::quoteValue(it->first);
+            toString(it->second, buffer);
+            resHash += ":";
+            resHash += buffer;
+        }
+        resHash += "}";
+        
         return resHash;
     }
 
@@ -165,6 +166,60 @@ public:
         resHash += CJSONEntry::quoteValue(m_oResult.getErrorString());
         resHash += "}";
         return resHash;
+    }
+    
+protected:
+    inline size_t getQuotedValueSizeEstimate(const rho::String& buffer )
+    {
+        return buffer.length() + 2;
+    }
+    
+    void toString(const rho::Hashtable<rho::String, rho::String>& value, rho::String& buffer )
+    {
+        // estimate buffer size
+        size_t size = 2;
+        for(rho::Hashtable<rho::String, rho::String>::const_iterator it = value.begin(); it != value.end(); ++it)
+        {
+            size+= 2 + getQuotedValueSizeEstimate(it->first) + getQuotedValueSizeEstimate(it->second);
+        };
+        buffer.clear();
+        buffer.reserve(size);
+        
+        // fill buffer
+        buffer = "{";
+        for(rho::Hashtable<rho::String, rho::String>::const_iterator it = value.begin(); it != value.end(); ++it)
+        {
+            if (it != value.begin())
+                buffer += ",";
+            
+            buffer += CJSONEntry::quoteValue(it->first);
+            buffer += ":";
+            buffer += CJSONEntry::quoteValue(it->second);
+        }
+        buffer += "}";
+    }
+    
+    void toString(const rho::Vector<rho::String>& value, rho::String& buffer )
+    {
+        // estimate buffer size
+        size_t size = 2;
+        for(rho::Vector<rho::String>::const_iterator it = value.begin(); it != value.end(); ++it)
+        {
+            size += 1 + getQuotedValueSizeEstimate(*it);
+        };
+        buffer.clear();
+        buffer.reserve(size);
+        
+        // fill buffer
+        buffer = "[";
+        for(rho::Vector<rho::String>::const_iterator it = value.begin(); it != value.end(); ++it)
+        {
+            if (it != value.begin())
+                buffer += ",";
+            
+            buffer += CJSONEntry::quoteValue(*it);
+        }
+        buffer += "]";
     }
 };
 

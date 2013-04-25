@@ -395,22 +395,11 @@ void CRhodesApp::run()
 #if !defined(RHO_NO_RUBY)
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
-    /*
-    CHoldRubyValue hashConflicts(rho_ruby_createHash());
-
-    HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
-    for ( HashtablePtr<String,Vector<String>* >::iterator it=mapConflicts.begin() ; it != mapConflicts.end(); it++ ) 
+    if (m_applicationEventReceiver.isCallbackSet())
     {
-        Vector<String>& values = *(it->second);
-        CHoldRubyValue arValues(rho_ruby_create_array());
-        for( int i = 0; i < (int)values.size(); i++)
-            rho_ruby_add_to_array(arValues, rho_ruby_create_string(values.elementAt(i).c_str()) );
-
-        addHashToHash(hashConflicts, it->first.c_str(), arValues);
+        HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
+        m_applicationEventReceiver.onReinstallConfigUpdate(mapConflicts);    
     }
-
-    return hashConflicts;
-    */
     rho_ruby_call_config_conflicts();
 #endif
     
@@ -625,9 +614,10 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         m_bDeactivationMode = true;
         m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::app_deactivated));
         
-        
+        // TODO: Support stop_local_server command to be parsed from callback result
         if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateDeactivated))
         {
+            // 
             if ( rho_ruby_is_started() )
             {
                 String strUrl = m_strHomeUrl + "/system/deactivateapp";
@@ -2051,7 +2041,6 @@ void CExtManager::requireRubyFile( const char* szFilePath )
                         break;
                 }
                 callbackData.put(APP_EVENT, state);
-                callbackData.put(APP_EVENT_DATA, "null");
                 m_result.set(callbackData);
                 return true;
             }
@@ -2080,7 +2069,6 @@ void CExtManager::requireRubyFile( const char* szFilePath )
                         break;
                 }
                 callbackData.put(APP_EVENT, state);
-                callbackData.put(APP_EVENT_DATA, "null");
                 m_result.set(callbackData);
                 return true;
             }
@@ -2092,7 +2080,24 @@ void CExtManager::requireRubyFile( const char* szFilePath )
         return false;
     }
     
-    bool ApplicationEventReceiver::onReinstallConfigUpdate(){
+    bool ApplicationEventReceiver::onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts)
+    {
+        if (m_result.hasCallback())
+        {
+            Hashtable<String, Vector<String> > conv;
+            for ( HashtablePtr<String,Vector<String>* >::const_iterator it=conflicts.begin() ; it != conflicts.end(); it++ )
+            {
+                String key = it->first;
+                Vector<String> temp;
+                for( Vector<String>::const_iterator it2=it->second->begin(); it2 != it->second->end(); it2++)
+                {
+                    temp.push_back(*it2);
+                }
+                conv[key] = temp;
+            }
+            m_result.set(conv);
+        }
+
         return false;
     }
     
