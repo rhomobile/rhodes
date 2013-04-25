@@ -58,27 +58,29 @@ describe "AsyncHttp" do
         orig_len = File.size(file_name)
         orig_len.should == res['headers']['content-length'].to_i
 
-        #delete file for re-download
-        File.delete(file_name) if File.exists?(file_name)
+        #delete file for re-download  - see should http partial download
+        #see another test should overwrite existing file on download, overwriteFile=true
+        #File.delete(file_name) if File.exists?(file_name)
 
         #check that in case of one more download, files keeps the same        
-        res = Rho::AsyncHttp.download_file(
-          :url => reference_url,
-          :filename => file_name )
-        puts "res : #{res}"  
+        #res = Rho::AsyncHttp.download_file(
+        #  :url => reference_url,
+        #  :filename => file_name,
+        #  :overwriteFile => true )
+        #puts "res : #{res}"  
         
-        res['status'].should == 'ok'
-        res['headers']['content-length'].to_i.should == reference_size
-        res['http_error'].should == '200'
-        #res['headers']['content-type'].should == 'image/png'
+        #res['status'].should == 'ok'
+        #res['headers']['content-length'].to_i.should == reference_size
+        #res['http_error'].should == '200'
 
-        File.exists?(file_name).should == true
-        File.size(file_name).should == orig_len
+        #File.exists?(file_name).should == true
+        #File.size(file_name).should == orig_len
 
         #check that in case of network error, files keeps the same        
         res = Rho::AsyncHttp.download_file(
           :url => 'http://www.google.com/images/icons/product/chrome-48_BAD.png',
-          :filename => file_name )
+          :filename => file_name,
+          :overwriteFile => true )
         puts "res : #{res}"  
         res['status'].should == 'error'
         res['http_error'].should == '404'
@@ -145,7 +147,7 @@ describe "AsyncHttp" do
         content.should == '1234567890'
     end
 =end
-    
+
     it "should http upload" do
         
         server = 'http://rhologs.heroku.com'
@@ -288,7 +290,7 @@ if System.get_property('platform') != 'WP8'
         
     end
 end
-    
+
     it "should overwrite existing file on download, overwriteFile=true" do
         targetFile = File.join(Rho::RhoApplication::get_base_app_path(), 'test.png')
         refFile = File.join(Rho::RhoApplication::get_base_app_path(), 'reference.dat')
@@ -316,7 +318,7 @@ end
         File.delete(refFile)
         File.delete(targetFile)
     end
-    
+
     it "should not download if file exists, overwriteFile=false" do
         
         refUrl = 'http://www.google.com/images/icons/product/chrome-48.png'

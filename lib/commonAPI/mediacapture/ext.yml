@@ -2,7 +2,7 @@ entry: Init_Mediacapture_extension
 libraries: ["mediacapture"]
 android:
   source_list: ext/platform/android/ext_java.files
-  rhodes_listener: com.rho.camera.CameraFactory
+  rhodes_listener: com.rho.mediacapture.RhoListener
 
 project_paths:
   wp8: ext/platform/wp8/Mediacapture.vcxproj

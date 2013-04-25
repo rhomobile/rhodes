@@ -31,6 +31,9 @@
     <ClCompile Include="..\..\shared\generated\<%= name.downcase() %>_ruby_api.c">
       <Filter>shared\generated</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.cpp">
+      <Filter>shared\generated\cpp</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_js_wrap.cpp">
       <Filter>shared\generated\cpp</Filter>
     </ClCompile>

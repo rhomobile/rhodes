@@ -25,11 +25,32 @@ def build_extension()
   fail "[#{cmdline}]" unless $? == 0
 
   if $targetext_dir
-    $targetext_dir = File.join($targetext_dir,$extname)
+    $targetext_dir = File.join($targetext_dir,$extname) unless $copy_csharp_files
     mkdir_p $targetext_dir
-    file_to_copy = File.join($target_temp_dir, $extname + ".lib")
+    file_to_copy = File.join($target_temp_dir, $extname + ($copy_csharp_files ? "Lib" : "") + ".lib")
     puts "copy file #{file_to_copy} to #{$targetext_dir}"
-    cp_r file_to_copy, $targetext_dir
+    cp_r file_to_copy, $targetext_dir if File.exist?(file_to_copy)
+    if $copy_csharp_files
+      file_to_copy = File.join($target_temp_dir, $extname + "Runtime.lib")
+      puts "copy file #{file_to_copy} to #{$targetext_dir}"
+      cp_r file_to_copy, $targetext_dir if File.exist?(file_to_copy)
+
+      file_to_copy = File.join($target_temp_dir, $extname + "Runtime.dll")
+      puts "copy file #{file_to_copy} to #{$targetext_dir}"
+      cp_r file_to_copy, $targetext_dir_csharp if File.exist?(file_to_copy)
+
+      file_to_copy = File.join($target_temp_dir, $extname + "Runtime.exp")
+      puts "copy file #{file_to_copy} to #{$targetext_dir}"
+      cp_r file_to_copy, $targetext_dir_csharp if File.exist?(file_to_copy)
+
+      file_to_copy = File.join($target_temp_dir, $extname + "Runtime.winmd")
+      puts "copy file #{file_to_copy} to #{$targetext_dir}"
+      cp_r file_to_copy, $targetext_dir_csharp if File.exist?(file_to_copy)
+
+      file_to_copy = File.join($target_temp_dir, $extname + "Impl.dll")
+      puts "copy file #{file_to_copy} to #{$targetext_dir}"
+      cp_r file_to_copy, $targetext_dir_csharp if File.exist?(file_to_copy)
+    end
   end
 
   if $targetext_dir2
@@ -46,7 +67,9 @@ namespace "build" do
     $target_temp_dir = ENV['TARGET_TEMP_DIR']
     $targetext_dir = ENV['TARGET_EXT_DIR']
     $targetext_dir2 = ENV['TARGET_EXT_DIR_SIM']
+    $targetext_dir_csharp = ENV['TARGET_EXT_DIR_CSHARP']
     $extname = ENV['RHO_EXT_NAME']
+    $copy_csharp_files = (!ENV['BUILD_CSHARP_IMPL'].nil?) && (ENV['BUILD_CSHARP_IMPL'] == "yes")
 
     $tempdir = ENV['TEMP_FILES_DIR']
     raise "TEMP_FILES_DIR is not set" if $tempdir.nil?

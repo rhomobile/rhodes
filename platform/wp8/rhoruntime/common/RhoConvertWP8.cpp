@@ -54,7 +54,7 @@ namespace common
     return ref new ::Platform::String(str.c_str());
 }
 
-IVectorView<Platform::String^>^ convertArrayWP8(const Vector<String>& arr)
+IVectorView<Platform::String^>^ convertArrayToWP8(const Vector<String>& arr)
 {
 	IVector<Platform::String^>^ res = ref new Platform::Collections::Vector<Platform::String^>();
 	for (Vector<String>::const_iterator i = arr.begin(); i != arr.end(); ++i)
@@ -62,7 +62,7 @@ IVectorView<Platform::String^>^ convertArrayWP8(const Vector<String>& arr)
 	return res->GetView();
 }
 
-IMapView<Platform::String^, Platform::String^>^ convertHashWP8(const Hashtable<String, String>& hash)
+IMapView<Platform::String^, Platform::String^>^ convertHashToWP8(const Hashtable<String, String>& hash)
 {
 	IMap<Platform::String^, Platform::String^>^ res = ref new Platform::Collections::Map<Platform::String^, Platform::String^>();
 	for(Hashtable<String, String>::const_iterator i = hash.begin(); i != hash.end(); ++i)

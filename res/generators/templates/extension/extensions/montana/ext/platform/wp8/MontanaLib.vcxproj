@@ -69,19 +69,19 @@
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\extensions\<%= name.downcase() %>\$(Configuration)\</OutDir>
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\extensions\<%= name.downcase() %>\$(Configuration)\</OutDir>
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\extensions\<%= name.downcase() %>\$(Configuration)\</OutDir>
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\extensions\<%= name.downcase() %>\$(Configuration)\</OutDir>
+    <OutDir>$(RHO_ROOT)\Platform\wp8\Bin\$(Platform)\rhoruntime\$(Configuration)\</OutDir>
     <IntDir>$(TEMP_FILES_DIR)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -158,6 +158,7 @@
     </ClCompile>
     <ClCompile Include="generated\lib\<%= name.camel_case() %>_MethodResultImpl.cpp" />
     <ClCompile Include="generated\lib\<%= name.camel_case() %>_impl.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_ruby_wrap.cpp" />
   </ItemGroup>
