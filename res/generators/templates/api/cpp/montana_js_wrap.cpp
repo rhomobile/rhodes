@@ -112,6 +112,8 @@ end %>
     {
         if ( argv[<%= first_arg %>].isFloat() )
             arg<%= first_arg %> = argv[<%= first_arg %>].getDouble();
+        else if ( argv[<%= first_arg %>].isInteger() )
+            arg<%= first_arg %> = argv[<%= first_arg %>].getInt();
         else if (!argv[<%= first_arg %>].isNull())
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );

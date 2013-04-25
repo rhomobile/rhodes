@@ -8,11 +8,16 @@ describe("<generator API specs>", function () {
         expect(Rho.GenPropBag.boolProp).toEqual(true);
     });
 
-    xit("Test float default property", function () {
-        Rho.GenPropBag.getDefault().floatProp = 0.0;
-        expect(Rho.GenPropBag.getDefault().floatProp).toEqual(0.0);
-        Rho.GenPropBag.getDefault().floatProp = 1.0;
-        expect(Rho.GenPropBag.getDefault().floatProp).toEqual(1.0);
+    it("Test float default property", function () {
+        Rho.GenPropBag.getDefault().floatProp = 0.1;
+        expect(Rho.GenPropBag.getDefault().floatProp).toEqual(0.1);
+        Rho.GenPropBag.getDefault().floatProp = 1.5;
+        expect(Rho.GenPropBag.getDefault().floatProp).toEqual(1.5);
+    });
+
+    it("Test float property with ints", function () {
+        Rho.GenPropBag.floatProp = 3.0;
+        expect(Rho.GenPropBag.floatProp).toEqual(3.0);
     });
 
     it("Test int default property", function () {
