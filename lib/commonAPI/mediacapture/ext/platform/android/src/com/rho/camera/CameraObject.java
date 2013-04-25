@@ -15,36 +15,22 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.util.ContextFactory;
 
-public class CameraObject extends CameraBase implements ICamera {
+public class CameraObject extends CameraBase implements ICameraObject {
     private static final String TAG = CameraObject.class.getSimpleName();
     
     private Map<String, String> mActualPropertyMap;
     public Map<String, String> getActualPropertyMap() { return mActualPropertyMap; }
 
-    CameraObject(String id) {
-        super(id);
-    }
+    CameraObject(String id) { super(id); }
 
     @Override
     public void getCameraType(IMethodResult result) {
-        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-        android.hardware.Camera.getCameraInfo(Integer.valueOf(getId()).intValue(), info);
-        switch (info.facing) {
-        case android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK:
             result.set("back");
-            break;
-        case android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT:
-            result.set("front");
-            break;
-        default:
-            result.setError("Camera with unknown type: " + info.facing);
-            break;
-        }
     }
 
     @Override
     public void getMaxWidth(IMethodResult result) {
-        android.hardware.Camera hwCamera = android.hardware.Camera.open(Integer.valueOf(getId()).intValue());
+        android.hardware.Camera hwCamera = android.hardware.Camera.open();
         List<android.hardware.Camera.Size> listSize = hwCamera.getParameters().getSupportedPictureSizes();
         int maxWidth = 0;
         for(android.hardware.Camera.Size curSize: listSize) {
@@ -59,7 +45,7 @@ public class CameraObject extends CameraBase implements ICamera {
 
     @Override
     public void getMaxHeight(IMethodResult result) {
-        android.hardware.Camera hwCamera = android.hardware.Camera.open(Integer.valueOf(getId()).intValue());
+        android.hardware.Camera hwCamera = android.hardware.Camera.open();
         List<android.hardware.Camera.Size> listSize = hwCamera.getParameters().getSupportedPictureSizes();
         int maxHeight = 0;
         for(android.hardware.Camera.Size curSize: listSize) {
@@ -124,7 +110,7 @@ public class CameraObject extends CameraBase implements ICamera {
                 throw new RuntimeException("Unknown 'outputFormat' value: " + outputFormat);
             }
             
-            ((CameraFactory)CameraFactorySingleton.getInstance()).setMethodResult(result);
+            ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
 
             boolean useSystemViewfinder = Boolean.parseBoolean(mActualPropertyMap.get("useSystemViewfinder"));
             Intent intent = null;
@@ -154,4 +140,5 @@ public class CameraObject extends CameraBase implements ICamera {
         // TODO Auto-generated method stub
         
     }
+
 }
