@@ -46,7 +46,7 @@ jobject rho_cast_helper<jobject, CJSONEntry>::convertJsonEntryToJavaMap(const CJ
     }
 
     CJSONStructIterator jsonObjectIt(jsonEntry);
-    while(!jsonObjectIt.isEnd())
+    for( ; !jsonObjectIt.isEnd(); jsonObjectIt.next() )
     {
         jhstring jhKey = rho_cast<jstring>(m_env, jsonObjectIt.getCurKey());
         jhstring jhVal = rho_cast<jstring>(m_env, jsonObjectIt.getCurString());
