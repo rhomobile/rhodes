@@ -362,7 +362,7 @@ boolean CJSONEntry::getBoolean() const
 {
     boolean nRes = false;
     if ( m_object != 0 )
-        nRes = static_cast<boolean>(json_object_get_boolean(m_object));
+        nRes = json_object_get_boolean(m_object) != 0 ? true : false;
     
     return nRes;
 }
