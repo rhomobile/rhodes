@@ -21,7 +21,7 @@ public class CameraFactory extends AbstractRhoListener implements ICameraFactory
     private static final String TAG = CameraFactory.class.getSimpleName();
     
     private CameraSingleton mSingleton;
-    private Camera[] mCameraList;
+    private CameraObject[] mCameraList;
     private IMethodResult mMethodResult;
 
     @Override
@@ -46,12 +46,12 @@ public class CameraFactory extends AbstractRhoListener implements ICameraFactory
             mSingleton = new CameraSingleton();
             
             int count = mSingleton.getCameraCount();
-            mCameraList = new Camera[count];
+            mCameraList = new CameraObject[count];
         }
         return mSingleton;
     }
     
-    Camera getCameraObject(String id) {
+    CameraObject getCameraObject(String id) {
         int idx = Integer.valueOf(id).intValue();
 
         if (idx >= mCameraList.length) {
@@ -60,7 +60,7 @@ public class CameraFactory extends AbstractRhoListener implements ICameraFactory
         }
 
         if (mCameraList[idx] == null) {
-            mCameraList[idx] = new Camera(id);
+            mCameraList[idx] = new CameraObject(id);
         }
         return mCameraList[idx];
     }
