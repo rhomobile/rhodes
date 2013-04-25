@@ -46,7 +46,6 @@ LOCAL_SRC_FILES := \
     ext/rho/rhosupport.c \
     ext/rhoconf/rhoconf_wrap.c \
     ext/ringtones/ringtones_wrap.c \
-    ext/signature/signature_wrap.c \
     ext/socket/socket.c \
     ext/sqlite3_api/sqlite3_api_wrap.c \
     ext/stringio/stringio.c \
