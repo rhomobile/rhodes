@@ -595,8 +595,15 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     int fActive = LOWORD(wParam);
     LOG(INFO) + "ACTIVATE: " + fActive;
 
+    if ( m_bLoading && !fActive )
+    {
+        LOG(INFO) + "Get deactivate before first navigate. Skip it.";
+        return 0;
+    }
+
     if (lParam) //We get activate from some internal window
     {
+        LOG(INFO) + "Get activate from child window. Skip it.";
 #if defined(_WIN32_WCE) 
         if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
 	        RhoSetFullScreen(true);
