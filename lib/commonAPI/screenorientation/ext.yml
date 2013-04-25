@@ -1,0 +1,12 @@
+entry: Init_ScreenOrientation_extension	
+javaentry: com.motorolasolutions.rho.screenorientation.ScreenOrientation
+libraries: ["ScreenOrientation"]
+android:
+  source_list: ext/platform/android/ext_java.files
+
+project_paths:
+  wp8: ext/platform/wp8/Screenorientation.vcxproj
+  wm: ext/platform/wm/Screenorientation.vcproj
+  win32: ext/platform/wm/Screenorientation.vcproj
+  
+xml_api_paths: ext/Screenorientation.xml
