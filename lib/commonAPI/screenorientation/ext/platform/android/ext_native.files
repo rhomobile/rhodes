@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/Screenorientation.cpp
+ext/platform/android/generated/jni/screenorientation_ruby_wrap.cpp
+ext/platform/android/generated/jni/screenorientation_js_wrap.cpp
+ext/platform/android/jni/Screenorientation_impl.cpp
+ext/shared/generated/screenorientation_api_init.cpp
+ext/shared/generated/screenorientation_js_api.cpp
+ext/shared/generated/screenorientation_ruby_api.c
