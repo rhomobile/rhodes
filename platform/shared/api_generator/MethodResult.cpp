@@ -230,8 +230,7 @@ void CMethodResult::callCallback()
                     
                     if (m_synchronousCallback)
                     {
-                        //rho_webview_execute_js_sync(strCallback.c_str(), m_iTabId);
-                        rho_webview_execute_js(strCallback.c_str(), m_iTabId);
+                        rho_webview_execute_js_sync(strCallback.c_str(), m_iTabId);
                     } else
                     {
                         rho_webview_execute_js(strCallback.c_str(), m_iTabId);

@@ -105,6 +105,13 @@ RHO_GLOBAL const char* rho_webview_execute_js(const char* js, int index)
     return "";
 }
 
+RHO_GLOBAL const char* rho_webview_execute_js_sync(const char* js, int index) 
+{
+    // TODO: implement sync js callback
+    rho_webview_execute_js(js, index);
+    return "";
+}
+
 RHO_GLOBAL void rho_webview_full_screen_mode(int enable)
 {
     JNIEnv *env = jnienv();

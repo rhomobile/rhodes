@@ -2034,6 +2034,8 @@ void CExtManager::requireRubyFile( const char* szFilePath )
                         state = APP_EVENT_ACTIVATED;
                         break;
                     case applicationStateDeactivated:
+                        // special case, should be processed in foreground
+                        m_result.setSynchronousCallback(true);
                         state = APP_EVENT_DEACTIVATED;
                         break;
                     default:
@@ -2041,6 +2043,7 @@ void CExtManager::requireRubyFile( const char* szFilePath )
                         break;
                 }
                 callbackData.put(APP_EVENT, state);
+                
                 m_result.set(callbackData);
                 return true;
             }
