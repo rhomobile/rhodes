@@ -146,6 +146,7 @@ public:
             resHash += "}";
         }
 
+        resHash += "}";
         return resHash;
     }
 

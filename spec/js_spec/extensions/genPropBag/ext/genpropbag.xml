@@ -24,9 +24,11 @@
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
-
-            <!-- <METHOD name="testMethod1" access="STATIC">
-            </METHOD>  -->
+        <!-- 
+        <METHOD name="testMethod1" access="STATIC">
+                <RETURN type="HASH">
+                </RETURN>
+        </METHOD>-->
 
         </METHODS>
         

@@ -22,7 +22,11 @@ class CGenPropBagSingleton: public CGenPropBagSingletonBase
 
     virtual void testMethod1(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set(false);
+        rho::Hashtable<rho::String, rho::String> hash;
+        hash.put("Test1", "AA");
+        hash.put("Test2", "BB");
+
+        oResult.set(hash);
     }
 
 };

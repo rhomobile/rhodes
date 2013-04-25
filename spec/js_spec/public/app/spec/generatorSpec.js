@@ -8,16 +8,16 @@ describe("<generator API specs>", function () {
         expect(Rho.GenPropBag.boolProp).toEqual(true);
     });
 
-    it("Test bool default property", function () {
-        Rho.GenPropBag.getDefault().boolProp = false;
-        expect(Rho.GenPropBag.getDefault().boolProp).toEqual(false);
-        Rho.GenPropBag.getDefault().boolProp = true;
-        expect(Rho.GenPropBag.getDefault().boolProp).toEqual(true);
+    xit("Test float default property", function () {
+        Rho.GenPropBag.getDefault().floatProp = 0.0;
+        expect(Rho.GenPropBag.getDefault().floatProp).toEqual(0.0);
+        Rho.GenPropBag.getDefault().floatProp = 1.0;
+        expect(Rho.GenPropBag.getDefault().floatProp).toEqual(1.0);
     });
 
     it("Test int default property", function () {
-        Rho.GenPropBag.getDefault().intProp = 0;
-        expect(Rho.GenPropBag.getDefault().intProp).toEqual(0);
+        Rho.GenPropBag.intProp = 25;
+        expect(Rho.GenPropBag.getDefault().intProp).toEqual(25);
         Rho.GenPropBag.getDefault().intProp = 15;
         expect(Rho.GenPropBag.getDefault().intProp).toEqual(15);
     });
@@ -30,6 +30,30 @@ describe("<generator API specs>", function () {
         expect(objs[1].boolProp).toEqual(false);
         objs[1].boolProp = true;
         expect(objs[1].boolProp).toEqual(true);
+    });
+
+    xit("Test testMethod1", function () {
+        var objs = Rho.GenPropBag.testMethod1();
+        
+        Rho.Log.info(objs.toString(), "test" );
+       
+    });
+
+    it("Test getAllProperties", function () {
+    
+        var callbackFunction = function (data) 
+        {
+            Rho.Log.info(data.toString(), "test" );
+        };
+
+        Rho.GenPropBag.getDefault().getAllProperties(callbackFunction);
+       
+    });
+
+    xit("Test getAllProperties witout callback", function () {
+    
+        var objs = Rho.GenPropBag.getDefault().getAllProperties();
+        Rho.Log.info(data.toString(), "test" );
     });
 
 });
