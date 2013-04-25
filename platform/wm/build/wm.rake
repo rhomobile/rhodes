@@ -555,12 +555,12 @@ namespace "device" do
       end
 
       if $run_on_startup == true
-        shortcut_content = '"\\Program Files\\' + $appname + "\\" + $appname + '.exe" -startAtBoot=""'
+        shortcut_content = '"\\Program Files\\' + $appname + "\\" + $appname + '.exe" -minimized=""'
         if File.exists? wm_icon then
           shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
         end
         shortcut_content = shortcut_content.length().to_s + '#' + shortcut_content
-        File.open(File.join($srcdir, $appname + ".lnk"), "w") { |f| f.write(shortcut_content) } 
+        File.open(File.join($srcdir, 'apps', $appname + ".lnk"), "w") { |f| f.write(shortcut_content) } 
       end
 
       chdir $builddir

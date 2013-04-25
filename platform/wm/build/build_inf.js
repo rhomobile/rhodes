@@ -238,7 +238,12 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     p("");
     p("[DefaultInstall]");
     if (show_shortcut && (!usereruntime)){
-        p("CEShortcuts=Shortcuts");
+        if (autorun) {
+          p("CEShortcuts=Shortcuts,ShortcutsAutorun");
+        }
+        else {
+          p("CEShortcuts=Shortcuts");
+        }
     }
     p("AddReg=RegKeys");
     p("CopyFiles=CopyToInstallDir"+((!usereruntime) && webkit ? ",CopyWebKitBin,CopyNPAPI,CopyConfig,CopySystemFiles" : "")+((!usereruntime) && (!webkit) && include_motocaps? ",CopyConfig" : "")+(show_shortcut && usereruntime ? ",Shortcuts" : "")+get_copyfiles_sections(es));
@@ -253,10 +258,10 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("3=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
             p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
 
-           if (autorun) 
-           {
-              p("5=,\"\",," + autorun_path + "\"\\\"");           
-           }
+           //if (autorun) 
+           //{
+           //   p("5=,\"\",," + autorun_path + "\"\\\"");           
+           //}
         }
         else
         {
@@ -265,9 +270,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
                 p("2=,\"\",," + rhogempath + "\"\\Config\\\"");
             }
  
-            if (autorun) {
-              p("3=,\"\",," + autorun_path + "\"\\\"");           
-            }
+            //if (autorun) {
+            //  p("3=,\"\",," + autorun_path + "\"\\\"");           
+            //}
         }
     }
     get_source_disks_names(es);
@@ -276,9 +281,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     if (usereruntime) {
         p("\"" + name + ".lnk\"=1");
     } else {
-        if (autorun) {
-          p("\"" + name + ".lnk\"=5");
-        }
+        //if (autorun) {
+        //  p("\"" + name + ".lnk\"=5");
+        //}
         p("\"" + name + ".exe\"=1");
         if (webkit) {
             p("\"eklibrary.dll\"=2");
@@ -312,6 +317,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     if (show_shortcut){
         p("Shortcuts=0,\"%CE11%\"");
     }
+    if (autorun) {
+        p("ShortcutsAutorun=0,\"%CE4%\"");
+    }
     if ((!usereruntime) && webkit) {
         p("CopySystemFiles=0,\"%CE2%\"");
     }
@@ -331,9 +339,9 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     if (usereruntime) {
         p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
     } else {
-        if (autorun) {
-          p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
-        }
+        //if (autorun) {
+        //  p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
+        //}
 
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
         p("\"license_rc.dll\",\"license_rc.dll\",,0");
@@ -383,9 +391,11 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
         else
             p("\""+name+"\",0,\"" + name + ".exe\",%CE11%");
 
-         if (autorun) {
-            p("\""+name+".lnk\",0,\""+name+".lnk\",%CE4%");
-         }
+        p("");
+        p("[ShortcutsAutorun]");
+        if (autorun) {
+           p("\""+name+".lnk\",0,\""+name+".lnk\",%CE4%");
+        }
     }
     p("");
     p("[RegKeys]");
