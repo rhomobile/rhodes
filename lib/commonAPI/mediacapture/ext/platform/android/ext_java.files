@@ -1,10 +1,13 @@
+ext/platform/android/src/com/rho/mediacapture/RhoListener.java
 ext/platform/android/generated/src/com/rho/camera/ICamera.java
 ext/platform/android/generated/src/com/rho/camera/ICameraSingleton.java
 ext/platform/android/generated/src/com/rho/camera/ICameraFactory.java
 ext/platform/android/generated/src/com/rho/camera/CameraBase.java
 ext/platform/android/generated/src/com/rho/camera/CameraSingletonBase.java
 ext/platform/android/generated/src/com/rho/camera/CameraFactorySingleton.java
-ext/platform/android/src/com/rho/camera/Camera.java
+ext/platform/android/src/com/rho/camera/CameraActivity.java
+ext/platform/android/src/com/rho/camera/CameraPreview.java
+ext/platform/android/src/com/rho/camera/CameraObject.java
 ext/platform/android/src/com/rho/camera/CameraSingleton.java
 ext/platform/android/src/com/rho/camera/CameraFactory.java
 ext/platform/android/src/com/rho/camera/CameraExtension.java
