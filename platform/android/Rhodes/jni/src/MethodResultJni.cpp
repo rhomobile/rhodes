@@ -501,9 +501,9 @@ void MethodResultJni::callJSBack(jint jTabIndex)
 
     String strCallback("Rho.callbackHandler( \"");
     strCallback += strCallbackID;
-    strCallback += "\", ";
+    strCallback += "\", {";
     strCallback += strRes;
-    strCallback += ")";
+    strCallback += "})";
 
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
     if (!cls) return;
