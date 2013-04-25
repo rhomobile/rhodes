@@ -235,6 +235,7 @@
     <ClCompile Include="common\RhoConvertWP8.cpp" />
     <ClCompile Include="common\RhoCryptImpl.cpp" />
     <ClCompile Include="common\SSLImpl.cpp" />
+    <ClCompile Include="CSharpExtensions.cpp" />
     <ClCompile Include="TabbarImpl.cpp" />
     <ClCompile Include="common\ThreadEmulation.cpp" />
     <ClCompile Include="FakeDefs.cpp" />

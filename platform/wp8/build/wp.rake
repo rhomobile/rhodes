@@ -196,7 +196,7 @@ namespace "build" do
 
           if (project_path)
             ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
-            #puts ENV.inspect
+
             puts Jake.run("rake", [], File.join($startdir, "lib/build/extensions"))
             break
           else
