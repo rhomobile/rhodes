@@ -29,27 +29,27 @@ def build_extension()
     mkdir_p $targetext_dir
     file_to_copy = File.join($target_temp_dir, $extname + ($copy_csharp_files ? "Lib" : "") + ".lib")
     puts "copy file #{file_to_copy} to #{$targetext_dir}"
-    cp_r file_to_copy, $targetext_dir
+    cp_r file_to_copy, $targetext_dir if File.exist?(file_to_copy)
     if $copy_csharp_files
       file_to_copy = File.join($target_temp_dir, $extname + "Runtime.lib")
       puts "copy file #{file_to_copy} to #{$targetext_dir}"
-      cp_r file_to_copy, $targetext_dir
+      cp_r file_to_copy, $targetext_dir if File.exist?(file_to_copy)
 
       file_to_copy = File.join($target_temp_dir, $extname + "Runtime.dll")
       puts "copy file #{file_to_copy} to #{$targetext_dir}"
-      cp_r file_to_copy, $targetext_dir_csharp
+      cp_r file_to_copy, $targetext_dir_csharp if File.exist?(file_to_copy)
 
       file_to_copy = File.join($target_temp_dir, $extname + "Runtime.exp")
       puts "copy file #{file_to_copy} to #{$targetext_dir}"
-      cp_r file_to_copy, $targetext_dir_csharp
+      cp_r file_to_copy, $targetext_dir_csharp if File.exist?(file_to_copy)
 
       file_to_copy = File.join($target_temp_dir, $extname + "Runtime.winmd")
       puts "copy file #{file_to_copy} to #{$targetext_dir}"
-      cp_r file_to_copy, $targetext_dir_csharp
+      cp_r file_to_copy, $targetext_dir_csharp if File.exist?(file_to_copy)
 
       file_to_copy = File.join($target_temp_dir, $extname + "Impl.dll")
       puts "copy file #{file_to_copy} to #{$targetext_dir}"
-      cp_r file_to_copy, $targetext_dir_csharp
+      cp_r file_to_copy, $targetext_dir_csharp if File.exist?(file_to_copy)
     end
   end
 
