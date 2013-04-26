@@ -166,6 +166,13 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 {
     LOG(INFO) + "RhoSetFullScreen: " + (bFull ? 1 : 0);
     m_bFullScreen = bFull;
+
+    if( !IsWindowVisible() )
+    {
+        LOG(INFO) + "Main Window is invisible. Skip fill screen method";
+        //return;
+    }
+
     HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
     if ( hTaskBar )
     {
@@ -250,6 +257,10 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     mbi.hwndParent = m_hWnd;
     mbi.nToolBarId = IDR_MAIN_MENUBAR; // ID of toolbar resource
     mbi.hInstRes   = _AtlBaseModule.GetResourceInstance();
+
+    if (!IsWindowVisible())
+        mbi.dwFlags = SHCMBF_HIDDEN;
+
     SHCreateMenuBar(&mbi);
 	m_hWndCECommandBar = mbi.hwndMB;
 	m_menuBar = m_hWndCECommandBar;
