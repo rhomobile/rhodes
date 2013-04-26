@@ -76,7 +76,19 @@ void rho_file_set_fs_mode(int mode);
 #endif
 
 }
-    
+
+static const char APP_EVENT_ACTIVATED[] = "Activated";
+static const char APP_EVENT_DEACTIVATED[] = "Deactivated";
+static const char APP_EVENT_UICREATED[] = "UICreated";
+static const char APP_EVENT_UIDESTROYED[] = "UIDestroyed";
+static const char APP_EVENT_SYNCUSERCHANGED[] = "SyncUserChanged";
+static const char APP_EVENT_CONFIGCONFLICT[] = "ConfigConflict";
+static const char APP_EVENT_DBMIGRATESOURCE[] = "DBMigrateSource";
+static const char APP_EVENT_UNINITIALIZED[] = "Uninitialized";
+
+static const char APP_EVENT[] = "applicationEvent";
+static const char APP_EVENT_DATA[] = "eventData";
+
 namespace rho {
 namespace common{
 
@@ -287,13 +299,19 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         case ui_created:
             {
-                callCallback("/system/uicreated");
+                if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateCreated))
+                {
+                    callCallback("/system/uicreated");
+                }
                 m_expected = app_activated;
             }
             break;
         case app_activated:
             {
-                callCallback("/system/activateapp");
+                if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateActivated))
+                {
+                    callCallback("/system/activateapp");
+                }
                 m_expected = app_deactivated;
             }
             break;
@@ -377,6 +395,11 @@ void CRhodesApp::run()
 #if !defined(RHO_NO_RUBY)
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
+    if (m_applicationEventReceiver.isCallbackSet())
+    {
+        HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
+        m_applicationEventReceiver.onReinstallConfigUpdate(mapConflicts);    
+    }
     rho_ruby_call_config_conflicts();
 #endif
     
@@ -490,6 +513,7 @@ void CRhodesApp::runCallbackInThread(const String& strCallback, const String& st
 static void callback_activateapp(void *arg, String const &strQuery)
 {
     rho_ruby_activateApp();
+
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
 }
@@ -497,6 +521,7 @@ static void callback_activateapp(void *arg, String const &strQuery)
 static void callback_deactivateapp(void *arg, String const &strQuery)
 {
     rho_ruby_deactivateApp();
+    
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
 }
@@ -504,12 +529,14 @@ static void callback_deactivateapp(void *arg, String const &strQuery)
 static void callback_uicreated(void *arg, String const &strQuery)
 {
     rho_ruby_uiCreated();
+
     rho_http_sendresponse(arg, "");
 }
 
 static void callback_uidestroyed(void *arg, String const &strQuery)
 {
     rho_ruby_uiDestroyed();
+    
     rho_http_sendresponse(arg, "");
 }
 
@@ -543,12 +570,15 @@ void CRhodesApp::callUiDestroyedCallback()
 {
     if ( m_bExit || !rho_ruby_is_started() )
         return;
-
-    String strUrl = m_strHomeUrl + "/system/uidestroyed";
-    NetResponse resp = getNetRequest().pullData( strUrl, null );
-    if ( !resp.isOK() )
+    
+    if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateDestroyed))
     {
-        LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        String strUrl = m_strHomeUrl + "/system/uidestroyed";
+        NetResponse resp = getNetRequest().pullData( strUrl, null );
+        if ( !resp.isOK() )
+        {
+            LOG(ERROR) + "UI destroy callback failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+        }
     }
 }
 	
@@ -583,25 +613,30 @@ void CRhodesApp::callAppActiveCallback(boolean bActive)
         // All such operation will throw exception in ruby code when calling in 'deactivate' mode.
         m_bDeactivationMode = true;
         m_appCallbacksQueue->addQueueCommand(new CAppCallbacksQueue::Command(CAppCallbacksQueue::app_deactivated));
-
-        if ( rho_ruby_is_started() )
+        
+        // TODO: Support stop_local_server command to be parsed from callback result
+        if (!RHODESAPP().getApplicationEventReceiver()->onAppStateChange(rho::common::applicationStateDeactivated))
         {
-            String strUrl = m_strHomeUrl + "/system/deactivateapp";
-            NetResponse resp = getNetRequest().pullData( strUrl, null );
-            if ( !resp.isOK() )
+            // 
+            if ( rho_ruby_is_started() )
             {
-                LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
-            }else
-            {
-                const char* szData = resp.getCharData();
-                boolean bStop = szData && strcmp(szData,"stop_local_server") == 0;
-
-                if (bStop)
+                String strUrl = m_strHomeUrl + "/system/deactivateapp";
+                NetResponse resp = getNetRequest().pullData( strUrl, null );
+                if ( !resp.isOK() )
                 {
-    #if !defined( WINDOWS_PLATFORM )
-                    LOG(INFO) + "Stopping local server.";
-                    m_httpServer->stop();
-    #endif
+                    LOG(ERROR) + "deactivate app failed. Code: " + resp.getRespCode() + "; Error body: " + resp.getCharData();
+                }else
+                {
+                    const char* szData = resp.getCharData();
+                    boolean bStop = szData && strcmp(szData,"stop_local_server") == 0;
+
+                    if (bStop)
+                    {
+        #if !defined( WINDOWS_PLATFORM )
+                        LOG(INFO) + "Stopping local server.";
+                        m_httpServer->stop();
+        #endif
+                    }
                 }
             }
         }
@@ -1921,6 +1956,21 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 		m_mxAccess(mxAccess)
 	{
 	}
+    
+    void CRhodesApp::setApplicationEventHandler(const apiGenerator::CMethodResult& oResult)
+    {
+        m_applicationEventReceiver.setCallback(oResult);
+    }
+    
+    void CRhodesApp::clearApplicationEventHandler()
+    {
+        m_applicationEventReceiver.setCallback(apiGenerator::CMethodResult());
+    }
+    
+    IApplicationEventReceiver* CRhodesApp::getApplicationEventReceiver()
+    {
+        return &m_applicationEventReceiver;
+    }
 	
 	
 	void NetworkStatusReceiver::onNetworkStatusChanged( enNetworkStatus currentStatus )
@@ -1962,6 +2012,109 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 		}
 		return "";
 	}
+    
+    ApplicationEventReceiver::ApplicationEventReceiver() :
+        m_app_state(applicationStateUninitialized),
+        m_ui_state(UIStateUninitialized)
+    {
+        
+    }
+    
+    bool ApplicationEventReceiver::onAppStateChange(const enApplicationState& newState)
+    {
+        if (m_app_state != newState)
+        {
+            m_app_state = newState;
+            if (m_result.hasCallback())
+            {
+                rho::Hashtable<rho::String, rho::String> callbackData;
+                const char* state = APP_EVENT_UNINITIALIZED;
+                switch (newState) {
+                    case applicationStateActivated:
+                        state = APP_EVENT_ACTIVATED;
+                        break;
+                    case applicationStateDeactivated:
+                        // special case, should be processed in foreground
+                        m_result.setSynchronousCallback(true);
+                        state = APP_EVENT_DEACTIVATED;
+                        break;
+                    default:
+                        state = APP_EVENT_UNINITIALIZED;
+                        break;
+                }
+                callbackData.put(APP_EVENT, state);
+                
+                m_result.set(callbackData);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    bool ApplicationEventReceiver::onUIStateChange(const enUIState& newState)
+    {
+        if (m_ui_state != newState)
+        {
+            m_ui_state = newState;
+            if (m_result.hasCallback())
+            {
+                rho::Hashtable<rho::String, rho::String> callbackData;
+                const char* state = APP_EVENT_UNINITIALIZED;
+                switch (newState) {
+                    case UIStateCreated:
+                        state = APP_EVENT_UICREATED;
+                        break;
+                    case UIStateDestroyed:
+                        state = APP_EVENT_UIDESTROYED;
+                        break;
+                    default:
+                        state = APP_EVENT_UNINITIALIZED;
+                        break;
+                }
+                callbackData.put(APP_EVENT, state);
+                m_result.set(callbackData);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    bool ApplicationEventReceiver::onSyncUserChanged(){
+        return false;
+    }
+    
+    bool ApplicationEventReceiver::onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts)
+    {
+        if (m_result.hasCallback())
+        {
+            Hashtable<String, Vector<String> > conv;
+            for ( HashtablePtr<String,Vector<String>* >::const_iterator it=conflicts.begin() ; it != conflicts.end(); it++ )
+            {
+                String key = it->first;
+                Vector<String>& ref = *(it->second);
+                Vector<String>& current = conv[key];
+                for( Vector<String>::const_iterator it2=ref.begin(); it2 != ref.end(); it2++)
+                {
+                    current.push_back(*it2);
+                }
+            }
+            m_result.set(conv);
+        }
+
+        return false;
+    }
+    
+    bool ApplicationEventReceiver::onMigrateSource(){
+        return false;
+    }
+        
+    bool ApplicationEventReceiver::isCallbackSet(){
+        return m_result.hasCallback();
+    }
+    
+    void ApplicationEventReceiver::setCallback(const apiGenerator::CMethodResult& oResult){
+        m_result = oResult;
+    }
 
 	
 
