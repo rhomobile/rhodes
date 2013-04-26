@@ -591,6 +591,9 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     m_appWindow.UpdateWindow();
 
     m_appWindow.initBrowserWindow();
+
+    if (m_bMinimized)
+        m_appWindow.ShowWindow(SW_MINIMIZE);
 #endif
 
     bool bRE1App = false;
