@@ -271,13 +271,9 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				m_nRestarting = 10;
 			}
 
-            if (WordCmpI(lpszToken, _T("minimized"))==0) {
+            if (wcsncmp(lpszToken, _T("minimized"), 9)==0) {
 				m_bMinimized = true;
 			}
-
-            if (wcsncmp(lpszToken, _T("startAtBoot"), 11) == 0) {
-                m_bMinimized = true;
-            }
 
 			if (WordCmpI(lpszToken, _T("rhoconnectpush"))==0) {
 				m_isRhoConnectPush = true;

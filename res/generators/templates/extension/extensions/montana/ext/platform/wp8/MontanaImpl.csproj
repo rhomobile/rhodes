@@ -26,7 +26,7 @@
     <Optimize>false</Optimize>
     <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
-    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\anycpu\extensions\<%= name.downcase() %>\$(Configuration)\</OutputPath>
+    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\anycpu\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -38,7 +38,7 @@
     <Optimize>true</Optimize>
     <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(TEMP_FILES_ROOT)\anycpu\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
-    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\anycpu\extensions\<%= name.downcase() %>\$(Configuration)\</OutputPath>
+    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\anycpu\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -51,7 +51,7 @@
     <Optimize>false</Optimize>
     <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
-    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\win32\extensions\<%= name.downcase() %>\$(Configuration)\</OutputPath>
+    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\win32\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -63,7 +63,7 @@
     <Optimize>true</Optimize>
     <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(TEMP_FILES_ROOT)\win32\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
-    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\win32\extensions\<%= name.downcase() %>\$(Configuration)\</OutputPath>
+    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\win32\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -76,7 +76,7 @@
     <Optimize>false</Optimize>
     <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
-    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\arm\extensions\<%= name.downcase() %>\$(Configuration)\</OutputPath>
+    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\arm\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -88,7 +88,7 @@
     <Optimize>true</Optimize>
     <BaseIntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= name.camel_case() %>Impl\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(TEMP_FILES_ROOT)\arm\extensions\<%= name.camel_case() %>Impl\tmp\</IntermediateOutputPath>
-    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\arm\extensions\<%= name.downcase() %>\$(Configuration)\</OutputPath>
+    <OutputPath>$(RHO_ROOT)\platform\wp8\bin\arm\rhodes\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
@@ -100,9 +100,9 @@
     <Compile Include="src\Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="<%= name.camel_case() %>Runtime.vcxproj">
-      <Project>{<%= @wp8RuntimeGUID %>}</Project>
-      <Name><%= name.camel_case() %>Runtime</Name>
+    <ProjectReference Include="$(RHO_ROOT)\platform\wp8\rhoruntime\rhoruntime.vcxproj">
+      <Project>{19b2cb23-b0fc-44c0-bd59-3da4f3113585}</Project>
+      <Name>rhoruntime</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />

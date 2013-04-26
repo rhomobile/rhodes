@@ -39,7 +39,6 @@ platform/shared/ruby/ext/rho/rhoruby.c
 platform/shared/ruby/ext/rho/rhosupport.c
 platform/shared/ruby/ext/rhoconf/rhoconf_wrap.c
 platform/shared/ruby/ext/ringtones/ringtones_wrap.c
-platform/shared/ruby/ext/signature/signature_wrap.c
 platform/shared/ruby/ext/socket/socket.c
 platform/shared/ruby/ext/stringio/stringio.c
 platform/shared/ruby/ext/strscan/strscan.c
