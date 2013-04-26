@@ -254,7 +254,7 @@ void RhoRubyStart()
 #if defined(WINDOWS_PLATFORM)
     //init_rhoext_Signature();
 #else
-#if !defined(OS_MACOSX)
+#if !defined(OS_MACOSX) && !defined(OS_ANDROID)
         Init_SignatureCapture();
 #endif
 #endif

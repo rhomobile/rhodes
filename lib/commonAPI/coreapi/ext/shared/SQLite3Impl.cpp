@@ -172,7 +172,7 @@ using namespace rho;
 using namespace rho::common;
 using namespace rho::json;
 
-rho::String js_SQLite3_execute(const rho::String& strObjID, CJSONArray& argv, const rho::String&, const rho::String& )
+rho::String js_SQLite3_execute(const rho::String& strObjID, CJSONArray& argv, const rho::String&, const rho::String&, const rho::String& )
 {
     rho::database::ISQLite3* pObj = rho::database::CSQLite3FactoryBase::getInstance()->getModuleByID(strObjID);
     void* pDB =  static_cast<rho::database::CSQLite3Impl*>(pObj)->getDb();

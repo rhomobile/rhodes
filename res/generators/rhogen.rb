@@ -550,6 +550,16 @@ module Rhogen
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}.sln"
     end
 
+    template :extension_wp8_solution_dev do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/Montana_dev.sln'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}_dev.sln"
+    end
+
+    template :extension_wp8_impl_targets do |template|
+        template.source = 'extensions/montana/ext/platform/wp8/MontanaImpl.targets'
+        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Impl.targets"
+    end
+
     template :extension_wp8_impl_csproj do |template|
         template.source = 'extensions/montana/ext/platform/wp8/MontanaImpl.csproj'
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Impl.csproj"
