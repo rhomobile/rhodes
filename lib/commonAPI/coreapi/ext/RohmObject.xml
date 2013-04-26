@@ -9,26 +9,28 @@
     </TEMPLATES>
 
     <PROPERTIES>
-      <PROPERTY name="client_id" access="STATIC" type="STRING" readOnly="true" generateAPI="false">
+      <PROPERTY name="clientId" access="STATIC" type="STRING" readOnly="true" generateAPI="false">
         <DESC>Returns the current sync client id.</DESC>
       </PROPERTY>
 
       <PROPERTY name="metadata" access="STATIC" type="HASH" generateAPI="false">
         <DESC>Returns the metadata definition for a given model as a hash. Click here for a Rhom metadata example.
-          Assigns the JSON metadata definition for a given model. Click here for a Rhom metadata example.
+          Assigns the hash metadata definition for a given model. Click here for a Rhom metadata example.
         </DESC>
       </PROPERTY>
     </PROPERTIES>
 
     <METHODS>
       <ALIASES>
+        <ALIAS new="changed" existing="isChanged"></ALIAS>
+
       </ALIASES>
 
-      <METHOD name="clear_notification" generateAPI="false" access="STATIC">
+      <METHOD name="clearNotification" generateAPI="false" access="STATIC">
         <DESC>Clear notification for the object. See the sync notification section for more details.</DESC>
       </METHOD>
 
-      <METHOD name="delete_all" generateAPI="false" access="STATIC">
+      <METHOD name="deleteAll" generateAPI="false" access="STATIC">
         <DESC>Delete all Rhodes model objects for a source, filtering by conditions. Click here for a Rhom delete_all
           example.
         </DESC>
@@ -92,7 +94,7 @@
             <CAN_BE_NIL/>
           </PARAM>
 
-          <PARAM name="per_page" type="INTEGER">
+          <PARAM name="perPage" type="INTEGER">
             <DESC>Maximum number of items to return.</DESC>
             <CAN_BE_NIL/>
           </PARAM>
@@ -110,12 +112,12 @@
         <RETURN type="ARRAY"/>
       </METHOD>
 
-      <METHOD name="find_all" generateAPI="false" access="STATIC">
+      <METHOD name="findAll" generateAPI="false" access="STATIC">
         <DESC>Alias for modelname.find(:all, argument list).</DESC>
         <RETURN type="ARRAY"/>
       </METHOD>
 
-      <METHOD name="find_by_sql" generateAPI="false" access="STATIC">
+      <METHOD name="findBySql" generateAPI="false" access="STATIC">
         <DESC>Returns Rhodes model object(s) based on sql_query. This method works only for schema models. Click here
           for a Rhom find_by_sql example.
         </DESC>
@@ -127,7 +129,7 @@
         <RETURN type="ARRAY"/>
       </METHOD>
 
-      <METHOD name="get_source_name" generateAPI="false" access="STATIC">
+      <METHOD name="getSourceName" generateAPI="false" access="STATIC">
         <DESC>Returns the source name for this Rhodes model object.</DESC>
         <RETURN type="STRING"/>
       </METHOD>
@@ -166,7 +168,7 @@
             <DESC>which page to return.</DESC>
           </PARAM>
 
-          <PARAM name="per_page" type="INTEGER">
+          <PARAM name="perPage" type="INTEGER">
             <DESC>with :page (used as offset), the number of records to return, such as :page => 1, :per_page => 20
             </DESC>
           </PARAM>
@@ -191,29 +193,29 @@
       <METHOD name="sync" generateAPI="false" access="STATIC">
         <DESC>Start the sync process for a Rhodes model. Click here for a Rhom sync example.</DESC>
         <PARAMS>
-          <PARAM name="callback_url" type="STRING">
+          <PARAM name="callbackUrl" type="STRING">
             <DESC>the url for the sync callback method. If this is used, SyncEngine.set_notification is called before
               SyncEngine.dosync.
             </DESC>
           </PARAM>
 
-          <PARAM name="callback_data" type="STRING">
+          <PARAM name="callbackData" type="STRING">
             <DESC>Data for the callback method.</DESC>
           </PARAM>
 
-          <PARAM name="show_status_popup" type="BOOLEAN">
+          <PARAM name="showStatusPopup" type="BOOLEAN">
             <DESC>true if you want to show a popup window upon sync, false otherwise.</DESC>
             <CAN_BE_NIL/>
           </PARAM>
 
-          <PARAM name="query_params" type="STRING">
+          <PARAM name="queryParams" type="STRING">
             <DESC>query to pass to the sync server. The query_params value must be URL encoded.</DESC>
             <CAN_BE_NIL/>
           </PARAM>
         </PARAMS>
       </METHOD>
 
-      <METHOD name="can_modify" generateAPI="false">
+      <METHOD name="canModify" generateAPI="false">
         <DESC>Returns true if the Rhodes model object is not currently being synced (if it is being synced, you should
           disable editing of the object). Click here for a Rhom can_modify example.
           Before displaying an edit page for an object, your application can check if the object is currently being
@@ -224,7 +226,7 @@
         <RETURN type="BOOLEAN"/>
       </METHOD>
 
-      <METHOD name="changed?" generateAPI="false" access="STATIC">
+      <METHOD name="isChanged" generateAPI="false" access="STATIC">
         <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false
           otherwise. Click here for a Rhom changed? example.
         </DESC>
@@ -236,11 +238,12 @@
         </DESC>
       </METHOD>
 
-      <METHOD name="set_notification" generateAPI="false" access="STATIC">
+      <METHOD name="setNotification" hasCallback="mandatory" runInThread="none" generateAPI="false" access="STATIC">
         <DESC>Saves the current Rhodes model object to the database. Click here for a Rhom save example.
         </DESC>
         <PARAMS>
-          <PARAM name="callback_url" type="STRING">
+
+          <PARAM name="callbackUrl" type="STRING">
             <DESC>the url for your sync is finished notification callback method.
             </DESC>
           </PARAM>
@@ -250,9 +253,10 @@
             <CAN_BE_NIL/>
           </PARAM>
         </PARAMS>
+
       </METHOD>
 
-      <METHOD name="update_attributes" generateAPI="false">
+      <METHOD name="updateAttributes" generateAPI="false">
         <DESC>Updates the current Rho model object attributes and saves it to the database. This is the fastest way to
           add or update model attributes. Click here for a Rhom update_attributes example.
         </DESC>
@@ -277,5 +281,43 @@
     <PLATFORM>
       <!--  This section is used for the supported platform images at the top -->
     </PLATFORM>
+    <EXAMPLES>
+      <EXAMPLE title="Rhom Delete Method Examples">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              Deletes all rhom objects for a source, optionally filtering by conditions:
+            </DESC>
+            <CODE lang='ruby'>
+              <![CDATA[
+# :conditions   Delete only objects matching these criteria.
+#               Supports find() conditions.
+# :op           See advanced find syntax
+Account.deleteAll(:conditions => {'industry'=>'electronics'})
+Account.deleteAll(:conditions => {'industry'=>'electronics', 'industry'=>'food'}, :op => 'OR')
+
+]]>
+
+            </CODE>
+
+          </SECTION>
+          <SECTION>
+            <DESC>
+              Deletes all rhom objects for a source, optionally filtering by conditions:
+            </DESC>
+            <CODE lang='javascript'>
+              <![CDATA[
+# :conditions   Delete only objects matching these criteria.
+#               Supports find() conditions.
+# :op           See advanced find syntax
+Account.deleteAll({industry: 'electronics'})
+Account.deleteAll({industry: 'electronics', industry: 'food'}, 'OR')
+
+]]>
+            </CODE>
+          </SECTION>
+        </SECTIONS>
+      </EXAMPLE>
+    </EXAMPLES>
   </MODULE>
 </API>    
