@@ -82,6 +82,47 @@ namespace common {
 	private:
 		static String networkStatusToString( enNetworkStatus status );
     };
+    
+    enum enApplicationState {
+        applicationStateUninitialized,
+        applicationStateDeactivated,
+        applicationStateActivated
+    };
+    
+    enum enUIState {
+        UIStateUninitialized,
+        UIStateDestroyed,
+        UIStateCreated
+    };
+    
+    class IApplicationEventReceiver
+    {
+    public:
+        virtual bool onAppStateChange(const enApplicationState& newState) = 0;
+        virtual bool onUIStateChange(const enUIState& newState) = 0;
+        virtual bool onSyncUserChanged() = 0;
+        virtual bool onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts) = 0;
+        virtual bool onMigrateSource() = 0;
+    };
+    
+    class ApplicationEventReceiver : public IApplicationEventReceiver
+    {
+    private:
+        apiGenerator::CMethodResult m_result;
+        enApplicationState m_app_state;
+        enUIState m_ui_state;
+    public:
+        ApplicationEventReceiver();
+        
+        virtual bool onAppStateChange(const enApplicationState& newState);
+        virtual bool onUIStateChange(const enUIState& newState);
+        virtual bool onSyncUserChanged();
+        virtual bool onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts);
+        virtual bool onMigrateSource();
+        
+        virtual bool isCallbackSet();
+        virtual void setCallback(const apiGenerator::CMethodResult& oResult);
+    };
 
 class CRhodesApp : public CRhodesAppBase
 {
@@ -126,6 +167,8 @@ private:
 	NetworkStatusReceiver m_networkStatusReceiver;
     INetworkStatusMonitor* m_pNetworkStatusMonitor;
 	static const int c_defaultNetworkStatusPollInterval = 20;
+    
+    ApplicationEventReceiver m_applicationEventReceiver;
 
 public:
     ~CRhodesApp(void);
@@ -215,6 +258,10 @@ public:
     void setNetworkStatusNotify(const apiGenerator::CMethodResult& oResult, int poll_interval);
     void clearNetworkStatusNotify();
     void setNetworkStatusMonitor(INetworkStatusMonitor* netMonitor);
+    
+    void setApplicationEventHandler(const apiGenerator::CMethodResult& oResult);
+    void clearApplicationEventHandler();
+    IApplicationEventReceiver* getApplicationEventReceiver();
 
     void registerLocalServerUrl(const String& strUrl, rho::net::CHttpServer::callback_t const &callback);
 

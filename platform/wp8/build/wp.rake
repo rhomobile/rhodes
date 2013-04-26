@@ -175,15 +175,24 @@ namespace "build" do
             extconf = Jake.config(File.open(extyml))
             project_paths = extconf["project_paths"]
             project_path = project_paths[$current_platform] if (project_paths && project_paths[$current_platform])
+            csharp_impl = (!extconf[$current_platform].nil?) && (!extconf[$current_platform]['csharp_impl'].nil?) ? true : false
           end
 
           ENV['RHO_PLATFORM'] = $current_platform
           ENV['RHO_ROOT'] = $startdir
           ENV['SDK'] = $sdk
           ENV['RHO_BUILD_CONFIG'] = $build_config
-          ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext)
+          ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext) # unused by rake build with 'project_path'
           ENV['VCBUILD'] = $msbuild
-          ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
+          ENV['RHO_EXT_NAME'] = ext
+          if csharp_impl
+            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext, $build_config)
+            ENV['TARGET_EXT_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
+            ENV['TARGET_EXT_DIR_CSHARP'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhodes", $build_config)
+            ENV['BUILD_CSHARP_IMPL'] = "yes"
+          else
+            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
+          end
 
           if (project_path)
             ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)

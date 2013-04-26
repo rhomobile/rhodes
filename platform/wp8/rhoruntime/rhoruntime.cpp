@@ -72,6 +72,7 @@ void CRhoRuntime::Execute()
 
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
     //RHODESAPP().setExtManager( &m_oExtManager );
+	m_MainPage->InitializeCSharpExtensions();
 
 	//Create Main window
 	createCustomMenu();

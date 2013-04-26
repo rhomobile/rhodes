@@ -54,6 +54,7 @@
     <ClCompile Include="common\RhoConvertWP8.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="CSharpExtensions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />

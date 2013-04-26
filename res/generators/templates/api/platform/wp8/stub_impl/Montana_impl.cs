@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using rhoruntime;
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
 end %>
@@ -24,7 +25,7 @@ end %>
         params += "#{api_generator_cs_makeNativeTypeArg(param.type)} #{param.name}, "
     end
 
-    params += $cur_module.name + 'Runtime.IMethodResult oResult'
+    params += "I#{$cur_module.name}MethodResult oResult"
     module_method.cached_data["cs_params"] = params
 
     method_def = "\n        public void #{module_method.native_name}(#{params})\n        {\n            // implement this method in C# here\n        }\n"
@@ -38,19 +39,19 @@ end %>
 %>
 namespace <%= $cur_module.name %>Impl
 {
-    public class <%= $cur_module.name %> : <%= $cur_module.name %>Runtime.I<%= $cur_module.name %>Impl
+    public class <%= $cur_module.name %> : I<%= $cur_module.name %>Impl
     {
         public <%= $cur_module.name %>()
         {
-            var _runtime = new <%= $cur_module.name %>Runtime.<%= $cur_module.name %>RuntimeComponent(this);
+            var _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
         }
 <%= dynamic_methods%>    }
 
-    public class <%= $cur_module.name %>Singleton : <%= $cur_module.name %>Runtime.I<%= $cur_module.name %>SingletonImpl
+    public class <%= $cur_module.name %>Singleton : I<%= $cur_module.name %>SingletonImpl
     {
         public <%= $cur_module.name %>Singleton()
         {
-            var _runtime = new <%= $cur_module.name %>Runtime.<%= $cur_module.name %>SingletonComponent(this);
+            var _runtime = new <%= $cur_module.name %>SingletonComponent(this);
         }
 <%= static_methods%>    }
 }

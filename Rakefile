@@ -607,6 +607,7 @@ namespace "config" do
         end    
 
         if $current_platform == "android"
+            $app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
         end    
         
@@ -651,7 +652,7 @@ namespace "config" do
         #$app_config['extensions'].delete('audiocapture')
         $rhoelements_features += "- Audio Capture\n"
     end
-    if $app_config['extensions'].index('signature') && ($current_platform == "iphone")
+    if $app_config['extensions'].index('signature') && (($current_platform == "iphone") || ($current_platform == "android"))
         $rhoelements_features += "- Signature Capture\n"
     end
     
@@ -943,7 +944,12 @@ def init_extensions(startdir, dest)
   extjsmodulefiles = []
   startJSModules = []
   endJSModules = []
-  
+  extcsharplibs = []
+  extcsharpentries = []
+  extcsharppaths = []
+  extcsharpprojects = []
+  extscsharp = nil
+
   extpaths = $app_config["extpaths"]  
 
   rhoapi_js_folder = nil
@@ -997,15 +1003,17 @@ def init_extensions(startdir, dest)
           type = extconf["exttype"]
           wm_type = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths = extconf["xml_api_paths"]
-        
+          csharp_impl = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) && (!extconf['wp8']['csharp_impl'].nil?) ? true : false
+
           if nlib != nil
             nlib.each do |libname|
               nativelib << libname
             end
           end
           
+          # ? if csharp_impl ... extcsharpentries ...
           extentries << entry unless entry.nil?
-         
+
           if type.to_s() != "nativelib"
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
@@ -1013,11 +1021,18 @@ def init_extensions(startdir, dest)
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
             if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
-              libs.map! { |lib| lib + ".lib" }
+              libs.each do |lib|
+                extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
+                extlibs << lib + "Runtime.lib" if csharp_impl
+                extcsharplibs << lib + (csharp_impl ? "Lib" : "") + ".lib" if csharp_impl
+                extcsharplibs << lib + "Runtime.lib" if csharp_impl
+                extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>" if csharp_impl
+                extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />' if csharp_impl
+              end
             else
               libs.map! { |lib| "lib" + lib + ".a" }
+              extlibs += libs
             end
-            extlibs += libs
           end
 
           if xml_api_paths && type != "prebuilt" && wm_type != "prebuilt"
@@ -1062,6 +1077,11 @@ def init_extensions(startdir, dest)
   gen_checker.update
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
+  if $config["platform"] == "wp8"
+    extscsharp = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.cs")
+    extscsharptargets = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.targets")
+    extscsharpcpp = File.join($startdir, "platform", "wp8", "rhoruntime", "CSharpExtensions.cpp")
+  end
   puts "exts " + exts
 
   extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
@@ -1077,7 +1097,7 @@ def init_extensions(startdir, dest)
   end
 
   if $config["platform"] != "bb"
-    f = StringIO.new("", "w+")          
+    f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
 
     if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
@@ -1090,7 +1110,7 @@ def init_extensions(startdir, dest)
         f.puts "#pragma comment(lib, \"#{lib}\")"
       end
     end
-      
+
     extentries.each do |entry|
       f.puts "extern void #{entry}(void);"
     end
@@ -1102,6 +1122,45 @@ def init_extensions(startdir, dest)
     f.puts "}"
 
     Jake.modify_file_if_content_changed( exts, f )
+
+    if !extscsharp.nil?
+      # C# extensions initialization
+      f = StringIO.new("", "w+")
+      f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+      f.puts "namespace rhodes {"
+      f.puts "    public static class CSharpExtensions {"
+      f.puts "        public static void InitializeExtenstions() {"
+      extcsharpentries.each do |entry|
+        f.puts "            #{entry}();"
+      end
+      f.puts "        }"
+      f.puts "    }"
+      f.puts "}"
+      Jake.modify_file_if_content_changed( extscsharp, f )
+
+      # C++ runtime libraries linking
+      f = StringIO.new("", "w+")
+      f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+      extcsharplibs.each do |lib|
+        f.puts "#pragma comment(lib, \"#{lib}\")"
+      end
+      Jake.modify_file_if_content_changed( extscsharpcpp, f )
+
+      f = StringIO.new("", "w+")
+      f.puts '<?xml version="1.0" encoding="utf-8"?>'
+      f.puts '<!-- WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT! -->'
+      f.puts '<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">'
+      f.puts '  <PropertyGroup>'
+      extcsharppaths.each do |p|
+        f.puts "    #{p}"
+      end
+      f.puts '  </PropertyGroup>'
+      extcsharpprojects.each do |p|
+        f.puts "  #{p}"
+      end
+      f.puts '</Project>'
+      Jake.modify_file_if_content_changed( extscsharptargets, f )
+    end
 
     extlibs.each { |lib| add_linker_library(lib) }
     nativelib.each { |lib| add_linker_library(lib) }

@@ -188,9 +188,14 @@ INetResponse* CNetRequestWrapper::pullFile(const String& strUrl, const String& s
     
     tmpFile.close();
     
-    if ( (pResp->getRespCode() == 200) || (pResp->getRespCode() == 206) ) {
-        if ( common::CRhoFile::renameFile( tmpfilename.c_str(), strFilePath.c_str() ) != 0 ) {
+    if ( (pResp->getRespCode() == 200) || (pResp->getRespCode() == 206) ) 
+    {
+        common::CRhoFile::deleteFile(strFilePath.c_str());
+
+        if ( common::CRhoFile::renameFile( tmpfilename.c_str(), strFilePath.c_str() ) != 0 ) 
+        {
             LOGC(ERROR, "Net") + "pullFile: cannot rename file :" + tmpfilename + " to " + strFilePath;
+            return m_pReqImpl->createEmptyNetResponse();
         }
         
         common::CRhoFile::deleteFile(modfilename.c_str());

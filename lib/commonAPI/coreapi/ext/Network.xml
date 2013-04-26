@@ -92,6 +92,9 @@
                         <PARAM name="http_error" type="INTEGER">
                             <DESC>HTTP error code if response code was not 200.</DESC>
                         </PARAM>
+                        <PARAM name="fileExists" type="BOOLEAN">
+                            <DESC>When overwriteFile is false and file exists, when error return and this flag set to true.</DESC>
+                        </PARAM>
                     </PARAMS>
                 </RETURN>
 
