@@ -21,9 +21,7 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
     private Map<String, String> mActualPropertyMap;
     public Map<String, String> getActualPropertyMap() { return mActualPropertyMap; }
 
-    CameraGingerbread(String id) {
-        super(id);
-    }
+    CameraGingerbread(String id) { super(id); }
     
     @Override
     public void getCameraType(IMethodResult result) {
@@ -70,5 +68,21 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
         }
         hwCamera.release();
         result.set(maxHeight);
+    }
+
+    protected String getTemporaryPath(String targetPath) {
+        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File externalRoot = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            if (! externalRoot.exists()){
+                if (! externalRoot.mkdirs()){
+                    Logger.E(TAG, "Failed to create directory: " + externalRoot);
+                    return null;
+                }
+            }
+            String filename = new File(targetPath).getName();
+            return new File(externalRoot, filename).getAbsolutePath();
+        } else {
+            return null;
+        }
     }
 }

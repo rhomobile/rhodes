@@ -1,8 +1,11 @@
 package com.rho.camera;
 
+import java.io.File;
 import java.util.Map;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.provider.MediaStore;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -56,11 +59,18 @@ public class CameraSingletonObject implements ICameraSingletonObject {
 
     @Override
     public void choosePicture(Map<String, String> propertyMap, IMethodResult result) {
-        ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
+        //((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setActualPropertyMap(propertyMap);
+        String fileName = propertyMap.get("fileName");
+        if (fileName != null && fileName.length() > 0) {
+            ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
 
-        RhodesActivity ra = RhodesActivity.safeGetInstance();
-        Intent intent = new Intent(ra, FileList.class);
-        ra.startActivityForResult(intent, 0);
+            RhodesActivity ra = RhodesActivity.safeGetInstance();
+            Intent intent = new Intent(ra, FileList.class);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(fileName + ".jpg")));
+            ra.startActivityForResult(intent, 0);
+        } else {
+            result.setArgError("'fileName' parameter is missed");
+        }
     }
 
     @Override
