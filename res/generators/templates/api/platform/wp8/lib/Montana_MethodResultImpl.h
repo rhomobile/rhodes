@@ -1,12 +1,9 @@
 #pragma once
 
 #include "../runtime/<%= $cur_module.name %>Runtime.h"
-<% $cur_module.parents.each do |parent| %>
-namespace <%= parent.downcase() %> {<%
-end %>
 
-namespace <%= $cur_module.name %>Runtime {
-    public ref class C<%= $cur_module.name %>MethodResultImpl sealed: public IMethodResult
+namespace rhoruntime {
+    public ref class C<%= $cur_module.name %>MethodResultImpl sealed: public I<%= $cur_module.name %>MethodResult
     {
         rho::apiGenerator::CMethodResult* oResult;
     public:
@@ -21,6 +18,3 @@ namespace <%= $cur_module.name %>Runtime {
         virtual void set(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ res);
     };
 }
-<% $cur_module.parents.each do |parent| %>
-}<%
-end %>
