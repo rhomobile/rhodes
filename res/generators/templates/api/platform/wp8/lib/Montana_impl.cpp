@@ -4,11 +4,10 @@
 #include "<%= $cur_module.name %>_MethodResultImpl.h"
 
 using namespace rho::apiGenerator;
+using namespace rhoruntime;
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
 end%>
-
-using namespace <%= $cur_module.name %>Runtime;
 <%
   dynamic_methods = ''
   static_methods = ''
