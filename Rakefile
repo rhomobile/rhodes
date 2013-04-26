@@ -946,6 +946,8 @@ def init_extensions(startdir, dest)
   endJSModules = []
   extcsharplibs = []
   extcsharpentries = []
+  extcsharppaths = []
+  extcsharpprojects = []
   extscsharp = nil
 
   extpaths = $app_config["extpaths"]  
@@ -1002,7 +1004,7 @@ def init_extensions(startdir, dest)
           wm_type = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths = extconf["xml_api_paths"]
           csharp_impl = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) && (!extconf['wp8']['csharp_impl'].nil?) ? true : false
-        
+
           if nlib != nil
             nlib.each do |libname|
               nativelib << libname
@@ -1024,6 +1026,8 @@ def init_extensions(startdir, dest)
                 extlibs << lib + "Runtime.lib" if csharp_impl
                 extcsharplibs << lib + (csharp_impl ? "Lib" : "") + ".lib" if csharp_impl
                 extcsharplibs << lib + "Runtime.lib" if csharp_impl
+                extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>" if csharp_impl
+                extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />' if csharp_impl
               end
             else
               libs.map! { |lib| "lib" + lib + ".a" }
@@ -1075,6 +1079,7 @@ def init_extensions(startdir, dest)
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
   if $config["platform"] == "wp8"
     extscsharp = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.cs")
+    extscsharptargets = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.targets")
     extscsharpcpp = File.join($startdir, "platform", "wp8", "rhoruntime", "CSharpExtensions.cpp")
   end
   puts "exts " + exts
@@ -1094,13 +1099,6 @@ def init_extensions(startdir, dest)
   if $config["platform"] != "bb"
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-
-    if !extscsharp.nil?
-      f_csharp = StringIO.new("", "w+")
-      f_csharp.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-      f_csharp_cpp = StringIO.new("", "w+")
-      f_csharp_cpp.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-    end
 
     if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
       # Add libraries through pragma
@@ -1127,21 +1125,41 @@ def init_extensions(startdir, dest)
 
     if !extscsharp.nil?
       # C# extensions initialization
-      f_csharp.puts "namespace rhodes {"
-      f_csharp.puts "    public static class CSharpExtensions {"
-      f_csharp.puts "        public static void InitializeExtenstions() {"
+      f = StringIO.new("", "w+")
+      f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+      f.puts "namespace rhodes {"
+      f.puts "    public static class CSharpExtensions {"
+      f.puts "        public static void InitializeExtenstions() {"
       extcsharpentries.each do |entry|
-        f_csharp.puts "            #{entry}();"
+        f.puts "            #{entry}();"
       end
-      f_csharp.puts "        }"
-      f_csharp.puts "    }"
-      f_csharp.puts "}"
-      Jake.modify_file_if_content_changed( extscsharp, f_csharp )
+      f.puts "        }"
+      f.puts "    }"
+      f.puts "}"
+      Jake.modify_file_if_content_changed( extscsharp, f )
+
       # C++ runtime libraries linking
+      f = StringIO.new("", "w+")
+      f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
       extcsharplibs.each do |lib|
-        f_csharp_cpp.puts "#pragma comment(lib, \"#{lib}\")"
+        f.puts "#pragma comment(lib, \"#{lib}\")"
       end
-      Jake.modify_file_if_content_changed( extscsharpcpp, f_csharp_cpp )
+      Jake.modify_file_if_content_changed( extscsharpcpp, f )
+
+      f = StringIO.new("", "w+")
+      f.puts '<?xml version="1.0" encoding="utf-8"?>'
+      f.puts '<!-- WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT! -->'
+      f.puts '<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">'
+      f.puts '  <PropertyGroup>'
+      extcsharppaths.each do |p|
+        f.puts "    #{p}"
+      end
+      f.puts '  </PropertyGroup>'
+      extcsharpprojects.each do |p|
+        f.puts "  #{p}"
+      end
+      f.puts '</Project>'
+      Jake.modify_file_if_content_changed( extscsharptargets, f )
     end
 
     extlibs.each { |lib| add_linker_library(lib) }
