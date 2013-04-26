@@ -2091,12 +2091,12 @@ void CExtManager::requireRubyFile( const char* szFilePath )
             for ( HashtablePtr<String,Vector<String>* >::const_iterator it=conflicts.begin() ; it != conflicts.end(); it++ )
             {
                 String key = it->first;
-                Vector<String> temp;
-                for( Vector<String>::const_iterator it2=it->second->begin(); it2 != it->second->end(); it2++)
+                Vector<String>& ref = *(it->second);
+                Vector<String>& current = conv[key];
+                for( Vector<String>::const_iterator it2=ref.begin(); it2 != ref.end(); it2++)
                 {
-                    temp.push_back(*it2);
+                    current.push_back(*it2);
                 }
-                conv[key] = temp;
             }
             m_result.set(conv);
         }

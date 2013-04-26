@@ -76,7 +76,7 @@ public:
     {
         rho::String resArray;
         // preallocate a bit of memory
-        resArray.reserve(127);
+        resArray.reserve(128);
         
         resArray = "[";
         if(m_oResult.getType() == CMethodResult::eStringArray)
@@ -110,7 +110,7 @@ public:
     {
         rho::String resHash;
         // preallocate a bit of memory
-        resHash.reserve(127);
+        resHash.reserve(128);
         rho::String buffer;
         
         resHash = "{";
