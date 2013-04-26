@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{<%= @wp8LibGUID %>}</ProjectGuid>
-    <RootNamespace><%= name.camel_case() %>Lib</RootNamespace>
+    <RootNamespace>rho</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <WinMDAssembly>true</WinMDAssembly>
