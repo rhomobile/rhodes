@@ -166,6 +166,13 @@ void CMainWindow::RhoSetFullScreen(bool bFull, bool bDestroy /*=false*/)
 {
     LOG(INFO) + "RhoSetFullScreen: " + (bFull ? 1 : 0);
     m_bFullScreen = bFull;
+
+    if( !IsWindowVisible() )
+    {
+        LOG(INFO) + "Main Window is invisible. Skip fill screen method";
+        //return;
+    }
+
     HWND hTaskBar = FindWindow(_T("HHTaskBar"), NULL);
     if ( hTaskBar )
     {
@@ -250,6 +257,10 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     mbi.hwndParent = m_hWnd;
     mbi.nToolBarId = IDR_MAIN_MENUBAR; // ID of toolbar resource
     mbi.hInstRes   = _AtlBaseModule.GetResourceInstance();
+
+    if (!IsWindowVisible())
+        mbi.dwFlags = SHCMBF_HIDDEN;
+
     SHCreateMenuBar(&mbi);
 	m_hWndCECommandBar = mbi.hwndMB;
 	m_menuBar = m_hWndCECommandBar;
@@ -608,8 +619,15 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
+    LOG(INFO) + "ACTIVATE: " + fActive;
 
-	if(m_isMinimized)
+    if ( m_bLoading && !fActive )
+    {
+        LOG(INFO) + "Get deactivate before first navigate. Skip it.";
+        return 0;
+    }
+
+	if(m_isMinimized && fActive)
 	{
 		m_isMinimized = false;
 		SendMessage( m_hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
@@ -617,6 +635,7 @@ LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
     if (lParam) //We get activate from some internal window
     {
+        LOG(INFO) + "Get activate from child window. Skip it.";
 #if defined(_WIN32_WCE) 
         if (m_bFullScreen && fActive && (getSIPVisibleTop()<0))
 	        RhoSetFullScreen(true);

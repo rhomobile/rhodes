@@ -7,7 +7,7 @@ namespace rho
 namespace apiGenerator
 {
 
-typedef rho::String (*Func_JS)(const String& strObjID, rho::json::CJSONArray& argv, const String& strCallbackID, const String& strJsVmID);
+typedef rho::String (*Func_JS)(const String& strObjID, rho::json::CJSONArray& argv, const String& strCallbackID, const String& strJsVmID, const String& strCallbackParam);
 
 void js_define_method(const char* szMethodPath, Func_JS pFunc );
 rho::String js_entry_point(const char* szJSON);

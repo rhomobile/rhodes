@@ -370,7 +370,7 @@ def api_generator_MakeJSMethodDecl(module_name, module_method_name, is_static)
     method_name += 's_' if is_static
     method_name += module_name + "_" + module_method_name
 
-    params = 'const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID'
+    params = 'const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam'
 
     "rho::String #{method_name}(#{params})"
 end

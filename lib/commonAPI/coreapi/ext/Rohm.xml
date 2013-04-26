@@ -53,9 +53,11 @@
         <PARAMS>
           <PARAM name="reset_client_info" type="STRING">
             <DESC>true to clean the client_info table, false otherwise.</DESC>
+            <CAN_BE_NIL/>
           </PARAM>
           <PARAM name="reset_local_models" type="STRING">
             <DESC>true to clean local (non-synced) models, false otherwise.</DESC>
+            <CAN_BE_NIL/>
           </PARAM>
         </PARAMS>
 

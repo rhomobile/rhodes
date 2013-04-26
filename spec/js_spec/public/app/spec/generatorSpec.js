@@ -69,13 +69,14 @@ describe("<generator API specs>", function() {
 
         it("works being defined", function() {
             var cbVal = null;
-            var val = Rho.System.getProperty('platform', function(v){ cbVal = v; });
+            var val = Rho.System.getProperty('platform');
+            Rho.System.getProperty('platform', function(v){ cbVal = v; });
 
             waitsFor(function(){return null != cbVal}, 'Callback should be called', 2000);
             runs(function() {
                 expect(typeof cbVal).toEqual('string');
                 expect(cbVal.length).toBeGreaterThan(0);
-                //expect(cbVal).toEqual(val);
+                expect(cbVal).toEqual(val);
             });
         });
 
@@ -83,13 +84,14 @@ describe("<generator API specs>", function() {
             var params = "abc123";
             var cbParams = null;
             var cbVal = null;
-            var val = Rho.System.getProperty('platform', function(v, p){ cbVal = v; cbParams = p; });
+            var val = Rho.System.getProperty('platform');
+            Rho.System.getProperty('platform', function(v, p){ cbVal = v; cbParams = p; }, params);
 
             waitsFor(function(){return null != cbVal}, 'Callback should be called', 2000);
             runs(function() {
                 expect(typeof cbVal).toEqual('string');
                 expect(cbVal.length).toBeGreaterThan(0);
-                //expect(cbVal).toEqual(val);
+                expect(cbVal).toEqual(val);
                 expect(cbParams).toEqual(params);
             });
         });

@@ -190,7 +190,8 @@ void CMethodResult::callCallback()
         strCallback += m_strJSCallback;
         strCallback += "\", {";
         strCallback += strRes;
-        strCallback += "})";
+        strCallback += "},\"";
+        strCallback += m_strCallbackParam + "\")";
 
         rho_webview_execute_js(strCallback.c_str(), m_iTabId);
 
