@@ -373,8 +373,7 @@
                         <DESC>Map of properties associated with the registry key being set</DESC>
                         <PARAMS>
                             <PARAM name="hive" type="STRING">
-                                <DESC>The hive name</DESC>, setRegistrySetting</DESC>
-
+                                <DESC>The hive name, setRegistrySetting</DESC>
                             </PARAM>
                             <PARAM name="key" type="STRING">
                                 <DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
