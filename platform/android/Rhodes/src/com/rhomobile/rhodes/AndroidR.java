@@ -55,9 +55,7 @@ public final class AndroidR {
         public static final int options=R.drawable.options;
         public static final int refresh=R.drawable.refresh;
         public static final int sync=R.drawable.sync;
-        public static final int signature_cancel=R.drawable.signature_cancel;
-        public static final int signature_clear=R.drawable.signature_clear;
-        public static final int signature_ok=R.drawable.signature_ok;
+
     }
     public static final class id {
         public static final int buttonLayout=R.id.buttonLayout;
@@ -84,10 +82,6 @@ public final class AndroidR {
         public static final int widget28=R.id.widget28;
         public static final int datePicker=R.id.datePicker;
         public static final int timePicker=R.id.timePicker;
-        public static final int sig_cancelButton=R.id.sig_cancelButton;
-        public static final int sig_clearButton=R.id.sig_clearButton;
-        public static final int sig_okButton=R.id.sig_okButton;
-        public static final int signature_view=R.id.signature_view;
         public static final int title_paired_devices=R.id.title_paired_devices;
         public static final int paired_devices=R.id.paired_devices;
         public static final int title_new_devices=R.id.title_new_devices;
@@ -99,7 +93,6 @@ public final class AndroidR {
     }
     public static final class layout {
         public static final int camera=R.layout.camera;
-        public static final int signature=R.layout.signature;
         public static final int dialog_activity=R.layout.dialog_activity;
         public static final int directory_list=R.layout.directory_list;
         public static final int file_row=R.layout.file_row;

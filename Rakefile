@@ -607,6 +607,7 @@ namespace "config" do
         end    
 
         if $current_platform == "android"
+            $app_config['extensions'] = $app_config['extensions'] | ['signature']
             $app_config['extensions'] = $app_config['extensions'] | ['cardreader']
         end    
         
@@ -651,7 +652,7 @@ namespace "config" do
         #$app_config['extensions'].delete('audiocapture')
         $rhoelements_features += "- Audio Capture\n"
     end
-    if $app_config['extensions'].index('signature') && ($current_platform == "iphone")
+    if $app_config['extensions'].index('signature') && (($current_platform == "iphone") || ($current_platform == "android"))
         $rhoelements_features += "- Signature Capture\n"
     end
     
