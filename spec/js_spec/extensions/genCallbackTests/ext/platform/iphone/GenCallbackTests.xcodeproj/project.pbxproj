@@ -1,0 +1,375 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C063705C17217FF8003F1EE6 /* GenCallbackTestsBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C063704117217FF8003F1EE6 /* GenCallbackTestsBase.h */; };
+		C063705D17217FF8003F1EE6 /* GenCallbackTestsBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C063704217217FF8003F1EE6 /* GenCallbackTestsBase.m */; };
+		C063705E17217FF8003F1EE6 /* GenCallbackTestsFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C063704317217FF8003F1EE6 /* GenCallbackTestsFactoryBase.h */; };
+		C063705F17217FF8003F1EE6 /* GenCallbackTestsFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C063704417217FF8003F1EE6 /* GenCallbackTestsFactoryBase.m */; };
+		C063706017217FF8003F1EE6 /* GenCallbackTestsSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C063704517217FF8003F1EE6 /* GenCallbackTestsSingletonBase.h */; };
+		C063706117217FF8003F1EE6 /* GenCallbackTestsSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C063704617217FF8003F1EE6 /* GenCallbackTestsSingletonBase.m */; };
+		C063706217217FF8003F1EE6 /* IGenCallbackTests.h in Headers */ = {isa = PBXBuildFile; fileRef = C063704717217FF8003F1EE6 /* IGenCallbackTests.h */; };
+		C063706317217FF8003F1EE6 /* gencallbacktests_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = C063704917217FF8003F1EE6 /* gencallbacktests_js_wrap.mm */; };
+		C063706417217FF8003F1EE6 /* gencallbacktests_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = C063704B17217FF8003F1EE6 /* gencallbacktests_ruby_wrap.m */; };
+		C063706B17217FF8003F1EE6 /* GenCallbackTests.h in Headers */ = {isa = PBXBuildFile; fileRef = C063705517217FF8003F1EE6 /* GenCallbackTests.h */; };
+		C063706C17217FF8003F1EE6 /* GenCallbackTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C063705617217FF8003F1EE6 /* GenCallbackTests.m */; };
+		C063706D17217FF8003F1EE6 /* GenCallbackTestsFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C063705717217FF8003F1EE6 /* GenCallbackTestsFactorySingleton.m */; };
+		C063706E17217FF8003F1EE6 /* GenCallbackTestsSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C063705817217FF8003F1EE6 /* GenCallbackTestsSetup.m */; };
+		C063706F17217FF8003F1EE6 /* GenCallbackTestsSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = C063705917217FF8003F1EE6 /* GenCallbackTestsSingleton.h */; };
+		C063707017217FF8003F1EE6 /* GenCallbackTestsSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C063705A17217FF8003F1EE6 /* GenCallbackTestsSingleton.m */; };
+		C06370811721800B003F1EE6 /* gencallbacktests_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06370791721800B003F1EE6 /* gencallbacktests_api_init.cpp */; };
+		C06370821721800B003F1EE6 /* gencallbacktests_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C063707A1721800B003F1EE6 /* gencallbacktests_js_api.cpp */; };
+		C06370831721800B003F1EE6 /* gencallbacktests_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C063707B1721800B003F1EE6 /* gencallbacktests_ruby_api.c */; };
+		FAC155E7145855CF0016F3BD /* genCallbackTests_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* genCallbackTests_Prefix.pch */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C063704117217FF8003F1EE6 /* GenCallbackTestsBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenCallbackTestsBase.h; sourceTree = "<group>"; };
+		C063704217217FF8003F1EE6 /* GenCallbackTestsBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenCallbackTestsBase.m; sourceTree = "<group>"; };
+		C063704317217FF8003F1EE6 /* GenCallbackTestsFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenCallbackTestsFactoryBase.h; sourceTree = "<group>"; };
+		C063704417217FF8003F1EE6 /* GenCallbackTestsFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenCallbackTestsFactoryBase.m; sourceTree = "<group>"; };
+		C063704517217FF8003F1EE6 /* GenCallbackTestsSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenCallbackTestsSingletonBase.h; sourceTree = "<group>"; };
+		C063704617217FF8003F1EE6 /* GenCallbackTestsSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenCallbackTestsSingletonBase.m; sourceTree = "<group>"; };
+		C063704717217FF8003F1EE6 /* IGenCallbackTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IGenCallbackTests.h; sourceTree = "<group>"; };
+		C063704917217FF8003F1EE6 /* gencallbacktests_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = gencallbacktests_js_wrap.mm; sourceTree = "<group>"; };
+		C063704B17217FF8003F1EE6 /* gencallbacktests_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gencallbacktests_ruby_wrap.m; sourceTree = "<group>"; };
+		C063705517217FF8003F1EE6 /* GenCallbackTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenCallbackTests.h; sourceTree = "<group>"; };
+		C063705617217FF8003F1EE6 /* GenCallbackTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenCallbackTests.m; sourceTree = "<group>"; };
+		C063705717217FF8003F1EE6 /* GenCallbackTestsFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenCallbackTestsFactorySingleton.m; sourceTree = "<group>"; };
+		C063705817217FF8003F1EE6 /* GenCallbackTestsSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenCallbackTestsSetup.m; sourceTree = "<group>"; };
+		C063705917217FF8003F1EE6 /* GenCallbackTestsSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GenCallbackTestsSingleton.h; sourceTree = "<group>"; };
+		C063705A17217FF8003F1EE6 /* GenCallbackTestsSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenCallbackTestsSingleton.m; sourceTree = "<group>"; };
+		C06370791721800B003F1EE6 /* gencallbacktests_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gencallbacktests_api_init.cpp; path = generated/gencallbacktests_api_init.cpp; sourceTree = "<group>"; };
+		C063707A1721800B003F1EE6 /* gencallbacktests_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gencallbacktests_js_api.cpp; path = generated/gencallbacktests_js_api.cpp; sourceTree = "<group>"; };
+		C063707B1721800B003F1EE6 /* gencallbacktests_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gencallbacktests_ruby_api.c; path = generated/gencallbacktests_ruby_api.c; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libgenCallbackTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgenCallbackTests.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* genCallbackTests_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = genCallbackTests_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libgenCallbackTests.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Barcode */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Barcode;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C06370711721800B003F1EE6 /* shared */,
+				C063703F17217FF8003F1EE6 /* generated */,
+				C063705417217FF8003F1EE6 /* impl */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* genCallbackTests_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		C063703F17217FF8003F1EE6 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C063704717217FF8003F1EE6 /* IGenCallbackTests.h */,
+				C063704817217FF8003F1EE6 /* javascript */,
+				C063704A17217FF8003F1EE6 /* ruby */,
+				C063704017217FF8003F1EE6 /* base_impl */,
+			);
+			path = generated;
+			sourceTree = "<group>";
+		};
+		C063704017217FF8003F1EE6 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				C063704117217FF8003F1EE6 /* GenCallbackTestsBase.h */,
+				C063704217217FF8003F1EE6 /* GenCallbackTestsBase.m */,
+				C063704317217FF8003F1EE6 /* GenCallbackTestsFactoryBase.h */,
+				C063704417217FF8003F1EE6 /* GenCallbackTestsFactoryBase.m */,
+				C063704517217FF8003F1EE6 /* GenCallbackTestsSingletonBase.h */,
+				C063704617217FF8003F1EE6 /* GenCallbackTestsSingletonBase.m */,
+			);
+			path = base_impl;
+			sourceTree = "<group>";
+		};
+		C063704817217FF8003F1EE6 /* javascript */ = {
+			isa = PBXGroup;
+			children = (
+				C063704917217FF8003F1EE6 /* gencallbacktests_js_wrap.mm */,
+			);
+			path = javascript;
+			sourceTree = "<group>";
+		};
+		C063704A17217FF8003F1EE6 /* ruby */ = {
+			isa = PBXGroup;
+			children = (
+				C063704B17217FF8003F1EE6 /* gencallbacktests_ruby_wrap.m */,
+			);
+			path = ruby;
+			sourceTree = "<group>";
+		};
+		C063705417217FF8003F1EE6 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C063705517217FF8003F1EE6 /* GenCallbackTests.h */,
+				C063705617217FF8003F1EE6 /* GenCallbackTests.m */,
+				C063705717217FF8003F1EE6 /* GenCallbackTestsFactorySingleton.m */,
+				C063705817217FF8003F1EE6 /* GenCallbackTestsSetup.m */,
+				C063705917217FF8003F1EE6 /* GenCallbackTestsSingleton.h */,
+				C063705A17217FF8003F1EE6 /* GenCallbackTestsSingleton.m */,
+			);
+			path = impl;
+			sourceTree = "<group>";
+		};
+		C06370711721800B003F1EE6 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				C06370791721800B003F1EE6 /* gencallbacktests_api_init.cpp */,
+				C063707A1721800B003F1EE6 /* gencallbacktests_js_api.cpp */,
+				C063707B1721800B003F1EE6 /* gencallbacktests_ruby_api.c */,
+			);
+			name = shared;
+			path = ../../shared;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155E7145855CF0016F3BD /* genCallbackTests_Prefix.pch in Headers */,
+				C063705C17217FF8003F1EE6 /* GenCallbackTestsBase.h in Headers */,
+				C063705E17217FF8003F1EE6 /* GenCallbackTestsFactoryBase.h in Headers */,
+				C063706017217FF8003F1EE6 /* GenCallbackTestsSingletonBase.h in Headers */,
+				C063706217217FF8003F1EE6 /* IGenCallbackTests.h in Headers */,
+				C063706B17217FF8003F1EE6 /* GenCallbackTests.h in Headers */,
+				C063706F17217FF8003F1EE6 /* GenCallbackTestsSingleton.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* genCallbackTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "genCallbackTests" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = genCallbackTests;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libgenCallbackTests.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "GenCallbackTests" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Barcode */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* genCallbackTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C063705D17217FF8003F1EE6 /* GenCallbackTestsBase.m in Sources */,
+				C063705F17217FF8003F1EE6 /* GenCallbackTestsFactoryBase.m in Sources */,
+				C063706117217FF8003F1EE6 /* GenCallbackTestsSingletonBase.m in Sources */,
+				C063706317217FF8003F1EE6 /* gencallbacktests_js_wrap.mm in Sources */,
+				C063706417217FF8003F1EE6 /* gencallbacktests_ruby_wrap.m in Sources */,
+				C063706C17217FF8003F1EE6 /* GenCallbackTests.m in Sources */,
+				C063706D17217FF8003F1EE6 /* GenCallbackTestsFactorySingleton.m in Sources */,
+				C063706E17217FF8003F1EE6 /* GenCallbackTestsSetup.m in Sources */,
+				C063707017217FF8003F1EE6 /* GenCallbackTestsSingleton.m in Sources */,
+				C06370811721800B003F1EE6 /* gencallbacktests_api_init.cpp in Sources */,
+				C06370821721800B003F1EE6 /* gencallbacktests_js_api.cpp in Sources */,
+				C06370831721800B003F1EE6 /* gencallbacktests_ruby_api.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/genCallbackTests.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = genCallbackTests_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = genCallbackTests;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386 armv7";
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /tmp/genCallbackTests.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = genCallbackTests_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = genCallbackTests;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386  armv7";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "GenCallbackTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "genCallbackTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

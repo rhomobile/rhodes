@@ -1,0 +1,12 @@
+entry: Init_GenCallbackTests_extension	
+javaentry: com.gencallbacktests.GenCallbackTests
+libraries: ["GenCallbackTests"]
+android:
+  source_list: ext/platform/android/ext_java.files
+
+project_paths:
+  wp8: ext/platform/wp8/GenCallbackTests.vcxproj
+  wm: ext/platform/wm/GenCallbackTests.vcproj
+  win32: ext/platform/wm/GenCallbackTests.vcproj
+  
+xml_api_paths: ext/GenCallbackTests.xml
