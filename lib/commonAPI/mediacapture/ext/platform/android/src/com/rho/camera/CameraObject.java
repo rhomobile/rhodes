@@ -111,6 +111,7 @@ public class CameraObject extends CameraBase implements ICameraObject {
             }
             
             ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
+            ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setActualPropertyMap(mActualPropertyMap);
 
             boolean useSystemViewfinder = Boolean.parseBoolean(mActualPropertyMap.get("useSystemViewfinder"));
             Intent intent = null;
@@ -118,7 +119,12 @@ public class CameraObject extends CameraBase implements ICameraObject {
                 intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     
                 if (outputFormat.equalsIgnoreCase("image")) {
-                    File file = new File(Environment.getExternalStorageDirectory(), filePath);
+                    String tmpPath = getTemporaryPath(filePath);
+                    if (tmpPath == null) {
+                        throw new RuntimeException("Failed to access shared temporary folder");
+                    }
+                    mActualPropertyMap.put("tempPath", tmpPath);
+                    File file = new File(tmpPath);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
                 } else
                 if (outputFormat.equalsIgnoreCase("dataUri")) {
@@ -135,6 +141,22 @@ public class CameraObject extends CameraBase implements ICameraObject {
         }
     }
 
+    protected String getTemporaryPath(String targetPath) {
+        if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            File externalRoot = Environment.getExternalStorageDirectory();
+            if (! externalRoot.exists()){
+                if (! externalRoot.mkdirs()){
+                    Logger.E(TAG, "Failed to create directory: " + externalRoot);
+                    return null;
+                }
+            }
+            String filename = new File(targetPath).getName();
+            return new File(externalRoot, filename).getAbsolutePath();
+        } else {
+            return null;
+        }
+    }
+    
     @Override
     public void getSupportedSizeList(IMethodResult result) {
         // TODO Auto-generated method stub

@@ -1,6 +1,7 @@
 package com.rho.camera;
 
 import java.io.File;
+import java.util.Map;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -21,6 +22,7 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
     private static final String TAG = CameraRhoListener.class.getSimpleName();
 
     private IMethodResult mMethodResult;
+    private Map<String, String> mActualPropertyMap;
 
     @Override
     public void onCreateApplication(IRhoExtManager extManager) {
@@ -30,29 +32,48 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
     }
     @Override
     public void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent) {
-        Logger.I(TAG, "Result intent: " + intent + ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         try {
             if (resultCode == Activity.RESULT_OK) {
-                Uri uri = (Uri)intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
-                Logger.T(TAG, "Photo is capltured: " + uri);
-                String curPath = uri.getPath();
+                String curPath = null;
+                if (intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT)) {
+                    Logger.T(TAG, "Intent extras: " + intent.getExtras().keySet());
+                    
+                    Uri uri = (Uri)intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+                    if (uri == null) {
+                        uri = intent.getData();
+                    }
+                    Logger.T(TAG, "Photo is capltured: " + uri);
+                    curPath = uri.getPath();
+                }
+                else {
+                    Logger.T(TAG, "Wrong intent: " + intent);
+                    curPath = getActualPropertyMap().get("tempPath");
+                    Logger.T(TAG, "Use fallback path: " + curPath);
+                }
+                String targetPath = getActualPropertyMap().get("fileName") + ".jpg";
                 File curFile = new File(curPath);
-                String filename = Utils.getBaseName(curPath);
+
                 if (!curFile.isFile()) {
                     Logger.E(TAG, "Captured photo file does not exist: " + curPath);
                     mMethodResult.setError("Captured photo file does not exist: " + curPath);
                 } else {
-                    if (!curPath.startsWith(RhodesAppOptions.getBlobPath())) {
-                        String dstPath = RhodesAppOptions.getBlobPath() + "/" + filename;
-                        Utils.copy(curPath, dstPath);
-                        Logger.T(TAG, "File copied to " + dstPath);
+                    if (!curPath.equals(targetPath)) {
+                        Utils.copy(curPath, targetPath);
+                        curFile.delete();
+                        Logger.T(TAG, "File copied to " + targetPath);
                     }
-                    mMethodResult.collect("image_uri", "db%2Fdb-files%2F/" + filename);
+                    mMethodResult.collect("imageUri", targetPath);
+                    mMethodResult.collect("image_uri", targetPath);
                     mMethodResult.collect("status", "ok");
                     mMethodResult.set();
                 }
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                mMethodResult.setError("Cancelled by user");
+                if (intent.hasExtra("error")) {
+                    mMethodResult.setError(intent.getStringExtra("error"));
+                } else {
+                    mMethodResult.collect("status", "cancel");
+                    mMethodResult.set();
+                }
             } else {
                 mMethodResult.setError("Unknown error");
             }
@@ -69,5 +90,13 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
     
     void releaseMethodResult() {
         mMethodResult = null;
+    }
+
+    void setActualPropertyMap(Map<String, String> propertyMap) {
+        mActualPropertyMap = propertyMap;
+    }
+
+    Map<String, String> getActualPropertyMap() {
+        return mActualPropertyMap;
     }
 }
