@@ -107,6 +107,13 @@ const char* rho_webview_execute_js(const char* js, int index)
 	return "";
 }
 
+const char* rho_webview_execute_js_sync(const char* js, int index) 
+{
+    // TODO: implement sync js callback
+    rho_webview_execute_js(js, index);
+    return "";
+}
+
 const char* rho_webview_current_location(int index) 
 {
     return RHODESAPP().getCurrentUrl(index).c_str();
