@@ -140,6 +140,16 @@ const char* rho_webview_execute_js(const char* js, int index) {
     return "";
 }
 
+const char* rho_webview_execute_js_sync(const char* js, int index) {
+    BOOL isUIThread = [NSThread isMainThread];
+    //NSAssert(isUIThread, @"Method called using a thread other than main!");
+    if (isUIThread)
+    {
+        [[[Rhodes sharedInstance] mainView] executeJs:[NSString stringWithUTF8String:js] tab:index];
+    }
+    return "";
+}
+
 const char* rho_webview_current_location(int index) {
     return rho_rhodesapp_getcurrenturl(index);
 }

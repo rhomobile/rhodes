@@ -2,11 +2,15 @@ entry: Init_Mediacapture_extension
 libraries: ["mediacapture"]
 android:
   source_list: ext/platform/android/ext_java.files
-  rhodes_listener: com.rho.camera.CameraFactory
+  rhodes_listener: com.rho.mediacapture.RhoListener
 
+android_manifest_changes: ext/platform/android/AndroidManifest_rhomobile.xml
+  
 project_paths:
   wp8: ext/platform/wp8/Mediacapture.vcxproj
   wm: ext/platform/wm/Mediacapture.vcproj
   win32: ext/platform/wm/Mediacapture.vcproj
   
-xml_api_paths: ext/camera.xml
+xml_api_paths: ext/camera.xml, ext/videocapture.xml
+
+platforms: ["wm", "iphone", "android"]

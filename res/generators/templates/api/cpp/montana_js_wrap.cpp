@@ -112,6 +112,8 @@ end %>
     {
         if ( argv[<%= first_arg %>].isFloat() )
             arg<%= first_arg %> = argv[<%= first_arg %>].getDouble();
+        else if ( argv[<%= first_arg %>].isInteger() )
+            arg<%= first_arg %> = argv[<%= first_arg %>].getInt();
         else if (!argv[<%= first_arg %>].isNull())
         {
             oRes.setArgError("Type error: argument " <%= "\"#{first_arg}\"" %> " should be " <%= "\"#{param.type.downcase}\"" %> );
@@ -172,7 +174,7 @@ end %>
 <% if module_method.has_callback != ModuleMethod::CALLBACK_NONE %>
     oRes.setCallInUIThread(<%= (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) ? "true" : "false" %>);
     oRes.setJSCallback( strCallbackID );
-    oRes.setCallbackParam( strJsVmID );
+    oRes.setCallbackParam( strCallbackParam );
 <% end %>
 
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>

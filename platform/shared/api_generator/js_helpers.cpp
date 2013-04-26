@@ -23,6 +23,7 @@ static const String RHO_CLASS("__rhoClass");
 static const String RHO_ID("__rhoID");
 static const String RHO_CALLBACK("__rhoCallback");
 static const String VM_ID("vmID");
+static const String RHO_CALLBACK_PARAM("optParams");
 
 void js_define_method(const char* szMethodPath, Func_JS pFunc )
 {
@@ -33,7 +34,7 @@ rho::String js_entry_point(const char* szJSON)
 {
     RAWTRACE(szJSON);
 
-    rho::String strReqId, strMethod, strObjID, strCallbackID, strJsVmID;
+    rho::String strReqId, strMethod, strObjID, strCallbackID, strJsVmID, strCallbackParam;
     CJSONEntry oEntry(szJSON);
 
     if ( !oEntry.hasName(ID) )
@@ -75,12 +76,16 @@ rho::String js_entry_point(const char* szJSON)
 
         const char* pcszCallbackID = oCallback.getString(ID.c_str());
         const char* pcszJsVmID = oCallback.getString(VM_ID.c_str());
+        const char* pcszCallbackParam = oCallback.getString(RHO_CALLBACK_PARAM.c_str());
 
         if (pcszCallbackID)
             strCallbackID = pcszCallbackID;
 
         if (pcszJsVmID)
             strJsVmID = pcszJsVmID;//oCallback.getString(pcszJsVmID);
+
+        if (pcszCallbackParam)
+            strCallbackParam = pcszCallbackParam;
     }
 
     String_replace(strMethod, '.', ':');
@@ -94,7 +99,7 @@ rho::String js_entry_point(const char* szJSON)
     CJSONArray oParams(oEntry.getEntry("params"));
 
     RAWTRACE3("Calling API: object: %s, method: %s, callback id: %s", strObjID.c_str(), strMethod.c_str(), strCallbackID.c_str());
-    return "{\"jsonrpc\": \"2.0\", " + pMethod( strObjID, oParams, strCallbackID, strJsVmID ) + ", \"id\": " + strReqId + "}";
+    return "{\"jsonrpc\": \"2.0\", " + pMethod( strObjID, oParams, strCallbackID, strJsVmID, strCallbackParam ) + ", \"id\": " + strReqId + "}";
 }
 
 void rho_http_js_entry_point(void *arg, rho::String const &query )

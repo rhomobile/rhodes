@@ -4,11 +4,10 @@
 #include "<%= $cur_module.name %>_MethodResultImpl.h"
 
 using namespace rho::apiGenerator;
+using namespace rhoruntime;
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%
 end%>
-
-using namespace <%= $cur_module.name %>Runtime;
 <%
   dynamic_methods = ''
   static_methods = ''
@@ -97,7 +96,7 @@ I<%= $cur_module.name %>Singleton* C<%= $cur_module.name %>Factory::createModule
 }<%
 end %>
 
-extern "C" void Init_<%= $cur_module.name %>()
+extern "C" void Init_<%= $cur_module.name %>_extension()
 {
     rho::C<%= $cur_module.name %>Factory::setInstance( new rho::C<%= $cur_module.name %>Factory() );
     rho::Init_<%= $cur_module.name %>_API();
