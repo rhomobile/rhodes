@@ -286,38 +286,335 @@
         <SECTIONS>
           <SECTION>
             <DESC>
-              Deletes all rhom objects for a source, optionally filtering by conditions:
+              Ruby usage
             </DESC>
             <CODE lang='ruby'>
               <![CDATA[
-# :conditions   Delete only objects matching these criteria.
-#               Supports find() conditions.
-# :op           See advanced find syntax
+# Deletes all rhom objects for a source, optionally filtering by conditions:
 Account.deleteAll(:conditions => {'industry'=>'electronics'})
-Account.deleteAll(:conditions => {'industry'=>'electronics', 'industry'=>'food'}, :op => 'OR')
 
-]]>
-
+# Delete a rhom object.
+@account = Account.find(:first)
+@account.destroy]]>
             </CODE>
 
           </SECTION>
           <SECTION>
             <DESC>
-              Deletes all rhom objects for a source, optionally filtering by conditions:
+              Javascript usage
             </DESC>
             <CODE lang='javascript'>
               <![CDATA[
-# :conditions   Delete only objects matching these criteria.
-#               Supports find() conditions.
-# :op           See advanced find syntax
+// Deletes all rhom objects for a source, optionally filtering by conditions:
 Account.deleteAll({industry: 'electronics'})
-Account.deleteAll({industry: 'electronics', industry: 'food'}, 'OR')
 
-]]>
+//Delete a rhom object.
+var account = Account.find('first');
+account.destroy]]>
             </CODE>
           </SECTION>
         </SECTIONS>
       </EXAMPLE>
+
+      <EXAMPLE title="Rhom find Method Examples">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              Ruby usage
+            </DESC>
+            <CODE lang='ruby'>
+              <![CDATA[
+# Find Rhom objects:
+acct = Account.find "3560c0a0-ef58-2f40-68a5-48f39f63741b"
+
+acct.name
+  #=> "A.G. Parr PLC 37862"
+
+accts = Account.find(:all, :select => ['name','address'])
+
+accts[0].name
+  #=> "A.G. Parr PLC 37862"
+
+accts[0].telephone
+  #=> nil
+
+# Order examples
+# The :order argument for find accepts several forms.
+# :order by one attribute.
+
+@accts = Account.find(
+      :all,
+      :order => 'name',
+      :orderdir => 'DESC'
+    )
+
+# :order by one attribute with a block.
+    @accts = Account.find(:all, :order => 'name') do |x,y|
+      y <=> x
+    end
+
+# :order with a block.
+    @accts = Account.find(:all) do |item1,item2|
+      item2.name <=> item1.name
+    end
+
+# :order by multiple attributes.
+    @accts = Account.find(
+      :all,
+      :order => ['name', 'industry'],
+      :orderdir => ['ASC', 'DESC']
+    )
+
+# find_by_sql(sql_query) returns rhom object(s) based on sql_query. This method works only for schema models.
+@accts = Account.find_by_sql("SELECT * FROM Account")
+
+  ]]>
+            </CODE>
+
+          </SECTION>
+
+          <SECTION>
+            <DESC>
+              Javascript usage
+            </DESC>
+            <CODE lang='javascript'>
+              <![CDATA[
+// Find Rhom objects:
+var account = Account.find('first');
+account.name; // "A.G. Parr PLC 37862"
+
+var accounts = Account.find('all', {select: ['name','address']})
+accounts[0].name; // "A.G. Parr PLC 37862"
+accounts[0].telephone // nil
+
+// Order examples
+// The order argument for find accepts several forms.
+// order by one attribute.
+
+var accounts = Account.find('all', {order}
+      :all,
+      :order => 'name',
+      :orderdir => 'DESC'
+    )
+
+// order by one attribute with a block.
+    @accts = Account.find(:all, :order => 'name') do |x,y|
+      y <=> x
+    end
+
+// order with a block.
+    @accts = Account.find(:all) do |item1,item2|
+      item2.name <=> item1.name
+    end
+
+// order by multiple attributes.
+    @accts = Account.find(
+      :all,
+      :order => ['name', 'industry'],
+      :orderdir => ['ASC', 'DESC']
+    )
+
+// find_by_sql(sql_query) returns rhom object(s) based on sql_query. This method works only for schema models.
+@accts = Account.find_by_sql("SELECT * FROM Account")
+]]>
+            </CODE>
+          </SECTION>
+
+
+        </SECTIONS>
+      </EXAMPLE>
+
+      <EXAMPLE title="Rhom New and Create Method Examples">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              Ruby usage
+            </DESC>
+            <CODE lang='ruby'>
+              <![CDATA[
+# Create a new rhom object and assign given attributes.
+@account = Account.new(
+  {"name" => "ABC Inc.","address" => "555 5th St."}
+)
+@account.name
+  #=> "ABC Inc."
+
+# Create a new rhom object and save to the database.
+@account = Account.create(
+  {"name" => "some new record", "industry" => "electronics"}
+)]]>
+            </CODE>
+
+          </SECTION>
+
+          <SECTION>
+            <DESC>
+              Javascript usage
+            </DESC>
+            <CODE lang='javascript'>
+              <![CDATA[
+// Create a new rhom object and assign given attributes.
+var account = Account.new({name: "ABC Inc.", address: "555 5th St."})
+account.name // "ABC Inc."
+
+// Create a new rhom object and save to the database.
+account = Account.create({name: "some new record", industry: "electronics"})]]>
+            </CODE>
+          </SECTION>
+        </SECTIONS>
+      </EXAMPLE>
+
+      <EXAMPLE title="Rhom Paginate Method Example">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              Paginate calls find with a limit on the # of records. This emulates rails' classic pagination syntax.
+              Default page size is 10.
+            </DESC>
+            <CODE lang="ruby">
+              <![CDATA[
+Account.paginate(:page => 0)
+  #=> returns first 10 records
+Account.paginate(:page => 1, :per_page => 20)
+  #=> returns records 21-40
+Account.paginate(
+  :page => 5,
+  :conditions => {'industry' => 'Technology'},
+  :order => 'name'
+) #=> you can have :conditions and :order as well ]]>
+
+            </CODE>
+          </SECTION>
+          <SECTION>
+            <DESC>
+              javascript usage:
+            </DESC>
+            <CODE lang="javascript">
+              <![CDATA[ ]]>
+
+            </CODE>
+          </SECTION>
+        </SECTIONS>
+      </EXAMPLE>
+
+      <EXAMPLE title="Rhom Sync and set_notification Method Example">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              Start the sync process for a model. In this example, the value for @params[“sku”] — the value of the sku — must be URL encoded.
+            </DESC>
+            <CODE lang="ruby">
+              <![CDATA[
+Product.sync( url_for(:action => :sync_callback), "", false, "query=#{@params["sku"]}" ) ]]>
+            </CODE>
+          </SECTION>
+
+          <SECTION>
+            <DESC>
+              Set a notification to be called when the sync is complete for this model. This is useful for example if you want to refresh the current list page or display an alert when new data is synchronized. See the sync notification docs for more information.
+            </DESC>
+            <CODE lang="ruby">
+              Account.set_notification( url_for(:action => :sync_notify) )
+            </CODE>
+          </SECTION>
+
+        </SECTIONS>
+      </EXAMPLE>
+
+      <EXAMPLE title="Rhom update_attributes Method Example">
+      <SECTIONS>
+        <SECTION>
+          <DESC>Update the current rhom object’s attributes and saves it to the database.</DESC>
+          <CODE lang="ruby">
+            <![CDATA[
+@account = Account.find(
+:all,
+:conditions => {'name' => 'ABC Inc.'}
+)
+@account.update_attributes(
+{"name" => "ABC Inc.", "industry" => "Technology"}
+)
+@account.industry
+#=> "Technology" ]]>
+          </CODE>
+        </SECTION>
+
+        <SECTION>
+          <DESC>Saves the current rhom object to the database.</DESC>
+          <CODE lang="ruby">
+            <![CDATA[
+@account = Account.new(
+  {"name" => "some new record", "industry" => "electronics"}
+)
+@account.save ]]>
+          </CODE>
+        </SECTION>
+
+      </SECTIONS>
+      </EXAMPLE>
+
+
+      <EXAMPLE title="Rhom can_modify Method Example">
+     <SECTIONS>
+       <SECTION>
+         <DESC>Before displaying an edit page for an object, your application can check if the object is currently being accessed by the sync process. If it is, you should disable editing of the object. can_modify could return true, for example, on a new local record that was created and sent to the RhoConnect application, but no response has been received yet.</DESC>
+         <CODE lang="ruby">
+           <![CDATA[
+def edit
+  @product = Product.find(@params['id'])
+  if @product && !@product.can_modify
+    render :action => :show_edit_error
+  else
+    render :action => :edit
+  end
+end
+                   ]]>
+         </CODE>
+       </SECTION>
+     </SECTIONS>
+      </EXAMPLE>
+
+      <EXAMPLE title="Rhom isChanged Method Example">
+      <SECTIONS>
+        <SECTION>
+          <DESC>
+            Determine if a rhom model has local database changes that need to be synchronized.
+          </DESC>
+          <CODE lang="ruby">
+            <![CDATA[
+                def should_sync_product_object
+  if Product.changed?
+    #... do stuff ...
+  end
+end]]>
+          </CODE>
+        </SECTION>
+      </SECTIONS>
+      </EXAMPLE>
+
+      <EXAMPLE title="Rhom metadata Method Examples">
+      <SECTIONS>
+        <SECTION>
+          <DESC>Returns the metadata for a given model.</DESC>
+          <CODE lang="ruby">
+            <![CDATA[
+             Product.metadata
+#=> {'foo' => 'bar'} ]]>
+          </CODE>
+        </SECTION>
+
+        <SECTION>
+          <DESC>Assigns the metadata for a given model.</DESC>
+          <CODE lang="ruby">
+            <![CDATA[
+             Product.metadata = { 'foo' => 'bar' } ]]>
+          </CODE>
+        </SECTION>
+
+      </SECTIONS>
+      </EXAMPLE>
+
+
     </EXAMPLES>
   </MODULE>
 </API>    
