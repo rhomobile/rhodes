@@ -433,7 +433,7 @@ int CURLNetRequest::getResponseCode(CURLcode err, char const *body, size_t bodys
 	
     if (statusCode >= 400) {
         RAWLOG_ERROR2("Request failed. HTTP Code: %d returned. HTTP Response: %s",
-                      (int)statusCode, body);
+                      (int)statusCode, String(body, bodysize).c_str());
         if (statusCode == 401)
             if (oSession)
                 oSession->logout();
