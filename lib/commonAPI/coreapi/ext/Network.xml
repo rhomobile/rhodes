@@ -251,77 +251,77 @@
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
                         <PARAMS>
-							<PARAM name="host" type="STRING" default="www.motorolasolutions.com">
-								<DESC>When detecting a network connection, this is the URL or IP address of the server to attempt to connect to</DESC>
-							</PARAM>
-							<PARAM name="port" type="INTEGER" default="80">
-								<DESC>When detecting a network connection, this is the port on the host to connect to.</DESC>
-							</PARAM>
-							<PARAM name="pollInterval" type="INTEGER" default="30000">
-								<DESC>The time, in milliseconds, between each check for a connection. Note that the actual connection report interval will be the sum of the poll interval and the detection timeout.  The minimum allowed value is 5000ms</DESC>
-							</PARAM>
-							<PARAM name="detectionTimeout" type="INTEGER" default="1000">
-								<DESC>The amount of time to attempt to connect to the specified URL before giving up and assuming 'disconnected'.  Value is specified in milliseconds.</DESC>
-							</PARAM>                       
+                            <PARAM name="host" type="STRING" default="www.motorolasolutions.com">
+                                <DESC>When detecting a network connection, this is the URL or IP address of the server to attempt to connect to</DESC>
+                            </PARAM>
+                            <PARAM name="port" type="INTEGER" default="80">
+                                <DESC>When detecting a network connection, this is the port on the host to connect to.</DESC>
+                            </PARAM>
+                            <PARAM name="pollInterval" type="INTEGER" default="30000">
+                                <DESC>The time, in milliseconds, between each check for a connection. Note that the actual connection report interval will be the sum of the poll interval and the detection timeout.  The minimum allowed value is 5000ms</DESC>
+                            </PARAM>
+                            <PARAM name="detectionTimeout" type="INTEGER" default="1000">
+                                <DESC>The amount of time to attempt to connect to the specified URL before giving up and assuming 'disconnected'.  Value is specified in milliseconds.</DESC>
+                            </PARAM>                       
                         </PARAMS>
                     </PARAM>
-				</PARAMS>
-				<CALLBACK  type="HASH">
-					<DESC>Information related to the connection to the specified URL.</DESC>
-					<PARAMS>
-						<PARAM name="connectionInformation" type="STRING">
-							<DESC>Whether the device is connected to the specified host and port.  Either 'Connected' or 'Disconnected'.</DESC>
-						</PARAM>
-						<PARAM name="failureMessage" type="STRING">
-							<DESC>If the device is disconnected this field will contain information about why the connection failed.</DESC>
-						</PARAM>
-					</PARAMS>
-				</CALLBACK>    
-			</METHOD>
-			
-			<METHOD name="stopDetectingConnection" hasCallback="mandatory">
+                </PARAMS>
+                <CALLBACK  type="HASH">
+                    <DESC>Information related to the connection to the specified URL.</DESC>
+                    <PARAMS>
+                        <PARAM name="connectionInformation" type="STRING">
+                            <DESC>Whether the device is connected to the specified host and port.  Either 'Connected' or 'Disconnected'.</DESC>
+                        </PARAM>
+                        <PARAM name="failureMessage" type="STRING">
+                            <DESC>If the device is disconnected this field will contain information about why the connection failed.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>    
+            </METHOD>
+            
+            <METHOD name="stopDetectingConnection" hasCallback="mandatory">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
                 <DESC>Ceases the network detection identified by the given callback</DESC>
-			</METHOD>
-			
-			<METHOD name="connectWan" hasCallback="mandatory">
+            </METHOD>
+            
+            <METHOD name="connectWan" hasCallback="mandatory">
                 <DESC>Connects RhoElements through a Wide Area Network. The connection destination must be first configured through the Connection Manager and the destination name provided to this method. If a connection is already established, you must first call disconnectWan before attempting another connection. A list of available connection destinations is written to the log file when either connectWan or disconnectWan are first specified. Specify the connection as 'Internet' to use the default internet connection defined on the device. If the specified destination does not exist no connection attempt will be made and an entry will be made in the log file.</DESC>
-				<PLATFORM>WM</PLATFORM>
-				<APPLIES>This method only applies to platforms with the Windows connection manager</APPLIES>
+                <PLATFORM>WM</PLATFORM>
+                <APPLIES>This method only applies to platforms with the Windows connection manager</APPLIES>
                 <VER_INTRODUCED>1.0.3</VER_INTRODUCED>
-				<PARAMS>
-					<PARAM name="connectionDestination" type="STRING">
-						<DESC>The connection in the Windows Connection manager to use, specify 'Internet' to use the default internet connection.</DESC>
-					</PARAM>                     
-				</PARAMS>
-				<CALLBACK  type="HASH">
-					<DESC>Notifies the user whenever any parameter associated with data connectivity changes.  This callback is called when the connectWan method is first called (for the initial state) and again whenever any of the associated parameters change.</DESC>
-					<PARAMS>
-						<PARAM name="phoneSignalStrength" type="STRING">
-							<DESC>The signal strength of the phone as a percentage of maximum strength. Returned as a number between 0 and 100. If there is no phone service this field will be 0.</DESC>
-						</PARAM>
-						<PARAM name="networkOperator" type="STRING">
-							<DESC>The name of the current network operator associated with the SIM card</DESC>
-						</PARAM>
-						<PARAM name="connectionTypeAvailable" type="STRING">
-							<DESC>The current data connection type available to RhoElements as provided by the Network. Values can be 'Unavailable', GPRS, 1XRTT, EVDO, EDGE, UMTS, EVDV or HSDPA</DESC>
-						</PARAM>
-						<PARAM name="connectionTypeConnected" type="STRING">
-							<DESC>The data connection type to which Rhoelements is currently connected. The values returned are identical to connectionTypeAvailable, with the exception that 'Not Connected' replaces 'Unavailable'.</DESC>
-						</PARAM>
-						<PARAM name="connectionManagerMessage" type="STRING">
-							<DESC>This is the last received status from the Connection Manager. Do NOT use this parameter to determine if you are able to physically send / receive data to a remote host, it only provides an indication of whether the Connection Manager believes the connection is available. To determine if you are connected to a remote host use the detectConnection method.</DESC>
-						</PARAM>
-					</PARAMS>
-				</CALLBACK>    
-			</METHOD>
-			
-			<METHOD name="disconnectWan" hasCallback="none" runInThread="separate">
+                <PARAMS>
+                    <PARAM name="connectionDestination" type="STRING">
+                        <DESC>The connection in the Windows Connection manager to use, specify 'Internet' to use the default internet connection.</DESC>
+                    </PARAM>                     
+                </PARAMS>
+                <CALLBACK  type="HASH">
+                    <DESC>Notifies the user whenever any parameter associated with data connectivity changes.  This callback is called when the connectWan method is first called (for the initial state) and again whenever any of the associated parameters change.</DESC>
+                    <PARAMS>
+                        <PARAM name="phoneSignalStrength" type="STRING">
+                            <DESC>The signal strength of the phone as a percentage of maximum strength. Returned as a number between 0 and 100. If there is no phone service this field will be 0.</DESC>
+                        </PARAM>
+                        <PARAM name="networkOperator" type="STRING">
+                            <DESC>The name of the current network operator associated with the SIM card</DESC>
+                        </PARAM>
+                        <PARAM name="connectionTypeAvailable" type="STRING">
+                            <DESC>The current data connection type available to RhoElements as provided by the Network. Values can be 'Unavailable', GPRS, 1XRTT, EVDO, EDGE, UMTS, EVDV or HSDPA</DESC>
+                        </PARAM>
+                        <PARAM name="connectionTypeConnected" type="STRING">
+                            <DESC>The data connection type to which Rhoelements is currently connected. The values returned are identical to connectionTypeAvailable, with the exception that 'Not Connected' replaces 'Unavailable'.</DESC>
+                        </PARAM>
+                        <PARAM name="connectionManagerMessage" type="STRING">
+                            <DESC>This is the last received status from the Connection Manager. Do NOT use this parameter to determine if you are able to physically send / receive data to a remote host, it only provides an indication of whether the Connection Manager believes the connection is available. To determine if you are connected to a remote host use the detectConnection method.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>    
+            </METHOD>
+            
+            <METHOD name="disconnectWan" hasCallback="none" runInThread="separate">
                 <VER_INTRODUCED>1.0.3</VER_INTRODUCED>
                 <DESC>Disconnects the current WAN connection. DisconnectWan will only affect connections established by RhoElements so if you have not previously called connectWan this function will have no effect.</DESC>
-				<PLATFORM>WM</PLATFORM>
-				<APPLIES>This method only applies to platforms with the Windows connection manager</APPLIES>
-			</METHOD>
+                <PLATFORM>WM</PLATFORM>
+                <APPLIES>This method only applies to platforms with the Windows connection manager</APPLIES>
+            </METHOD>
 
         </METHODS>
         
@@ -365,33 +365,33 @@ Receiving phone calls or texts whilst running RhoElements will cause the start b
         <EXAMPLES >
             <EXAMPLE title="Detecting a Network Connection">
                 <SECTIONS>
-					<SECTION>
-					<DESC>
-						This code example shows how you would detect if your device is connected to an external website
-					</DESC>
-					<CODE lang='ruby'>
-				<![CDATA[
-	#/app/Model
-	def index
-		networkProps = Hash.new
-		networkProps['host'] = 'www.motorolasolutions.com'
-		networkProps['port'] = '80'
-		networkProps['pollInterval'] = 10000
-		networkProps['detectionTimeout'] = 1000	
-		Rho::Network.detectConnection(networkProps, url_for(:action => :connectionEvent))  	
-	end
+                    <SECTION>
+                    <DESC>
+                        This code example shows how you would detect if your device is connected to an external website
+                    </DESC>
+                    <CODE lang='ruby'>
+                <![CDATA[
+    #/app/Model
+    def index
+        networkProps = Hash.new
+        networkProps['host'] = 'www.motorolasolutions.com'
+        networkProps['port'] = '80'
+        networkProps['pollInterval'] = 10000
+        networkProps['detectionTimeout'] = 1000 
+        Rho::Network.detectConnection(networkProps, url_for(:action => :connectionEvent))   
+    end
 
-	 def connectionEvent
-		puts "ConnectionEvent Called #{@params}"
-		if @params['connectionInformation'] == 'Disconnected'
-			Alert.show_popup "Connection Lost"
-		else
-			Alert.show_popup "Connection Restored"
-		end
-	  end
-						]]>
-					</CODE>
-					</SECTION>
+     def connectionEvent
+        puts "ConnectionEvent Called #{@params}"
+        if @params['connectionInformation'] == 'Disconnected'
+            Alert.show_popup "Connection Lost"
+        else
+            Alert.show_popup "Connection Restored"
+        end
+      end
+                        ]]>
+                    </CODE>
+                    </SECTION>
                 </SECTIONS>
             </EXAMPLE>
         </EXAMPLES>
