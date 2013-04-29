@@ -11,3 +11,12 @@ ext/platform/android/src/com/rho/camera/CameraObject.java
 ext/platform/android/src/com/rho/camera/CameraSingleton.java
 ext/platform/android/src/com/rho/camera/CameraFactory.java
 ext/platform/android/src/com/rho/camera/CameraExtension.java
+ext/platform/android/generated/src/com/rho/videocapture/IVideocapture.java
+ext/platform/android/generated/src/com/rho/videocapture/IVideocaptureSingleton.java
+ext/platform/android/generated/src/com/rho/videocapture/IVideocaptureFactory.java
+ext/platform/android/generated/src/com/rho/videocapture/VideocaptureBase.java
+ext/platform/android/generated/src/com/rho/videocapture/VideocaptureSingletonBase.java
+ext/platform/android/generated/src/com/rho/videocapture/VideocaptureFactorySingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/videocapture/Videocapture.java
+ext/platform/android/src/com/motorolasolutions/rho/videocapture/VideocaptureSingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/videocapture/VideocaptureFactory.java

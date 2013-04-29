@@ -3,5 +3,6 @@
   <PropertyGroup>
     <_RHO_ROOT>c:\rhomobile\rhodes</_RHO_ROOT>
     <_TEMP_FILES_ROOT>$(RHO_ROOT)\platform\wp8\bin</_TEMP_FILES_ROOT>
+    <<%= name.upcase %>_ROOT>..\..</<%= name.upcase %>_ROOT>
   </PropertyGroup>
 </Project>

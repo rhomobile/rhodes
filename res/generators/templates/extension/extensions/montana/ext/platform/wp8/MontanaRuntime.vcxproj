@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{<%= @wp8RuntimeGUID %>}</ProjectGuid>
-    <RootNamespace><%= name.camel_case() %>Runtime</RootNamespace>
+    <RootNamespace>rhoruntime</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <WinMDAssembly>true</WinMDAssembly>
