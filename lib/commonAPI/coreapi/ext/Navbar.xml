@@ -29,7 +29,7 @@
                                     <DESC>Label for the button.</DESC>
                                 </PARAM>
                                 <PARAM name="action" type="STRING">
-                                    <DESC>URL to call when button is pressed.It may be path to Ruby controller action; i.e. ‘/app/Account’ would load the Account index action. Or javascript method to call: 'javascript: methodOnTab();'.</DESC>
+                                    <DESC>URL to call when button is pressed.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
                                 </PARAM>
                             </PARAMS>
                         </PARAM>
@@ -40,7 +40,7 @@
                                     <DESC>Label for the button.</DESC>
                                 </PARAM>
                                 <PARAM name="action" type="STRING">
-                                    <DESC>URL to call when button is pressed.It may be path to Ruby controller action; i.e. ‘/app/Account’ would load the Account index action. Or javascript method to call: 'javascript: methodOnTab();'.</DESC>
+                                    <DESC>URL to call when button is pressed.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
                                 </PARAM>
                             </PARAMS>
                         </PARAM>
