@@ -1,6 +1,7 @@
 
 #import "CameraSingleton.h"
 #import "CameraBase.h"
+#import "Camera.h"
 
 extern int get_camera_max_width(const char* camera_type);
 void camera_choose_picture(NSDictionary* options, id<IMethodResult> callback_api);
@@ -33,7 +34,7 @@ extern void save_image_to_device_gallery(const char* image_path);
 
 
 -(void) choosePicture:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
-    camera_choose_picture([CameraBase applyAliasesToDictionary:propertyMap], methodResult);
+    camera_choose_picture([CameraBase applyAliasesToDictionary:[Camera convertValuesToString:propertyMap]], methodResult);
 }
 
 -(void) saveImageToDeviceGallery:(NSString*)pathToImage {
