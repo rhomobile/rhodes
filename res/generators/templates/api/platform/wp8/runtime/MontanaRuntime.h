@@ -1,9 +1,6 @@
 #pragma once
 
 #include "../../../../shared/generated/cpp/I<%= $cur_module.name %>.h"
-<% $cur_module.parents.each do |parent| %>
-namespace <%= parent.downcase() %> {<%
-end %>
 <%
   dynamic_methods = ''
   static_methods = ''
@@ -18,7 +15,7 @@ end %>
         call_params += "#{param.name}, "
     end
 
-    params += 'IMethodResult^ oResult'
+    params += "I#{$cur_module.name}MethodResult^ oResult"
     call_params += 'oResult'
     module_method.cached_data["cli_params"] = params
     module_method.cached_data["cli_call_params"] = call_params
@@ -33,9 +30,9 @@ end %>
   dynamic_methods = "    public:\n" + dynamic_methods if dynamic_methods.length() > 0
   static_methods = "    public:\n" + static_methods if static_methods.length() > 0
 %>
-namespace <%= $cur_module.name %>Runtime
+namespace rhoruntime
 {
-    public interface class IMethodResult
+    public interface class I<%= $cur_module.name %>MethodResult
     {
     public:
         [Windows::Foundation::Metadata::DefaultOverloadAttribute]
@@ -80,6 +77,3 @@ namespace <%= $cur_module.name %>Runtime
         I<%= $cur_module.name %>SingletonImpl^ _impl;
     };
 }
-<% $cur_module.parents.each do |parent| %>
-}<%
-end %>
