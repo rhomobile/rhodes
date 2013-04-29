@@ -397,7 +397,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
         p("");
         p("[ShortcutsAutorun]");
         if (autorun) {
-           p("\""+name+".lnk\",0,\""+name+".lnk\",%CE4%");
+           p("\""+name+".lnk\",0,\""+name+"Min.lnk\",%CE4%");
         }
     }
     p("");

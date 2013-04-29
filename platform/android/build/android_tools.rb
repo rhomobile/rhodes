@@ -243,6 +243,7 @@ def  run_emulator(options = {})
     cmd = "\"#{$emulator}\" -cpu-delay 0"
     cmd << " -no-window" if options[:hidden]
     cmd << " -avd #{$avdname}"
+    cmd << " -wipe-data" if options[:wipe]
     Thread.new { system(cmd) }
 
     puts "Waiting for emulator..."

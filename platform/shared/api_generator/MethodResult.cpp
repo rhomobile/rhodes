@@ -151,51 +151,100 @@ bool CMethodResult::hasCallback()
 bool CMethodResult::isEqualCallback(CMethodResult& oResult)
 {
     if (!hasCallback())
+    {
         return hasCallback() == oResult.hasCallback();
+    }
 
     if ( m_strRubyCallback.length() != 0 )
+    {
         return m_strRubyCallback == oResult.m_strRubyCallback;
+    }
 
     if ( m_pRubyCallbackProc )
+    {
         return m_pRubyCallbackProc == oResult.m_pRubyCallbackProc;
+    }
 
     return m_strJSCallback == oResult.m_strJSCallback;
+}
+    
+CMethodResult::ECallbackType CMethodResult::getCallbackType()
+{
+    CMethodResult::ECallbackType cbType = ctNone;
+    
+    if ( m_strRubyCallback.length() != 0 )
+    {
+        cbType = ctRubyStr;
+    }
+    else if ( m_pRubyCallbackProc )
+    {
+        cbType = ctRubyProc;
+    }
+    else if ( m_strJSCallback.length() != 0 )
+    {
+        cbType = ctJavaScript;
+    }
+
+    return cbType;
 }
 
 void CMethodResult::callCallback()
 {
     if ( m_bCollectionMode )
         return;
-
-    if ( m_ResType != eNone && m_strRubyCallback.length() != 0 )
+    
+    if ( m_ResType != eNone )
     {
-        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "__rho_inline");
-
-        RHODESAPP().callCallbackWithData( m_strRubyCallback, strResBody, m_strCallbackParam, true);
-
-        m_ResType = eNone;
-    }else if ( m_ResType != eNone && m_pRubyCallbackProc)
-    {
-        VALUE oProc = m_pRubyCallbackProc->getValue();
-        rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "body");
-
-        RHODESAPP().callCallbackProcWithData( oProc, strResBody, m_strCallbackParam, true);
-
-        m_ResType = eNone;
-    }else if ( m_ResType != eNone && m_strJSCallback.length() != 0 )
-    {
-        String strRes(CMethodResultConvertor().toJSON(*this));
-
-        String strCallback("Rho.callbackHandler( \"");
-        strCallback += m_strJSCallback;
-        strCallback += "\", {";
-        strCallback += strRes;
-        strCallback += "},\"";
-        strCallback += m_strCallbackParam + "\")";
-
-        rho_webview_execute_js(strCallback.c_str(), m_iTabId);
-
-        m_ResType = eNone;
+        ECallbackType cbType = getCallbackType();
+        
+        if (cbType != ctNone)
+        {
+            switch (cbType)
+            {
+                case ctRubyStr:
+                {
+                    rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "__rho_inline");
+                    
+                    RHODESAPP().callCallbackWithData( m_strRubyCallback, strResBody, m_strCallbackParam, true);
+                    break;
+                }
+                    
+                case ctRubyProc:
+                {
+                    VALUE oProc = m_pRubyCallbackProc->getValue();
+                    rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "body");
+                    
+                    RHODESAPP().callCallbackProcWithData( oProc, strResBody, m_strCallbackParam, true);
+                    break;
+                }
+                                    
+                case ctJavaScript:
+                {
+                    String strRes(CMethodResultConvertor().toJSON(*this));
+                    
+                    String strCallback("Rho.callbackHandler( \"");
+                    strCallback += m_strJSCallback;
+                    strCallback += "\", {";
+                    strCallback += strRes;
+                    strCallback += "},\"";
+                    strCallback += m_strCallbackParam + "\")";
+                    
+                    if (m_synchronousCallback)
+                    {
+                        rho_webview_execute_js_sync(strCallback.c_str(), m_iTabId);
+                    } else
+                    {
+                        rho_webview_execute_js(strCallback.c_str(), m_iTabId);
+                    }
+                    break;
+                }
+                   
+                default:
+                    break;
+            }
+            m_ResType = eNone;
+            m_synchronousCallback = false;
+        }
     }
 }
 
@@ -223,6 +272,15 @@ void CMethodResult::setJSCallback(const rho::String& strCallback)
     m_strJSCallback = strCallback;
     m_iTabId = rho_webview_active_tab();
 }
-
+    
+bool CMethodResult::isSynchronousCallback()
+{
+    return m_synchronousCallback;
+}
+void CMethodResult::setSynchronousCallback(bool executeSynchronous)
+{
+    m_synchronousCallback = executeSynchronous;
+}
+    
 }
 }

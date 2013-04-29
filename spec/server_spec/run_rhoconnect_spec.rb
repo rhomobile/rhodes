@@ -67,6 +67,7 @@ def run_apps(platform)
 	
 	puts "adding source files"
 	FileUtils.cp_r ["#{$source_path}/settings"], $server_path
+    FileUtils.cp_r ["#{$source_path}/controllers"], $server_path
 	
 	puts "cleanup rhoconnect data"
 	FileUtils.rm_r(File.join($server_path,"data")) if File.directory?(File.join($server_path,"data"))
@@ -89,10 +90,10 @@ def run_apps(platform)
 	
 	puts "configure android"
 	Rake::Task["config:android:emulator"].invoke
-	AndroidTools.run_emulator
+	AndroidTools.run_emulator( :wipe => true )
 	
 	push_service_apk = File.join($rhoelements_root,'libs','rhoconnect-push-service','rhoconnect-push-service.apk')
-	
+    
 	puts "install rhoconnect push service"
 	AndroidTools.load_app_and_run("-e", push_service_apk, "")
 	
