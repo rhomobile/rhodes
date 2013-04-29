@@ -832,7 +832,7 @@ namespace rhodes
         {
             String answer = CRhoRuntime.getInstance().onJSInvoke(e.Value);
             RhodesWebBrowser.IsScriptEnabled = true;
-            RhodesWebBrowser.InvokeScript("nativeCallback", new string[] { answer});
+            RhodesWebBrowser.InvokeScript("__rhoNativeApiResult", new string[] { answer });
         }
     }
 }
