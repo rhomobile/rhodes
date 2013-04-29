@@ -5,7 +5,8 @@ import com.rhomobile.rhodes.api.RhoApiFactory;
 
 public class ScreenOrientationFactory
         extends RhoApiFactory< ScreenOrientation, ScreenOrientationSingleton>
-        implements IScreenOrientationFactory {
+        implements IScreenOrientationFactory
+{
 
     @Override
     protected ScreenOrientationSingleton createSingleton() {
