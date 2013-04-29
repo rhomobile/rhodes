@@ -27,6 +27,7 @@
 package com.rhomobile.rhodes.ui;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -83,7 +84,7 @@ public class FileList extends BaseActivity implements OnClickListener{
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-
+		
 		setContentView(AndroidR.layout.directory_list);
 		
 		imagePreview = (ImageView) findViewById(AndroidR.id.preview);
@@ -133,14 +134,23 @@ public class FileList extends BaseActivity implements OnClickListener{
 
     private void doCallback(int status, String filename) {
         Intent intent = new Intent();
-//            String dst = null;
+        try {
+            Uri dstUrl = getIntent().getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+            String dstPath = dstUrl.getPath();
             if (filename != null && filename.length() > 0) {
-                //dst = RhodesAppOptions.getBlobPath() + "/" + Utils.getBaseName(filename);
-                //Utils.copy(filename, dst);
                 Logger.T(TAG, "Selected file: " + Uri.fromFile(new File(filename)));
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(filename)));
+                Utils.copy(filename, dstPath);
+                Logger.T(TAG, "Copied file: " + dstPath);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, dstUrl);
+            } else {
+                intent.putExtra("error", "No input file name");
             }
-            setResult(status, intent);
+        } catch (IOException e) {
+            Logger.E(TAG, e);
+            intent.putExtra("error", e.getMessage());
+            status = RESULT_CANCELED;
+        }
+        setResult(status, intent);
     }
 
     public void onClick(View view) {

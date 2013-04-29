@@ -17,7 +17,5 @@ class AppApplication < Rho::RhoApplication
   
   def on_ui_created
     super
-    
-    #SyncEngine.login('gcmclient', 'gcmclient', '/app/Settings/login_callback' )
   end
 end

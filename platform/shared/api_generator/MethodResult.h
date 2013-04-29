@@ -14,13 +14,16 @@ class CMethodResult
     DEFINE_LOGCLASS
 
 public:
-    enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eArrayHash, eJSON, eBool, eInt, eDouble, eError, eArgError};
+    enum ETypes{ eNone = 0, eString, eStringW, eStringArray, eStringHash, eStringHashVector, eArrayHash, eJSON, eBool, eInt, eDouble, eError, eArgError};
+    enum ECallbackType { ctNone = 0, ctRubyStr, ctRubyProc, ctJavaScript };
 private:
     rho::String m_strRubyCallback, m_strCallbackParam, m_strParamName;
     rho::String m_strJSCallback;
+    bool m_synchronousCallback;
     int m_iTabId;
     rho::Hashtable<rho::String, rho::String> m_hashStrRes;
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> > m_hashStrL2Res;
+    rho::Hashtable<rho::String, rho::Vector<rho::String> > m_hashStrVecRes;
     rho::Vector<rho::Hashtable<rho::String, rho::String> > m_arHashRes;
     rho::String m_strRes;
     rho::String m_strJSONRes;
@@ -53,8 +56,10 @@ private:
 
 public:
 
-    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_iTabId(-1), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode),
+    CMethodResult(bool bCollectionMode=false): m_strParamName("result"), m_synchronousCallback(false), m_iTabId(-1), m_ResType(eNone), m_oRubyObjectClass(0), m_bCollectionMode(bCollectionMode),
         m_nRes(0), m_bRes(false), m_dRes(0), m_eRequestedType(eNone){}
+    
+    ECallbackType getCallbackType();
 
     void setRubyCallback(const rho::String& strCallback){ m_strRubyCallback = strCallback; }
     const rho::String& getRubyCallback() const { return m_strRubyCallback; }
@@ -70,7 +75,9 @@ public:
     void setRequestedType( ETypes eRequestedType ){ m_eRequestedType = eRequestedType;}
 
     void set(const rho::Hashtable<rho::String, rho::String>& res){ m_hashStrRes = res; setType(eStringHash); }
-    void set(const rho::Vector<rho::Hashtable<rho::String, rho::String> > res ) { m_arHashRes = res; setType(eArrayHash); }
+    void set(const rho::Vector<rho::Hashtable<rho::String, rho::String> >& res ) { m_arHashRes = res; setType(eArrayHash); }
+    
+    void set(const rho::Hashtable<rho::String, rho::Vector<rho::String> >& res ) { m_hashStrVecRes = res; setType(eStringHashVector); }
 
 #ifndef OS_ANDROID
     void set(const rho::StringW& res){ m_strResW = res;  setType(eStringW); }
@@ -103,6 +110,7 @@ public:
     rho::Vector<rho::Hashtable<rho::String, rho::String> >& getHashArray() { return m_arHashRes; }
     rho::Hashtable<rho::String, rho::String>& getStringHash(){ return m_hashStrRes; }
     rho::Hashtable<rho::String, rho::Hashtable<rho::String, rho::String> >& getStringHashL2(){ return m_hashStrL2Res; }
+    const rho::Hashtable<rho::String, rho::Vector<rho::String> >& getStringHashVector() { return m_hashStrVecRes; }
     const rho::String& getString() const { return m_strRes; }
     const rho::StringW& getStringW() const { return m_strResW; }
     rho::String& getString() { return m_strRes; }
@@ -128,6 +136,12 @@ public:
     bool hasCallback();
     void callCallback();
     bool isEqualCallback(CMethodResult& oResult);
+    
+    // callbacks could be called in different threads in case when we need
+    // to call callback in the same thread setSynchronousCallback(true) could be used
+    // please note that after executing callback this flag is reset to false
+    bool isSynchronousCallback(); 
+    void setSynchronousCallback(bool executeSynchronous);
 };
 
 }
