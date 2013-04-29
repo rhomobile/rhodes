@@ -4,11 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.view.Display;
+import android.view.Surface;
+import android.view.WindowManager;
 
 import com.rho.screenorientation.IScreenOrientation;
 import com.rho.screenorientation.ScreenOrientationBase;
@@ -31,6 +38,24 @@ public class ScreenOrientation extends ScreenOrientationBase
     private SensorManager mSensorManager;
     private boolean mIsAutoRotate;
     private String mDirection;
+    private String mLastDirection = "Empty";
+    
+    /**
+     * Monitors the Orientation sensor to determine which way up the device is
+     * also takes care of upside down which is not handled by the default Sensors
+     * using the Magnetic Field Sensor as well as Orientation.
+     */
+    private final SensorEventListener mSensorListener = new SensorEventListener() 
+    {
+	@Override
+	public void onAccuracyChanged(Sensor arg0, int arg1) {}
+
+	@Override
+	public void onSensorChanged(SensorEvent arg0)
+	{
+	    setDirection();
+	}
+    };
     
     public ScreenOrientation(String id)
     {
@@ -47,9 +72,16 @@ public class ScreenOrientation extends ScreenOrientationBase
 	Logger.D(TAG, "setAutorotate -- START");
 	Logger.D(TAG, "setAutorotate -- autoRotate: " + autoRotate);
 	if (autoRotate.equalsIgnoreCase("enabled"))
+	{
+	    RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
 	    mIsAutoRotate = true;
+	}
 	else if (autoRotate.equalsIgnoreCase("disabled"))
+	{
+	    setDirection();
+	    setScreenOrientation(mDirection);
 	    mIsAutoRotate = false;
+	}
 	else
 	{
 	    Logger.D(TAG, "setAutorotate -- autoRotate value is invalid: " + autoRotate);
@@ -85,6 +117,8 @@ public class ScreenOrientation extends ScreenOrientationBase
     
     private void setScreenOrientation(String orientation)
     {
+	Logger.D(TAG, "setScreenOrientation -- START");
+	Logger.D(TAG, "setScreenOrientation -- orientation: " + orientation);
 	Map<String, Object> values = new HashMap<String, Object>();
 	String value = null;
 	if (orientation.equalsIgnoreCase("normal"))
@@ -115,8 +149,71 @@ public class ScreenOrientation extends ScreenOrientationBase
 	{
 	    mDirection = value;
 	    values.put("currentOrientation", mDirection);
-	    mScreenOrientationCallback.set(values);
+	    Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + values.get("currentOrientation"));
+	    if (mScreenOrientationCallback != null)
+		mScreenOrientationCallback.set(values);
 	}
+    }
+    
+    private void setDirection()
+    {
+	Display display = ((WindowManager) RhodesActivity.safeGetInstance().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+	switch (display.getRotation())
+	{
+		case(Surface.ROTATION_0):
+		{
+		    mDirection = "normal";
+		    break;
+		}
+		case(Surface.ROTATION_90):
+		{
+		    mDirection = "lefthanded";
+		    break;
+		}
+		case(Surface.ROTATION_180):
+		{
+		    mDirection = "upsidedown";
+		    break;
+		}
+		case(Surface.ROTATION_270):
+		{
+		    mDirection = "righthanded";
+		    break;
+		}
+		default:
+		    mDirection = "normal";
+	}
+	if(mLastDirection != mDirection)
+	{
+	    mLastDirection = mDirection;
+	    Map<String, Object> values = new HashMap<String, Object>();
+	    values.put("currentOrientation", mDirection);
+	    Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + values.get("currentOrientation"));
+	    if (mScreenOrientationCallback != null)
+		mScreenOrientationCallback.set(values);
+	}
+    }
+    
+    @Override
+    public void setScreenOrientationEvent(IMethodResult result)
+    {
+	mScreenOrientationCallback = result;
+	if (result == null)
+	{
+	    unregisterSensorListeners();
+	}
+	else
+	{
+	    // Register SensorListener's for Magnetic Field and Orientation
+	    mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+	}
+	
+    } 
+    
+    private void unregisterSensorListeners()
+    {
+	// Un-Register SensorListener's
+	mSensorManager.unregisterListener(mSensorListener);
     }
 
     @Override
@@ -187,10 +284,4 @@ public class ScreenOrientation extends ScreenOrientationBase
 	// TODO Auto-generated method stub
 	
     }
-
-    @Override
-    public void setScreenOrientationEvent(IMethodResult result) {
-	// TODO Auto-generated method stub
-	
-    } 
 }
