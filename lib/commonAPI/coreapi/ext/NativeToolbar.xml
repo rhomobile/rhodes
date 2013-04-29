@@ -1,0 +1,84 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="NativeToolbar" parent="Rho" generateUnderscoreRubyNames="true">
+        <HELP_OVERVIEW>The NativeToolbar methods let you create and remove toolbar at runtime.</HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
+        
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <PROPERTIES access="STATIC" generateAccessors="false">
+        </PROPERTIES>
+
+        <METHODS  access="STATIC">
+            <ALIASES>
+            </ALIASES>
+
+            <METHOD name="create" runInThread="UI">
+                <DESC>Removes the current toolbar and replaces it with this one.</DESC>
+                <PARAMS>
+                    <PARAM name="toolbarElements" type="ARRAY">
+                        <DESC>Array of Tab elements.</DESC>
+
+                        <PARAM name="toolbarElement" type="HASH">
+                            <DESC>Properties of Toolbar elements. Either :icon or :label must be specified: if both are omitted, button will not be aded to the toolbar. If both are specified, :icon is drawn and :label is discarded.</DESC>
+                            <PARAMS>
+                                <PARAM name="label" type="STRING">
+                                    <DESC>Visible label to display instead of an icon.</DESC>
+                                </PARAM>
+                                <PARAM name="action" type="STRING">
+                                    <DESC>URL to call when button is pressed.It may be path to Ruby controller action; i.e. ‘/app/Account’ would load the Account index action. Or javascript method to call: 'javascript: methodOnTab();'.</DESC>
+                                </PARAM>
+                                <PARAM name="icon" type="STRING">
+                                    <DESC>Relative path to toolbar item icon in your rhodes app (typically located in /public/images/). iPhone and Android: Icons must be no more than 30x30 pixels and must be in .png format. Windows Mobile: Icons can be any size, but all icons should have same size (default – 48x48).</DESC>
+                                </PARAM>
+                                <PARAM name="coloredIcon" type="BOOLEAN" default="false">
+                                    <DESC>Use colored icon in toolbar on iPhone instead of standard monochrome white icon (prepared from image alpha).</DESC>
+                                </PARAM>
+                                <PARAM name="width" type="INTEGER">
+                                    <DESC>Button width in pixel. Used to define separator width.</DESC>
+                                </PARAM>
+                            </PARAMS>
+                        </PARAM>
+                    </PARAM>
+                    
+                    <PARAM name="toolBarProperties" type="HASH">
+                        <DESC>Properties of TabBar.</DESC>
+
+                        <PARAMS>
+                            <PARAM name="backgroundColor" type="INTEGER">
+                                <DESC>Background color of the toolbar.</DESC>
+                            </PARAM>
+                            <PARAM name="maskColor" type="INTEGER" default="0xFFFFFF">
+                                <DESC>Image mask color(transparent color).</DESC>
+                                <PLATFORMS>WM, Win32</PLATFORMS>
+                            </PARAM>
+                            <PARAM name="viewHeight" type="INTEGER">
+                                <DESC>Toolbar height in pixels.</DESC>
+                                <PLATFORMS>WM, Win32</PLATFORMS>
+                            </PARAM>
+
+                        </PARAMS>
+                    </PARAM>
+                    
+                </PARAMS>
+
+            </METHOD>
+
+            <METHOD name="remove" >
+                <DESC>Removes the current toolbar. Does nothing if there is no active toolbar.</DESC>
+            </METHOD>
+
+        </METHODS>
+        
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+        <REMARKS>
+        </REMARKS>
+        <EXAMPLES >
+        </EXAMPLES>
+    </MODULE>
+</API>    
