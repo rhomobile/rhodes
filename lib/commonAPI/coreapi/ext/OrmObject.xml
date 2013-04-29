@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-  <MODULE name="RhomObject" parent="Rhom">
+  <MODULE name="OrmObject" parent="Orm">
     <HELP_OVERVIEW></HELP_OVERVIEW>
     <MORE_HELP></MORE_HELP>
 
@@ -14,8 +14,8 @@
       </PROPERTY>
 
       <PROPERTY name="metadata" access="STATIC" type="HASH" generateAPI="false">
-        <DESC>Returns the metadata definition for a given model as a hash. Click here for a Rhom metadata example.
-          Assigns the hash metadata definition for a given model. Click here for a Rhom metadata example.
+        <DESC>Returns the metadata definition for a given model as a hash. Click here for a Orm metadata example.
+          Assigns the hash metadata definition for a given model. Click here for a Orm metadata example.
         </DESC>
       </PROPERTY>
     </PROPERTIES>
@@ -31,7 +31,7 @@
       </METHOD>
 
       <METHOD name="deleteAll" generateAPI="false" access="STATIC">
-        <DESC>Delete all Rhodes model objects for a source, filtering by conditions. Click here for a Rhom delete_all
+        <DESC>Delete all Rhodes model objects for a source, filtering by conditions. Click here for a Orm delete_all
           example.
         </DESC>
         <PARAMS>
@@ -49,12 +49,12 @@
       </METHOD>
 
       <METHOD name="destroy" generateAPI="false" access="STATIC">
-        <DESC>Destroy a Rhodes model object. Click here for a Rhom destroy example.</DESC>
+        <DESC>Destroy a Rhodes model object. Click here for a Orm destroy example.</DESC>
       </METHOD>
 
       <METHOD name="find" generateAPI="false" access="STATIC">
-        <DESC>Find Rhodes model objects. Click here for a Rhom find example. For examples of find with advanced queries,
-          see Advanced Queries in Using the Local Database with Rhom.
+        <DESC>Find Rhodes model objects. Click here for a Orm find example. For examples of find with advanced queries,
+          see Advanced Queries in Using the Local Database with Orm.
         </DESC>
         <PARAMS>
           <PARAM name="queryType" type="STRING">
@@ -71,7 +71,7 @@
             </VALUES>
           </PARAM>
           <PARAM name="conditions" type="HASH">
-            <DESC>Hash of attribute/values. Also supports sql fragments (i.e. "name like 'rhomobile'") or sql fragment
+            <DESC>Hash of attribute/values. Also supports sql fragments (i.e. "name like 'Ormobile'") or sql fragment
               with binding (you have to define :select with sql queries) (i.e. ["name like ?", "'#{company#}'"]) Use a
               comma around string values.
             </DESC>
@@ -119,7 +119,7 @@
 
       <METHOD name="findBySql" generateAPI="false" access="STATIC">
         <DESC>Returns Rhodes model object(s) based on sql_query. This method works only for schema models. Click here
-          for a Rhom find_by_sql example.
+          for a Orm find_by_sql example.
         </DESC>
         <PARAMS>
           <PARAM name="query" type="STRING">
@@ -136,7 +136,7 @@
 
 
       <METHOD name="new" generateAPI="false" access="STATIC">
-        <DESC>Create a new Rhodes model object. Rhom new example.</DESC>
+        <DESC>Create a new Rhodes model object. Orm new example.</DESC>
         <PARAMS>
           <PARAM name="attributes" type="HASH">
             <DESC>List of attributes assigned to the new model object, such as {"name" => "ABC Inc.","address" => "555
@@ -148,7 +148,7 @@
       </METHOD>
 
       <METHOD name="create" generateAPI="false" access="STATIC">
-        <DESC>Create a new Rhodes model object and save it to the database.Rhom create example. This is the fastest way
+        <DESC>Create a new Rhodes model object and save it to the database.Orm create example. This is the fastest way
           to insert a single item into the database.
         </DESC>
         <PARAMS>
@@ -162,7 +162,7 @@
       </METHOD>
 
       <METHOD name="paginate" generateAPI="false" access="STATIC">
-        <DESC>Call find with a limit on the number of records. Default page size is 10. Rhom paginate example.</DESC>
+        <DESC>Call find with a limit on the number of records. Default page size is 10. Orm paginate example.</DESC>
         <PARAMS>
           <PARAM name="page" type="INTEGER">
             <DESC>which page to return.</DESC>
@@ -191,7 +191,7 @@
 
 
       <METHOD name="sync" generateAPI="false" access="STATIC">
-        <DESC>Start the sync process for a Rhodes model. Click here for a Rhom sync example.</DESC>
+        <DESC>Start the sync process for a Rhodes model. Click here for a Orm sync example.</DESC>
         <PARAMS>
           <PARAM name="callbackUrl" type="STRING">
             <DESC>the url for the sync callback method. If this is used, SyncEngine.set_notification is called before
@@ -217,7 +217,7 @@
 
       <METHOD name="canModify" generateAPI="false">
         <DESC>Returns true if the Rhodes model object is not currently being synced (if it is being synced, you should
-          disable editing of the object). Click here for a Rhom can_modify example.
+          disable editing of the object). Click here for a Orm can_modify example.
           Before displaying an edit page for an object, your application can check if the object is currently being
           accessed by the sync process. If it is, you should disable editing of the object. can_modify could return
           true, for example, on a new local record that was created and sent to the RhoConnect application, but no
@@ -228,18 +228,18 @@
 
       <METHOD name="isChanged" generateAPI="false" access="STATIC">
         <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false
-          otherwise. Click here for a Rhom changed? example.
+          otherwise. Click here for a Orm changed? example.
         </DESC>
         <RETURN type="BOOLEAN"/>
       </METHOD>
 
       <METHOD name="save" generateAPI="false">
-        <DESC>Saves the current Rhodes model object to the database. Click here for a Rhom save example.
+        <DESC>Saves the current Rhodes model object to the database. Click here for a Orm save example.
         </DESC>
       </METHOD>
 
       <METHOD name="setNotification" hasCallback="mandatory" runInThread="none" generateAPI="false" access="STATIC">
-        <DESC>Saves the current Rhodes model object to the database. Click here for a Rhom save example.
+        <DESC>Saves the current Rhodes model object to the database. Click here for a Orm save example.
         </DESC>
         <PARAMS>
 
@@ -258,7 +258,7 @@
 
       <METHOD name="updateAttributes" generateAPI="false">
         <DESC>Updates the current Rho model object attributes and saves it to the database. This is the fastest way to
-          add or update model attributes. Click here for a Rhom update_attributes example.
+          add or update model attributes. Click here for a Orm update_attributes example.
         </DESC>
         <PARAMS>
           <PARAM name="attributes" type="HASH">
@@ -282,7 +282,7 @@
       <!--  This section is used for the supported platform images at the top -->
     </PLATFORM>
     <EXAMPLES>
-      <EXAMPLE title="Rhom Delete Method Examples">
+      <EXAMPLE title="Orm Delete Method Examples">
         <SECTIONS>
           <SECTION>
             <DESC>
@@ -290,10 +290,10 @@
             </DESC>
             <CODE lang='ruby'>
               <![CDATA[
-# Deletes all rhom objects for a source, optionally filtering by conditions:
+# Deletes all Orm objects for a source, optionally filtering by conditions:
 Account.deleteAll(:conditions => {'industry'=>'electronics'})
 
-# Delete a rhom object.
+# Delete a Orm object.
 @account = Account.find(:first)
 @account.destroy]]>
             </CODE>
@@ -305,10 +305,10 @@ Account.deleteAll(:conditions => {'industry'=>'electronics'})
             </DESC>
             <CODE lang='javascript'>
               <![CDATA[
-// Deletes all rhom objects for a source, optionally filtering by conditions:
+// Deletes all Orm objects for a source, optionally filtering by conditions:
 Account.deleteAll({industry: 'electronics'})
 
-//Delete a rhom object.
+//Delete a Orm object.
 var account = Account.find('first');
 account.destroy]]>
             </CODE>
@@ -316,7 +316,7 @@ account.destroy]]>
         </SECTIONS>
       </EXAMPLE>
 
-      <EXAMPLE title="Rhom find Method Examples">
+      <EXAMPLE title="Orm find Method Examples">
         <SECTIONS>
           <SECTION>
             <DESC>
@@ -324,7 +324,7 @@ account.destroy]]>
             </DESC>
             <CODE lang='ruby'>
               <![CDATA[
-# Find Rhom objects:
+# Find Orm objects:
 acct = Account.find "3560c0a0-ef58-2f40-68a5-48f39f63741b"
 
 acct.name
@@ -365,8 +365,8 @@ accts[0].telephone
       :orderdir => ['ASC', 'DESC']
     )
 
-# find_by_sql(sql_query) returns rhom object(s) based on sql_query. This method works only for schema models.
-@accts = Account.find_by_sql("SELECT * FROM Account")
+# findBySql(sql_query) returns Orm object(s) based on sql_query. This method works only for schema models.
+@accts = Account.findBySql("SELECT * FROM Account")
 
   ]]>
             </CODE>
@@ -375,11 +375,56 @@ accts[0].telephone
 
           <SECTION>
             <DESC>
+              Ruby usage
+            </DESC>
+            <CODE lang='javascript'>
+              <![CDATA[
+// Find Orm objects:
+vat accounts = Account.find('first')
+
+account.name // "A.G. Parr PLC 37862"
+
+var accounts = Account.find('all', {select: ['name','address']})
+
+accounts[0].name // "A.G. Parr PLC 37862"
+
+accounts[0].telephone // nil
+
+// Order examples
+// The order argument for find accepts several forms.
+// order by one attribute.
+
+var accounts = Account.find('all', {order: 'name', orderdir: 'DESC'})
+
+// order by one attribute with a block.
+var accounts = Account.find('all', {order: 'name') do |x,y|
+      y <=> x
+    end
+
+// order with a block.
+var accounts = Account.find('all') do |item1,item2|
+      item2.name <=> item1.name
+    end
+
+// order by multiple attributes.
+var accounts = Account.find('all', {order: ['name', 'industry'], orderdir: ['ASC', 'DESC']})
+
+// findBySql(sql_query) returns Orm object(s) based on sql_query. This method works only for schema models.
+var accounts = Account.findBySql("SELECT * FROM Account")
+
+  ]]>
+            </CODE>
+
+          </SECTION>
+
+
+          <SECTION>
+            <DESC>
               Javascript usage
             </DESC>
             <CODE lang='javascript'>
               <![CDATA[
-// Find Rhom objects:
+// Find Orm objects:
 var account = Account.find('first');
 account.name; // "A.G. Parr PLC 37862"
 
@@ -414,7 +459,7 @@ var accounts = Account.find('all', {order}
       :orderdir => ['ASC', 'DESC']
     )
 
-// find_by_sql(sql_query) returns rhom object(s) based on sql_query. This method works only for schema models.
+// find_by_sql(sql_query) returns Orm object(s) based on sql_query. This method works only for schema models.
 @accts = Account.find_by_sql("SELECT * FROM Account")
 ]]>
             </CODE>
@@ -424,7 +469,7 @@ var accounts = Account.find('all', {order}
         </SECTIONS>
       </EXAMPLE>
 
-      <EXAMPLE title="Rhom New and Create Method Examples">
+      <EXAMPLE title="Orm New and Create Method Examples">
         <SECTIONS>
           <SECTION>
             <DESC>
@@ -432,14 +477,14 @@ var accounts = Account.find('all', {order}
             </DESC>
             <CODE lang='ruby'>
               <![CDATA[
-# Create a new rhom object and assign given attributes.
+# Create a new Orm object and assign given attributes.
 @account = Account.new(
   {"name" => "ABC Inc.","address" => "555 5th St."}
 )
 @account.name
   #=> "ABC Inc."
 
-# Create a new rhom object and save to the database.
+# Create a new Orm object and save to the database.
 @account = Account.create(
   {"name" => "some new record", "industry" => "electronics"}
 )]]>
@@ -453,18 +498,18 @@ var accounts = Account.find('all', {order}
             </DESC>
             <CODE lang='javascript'>
               <![CDATA[
-// Create a new rhom object and assign given attributes.
+// Create a new Orm object and assign given attributes.
 var account = Account.new({name: "ABC Inc.", address: "555 5th St."})
 account.name // "ABC Inc."
 
-// Create a new rhom object and save to the database.
+// Create a new Orm object and save to the database.
 account = Account.create({name: "some new record", industry: "electronics"})]]>
             </CODE>
           </SECTION>
         </SECTIONS>
       </EXAMPLE>
 
-      <EXAMPLE title="Rhom Paginate Method Example">
+      <EXAMPLE title="Orm Paginate Method Example">
         <SECTIONS>
           <SECTION>
             <DESC>
@@ -497,7 +542,7 @@ Account.paginate(
         </SECTIONS>
       </EXAMPLE>
 
-      <EXAMPLE title="Rhom Sync and set_notification Method Example">
+      <EXAMPLE title="Orm Sync and set_notification Method Example">
         <SECTIONS>
           <SECTION>
             <DESC>
@@ -521,10 +566,10 @@ Product.sync( url_for(:action => :sync_callback), "", false, "query=#{@params["s
         </SECTIONS>
       </EXAMPLE>
 
-      <EXAMPLE title="Rhom update_attributes Method Example">
+      <EXAMPLE title="Orm update_attributes Method Example">
       <SECTIONS>
         <SECTION>
-          <DESC>Update the current rhom object’s attributes and saves it to the database.</DESC>
+          <DESC>Update the current Orm object’s attributes and saves it to the database.</DESC>
           <CODE lang="ruby">
             <![CDATA[
 @account = Account.find(
@@ -540,7 +585,7 @@ Product.sync( url_for(:action => :sync_callback), "", false, "query=#{@params["s
         </SECTION>
 
         <SECTION>
-          <DESC>Saves the current rhom object to the database.</DESC>
+          <DESC>Saves the current Orm object to the database.</DESC>
           <CODE lang="ruby">
             <![CDATA[
 @account = Account.new(
@@ -554,7 +599,7 @@ Product.sync( url_for(:action => :sync_callback), "", false, "query=#{@params["s
       </EXAMPLE>
 
 
-      <EXAMPLE title="Rhom can_modify Method Example">
+      <EXAMPLE title="Orm can_modify Method Example">
      <SECTIONS>
        <SECTION>
          <DESC>Before displaying an edit page for an object, your application can check if the object is currently being accessed by the sync process. If it is, you should disable editing of the object. can_modify could return true, for example, on a new local record that was created and sent to the RhoConnect application, but no response has been received yet.</DESC>
@@ -574,11 +619,11 @@ end
      </SECTIONS>
       </EXAMPLE>
 
-      <EXAMPLE title="Rhom isChanged Method Example">
+      <EXAMPLE title="Orm isChanged Method Example">
       <SECTIONS>
         <SECTION>
           <DESC>
-            Determine if a rhom model has local database changes that need to be synchronized.
+            Determine if a Orm model has local database changes that need to be synchronized.
           </DESC>
           <CODE lang="ruby">
             <![CDATA[
@@ -592,7 +637,7 @@ end]]>
       </SECTIONS>
       </EXAMPLE>
 
-      <EXAMPLE title="Rhom metadata Method Examples">
+      <EXAMPLE title="Orm metadata Method Examples">
       <SECTIONS>
         <SECTION>
           <DESC>Returns the metadata for a given model.</DESC>
