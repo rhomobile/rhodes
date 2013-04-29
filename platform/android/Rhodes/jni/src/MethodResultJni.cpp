@@ -494,8 +494,8 @@ void MethodResultJni::callJSBack(jint jTabIndex)
     jhstring jhStrCallbackID = getStrCallback(m_env);
     String strCallbackID = rho_cast<String>(m_env, jhStrCallbackID.get());
 
-    jhstring jhJsVmID = getStrCallbackData(m_env);
-    String strJsVmID = rho_cast<String>(m_env, jhJsVmID.get());
+    jhstring jhCallbackData = getStrCallbackData(m_env);
+    String strCallbackData = rho_cast<String>(m_env, jhCallbackData.get());
 
     String strRes(CMethodResultConvertor().toJSON(*this));
 
@@ -503,7 +503,9 @@ void MethodResultJni::callJSBack(jint jTabIndex)
     strCallback += strCallbackID;
     strCallback += "\", {";
     strCallback += strRes;
-    strCallback += "})";
+    strCallback += "},\"";
+    strCallback += strCallbackData;
+    strCallback += "\")";
 
     jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
     if (!cls) return;
@@ -525,7 +527,7 @@ void MethodResultJni::releaseRubyProcCallback(jlong jRubyProc)
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_api_MethodResult_nativeCallBack
   (JNIEnv * env, jobject jResult, jint jTabId, jboolean jIsRuby, jboolean jReleaseCallback)
 {
-    RAWTRACE1("nativeCallBack - env: 0x%.8x", env);
+    RAWTRACE3("nativeCallBack - env: 0x%.8x, isRuby: %s, release: %s", env, jIsRuby?"true":"false", jReleaseCallback?"true":"false");
 
     initjnienv(env);
 
