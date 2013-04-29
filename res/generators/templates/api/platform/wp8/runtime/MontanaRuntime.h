@@ -53,6 +53,12 @@ namespace rhoruntime
     public interface class I<%= $cur_module.name %>SingletonImpl
     {
 <%= static_methods%>    };
+    public interface class I<%= $cur_module.name %>FactoryImpl
+    {
+    public:
+        I<%= $cur_module.name %>Impl^ getImpl();
+        I<%= $cur_module.name %>SingletonImpl^ getSingletonImpl();
+    };
 
     public ref class <%= $cur_module.name %>RuntimeComponent sealed: public I<%= $cur_module.name %>Impl
     {
@@ -75,5 +81,11 @@ namespace rhoruntime
 %>        virtual void <%= module_method.native_name%>(<%= module_method.cached_data["cli_params"]%>);
 <% end %>    private:
         I<%= $cur_module.name %>SingletonImpl^ _impl;
+    };
+
+    public ref class <%= $cur_module.name %>FactoryComponent sealed
+    {
+    public:
+        static void setImpl(I<%= $cur_module.name %>FactoryImpl^ impl);
     };
 }

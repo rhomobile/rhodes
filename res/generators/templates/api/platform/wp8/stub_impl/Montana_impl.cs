@@ -54,6 +54,16 @@ namespace <%= $cur_module.name %>Impl
             var _runtime = new <%= $cur_module.name %>SingletonComponent(this);
         }
 <%= static_methods%>    }
+
+    public class <%= $cur_module.name %>Factory : I<%= $cur_module.name %>FactoryImpl
+    {
+        public I<%= $cur_module.name %>Impl getImpl() {
+            return new <%= $cur_module.name %>();
+        }
+        public I<%= $cur_module.name %>SingletonImpl getSingletonImpl() {
+            return new <%= $cur_module.name %>Singleton();
+        }
+    }
 }
 <% $cur_module.parents.each do |parent| %>
 }<%
