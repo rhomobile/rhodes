@@ -14,12 +14,12 @@
         <!-- <PROPERTIES usePropertyBag="PropertyBagViaAccessors"> -->
         <PROPERTIES usePropertyBag="accessorsViaPropertyBag">
             <DESC>Properties used to configure Screen Orientation module</DESC>
-            <PROPERTY name="autoRotate" type="BOOLEAN" generateAccessors="true" default="true">
+            <PROPERTY name="autoRotate" type="STRING" generateAccessors="true" default="enabled">
                 <DESC>Enables or Disables autorotation of the screen orientation when the device is rotated.</DESC>
             </PROPERTY>
-			<PROPERTY name="screenOrientationEvent" type="STRING" generateAccessors="true">
+			<!-- <PROPERTY name="screenOrientationEvent" type="STRING" generateAccessors="true">
                 <DESC>The screen orientation event is sent when the current RhoElements application changes the orientation of the screen. For devices with an inbuilt accelerometer this event will also be sent when the user physically rotates the device to a new orientation.</DESC>
-            </PROPERTY>
+            </PROPERTY> -->
         </PROPERTIES>
 
         <METHODS>
@@ -35,6 +35,17 @@
             <METHOD name="upsideDown">
                 <DESC>Sets the screen orientation to upside down, useful if presenting the device to a customer to obtain a signature.</DESC>
             </METHOD>
+			<METHOD name="setScreenOrientationEvent" hasCallback="mandatory">
+				<DESC>It's quite self-explanatory really!</DESC>
+				<CALLBACK type="HASH">
+						<DESC>This is really a lot of documentation!</DESC>
+						<PARAMS>
+							<PARAM name="currentOrientation" type="STRING">
+								<DESC>Current orientation of the device.</DESC>
+							</PARAM>
+						</PARAMS>
+				</CALLBACK> 
+			</METHOD>
         </METHODS>
         
         <USER_OVERVIEW>

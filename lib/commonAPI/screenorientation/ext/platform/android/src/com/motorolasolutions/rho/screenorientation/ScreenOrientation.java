@@ -1,11 +1,14 @@
 package com.motorolasolutions.rho.screenorientation;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.hardware.SensorManager;
 
 import com.rho.screenorientation.IScreenOrientation;
 import com.rho.screenorientation.ScreenOrientationBase;
@@ -21,51 +24,99 @@ import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 public class ScreenOrientation extends ScreenOrientationBase 
-	implements IScreenOrientation, IRhoExtension, IRhoListener
+	implements IScreenOrientation, IRhoListener
 {
     private String TAG = ScreenOrientation.class.getSimpleName();
-    
-    private OrientationPlugin mOrientationPlugin = null;
+    private IMethodResult mScreenOrientationCallback;
+    private SensorManager mSensorManager;
+    private boolean mIsAutoRotate;
+    private String mDirection;
     
     public ScreenOrientation(String id)
     {
 	super(id);
-        RhoExtManager.getInstance().registerExtension("screenorientation", this);
+	mSensorManager = (SensorManager) RhodesActivity.safeGetInstance().getSystemService("sensor");
+	
+	mIsAutoRotate = true;
         Logger.D(TAG, "ScreenOrientation object constructed correctly");
     }
     
     @Override
-    public void setAutoRotate(boolean autoRotate, IMethodResult result)
+    public void setAutoRotate(String autoRotate, IMethodResult result)
     {
 	Logger.D(TAG, "setAutorotate -- START");
+	Logger.D(TAG, "setAutorotate -- autoRotate: " + autoRotate);
+	if (autoRotate.equalsIgnoreCase("enabled"))
+	    mIsAutoRotate = true;
+	else if (autoRotate.equalsIgnoreCase("disabled"))
+	    mIsAutoRotate = false;
+	else
+	{
+	    Logger.D(TAG, "setAutorotate -- autoRotate value is invalid: " + autoRotate);
+	    return;
+	}
 	super.setAutoRotate(autoRotate, result);
-	Logger.D(TAG, "setAutorotate -- mOrientationPlugin: " + mOrientationPlugin);
-	mOrientationPlugin.setAutoRotate(autoRotate);
 	Logger.D(TAG, "setAutorotate -- END");
     }
 
     @Override
     public void normal(IMethodResult result)
     {
-	mOrientationPlugin.onSetting("normal", null);
+	setScreenOrientation("normal");
     }
 
     @Override
     public void rightHanded(IMethodResult result)
     {
-	mOrientationPlugin.onSetting("rightHanded", null);
+	setScreenOrientation("righthanded");
     }
 
     @Override
-    public void leftHanded(IMethodResult result) {
-	// TODO Auto-generated method stub
-	
+    public void leftHanded(IMethodResult result)
+    {
+	setScreenOrientation("lefthanded");
     }
 
     @Override
-    public void upsideDown(IMethodResult result) {
-	// TODO Auto-generated method stub
-	
+    public void upsideDown(IMethodResult result)
+    {
+	setScreenOrientation("upsidedown");
+    }
+    
+    private void setScreenOrientation(String orientation)
+    {
+	Map<String, Object> values = new HashMap<String, Object>();
+	String value = null;
+	if (orientation.equalsIgnoreCase("normal"))
+	{
+	    RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+	    mIsAutoRotate = false;
+	    value = "normal";
+	}
+	else if (orientation.equalsIgnoreCase("righthanded"))
+	{
+	    RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+	    mIsAutoRotate = false;
+	    value = "righthanded";
+	}
+	else if (orientation.equalsIgnoreCase("lefthanded"))
+	{
+	    RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+	    mIsAutoRotate = false;
+	    value = "lefthanded";
+	}
+	else if (orientation.equalsIgnoreCase("upsidedown"))
+	{
+	    RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+	    mIsAutoRotate = false;
+	    value = "upsidedown";
+	}
+	if (value != null)
+	{
+	    mDirection = value;
+	    values.put("currentOrientation", mDirection);
+	    mScreenOrientationCallback.set(values);
+	}
     }
 
     @Override
@@ -78,7 +129,7 @@ public class ScreenOrientation extends ScreenOrientationBase
     public void onStart(RhodesActivity activity)
     {
 	Logger.D(TAG, "onStart -- START");
-	mOrientationPlugin = new OrientationPlugin(activity);
+	//mOrientationPlugin = new OrientationPlugin(activity);
     }
 
     @Override
@@ -138,170 +189,8 @@ public class ScreenOrientation extends ScreenOrientationBase
     }
 
     @Override
-    public IRhoWebView onCreateWebView(IRhoExtManager extManager, int tabIndex) {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
-    @Override
-    public boolean onWebViewCreated(IRhoExtManager extManager, IRhoWebView ext,
-	    boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onSetPropertiesData(IRhoExtManager extManager,
-	    String propId, String data, int pos, int total, IRhoWebView ext,
-	    boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onSetPropertiesDataEnd(IRhoExtManager extManager,
-	    IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onSetProperty(IRhoExtManager extManager, String name,
-	    String value, IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onBeforeNavigate(IRhoExtManager extManager, String url,
-	    IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onNavigateProgress(IRhoExtManager extManager, String url,
-	    int pos, int total, IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onNavigateComplete(IRhoExtManager extManager, String url,
-	    IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onDocumentComplete(IRhoExtManager extManager, String url,
-	    IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onAlert(IRhoExtManager extManager, String message,
-	    IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onConfirm(IRhoExtManager extManager, String message,
-	    IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onPrompt(IRhoExtManager extManager, String message,
-	    String defaultResponse, IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onSelect(IRhoExtManager extManager, String[] items,
-	    int selected, IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onStatus(IRhoExtManager extManager, String status,
-	    IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onTitle(IRhoExtManager extManager, String title,
-	    IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onConsole(IRhoExtManager extManager, String message,
-	    IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onInputMethod(IRhoExtManager extManager, boolean enabled,
-	    String type, Rect area, IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onNavigateError(IRhoExtManager extManager, String url,
-	    LoadErrorReason reason, IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onAuthRequired(IRhoExtManager extManager, String type,
-	    String url, String realm, IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public void onAppActivate(IRhoExtManager extManager, boolean bActivate) {
+    public void setScreenOrientationEvent(IMethodResult result) {
 	// TODO Auto-generated method stub
 	
-    }
-
-    @Override
-    public boolean startLocationUpdates(IRhoExtManager extManager,
-	    boolean highAccuracy, IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean stopLocationUpdates(IRhoExtManager extManager,
-	    IRhoWebView ext, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public boolean onNewConfig(IRhoExtManager extManager, IRhoConfig config,
-	    String name, boolean res) {
-	// TODO Auto-generated method stub
-	return false;
-    }
-
-    @Override
-    public String onGetProperty(IRhoExtManager extManager, String name) {
-	// TODO Auto-generated method stub
-	return null;
-    }
-
-    
+    } 
 }
