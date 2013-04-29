@@ -80,7 +80,7 @@
             </PROPERTY>
             <PROPERTY name="deviceOwnerName" type="STRING" readOnly="true">
                 <DESC>Name(account name) of phone owner.</DESC>
-              <PLATFORM>Android</PLATFORM>
+                <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="devicePushId" type="STRING" readOnly="true">
                 <DESC>Push notifications device ID which may be used to receive push messages.</DESC>
@@ -114,17 +114,17 @@
             </PROPERTY>
             <PROPERTY name="oemInfo" type="STRING" readOnly="true">
                 <DESC>The OEM Information string for the terminal.</DESC>
-				<APPLIES msiOnly="true"></APPLIES>
+                <APPLIES msiOnly="true"></APPLIES>
                 <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="uuid" type="STRING" readOnly="true">
                 <DESC>The Unique Unit IDentifier for the terminal.</DESC>
-				<APPLIES msiOnly="true"></APPLIES>
+                <APPLIES msiOnly="true"></APPLIES>
                 <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="applicationIconBadge" type="INTEGER">
                 <DESC>Set the application icon to have this badge number. Set to 0 (zero) to remove badge.</DESC>
-              <PLATFORM>iOS</PLATFORM>
+                <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
                 <DESC>Client HTTP proxy.</DESC>
@@ -133,10 +133,10 @@
                 <DESC>Lock/unlock the window size change by the user.</DESC>
                 <PLATFORM>Win32</PLATFORM>
             </PROPERTY>
-           <PROPERTY name="keyboardState" type="STRING" default="automatic">
+            <PROPERTY name="keyboardState" type="STRING" default="automatic">
                 <DESC>For Windows Mobile and Windows CE the keyboard can be manually shown or hidden as required.  All other platforms only support 'automatic'.</DESC>
                 <PLATFORM>WM</PLATFORM>               
-				<APPLIES msiOnly="true"></APPLIES>
+                <APPLIES msiOnly="true"></APPLIES>
                 <VALUES>
                     <VALUE constName="KEYBOARD_SHOWN" value ="shown">
                         <DESC>Shows the on screen keyboard, after setting the keyboard to shown or hidden it will no longer appear / disappear automatically until you set this property to automatic.</DESC>
@@ -284,113 +284,113 @@
                 <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
                 <PARAMS>
-					<PARAM name="propertyMap" type="HASH" propertyHash="true">
-						<DESC>Map of properties associated with the registry key being set</DESC>
-						<PARAMS>
-							<PARAM name="hive" type="STRING">
-								<DESC>The hive name</DESC>
-								<VALUES>
-									<VALUE constName="REGKEY_CLASSES_ROOT" value ="HKCR">
-										<DESC>Set the property in the HKEY_CLASSES_ROOT hive</DESC>
-									</VALUE>
-									<VALUE constName="REGKEY_CURRENT_USER" value ="HKCU">
-										<DESC>Set the property in the HKEY_CURRENT_USER hive</DESC>
-									</VALUE>
-									<VALUE constName="REGKEY_LOCAL_MACHINE" value ="HKLM">
-										<DESC>Set the property in the HKEY_LOCAL_MACHINE hive</DESC>
-									</VALUE>
-									<VALUE constName="REGKEY_USERS" value ="HKU">
-										<DESC>Set the property in the HKEY_USERS hive</DESC>
-									</VALUE>
-								</VALUES>
-							</PARAM>
-							<PARAM name="type" type="STRING">
-								<DESC>The type</DESC>
-								<VALUES>
-									<VALUE constName="REGTYPE_SZ" value ="String">
-										<DESC>The type of the value being set is a string</DESC>
-									</VALUE>
-									<VALUE constName="REGTYPE_BINARY" value ="Binary">
-										<DESC>The type of the value being set is a binary number</DESC>
-									</VALUE>
-									<VALUE constName="REGTYPE_DWORD" value ="DWORD">
-										<DESC>The type of the value being set is a natural number (DWORD)</DESC>
-									</VALUE>
-									<VALUE constName="REGTYPE_MULTI_SZ" value ="MultiSZ">
-										<DESC>The type of the value being set is a multi line string.  Separate your lines with \n (\\n in Javascript)</DESC>
-									</VALUE>
-								</VALUES>
-							</PARAM>
-							<PARAM name="key" type="STRING">
-								<DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
-							</PARAM>
-							<PARAM name="setting" type="STRING">
-								<DESC>The name of the registry setting to be set</DESC>
-							</PARAM>
-							<PARAM name="value" type="STRING">
-								<DESC>The registry value to be set</DESC>
-							</PARAM>
-							<PARAM name="persistent" type="BOOLEAN">
-								<DESC>Whether or not to create a corresponding merge file, setting to true will cause your value to persist across a device clean boot.  A .reg file is written to the \Application folder on the device to persist the setting.</DESC>
-							</PARAM>
-						</PARAMS>
-					</PARAM>
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
+                        <DESC>Map of properties associated with the registry key being set</DESC>
+                        <PARAMS>
+                            <PARAM name="hive" type="STRING">
+                                <DESC>The hive name</DESC>
+                                <VALUES>
+                                    <VALUE constName="REGKEY_CLASSES_ROOT" value ="HKCR">
+                                        <DESC>Set the property in the HKEY_CLASSES_ROOT hive</DESC>
+                                    </VALUE>
+                                    <VALUE constName="REGKEY_CURRENT_USER" value ="HKCU">
+                                        <DESC>Set the property in the HKEY_CURRENT_USER hive</DESC>
+                                    </VALUE>
+                                    <VALUE constName="REGKEY_LOCAL_MACHINE" value ="HKLM">
+                                        <DESC>Set the property in the HKEY_LOCAL_MACHINE hive</DESC>
+                                    </VALUE>
+                                    <VALUE constName="REGKEY_USERS" value ="HKU">
+                                        <DESC>Set the property in the HKEY_USERS hive</DESC>
+                                    </VALUE>
+                                </VALUES>
+                            </PARAM>
+                            <PARAM name="type" type="STRING">
+                                <DESC>The type</DESC>
+                                <VALUES>
+                                    <VALUE constName="REGTYPE_SZ" value ="String">
+                                        <DESC>The type of the value being set is a string</DESC>
+                                    </VALUE>
+                                    <VALUE constName="REGTYPE_BINARY" value ="Binary">
+                                        <DESC>The type of the value being set is a binary number</DESC>
+                                    </VALUE>
+                                    <VALUE constName="REGTYPE_DWORD" value ="DWORD">
+                                        <DESC>The type of the value being set is a natural number (DWORD)</DESC>
+                                    </VALUE>
+                                    <VALUE constName="REGTYPE_MULTI_SZ" value ="MultiSZ">
+                                        <DESC>The type of the value being set is a multi line string.  Separate your lines with \n (\\n in Javascript)</DESC>
+                                    </VALUE>
+                                </VALUES>
+                            </PARAM>
+                            <PARAM name="key" type="STRING">
+                                <DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
+                            </PARAM>
+                            <PARAM name="setting" type="STRING">
+                                <DESC>The name of the registry setting to be set</DESC>
+                            </PARAM>
+                            <PARAM name="value" type="STRING">
+                                <DESC>The registry value to be set</DESC>
+                            </PARAM>
+                            <PARAM name="persistent" type="BOOLEAN">
+                                <DESC>Whether or not to create a corresponding merge file, setting to true will cause your value to persist across a device clean boot.  A .reg file is written to the \Application folder on the device to persist the setting.</DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
                 </PARAMS>
                 <RETURN type="BOOLEAN">
                     <DESC>Whether or not the registry key was successfully set.</DESC>
                 </RETURN>
-			</METHOD>
+            </METHOD>
 
             <METHOD name="getRegistrySetting">
                 <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
                 <PARAMS>
-					<PARAM name="propertyMap" type="HASH" propertyHash="true">
-						<DESC>Map of properties associated with the registry key being set</DESC>
-						<PARAMS>
-							<PARAM name="hive" type="STRING">
-								<DESC>The hive name, see setRegistrySetting</DESC>
-							</PARAM>
-							<PARAM name="key" type="STRING">
-								<DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
-							</PARAM>
-							<PARAM name="setting" type="STRING">
-								<DESC>The name of the setting to be retrieved</DESC>
-							</PARAM>
-						</PARAMS>
-					</PARAM>
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
+                        <DESC>Map of properties associated with the registry key being set</DESC>
+                        <PARAMS>
+                            <PARAM name="hive" type="STRING">
+                                <DESC>The hive name, see setRegistrySetting</DESC>
+                            </PARAM>
+                            <PARAM name="key" type="STRING">
+                                <DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
+                            </PARAM>
+                            <PARAM name="setting" type="STRING">
+                                <DESC>The name of the setting to be retrieved</DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
                 </PARAMS>
                 <RETURN type="STRING">
                     <DESC>Regsitry value of the key.</DESC>
                 </RETURN>
             </METHOD>
-			
+            
             <METHOD name="deleteRegistrySetting">
                 <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
                 <PARAMS>
-					<PARAM name="propertyMap" type="HASH" propertyHash="true">
-						<DESC>Map of properties associated with the registry key being set</DESC>
-						<PARAMS>
-							<PARAM name="hive" type="STRING">
-								<DESC>The hive name, setRegistrySetting</DESC>
-							</PARAM>
-							<PARAM name="key" type="STRING">
-								<DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
-							</PARAM>
-							<PARAM name="setting" type="STRING">
-								<DESC>The name of the setting to be deleted</DESC>
-							</PARAM>
-							<PARAM name="persistent" type="BOOLEAN">
-								<DESC>If the registry value was set to be persistent, ie a corresponding .reg file was created in the \Application folder then setting true here will delete that .reg file.</DESC>
-							</PARAM>
-						</PARAMS>
-					</PARAM>
+                    <PARAM name="propertyMap" type="HASH" propertyHash="true">
+                        <DESC>Map of properties associated with the registry key being set</DESC>
+                        <PARAMS>
+                            <PARAM name="hive" type="STRING">
+                                <DESC>The hive name, setRegistrySetting</DESC>
+                            </PARAM>
+                            <PARAM name="key" type="STRING">
+                                <DESC>Full path of the key, including '\' separators as required. Remember to use '\\' in Javascript to specify backslash</DESC>
+                            </PARAM>
+                            <PARAM name="setting" type="STRING">
+                                <DESC>The name of the setting to be deleted</DESC>
+                            </PARAM>
+                            <PARAM name="persistent" type="BOOLEAN">
+                                <DESC>If the registry value was set to be persistent, ie a corresponding .reg file was created in the \Application folder then setting true here will delete that .reg file.</DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
                 </PARAMS>
                 <RETURN type="BOOLEAN">
                     <DESC>Whether or not the registry key was successfully deleted.</DESC>
                 </RETURN>
-			</METHOD>	
+            </METHOD>
             <METHOD name="setWindowFrame">
                 <DESC>Change application window position and size</DESC>
                 <PLATFORM>Win32</PLATFORM>
@@ -583,8 +583,8 @@
             </METHOD>
             <METHOD name="set_application_icon_badge" deprecated="true">
                 <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
-               <PLATFORM>iOS</PLATFORM>
-		<PARAMS>
+                <PLATFORM>iOS</PLATFORM>
+                <PARAMS>
                     <PARAM name="badgeNumber" type="INTEGER"/>
                 </PARAMS>
             </METHOD>
@@ -608,41 +608,40 @@
 
             </METHOD>
         </METHODS>
- 	<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
         <EXAMPLES >
             <EXAMPLE title="Working with the Windows Registry">
                 <SECTIONS>
-					<SECTION>
-					<DESC>
-						On devices running Windows Mobile, Windows CE, Windows Embedded Handheld and Windows Embedded CE it is possible to interact with the registry, this example shows how to do that.
-					</DESC>
-					<CODE lang='ruby'>
+                    <SECTION>
+                        <DESC>
+                            On devices running Windows Mobile, Windows CE, Windows Embedded Handheld and Windows Embedded CE it is possible to interact with the registry, this example shows how to do that.
+                        </DESC>
+                        <CODE lang='ruby'>
 <![CDATA[
 #/app/Model
 
 #  Retrieve a value from the Registry
 def get_registry_sync
-	theRegSetting = Rho::System.getRegistrySetting({hive:'HKLM', key:'software', Setting:'RhoElementsTest'})
-	puts "Registry Setting retrieved: #{theRegSetting}"
+    theRegSetting = Rho::System.getRegistrySetting({hive:'HKLM', key:'software', Setting:'RhoElementsTest'})
+    puts "Registry Setting retrieved: #{theRegSetting}"
 end
 
 #  Set a value in the registry which will persist across a clean boot of the device  
 def set_registry_sync
-	theRegSetting = Rho::System.setRegistrySetting({hive:'HKLM', type:'String', key:'Software', setting:'RhoElementsTest', value:'MVC ftw', persistent:true})
-	puts "Registry Setting Success?: #{theRegSetting}"
+    theRegSetting = Rho::System.setRegistrySetting({hive:'HKLM', type:'String', key:'Software', setting:'RhoElementsTest', value:'MVC ftw', persistent:true})
+    puts "Registry Setting Success?: #{theRegSetting}"
 end
-	  
+      
 #  Delete a value from the registry
 def delete_registry_sync
-	theRegSetting = Rho::System.deleteRegistrySetting({hive:'HKLM', key:'Software', setting:'RhoElementsTest', persistent:true})
-	puts "Registry Deleting Success?: #{theRegSetting}"
-end						]]>
-
-					</CODE>
-					</SECTION>
+    theRegSetting = Rho::System.deleteRegistrySetting({hive:'HKLM', key:'Software', setting:'RhoElementsTest', persistent:true})
+    puts "Registry Deleting Success?: #{theRegSetting}"
+end]]>
+                        </CODE>
+                    </SECTION>
                 </SECTIONS>
             </EXAMPLE>
         </EXAMPLES>

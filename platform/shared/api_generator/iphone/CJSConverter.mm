@@ -87,12 +87,8 @@
             if (!is_first) {
                strRes = [strRes stringByAppendingString:@","]; 
             }
-            strRes = [strRes stringByAppendingString:@"\""];
-            strRes = [strRes stringByAppendingString:objKey];
-            strRes = [strRes stringByAppendingString:@"\":"];
-            
-            strRes = [strRes stringByAppendingString:[CJSConverter convertToJS:objValue level:(level+1)]];
-            
+            NSString* keyval = [NSString stringWithFormat:@"\"%@\":%@",objKey,[CJSConverter convertToJS:objValue level:(level+1)]];
+            strRes = [strRes stringByAppendingString:keyval];            
             is_first = NO;
         }
         strRes = [strRes stringByAppendingString:@"}"];
