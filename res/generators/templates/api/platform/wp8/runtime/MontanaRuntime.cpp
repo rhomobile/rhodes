@@ -1,8 +1,12 @@
 // <%= $cur_module.name %>Runtime.cpp
 #include "<%= $cur_module.name %>Runtime.h"
+#include "../lib/<%= $cur_module.name %>Factory.h"
 
 using namespace Platform;
 using namespace rho::apiGenerator;
+<% $cur_module.parents.each do |parent| %>
+using namespace <%= parent.downcase() %>;<%
+end%>
 
 namespace rhoruntime
 {
@@ -26,5 +30,10 @@ void <%= $cur_module.name %><%= component_name%>Component::<%= module_method.nat
 {
     _impl-><%= module_method.native_name%>(<%= module_method.cached_data["cli_call_params"]%>);
 }<% end %>
+
+void <%= $cur_module.name %>FactoryComponent::setImpl(I<%= $cur_module.name %>FactoryImpl^ impl)
+{
+    C<%= $cur_module.name %>Factory::setImpl(impl);
+}
 
 }

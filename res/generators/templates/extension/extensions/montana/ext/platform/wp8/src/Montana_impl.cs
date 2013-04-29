@@ -90,6 +90,16 @@ namespace <%= name.camel_case() %>Impl
             // implement this method in C# here
         }
     }
+
+    public class <%= name.camel_case() %>Factory : I<%= name.camel_case() %>FactoryImpl
+    {
+        public I<%= name.camel_case() %>Impl getImpl() {
+            return new <%= name.camel_case() %>();
+        }
+        public I<%= name.camel_case() %>SingletonImpl getSingletonImpl() {
+            return new <%= name.camel_case() %>Singleton();
+        }
+    }
 }
 
 }

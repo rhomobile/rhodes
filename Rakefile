@@ -1012,7 +1012,6 @@ def init_extensions(startdir, dest)
             end
           end
           
-          # ? if csharp_impl ... extcsharpentries ...
           extentries << entry unless entry.nil?
 
           if type.to_s() != "nativelib"
@@ -1029,6 +1028,7 @@ def init_extensions(startdir, dest)
                 extcsharplibs << lib + "Runtime.lib" if csharp_impl
                 extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>" if csharp_impl
                 extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />' if csharp_impl
+                extcsharpentries << "#{lib}FactoryComponent.setImpl(new rho.#{lib}Impl.#{lib}Factory())" if csharp_impl
               end
             else
               libs.map! { |lib| "lib" + lib + ".a" }
@@ -1128,11 +1128,12 @@ def init_extensions(startdir, dest)
       # C# extensions initialization
       f = StringIO.new("", "w+")
       f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
+      f.puts "using rhoruntime;"
       f.puts "namespace rhodes {"
       f.puts "    public static class CSharpExtensions {"
-      f.puts "        public static void InitializeExtenstions() {"
+      f.puts "        public static void InitializeExtensions() {"
       extcsharpentries.each do |entry|
-        f.puts "            #{entry}();"
+        f.puts "            #{entry};"
       end
       f.puts "        }"
       f.puts "    }"

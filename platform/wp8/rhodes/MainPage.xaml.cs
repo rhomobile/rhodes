@@ -75,6 +75,8 @@ namespace rhodes
             ApplicationBar.IsVisible = false;
             try
             {
+                // initialize C# extensions factories
+                CSharpExtensions.InitializeExtensions();
                 // create rhodes runtime object
                 var _rhoruntime = CRhoRuntime.getInstance(new MainPageWrapper(this));
                 // create and start rhodes main thread
@@ -93,7 +95,7 @@ namespace rhodes
 
         public void InitializeCSharpExtensions()
         {
-            CSharpExtensions.InitializeExtenstions();
+            // CSharpExtensions.InitializeExtensions();
         }
 
 		public int getLogicalDpiX()
