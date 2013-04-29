@@ -275,7 +275,7 @@ namespace "build" do
 
       File.open($startdir + "/"+$config["build"]["wp8path"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
 
-      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/t:Build']
+      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/p:PlatformToolset=v110', '/t:Build']
 
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       Jake.run($msbuild, args)

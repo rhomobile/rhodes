@@ -1,18 +1,12 @@
 env:
-  app: C:/rhodes-app
+  #app: C:/rhodes-app
   paths:
     java: C:/Program Files/Java/jdk1.6.0_11/bin
     android: C:/android-sdk-windows
     android-ndk: C:/android-ndk-r4b
     cabwiz: C:/Program Files/Windows Mobile 6 SDK/Tools/CabWiz
-    4.6:
-      jde: C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0
-      mds: C:/Program Files/Research In Motion/BlackBerry JDE 4.6.0/MDS
-      sim: 9000
-    4.2:
-      jde: C:/Program Files/Research In Motion/BlackBerry JDE 4.2.0 
-      mds: C:/Program Files/Research In Motion/BlackBerry Email and MDS Services Simulators 4.1.2/MDS
-      sim: 8100
+    msbuild: C:/Windows/Microsoft.NET/Framework/v4.0.30319/MSBuild.exe
+    
 build:
   bbpath: platform/bb
   wmpath: platform/wm
@@ -41,15 +35,3 @@ excludedirs:
     - "**/.*.swo"
     - "**/.*.swn"
     - "**/.DS_Store"
-  bb:
-    - public/js/iui
-    - public/js/jquery*
-    - public/jqtouch*
-    - public/js/prototype*
-    - public/css/iphone*
-    - public/iwebkit
-    - public/themes
-    - "**/jquery*.js"
-    - "**/*.db"
-    - public/images/android
-    - public/images/iphone
