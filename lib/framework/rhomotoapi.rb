@@ -89,7 +89,6 @@ class << self
 end
 end
 end
-=end
 
 module Barcode
 
@@ -174,6 +173,7 @@ class << self
     end
 end    
 end
+=end
 
 end
 end
