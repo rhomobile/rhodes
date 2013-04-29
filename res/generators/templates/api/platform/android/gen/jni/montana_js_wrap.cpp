@@ -86,7 +86,9 @@ end
     }
     
     if(strCallbackID.length() != 0)
-        result.setCallBack(strCallbackID, strJsVmID);
+    {
+        result.setCallBack(strCallbackID, strCallbackParam);
+    }
 <%
 if method.has_callback == ModuleMethod::CALLBACK_MANDATORY %>
     if(!result.hasCallback())

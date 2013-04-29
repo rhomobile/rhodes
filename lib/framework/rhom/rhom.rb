@@ -51,8 +51,8 @@ module Rhom
       def database_client_reset(reset_local_models=true)
         puts "database_client_reset : reset_local_models=#{reset_local_models}"      
         
-		#load all partitions
-		Rho::RHO.load_all_sources
+		    #load all partitions
+		    Rho::RHO.load_all_sources
 
         if defined?(RHOCONNECT_CLIENT_PRESENT)
             old_interval = Rho::RhoConnectClient.set_pollinterval(0)
@@ -84,8 +84,8 @@ module Rhom
       def database_local_reset()
         puts "database_local_reset"
         
-		#load all partitions
-		Rho::RHO.load_all_sources
+		    #load all partitions
+		    Rho::RHO.load_all_sources
 
         ::Rho::RHO.get_db_partitions().each do |partition, db|
         
@@ -113,8 +113,8 @@ module Rhom
 
         raise ArgumentError, "reset_client_info should not be true if reset selected models" if args.count > 0 && args[0][:reset_client_info]
         
-		#load all partitions
-		Rho::RHO.load_all_sources
+		    #load all partitions
+		    Rho::RHO.load_all_sources
 
         if defined?(RHOCONNECT_CLIENT_PRESENT)
             old_interval = Rho::RhoConnectClient.set_pollinterval(0)
@@ -133,7 +133,9 @@ module Rhom
             next if !args[0][:reset_local_models] && src_partition == 'local'        
 
             if (src_partition != 'local')
-                Rho::RhoConfig.reset_models += "&sources[][name]=#{src_name}"
+                # build comma-separated string of models
+                Rho::RhoConfig.reset_models += "," unless Rho::RhoConfig.reset_models.size == 0
+                Rho::RhoConfig.reset_models += "#{src_name}"
             end
                 
             begin

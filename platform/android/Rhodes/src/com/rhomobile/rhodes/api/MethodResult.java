@@ -213,7 +213,7 @@ public class MethodResult implements IMethodResult {
         Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
-            nativeCallBack(mTabId, mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mIsRuby, mSingleShot);
         }
     }
     @Override
@@ -224,7 +224,7 @@ public class MethodResult implements IMethodResult {
         Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
-            nativeCallBack(mTabId, mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mIsRuby, mSingleShot);
         }
     }
     @Override
@@ -235,7 +235,7 @@ public class MethodResult implements IMethodResult {
         Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
-            nativeCallBack(mTabId, mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mIsRuby, mSingleShot);
         }
     }
     @Override
@@ -276,7 +276,7 @@ public class MethodResult implements IMethodResult {
         Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
-            nativeCallBack(mTabId, mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mIsRuby, mSingleShot);
         }
     }
 
@@ -288,7 +288,7 @@ public class MethodResult implements IMethodResult {
         Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
-            nativeCallBack(mTabId, mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mIsRuby, mSingleShot);
         }
     }
 
@@ -300,7 +300,7 @@ public class MethodResult implements IMethodResult {
         Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
-            nativeCallBack(mTabId, mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mIsRuby, mSingleShot);
         }
     }
 
@@ -465,7 +465,7 @@ public class MethodResult implements IMethodResult {
         Logger.T(TAG, toString());
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
-            nativeCallBack(mTabId, mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mIsRuby, mSingleShot);
         }
     }
     
@@ -476,7 +476,7 @@ public class MethodResult implements IMethodResult {
         mResultType = ResultType.typeArgError;
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
-            nativeCallBack(mTabId, mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mIsRuby, mSingleShot);
         }
     }
 
@@ -487,7 +487,7 @@ public class MethodResult implements IMethodResult {
         mResultType = ResultType.typeError;
         if (mStrCallback.length() > 0 || mRubyProcCallback != 0) {
             Logger.T(TAG, "Calling native callback handler");
-            nativeCallBack(mTabId, mSingleShot, mIsRuby);
+            nativeCallBack(mTabId, mIsRuby, mSingleShot);
         }
     }
 }
