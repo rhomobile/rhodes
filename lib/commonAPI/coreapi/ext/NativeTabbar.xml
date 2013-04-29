@@ -29,7 +29,7 @@
                                     <DESC>Visible label to display on the tabbar.</DESC>
                                 </PARAM>
                                 <PARAM name="action" type="STRING">
-                                    <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. ‘/app/Account’ would load the Account index action. Or path to html page to load.</DESC>
+                                    <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. ‘/app/Account’ would load the Account index action. Or javascript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
                                 </PARAM>
                                 <PARAM name="icon" type="STRING">
                                     <DESC>Relative path to tabbar item icon in your rhodes app; typically located in /public/images/.</DESC>
@@ -73,17 +73,17 @@
 
             </METHOD>
 
-            <METHOD name="currentTabIndex" >
+            <METHOD name="currentTabIndex">
                 <DESC>Returns the current tab 0-based index.</DESC>
                 <RETURN type="INTEGER">
                 </RETURN>
             </METHOD>
 
-            <METHOD name="remove" >
+            <METHOD name="remove" runInThread="UI">
                 <DESC>Removes the current tabbar. Does nothing if there is no active tabbar.</DESC>
             </METHOD>
 
-            <METHOD name="setTabBadge" >
+            <METHOD name="setTabBadge" runInThread="UI" >
                 <DESC>Set the iPhone badge to tab.</DESC>
                 <PLATFORMS>iOS</PLATFORMS>
                 <PARAMS>
@@ -97,7 +97,7 @@
                 </PARAMS>                
             </METHOD>
 
-            <METHOD name="switchTab" >
+            <METHOD name="switchTab" runInThread="UI">
                 <DESC>Switch active tab.</DESC>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER">
