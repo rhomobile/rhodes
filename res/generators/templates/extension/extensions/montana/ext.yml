@@ -8,7 +8,7 @@ wp8:
   root_namespace: rho
 
 project_paths:
-  wp8: ext/platform/wp8/<%= namecamelcase %>.sln
+  wp8: ext/platform/wp8/<%= namecamelcase %>Lib.vcxproj
   wm: ext/platform/wm/<%= namecamelcase %>.vcproj
   win32: ext/platform/wm/<%= namecamelcase %>.vcproj
   

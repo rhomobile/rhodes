@@ -390,7 +390,6 @@ module Rhogen
       generated_uuid = puuid.generate
       @productid = generated_uuid
       @wp8LibGUID = puuid.generate
-      @wp8RuntimeGUID = puuid.generate
       @wp8StubImplGUID = puuid.generate
       @@noapp = noapp
     end
@@ -545,16 +544,6 @@ module Rhogen
 
     # wp8: c++ -> c# bridging
 
-    template :extension_wp8_solution do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/Montana.sln'
-        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}.sln"
-    end
-
-    template :extension_wp8_solution_dev do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/Montana_dev.sln'
-        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}_dev.sln"
-    end
-
     template :extension_wp8_impl_targets do |template|
         template.source = 'extensions/montana/ext/platform/wp8/MontanaImpl.targets'
         template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Impl.targets"
@@ -578,21 +567,6 @@ module Rhogen
     template :extension_wp8_impl_assemblyinfo do |template|
         template.source = 'extensions/montana/ext/platform/wp8/src/Properties/AssemblyInfo.cs'
         template.destination = "extensions/#{name}/ext/platform/wp8/src/Properties/AssemblyInfo.cs"
-    end
-
-    template :extension_wp8_runtime_vcxproj do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/MontanaRuntime.vcxproj'
-        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Runtime.vcxproj"
-    end
-
-    template :extension_wp8_runtime_vcxproj_filters do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/MontanaRuntime.vcxproj.filters'
-        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Runtime.vcxproj.filters"
-    end
-
-    template :extension_wp8_runtime_props do |template|
-        template.source = 'extensions/montana/ext/platform/wp8/MontanaRuntime.props'
-        template.destination = "extensions/#{name}/ext/platform/wp8/#{namecamelcase}Runtime.props"
     end
 
     template :extension_wp8_lib_vcxproj do |template|
@@ -2218,13 +2192,13 @@ module Rhogen
     end
 
     template :wp8_runtime_montana_runtime_h do |template|
-      template.source = 'platform/wp8/runtime/MontanaRuntime.h'
-      template.destination = "platform/wp8/generated/runtime/#{$cur_module.name}Runtime.h"
+      template.source = 'platform/wp8/lib/MontanaRuntime.h'
+      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}Runtime.h"
     end
 
     template :wp8_runtime_montana_runtime_cpp do |template|
-      template.source = 'platform/wp8/runtime/MontanaRuntime.cpp'
-      template.destination = "platform/wp8/generated/runtime/#{$cur_module.name}Runtime.cpp"
+      template.source = 'platform/wp8/lib/MontanaRuntime.cpp'
+      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}Runtime.cpp"
     end
 
     template :wp8_lib_montana_factory_h do |template|
