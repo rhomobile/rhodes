@@ -160,12 +160,24 @@ def addconfigtoxap()
   puts Jake.run($zippath, args)
 end
 
+def setCSharpEnvironment(csharp_impl)
+  if csharp_impl
+    ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", $cur_ext, $build_config)
+    ENV['TARGET_EXT_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
+    ENV['BUILD_CSHARP_IMPL'] = "yes"
+  else
+    ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
+    ENV['TARGET_EXT_DIR'] = ''
+    ENV['BUILD_CSHARP_IMPL'] = "no"
+  end
+end
 
 namespace "build" do
   namespace "wp8" do
 
     task :extensions => "config:wp8" do
       $app_config["extensions"].each do |ext|
+        $cur_ext = ext
         $app_config["extpaths"].each do |p|
 
           project_path = nil
@@ -175,7 +187,11 @@ namespace "build" do
             extconf = Jake.config(File.open(extyml))
             project_paths = extconf["project_paths"]
             project_path = project_paths[$current_platform] if (project_paths && project_paths[$current_platform])
-            csharp_impl = (!extconf[$current_platform].nil?) && (!extconf[$current_platform]['csharp_impl'].nil?) ? true : false
+            extconf_wp8 = (!extconf[$current_platform].nil?) ? extconf[$current_platform] : Hash.new
+            csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
+          else
+            csharp_impl_all = false
+            extconf_wp8 = Hash.new
           end
 
           ENV['RHO_PLATFORM'] = $current_platform
@@ -185,18 +201,23 @@ namespace "build" do
           ENV['TEMP_FILES_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext) # unused by rake build with 'project_path'
           ENV['VCBUILD'] = $msbuild
           ENV['RHO_EXT_NAME'] = ext
-          if csharp_impl
-            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext, $build_config)
-            ENV['TARGET_EXT_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
-            ENV['BUILD_CSHARP_IMPL'] = "yes"
-          else
-            ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
-          end
+          setCSharpEnvironment(csharp_impl_all) 
 
           if (project_path)
             ENV['RHO_PROJECT_PATH'] = File.join(p, ext, project_path)
-
             puts Jake.run("rake", [], File.join($startdir, "lib/build/extensions"))
+
+            if (!extconf_wp8['libraries'].nil?) && (extconf_wp8['libraries'].is_a? Array)
+              extconf_wp8['libraries'].each do |lib|
+                extconf_wp8_lib = !extconf_wp8[lib].nil? ? extconf_wp8[lib] : Hash.new
+                if !extconf_wp8_lib['project_path'].nil?
+                  setCSharpEnvironment( csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?) )
+                  ENV['RHO_PROJECT_PATH'] = File.join(p, ext, extconf_wp8_lib['project_path'])
+                  puts Jake.run("rake", [], File.join($startdir, "lib/build/extensions"))
+                end
+              end
+            end
+
             break
           else
             extpath = File.join(p, ext, 'ext')
