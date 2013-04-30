@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../../../shared/generated/cpp/I<%= $cur_module.name %>.h"
+#include "api_generator/wp8/IMethodResult.h"
 <%
   dynamic_methods = ''
   static_methods = ''
@@ -15,7 +16,7 @@
         call_params += "#{param.name}, "
     end
 
-    params += "I#{$cur_module.name}MethodResult^ oResult"
+    params += "IMethodResult^ oResult"
     call_params += 'oResult'
     module_method.cached_data["cli_params"] = params
     module_method.cached_data["cli_call_params"] = call_params
@@ -32,20 +33,6 @@
 %>
 namespace rhoruntime
 {
-    public interface class I<%= $cur_module.name %>MethodResult
-    {
-    public:
-        [Windows::Foundation::Metadata::DefaultOverloadAttribute]
-
-        void set(bool res);
-        void set(int64 res);
-        void set(int res);
-        void set(double res);
-        void set(Platform::String^ res);
-        void set(Windows::Foundation::Collections::IVectorView<Platform::String^>^ res);
-        void set(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ res);
-    };
-
     public interface class I<%= $cur_module.name %>Impl
     {
 <%= dynamic_methods%>    };

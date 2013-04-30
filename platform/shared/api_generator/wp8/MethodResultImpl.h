@@ -1,13 +1,15 @@
 #pragma once
 
-#include "../runtime/<%= $cur_module.name %>Runtime.h"
+#include "../MethodResult.h"
+#include "IMethodResult.h"
 
 namespace rhoruntime {
-    public ref class C<%= $cur_module.name %>MethodResultImpl sealed: public I<%= $cur_module.name %>MethodResult
+
+    public ref class CMethodResultImpl sealed: public IMethodResult
     {
         rho::apiGenerator::CMethodResult* oResult;
     public:
-        C<%= $cur_module.name %>MethodResultImpl(int64 native);
+        CMethodResultImpl(int64 native);
 
         virtual void set(bool res);
         virtual void set(int64 res);
@@ -17,4 +19,5 @@ namespace rhoruntime {
         virtual void set(Windows::Foundation::Collections::IVectorView<Platform::String^>^ res);
         virtual void set(Windows::Foundation::Collections::IMapView<Platform::String^, Platform::String^>^ res);
     };
+
 }

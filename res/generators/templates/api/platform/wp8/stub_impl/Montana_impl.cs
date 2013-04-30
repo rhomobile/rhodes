@@ -25,7 +25,7 @@ end %>
         params += "#{api_generator_cs_makeNativeTypeArg(param.type)} #{param.name}, "
     end
 
-    params += "I#{$cur_module.name}MethodResult oResult"
+    params += "IMethodResult oResult"
     module_method.cached_data["cs_params"] = params
 
     method_def = "\n        public void #{module_method.native_name}(#{params})\n        {\n            // implement this method in C# here\n        }\n"
