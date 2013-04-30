@@ -75,6 +75,8 @@ namespace rhodes
             ApplicationBar.IsVisible = false;
             try
             {
+                // initialize C# extensions factories
+                CSharpExtensions.InitializeExtensions();
                 // create rhodes runtime object
                 var _rhoruntime = CRhoRuntime.getInstance(new MainPageWrapper(this));
                 // create and start rhodes main thread
@@ -89,11 +91,6 @@ namespace rhodes
             {
                 RhodesWebBrowser.NavigateToString("<html><head><title>Exception</title></head><body>Exception: "+e.Message+"</body></html>");
             }
-        }
-
-        public void InitializeCSharpExtensions()
-        {
-            CSharpExtensions.InitializeExtenstions();
         }
 
 		public int getLogicalDpiX()
@@ -832,7 +829,7 @@ namespace rhodes
         {
             String answer = CRhoRuntime.getInstance().onJSInvoke(e.Value);
             RhodesWebBrowser.IsScriptEnabled = true;
-            RhodesWebBrowser.InvokeScript("nativeCallback", new string[] { answer});
+            RhodesWebBrowser.InvokeScript("__rhoNativeApiResult", new string[] { answer });
         }
     }
 }

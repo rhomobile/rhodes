@@ -80,7 +80,7 @@ describe("<generator API specs>", function() {
             });
         });
 
-        it("can receive optional params", function() {
+        xit("can receive optional params", function() {
             var params = "abc123";
             var cbParams = null;
             var cbVal = null;
@@ -108,6 +108,20 @@ describe("<generator API specs>", function() {
             expect(objs[1].boolProp).toEqual(false);
             objs[1].boolProp = true;
             expect(objs[1].boolProp).toEqual(true);
+        });
+
+        it("enumerates module instances with callback", function() 
+        {
+            var objs = null;
+            Rho.GenPropBag.enumerate( function(v){ objs = v; } );
+            waitsFor(function(){return null != objs}, 'Callback should be called', 2000);
+
+            runs(function() 
+            {
+                expect(objs.length).toEqual(2);
+                objs[1].boolProp = true;
+                expect(objs[1].boolProp).toEqual(true);
+            });
         });
 
     });

@@ -107,14 +107,7 @@ Once duration has been reached the video file will be saved or transferred.  Cal
 The output file format on Android is MP4 and on Windows is WMV. 
                     ]]>
                 </DESC>
-            </REMARK>            			
-            <REMARK title="Format of the remoteFileName URL">
-                <DESC>
-                    <![CDATA[
-This has to be wrapped with url('') for Javascript. The protocol, port number, username (optional) and password (optional) are all derived from the URL string and should be specified in the following manner: [protocol]://[username]:[password@]Server[:Port]FileNameAndPath.  FTP Example: ftp://admin:root@192.168.1.1:2500/Folder/Cap.mov.  HTTP Example: http://admin:root@192.168.1.1:8080/Folder/Upload.aspx.  File Example: file://\path\Cap.mov.  
-                    ]]>
-                </DESC>
-            </REMARK>			
+            </REMARK>
 		</REMARKS>
 		<EXAMPLES >
             <EXAMPLE title="Basic Example">
@@ -127,7 +120,7 @@ This has to be wrapped with url('') for Javascript. The protocol, port number, u
             <![CDATA[
 #/app/Model
 def index
-	Rho::Videocapture.fileName = '/mnt/sdcard/RhoVideoCapture'
+	Rho::Videocapture.fileName = '/RhoVideoCapture'
 	Rho::Videocapture.duration = 30000
     Rho::Videocapture.start(url_for(:action => :mysaveevent))
 end

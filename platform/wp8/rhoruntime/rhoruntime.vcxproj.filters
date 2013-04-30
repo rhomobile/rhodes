@@ -8,6 +8,9 @@
     <Filter Include="common">
       <UniqueIdentifier>{bf0c8341-f452-446c-a451-bdc1ac77a16b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="api_generator">
+      <UniqueIdentifier>{f9a8a970-8c40-4714-915d-98aeaacf1a3c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="rhoruntime.cpp" />
@@ -55,6 +58,9 @@
       <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="CSharpExtensions.cpp" />
+    <ClCompile Include="..\..\shared\api_generator\wp8\MethodResultImpl.cpp">
+      <Filter>api_generator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rhoruntime.h" />
@@ -76,6 +82,12 @@
     </ClInclude>
     <ClInclude Include="common\RhoConvertWP8.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\wp8\IMethodResult.h">
+      <Filter>api_generator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\api_generator\wp8\MethodResultImpl.h">
+      <Filter>api_generator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

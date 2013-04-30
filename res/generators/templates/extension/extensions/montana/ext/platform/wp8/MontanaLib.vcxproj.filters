@@ -43,7 +43,7 @@
     <ClCompile Include="generated\lib\<%= name.camel_case() %>_impl.cpp">
       <Filter>wp8\lib</Filter>
     </ClCompile>
-    <ClCompile Include="generated\lib\MethodResultImpl.cpp">
+    <ClCompile Include="generated\lib\<%= name.camel_case() %>Runtime.cpp">
       <Filter>wp8\lib</Filter>
     </ClCompile>
   </ItemGroup>
@@ -51,8 +51,8 @@
     <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h">
       <Filter>shared\generated\cpp</Filter>
     </ClInclude>
-    <ClInclude Include="generated\lib\MethodResultImpl.h">
+    <ClInclude Include="generated\lib\<%= name.camel_case() %>Runtime.h">
       <Filter>wp8\lib</Filter>
-    </ClInclude>
+    </ClCompile>
   </ItemGroup>
 </Project>

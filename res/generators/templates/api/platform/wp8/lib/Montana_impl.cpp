@@ -1,7 +1,8 @@
 #include "common/RhodesApp.h"
 #include "../../wp8/rhoruntime/common/RhoConvertWP8.h"
-#include "../../../../shared/generated/cpp/<%= $cur_module.name %>Base.h"
-#include "<%= $cur_module.name %>_MethodResultImpl.h"
+//#include "../../../../shared/generated/cpp/<%= $cur_module.name %>Base.h"
+#include "<%= $cur_module.name %>Factory.h"
+#include "api_generator/wp8/MethodResultImpl.h"
 
 using namespace rho::apiGenerator;
 using namespace rhoruntime;
@@ -30,7 +31,7 @@ end%>
     end
 
     params += 'CMethodResult& oResult'
-    call_params += "ref new C#{$cur_module.name}MethodResultImpl((int64)&oResult)"
+    call_params += 'ref new CMethodResultImpl((int64)&oResult)'
     module_method.cached_data["cpp2cs_params"] = params
     module_method.cached_data["cpp2cs_call_params"] = call_params
 
@@ -44,29 +45,19 @@ end%>
 %>
 class C<%= $cur_module.name %>Impl: public C<%= $cur_module.name %>Base
 {
+private:
     I<%= $cur_module.name %>Impl^ _runtime;
 public:
-    C<%= $cur_module.name %>Impl(const rho::String& strID): C<%= $cur_module.name %>Base()
-    {
-        // TODO: implement implementation constructor
-    }
-
-    virtual void registerRuntime(I<%= $cur_module.name %>Impl^ runtime)
-    {
-        _runtime = runtime;
-    }
+    C<%= $cur_module.name %>Impl(const rho::String& strID, I<%= $cur_module.name %>Impl^ runtime): C<%= $cur_module.name %>Base(), _runtime(runtime) {}
 <%= dynamic_methods%>};
 
 class C<%= $cur_module.name %>Singleton: public C<%= $cur_module.name %>SingletonBase
 {
+private:
     I<%= $cur_module.name %>SingletonImpl^ _runtime;
 public:
+    C<%= $cur_module.name %>Singleton(I<%= $cur_module.name %>SingletonImpl^ runtime): _runtime(runtime) {}
     ~C<%= $cur_module.name %>Singleton(){}
-
-    virtual void registerRuntime(I<%= $cur_module.name %>SingletonImpl^ runtime)
-    {
-        _runtime = runtime;
-    }
 <%= static_methods%>
 <% if $cur_module.is_template_default_instance %>
     virtual rho::String getDefaultID(){return "1";} // TODO: implement getDefaultID
@@ -76,21 +67,16 @@ public:
     virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor){} // TODO: implement callCommandInThread
 };
 
-class C<%= $cur_module.name %>Factory: public C<%= $cur_module.name %>FactoryBase
-{
-    ~C<%= $cur_module.name %>Factory(){}
-    virtual I<%= $cur_module.name %>Singleton* createModuleSingleton();
-    virtual I<%= $cur_module.name %>* createModuleByID(const rho::String& strID);
-};
+I<%= $cur_module.name %>FactoryImpl^ C<%= $cur_module.name %>Factory::_impl;
 
 I<%= $cur_module.name %>* C<%= $cur_module.name %>Factory::createModuleByID(const rho::String& strID)
 {
-    return new C<%= $cur_module.name %>Impl(strID);
+    return new C<%= $cur_module.name %>Impl(strID, _impl->getImpl());
 }
 
 I<%= $cur_module.name %>Singleton* C<%= $cur_module.name %>Factory::createModuleSingleton()
 {
-    return new C<%= $cur_module.name %>Singleton();
+    return new C<%= $cur_module.name %>Singleton(_impl->getSingletonImpl());
 }
 <% $cur_module.parents.each do |parent| %>
 }<%

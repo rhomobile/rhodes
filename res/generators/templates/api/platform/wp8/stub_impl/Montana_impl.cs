@@ -25,7 +25,7 @@ end %>
         params += "#{api_generator_cs_makeNativeTypeArg(param.type)} #{param.name}, "
     end
 
-    params += "I#{$cur_module.name}MethodResult oResult"
+    params += "IMethodResult oResult"
     module_method.cached_data["cs_params"] = params
 
     method_def = "\n        public void #{module_method.native_name}(#{params})\n        {\n            // implement this method in C# here\n        }\n"
@@ -54,6 +54,16 @@ namespace <%= $cur_module.name %>Impl
             var _runtime = new <%= $cur_module.name %>SingletonComponent(this);
         }
 <%= static_methods%>    }
+
+    public class <%= $cur_module.name %>Factory : I<%= $cur_module.name %>FactoryImpl
+    {
+        public I<%= $cur_module.name %>Impl getImpl() {
+            return new <%= $cur_module.name %>();
+        }
+        public I<%= $cur_module.name %>SingletonImpl getSingletonImpl() {
+            return new <%= $cur_module.name %>Singleton();
+        }
+    }
 }
 <% $cur_module.parents.each do |parent| %>
 }<%

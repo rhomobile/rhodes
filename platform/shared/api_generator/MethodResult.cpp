@@ -211,8 +211,14 @@ void CMethodResult::callCallback()
                     
                 case ctRubyProc:
                 {
+                    // CRubyCallbackResult<CMethodResult>(*this) will reset m_pRubyCallbackProc, save a copy
+                    CMethodRubyValue rubyCallProcCopy(m_pRubyCallbackProc->getValue());
+                    
                     VALUE oProc = m_pRubyCallbackProc->getValue();
                     rho::String strResBody = RHODESAPP().addCallbackObject( new CRubyCallbackResult<CMethodResult>(*this), "body");
+                    
+                    // restore original value
+                    m_pRubyCallbackProc = new CMethodRubyValue(rubyCallProcCopy.getValue());
                     
                     RHODESAPP().callCallbackProcWithData( oProc, strResBody, m_strCallbackParam, true);
                     break;
