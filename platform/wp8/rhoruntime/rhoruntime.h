@@ -38,7 +38,6 @@ namespace rhoruntime
 		bool isBrowserInitialized();
 		::Platform::String^ getScreenOrientation();
 		void bringToFront();
-		void InitializeCSharpExtensions();
 
 		// webview
 		void navigate(::Platform::String^ url, int index);

@@ -72,48 +72,11 @@ void CRhoRuntime::Execute()
 
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
     //RHODESAPP().setExtManager( &m_oExtManager );
-	m_MainPage->InitializeCSharpExtensions();
 
 	//Create Main window
 	createCustomMenu();
 
 	RHODESAPP().startApp();
-
-	// wait for 8 seconds
-	//m_MainPage->DoWait(8000);
-	
-	/* Toolbar test
-	rho::String strImagePath;
-	rho::StringW iconW;
-	m_MainPage->toolbarRemoveAllButtons();
-	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "/public/images/bar/back_btn.png");
-	m_MainPage->toolbarAddAction(rho::common::convertStringToWP8(strImagePath), ref new String(L"Back"), ref new String(L"back"));
-	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "public/images/bar/forward_btn.png");
-	m_MainPage->toolbarAddAction(rho::common::convertStringToWP8(strImagePath), ref new String(L"Forward"), ref new String(L"forward"));
-	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "/public/images/bar/home_btn.png");
-	m_MainPage->toolbarAddAction(rho::common::convertStringToWP8(strImagePath), ref new String(L"Home"), ref new String(L"home"));
-	strImagePath = rho::common::CFilePath::join( rho_native_reruntimepath(), "public/images/bar/gears.png");
-	m_MainPage->toolbarAddAction(rho::common::convertStringToWP8(strImagePath), ref new String(L"Options"), ref new String(L"options"));
-	m_MainPage->toolbarAddAction(nullptr, ref new String(L"Refresh"), ref new String(L"refresh"));
-	m_MainPage->toolbarShow();
-	*/
-
-	/* Tabbar test
-	m_MainPage->tabbarInitialize();
-	rho::String strIconPath1 = rho::common::CFilePath::join( RHODESAPP().getAppRootPath(), "/public/images/bar/gears.png");
-	rho::StringW icon1 = rho::common::convertToStringW(strIconPath1);
-	rho::String strIconPath2 = rho::common::CFilePath::join( RHODESAPP().getAppRootPath(), "public/images/bar/forward_btn.png");
-	rho::StringW icon2 = rho::common::convertToStringW(strIconPath2);
-	rho::String strIconPath3 = rho::common::CFilePath::join( RHODESAPP().getAppRootPath(), "/public/images/bar/home_btn.png");
-	rho::StringW icon3 = rho::common::convertToStringW(strIconPath3);
-	m_MainPage->tabbarAddTab(ref new String(L"Tab 1"), ref new String(icon1.c_str()), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
-	m_MainPage->tabbarAddTab(ref new String(L"Tab 2"), ref new String(icon2.c_str()), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
-	m_MainPage->tabbarAddTab(ref new String(L"Tab 3"), ref new String(icon3.c_str()), ref new String(L"/app"), false, ref new String(L""), ref new String(L""), false, false);
-	m_MainPage->tabbarShow();
-	*/
-
-	//m_MainPage->fullscreenCommand(1);
-	//m_MainPage->exitCommand();
 }
 
 
@@ -242,7 +205,7 @@ extern "C" void rho_sys_app_exit()
 #ifdef OS_WP8
 extern "C" void rho_net_impl_network_indicator(int active)
 {
-	 //TODO: rho_net_ping_network
+	//TODO: rho_net_ping_network
     //RAWLOGC_INFO("rhoruntime.cpp", "rho_net_impl_network_indicator() has no implementation on WP8.");
 }
 
