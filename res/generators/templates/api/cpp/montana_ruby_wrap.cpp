@@ -1,3 +1,4 @@
+<% moduleNamespace = api_generator_cpp_MakeNamespace($cur_module.parents) %>
 #include "<%= $cur_module.name %>Base.h"
 
 #include "logging/RhoLog.h"
@@ -14,8 +15,6 @@ using namespace rho::apiGenerator;
 
 extern "C"
 {
-<% moduleNamespace = api_generator_cpp_MakeNamespace($cur_module.parents) 
-%>
 void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 VALUE getRuby_<%= $cur_module.name %>_Module();
 
@@ -255,9 +254,12 @@ end
 
 numParams = module_method.params.size()+1
 if module_method.access != ModuleMethod::ACCESS_STATIC
-    functorWar = "pFunctor = rho_makeInstanceClassFunctor#{numParams}( pObj, &#{moduleNamespace}I#{$cur_module.name}::#{module_method.native_name}, #{functor_params} oRes );"
+    nativeInterfaceFunc = "#{moduleNamespace}I#{$cur_module.name}::#{module_method.native_name}"
+    functorWar = "pFunctor = rho_makeInstanceClassFunctor#{numParams}( pObj, &#{nativeInterfaceFunc}, #{functor_params} oRes );"
 else 
-    functorWar = "pFunctor = rho_makeInstanceClassFunctor#{numParams}( #{moduleNamespace}C#{$cur_module.name}FactoryBase::get#{$cur_module.name}SingletonS(), &#{moduleNamespace}I#{$cur_module.name}Singleton::#{module_method.native_name}, #{functor_params} oRes );"
+    nativeSingleton = "#{moduleNamespace}C#{$cur_module.name}FactoryBase::get#{$cur_module.name}SingletonS()"
+    nativeSingletonMethod = "#{moduleNamespace}I#{$cur_module.name}Singleton::#{module_method.native_name}"
+    functorWar = "pFunctor = rho_makeInstanceClassFunctor#{numParams}( #{nativeSingleton}, &#{nativeSingletonMethod}, #{functor_params} oRes );"
 end
 
 if module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI %>
@@ -280,8 +282,8 @@ end %>
 else %>
         <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.native_name %>( <%= functor_params %> oRes );<%
 end %>
-    }<%
-end %>
+    }<% end %>
+    
     return oRes.toRuby();
 }
 <% else 
