@@ -131,11 +131,20 @@ INetResponse* CNetRequestWrapper::pushMultipartData(const String& strUrl, CMulti
     return pResp;
 }
 
-INetResponse* CNetRequestWrapper::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders,bool overwriteFile,bool createFolders)
+INetResponse* CNetRequestWrapper::pullFile(const String& strUrl, const String& strFilePath, IRhoSession* oSession, Hashtable<String,String>* pHeaders,bool overwriteFile,bool createFolders, bool* pFileExistsFlag )
 {
     if (!overwriteFile && common::CRhoFile::isFileExist(strFilePath.c_str())) {
         LOGC(WARNING,"Net") + "pullFile: " + strFilePath + " already exists, won't download since overwrite flag is not set";
+        
+        if ( pFileExistsFlag != 0 ) {
+            *pFileExistsFlag = true;
+        }
+        
         return m_pReqImpl->createEmptyNetResponse();
+    }
+    
+    if ( pFileExistsFlag != 0 ) {
+        *pFileExistsFlag = false;
     }
     
     if ( createFolders ) {
