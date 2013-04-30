@@ -11,8 +11,6 @@ namespace rhodes
         private MainPage _mainPage;
         public MainPageWrapper(MainPage mainPage) { _mainPage = mainPage; }
 
-        public void InitializeCSharpExtensions() { _mainPage.InitializeCSharpExtensions(); }
-
         public int getLogicalDpiX() { return _mainPage.getLogicalDpiX(); }
         public int getLogicalDpiY() { return _mainPage.getLogicalDpiY(); }
         public int getScreenWidth() { return _mainPage.getScreenWidth();  }

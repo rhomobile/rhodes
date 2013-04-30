@@ -188,7 +188,6 @@ namespace "build" do
           if csharp_impl
             ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext, $build_config)
             ENV['TARGET_EXT_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
-            ENV['TARGET_EXT_DIR_CSHARP'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhodes", $build_config)
             ENV['BUILD_CSHARP_IMPL'] = "yes"
           else
             ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
@@ -275,7 +274,7 @@ namespace "build" do
 
       File.open($startdir + "/"+$config["build"]["wp8path"] + "/rhodes/Properties/WMAppManifest.xml", "w") { |f| doc.write f; f.close }
 
-      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}", '/t:Build']
+      args = ['rhodes.sln', "/p:Configuration=#{$build_config}", "/p:Platform=#{$sdk}",  '/p:VisualStudioVersion=11.0', '/t:Build'] #'/p:PlatformToolset=v110'
 
       puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
       Jake.run($msbuild, args)

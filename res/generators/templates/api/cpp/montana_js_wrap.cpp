@@ -1,3 +1,5 @@
+<% moduleNamespace = api_generator_cpp_MakeNamespace($cur_module.parents) %>
+
 #include "<%= $cur_module.name %>Base.h"
 #include "api_generator/js_helpers.h"
 
@@ -49,7 +51,7 @@ end %>
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     int argc = argv.getSize();
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
-    <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>* pObj = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(strObjID);
+    <%= moduleNamespace%>I<%= $cur_module.name %>* pObj = <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::getInstance()->getModuleByID(strObjID);
 <%end%>
 
 <% functor_params = ""; first_arg = 0;
@@ -177,33 +179,37 @@ end %>
     oRes.setCallbackParam( strCallbackParam );
 <% end %>
 
-<% if module_method.access != ModuleMethod::ACCESS_STATIC %>
-    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( pObj, &<%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>::<%= module_method.native_name %>, <%= functor_params %> oRes );
-<% else %>
-    pFunctor = rho_makeInstanceClassFunctor<%= module_method.params.size()+1%>( <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS(), &<%= api_generator_cpp_MakeNamespace($cur_module.parents)%>I<%= $cur_module.name %>Singleton::<%= module_method.native_name %>, <%= functor_params %> oRes );
-<% end %>
+<% numParams = module_method.params.size()+1
+if module_method.access != ModuleMethod::ACCESS_STATIC
+    nativeInterfaceFunc = "#{moduleNamespace}I#{$cur_module.name}::#{module_method.native_name}"
+    functorWar = "pFunctor = rho_makeInstanceClassFunctor#{numParams}( pObj, &#{nativeInterfaceFunc}, #{functor_params} oRes );"
+else 
+    nativeSingleton = "#{moduleNamespace}C#{$cur_module.name}FactoryBase::get#{$cur_module.name}SingletonS()"
+    nativeSingletonMethod = "#{moduleNamespace}I#{$cur_module.name}Singleton::#{module_method.native_name}"
+    functorWar = "pFunctor = rho_makeInstanceClassFunctor#{numParams}( #{nativeSingleton}, &#{nativeSingletonMethod}, #{functor_params} oRes );"
+end
 
-<% if (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) %>
-    rho_wm_impl_performOnUiThread( pFunctor );
-<% elsif (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE) || (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED) %>
-    <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
-<% else if module_method.run_in_thread != ModuleMethod::RUN_IN_THREAD_NONE %>
-
+if module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI %>
+    <%= functorWar %>
+    rho_wm_impl_performOnUiThread( pFunctor );<%
+elsif (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_MODULE) || (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_SEPARATED) %>
+    <%= functorWar %>
+    <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );<%
+else if module_method.run_in_thread != ModuleMethod::RUN_IN_THREAD_NONE %>
     if ( oRes.hasCallback() )
-        <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
+    {
+        <%= functorWar %>
+        <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->addCommandToQueue( pFunctor );
+    }
     else <%
 end %>
     {
-        delete pFunctor;
-
 <% if module_method.access != ModuleMethod::ACCESS_STATIC %>
-        pObj-><%= module_method.native_name %>( <%= functor_params %> oRes );
-<% else %>
-        <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.native_name %>( <%= functor_params %> oRes );
-<% end %>
-
-    }
-<% end %>
+        pObj-><%= module_method.native_name %>( <%= functor_params %> oRes );<%
+else %>
+        <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()-><%= module_method.native_name %>( <%= functor_params %> oRes );<%
+end %>
+    }<% end %>
 
     return oRes.toJSON();
 
@@ -215,7 +221,7 @@ end %>
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "getDefaultID", true)%>
 {
     rho::apiGenerator::CMethodResult oRes;
-    rho::String strDefaultID = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
+    rho::String strDefaultID = <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
     oRes.set(strDefaultID);
 
     return oRes.toJSON();
@@ -224,7 +230,7 @@ end %>
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "getDefault", true)%>
 {
     rho::apiGenerator::CMethodResult oRes;
-    rho::String strDefaultID = <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
+    rho::String strDefaultID = <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->getDefaultID();
     oRes.set(strDefaultID);
     oRes.setJSObjectClassPath("<%= api_generator_getJSModuleName(api_generator_getRubyModuleFullName($cur_module))%>");
 
@@ -234,7 +240,7 @@ end %>
 <%= api_generator_MakeJSMethodDecl($cur_module.name, "setDefaultID", true)%>
 {
     rho::apiGenerator::CMethodResult oRes;
-    <%= api_generator_cpp_MakeNamespace($cur_module.parents)%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(strObjID);
+    <%= moduleNamespace%>C<%= $cur_module.name %>FactoryBase::get<%= $cur_module.name %>SingletonS()->setDefaultID(strObjID);
 
     return oRes.toJSON();
 }

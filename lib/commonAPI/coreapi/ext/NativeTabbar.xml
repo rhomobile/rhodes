@@ -1,0 +1,125 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="NativeTabbar" parent="Rho" generateUnderscoreRubyNames="true">
+        <HELP_OVERVIEW>The NativeTabbar methods let you customize the Rhodes tabbar at runtime.</HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
+        
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <PROPERTIES access="STATIC" generateAccessors="false">
+        </PROPERTIES>
+
+        <METHODS  access="STATIC">
+            <ALIASES>
+                <ALIAS new="get_current_tab" existing="currentTabIndex" deprecated="true"/>
+            </ALIASES>
+
+            <METHOD name="create" hasCallback="optional" runInThread="UI">
+                <DESC>Removes the current tabbar and replaces it with this one. Callback will be called when tab is switched.</DESC>
+                <PARAMS>
+                    <PARAM name="tabElements" type="ARRAY">
+                        <DESC>Array of Tab elements.</DESC>
+
+                        <PARAM name="tabElement" type="HASH">
+                            <DESC>Properties of Tab elements.</DESC>
+                            <PARAMS>
+                                <PARAM name="label" type="STRING">
+                                    <DESC>Visible label to display on the tabbar.</DESC>
+                                </PARAM>
+                                <PARAM name="action" type="STRING">
+                                    <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
+                                </PARAM>
+                                <PARAM name="icon" type="STRING">
+                                    <DESC>Relative path to tabbar item icon in your rhodes app; typically located in /public/images/.</DESC>
+                                </PARAM>
+                                <PARAM name="reload" type="BOOLEAN" default="false">
+                                    <DESC>When tab is activated  - page in tab will be reloaded.</DESC>
+                                </PARAM>
+                                <PARAM name="selectedColor" type="INTEGER">
+                                    <DESC>Change the selected color of this tab.</DESC>
+                                </PARAM>
+                                <PARAM name="disabled" type="BOOLEAN" default="false">
+                                    <DESC>Tab will be displayed as disabled.</DESC>
+                                </PARAM>
+                                <PARAM name="backgroundColor" type="INTEGER">
+                                    <DESC> Background color for tab. Use when your application background color is not white for removing blink during switch tabs.</DESC>
+                                </PARAM>
+                                <PARAM name="useCurrentViewForTab" type="BOOLEAN" default="false">
+                                    <DESC>Smooth transfer WebView from current view into this Tab and make this Tab active. Only one Tab can have this parameter.</DESC>
+                                </PARAM>
+
+                            </PARAMS>
+                        </PARAM>
+                    </PARAM>
+                    
+                    <PARAM name="tabBarProperties" type="HASH">
+                        <DESC>Properties of TabBar.</DESC>
+
+                        <PARAMS>
+                            <PARAM name="verticalOrientation" type="BOOLEAN" default="false">
+                                <DESC>Creates a vertical tabbar on the iPad.</DESC>
+                                <PLATFORMS>iOS</PLATFORMS>
+                            </PARAM>
+
+                            <PARAM name="backgroundColor" type="INTEGER">
+                                <DESC>Background color of the tabbar.</DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
+                    
+                </PARAMS>
+
+            </METHOD>
+
+            <METHOD name="currentTabIndex">
+                <DESC>Returns the current tab 0-based index.</DESC>
+                <RETURN type="INTEGER">
+                </RETURN>
+            </METHOD>
+
+            <METHOD name="remove" runInThread="UI">
+                <DESC>Removes the current tabbar. Does nothing if there is no active tabbar.</DESC>
+            </METHOD>
+
+            <METHOD name="setTabBadge" runInThread="UI" >
+                <DESC>Set the iPhone badge to tab.</DESC>
+                <PLATFORMS>iOS</PLATFORMS>
+                <PARAMS>
+                    <PARAM name="tabIndex" type="INTEGER">
+                        <DESC>The index for this tab (index numbered from 0). To set to all tabs : - 1.</DESC>
+                    </PARAM>
+                    <PARAM name="badge" type="STRING">
+                        <DESC>String for iPhone badge, such as '12'.</DESC>
+                    </PARAM>
+
+                </PARAMS>                
+            </METHOD>
+
+            <METHOD name="switchTab" runInThread="UI">
+                <DESC>Switch active tab.</DESC>
+                <PARAMS>
+                    <PARAM name="tabIndex" type="INTEGER">
+                        <DESC>The index for this tab (index numbered from 0).</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="isCreated" generateDoc="false">
+                <DESC>If Tabbar already created.</DESC>
+                <RETURN type="BOOLEAN"/>
+            </METHOD>
+
+        </METHODS>
+        
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+        <REMARKS>
+        </REMARKS>
+        <EXAMPLES >
+        </EXAMPLES>
+    </MODULE>
+</API>    

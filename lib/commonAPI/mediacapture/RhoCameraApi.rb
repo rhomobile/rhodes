@@ -25,30 +25,10 @@
 #------------------------------------------------------------------------
 
 
-if Rho::System.getProperty('platform') == 'APPLE' || Rho::System.getProperty('platform') == 'ANDROID'
+if Rho::System.getProperty('platform') == 'APPLE' 
 
    class Camera
 	
-       def self.convert_options(opt)
-           if opt != nil
-               res_opt = {}
-               opt.each do |key,value|
-                    if value == true
-                          value = 'true'
-                    end
-                    if value == false
-                          value = 'false'
-                    end
-                    if key == 'camera_type' and value == 'main'
-                        value = 'back'
-                    end
-                    res_opt[key.to_s] = value.to_s
-               end	
-               return res_opt
-           end
-           return nil
-       end
-
        def self.take_picture(callback_url, options = nil)
             if options == nil
                 options = {}
@@ -59,6 +39,7 @@ if Rho::System.getProperty('platform') == 'APPLE' || Rho::System.getProperty('pl
                       cam_type =  options['camera_type']
                  end 
             end
+            cam_type = 'back' if cam_type == 'main'
             cams = Camera.enumerate
             if cams != nil
                 if cams.size > 0
@@ -68,14 +49,14 @@ if Rho::System.getProperty('platform') == 'APPLE' || Rho::System.getProperty('pl
                            selected_cam = cam
                        end 
                     end
-                    selected_cam.takePicture(convert_options(options), callback_url)
+                    selected_cam.takePicture(options, callback_url)
                 end
             end
        end
 
        def self.choose_picture(callback_url, options = nil)
             options = {} unless options
-            Camera.choosePicture(convert_options(options), callback_url)
+            Camera.choosePicture(options, callback_url)
        end
 
        def self.get_camera_info(cam_type)

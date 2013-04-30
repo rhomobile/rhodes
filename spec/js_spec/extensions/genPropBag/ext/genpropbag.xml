@@ -19,7 +19,7 @@
         </PROPERTIES>
 
         <METHODS>
-            <METHOD name="enumerate" access="STATIC">
+            <METHOD name="enumerate" hasCallback="optional" access="STATIC">
                 <RETURN type="ARRAY">
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>

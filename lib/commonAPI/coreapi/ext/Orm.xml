@@ -1,0 +1,95 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+  <MODULE name="Orm" parent="Rho">
+    <HELP_OVERVIEW></HELP_OVERVIEW>
+    <MORE_HELP></MORE_HELP>
+
+    <TEMPLATES>
+    </TEMPLATES>
+
+    <METHODS access="STATIC">
+      <ALIASES>
+      </ALIASES>
+
+      <METHOD name="databaseExport" generateAPI="false">
+        <DESC>Creates a zip archive of a local database partition with all its blob objects, and returns a path to that
+          zip archive.
+        </DESC>
+
+        <PARAMS>
+          <PARAM name="partition" type="STRING">
+            <DESC>a local database partition.</DESC>
+          </PARAM>
+        </PARAMS>
+
+        <RETURN type="STRING"/>
+      </METHOD>
+
+      <METHOD name="databaseImport" generateAPI="false">
+        <DESC>Imports the database and blob objects from a zip archive created with database_export. If the imported
+          archive is inconsistent, or other failure occurs during the import process, the original database will be
+          restored.
+        </DESC>
+
+        <PARAMS>
+          <PARAM name="partition" type="STRING">
+            <DESC>the local database partition to be replaced by the zip.</DESC>
+          </PARAM>
+          <PARAM name="pathToZip" type="STRING">
+            <DESC>path to the zip archive created with database_export.</DESC>
+          </PARAM>
+        </PARAMS>
+
+      </METHOD>
+
+
+      <METHOD name="databaseFullReset" generateAPI="false">
+        <DESC>Imports the database and blob objects from a zip archive created with database_export. If the imported
+          archive is inconsistent, or other failure occurs during the import process, the original database will be
+          restored.
+        </DESC>
+
+        <PARAMS>
+          <PARAM name="resetClientInfo" type="STRING">
+            <DESC>true to clean the client_info table, false otherwise.</DESC>
+            <CAN_BE_NIL/>
+          </PARAM>
+          <PARAM name="resetLocalModels" type="STRING">
+            <DESC>true to clean local (non-synced) models, false otherwise.</DESC>
+            <CAN_BE_NIL/>
+          </PARAM>
+        </PARAMS>
+
+      </METHOD>
+
+      <METHOD name="databaseFullResetAndLogout" generateAPI="false">
+        <DESC>Deletes all records from the property bag and model tables. For examples, see Resetting the Database in
+          Using the Local Database with Orm.
+        </DESC>
+      </METHOD>
+
+      <METHOD name="databaseLocalReset" generateAPI="false">
+        <DESC>Reset only local (non-sync-enabled) models.</DESC>
+      </METHOD>
+
+
+      <METHOD name="databaseFullclientResetAndLogout" generateAPI="false">
+        <DESC>Reset the Rhodes model database and logout. Equivalent to Orm::Orm.database_full_reset(true) followed by
+          SyncEngine.logout.
+        </DESC>
+      </METHOD>
+
+    </METHODS>
+
+    <USER_OVERVIEW>
+      <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+      <![CDATA[]]>
+
+    </USER_OVERVIEW>
+    <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+    <PLATFORM>
+      <!--  This section is used for the supported platform images at the top -->
+    </PLATFORM>
+  </MODULE>
+</API>    
