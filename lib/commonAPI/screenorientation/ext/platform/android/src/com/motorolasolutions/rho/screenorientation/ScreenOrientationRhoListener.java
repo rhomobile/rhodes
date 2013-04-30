@@ -15,15 +15,15 @@ import com.rhomobile.rhodes.extmanager.IRhoListener;
 public class ScreenOrientationRhoListener implements IRhoListener
 {
     private static String TAG = ScreenOrientationRhoListener.class.getSimpleName();
-    private static LinkedList<ScreenOrientation> mScreenOrientationInstances = null;
+    private static LinkedList<ScreenOrientationSingleton> mScreenOrientationInstances = null;
     
     public ScreenOrientationRhoListener()
     {
 	if (mScreenOrientationInstances == null)
-	    mScreenOrientationInstances = new LinkedList<ScreenOrientation>();
+	    mScreenOrientationInstances = new LinkedList<ScreenOrientationSingleton>();
     }
     
-    public static void addScreenOrientationInstance(ScreenOrientation screenOrientation)
+    public static void addScreenOrientationInstance(ScreenOrientationSingleton screenOrientation)
     {
 	try
 	{
@@ -62,10 +62,10 @@ public class ScreenOrientationRhoListener implements IRhoListener
     @Override
     public void onStop(RhodesActivity activity)
     {
-	Iterator<ScreenOrientation> iterator = mScreenOrientationInstances.iterator();
+	Iterator<ScreenOrientationSingleton> iterator = mScreenOrientationInstances.iterator();
 	while (iterator.hasNext())
 	{
-	    ScreenOrientation screenOrientationInstance = iterator.next();
+	    ScreenOrientationSingleton screenOrientationInstance = iterator.next();
 	    screenOrientationInstance.cleanUp();
 	}
     }
@@ -73,10 +73,10 @@ public class ScreenOrientationRhoListener implements IRhoListener
     @Override
     public void onDestroy(RhodesActivity activity)
     {
-	Iterator<ScreenOrientation> iterator = mScreenOrientationInstances.iterator();
+	Iterator<ScreenOrientationSingleton> iterator = mScreenOrientationInstances.iterator();
 	while (iterator.hasNext())
 	{
-	    ScreenOrientation screenOrientationInstance = iterator.next();
+	    ScreenOrientationSingleton screenOrientationInstance = iterator.next();
 	    screenOrientationInstance.cleanUp();
 	}
     }
