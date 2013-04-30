@@ -716,9 +716,6 @@ namespace "config" do
                 end
                 
             rescue Exception => e
-                if $app_config['extensions'].index('barcode')
-                    $app_config['extensions'].delete('barcode')
-                end
                 if $app_config['extensions'].index('nfc')
                     $app_config['extensions'].delete('nfc')
                 end
