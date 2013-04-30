@@ -188,7 +188,6 @@ namespace "build" do
           if csharp_impl
             ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "extensions", ext, $build_config)
             ENV['TARGET_EXT_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)
-            ENV['TARGET_EXT_DIR_CSHARP'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhodes", $build_config)
             ENV['BUILD_CSHARP_IMPL'] = "yes"
           else
             ENV['TARGET_TEMP_DIR'] = File.join($startdir, "platform", $current_platform, "bin", $sdk, "rhoruntime", $build_config)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../../../shared/generated/cpp/<%= $cur_module.name %>Base.h"
-#include "../runtime/<%= $cur_module.name %>Runtime.h"
+#include "<%= $cur_module.name %>Runtime.h"
 
 <% $cur_module.parents.each do |parent| %>
 namespace <%= parent.downcase() %> {<%

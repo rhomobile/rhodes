@@ -1024,9 +1024,7 @@ def init_extensions(startdir, dest)
             if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
               libs.each do |lib|
                 extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
-                extlibs << lib + "Runtime.lib" if csharp_impl
                 extcsharplibs << lib + (csharp_impl ? "Lib" : "") + ".lib" if csharp_impl
-                extcsharplibs << lib + "Runtime.lib" if csharp_impl
                 extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>" if csharp_impl
                 extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />' if csharp_impl
                 extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{wp8_root_namespace}.#{lib}Impl.#{lib}Factory())" if csharp_impl

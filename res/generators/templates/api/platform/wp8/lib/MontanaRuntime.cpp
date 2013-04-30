@@ -1,6 +1,6 @@
 // <%= $cur_module.name %>Runtime.cpp
 #include "<%= $cur_module.name %>Runtime.h"
-#include "../lib/<%= $cur_module.name %>Factory.h"
+#include "<%= $cur_module.name %>Factory.h"
 
 using namespace Platform;
 using namespace rho::apiGenerator;
