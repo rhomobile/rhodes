@@ -156,14 +156,12 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
     </ClCompile>
-    <ClCompile Include="generated\lib\<%= name.camel_case() %>_MethodResultImpl.cpp" />
     <ClCompile Include="generated\lib\<%= name.camel_case() %>_impl.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.camel_case() %>Base.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\<%= name.downcase() %>_ruby_wrap.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="generated\lib\<%= name.camel_case() %>_MethodResultImpl.h" />
     <ClInclude Include="..\..\shared\generated\cpp\I<%= name.camel_case() %>.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2227,16 +2227,6 @@ module Rhogen
       template.destination = "platform/wp8/generated/runtime/#{$cur_module.name}Runtime.cpp"
     end
 
-    template :wp8_lib_montana_methodresultimpl_h do |template|
-      template.source = 'platform/wp8/lib/Montana_MethodResultImpl.h'
-      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_MethodResultImpl.h"
-    end
-
-    template :wp8_lib_montana_methodresultimpl_cpp do |template|
-      template.source = 'platform/wp8/lib/Montana_MethodResultImpl.cpp'
-      template.destination = "platform/wp8/generated/lib/#{$cur_module.name}_MethodResultImpl.cpp"
-    end
-
     template :wp8_lib_montana_factory_h do |template|
       template.source = 'platform/wp8/lib/MontanaFactory.h'
       template.destination = "platform/wp8/generated/lib/#{$cur_module.name}Factory.h"

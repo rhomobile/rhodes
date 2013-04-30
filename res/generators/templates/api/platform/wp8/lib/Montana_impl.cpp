@@ -2,7 +2,7 @@
 #include "../../wp8/rhoruntime/common/RhoConvertWP8.h"
 //#include "../../../../shared/generated/cpp/<%= $cur_module.name %>Base.h"
 #include "<%= $cur_module.name %>Factory.h"
-#include "<%= $cur_module.name %>_MethodResultImpl.h"
+#include "api_generator/wp8/MethodResultImpl.h"
 
 using namespace rho::apiGenerator;
 using namespace rhoruntime;
@@ -31,7 +31,7 @@ end%>
     end
 
     params += 'CMethodResult& oResult'
-    call_params += "ref new C#{$cur_module.name}MethodResultImpl((int64)&oResult)"
+    call_params += 'ref new CMethodResultImpl((int64)&oResult)'
     module_method.cached_data["cpp2cs_params"] = params
     module_method.cached_data["cpp2cs_call_params"] = call_params
 
