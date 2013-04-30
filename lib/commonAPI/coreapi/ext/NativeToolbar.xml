@@ -28,7 +28,14 @@
                                     <DESC>Visible label to display instead of an icon.</DESC>
                                 </PARAM>
                                 <PARAM name="action" type="STRING">
-                                    <DESC>URL to call when button is pressed.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
+                                    <DESC>URL to call when button is pressed or special value.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
+                                    <!--
+                                    <VALUES>
+                                        <VALUE value ="separator">
+                                            <DESC>Added separator to tollbar.</DESC>
+                                        </VALUE>
+                                    </VALUES> -->
+
                                 </PARAM>
                                 <PARAM name="icon" type="STRING">
                                     <DESC>Relative path to toolbar item icon in your rhodes app (typically located in '/public/images/'). iPhone and Android: Icons must be no more than 30x30 pixels and must be in .png format. Windows Mobile: Icons can be any size, but all icons should have same size (default - 48x48).</DESC>
@@ -68,6 +75,11 @@
 
             <METHOD name="remove" runInThread="UI">
                 <DESC>Removes the current toolbar. Does nothing if there is no active toolbar.</DESC>
+            </METHOD>
+
+            <METHOD name="isCreated" generateDoc="false">
+                <DESC>If Toolbar already created.</DESC>
+                <RETURN type="BOOLEAN"/>
             </METHOD>
 
         </METHODS>

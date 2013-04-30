@@ -17,7 +17,7 @@
             </ALIASES>
 
             <METHOD name="create" hasCallback="optional" runInThread="UI">
-                <DESC>Removes the current tabbar and replaces it with this one. Callback willbe called when tab is switched.</DESC>
+                <DESC>Removes the current tabbar and replaces it with this one. Callback will be called when tab is switched.</DESC>
                 <PARAMS>
                     <PARAM name="tabElements" type="ARRAY">
                         <DESC>Array of Tab elements.</DESC>
@@ -104,6 +104,11 @@
                         <DESC>The index for this tab (index numbered from 0).</DESC>
                     </PARAM>
                 </PARAMS>
+            </METHOD>
+
+            <METHOD name="isCreated" generateDoc="false">
+                <DESC>If Tabbar already created.</DESC>
+                <RETURN type="BOOLEAN"/>
             </METHOD>
 
         </METHODS>
