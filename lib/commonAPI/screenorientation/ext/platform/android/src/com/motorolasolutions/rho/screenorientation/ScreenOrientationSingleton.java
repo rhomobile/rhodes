@@ -1,7 +1,6 @@
 package com.motorolasolutions.rho.screenorientation;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
@@ -49,7 +48,7 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
     };
     public ScreenOrientationSingleton(ScreenOrientationFactory factory)
     {
-        super(factory);
+        super();
 	mSensorManager = (SensorManager) RhodesActivity.safeGetInstance().getSystemService("sensor");
 	Logger.D(TAG, "ScreenOrientation -- disable_screen_rotation: " + RhoConf.getString("disable_screen_rotation"));
 	isAutoRotate = !(RhoConf.getString("disable_screen_rotation").compareTo("1") == 0);
@@ -58,46 +57,35 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
     }
 
     @Override
-    protected String getInitialDefaultID() {
-	// TODO Auto-generated method stub
-	return null;
-    }
-	
-    @Override
-    public void setAutoRotate(String autoRotate, IMethodResult result)
+    public void setAutoRotate(boolean autoRotate, IMethodResult result)
     {
 	Logger.D(TAG, "setAutorotate -- START");
 	Logger.D(TAG, "setAutorotate -- autoRotate: " + autoRotate);
 	if (RhodesActivity.safeGetInstance() == null)
 	    return;
-	if (autoRotate.equalsIgnoreCase("enabled"))
+	if (autoRotate)
 	{
 	    RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
 	    isAutoRotate = true;
 	    RhoConf.setString("disable_screen_rotation", "0");
 	}
-	else if (autoRotate.equalsIgnoreCase("disabled"))
+	else
 	{
 	    setDirection();
 	    setScreenOrientation(direction);
 	    isAutoRotate = false;
 	    RhoConf.setString("disable_screen_rotation", "1");
 	}
-	else
-	{
-	    Logger.D(TAG, "setAutorotate -- autoRotate value is invalid: " + autoRotate);
-	    return;
-	}
 	Logger.D(TAG, "setAutorotate -- END");
     }
-
+	
     @Override
     public void getAutoRotate(IMethodResult result) 
     {
 	if (isAutoRotate)
-	    result.set("enabled");
+	    result.set(true);
 	else
-	    result.set("disabled");
+	    result.set(false);
     }
 
    
@@ -244,8 +232,6 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 	Logger.D(TAG, "cleanUp -- START");
 	// Un-Register SensorListener's
 	mSensorManager.unregisterListener(mSensorListener);
-	/*isAutoRotate = true;
-	RhoConf.setString("disable_screen_rotation", "0");*/
     }
 	
     private static int getNaturalDeviceOrientation()
@@ -267,67 +253,5 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 	}     
 
 	return Configuration.ORIENTATION_PORTRAIT;
-    }
-	
-    @Override
-    public void getAllProperties(IMethodResult result)
-    {
-	Logger.D(TAG,  "getAllProperties -- START");
-	// These are the only supported properties on Android
-	Map<String, Object> props = new HashMap<String, Object>();
-	props.put("autoRotate", isAutoRotate ? "enabled" : "disabled");
-	result.set(props);
-    }
-	
-
-    @Override
-    public void setProperty(String propertyName, String propertyValue,
-	    IMethodResult result)
-    {
-	if (propertyName.compareToIgnoreCase("autorotate") == 0)
-	    setAutoRotate(propertyValue, result);	
-    }
-
-    @Override
-    public void setProperties(Map<String, String> propertyMap, IMethodResult result)
-    {
-	Logger.D(TAG,  "setProperties -- START");
-    	for (Map.Entry<String, String> entry: propertyMap.entrySet())
-    	{
-    	    if (entry.getKey().compareToIgnoreCase("autorotate") == 0)
-    		setAutoRotate(entry.getValue(), result);
-    	}
-    }
-
-    @Override
-    public void clearAllProperties(IMethodResult result)
-    {
-	cleanUp();
-	result.set();
-    }
-
-    @Override
-    public void getProperty(String propertyName, IMethodResult result)
-    {
-	if (propertyName.compareToIgnoreCase("autorotate") == 0)
-	{
-	    getAutoRotate(result);
-	}
-	result.set();
-    }
-
-    @Override
-    public void getProperties(List<String> arrayofNames, IMethodResult result)
-    {
-	Logger.D(TAG,  "getProperties -- START");
-    	Map<String, Object> props = new HashMap<String, Object>();
-    	for (String propertyName: arrayofNames)
-    	{
-    	    if (propertyName.compareToIgnoreCase("autorotate") == 0)
-    	    {
-    		getAutoRotate(result);
-    	    }
-    	}
-    	result.set(props);
     }
 }
