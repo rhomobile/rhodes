@@ -716,9 +716,6 @@ namespace "config" do
                 end
                 
             rescue Exception => e
-                if $app_config['extensions'].index('barcode')
-                    $app_config['extensions'].delete('barcode')
-                end
                 if $app_config['extensions'].index('nfc')
                     $app_config['extensions'].delete('nfc')
                 end
@@ -1004,8 +1001,8 @@ def init_extensions(startdir, dest)
           type = extconf["exttype"]
           wm_type = extconf["wm"]["exttype"] if extconf["wm"]
           xml_api_paths = extconf["xml_api_paths"]
-          csharp_impl = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) && (!extconf['wp8']['csharp_impl'].nil?) ? true : false
-          wp8_root_namespace = (extconf['wp8'].nil? || extconf['wp8']['root_namespace'].nil?) ? 'rho' : extconf['wp8']['root_namespace']
+          extconf_wp8 = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) ? extconf['wp8'] : Hash.new
+          csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
 
           if nlib != nil
             nlib.each do |libname|
@@ -1018,16 +1015,21 @@ def init_extensions(startdir, dest)
           if type.to_s() != "nativelib"
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
-            if (!extconf[$config["platform"]].nil?) && (extconf[$config["platform"]]["libraries"].is_a? Array)
+            if (!extconf[$config["platform"]].nil?) && (!extconf[$config["platform"]]["libraries"].nil?) && (extconf[$config["platform"]]["libraries"].is_a? Array)
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
             if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
               libs.each do |lib|
+                extconf_wp8_lib = !extconf_wp8[lib].nil? ? extconf_wp8[lib] : Hash.new
+                csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?)
                 extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
-                extcsharplibs << lib + (csharp_impl ? "Lib" : "") + ".lib" if csharp_impl
-                extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>" if csharp_impl
-                extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />' if csharp_impl
-                extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{wp8_root_namespace}.#{lib}Impl.#{lib}Factory())" if csharp_impl
+                if csharp_impl
+                  wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
+                  extcsharplibs << lib + "Lib.lib"
+                  extcsharppaths << "<#{lib.upcase}_ROOT>" + File.join(extpath, 'ext') + "</#{lib.upcase}_ROOT>"
+                  extcsharpprojects << '<Import Project="$(' + lib.upcase + '_ROOT)\\platform\\wp8\\' + lib + 'Impl.targets" />'
+                  extcsharpentries << "#{lib}FactoryComponent.setImpl(new #{wp8_root_namespace}.#{lib}Impl.#{lib}Factory())"
+                end
               end
             else
               libs.map! { |lib| "lib" + lib + ".a" }
