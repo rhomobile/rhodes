@@ -38,10 +38,7 @@
 				<VALUES>
                     <VALUE constName="LOW" value="low">
                         <DESC>Low resolution</DESC>
-                    </VALUE> 
-                    <VALUE constName="MEDIUM" value="medium">
-                        <DESC>Medium resolution</DESC>
-                    </VALUE> 
+                    </VALUE>                      
                     <VALUE constName="HIGH" value="high">
                         <DESC>High resolution</DESC>
                     </VALUE>                                       					
@@ -107,7 +104,7 @@ Once duration has been reached the video file will be saved or transferred.  Cal
 The output file format on Android is MP4 and on Windows is WMV. 
                     ]]>
                 </DESC>
-            </REMARK>
+            </REMARK> 
 		</REMARKS>
 		<EXAMPLES >
             <EXAMPLE title="Basic Example">

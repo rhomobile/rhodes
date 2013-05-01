@@ -45,8 +45,8 @@ logname='<%=@app_name%>'
 KeepTrackOfLastVisitedPage = 0 
 LastVisitedPage = ''
 
-# sync server url, typically this will look like 'http://<hostname>:<port>/application'
-# for example: 'http://localhost:9292/application'
+# sync server url, typically this will look like 'http://<hostname>:<port>'
+# for example: 'http://localhost:9292'
 syncserver = '<%=syncserver%>'
 
 # geo location inactivity timeout (in seconds)

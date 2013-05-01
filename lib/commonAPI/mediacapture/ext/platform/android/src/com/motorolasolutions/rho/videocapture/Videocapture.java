@@ -17,6 +17,7 @@ import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+
 import com.rho.videocapture.IVideocapture;
 import com.rho.videocapture.VideocaptureBase;
 import com.rhomobile.rhodes.Logger;
@@ -27,8 +28,7 @@ import com.rhomobile.rhodes.api.IMethodResult;
 public class Videocapture extends VideocaptureBase implements IVideocapture {
   
 	private enum resolution {
-		LOW,
-		MEDIUM,
+		LOW,		
 		HIGH
 	};
 	
@@ -42,7 +42,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	private Activity mActivity		= null;    	
 	public int RESULT_VIDEO_CODE	= 1;		// Result code from video capture activity
 	private String path 			= null;
-	private resolution mResolution = resolution.HIGH;    
+	private resolution mResolution 	= resolution.HIGH;    
     
     public Videocapture(String id) {
     	super(id);
@@ -97,8 +97,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	{
 		switch (mResolution)
 		{
-			case LOW: result.set("LOW"); break;
-			case MEDIUM: result.set("MEDIUM"); break;
+			case LOW: result.set("LOW"); break;			
 			case HIGH: result.set("HIGH"); break;
 		}
 	}
@@ -141,9 +140,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 		    else if (name.equalsIgnoreCase("resolution"))
 		    {
 		    	if (val.equalsIgnoreCase("low"))
-		    		mResolution = resolution.LOW;
-		    	else if (val.equalsIgnoreCase("medium"))
-		    		mResolution = resolution.MEDIUM;
+		    		mResolution = resolution.LOW;		    	
 		    	else if (val.equalsIgnoreCase("high"))
 		    		mResolution = resolution.HIGH;
 		    }
@@ -176,8 +173,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	    {
 	    	switch (mResolution)
 			{
-				case LOW: return "LOW"; 
-				case MEDIUM: return "MEDIUM"; 
+				case LOW: return "LOW"; 				
 				case HIGH: return "HIGH"; 
 				default: return "HIGH";
 			}
@@ -207,8 +203,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 		Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);	
 		switch (mResolution)
 		{
-			case LOW: takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 0);	 break;
-			case MEDIUM: takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 0.5);	 break;
+			case LOW: takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 0);	 break;				
 			case HIGH: takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_VIDEO_QUALITY, 1);	 break;
 		}			
 		takeVideoIntent.putExtra(android.provider.MediaStore.EXTRA_DURATION_LIMIT, durationInSeconds);
@@ -221,7 +216,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	public void stop(IMethodResult result)
 	{
 		//Not supported
-		Logger.D(TAG,  "Stop API");
+		Logger.D(TAG,  "Stop API");		
 		result.setError("Stop API not supported on Android");
 	}	
 
@@ -229,8 +224,7 @@ public class Videocapture extends VideocaptureBase implements IVideocapture {
 	public void cancel(IMethodResult result)
 	{		
 		Logger.D(TAG,  "Cancel API");
-		result.setError("Cancel API not supported on Android");
-		//mActivity.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK));		
+		result.setError("Cancel API not supported on Android");		
 	}
 	
 	public void stopCapture(Uri intentData)

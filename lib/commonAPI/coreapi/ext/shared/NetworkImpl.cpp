@@ -199,11 +199,22 @@ void CNetworkImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>&
 
     if ( propertyMap.containsKey("verifyPeerCertificate") )
         getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+    
+    bool fileExists = false;
 
-    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).pullFile( propertyMap.get("url"), propertyMap.get("filename"), null, &mapHeaders,overwriteFile,createFolders);
+    NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).pullFile( propertyMap.get("url"), propertyMap.get("filename"), null, &mapHeaders,overwriteFile,createFolders,&fileExists);
 
-    if ( !getCurRequest(oNetRequest).isCancelled())
-        createResult( resp, mapHeaders, oResult );
+    if ( !getCurRequest(oNetRequest).isCancelled()) {
+        if (fileExists) {
+            Hashtable<String,String>& mapRes = oResult.getStringHash();
+            mapRes["status"] = "error";
+            mapRes["fileExists"] = "true";
+            oResult.set(mapRes);
+
+        } else {
+            createResult( resp, mapHeaders, oResult );
+        }
+    }
 }
 
 void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
