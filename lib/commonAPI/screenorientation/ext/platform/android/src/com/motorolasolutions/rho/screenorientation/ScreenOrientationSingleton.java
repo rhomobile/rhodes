@@ -1,5 +1,6 @@
 package com.motorolasolutions.rho.screenorientation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
     private static String direction;
     private static String lastDirection = "";
     
-	/**
+    /**
      * Monitors the Orientation sensor to determine which way up the device is
      * also takes care of upside down which is not handled by the default Sensors
      * using the Magnetic Field Sensor as well as Orientation.
@@ -226,7 +227,7 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
     {
 	Logger.D(TAG, "setScreenOrientationEvent() -- Setting screen orientation event to: " + result);
 	mScreenOrientationCallback = result;
-	if (result == null)
+	if ( result.toString().contains("Callback: ,") ) // No callback is set 
 	{
 	    cleanUp();
 	}
@@ -242,6 +243,8 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 	Logger.D(TAG, "cleanUp -- START");
 	// Un-Register SensorListener's
 	mSensorManager.unregisterListener(mSensorListener);
+	isAutoRotate = true;
+	RhoConf.setString("disable_screen_rotation", "0");
     }
 	
     private static int getNaturalDeviceOrientation()
@@ -264,40 +267,64 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
     }
 	
     @Override
-    public void getAllProperties(IMethodResult result) {
-	// TODO Auto-generated method stub
-	
+    public void getAllProperties(IMethodResult result)
+    {
+	Logger.D(TAG,  "getAllProperties -- START");
+	// These are the only supported properties on Android
+	Map<String, Object> props = new HashMap<String, Object>();
+	props.put("autoRotate", isAutoRotate ? "enabled" : "disabled");
+	result.set(props);
     }
+	
 
     @Override
     public void setProperty(String propertyName, String propertyValue,
-	    IMethodResult result) {
-	// TODO Auto-generated method stub
-	
+	    IMethodResult result)
+    {
+	if (propertyName.compareToIgnoreCase("autorotate") == 0)
+	    setAutoRotate(propertyValue, result);	
     }
 
     @Override
-    public void setProperties(Map<String, String> propertyMap,
-	    IMethodResult result) {
-	// TODO Auto-generated method stub
-	
+    public void setProperties(Map<String, String> propertyMap, IMethodResult result)
+    {
+	Logger.D(TAG,  "setProperties -- START");
+    	for (Map.Entry<String, String> entry: propertyMap.entrySet())
+    	{
+    	    if (entry.getKey().compareToIgnoreCase("autorotate") == 0)
+    		setAutoRotate(entry.getValue(), result);
+    	}
     }
 
     @Override
-    public void clearAllProperties(IMethodResult result) {
-	// TODO Auto-generated method stub
-	
+    public void clearAllProperties(IMethodResult result)
+    {
+	cleanUp();
+	result.set();
     }
 
     @Override
-    public void getProperty(String propertyName, IMethodResult result) {
-	// TODO Auto-generated method stub
-	
+    public void getProperty(String propertyName, IMethodResult result)
+    {
+	if (propertyName.compareToIgnoreCase("autorotate") == 0)
+	{
+	    getAutoRotate(result);
+	}
+	result.set();
     }
 
     @Override
-    public void getProperties(List<String> arrayofNames, IMethodResult result) {
-	// TODO Auto-generated method stub
-	
+    public void getProperties(List<String> arrayofNames, IMethodResult result)
+    {
+	Logger.D(TAG,  "getProperties -- START");
+    	Map<String, Object> props = new HashMap<String, Object>();
+    	for (String propertyName: arrayofNames)
+    	{
+    	    if (propertyName.compareToIgnoreCase("autorotate") == 0)
+    	    {
+    		getAutoRotate(result);
+    	    }
+    	}
+    	result.set(props);
     }
 }
