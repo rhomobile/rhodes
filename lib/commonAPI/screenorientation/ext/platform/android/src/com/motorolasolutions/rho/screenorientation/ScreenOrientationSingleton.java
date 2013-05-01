@@ -1,6 +1,5 @@
 package com.motorolasolutions.rho.screenorientation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +68,8 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
     {
 	Logger.D(TAG, "setAutorotate -- START");
 	Logger.D(TAG, "setAutorotate -- autoRotate: " + autoRotate);
+	if (RhodesActivity.safeGetInstance() == null)
+	    return;
 	if (autoRotate.equalsIgnoreCase("enabled"))
 	{
 	    RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
@@ -206,7 +207,7 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
         	default:
         	    direction = "normal";
         	}
-	    if(lastDirection != direction)
+	    if(lastDirection.compareToIgnoreCase(direction) != 0)
 	    {
 		lastDirection = direction;
 		Map<String, Object> values = new HashMap<String, Object>();
@@ -243,13 +244,15 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 	Logger.D(TAG, "cleanUp -- START");
 	// Un-Register SensorListener's
 	mSensorManager.unregisterListener(mSensorListener);
-	isAutoRotate = true;
-	RhoConf.setString("disable_screen_rotation", "0");
+	/*isAutoRotate = true;
+	RhoConf.setString("disable_screen_rotation", "0");*/
     }
 	
     private static int getNaturalDeviceOrientation()
     {
 	Logger.D(TAG, "getNaturalDeviceOrientation -- START");
+	if (RhodesActivity.safeGetInstance() == null)
+	    return 0; //No valid natural orientation returned
 	WindowManager lWindowManager = (WindowManager) RhodesActivity.safeGetInstance().getSystemService(Context.WINDOW_SERVICE);
 
 	Configuration cfg = RhodesActivity.safeGetInstance().getResources().getConfiguration();
