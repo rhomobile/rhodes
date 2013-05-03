@@ -1,0 +1,46 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="ScreenOrientation" parent="Rho">
+        <HELP_OVERVIEW>The ScreenOrientation Module is used to control the screen orientation/layout and register to receive an event when it changes.</HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
+    
+        <PROPERTIES access="STATIC">
+            <DESC>Properties used to configure Screen Orientation module</DESC>
+            <PROPERTY name="autoRotate" type="BOOLEAN" access="STATIC" generateAccessors="true" default="true">
+                <DESC>Enables or Disables autorotation of the screen orientation when the device is rotated.</DESC>
+            </PROPERTY>
+        </PROPERTIES>
+
+        <METHODS access="STATIC">
+            <METHOD name="normal" runInThread="ui">
+                <DESC>Sets the screen orientation to default device orientation</DESC>
+            </METHOD>
+			<METHOD name="rightHanded" runInThread="ui">
+                <DESC>Sets the screen orientation to righthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
+            </METHOD>
+            <METHOD name="leftHanded" runInThread="ui">
+                <DESC>Sets the screen orientation to lefthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
+            </METHOD>
+            <METHOD name="upsideDown" runInThread="ui">
+                <DESC>Sets the screen orientation to upside down, useful if presenting the device to a customer to obtain a signature.</DESC>
+            </METHOD>
+			<METHOD name="setScreenOrientationEvent" hasCallback="mandatory" runInThread="ui">
+				<DESC>Sets the callback to be called when a screen orientation event occurres</DESC>
+				<CALLBACK type="STRING">
+					<DESC>Current orientation of the screen</DESC>
+				</CALLBACK>
+			</METHOD>
+        </METHODS>
+        
+        <USER_OVERVIEW>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+            <![CDATA[]]>
+    
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+    </MODULE>
+</API>    

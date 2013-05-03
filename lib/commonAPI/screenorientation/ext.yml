@@ -1,0 +1,13 @@
+entry: Init_ScreenOrientation_extension	
+
+libraries: ["screenorientation"]
+android:
+  source_list: ext/platform/android/ext_java.files
+  rhodes_listener: com.motorolasolutions.rho.screenorientation.ScreenOrientationRhoListener
+
+project_paths:
+  wp8: ext/platform/wp8/Screenorientation.vcxproj
+  wm: ext/platform/wm/Screenorientation.vcproj
+  win32: ext/platform/wm/Screenorientation.vcproj
+  
+xml_api_paths: ext/Screenorientation.xml
