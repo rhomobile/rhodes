@@ -1,0 +1,10 @@
+ext/platform/android/generated/src/com/rho/screenorientation/ScreenOrientationBase.java
+ext/platform/android/generated/src/com/rho/screenorientation/ScreenOrientationFactorySingleton.java
+ext/platform/android/generated/src/com/rho/screenorientation/ScreenOrientationSingletonBase.java
+ext/platform/android/generated/src/com/rho/screenorientation/IScreenOrientation.java
+ext/platform/android/generated/src/com/rho/screenorientation/IScreenOrientationFactory.java
+ext/platform/android/generated/src/com/rho/screenorientation/IScreenOrientationSingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/screenorientation/ScreenOrientation.java
+ext/platform/android/src/com/motorolasolutions/rho/screenorientation/ScreenOrientationFactory.java
+ext/platform/android/src/com/motorolasolutions/rho/screenorientation/ScreenOrientationSingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/screenorientation/ScreenOrientationRhoListener.java
