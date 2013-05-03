@@ -286,5 +286,213 @@
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
+        <EXAMPLES >
+           <EXAMPLE title="Execute javascript">
+               <SECTIONS>
+               <SECTION>
+               <DESC>
+                   You can call the WebView and make it execute Javascript code from a Ruby controller. This can be particularly helpful in order to reuse Javascript functionality 
+                   that is already included in your pages 
+               </DESC>
+               <CODE lang='ruby'>
+           <![CDATA[
+    #call javascript alert on the current page
+    Rho::WebView.executeJavascript("alert('This is Webview.executejavascript function');")
+
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               <SECTION>
+               <DESC>
+                    As an example, you can invoke JQuery Mobile's changePage
+               </DESC>
+               <CODE lang='ruby'>
+           <![CDATA[
+    #call JQuery Mobile from a Ruby controller
+    Rho::WebView.executeJavascript("$.mobile.changePage('#my_page');")
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               <SECTION>
+               <DESC>
+                    You can also call your own functions                    
+               </DESC>
+               <CODE lang='javascript'>
+           <![CDATA[
+           function greet(name) {
+                alert("Hello, "+name);  
+           }
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               <SECTION>
+               <DESC>
+                    From the Ruby controller we can execute the Javascript function that may be in the view.
+                </DESC> 
+               <CODE lang='ruby'>
+           <![CDATA[
+    #call a custom Javascript function from Ruby
+    Rho::WebView.executeJavascript("greet('John Doe');")
+                   ]]>
+
+               </CODE>
+               </SECTION>
+                              
+               </SECTIONS>
+           </EXAMPLE>
+            <EXAMPLE title="Use full-screen mode">
+               <SECTIONS>
+               <SECTION>
+               <DESC>
+                   The WebView can be set to use all the available screen real-estate by turning on "full-screen" mode 
+               </DESC>
+               <CODE lang='ruby'>
+           <![CDATA[
+           # Toggle fullScreen on / off
+        Rho::WebView.fullScreen = !Rho::WebView.fullScreen 
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               <SECTION>
+               <DESC>
+                   This property can also be assigned to in Javascript   
+               </DESC>
+               <CODE lang='javascript'>
+           <![CDATA[
+        // Fullscreen can also be invoked from Javascript
+        Rho.WebView.fullScreen = true;
+        
+        Rho.WebView.fullScreen = false;
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>           
+           <EXAMPLE title="Navigate">
+               <SECTIONS>
+               <SECTION>
+               <DESC>
+                   This is the section that will appear before the code block
+               </DESC>
+               <CODE lang='ruby'>
+           <![CDATA[
+    #Force WebView to navigate to a URL.
+    Rho::WebView.navigate(url_for(:action => :my_action))
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               <SECTION>
+               <DESC>
+                   You can also navigate outside of your application, to an external site
+               </DESC>
+               <CODE lang='ruby'>
+           <![CDATA[
+     #Navigate out of the local application and into an externally-served site
+      Rho::WebView.navigate("http://www.example.com");
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               <SECTION>
+               <DESC>
+                   This API is also available from Javascript
+               </DESC>
+               <CODE lang='javascript'>
+           <![CDATA[
+     //Navigate out of the local application and into an externally-served site
+      Rho.WebView.navigate("http://www.example.com");
+                   ]]>
+
+               </CODE>
+               </SECTION>
+
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Navigate back">
+               <SECTIONS>
+               <SECTION>
+               <DESC>
+                   This is the section that will appear before the code block
+               </DESC>
+               <CODE lang='ruby'>
+           <![CDATA[
+     #Force WebView to navigate to the previous page using Browser back.
+      Rho::WebView.navigateBack
+
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               <SECTION>
+               <DESC>
+                   The same method is available in Javascript
+               </DESC>
+               <CODE lang='javascript'>
+           <![CDATA[
+     //Force WebView to navigate to the previous page using Browser back.
+      Rho.WebView.navigateBack();
+    
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Refresh the page">
+               <SECTIONS>
+               <SECTION>
+               <DESC>
+                   Reload the current URL into the WebView. This is useful especially after having updated data that must be now shown to the user 
+               </DESC>
+               <CODE lang='ruby'>
+           <![CDATA[
+    # Update database or variables here
+    # ...      
+    # Refresh the current page to show new information
+    Rho::WebView.refresh
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               <SECTION>
+               <DESC>
+                   By default, "refresh" will update the current view. If you are using the native Tabbar and have multiple WebViews, you can specify which one to refresh
+               </DESC>
+               <CODE lang='ruby'>
+           <![CDATA[
+     # Reload the page on WebView number 2
+      Rho::WebView.refresh(2)
+                   ]]>
+
+               </CODE>
+               </SECTION>
+               
+               <SECTION>
+               <DESC>
+                   Also available from Javascript
+               </DESC>
+               <CODE lang='javascript'>
+           <![CDATA[
+     // Reload the current page
+      Rho.WebView.refresh()
+
+     // Reload the page on WebView number 3
+      Rho.WebView.refresh(3)
+      
+                   ]]>
+
+               </CODE>
+               </SECTION>               
+               </SECTIONS>
+           </EXAMPLE>
+
+       </EXAMPLES>
+
     </MODULE>
 </API>    
