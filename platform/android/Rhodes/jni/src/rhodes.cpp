@@ -220,6 +220,9 @@ jstring rho_cast_helper<jstring, char const *>::operator()(JNIEnv *env, char con
     return s ? env->NewStringUTF(s) : (jstring)0;
 }
 
+jclass RhoJniConvertor::clsBoolean;
+jclass RhoJniConvertor::clsInteger;
+jclass RhoJniConvertor::clsDouble;
 jclass RhoJniConvertor::clsString;
 jclass RhoJniConvertor::clsCollection;
 jclass RhoJniConvertor::clsMap;
@@ -237,6 +240,12 @@ jmethodID RhoJniConvertor::midHashMapPut;
 jmethodID RhoJniConvertor::midSetIterator;
 jmethodID RhoJniConvertor::midIteratorHasNext;
 jmethodID RhoJniConvertor::midIteratorNext;
+jmethodID RhoJniConvertor::midBooleanValue;
+jmethodID RhoJniConvertor::midBooleanValueOf;
+jmethodID RhoJniConvertor::midIntValue;
+jmethodID RhoJniConvertor::midInteger;
+jmethodID RhoJniConvertor::midDoubleValue;
+jmethodID RhoJniConvertor::midDoubleValueOf;
 
 bool RhoJniConvertor::initConvertor(JNIEnv *env)
 {
@@ -255,6 +264,12 @@ bool RhoJniConvertor::initConvertor(JNIEnv *env)
     if (initialized)
         return initialized;
 
+    clsBoolean = getJNIClass(RHODES_JAVA_CLASS_BOOLEAN);
+    if (!clsBoolean) return false;
+    clsInteger = getJNIClass(RHODES_JAVA_CLASS_INTEGER);
+    if (!clsInteger) return false;
+    clsDouble = getJNIClass(RHODES_JAVA_CLASS_DOUBLE);
+    if (!clsDouble) return false;
     clsString = getJNIClass(RHODES_JAVA_CLASS_STRING);
     if (!clsString) return false;
     clsCollection = getJNIClass(RHODES_JAVA_CLASS_COLLECTION);
@@ -290,6 +305,18 @@ bool RhoJniConvertor::initConvertor(JNIEnv *env)
     if (!midIteratorHasNext) return false;
     midIteratorNext = getJNIClassMethod(env, clsIterator, "next", "()Ljava/lang/Object;");
     if (!midIteratorNext) return false;
+    midBooleanValue = getJNIClassMethod(env, clsBoolean, "booleanValue", "()Z");
+    if (!midBooleanValue) return false;
+    midBooleanValueOf = getJNIClassStaticMethod(env, clsBoolean, "valueOf", "(Z)Ljava/lang/Boolean;");
+    if (!midBooleanValueOf) return false;
+    midIntValue = getJNIClassMethod(env, clsInteger, "intValue", "()I");
+    if (!midIntValue) return false;
+    midInteger = getJNIClassMethod(env, clsInteger, "<init>", "(I)V");
+    if (!midInteger) return false;
+    midDoubleValue = getJNIClassMethod(env, clsDouble, "doubleValue", "()D");
+    if (!midDoubleValue) return false;
+    midDoubleValueOf = getJNIClassStaticMethod(env, clsDouble, "valueOf", "(D)Ljava/lang/Double;");
+    if (!midDoubleValueOf) return false;
 
     return initialized = true;
 }
