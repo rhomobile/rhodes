@@ -34,10 +34,11 @@ public class VideocaptureFactory extends RhoApiFactory< Videocapture, Videocaptu
 	}
 	
 	@Override
-	public void onActivityResult(RhodesActivity activity, int requestCode, int resultCode,
-			Intent intent)
-	{		
-		default_instance.onActivityResultVideoCapture(activity, requestCode, resultCode, intent);		
+	public void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent)
+	{
+	    if (default_instance != null) {
+	        default_instance.onActivityResultVideoCapture(activity, requestCode, resultCode, intent);
+	    }
 	}
 	
 	@Override
