@@ -223,6 +223,9 @@ struct rho_cast_helper<jdouble, double>
 
 struct RhoJniConvertor
 {
+    static jclass clsBoolean;
+    static jclass clsInteger;
+    static jclass clsDouble;
     static jclass clsString;
     static jclass clsCollection;
     static jclass clsMap;
@@ -240,6 +243,12 @@ struct RhoJniConvertor
     static jmethodID midSetIterator;
     static jmethodID midIteratorHasNext;
     static jmethodID midIteratorNext;
+    static jmethodID midBooleanValue;
+    static jmethodID midBooleanValueOf;
+    static jmethodID midIntValue;
+    static jmethodID midInteger;
+    static jmethodID midDoubleValue;
+    static jmethodID midDoubleValueOf;
 
     RhoJniConvertor() : m_env(0) {}
     bool initConvertor(JNIEnv *env);

@@ -142,6 +142,24 @@ VALUE rho_cast_helper<VALUE, jobject>::convertJavaCollectionToRubyArray(jobject 
     return retval;
 }
 
+VALUE rho_cast_helper<VALUE, jobject>::getBoolean(jobject jBoolean)
+{
+    jboolean jRes = m_env->CallBooleanMethod(jBoolean, midBooleanValue);
+    return static_cast<bool>(jRes) ? Qtrue : Qfalse;
+}
+
+VALUE rho_cast_helper<VALUE, jobject>::getInteger(jobject jInteger)
+{
+    jint jRes = m_env->CallIntMethod(jInteger, midIntValue);
+    return rho_ruby_create_integer(jRes);
+}
+
+VALUE rho_cast_helper<VALUE, jobject>::getDouble(jobject jDouble)
+{
+    jboolean jRes = m_env->CallDoubleMethod(jDouble, midDoubleValue);
+    return rho_ruby_create_double(jRes);
+}
+
 extern "C"
 {
 
@@ -183,6 +201,31 @@ jobject rho_cast_helper<jobject, VALUE>::convertRubyHashToJavaMap(VALUE hash)
     return m_jObject;
 }
 
+jobject rho_cast_helper<jobject, VALUE>::getBooleanObject(bool val)
+{
+    jfieldID fid;
+    if(val)
+    {
+        fid = getJNIClassStaticField(m_env, clsBoolean, "TRUE", "Ljava/lang/Boolean;");
+    }
+    else
+    {
+        fid = getJNIClassStaticField(m_env, clsBoolean, "FALSE", "Ljava/lang/Boolean;");
+    }
+    jobject res = m_env->GetStaticObjectField(clsBoolean, fid);
+}
+
+jobject rho_cast_helper<jobject, VALUE>::getIntegerObject(VALUE val)
+{
+    jint jres = static_cast<jint>(rho_ruby_get_int(val));
+    return m_env->NewObject(clsInteger, midInteger, jres);
+}
+
+jobject rho_cast_helper<jobject, VALUE>::getDoubleObject(VALUE val)
+{
+    jdouble jres = static_cast<jdouble>(rho_ruby_get_double(val));
+    return m_env->CallStaticObjectMethod(clsDouble, midDoubleValueOf, jres);
+}
 
 jobject rho_cast_helper<jobject, VALUE>::operator()(JNIEnv *env, VALUE value)
 {
@@ -207,14 +250,18 @@ jobject rho_cast_helper<jobject, VALUE>::operator()(JNIEnv *env, VALUE value)
     case T_HASH:
         RAWTRACE("Convert to map");
         return convertRubyHashToJavaMap(value);
-//    case T_TRUE:
-//        return static_cast<jboolean>(true);
-//    case T_FALSE:
-//        return static_cast<jboolean>(false);
-//    case T_FIXNUM:
-//        return static_cast<jlong>(rho_ruby_get_int(value));
-//    case T_FLOAT:
-//        return static_cast<jdouble>(rho_ruby_get_double(value));
+    case T_TRUE:
+        RAWTRACE("Convert to true");
+        return getBooleanObject(true);
+    case T_FALSE:
+        RAWTRACE("Convert to false");
+        return getBooleanObject(false);
+    case T_FIXNUM:
+        RAWTRACE("Convert to Integer object");
+        return getIntegerObject(value);
+    case T_FLOAT:
+        RAWTRACE("Convert to Double object");
+        return getDoubleObject(value);
     }
 
     RAWLOG_ERROR1("rho_cast<jobject, VALUE>: wrong type of VALUE: %d", TYPE(value));
@@ -241,6 +288,15 @@ VALUE rho_cast_helper<VALUE, jobject>::operator()(JNIEnv *env, jobject obj)
         env->ReleaseStringUTFChars(static_cast<jstring>(obj), str);
         return res;
     }
+    else
+    if(env->IsInstanceOf(obj, clsBoolean))
+        return getBoolean(obj);
+    else
+    if(env->IsInstanceOf(obj, clsInteger))
+        return getInteger(obj);
+    else
+    if(env->IsInstanceOf(obj, clsDouble))
+        return getDouble(obj);
     else
     if(env->IsInstanceOf(obj, clsCollection))
         return convertJavaCollectionToRubyArray(obj);
