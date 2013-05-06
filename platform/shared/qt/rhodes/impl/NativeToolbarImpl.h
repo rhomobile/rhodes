@@ -31,19 +31,14 @@
 #include "common/IRhoThreadImpl.h"
 #include "ruby/ext/rho/rhoruby.h"
 
-class CNativeToolbar
+/*class CNativeToolbar
 {
     DEFINE_LOGCLASS;
 
-public:
-    static const int  MIN_TOOLBAR_HEIGHT = 60;
-    CNativeToolbar(void) {};
+public:*/
+    static const int MIN_TOOLBAR_HEIGHT = 60;
+/*    CNativeToolbar(void) {};
     ~CNativeToolbar(void) {};
-    static CNativeToolbar& getInstance();
-    int getHeight();
-    bool isStarted();
-    void createToolbarEx(const rho::Vector<rho::String>& toolbarElements, const rho::Hashtable<rho::String, rho::String>& toolBarProperties);
-    void removeToolbar();
-};
+};*/
 
 #endif // NATIVETOOLBARIMPL_H

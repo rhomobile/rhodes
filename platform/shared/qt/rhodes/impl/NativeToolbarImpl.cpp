@@ -40,50 +40,25 @@
 #include <QApplication>
 #include <QtGui/QAction>
 
-IMPLEMENT_LOGCLASS(CNativeToolbar,"NativeToolbar");
+//IMPLEMENT_LOGCLASS(CNativeToolbar,"NativeToolbar");
 
 using namespace rho;
 using namespace rho::common;
-
-CNativeToolbar& CNativeToolbar::getInstance()
-{
-    return CMainWindow::getInstance()->getToolbar();
-}
-
-void CNativeToolbar::createToolbarEx(const rho::Vector<rho::String>& toolbarElements, const rho::Hashtable<rho::String, rho::String>& toolBarProperties)
-{
-    CMainWindow::getInstance()->createToolbarEx(toolbarElements, toolBarProperties);
-}
-
-void CNativeToolbar::removeToolbar()
-{
-    CMainWindow::getInstance()->removeToolbar();
-}
-
-int CNativeToolbar::getHeight()
-{
-    return CMainWindow::getInstance()->getToolbarHeight();
-}
-
-bool CNativeToolbar::isStarted()
-{
-    return CMainWindow::getInstance()->isStarted();
-}
 
 /////////////////////////
 //Common API Support
 
 bool rho_osximpl_toolbar_isStarted()
 {
-    return CNativeToolbar::getInstance().isStarted();
+    return CMainWindow::getInstance()->isStarted();
 }
 
 void rho_osximpl_toolbar_create( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties)
 {
-    CNativeToolbar::getInstance().createToolbarEx(toolbarElements, toolBarProperties);
+    CMainWindow::getInstance()->createToolbarEx(toolbarElements, toolBarProperties);
 }
 
 void rho_osximpl_toolbar_remove()
 {
-    CNativeToolbar::getInstance().removeToolbar();
+    CMainWindow::getInstance()->removeToolbar();
 }
