@@ -41,7 +41,7 @@ class CNativeToolbar
 
 public:
     static const int  MIN_TOOLBAR_HEIGHT = 60;
-
+/*
 public:
     class CCreateTask: public rho::common::IRhoRunnable
     {
@@ -59,7 +59,7 @@ public:
         virtual void runObject(){
             CNativeToolbar::getInstance().removeToolbar(); 
         }
-    };
+    };  */
 
 public:
     CNativeToolbar(void);
@@ -72,7 +72,7 @@ public:
     int getHeight();
     bool isStarted();
 
-private:
-    void createToolbar(rho_param *param);
+    //void createToolbar(rho_param *param);
+    void createToolbarEx( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties);
     void removeToolbar();
 };

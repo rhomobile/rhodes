@@ -70,6 +70,7 @@ void rho_appmanager_load( void* httpContext, const char* szQuery);
 void rho_db_init_attr_manager();
 void rho_sys_app_exit();
 void rho_sys_report_app_started();
+void rho_conf_show_log();
 
 #ifdef OS_ANDROID
 void rho_file_set_fs_mode(int mode);
@@ -1865,11 +1866,19 @@ void CRhodesApp::loadUrl(String url)
         return;
     }else if ( strcasecmp(url.c_str(), "refresh")==0 )
     {
-        rho_webview_refresh(0);
+        rho_webview_refresh(-1);
         return;
     }else if ( strcasecmp(url.c_str(), "back")==0 )
     {
         navigateBack();
+        return;
+    }else if ( strcasecmp(url.c_str(), "log")==0 )
+    {
+        rho_conf_show_log();
+        return;
+    }else if ( strcasecmp(url.c_str(), "fullscreen")==0 )
+    {
+        rho_webview_full_screen_mode(1);
         return;
     }else if ( strcasecmp(url.c_str(), "sync")==0 )
     {

@@ -55,6 +55,7 @@ void CNativeTabbar::OnFinalMessage(HWND /*hWnd*/)
     getAppWindow().removeAllTabs(false);
 }
 
+#if 0
 /*static*/ CNativeTabbar& CNativeTabbar::getInstance()
 {
     return getAppWindow().getTabbar();
@@ -85,7 +86,8 @@ void CNativeTabbar::tabbarSwitch(int index)
     getAppWindow().tabbarSwitch(index);
 }
 
-void CNativeTabbar::tabbarBadge(int index, char* badge)
+void CNativeTabbar::tabbarBadge(int index, const char* badge)
 {
     getAppWindow().tabbarBadge(index, badge);
 }
+#endif

@@ -59,12 +59,16 @@ void CNativeToolbar::OnFinalMessage(HWND /*hWnd*/)
 {
     return getAppWindow().getToolbar();
 }
-
+/*
 void CNativeToolbar::createToolbar(rho_param *p)
 {
     getAppWindow().createToolbar(p);
-}
+} */
 
+void CNativeToolbar::createToolbarEx( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties)
+{
+    getAppWindow().createToolbarEx(toolbarElements, toolBarProperties);
+}
 
 void CNativeToolbar::removeToolbar()
 {

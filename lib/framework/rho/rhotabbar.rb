@@ -24,6 +24,8 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
+if !Rho::System.isRhoSimulator && System.get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
+
 module Rho
  
 class NativeTabbar
@@ -60,4 +62,5 @@ class NativeTabbar
 end
  
  
+end
 end

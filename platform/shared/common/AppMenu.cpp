@@ -31,11 +31,6 @@
 #include "sync/RhoconnectClientManager.h"
 #include "json/JSONIterator.h"
 
-//extern "C" void rho_sync_doSyncAllSources(int show_status_popup, const char* query_params);
-
-extern "C" void rho_conf_show_log();
-extern "C" void rho_sys_app_exit();
-
 namespace rho {
 namespace common{
 
@@ -131,7 +126,7 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 	
 	if (strLabel == "separator")
 		m_eType = emtSeparator;
-	else if (strLink == "home")
+/*	else if (strLink == "home")
 		m_eType = emtHome;
 	else if (strLink == "refresh")
 		m_eType = emtRefresh;
@@ -140,21 +135,25 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 	else if (strLink == "log")
 		m_eType = emtLog;
 	else if (strLink == "sync")
-		m_eType = emtSync;
+		m_eType = emtSync;*/
 	else if (strLink == "close")
 		m_eType = emtClose;
 	else if (strLink == "exit")
 		m_eType = emtExit;
-	else if (strLink == "back")
+	/*else if (strLink == "back")
 		m_eType = emtBack;
 	else if (strLink == "fullscreen")
 		m_eType = emtFullscreen;
 	else
-		m_eType = emtUrl;
+		m_eType = emtUrl;*/
 }
 
-boolean CAppMenuItem::processCommand()
+void CAppMenuItem::processCommand()
 {
+    if ( m_eType != emtSeparator )
+        RHODESAPP().loadUrl(m_strLink.c_str());
+
+/*
     switch(m_eType)
     {
     case CAppMenuItem::emtUrl:
@@ -195,6 +194,7 @@ boolean CAppMenuItem::processCommand()
     }
 
     return true;
+*/
 }
 
 } //namespace common

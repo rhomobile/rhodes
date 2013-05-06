@@ -32,6 +32,7 @@
 #include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
 #include "rubyext/NativeToolbarExt.h"
+#include "json/JSONIterator.h"
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
@@ -41,6 +42,8 @@ extern CMainWindow& getAppWindow();
 
 IMPLEMENT_LOGCLASS(CNativeToolbar,"NativeToolbar");
 extern "C" int rho_wmsys_has_touchscreen();
+
+using namespace rho::json;
 
 CNativeToolbar::CNativeToolbar(void)
 {
@@ -89,6 +92,111 @@ static int getColorFromString(const char* szColor)
     return RGB(cR, cG, cB);
 }
 
+void CNativeToolbar::createToolbarEx( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties)
+{
+    if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
+        return;
+
+    m_rgbBackColor = RGB(220,220,220);
+    m_rgbMaskColor = RGB(255,255,255);
+    m_nHeight = MIN_TOOLBAR_HEIGHT;
+
+    for ( Hashtable<rho::String, rho::String>::const_iterator it = toolBarProperties.begin(); it != toolBarProperties.end(); ++it )
+    {
+        const char *name = (it->first).c_str();
+        const char *value = (it->second).c_str();
+        if (strcasecmp(name, "backgroundColor") == 0) 
+            m_rgbBackColor = getColorFromString(value);
+        else if (strcasecmp(name, "maskColor") == 0) 
+            m_rgbMaskColor = getColorFromString(value);
+        else if (strcasecmp(name, "viewHeight") == 0) 
+            m_nHeight = atoi(value);
+    }
+
+    if ( toolbarElements.size() == 0 )
+    {
+        removeToolbar();
+        return;
+    }
+
+    if ( m_hWnd )
+    {
+        removeAllButtons();
+    }else
+    {
+        RECT rcToolbar;
+        rcToolbar.left = 0;
+        rcToolbar.right = 0;
+        rcToolbar.top = 0;
+        rcToolbar.bottom = m_nHeight;
+        Create(getAppWindow().m_hWnd, rcToolbar, NULL, WS_CHILD|CCS_NOPARENTALIGN|CCS_NORESIZE|CCS_NOMOVEY|CCS_BOTTOM|CCS_NODIVIDER |
+            TBSTYLE_FLAT |TBSTYLE_LIST|TBSTYLE_TRANSPARENT ); //TBSTYLE_AUTOSIZE
+
+        SetButtonStructSize();
+    }
+
+    for (int i = 0; i < (int)toolbarElements.size(); ++i) 
+    {
+        const char *label = NULL;
+        const char *action = NULL;
+        const char *icon = NULL;
+        const char *colored_icon = NULL;
+        int  nItemWidth = 0;
+
+        CJSONEntry oEntry(toolbarElements[i].c_str());
+
+        if ( oEntry.hasName("label") )
+            label = oEntry.getString("label");
+        if ( oEntry.hasName("action") )
+            action = oEntry.getString("action");
+        if ( oEntry.hasName("icon") )
+            icon = oEntry.getString("icon");
+        if ( oEntry.hasName("coloredIcon") )
+            colored_icon = oEntry.getString("coloredIcon");
+        if ( oEntry.hasName("width") )
+            nItemWidth = oEntry.getInt("width");
+
+        if (label == NULL)
+            label = "";
+        
+        if ( label == NULL || action == NULL) {
+            LOG(ERROR) + "Illegal argument for create_nativebar";
+            return;
+        }
+        if ( strcasecmp(action, "forward") == 0 && rho_conf_getBool("jqtouch_mode") )
+            continue;
+
+        m_arButtons.addElement( new CToolbarBtn(label, action, icon, nItemWidth) );
+    }
+
+    CSize sizeMax = getMaxImageSize();
+    m_nHeight = max(m_nHeight, sizeMax.cy+MIN_TOOLBAR_IDENT);
+    int nBtnSize = m_nHeight-MIN_TOOLBAR_IDENT;
+    SetButtonSize(max(nBtnSize,sizeMax.cx), max(nBtnSize,sizeMax.cy));
+    SetBitmapSize(sizeMax.cx, sizeMax.cy);
+    m_listImages.Create(sizeMax.cx, sizeMax.cy, ILC_MASK|ILC_COLOR32, m_arButtons.size(), 0);
+    SetImageList(m_listImages);
+
+    for ( int i = 0; i < (int)m_arButtons.size(); i++ )
+        addToolbarButton( *m_arButtons.elementAt(i), i );
+
+    AutoSize();
+
+    alignSeparatorWidth();
+
+    ShowWindow(SW_SHOW);
+
+#if defined (OS_WINDOWS_DESKTOP)
+    RECT rcWnd;
+    getAppWindow().GetWindowRect(&rcWnd);
+    getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left-1,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
+    getAppWindow().SetWindowPos( 0, 0,0,rcWnd.right-rcWnd.left,rcWnd.bottom-rcWnd.top, SWP_NOMOVE|SWP_NOZORDER|SWP_FRAMECHANGED);
+#else
+    getAppWindow().SetWindowPos( 0, 0,0,0,0, SWP_NOMOVE|SWP_NOZORDER|SWP_NOSIZE|SWP_FRAMECHANGED);
+#endif
+
+}
+/*
 void CNativeToolbar::createToolbar(rho_param *p)
 {
 //#if defined( OS_PLATFORM_MOTCE )
@@ -234,7 +342,7 @@ void CNativeToolbar::createToolbar(rho_param *p)
 #else
     getAppWindow().SetWindowPos( 0, 0,0,0,0, SWP_NOMOVE|SWP_NOZORDER|SWP_NOSIZE|SWP_FRAMECHANGED);
 #endif
-}
+}*/
 
 void CNativeToolbar::alignSeparatorWidth()
 {

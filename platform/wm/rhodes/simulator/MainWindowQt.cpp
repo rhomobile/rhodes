@@ -37,6 +37,7 @@
 #include "NativeToolbarQt.h"
 #include "rubyext/NativeToolbarExt.h"
 #include "AppManager.h"
+#include "json/JSONIterator.h"
 #undef null
 #include <QString>
 #include <QApplication>
@@ -54,6 +55,7 @@ extern "C" int rho_wmsys_has_touchscreen();
 
 using namespace rho;
 using namespace rho::common;
+using namespace rho::json;
 
 extern "C" void rho_geoimpl_turngpsoff();
 
@@ -152,7 +154,7 @@ void CMainWindow::createCustomMenu(void)
             menuAddSeparator();
         else
         {
-            menuAddAction((oItem.m_eType == CAppMenuItem::emtClose ? "Exit" : oItem.m_strLabel.c_str()), i);
+            menuAddAction((oItem.m_strLink == "close" ? "Exit" : oItem.m_strLabel.c_str()), i);
         }
     }
 }
@@ -163,19 +165,16 @@ void CMainWindow::onCustomMenuItemCommand(int nItemPos)
         return;
 
     CAppMenuItem& oMenuItem = m_arAppMenuItems.elementAt(nItemPos);
-    if ( oMenuItem.m_eType == CAppMenuItem::emtUrl )
+    if ( oMenuItem.m_strLink == "reload_rhobundle" )
     {
-        if ( oMenuItem.m_strLink == "reload_rhobundle" )
-        {
-        #ifdef ENABLE_DYNAMIC_RHOBUNDLE
-            if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
-                CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
-            } else {
-                MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
-            }
-        #endif
-            return;
+    #ifdef ENABLE_DYNAMIC_RHOBUNDLE
+        if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
+            CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
+        } else {
+            MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
         }
+    #endif
+        return;
     }
 
     oMenuItem.processCommand();
@@ -284,6 +283,132 @@ static QColor getColorFromString(const char* szColor)
     return QColor(cR, cG, cB);
 }
 
+void CMainWindow::createToolbarEx( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties)
+{
+    if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
+        return;
+
+    //int bar_type = TOOLBAR_TYPE;
+	std::auto_ptr<QColor> m_rgbBackColor (NULL);
+    std::auto_ptr<QColor> m_rgbMaskColor (NULL);
+    int m_nHeight = CNativeToolbar::MIN_TOOLBAR_HEIGHT;
+
+    for ( Hashtable<rho::String, rho::String>::const_iterator it = toolBarProperties.begin(); it != toolBarProperties.end(); ++it )
+    {
+        const char *name = (it->first).c_str();
+        const char *value = (it->second).c_str();
+        if (strcasecmp(name, "backgroundColor") == 0) 
+            m_rgbBackColor.reset(new QColor(getColorFromString(value)));
+        else if (strcasecmp(name, "maskColor") == 0) 
+            m_rgbMaskColor.reset(new QColor(getColorFromString(value)));
+        else if (strcasecmp(name, "viewHeight") == 0) 
+            m_nHeight = atoi(value);
+    }
+
+    if ( toolbarElements.size() == 0 )
+    {
+        removeToolbar();
+        return;
+    }
+
+    removeAllButtons();
+
+    int nSeparators = 0;
+    bool wasSeparator = false;
+    for (int ipass=0; ipass < 2; ++ipass) 
+    {
+        for (int i = 0; i < (int)toolbarElements.size(); ++i) 
+        {
+            const char *label = NULL;
+            const char *action = NULL;
+            const char *icon = NULL;
+            const char *colored_icon = NULL;
+            int  nItemWidth = 0;
+
+            CJSONEntry oEntry(toolbarElements[i].c_str());
+
+            if ( oEntry.hasName("label") )
+                label = oEntry.getString("label");
+            if ( oEntry.hasName("action") )
+                action = oEntry.getString("action");
+            if ( oEntry.hasName("icon") )
+                icon = oEntry.getString("icon");
+            if ( oEntry.hasName("coloredIcon") )
+                colored_icon = oEntry.getString("coloredIcon");
+            if ( oEntry.hasName("width") )
+                nItemWidth = oEntry.getInt("width");
+
+            if (label == NULL)
+                label = "";
+            
+            if ( label == NULL || action == NULL) {
+                LOG(ERROR) + "Illegal argument for create_nativebar";
+                return;
+            }
+            if ( strcasecmp(action, "forward") == 0 && rho_conf_getBool("jqtouch_mode") )
+                continue;
+
+            if (!action) action = "";
+
+            if (ipass==0) {
+                if (strcasecmp(action, "separator")==0)
+                    ++nSeparators;
+            } else {
+                LOG(INFO) + "addToolbarButton: Label: '"+label+"';Action: '"+action+"'";
+                if (strcasecmp(action, "separator")==0) {
+                    if (nSeparators!=1)
+                        ((QtMainWindow*)qtMainWindow)->toolbarAddSeparator();
+                    else
+                        wasSeparator = true;
+                } else {
+                    String strImagePath;
+                    if ( icon && *icon )
+                    {
+#ifndef RHODES_EMULATOR
+                        strImagePath = rho::common::CFilePath::join( RHODESAPP().getRhoRootPath(), "/apps" );
+                        strImagePath = rho::common::CFilePath::join( strImagePath, icon );
+
+#else
+                        strImagePath = rho::common::CFilePath::join( RHODESAPP().getRhoRootPath(), icon );
+#endif
+
+                    }else {
+#if defined(RHODES_EMULATOR)
+#define RHODES_EMULATOR_PLATFORM_STR ".win32"
+#elif defined(RHO_SYMBIAN)
+#define RHODES_EMULATOR_PLATFORM_STR ".sym"
+#else
+#define RHODES_EMULATOR_PLATFORM_STR
+#endif
+                        if ( strcasecmp(action, "options")==0 )
+                            strImagePath = "res/options_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
+                        else if ( strcasecmp(action, "home")==0 )
+                            strImagePath = "res/home_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
+                        else if ( strcasecmp(action, "refresh")==0 )
+                            strImagePath = "res/refresh_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
+                        else if ( strcasecmp(action, "back")==0 )
+                            strImagePath = "res/back_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
+                        else if ( strcasecmp(action, "forward")==0 )
+                            strImagePath = "res/forward_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
+#undef RHODES_EMULATOR_PLATFORM_STR
+#ifdef RHODES_EMULATOR
+                        strImagePath = strImagePath.length() > 0 ? CFilePath::join( RHOSIMCONF().getRhoRuntimePath(), "lib/framework/" + strImagePath) : String();
+#else
+                        strImagePath = strImagePath.length() > 0 ? CFilePath::join( rho_native_reruntimepath() , "lib/" + strImagePath) : String();
+#endif
+                    }
+
+                    ((QtMainWindow*)qtMainWindow)->toolbarAddAction(QIcon(QString(strImagePath.c_str())), QString(label), action, wasSeparator);
+                }
+            }
+        }
+    }
+
+	((QtMainWindow*)qtMainWindow)->setToolbarStyle(false, (m_rgbBackColor.get()!=NULL ? m_rgbBackColor->name() : ""));
+    ((QtMainWindow*)qtMainWindow)->toolbarShow();
+    m_started = true;
+}
+/*
 void CMainWindow::createToolbar(rho_param *p)
 {
     if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
@@ -445,30 +570,102 @@ void CMainWindow::createToolbar(rho_param *p)
     ((QtMainWindow*)qtMainWindow)->toolbarShow();
     //removeTabbar();
     m_started = true;
-}
+}*/
 
 bool charToBool(const char* str)
 {
     return str && ((stricmp(str,"true")==0) || (stricmp(str,"yes")==0) || (atoi(str)==1));
 }
 
-void CMainWindow::createTabbar(int bar_type, rho_param *p)
+void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult)
 {
-    // TODO: implement tabbar creation
-
     if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
         return;
 
-	/*
-    if (bar_type==NOBAR_TYPE) {
-        removeToolbar();
-		removeAllButtons();
-        removeTabbar();
-		removeAllTabs();
-        m_started = false;
-        return;
+	std::auto_ptr<QColor> background_color (NULL);
+
+    for ( Hashtable<rho::String, rho::String>::const_iterator it = tabBarProperties.begin(); it != tabBarProperties.end(); ++it )
+    {
+        const char *name = (it->first).c_str();
+        const char *value = (it->second).c_str();
+        if (strcasecmp(name, "backgroundColor") == 0) 
+            background_color.reset(new QColor(getColorFromString(value)));
     }
-    */
+
+    ((QtMainWindow*)qtMainWindow)->tabbarInitialize();
+
+    for (int i = 0; i < (int)tabbarElements.size(); ++i) 
+    {
+        const char *label = NULL;
+        const char *action = NULL;
+        const char *icon = NULL;
+        const char *reload = NULL;
+        const char *colored_icon = NULL;
+        
+    	std::auto_ptr<QColor> selected_color (NULL);
+        const char *disabled = NULL;
+		std::auto_ptr<QColor> web_bkg_color (NULL);
+        const char* use_current_view_for_tab = NULL;
+
+        CJSONEntry oEntry(tabbarElements[i].c_str());
+
+        if ( oEntry.hasName("label") )
+            label = oEntry.getString("label");
+        if ( oEntry.hasName("action") )
+            action = oEntry.getString("action");
+        if ( oEntry.hasName("icon") )
+            icon = oEntry.getString("icon");
+        if ( oEntry.hasName("coloredIcon") )
+            colored_icon = oEntry.getString("coloredIcon");
+        if ( oEntry.hasName("reload") )
+            reload = oEntry.getString("reload");
+        if ( oEntry.hasName("selectedColor") )
+            selected_color.reset(new QColor(getColorFromString(oEntry.getString("selectedColor"))));
+        if ( oEntry.hasName("disabled") )
+            disabled = oEntry.getString("disabled");
+        if ( oEntry.hasName("useCurrentViewForTab") )
+        {
+            use_current_view_for_tab = oEntry.getString("useCurrentViewForTab");
+            if (strcasecmp(use_current_view_for_tab, "true") == 0) {
+                action = "none";
+            }
+        }
+        if (oEntry.hasName("backgroundColor")) 
+            web_bkg_color.reset(new QColor(getColorFromString(oEntry.getString("backgroundColor"))));
+
+        if (label == NULL)
+            label = "";
+        
+        if ( label == NULL || action == NULL) {
+            RAWLOG_ERROR("Illegal argument for create_nativebar");
+            return;
+        }
+
+        QtMainWindow::QTabBarRuntimeParams tbrp;
+        tbrp["label"] = QString(label);
+        tbrp["action"] = QString(action);
+        tbrp["reload"] = charToBool(reload);
+        tbrp["use_current_view_for_tab"] = charToBool(use_current_view_for_tab);
+        tbrp["background_color"] = background_color.get() != NULL ? background_color->name() : QString("");
+		tbrp["selected_color"] = selected_color.get() != NULL ? selected_color->name() : QString("");
+        String strIconPath = icon ? CFilePath::join( RHODESAPP().getAppRootPath(), icon) : String();
+
+        ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), web_bkg_color.get(), tbrp);
+    }
+
+    if (oResult.hasCallback())
+        ((QtMainWindow*)qtMainWindow)->tabbarSetSwitchCallback(oResult);
+
+    ((QtMainWindow*)qtMainWindow)->tabbarShow();
+
+    m_started = true;
+}
+
+/*
+void CMainWindow::createTabbar(int bar_type, rho_param *p)
+{
+    if (!rho_rhodesapp_check_mode() || !rho_wmsys_has_touchscreen() )
+        return;
 
 	std::auto_ptr<QColor> background_color (NULL);
     const char* on_change_tab_callback = NULL;
@@ -591,7 +788,7 @@ void CMainWindow::createTabbar(int bar_type, rho_param *p)
 
 	//removeToolbar();
     m_started = true;
-}
+}*/
 
 int CMainWindow::getTabbarHeight()
 {
@@ -613,7 +810,7 @@ void CMainWindow::tabbarSwitch(int index)
     ((QtMainWindow*)qtMainWindow)->tabbarSwitch(index);
 }
 
-void CMainWindow::tabbarBadge(int index, char* badge)
+void CMainWindow::tabbarBadge(int index, const char* badge)
 {
     ((QtMainWindow*)qtMainWindow)->tabbarSetBadge(index, badge);
 }

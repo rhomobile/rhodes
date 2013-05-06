@@ -43,7 +43,7 @@ public:
     static const int MIN_TABBAR_HEIGHT = 120;
 
 public:
-    class CCreateTask: public rho::common::IRhoRunnable
+/*    class CCreateTask: public rho::common::IRhoRunnable
     {
 		int m_bartype;
         rho_param *m_param;
@@ -81,22 +81,23 @@ public:
         virtual void runObject(){
             CNativeTabbar::getInstance().tabbarBadge(m_index, m_badge);
         }
-    };
+    };*/
 
 public:
     CNativeTabbar(void);
     ~CNativeTabbar(void);
 
-    static CNativeTabbar& getInstance();
+    //static CNativeTabbar& getInstance();
 
     virtual void OnFinalMessage(HWND /*hWnd*/);
 
-    int getHeight();
-    bool isStarted();
+    //int getHeight();
+    //bool isStarted();
 
-private:
-    void createTabbar(int bar_type, rho_param *param);
-    void removeTabbar();
-    void tabbarSwitch(int index);
-    void tabbarBadge(int index, char* badge);
+//private:
+    //void createTabbar(int bar_type, rho_param *param);
+    //void createTabbarEx(const rho::Vector<rho::String>& tabbarElements,  const rho::Hashtable<rho::String, rho::String>& tabBarProperties);
+    //void removeTabbar();
+    //void tabbarSwitch(int index);
+    //void tabbarBadge(int index, const char* badge);
 };

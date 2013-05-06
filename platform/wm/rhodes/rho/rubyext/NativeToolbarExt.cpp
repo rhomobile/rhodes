@@ -31,6 +31,8 @@
 
 extern CMainWindow& getAppWindow();
 
+#if 0
+
 extern "C"
 {
 int rho_wmsys_has_touchscreen();
@@ -149,3 +151,81 @@ VALUE navbar_started()
 }
 
 }
+#endif
+/////////////////////////
+//Common API Support
+
+bool rho_wmimpl_toolbar_isStarted()
+{
+    return CNativeToolbar::getInstance().isStarted();
+}
+
+void rho_wmimpl_toolbar_create( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties)
+{
+    CNativeToolbar::getInstance().createToolbarEx(toolbarElements, toolBarProperties);
+}
+
+void rho_wmimpl_toolbar_remove()
+{
+    CNativeToolbar::getInstance().removeToolbar();
+}
+
+//Tabbar
+#if defined(OS_WINDOWS_DESKTOP)
+bool rho_wmimpl_tabbar_isStarted()
+{
+    return getAppWindow().isStarted();
+}
+
+void rho_wmimpl_tabbar_create( const rho::Vector<rho::String>& tabbarElements,  const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult)
+{
+    getAppWindow().createTabbarEx(tabbarElements, tabBarProperties, oResult);
+}
+
+void rho_wmimpl_tabbar_remove()
+{
+    getAppWindow().removeTabbar();
+}
+
+int rho_wmimpl_tabbar_currentTabIndex()
+{
+	return getAppWindow().tabbarGetCurrent();
+}
+
+void rho_wmimpl_tabbar_switchTab(int tabIndex)
+{
+    getAppWindow().tabbarSwitch(tabIndex);
+}
+
+void rho_wmimpl_tabbar_setTabBadge(int tabIndex,  const rho::String& badge)
+{
+    getAppWindow().tabbarBadge(tabIndex, badge.c_str());
+}
+#else
+bool rho_wmimpl_tabbar_isStarted()
+{
+    return false;
+}
+
+void rho_wmimpl_tabbar_create( const rho::Vector<rho::String>& tabbarElements,  const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult)
+{
+}
+
+void rho_wmimpl_tabbar_remove()
+{
+}
+
+int rho_wmimpl_tabbar_currentTabIndex()
+{
+	return 0;
+}
+
+void rho_wmimpl_tabbar_switchTab(int tabIndex)
+{
+}
+
+void rho_wmimpl_tabbar_setTabBadge(int tabIndex,  const rho::String& badge)
+{
+}
+
+#endif
