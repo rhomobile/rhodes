@@ -121,13 +121,25 @@ describe("<ORM module specs>", function() {
         var Model = Rho.ORM.addModel('Model');
         Model.deleteAll();
 
-        var original = Model.create({'key': 'value'});
+        var object = Model.create({'key': 'value'});
 
-        expect(Model.find(original.object()).vars()).toEqual(original.vars());
-        original.set('key', 'another value').set('new key', 'new value');
-        expect(Model.find(original.object()).vars()).not.toEqual(original.vars());
-        original.save();
-        expect(Model.find(original.object()).vars()).toEqual(original.vars());
+        expect(Model.find(object.object()).vars()).toEqual(object.vars());
+        object.set('key', 'another value').set('new key', 'new value');
+        expect(Model.find(object.object()).vars()).not.toEqual(object.vars());
+        object.save();
+        expect(Model.find(object.object()).vars()).toEqual(object.vars());
+    });
+
+    it('updates object attributes in database', function() {
+        var Model = Rho.ORM.addModel('Model');
+        Model.deleteAll();
+
+        var object = Model.create({'key': 'value', 'original key': 'original value'});
+
+        expect(Model.find(object.object()).vars()).toEqual(object.vars());
+        object.update_attributes({'key': 'another value', 'new key': 'new value'});
+        expect(Model.find(object.object()).vars()).toEqual(object.vars());
+        expect(cleanVars(object)).toEqual({'key': 'another value', 'new key': 'new value', 'original key': 'original value'});
     });
 
     it('does not create empty object in database', function() {
