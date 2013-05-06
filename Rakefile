@@ -1983,6 +1983,16 @@ namespace "build" do
 end
 
 namespace "run" do
+    
+    task :rhoconnect_push_spec do
+        require 'mspec'
+        
+        Dir.chdir( File.join(File.dirname(__FILE__),'spec','server_spec'))
+        MSpec.register_files [ 'rhoconnect_push_spec.rb' ]
+        
+        MSpec.process
+        MSpec.exit_code
+    end
 
     task :set_rhosimulator_flag do
         $is_rho_simulator = true    

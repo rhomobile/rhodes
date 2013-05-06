@@ -14,33 +14,27 @@ class SettingsController < Rho::RhoController
     @msg = @params['msg']
     
     puts "Logged in: #{SyncEngine.logged_in}"
-	SyncEngine.set_syncserver("http://#{SYNC_SERVER_HOST}:#{SYNC_SERVER_PORT}/application")
+=begin
+      if SyncEngine.logged_in
+          puts "logging out"
+          SyncEngine.logout
+          sleep 5
+      end
+=end
+	SyncEngine.set_syncserver("http://#{SYNC_SERVER_HOST}:#{SYNC_SERVER_PORT}")
 	RhoConf.set_property_by_name('rhoconnect_push_server',"http://#{PUSH_SERVER_HOST}:#{PUSH_SERVER_PORT}")
 	puts "push server is #{RhoConf.get_property_by_name('rhoconnect_push_server')}"
-	  
-	SyncEngine.logout
-	SyncEngine.login('pushclient', 'pushclient', '/app/Settings/login_callback' )
-	  #unless $push_check_started
-      #check_registration
-      #$push_check_started = true
-	  #end
     
-	  #    render
+      #    System.set_push_notification('/app/Settings/push_callback', '')
+	SyncEngine.login('pushclient', 'pushclient', '/app/Settings/login_callback' )
   end
-=begin
-  def login
-    @msg = @params['msg']
-    render :action => :login
-  end
-=end
+
   def login_callback
     errCode = @params['error_code'].to_i
 	  
 	puts "login callback, error code: #{errCode}"
 	  
-    if errCode == 0
-		#      WebView.navigate Rho::RhoConfig.options_path
-    else
+    if errCode != 0
       if errCode == Rho::RhoError::ERR_CUSTOMSYNCSERVER
         @msg = @params['error_message']
       end
@@ -49,7 +43,6 @@ class SettingsController < Rho::RhoController
         @msg = Rho::RhoError.new(errCode).message
       end
       
-		#      WebView.navigate ( url_for :action => :login, :query => {:msg => @msg} )
     end
 
     host = SPEC_LOCAL_SERVER_HOST
@@ -95,95 +88,21 @@ class SettingsController < Rho::RhoController
 	url = "http://#{host}:#{port}?alert=#{@params['alert']}&error=#{@params['error']}"
 
 	  
-	if @params['error']
-		puts "skipping response: #{url} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-	else
+      if @params['error']
+      		puts "skipping response: #{url} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+      else
 		puts "sending response: #{url} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
 		Rho::AsyncHttp.get :url => url
-	end
+      end
     
-    System.exit if exit
+    puts "before exit, exit = #{exit}"
+    if exit then
+        puts "before exit, exit = #{exit}"
+        System.exit
+        puts "after exit, exit = #{exit}"
+    end
+    puts "after exit, exit = #{exit}"
+
   end
  
-=begin
-  def do_login
-    if @params['login'] and @params['password']
-      begin
-        SyncEngine.login(@params['login'], @params['password'], (url_for :action => :login_callback) )
-        @response['headers']['Wait-Page'] = 'true'
-        render :action => :wait
-      rescue Rho::RhoError => e
-        @msg = e.message
-        render :action => :login
-      end
-    else
-      @msg = Rho::RhoError.err_message(Rho::RhoError::ERR_UNATHORIZED) unless @msg && @msg.length > 0
-      render :action => :login
-    end
-  end
-  
-  def logout
-    SyncEngine.logout
-    @msg = "You have been logged out."
-    render :action => :login
-  end
-  
-  def reset
-    render :action => :reset
-  end
-  
-  def do_reset
-    Rhom::Rhom.database_full_reset
-    SyncEngine.dosync
-    @msg = "Database has been reset."
-    redirect :action => :index, :query => {:msg => @msg}
-  end
-  
-  def do_sync
-    SyncEngine.dosync
-    @msg =  "Sync has been triggered."
-    redirect :action => :index, :query => {:msg => @msg}
-  end
-  
-  def sync_notify
-  	status = @params['status'] ? @params['status'] : ""
-  	
-  	# un-comment to show a debug status pop-up
-  	#Alert.show_status( "Status", "#{@params['source_name']} : #{status}", Rho::RhoMessages.get_message('hide'))
-  	
-  	if status == "in_progress" 	
-  	  # do nothing
-  	elsif status == "complete"
-      WebView.navigate Rho::RhoConfig.start_path if @params['sync_type'] != 'bulk'
-  	elsif status == "error"
-	
-      if @params['server_errors'] && @params['server_errors']['create-error']
-        SyncEngine.on_sync_create_error( 
-          @params['source_name'], @params['server_errors']['create-error'].keys, :delete )
-      end
-
-      if @params['server_errors'] && @params['server_errors']['update-error']
-        SyncEngine.on_sync_update_error(
-          @params['source_name'], @params['server_errors']['update-error'], :retry )
-      end
-      
-      err_code = @params['error_code'].to_i
-      rho_error = Rho::RhoError.new(err_code)
-      
-      @msg = @params['error_message'] if err_code == Rho::RhoError::ERR_CUSTOMSYNCSERVER
-      @msg = rho_error.message unless @msg && @msg.length > 0   
-
-      if rho_error.unknown_client?( @params['error_message'] )
-        Rhom::Rhom.database_client_reset
-        SyncEngine.dosync
-      elsif err_code == Rho::RhoError::ERR_UNATHORIZED
-        WebView.navigate( 
-          url_for :action => :login, 
-          :query => {:msg => "Server credentials are expired"} )                
-      elsif err_code != Rho::RhoError::ERR_CUSTOMSYNCSERVER
-        WebView.navigate( url_for :action => :err_sync, :query => { :msg => @msg } )
-      end    
-	end
-  end
-=end
 end
