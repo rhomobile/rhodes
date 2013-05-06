@@ -31,7 +31,7 @@
 #include "common/IRhoThreadImpl.h"
 #include "ruby/ext/rho/rhoruby.h"
 
-class CNativeTabbar
+/*class CNativeTabbar
 {
     DEFINE_LOGCLASS;
 
@@ -39,6 +39,6 @@ public:
     static const int MIN_TABBAR_HEIGHT = 120;
     CNativeTabbar(void) {};
     ~CNativeTabbar(void) {};
-};
+};*/
 
 #endif // NATIVETABBARIMPL_H

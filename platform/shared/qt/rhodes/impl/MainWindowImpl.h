@@ -66,8 +66,6 @@ public:
     // public methods:
     bool Initialize(const wchar_t* title);
     void DestroyUi(void);
-    CNativeToolbar& getToolbar(){ return m_toolbar; }
-    //CNativeTabbar& getTabbar(){ return m_tabbar; }
     // for 'main_window_closed' System property
     static bool mainWindowClosed;
 
@@ -105,8 +103,6 @@ public:
 
 private:
     //TODO: CLogView m_logView;
-    CNativeToolbar m_toolbar;
-    //CNativeTabbar m_tabbar;
     bool m_started;
     void* qtMainWindow;
     void* qtApplication;

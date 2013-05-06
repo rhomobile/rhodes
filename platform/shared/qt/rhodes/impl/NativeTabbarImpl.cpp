@@ -36,7 +36,7 @@
 #include <QApplication>
 #include <QtGui/QAction>
 
-IMPLEMENT_LOGCLASS(CNativeTabbar,"NativeTabbar");
+//IMPLEMENT_LOGCLASS(CNativeTabbar,"NativeTabbar");
 
 using namespace rho;
 using namespace rho::common;

@@ -306,10 +306,9 @@ void CMainWindow::createToolbarEx( const rho::Vector<rho::String>& toolbarElemen
     if (!rho_rhodesapp_check_mode())
         return;
 
-    //int bar_type = TOOLBAR_TYPE;
     std::auto_ptr<QColor> m_rgbBackColor (NULL);
     std::auto_ptr<QColor> m_rgbMaskColor (NULL);
-    int m_nHeight = CNativeToolbar::MIN_TOOLBAR_HEIGHT;
+    int m_nHeight = MIN_TOOLBAR_HEIGHT;
 
     for ( Hashtable<rho::String, rho::String>::const_iterator it = toolBarProperties.begin(); it != toolBarProperties.end(); ++it )
     {
