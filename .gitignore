@@ -113,6 +113,7 @@ spec/**/RhoLogSpec.txt
 spec/**/rhosimulator/
 spec/**/sim-public*
 spec/*/extensions/*/ext/platform/iphone/build/*
+spec/*/extensions/*/ext/platform/iphone/impl
 spec/api_generator_spec/**/generated/
 spec/api_generator_spec/*/*/generated/
 spec/api_generator_spec/*/*/*/generated/
