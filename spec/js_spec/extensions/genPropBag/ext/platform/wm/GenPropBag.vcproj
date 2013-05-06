@@ -643,6 +643,7 @@
 				>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
