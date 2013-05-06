@@ -35,6 +35,18 @@
 #define VTABBAR_TYPE		3
 */
 
+#if defined(OS_MACOSX)
+bool rho_osximpl_toolbar_isStarted();
+void rho_osximpl_toolbar_create(const rho::Vector<rho::String>& toolbarElements, const rho::Hashtable<rho::String, rho::String>& toolBarProperties);
+void rho_osximpl_toolbar_remove();
+
+bool rho_osximpl_tabbar_isStarted();
+void rho_osximpl_tabbar_create(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
+void rho_osximpl_tabbar_remove();
+int rho_osximpl_tabbar_currentTabIndex();
+void rho_osximpl_tabbar_switchTab(int tabIndex);
+void rho_osximpl_tabbar_setTabBadge(int tabIndex, const rho::String& badge);
+#else
 bool rho_wmimpl_toolbar_isStarted();
 void rho_wmimpl_toolbar_create( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties);
 void rho_wmimpl_toolbar_remove();
@@ -45,5 +57,6 @@ void rho_wmimpl_tabbar_remove();
 int rho_wmimpl_tabbar_currentTabIndex();
 void rho_wmimpl_tabbar_switchTab(int tabIndex);
 void rho_wmimpl_tabbar_setTabBadge(int tabIndex,  const rho::String& badge);
+#endif
 
 #endif //_NATIVETOOLBAREXT_H_

@@ -35,7 +35,7 @@
 #include "common/RhoNativeViewManager.h"
 #include "../MainWindowCallback.h"
 #include "NativeToolbarImpl.h"
-#include "NativeTabbarImpl.h"
+//#include "NativeTabbarImpl.h"
 #include "AlertImpl.h"
 #include "DateTimePickerImpl.h"
 #undef null
@@ -67,7 +67,7 @@ public:
     bool Initialize(const wchar_t* title);
     void DestroyUi(void);
     CNativeToolbar& getToolbar(){ return m_toolbar; }
-    CNativeTabbar& getTabbar(){ return m_tabbar; }
+    //CNativeTabbar& getTabbar(){ return m_tabbar; }
     // for 'main_window_closed' System property
     static bool mainWindowClosed;
 
@@ -85,7 +85,8 @@ public:
     bool isStarted();
     // toolbar proxy
     int getToolbarHeight();
-    void createToolbar(rho_param *p);
+    //void createToolbar(rho_param *p);
+    void createToolbarEx( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties);
     void removeToolbar();
     void removeAllButtons();
     // menu proxy
@@ -95,16 +96,17 @@ public:
     // tabbar
     int getTabbarHeight();
     void removeAllTabs(bool restore);
-    void createTabbar(int bar_type, rho_param *p);
+    //void createTabbar(int bar_type, rho_param *p);
+    void createTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
     void removeTabbar();
     void tabbarSwitch(int index);
-    void tabbarBadge(int index, char* badge);
+    void tabbarBadge(int index, const char* badge);
     int tabbarGetCurrent();
 
 private:
     //TODO: CLogView m_logView;
     CNativeToolbar m_toolbar;
-    CNativeTabbar m_tabbar;
+    //CNativeTabbar m_tabbar;
     bool m_started;
     void* qtMainWindow;
     void* qtApplication;

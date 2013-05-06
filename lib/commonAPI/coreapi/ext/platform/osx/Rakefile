@@ -11,13 +11,13 @@ def build_extension(name, arch)
   Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/shared/**/*.cpp").each do |f|
     files << f
   end
-  # these files must be compiled in Qt environment (see /platform/shared/qt/rhodes/rhodes.pro):
-  #Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/**/*.c").each do |f|
-  #  files << f
-  #end
-  #Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/**/*.cpp").each do |f|
-  #  files << f
-  #end
+  Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/**/*.c").each do |f|
+    files << f
+  end
+  # CSystemImpl.cpp & CWebViewImpl.cpp must be compiled in Qt environment (see /platform/shared/qt/rhodes/rhodes.pro)
+  Dir.glob("#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/**/Native*Impl.cpp").each do |f|
+    files << f
+  end
 
   files.each do |f|
     objname = File.join( $tempdir, File.basename( f.gsub(/\.(c|cpp)$/, '.o') ) )

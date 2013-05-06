@@ -96,7 +96,6 @@ HEADERS += ../../ruby/ext/rho/rhoruby.h\
 
 SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/rhoconf/rhoconf_wrap.c\
-../../ruby/ext/nativebar/nativebar_wrap.c\
 ../../ruby/ext/rho/rhoruby.c\
 ../../ruby/ext/rho/rhosupport.c\
 ../../ruby/ext/stringio/stringio.c\
@@ -106,7 +105,6 @@ SOURCES += ../../ruby/ext/datetimepicker/datetimepicker_wrap.c\
 ../../ruby/ext/ringtones/ringtones_wrap.c\
 ../../ruby/ext/calendar/calendar_wrap.c\
 ../../ruby/ext/calendar/event_wrap.c\
-../../ruby/ext/navbar/navbar_wrap.c\
 ../../ruby/ext/alert/alert_wrap.c\
 ../../ruby/ext/phonebook/phonebook_wrap.c\
 ../../ruby/ext/camera/camera_wrap.c\
