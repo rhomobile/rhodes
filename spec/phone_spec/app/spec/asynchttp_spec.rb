@@ -329,7 +329,10 @@ end
         File.delete(targetFile) if File.exists?(targetFile)
         File.open(targetFile,'w') { |outf| outf.write(stamp) }
         
-        Rho::Network::downloadFile( :url => refUrl, :filename => targetFile, :overwriteFile => false )
+        res = Rho::Network::downloadFile( :url => refUrl, :filename => targetFile, :overwriteFile => false )
+        
+        res["status"].should == "error"
+        res["fileExists"].should == "true"
         
         File.exists?(targetFile).should == true
         File.size(targetFile).should == stamp.length
