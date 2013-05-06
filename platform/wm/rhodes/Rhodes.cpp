@@ -898,29 +898,18 @@ extern "C" void rho_wm_impl_CheckLicense()
             StringW strCompanyW;
             common::convertToStringW( get_app_build_config_item("motorola_license_company"), strCompanyW );
 
-            bool bRE1App = false;
         #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
-            if (!rho_wmimpl_get_is_version2())
-                bRE1App = true;
+            LPCTSTR szLicense = rho_wmimpl_sharedconfig_getvalue( L"LicenseKey" );
+            if ( szLicense )
+                strLicenseW = szLicense;
 
-            if ( bRE1App )
-            {
-                LPCTSTR szLicense = rho_wmimpl_sharedconfig_getvalue( L"LicenseKey" );
-                if ( szLicense )
-                    strLicenseW = szLicense;
-
-                LPCTSTR szLicenseComp = rho_wmimpl_sharedconfig_getvalue( L"LicenseKeyCompany" );
-                if ( szLicenseComp )
-                    strCompanyW = szLicenseComp;
-            }
+            LPCTSTR szLicenseComp = rho_wmimpl_sharedconfig_getvalue( L"LicenseKeyCompany" );
+            if ( szLicenseComp )
+                strCompanyW = szLicenseComp;
         #endif
 
             StringW strAppNameW;
-//#if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
             strAppNameW = RHODESAPP().getAppNameW();
-//#else
-//            common::convertToStringW( get_app_build_config_item("name"), strAppNameW );
-//#endif
             szLogText = pCheckLicense( getMainWnd(), strAppNameW.c_str(), strLicenseW.c_str(), strCompanyW.c_str() );
         }
 
