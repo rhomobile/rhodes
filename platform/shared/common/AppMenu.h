@@ -38,14 +38,13 @@ namespace common {
 
 struct CAppMenuItem 
 {
-    enum EnumMenuType { emtNone = 0, emtSeparator, emtUrl, emtRefresh, emtHome, emtBack, emtSync, emtOptions, emtLog, emtExit,
-        emtClose, emtFullscreen };
+    enum EnumMenuType { emtNone = 0, emtSeparator, emtExit, emtClose };//, emtUrl, emtRefresh, emtHome, emtBack, emtSync, emtOptions, emtLog, emtExit, emtClose, emtFullscreen };
 	String m_strLabel;
 	String m_strLink;
 	EnumMenuType  m_eType;
 
     CAppMenuItem (const String &label, const String &link);
-    boolean processCommand();
+    void processCommand();
 };
 
 class CAppMenu

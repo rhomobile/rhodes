@@ -13,11 +13,12 @@ struct I<%= $cur_module.name %>
 //constants
 <% if $cur_module.properties_access == ModuleMethod::ACCESS_INSTANCE
    $cur_module.constants.each do |module_constant|
+    if  module_constant.name && module_constant.name.length() > 0 
     if module_constant.type == MethodParam::TYPE_STRING %>
     static const char <%= module_constant.name %>[];// "<%= module_constant.value %>" <%
 else %>
     static const <%= api_generator_cpp_makeNativeType(module_constant.type) %> <%= module_constant.name %> = <%= module_constant.value %>; <%
-end; end; end %>
+end; end; end; end %>
 
 //methods
     virtual ~I<%= $cur_module.name %>(){}
@@ -47,11 +48,12 @@ struct I<%= $cur_module.name %>Singleton
 //constants
 <% if $cur_module.properties_access == ModuleMethod::ACCESS_STATIC
    $cur_module.constants.each do |module_constant|
+    if  module_constant.name && module_constant.name.length() > 0 
     if module_constant.type == MethodParam::TYPE_STRING %>
     static const char <%= module_constant.name %>[];// "<%= module_constant.value %>" <%
 else %>
     static const <%= api_generator_cpp_makeNativeType(module_constant.type) %> <%= module_constant.name %> = <%= module_constant.value %>; <%
-end; end; end %>
+end; end; end; end %>
 
     virtual ~I<%= $cur_module.name %>Singleton(){}
 

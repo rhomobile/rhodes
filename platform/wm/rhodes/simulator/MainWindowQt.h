@@ -35,7 +35,7 @@
 #include "RhoNativeViewManagerWM.h"
 #include "SyncStatusDlg.h"
 #include "NativeToolbarQt.h"
-#include "NativeTabbarQt.h"
+//#include "NativeTabbarQt.h"
 #if defined(OS_WINDOWS_DESKTOP)
 #include "menubar.h"
 #endif
@@ -84,7 +84,7 @@ public:
 	void DestroyUi(void);
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
     CNativeToolbar& getToolbar(){ return m_toolbar; }
-    CNativeTabbar& getTabbar(){ return m_tabbar; }
+    //CNativeTabbar& getTabbar(){ return m_tabbar; }
     HWND getWebViewHWND(int index);
 	void setProxy();
 	void setProxy(const rho::String& host, const rho::String& port, const rho::String& login, const rho::String& password);
@@ -105,7 +105,8 @@ public:
     bool isStarted();
     // toolbar proxy
     int getToolbarHeight();
-    void createToolbar(rho_param *p);
+    //void createToolbar(rho_param *p);
+    void createToolbarEx( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties);
     void removeToolbar();
     void removeAllButtons();
     // menu proxy
@@ -115,10 +116,11 @@ public:
 	// tabbar
     int getTabbarHeight();
     void removeAllTabs(bool restore);
-    void createTabbar(int bar_type, rho_param *p);
+    //void createTabbar(int bar_type, rho_param *p);
+    void createTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
     void removeTabbar();
     void tabbarSwitch(int index);
-    void tabbarBadge(int index, char* badge);
+    void tabbarBadge(int index, const char* badge);
     int tabbarGetCurrent();
     bool isExistJavascript(const wchar_t* szJSFunction, int index){return true;}
 	// window frame
@@ -184,7 +186,7 @@ private:
 private:
     CLogView m_logView;
     CNativeToolbar m_toolbar;
-	CNativeTabbar m_tabbar;
+	//CNativeTabbar m_tabbar;
     bool m_started;
     void* qtMainWindow;
     void* qtApplication;

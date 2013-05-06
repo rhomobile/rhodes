@@ -58,7 +58,7 @@ class CNativeToolbar : public CWindowImpl<CNativeToolbar, CToolBarCtrl>
 
     rho::VectorPtr<CToolbarBtn*> m_arButtons;
 public:
-    class CCreateTask: public rho::common::IRhoRunnable
+/*    class CCreateTask: public rho::common::IRhoRunnable
     {
         rho_param *m_param;
     public:
@@ -70,7 +70,7 @@ public:
     {
     public:
         virtual void runObject(){ CNativeToolbar::getInstance().removeToolbar(); }
-    };
+    };*/
 
     CNativeToolbar(void);
     ~CNativeToolbar(void);
@@ -88,6 +88,11 @@ public:
 
     void processCommand(int nItemPos);
     bool isStarted();
+
+    //void createToolbar(rho_param *param);
+    void createToolbarEx( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties);
+    void removeToolbar();
+
 private:
 
     void addToolbarButton(CToolbarBtn& oButton, int nPos);
@@ -95,6 +100,4 @@ private:
     CSize getMaxImageSize();
     void alignSeparatorWidth();
 
-    void createToolbar(rho_param *param);
-    void removeToolbar();
 };

@@ -266,12 +266,16 @@ void RhoRubyStart()
 #endif
     Init_stringio(); //+
     Init_DateTimePicker();
+#if !defined(WINDOWS_PLATFORM)
     Init_NativeBar();
+#endif
     Init_RhoSupport(); //+
     Init_MapView();                         
     Init_RingtoneManager();
     Init_socket(); //+
+#if !defined(WINDOWS_PLATFORM)
     Init_NavBar();
+#endif
     Init_RhoEvent();
     Init_Calendar();
     Init_Alert();

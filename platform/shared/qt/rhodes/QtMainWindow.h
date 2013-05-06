@@ -42,6 +42,7 @@
 #include "logging/RhoLog.h"
 #include "impl/AlertImpl.h"
 #include "impl/DateTimePickerImpl.h"
+#include "api_generator/MethodResult.h"
 
 namespace Ui {
     class QtMainWindow;
@@ -95,7 +96,8 @@ public:
     void tabbarSwitch(int index);
     int tabbarGetCurrent();
     int tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbri);
-    void tabbarSetBadge(int index, char* badge);
+    void tabbarSetBadge(int index, const char* badge);
+    void tabbarSetSwitchCallback(rho::apiGenerator::CMethodResult& oResult);
 private:
     void tabbarWebViewRestore(bool reload);
     void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);
@@ -118,6 +120,7 @@ private:
     int m_LogicalDpiY;
 	bool firstShow, m_bFirstLoad;
     QBasicTimer m_SplashTimer;
+    rho::apiGenerator::CMethodResult m_oTabBarSwitchCallback;
 
 private slots:
     void on_webView_urlChanged(QUrl );

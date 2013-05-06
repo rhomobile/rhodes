@@ -27,9 +27,23 @@
 #ifndef _NATIVETOOLBAREXT_H_
 #define _NATIVETOOLBAREXT_H_
 
+#include "common/RhoStd.h"
+/*
 #define TOOLBAR_TYPE		0
 #define TABBAR_TYPE			1
 #define NOBAR_TYPE			2
 #define VTABBAR_TYPE		3
+*/
+
+bool rho_wmimpl_toolbar_isStarted();
+void rho_wmimpl_toolbar_create( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties);
+void rho_wmimpl_toolbar_remove();
+
+bool rho_wmimpl_tabbar_isStarted();
+void rho_wmimpl_tabbar_create( const rho::Vector<rho::String>& tabbarElements,  const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
+void rho_wmimpl_tabbar_remove();
+int rho_wmimpl_tabbar_currentTabIndex();
+void rho_wmimpl_tabbar_switchTab(int tabIndex);
+void rho_wmimpl_tabbar_setTabBadge(int tabIndex,  const rho::String& badge);
 
 #endif //_NATIVETOOLBAREXT_H_

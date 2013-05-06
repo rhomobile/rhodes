@@ -1721,19 +1721,16 @@ LRESULT CMainWindow::OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD  wID, H
         return 0;
 
 	CAppMenuItem& oMenuItem = m_arAppMenuItems.elementAt(nItemPos);
-    if ( oMenuItem.m_eType == CAppMenuItem::emtUrl )
+    if ( oMenuItem.m_strLink == "reload_rhobundle" )
     {
-        if ( oMenuItem.m_strLink == "reload_rhobundle" )
-        {
-        #ifdef ENABLE_DYNAMIC_RHOBUNDLE
-	        if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
-		        CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
-	        } else {
-		        MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
-	        }
-        #endif
-            return 0;
+    #ifdef ENABLE_DYNAMIC_RHOBUNDLE
+        if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
+	        CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
+        } else {
+	        MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
         }
+    #endif
+        return 0;
     }
 
     oMenuItem.processCommand();

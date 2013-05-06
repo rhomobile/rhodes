@@ -25,7 +25,8 @@
 #------------------------------------------------------------------------
 
 module Rho
- 
+
+if !Rho::System.isRhoSimulator && System.get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
 class NativeToolbar
  
   def self.create(params)
@@ -37,6 +38,6 @@ class NativeToolbar
   end
 
 end
- 
+end 
  
 end
