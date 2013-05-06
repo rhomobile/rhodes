@@ -1194,6 +1194,8 @@ def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
   mkdir_p dst_dir if not File.exists? dst_dir
   Dir.foreach(src_dir) do |filename|
     next if filename.eql?('.') || filename.eql?('..')
+    next if filename.eql?('api')
+    
     filepath = src_dir + '/' + filename
     dst_path = dst_dir + '/' + filename
     if File.directory?(filepath)
@@ -1285,11 +1287,11 @@ def common_bundle_start(startdir, dest)
   #throw "ME"
   cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
   if File.exists? app + '/public'
-    if $obfuscate_js.nil? && $obfuscate_css.nil?
-      cp_r app + '/public', File.join($srcdir,'apps'), :preserve => true 
-    else
+    #if $obfuscate_js.nil? && $obfuscate_css.nil?
+    #  cp_r app + '/public', File.join($srcdir,'apps'), :preserve => true 
+    #else
       public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, 1
-    end
+    #end
   end
   copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
 
