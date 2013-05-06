@@ -113,6 +113,16 @@
         </PARAMS>
       </METHOD>
 
+        <METHOD name="isBlobAttr" access="STATIC">
+            <DESC>Is model attribute is blob.</DESC>
+            <PARAMS>
+                <PARAM name="partition" type="STRING"/>
+                <PARAM name="sourceID" type="INTEGER"/>
+                <PARAM name="attrName" type="STRING"/>
+            </PARAMS>
+            <RETURN type="BOOLEAN"/>
+        </METHOD>
+
     </METHODS>
 
     <USER_OVERVIEW>

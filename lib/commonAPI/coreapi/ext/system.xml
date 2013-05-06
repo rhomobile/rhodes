@@ -469,7 +469,7 @@
                 </PARAMS>
             </METHOD>
             <METHOD name="isBlobAttr" deprecated="true">
-                <DESC>Use Database.isBlobAttr: is model attribute is blob.</DESC>
+                <DESC>Use Database.SQLite3.isBlobAttr: is model attribute is blob.</DESC>
                 <PARAMS>
                     <PARAM name="partition" type="STRING"/>
                     <PARAM name="sourceID" type="INTEGER"/>
