@@ -615,7 +615,7 @@ Product.sync( url_for(:action => :sync_callback), "", false, "query=#{@params["s
             <CODE lang="ruby">
               <![CDATA[
 @account = Account.find(
-:all,
+:first,
 :conditions => {'name' => 'ABC Inc.'}
 )
 @account.update_attributes(
