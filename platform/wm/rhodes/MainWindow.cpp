@@ -565,7 +565,12 @@ LRESULT CMainWindow::OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     Rhodes_WM_ProcessBeforeNavigate((LPCTSTR)lParam);
-    rho_wm_impl_CheckLicense();
+
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+    if ( m_bLoading )
+        rho_wm_impl_CheckLicense();
+#endif
+
     return 0;
 }
 
