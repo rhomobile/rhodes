@@ -135,6 +135,13 @@ void CSQLite3Impl::doExport(rho::apiGenerator::CMethodResult& oResult)
 class CSQLite3SingletonImpl: public CSQLite3SingletonBase
 {
 public:
+
+    virtual void isBlobAttr( const rho::String& partition,  int sourceID,  const rho::String& attrName, rho::apiGenerator::CMethodResult& oResult)
+    {
+        bool bRes = db::CDBAdapter::getDB( partition.c_str()).getAttrMgr().isBlobAttr((int)sourceID, attrName.c_str());
+        oResult.set(bRes);
+    }
+
 };
 
 class CSQLite3Factory: public CSQLite3FactoryBase
