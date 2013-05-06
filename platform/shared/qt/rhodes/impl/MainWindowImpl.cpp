@@ -24,14 +24,15 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
-#include "MainWindowImpl.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "common/StringConverter.h"
 #include "common/RhoFilePath.h"
 #include "rubyext/NativeToolbarExt.h"
-#undef null
+#include "json/JSONIterator.h"
+#include "MainWindowImpl.h"
+//#undef null
 #include <QString>
 #include <QApplication>
 #include <QtGui/QAction>
@@ -42,6 +43,7 @@ IMPLEMENT_LOGCLASS(CMainWindow,"MainWindow");
 
 using namespace rho;
 using namespace rho::common;
+using namespace rho::json;
 
 extern "C" void rho_geoimpl_turngpsoff();
 
@@ -119,7 +121,7 @@ void CMainWindow::createCustomMenu(void)
             menuAddSeparator();
         else
         {
-            menuAddAction((oItem.m_eType == CAppMenuItem::emtClose ? "Exit" : oItem.m_strLabel.c_str()), i);
+            menuAddAction((oItem.m_strLink == "close" ? "Exit" : oItem.m_strLabel.c_str()), i);
         }
     }
 }
@@ -130,19 +132,16 @@ void CMainWindow::onCustomMenuItemCommand(int nItemPos)
         return;
 
     CAppMenuItem& oMenuItem = m_arAppMenuItems.elementAt(nItemPos);
-    if ( oMenuItem.m_eType == CAppMenuItem::emtUrl )
+    if ( oMenuItem.m_strLink == "reload_rhobundle" )
     {
-        if ( oMenuItem.m_strLink == "reload_rhobundle" )
-        {
-        #ifdef ENABLE_DYNAMIC_RHOBUNDLE
-            if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
-                CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
-            } else {
-                MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
-            }
-        #endif
-            return;
+    #ifdef ENABLE_DYNAMIC_RHOBUNDLE
+        if ( RHODESAPP().getRhobundleReloadUrl().length()>0 ) {
+            CAppManager::ReloadRhoBundle(m_hWnd,RHODESAPP().getRhobundleReloadUrl().c_str(), NULL);
+        } else {
+            MessageBox(_T("Path to the bundle is not defined."),_T("Information"), MB_OK | MB_ICONINFORMATION );
         }
+    #endif
+        return;
     }
 
     oMenuItem.processCommand();
@@ -302,53 +301,29 @@ static QColor getColorFromString(const char* szColor)
     return QColor(cR, cG, cB);
 }
 
-void CMainWindow::createToolbar(rho_param *p)
+void CMainWindow::createToolbarEx( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties)
 {
     if (!rho_rhodesapp_check_mode())
         return;
 
-    int bar_type = TOOLBAR_TYPE;
-	std::auto_ptr<QColor> m_rgbBackColor (NULL);
+    //int bar_type = TOOLBAR_TYPE;
+    std::auto_ptr<QColor> m_rgbBackColor (NULL);
     std::auto_ptr<QColor> m_rgbMaskColor (NULL);
     int m_nHeight = CNativeToolbar::MIN_TOOLBAR_HEIGHT;
 
-    rho_param *params = NULL;
-    switch (p->type) 
+    for ( Hashtable<rho::String, rho::String>::const_iterator it = toolBarProperties.begin(); it != toolBarProperties.end(); ++it )
     {
-        case RHO_PARAM_ARRAY:
-            params = p;
-            break;
-        case RHO_PARAM_HASH: 
-            {
-                for (int i = 0, lim = p->v.hash->size; i < lim; ++i) 
-                {
-                    const char *name = p->v.hash->name[i];
-                    rho_param *value = p->v.hash->value[i];
-                    
-                    if (strcasecmp(name, "background_color") == 0) 
-                        m_rgbBackColor.reset(new QColor(getColorFromString(value->v.string)));
-                    else if (strcasecmp(name, "mask_color") == 0) 
-                        m_rgbMaskColor.reset(new QColor(getColorFromString(value->v.string)));
-                    else if (strcasecmp(name, "view_height") == 0) 
-                        m_nHeight = atoi(value->v.string);
-                    else if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) 
-                        params = value;
-                }
-            }
-            break;
-        default: {
-            LOG(ERROR) + "Unexpected parameter type for create_nativebar, should be Array or Hash";
-            return;
-        }
-    }
-    
-    if (!params) {
-        LOG(ERROR) + "Wrong parameters for create_nativebar";
-        return;
+        const char *name = (it->first).c_str();
+        const char *value = (it->second).c_str();
+        if (strcasecmp(name, "backgroundColor") == 0)
+            m_rgbBackColor.reset(new QColor(getColorFromString(value)));
+        else if (strcasecmp(name, "maskColor") == 0)
+            m_rgbMaskColor.reset(new QColor(getColorFromString(value)));
+        else if (strcasecmp(name, "viewHeight") == 0)
+            m_nHeight = atoi(value);
     }
 
-    int size = params->v.array->size;
-    if ( size == 0 )
+    if ( toolbarElements.size() == 0 )
     {
         removeToolbar();
         return;
@@ -358,45 +333,32 @@ void CMainWindow::createToolbar(rho_param *p)
 
     int nSeparators = 0;
     bool wasSeparator = false;
-    for (int ipass=0; ipass < 2; ++ipass) {
-        for (int i = 0; i < size; ++i) 
+    for (int ipass=0; ipass < 2; ++ipass)
+    {
+        for (int i = 0; i < (int)toolbarElements.size(); ++i)
         {
-            rho_param *hash = params->v.array->value[i];
-            if (hash->type != RHO_PARAM_HASH) {
-                LOG(ERROR) + "Unexpected type of array item for create_nativebar, should be Hash";
-                return;
-            }
-            
             const char *label = NULL;
             const char *action = NULL;
             const char *icon = NULL;
             const char *colored_icon = NULL;
             int  nItemWidth = 0;
 
-            for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) 
-            {
-                const char *name = hash->v.hash->name[j];
-                rho_param *value = hash->v.hash->value[j];
-                if (value->type != RHO_PARAM_STRING) {
-                    LOG(ERROR) + "Unexpected '" + name + "' type, should be String";
-                    return;
-                }
-                
-                if (strcasecmp(name, "label") == 0)
-                    label = value->v.string;
-                else if (strcasecmp(name, "action") == 0)
-                    action = value->v.string;
-                else if (strcasecmp(name, "icon") == 0)
-                    icon = value->v.string;
-                else if (strcasecmp(name, "colored_icon") == 0)
-                    colored_icon = value->v.string;
-                else if (strcasecmp(name, "width") == 0)
-                    nItemWidth = atoi(value->v.string);
-            }
-            
-            if (label == NULL && bar_type == TOOLBAR_TYPE)
+            CJSONEntry oEntry(toolbarElements[i].c_str());
+
+            if ( oEntry.hasName("label") )
+                label = oEntry.getString("label");
+            if ( oEntry.hasName("action") )
+                action = oEntry.getString("action");
+            if ( oEntry.hasName("icon") )
+                icon = oEntry.getString("icon");
+            if ( oEntry.hasName("coloredIcon") )
+                colored_icon = oEntry.getString("coloredIcon");
+            if ( oEntry.hasName("width") )
+                nItemWidth = oEntry.getInt("width");
+
+            if (label == NULL)
                 label = "";
-            
+
             if ( label == NULL || action == NULL) {
                 LOG(ERROR) + "Illegal argument for create_nativebar";
                 return;
@@ -419,10 +381,17 @@ void CMainWindow::createToolbar(rho_param *p)
                 } else {
                     String strImagePath;
                     if ( icon && *icon )
+                    {
+#ifndef RHODES_EMULATOR
+                        strImagePath = rho::common::CFilePath::join( RHODESAPP().getRhoRootPath(), "/apps" );
+                        strImagePath = rho::common::CFilePath::join( strImagePath, icon );
+
+#else
                         strImagePath = rho::common::CFilePath::join( RHODESAPP().getRhoRootPath(), icon );
-                    else {
+#endif
+                    } else {
 #if defined(RHODES_EMULATOR)
-#define RHODES_EMULATOR_PLATFORM_STR ".wm"
+#define RHODES_EMULATOR_PLATFORM_STR ".win32"
 #elif defined(RHO_SYMBIAN)
 #define RHODES_EMULATOR_PLATFORM_STR ".sym"
 #else
@@ -451,9 +420,8 @@ void CMainWindow::createToolbar(rho_param *p)
             }
         }
     }
-	((QtMainWindow*)qtMainWindow)->setToolbarStyle(false, (m_rgbBackColor.get()!=NULL ? m_rgbBackColor->name() : ""));
+    ((QtMainWindow*)qtMainWindow)->setToolbarStyle(false, (m_rgbBackColor.get()!=NULL ? m_rgbBackColor->name() : ""));
     ((QtMainWindow*)qtMainWindow)->toolbarShow();
-    //removeTabbar();
     m_started = true;
 }
 
@@ -462,138 +430,83 @@ bool charToBool(const char* str)
     return str && ((strcasecmp(str,"true")==0) || (strcasecmp(str,"yes")==0) || (atoi(str)==1));
 }
 
-void CMainWindow::createTabbar(int bar_type, rho_param *p)
+void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult)
 {
     if (!rho_rhodesapp_check_mode())
         return;
 
-    /*
-    if (bar_type==NOBAR_TYPE) {
-        removeToolbar();
-		removeAllButtons();
-        removeTabbar();
-		removeAllTabs();
-        m_started = false;
-        return;
-    }
-    */
-
     std::auto_ptr<QColor> background_color (NULL);
-    const char* on_change_tab_callback = NULL;
-    
-    rho_param *params = NULL;
-    switch (p->type)
-	{
-        case RHO_PARAM_ARRAY:
-            params = p;
-            break;
-        case RHO_PARAM_HASH:
-			{
-                for (int i = 0, lim = p->v.hash->size; i < lim; ++i)
-			    {
-                    const char *name = p->v.hash->name[i];
-                    rho_param *value = p->v.hash->value[i];
-                    if (strcasecmp(name, "background_color") == 0) {
-                        background_color.reset(new QColor(getColorFromString(value->v.string)));
-                    } else if (strcasecmp(name, "on_change_tab_callback") == 0) {
-                        on_change_tab_callback = value->v.string;
-                    } else if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) {
-                        params = value;
-                    }
-                }
-            }
-            break;
-        default: {
-            RAWLOG_ERROR("Unexpected parameter type for create_nativebar, should be Array or Hash");
-            return;
-        }
+
+    for ( Hashtable<rho::String, rho::String>::const_iterator it = tabBarProperties.begin(); it != tabBarProperties.end(); ++it )
+    {
+        const char *name = (it->first).c_str();
+        const char *value = (it->second).c_str();
+        if (strcasecmp(name, "backgroundColor") == 0)
+            background_color.reset(new QColor(getColorFromString(value)));
     }
-    
-    if (!params) {
-        RAWLOG_ERROR("Wrong parameters for create_tabbar");
-        return;
-    }
-    
+
     ((QtMainWindow*)qtMainWindow)->tabbarInitialize();
 
-    int size = params->v.array->size;
-
-    for (int i = 0; i < size; ++i) {
-        rho_param *hash = params->v.array->value[i];
-        if (hash->type != RHO_PARAM_HASH) {
-            RAWLOG_ERROR("Unexpected type of array item for create_nativebar, should be Hash");
-            return;
-        }
-        
+    for (int i = 0; i < (int)tabbarElements.size(); ++i)
+    {
         const char *label = NULL;
         const char *action = NULL;
         const char *icon = NULL;
         const char *reload = NULL;
         const char *colored_icon = NULL;
-        
-    	std::auto_ptr<QColor> selected_color (NULL);
+
+        std::auto_ptr<QColor> selected_color (NULL);
         const char *disabled = NULL;
-		std::auto_ptr<QColor> web_bkg_color (NULL);
+        std::auto_ptr<QColor> web_bkg_color (NULL);
         const char* use_current_view_for_tab = NULL;
-        
-        bool skip_item = false;
-        for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) {
-            const char *name = hash->v.hash->name[j];
-            rho_param *value = hash->v.hash->value[j];
-            if (value->type != RHO_PARAM_STRING) {
-                RAWLOGC_ERROR("Unexpected '%s' type, should be String", name);
-                return;
-            }
-            if (strcasecmp(name, "background_color") == 0) {
-                background_color.reset(new QColor(getColorFromString(value->v.string)));
-                skip_item = true;
-            }
-            
-            if (strcasecmp(name, "label") == 0)
-                label = value->v.string;
-            else if (strcasecmp(name, "action") == 0)
-                action = value->v.string;
-            else if (strcasecmp(name, "icon") == 0)
-                icon = value->v.string;
-            else if (strcasecmp(name, "reload") == 0)
-                reload = value->v.string;
-            else if (strcasecmp(name, "colored_icon") == 0)
-                colored_icon = value->v.string;
-            else if (strcasecmp(name, "selected_color") == 0){
-                selected_color.reset(new QColor(getColorFromString(value->v.string)));
-            }    
-            else if (strcasecmp(name, "disabled") == 0)
-                disabled = value->v.string;
-            else if (strcasecmp(name, "web_bkg_color") == 0)
-                web_bkg_color.reset(new QColor(getColorFromString(value->v.string)));
-            else if (strcasecmp(name, "use_current_view_for_tab") == 0) {
-                use_current_view_for_tab = value->v.string;
-                if (strcasecmp(use_current_view_for_tab, "true") == 0) {
-                    action = "none";
-                }
+
+        CJSONEntry oEntry(tabbarElements[i].c_str());
+
+        if ( oEntry.hasName("label") )
+            label = oEntry.getString("label");
+        if ( oEntry.hasName("action") )
+            action = oEntry.getString("action");
+        if ( oEntry.hasName("icon") )
+            icon = oEntry.getString("icon");
+        if ( oEntry.hasName("coloredIcon") )
+            colored_icon = oEntry.getString("coloredIcon");
+        if ( oEntry.hasName("reload") )
+            reload = oEntry.getString("reload");
+        if ( oEntry.hasName("selectedColor") )
+            selected_color.reset(new QColor(getColorFromString(oEntry.getString("selectedColor"))));
+        if ( oEntry.hasName("disabled") )
+            disabled = oEntry.getString("disabled");
+        if ( oEntry.hasName("useCurrentViewForTab") )
+        {
+            use_current_view_for_tab = oEntry.getString("useCurrentViewForTab");
+            if (strcasecmp(use_current_view_for_tab, "true") == 0) {
+                action = "none";
             }
         }
-        
-        if (label == NULL && bar_type == TOOLBAR_TYPE)
+        if (oEntry.hasName("backgroundColor"))
+            web_bkg_color.reset(new QColor(getColorFromString(oEntry.getString("backgroundColor"))));
+
+        if (label == NULL)
             label = "";
-        
-        if ((label == NULL || (action == NULL)) && (!skip_item)) {
+
+        if ( label == NULL || action == NULL) {
             RAWLOG_ERROR("Illegal argument for create_nativebar");
             return;
         }
-        if (!skip_item) {
-            QtMainWindow::QTabBarRuntimeParams tbrp;
-            tbrp["label"] = QString(label);
-            tbrp["action"] = QString(action);
-            tbrp["reload"] = charToBool(reload);
-            tbrp["use_current_view_for_tab"] = charToBool(use_current_view_for_tab);
-            tbrp["background_color"] = background_color.get() != NULL ? background_color->name() : QString("");
-			tbrp["selected_color"] = selected_color.get() != NULL ? selected_color->name() : QString("");
-            tbrp["on_change_tab_callback"] = QString(on_change_tab_callback != NULL ? on_change_tab_callback : "");
-            String strIconPath = icon ? CFilePath::join( RHODESAPP().getAppRootPath(), icon) : String();
-            ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), web_bkg_color.get(), tbrp);
-        }
+
+        QtMainWindow::QTabBarRuntimeParams tbrp;
+        tbrp["label"] = QString(label);
+        tbrp["action"] = QString(action);
+        tbrp["reload"] = charToBool(reload);
+        tbrp["use_current_view_for_tab"] = charToBool(use_current_view_for_tab);
+        tbrp["background_color"] = background_color.get() != NULL ? background_color->name() : QString("");
+        tbrp["selected_color"] = selected_color.get() != NULL ? selected_color->name() : QString("");
+        String strIconPath = icon ? CFilePath::join( RHODESAPP().getAppRootPath(), icon) : String();
+        ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), web_bkg_color.get(), tbrp);
     }
+
+    if (oResult.hasCallback())
+        ((QtMainWindow*)qtMainWindow)->tabbarSetSwitchCallback(oResult);
 
     ((QtMainWindow*)qtMainWindow)->tabbarShow();
 
@@ -620,7 +533,7 @@ void CMainWindow::tabbarSwitch(int index)
     ((QtMainWindow*)qtMainWindow)->tabbarSwitch(index);
 }
 
-void CMainWindow::tabbarBadge(int index, char* badge)
+void CMainWindow::tabbarBadge(int index, const char* badge)
 {
     ((QtMainWindow*)qtMainWindow)->tabbarSetBadge(index, badge);
 }
@@ -758,4 +671,9 @@ void CMainWindow::setSize(int width, int height)
 void CMainWindow::lockSize(int locked)
 {
     emit doLockSize(locked);
+}
+
+extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
+{
+    CMainWindow::getInstance()->executeRunnable(pTask);
 }

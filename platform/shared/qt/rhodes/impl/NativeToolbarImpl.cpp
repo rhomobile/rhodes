@@ -29,10 +29,12 @@
 #include "common/rhoparams.h"
 #include "common/RhoFilePath.h"
 #include "logging/RhoLog.h"
+#include "api_generator/MethodResult.h"
 #include "rubyext/NativeToolbarExt.h"
 #include "rubyext/WebView.h"
 #include "MainWindowImpl.h"
 #include "NativeToolbarImpl.h"
+#include "rubyext/NativeToolbarExt.h"
 #undef null
 #include <QString>
 #include <QApplication>
@@ -48,9 +50,9 @@ CNativeToolbar& CNativeToolbar::getInstance()
     return CMainWindow::getInstance()->getToolbar();
 }
 
-void CNativeToolbar::createToolbar(rho_param *p)
+void CNativeToolbar::createToolbarEx(const rho::Vector<rho::String>& toolbarElements, const rho::Hashtable<rho::String, rho::String>& toolBarProperties)
 {
-    CMainWindow::getInstance()->createToolbar(p);
+    CMainWindow::getInstance()->createToolbarEx(toolbarElements, toolBarProperties);
 }
 
 void CNativeToolbar::removeToolbar()
@@ -68,57 +70,20 @@ bool CNativeToolbar::isStarted()
     return CMainWindow::getInstance()->isStarted();
 }
 
-extern "C" {
+/////////////////////////
+//Common API Support
 
-void remove_native_toolbar() 
+bool rho_osximpl_toolbar_isStarted()
 {
-    CMainWindow::getInstance()->executeRunnable(new CNativeToolbar::CRemoveTask() );
+    return CNativeToolbar::getInstance().isStarted();
 }
 
-void create_native_toolbar(int bar_type, rho_param *p) 
+void rho_osximpl_toolbar_create( const rho::Vector<rho::String>& toolbarElements,  const rho::Hashtable<rho::String, rho::String>& toolBarProperties)
 {
-    if ( bar_type == NOBAR_TYPE )
-        remove_native_toolbar();
-    else if ( bar_type == TOOLBAR_TYPE ) {
-        CMainWindow::getInstance()->executeRunnable(new CNativeToolbar::CCreateTask(p) );
-    } else {
-        RAWLOGC_ERROR("NativeBar", "Only Toolbar control is supported.");
-    }
+    CNativeToolbar::getInstance().createToolbarEx(toolbarElements, toolBarProperties);
 }
 
-void create_nativebar(int bar_type, rho_param *p) 
+void rho_osximpl_toolbar_remove()
 {
-    RAWLOGC_INFO("NativeBar", "NativeBar.create() is DEPRECATED. Use Rho::NativeToolbar.create() or Rho::NativeTabbar.create().");
-    create_native_toolbar(bar_type, p);
+    CNativeToolbar::getInstance().removeToolbar();
 }
-
-void remove_nativebar() 
-{
-    RAWLOGC_INFO("NativeBar", "NativeBar.remove() is DEPRECATED API ! Please use Rho::NativeToolbar.remove() or Rho::NativeTabbar.remove().");
-    remove_native_toolbar();
-}
-
-VALUE nativebar_started() 
-{
-    bool bStarted = CNativeToolbar::getInstance().isStarted();
-    return rho_ruby_create_boolean(bStarted?1:0);
-}
-
-//NavBar - iphone only
-void create_navbar(rho_param *p)
-{
-    //TODO: create_navbar
-}
-
-void remove_navbar()
-{
-    //TODO: remove_navbar
-}
-
-VALUE navbar_started()
-{
-    //TODO: navbar_started
-    return rho_ruby_create_boolean(0);
-}
-
-} //extern "C"
