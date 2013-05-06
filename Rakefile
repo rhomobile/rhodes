@@ -1055,6 +1055,12 @@ def init_extensions(startdir, dest)
         
         unless rhoapi_js_folder.nil?
           Dir.glob(extpath + "/public/api/*.js").each do |f|
+              fBaseName = File.basename(f)
+              if (fBaseName.start_with?("rhoapi-native") )
+                endJSModules << f if fBaseName == "rhoapi-native." + $current_platform + ".js"
+                next
+              end
+              
               if f.downcase().end_with?("rhoapi.js")
                 startJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
@@ -2125,7 +2131,12 @@ namespace "run" do
               # TODO: RhoSimulator should look for 'public' at all extension folders!
                 unless rhoapi_js_folder.nil?
                   Dir.glob(extpath + "/public/api/*.js").each do |f|
-                      #puts "f: #{f}"
+                      fBaseName = File.basename(f)
+                      if (fBaseName.start_with?("rhoapi-native") )
+                        endJSModules << f if fBaseName == "rhoapi-native.rhosim.js"
+                        next
+                      end
+                      
                       if f.downcase().end_with?("rhoapi.js")
                         startJSModules << f
                       elsif f.downcase().end_with?("rho.database.js")
