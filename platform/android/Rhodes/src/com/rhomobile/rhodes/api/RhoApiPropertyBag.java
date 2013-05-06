@@ -47,7 +47,7 @@ public class RhoApiPropertyBag implements
             for (String key: getPropertiesMap().keySet()) {
                 MethodResult propResult = new MethodResult(false);
                 getProperty(key, propResult);
-                result.collect(propResult);
+                propResult.collectSelf(key, result);
             }
         } else {
             for (String key: mAllowedNames) {
@@ -100,7 +100,7 @@ public class RhoApiPropertyBag implements
                 setProperty(name, props.get(name), result);
             }
         } else {
-            names.removeAll(getPropertiesMap().keySet());
+            names.removeAll(mAllowedNames);
             StringBuffer strNames = new StringBuffer();
             for (String name: names) {
                 strNames.append("'").append(name).append("', ");
