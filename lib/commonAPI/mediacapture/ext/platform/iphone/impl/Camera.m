@@ -56,6 +56,9 @@ void camera_take_picture(NSDictionary* options, id<IMethodResult> callback_api);
     return res_dict;
 }
 
+-(void) getSupportedSizeList:(id<IMethodResult>)methodResult {
+
+}
 
 
 
