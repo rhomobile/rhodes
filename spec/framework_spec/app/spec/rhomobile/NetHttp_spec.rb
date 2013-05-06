@@ -1,6 +1,8 @@
 require File.expand_path('../../spec_helper', __FILE__)
 require 'net/https'
 
+if ( System.get_property('platform') != 'ANDROID' )
+
 describe "NetHttp#https" do
 
   it "gets web page content by https" do
@@ -18,5 +20,7 @@ describe "NetHttp#https" do
     res.message.should == "OK"
     res.class.name.should == "Net::HTTPOK"
   end
+
+end
 
 end
