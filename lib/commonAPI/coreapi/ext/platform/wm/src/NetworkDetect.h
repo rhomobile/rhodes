@@ -3,7 +3,7 @@
 #pragma once
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include "../../shared/NetworkDetectBase.h"
+#include "../../../shared/NetworkDetectBase.h"
 
 /**
 *  Class to wrap the Network functionality, to poll on a specified address to see if
