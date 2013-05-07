@@ -25,7 +25,7 @@
 #------------------------------------------------------------------------
 
 
-if Rho::System.getProperty('platform') == 'APPLE' 
+if Rho::System.platform == 'APPLE' || Rho::System.platform == 'ANDROID'
 
    class Camera
 	
@@ -34,12 +34,13 @@ if Rho::System.getProperty('platform') == 'APPLE'
                 options = {}
             end
             cam_type = 'back'
-            if options != nil
-                 if options['camera_type'] != nil
-                      cam_type =  options['camera_type']
-                 end 
+            if options['camera_type'] != nil
+                 cam_type =  options['camera_type']
             end
             cam_type = 'back' if cam_type == 'main'
+            unless options['fileName']
+                options['fileName'] = File.join(Rho::RhoApplication.get_blob_folder(), Rho::RhoConfig.generate_id.to_s)
+            end
             cams = Camera.enumerate
             if cams != nil
                 if cams.size > 0
@@ -56,6 +57,9 @@ if Rho::System.getProperty('platform') == 'APPLE'
 
        def self.choose_picture(callback_url, options = nil)
             options = {} unless options
+            unless options['fileName']
+                options['fileName'] = File.join(Rho::RhoApplication.get_blob_folder(), Rho::RhoConfig.generate_id.to_s)
+            end
             Camera.choosePicture(options, callback_url)
        end
 

@@ -18,6 +18,7 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
         super(id); 
 
         getPropertiesMap().put("compressionFormat", "jpg");
+        getPropertiesMap().put("outputFormat", "image");
 
         android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(Integer.valueOf(getId()).intValue(), info);
