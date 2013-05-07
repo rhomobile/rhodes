@@ -73,6 +73,7 @@ private:
     bool m_hasCallback;
 
     ResultType m_resType;
+    mutable int m_javaResultType;
     std::string m_errMsg;
 
     jboolean getBooleanResult(JNIEnv*) const;
@@ -120,7 +121,7 @@ public:
     jobject getListResult() const { return getListResult(jniInit()); }
     jobject getMapResult() const { return getMapResult(jniInit()); }
     jstring getJSONResult() const { return getJSONResult(jniInit()); }
-    int getResultType() const { return getResultType(jniInit()); }
+    int getResultType() const { return (m_javaResultType == 0) ? getResultType(jniInit()) : m_javaResultType; }
     bool isError() const { ResultType resType = static_cast<ResultType>(getResultType()); return resType == typeError || resType == typeArgError; }
     rho::String getErrorMessage() const { return getErrorMessage(jniInit()); }
     void reset() { reset(jniInit()); }

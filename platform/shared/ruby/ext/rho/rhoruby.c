@@ -261,7 +261,7 @@ void RhoRubyStart()
 
     Init_RhoBluetooth();
 	Init_RhodesNativeViewManager();
-#if !defined(OS_MACOSX)
+#if !defined(OS_MACOSX) && !defined(OS_ANDROID)
     Init_Camera();
 #endif
     Init_stringio(); //+

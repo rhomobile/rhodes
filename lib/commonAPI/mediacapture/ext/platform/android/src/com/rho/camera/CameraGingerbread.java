@@ -1,74 +1,72 @@
 package com.rho.camera;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import android.content.Intent;
-import android.net.Uri;
+import android.app.Activity;
+import android.hardware.Camera;
 import android.os.Environment;
-import android.provider.MediaStore;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhodesActivity;
-import com.rhomobile.rhodes.api.IMethodResult;
-import com.rhomobile.rhodes.util.ContextFactory;
 
 public class CameraGingerbread extends CameraEclair implements ICameraObject {
     private static final String TAG = CameraGingerbread.class.getSimpleName();
     
-    private Map<String, String> mActualPropertyMap;
-    public Map<String, String> getActualPropertyMap() { return mActualPropertyMap; }
+    private int mCameraUsers = 0;
 
-    CameraGingerbread(String id) { super(id); }
-    
-    @Override
-    public void getCameraType(IMethodResult result) {
+    CameraGingerbread(String id) { 
+        super(id); 
+
+        getPropertiesMap().put("compressionFormat", "jpg");
+
         android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(Integer.valueOf(getId()).intValue(), info);
         switch (info.facing) {
         case android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK:
-            result.set("back");
+            getPropertiesMap().put("cameraType", "back");
             break;
         case android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT:
-            result.set("front");
+            getPropertiesMap().put("cameraType", "front");
             break;
         default:
-            result.setError("Camera with unknown type: " + info.facing);
+            getPropertiesMap().put("cameraType", "unknown");
             break;
         }
-    }
-
-    @Override
-    public void getMaxWidth(IMethodResult result) {
-        android.hardware.Camera hwCamera = android.hardware.Camera.open(Integer.valueOf(getId()).intValue());
-        List<android.hardware.Camera.Size> listSize = hwCamera.getParameters().getSupportedPictureSizes();
-        int maxWidth = 0;
+        
+        openCamera();
+        Camera.Parameters params = getCamera().getParameters();
+        closeCamera();
+        
+        List<android.hardware.Camera.Size> listSize = params.getSupportedPictureSizes();
+        ISize maxSize = null;
         for(android.hardware.Camera.Size curSize: listSize) {
-            Logger.D(TAG, "Possible picture width: " + curSize.width);
-            if (curSize.width > maxWidth) {
-                maxWidth = curSize.width;
+            Logger.D(TAG, "Possible picture size: " + curSize.width + "X" + curSize.height);
+            if ((maxSize == null) || (curSize.width > maxSize.getWidth())) {
+                maxSize = new CameraSize(curSize);
             }
         }
-        hwCamera.release();
-        result.set(maxWidth);
+
+        getPropertiesMap().put("maxWidth", String.valueOf(maxSize.getWidth()));
+        getPropertiesMap().put("maxHeight", String.valueOf(maxSize.getHeight()));
+    }
+    
+
+    @Override synchronized
+    protected void openCamera() { 
+        if (mCameraUsers == 0) {
+            setCamera(Camera.open(Integer.valueOf(getId()).intValue())); 
+        }
+        mCameraUsers++;
     }
 
-    @Override
-    public void getMaxHeight(IMethodResult result) {
-        android.hardware.Camera hwCamera = android.hardware.Camera.open(Integer.valueOf(getId()).intValue());
-        List<android.hardware.Camera.Size> listSize = hwCamera.getParameters().getSupportedPictureSizes();
-        int maxHeight = 0;
-        for(android.hardware.Camera.Size curSize: listSize) {
-            Logger.D(TAG, "Possible picture height: " + curSize.height);
-            if (curSize.height > maxHeight) {
-                maxHeight = curSize.height;
-            }
+    @Override synchronized
+    protected void closeCamera() {
+        mCameraUsers--;
+        if (mCameraUsers == 0) {
+            getCamera().release();
         }
-        hwCamera.release();
-        result.set(maxHeight);
     }
+
 
     protected String getTemporaryPath(String targetPath) {
         if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
@@ -84,5 +82,36 @@ public class CameraGingerbread extends CameraEclair implements ICameraObject {
         } else {
             return null;
         }
+    }
+    @Override
+    public void doTakePicture(final Activity previewActivity, int rotation) {
+        Logger.T(TAG, "doTakePicture: rotation: " + rotation);
+        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(Integer.valueOf(getId()).intValue(), info);
+        openCamera();
+        ISize pictureSize = getDesiredSize();
+        Camera.Parameters params = getCamera().getParameters();
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            params.setRotation((info.orientation - rotation + 360) % 360);
+        } else {
+            params.setRotation((info.orientation + rotation) % 360);
+        }
+        if (pictureSize != null) {
+            params.setPictureSize(pictureSize.getWidth(), pictureSize.getHeight());
+        }
+        getCamera().setParameters(params);
+        if (hasAutoFocus()) {
+            getCamera().autoFocus(new Camera.AutoFocusCallback() {
+                public void onAutoFocus(boolean success, Camera camera) {
+                    openCamera();
+                    getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
+                    closeCamera();
+                }
+            });
+            
+        } else {
+            getCamera().takePicture(null, null, new TakePictureCallback(previewActivity));
+        }
+        closeCamera();
     }
 }

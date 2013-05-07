@@ -59,7 +59,6 @@ public final class AndroidR {
     }
     public static final class id {
         public static final int buttonLayout=R.id.buttonLayout;
-        public static final int cameraButton=R.id.cameraButton;
         public static final int cancelButton=R.id.cancelButton;
         public static final int excludeClasses=R.id.excludeClasses;
         public static final int filesList=R.id.filesList;
@@ -76,7 +75,7 @@ public final class AndroidR {
         public static final int okButton=R.id.okButton;
         public static final int preview=R.id.preview;
         public static final int scrollview=R.id.scrollview;
-        public static final int surface=R.id.surface;
+        public static final int previewSurface=R.id.previewSurface;
         public static final int text=R.id.text;
         public static final int text1=R.id.text1;
         public static final int widget28=R.id.widget28;
