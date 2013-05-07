@@ -21,7 +21,7 @@
       </ALIASES>
 
       <METHOD name="initialize" constructor="true" generateAPI="false">
-        <DESC>Open or create database. If database file does not exist it will be created using SQL scheme : rhodes\platform\shared\db\res\db\syncdb.schema.</DESC>
+        <DESC>Open or create database. If database file does not exist it will be created using SQL scheme : rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local</DESC>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
             <DESC>The path to the database. Databases stored at the path provided by Rho::Application.databaseFilePath</DESC>
@@ -49,15 +49,15 @@
       </METHOD>
 
       <METHOD name="lockDb" generateAPI="false">
-        <DESC>Lock database</DESC>
+        <DESC>Lock database. This method should be used to syncronize Database access with RhoConnect client. startTransaction also locks the database but if you going to read from database, lockDb is faster.</DESC>
       </METHOD>
 
       <METHOD name="unlockDb" generateAPI="false">
-        <DESC>Unlock database</DESC>
+        <DESC>Unlock database, previusly locked by lockDb.</DESC>
       </METHOD>
 
       <METHOD name="isUiWaitForDb" generateAPI="false">
-        <DESC>Is UI waiting for DB?></DESC>
+        <DESC>Is UI waiting for DB? Should be used in separate Ruby thread, which update database(implementing custom data sync logic). Will be true when database method calls from Main Ruby thread and wait for database.></DESC>
         <RETURN type="BOOLEAN"/>
       </METHOD>
 
@@ -72,6 +72,10 @@
             <CAN_BE_NIL/>
           </PARAM>
         </PARAMS>
+
+        <RETURN type="ARRAY">
+            <DESC>Array of Hashes. Each Hash item represent record from Database.</DESC>
+        </RETURN>
       </METHOD>
 
       <METHOD name="executeBatchSql" generateAPI="false" >
@@ -138,7 +142,7 @@
       </METHOD>
 
       <METHOD name="setDoNotBackupAttribute" generateAPI="false" >
-        <DESC>Set do not backup attribute for database file.</DESC>
+        <DESC>Set do not backup attribute for database file. This is special flag set on files, whcih will exclude it from iCloud service.</DESC>
         <PLATFORM>iOS</PLATFORM>
         <PARAMS>
           <PARAM name="setFlag" type="BOOLEAN">
@@ -159,5 +163,33 @@
     <PLATFORM>
       <!--  This section is used for the supported platform images at the top -->
     </PLATFORM>
-  </MODULE>
+      
+    <EXAMPLES>
+      <EXAMPLE title="Open database Examples">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              Delete all Rhodes model objects for a source, filtering by conditions.
+            </DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+Rho::Database.new( Rho::Application.databaseFilePath('test'), 'test')
+Rho::Database.close()
+]]>
+              </RUBY>
+              <JAVASCRIPT>
+                <![CDATA[
+Rho.Database.new( Rho.Application.databaseFilePath('test'), 'test');
+Rho.Database.close();
+]]>
+              </JAVASCRIPT>
+            </CODE>
+
+          </SECTION>
+        </SECTIONS>          
+      </EXAMPLE>
+    </EXAMPLES>
+
+</MODULE>
 </API>
