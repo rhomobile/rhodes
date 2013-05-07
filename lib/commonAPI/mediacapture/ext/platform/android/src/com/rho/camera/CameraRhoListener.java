@@ -10,7 +10,6 @@ import android.provider.MediaStore;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
-import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;

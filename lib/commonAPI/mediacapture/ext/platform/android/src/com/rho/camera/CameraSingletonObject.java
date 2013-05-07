@@ -62,7 +62,9 @@ public class CameraSingletonObject implements ICameraSingletonObject {
         //((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setActualPropertyMap(propertyMap);
         String fileName = propertyMap.get("fileName");
         if (fileName != null && fileName.length() > 0) {
-            ((CameraFactory)CameraFactorySingleton.getInstance()).getRhoListener().setMethodResult(result);
+            CameraFactory factory = (CameraFactory)CameraFactorySingleton.getInstance();
+            factory.getRhoListener().setMethodResult(result);
+            factory.getRhoListener().setActualPropertyMap(propertyMap);
 
             RhodesActivity ra = RhodesActivity.safeGetInstance();
             Intent intent = new Intent(ra, FileList.class);
