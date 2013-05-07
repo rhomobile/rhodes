@@ -142,6 +142,23 @@ describe("<ORM module specs>", function() {
         expect(cleanVars(object)).toEqual({'key': 'another value', 'new key': 'new value', 'original key': 'original value'});
     });
 
+    it('destroys object in database', function() {
+        var Model = Rho.ORM.addModel('Model');
+
+        Model.deleteAll();
+
+        var object1 = Model.create({'key1': 'value1'});
+        var object2 = Model.create({'key2': 'value2'});
+
+        expect(Model.count()).toBe(2);
+
+        object1.destroy();
+
+        var found = Model.find('all');
+        expect(found.length).toBe(1);
+        expect(found[0].vars()).toEqual(object2.vars());
+    });
+
     it('does not create empty object in database', function() {
         var Model = Rho.ORM.addModel('Model');
         var before = Model.count();
