@@ -74,15 +74,4 @@ class AndroidFunctionality05 extends AndroidFunctionality04 implements AndroidFu
         }
     }
 
-    @Override
-    public void applyWebSettings(WebView view) {
-        super.applyWebSettings(view);
-        WebSettings settings = view.getSettings();
-        settings.setDatabaseEnabled(true);
-
-        Context context = view.getContext();
-        String databasePath = context.getDir("database", Context.MODE_PRIVATE).getPath();
-        settings.setDatabasePath(databasePath);
-    }
-
 }

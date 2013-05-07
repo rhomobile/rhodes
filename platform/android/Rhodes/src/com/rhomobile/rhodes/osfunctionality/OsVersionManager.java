@@ -52,7 +52,7 @@ public class OsVersionManager {
     private HashMap<Class<?>, Object> mActiveFeatures;
     private ArrayList<HashMap<Class<?>, String>> mSelectors;
 
-    private Object getFeature1(Class<?> selectorIface) {
+    private Object getFeatureInstance(Class<?> selectorIface) {
         Logger.T(TAG, "Looking " + selectorIface);
         return mActiveFeatures.get(selectorIface);
     }
@@ -64,7 +64,7 @@ public class OsVersionManager {
         theVersion.put(featureIface, selectorClassName);
 
         for (int i = version + 1; i <= Build.VERSION.SDK_INT; ++i) {
-            Logger.T(TAG, "Check feature for OS rev. " + i);
+            Logger.D(TAG, "Check feature for OS rev. " + i);
             HashMap<Class<?>, String> curVersion = selectFeatureMap(i);
             //if (!curVersion.containsKey(featureIface)) {
                 Logger.T(TAG, "OS " + i + ": " + featureIface + "->" + selectorClassName);
@@ -78,17 +78,15 @@ public class OsVersionManager {
     }
     
     private void refreshFeature(Class<?> featureIface) {
-        Logger.T(TAG, "refreshFeature: " + featureIface);
+        Logger.D(TAG, "refreshFeature: " + featureIface);
         String selectorClassName = selectFeatureMap(Build.VERSION.SDK_INT).get(featureIface);
         try {
             Class<?> selectorClass = Class.forName(selectorClassName).asSubclass(featureIface);
             
-            Logger.T(TAG, "Set " + featureIface + "->" + selectorClass);
+            Logger.D(TAG, "Set " + featureIface + "->" + selectorClass);
             
             Constructor<?> ctor = selectorClass.getConstructor();
             Object feature = ctor.newInstance();
-            
-            //Object feature = selectorClass.newInstance();
             
             if (feature == null) {
                 Logger.E(TAG, "Cannot create feature instance!");
@@ -122,20 +120,8 @@ public class OsVersionManager {
     public static <SelectorClass> SelectorClass getFeature(Class<?> featureIface) {
         OsVersionManager instance = getInstance();
         
-        Object selectorObject = instance.getFeature1(featureIface);
+        Object selectorObject = instance.getFeatureInstance(featureIface);
         return (SelectorClass)selectorObject;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
 }

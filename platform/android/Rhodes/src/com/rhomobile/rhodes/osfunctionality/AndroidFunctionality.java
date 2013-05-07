@@ -49,8 +49,7 @@ public interface AndroidFunctionality {
      */
     int getScreenOrientation(Context context);
 
-    void applyWebSettings(WebView view);
     void pauseWebView( WebView view, boolean doPause );
-    
+
     CalendarIDsProvider buildCalendarIDsProvider();
 }
