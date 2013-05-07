@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
+import com.rhomobile.rhodes.osfunctionality.OsVersionManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
 import android.app.Activity;
@@ -39,6 +40,15 @@ public class GoogleWebView implements IRhoWebView {
     }
 
     private static void initWebStuff(Activity activity) {
+
+        Logger.I(TAG, "Initialize Google WEbView staff");
+        
+        OsVersionManager.registerSelector(IWebSettingsProvider.class, WebSettingsProviderBase.class.getCanonicalName());
+        OsVersionManager.registerSelector(Build.VERSION_CODES.ECLAIR, IWebSettingsProvider.class, WebSettingsProviderEclair.class.getCanonicalName());
+        OsVersionManager.registerSelector(Build.VERSION_CODES.ECLAIR_MR1, IWebSettingsProvider.class, WebSettingsProviderEclairMR1.class.getCanonicalName());
+        OsVersionManager.registerSelector(Build.VERSION_CODES.FROYO, IWebSettingsProvider.class, WebSettingsProviderFroyo.class.getCanonicalName());
+        OsVersionManager.registerSelector(Build.VERSION_CODES.JELLY_BEAN, IWebSettingsProvider.class, WebSettingsProviderJellyBean.class.getCanonicalName());
+
         mWebViewClient = new RhoWebViewClient();
         mInitialized = true;
     }
@@ -52,7 +62,10 @@ public class GoogleWebView implements IRhoWebView {
                 mWebView.setVerticalScrollbarOverlay(true);
                 mWebView.setHorizontalScrollbarOverlay(true);
                 mWebView.setFocusableInTouchMode(true);
-                AndroidFunctionalityManager.getAndroidFunctionality().applyWebSettings(mWebView);
+
+                IWebSettingsProvider provider = OsVersionManager.getFeature(IWebSettingsProvider.class);
+                provider.fillSettings(mWebView.getSettings());
+
                 if (mChromeClient != null) {
                     mWebView.setWebChromeClient(mChromeClient);
                 }

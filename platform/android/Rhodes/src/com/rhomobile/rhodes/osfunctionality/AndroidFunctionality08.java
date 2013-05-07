@@ -69,22 +69,5 @@ class AndroidFunctionality08 extends AndroidFunctionality07 implements
             return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
         }
     }
-    
-    @Override
-    protected void setWebPlugins(WebSettings settings) {
-        if(RhoConf.getBool("enable_web_plugins")) {
-            settings.setPluginState(WebSettings.PluginState.ON);
-            Logger.I(TAG, "Set web plugins state 'ON'");
-        }
-        else {
-            settings.setPluginState(WebSettings.PluginState.OFF);
-            Logger.I(TAG, "Set web plugins state 'OFF'");
-        }
-    }
-    
-    @Override
-    public CalendarIDsProvider buildCalendarIDsProvider() {
-    	return new CalendarIDsProviderFroyo();
-    }
 
 }
