@@ -48,7 +48,7 @@
         </PARAMS>
       </METHOD>
 
-      <METHOD name="destroy" generateAPI="false" access="STATIC">
+      <METHOD name="destroy" generateAPI="false">
         <DESC>Destroy a Rhodes model object. Click here for a Orm destroy example.</DESC>
       </METHOD>
 
