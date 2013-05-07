@@ -43,4 +43,5 @@ ext/platform/android/generated/jni/webview_js_wrap.cpp
 ext/platform/android/generated/jni/webview_ruby_wrap.cpp
 ext/platform/android/generated/jni/WebView.cpp
 ext/platform/android/jni/WebViewInit.cpp
-
+ext/shared/NetworkDetectBase.cpp
+ext/platform/android/jni/NetworkDetect.cpp

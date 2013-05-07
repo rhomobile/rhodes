@@ -251,6 +251,7 @@
     </ClCompile>
     <ClCompile Include="..\..\shared\LogImpl.cpp" />
     <ClCompile Include="..\..\shared\NetworkImpl.cpp" />
+    <ClCompile Include="..\..\shared\NetworkDetectBase.cpp" />
     <ClCompile Include="..\..\shared\SQLite3Impl.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
