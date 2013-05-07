@@ -30,7 +30,6 @@ public final class AndroidR {
     	public static final int alert_info=R.drawable.alert_info;
     	public static final int alert_question=R.drawable.alert_question;
         public static final int back=R.drawable.back;
-        public static final int camera=R.drawable.camera;
         public static final int exit=R.drawable.exit;
         public static final int home=R.drawable.home;
         public static final int icon=R.drawable.icon;
@@ -75,7 +74,6 @@ public final class AndroidR {
         public static final int okButton=R.id.okButton;
         public static final int preview=R.id.preview;
         public static final int scrollview=R.id.scrollview;
-        public static final int previewSurface=R.id.previewSurface;
         public static final int text=R.id.text;
         public static final int text1=R.id.text1;
         public static final int widget28=R.id.widget28;
@@ -91,7 +89,6 @@ public final class AndroidR {
         public static final int title=R.id.title;
     }
     public static final class layout {
-        public static final int camera=R.layout.camera;
         public static final int dialog_activity=R.layout.dialog_activity;
         public static final int directory_list=R.layout.directory_list;
         public static final int file_row=R.layout.file_row;
