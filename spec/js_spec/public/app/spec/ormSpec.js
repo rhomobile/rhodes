@@ -137,7 +137,7 @@ describe("<ORM module specs>", function() {
         var object = Model.create({'key': 'value', 'original key': 'original value'});
 
         expect(Model.find(object.object()).vars()).toEqual(object.vars());
-        object.update_attributes({'key': 'another value', 'new key': 'new value'});
+        object.updateAttributes({'key': 'another value', 'new key': 'new value'});
         expect(Model.find(object.object()).vars()).toEqual(object.vars());
         expect(cleanVars(object)).toEqual({'key': 'another value', 'new key': 'new value', 'original key': 'original value'});
     });
