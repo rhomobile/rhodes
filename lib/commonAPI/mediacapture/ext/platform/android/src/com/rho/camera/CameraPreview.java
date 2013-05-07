@@ -1,42 +1,41 @@
 package com.rho.camera;
 
-import java.io.IOException;
 import java.util.List;
 
+import com.rho.camera.ICameraObject.ISize;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.R;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
+import android.view.Gravity;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
-public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
+public class CameraPreview implements SurfaceHolder.Callback {
     private static final String TAG = CameraPreview.class.getSimpleName();
 
     private SurfaceView mSurfaceView;
     private SurfaceHolder mHolder;
-    private Camera mCamera;
-    private List<Size> mSupportedPreviewSizes;
+    private ICameraObject mCamera;
 
-    public CameraPreview(Context context) {
-        super(context);
-
-        mSurfaceView = new SurfaceView(context);
-        addView(mSurfaceView);
-
-        // Install a SurfaceHolder.Callback so we get notified when the
-        // underlying surface is created and destroyed.
-        mHolder = mSurfaceView.getHolder();
-        mHolder.addCallback(this);
-        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+    public CameraPreview(SurfaceView surfaceView) {
+        Logger.T(TAG, "CameraPreview");
+        
+        mSurfaceView = surfaceView;
     }
 
-    public void setCamera(Camera camera) {
+    public void startPreview(ICameraObject camera, Context context) {
+        Logger.T(TAG, "startPreview");
+
         if (camera == null) {
             Logger.E(TAG, "Camera is null");
             return;
@@ -44,61 +43,61 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
         mCamera = camera;
 
-        List<Size> localSizes = mCamera.getParameters().getSupportedPreviewSizes();
-        mSupportedPreviewSizes = localSizes;
-        requestLayout();
-      
-        try {
-            mCamera.setPreviewDisplay(mHolder);
-        } catch (IOException e) {
-            Logger.E(TAG, e);
-            return;
-        }
-      
-        /*
-          Important: Call startPreview() to start updating the preview surface. Preview must 
-          be started before you can take a picture.
-          */
-        mCamera.startPreview();
-        
+        // Install a SurfaceHolder.Callback so we get notified when the
+        // underlying surface is created and destroyed.
+        mHolder = mSurfaceView.getHolder();
+        mHolder.addCallback(this);
+        mHolder.setSizeFromLayout();
+        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
     }
     
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-        // Now that the size is known, set up the camera parameters and begin the preview.
-        Camera.Parameters parameters = mCamera.getParameters();
-        parameters.setPreviewSize(width, height);
-        requestLayout();
-        mCamera.setParameters(parameters);
-
-        /*
-          Important: Call startPreview() to start updating the preview surface. Preview must be
-          started before you can take a picture.
-        */
-        mCamera.startPreview();
+    public void stopPreview() {
+        Logger.T(TAG, "stopPreview");
+        if (mCamera != null) {
+            mCamera.stopPreview();
+            mCamera = null;
+        } else {
+            Logger.T(TAG, "No camera to stop preview");
+        }
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        // TODO Auto-generated method stub
+        Rect surfaceRect = holder.getSurfaceFrame();
+        Logger.T(TAG, "surfaceCreated: " + surfaceRect.right + "x" + surfaceRect.bottom);
         
+        mCamera.startPreview(holder);
+        ISize size = mCamera.setPreviewSize(surfaceRect.right, surfaceRect.bottom);
+        
+        double previewRatio = (double) size.getWidth() / size.getHeight();
+        double dR = previewRatio - (double) surfaceRect.right / surfaceRect.bottom;
+        int marginX = 0;
+        int marginY = 0;
+        if (dR > 0) {
+            marginY = (int)(((double)surfaceRect.bottom - surfaceRect.right / previewRatio) / 2);
+        } else if (dR < 1.0) {
+            marginX = (int)(((double)surfaceRect.right - surfaceRect.bottom * previewRatio) / 2);
+        }
+        
+
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)mSurfaceView.getLayoutParams();
+        layoutParams.leftMargin = marginX;
+        layoutParams.rightMargin = marginX;
+        layoutParams.topMargin = marginY;
+        layoutParams.bottomMargin = marginY;
+        mSurfaceView.setLayoutParams(layoutParams);
+        mSurfaceView.requestLayout();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        // Surface will be destroyed when we return, so stop the preview.
+        Logger.T(TAG, "surfaceDestroyed");
         if (mCamera != null) {
             mCamera.stopPreview();
         }
-        
     }
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        // TODO Auto-generated method stub
-        
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
     }
-
-
 }

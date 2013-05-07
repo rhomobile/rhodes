@@ -3,8 +3,10 @@ libraries: ["mediacapture"]
 android:
   source_list: ext/platform/android/ext_java.files
   rhodes_listener: com.rho.mediacapture.RhoListener
-
-android_manifest_changes: ext/platform/android/AndroidManifest_rhomobile.xml
+  manifest_changes:
+  - ext/platform/android/AndroidManifest_rhomobile.xml
+  - ext/platform/android/ApplicationCameraActivity.erb
+  adds: ext/platform/android/adds
   
 project_paths:
   wp8: ext/platform/wp8/Mediacapture.vcxproj

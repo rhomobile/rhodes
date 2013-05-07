@@ -35,40 +35,51 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
         try {
             if (resultCode == Activity.RESULT_OK) {
                 String curPath = null;
+                Uri captureUri = null;
+                String strCaptureUri = getActualPropertyMap().get("captureUri");
+                if (strCaptureUri != null) {
+                    captureUri = Uri.parse(getActualPropertyMap().get("captureUri"));
+                }
+                Uri curUri = null;
                 if (intent != null && intent.hasExtra(MediaStore.EXTRA_OUTPUT)) {
                     Logger.T(TAG, "Intent extras: " + intent.getExtras().keySet());
                     
-                    Uri uri = (Uri)intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
-                    if (uri == null) {
-                        uri = intent.getData();
+                    curUri = (Uri)intent.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+                    if (curUri == null) {
+                        curUri = intent.getData();
                     }
-                    Logger.T(TAG, "Photo is capltured: " + uri);
-                    curPath = uri.getPath();
+                    Logger.T(TAG, "Photo is captured: " + curUri);
+                }
+                else if (captureUri != null){
+                    Logger.T(TAG, "Use stored captureUri: " + captureUri);
+                    curUri = captureUri;
                 }
                 else {
-                    Logger.T(TAG, "Wrong intent: " + intent);
-                    curPath = getActualPropertyMap().get("tempPath");
-                    Logger.T(TAG, "Use fallback path: " + curPath);
+                    curUri = intent.getData();
+                    Logger.T(TAG, "Check intent data: " + curUri);
                 }
-                String targetPath = getActualPropertyMap().get("fileName") + ".jpg";
-                File curFile = new File(curPath);
 
-                if (!curFile.isFile()) {
-                    Logger.E(TAG, "Captured photo file does not exist: " + curPath);
-                    mMethodResult.setError("Captured photo file does not exist: " + curPath);
-                } else {
+                if (curUri.getScheme().equals("file")) {
+                    curPath = curUri.getPath();
+                    String targetPath = getActualPropertyMap().get("fileName") + ".jpg";
+                    File curFile = new File(curPath);
+                    if (!curFile.isFile()) {
+                        throw new RuntimeException("Captured photo file does not exist: " + curPath);
+                    }
                     if (!curPath.equals(targetPath)) {
                         Utils.copy(curPath, targetPath);
                         curFile.delete();
                         Logger.T(TAG, "File copied to " + targetPath);
+                        curUri = Uri.fromFile(new File(targetPath));
                     }
-                    mMethodResult.collect("imageUri", targetPath);
-                    mMethodResult.collect("image_uri", targetPath);
-                    mMethodResult.collect("status", "ok");
-                    mMethodResult.set();
                 }
+
+                mMethodResult.collect("imageUri", curUri.toString());
+                mMethodResult.collect("image_uri", curUri.toString());
+                mMethodResult.collect("status", "ok");
+                mMethodResult.set();
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                if (intent.hasExtra("error")) {
+                if (intent != null && intent.hasExtra("error")) {
                     mMethodResult.setError(intent.getStringExtra("error"));
                 } else {
                     mMethodResult.collect("status", "cancel");

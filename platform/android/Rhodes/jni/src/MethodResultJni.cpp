@@ -252,10 +252,10 @@ int MethodResultJni::getResultType(JNIEnv* env) const
     RAWTRACE(__FUNCTION__);
     if(m_resType == typeNone && m_jhResult)
     {
-        int res = env->CallIntMethod(m_jhResult.get(), s_midGetResultType);
+        m_javaResultType = env->CallIntMethod(m_jhResult.get(), s_midGetResultType);
+        RAWTRACE1("Java result type: %d", m_javaResultType);
 
-        RAWTRACE1("Java result type: %d", res);
-        return res;
+        return m_javaResultType;
     } else
     {
         RAWTRACE1("Native result type: %d", m_resType);
@@ -327,7 +327,7 @@ void MethodResultJni::reset(JNIEnv* env)
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni(bool isRuby) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone)
+MethodResultJni::MethodResultJni(bool isRuby) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0)
 {
     m_env = jniInit();
     if (!m_env) {
@@ -339,7 +339,7 @@ MethodResultJni::MethodResultJni(bool isRuby) : m_env(0), m_jhResult(0), m_bGlob
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_jhResult(jResult), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone)
+MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_jhResult(jResult), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0)
 {
     m_env = jniInit(env);
     if (!m_env) {
@@ -349,7 +349,7 @@ MethodResultJni::MethodResultJni(JNIEnv* env, jobject jResult) : m_jhResult(jRes
 }
 //----------------------------------------------------------------------------------------------------------------------
 
-MethodResultJni::MethodResultJni(const MethodResultJni& result) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone)
+MethodResultJni::MethodResultJni(const MethodResultJni& result) : m_env(0), m_jhResult(0), m_bGlobalRef(false), m_bSlaveRef(false), m_hasCallback(false), m_resType(typeNone), m_javaResultType(0)
 {
     JNIEnv* env = result.m_env;
     if(result.m_bGlobalRef) {

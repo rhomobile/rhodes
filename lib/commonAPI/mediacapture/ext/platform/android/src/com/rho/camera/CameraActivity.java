@@ -26,53 +26,85 @@
 
 package com.rho.camera;
 
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
-import com.rhomobile.rhodes.RhodesAppOptions;
-import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
-import com.rhomobile.rhodes.util.ContextFactory;
-import com.rhomobile.rhodes.util.Utils;
+import com.rhomobile.rhodes.R;
 
-import android.content.ContentValues;
 import android.graphics.PixelFormat;
-import android.hardware.Camera;
-import android.hardware.Camera.PictureCallback;
-import android.hardware.Camera.Size;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore.Images.Media;
-import android.view.KeyEvent;
-import android.view.SurfaceHolder;
+import android.view.OrientationEventListener;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.hardware.SensorManager;
-import android.view.OrientationEventListener;
 
 public class CameraActivity extends BaseActivity implements OnClickListener {
-
     private static final String TAG = CameraActivity.class.getSimpleName();
+    
+    private CameraPreview mPreview;
+    private OrientationEventListener mOrientationListener;
+    private int mRotation = 0;
 
     @Override
     protected void onCreate(Bundle extras) {
-        String id = extras.getString(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
+        super.onCreate(extras);
+        Logger.T(TAG, "onCreate");
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+        setContentView(R.layout.camera);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);
+        
+        findViewById(R.id.cameraButton).setOnClickListener(this);
+
+        mPreview = new CameraPreview((SurfaceView)findViewById(R.id.previewSurface));
+        mOrientationListener = new OrientationEventListener(this) {
+            @Override public void onOrientationChanged(int rotation) {
+                Logger.T(TAG, "Rotation: " + rotation);
+                mRotation = rotation;
+            }
+        };
+
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Logger.T(TAG, "onResume");
+        
+        if (mOrientationListener.canDetectOrientation()) {
+            mOrientationListener.enable();
+        }
+
+        String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
+        
+        ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
+        mPreview.startPreview(camera, this);
+    }
+    
+    @Override
+    protected void onPause() {
+        Logger.T(TAG, "onPause");
+
+        mPreview.stopPreview();
+        mOrientationListener.disable();
+        
+        super.onPause();
     }
     
     @Override
     public void onClick(View view) {
-        
-        
+        Logger.T(TAG, "onClick");
+        if (view.getId() == R.id.cameraButton) {
+            Logger.T(TAG, "cameraButton");
+            String id = getIntent().getStringExtra(CameraExtension.INTENT_EXTRA_PREFIX + "CAMERA_ID");
+            
+            ICameraObject camera = ((CameraFactory)CameraFactorySingleton.getInstance()).getCameraObject(id);
+            camera.doTakePicture(this, (mRotation + 45)/90 * 90);
+        }
     }
 
 
