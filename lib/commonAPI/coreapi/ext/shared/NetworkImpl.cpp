@@ -1,7 +1,8 @@
 #include "common/RhoPort.h"
-#if (defined OS_WINCE || defined OS_WP8)
-#include "../platform/wm/src/NetworkDetect.h"
+#include "INetworkDetect.h"
 #include <list>
+
+#if (defined OS_WINCE || defined OS_WP8)
 #if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 #include "../platform/wm/src/ConnectionManager.h"
 #endif
@@ -101,11 +102,9 @@ private:
     void readHeaders( const rho::Hashtable<rho::String, rho::String>& propertyMap, Hashtable<String,String>& mapHeaders );
     void createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult );
 	//  RE1 Network API
-#if (defined OS_WINCE || defined OS_WP8)
-	std::list<CNetworkDetection*> m_networkPollers;
+	std::list<INetworkDetection*> m_networkPollers;
 #if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 	CWAN *m_pConnectionManager;
-#endif
 #endif
 };
 
@@ -424,8 +423,12 @@ void CNetworkImpl::stopStatusNotify(rho::apiGenerator::CMethodResult& oResult)
 //  RE1 Network API Implementation
 void CNetworkImpl::detectConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
-#if (defined WINCE || defined _WP8_LIB)
-	CNetworkDetection* pNetworkDetection = new CNetworkDetection();
+	INetworkDetection* pNetworkDetection = NetworkDetectionFactory::createNetworkDetection();
+    if ( 0 == pNetworkDetection ) {
+        LOG(ERROR) + "Unable to create network detection object";
+        return;
+    }
+    
 	pNetworkDetection->Initialise();
 	m_networkPollers.push_back(pNetworkDetection);
 	if (!pNetworkDetection->IsChecking())
@@ -449,15 +452,13 @@ void CNetworkImpl::detectConnection( const rho::Hashtable<rho::String, rho::Stri
 	}
 	else
 		LOG(WARNING) + "Unable to start checking for a network connection, a check is already in progress.  First stop the in progress connection check";
-#endif
 }
 
 void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oResult)
 {
-#if (defined OS_WINCE || defined OS_WP8)
 	//  Find the network detector which matches our callback
-	CNetworkDetection *pNetworkDetection = NULL;
-	std::list<CNetworkDetection*>::iterator i;
+	INetworkDetection *pNetworkDetection = NULL;
+	std::list<INetworkDetection*>::iterator i;
 	for (i = m_networkPollers.begin(); i != m_networkPollers.end(); ++i)
 	{
 		if ((*i) && (*i)->GetCallback().isEqualCallback(oResult))
@@ -471,11 +472,11 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
 	{
 		pNetworkDetection->StopNetworkChecking();
 		m_networkPollers.remove(pNetworkDetection);
+        pNetworkDetection->Cleanup();
 		delete pNetworkDetection;
 	}
 	else
 		LOG(WARNING) + "Unable to stop detecting network connection, could not find specified callback";
-#endif
 }
 
 

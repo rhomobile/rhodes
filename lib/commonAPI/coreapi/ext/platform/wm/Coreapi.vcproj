@@ -1636,6 +1636,11 @@
 					RelativePath="..\..\shared\NetworkImpl.cpp"
 					>
 				</File>
+                <File
+					RelativePath="..\..\shared\NetworkDetectBase.cpp"
+					>
+				</File>
+
 				<File
 					RelativePath="..\..\..\RhoNetworkApi.rb"
 					>

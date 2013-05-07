@@ -1,3 +1,10 @@
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <netdb.h>
+#include <errno.h>
+#include <stdlib.h>
+
 #include "NetworkDetect.h"
 
 INetworkDetection* NetworkDetectionFactory::createNetworkDetection() {
@@ -6,61 +13,53 @@ INetworkDetection* NetworkDetectionFactory::createNetworkDetection() {
 
 void CNetworkDetection::Cleanup()
 {
-    stop(1000);
-
-	WSACleanup();
+	stop(1000);
+    
 }
 
 void CNetworkDetection::Startup()
 {
-	WSADATA wsaData;
-	WSAStartup(MAKEWORD(2, 2), &wsaData);
 }
 
-/**
-* \author	Darryn Campbell (DCC, JRQ768)
-* \date		August 2011 (Initial Creation)
-*/
 void CNetworkDetection::CheckConnectivity()
 {
-	bool bConnectSuccessful = false;
-	struct addrinfo hints, *result = NULL, *ptr = NULL;
-	SOCKET sockfd = INVALID_SOCKET;
-	ZeroMemory(&hints, sizeof(hints));
+    bool bConnectSuccessful = false;
+    
+    struct addrinfo hints, *result = NULL, *ptr = NULL;
+	int sockfd = -1;
+    memset(&hints,0,sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 	char szPortAsString[5 + 1];
-	_itoa(m_iPort, szPortAsString, 10);
+    snprintf(szPortAsString,5,"%d",m_iPort);
 	char* szHost = new char[m_szHost.length() + 1];
 	memset(szHost, 0, m_szHost.length() + 1);
 	strcpy(szHost, m_szHost.c_str());
 	int iResult = getaddrinfo(szHost, szPortAsString, &hints, &result);
 	if (iResult != 0)
-	{
+    {
 		//  Log the Fact that we can't get the addr info
-		int iErr = WSAGetLastError();
-		m_szLastError = "Attempted to resolve hostname to connect to but did not succeed, return value (" + itos(iResult) + 
-			"), last error (" + itos(iErr) + ")";
+        int iErr = errno;
+		m_szLastError = "Attempted to resolve hostname to connect to but did not succeed, return value (" + itos(iResult) +
+        "), last error (" + itos(iErr) + ")";
 		LOG(INFO) + m_szLastError;
 	}
 	else
 	{
 		ptr=result;
 		sockfd = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
-
-		if (sockfd == INVALID_SOCKET)
+        
+		if (sockfd == -1)
 		{
-			int iErr = WSAGetLastError();
+            int iErr = errno;
 			m_szLastError = "Unable to create communications socket, last error was " + itos(iErr);
 			LOG(INFO) + m_szLastError;
 		}
 		else
 		{
-			//  Make the Socket Non Blocking
-			u_long iNonBlock = 1;
-			int iNonBlockRes = ioctlsocket(sockfd, FIONBIO, &iNonBlock);
-			if (iNonBlockRes != NO_ERROR)
+			int iNonBlockRes = fcntl(sockfd, F_SETFL, O_NONBLOCK);
+			if (iNonBlockRes == -1)
 			{
 				m_szLastError = "Error setting socket into Non Blocking mode";
 				LOG(INFO) + m_szLastError;
@@ -68,9 +67,7 @@ void CNetworkDetection::CheckConnectivity()
 			else
 			{
 				int iConnectSuccess = connect(sockfd, ptr->ai_addr, ptr->ai_addrlen);
-				//  Because Socket is non blocking we expect it to return SOCKET_ERROR
-				//  and WSAGetLastError() would be WSAEWOULDBLOCK
-				if (!(iConnectSuccess == SOCKET_ERROR && WSAGetLastError() == WSAEWOULDBLOCK))
+				if (!(iConnectSuccess == -1 && errno == EINPROGRESS))
 				{
 					m_szLastError = "Socket Operation unexpectedly blocked, are you connected to a PC?";
 					LOG(WARNING) + m_szLastError;
@@ -80,7 +77,8 @@ void CNetworkDetection::CheckConnectivity()
 					fd_set WriteFDs;
 					FD_ZERO(&WriteFDs);
 					FD_SET(sockfd, &WriteFDs);
-					int iSelectReturnVal = select(0, 0, &WriteFDs, 0, &m_connectionTimeout);
+                    timeval to = m_connectionTimeout;
+					int iSelectReturnVal = select(sockfd+1, 0, &WriteFDs, 0, &to);
 					if (iSelectReturnVal > 0)
 					{
 						//  We have a socket to connect to
@@ -94,14 +92,14 @@ void CNetworkDetection::CheckConnectivity()
 					else
 					{
 						//  Some form of error occured
-						int iErr = WSAGetLastError();
+                        int iErr = errno;
 						m_szLastError = "Unable to connect to specified host, last error was " + itos(iErr);
 						LOG(INFO) + m_szLastError;
 					}
 				}
 			}
-			closesocket(sockfd);
-			sockfd = INVALID_SOCKET;
+			close(sockfd);
+			sockfd = -1;
 		}
 	}
 	delete[] szHost;
@@ -129,5 +127,6 @@ void CNetworkDetection::CheckConnectivity()
 			m_pDetectCallback.set(detectedCallbackData);
 		}
 	}
+    
 }
 

@@ -16,6 +16,8 @@
 		C06A0F2716F21C880065EF81 /* log_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EE416F21C880065EF81 /* log_js_api.cpp */; };
 		C06A0F2816F21C880065EF81 /* log_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EE516F21C880065EF81 /* log_ruby_api.c */; };
 		C06A0F3C16F21C880065EF81 /* LogImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EF916F21C880065EF81 /* LogImpl.cpp */; };
+		C5AA919617380F6B002E4A65 /* NetworkDetectBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5AA919517380F6B002E4A65 /* NetworkDetectBase.cpp */; };
+		C5AA919817380FD0002E4A65 /* NetworkDetect.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5AA919717380FD0002E4A65 /* NetworkDetect.mm */; };
 		FA01F1DF16E65FBB00D53D60 /* sqlite3_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1DC16E65FBB00D53D60 /* sqlite3_api_init.cpp */; };
 		FA01F1E016E65FBB00D53D60 /* sqlite3_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1DD16E65FBB00D53D60 /* sqlite3_js_api.cpp */; };
 		FA01F1E116E65FBB00D53D60 /* sqlite3_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1DE16E65FBB00D53D60 /* sqlite3_ruby_api.c */; };
@@ -92,6 +94,8 @@
 		C06A0EE416F21C880065EF81 /* log_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log_js_api.cpp; path = generated/log_js_api.cpp; sourceTree = "<group>"; };
 		C06A0EE516F21C880065EF81 /* log_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = log_ruby_api.c; path = generated/log_ruby_api.c; sourceTree = "<group>"; };
 		C06A0EF916F21C880065EF81 /* LogImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogImpl.cpp; path = ../../shared/LogImpl.cpp; sourceTree = "<group>"; };
+		C5AA919517380F6B002E4A65 /* NetworkDetectBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetworkDetectBase.cpp; path = ../../shared/NetworkDetectBase.cpp; sourceTree = "<group>"; };
+		C5AA919717380FD0002E4A65 /* NetworkDetect.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NetworkDetect.mm; path = cpp_based_impl/NetworkDetect.mm; sourceTree = "<group>"; };
 		FA01F1DC16E65FBB00D53D60 /* sqlite3_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sqlite3_api_init.cpp; path = ../../shared/generated/sqlite3_api_init.cpp; sourceTree = "<group>"; };
 		FA01F1DD16E65FBB00D53D60 /* sqlite3_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sqlite3_js_api.cpp; path = ../../shared/generated/sqlite3_js_api.cpp; sourceTree = "<group>"; };
 		FA01F1DE16E65FBB00D53D60 /* sqlite3_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3_ruby_api.c; path = ../../shared/generated/sqlite3_ruby_api.c; sourceTree = "<group>"; };
@@ -270,6 +274,14 @@
 			name = Impl;
 			sourceTree = "<group>";
 		};
+		C5AA91991738101F002E4A65 /* iphone */ = {
+			isa = PBXGroup;
+			children = (
+				C5AA919717380FD0002E4A65 /* NetworkDetect.mm */,
+			);
+			name = iphone;
+			sourceTree = "<group>";
+		};
 		FA01F1D516E65F2D00D53D60 /* SQLLite */ = {
 			isa = PBXGroup;
 			children = (
@@ -445,6 +457,7 @@
 		FA7C85B216E411C20000EAE6 /* NetworkAccess */ = {
 			isa = PBXGroup;
 			children = (
+				C5AA91991738101F002E4A65 /* iphone */,
 				FA7C85B316E411F70000EAE6 /* CPP */,
 			);
 			name = NetworkAccess;
@@ -471,6 +484,7 @@
 		FA7C85B516E412040000EAE6 /* impl */ = {
 			isa = PBXGroup;
 			children = (
+				C5AA919517380F6B002E4A65 /* NetworkDetectBase.cpp */,
 				FA7C85C916E412950000EAE6 /* NetworkImpl.cpp */,
 			);
 			name = impl;
@@ -678,6 +692,8 @@
 				FA1C7FAD16FBCAF00024FB5C /* Application_ruby_wrap.cpp in Sources */,
 				FA1C7FAE16FBCAF00024FB5C /* ApplicationBase.cpp in Sources */,
 				FA1C7FB216FBCAFE0024FB5C /* ApplicationImpl.cpp in Sources */,
+				C5AA919617380F6B002E4A65 /* NetworkDetectBase.cpp in Sources */,
+				C5AA919817380FD0002E4A65 /* NetworkDetect.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
