@@ -302,6 +302,20 @@ end
         expect(cleanVars(found[1 - i])).toEqual({'key3': 'value3'});
     });
 
+    it('finds objects with condition', function() {
+        var Model = Rho.ORM.addModel('Model');
+
+        Model.deleteAll();
+
+        Model.create({'key': 'value1'});
+        var object = Model.create({'key': 'value2'});
+
+        var found = Model.find('all', {conditions: {'key': 'value2'}});
+
+        expect(found.length).toBe(1);
+        expect(found[0].vars()).toEqual(object.vars());
+    });
+
     it('finds specific object', function() {
         var Model = Rho.ORM.addModel('Model');
 
