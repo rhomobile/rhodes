@@ -28,12 +28,13 @@
 #define _NATIVETOOLBAREXT_H_
 
 #include "common/RhoStd.h"
-/*
+
+#if defined(OS_WP8)
 #define TOOLBAR_TYPE		0
 #define TABBAR_TYPE			1
 #define NOBAR_TYPE			2
 #define VTABBAR_TYPE		3
-*/
+#endif
 
 #if defined(OS_MACOSX)
 bool rho_osximpl_toolbar_isStarted();
