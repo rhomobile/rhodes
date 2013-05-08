@@ -98,6 +98,8 @@ namespace common {
     class IApplicationEventReceiver
     {
     public:
+        virtual ~IApplicationEventReceiver(void) {}
+       
         virtual bool onAppStateChange(const enApplicationState& newState) = 0;
         virtual bool onUIStateChange(const enUIState& newState) = 0;
         virtual bool onSyncUserChanged() = 0;
@@ -121,7 +123,7 @@ namespace common {
         virtual bool onMigrateSource();
         
         virtual bool isCallbackSet();
-        virtual void setCallback(const apiGenerator::CMethodResult& oResult);
+        virtual void setCallback(apiGenerator::CMethodResult& oResult);
     };
 
 class CRhodesApp : public CRhodesAppBase
@@ -259,7 +261,7 @@ public:
     void clearNetworkStatusNotify();
     void setNetworkStatusMonitor(INetworkStatusMonitor* netMonitor);
     
-    void setApplicationEventHandler(const apiGenerator::CMethodResult& oResult);
+    void setApplicationEventHandler(apiGenerator::CMethodResult& oResult);
     void clearApplicationEventHandler();
     IApplicationEventReceiver* getApplicationEventReceiver();
 
