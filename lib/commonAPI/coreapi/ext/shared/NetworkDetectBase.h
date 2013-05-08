@@ -2,6 +2,9 @@
 #include "common/RhoThread.h"
 #include "logging/RhoLog.h"
 #include "INetworkDetect.h"
+#ifdef OS_WP8
+#include "winsock2.h"
+#endif
 
 
 class CNetworkDetectionBase :  public rho::common::CRhoThread, public INetworkDetection
