@@ -302,18 +302,42 @@ end
         expect(cleanVars(found[1 - i])).toEqual({'key3': 'value3'});
     });
 
-    it('finds objects with condition', function() {
+    it('finds all objects with one condition', function() {
         var Model = Rho.ORM.addModel('Model');
 
         Model.deleteAll();
 
         Model.create({'key': 'value1'});
-        var object = Model.create({'key': 'value2'});
+        var objects = [Model.create({'key': 'value2'}), Model.create({'key': 'value2'})];
 
         var found = Model.find('all', {conditions: {'key': 'value2'}});
 
-        expect(found.length).toBe(1);
-        expect(found[0].vars()).toEqual(object.vars());
+        expect(found.length).toBe(2);
+        var i = (found[0].object() === objects[0].object()) ? 0 : 1;
+        expect(found[i    ].vars()).toEqual(objects[0].vars());
+        expect(found[1 - i].vars()).toEqual(objects[1].vars());
+    });
+
+    it('finds all objects with conditions', function() {
+        var Model = Rho.ORM.addModel('Model');
+
+        Model.deleteAll();
+
+        Model.create({'key1': 'value2'});
+        Model.create({'key2': 'value3'});
+        var objects = [
+            Model.create({'key1': 'value2', 'key2': 'value3'}),
+            Model.create({'key1': 'value2', 'key2': 'value3'})
+        ];
+        Model.create({'key1': 'value2', 'key2': 'value2'});
+        Model.create({'key1': 'value3', 'key2': 'value3'});
+
+        var found = Model.find('all', {conditions: {'key1': 'value2', 'key2': 'value3'}});
+
+        expect(found.length).toBe(2);
+        var i = (found[0].object() === objects[0].object()) ? 0 : 1;
+        expect(found[i    ].vars()).toEqual(objects[0].vars());
+        expect(found[1 - i].vars()).toEqual(objects[1].vars());
     });
 
     it('finds specific object', function() {
@@ -345,13 +369,6 @@ end
     @accts[0].industry.should == "Technology"
     @accts[1].name.should == "Aeroprise"
     @accts[1].industry.should == "Technology"
-  end
-
-  it "should find with multiple conditions" do
-    @accts = getAccount.find(:all, :conditions => {'name' => 'Mobio India', 'industry' => 'Technology'})
-    @accts.length.should == 1
-    @accts[0].name.should == "Mobio India"
-    @accts[0].industry.should == "Technology"
   end
 
   it "should find with advanced OR conditions" do
