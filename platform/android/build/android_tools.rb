@@ -219,14 +219,26 @@ def  run_emulator(options = {})
       $avdname += "motosol" if $use_motosol_api
     end
     
-    targetid = $androidtargets[get_api_level($emuversion)]
+    puts $androidtargets.inspect
+    
+    targetid = $androidtargets[get_api_level($emuversion)][:id]
+    abi = nil
+    if $androidtargets[get_api_level($emuversion)][:abis]
+      $androidtargets[get_api_level($emuversion)][:abis].each do |cur_abi|
+        abi = cur_abi if cur_abi =~ /armeabi/
+      end
+      raise "ARM-based emulator image is not found for selected target: #{$androidtargets[get_api_level($emuversion)][:abis].inspecct}" unless abi
+    end
     
     unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
+      puts "Emulator API level: #{get_api_level($emuversion)}"
+      puts "Emulator params: #{$androidtargets[get_api_level($emuversion)].inspect}"
       if USE_TRACES
         puts "AVD name: #{$avdname}, emulator version: #{$emuversion}, target id: #{targetid}"
       end
       raise "Unable to create AVD image. No appropriate target API for SDK version: #{$emuversion}" unless targetid
       createavd = "\"#{$androidbin}\" create avd --name #{$avdname} --target #{targetid} --sdcard 128M"
+      createavd = createavd + " --abi #{abi}" if abi
       puts "Creating AVD image: #{$avdname}"
       IO.popen(createavd, 'r+') do |io|
         io.puts "\n"

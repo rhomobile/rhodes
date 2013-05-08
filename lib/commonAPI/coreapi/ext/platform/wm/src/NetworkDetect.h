@@ -22,3 +22,4 @@ private:  //  Methods
     virtual void Cleanup();
 
 };
+#endif
