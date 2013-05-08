@@ -19,6 +19,8 @@ def build_extension(name, arch)
     files << f
   end
 
+  files << "#{$rootdir}/lib/commonAPI/coreapi/ext/platform/osx/src/NetworkDetect.cpp"
+
   files.each do |f|
     objname = File.join( $tempdir, File.basename( f.gsub(/\.(c|cpp)$/, '.o') ) )
     objects << ('"'+objname+'"')
