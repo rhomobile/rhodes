@@ -117,10 +117,6 @@ def set_app_name_android(newname)
   doc = REXML::Document.new(File.new(rhostrings))
   doc.elements["resources/string[@name='app_name']"].text = newname
   File.open(appstrings, "w") { |f| doc.write f }
-
-
-  buf = File.new($rho_android_r, "r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/, "\nimport #{$app_package_name}.R;\n")
-  File.open($app_android_r, "w") { |f| f.write(buf) }
 end
 
 def generate_rjava
@@ -276,26 +272,6 @@ namespace "config" do
       $path_separator = ":"
       # TODO: add ruby executable for Linux
     end
-
-    puts "+++ Looking for platform..." if USE_TRACES
-
-    if $androidplatform.nil?
-      ajar = File.join($androidsdkpath, 'platforms', 'android-' + $min_sdk_level.to_s, 'android.jar')
-      if USE_TRACES
-        puts "Using target path: "+ ajar
-      end
-      $androidplatform = 'android-' + $min_sdk_level.to_s if File.file?(ajar)
-    end
-
-    if $androidplatform.nil?
-      puts "+++ No required platform (API level >= #{$min_sdk_level}) found, can't proceed"
-      puts "+++ Looks like you have no installed required Android platform package."
-      puts "+++ To solve that, please strictly follow instructions from http://wiki.rhomobile.com/index.php/BuildingRhodes#Prerequisites_5"
-      exit 1
-    else
-      puts "+++ Platform found: #{$androidplatform}" if USE_TRACES
-    end
-    $stdout.flush
 
     $dx = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext)
     $dx = File.join($androidsdkpath, "platform-tools", "dx" + $bat_ext) unless File.exists? $dx
@@ -623,6 +599,7 @@ namespace "config" do
       # Detect android targets
       $androidtargets = {}
       id = nil
+      apilevel = nil
 
       `"#{$androidbin}" list targets`.split(/\n/).each do |line|
         line.chomp!
@@ -632,26 +609,35 @@ namespace "config" do
 
           if $use_google_addon_api
             if line =~ /Google Inc\.:Google APIs:([0-9]+)/
-              apilevel = $1
-              $androidtargets[apilevel.to_i] = id.to_i
+              apilevel = $1.to_i
+              $androidtargets[apilevel] = {:id => id.to_i}
             end
           else
             if $use_motosol_api
               if line =~ /MotorolaSolutions\s+Inc\.:MotorolaSolution\s+Value\s+Add\s+APIs.*:([0-9]+)/
-                apilevel = $1
-                $androidtargets[apilevel.to_i] = id.to_i
+                apilevel = $1.to_i
+                $androidtargets[apilevel] = {:id => id.to_i}
               end
             end
           end
         end
 
-        unless $use_google_addon_api or $use_motosol_api
+        unless $use_google_addon_api and $use_motosol_api
           if line =~ /^\s+API\s+level:\s+([0-9]+)$/
-            apilevel = $1
-            $androidtargets[apilevel.to_i] = id.to_i
+            apilevel = $1.to_i
+            $androidtargets[apilevel] = {:id => id.to_i}
           end
         end
-
+    
+        if apilevel && $androidtargets[apilevel][:id] == id.to_i
+          if line =~ /^\s+ABIs\s*:\s+(.*)/
+            $androidtargets[apilevel][:abis] = []
+            $1.split(/,\s*/).each do |abi|
+              $androidtargets[apilevel][:abis] << abi
+            end
+            puts $androidtargets[apilevel][:abis].inspect if USE_TRACES
+          end
+        end
       end
 
       if USE_TRACES
@@ -1446,6 +1432,9 @@ namespace "build" do
       end
 
       generate_rjava
+
+      buf = File.new($rho_android_r, "r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/, "\nimport #{$app_package_name}.R;\n")
+      File.open($app_android_r, "w") { |f| f.write(buf) }
 
       mkdir_p File.join($app_rjava_dir, "R") if not File.exists? File.join($app_rjava_dir, "R")
       buf = File.new(File.join($app_rjava_dir, "R.java"), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage com.rhomobile.rhodes;\n")
