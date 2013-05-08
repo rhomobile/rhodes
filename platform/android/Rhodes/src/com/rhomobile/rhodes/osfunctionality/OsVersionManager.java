@@ -29,10 +29,9 @@ public class OsVersionManager {
     }
     
     private HashMap<Class<?>, String> selectFeatureMap(int version) {
-        Logger.T(TAG, "Select feature map for OS ver. " + version + ", idx: " + (version-1));
+        Logger.T(TAG, "feature map: OS " + version + ", idx: " + (version-1));
         if (version > mSelectors.size()) {
-            Logger.W(TAG, "App is built with SDK ver. " + mSelectors.size());
-            version = mSelectors.size();
+            return null;
         }
         return mSelectors.get(version - 1);
     }
@@ -58,23 +57,20 @@ public class OsVersionManager {
     }
     
     private void setSelector(int version, Class<?> featureIface, String selectorClassName) {
-        Logger.T(TAG, "Set " + featureIface + "->" +selectorClassName + " for OS rev. " + version);
+        Logger.T(TAG, "Feature Selector: " + featureIface);
+        Logger.T(TAG, "Implementation: " + selectorClassName + ", OS rev. " + version);
 
-        HashMap<Class<?>, String> theVersion = selectFeatureMap(version);
-        theVersion.put(featureIface, selectorClassName);
+        //HashMap<Class<?>, String> theVersion = selectFeatureMap(version);
+        //if (theVersion != null) {
+        //    theVersion.put(featureIface, selectorClassName);
 
-        for (int i = version + 1; i <= Build.VERSION.SDK_INT; ++i) {
-            Logger.D(TAG, "Check feature for OS rev. " + i);
-            HashMap<Class<?>, String> curVersion = selectFeatureMap(i);
-            //if (!curVersion.containsKey(featureIface)) {
-                Logger.T(TAG, "OS " + i + ": " + featureIface + "->" + selectorClassName);
-                curVersion.put(featureIface, selectorClassName);
-            //} else {
-            //    break;
-            //}
-        }
-        
-        refreshFeature(featureIface);
+            for (int i = version; i <= Build.VERSION.SDK_INT; ++i) {
+                Logger.D(TAG, selectorClassName + " : " + i);
+                selectFeatureMap(i).put(featureIface, selectorClassName);
+            }
+
+            refreshFeature(featureIface);
+        //}
     }
     
     private void refreshFeature(Class<?> featureIface) {
@@ -83,7 +79,7 @@ public class OsVersionManager {
         try {
             Class<?> selectorClass = Class.forName(selectorClassName).asSubclass(featureIface);
             
-            Logger.D(TAG, "Set " + featureIface + "->" + selectorClass);
+            Logger.D(TAG, "Set " + selectorClass);
             
             Constructor<?> ctor = selectorClass.getConstructor();
             Object feature = ctor.newInstance();

@@ -64,6 +64,9 @@
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
                         <PARAMS>
+                            <PARAM name="url" type="STRING">
+                                <DESC>URL of file to be downloaded. HTTP and HTTPS protocols are supported.</DESC>
+                            </PARAM>
                             <PARAM name="filename" type="STRING">
                                 <DESC>The path and name of the file to be uploaded.</DESC>
                             </PARAM>
