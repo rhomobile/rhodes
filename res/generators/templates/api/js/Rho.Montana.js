@@ -46,6 +46,7 @@
     rhoUtil.createPropsProxy(<%= $cur_module.name %>.prototype, [
     <% first_prop = true
        $cur_module.properties.each do |module_property|
+         next if module_property.name.nil? || module_property.name.empty?
          next if module_property.access == ModuleMethod::ACCESS_STATIC
          next if module_property.is_deprecated
          next if module_property.readonly && module_property.writeonly
@@ -89,9 +90,10 @@
     rhoUtil.createPropsProxy(<%= $cur_module.name %>, [
     <% first_prop = true
        $cur_module.properties.each do |module_property|
-        next if module_property.access != ModuleMethod::ACCESS_STATIC
-        next if module_property.is_deprecated
-        next if module_property.readonly && module_property.writeonly
+         next if module_property.name.nil? || module_property.name.empty?
+         next if module_property.access != ModuleMethod::ACCESS_STATIC
+         next if module_property.is_deprecated
+         next if module_property.readonly && module_property.writeonly
     %>  <%= first_prop ? '  ' : ', ' %>{ propName: '<%= module_property.name %>', propAccess: '<%= 'r' if !module_property.writeonly %><%= 'w' if !module_property.readonly %>' }
     <% first_prop = false
        end %>], apiReq);
