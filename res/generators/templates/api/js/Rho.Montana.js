@@ -77,6 +77,7 @@
 
     <% $cur_module.constants.each do |module_constant|
         # next if module_constant.is_deprecated
+        next if module_constant.name.nil? || module_constant.name.empty?
 
         if module_constant.type == MethodParam::TYPE_STRING %>
             <%= $cur_module.name %>.<%= module_constant.name %> = '<%= module_constant.value %>';
