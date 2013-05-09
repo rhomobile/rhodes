@@ -1,0 +1,505 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Sensors" parent="Rho">
+		
+		<ALIASES>
+            <ALIAS new="RawSensors" deprecated="true"/>        
+        </ALIASES>
+		
+        <HELP_OVERVIEW>The Sensors extension is used to retrieve the raw data values of the specified sensors from the device.</HELP_OVERVIEW>       
+    
+        <TEMPLATES>            
+            <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->            
+        </TEMPLATES>
+
+		<PLATFORM>WM, Android</PLATFORM>
+
+        <METHODS access="STATIC">
+			
+			<METHOD name="watchAccelerometer" hasCallback="mandatory">
+                <DESC>This enables the accelerometer sensor data retrieval.</DESC>
+				<PLATFORM>WM, Android</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the accelerometer co-ordiantes when a parameter of the accelerometer sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="x" type="STRING">
+							<DESC>X co-ordinate value of the Accelerometer sensor in SI units (m/s^2)</DESC>
+						</PARAM>
+						<PARAM name="y" type="STRING">
+							<DESC>Y co-ordinate value of the Accelerometer sensor in SI units (m/s^2)</DESC>
+						</PARAM>
+						<PARAM name="z" type="STRING">
+							<DESC>Z co-ordinate value of the Accelerometer sensor in SI units (m/s^2)</DESC>
+						</PARAM>														
+					</PARAMS>					
+				</CALLBACK> 
+            </METHOD>
+			
+            <METHOD name="stopAccelerometer">
+                <DESC>Stops listening to the accelerometer sensor</DESC>
+				<PLATFORM>WM, Android</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchTiltAngle" hasCallback="mandatory">
+                <DESC>This enables the tilt angle data retrieval through accelerometer sensor.</DESC>
+				<PLATFORM>WM, Android</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the tilt angle co-ordiantes when a parameter of the accelerometer sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="x" type="STRING">
+							<DESC>X co-ordinate value of the tiltangle sensor in degrees units</DESC>
+						</PARAM>
+						<PARAM name="y" type="STRING">
+							<DESC>Y co-ordinate value of the tiltangle sensor in degrees units</DESC>
+						</PARAM>
+						<PARAM name="z" type="STRING">
+							<DESC>Z co-ordinate value of the tiltangle sensor in degrees units</DESC>
+						</PARAM>														
+					</PARAMS>					
+				</CALLBACK> 
+            </METHOD>
+			
+            <METHOD name="stopTiltAngle">
+                <DESC>Stops listening to the tilt angle data retrieval through accelerometer sensor</DESC>
+				<PLATFORM>WM, Android</PLATFORM>
+            </METHOD>			
+						
+			<METHOD name="watchDeviceOrientation" hasCallback="mandatory">
+                <DESC>This enables the device orientation sensor data retrieval.</DESC>
+				<PLATFORM>WM</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="String">
+					<DESC>The callback is triggered with the device orientation value when the device orientation sensor is changed.</DESC>
+				</CALLBACK>				
+            </METHOD>
+			
+            <METHOD name="stopDeviceOrientation">
+                <DESC>Stops listening to the device orientation sensor</DESC>
+				<PLATFORM>WM</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchMotion" hasCallback="mandatory">
+                <DESC>This enables the motion sensor data retrieval.</DESC>
+				<PLATFORM>WM, Android</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="String">
+					<DESC>The callback is triggered with the motion sensor value when the motion sensor is changed.</DESC>
+				</CALLBACK>				
+            </METHOD>
+			
+            <METHOD name="stopMotion">
+                <DESC>Stops listening to the motion sensor</DESC>
+				<PLATFORM>WM, Android</PLATFORM>
+            </METHOD>
+		
+			<METHOD name="watcheCompass" hasCallback="mandatory">
+                <DESC>This enables the eCompass sensor data retrieval.</DESC>
+				<PLATFORM>WM</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="String">
+					<DESC>The callback is triggered with the eCompass sensor value when the eCompass sensor is changed.</DESC>
+				</CALLBACK>				
+            </METHOD>
+			
+            <METHOD name="stopeCompass">
+                <DESC>Stops listening to the eCompass sensor</DESC>
+				<PLATFORM>WM</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchMagnetometer" hasCallback="mandatory">
+                <DESC>This enables the magnetometer sensor data retrieval.</DESC>
+				<PLATFORM>Android</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the magnetometer co-ordiantes when a parameter of the magnetometer sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="x" type="STRING">
+							<DESC>X value of the magnetometer sensor in micro-Tesla (uT) units</DESC>
+						</PARAM>
+						<PARAM name="y" type="STRING">
+							<DESC>Y value of the magnetometer sensor in micro-Tesla (uT) units</DESC>
+						</PARAM>
+						<PARAM name="z" type="STRING">
+							<DESC>Z value of the magnetometer sensor in micro-Tesla (uT) units</DESC>
+						</PARAM>														
+					</PARAMS>					
+				</CALLBACK> 
+            </METHOD>
+			
+            <METHOD name="stopMagnetometer">
+                <DESC>Stops listening to the magnetometer sensor</DESC>
+				<PLATFORM>Android</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchGyroscope" hasCallback="mandatory">
+                <DESC>This enables the gyroscope sensor data retrieval.</DESC>
+				<PLATFORM>Android</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the gyroscope co-ordiantes when a parameter of the gyroscope sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="x" type="STRING">
+							<DESC>X co-ordinate value of the gyroscope sensor in radians/second units</DESC>
+						</PARAM>
+						<PARAM name="y" type="STRING">
+							<DESC>X co-ordinate value of the gyroscope sensor in radians/second units</DESC>
+						</PARAM>
+						<PARAM name="z" type="STRING">
+							<DESC>X co-ordinate value of the gyroscope sensor in radians/second units</DESC>
+						</PARAM>														
+					</PARAMS>					
+				</CALLBACK> 
+            </METHOD>
+			
+            <METHOD name="stopGyroscope">
+                <DESC>Stops listening to the gyroscope sensor</DESC>
+				<PLATFORM>Android</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchAmbientLight" hasCallback="mandatory">
+                <DESC>This enables the ambient light data sensor data retrieval.</DESC>
+				<PLATFORM>WM, Android</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="String">
+					<DESC>The callback is triggered with the ambient light sensor value when the ambient value sensor is changed.</DESC>
+				</CALLBACK>				
+            </METHOD>
+			
+            <METHOD name="stopAmbientLight">
+                <DESC>Stops listening to the ambient light sensor</DESC>
+				<PLATFORM>WM, Android</PLATFORM>
+            </METHOD>			
+						
+			<METHOD name="watchProximity" hasCallback="mandatory">
+                <DESC>This enables the proximity sensor data retrieval.</DESC>
+				<PLATFORM>WM</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="String">
+					<DESC>The callback is triggered with the proximity sensor value when the proximity sensor is changed.</DESC>
+				</CALLBACK>				
+            </METHOD>
+			
+            <METHOD name="stopProximity">
+                <DESC>Stops listening to the proximity sensor</DESC>
+				<PLATFORM>WM</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchProximityLongRange" hasCallback="mandatory">
+                <DESC>This enables the proximity long range sensor data retrieval.</DESC>
+				<PLATFORM>WM</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="String">
+					<DESC>The callback is triggered with the proximity long range sensor value when the proximity long range sensor is changed.</DESC>
+				</CALLBACK>				
+            </METHOD>
+			
+            <METHOD name="stopProximityLongRange">
+                <DESC>Stops listening to the proximity long range sensor</DESC>
+				<PLATFORM>WM</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchPressure" hasCallback="mandatory">
+                <DESC>This enables the pressure sensor data retrieval.</DESC>
+				<PLATFORM>WM</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="String">
+					<DESC>The callback is triggered with the pressure sensor value when the pressure sensor is changed.</DESC>
+				</CALLBACK>				
+            </METHOD>
+			
+            <METHOD name="stopPressure">
+                <DESC>Stops listening to the pressure sensor</DESC>
+				<PLATFORM>WM</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchTemperature" hasCallback="mandatory">
+                <DESC>This enables the temperature sensor data retrieval.</DESC>
+				<PLATFORM>WM</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="String">
+					<DESC>The callback is triggered with the temperature sensor value when the temperature sensor is changed.</DESC>
+				</CALLBACK>				
+            </METHOD>
+			
+            <METHOD name="stopTemperature">
+                <DESC>Stops listening to the temperature sensor</DESC>
+				<PLATFORM>WM</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchHumidity" hasCallback="mandatory">
+                <DESC>This enables the humidity sensor data retrieval.</DESC>
+				<PLATFORM>WM</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="String">
+					<DESC>The callback is triggered with the humidity sensor value when the humidity sensor is changed.</DESC>
+				</CALLBACK>				
+            </METHOD>
+			
+            <METHOD name="stopHumidity">
+                <DESC>Stops listening to the humidity sensor</DESC>
+				<PLATFORM>WM</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchGravity" hasCallback="mandatory">
+                <DESC>This enables the gravity sensor data retrieval.</DESC>
+				<PLATFORM>Android</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the gravity co-ordiantes when a parameter of the gravity sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="x" type="STRING">
+							<DESC>X co-ordinate value of the gravity sensor in SI units (m/s^2)</DESC>
+						</PARAM>
+						<PARAM name="y" type="STRING">
+							<DESC>Y co-ordinate value of the gravity sensor in SI units (m/s^2)</DESC>
+						</PARAM>
+						<PARAM name="z" type="STRING">
+							<DESC>Z co-ordinate value of the gravity sensor in SI units (m/s^2)</DESC>
+						</PARAM>														
+					</PARAMS>					
+				</CALLBACK> 
+            </METHOD>
+			
+            <METHOD name="stopGravity">
+                <DESC>Stops listening to the gravity sensor</DESC>
+				<PLATFORM>Android</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchLinearAcceleration" hasCallback="mandatory">
+                <DESC>This enables the linear acceleration sensor data retrieval.</DESC>
+				<PLATFORM>Android</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the linear acceleration co-ordiantes when a parameter of the linear acceleration sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="x" type="STRING">
+							<DESC>X co-ordinate value of the linear acceleration sensor in SI units (m/s^2)</DESC>
+						</PARAM>
+						<PARAM name="y" type="STRING">
+							<DESC>Y co-ordinate value of the linear acceleration sensor in SI units (m/s^2)</DESC>
+						</PARAM>
+						<PARAM name="z" type="STRING">
+							<DESC>Z co-ordinate value of the linear acceleration sensor in SI units (m/s^2)</DESC>
+						</PARAM>														
+					</PARAMS>					
+				</CALLBACK> 
+            </METHOD>
+			
+            <METHOD name="stopLinearAcceleration">
+                <DESC>Stops listening to the linear acceleration sensor</DESC>
+				<PLATFORM>Android</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchRotation" hasCallback="mandatory">
+                <DESC>This enables the rotation sensor data retrieval.</DESC>
+				<PLATFORM>Android</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the rotation co-ordiantes when a parameter of the rotation sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="x" type="STRING">
+							<DESC>X co-ordinate value of the rotation sensor as a combination of an angle and an axis</DESC>
+						</PARAM>
+						<PARAM name="y" type="STRING">
+							<DESC>Y co-ordinate value of the rotation sensor as a combination of an angle and an axis</DESC>
+						</PARAM>
+						<PARAM name="z" type="STRING">
+							<DESC>Z co-ordinate value of the rotation sensor as a combination of an angle and an axis</DESC>
+						</PARAM>														
+					</PARAMS>					
+				</CALLBACK> 
+            </METHOD>
+			
+            <METHOD name="stopRotation">
+                <DESC>Stops listening to the rotation sensors</DESC>
+				<PLATFORM>Android</PLATFORM>
+            </METHOD>
+			
+			<METHOD name="watchOrientation" hasCallback="mandatory">
+                <DESC>This enables the orientation sensor data retrieval.</DESC>
+				<PLATFORM>Android</PLATFORM>
+				<PARAMS>
+                    <PARAM name="minimumGap" type="INTEGER">
+                        <DESC>The minimum amount of time gap between two sensor update events, specified in milliseconds. The interval cannot be set to less than 200 milliseconds, if a value of less than 200 milli seconds is specified, the interval will be defaulted to 200 milli seconds. If a value of 0 is provided then the data is returned immediately and the callback event will not be invoked periodically.</DESC>
+                        <CAN_BE_NIL>
+                            <DESC>Not providing properties to this function will use the default gap i.e. 200 milliseconds</DESC>
+                        </CAN_BE_NIL>
+                    </PARAM>
+                </PARAMS>
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the orientation co-ordiantes when a parameter of the orientation sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="x" type="STRING">
+							<DESC>X co-ordinate value of the orientation sensor in degrees units</DESC>
+						</PARAM>
+						<PARAM name="y" type="STRING">
+							<DESC>Y co-ordinate value of the orientation sensor in degrees units</DESC>
+						</PARAM>
+						<PARAM name="z" type="STRING">
+							<DESC>Z co-ordinate value of the orientation sensor in degrees units</DESC>
+						</PARAM>														
+					</PARAMS>					
+				</CALLBACK> 
+            </METHOD>
+			
+            <METHOD name="stopOrientation">
+                <DESC>Stops listening to the orientation sensors</DESC>
+				<PLATFORM>Android</PLATFORM>
+            </METHOD>
+			
+        </METHODS>
+        
+		<VER_INTRODUCED>1.0.0</VER_INTRODUCED>	
+		<PLATFORM>Android, WM, IOS</PLATFORM>
+		<REMARKS>
+            <REMARK title="General">
+                <DESC>
+                    <![CDATA[
+As this extension returns the raw sensor values reported by the operating system the values might differ between platforms. Also as some of the sensor values change rapidly the minimum gap between two updates should be specified as a reasonable value, otherwise there can be a performance impact.
+                    ]]>
+                </DESC>
+            </REMARK>            
+		</REMARKS>
+		<EXAMPLES >
+            <EXAMPLE title="Basic Example">
+                <SECTIONS>
+                <SECTION>
+                <DESC>
+                    The below example gets the Accelerometer values for every 200 milli seconds.
+                </DESC>
+                <CODE lang='ruby'>
+            <![CDATA[
+#/app/Model
+def index
+    Rho::Sensors.watchAccelerometer(url_for(:action => :myevent))
+end
+  def myevent       
+       puts "Accelerometer params: #{@params}"
+       puts "X is #{@params['x']}"
+	   puts "Y is #{@params['y']}"  
+	   puts "Z is #{@params['z']}" 	   
+  end 
+                    ]]>
+
+                </CODE>
+                </SECTION>
+                </SECTIONS>
+            </EXAMPLE>
+        </EXAMPLES>
+    </MODULE>
+</API>    
