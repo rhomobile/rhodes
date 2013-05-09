@@ -2,7 +2,7 @@
 #include "common/RhoThread.h"
 #include "logging/RhoLog.h"
 #include "INetworkDetect.h"
-#ifdef OS_WP8
+#if defined( OS_WP8 ) || defined( OS_WINCE )
 #include "winsock2.h"
 #endif
 
