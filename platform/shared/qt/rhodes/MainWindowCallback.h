@@ -28,12 +28,12 @@
 #define MAINWINDOWCALLBACK_H
 
 #include <string>
-
+/*
 typedef struct _TNavigateData {
     int index;
     wchar_t* url;
 } TNavigateData;
-
+*/
 class IMainWindowCallback
 {
 public:

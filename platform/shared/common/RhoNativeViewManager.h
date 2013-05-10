@@ -40,6 +40,23 @@
 #include "common/RhoStd.h"
 #include "ruby/ext/rho/rhoruby.h"
 
+#if defined(OS_WINCE) || defined(OS_WINDOWS_DESKTOP)
+typedef struct _TCookieData {
+    char* url;
+    char* cookie;
+
+    _TCookieData(): url(0), cookie(0){}
+    ~_TCookieData(){ if (url) free(url); if(cookie) free(cookie); }
+} TCookieData;
+
+typedef struct _TNavigateData {
+    int index;
+    wchar_t* url;
+
+    _TNavigateData(): index(-1), url(0){}
+    ~_TNavigateData(){ if (url) free(url); }
+} TNavigateData;
+#endif
 
 class NativeView {
 public:

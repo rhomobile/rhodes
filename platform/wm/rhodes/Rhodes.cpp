@@ -610,11 +610,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif
 
 #if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && defined(OS_WINCE)
-	    m_appWindow.Navigate2(_T("about:blank")
-#if defined(OS_WINDOWS_DESKTOP)
-            , -1
-#endif
-        );
+	    m_appWindow.Navigate2(_T("about:blank"), -1 );
 #endif //!APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
         rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0 );
@@ -629,11 +625,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
 #if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && defined(OS_WINCE)
         // Navigate to the "loading..." page
-	    m_appWindow.Navigate2(_T("about:blank")
-#if defined(OS_WINDOWS_DESKTOP)
-            , -1
-#endif
-        );
+	    m_appWindow.Navigate2(_T("about:blank"), -1 );
 #endif //APP_BUILD_CAPABILITY_WEBKIT_BROWSER
     }
 

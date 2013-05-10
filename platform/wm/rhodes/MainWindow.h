@@ -107,11 +107,6 @@ static UINT WM_WINDOW_MINIMIZE 		   = ::RegisterWindowMessage(L"RHODES_WM_MINIMI
 static UINT WM_SHOW_LICENSE_WARNING	   = ::RegisterWindowMessage(L"RHOELEMENTS_WM_LICENSE_WARNING");
 extern UINT WM_LICENSE_SCREEN;
 
-typedef struct _TCookieData {
-    char* url;
-    char* cookie;
-} TCookieData;
-
 namespace rho
 {
 	namespace common
@@ -151,8 +146,8 @@ public:
     CMainWindow();
     ~CMainWindow();
     //
-	void Navigate2(BSTR URL);
-    void Navigate(BSTR URL);
+	void Navigate2(BSTR URL, int index);
+    void Navigate(BSTR URL, int index);
 
 	HWND getWebViewHWND();
     CNativeToolbar& getToolbar(){ return m_toolbar; }
@@ -341,6 +336,12 @@ public:
     END_SINK_MAP()
 #endif
 
+    void createTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
+    void removeTabbar();
+    void tabbarSwitch(int index);
+    void tabbarBadge(int index, const char* badge);
+    int tabbarGetCurrent();
+    bool isTabBarStarted();
 private:
     // event handlers
     void __stdcall OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL, 
@@ -395,6 +396,20 @@ private:
 // #if defined( OS_PLATFORM_MOTCE )
     int m_menuBarHeight;
     HWND				g_hWndCommandBar;	// command bar handle
+    int  m_nCurrentTab;
+    bool m_bTabCreated;
+
+    struct CTabBarItem
+    {
+        String m_strAction;
+        bool m_bUseCurrentViewForTab;
+        bool m_bReloadPage;
+        HWND m_hwndTab;
+
+        CTabBarItem(const String& strAction, bool bUseCurrentViewForTab, bool bReloadPage ): m_bUseCurrentViewForTab(bUseCurrentViewForTab), m_bReloadPage(bReloadPage), m_strAction(strAction), m_hwndTab(0){}
+    };
+
+    Vector<CTabBarItem> m_arTabs;
 // #endif
 
 #if defined(_WIN32_WCE)
