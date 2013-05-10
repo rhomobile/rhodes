@@ -963,9 +963,8 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
         LPTSTR wcurl = (LPTSTR)(nd->url);
         if (wcurl) {
             Navigate2(wcurl, nd->index);
-            free(wcurl);
         }
-        free(nd);
+        delete nd;
     }
     return 0;
 }
@@ -984,9 +983,8 @@ LRESULT CMainWindow::OnExecuteJS(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCt
             strUrlW += wcurl;
 
             Navigate2((LPWSTR)strUrlW.c_str(), nd->index);
-            free(wcurl);
         }
-        free(nd);
+        delete nd;
     }
     return 0;
 }
@@ -1004,10 +1002,8 @@ LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     if (cd) {
         if (cd->url && cd->cookie) {
             ((QtMainWindow*)qtMainWindow)->setCookie(cd->url, cd->cookie);
-            if (cd->url) free(cd->url);
-            if (cd->cookie) free(cd->cookie);
         }
-        free(cd);
+        delete cd;
     }
     return 0;
 }

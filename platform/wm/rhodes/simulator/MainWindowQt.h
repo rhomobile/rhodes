@@ -56,12 +56,12 @@ static UINT WM_SHOW_LICENSE_WARNING	   = ::RegisterWindowMessage(L"RHOELEMENTS_W
 #define ID_CUSTOM_MENU_ITEM_LAST  (ID_CUSTOM_MENU_ITEM_FIRST + (APP_MENU_ITEMS_MAX) - 1)
 #define ID_CUSTOM_TOOLBAR_ITEM_FIRST (ID_CUSTOM_MENU_ITEM_LAST+1)
 #define ID_CUSTOM_TOOLBAR_ITEM_LAST  (ID_CUSTOM_TOOLBAR_ITEM_FIRST + 20 - 1)
-
+/*
 typedef struct _TCookieData {
     char* url;
     char* cookie;
 } TCookieData;
-
+*/
 class CMainWindow :
     public CWindowImpl<CMainWindow, CWindow, CWinTraits<WS_BORDER | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN | WS_CLIPSIBLINGS> >,
     public IMainWindowCallback

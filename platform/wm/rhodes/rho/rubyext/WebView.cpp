@@ -64,14 +64,10 @@ void rho_webview_navigate(const char* url, int index)
     }
 
     String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
-#if defined(OS_WINDOWS_DESKTOP)
-    TNavigateData* nd = (TNavigateData*)malloc(sizeof(TNavigateData));
+    TNavigateData* nd = new TNavigateData();
     nd->index = index;
     nd->url = _tcsdup(convertToStringW(strUrl).c_str());
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)nd );
-#else
-    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)_tcsdup(convertToStringW(strUrl).c_str()) );
-#endif
 }
 
 void rho_webview_navigate_back()
@@ -95,14 +91,10 @@ const char* rho_webview_execute_js(const char* js, int index)
     StringW strJsW;
     convertToStringW(js, strJsW);
 
-#if defined(OS_WINDOWS_DESKTOP)
-    TNavigateData* nd = (TNavigateData*)malloc(sizeof(TNavigateData));
+    TNavigateData* nd = new TNavigateData();
     nd->index = index;
     nd->url = _tcsdup(strJsW.c_str());
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
-#else
-    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)_tcsdup(strJsW.c_str()) );
-#endif
 
 	return "";
 }
@@ -121,11 +113,7 @@ const char* rho_webview_current_location(int index)
 
 int rho_webview_active_tab() 
 {
-#if defined(OS_WINDOWS_DESKTOP)
     return getAppWindow().tabbarGetCurrent();
-#else
-	return 0;
-#endif
 }
 
 void rho_webview_set_menu_items(VALUE valMenu) 
@@ -146,7 +134,7 @@ int rho_webview_get_full_screen( )
 
 void rho_webview_set_cookie(const char *url, const char *cookie)
 {
-    TCookieData* cd = (TCookieData*)malloc(sizeof(TCookieData));
+    TCookieData* cd = new TCookieData();
     cd->url = strdup(url);
     cd->cookie = strdup(cookie);
     ::PostMessage( getMainWnd(), WM_COMMAND, ID_SETCOOKIE, (LPARAM)cd );

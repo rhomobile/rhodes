@@ -56,6 +56,7 @@
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
 #include "statistic/RhoProfiler.h"
+#include "json/JSONIterator.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
@@ -77,6 +78,7 @@ bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 using namespace rho::common;
 using namespace rho;
 using namespace stdext;
+using namespace rho::json;
 
 #if !defined(_WIN32_WCE)
 int CMainWindow::m_screenWidth;
@@ -113,6 +115,9 @@ CMainWindow::CMainWindow()
 
     m_alertDialog = 0;
 	m_isMinimized = 0;
+
+    m_nCurrentTab = 0;
+    m_bTabCreated = false;
 }
 
 CMainWindow::~CMainWindow()
@@ -124,7 +129,7 @@ CMainWindow::~CMainWindow()
 //        free(m_szStartPage);
 }
 
-void CMainWindow::Navigate2(BSTR URL) 
+void CMainWindow::Navigate2(BSTR URL, int index) 
 {
 	String cleared_url = processForNativeView(convertToStringA(OLE2CT(URL)));
 	if ( m_pBrowserEng && !cleared_url.empty()) 
@@ -132,11 +137,11 @@ void CMainWindow::Navigate2(BSTR URL)
 		StringW cw = convertToStringW(cleared_url);
 		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
 	    //m_spIWebBrowser2->Navigate2(&CComVariant(cleared_url_bstr), NULL, &CComVariant(L"_self"), NULL, NULL);
-        m_pBrowserEng->Navigate(cw.c_str());
+        m_pBrowserEng->Navigate(cw.c_str() /*,index*/); 
 	}
 }
 
-void CMainWindow::Navigate(BSTR URL) 
+void CMainWindow::Navigate(BSTR URL, int index) 
 {
 	String cleared_url = processForNativeView(convertToStringA(OLE2CT(URL)));
 	if (m_pBrowserEng && !cleared_url.empty()) 
@@ -144,7 +149,7 @@ void CMainWindow::Navigate(BSTR URL)
 		StringW cw = convertToStringW(cleared_url);
 		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
 	    //m_spIWebBrowser2->Navigate(cleared_url_bstr, NULL, &CComVariant(L"_self"), NULL, NULL);
-        m_pBrowserEng->Navigate(cw.c_str());
+        m_pBrowserEng->Navigate(cw.c_str()/*,index*/);
 	}
 }
 
@@ -675,10 +680,8 @@ LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     if (cd) {
         if (m_pBrowserEng && cd->url && cd->cookie) {
             m_pBrowserEng->SetCookie(cd->url, cd->cookie);
-            if (cd->url) free(cd->url);
-            if (cd->cookie) free(cd->cookie);
         }
-        free(cd);
+        delete cd;
     }
     return 0;
 }
@@ -1033,7 +1036,7 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     if ( m_pBrowserEng )
-        m_pBrowserEng->ReloadOnTab(false, 0);
+        m_pBrowserEng->ReloadOnTab(false, tabbarGetCurrent());
 
     return 0;
 }
@@ -1048,25 +1051,29 @@ LRESULT CMainWindow::OnNavTimeout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndC
 
 LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-	LPTSTR wcurl = (LPTSTR)hWndCtl;
-	if (wcurl) 
-    {
-		Navigate2(wcurl);
-		free(wcurl);
-	}
+    TNavigateData* nd = (TNavigateData*)hWndCtl;
+    if (nd) {
+        LPTSTR wcurl = (LPTSTR)(nd->url);
+        if (wcurl)
+            Navigate2(wcurl, nd->index);
+
+        delete nd;
+    }
     return 0;
 }
 
 LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-	LPTSTR wcurl = (LPTSTR)hWndCtl;
-	if (wcurl) 
-    {
-        if ( m_pBrowserEng )
-            m_pBrowserEng->executeJavascript(wcurl,0);
-
-		free(wcurl);
-	}
+    TNavigateData* nd = (TNavigateData*)hWndCtl;
+    if (nd) {
+        LPTSTR wcurl = (LPTSTR)(nd->url);
+        if (wcurl) 
+        {
+            if ( m_pBrowserEng )
+                m_pBrowserEng->executeJavascript(wcurl,nd->index);
+        }
+        delete nd;
+    }
     return 0;
 }
 
@@ -1084,7 +1091,7 @@ LRESULT CMainWindow::OnZoomPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
     float fZoom = pFloatData->m_fValue;
     delete pFloatData;
     if ( m_pBrowserEng )
-        m_pBrowserEng->ZoomPageOnTab(fZoom, rho_webview_active_tab());
+        m_pBrowserEng->ZoomPageOnTab(fZoom, tabbarGetCurrent());
 
     return 0;
 }
@@ -1093,7 +1100,7 @@ LRESULT CMainWindow::OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
 {
     int nZoom = (int)hWndCtl;
     if ( m_pBrowserEng )
-        m_pBrowserEng->ZoomTextOnTab(nZoom, rho_webview_active_tab());
+        m_pBrowserEng->ZoomTextOnTab(nZoom, tabbarGetCurrent());
     return 0;
 }
 
@@ -1795,4 +1802,126 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 
 	EndPaint(hWnd, &ps);
 	return 1;
+}
+
+static int getColorFromString(const char* szColor)
+{
+    if ( !szColor || !*szColor )
+        return RGB(0, 0, 0);
+
+	int c = atoi(szColor);
+
+	int cR = (c & 0xFF0000) >> 16;
+	int cG = (c & 0xFF00) >> 8;
+	int cB = (c & 0xFF);
+
+    return RGB(cR, cG, cB);
+}
+
+void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult)
+{
+    if (!rho_rhodesapp_check_mode() )
+        return;
+
+	COLORREF   rgbBackColor;
+    bool bHiddenTabs = false;
+
+    for ( Hashtable<rho::String, rho::String>::const_iterator it = tabBarProperties.begin(); it != tabBarProperties.end(); ++it )
+    {
+        const char *name = (it->first).c_str();
+        const char *value = (it->second).c_str();
+        if (strcasecmp(name, "backgroundColor") == 0) 
+            rgbBackColor = getColorFromString(value);
+        if (strcasecmp(name, "hiddenTabs") == 0) 
+            bHiddenTabs = strcasecmp(value, "true");
+    }
+
+    if ( !bHiddenTabs )
+    {
+        LOG(WARNING) + "Illegal argument for create_nativebar: hiddenTabs should be true for Windows Mobile and Windows CE.";
+        bHiddenTabs = true;
+    }
+
+    for (int i = 0; i < (int)tabbarElements.size(); ++i) 
+    {
+        const char *label = NULL;
+        const char *action = NULL;
+        const char *icon = NULL;
+        const char *reload = NULL;
+        const char *colored_icon = NULL;
+        
+    	COLORREF selected_color;
+        const char *disabled = NULL;
+		COLORREF web_bkg_color;
+        const char* use_current_view_for_tab = NULL;
+        bool bUseCurrentViewForTab = false, bReloadPage = false;
+        CJSONEntry oEntry(tabbarElements[i].c_str());
+
+        if ( oEntry.hasName("label") )
+            label = oEntry.getString("label");
+        if ( oEntry.hasName("action") )
+            action = oEntry.getString("action");
+        if ( oEntry.hasName("icon") )
+            icon = oEntry.getString("icon");
+        if ( oEntry.hasName("coloredIcon") )
+            colored_icon = oEntry.getString("coloredIcon");
+        if ( oEntry.hasName("reload") )
+        {
+            reload = oEntry.getString("reload");
+            if (strcasecmp(reload, "true") == 0)
+                bReloadPage = true;
+        }
+        if ( oEntry.hasName("selectedColor") )
+            selected_color = getColorFromString(oEntry.getString("selectedColor"));
+        if ( oEntry.hasName("disabled") )
+            disabled = oEntry.getString("disabled");
+        if ( oEntry.hasName("useCurrentViewForTab") )
+        {
+            use_current_view_for_tab = oEntry.getString("useCurrentViewForTab");
+            if (strcasecmp(use_current_view_for_tab, "true") == 0)
+                bUseCurrentViewForTab = true;
+        }
+        if (oEntry.hasName("backgroundColor")) 
+            web_bkg_color = getColorFromString(oEntry.getString("backgroundColor"));
+
+        if (label == NULL)
+            label = "";
+        
+        if ( label == NULL || action == NULL) {
+            LOG(ERROR) + "Illegal argument for create_nativebar";
+            return;
+        }
+
+        m_arTabs.addElement(CTabBarItem(action, bUseCurrentViewForTab, bReloadPage));
+    }
+
+    m_bTabCreated = true;
+}
+
+void CMainWindow::removeTabbar()
+{
+    //TODO: removeTabbar()
+    m_bTabCreated = false;
+}
+
+void CMainWindow::tabbarSwitch(int index)
+{
+    m_nCurrentTab = index;
+
+    //TODO: tabbarSwitch
+}
+
+void CMainWindow::tabbarBadge(int index, const char* badge)
+{
+    //Not implemented
+}
+
+int CMainWindow::tabbarGetCurrent()
+{
+	return m_nCurrentTab;
+}
+
+bool CMainWindow::isTabBarStarted()
+{
+    return m_bTabCreated;
 }
