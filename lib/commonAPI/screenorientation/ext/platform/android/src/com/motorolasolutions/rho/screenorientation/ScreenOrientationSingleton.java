@@ -1,8 +1,5 @@
 package com.motorolasolutions.rho.screenorientation;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -117,7 +114,6 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
     {
 	Logger.D(TAG, "setScreenOrientation -- START");
 	Logger.D(TAG, "setScreenOrientation -- orientation: " + orientation);
-	Map<String, Object> values = new HashMap<String, Object>();
 	String value = null;
 	if (orientation.equalsIgnoreCase("normal"))
 	{
@@ -158,10 +154,9 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 	if (value != null)
 	{
 	    direction = value;
-	    values.put("currentOrientation", direction);
-	    Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + values.get("currentOrientation"));
+	    Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
 	    if (mScreenOrientationCallback != null)
-		mScreenOrientationCallback.set(values);
+		mScreenOrientationCallback.set(direction);
 	}
     }
 	
@@ -198,11 +193,9 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 	    if(lastDirection.compareToIgnoreCase(direction) != 0)
 	    {
 		lastDirection = direction;
-		Map<String, Object> values = new HashMap<String, Object>();
-		values.put("currentOrientation", direction);
-		Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + values.get("currentOrientation"));
+		Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
 		if (mScreenOrientationCallback != null)
-		    mScreenOrientationCallback.set(values);
+		    mScreenOrientationCallback.set(direction);
 	    }
 	}
 	catch (NullPointerException e)
