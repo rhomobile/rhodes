@@ -1200,7 +1200,7 @@ def public_folder_cp_r(src_dir,dst_dir,level,obfuscate)
   mkdir_p dst_dir if not File.exists? dst_dir
   Dir.foreach(src_dir) do |filename|
     next if filename.eql?('.') || filename.eql?('..')
-    next if filename.eql?('api')
+    next if filename.eql?('api') && level == 0
     
     filepath = src_dir + '/' + filename
     dst_path = dst_dir + '/' + filename
