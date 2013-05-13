@@ -209,7 +209,7 @@ namespace "build" do
 
             if (!extconf_wp8['libraries'].nil?) && (extconf_wp8['libraries'].is_a? Array)
               extconf_wp8['libraries'].each do |lib|
-                extconf_wp8_lib = !extconf_wp8[lib].nil? ? extconf_wp8[lib] : Hash.new
+                extconf_wp8_lib = !extconf_wp8[lib.downcase].nil? ? extconf_wp8[lib.downcase] : Hash.new
                 if !extconf_wp8_lib['project_path'].nil?
                   setCSharpEnvironment( csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?) )
                   ENV['RHO_PROJECT_PATH'] = File.join(p, ext, extconf_wp8_lib['project_path'])

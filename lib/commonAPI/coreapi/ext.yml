@@ -5,6 +5,13 @@ libraries: ["CoreAPI"]
 android:
   source_list: /ext/platform/android/ext_java.files
 
+wp8:
+  libraries: ["WebView"]
+  webview:
+    csharp_impl: yes
+    root_namespace: rho
+    project_path: ext/platform/wp8/WebViewLib.vcxproj
+
 project_paths:
   wp8: ext/platform/wp8/CoreAPI.vcxproj
   wm: ext/platform/wm/CoreAPI.vcproj

@@ -1020,7 +1020,7 @@ def init_extensions(startdir, dest)
             end
             if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
               libs.each do |lib|
-                extconf_wp8_lib = !extconf_wp8[lib].nil? ? extconf_wp8[lib] : Hash.new
+                extconf_wp8_lib = !extconf_wp8[lib.downcase].nil? ? extconf_wp8[lib.downcase] : Hash.new
                 csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?)
                 extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
                 if csharp_impl
