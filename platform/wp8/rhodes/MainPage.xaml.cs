@@ -215,31 +215,41 @@ namespace rhodes
 
 		public void GoBack()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoBack(); }); return; }
-            if (isDefaultBrowser())
+            GoBack(TabbarPivot.SelectedIndex);
+        }
+
+        public void GoBack(int index)
+        {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoBack(index); }); return; }
+            if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
             {
                 if (RhodesWebBrowser.CanGoBack)
                     RhodesWebBrowser.GoBack();
             }
             else
             {
-                if (((WebBrowser)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Content).CanGoBack)
-                    ((WebBrowser)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Content).GoBack();
+                if (((WebBrowser)((PivotItem)TabbarPivot.Items[index]).Content).CanGoBack)
+                    ((WebBrowser)((PivotItem)TabbarPivot.Items[index]).Content).GoBack();
             }
         }
 
-		public void GoForward()
+        public void GoForward()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoForward(); }); return; }
-            if (isDefaultBrowser())
+            GoForward(TabbarPivot.SelectedIndex);
+        }
+
+		public void GoForward(int index)
+        {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoForward(index); }); return; }
+            if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
             {
                 if (RhodesWebBrowser.CanGoForward)
                     RhodesWebBrowser.GoForward();
             }
             else
             {
-                if (((WebBrowser)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Content).CanGoForward)
-                    ((WebBrowser)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Content).GoForward();
+                if (((WebBrowser)((PivotItem)TabbarPivot.Items[index]).Content).CanGoForward)
+                    ((WebBrowser)((PivotItem)TabbarPivot.Items[index]).Content).GoForward();
             }
         }
 
@@ -715,7 +725,17 @@ namespace rhodes
 		
         //public void takeSignature(void*); // Signature::Params*
 
-		public void fullscreenCommand(int fullScreen)
+        private int isFullscreenFunc()
+        {
+            return SystemTray.IsVisible ? 0 : 1;
+        }
+
+        public bool isFullscreen()
+        {
+            return IntValueReturnAgent(isFullscreenFunc) != 0;
+        }
+
+        public void fullscreenCommand(int fullScreen)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { fullscreenCommand(fullScreen); }); return; }
             SystemTray.IsVisible = fullScreen == 0;
