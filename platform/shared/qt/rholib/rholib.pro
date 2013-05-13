@@ -102,7 +102,8 @@ HEADERS += ../../common/RhoAppAdapter.h\
 ../../api_generator/BaseClasses.h\
 ../../api_generator/GeneratorQueue.h\
 ../../api_generator/MethodResult.h\
-../../api_generator/js_helpers.h
+../../api_generator/js_helpers.h\
+../../api_generator/StringfyHelper.h
 
 SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/RhoAppAdapter.cpp\
@@ -141,4 +142,5 @@ SOURCES += ../../common/RhoTime.cpp\
 ../../rubyext/ZipFiles.cpp\
 ../../common/push/RhoPushManager.cpp\
 ../../api_generator/js_helpers.cpp\
-../../api_generator/MethodResult.cpp
+../../api_generator/MethodResult.cpp\
+../../api_generator/StringfyHelper.cpp

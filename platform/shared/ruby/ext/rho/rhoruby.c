@@ -266,7 +266,7 @@ void RhoRubyStart()
 #endif
     Init_stringio(); //+
     Init_DateTimePicker();
-#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR)
+#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR) && !defined(OS_ANDROID)
     Init_NativeBar();
 #endif
     Init_RhoSupport(); //+

@@ -171,10 +171,13 @@ void rho_wmimpl_toolbar_remove()
 }
 
 //Tabbar
-#if defined(OS_WINDOWS_DESKTOP)
 bool rho_wmimpl_tabbar_isStarted()
 {
+#ifdef OS_WINCE
+    return getAppWindow().isTabBarStarted();
+#else
     return getAppWindow().isStarted();
+#endif
 }
 
 void rho_wmimpl_tabbar_create( const rho::Vector<rho::String>& tabbarElements,  const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult)
@@ -201,31 +204,3 @@ void rho_wmimpl_tabbar_setTabBadge(int tabIndex,  const rho::String& badge)
 {
     getAppWindow().tabbarBadge(tabIndex, badge.c_str());
 }
-#else
-bool rho_wmimpl_tabbar_isStarted()
-{
-    return false;
-}
-
-void rho_wmimpl_tabbar_create( const rho::Vector<rho::String>& tabbarElements,  const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult)
-{
-}
-
-void rho_wmimpl_tabbar_remove()
-{
-}
-
-int rho_wmimpl_tabbar_currentTabIndex()
-{
-	return 0;
-}
-
-void rho_wmimpl_tabbar_switchTab(int tabIndex)
-{
-}
-
-void rho_wmimpl_tabbar_setTabBadge(int tabIndex,  const rho::String& badge)
-{
-}
-
-#endif

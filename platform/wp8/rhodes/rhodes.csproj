@@ -132,6 +132,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="common\IInputStream.cs" />
+    <Compile Include="common\RhoCrypt.cs" />
     <Compile Include="common\RhoResourceMap.cs" />
     <Compile Include="CSharpExtensions.cs" />
     <Compile Include="LocalizedStrings.cs" />

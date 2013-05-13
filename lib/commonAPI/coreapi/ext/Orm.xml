@@ -1,85 +1,99 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-  <MODULE name="Orm" parent="Rho">
+  <MODULE name="ORM" parent="Rho" generateUnderscoreRubyNames="true" generateAPI="false">
     <HELP_OVERVIEW></HELP_OVERVIEW>
     <MORE_HELP></MORE_HELP>
 
     <TEMPLATES>
     </TEMPLATES>
 
+    <PROPERTIES>
+      <PROPERTY name="clientId" access="STATIC" type="STRING" readOnly="true" generateAPI="false">
+        <DESC>Returns the current sync client id.</DESC>
+      </PROPERTY>
+      <PROPERTY name="haveLocalChanges" access="STATIC" type="BOOLEAN" readOnly="true" generateAPI="false">
+        <DESC>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized,
+          false otherwise.</DESC>
+      </PROPERTY>
+    </PROPERTIES>
+
     <METHODS access="STATIC">
       <ALIASES>
       </ALIASES>
-
-      <METHOD name="databaseExport" generateAPI="false">
-        <DESC>Creates a zip archive of a local database partition with all its blob objects, and returns a path to that
-          zip archive.
-        </DESC>
-
-        <PARAMS>
-          <PARAM name="partition" type="STRING">
-            <DESC>a local database partition.</DESC>
-          </PARAM>
-        </PARAMS>
-
-        <RETURN type="STRING"/>
-      </METHOD>
-
-      <METHOD name="databaseImport" generateAPI="false">
-        <DESC>Imports the database and blob objects from a zip archive created with database_export. If the imported
-          archive is inconsistent, or other failure occurs during the import process, the original database will be
-          restored.
-        </DESC>
-
-        <PARAMS>
-          <PARAM name="partition" type="STRING">
-            <DESC>the local database partition to be replaced by the zip.</DESC>
-          </PARAM>
-          <PARAM name="pathToZip" type="STRING">
-            <DESC>path to the zip archive created with database_export.</DESC>
-          </PARAM>
-        </PARAMS>
-
-      </METHOD>
-
-
       <METHOD name="databaseFullReset" generateAPI="false">
-        <DESC>Imports the database and blob objects from a zip archive created with database_export. If the imported
-          archive is inconsistent, or other failure occurs during the import process, the original database will be
-          restored.
+        <DESC>
+          Deletes all records from the property bag and model tables.
         </DESC>
 
         <PARAMS>
-          <PARAM name="resetClientInfo" type="STRING">
+          <PARAM name="resetClientInfo" type="BOOLEAN">
             <DESC>true to clean the client_info table, false otherwise.</DESC>
+            <DEFAULT>false</DEFAULT>
             <CAN_BE_NIL/>
           </PARAM>
-          <PARAM name="resetLocalModels" type="STRING">
+          <PARAM name="resetLocalModels" type="BOOLEAN">
             <DESC>true to clean local (non-synced) models, false otherwise.</DESC>
+            <DEFAULT>false</DEFAULT>
             <CAN_BE_NIL/>
           </PARAM>
         </PARAMS>
 
       </METHOD>
-
       <METHOD name="databaseFullResetAndLogout" generateAPI="false">
         <DESC>Deletes all records from the property bag and model tables. For examples, see Resetting the Database in
-          Using the Local Database with Orm.
+          Using the Local Database with ORM.
         </DESC>
       </METHOD>
-
       <METHOD name="databaseLocalReset" generateAPI="false">
         <DESC>Reset only local (non-sync-enabled) models.</DESC>
       </METHOD>
-
-
       <METHOD name="databaseFullclientResetAndLogout" generateAPI="false">
-        <DESC>Reset the Rhodes model database and logout. Equivalent to Orm::Orm.database_full_reset(true) followed by
+        <DESC>Reset the Rhodes model database and logout. Equivalent to ORM::ORM.database_full_reset(true) followed by
           SyncEngine.logout.
         </DESC>
       </METHOD>
+      <METHOD name="databaseFullResetEx" generateAPI="false">
+        <DESC>Deletes all records from the property bag and model tables, if models are set then reset only selected
+          models.
+        </DESC>
+        <PARAMS>
+          <PARAM name="propertyMap" type="HASH" propertyHash="true">
+            <DESC>Properties map.</DESC>
+            <PARAMS>
+              <PARAM name="models" type="ARRAY">
+                <DESC>Array of models names to reset.</DESC>
+                <CAN_BE_NIL>
+                  <DESC>Reset all models</DESC>
+                </CAN_BE_NIL>
+              </PARAM>
+              <PARAM name="reset_client_info" type="INTEGER" default="false">
+                <DESC>If set to true, client_info table will be cleaned.</DESC>
+                <CAN_BE_NIL>
+                  <DESC>False on default</DESC>
+                </CAN_BE_NIL>
+              </PARAM>
+              <PARAM name="reset_local_models" type="INTEGER" default="false">
+                <DESC>If set to true, local(non-synced models) will be cleaned.</DESC>
+                <CAN_BE_NIL>
+                  <DESC>False on default</DESC>
+                </CAN_BE_NIL>
+              </PARAM>
+            </PARAMS>
+          </PARAM>
+        </PARAMS>
 
+
+      </METHOD>
+      <METHOD name="addModel" generateAPI="false">
+        <DESC>Javascript using only. Creates ORM model.
+        </DESC>
+        <PARAMS>
+          <PARAM name="name" type="STRING">
+            <DESC>Model name</DESC>
+          </PARAM>
+        </PARAMS>
+      </METHOD>
     </METHODS>
 
     <USER_OVERVIEW>
@@ -89,7 +103,80 @@
     </USER_OVERVIEW>
     <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
     <PLATFORM>
-      <!--  This section is used for the supported platform images at the top -->
+      <!--  This section is used for the supported platfORM images at the top -->
     </PLATFORM>
+    <EXAMPLES>
+      <EXAMPLE title="ORM databaseFullResetEx Method Examples">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              Delete all Rhodes model objects for a source, filtering by conditions.
+            </DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+ORM.databaseFullResetEx(:models => ['Product', 'Customer'], :reset_client_info => true, :reset_local_models => true) ]]>
+              </RUBY>
+              <JAVASCRIPT>
+                <![CDATA[
+ORM.databaseFullResetEx({
+    models: ['Product', 'Customer'],
+    reset_local_info: true,
+    reset_local_models: true
+  }); ]]>
+              </JAVASCRIPT>
+            </CODE>
+
+          </SECTION>
+
+        </SECTIONS>
+      </EXAMPLE>
+      <EXAMPLE title="Add ORM model, create ORM object">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              This example describes creating model and adding model object.
+            </DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+class Product
+  include ORM::PropertyBag
+end
+
+product = Product.create( :manufacturer => 'Apple', :name => 'iPhone5', :price => 199.99)
+
+readedProduct = Product.find(:first)
+readedProduct.manufacturer
+  #=> "Apple"
+readedProduct.name
+  #=> "iPhone5"    ]]>
+              </RUBY>
+
+              <JAVASCRIPT>
+                <![CDATA[
+var productModel = ORM.AddModel('Product');
+
+// create model object and save it to database
+var product = productModel.create({
+  manufacturer: 'Apple',
+  model: 'iPhone5',
+  price: 199.99});
+
+// read product from database
+var readedProduct = productModel.find('first');
+readerProduct.get('manufacturer'); // Apple
+readerProduct.get('model'); // iPhone5
+]]>
+              </JAVASCRIPT>
+            </CODE>
+
+          </SECTION>
+
+        </SECTIONS>
+      </EXAMPLE>
+    </EXAMPLES>
   </MODULE>
-</API>    
+</API>
+
+

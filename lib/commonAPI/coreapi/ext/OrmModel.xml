@@ -1,17 +1,17 @@
 <?xml version = "1.0"?>
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
-  <MODULE name="OrmModel" parent="Orm">
-    <HELP_OVERVIEW></HELP_OVERVIEW>
-    <MORE_HELP></MORE_HELP>
+  <MODULE name="ORMModel" parent="Rho">
+    <HELP_OVERVIEW>ORM model is base class provides methods for creating, update and deletes objects at database
+    </HELP_OVERVIEW>
+    <MORE_HELP> See remarks for different between ruby and javascript usage.
+    </MORE_HELP>
+
 
     <TEMPLATES>
     </TEMPLATES>
 
     <PROPERTIES>
-      <PROPERTY name="clientId" access="STATIC" type="STRING" readOnly="true" generateAPI="false">
-        <DESC>Returns the current sync client id.</DESC>
-      </PROPERTY>
       <PROPERTY name="metadata" access="STATIC" type="HASH" generateAPI="false">
         <DESC>Returns the metadata definition for a given model as a hash. Click here for a Orm metadata example.
           Assigns the hash metadata definition for a given model. Click here for a Orm metadata example.
@@ -21,8 +21,7 @@
 
     <METHODS>
       <ALIASES>
-        <ALIAS new="changed" existing="isChanged"></ALIAS>
-
+        <ALIAS new="changed?" existing="isChanged"></ALIAS>
       </ALIASES>
       <METHOD name="clearNotification" generateAPI="false" access="STATIC">
         <DESC>Clear notification for the object. See the sync notification section for more details.</DESC>
@@ -44,7 +43,6 @@
           </PARAM>
         </PARAMS>
       </METHOD>
-
       <METHOD name="destroy" generateAPI="false">
         <DESC>Destroy a Rhodes model object. Click here for a Orm destroy example.</DESC>
       </METHOD>
@@ -225,6 +223,37 @@
         </PARAMS>
 
       </METHOD>
+
+      <METHOD name="destroy" generateAPI="false">
+        <DESC>Destroy a Rhodes model object. Click here for a ORM destroy example.</DESC>
+      </METHOD>
+      <METHOD name="canModify" generateAPI="false">
+        <DESC>Returns true if the Rhodes model object is not currently being synced (if it is being synced, you should
+          disable editing of the object). Click here for a ORM can_modify example.
+          Before displaying an edit page for an object, your application can check if the object is currently being
+          accessed by the sync process. If it is, you should disable editing of the object. can_modify could return
+          true, for example, on a new local record that was created and sent to the RhoConnect application, but no
+          response has been received yet.
+        </DESC>
+        <RETURN type="BOOLEAN"/>
+      </METHOD>
+      <METHOD name="save" generateAPI="false">
+        <DESC>Saves the current Rhodes model object to the database. Click here for a ORM save example.
+        </DESC>
+      </METHOD>
+      <METHOD name="updateAttributes" generateAPI="false">
+        <DESC>Updates the current Rho model object attributes and saves it to the database. This is the fastest way to
+          add or update model attributes. Click here for a ORM update_attributes example.
+        </DESC>
+        <PARAMS>
+          <PARAM name="attributes" type="HASH">
+            <DESC>List of attributes and their updated values, such as {"name" => "ABC Inc.","address" => "555 5th
+              St."}.
+            </DESC>
+          </PARAM>
+        </PARAMS>
+      </METHOD>
+
     </METHODS>
 
     <USER_OVERVIEW>
@@ -237,7 +266,7 @@
       <!--  This section is used for the supported platform images at the top -->
     </PLATFORM>
     <EXAMPLES>
-      <EXAMPLE title="Orm DeleteAll Method Examples">
+      <EXAMPLE title="ORM DeleteAll Method Examples">
         <SECTIONS>
           <SECTION>
             <DESC>
@@ -258,7 +287,7 @@ Account.deleteAll({industry: 'electronics', website: 'electronics.com'});]]>
 
         </SECTIONS>
       </EXAMPLE>
-      <EXAMPLE title="Orm Find Method Examples">
+      <EXAMPLE title="ORM Find Method Examples">
         <SECTIONS>
 
           <SECTION>
@@ -333,7 +362,7 @@ accounts[0].telephone; // nil ]]>
           <SECTION>
             <DESC>
               Order option is used to sort objects by one or more attributes.
-              The order argument for find accepts several forms.
+              The order argument for find accepts several fORMs.
 
 
               Order by one attribute.
@@ -442,11 +471,11 @@ var accounts = Account.find(
 
         </SECTIONS>
       </EXAMPLE>
-      <EXAMPLE title="Orm New and Create Method Examples">
+      <EXAMPLE title="ORM New and Create Method Examples">
         <SECTIONS>
           <SECTION>
             <DESC>
-              Use method New for creating a new Orm object and assign given attributes.
+              Use method New for creating a new ORM object and assign given attributes.
             </DESC>
             <CODE>
               <RUBY>
@@ -465,7 +494,7 @@ account.name // "ABC Inc." ]]>
           </SECTION>
           <SECTION>
             <DESC>
-              Use method Create for creating a new Orm object and save to the database.
+              Use method Create for creating a new ORM object and save to the database.
             </DESC>
             <CODE>
               <RUBY>
@@ -481,7 +510,7 @@ var account = Account.create({name: "some new record", industry: "electronics"})
           </SECTION>
         </SECTIONS>
       </EXAMPLE>
-      <EXAMPLE title="Orm Paginate Method Example">
+      <EXAMPLE title="ORM Paginate Method Example">
         <SECTIONS>
           <SECTION>
             <DESC>
@@ -546,7 +575,7 @@ Account.paginate({
 
         </SECTIONS>
       </EXAMPLE>
-      <EXAMPLE title="Orm Sync and setNotification Method Example">
+      <EXAMPLE title="ORM Sync and setNotification Method Example">
         <SECTIONS>
           <SECTION>
             <DESC>
@@ -565,7 +594,7 @@ Product.sync( url_for(:action => :sync_callback), "", false, "query=#{@params["s
             <DESC>
               Set a notification to be called when the sync is complete for this model. This is useful for example if
               you want to refresh the current list page or display an alert when new data is synchronized. See the sync
-              notification docs for more information.
+              notification docs for more infORMation.
             </DESC>
             <CODE>
               <RUBY>
@@ -577,11 +606,11 @@ Product.sync( url_for(:action => :sync_callback), "", false, "query=#{@params["s
 
         </SECTIONS>
       </EXAMPLE>
-      <EXAMPLE title="Orm IsChanged Method Example">
+      <EXAMPLE title="ORM IsChanged Method Example">
         <SECTIONS>
           <SECTION>
             <DESC>
-              Determine if a Orm model has local database changes that need to be synchronized.
+              Determine if a ORM model has local database changes that need to be synchronized.
             </DESC>
             <CODE>
               <RUBY>
@@ -604,6 +633,135 @@ end  ]]>
           </SECTION>
         </SECTIONS>
       </EXAMPLE>
+
+      <EXAMPLE title="ORM Destroy Method Examples">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              Destroy a Rhodes model object.
+            </DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+@account = Account.find(:first)
+@account.destroy]]>
+              </RUBY>
+              <JAVASCRIPT>
+                <![CDATA[
+var account = Account.find('first');
+account.destroy();]]>
+              </JAVASCRIPT>
+
+            </CODE>
+
+          </SECTION>
+        </SECTIONS>
+      </EXAMPLE>
+      <EXAMPLE title="ORM UpdateAttributes Method Example">
+        <SECTIONS>
+          <SECTION>
+            <DESC>Update the current ORM object’s attributes and saves it to the database.</DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+account = Account.find(
+  :first,
+  :conditions => {'name' => 'ABC Inc.'}
+)
+account.update_attributes({"name" => "ABC Inc.", "industry" => "Technology"})
+
+account.industry
+  #=> "Technology" ]]>
+              </RUBY>
+              <JAVASCRIPT>
+                <![CDATA[
+var account = Account.find("first", {conditions: {name: "ABC Inc."});
+account.updateAttributes({name: "ABC Inc.", industry: "Technology"});
+account.industry // "Technology" ]]>
+              </JAVASCRIPT>
+            </CODE>
+          </SECTION>
+        </SECTIONS>
+      </EXAMPLE>
+      <EXAMPLE title="ORM Save Method Example">
+        <SECTIONS>
+          <SECTION>
+            <DESC>Saves the current ORM object to the database.</DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+account = Account.new({"name" => "some new record", "industry" => "electronics"})
+account.save ]]>
+              </RUBY>
+              <JAVASCRIPT>
+                <![CDATA[
+var account = Account.new({name: "some new record", industry: "electronics"});
+account.save(); ]]>
+              </JAVASCRIPT>
+            </CODE>
+          </SECTION>
+
+        </SECTIONS>
+      </EXAMPLE>
+      <EXAMPLE title="ORM CanModify Method Example">
+        <SECTIONS>
+          <SECTION>
+            <DESC>Before displaying an edit page for an object, your application can check if the object is currently
+              being accessed by the sync process. If it is, you should disable editing of the object. canModify could
+              return true, for example, on a new local record that was created and sent to the RhoConnect application,
+              but no response has been received yet.
+            </DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+def edit
+  @product = Product.find(@params['id'])
+  if @product && !@product.can_modify
+    render :action => :show_edit_error
+  else
+    render :action => :edit
+  end
+end  ]]>
+              </RUBY>
+            </CODE>
+          </SECTION>
+        </SECTIONS>
+      </EXAMPLE>
     </EXAMPLES>
+
+    <REMARKS>
+      <REMARK title="Ruby usage">
+        <DESC>
+          <![CDATA[
+ORM model class at Ruby provides static methods for creating model instances, reading saved model instances, batch delete their.
+Also ORM model has instance methods for work with concrete model instance: update attributes or delete it.
+                    ]]>
+
+        </DESC>
+      </REMARK>
+      <REMARK title="Javascript usage">
+        <DESC>
+          <![CDATA[
+At javascript we work with objects two kinds:
+
+- ORM model object provides methods like Ruby ORM model static methods.
+ORM models create by calling method addModel(modelName). For example:
+
+    var productModel = ORM.addModel('Product');
+
+- ORM object provides methods for work with concrete object (as Ruby ORM model instance methods).
+
+    var concreteProduct = productModel.new({name: 'Apple', name: 'iPhone5' , price: 199.99});
+
+    concreteProduct.save();
+
+
+
+
+                    ]]>
+
+        </DESC>
+      </REMARK>
+    </REMARKS>
   </MODULE>
 </API>
