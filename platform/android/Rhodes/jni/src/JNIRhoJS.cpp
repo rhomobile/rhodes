@@ -70,16 +70,36 @@ jobject rho_cast_helper<jobject, CJSONEntry>::operator ()(JNIEnv *env, const CJS
     }
     if(jsonEntry.isString())
     {
+        RAWTRACE("Convert to String object");
         return rho_cast<jstring>(env, jsonEntry.getString());
     }
     if(jsonEntry.isArray())
     {
+        RAWTRACE("Convert to Collection object");
         return convertJsonEntryToJavaCollection(jsonEntry);
     }
     if(jsonEntry.isObject())
     {
+        RAWTRACE("Convert to Map object");
         return convertJsonEntryToJavaMap(jsonEntry);
     }
+    if(jsonEntry.isBoolean())
+    {
+        RAWTRACE("Convert to Boolean object");
+        return RhoJniConvertor::getBooleanObject(jsonEntry.getBoolean());
+    }
+    if(jsonEntry.isInteger())
+    {
+        RAWTRACE("Convert to Integer object");
+        return RhoJniConvertor::getIntegerObject(jsonEntry.getInt());
+    }
+    if(jsonEntry.isFloat())
+    {
+        RAWTRACE("Convert to Double object");
+        return RhoJniConvertor::getDoubleObject(jsonEntry.getDouble());
+    }
+
+    RAWTRACE("Convert to null");
     return 0;
 }
 //----------------------------------------------------------------------------------------------------------------------

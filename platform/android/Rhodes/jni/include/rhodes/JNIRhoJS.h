@@ -23,18 +23,6 @@ namespace details
 
 using rho::json::CJSONEntry;
 
-//template <>
-//struct rho_cast_helper<CJSONEntry, jobject>: public RhoJniConvertor
-//{
-//    CJSONEntry operator()(JNIEnv *env, jobject obj);
-//};
-//
-//template <>
-//struct rho_cast_helper<CJSONArray, jobjectArray>: public RhoJniConvertor
-//{
-//    CJSONArray operator()(JNIEnv *env, jobjectArray jArr);
-//};
-
 template <>
 struct rho_cast_helper<jstring, CJSONEntry>
 {

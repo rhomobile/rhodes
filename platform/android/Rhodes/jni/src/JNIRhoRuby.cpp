@@ -201,32 +201,6 @@ jobject rho_cast_helper<jobject, VALUE>::convertRubyHashToJavaMap(VALUE hash)
     return m_jObject;
 }
 
-jobject rho_cast_helper<jobject, VALUE>::getBooleanObject(bool val)
-{
-    jfieldID fid;
-    if(val)
-    {
-        fid = getJNIClassStaticField(m_env, clsBoolean, "TRUE", "Ljava/lang/Boolean;");
-    }
-    else
-    {
-        fid = getJNIClassStaticField(m_env, clsBoolean, "FALSE", "Ljava/lang/Boolean;");
-    }
-    jobject res = m_env->GetStaticObjectField(clsBoolean, fid);
-}
-
-jobject rho_cast_helper<jobject, VALUE>::getIntegerObject(VALUE val)
-{
-    jint jres = static_cast<jint>(rho_ruby_get_int(val));
-    return m_env->NewObject(clsInteger, midInteger, jres);
-}
-
-jobject rho_cast_helper<jobject, VALUE>::getDoubleObject(VALUE val)
-{
-    jdouble jres = static_cast<jdouble>(rho_ruby_get_double(val));
-    return m_env->CallStaticObjectMethod(clsDouble, midDoubleValueOf, jres);
-}
-
 jobject rho_cast_helper<jobject, VALUE>::operator()(JNIEnv *env, VALUE value)
 {
     RAWTRACE("rho_cast<jobject, VALUE>");
@@ -242,26 +216,26 @@ jobject rho_cast_helper<jobject, VALUE>::operator()(JNIEnv *env, VALUE value)
     case T_SYMBOL:
         value = rb_funcall(value, rb_intern("to_s"), 0);
     case T_STRING:
-        RAWTRACE("Convert to string");
+        RAWTRACE("Convert to String object");
         return env->NewStringUTF(RSTRING_PTR(value));
     case T_ARRAY:
-        RAWTRACE("Convert to collection");
+        RAWTRACE("Convert to Collection object");
         return convertRubyArrayToJavaCollection(value);
     case T_HASH:
-        RAWTRACE("Convert to map");
+        RAWTRACE("Convert to Map object");
         return convertRubyHashToJavaMap(value);
     case T_TRUE:
-        RAWTRACE("Convert to true");
-        return getBooleanObject(true);
+        RAWTRACE("Convert to TRUE Boolean obeject");
+        return RhoJniConvertor::getBooleanObject(true);
     case T_FALSE:
-        RAWTRACE("Convert to false");
-        return getBooleanObject(false);
+        RAWTRACE("Convert to FALSE Boolean object");
+        return RhoJniConvertor::getBooleanObject(false);
     case T_FIXNUM:
         RAWTRACE("Convert to Integer object");
-        return getIntegerObject(value);
+        return RhoJniConvertor::getIntegerObject(rho_ruby_get_int(value));
     case T_FLOAT:
         RAWTRACE("Convert to Double object");
-        return getDoubleObject(value);
+        return RhoJniConvertor::getDoubleObject(rho_ruby_get_double(value));
     }
 
     RAWLOG_ERROR1("rho_cast<jobject, VALUE>: wrong type of VALUE: %d", TYPE(value));

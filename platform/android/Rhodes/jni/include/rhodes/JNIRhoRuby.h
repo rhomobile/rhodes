@@ -102,9 +102,6 @@ struct rho_cast_helper<jobject, VALUE>: public RhoJniConvertor
     jobject operator()(JNIEnv *env, VALUE value);
     jobject convertRubyArrayToJavaCollection(VALUE array);
     jobject convertRubyHashToJavaMap(VALUE array);
-    jobject getBooleanObject(bool val);
-    jobject getIntegerObject(VALUE val);
-    jobject getDoubleObject(VALUE val);
 };
 
 template <>

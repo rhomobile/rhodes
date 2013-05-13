@@ -321,6 +321,25 @@ bool RhoJniConvertor::initConvertor(JNIEnv *env)
     return initialized = true;
 }
 //----------------------------------------------------------------------------------------------------------------------
+jobject RhoJniConvertor::getBooleanObject(bool val)
+{
+    static jfieldID fidTRUE = getJNIClassStaticField(m_env, clsBoolean, "TRUE", "Ljava/lang/Boolean;");
+    static jfieldID fidFALSE = getJNIClassStaticField(m_env, clsBoolean, "FALSE", "Ljava/lang/Boolean;");
+    jobject res = m_env->GetStaticObjectField(clsBoolean, val ? fidTRUE : fidFALSE);
+}
+//----------------------------------------------------------------------------------------------------------------------
+jobject RhoJniConvertor::getIntegerObject(int val)
+{
+    jint jres = static_cast<jint>(val);
+    return m_env->NewObject(clsInteger, midInteger, jres);
+}
+//----------------------------------------------------------------------------------------------------------------------
+jobject RhoJniConvertor::getDoubleObject(double val)
+{
+    jdouble jres = static_cast<jdouble>(val);
+    return m_env->CallStaticObjectMethod(clsDouble, midDoubleValueOf, jres);
+}
+//----------------------------------------------------------------------------------------------------------------------
 
 HStringMap
 rho_cast_helper<HStringMap, jobject>::operator()(JNIEnv *env, jobject jObj)
