@@ -66,6 +66,15 @@
                             <PARAM name="backgroundColor" type="INTEGER">
                                 <DESC>Background color of the tabbar.</DESC>
                             </PARAM>
+
+                            <PARAM name="hiddenTabs" type="BOOLEAN">
+                                <DESC>Do not display Tabs with labels.</DESC>
+                            </PARAM>
+
+                            <PARAM name="createOnDemand" type="BOOLEAN">
+                                <DESC>Create tabs on demand. If false, when all tabs will be created immediately.</DESC>
+                            </PARAM>
+
                         </PARAMS>
                     </PARAM>
                     

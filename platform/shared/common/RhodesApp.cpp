@@ -1578,6 +1578,8 @@ void CRhodesApp::setAppBackUrl(const String& url)
 void CRhodesApp::navigateBack()
 {
     int nIndex = rho_webview_active_tab();
+    if (nIndex < 0)
+        nIndex = 0;
 
     if((nIndex < static_cast<int>(m_arAppBackUrlOrig.size()))
         && (m_arAppBackUrlOrig[nIndex].length() > 0))

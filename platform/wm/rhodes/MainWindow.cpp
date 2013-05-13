@@ -116,7 +116,7 @@ CMainWindow::CMainWindow()
     m_alertDialog = 0;
 	m_isMinimized = 0;
 
-    m_nCurrentTab = 0;
+    m_nCurrentTab = -1;
     m_bTabCreated = false;
 }
 
@@ -135,9 +135,10 @@ void CMainWindow::Navigate2(BSTR URL, int index)
 	if ( m_pBrowserEng && !cleared_url.empty()) 
     {
 		StringW cw = convertToStringW(cleared_url);
-		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
-	    //m_spIWebBrowser2->Navigate2(&CComVariant(cleared_url_bstr), NULL, &CComVariant(L"_self"), NULL, NULL);
-        m_pBrowserEng->Navigate(cw.c_str() /*,index*/); 
+        if ( index < 0 )
+            index = tabbarGetCurrent();
+
+        m_pBrowserEng->Navigate(cw.c_str() ,index); 
 	}
 }
 
@@ -149,7 +150,11 @@ void CMainWindow::Navigate(BSTR URL, int index)
 		StringW cw = convertToStringW(cleared_url);
 		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
 	    //m_spIWebBrowser2->Navigate(cleared_url_bstr, NULL, &CComVariant(L"_self"), NULL, NULL);
-        m_pBrowserEng->Navigate(cw.c_str()/*,index*/);
+
+        if ( index < 0 )
+            index = tabbarGetCurrent();
+
+        m_pBrowserEng->Navigate(cw.c_str() ,index );
 	}
 }
 
@@ -400,14 +405,14 @@ HWND CMainWindow::getWebViewHWND()
     if (!m_pBrowserEng)
         return 0;
 
-    return m_pBrowserEng->GetHTMLWND();
+    return m_pBrowserEng->GetHTMLWND(tabbarGetCurrent());
 }
 
 void CMainWindow::hideWebView() 
 {
     if ( m_pBrowserEng )
     {
-        ::ShowWindow( m_pBrowserEng->GetHTMLWND(), SW_HIDE );
+        ::ShowWindow( m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()), SW_HIDE );
 	    mIsBrowserViewHided = true;
     }
 }
@@ -416,7 +421,7 @@ void CMainWindow::showWebView()
 {
     if ( m_pBrowserEng )
     {
-        ::ShowWindow( m_pBrowserEng->GetHTMLWND(), SW_SHOW );
+        ::ShowWindow( m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()), SW_SHOW );
 	    mIsBrowserViewHided = false;
     }
 }
@@ -483,8 +488,8 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     //m_browser.MoveWindow(0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight());
     RECT rect = {0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight()};
 
-    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND() )
-        m_pBrowserEng->ResizeOnTab(0, rect);
+    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()) )
+        m_pBrowserEng->ResizeOnTab(tabbarGetCurrent(), rect);
 
     if (m_menuBar.m_hWnd) {
 		m_menuBar.MoveWindow(0, ySize-m_menuBarHeight, xSize, m_menuBarHeight);
@@ -520,8 +525,8 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     }
 #endif
 
-    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND() )
-        m_pBrowserEng->ResizeOnTab(0, rect);
+    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()) )
+        m_pBrowserEng->ResizeOnTab(tabbarGetCurrent(), rect);
 
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, ySize-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
@@ -959,7 +964,7 @@ LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
         return 0;
     }
 
-    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND() : NULL;
+    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()) : NULL;
     if (hBrowserWnd && ::IsWindowVisible(m_hWnd) ) //!::IsIconic(m_hWnd))
 	{
 		if (hWndLostFocus == hBrowserWnd)
@@ -987,7 +992,7 @@ LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	restoreWebView();
 
     if ( m_pBrowserEng )
-        m_pBrowserEng->BackOnTab(0, 1);
+        m_pBrowserEng->BackOnTab(tabbarGetCurrent(), 1);
 
     return 0;
 }
@@ -997,7 +1002,7 @@ LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 	restoreWebView();
 
     if ( m_pBrowserEng )
-        m_pBrowserEng->ForwardOnTab(0);
+        m_pBrowserEng->ForwardOnTab(tabbarGetCurrent());
 
     return 0;
 }
@@ -1069,6 +1074,9 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
         LPTSTR wcurl = (LPTSTR)(nd->url);
         if (wcurl) 
         {
+            if ( nd->index < 0 )
+                nd->index = tabbarGetCurrent();
+
             if ( m_pBrowserEng )
                 m_pBrowserEng->executeJavascript(wcurl,nd->index);
         }
@@ -1329,7 +1337,7 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 #endif
 
     //Fix issue with lost focus after License Screen hides
-    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND() : NULL;
+    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()) : NULL;
     if (hBrowserWnd && !::IsIconic(m_hWnd))
         ::SetFocus(hBrowserWnd);
 
@@ -1456,7 +1464,7 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
 void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
 {
 	if ( !m_bLoading && !mIsBrowserViewHided && m_pBrowserEng )
-        ::ShowWindow(m_pBrowserEng->GetHTMLWND(), SW_SHOW);
+        ::ShowWindow(m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()), SW_SHOW);
 
 
     RAWLOGC_INFO("WebView", "Page load complete." );
@@ -1645,7 +1653,7 @@ void CMainWindow::createCustomMenu()
 	CMenu sub;
 	CMenu popup;
 	
-    if (!m_pBrowserEng || !m_pBrowserEng->GetHTMLWND())
+    if (!m_pBrowserEng || !m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()))
         return;
 
 	VERIFY(menu.CreateMenu());
@@ -1824,7 +1832,7 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
         return;
 
 	COLORREF   rgbBackColor;
-    bool bHiddenTabs = false;
+    bool bHiddenTabs = false, bCreateOnDemand = false;
 
     for ( Hashtable<rho::String, rho::String>::const_iterator it = tabBarProperties.begin(); it != tabBarProperties.end(); ++it )
     {
@@ -1833,7 +1841,10 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
         if (strcasecmp(name, "backgroundColor") == 0) 
             rgbBackColor = getColorFromString(value);
         if (strcasecmp(name, "hiddenTabs") == 0) 
-            bHiddenTabs = strcasecmp(value, "true");
+            bHiddenTabs = strcasecmp(value, "true") == 0;
+        if (strcasecmp(name, "createOnDemand") == 0) 
+            bCreateOnDemand = strcasecmp(value, "true") == 0;
+
     }
 
     if ( !bHiddenTabs )
@@ -1895,20 +1906,70 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
         m_arTabs.addElement(CTabBarItem(action, bUseCurrentViewForTab, bReloadPage));
     }
 
+    if (!bCreateOnDemand)
+    {
+        for ( int i = 0; i < (int)m_arTabs.size(); i++ )
+        {
+            tabbarSwitch(i);
+        }
+    }
+
     m_bTabCreated = true;
 }
 
 void CMainWindow::removeTabbar()
 {
-    //TODO: removeTabbar()
+    for ( int i = 0; i < (int)m_arTabs.size(); i++ )
+    {
+        if (!m_arTabs[i].m_bUseCurrentViewForTab)
+            m_pBrowserEng->CloseTab(m_arTabs[i].m_nTabID);
+    }
+
+    m_arTabs.removeAllElements();
     m_bTabCreated = false;
+    m_nCurrentTab = -1;
 }
 
 void CMainWindow::tabbarSwitch(int index)
 {
-    m_nCurrentTab = index;
+    if (!m_pBrowserEng)
+        return;
 
-    //TODO: tabbarSwitch
+    if ( index >= (int)m_arTabs.size() )
+    {
+        LOG(ERROR) + "Invalid Tab Index: " + index;
+        return;
+    }
+
+    bool bNewTab = !m_arTabs[index].m_hwndTab;
+    if ( !m_arTabs[index].m_hwndTab )
+    {
+        if ( m_arTabs[index].m_bUseCurrentViewForTab)
+        {
+            m_arTabs[index].m_nTabID = index;
+            m_arTabs[index].m_hwndTab = m_pBrowserEng->GetHTMLWND(0);
+        }else
+        {
+            m_arTabs[index].m_nTabID = m_pBrowserEng->NewTab();
+            m_arTabs[index].m_hwndTab = m_pBrowserEng->GetHTMLWND(m_arTabs[index].m_nTabID);
+        }
+    }
+
+    if ( !m_arTabs[index].m_hwndTab )
+    {
+        LOG(ERROR) + "Unable to create Tab.";
+        return;
+    }
+
+    if ( m_nCurrentTab != index && !m_arTabs[index].m_bUseCurrentViewForTab)
+    {
+        m_pBrowserEng->SwitchTab(m_arTabs[index].m_nTabID);
+        m_nCurrentTab = index;
+    }
+
+    if ( m_arTabs[index].m_bReloadPage || bNewTab )
+        RHODESAPP().loadUrl( m_arTabs[index].m_strAction );
+    
 }
 
 void CMainWindow::tabbarBadge(int index, const char* badge)
@@ -1918,7 +1979,10 @@ void CMainWindow::tabbarBadge(int index, const char* badge)
 
 int CMainWindow::tabbarGetCurrent()
 {
-	return m_nCurrentTab;
+    if (m_arTabs.size()>0 && m_nCurrentTab < m_arTabs.size() && m_nCurrentTab > 0 )
+	    return m_arTabs[m_nCurrentTab].m_nTabID;
+
+    return 0;
 }
 
 bool CMainWindow::isTabBarStarted()

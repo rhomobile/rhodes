@@ -46,7 +46,7 @@ CIEBrowserEngine::~CIEBrowserEngine(void)
     //TODO: destroy browser
 }
 
-BOOL CIEBrowserEngine::Navigate(LPCTSTR szURL)
+BOOL CIEBrowserEngine::Navigate(LPCTSTR szURL, int iTabID)
 {
     BSTR bstrUrl = SysAllocString(szURL);
     if ( wcsncmp(szURL, L"http://127.0.0.1", 16 ) == 0 )
@@ -204,7 +204,7 @@ void CIEBrowserEngine::executeJavascript(const wchar_t* szJSFunction, int index)
         strUrlW = L"javascript:";
 
     strUrlW += szJSFunction;
-    Navigate(strUrlW.c_str());
+    Navigate(strUrlW.c_str(), index);
 }
 
 void CIEBrowserEngine::SetCookie(char* url, char* cookie)
