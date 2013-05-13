@@ -613,6 +613,182 @@
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
         <EXAMPLES >
+           <EXAMPLE title="Get device capabilities">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   You can find out whether the device has access to several system-dependant features such as calendar, camera, touchscreen, etc.
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# Returns true if device supports Motorola device capabilities, such as barcode scanner, etc.
+is_motorola_device = Rho::System.isMotorolaDevice
+    
+has_calendar = Rho::System.hasCalendar
+has_camera = Rho::System.hasCamera
+has_cell_network = Rho::System.hasCellNetwork
+has_wifi_network = Rho::System.hasWifiNetwork
+has_network = Rho::System.hasNetwork
+has_sqlite = Rho::System.hasSqlite
+has_touchscreen = Rho::System.hasTouchscreen
+
+message = "
+Motorola device: #{is_motorola_device}
+Calendar: #{has_calendar}
+Camera: #{has_camera}
+Cell network: #{has_cell_network}
+WiFi: #{has_wifi_network}
+Network: #{has_network}
+SQLite: #{has_sqlite}
+Touchscreen: #{has_touchscreen}
+"
+Alert.show_popup(message)
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+// Returns true if device supports Motorola device capabilities, such as Scanner, etc.
+var is_motorola_device = Rho.System.isMotorolaDevice;
+
+var has_calendar = Rho.System.hasCalendar;
+var has_camera = Rho.System.hasCamera;
+var has_cell_network = Rho.System.hasCellNetwork;
+var has_wifi_network = Rho.System.hasWifiNetwork;
+var has_network = Rho.System.hasNetwork;
+var has_sqlite = Rho.System.hasSqlite;
+var has_touchscreen = Rho.System.hasTouchscreen;
+
+message = "Motorola device: "+is_motorola_device+"\n"+
+  "Calendar: "+has_calendar+"\n"+ 
+  "Camera: "+has_camera+"\n"+
+  "Cell network: "+has_cell_network+"\n"+
+  "WiFi: "+has_wifi_network+"\n"+
+  "Network: "+has_network+"\n"+
+  "SQLite: "+has_sqlite+"\n"+
+  "Touchscreen: "+has_touchscreen;
+
+alert(message);
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Get version information">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Retrieve the version of the underlying Operating System
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+version_info = Rho::System.osVersion
+Alert.show_popup(version_info)
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+var version_info = Rho.System.osVersion;
+alert(version_info);
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Install / uninstall other applications">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   You can ask the system to install or uninstall a different application. This feature is useful for installing sub-applications, custom upgrades, etc
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+#install an application from given url
+Rho::System.applicationInstall("/bin/target/android/rhodes-app-debug.apk")
+
+# uninstall the application
+Rho::System.applicationUninstall("rhodes-app")
+
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+// install an application from given url
+Rho.System.applicationInstall("/bin/target/android/rhodes-app-debug.apk");
+  
+// uninstall the application
+Rho.System.applicationUninstall("rhodes-app");
+
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Get the local server port for debug purposes">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   If necessary, you can read the embedded HTTP server's port, for debugging purposes.
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# Get port of the local (embedded) HTTP served
+local_port = Rho::System.localServerPort()
+Alert.show_popup(local_port)
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+// Get port of the local (embedded) HTTP server
+var local_port = Rho.System.localServerPort;
+alert(local_port);
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Zipping and unzipping files">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   If you ever need to build or extract zip archives, RhoMobile includes easy-to-use APIs for this task  
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# unzip a file 
+Rho::System.unzipFile("/app/public/sample.zip")
+
+# zip a file
+Rho::System.zipFile("/app/public", "/app/public/sample.txt")
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+// unzip file 
+Rho.System.unzipFile("/app/public/sample.zip");
+  
+// zip file
+Rho.System.zipFile("/app/public/zipfile.zip", "/app/public/sample.txt");
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+            
             <EXAMPLE title="Working with the Windows Registry">
                 <SECTIONS>
                     <SECTION>

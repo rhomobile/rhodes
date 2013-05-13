@@ -241,5 +241,149 @@
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
+<EXAMPLES >
+           <EXAMPLE title="Set the locale">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   If your application is internationalized, you may want to set the locale depending on the user's preference 
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+Rho::Application.setLocale('en')
+current_locale = Rho::Application.locale
+Alert.show_popup(current_locale)
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+Rho.Application.setLocale('en')
+var current_locale = Rho.Application.locale();
+alert(current_locale)
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Get folders where items are stored">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   There are times where you need access to files bundled with your application, or to write files to a safe folder. These examples show how to retrieve each of the several important folders available
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# Get and show the various app folders
+appFolder = Rho::Application.appBundleFolder
+appsBundleFolder = Rho::Application.appsBundleFolder
+databaseBlobFolder = Rho::Application.databaseBlobFolder
+publicFolder = Rho::Application.publicFolder
+userFolder = Rho::Application.userFolder
+
+message = "App bundle folder: "+appFolder+"\n"+
+"Apps bundle folder: "+appsBundleFolder+"\n"+ 
+"Database blob folder: "+databaseBlobFolder+"\n"+ 
+"Public folder: "+publicFolder+"\n"+ 
+"User folder: "+userFolder
+    
+Alert.show_popup(message)
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+     // Get and show the various app folders
+     var appFolder = Rho.Application.appBundleFolder;
+     var appsBundleFolder = Rho.Application.appsBundleFolder;
+     var databaseBlobFolder = Rho.Application.databaseBlobFolder;
+     var publicFolder = Rho.Application.publicFolder;
+     var userFolder = Rho.Application.userFolder;
+     
+     var message = "App bundle folder: "+appFolder+"\n"+
+     "Apps bundle folder: "+appsBundleFolder+"\n"+ 
+     "Database blob folder: "+databaseBlobFolder+"\n"+ 
+     "Public folder: "+publicFolder+"\n"+ 
+     "User folder: "+userFolder;
+     
+     alert(message);
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+          <EXAMPLE title="Minimize your application">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   This will minimize your application.
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+Rho::Application.minimize
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+Rho.Application.minimize();
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Quit your application">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   This will exit your application.
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+Rho::Application.quit
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+Rho.Application.quit();
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Restore your application">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   This will restore you application
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+Rho::Application.restore
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+Rho.Application.restore();
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+
+       </EXAMPLES>
+
     </MODULE>
 </API>    

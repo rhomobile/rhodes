@@ -175,6 +175,71 @@ readerProduct.get('model'); // iPhone5
 
         </SECTIONS>
       </EXAMPLE>
+           <EXAMPLE title="Export database">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Export all data from a database partition to a zip file
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# Export database partition as zip file
+zip_archive = Rho::Orm.databaseExport(:user)
+Alert.show_popup(zip_archive)
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+// Export database partition as zip file
+var exported_zip = Rho.Orm.databaseExport("user");
+alert("Exported database to: "+exported_zip);
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+          <EXAMPLE title="Import database">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Import database from a zip file created with Orm.databaseExport
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# Import database from a zip file created with "Rho::Orm.databaseExport"
+exported_database = "/somewhere/file.zip"
+result = Rho::Orm.databaseImport(:user, exported_database)
+if (result)
+  Alert.show_popup("Import succeeded. Existing data was erased and the backup was restored")
+else
+  # If the process fails, everything will be restored to its previous state. We will not lose any information
+  Alert.show_popup("Database import failed. The database is unchanged")
+end
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+// Import database from a zip file created with "Rho.Orm.databaseExport"      
+var exported_zip = "/somewhere/filename.zip";
+var result = Rho.Orm.databaseImport("user", exported_zip);
+if (result) {
+  alert("Import succeeded. Existing data was erased and the backup was restored");
+} else {
+  // If the process fails, everything will be restored to its previous state. We will not lose any information
+  alert("Database import failed. The database is unchanged");
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+      
     </EXAMPLES>
   </MODULE>
 </API>
