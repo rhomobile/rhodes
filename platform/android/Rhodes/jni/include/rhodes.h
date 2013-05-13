@@ -254,6 +254,10 @@ struct RhoJniConvertor
     bool initConvertor(JNIEnv *env);
 
     JNIEnv* m_env;
+
+    jobject getBooleanObject(bool val);
+    jobject getIntegerObject(int val);
+    jobject getDoubleObject(double val);
 };
 
 template <>
