@@ -311,5 +311,343 @@
         <PLATFORM>
             <!--  This section is used for the supported platform images at the top -->
         </PLATFORM>
+<EXAMPLES >
+           <EXAMPLE title="Take picture with default camera">
+            <SECTIONS>
+              <SECTION>
+               <DESC>
+                   Take an image with as little code as possible, using all default values
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+def take_picture_with_default_camera
+  # Capture an image from the default camera on the device, using the default image settings
+  Rho::Camera.take_picture({}, :picture_taken_callback)
+end
+  
+def picture_taken_callback
+  # Did we really take a picture?
+  if (@params["status"]=="ok")
+    # If so, show it
+    Rho::WebView.navigate(url_for(:action => :show_picture, :query => {:image => Rho::Application.expandDatabaseBlobFilePath(@params["imageUri"])}))
+  else
+    # Otherwise we are done here
+    Rho::WebView.navigate(url_for(:action => :index))
+  end
+end
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+function take_picture_with_default_camera() {
+  // Capture an image from the default camera on the device, using the default image settings
+  Rho.Camera.take_picture({}, picture_taken_callback);
+}
+
+function picture_taken_callback(params) {
+  // Did we receive an image?
+  if (params["status"]=="ok") {
+    // Assuming we have an <img id="#captured_image"> tag, we will be able to see the image that was just captured
+    $("#captured_image").attr("src", Rho.Application.expandDatabaseBlobFilePath(params["imageUri"]));
+  }
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+
+           <EXAMPLE title="Choose which camera to use when taking images">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   On devices with more than one camera, you can select which camera to use for taking pictures
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+
+# controller.rb
+def choose_camera
+  $cameras = Rho::Camera.enumerate
+  render
+end
+
+def take_picture_using_chosen_camera
+  camera = $cameras[@params["cameraIndex"].to_i]
+  camera.take({}, url_for(:action => :picture_taken_callback))
+end
+
+
+# choose_camera.erb
+<ul data-role="listview">
+  <% $cameras.each_with_index do |camera, index| %>
+    <li><a href="<%= url_for(:action => :take_picture_using_chosen_camera, :query => {:camera_index => index}) %>"><%= camera.cameraType %></li> 
+  <% end %>
+</ul>
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+
+
+<div id="camera_list">
+</div>
+
+
+var cameras = [];
+
+function choose_camera() {
+  // get all available cameras
+  cameras = Rho.Camera.enumerate();
+
+  // build an HTML list
+  var cameraList = "<ul>";
+       
+  for (var cameraIndex=0; cameraIndex<cameras.length; cameraIndex++) {
+    var camera = cameras[cameraIndex];
+    // Create a link for each camera with an onclick handler
+    cameraList = cameraList +'<li><a href="#" class="take_picture_with_selected_camera" onclick="take_picture_with_camera('+cameraIndex+')">'+camera.cameraType+'</a></li>';
+  }
+  
+  cameraList = cameraList+"</ul>";
+  
+  // make camera list visible to the user
+  $("#camera_list").html(cameraList);
+}
+
+function take_picture_with_camera(cameraIndex) {
+  var camera = cameras[cameraIndex];
+  camera.take_picture({}, picture_taken_callback);
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Saving a picture to the device's gallery">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Apart from taking new pictures, you can also save images to the built-in gallery. In the following examples, the picture we are adding to the gallery is one that was just taken with the camera, but you can add any other image you can access by filename
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+def take_picture_and_save_it_to_gallery
+  Rho::Camera.choose_picture({}, url_for(:action => :picture_taken_callback_save_to_gallery))    
+end
+  
+def picture_taken_callback_save_to_gallery
+  # Did we really take a picture?
+  if (@params["status"]=="ok")
+    # If so, save it to the gallery
+    Rho::Camera.saveImageToDeviceGallery(Rho::Application.expandDatabaseBlobFilePath(@params["imageUri"]))
+  end
+
+  Rho::WebView.navigate(url_for(:action => :index))
+
+end  
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+function take_picture_and_save_it_to_gallery() {
+  Rho.Camera.choose_picture({}, picture_taken_callback_save_to_gallery);
+}
+
+function picture_taken_callback_save_to_gallery(params) {
+  if (params["status"]=="ok") {
+    Rho.Camera.saveImageToDeviceGallery(Rho.Application.expandDatabaseBlobFilePath(params["imageUri"]));
+      
+    alert("Image saved to gallery");
+  }
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+
+           <EXAMPLE title="Control image properties">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   You can tweak multiple options to get an image exactly as you need it 
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+def control_image_properties
+  # Instead of accepting the defaults, let's set some properties to our liking
+    
+  # We will ask for a PNG file...
+  Rho::Camera.compressionFormat = "png"
+    
+  # ...a particular image size...
+  Rho::Camera.desiredWidth = 1024
+  Rho::Camera.desiredHeight = 768
+    
+  # ...and force the flash to be used
+  Rho::Camera.flashMode = "on"
+    
+  # Now, take the picture
+  Rho::Camera.take_picture({}, :picture_taken_callback)    
+end
+
+def picture_taken_callback
+  # Did we really take a picture?
+  if (@params["status"]=="ok")
+    # If so, show it
+    Rho::WebView.navigate(url_for(:action => :show_picture, :query => {:image => Rho::Application.expandDatabaseBlobFilePath(@params["imageUri"])}))
+  else
+    # Otherwise we are done here
+    Rho::WebView.navigate(url_for(:action => :index))
+  end
+end
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+function control_image_properties() {
+  // Instead of accepting the defaults, let's set some properties to our liking
+  
+  // We will ask for a PNG file...
+  Rho.Camera.compressionFormat = "png";
+  
+  // ...a particular image size...
+  Rho.Camera.desiredWidth = 1024;
+  Rho.Camera.desiredHeight = 768;
+  
+  // ...and force the flash to be used
+  Rho.Camera.flashMode = "on";
+  
+  // Now, take the picture
+  Rho.Camera.take_picture({}, picture_taken_callback);      
+}
+
+function picture_taken_callback(params) {
+  // Did we receive an image?
+  if (params["status"]=="ok") {
+    // show it in our <img id="captured_image"> tag
+    $("#captured_image").attr("src", Rho.Application.expandDatabaseBlobFilePath(params["imageUri"]));
+  }
+
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Determine camera capabilities">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   You can get all available camera properties in a single call
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# controller.rb
+
+def determine_camera_capabilities
+  # Get all camera properties
+  @properties = Rho::Camera.getAllProperties
+  render
+end
+
+# determine_camera_capabilities.erb
+    <ul data-role="listview">
+    
+    <% @properties.each_pair do |name,value| %>
+      <li><%= name %> : <%= value %></li>
+    <% end %>
+
+    </ul>
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+function determine_camera_capabilities() {
+  var capabilitiesList = "<ul>"; 
+
+  // Get all capabilities of the camera...
+  var capabilities = Rho.Camera.getAllProperties();
+
+  // ... compose a nicely formatted list with their names and values ...
+  for (var capability in capabilities) {
+    capabilitiesList+="<li>"+capability+": "+capabilities[capability]+"</li>";
+  }
+
+  capabilitiesList += "</ul>";
+  
+  // ... and show it
+  $("#camera_capabilities").html(capabilitiesList);
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+           <EXAMPLE title="Select picture from device gallery">
+            <SECTIONS>
+               
+              <SECTION>
+               <DESC>
+                   Apart from taking new pictures, the Camera API also lets you access existing images on the device's gallery
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+def select_picture_from_gallery 
+  Rho::Camera.choose_picture({}, url_for(:action => :picture_taken_callback))
+end
+
+def picture_taken_callback
+  # Did we really take a picture?
+  if (@params["status"]=="ok")
+    # If so, show it
+    Rho::WebView.navigate(url_for(:action => :show_picture, :query => {:image => Rho::Application.expandDatabaseBlobFilePath(@params["imageUri"])}))
+  else
+    # Otherwise we are done here
+    Rho::WebView.navigate(url_for(:action => :index))
+  end
+end
+                   ]]>
+                 </RUBY>
+                <JAVASCRIPT>
+           <![CDATA[
+function select_picture_from_gallery() {
+  Rho.Camera.choose_picture({}, picture_taken_callback);
+}
+
+function picture_taken_callback(params) {
+  // Did we receive an image?
+  if (params["status"]=="ok") {
+    // Show it in an <img> tag
+    $("#captured_image").attr("src", Rho.Application.expandDatabaseBlobFilePath(params["imageUri"]));
+  }
+}
+                   ]]>
+                 </JAVASCRIPT>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+
+
+       </EXAMPLES>
+
+
     </MODULE>
 </API>    
