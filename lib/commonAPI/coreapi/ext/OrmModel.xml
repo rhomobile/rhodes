@@ -44,14 +44,11 @@
           </PARAM>
         </PARAMS>
       </METHOD>
-<<<<<<< Updated upstream
 
       <METHOD name="destroy" generateAPI="false">
         <DESC>Destroy a Rhodes model object. Click here for a Orm destroy example.</DESC>
       </METHOD>
 
-=======
->>>>>>> Stashed changes
       <METHOD name="find" generateAPI="false" access="STATIC">
         <DESC>Find Rhodes model objects. Click here for a Orm find example. For examples of find with advanced queries,
           see Advanced Queries in Using the Local Database with Orm.
