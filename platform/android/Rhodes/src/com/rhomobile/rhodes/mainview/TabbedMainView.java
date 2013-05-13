@@ -26,16 +26,20 @@
 
 package com.rhomobile.rhodes.mainview;
 
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
+import java.util.List;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
+import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.ContextFactory;
+import com.rhomobile.rhodes.util.Utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -71,18 +75,26 @@ public class TabbedMainView implements MainView {
 	private int mBackgroundColor = 0;
 	private boolean mBackgroundColorEnable = false;
 	
-	private String mChangeTabCallback = null;
-	
+	//private String mChangeTabCallback = null;
+	IMethodResult mChangeTabCallback = null;
 	
 	private boolean mIsReallyOnScreen = false;
 	//private String mLoadUrlAfterLoadToScreen = null;
 	
-	private static native void onTabBarChangeTabCallback(String callback_url, String body);
+	//private static native void onTabBarChangeTabCallback(String callback_url, String body);
 	
 	
 	private void callChangeTabCallback(int index) {
-		String body = "&rho_callback=1" + "&tab_index=" + String.valueOf(index);
-		onTabBarChangeTabCallback(mChangeTabCallback, body);
+		//String body = "&rho_callback=1" + "&tab_index=" + String.valueOf(index);
+		//onTabBarChangeTabCallback(mChangeTabCallback, body);
+		Map<String,Object> resHash = new Hashtable<String,Object>();
+		
+		resHash.put("tab_index", String.valueOf(index));
+		if (mChangeTabCallback != null) {
+			mChangeTabCallback.set(resHash);
+			Utils.platformLog("TABBAR", "TabIndex changed, tab_index = "+String.valueOf(index));
+		}
+		
 	}
 	
 	private static class TabData {
@@ -452,17 +464,22 @@ public class TabbedMainView implements MainView {
 	
 	
 	@SuppressWarnings("unchecked")
-	public TabbedMainView(Object params) {
+	public TabbedMainView(Object params, Object options, IMethodResult callback) {
 		Context ctx = ContextFactory.getUiContext();
 
+		if (callback != null) {
+			mChangeTabCallback = callback;
+		}
+		
 		mBackgroundColorEnable = false;		
 
-		Vector<Object> tabs = null;
+		List<Object> tabs = null;
 		boolean place_tabs_bottom = false;
-		if (params instanceof Vector<?>)
-			tabs = (Vector<Object>)params;
-		else if (params instanceof Map<?,?>) {
-			Map<Object,Object> settings = (Map<Object,Object>)params;
+		if (params instanceof List<?>) {
+			tabs = (List<Object>)params;
+		}
+		if (options instanceof Map<?,?>) {
+			Map<Object,Object> settings = (Map<Object,Object>)options;
 			
 			Object bkgObj = settings.get("background_color");
 			if ((bkgObj != null) && (bkgObj instanceof String)) {
@@ -471,10 +488,10 @@ public class TabbedMainView implements MainView {
 				mBackgroundColorEnable = true;
 			}
 			
-			Object callbackObj = settings.get("on_change_tab_callback");
-			if ((callbackObj != null) && (callbackObj instanceof String)) {
-				mChangeTabCallback = new String(((String)callbackObj));
-			}
+			//Object callbackObj = settings.get("on_change_tab_callback");
+			//if ((callbackObj != null) && (callbackObj instanceof String)) {
+			//	mChangeTabCallback = new String(((String)callbackObj));
+			//}
 
 			Object placeBottomObj = settings.get("place_tabs_bottom");
 			if ((placeBottomObj != null) && (placeBottomObj instanceof String)) {
@@ -482,15 +499,17 @@ public class TabbedMainView implements MainView {
 			}
 			
 			
-			Object tabsObj = settings.get("tabs");
-			if (tabsObj != null && (tabsObj instanceof Vector<?>))
-				tabs = (Vector<Object>)tabsObj;
+			//Object tabsObj = settings.get("tabs");
+			//if (tabsObj != null && (tabsObj instanceof Vector<?>))
+			//	tabs = (Vector<Object>)tabsObj;
 		}
 		
 		if (tabs == null)
 			throw new IllegalArgumentException("No tabs specified");
 		
-		int size = tabs.size();
+		Object[] tabs_array = tabs.toArray();
+		
+		int size = tabs_array.length;
 		
 		host = new TabHost(ctx, null);
 		
@@ -536,7 +555,7 @@ public class TabbedMainView implements MainView {
 		boolean selected_color_enable = false;
 
 		for (int i = 0; i < size; ++i) {
-			Object param = tabs.elementAt(i);
+			Object param = tabs_array[i];
 			if (!(param instanceof Map<?,?>))
 				throw new IllegalArgumentException("Hash expected");
 			
@@ -549,7 +568,7 @@ public class TabbedMainView implements MainView {
 			Object actionObj = hash.get("action");
 			
 			boolean use_current_view_for_tab = false;
-			Object use_current_view_for_tab_Obj = hash.get("use_current_view_for_tab");
+			Object use_current_view_for_tab_Obj = hash.get("useCurrentViewForTab");
 			if (use_current_view_for_tab_Obj != null) {
 				use_current_view_for_tab = ((String)use_current_view_for_tab_Obj).equalsIgnoreCase("true");
 			}
@@ -576,7 +595,7 @@ public class TabbedMainView implements MainView {
 			if (reloadObj != null && (reloadObj instanceof String))
 				reload = ((String)reloadObj).equalsIgnoreCase("true");
 			
-			Object selected_color_Obj = hash.get("selected_color");
+			Object selected_color_Obj = hash.get("selectedColor");
 			if ((selected_color_Obj != null) && (selected_color_Obj instanceof String)) {
 				selected_color_enable = true;
 				selected_color = Integer.parseInt((String)selected_color_Obj) | 0xFF000000;
@@ -586,7 +605,7 @@ public class TabbedMainView implements MainView {
 			if (disabled_Obj != null && (disabled_Obj instanceof String))
 				disabled = ((String)disabled_Obj).equalsIgnoreCase("true");
 			
-			Object web_bkg_color_Obj = hash.get("web_bkg_color");
+			Object web_bkg_color_Obj = hash.get("backgroundColor");
 			if (web_bkg_color_Obj != null && (web_bkg_color_Obj instanceof String)) {
 				web_bkg_color = Integer.parseInt((String)web_bkg_color_Obj) | 0xFF000000;
 			}

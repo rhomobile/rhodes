@@ -44,6 +44,7 @@
 #include "unzip/unzip.h"
 #include "common/Tokenizer.h"
 #include "api_generator/js_helpers.h"
+#include "api_generator/StringfyHelper.h"
 
 #include <algorithm>
 
@@ -396,14 +397,19 @@ void CRhodesApp::run()
 #if !defined(RHO_NO_RUBY)
     LOG(INFO) + "RhoRubyInitApp...";
     RhoRubyInitApp();
-    if (m_applicationEventReceiver.isCallbackSet())
-    {
-        HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
-        m_applicationEventReceiver.onReinstallConfigUpdate(mapConflicts);    
-    }
-    rho_ruby_call_config_conflicts();
-#endif
     
+    HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
+    bool handled = mapConflicts.size()==0;
+    
+    if (!handled)
+    {
+        handled = m_applicationEventReceiver.onReinstallConfigUpdate(mapConflicts);
+    }
+    if (!handled)
+    {
+        rho_ruby_call_config_conflicts();
+    }
+#endif
     RHOCONF().conflictsResolved();
 
     while (!m_bExit) {
@@ -1966,14 +1972,15 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 	{
 	}
     
-    void CRhodesApp::setApplicationEventHandler(const apiGenerator::CMethodResult& oResult)
+    void CRhodesApp::setApplicationEventHandler(apiGenerator::CMethodResult& oResult)
     {
         m_applicationEventReceiver.setCallback(oResult);
     }
     
     void CRhodesApp::clearApplicationEventHandler()
     {
-        m_applicationEventReceiver.setCallback(apiGenerator::CMethodResult());
+        apiGenerator::CMethodResult tmp;
+        m_applicationEventReceiver.setCallback(tmp);
     }
     
     IApplicationEventReceiver* CRhodesApp::getApplicationEventReceiver()
@@ -2094,20 +2101,36 @@ void CExtManager::requireRubyFile( const char* szFilePath )
     
     bool ApplicationEventReceiver::onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts)
     {
-        if (m_result.hasCallback())
+        // at this point http server is not yet started
+        // there is no way to call ruby and javascript callbacks
+        // TODO: find a way to execute ruby callbacks during initialization
+        return false;
+        
+        using namespace rho::apiGenerator;
+        if (m_result.hasCallback() && (conflicts.size() > 0) )
         {
-            Hashtable<String, Vector<String> > conv;
+            StringifyHash confhash;            
             for ( HashtablePtr<String,Vector<String>* >::const_iterator it=conflicts.begin() ; it != conflicts.end(); it++ )
             {
                 String key = it->first;
                 Vector<String>& ref = *(it->second);
-                Vector<String>& current = conv[key];
+                StringifyVector vect;
+                //Vector<String>& current = conv[key];
                 for( Vector<String>::const_iterator it2=ref.begin(); it2 != ref.end(); it2++)
                 {
-                    current.push_back(*it2);
+                    vect.push_back(*it2);
                 }
+                confhash.set(key, vect);
             }
-            m_result.set(conv);
+            
+            StringifyHash result;
+            result.set(APP_EVENT, APP_EVENT_CONFIGCONFLICT);
+            result.set(APP_EVENT_DATA, confhash);
+            
+            rho::String buffer;
+            result.toString(buffer);
+            
+            m_result.setJSON(buffer);
         }
 
         return false;
@@ -2121,7 +2144,7 @@ void CExtManager::requireRubyFile( const char* szFilePath )
         return m_result.hasCallback();
     }
     
-    void ApplicationEventReceiver::setCallback(const apiGenerator::CMethodResult& oResult){
+    void ApplicationEventReceiver::setCallback(apiGenerator::CMethodResult& oResult){
         m_result = oResult;
     }
 

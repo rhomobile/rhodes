@@ -26,11 +26,13 @@
 
 package com.rhomobile.rhodes;
 
+import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.mainview.MainView;
 import com.rhomobile.rhodes.mainview.SimpleMainView;
 import com.rhomobile.rhodes.mainview.TabbedMainView;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
+
 
 public class NativeBar {
 	
@@ -46,10 +48,14 @@ public class NativeBar {
 		
 		private int type;
 		private Object params;
+		private Object options;
+		private IMethodResult callback;
 		
-		public CreateTask(int t, Object p) {
+		public CreateTask(int t, Object p, Object o, IMethodResult cb) {
 			type = t;
 			params = p;
+			options = o;
+			callback = cb;
 		}
 
 		public void run() {
@@ -77,11 +83,11 @@ public class NativeBar {
                         v = new SimpleMainView(webView, params);
                     }
 					else
-						smv.setToolbar(params);
+						smv.setToolbar(params, options);
 					started = true;
 					break;
 				case TABBAR_TYPE:
-					v = new TabbedMainView(params);
+					v = new TabbedMainView(params, options, callback);
 					started = true;
 					break;
 				default:
@@ -122,9 +128,9 @@ public class NativeBar {
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 
-	public static void create(int type, Object params) {
+	public static void create(int type, Object params, Object options, IMethodResult callback) {
 		try {
-			PerformOnUiThread.exec(new CreateTask(type, params));
+			PerformOnUiThread.exec(new CreateTask(type, params, options, callback));
 		}
 		catch (Exception e) {
 			reportFail("create", e);
@@ -133,7 +139,7 @@ public class NativeBar {
 	
 	public static void remove() {
 		try {
-			PerformOnUiThread.exec(new CreateTask(NOBAR_TYPE, null));
+			PerformOnUiThread.exec(new CreateTask(NOBAR_TYPE, null, null, null));
 		}
 		catch (Exception e) {
 			reportFail("remove", e);

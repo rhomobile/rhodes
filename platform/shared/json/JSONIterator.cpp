@@ -412,7 +412,10 @@ CJSONEntry CJSONEntry::getEntry(const char* name) const
 {
     int pos = 0, start_offset = 0;
     unsigned char c;
-    String strRes = "\"";
+    String strRes;
+    // \" + <1 char per symbol in an average case> + \"
+    strRes.reserve(strValue.length()+2);
+    strRes += "\"";
     const char* str = strValue.c_str();
     do 
     {

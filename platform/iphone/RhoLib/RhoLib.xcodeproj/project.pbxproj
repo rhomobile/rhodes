@@ -77,6 +77,8 @@
 		BDD11ECE113664E700349BE3 /* rhoparams.h in Headers */ = {isa = PBXBuildFile; fileRef = BDD11ECC113664E700349BE3 /* rhoparams.h */; };
 		BDFCB13D112EE2B500AE3724 /* ssl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BDFCB13B112EE2B500AE3724 /* ssl.cpp */; };
 		BDFCB13E112EE2B500AE3724 /* ssl.h in Headers */ = {isa = PBXBuildFile; fileRef = BDFCB13C112EE2B500AE3724 /* ssl.h */; };
+		C084B09117394D4D00C1DCC0 /* StringfyHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C084B08F17394D4800C1DCC0 /* StringfyHelper.cpp */; };
+		C084B09217394D4D00C1DCC0 /* StringfyHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = C084B09017394D4A00C1DCC0 /* StringfyHelper.h */; };
 		C56918CE168B9AB800F6013A /* RhodesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C56918CD168B9AB800F6013A /* RhodesApp.cpp */; };
 		C5D47762156A4ED000943A2D /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5D47760156A4ED000943A2D /* zip.cpp */; };
 		C5D47763156A4ED000943A2D /* zip.h in Headers */ = {isa = PBXBuildFile; fileRef = C5D47761156A4ED000943A2D /* zip.h */; };
@@ -185,6 +187,8 @@
 		BDD11ECC113664E700349BE3 /* rhoparams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rhoparams.h; path = ../../shared/common/rhoparams.h; sourceTree = SOURCE_ROOT; };
 		BDFCB13B112EE2B500AE3724 /* ssl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ssl.cpp; path = ../../shared/net/ssl.cpp; sourceTree = SOURCE_ROOT; };
 		BDFCB13C112EE2B500AE3724 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = ../../shared/net/ssl.h; sourceTree = SOURCE_ROOT; };
+		C084B08F17394D4800C1DCC0 /* StringfyHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringfyHelper.cpp; path = ../../shared/api_generator/StringfyHelper.cpp; sourceTree = "<group>"; };
+		C084B09017394D4A00C1DCC0 /* StringfyHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StringfyHelper.h; path = ../../shared/api_generator/StringfyHelper.h; sourceTree = "<group>"; };
 		C56918CD168B9AB800F6013A /* RhodesApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhodesApp.cpp; path = ../../shared/common/RhodesApp.cpp; sourceTree = "<group>"; };
 		C5D2784315A1F33A00A7EFC7 /* ZipFiles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ZipFiles.cpp; path = ../../shared/rubyext/ZipFiles.cpp; sourceTree = "<group>"; };
 		C5D47760156A4ED000943A2D /* zip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = zip.cpp; path = ../../shared/unzip/zip.cpp; sourceTree = "<group>"; };
@@ -452,6 +456,8 @@
 				FAEF1DC716AED9D200E22B05 /* js_helpers.h */,
 				FAEF1DC816AED9D200E22B05 /* MethodResult.cpp */,
 				FAEF1DC916AED9D200E22B05 /* MethodResult.h */,
+				C084B08F17394D4800C1DCC0 /* StringfyHelper.cpp */,
+				C084B09017394D4A00C1DCC0 /* StringfyHelper.h */,
 			);
 			name = api_generator;
 			sourceTree = "<group>";
@@ -541,6 +547,7 @@
 				FAEF1DD616AED9D200E22B05 /* js_helpers.h in Headers */,
 				FAEF1DD816AED9D200E22B05 /* MethodResult.h in Headers */,
 				FA6B222617026477009D1398 /* MethodResultConvertor.h in Headers */,
+				C084B09217394D4D00C1DCC0 /* StringfyHelper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -638,6 +645,7 @@
 				FAEF1DD516AED9D200E22B05 /* js_helpers.cpp in Sources */,
 				FAEF1DD716AED9D200E22B05 /* MethodResult.cpp in Sources */,
 				FA0E908D16B7FE000094CCDE /* CJSConverter.mm in Sources */,
+				C084B09117394D4D00C1DCC0 /* StringfyHelper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

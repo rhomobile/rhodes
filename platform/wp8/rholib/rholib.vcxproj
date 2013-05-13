@@ -227,6 +227,7 @@
     <ClInclude Include="..\..\shared\api_generator\GeneratorQueue.h" />
     <ClInclude Include="..\..\shared\api_generator\js_helpers.h" />
     <ClInclude Include="..\..\shared\api_generator\MethodResult.h" />
+    <ClInclude Include="..\..\shared\api_generator\StringfyHelper.h" />
     <ClInclude Include="..\..\shared\common\AppMenu.h" />
     <ClInclude Include="..\..\shared\common\app_build_capabilities.h" />
     <ClInclude Include="..\..\shared\common\app_build_configs.h" />
@@ -283,6 +284,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\shared\api_generator\js_helpers.cpp" />
     <ClCompile Include="..\..\shared\api_generator\MethodResult.cpp" />
+    <ClCompile Include="..\..\shared\api_generator\StringfyHelper.cpp" />
     <ClCompile Include="..\..\shared\common\AppMenu.cpp" />
     <ClCompile Include="..\..\shared\common\app_build_configs.c" />
     <ClCompile Include="..\..\shared\common\BundleManager.cpp" />

@@ -143,7 +143,7 @@ unsigned long CExtManager::parseJsonToRubyHash(const char* szJson)
 
 void CExtManager::navigate(const wchar_t* szUrl)
 {
-    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)_wcsdup(szUrl) );
+    rho_webview_navigate( convertToStringA(szUrl).c_str(), -1 );
 }
 
 bool CExtManager::existsJavascript(const wchar_t* szJSFunction)

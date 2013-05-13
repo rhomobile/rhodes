@@ -3335,6 +3335,14 @@
 				RelativePath="..\..\shared\api_generator\RubyResultConvertor.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\shared\api_generator\StringfyHelper.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\shared\api_generator\StringfyHelper.h"
+				>
+			</File>			
 		</Filter>
 	</Files>
 	<Globals>
