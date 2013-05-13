@@ -292,7 +292,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("\"ipc_manager.dll\"=2");
             p("\"OutProcessWK.exe\"=2");
             p("\"openssl.dll\"=2");
-            p("\"PBEngine_WK.dll\"=2");
+            p("\"Ekioh.dll\"=2");
             p("\"npwtg_jsobjects.dll\"=3");
             p("\"npwtg_legacy.dll\"=3");
             if (!is_custom_config) {
@@ -354,7 +354,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("\"ipc_manager.dll\",\"ipc_manager.dll\",,0");
             p("\"OutProcessWK.exe\",\"OutProcessWK.exe\",,0");
             p("\"openssl.dll\",\"openssl.dll\",,0");
-            p("\"PBEngine_WK.dll\",\"PBEngine_WK.dll\",,0");
+            p("\"Ekioh.dll\",\"Ekioh.dll\",,0");
             p("");
             p("[CopyNPAPI]");
             p("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
