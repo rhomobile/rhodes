@@ -28,6 +28,7 @@ package com.rhomobile.rhodes.mainview;
 
 import java.util.Map;
 import java.util.Vector;
+import java.util.List;
 
 import com.rhomobile.rhodes.AndroidR;
 import com.rhomobile.rhodes.Logger;
@@ -425,18 +426,20 @@ public class SimpleMainView implements MainView {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void setupToolbar(LinearLayout tool_bar, Object params) {
+	private void setupToolbar(LinearLayout tool_bar, Object params, Object options) {
 		Context ctx = RhodesActivity.getContext();
 
         mCustomBackgroundColorEnable = false;
 
-		Vector<Object> buttons = null;
+        
+		List<Object> buttons = null;
 		if (params != null) {
-			if (params instanceof Vector<?>) {
-				buttons = (Vector<Object>)params;
+			if (params instanceof List<?>) {
+				buttons = (List<Object>)params;
 			}
-			else if (params instanceof Map<?,?>) {
-				Map<Object,Object> settings = (Map<Object,Object>)params;
+			if ((options != null) && (options instanceof Map<?,?>)) 
+			{
+				Map<Object,Object> settings = (Map<Object,Object>)options;
 				
 				Object colorObj = settings.get("color");
 				if (colorObj != null && (colorObj instanceof Map<?,?>)) {
@@ -464,7 +467,7 @@ public class SimpleMainView implements MainView {
 					}
 				}
 				
-				Object bkgObj = settings.get("background_color");
+				Object bkgObj = settings.get("backgroundColor");
 				if ((bkgObj != null) && (bkgObj instanceof String)) {
 					int color = Integer.decode(((String)bkgObj)).intValue();
 					int red = (color & 0xFF0000) >> 16;
@@ -475,9 +478,9 @@ public class SimpleMainView implements MainView {
 					mCustomBackgroundColorEnable = true;
 				}
 				
-				Object buttonsObj = settings.get("buttons");
-				if (buttonsObj != null && (buttonsObj instanceof Vector<?>))
-					buttons = (Vector<Object>)buttonsObj;
+				//Object buttonsObj = settings.get("buttons");
+				//if (buttonsObj != null && (buttonsObj instanceof Vector<?>))
+				//	buttons = (Vector<Object>)buttonsObj;
 			}
 		}
 		
@@ -485,8 +488,11 @@ public class SimpleMainView implements MainView {
 			LinearLayout group = null;
 			// First group should have gravity LEFT
 			int gravity = Gravity.LEFT;
-			for (int i = 0, lim = buttons.size(); i < lim; ++i) {
-				Object param = buttons.elementAt(i);
+			Object[] buttons_array = buttons.toArray();
+			
+			
+			for (int i = 0, lim = buttons_array.length; i < lim; ++i) {
+				Object param = buttons_array[i];
 				if (!(param instanceof Map<?,?>))
 					throw new IllegalArgumentException("Hash expected");
 				
@@ -534,7 +540,7 @@ public class SimpleMainView implements MainView {
 		
 		toolBar = bottom;
 		
-		setupToolbar(toolBar, params);
+		setupToolbar(toolBar, params, null);
 	}
 	
 	public SimpleMainView() {
@@ -677,10 +683,10 @@ public class SimpleMainView implements MainView {
 		navBar = null;
 	}
 	
-	public void setToolbar(Object params) {
+	public void setToolbar(Object params, Object options) {
 		toolBar.setBackgroundColor(Color.GRAY);
 		toolBar.removeAllViews();
-		setupToolbar(toolBar, params);
+		setupToolbar(toolBar, params, options);
 		toolBar.requestLayout();
 		view.requestLayout();
 	}
