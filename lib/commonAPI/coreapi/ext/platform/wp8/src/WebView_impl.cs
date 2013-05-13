@@ -9,7 +9,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using Microsoft.Phone.Controls;
 using rhoruntime;
+using rhodes;
 
 namespace rho {
 
@@ -30,24 +32,39 @@ namespace WebViewImpl
             var _runtime = new WebViewSingletonComponent(this);
         }
 
+        static private MainPage getMainPage()
+        {
+            MainPage startPage = null;
+            var frame = Application.Current.RootVisual as PhoneApplicationFrame;
+            if (frame != null)
+                startPage = frame.Content as MainPage;
+            return startPage;
+        }
+
         public void getFramework(IMethodResult oResult)
         {
-            // implement this method in C# here
+            string DeviceManufacturer = (string)Microsoft.Phone.Info.DeviceExtendedProperties.GetValue("DeviceManufacturer");
+            string DeviceName = (string)Microsoft.Phone.Info.DeviceExtendedProperties.GetValue("DeviceName");
+            oResult.set(System.Environment.OSVersion.ToString() + " / " + DeviceName + ", " + DeviceManufacturer);
         }
 
         public void getFullScreen(IMethodResult oResult)
         {
-            // implement this method in C# here
+            MainPage mp = getMainPage();
+            oResult.set(mp != null ? mp.isFullscreen() : false);
         }
 
         public void setFullScreen(bool fullScreen, IMethodResult oResult)
         {
-            // implement this method in C# here
+            MainPage mp = getMainPage();
+            if (mp != null)
+                mp.fullscreenCommand(fullScreen ? 1 : 0);
         }
 
         public void getEnableZoom(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set(true);
         }
 
         public void setEnableZoom(bool enableZoom, IMethodResult oResult)
@@ -58,6 +75,7 @@ namespace WebViewImpl
         public void getEnablePageLoadingIndication(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set(false);
         }
 
         public void setEnablePageLoadingIndication(bool enablePageLoadingIndication, IMethodResult oResult)
@@ -68,6 +86,7 @@ namespace WebViewImpl
         public void getEnableWebPlugins(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set(true);
         }
 
         public void setEnableWebPlugins(bool enableWebPlugins, IMethodResult oResult)
@@ -78,6 +97,7 @@ namespace WebViewImpl
         public void getNavigationTimeout(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set(0);
         }
 
         public void setNavigationTimeout(int navigationTimeout, IMethodResult oResult)
@@ -88,36 +108,44 @@ namespace WebViewImpl
         public void getScrollTechnique(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set("natural");
         }
 
         public void getFontFamily(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set("Arial");
         }
 
         public void getUserAgent(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set("IE/" + System.Environment.OSVersion.ToString());
         }
 
         public void getViewportEnabled(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set(true);
         }
 
         public void getViewportWidth(IMethodResult oResult)
         {
             // implement this method in C# here
+            MainPage mp = getMainPage();
+            oResult.set(mp != null ? mp.getScreenWidth() : 0);
         }
 
         public void getCacheSize(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set(0);
         }
 
         public void getEnableCache(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set(false);
         }
 
         public void setEnableCache(bool enableCache, IMethodResult oResult)
@@ -128,6 +156,7 @@ namespace WebViewImpl
         public void getAcceptLanguage(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set("en");
         }
 
         public void setAcceptLanguage(string acceptLanguage, IMethodResult oResult)
@@ -138,6 +167,7 @@ namespace WebViewImpl
         public void getZoomPage(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set(1.0);
         }
 
         public void setZoomPage(double zoomPage, IMethodResult oResult)
@@ -148,6 +178,7 @@ namespace WebViewImpl
         public void getTextZoomLevel(IMethodResult oResult)
         {
             // implement this method in C# here
+            oResult.set(1.0);
         }
 
         public void setTextZoomLevel(int textZoomLevel, IMethodResult oResult)
@@ -157,52 +188,65 @@ namespace WebViewImpl
 
         public void getActiveTab(IMethodResult oResult)
         {
-            // implement this method in C# here
+            MainPage mp = getMainPage();
+            oResult.set(mp != null ? mp.tabbarGetCurrent() : 0);
         }
 
         public void refresh(int tabIndex, IMethodResult oResult)
         {
-            // implement this method in C# here
+            MainPage mp = getMainPage();
+            if (mp != null)
+                mp.Refresh(tabIndex);
         }
 
         public void navigate(string url, int tabIndex, IMethodResult oResult)
         {
-            // implement this method in C# here
+            MainPage mp = getMainPage();
+            if (mp != null)
+                mp.navigate(url, tabIndex);
         }
 
         public void navigateBack(int tabIndex, IMethodResult oResult)
         {
-            // implement this method in C# here
+            MainPage mp = getMainPage();
+            if (mp != null)
+                mp.GoBack(tabIndex);
         }
 
         public void currentLocation(int tabIndex, IMethodResult oResult)
         {
-            // implement this method in C# here
+            MainPage mp = getMainPage();
+            oResult.set(mp != null ? mp.getCurrentURL(tabIndex) : "");
         }
 
         public void currentURL(int tabIndex, IMethodResult oResult)
         {
-            // implement this method in C# here
+            MainPage mp = getMainPage();
+            oResult.set(mp != null ? mp.getCurrentURL(tabIndex) : "");
         }
 
         public void executeJavascript(string javascriptText, int tabIndex, IMethodResult oResult)
         {
-            // implement this method in C# here
+            MainPage mp = getMainPage();
+            if (mp != null)
+                mp.executeScript(javascriptText, tabIndex);
         }
 
         public void active_tab(IMethodResult oResult)
         {
-            // implement this method in C# here
+            getActiveTab(oResult);
         }
 
         public void full_screen_mode(bool enable, IMethodResult oResult)
         {
-            // implement this method in C# here
+            setFullScreen(enable, oResult);
         }
 
         public void setCookie(string url, string cookie, IMethodResult oResult)
         {
-            // implement this method in C# here
+            MainPage mp = getMainPage();
+            if (mp != null)
+                mp.setCookie(url, cookie);
         }
 
         public void save(string format, string path, int tabIndex, IMethodResult oResult)
