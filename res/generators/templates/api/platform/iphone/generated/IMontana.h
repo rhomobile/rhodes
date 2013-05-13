@@ -14,20 +14,22 @@ $iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
 
 
 <% $cur_module.constants.each do |module_constant|
-   cline = ''
-   cline = cline + '#define '
-   cline = cline + module_constant.name + ' '
-   if module_constant.type == MethodParam::TYPE_STRING
-        cline = cline + '@"'+module_constant.value + '"'
-   else
-        cline = cline + module_constant.value
-   end
-   if (module_constant.desc != nil) && (module_constant.desc.size > 0)
+   if (module_constant.name != nil) && (module_constant.name.size > 0)
+      cline = ''
+      cline = cline + '#define '
+      cline = cline + module_constant.name + ' '
+      if module_constant.type == MethodParam::TYPE_STRING
+           cline = cline + '@"'+module_constant.value + '"'
+      else
+           cline = cline + module_constant.value
+      end
+      if (module_constant.desc != nil) && (module_constant.desc.size > 0)
 %><%= '/* '+module_constant.desc+' */' %><%
-   end %>
+      end %>
 <%= cline %>
 
 <%
+   end
    end
  %>
 

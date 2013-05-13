@@ -26,7 +26,7 @@
 
 module Rho
 
-if !Rho::System.isRhoSimulator && System.get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP'
+if !Rho::System.isRhoSimulator && System.get_property('platform') != 'WINDOWS' && System.get_property('platform') != 'WINDOWS_DESKTOP' && System.get_property('platform') != 'ANDROID'
 class NativeToolbar
  
   def self.create(params)
