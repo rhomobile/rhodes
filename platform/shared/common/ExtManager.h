@@ -108,6 +108,8 @@ struct IRhoExtManager
 
     virtual void setBrowserGesturing(bool bEnableGesturing) = 0;
     virtual void passSipPositionToEngine() = 0;
+
+    virtual int getCurrentTabID() = 0;
 };
 
 class CExtManager : public IRhoExtManager
@@ -173,6 +175,8 @@ public:
 	virtual bool DeRegisterForBrowserMessage(unsigned int iMsgId);
 	virtual bool RegisterForPrimaryBrowserMessage(unsigned int iMsgId);
 	virtual bool DeRegisterForPrimaryBrowserMessage(unsigned int iMsgId);
+
+    virtual int getCurrentTabID();
 };
 	
 } //namespace common
@@ -217,6 +221,8 @@ public:
     }
 
     virtual void requireRubyFile( const char* szFilePath );
+
+    virtual int getCurrentTabID(){ return 0; }
 };
 	
 } //namespace common

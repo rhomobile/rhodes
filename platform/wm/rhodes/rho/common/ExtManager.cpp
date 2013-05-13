@@ -64,11 +64,11 @@ CRhoExtData CExtManager::makeExtData()
     CRhoExtData oData;
     oData.m_hWnd = getMainWnd();
     oData.m_hInstance = rho_wmimpl_get_appinstance();
-#if !defined(OS_WINDOWS_DESKTOP)
-    oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND();
-#endif
-
     oData.m_iTabIndex = rho_webview_active_tab();
+#if !defined(OS_WINDOWS_DESKTOP)
+    oData.m_hBrowserWnd = getAppWindow().getWebKitEngine()->GetHTMLWND(oData.m_iTabIndex);
+#endif
+    
     return oData;
 }
 
@@ -230,6 +230,11 @@ void CExtManager::historyForward()
 void CExtManager::historyBack()
 {
     rho_webview_navigate_back();
+}
+
+int CExtManager::getCurrentTabID()
+{
+    return rho_webview_active_tab();    
 }
 
 void CExtManager::refreshPage(bool bFromCache)

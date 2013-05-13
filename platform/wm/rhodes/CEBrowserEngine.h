@@ -74,9 +74,9 @@ private:
 	HRESULT OnInPlaceDeactivate(void);
 
     // Rho IBrowserEngine implementstion
-    virtual BOOL    Navigate(LPCTSTR szURL);
+    virtual BOOL    Navigate(LPCTSTR szURL, int iTabID);
     virtual BOOL    StopOnTab(UINT iTab);
-    virtual HWND    GetHTMLWND(){ return m_hwndTabHTML; }
+    virtual HWND    GetHTMLWND(int /*iTabID*/){ return m_hwndTabHTML; }
     virtual BOOL    ResizeOnTab(int iInstID,RECT rcNewSize);
     virtual BOOL    BackOnTab(int iInstID,int iPagesBack = 1);
     virtual BOOL    ForwardOnTab(int iInstID);

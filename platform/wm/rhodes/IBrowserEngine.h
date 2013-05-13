@@ -9,8 +9,8 @@ struct IBrowserEngine
 public:
     virtual ~IBrowserEngine(void){};
 
-    virtual BOOL Navigate(LPCTSTR szURL) = 0;
-    virtual HWND GetHTMLWND() = 0;
+    virtual BOOL Navigate(LPCTSTR szURL, int iTabID) = 0;
+    virtual HWND GetHTMLWND(int iTabID) = 0;
     virtual BOOL ResizeOnTab(int iInstID,RECT rcNewSize) = 0;
     virtual BOOL BackOnTab(int iInstID,int iPagesBack = 1) = 0;
     virtual BOOL ForwardOnTab(int iInstID) = 0;
@@ -34,6 +34,10 @@ public:
 	virtual bool DeRegisterForMessage(unsigned int iMsgId) = 0;
 	virtual bool RegisterForPrimaryMessage(unsigned int iMsgId) = 0;
 	virtual bool DeRegisterForPrimaryMessage(unsigned int iMsgId) = 0;
+
+    virtual int NewTab() = 0;//returns	the new tab ID 
+	virtual int SwitchTab(int iTabID) = 0;//returns the previous tab ID
+	virtual BOOL CloseTab(int iTabID) = 0;//returns TRUE if successful
 };
 
 }

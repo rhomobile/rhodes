@@ -23,8 +23,8 @@ public:
     CIEBrowserEngine(HWND hParentWnd, HINSTANCE hInstance);
     virtual ~CIEBrowserEngine(void);
 
-    virtual BOOL Navigate(LPCTSTR szURL);
-    virtual HWND GetHTMLWND(){ return m_browser.m_hWnd; }
+    virtual BOOL Navigate(LPCTSTR szURL, int iTabID);
+    virtual HWND GetHTMLWND(int /*iTabID*/){ return m_browser.m_hWnd; }
     virtual BOOL ResizeOnTab(int iInstID,RECT rcNewSize);
     virtual BOOL BackOnTab(int iInstID,int iPagesBack = 1);
     virtual BOOL ForwardOnTab(int iInstID);

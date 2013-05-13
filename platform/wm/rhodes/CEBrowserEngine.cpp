@@ -274,7 +274,7 @@ Cleanup:
 	return S_OK;		
 };
 
-BOOL CEBrowserEngine::Navigate(LPCTSTR tcURL)
+BOOL CEBrowserEngine::Navigate(LPCTSTR tcURL, int iTabID)
 {
 	LRESULT retVal = S_FALSE;
 
