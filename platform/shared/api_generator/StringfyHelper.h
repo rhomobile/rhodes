@@ -1,5 +1,5 @@
-#ifndef __RhoLib__StringficationHelper.h__
-#define __RhoLib__StringficationHelper.h__
+#ifndef __RhoLib__StringfyHelper__
+#define __RhoLib__StringfyHelper__
 
 #include "common/RhoStd.h"
 #include "common/RhoPort.h"
@@ -65,4 +65,4 @@ namespace rho
 }
 
 
-#endif /* defined(__RhoLib__StringficationHelper.h__) */
+#endif /* defined(__RhoLib__StringfyHelper__) */

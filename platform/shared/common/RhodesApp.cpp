@@ -44,7 +44,7 @@
 #include "unzip/unzip.h"
 #include "common/Tokenizer.h"
 #include "api_generator/js_helpers.h"
-#include "api_generator/StringficationHelper.h"
+#include "api_generator/StringfyHelper.h"
 
 #include <algorithm>
 

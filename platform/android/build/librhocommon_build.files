@@ -32,3 +32,4 @@ platform/shared/unzip/unzip.cpp
 platform/shared/unzip/zip.cpp
 platform/shared/api_generator/js_helpers.cpp
 platform/shared/api_generator/MethodResult.cpp
+platform/shared/api_generator/StringfyHelper.cpp
