@@ -631,12 +631,6 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     return 0;
 }
 
-LRESULT CMainWindow::OnSwitchTab (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-{
-    LOG(INFO) + "OnSwitchTab : " + (const char*) lParam;
-    return 0;
-}
-
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
@@ -1909,7 +1903,7 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
             return;
         }
 
-        m_arTabs.addElement(CTabBarItem(action, bUseCurrentViewForTab, bReloadPage));
+        m_arTabs.addElement(CTabBarItem(action, label, bUseCurrentViewForTab, bReloadPage));
     }
 
     if (!bCreateOnDemand)
@@ -1934,6 +1928,25 @@ void CMainWindow::removeTabbar()
     m_arTabs.removeAllElements();
     m_bTabCreated = false;
     m_nCurrentTab = -1;
+}
+
+LRESULT CMainWindow::OnSwitchTab (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    LOG(INFO) + "OnSwitchTab : " + (const char*) lParam;
+
+    if ( !lParam || !*((const char*) lParam))
+        return 0;
+
+    for ( int i = 0; i < (int)m_arTabs.size(); i++ )
+    {
+        if ( m_arTabs[i].m_strLabel == ((const char*) lParam) )
+        {
+            tabbarSwitch(i);
+            break;
+        }
+    }
+
+    return 0;
 }
 
 void CMainWindow::tabbarSwitch(int index)

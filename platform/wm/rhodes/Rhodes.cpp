@@ -177,6 +177,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
     bool m_bMinimized;
 	bool m_isRhoConnectPush;
     bool m_startAtBoot;
+    String m_strTabName;
 
 #ifndef RHODES_EMULATOR
 	HANDLE m_hMutex;
@@ -273,6 +274,10 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 
             if (wcsncmp(lpszToken, _T("minimized"), 9)==0) {
 				m_bMinimized = true;
+			}
+
+            if (wcsncmp(lpszToken, _T("tabname"), 7)==0) {
+				m_strTabName = convertToStringA(value);
 			}
 
 			if (WordCmpI(lpszToken, _T("rhoconnectpush"))==0) {
@@ -415,6 +420,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         {
             ShowWindow(hWnd, SW_SHOW);
             SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
+            SendMessage( hWnd, WM_WINDOW_SWITCHTAB, NULL, (LPARAM)m_strTabName.c_str());
             SetForegroundWindow( hWnd );
         }
 
