@@ -16,6 +16,17 @@ import com.rhomobile.rhodes.api.<%= base %>;
 public interface I<%= $cur_module.name %>Singleton
 <% if base %>       extends <%= base %> <% end %> {
 
+<% $cur_module.constants.each do |module_constant|
+        # next if module_constant.is_deprecated
+  next if module_constant.name.nil? || module_constant.name.empty?
+
+  if module_constant.type == MethodParam::TYPE_STRING %>
+    static final String <%= module_constant.name %> = "<%= module_constant.value %>";<%
+  else %>
+    static final <%= api_generator_java_makeSimpleNativeType(module_constant.type) %><%= module_constant.name %> = <%= module_constant.value %>;<%
+  end
+end %>
+
 <% $cur_module.methods.each do |module_method|
     next unless module_method.access == ModuleMethod::ACCESS_STATIC
     
