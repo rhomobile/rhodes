@@ -631,6 +631,12 @@ LRESULT CMainWindow::OnWindowMinimized (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     return 0;
 }
 
+LRESULT CMainWindow::OnSwitchTab (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    LOG(INFO) + "OnSwitchTab : " + (const char*) lParam;
+    return 0;
+}
+
 LRESULT CMainWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     int fActive = LOWORD(wParam);
@@ -1979,7 +1985,7 @@ void CMainWindow::tabbarBadge(int index, const char* badge)
 
 int CMainWindow::tabbarGetCurrent()
 {
-    if (m_arTabs.size()>0 && m_nCurrentTab < m_arTabs.size() && m_nCurrentTab > 0 )
+    if (m_arTabs.size()>0 && m_nCurrentTab < m_arTabs.size() && m_nCurrentTab >= 0 )
 	    return m_arTabs[m_nCurrentTab].m_nTabID;
 
     return 0;

@@ -48,4 +48,9 @@ public:
 	virtual bool DeRegisterForMessage(unsigned int iMsgId);
 	virtual bool RegisterForPrimaryMessage(unsigned int iMsgId);
 	virtual bool DeRegisterForPrimaryMessage(unsigned int iMsgId);
+
+    virtual int NewTab();//returns	the new tab ID 
+	virtual int SwitchTab(int iTabID);//returns the previous tab ID
+	virtual BOOL CloseTab(int iTabID);//returns TRUE if successful
+
 };
