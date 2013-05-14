@@ -713,4 +713,16 @@ end
 
 */
 
+    it("syncs", function() {
+        var Model = Rho.ORM.addModel('Model');
+        if (typeof Rho !== 'undefined' && typeof Rho.RhoConnectClient !== 'undefined') {
+            var count = 0;
+            Model.sync(function() {++count;});
+            waitsFor(function() {return count > 0;}, 'callback', 10000);
+            runs(function() {expect(count).toBe(101);});
+        } else {
+            Model.sync();
+        }
+    });
+
 });
