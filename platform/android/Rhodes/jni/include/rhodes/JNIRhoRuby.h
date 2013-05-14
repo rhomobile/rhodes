@@ -69,6 +69,13 @@ struct ArgumentsAdapter<std::vector<VALUE> >
     size_type size() const { return m_args.size(); }
 };
 
+template <>
+struct PropertyMapConvertor<VALUE>: public details::RhoJniConvertor
+{
+    jobject m_jObject;
+    jobject convertToPropertyMap(JNIEnv *env, VALUE value);
+};
+
 namespace details
 {
 

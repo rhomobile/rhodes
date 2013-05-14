@@ -18,6 +18,13 @@ struct ArgumentsAdapter<rho::json::CJSONArray>
     size_type size() const { return const_cast<container_type&>(m_args).getSize(); }
 };
 
+template <>
+struct PropertyMapConvertor<rho::json::CJSONEntry>: public details::RhoJniConvertor
+{
+    jobject convertToPropertyMap(JNIEnv *env, const rho::json::CJSONEntry& entry);
+};
+
+
 namespace details
 {
 
