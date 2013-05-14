@@ -28,6 +28,7 @@
 #define MAINWINDOWCALLBACK_H
 
 #include <string>
+#include "common/RhoDefs.h"
 
 #if defined(OS_MACOSX)
 typedef struct _TNavigateData {
