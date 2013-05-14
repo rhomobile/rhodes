@@ -405,13 +405,14 @@ private:
     struct CTabBarItem
     {
         String m_strAction;
+        String m_strLabel;
         bool m_bUseCurrentViewForTab;
         bool m_bReloadPage;
         HWND m_hwndTab;
         int m_nTabID;
 
-        CTabBarItem(const String& strAction, bool bUseCurrentViewForTab, bool bReloadPage ): m_bUseCurrentViewForTab(bUseCurrentViewForTab), m_bReloadPage(bReloadPage), 
-            m_strAction(strAction), m_hwndTab(0), m_nTabID(-1){}
+        CTabBarItem(const String& strAction, const String& strLabel, bool bUseCurrentViewForTab, bool bReloadPage ): m_bUseCurrentViewForTab(bUseCurrentViewForTab), m_bReloadPage(bReloadPage), 
+            m_strAction(strAction), m_strLabel(strLabel), m_hwndTab(0), m_nTabID(-1){}
     };
 
     Vector<CTabBarItem> m_arTabs;
