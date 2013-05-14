@@ -908,10 +908,11 @@ def find_ext_ingems(extname)
   
   extpath
 end
+
 def write_modules_js(filename, modules)
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
-
+    
     if modules
         modules.each do |m|
             modulename = m.gsub(/^(|.*[\\\/])([^\\\/]+)\.js$/, '\2')
@@ -919,8 +920,17 @@ def write_modules_js(filename, modules)
             f.write(File.read(m))
         end
     end
-    
-    Jake.modify_file_if_content_changed(filename, f)
+
+    if $debug
+        Jake.modify_file_if_content_changed(filename, f)
+    else
+        require 'uglifier'
+        f.rewind()
+        fc = StringIO.new("","w+")
+        fc.puts(Uglifier.compile(f))
+        
+        Jake.modify_file_if_content_changed(filename, fc)
+    end
 end
 
 def is_ext_supported(extpath)
