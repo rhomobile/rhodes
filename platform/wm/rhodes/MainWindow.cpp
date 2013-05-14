@@ -1853,6 +1853,8 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
         bHiddenTabs = true;
     }
 
+    int nStartTab = -1;
+
     for (int i = 0; i < (int)tabbarElements.size(); ++i) 
     {
         const char *label = NULL;
@@ -1904,6 +1906,10 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
         }
 
         m_arTabs.addElement(CTabBarItem(action, label, bUseCurrentViewForTab, bReloadPage));
+
+        if (m_strStartTabName.length()>0 && m_strStartTabName == label)
+            nStartTab = i;
+
     }
 
     if (!bCreateOnDemand)
@@ -1912,6 +1918,12 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
         {
             tabbarSwitch(i);
         }
+    }
+
+    if (m_strStartTabName.length()>0&&nStartTab>=0)
+    {
+        tabbarSwitch(nStartTab);
+        m_strStartTabName = "";
     }
 
     m_bTabCreated = true;

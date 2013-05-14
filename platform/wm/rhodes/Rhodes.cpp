@@ -560,6 +560,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     DWORD dwStyle = m_bMinimized ? 0 : WS_VISIBLE;
 
+    m_appWindow.setStartTabName(m_strTabName);
+
 #if !defined(_WIN32_WCE)
     dwStyle |= WS_OVERLAPPEDWINDOW;
 #endif

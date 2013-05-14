@@ -345,6 +345,8 @@ public:
     void tabbarBadge(int index, const char* badge);
     int tabbarGetCurrent();
     bool isTabBarStarted();
+
+    void setStartTabName(const String& strTabName){m_strStartTabName = strTabName;}
 private:
     // event handlers
     void __stdcall OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL, 
@@ -416,6 +418,7 @@ private:
     };
 
     Vector<CTabBarItem> m_arTabs;
+    String m_strStartTabName;
 // #endif
 
 #if defined(_WIN32_WCE)

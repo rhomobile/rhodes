@@ -593,7 +593,7 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
     }
 
     ((QtMainWindow*)qtMainWindow)->tabbarInitialize();
-
+    int nStartTab = -1;
     for (int i = 0; i < (int)tabbarElements.size(); ++i) 
     {
         const char *label = NULL;
@@ -651,12 +651,21 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
         String strIconPath = icon ? CFilePath::join( RHODESAPP().getAppRootPath(), icon) : String();
 
         ((QtMainWindow*)qtMainWindow)->tabbarAddTab(QString(label), icon ? strIconPath.c_str() : NULL, charToBool(disabled), web_bkg_color.get(), tbrp);
+
+        if (m_strStartTabName.length()>0 && m_strStartTabName == label)
+            nStartTab = i;
     }
 
     if (oResult.hasCallback())
         ((QtMainWindow*)qtMainWindow)->tabbarSetSwitchCallback(oResult);
 
     ((QtMainWindow*)qtMainWindow)->tabbarShow();
+
+    if (m_strStartTabName.length()>0&&nStartTab>=0)
+    {
+        tabbarSwitch(nStartTab);
+        m_strStartTabName = "";
+    }
 
     m_started = true;
 }
