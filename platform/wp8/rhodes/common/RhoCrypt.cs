@@ -12,9 +12,9 @@ namespace rhodes.common
 {
     class RhoCrypt
     {
-        private byte[] mKey;
+        //private byte[] mKey;
         private uint mLastError;
-        private String mDBPartition;
+        //private String mDBPartition;
 
         public int dbDecrypt(String partition, int size, ref String data)
         {
@@ -24,7 +24,7 @@ namespace rhodes.common
             try
             {
                 aes = new AesManaged();
-                aes.Key = mKey;
+                aes.Key = readKeyFromFile(partition);
 
                 memoryStream = new MemoryStream();
                 CryptoStream cryptoStream = new CryptoStream(memoryStream, aes.CreateDecryptor(), CryptoStreamMode.Write);
@@ -62,7 +62,7 @@ namespace rhodes.common
             try
             {
                 aes = new AesManaged();
-                aes.Key = mKey;
+                aes.Key = readKeyFromFile(partition);
 
                 memoryStream = new MemoryStream();
                 cryptoStream = new CryptoStream(memoryStream, aes.CreateEncryptor(), CryptoStreamMode.Write);
@@ -90,7 +90,11 @@ namespace rhodes.common
 
         public int setDbCryptKey(String partition, String key, bool bPersistent)
         {
-            mKey = Encoding.UTF8.GetBytes(key);
+            byte[] keyByte = Encoding.UTF8.GetBytes(key);
+            //mKey = keyByte;
+            byte[] protectedKeyByte = ProtectedData.Protect(keyByte, null);
+
+            this.writeKeyToFile(partition, protectedKeyByte);        
             
             return getErrorCode() == 0 ? 1 : 0;
         }
@@ -102,5 +106,30 @@ namespace rhodes.common
 
         private uint getErrorCode() { return mLastError; }
 
+        private void writeKeyToFile(String filePath, byte[] key)
+        {
+            IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
+            IsolatedStorageFileStream writestream = new IsolatedStorageFileStream(filePath, System.IO.FileMode.Create, System.IO.FileAccess.Write, file);
+
+            Stream writer = new StreamWriter(writestream).BaseStream;
+            writer.Write(key, 0, key.Length);
+            writer.Close();
+            writestream.Close();
+        }
+
+        private byte[] readKeyFromFile(String filePath)
+        {
+            IsolatedStorageFile file = IsolatedStorageFile.GetUserStoreForApplication();
+            IsolatedStorageFileStream readstream = new IsolatedStorageFileStream(filePath, System.IO.FileMode.Open, FileAccess.Read, file);
+
+            Stream reader = new StreamReader(readstream).BaseStream;
+            byte[] key = new byte[reader.Length];
+
+            reader.Read(key, 0, key.Length);
+            reader.Close();
+            readstream.Close();
+
+            return key;
+        }
     }
 }
