@@ -80,6 +80,7 @@ public:
     // public methods:
     void Navigate2(BSTR URL, int index);
     HWND Initialize(const wchar_t* title);
+    void setStartTabName(const String& strTabName){m_strStartTabName = strTabName;}
     void MessageLoop(void);
 	void DestroyUi(void);
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
@@ -203,6 +204,7 @@ private:
     rho::Vector<rho::common::CAppMenuItem> m_arAppMenuItems;
     CAlertDialog *m_alertDialog;
     CSyncStatusDlg *m_SyncStatusDlg;
+    String m_strStartTabName;
 };
 
 #if !defined(_WIN32_WCE)
