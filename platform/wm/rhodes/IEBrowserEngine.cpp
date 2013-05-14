@@ -280,4 +280,9 @@ bool CIEBrowserEngine::DeRegisterForPrimaryMessage(unsigned int iMsgId)
 {
 	return true;
 }
+
+int CIEBrowserEngine::NewTab() { return 0; }
+int CIEBrowserEngine::SwitchTab(int iTabID){ return 0;}
+BOOL CIEBrowserEngine::CloseTab(int iTabID) { return false; }
+
 #endif //!defined( OS_PLATFORM_MOTCE )
