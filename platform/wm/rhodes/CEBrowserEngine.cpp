@@ -607,7 +607,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 		SendMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)tcURL);
 
         m_bLoadingComplete = true;
-        InvalidateRect(GetHTMLWND(), NULL, FALSE);
+        InvalidateRect(GetHTMLWND(0), NULL, FALSE);
 
 		retVal = S_OK;
 		break;
@@ -844,12 +844,12 @@ void CEBrowserEngine::executeJavascript(const wchar_t* szJSFunction, int index)
             //  Function does not start with JavaScript:
             wchar_t* tcURI = new wchar_t[MAX_URL];
             wsprintf(tcURI, L"JavaScript:%s", szJSFunction);
-            Navigate(tcURI);
+            Navigate(tcURI, index);
             delete[] tcURI;
         }
         else
         {
-            Navigate(szJSFunction);
+            Navigate(szJSFunction, index);
         }
     }
 }
@@ -884,5 +884,9 @@ bool CEBrowserEngine::DeRegisterForPrimaryMessage(unsigned int iMsgId)
 {
     return true;
 }
+
+int CEBrowserEngine::NewTab() { return 0; }
+int CEBrowserEngine::SwitchTab(int iTabID){ return 0;}
+BOOL CEBrowserEngine::CloseTab(int iTabID) { return false; }
 
 #endif //!defined( OS_WINCE )

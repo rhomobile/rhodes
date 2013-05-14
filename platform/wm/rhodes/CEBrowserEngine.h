@@ -91,6 +91,10 @@ private:
     virtual bool RegisterForPrimaryMessage(unsigned int iMsgId);
     virtual bool DeRegisterForPrimaryMessage(unsigned int iMsgId);
 
+    virtual int NewTab();//returns	the new tab ID 
+	virtual int SwitchTab(int iTabID);//returns the previous tab ID
+	virtual BOOL CloseTab(int iTabID);//returns TRUE if successful
+
 #pragma region not_implemented_virtual_functions
     virtual BOOL    NavigateToHtml(LPCTSTR szHtml) { return FALSE; }
     
