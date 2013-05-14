@@ -4,10 +4,39 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "JNIRhoJS"
 
+jobject PropertyMapConvertor<rho::json::CJSONEntry>::convertToPropertyMap(JNIEnv *env, const rho::json::CJSONEntry& jsonEntry)
+{
+    if (jsonEntry.isEmpty() || jsonEntry.isNull())
+        return 0;
+
+    if (!initConvertor(env))
+        return 0;
+
+    jobject jMap = env->NewObject(clsHashMap, midHashMap);
+    if(env->ExceptionCheck() == JNI_TRUE)
+    {
+        rho::String message = rho::common::clearException(env);
+        RAWLOG_ERROR(message.c_str());
+        return 0;
+    }
+
+    rho::json::CJSONStructIterator jsonObjectIt(jsonEntry);
+    for( ; !jsonObjectIt.isEnd(); jsonObjectIt.next() )
+    {
+        jhstring jhKey = rho_cast<jstring>(env, jsonObjectIt.getCurKey());
+        jhstring jhVal = rho_cast<jstring>(env, jsonObjectIt.getCurString());
+
+        jhobject jhPrev = env->CallObjectMethod(jMap, details::RhoJniConvertor::midHashMapPut, jhKey.get(), jhVal.get());
+    }
+
+    return jMap;
+}
+
 namespace details {
 
 using rho::json::CJSONArray;
 using rho::json::CJSONStructIterator;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -20,16 +49,19 @@ jstring rho_cast_helper<jstring, CJSONEntry>::operator ()(JNIEnv *env, const CJS
 jobject rho_cast_helper<jobject, CJSONEntry>::convertJsonEntryToJavaCollection(const CJSONEntry& jsonEntry)
 {
     jobject jList = m_env->NewObject(clsArrayList, midArrayList);
-    if(!jList)
+    if(m_env->ExceptionCheck() == JNI_TRUE)
     {
+        rho::String message = rho::common::clearException(m_env);
+        RAWLOG_ERROR(message.c_str());
         return 0;
     }
+
     CJSONArray jsonArray(jsonEntry);
     int size = jsonArray.getSize();
 
     for(int i = 0; i < size; ++i)
     {
-        jhstring jhElement = rho_cast<jstring>(m_env, jsonArray.getItem(i).getString());
+        jhobject jhElement = rho_cast<jobject>(m_env, jsonArray.getItem(i));
         m_env->CallBooleanMethod(jList, RhoJniConvertor::midArrayListAdd, jhElement.get());
     }
 
@@ -40,8 +72,10 @@ jobject rho_cast_helper<jobject, CJSONEntry>::convertJsonEntryToJavaCollection(c
 jobject rho_cast_helper<jobject, CJSONEntry>::convertJsonEntryToJavaMap(const CJSONEntry& jsonEntry)
 {
     jobject jMap = m_env->NewObject(clsHashMap, midHashMap);
-    if(!jMap)
+    if(m_env->ExceptionCheck() == JNI_TRUE)
     {
+        rho::String message = rho::common::clearException(m_env);
+        RAWLOG_ERROR(message.c_str());
         return 0;
     }
 
@@ -49,7 +83,7 @@ jobject rho_cast_helper<jobject, CJSONEntry>::convertJsonEntryToJavaMap(const CJ
     for( ; !jsonObjectIt.isEnd(); jsonObjectIt.next() )
     {
         jhstring jhKey = rho_cast<jstring>(m_env, jsonObjectIt.getCurKey());
-        jhstring jhVal = rho_cast<jstring>(m_env, jsonObjectIt.getCurString());
+        jhobject jhVal = rho_cast<jobject>(m_env, jsonObjectIt.getCurValue());
 
         jhobject jhPrev = m_env->CallObjectMethod(jMap, RhoJniConvertor::midHashMapPut, jhKey.get(), jhVal.get());
     }
@@ -118,6 +152,12 @@ jobjectArray rho_cast_helper<jobjectArray, CJSONEntry>::operator ()(JNIEnv *env,
     CJSONArray jsonArray(jsonEntry);
     int size = jsonArray.getSize();
     jobjectArray jArray = env->NewObjectArray(size, clsString, 0);
+    if(env->ExceptionCheck() == JNI_TRUE)
+    {
+        rho::String message = rho::common::clearException(env);
+        RAWLOG_ERROR(message.c_str());
+        return 0;
+    }
 
     for(int i = 0; i < size; ++i)
     {

@@ -764,6 +764,7 @@ module Rhogen
         @can_be_nil = false
         @desc = ''
         @default_value = nil
+        @is_property_hash = false
       end
 
       attr_accessor :name
@@ -779,6 +780,7 @@ module Rhogen
       attr_accessor :can_be_nil
       attr_accessor :desc
       attr_accessor :default_value
+      attr_accessor :is_property_hash
 
       def type=(value)
         up_value = value.upcase
@@ -1295,6 +1297,9 @@ module Rhogen
        end
        if xml_param_item.attribute("default") != nil
           param.default_value = xml_param_item.attribute("default").to_s
+       end
+       if xml_param_item.attribute("propertyHash") != nil
+          param.is_property_hash = (xml_param_item.attribute("propertyHash").to_s == "true")
        end
 
        xml_param_item.elements.each("DESC") do |xml_desc|
