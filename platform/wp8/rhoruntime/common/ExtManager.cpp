@@ -181,6 +181,11 @@ StringW CExtManager::getCurrentUrl()
     return L"";//convertToStringW(RHODESAPP().getCurrentUrl(rho_webview_active_tab()));
 }
 
+int CExtManager::getCurrentTabID()
+{
+    return 0;//rho_webview_active_tab();
+}
+
 void CExtManager::historyForward()
 {
     //rho_webview_navigate_forward();
