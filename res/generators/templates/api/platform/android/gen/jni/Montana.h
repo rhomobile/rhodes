@@ -117,8 +117,12 @@ param = method.params[index]
     end %>
 
         jholder< <%=api_generator_jni_makeJNIType(param.type) %> > jh<%= param.name %> = (argsAdapter.size() <= <%= index %>) ?
-            <%= def_val %> :
+            <%= def_val %> : <%
+    if param.is_property_hash %>
+                convertToPropertyMap(env, argsAdapter[<%= index %>]);<%
+    else %>
                 rho_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(env, argsAdapter[<%= index %>]);<%
+    end
   else %>
 
         if(argsAdapter.size() <= <%= index %>)
@@ -127,7 +131,12 @@ param = method.params[index]
             result.setArgError("Wrong number of arguments: '<%= param.name %>' must be set");
             return;
         }
-        jholder< <%=api_generator_jni_makeJNIType(param.type) %> > jh<%= param.name %> = rho_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(env, argsAdapter[<%= index %>]);<%
+        jholder< <%=api_generator_jni_makeJNIType(param.type) %> > jh<%= param.name %> = <%
+    if param.is_property_hash %>
+            convertToPropertyMap(env, argsAdapter[<%= index %>]);<%
+    else %>
+            rho_cast< <%=api_generator_jni_makeJNIType(param.type) %> >(env, argsAdapter[<%= index %>]);<%
+    end
   end
 end %>
 

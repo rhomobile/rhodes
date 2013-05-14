@@ -167,6 +167,15 @@ ArgumentsAdapter<T> argumentsAdapter(const T& arguments) {
     return ArgumentsAdapter<T>(arguments);
 }
 
+template <typename T>
+struct PropertyMapConvertor;
+
+template <typename T>
+jobject convertToPropertyMap(JNIEnv *env, T value) {
+    PropertyMapConvertor<T> convertor;
+    return convertor.convertToPropertyMap(env, value);
+}
+
 namespace details
 {
 
