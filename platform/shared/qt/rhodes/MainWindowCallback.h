@@ -29,10 +29,12 @@
 
 #include <string>
 
+#if defined(OS_MACOSX)
 typedef struct _TNavigateData {
     int index;
     wchar_t* url;
 } TNavigateData;
+#endif
 
 class IMainWindowCallback
 {
