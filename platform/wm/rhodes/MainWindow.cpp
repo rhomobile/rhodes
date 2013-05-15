@@ -1714,11 +1714,10 @@ void CMainWindow::createCustomMenu()
 	
 	//except exit item
 	int num = GetMenuItemCount (hMenu);
-	for (int i = 0; i < (num - 1); i++)	
+	for (int i = 0; i < (num/* - 1*/); i++)	
 		DeleteMenu(hMenu, 0, MF_BYPOSITION);
 
 	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
- 	
 	//update UI with cusom menu items
 	USES_CONVERSION;
     for ( int i = m_arAppMenuItems.size() - 1; i >= 0; i--)
@@ -1728,8 +1727,10 @@ void CMainWindow::createCustomMenu()
 
 		if (oItem.m_eType == CAppMenuItem::emtSeparator) 
 			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
-		else if (oItem.m_eType != CAppMenuItem::emtExit && oItem.m_eType != CAppMenuItem::emtClose)
+		else if (oItem.m_eType != CAppMenuItem::emtClose)
     		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, strLabelW.c_str() );
+        else
+            InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, L"Exit" );
 	}
 }
 #endif //OS_WINCE
