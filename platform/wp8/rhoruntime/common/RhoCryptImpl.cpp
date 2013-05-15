@@ -28,6 +28,10 @@
 #include "RhoCryptImpl.h"
 #include "common/RhodesApp.h"
 
+#include "rhoruntime.h"
+#include "RhoConvertWP8.h"
+using namespace rhoruntime;
+
 namespace rho{
 namespace common{
 IMPLEMENT_LOGCLASS(CRhoCryptImpl,"RhoCrypt");
@@ -45,7 +49,7 @@ CRhoCryptImpl::~CRhoCryptImpl(void)
     //if ( m_hCryptProv )
     //    CryptReleaseContext( m_hCryptProv, 0 );
 }
-
+/*
 bool CRhoCryptImpl::_checkError( BOOL bRes, const char* szFunc )
 {
     m_dwLastError = 0;
@@ -196,11 +200,14 @@ void CRhoCryptImpl::initContext(const char* szPartition)
     //    }
     //}
 }
+*/
 
 int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char* data, unsigned char* dataOut )
 {
-    //initContext(szPartition);
-
+	::Platform::String^ out;// =  convertStringToWP8(rho::String((char*)dataOut));
+	CRhoRuntime::getInstance()->getCryptoEngine()->dbEncrypt(convertStringCToWP8(szPartition), size, convertStringToWP8(rho::String((char*)data)), &out);
+	memcpy(dataOut, convertStringAFromWP8(out).c_str(), convertStringAFromWP8(out).length());
+	//initContext(szPartition);
     //memcpy(dataOut, data, size);
 
     //DWORD dwSize = size;
@@ -216,14 +223,20 @@ int CRhoCryptImpl::db_encrypt( const char* szPartition, int size, unsigned char*
     //    ));         
     //}
 
-    return getErrorCode() == 0 ? 1 : 0;
+    //return getErrorCode() == 0 ? 1 : 0;
+	return 1;
 }
 
 int CRhoCryptImpl::db_decrypt( const char* szPartition, int size, unsigned char* data )
 {
-    initContext(szPartition);
+    ::Platform::String^ Data = convertStringToWP8(rho::String((char*)data));
+	::Platform::String^ decryptedData;
+	CRhoRuntime::getInstance()->getCryptoEngine()->dbDecrypt(convertStringCToWP8(szPartition), size, Data, &decryptedData);
+	rho::String decrytped = convertStringAFromWP8(decryptedData);
+	memcpy(data, decrytped.c_str(), decrytped.length());
+	//initContext(szPartition);
 
-    DWORD dwSize = size;
+    //DWORD dwSize = size;
 
     //if ( m_hKey )
     //{
@@ -236,12 +249,14 @@ int CRhoCryptImpl::db_decrypt( const char* szPartition, int size, unsigned char*
     //    ));         
     //}
 
-    return getErrorCode() == 0 ? 1 : 0;
+    //return getErrorCode() == 0 ? 1 : 0;
+	return 1;
 }
 
 int CRhoCryptImpl::set_db_CryptKey( const char* szPartition, const char* szKey, bool bPersistent )
 {
-    //convertToStringW(szPartition, m_strDBPartition);
+	CRhoRuntime::getInstance()->getCryptoEngine()->setDbCryptKey(convertStringCToWP8(szPartition), convertStringCToWP8(szKey), bPersistent);
+	//convertToStringW(szPartition, m_strDBPartition);
 
     //int dwBlobLen = rho_base64_decode( szKey, -1, 0 );
     //BYTE* pbKeyBlob = (BYTE*)malloc(dwBlobLen);

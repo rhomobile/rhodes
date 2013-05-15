@@ -51,7 +51,7 @@ public:
     virtual int db_decrypt( const char* szPartition, int size, unsigned char* data );
     virtual int db_encrypt( const char* szPartition, int size, unsigned char* data, unsigned char* dataOut );
     virtual int set_db_CryptKey( const char* szPartition, const char* szKey, bool bPersistent );
-private:
+/*private:
     bool _checkError( BOOL bRes, const char* szFunc );
     unsigned int getErrorCode(){ return m_dwLastError; }
 
@@ -60,7 +60,7 @@ private:
 
     void readKeyFromStorage(DATA_BLOB& blobKey);
     void writeKeyToStorage();
-    void saveKeyToStorage(DATA_BLOB& blobKey);
+    void saveKeyToStorage(DATA_BLOB& blobKey);*/
 };
 
 }
