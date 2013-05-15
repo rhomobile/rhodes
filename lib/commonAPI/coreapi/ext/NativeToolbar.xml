@@ -45,6 +45,7 @@
                                 </PARAM>
                                 <PARAM name="width" type="INTEGER">
                                     <DESC>Button width in pixel. Used to define separator width.</DESC>
+                                    <PLATFORMS>WM, Win32</PLATFORMS>
                                 </PARAM>
                             </PARAMS>
                         </PARAM>

@@ -68,10 +68,12 @@
                             </PARAM>
 
                             <PARAM name="hiddenTabs" type="BOOLEAN">
+                                <PLATFORMS>WM</PLATFORMS>
                                 <DESC>Do not display Tabs with labels.</DESC>
                             </PARAM>
 
                             <PARAM name="createOnDemand" type="BOOLEAN">
+                                <PLATFORMS>WM</PLATFORMS>
                                 <DESC>Create tabs on demand. If false, when all tabs will be created immediately.</DESC>
                             </PARAM>
 

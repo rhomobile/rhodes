@@ -23,7 +23,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_WebView_extension();
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || (defined(OS_MACOSX) && defined(RHODES_EMULATOR)) || defined(OS_ANDROID)
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || (defined(OS_MACOSX) && defined(RHODES_EMULATOR)) || defined(OS_ANDROID) || defined(OS_MACOSX)
     Init_NativeToolbar();
     Init_NativeTabbar();
 #endif
