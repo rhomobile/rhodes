@@ -1977,7 +1977,7 @@ void CMainWindow::tabbarSwitch(int index)
     {
         if ( m_arTabs[index].m_bUseCurrentViewForTab)
         {
-            m_arTabs[index].m_nTabID = index;
+            m_arTabs[index].m_nTabID = 0;
             m_arTabs[index].m_hwndTab = m_pBrowserEng->GetHTMLWND(0);
         }else
         {
@@ -1992,11 +1992,10 @@ void CMainWindow::tabbarSwitch(int index)
         return;
     }
 
-    if ( m_nCurrentTab != index && !m_arTabs[index].m_bUseCurrentViewForTab)
-    {
+    if ( m_nCurrentTab != index )
         m_pBrowserEng->SwitchTab(m_arTabs[index].m_nTabID);
-        m_nCurrentTab = index;
-    }
+
+    m_nCurrentTab = index;
 
     if ( m_arTabs[index].m_bReloadPage || bNewTab )
         RHODESAPP().loadUrl( m_arTabs[index].m_strAction );
