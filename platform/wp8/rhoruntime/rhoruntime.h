@@ -94,6 +94,14 @@ namespace rhoruntime
 		void DisplayMessage(::Platform::String^ msg);
 	};
 
+	public interface class ICryptoEngine
+	{
+	public:
+		int dbDecrypt(::Platform::String^ partition, int size, ::Platform::String^ data, ::Platform::String^* decryptedData);
+		int dbEncrypt(::Platform::String^ partition, int size, ::Platform::String^ data, ::Platform::String^* dataOut);
+		int setDbCryptKey(::Platform::String^ partition, ::Platform::String^ key, bool bPersistent);
+	};
+
     public ref class CRhoRuntime sealed
     {
 	private:
@@ -123,9 +131,12 @@ namespace rhoruntime
 		void DestroyUi(void);
 		//CNativeToolbar& getToolbar(){ return m_toolbar; }
 		//CNativeTabbar& getTabbar(){ return m_tabbar; }
+		void setCryptoEngine(ICryptoEngine^ cryptoEngine);
+		ICryptoEngine^ getCryptoEngine() {return m_CryptoEngine;}
 
 	private:
 		IMainPage^ m_MainPage;
+		ICryptoEngine^ m_CryptoEngine;
 		static CRhoRuntime^ m_instance;
     };
 }

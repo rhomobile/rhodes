@@ -35,6 +35,7 @@ using Microsoft.Phone.Shell;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.IO.IsolatedStorage;
+using rhodes.common;
 
 namespace rhodes
 {
@@ -79,6 +80,7 @@ namespace rhodes
                 CSharpExtensions.InitializeExtensions();
                 // create rhodes runtime object
                 var _rhoruntime = CRhoRuntime.getInstance(new MainPageWrapper(this));
+                _rhoruntime.setCryptoEngine(new CryptoEngineWrapper(new RhoCrypt()));
                 // create and start rhodes main thread
                 _rhoruntimeThread = new Thread(_rhoruntime.Execute);
                 _rhoruntimeThread.Start();
