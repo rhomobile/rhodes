@@ -12,6 +12,7 @@ appEventsTest.ajax = function(url)
 appEventsTest.eventCallback = function(event,eventData)
 {
 	appEventsTest.lastEvent = event;
+    appEventsTest.lastEventData = eventData;
 	appEventsTest.eventList.push(event);
 	appEventsTest.callbackFired = true;
 };
@@ -135,6 +136,7 @@ describe('<application module events specs>', function() {
             Rho.AppEvents.simulateEvent(Rho.AppEvents.APP_EVENT_UICREATED);
             appEventsTest.callbackFired = false;
             appEventsTest.lastEvent = "";
+            appEventsTest.lastEventData = {};
             appEventsTest.eventList = [];
         });
         
@@ -211,15 +213,20 @@ describe('<application module events specs>', function() {
             runs(function ()
             {
                 expect(appEventsTest.eventList).toEqual(events);
-            });
+            }); 
         });
 
         it('Should handle conflicts', function(){
+            template = {
+              "intProp" : ['128', '42'],
+              "stringProp" : ["ohr","abc"]
+            };
+
             runs(function ()
             {
                 appEventsTest.setCallback();
-                Rho.AppEvents.addConflictInt("intProp",16,32);
-                Rho.AppEvents.addConflictString("addConflictString","xyz","rho");
+                Rho.AppEvents.addConflictInt("intProp",64,128);
+                Rho.AppEvents.addConflictString("stringProp","rho","ohr");
                 Rho.AppEvents.simulateConflicts();
             });
             
@@ -230,7 +237,7 @@ describe('<application module events specs>', function() {
             
             runs(function ()
             {
-                expect(appEventsTest.lastEventData).toEqual({});
+                expect(appEventsTest.lastEventData).toEqual(template);
             });
         });
     }

@@ -45,6 +45,9 @@ extern "C" void rho_app_events_simulate_conflict()
     
     rho::common::IApplicationEventReceiver* rcvr = RHODESAPP().getApplicationEventReceiver();
     
+    // reset timestamp
+    RHOCONF().setString("rho_conf_timestamp", "", true);
+    
     RHOCONF().loadFromFile();
     
     HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
