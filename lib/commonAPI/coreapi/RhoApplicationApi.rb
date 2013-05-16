@@ -62,7 +62,7 @@ module Rho
       
     end
     
-    def processApplicationEvent(params)
+    def self.processApplicationEvent(params)
       applicationEvent = params['applicationEvent'] 
       eventData = params['eventData']
       eventData = {} unless eventData
