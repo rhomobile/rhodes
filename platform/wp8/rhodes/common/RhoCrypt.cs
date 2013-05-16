@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace rhodes.common
 {
-    class RhoCrypt
+    public class RhoCrypt
     {
         //private byte[] mKey;
         private uint mLastError;
         //private String mDBPartition;
 
-        public int dbDecrypt(String partition, int size, ref String data)
+        public int dbDecrypt(String partition, int size, String data, out String decryptedData)
         {
             AesManaged aes = null;
             MemoryStream memoryStream = null;
@@ -38,7 +37,7 @@ namespace rhodes.common
                 if (cryptoStream != null)
                     cryptoStream.Dispose();
 
-                data = Encoding.UTF8.GetString(decryptBytes, 0, decryptBytes.Length);
+                decryptedData = Encoding.UTF8.GetString(decryptBytes, 0, decryptBytes.Length);
             }
             finally
             {
@@ -53,7 +52,7 @@ namespace rhodes.common
             return getErrorCode() == 0 ? 1 : 0;
         }
 
-        public int dbEncrypt(String partition, int size, String data, ref String dataOut)
+        public int dbEncrypt(String partition, int size, String data, out String dataOut)
         {
             AesManaged aes = null;
             MemoryStream memoryStream = null;

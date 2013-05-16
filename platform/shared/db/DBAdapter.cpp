@@ -1214,10 +1214,10 @@ int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
     {
         pDB = new CDBAdapter(szDBPartition, false);
         CDBAdapter::getDBPartitions().put(szDBPartition, pDB);
-    }
 
-    rho::String strVer = RhoAppAdapter.getRhoDBVersion();
-    pDB->open(szDBPath,strVer, false,true);
+        rho::String strVer = RhoAppAdapter.getRhoDBVersion();
+        pDB->open(szDBPath,strVer, false,true);
+    }
 
     *ppDB = pDB;
     return 0;

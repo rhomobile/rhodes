@@ -81,6 +81,42 @@
 		FAC155E7145855CF0016F3BD /* CoreAPI_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* CoreAPI_Prefix.pch */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+		FAEB2B901743C486001AE032 /* INativeToolbar.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2B8F1743C486001AE032 /* INativeToolbar.h */; };
+		FAEB2B971743C498001AE032 /* NativeToolbarBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2B911743C498001AE032 /* NativeToolbarBase.h */; };
+		FAEB2B981743C498001AE032 /* NativeToolbarBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2B921743C498001AE032 /* NativeToolbarBase.m */; };
+		FAEB2B991743C498001AE032 /* NativeToolbarFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2B931743C498001AE032 /* NativeToolbarFactoryBase.h */; };
+		FAEB2B9A1743C498001AE032 /* NativeToolbarFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2B941743C498001AE032 /* NativeToolbarFactoryBase.m */; };
+		FAEB2B9B1743C498001AE032 /* NativeToolbarSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2B951743C498001AE032 /* NativeToolbarSingletonBase.h */; };
+		FAEB2B9C1743C498001AE032 /* NativeToolbarSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2B961743C498001AE032 /* NativeToolbarSingletonBase.m */; };
+		FAEB2B9E1743C4AC001AE032 /* nativetoolbar_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2B9D1743C4AC001AE032 /* nativetoolbar_ruby_wrap.m */; };
+		FAEB2BA01743C4B6001AE032 /* nativetoolbar_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2B9F1743C4B6001AE032 /* nativetoolbar_js_wrap.mm */; };
+		FAEB2BA41743C4CE001AE032 /* nativetoolbar_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BA11743C4CE001AE032 /* nativetoolbar_api_init.cpp */; };
+		FAEB2BA51743C4CE001AE032 /* nativetoolbar_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BA21743C4CE001AE032 /* nativetoolbar_js_api.cpp */; };
+		FAEB2BA61743C4CE001AE032 /* nativetoolbar_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BA31743C4CE001AE032 /* nativetoolbar_ruby_api.c */; };
+		FAEB2BAD1743C4E0001AE032 /* NativeToolbar.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2BA71743C4E0001AE032 /* NativeToolbar.h */; };
+		FAEB2BAE1743C4E0001AE032 /* NativeToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BA81743C4E0001AE032 /* NativeToolbar.m */; };
+		FAEB2BAF1743C4E0001AE032 /* NativeToolbarFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BA91743C4E0001AE032 /* NativeToolbarFactorySingleton.m */; };
+		FAEB2BB01743C4E0001AE032 /* NativeToolbarSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BAA1743C4E0001AE032 /* NativeToolbarSetup.m */; };
+		FAEB2BB11743C4E0001AE032 /* NativeToolbarSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2BAB1743C4E0001AE032 /* NativeToolbarSingleton.h */; };
+		FAEB2BB21743C4E0001AE032 /* NativeToolbarSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BAC1743C4E0001AE032 /* NativeToolbarSingleton.m */; };
+		FAEB2BC01743C584001AE032 /* NativeTabbar.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2BBA1743C584001AE032 /* NativeTabbar.h */; };
+		FAEB2BC11743C584001AE032 /* NativeTabbar.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BBB1743C584001AE032 /* NativeTabbar.m */; };
+		FAEB2BC21743C584001AE032 /* NativeTabbarFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BBC1743C584001AE032 /* NativeTabbarFactorySingleton.m */; };
+		FAEB2BC31743C584001AE032 /* NativeTabbarSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BBD1743C584001AE032 /* NativeTabbarSetup.m */; };
+		FAEB2BC41743C584001AE032 /* NativeTabbarSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2BBE1743C584001AE032 /* NativeTabbarSingleton.h */; };
+		FAEB2BC51743C584001AE032 /* NativeTabbarSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BBF1743C584001AE032 /* NativeTabbarSingleton.m */; };
+		FAEB2BC91743C596001AE032 /* nativetabbar_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BC61743C596001AE032 /* nativetabbar_api_init.cpp */; };
+		FAEB2BCA1743C596001AE032 /* nativetabbar_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BC71743C596001AE032 /* nativetabbar_js_api.cpp */; };
+		FAEB2BCB1743C596001AE032 /* nativetabbar_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BC81743C596001AE032 /* nativetabbar_ruby_api.c */; };
+		FAEB2BCD1743C5A1001AE032 /* nativetabbar_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BCC1743C5A1001AE032 /* nativetabbar_ruby_wrap.m */; };
+		FAEB2BCF1743C5AA001AE032 /* nativetabbar_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BCE1743C5AA001AE032 /* nativetabbar_js_wrap.mm */; };
+		FAEB2BD61743C5C0001AE032 /* NativeTabbarBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2BD01743C5C0001AE032 /* NativeTabbarBase.h */; };
+		FAEB2BD71743C5C0001AE032 /* NativeTabbarBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BD11743C5C0001AE032 /* NativeTabbarBase.m */; };
+		FAEB2BD81743C5C0001AE032 /* NativeTabbarFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2BD21743C5C0001AE032 /* NativeTabbarFactoryBase.h */; };
+		FAEB2BD91743C5C0001AE032 /* NativeTabbarFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BD31743C5C0001AE032 /* NativeTabbarFactoryBase.m */; };
+		FAEB2BDA1743C5C0001AE032 /* NativeTabbarSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2BD41743C5C0001AE032 /* NativeTabbarSingletonBase.h */; };
+		FAEB2BDB1743C5C0001AE032 /* NativeTabbarSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAEB2BD51743C5C0001AE032 /* NativeTabbarSingletonBase.m */; };
+		FAEB2BDD1743C5C8001AE032 /* INativeTabbar.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEB2BDC1743C5C8001AE032 /* INativeTabbar.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -159,6 +195,42 @@
 		FAC155F3145855CF0016F3BD /* libCoreAPI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCoreAPI.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAD45FD51225FED600141873 /* CoreAPI_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreAPI_Prefix.pch; sourceTree = "<group>"; };
 		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		FAEB2B8F1743C486001AE032 /* INativeToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INativeToolbar.h; path = generated/INativeToolbar.h; sourceTree = "<group>"; };
+		FAEB2B911743C498001AE032 /* NativeToolbarBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeToolbarBase.h; path = generated/base_impl/NativeToolbarBase.h; sourceTree = "<group>"; };
+		FAEB2B921743C498001AE032 /* NativeToolbarBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeToolbarBase.m; path = generated/base_impl/NativeToolbarBase.m; sourceTree = "<group>"; };
+		FAEB2B931743C498001AE032 /* NativeToolbarFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeToolbarFactoryBase.h; path = generated/base_impl/NativeToolbarFactoryBase.h; sourceTree = "<group>"; };
+		FAEB2B941743C498001AE032 /* NativeToolbarFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeToolbarFactoryBase.m; path = generated/base_impl/NativeToolbarFactoryBase.m; sourceTree = "<group>"; };
+		FAEB2B951743C498001AE032 /* NativeToolbarSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeToolbarSingletonBase.h; path = generated/base_impl/NativeToolbarSingletonBase.h; sourceTree = "<group>"; };
+		FAEB2B961743C498001AE032 /* NativeToolbarSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeToolbarSingletonBase.m; path = generated/base_impl/NativeToolbarSingletonBase.m; sourceTree = "<group>"; };
+		FAEB2B9D1743C4AC001AE032 /* nativetoolbar_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = nativetoolbar_ruby_wrap.m; path = generated/ruby/nativetoolbar_ruby_wrap.m; sourceTree = "<group>"; };
+		FAEB2B9F1743C4B6001AE032 /* nativetoolbar_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = nativetoolbar_js_wrap.mm; path = generated/javascript/nativetoolbar_js_wrap.mm; sourceTree = "<group>"; };
+		FAEB2BA11743C4CE001AE032 /* nativetoolbar_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nativetoolbar_api_init.cpp; path = ../../shared/generated/nativetoolbar_api_init.cpp; sourceTree = "<group>"; };
+		FAEB2BA21743C4CE001AE032 /* nativetoolbar_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nativetoolbar_js_api.cpp; path = ../../shared/generated/nativetoolbar_js_api.cpp; sourceTree = "<group>"; };
+		FAEB2BA31743C4CE001AE032 /* nativetoolbar_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nativetoolbar_ruby_api.c; path = ../../shared/generated/nativetoolbar_ruby_api.c; sourceTree = "<group>"; };
+		FAEB2BA71743C4E0001AE032 /* NativeToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeToolbar.h; path = impl/NativeToolbar.h; sourceTree = "<group>"; };
+		FAEB2BA81743C4E0001AE032 /* NativeToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeToolbar.m; path = impl/NativeToolbar.m; sourceTree = "<group>"; };
+		FAEB2BA91743C4E0001AE032 /* NativeToolbarFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeToolbarFactorySingleton.m; path = impl/NativeToolbarFactorySingleton.m; sourceTree = "<group>"; };
+		FAEB2BAA1743C4E0001AE032 /* NativeToolbarSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeToolbarSetup.m; path = impl/NativeToolbarSetup.m; sourceTree = "<group>"; };
+		FAEB2BAB1743C4E0001AE032 /* NativeToolbarSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeToolbarSingleton.h; path = impl/NativeToolbarSingleton.h; sourceTree = "<group>"; };
+		FAEB2BAC1743C4E0001AE032 /* NativeToolbarSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeToolbarSingleton.m; path = impl/NativeToolbarSingleton.m; sourceTree = "<group>"; };
+		FAEB2BBA1743C584001AE032 /* NativeTabbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeTabbar.h; path = impl/NativeTabbar.h; sourceTree = "<group>"; };
+		FAEB2BBB1743C584001AE032 /* NativeTabbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeTabbar.m; path = impl/NativeTabbar.m; sourceTree = "<group>"; };
+		FAEB2BBC1743C584001AE032 /* NativeTabbarFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeTabbarFactorySingleton.m; path = impl/NativeTabbarFactorySingleton.m; sourceTree = "<group>"; };
+		FAEB2BBD1743C584001AE032 /* NativeTabbarSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeTabbarSetup.m; path = impl/NativeTabbarSetup.m; sourceTree = "<group>"; };
+		FAEB2BBE1743C584001AE032 /* NativeTabbarSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeTabbarSingleton.h; path = impl/NativeTabbarSingleton.h; sourceTree = "<group>"; };
+		FAEB2BBF1743C584001AE032 /* NativeTabbarSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeTabbarSingleton.m; path = impl/NativeTabbarSingleton.m; sourceTree = "<group>"; };
+		FAEB2BC61743C596001AE032 /* nativetabbar_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nativetabbar_api_init.cpp; path = ../../shared/generated/nativetabbar_api_init.cpp; sourceTree = "<group>"; };
+		FAEB2BC71743C596001AE032 /* nativetabbar_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nativetabbar_js_api.cpp; path = ../../shared/generated/nativetabbar_js_api.cpp; sourceTree = "<group>"; };
+		FAEB2BC81743C596001AE032 /* nativetabbar_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nativetabbar_ruby_api.c; path = ../../shared/generated/nativetabbar_ruby_api.c; sourceTree = "<group>"; };
+		FAEB2BCC1743C5A1001AE032 /* nativetabbar_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = nativetabbar_ruby_wrap.m; path = generated/ruby/nativetabbar_ruby_wrap.m; sourceTree = "<group>"; };
+		FAEB2BCE1743C5AA001AE032 /* nativetabbar_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = nativetabbar_js_wrap.mm; path = generated/javascript/nativetabbar_js_wrap.mm; sourceTree = "<group>"; };
+		FAEB2BD01743C5C0001AE032 /* NativeTabbarBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeTabbarBase.h; path = generated/base_impl/NativeTabbarBase.h; sourceTree = "<group>"; };
+		FAEB2BD11743C5C0001AE032 /* NativeTabbarBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeTabbarBase.m; path = generated/base_impl/NativeTabbarBase.m; sourceTree = "<group>"; };
+		FAEB2BD21743C5C0001AE032 /* NativeTabbarFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeTabbarFactoryBase.h; path = generated/base_impl/NativeTabbarFactoryBase.h; sourceTree = "<group>"; };
+		FAEB2BD31743C5C0001AE032 /* NativeTabbarFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeTabbarFactoryBase.m; path = generated/base_impl/NativeTabbarFactoryBase.m; sourceTree = "<group>"; };
+		FAEB2BD41743C5C0001AE032 /* NativeTabbarSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeTabbarSingletonBase.h; path = generated/base_impl/NativeTabbarSingletonBase.h; sourceTree = "<group>"; };
+		FAEB2BD51743C5C0001AE032 /* NativeTabbarSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NativeTabbarSingletonBase.m; path = generated/base_impl/NativeTabbarSingletonBase.m; sourceTree = "<group>"; };
+		FAEB2BDC1743C5C8001AE032 /* INativeTabbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INativeTabbar.h; path = generated/INativeTabbar.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +277,8 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FAEB2BB31743C4F4001AE032 /* NativeTabbar */,
+				FAEB2B871743C425001AE032 /* NativeToolbar */,
 				FA1C7F9A16FBCA740024FB5C /* Application */,
 				C06A0DE416F21BCC0065EF81 /* Log */,
 				FA7C85B216E411C20000EAE6 /* NetworkAccess */,
@@ -562,6 +636,152 @@
 			name = iphone;
 			sourceTree = "<group>";
 		};
+		FAEB2B871743C425001AE032 /* NativeToolbar */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2B8A1743C445001AE032 /* generated */,
+				FAEB2B891743C43E001AE032 /* impl */,
+			);
+			name = NativeToolbar;
+			sourceTree = "<group>";
+		};
+		FAEB2B891743C43E001AE032 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2BA71743C4E0001AE032 /* NativeToolbar.h */,
+				FAEB2BA81743C4E0001AE032 /* NativeToolbar.m */,
+				FAEB2BA91743C4E0001AE032 /* NativeToolbarFactorySingleton.m */,
+				FAEB2BAA1743C4E0001AE032 /* NativeToolbarSetup.m */,
+				FAEB2BAB1743C4E0001AE032 /* NativeToolbarSingleton.h */,
+				FAEB2BAC1743C4E0001AE032 /* NativeToolbarSingleton.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FAEB2B8A1743C445001AE032 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2B8B1743C44F001AE032 /* api */,
+				FAEB2B8C1743C455001AE032 /* base_impl */,
+				FAEB2B8E1743C464001AE032 /* wrappers */,
+				FAEB2B8D1743C45B001AE032 /* shared */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FAEB2B8B1743C44F001AE032 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2B8F1743C486001AE032 /* INativeToolbar.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+		FAEB2B8C1743C455001AE032 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2B911743C498001AE032 /* NativeToolbarBase.h */,
+				FAEB2B921743C498001AE032 /* NativeToolbarBase.m */,
+				FAEB2B931743C498001AE032 /* NativeToolbarFactoryBase.h */,
+				FAEB2B941743C498001AE032 /* NativeToolbarFactoryBase.m */,
+				FAEB2B951743C498001AE032 /* NativeToolbarSingletonBase.h */,
+				FAEB2B961743C498001AE032 /* NativeToolbarSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		FAEB2B8D1743C45B001AE032 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2BA11743C4CE001AE032 /* nativetoolbar_api_init.cpp */,
+				FAEB2BA21743C4CE001AE032 /* nativetoolbar_js_api.cpp */,
+				FAEB2BA31743C4CE001AE032 /* nativetoolbar_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FAEB2B8E1743C464001AE032 /* wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2B9F1743C4B6001AE032 /* nativetoolbar_js_wrap.mm */,
+				FAEB2B9D1743C4AC001AE032 /* nativetoolbar_ruby_wrap.m */,
+			);
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		FAEB2BB31743C4F4001AE032 /* NativeTabbar */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2BB51743C53A001AE032 /* generated */,
+				FAEB2BB41743C531001AE032 /* impl */,
+			);
+			name = NativeTabbar;
+			sourceTree = "<group>";
+		};
+		FAEB2BB41743C531001AE032 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2BBA1743C584001AE032 /* NativeTabbar.h */,
+				FAEB2BBB1743C584001AE032 /* NativeTabbar.m */,
+				FAEB2BBC1743C584001AE032 /* NativeTabbarFactorySingleton.m */,
+				FAEB2BBD1743C584001AE032 /* NativeTabbarSetup.m */,
+				FAEB2BBE1743C584001AE032 /* NativeTabbarSingleton.h */,
+				FAEB2BBF1743C584001AE032 /* NativeTabbarSingleton.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FAEB2BB51743C53A001AE032 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2BB91743C556001AE032 /* api */,
+				FAEB2BB81743C54E001AE032 /* base_impl */,
+				FAEB2BB61743C541001AE032 /* wrappers */,
+				FAEB2BB71743C548001AE032 /* shared */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FAEB2BB61743C541001AE032 /* wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2BCE1743C5AA001AE032 /* nativetabbar_js_wrap.mm */,
+				FAEB2BCC1743C5A1001AE032 /* nativetabbar_ruby_wrap.m */,
+			);
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		FAEB2BB71743C548001AE032 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2BC61743C596001AE032 /* nativetabbar_api_init.cpp */,
+				FAEB2BC71743C596001AE032 /* nativetabbar_js_api.cpp */,
+				FAEB2BC81743C596001AE032 /* nativetabbar_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FAEB2BB81743C54E001AE032 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2BD01743C5C0001AE032 /* NativeTabbarBase.h */,
+				FAEB2BD11743C5C0001AE032 /* NativeTabbarBase.m */,
+				FAEB2BD21743C5C0001AE032 /* NativeTabbarFactoryBase.h */,
+				FAEB2BD31743C5C0001AE032 /* NativeTabbarFactoryBase.m */,
+				FAEB2BD41743C5C0001AE032 /* NativeTabbarSingletonBase.h */,
+				FAEB2BD51743C5C0001AE032 /* NativeTabbarSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		FAEB2BB91743C556001AE032 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FAEB2BDC1743C5C8001AE032 /* INativeTabbar.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -589,6 +809,18 @@
 				C06A0F0D16F21C880065EF81 /* LogBase.h in Headers */,
 				FA1C7FAF16FBCAF00024FB5C /* ApplicationBase.h in Headers */,
 				FA1C7FB016FBCAF00024FB5C /* IApplication.h in Headers */,
+				FAEB2B901743C486001AE032 /* INativeToolbar.h in Headers */,
+				FAEB2B971743C498001AE032 /* NativeToolbarBase.h in Headers */,
+				FAEB2B991743C498001AE032 /* NativeToolbarFactoryBase.h in Headers */,
+				FAEB2B9B1743C498001AE032 /* NativeToolbarSingletonBase.h in Headers */,
+				FAEB2BAD1743C4E0001AE032 /* NativeToolbar.h in Headers */,
+				FAEB2BB11743C4E0001AE032 /* NativeToolbarSingleton.h in Headers */,
+				FAEB2BC01743C584001AE032 /* NativeTabbar.h in Headers */,
+				FAEB2BC41743C584001AE032 /* NativeTabbarSingleton.h in Headers */,
+				FAEB2BD61743C5C0001AE032 /* NativeTabbarBase.h in Headers */,
+				FAEB2BD81743C5C0001AE032 /* NativeTabbarFactoryBase.h in Headers */,
+				FAEB2BDA1743C5C0001AE032 /* NativeTabbarSingletonBase.h in Headers */,
+				FAEB2BDD1743C5C8001AE032 /* INativeTabbar.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -694,6 +926,30 @@
 				FA1C7FB216FBCAFE0024FB5C /* ApplicationImpl.cpp in Sources */,
 				C5AA919617380F6B002E4A65 /* NetworkDetectBase.cpp in Sources */,
 				C5AA919817380FD0002E4A65 /* NetworkDetect.mm in Sources */,
+				FAEB2B981743C498001AE032 /* NativeToolbarBase.m in Sources */,
+				FAEB2B9A1743C498001AE032 /* NativeToolbarFactoryBase.m in Sources */,
+				FAEB2B9C1743C498001AE032 /* NativeToolbarSingletonBase.m in Sources */,
+				FAEB2B9E1743C4AC001AE032 /* nativetoolbar_ruby_wrap.m in Sources */,
+				FAEB2BA01743C4B6001AE032 /* nativetoolbar_js_wrap.mm in Sources */,
+				FAEB2BA41743C4CE001AE032 /* nativetoolbar_api_init.cpp in Sources */,
+				FAEB2BA51743C4CE001AE032 /* nativetoolbar_js_api.cpp in Sources */,
+				FAEB2BA61743C4CE001AE032 /* nativetoolbar_ruby_api.c in Sources */,
+				FAEB2BAE1743C4E0001AE032 /* NativeToolbar.m in Sources */,
+				FAEB2BAF1743C4E0001AE032 /* NativeToolbarFactorySingleton.m in Sources */,
+				FAEB2BB01743C4E0001AE032 /* NativeToolbarSetup.m in Sources */,
+				FAEB2BB21743C4E0001AE032 /* NativeToolbarSingleton.m in Sources */,
+				FAEB2BC11743C584001AE032 /* NativeTabbar.m in Sources */,
+				FAEB2BC21743C584001AE032 /* NativeTabbarFactorySingleton.m in Sources */,
+				FAEB2BC31743C584001AE032 /* NativeTabbarSetup.m in Sources */,
+				FAEB2BC51743C584001AE032 /* NativeTabbarSingleton.m in Sources */,
+				FAEB2BC91743C596001AE032 /* nativetabbar_api_init.cpp in Sources */,
+				FAEB2BCA1743C596001AE032 /* nativetabbar_js_api.cpp in Sources */,
+				FAEB2BCB1743C596001AE032 /* nativetabbar_ruby_api.c in Sources */,
+				FAEB2BCD1743C5A1001AE032 /* nativetabbar_ruby_wrap.m in Sources */,
+				FAEB2BCF1743C5AA001AE032 /* nativetabbar_js_wrap.mm in Sources */,
+				FAEB2BD71743C5C0001AE032 /* NativeTabbarBase.m in Sources */,
+				FAEB2BD91743C5C0001AE032 /* NativeTabbarFactoryBase.m in Sources */,
+				FAEB2BDB1743C5C0001AE032 /* NativeTabbarSingletonBase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

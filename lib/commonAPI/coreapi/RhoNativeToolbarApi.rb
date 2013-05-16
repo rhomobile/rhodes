@@ -1,4 +1,4 @@
-if Rho::System.isRhoSimulator || System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP' || System.get_property('platform') == 'ANDROID'
+if Rho::System.isRhoSimulator || System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP' || System.get_property('platform') == 'ANDROID' || System.get_property('platform') == 'APPLE'
 
 module Rho
 class NativeToolbar

@@ -345,7 +345,9 @@
 	NSDictionary* global_properties = (NSDictionary*)[bar_info objectForKey:NATIVE_BAR_PROPERTIES];
 	if (global_properties != nil) {
 		background_color = (NSString*)[global_properties objectForKey:NATIVE_BAR_BACKGOUND_COLOR];
-        self.on_change_tab_callback = (NSString*)[global_properties objectForKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];
+
+        //COMMONAPI
+        //self.on_change_tab_callback = (NSString*)[global_properties objectForKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];
 	}
 	
 	if (background_color != nil) {

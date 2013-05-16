@@ -35,18 +35,18 @@
 #define NATIVE_BAR_PROPERTIES						@"properties"
 #define NATIVE_BAR_ITEMS							@"items"
 
-#define NATIVE_BAR_BACKGOUND_COLOR					@"bkg_color"
-#define NATIVE_BAR_ON_CHANGE_TAB_CALLBACK           @"on_change_tab_callback"
+#define NATIVE_BAR_BACKGOUND_COLOR					@"backgroundColor"
+//#define NATIVE_BAR_ON_CHANGE_TAB_CALLBACK           @"on_change_tab_callback"
 
 #define NATIVE_BAR_ITEM_LABEL						@"label"
 #define NATIVE_BAR_ITEM_ACTION						@"action"
 #define NATIVE_BAR_ITEM_ICON						@"icon"
 #define NATIVE_BAR_ITEM_RELOAD						@"reload"
-#define NATIVE_BAR_ITEM_COLORED_ICON				@"colored_icon"
-#define NATIVE_BAR_ITEM_SELECTED_COLOR				@"selected_color"
+#define NATIVE_BAR_ITEM_COLORED_ICON				@"coloredIcon"
+#define NATIVE_BAR_ITEM_SELECTED_COLOR				@"selectedColor"
 #define NATIVE_BAR_ITEM_DISABLED					@"disabled"
-#define NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR		@"web_bkg_color"
-#define NATIVE_BAR_ITEM_USE_CURRENT_VIEW_FOR_TAB	@"use_current_view_for_tab"
+#define NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR		@"backgroundColor"
+#define NATIVE_BAR_ITEM_USE_CURRENT_VIEW_FOR_TAB	@"useCurrentViewForTab"
 
 /*
  
