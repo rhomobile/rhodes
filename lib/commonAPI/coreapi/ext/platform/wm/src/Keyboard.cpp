@@ -24,7 +24,7 @@ void HideSIPButton()
 */
 CSIP::CSIP()
 {
-	currentStatus = SIP_CONTROL_AUTOMATIC;
+	currentStatus = SIP_CONTROL_MANUAL;
 	InitSIP();
 }
 

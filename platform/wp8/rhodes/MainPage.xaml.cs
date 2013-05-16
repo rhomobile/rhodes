@@ -35,6 +35,7 @@ using Microsoft.Phone.Shell;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.IO.IsolatedStorage;
+using rhodes.common;
 
 namespace rhodes
 {
@@ -79,6 +80,7 @@ namespace rhodes
                 CSharpExtensions.InitializeExtensions();
                 // create rhodes runtime object
                 var _rhoruntime = CRhoRuntime.getInstance(new MainPageWrapper(this));
+                _rhoruntime.setCryptoEngine(new CryptoEngineWrapper(new RhoCrypt()));
                 // create and start rhodes main thread
                 _rhoruntimeThread = new Thread(_rhoruntime.Execute);
                 _rhoruntimeThread.Start();
@@ -193,7 +195,7 @@ namespace rhodes
 		public void navigate(string url, int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigate(url, index); }); return; }
-            if (isDefaultBrowser())
+            if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
                 RhodesWebBrowser.Navigate(new Uri(url));
             else
                 ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url));
@@ -202,7 +204,7 @@ namespace rhodes
         public string executeScriptFunc(string script, int index)
         {
             string[] codeString = { script };
-            if (isDefaultBrowser())
+            if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
                 return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
             else
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
@@ -256,7 +258,7 @@ namespace rhodes
 		public void Refresh(int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { Refresh(index); }); return; }
-            if (isDefaultBrowser())
+            if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
                 RhodesWebBrowser.Navigate(new Uri(RhodesWebBrowser.Source.AbsoluteUri, UriKind.Absolute));
                 // another possible implementation: RhodesWebBrowser.InvokeScript("eval", "history.go()");
             else
@@ -272,14 +274,14 @@ namespace rhodes
 
         private int getValidTabbarIndex(int index)
         {
-            return (index < 0) || (index >= TabbarPivot.Items.Count) ? TabbarPivot.SelectedIndex : index;
+            return ((index < 0) || (index >= TabbarPivot.Items.Count)) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count) ? TabbarPivot.SelectedIndex : index;
         }
 
         private string getCurrentURLFunc(int index)
         {
             try
             {
-                if (isDefaultBrowser())
+                if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
                     return RhodesWebBrowser.Source.ToString();
                 else
                     return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Source.ToString();
@@ -645,11 +647,6 @@ namespace rhodes
             TabbarPivot.Items.Add(tab);
 
             //return TabbarPivot.Items.Count-1; 
-        }
-
-        private bool isDefaultBrowser()
-        {
-            return (TabbarPivot.Items.Count == 0) || (TabbarPivot.SelectedIndex < 0) || (TabbarPivot.SelectedIndex >= TabbarPivot.Items.Count);
         }
 
         private void TabbarPivot_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
