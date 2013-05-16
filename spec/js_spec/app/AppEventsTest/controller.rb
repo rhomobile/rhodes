@@ -9,7 +9,7 @@ class AppEventsTestController < Rho::RhoController
 
   def app_callback(data)
     puts "Handling #{data.to_s}"
-    WebView.execute_js("appEventsTest.eventCallback('#{data['applicationEvent']}',#{data['applicationEvent'].to_json});")
+    WebView.execute_js("appEventsTest.eventCallback('#{data['applicationEvent']}',#{data['eventData'].to_json});")
   end
 
 end
