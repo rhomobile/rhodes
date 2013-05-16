@@ -19,11 +19,6 @@ class NativeToolbar
     end
 
     params[:backgroundColor] = params[:background_color] if params[:background_color]
-    if System.get_property('platform') == 'ANDROID'
-        if params[:backgroundColor] != nil
-             params[:backgroundColor] = params[:backgroundColor].to_s
-        end
-    end
 
     params[:maskColor] = params[:mask_color] if params[:mask_color]
     params[:viewHeight] = params[:view_height] if params[:view_height]
