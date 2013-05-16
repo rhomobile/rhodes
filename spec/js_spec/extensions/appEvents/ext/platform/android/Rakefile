@@ -1,0 +1,56 @@
+require 'fileutils'
+
+$curdir = pwd
+TARGETDIR = ENV['TARGET_TEMP_DIR']
+raise "TARGET_TEMP_DIR is not set" if TARGETDIR.nil?
+OBJDIR = ENV['TEMP_FILES_DIR']
+raise "TEMP_FILES_DIR is not set" if OBJDIR.nil?
+$rootdir = ENV['RHO_ROOT']
+raise "RHO_ROOT is not set" if $rootdir.nil?
+$appincdir = ENV["RHO_INC"]
+raise "RHO_INC is not set" if $appincdir.nil?
+
+TARGETLIB = File.join(TARGETDIR, 'libappevents.a')
+
+require File.join($rootdir, 'platform/android/build/androidcommon.rb')
+
+task :config do
+    setup_ndk(ENV['ANDROID_NDK'],ENV['ANDROID_API_LEVEL'])
+    $sources = get_sources File.join($curdir, 'ext_native.files')
+    $objects = get_objects $sources, OBJDIR
+end
+
+directory TARGETDIR
+directory OBJDIR
+
+task :build => [:config, OBJDIR] do
+
+    $std_includes = File.join ENV['ANDROID_NDK'], "sources", "cxx-stl", "stlport", "stlport"
+
+    args = []
+    args << "-I#{$curdir}/generated/jni"
+    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include"
+    args << "-I#{$rootdir}/platform/android/Rhodes/jni/include/rhodes/details"
+    args << "-I#{$rootdir}/platform/shared/ruby/include"
+    args << "-I#{$rootdir}/platform/shared"
+    args << "-I#{$rootdir}/platform/shared/common"
+    args << "-I#{$rootdir}/platform/shared/api_generator"
+    args << "-I#{$appincdir}"
+    args << "-I#{$std_includes}"
+    args << "-I#{$rootdir}/platform/shared/ruby"
+    args << "-I#{$rootdir}/platform/shared/ruby/android"
+    args << "-I#{$rootdir}/platform/shared/ruby/generated"
+    
+    cd '../../..'
+    puts "pwd: #{pwd} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+    
+    cc_build $sources, OBJDIR, args or raise "Compile is failed"
+end
+
+file TARGETLIB => [TARGETDIR, :build] do |t|
+    puts "objects: " + $objects.inspect
+    
+    cc_ar ('"'+t.name+'"'), $objects.collect{|x| '"'+x+'"'} or raise "Static library is failed"
+end
+
+task :default => TARGETLIB

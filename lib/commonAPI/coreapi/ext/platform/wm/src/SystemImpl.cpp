@@ -134,7 +134,8 @@ public:
 #if defined( OS_WINCE )
 		if (!m_pSip)
 			m_pSip = new CSIP();
-		m_pSip->ToggleSIPReliably(bSIPState);
+		if (m_pSip->getCurrentStatus() == SIP_CONTROL_AUTOMATIC)
+			m_pSip->ToggleSIPReliably(bSIPState);
 #endif
 		return S_OK;
 	}

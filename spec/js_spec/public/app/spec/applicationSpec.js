@@ -1,3 +1,27 @@
+var appEventsTest = {};
+
+appEventsTest.ajax = function(url)
+{
+	var ajax = new XMLHttpRequest();
+	//ajax.onreadystatechange = function () {} //Async call
+	ajax.open("GET", url, false); //Sync Call
+	ajax.send();
+	return ajax.responseText;
+};
+
+appEventsTest.eventCallback = function(event,eventData)
+{
+	appEventsTest.lastEvent = event;
+    appEventsTest.lastEventData = eventData;
+	appEventsTest.eventList.push(event);
+	appEventsTest.callbackFired = true;
+};
+
+appEventsTest.setCallback = function ()
+{
+	appEventsTest.ajax('/app/AppEventsTest/set_callback');
+};
+
 describe("<application module specs>", function () {
 
     it("Test appBundleFolder property", function () {
@@ -80,7 +104,7 @@ describe("<application module specs>", function () {
         expect(Rho.Application.restore).not.toThrow();
     });
 
-    //TODO: implement spec for setActivationNotify with callback
+    //TODO: implement spec for setActivationNotify with callback on all platforms
 
     //TODO: implement spec for getRhoPlatformVersion with callback
 
@@ -103,4 +127,118 @@ describe("<application module specs>", function () {
 
     }
 
+});
+
+describe('<application module events specs>', function() {
+    if (isApplePlatform()) {
+        beforeEach(function() {
+            Rho.AppEvents.simulateEvent(Rho.AppEvents.APP_EVENT_ACTIVATED);
+            Rho.AppEvents.simulateEvent(Rho.AppEvents.APP_EVENT_UICREATED);
+            appEventsTest.callbackFired = false;
+            appEventsTest.lastEvent = "";
+            appEventsTest.lastEventData = {};
+            appEventsTest.eventList = [];
+        });
+        
+        it('Should fire callback', function(){
+            runs(function ()
+            {
+                appEventsTest.setCallback();
+                // state is "activated" should be changed
+                Rho.AppEvents.simulateEvent(Rho.AppEvents.APP_EVENT_DEACTIVATED);
+            });
+            
+            waitsFor(function ()
+            {
+                return appEventsTest.callbackFired;
+            }, "the callback didnt fire", 750);
+            
+            runs(function ()
+            {
+                expect(appEventsTest.lastEvent).toEqual(Rho.AppEvents.APP_EVENT_DEACTIVATED);
+            });
+        });
+
+        it('Should fire callback not once', function(){
+            events = [
+                Rho.AppEvents.APP_EVENT_DEACTIVATED,
+                Rho.AppEvents.APP_EVENT_UIDESTROYED,
+                Rho.AppEvents.APP_EVENT_UICREATED,
+                Rho.AppEvents.APP_EVENT_ACTIVATED
+            ];
+
+            runs(function ()
+            {
+                appEventsTest.setCallback();
+                for(var i = 0; i < events.length; i++)
+                {
+                    Rho.AppEvents.simulateEvent(events[i]);
+                }
+            });
+            
+            waitsFor(function ()
+            {
+                return appEventsTest.eventList.length == events.length;
+            }, "the callback didnt fire", 750);
+            
+            runs(function ()
+            {
+                expect(appEventsTest.eventList).toEqual(events);
+            });
+        });
+
+        it('Should not duplicate callbacks', function(){
+            events = [
+                Rho.AppEvents.APP_EVENT_DEACTIVATED,
+                Rho.AppEvents.APP_EVENT_UIDESTROYED,
+                Rho.AppEvents.APP_EVENT_ACTIVATED,
+                Rho.AppEvents.APP_EVENT_UICREATED
+            ];
+
+            runs(function ()
+            {
+                appEventsTest.setCallback();
+                for(var i = 0; i < events.length; i++)
+                {
+                    Rho.AppEvents.simulateEvent(events[i]);
+                    Rho.AppEvents.simulateEvent(events[i]);
+                }
+            });
+            
+            waitsFor(function ()
+            {
+                return appEventsTest.eventList.length == events.length;
+            }, "the callback didnt fire", 750);
+            
+            runs(function ()
+            {
+                expect(appEventsTest.eventList).toEqual(events);
+            }); 
+        });
+
+        it('Should handle conflicts', function(){
+            template = {
+              "intProp" : ['128', '42'],
+              "stringProp" : ["ohr","abc"]
+            };
+
+            runs(function ()
+            {
+                appEventsTest.setCallback();
+                Rho.AppEvents.addConflictInt("intProp",64,128);
+                Rho.AppEvents.addConflictString("stringProp","rho","ohr");
+                Rho.AppEvents.simulateConflicts();
+            });
+            
+            waitsFor(function ()
+            {
+                return appEventsTest.callbackFired;
+            }, "the callback didnt fire", 750);
+            
+            runs(function ()
+            {
+                expect(appEventsTest.lastEventData).toEqual(template);
+            });
+        });
+    }
 });

@@ -266,6 +266,7 @@ public:
     IApplicationEventReceiver* getApplicationEventReceiver();
 
     void registerLocalServerUrl(const String& strUrl, rho::net::CHttpServer::callback_t const &callback);
+    bool isLocalServerRunning() { return ( (m_httpServer) && (m_httpServer->started()) ); }
 
     void callCallbackProcWithData(unsigned long oRubyCallbackProc, String strBody, const String& strCallbackData, bool bWaitForResponse);
 protected:
