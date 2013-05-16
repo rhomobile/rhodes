@@ -153,7 +153,7 @@ boolean CDBAdapter::checkDbErrorEx(int rc, rho::db::CDBResult& res)
 
 void CDBAdapter::open (String strDbPath, String strVer, boolean bTemp, boolean checkImportState)
 {
-    if ( strcasecmp(strDbPath.c_str(),m_strDbPath.c_str() ) == 0 )
+    if ( strcasecmp(strDbPath.c_str(),m_strDbPath.c_str() ) == 0 && m_dbHandle )
         return;
 
     LOG(INFO) + "Open DB: " + strDbPath;
@@ -1214,10 +1214,10 @@ int rho_db_open(const char* szDBPath, const char* szDBPartition, void** ppDB)
     {
         pDB = new CDBAdapter(szDBPartition, false);
         CDBAdapter::getDBPartitions().put(szDBPartition, pDB);
-
-        rho::String strVer = RhoAppAdapter.getRhoDBVersion();
-        pDB->open(szDBPath,strVer, false,true);
     }
+
+    rho::String strVer = RhoAppAdapter.getRhoDBVersion();
+    pDB->open(szDBPath,strVer, false,true);
 
     *ppDB = pDB;
     return 0;
