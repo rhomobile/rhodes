@@ -2106,7 +2106,10 @@ void CExtManager::requireRubyFile( const char* szFilePath )
         // at this point http server is not yet started
         // there is no way to call ruby and javascript callbacks
         // TODO: find a way to execute ruby callbacks during initialization
-        return false;
+        if (!RHODESAPP().isLocalServerRunning())
+        {
+            return false;
+        }
         
         using namespace rho::apiGenerator;
         if (m_result.hasCallback() && (conflicts.size() > 0) )

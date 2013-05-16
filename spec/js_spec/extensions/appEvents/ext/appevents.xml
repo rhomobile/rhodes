@@ -1,0 +1,57 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="AppEvents" parent="Rho">
+        <METHODS access="STATIC">
+            <METHOD name="simulateEvent" runInThread="ui">
+                <DESC>Simulate APP Event</DESC>
+                <PARAMS>
+                    <PARAM name="applicationEvent" type="STRING">
+                        <DESC></DESC>
+                        <VALUES>
+                            <VALUE constName="APP_EVENT_ACTIVATED" value ="Activated">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="APP_EVENT_DEACTIVATED" value ="Deactivated">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="APP_EVENT_UICREATED" value ="UICreated">
+                                <DESC></DESC>
+                            </VALUE>
+                            <VALUE constName="APP_EVENT_UIDESTROYED" value ="UIDestroyed">
+                                <DESC></DESC>
+                            </VALUE>
+                        </VALUES>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+            <METHOD name="addConflictInt" runInThread="none">
+                <DESC>Simulate APP Event</DESC>
+                <PARAMS>
+                    <PARAM name="valueName" type="STRING"/>
+                    <PARAM name="savedValue" type="INTEGER"/>
+                    <PARAM name="newValue" type="INTEGER"/>
+                </PARAMS>
+            </METHOD>
+            <METHOD name="addConflictString" runInThread="none">
+                <DESC>Simulate APP Event</DESC>
+                <PARAMS>
+                    <PARAM name="valueName" type="STRING"/>
+                    <PARAM name="savedValue" type="STRING"/>
+                    <PARAM name="newValue" type="STRING"/>
+                </PARAMS>
+            </METHOD>
+            <METHOD name="simulateConflicts" runInThread="ui">
+                <DESC>Simulate Conflicts event</DESC>
+            </METHOD>
+        </METHODS>
+        
+        <USER_OVERVIEW>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+    </MODULE>
+</API>    
