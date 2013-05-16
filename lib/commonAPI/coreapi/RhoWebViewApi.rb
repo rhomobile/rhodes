@@ -25,7 +25,7 @@
 #------------------------------------------------------------------------
 
 
-if Rho::System.isRhoSimulator || System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'  || System.get_property('platform') == 'ANDROID'
+if Rho::System.isRhoSimulator || System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP' || System.get_property('platform') == 'WP8' || System.get_property('platform') == 'ANDROID'
  class WebView
     class << self
         alias_method :orig_execute_js, :execute_js
