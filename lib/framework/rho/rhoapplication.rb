@@ -120,33 +120,33 @@ module Rho
     end
 
     def on_activate_app
-      processApplicationEvent({'applicationEvent'=>'Activated'})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'Activated'})
     end
 
     def on_deactivate_app
-      processApplicationEvent({'applicationEvent'=>'Deactivated'})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'Deactivated'})
     end
 
     def on_ui_created
-      processApplicationEvent({'applicationEvent'=>'UICreated'})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'UICreated'})
     end
 
     def on_ui_destroyed
-      processApplicationEvent({'applicationEvent'=>'UIDestroyed'})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'UIDestroyed'})
     end
 
     def on_sync_user_changed
-      processApplicationEvent({'applicationEvent'=>'SyncUserChanged'})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'SyncUserChanged'})
     end
 
     def on_reinstall_config_update(conflicts)
-      processApplicationEvent({'applicationEvent'=>'ConfigConflict','eventData'=>{ 'conflicts' => conflicts}})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'ConfigConflict','eventData'=>{ 'conflicts' => conflicts}})
     end
 
     # works for schema sources
     #return true to run script creating table    
     def on_migrate_source(old_version, new_src)
-      processApplicationEvent({'applicationEvent'=>'DBMigrateSource','eventData'=>{ 'old_version' => old_version, 'new_src' =>  new_src}})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'DBMigrateSource','eventData'=>{ 'old_version' => old_version, 'new_src' =>  new_src}})
     end
 
     def set_menu(menu=nil,back_action=nil)
