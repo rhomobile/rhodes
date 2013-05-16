@@ -43,6 +43,11 @@ public:
     {
         oResult.set( rho_wmimpl_tabbar_isStarted() );
     }
+
+    virtual void removeTab( int tabIndex, rho::apiGenerator::CMethodResult& oResult)
+    {
+        rho_wmimpl_tabbar_removeTab(tabIndex);
+    }
 };
 
 ////////////////////////////////////////////////////////////////////////

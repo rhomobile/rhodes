@@ -341,6 +341,7 @@ public:
 
     void createTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
     void removeTabbar();
+    void removeTab(int index);
     void tabbarSwitch(int index);
     void tabbarBadge(int index, const char* badge);
     int tabbarGetCurrent();

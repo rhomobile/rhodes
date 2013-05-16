@@ -1943,6 +1943,18 @@ void CMainWindow::removeTabbar()
     m_nCurrentTab = -1;
 }
 
+void CMainWindow::removeTab(int index)
+{
+    if (index >= 0 && index < (int)m_arTabs.size() )
+    {
+        if (!m_arTabs[index].m_bUseCurrentViewForTab)
+            m_pBrowserEng->CloseTab(m_arTabs[index].m_nTabID);
+
+        m_arTabs[index].m_nTabID = -1;
+        m_arTabs[index].m_hwndTab = 0;
+    }
+}
+
 LRESULT CMainWindow::OnSwitchTab (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LOG(INFO) + "OnSwitchTab : " + (const char*) lParam;
