@@ -45,6 +45,8 @@ extern "C" void rho_app_events_simulate_conflict()
     
     rho::common::IApplicationEventReceiver* rcvr = RHODESAPP().getApplicationEventReceiver();
     
+    RHOCONF().loadFromFile();
+    
     HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
 
     rcvr->onReinstallConfigUpdate(mapConflicts);
