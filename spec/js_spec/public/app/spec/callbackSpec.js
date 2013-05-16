@@ -1,4 +1,4 @@
-describe("<system module specs>", function () {
+describe("<api generator callback specs>", function () {
 
     if (isApplePlatform()) {
         var alptabet = [ 
