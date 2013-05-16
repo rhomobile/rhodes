@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		46056D171031DC7E00C21967 /* datetimepicker_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46056D151031DC7E00C21967 /* datetimepicker_wrap.c */; };
 		46A4ABC0101A25DD00AF74C7 /* rhoconf_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46A4ABBE101A25DD00AF74C7 /* rhoconf_wrap.c */; };
-		46AF502F103DE480006E02E1 /* nativebar_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = 46AF502D103DE480006E02E1 /* nativebar_wrap.c */; };
 		5C76527E0FD3E3C100CB43FD /* rhoruby.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C76527B0FD3E3C100CB43FD /* rhoruby.c */; };
 		5C76527F0FD3E3C100CB43FD /* rhoruby.h in Headers */ = {isa = PBXBuildFile; fileRef = 5C76527C0FD3E3C100CB43FD /* rhoruby.h */; };
 		5C7652800FD3E3C100CB43FD /* rhosupport.c in Sources */ = {isa = PBXBuildFile; fileRef = 5C76527D0FD3E3C100CB43FD /* rhosupport.c */; };
@@ -793,7 +792,6 @@
 				F51668800FFD39D80079F023 /* alert_wrap.c in Sources */,
 				46A4ABC0101A25DD00AF74C7 /* rhoconf_wrap.c in Sources */,
 				46056D171031DC7E00C21967 /* datetimepicker_wrap.c in Sources */,
-				46AF502F103DE480006E02E1 /* nativebar_wrap.c in Sources */,
 				F5FD0A3D10619E7900B7B8ED /* mapview_wrap.c in Sources */,
 				5CF8DBCA10B1D45C00247AB4 /* socket.c in Sources */,
 				D38F7B5F110647510030B1F4 /* extensions.c in Sources */,

@@ -13,7 +13,7 @@ iphone:
   provisionprofile:
   codesignidentity:
   entitlements:
-  extensions: ["genCallbackTests"]
+  extensions: ["genCallbackTests","appEvents"]
 wp:
   productid: '0b698de0-7218-0130-547c-001a925f2369'
 symbian:
