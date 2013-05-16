@@ -217,12 +217,9 @@ describe('<application module events specs>', function() {
         it('Should handle conflicts', function(){
             runs(function ()
             {
-                Rho.Log.info("getting into", "APP");
                 appEventsTest.setCallback();
-                Rho.Log.info("setting props", "APP");
                 Rho.AppEvents.addConflictInt("intProp",16,32);
                 Rho.AppEvents.addConflictString("addConflictString","xyz","rho");
-                Rho.Log.info("firing callback", "APP");
                 Rho.AppEvents.simulateConflicts();
             });
             
