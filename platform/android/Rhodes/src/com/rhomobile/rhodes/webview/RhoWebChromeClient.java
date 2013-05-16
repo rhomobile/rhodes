@@ -29,6 +29,7 @@ package com.rhomobile.rhodes.webview;
 import android.app.Activity;
 import android.view.Window;
 import android.webkit.GeolocationPermissions;
+import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebStorage;
@@ -37,10 +38,58 @@ import android.webkit.WebView;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.extmanager.IRhoExtension;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 
 public class RhoWebChromeClient extends WebChromeClient {
     private static final String TAG = RhoWebChromeClient.class.getSimpleName();
+    
+    private class AlertResult implements IRhoExtension.IAlertResult {
+        private boolean mPending = false;
+        private JsResult mResult;
+        public AlertResult(JsResult result) {
+            mResult = result;
+        }
+        @Override
+        public void setPending() {
+            mPending = true;
+        }
+        @Override
+        public void confirm() {
+            mResult.confirm();
+        }
+        @Override
+        public void cancel() {
+            mResult.cancel();
+        }
+        public boolean isPending() {
+            return mPending;
+        }
+    }
+
+    private class PromptResult implements IRhoExtension.IPromptResult {
+        private boolean mPending = false;
+        private JsPromptResult mResult;
+        public PromptResult(JsPromptResult result) {
+            mResult = result;
+        }
+        @Override
+        public void setPending() {
+            mPending = true;
+        }
+        @Override
+        public void confirm(String message) {
+            mResult.confirm(message);
+        }
+        @Override
+        public void cancel() {
+            mResult.cancel();
+        }
+        public boolean isPending() {
+            return mPending;
+        }
+    }
 
     private Activity mActivity;
     //private SimpleMainView mMainView;
@@ -95,12 +144,24 @@ public class RhoWebChromeClient extends WebChromeClient {
     }
     
     public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-        return false;
+        AlertResult alertResult = new AlertResult(result);
+        RhoExtManager.getImplementationInstance().onAlert(view, message, alertResult);
+        return alertResult.isPending();
     }
     
     public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
-        return false;
+        AlertResult alertResult = new AlertResult(result);
+        RhoExtManager.getImplementationInstance().onAlert(view, message, alertResult);
+        return alertResult.isPending();
     }
+
+    public boolean onJsPrompt (WebView view, String url, String message, String defaultValue, final JsPromptResult result) {
+        PromptResult promptResult = new PromptResult(result);
+        RhoExtManager.getImplementationInstance().onPrompt(view, message, defaultValue, promptResult);
+        Logger.T(TAG, "JS Prompt is processing by rhodes: " + promptResult.isPending());
+        return promptResult.isPending();
+    }
+
     public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
         callback.invoke(origin, true, false);
     }
