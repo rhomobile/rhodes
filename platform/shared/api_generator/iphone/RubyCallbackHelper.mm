@@ -62,10 +62,10 @@ void RubyCallbackHelper_callCallback(NSString* callbackURL,
             strBody = [strBody stringByAppendingString:@"&"];
             strBody = [strBody stringByAppendingString:strParam];
         }
-        [methodResult release];
+        //[methodResult release];
     }
     else {
-        NSString* strParam = [NSString stringWithUTF8String:( RHODESAPP().addCallbackObject( new BarcodeRhoCallbackResultContainer(methodResult), param_name).c_str() ) ];
+        NSString* strParam = [NSString stringWithUTF8String:( RHODESAPP().addCallbackObject( new BarcodeRhoCallbackResultContainer([methodResult retain]), param_name).c_str() ) ];
         //strBody = [strBody stringByAppendingString:@"&"];
         strBody = [strBody stringByAppendingString:strParam];
     }
