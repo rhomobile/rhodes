@@ -27,6 +27,7 @@
 #import <UIKit/UIKit.h>
 #import "RhoMainView.h"
 #import "RhoViewController.h"
+#import "api_generator/iphone/IMethodResult.h"
 
 @interface RhoUITabBarController : UITabBarController
 {
@@ -52,14 +53,14 @@
     UITabBarController *tabbar;
     NSArray *tabbarData;
     int tabindex;
-    NSString* on_change_tab_callback;
+    id<IMethodResult> on_change_tab_callback;
     CGRect rootFrame;
 }
 
 @property (nonatomic,retain) UITabBarController *tabbar;
 @property (nonatomic,retain) NSArray *tabbarData;
 @property (nonatomic,assign) int tabindex;
-@property (nonatomic,retain) NSString *on_change_tab_callback;
+@property (nonatomic,assign) id<IMethodResult> on_change_tab_callback;
 
 - (id)initWithMainView:(id<RhoMainView>)v parent:(UIWindow*)p bar_info:(NSDictionary*)bar_info;
 

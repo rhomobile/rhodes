@@ -149,7 +149,7 @@ static int started = 0;
 @end
 
 
-void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_properties)
+void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_properties, id<IMethodResult>callback)
 {
     if (!rho_rhodesapp_check_mode())
         return;
@@ -172,46 +172,7 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
         }
     }
     
-    
-    
-    
-    /*
-    rho_param *params = NULL;
-    switch (p->type) {
-        case RHO_PARAM_ARRAY:
-            params = p;
-            break;
-        case RHO_PARAM_HASH: {
-            for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
-                const char *name = p->v.hash->name[i];
-                rho_param *value = p->v.hash->value[i];
-                
-                if (strcasecmp(name, "background_color") == 0) {
-					background_color = value->v.string;
-					background_color_enable = "true";
-                }
 
-                if (strcasecmp(name, "on_change_tab_callback") == 0) {
-					on_change_tab_callback = value->v.string;
-                }
-                
-                if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) {
-                    params = value;
-                }
-            }
-        }
-            break;
-        default: {
-            RAWLOG_ERROR("Unexpected parameter type for create_nativebar, should be Array or Hash");
-            return;
-        }
-    }
-    
-    if (!params) {
-        RAWLOG_ERROR("Wrong parameters for create_nativebar");
-        return;
-    }
-    */
     
     int size = [p_items count];//params->v.array->size;
 
@@ -355,8 +316,8 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
 	}
     
     //COMMONAPI
-    if (on_change_tab_callback != NULL) {
-	//	[properties setObject:[NSString stringWithUTF8String:on_change_tab_callback] forKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];
+    if (callback != NULL) {
+		[properties setObject:[callback retain] forKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];
     }
 	
     id runnable = [RhoNativeBarCreateTask class];
@@ -365,14 +326,14 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
 }
 
 void rho_create_toolbar(NSArray* items, NSDictionary* properties) {
-    rho_create_nativebar_inner(TOOLBAR_TYPE, items, properties);
+    rho_create_nativebar_inner(TOOLBAR_TYPE, items, properties, nil);
 }
 
 void rho_create_tabbar(NSArray* items, NSDictionary* properties, id<IMethodResult>callback) {
     //COMMONAPI
     // add check for Vertical type
     // add callbacl processing
-    rho_create_nativebar_inner(TABBAR_TYPE, items, properties);
+    rho_create_nativebar_inner(TABBAR_TYPE, items, properties, callback);
 }
 
 
