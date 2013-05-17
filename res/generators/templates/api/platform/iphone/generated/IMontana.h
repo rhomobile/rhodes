@@ -33,6 +33,33 @@ $iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
    end
  %>
 
+// hash keys used in properties and parameters
+<% if $cur_module.hash_key_names.size > 0 
+    $cur_module.hash_key_names.each do |key_names| 
+%>#define <%= key_names.const_tag %> @"<%= key_names.name %>"
+<% end 
+end %>
+
+<% $cur_module.constants.each do |module_constant|
+   if (module_constant.name != nil) && (module_constant.name.size > 0)
+      cline = ''
+      cline = cline + '#define '
+      cline = cline + module_constant.name + ' '
+      if module_constant.type == MethodParam::TYPE_STRING
+           cline = cline + '@"'+module_constant.value + '"'
+      else
+           cline = cline + module_constant.value
+      end
+      if (module_constant.desc != nil) && (module_constant.desc.size > 0)
+%><%= '/* '+module_constant.desc+' */' %><%
+      end %>
+<%= cline %>
+
+<%
+   end
+   end
+ %>
+
 
 
 @protocol I<%= $cur_module.name %> <NSObject>

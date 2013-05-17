@@ -27,6 +27,13 @@ public interface I<%= $cur_module.name %>Singleton
   end
 end %>
 
+  // hash keys used in properties and parameters
+<% if $cur_module.hash_key_names.size > 0 
+    $cur_module.hash_key_names.each do |key_names| %>
+    static final String <%= key_names.const_tag %> = "<%= key_names.name %>"; <% 
+    end 
+end %>
+
 <% $cur_module.methods.each do |module_method|
     next unless module_method.access == ModuleMethod::ACCESS_STATIC
     
