@@ -431,24 +431,24 @@ def apk_build(sdk, apk_name, res_name, dex_name, debug)
     prev_dir = Dir.pwd
     Dir.chdir File.join(sdk, "tools")
     #"-classpath", File.join("lib", "sdklib.jar"), "com.android.sdklib.build.ApkBuilderMain", 
+    params = ['-Xmx1024m', '-classpath', $sdklibjar, 'com.android.sdklib.build.ApkBuilderMain', apk_name]
     if debug
-        params = [apk_name, "-z", res_name, "-f", dex_name]
+        params += ['-z', res_name, '-f', dex_name]
     else
-        params = [apk_name, "-u", "-z", res_name, "-f", dex_name]
+        params += ['-u', '-z', res_name, '-f', dex_name]
     end
     
-    if RUBY_PLATFORM =~ /(win|w)32$/
-        apkbuilder = "apkbuilder" + $bat_ext
-    else
-        apkbuilder = File.join(".", "apkbuilder" + $bat_ext)
-    end
+#    if RUBY_PLATFORM =~ /(win|w)32$/
+#        apkbuilder = "apkbuilder" + $bat_ext
+#    else
+#        apkbuilder = File.join(".", "apkbuilder" + $bat_ext)
+#    end
+#    Jake.run apkbuilder, params
 
-    Jake.run apkbuilder, params
-    
+    Jake.run File.join($java, 'java'+$exe_ext), params
     unless $?.success?
         Dir.chdir prev_dir
-        puts "Error building APK file"
-        exit 1
+        raise 'Error building APK file'
     end
     Dir.chdir prev_dir
 end
