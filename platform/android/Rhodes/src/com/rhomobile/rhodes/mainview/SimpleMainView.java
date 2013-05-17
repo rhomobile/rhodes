@@ -450,11 +450,11 @@ public class SimpleMainView implements MainView {
 					Object blueObj = color.get("blue");
 					
 					if (redObj != null && greenObj != null && blueObj != null &&
-							(redObj instanceof String) && (greenObj instanceof String) && (blueObj instanceof String)) {
+							(redObj instanceof Integer) && (greenObj instanceof Integer) && (blueObj instanceof Integer)) {
 						try {
-							int red = Integer.parseInt((String)redObj);
-							int green = Integer.parseInt((String)greenObj);
-							int blue = Integer.parseInt((String)blueObj);
+							int red = ((Integer)redObj).intValue() ;//Integer.parseInt((String)redObj);
+							int green = ((Integer)greenObj).intValue() ;//Integer.parseInt((String)greenObj);
+							int blue = ((Integer)blueObj).intValue() ;//Integer.parseInt((String)blueObj);
 							
 							mCustomBackgroundColor = ((red & 0xFF ) << 16) | ((green & 0xFF ) << 8) | ((blue & 0xFF )) | 0xFF000000;
 							mCustomBackgroundColorEnable = true;
@@ -468,8 +468,8 @@ public class SimpleMainView implements MainView {
 				}
 				
 				Object bkgObj = settings.get("backgroundColor");
-				if ((bkgObj != null) && (bkgObj instanceof String)) {
-					int color = Integer.decode(((String)bkgObj)).intValue();
+				if ((bkgObj != null) && (bkgObj instanceof Integer)) {
+					int color = ((Integer)bkgObj).intValue() ;//Integer.decode(((String)bkgObj)).intValue();
 					int red = (color & 0xFF0000) >> 16;
 					int green = (color & 0xFF00) >> 8;
 					int blue = (color & 0xFF);

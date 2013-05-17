@@ -120,89 +120,33 @@ module Rho
     end
 
     def on_activate_app
-      processApplicationEvent({'applicationEvent'=>'Activated'})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'Activated'})
     end
 
     def on_deactivate_app
-      processApplicationEvent({'applicationEvent'=>'Deactivated'})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'Deactivated'})
     end
 
     def on_ui_created
-      processApplicationEvent({'applicationEvent'=>'UICreated'})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'UICreated'})
     end
 
     def on_ui_destroyed
-      processApplicationEvent({'applicationEvent'=>'UIDestroyed'})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'UIDestroyed'})
     end
 
     def on_sync_user_changed
-      processApplicationEvent({'applicationEvent'=>'SyncUserChanged'})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'SyncUserChanged'})
     end
 
     def on_reinstall_config_update(conflicts)
-      processApplicationEvent({'applicationEvent'=>'ConfigConflict','eventData'=>{ 'conflicts' => conflicts}})
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'ConfigConflict','eventData'=>{ 'conflicts' => conflicts}})
     end
 
     # works for schema sources
     #return true to run script creating table    
     def on_migrate_source(old_version, new_src)
-      processApplicationEvent({'applicationEvent'=>'DBMigrateSource','eventData'=>{ 'old_version' => old_version, 'new_src' =>  new_src}})
-    end
-
-    def processApplicationEvent(params)
-      applicationEvent = params['applicationEvent'] 
-      eventData = params['eventData']
-      eventData = {} unless eventData
-
-      case applicationEvent
-      when 'Activated'
-        puts "AppEvent #{applicationEvent}"
-
-      when 'Deactivated'
-        puts "AppEvent #{applicationEvent}"
-
-      when 'UICreated'
-        start_url = Rho::Application.startURI
-        start_url = "" unless start_url
-
-        if System.get_property('platform') != 'WP8'
-
-          invalid_security_token_start_path = Rho::Application.invalidSecurityTokenStartPath
-          
-          if Rho::Application.securityTokenNotPassed
-            if invalid_security_token_start_path && invalid_security_token_start_path.length() > 0
-              start_url = invalid_security_token_start_path
-            else
-              # exit from application - old way
-              puts 'security_token is not passed - application will closed'
-              System.exit
-            end
-          end
-        end
-
-        puts "on_ui_created.navigate to start url: '#{start_url}'"
-        WebView.navigate(start_url)
-
-      when 'UIDestroyed'
-        puts "AppEvent #{applicationEvent}"
-
-      when 'SyncUserChanged'
-        Rhom::Rhom.database_full_reset(false, false)    
-        #::Rho::RHO.get_user_db().execute_sql("UPDATE client_info SET client_id=?", "")
-
-      when 'ConfigConflict'
-        puts "on_reinstall_config_update: #{eventData.conflicts}"
-
-      when 'DBMigrateSource'
-        puts "default on_migrate_source - do nothing; old_version :#{eventData.old_version}; new_src : #{eventData.new_src}"
-        #if new_src['schema']
-        #    db = ::Rho::RHO.get_src_db(new_src['name'])
-        #    db.delete_table(new_src['name'])
-
-        #    return false  #create new table
-        #end
-        return true
-      end
+      Rho::Application.processApplicationEvent({'applicationEvent'=>'DBMigrateSource','eventData'=>{ 'old_version' => old_version, 'new_src' =>  new_src}})
     end
 
     def set_menu(menu=nil,back_action=nil)

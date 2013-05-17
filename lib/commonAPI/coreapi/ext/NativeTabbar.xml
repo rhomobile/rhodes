@@ -94,6 +94,18 @@
                 <DESC>Removes the current tabbar. Does nothing if there is no active tabbar.</DESC>
             </METHOD>
 
+            <METHOD name="removeTab" runInThread="UI">
+                <DESC>Removes the Tab by index. Method will remove WebView for specific tab, it will not remove tab from tab array, so all indexes will remain the same.</DESC>
+                <PLATFORMS>WM</PLATFORMS>
+
+                <PARAMS>
+                    <PARAM name="tabIndex" type="INTEGER">
+                        <DESC>The index for tab (index numbered from 0) to delete.</DESC>
+                    </PARAM>
+                </PARAMS>
+
+            </METHOD>
+
             <METHOD name="setTabBadge" runInThread="UI" >
                 <DESC>Set the iPhone badge to tab.</DESC>
                 <PLATFORMS>iOS</PLATFORMS>
