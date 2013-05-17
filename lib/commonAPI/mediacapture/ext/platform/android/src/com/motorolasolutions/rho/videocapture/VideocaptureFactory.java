@@ -9,6 +9,7 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.RhoApiFactory;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
+import android.view.KeyEvent;
 
 public class VideocaptureFactory extends RhoApiFactory< Videocapture, VideocaptureSingleton> implements IVideocaptureFactory, IRhoListener {
 
@@ -104,4 +105,6 @@ public class VideocaptureFactory extends RhoApiFactory< Videocapture, Videocaptu
 		
 	}	
 
+	@Override
+	public boolean onKey(int keyCode, KeyEvent event){ return false; }
 }
