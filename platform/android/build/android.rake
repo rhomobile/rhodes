@@ -308,6 +308,7 @@ namespace "config" do
     $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
     $dxjar = File.join( $androidsdkpath, "platforms", $androidplatform, "tools", "lib", "dx.jar")
     $dxjar = File.join( $androidsdkpath, "platform-tools", "lib", "dx.jar") unless File.exists? $dxjar
+    $sdklibjar = File.join($androidsdkpath, 'tools', 'lib', 'sdklib.jar')
 
     $keytool = File.join( $java, "keytool" + $exe_ext )
     $jarsigner = File.join( $java, "jarsigner" + $exe_ext )
