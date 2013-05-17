@@ -35,7 +35,7 @@ end%>
     module_method.cached_data["cpp2cs_params"] = params
     module_method.cached_data["cpp2cs_call_params"] = call_params
 
-    method_def = "\n    virtual void #{module_method.native_name}(#{params})\n    {\n#{covert_params}        _runtime->#{module_method.native_name}(#{call_params});\n    }\n"
+    method_def = "\n    virtual void #{module_method.native_name}(#{params})\n    {\n#{covert_params}        try {\n            _runtime->#{module_method.native_name}(#{call_params});\n        } catch (Platform::Exception^ e) {\n            LOG(ERROR) + rho::common::convertStringAFromWP8(e->ToString());\n        }\n    }\n"
     if module_method.access == ModuleMethod::ACCESS_STATIC
       static_methods += method_def
     else
