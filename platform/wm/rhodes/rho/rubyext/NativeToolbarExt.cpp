@@ -190,6 +190,14 @@ void rho_wmimpl_tabbar_remove()
     getAppWindow().removeTabbar();
 }
 
+void rho_wmimpl_tabbar_removeTab(int tabIndex)
+{
+#ifdef OS_WINCE
+    getAppWindow().removeTab(tabIndex);
+#else
+#endif
+}
+
 int rho_wmimpl_tabbar_currentTabIndex()
 {
 	return getAppWindow().tabbarGetCurrent();

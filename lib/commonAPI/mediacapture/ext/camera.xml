@@ -92,6 +92,7 @@
                     </VALUE>
                     <VALUE constName="OUTPUT_FORMAT_DATAURI" value="dataUri">
                         <DESC>Image will be returned as a Data URI object, this is a base 64 encoding of the image and can be used to easily embed the image on the page or store the image in a database.</DESC>
+                        <PLATFORM>Android,WM</PLATFORM>
                     </VALUE>
                 </VALUES>
             </PROPERTY>

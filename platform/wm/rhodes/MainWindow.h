@@ -239,6 +239,7 @@ public:
 		MESSAGE_HANDLER(WM_LICENSE_SCREEN, OnLicenseScreen);
         MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus);
         MESSAGE_HANDLER(WM_HOTKEY, OnHotKey);
+        MESSAGE_HANDLER(WM_TIMER, OnTimer);
 #if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
         MESSAGE_HANDLER(WM_BROWSER_ONDOCUMENTCOMPLETE, OnBrowserDocumentComplete);
         MESSAGE_HANDLER(WM_BROWSER_ONNAVIGATECOMPLETE, OnNavigateComplete);
@@ -311,6 +312,7 @@ private:
 	LRESULT OnLicenseScreen (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnSetFocus (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
     LRESULT OnHotKey (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+    LRESULT OnTimer (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
     LRESULT OnWebKitMessages (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
@@ -341,6 +343,7 @@ public:
 
     void createTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
     void removeTabbar();
+    void removeTab(int index);
     void tabbarSwitch(int index);
     void tabbarBadge(int index, const char* badge);
     int tabbarGetCurrent();

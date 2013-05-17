@@ -1,5 +1,8 @@
 package com.rhomobile.rhodes.extmanager;
 
+import com.rhomobile.rhodes.extmanager.IRhoExtension.IAlertResult;
+import com.rhomobile.rhodes.extmanager.IRhoExtension.IPromptResult;
+
 import android.graphics.Rect;
 
 public abstract class AbstractRhoExtension implements IRhoExtension {
@@ -51,17 +54,17 @@ public abstract class AbstractRhoExtension implements IRhoExtension {
     }
 
     @Override
-    public boolean onAlert(IRhoExtManager extManager, String message, IRhoWebView ext, boolean res) {
+    public boolean onAlert(IRhoExtManager extManager, String message, IRhoWebView ext, IAlertResult alertResult, boolean res) {
         return res;
     }
 
     @Override
-    public boolean onConfirm(IRhoExtManager extManager, String message, IRhoWebView ext, boolean res) {
+    public boolean onConfirm(IRhoExtManager extManager, String message, IRhoWebView ext, IAlertResult confirmResult, boolean res) {
         return res;
     }
 
     @Override
-    public boolean onPrompt(IRhoExtManager extManager, String message, String defaultResponse, IRhoWebView ext, boolean res) {
+    public boolean onPrompt(IRhoExtManager extManager, String message, String defaultResponse, IRhoWebView ext, IPromptResult promptResult, boolean res) {
         return res;
     }
 

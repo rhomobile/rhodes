@@ -36,6 +36,9 @@ extern void native_tabbar_switch_tab(int index);
     [methodResult setResult:[NSNumber numberWithBool:nativebar_started()]];
 }
 
+-(void) removeTab:(int)tabIndex {
+    // unsupported
+}
 
 
 
