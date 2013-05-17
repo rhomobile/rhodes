@@ -1,9 +1,0 @@
-ext/platform/android/generated/src/com/rho/appevents/AppEventsBase.java
-ext/platform/android/generated/src/com/rho/appevents/AppEventsFactorySingleton.java
-ext/platform/android/generated/src/com/rho/appevents/AppEventsSingletonBase.java
-ext/platform/android/generated/src/com/rho/appevents/IAppEvents.java
-ext/platform/android/generated/src/com/rho/appevents/IAppEventsFactory.java
-ext/platform/android/generated/src/com/rho/appevents/IAppEventsSingleton.java
-ext/platform/android/src/com/rho/appevents/AppEvents.java
-ext/platform/android/src/com/rho/appevents/AppEventsFactory.java
-ext/platform/android/src/com/rho/appevents/AppEventsSingleton.java
