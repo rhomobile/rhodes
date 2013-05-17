@@ -28,6 +28,7 @@
 #include "rhodes/JNIRhoRuby.h"
 
 #include <ruby/ext/rho/rhoruby.h>
+#include <api_generator/js_helpers.h>
 
 #include <string>
 
@@ -36,4 +37,13 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_extmanager_RhoExtManagerImpl_n
 {
     std::string path = rho_cast<std::string>(env, jPath);
     rb_require(path.c_str());
+}
+
+RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_extmanager_RhoExtManagerImpl_nativeJSCallEntryPoint
+  (JNIEnv * env, jclass, jstring jQuery)
+{
+    std::string strQuery = rho_cast<std::string>(env, jQuery);
+    std::string strRes = rho::apiGenerator::js_entry_point(strQuery.c_str());
+    jhstring jhRes = rho_cast<jstring>(env, strRes);
+    return jhRes.get();
 }
