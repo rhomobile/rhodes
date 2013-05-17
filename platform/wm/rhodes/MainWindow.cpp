@@ -918,6 +918,7 @@ LRESULT CMainWindow::OnHotKey (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
     return 1;
 }
+
 extern "C" HWND getMainWnd();
 BOOL EnumChildProc(HWND hwnd,LPARAM lParam)
 {
@@ -1923,11 +1924,27 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
 
     if (m_strStartTabName.length()>0&&nStartTab>=0)
     {
-        tabbarSwitch(nStartTab);
-        m_strStartTabName = "";
+        SetTimer( 1, 500 );
     }
 
     m_bTabCreated = true;
+}
+
+LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    LOG(INFO) + "OnTimer : " + wParam;
+    bHandled = FALSE;
+
+    if ( wParam == 1 )
+    {
+        SendMessage( WM_WINDOW_SWITCHTAB, NULL, (LPARAM)m_strStartTabName.c_str());
+        m_strStartTabName = "";
+        KillTimer(1); 
+
+        bHandled = TRUE;
+    }
+
+    return 0;
 }
 
 void CMainWindow::removeTabbar()
@@ -1941,6 +1958,18 @@ void CMainWindow::removeTabbar()
     m_arTabs.removeAllElements();
     m_bTabCreated = false;
     m_nCurrentTab = -1;
+}
+
+void CMainWindow::removeTab(int index)
+{
+    if (index >= 0 && index < (int)m_arTabs.size() )
+    {
+        if (!m_arTabs[index].m_bUseCurrentViewForTab)
+            m_pBrowserEng->CloseTab(m_arTabs[index].m_nTabID);
+
+        m_arTabs[index].m_nTabID = -1;
+        m_arTabs[index].m_hwndTab = 0;
+    }
 }
 
 LRESULT CMainWindow::OnSwitchTab (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)

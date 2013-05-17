@@ -85,15 +85,19 @@ public class TabbedMainView implements MainView {
 	
 	
 	private void callChangeTabCallback(int index) {
+		
+		if (mChangeTabCallback == null) {
+			Utils.platformLog("TABBAR", "mChangeTabCallback is NULL !");
+			return;
+		}
+		
 		//String body = "&rho_callback=1" + "&tab_index=" + String.valueOf(index);
 		//onTabBarChangeTabCallback(mChangeTabCallback, body);
 		Map<String,Object> resHash = new Hashtable<String,Object>();
 		
 		resHash.put("tab_index", String.valueOf(index));
-		if (mChangeTabCallback != null) {
-			mChangeTabCallback.set(resHash);
-			Utils.platformLog("TABBAR", "TabIndex changed, tab_index = "+String.valueOf(index));
-		}
+		mChangeTabCallback.set(resHash);
+		Utils.platformLog("TABBAR", "TabIndex changed, tab_index = "+String.valueOf(index));
 		
 	}
 	
@@ -482,8 +486,8 @@ public class TabbedMainView implements MainView {
 			Map<Object,Object> settings = (Map<Object,Object>)options;
 			
 			Object bkgObj = settings.get("background_color");
-			if ((bkgObj != null) && (bkgObj instanceof String)) {
-				int color = Integer.parseInt((String)bkgObj) | 0xFF000000;
+			if ((bkgObj != null) && (bkgObj instanceof Integer)) {
+				int color = ((Integer)bkgObj).intValue();//;Integer.parseInt((String)bkgObj) | 0xFF000000;
 				mBackgroundColor = color;
 				mBackgroundColorEnable = true;
 			}
@@ -494,8 +498,8 @@ public class TabbedMainView implements MainView {
 			//}
 
 			Object placeBottomObj = settings.get("place_tabs_bottom");
-			if ((placeBottomObj != null) && (placeBottomObj instanceof String)) {
-				place_tabs_bottom = ((String)placeBottomObj).equalsIgnoreCase("true");
+			if ((placeBottomObj != null) && (placeBottomObj instanceof Boolean)) {
+				place_tabs_bottom = ((Boolean)placeBottomObj).booleanValue();//;((String)placeBottomObj).equalsIgnoreCase("true");
 			}
 			
 			
@@ -592,22 +596,22 @@ public class TabbedMainView implements MainView {
 				icon = "apps/" + (String)iconObj;
 			
 			Object reloadObj = hash.get("reload");
-			if (reloadObj != null && (reloadObj instanceof String))
-				reload = ((String)reloadObj).equalsIgnoreCase("true");
+			if (reloadObj != null && (reloadObj instanceof Boolean))
+				reload = ((Boolean)reloadObj).booleanValue();//((String)reloadObj).equalsIgnoreCase("true");
 			
 			Object selected_color_Obj = hash.get("selectedColor");
-			if ((selected_color_Obj != null) && (selected_color_Obj instanceof String)) {
+			if ((selected_color_Obj != null) && (selected_color_Obj instanceof Integer)) {
 				selected_color_enable = true;
-				selected_color = Integer.parseInt((String)selected_color_Obj) | 0xFF000000;
+				selected_color = ((Integer)selected_color_Obj).intValue() | 0xFF000000;//Integer.parseInt((String)selected_color_Obj) | 0xFF000000;
 			}
 
 			Object disabled_Obj = hash.get("disabled");
-			if (disabled_Obj != null && (disabled_Obj instanceof String))
-				disabled = ((String)disabled_Obj).equalsIgnoreCase("true");
+			if (disabled_Obj != null && (disabled_Obj instanceof Boolean))
+				disabled = ((Boolean)disabled_Obj).booleanValue();//((String)disabled_Obj).equalsIgnoreCase("true");
 			
 			Object web_bkg_color_Obj = hash.get("backgroundColor");
-			if (web_bkg_color_Obj != null && (web_bkg_color_Obj instanceof String)) {
-				web_bkg_color = Integer.parseInt((String)web_bkg_color_Obj) | 0xFF000000;
+			if (web_bkg_color_Obj != null && (web_bkg_color_Obj instanceof Integer)) {
+				web_bkg_color = ((Integer)web_bkg_color_Obj).intValue() | 0xFF000000;//Integer.parseInt((String)web_bkg_color_Obj) | 0xFF000000;
 			}
 			
 			spec = host.newTabSpec(Integer.toString(i));
@@ -759,7 +763,7 @@ public class TabbedMainView implements MainView {
 			}
 			tabIndex = new_tabIndex;
 
-			if (real_change && (mChangeTabCallback != null)) {
+			if (real_change) {
 				callChangeTabCallback(tabIndex);
 			}
 			

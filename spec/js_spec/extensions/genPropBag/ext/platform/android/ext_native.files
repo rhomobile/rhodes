@@ -1,7 +1,0 @@
-ext/platform/android/generated/jni/GenPropBag.cpp
-ext/platform/android/generated/jni/genpropbag_ruby_wrap.cpp
-ext/platform/android/generated/jni/genpropbag_js_wrap.cpp
-ext/platform/android/jni/GenPropBag_impl.cpp
-ext/shared/generated/genpropbag_api_init.cpp
-ext/shared/generated/genpropbag_js_api.cpp
-ext/shared/generated/genpropbag_ruby_api.c

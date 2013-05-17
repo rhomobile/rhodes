@@ -1,7 +1,0 @@
-ext/platform/android/generated/jni/AppEvents.cpp
-ext/platform/android/generated/jni/appevents_ruby_wrap.cpp
-ext/platform/android/generated/jni/appevents_js_wrap.cpp
-ext/platform/android/jni/AppEvents_impl.cpp
-ext/shared/generated/appevents_api_init.cpp
-ext/shared/generated/appevents_js_api.cpp
-ext/shared/generated/appevents_ruby_api.c
