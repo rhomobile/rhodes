@@ -11,8 +11,9 @@ import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoListener;
+import com.rhomobile.rhodes.extmanager.AbstractRhoListener;
 
-public class ScreenOrientationRhoListener implements IRhoListener
+public class ScreenOrientationRhoListener extends AbstractRhoListener
 {
     private static String TAG = ScreenOrientationRhoListener.class.getSimpleName();
     private static LinkedList<ScreenOrientationSingleton> mScreenOrientationInstances = null;

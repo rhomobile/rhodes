@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsoluteLayout;
@@ -32,6 +33,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private LinkedHashMap <String, IRhoExtension> mExtensions = new LinkedHashMap<String, IRhoExtension>();
     private Map<String, IRhoConfig> mConfigs = new LinkedHashMap<String, IRhoConfig>();
     private ArrayList<IRhoListener> mListeners = new ArrayList<IRhoListener>();
+    private ArrayList<IRhoListener> mKeyListeners = new ArrayList<IRhoListener>();
     private boolean mLogError = false;
     private boolean mLogWarning = false;
     private boolean mLogInfo = false;
@@ -76,6 +78,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             mListeners.add(listener);
         }
     }
+    
 
     @Override
     public void setConfig(String name, IRhoConfig config) {
@@ -184,6 +187,16 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     @Override
     public void historyBack() {
         WebView.navigateBack();
+    }
+    
+    @Override
+    public boolean onKey(int keyCode, KeyEvent event){
+    	for(IRhoListener listener: mKeyListeners){
+    		if(listener.onKey(keyCode, event)){
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
     @Override
@@ -579,6 +592,32 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                 res = ext.stopLocationUpdates(this, rhoWebView, res);
             }
         }
+    }
+
+    @Override
+    public void startKeyEventUpdates(IRhoListener listener)
+    {
+    	startKeyEventUpdates(listener, false);
+    }
+    
+    @Override
+    public void startKeyEventUpdates(IRhoListener listener, boolean makeImportant)
+    {
+		if(makeImportant){
+			mKeyListeners.remove(listener);
+			mKeyListeners.add(0, listener);
+		}
+		else{
+			if(!mKeyListeners.contains(listener)){
+				mKeyListeners.add(listener);
+			}
+		}
+    }
+    
+    @Override
+    public void stopKeyEventUpdates(IRhoListener listener)
+    {
+		mKeyListeners.remove(listener);
     }
 
     public String getProperty(String name) {

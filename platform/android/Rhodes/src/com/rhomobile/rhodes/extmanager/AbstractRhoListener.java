@@ -3,6 +3,7 @@ package com.rhomobile.rhodes.extmanager;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.view.KeyEvent;
 
 import com.rhomobile.rhodes.RhodesActivity;
 
@@ -38,4 +39,6 @@ public abstract class AbstractRhoListener implements IRhoListener {
     @Override
     public void onConfigurationChanged(RhodesActivity activity, Configuration newConfig) { }
 
+	@Override
+	public boolean onKey(int keyCode, KeyEvent event){ return false; }
 }
