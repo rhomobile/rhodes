@@ -918,6 +918,7 @@ LRESULT CMainWindow::OnHotKey (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
     return 1;
 }
+
 extern "C" HWND getMainWnd();
 BOOL EnumChildProc(HWND hwnd,LPARAM lParam)
 {
@@ -1923,11 +1924,27 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
 
     if (m_strStartTabName.length()>0&&nStartTab>=0)
     {
-        tabbarSwitch(nStartTab);
-        m_strStartTabName = "";
+        SetTimer( 1, 500 );
     }
 
     m_bTabCreated = true;
+}
+
+LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    LOG(INFO) + "OnTimer : " + wParam;
+    bHandled = FALSE;
+
+    if ( wParam == 1 )
+    {
+        SendMessage( WM_WINDOW_SWITCHTAB, NULL, (LPARAM)m_strStartTabName.c_str());
+        m_strStartTabName = "";
+        KillTimer(1); 
+
+        bHandled = TRUE;
+    }
+
+    return 0;
 }
 
 void CMainWindow::removeTabbar()
