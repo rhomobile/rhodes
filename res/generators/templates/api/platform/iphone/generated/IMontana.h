@@ -10,10 +10,9 @@ $iphone_types["FLOAT"] = 'float'
 $iphone_types["STRING"] = 'NSString*'
 $iphone_types["ARRAY"] = 'NSArray*'
 $iphone_types["HASH"] = 'NSDictionary*'
-$iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
+$iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' 
 
-
-<% $cur_module.constants.each do |module_constant|
+$cur_module.constants.each do |module_constant|
    if (module_constant.name != nil) && (module_constant.name.size > 0)
       cline = ''
       cline = cline + '#define '
@@ -32,35 +31,13 @@ $iphone_types["SELF_INSTANCE"] = 'id<I'+$cur_module.name+'>' %>
    end
    end
  %>
-
 // hash keys used in properties and parameters
 <% if $cur_module.hash_key_names.size > 0 
     $cur_module.hash_key_names.each do |key_names| 
-%>#define <%= key_names.const_tag %> @"<%= key_names.name %>"
+%>
+#define <%= key_names.const_tag %> @"<%= key_names.name %>"
 <% end 
 end %>
-
-<% $cur_module.constants.each do |module_constant|
-   if (module_constant.name != nil) && (module_constant.name.size > 0)
-      cline = ''
-      cline = cline + '#define '
-      cline = cline + module_constant.name + ' '
-      if module_constant.type == MethodParam::TYPE_STRING
-           cline = cline + '@"'+module_constant.value + '"'
-      else
-           cline = cline + module_constant.value
-      end
-      if (module_constant.desc != nil) && (module_constant.desc.size > 0)
-%><%= '/* '+module_constant.desc+' */' %><%
-      end %>
-<%= cline %>
-
-<%
-   end
-   end
- %>
-
-
 
 @protocol I<%= $cur_module.name %> <NSObject>
 
@@ -98,10 +75,7 @@ end %>
 <% end
 end %>
 
-
-
-// NOTE: if you want to hold methodResult(for periodically call callback for example) you should release it buself when you stop using it !
-
+// NOTE: if you want to hold methodResult(for example periodically call callbacks) you should release it manually when you stop using it!
 @end
 
 
