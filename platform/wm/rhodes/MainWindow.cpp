@@ -1924,7 +1924,7 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
 
     if (m_strStartTabName.length()>0&&nStartTab>=0)
     {
-        SetTimer( 1, 500 );
+        SetTimer( 1, 1000 );
     }
 
     m_bTabCreated = true;
@@ -1937,7 +1937,7 @@ LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 
     if ( wParam == 1 )
     {
-        SendMessage( WM_WINDOW_SWITCHTAB, NULL, (LPARAM)m_strStartTabName.c_str());
+        tabbarSwitchByName( m_strStartTabName.c_str() );
         m_strStartTabName = "";
         KillTimer(1); 
 
@@ -1972,23 +1972,37 @@ void CMainWindow::removeTab(int index)
     }
 }
 
-LRESULT CMainWindow::OnSwitchTab (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnCopyData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    LOG(INFO) + "OnSwitchTab : " + (const char*) lParam;
-
-    if ( !lParam || !*((const char*) lParam))
+    if ( wParam != WM_WINDOW_SWITCHTAB)
         return 0;
+
+    COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
+    //tabbarSwitchByName((LPCSTR)(pcds->lpData));
+    if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))
+    {
+        m_strStartTabName = (LPCSTR)(pcds->lpData);
+        SetTimer( 1, 4000 );
+    }
+
+    return 0;
+}
+
+void CMainWindow::tabbarSwitchByName(const char* szTabName)
+{
+    LOG(INFO) + "tabbarSwitchByName: " + szTabName;
+
+    if ( !szTabName || !*szTabName)
+        return;
 
     for ( int i = 0; i < (int)m_arTabs.size(); i++ )
     {
-        if ( m_arTabs[i].m_strLabel == ((const char*) lParam) )
+        if ( m_arTabs[i].m_strLabel == szTabName )
         {
             tabbarSwitch(i);
             break;
         }
     }
-
-    return 0;
 }
 
 void CMainWindow::tabbarSwitch(int index)
@@ -2012,13 +2026,20 @@ void CMainWindow::tabbarSwitch(int index)
         }else
         {
             m_arTabs[index].m_nTabID = m_pBrowserEng->NewTab();
-            m_arTabs[index].m_hwndTab = m_pBrowserEng->GetHTMLWND(m_arTabs[index].m_nTabID);
+
+            if ( m_arTabs[index].m_nTabID < 0 )
+            {
+                LOG(ERROR) + "Unable to create Tab. NewTab return: " + m_arTabs[index].m_nTabID;
+                return;
+            }
+            else
+                m_arTabs[index].m_hwndTab = m_pBrowserEng->GetHTMLWND(m_arTabs[index].m_nTabID);
         }
     }
 
     if ( !m_arTabs[index].m_hwndTab )
     {
-        LOG(ERROR) + "Unable to create Tab.";
+        LOG(ERROR) + "Unable to create Tab. Cannot get Tab Window.";
         return;
     }
 
