@@ -1937,7 +1937,7 @@ LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 
     if ( wParam == 1 )
     {
-        tabbarSwitchByName( m_strStartTabName.c_str() );
+        tabbarSwitchByName( m_strStartTabName.c_str(), false );
         m_strStartTabName = "";
         KillTimer(1); 
 
@@ -1981,14 +1981,16 @@ LRESULT CMainWindow::OnCopyData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
     //tabbarSwitchByName((LPCSTR)(pcds->lpData));
     if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))
     {
-        m_strStartTabName = (LPCSTR)(pcds->lpData);
-        SetTimer( 1, 4000 );
+        //m_strStartTabName = (LPCSTR)(pcds->lpData);
+        //SetTimer( 1, 4000 );
+
+        tabbarSwitchByName((LPCSTR)(pcds->lpData), true);
     }
 
     return 0;
 }
 
-void CMainWindow::tabbarSwitchByName(const char* szTabName)
+void CMainWindow::tabbarSwitchByName(const char* szTabName, bool bExecuteJS)
 {
     LOG(INFO) + "tabbarSwitchByName: " + szTabName;
 
@@ -1999,7 +2001,16 @@ void CMainWindow::tabbarSwitchByName(const char* szTabName)
     {
         if ( m_arTabs[i].m_strLabel == szTabName )
         {
-            tabbarSwitch(i);
+            if ( bExecuteJS )
+            {
+                String strJS = "Rho.NativeTabbar.switchTab(";
+                strJS += convertToStringA(i);
+                strJS += ");";
+
+                rho_webview_execute_js( strJS.c_str(), tabbarGetCurrent() );
+            }
+            else
+                tabbarSwitch(i);
             break;
         }
     }

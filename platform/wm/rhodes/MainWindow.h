@@ -348,7 +348,7 @@ public:
     void tabbarBadge(int index, const char* badge);
     int tabbarGetCurrent();
     bool isTabBarStarted();
-    void tabbarSwitchByName(const char* szTabName);
+    void tabbarSwitchByName(const char* szTabName, bool bExecuteJS);
     void setStartTabName(const String& strTabName){m_strStartTabName = strTabName;}
 private:
     // event handlers
