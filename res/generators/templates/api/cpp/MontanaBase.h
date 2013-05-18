@@ -15,9 +15,10 @@ using namespace rho::apiGenerator;
 if $cur_module.hash_key_names.size > 0 %>
 namespace <%= $cur_module.name.downcase() %> {
 <% $cur_module.hash_key_names.each do |key_names| 
-%>    static const char <%= key_names.const_tag %>[] = "<%= key_names.name %>"; 
-<% end 
-%> } <% end %>
+%>
+    static const char <%= key_names.const_tag %>[] = "<%= key_names.name %>"; 
+<% end %> 
+} <% end %>
 
 class C<%= $cur_module.name %>FactoryBase : public CModuleFactoryBase<I<%= $cur_module.name %>, I<%= $cur_module.name %>Singleton, I<%= $cur_module.name %>Factory>
 {

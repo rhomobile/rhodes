@@ -90,8 +90,8 @@
     // === <%= $cur_module.name %> hash keys ===
     
     <% $cur_module.hash_key_names.each do |key_names| %>
-            <%= $cur_module.name %>.<%= key_names.const_tag %> = "<%= key_names.name %>"; <% 
-    end 
+            <%= $cur_module.name %>.<%= key_names.const_tag %> = "<%= key_names.name %>"; 
+<% end 
 end %>
 
     // === <%= $cur_module.name %> static properties ===
