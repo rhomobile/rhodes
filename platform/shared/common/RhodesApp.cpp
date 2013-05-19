@@ -35,6 +35,7 @@
 #include "sync/RhoconnectClientManager.h"
 #include "net/URI.h"
 
+#include "db/DBAdapter.h"
 #include "net/HttpServer.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "rubyext/WebView.h"
@@ -45,6 +46,7 @@
 #include "common/Tokenizer.h"
 #include "api_generator/js_helpers.h"
 #include "api_generator/StringfyHelper.h"
+#include "Application.h"
 
 #include <algorithm>
 
@@ -172,11 +174,6 @@ CAppCallbacksQueue::CAppCallbacksQueue()
 CAppCallbacksQueue::~CAppCallbacksQueue()
 {
 }
-/*
-void CAppCallbacksQueue::call(CAppCallbacksQueue::callback_t type)
-{
-    addQueueCommand(new Command(type));
-}*/
 
 void CAppCallbacksQueue::callCallback(const String& strCallback)
 {
@@ -221,7 +218,6 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     Command *cmd = (Command *)pCmd;
     if (!cmd)
         return;
-    
 /*
     if (cmd->type < m_expected)
     {
@@ -364,8 +360,6 @@ CRhodesApp::CRhodesApp(const String& strRootPath, const String& strUserPath, con
 
     initAppUrls();
 
-    //LOGCONF().initRemoteLog();
-
     initHttpServer();
 
     getSplashScreen().init();
@@ -378,6 +372,19 @@ void CRhodesApp::startApp()
 
 extern "C" void Init_Extensions(void);
 
+void RhoJsStart()
+{
+    Init_Extensions();
+    void *dbObj = NULL;
+
+    rho::String partName = rho::db::CDBAdapter::USER_PARTITION_NAME();
+    rho::String dbPath   = rho::Application::databaseFilePath(partName.c_str());
+
+    rho_db_open(dbPath.c_str(), partName.c_str(), &dbObj);
+
+    rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0);
+}
+
 void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
@@ -386,7 +393,7 @@ void CRhodesApp::run()
     RhoRubyStart();
     rubyext::CGeoLocation::Create();
 #else
-    Init_Extensions();
+    RhoJsStart();
 #endif
 
 	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
@@ -432,13 +439,13 @@ void CRhodesApp::run()
     rubyext::CGeoLocation::Destroy();
 #endif
 
-	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) 
+    if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) 
     {
-		sync::RhoconnectClientManager::clientRegisterDestroy();
-		sync::RhoconnectClientManager::syncThreadDestroy();
-	}
+      sync::RhoconnectClientManager::clientRegisterDestroy();
+      sync::RhoconnectClientManager::syncThreadDestroy();
+    }
 
-	db::CDBAdapter::closeAll();
+    db::CDBAdapter::closeAll();
 
 #if !defined(RHO_NO_RUBY)
     RhoRubyStop();
@@ -519,7 +526,9 @@ void CRhodesApp::runCallbackInThread(const String& strCallback, const String& st
 
 static void callback_activateapp(void *arg, String const &strQuery)
 {
+#if !defined(RHO_NO_RUBY)
     rho_ruby_activateApp();
+#endif
 
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
@@ -527,23 +536,29 @@ static void callback_activateapp(void *arg, String const &strQuery)
 
 static void callback_deactivateapp(void *arg, String const &strQuery)
 {
+#if !defined(RHO_NO_RUBY)
     rho_ruby_deactivateApp();
-    
+#endif
+
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
 }
 
 static void callback_uicreated(void *arg, String const &strQuery)
 {
+#if !defined(RHO_NO_RUBY)
     rho_ruby_uiCreated();
+#endif
 
     rho_http_sendresponse(arg, "");
 }
 
 static void callback_uidestroyed(void *arg, String const &strQuery)
 {
+#if !defined(RHO_NO_RUBY)
     rho_ruby_uiDestroyed();
-    
+#endif
+
     rho_http_sendresponse(arg, "");
 }
 
@@ -1648,7 +1663,6 @@ boolean CRhodesApp::isOnStartPage()
     }
 
     return false;
-
 }
 
 const String& CRhodesApp::getBaseUrl()
@@ -1894,7 +1908,7 @@ void CRhodesApp::loadUrl(String url)
 			rho::sync::RhoconnectClientManager::doSyncAllSources(1,"",false);
 			
 		}
-//        rho_sync_doSyncAllSources(1,"",false);
+
         return;
     }
 
