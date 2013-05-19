@@ -141,7 +141,9 @@ int sqlite3CodecAttach(sqlite3* db, int nDb, const void *pKey, int nKey)
         Note: before forcing the page size we need to force pageSizeFixed to 0, else  
         sqliteBtreeSetPageSize will block the change 
         */
+#ifndef OS_WP8
         pDb->pBt->pBt->pageSizeFixed = 0; 
+#endif
         sqlite3BtreeSetPageSize( pDb->pBt, SQLITE_DEFAULT_PAGE_SIZE, EVP_MAX_IV_LENGTH, 0 );
 
         /* if fd is null, then this is an in-memory database and

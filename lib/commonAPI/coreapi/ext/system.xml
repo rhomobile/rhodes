@@ -133,8 +133,8 @@
                 <DESC>Lock/unlock the window size change by the user.</DESC>
                 <PLATFORM>Win32</PLATFORM>
             </PROPERTY>
-            <PROPERTY name="keyboardState" type="STRING" default="automatic">
-                <DESC>For Windows Mobile and Windows CE the keyboard can be manually shown or hidden as required.  All other platforms only support 'automatic'.</DESC>
+            <PROPERTY name="keyboardState" type="STRING" default="See Description">
+                <DESC>For Windows Mobile and Windows CE the keyboard can be manually shown or hidden as required.  All other platforms only support 'automatic'.  The default state for Windows Mobile and Windows CE is manual, for all other platforms it is automatic.</DESC>
                 <PLATFORM>WM</PLATFORM>               
                 <APPLIES msiOnly="true"></APPLIES>
                 <VALUES>

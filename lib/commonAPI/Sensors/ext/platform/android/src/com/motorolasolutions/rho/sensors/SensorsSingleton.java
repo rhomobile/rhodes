@@ -17,9 +17,9 @@ import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.api.IMethodResult;
 
 class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton {	
-	
+
 	private String TAG = "Rho::" + SensorsSingleton.class.getSimpleName();  
-	
+
 	private enum SENSOR
 	{
 		accelerometer,
@@ -40,7 +40,7 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 		rotation,
 		orientation;
 	}
-	
+
 	private static final int size = SENSOR.values().length;
 	/**
 	 * Sensor Manager variable for enabling/disabling all the sensors
@@ -50,17 +50,17 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 	 * Sensor Navigation URLs for all the sensors
 	 */
 	private static IMethodResult[] sensorUrl = new IMethodResult[size];
-			
+
 	/**
 	 * Minimum Interval between any two sensor event updates
 	 */
 	private static int[] minimumInterval = new int[size];
-	
+
 	/**
 	 * Variable that records the event sending data to avoid sending another event before minimum interval
 	 */
 	private static long[] dwQuietStart = new long[size];		
-	
+
 	private final SensorEventListener accelerometerListener = new SensorEventListener() 
 	{
 		@Override
@@ -72,7 +72,7 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			accelerometerSensorChanged(arg0);
 		}
 	};
-	
+
 	private final SensorEventListener magnetometerListener = new SensorEventListener() 
 	{
 		@Override
@@ -84,7 +84,7 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			magnetometerSensorChanged(arg0);
 		}
 	};
-	
+
 	private final SensorEventListener gyroscopeListener = new SensorEventListener() 
 	{
 		@Override
@@ -96,7 +96,7 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			gyroscopeSensorChanged(arg0);
 		}
 	};
-	
+
 	private final SensorEventListener ambientlightListener = new SensorEventListener() 
 	{
 		@Override
@@ -108,7 +108,7 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			ambientlightSensorChanged(arg0);
 		}
 	};
-	
+
 	private final SensorEventListener proximityListener = new SensorEventListener() 
 	{
 		@Override
@@ -120,7 +120,7 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			proximitySensorChanged(arg0);
 		}
 	};
-	
+
 	private final SensorEventListener pressureListener = new SensorEventListener() 
 	{
 		@Override
@@ -132,7 +132,7 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			pressureSensorChanged(arg0);
 		}
 	};
-	
+
 	private final SensorEventListener temperatureListener = new SensorEventListener() 
 	{
 		@Override
@@ -144,8 +144,8 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			temperatureSensorChanged(arg0);
 		}
 	};	
-	
-	
+
+
 	private final SensorEventListener gravityListener = new SensorEventListener() 
 	{
 		@Override
@@ -157,8 +157,8 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			gravitySensorChanged(arg0);
 		}
 	};	
-	
-	
+
+
 	private final SensorEventListener linearListener = new SensorEventListener() 
 	{
 		@Override
@@ -170,8 +170,8 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			linearSensorChanged(arg0);
 		}
 	};	
-	
-	
+
+
 	private final SensorEventListener rotationListener = new SensorEventListener() 
 	{
 		@Override
@@ -183,8 +183,8 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			rotationSensorChanged(arg0);
 		}
 	};	
-	
-	
+
+
 	private final SensorEventListener orientationListener = new SensorEventListener() 
 	{
 		@Override
@@ -196,18 +196,18 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 			orientationSensorChanged(arg0);
 		}
 	};
-	
+
 	/**
 	 * Handle the data from Accelerometer sensor
 	 * @param event
 	 */
 	private void accelerometerSensorChanged(SensorEvent event) {
-		
+
 		Map<String, Object> props = new HashMap<String, Object>();
 		double accel_x = event.values[0];
 		double accel_y = event.values[1];
 		double accel_z = event.values[2];	
-		
+
 		//Logger.D(TAG, "Sensor change detected");
 		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
 		{
@@ -221,16 +221,16 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 				if (elapsed >= minimumInterval[SENSOR.accelerometer.ordinal()])
 				{
 					//Logger.D(TAG, "Accelerometer minimum interval surpassed");
-			        props.put("x", String.valueOf(accel_x));
-		        	props.put("y", String.valueOf(accel_y));
-		        	props.put("z", String.valueOf(accel_z));	
-		        	
-		        	sensorUrl[SENSOR.accelerometer.ordinal()].set(props);
-		        	Logger.T(TAG, "Accelerometer event fired: "+ sensorUrl[SENSOR.accelerometer.ordinal()]+":" + props);
-		        	dwQuietStart[SENSOR.accelerometer.ordinal()] = System.currentTimeMillis();	
-		        }				
+					props.put("x", String.valueOf(accel_x));
+					props.put("y", String.valueOf(accel_y));
+					props.put("z", String.valueOf(accel_z));	
+
+					sensorUrl[SENSOR.accelerometer.ordinal()].set(props);
+					Logger.T(TAG, "Accelerometer event fired: "+ sensorUrl[SENSOR.accelerometer.ordinal()]+":" + props);
+					dwQuietStart[SENSOR.accelerometer.ordinal()] = System.currentTimeMillis();	
+				}				
 			}		
-			     
+
 			if (sensorUrl[SENSOR.tiltAngle.ordinal()] != null)
 			{
 				//get time from the last event
@@ -239,30 +239,30 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 				if (elapsed >= minimumInterval[SENSOR.tiltAngle.ordinal()])
 				{
 					double PI = 3.14159265;				
-			        // This algorithm is taken from the Windows Sensor API
-			        double tilt_y =  (Math.atan( accel_x/Math.sqrt( accel_y*accel_y + accel_z*accel_z ) ) * 180 / PI);
-			        double tilt_x =  (Math.atan( accel_y/Math.sqrt( accel_x*accel_x + accel_z*accel_z ) ) * 180 / PI);        
-			        double tilt_z =  (Math.atan( accel_z/Math.sqrt( accel_x*accel_x + accel_y*accel_y ) ) * 180 / PI);  
-			        
-			        props.put("x", String.valueOf(tilt_x));
-		        	props.put("y", String.valueOf(tilt_y));
-		        	props.put("z", String.valueOf(tilt_z));	
-		        	
-		        	sensorUrl[SENSOR.tiltAngle.ordinal()].set(props);
-		        	dwQuietStart[SENSOR.tiltAngle.ordinal()] = System.currentTimeMillis();
+					// This algorithm is taken from the Windows Sensor API
+					double tilt_y =  (Math.atan( accel_x/Math.sqrt( accel_y*accel_y + accel_z*accel_z ) ) * 180 / PI);
+					double tilt_x =  (Math.atan( accel_y/Math.sqrt( accel_x*accel_x + accel_z*accel_z ) ) * 180 / PI);        
+					double tilt_z =  (Math.atan( accel_z/Math.sqrt( accel_x*accel_x + accel_y*accel_y ) ) * 180 / PI);  
+
+					props.put("x", String.valueOf(tilt_x));
+					props.put("y", String.valueOf(tilt_y));
+					props.put("z", String.valueOf(tilt_z));	
+
+					sensorUrl[SENSOR.tiltAngle.ordinal()].set(props);
+					dwQuietStart[SENSOR.tiltAngle.ordinal()] = System.currentTimeMillis();
 				}					
 			}	       
 		}
-    }
-	
+	}
+
 	/**
 	 * Handle data from Magnetic sensor
 	 * @param event
 	 */
 	private void magnetometerSensorChanged(SensorEvent event) {
-		
+
 		Map<String, Object> props = new HashMap<String, Object>();
-		
+
 		if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
 		{        		
 			if (sensorUrl[SENSOR.magnetometer.ordinal()] != null)
@@ -272,25 +272,25 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 
 				if (elapsed >= minimumInterval[SENSOR.magnetometer.ordinal()])
 				{
-			        props.put("x", String.valueOf(event.values[0]));
-		        	props.put("y", String.valueOf(event.values[1]));
-		        	props.put("z", String.valueOf(event.values[2]));	
-		        	
-		        	sensorUrl[SENSOR.magnetometer.ordinal()].set(props);
-		        	dwQuietStart[SENSOR.magnetometer.ordinal()] = System.currentTimeMillis();	
-		        }
+					props.put("x", String.valueOf(event.values[0]));
+					props.put("y", String.valueOf(event.values[1]));
+					props.put("z", String.valueOf(event.values[2]));	
+
+					sensorUrl[SENSOR.magnetometer.ordinal()].set(props);
+					dwQuietStart[SENSOR.magnetometer.ordinal()] = System.currentTimeMillis();	
+				}
 			}	
 		}		
-    }
-	
+	}
+
 	/**
 	 * handle data from Gyroscope sensor
 	 * @param event
 	 */
 	private void gyroscopeSensorChanged(SensorEvent event) {
-		
+
 		Map<String, Object> props = new HashMap<String, Object>();
-		
+
 		if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE)
 		{        		
 			if (sensorUrl[SENSOR.gyroscope.ordinal()] != null)
@@ -300,23 +300,23 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 
 				if (elapsed >= minimumInterval[SENSOR.gyroscope.ordinal()])
 				{
-			        props.put("x", String.valueOf(event.values[0]));
-		        	props.put("y", String.valueOf(event.values[1]));
-		        	props.put("z", String.valueOf(event.values[2]));	
-		        	
-		        	sensorUrl[SENSOR.gyroscope.ordinal()].set(props);
-		        	dwQuietStart[SENSOR.gyroscope.ordinal()] = System.currentTimeMillis();	
-		        }				
+					props.put("x", String.valueOf(event.values[0]));
+					props.put("y", String.valueOf(event.values[1]));
+					props.put("z", String.valueOf(event.values[2]));	
+
+					sensorUrl[SENSOR.gyroscope.ordinal()].set(props);
+					dwQuietStart[SENSOR.gyroscope.ordinal()] = System.currentTimeMillis();	
+				}				
 			}	
 		}
-    }
-	
+	}
+
 	/**
 	 * Handle data from Ambient light sensor
 	 * @param event
 	 */
 	private void ambientlightSensorChanged(SensorEvent event) {		
-		
+
 		if (event.sensor.getType() == Sensor.TYPE_LIGHT)
 		{        		
 			if (sensorUrl[SENSOR.ambientLight.ordinal()] != null)
@@ -326,19 +326,19 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 
 				if (elapsed >= minimumInterval[SENSOR.ambientLight.ordinal()])
 				{
-		        	sensorUrl[SENSOR.ambientLight.ordinal()].set(String.valueOf(event.values[0]));
-		        	dwQuietStart[SENSOR.ambientLight.ordinal()] = System.currentTimeMillis();	
-		        }				
+					sensorUrl[SENSOR.ambientLight.ordinal()].set(String.valueOf(event.values[0]));
+					dwQuietStart[SENSOR.ambientLight.ordinal()] = System.currentTimeMillis();	
+				}				
 			}	
 		}
-    }
-	
+	}
+
 	/**
 	 * handle data from the proximity sensor
 	 * @param event
 	 */
 	private void proximitySensorChanged(SensorEvent event) {
-		
+
 		if (event.sensor.getType() == Sensor.TYPE_PROXIMITY)
 		{        		
 			if (sensorUrl[SENSOR.proximity.ordinal()] != null)
@@ -348,19 +348,19 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 
 				if (elapsed >= minimumInterval[SENSOR.proximity.ordinal()])
 				{
-		        	sensorUrl[SENSOR.proximity.ordinal()].set(String.valueOf(event.values[0]));
-		        	dwQuietStart[SENSOR.proximity.ordinal()] = System.currentTimeMillis();	
-		        }				
+					sensorUrl[SENSOR.proximity.ordinal()].set(String.valueOf(event.values[0]));
+					dwQuietStart[SENSOR.proximity.ordinal()] = System.currentTimeMillis();	
+				}				
 			}	
 		}
-    }
-	
+	}
+
 	/**
 	 * Handle data from the pressure sensor
 	 * @param event
 	 */
 	private void pressureSensorChanged(SensorEvent event) {
-		
+
 		if (event.sensor.getType() == Sensor.TYPE_PRESSURE)
 		{        		
 			if (sensorUrl[SENSOR.pressure.ordinal()] != null)
@@ -370,19 +370,19 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 
 				if (elapsed >= minimumInterval[SENSOR.pressure.ordinal()])
 				{
-		        	sensorUrl[SENSOR.pressure.ordinal()].set(String.valueOf(event.values[0]));
-		        	dwQuietStart[SENSOR.pressure.ordinal()] = System.currentTimeMillis();	
-		        }				
+					sensorUrl[SENSOR.pressure.ordinal()].set(String.valueOf(event.values[0]));
+					dwQuietStart[SENSOR.pressure.ordinal()] = System.currentTimeMillis();	
+				}				
 			}	
 		}
-    }
-	
+	}
+
 	/**
 	 * Handle data from the temperature sensor
 	 * @param event
 	 */
 	private void temperatureSensorChanged(SensorEvent event) {
-		
+
 		if (event.sensor.getType() == Sensor.TYPE_TEMPERATURE)
 		{        		
 			if (sensorUrl[SENSOR.temperature.ordinal()] != null)
@@ -392,20 +392,20 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 
 				if (elapsed >= minimumInterval[SENSOR.temperature.ordinal()])
 				{
-		        	sensorUrl[SENSOR.temperature.ordinal()].set(String.valueOf(event.values[0]));
-		        	dwQuietStart[SENSOR.temperature.ordinal()] = System.currentTimeMillis();	
-		        }				
+					sensorUrl[SENSOR.temperature.ordinal()].set(String.valueOf(event.values[0]));
+					dwQuietStart[SENSOR.temperature.ordinal()] = System.currentTimeMillis();	
+				}				
 			}	
 		}
-    }
-	
+	}
+
 	/**
 	 * Handle data from the gravity sensor
 	 * @param event
 	 */
 	private void gravitySensorChanged(SensorEvent event) {
 		Map<String, Object> props = new HashMap<String, Object>();
-		
+
 		if (event.sensor.getType() == Sensor.TYPE_GRAVITY)
 		{        		
 			if (sensorUrl[SENSOR.gravity.ordinal()] != null)
@@ -415,25 +415,25 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 
 				if (elapsed >= minimumInterval[SENSOR.gravity.ordinal()])
 				{
-			        props.put("x", String.valueOf(event.values[0]));
-		        	props.put("y", String.valueOf(event.values[1]));
-		        	props.put("z", String.valueOf(event.values[2]));	
-		        	
-		        	sensorUrl[SENSOR.gravity.ordinal()].set(props);
-		        	dwQuietStart[SENSOR.gravity.ordinal()] = System.currentTimeMillis();	
-		        }				
+					props.put("x", String.valueOf(event.values[0]));
+					props.put("y", String.valueOf(event.values[1]));
+					props.put("z", String.valueOf(event.values[2]));	
+
+					sensorUrl[SENSOR.gravity.ordinal()].set(props);
+					dwQuietStart[SENSOR.gravity.ordinal()] = System.currentTimeMillis();	
+				}				
 			}	
 		}
-    }
-	
+	}
+
 	/**
 	 * Handle data from the linear acceleration sensor
 	 * @param event
 	 */
 	private void linearSensorChanged(SensorEvent event) {
-		
+
 		Map<String, Object> props = new HashMap<String, Object>();
-		
+
 		if (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION)
 		{        		
 			if (sensorUrl[SENSOR.linearAcceleration.ordinal()] != null)
@@ -443,25 +443,25 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 
 				if (elapsed >= minimumInterval[SENSOR.linearAcceleration.ordinal()])
 				{
-			        props.put("x", String.valueOf(event.values[0]));
-		        	props.put("y", String.valueOf(event.values[1]));
-		        	props.put("z", String.valueOf(event.values[2]));	
-		        	
-		        	sensorUrl[SENSOR.linearAcceleration.ordinal()].set(props);
-		        	dwQuietStart[SENSOR.linearAcceleration.ordinal()] = System.currentTimeMillis();	
-		        }				
+					props.put("x", String.valueOf(event.values[0]));
+					props.put("y", String.valueOf(event.values[1]));
+					props.put("z", String.valueOf(event.values[2]));	
+
+					sensorUrl[SENSOR.linearAcceleration.ordinal()].set(props);
+					dwQuietStart[SENSOR.linearAcceleration.ordinal()] = System.currentTimeMillis();	
+				}				
 			}	
 		}
-    }
-	
+	}
+
 	/**
 	 * handle data from the rotation sensor
 	 * @param event
 	 */
 	private void rotationSensorChanged(SensorEvent event) {
-		
+
 		Map<String, Object> props = new HashMap<String, Object>();
-		
+
 		if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR)
 		{        		
 			if (sensorUrl[SENSOR.rotation.ordinal()] != null)
@@ -471,25 +471,25 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 
 				if (elapsed >= minimumInterval[SENSOR.rotation.ordinal()])
 				{
-			        props.put("x", String.valueOf(event.values[0]));
-		        	props.put("y", String.valueOf(event.values[1]));
-		        	props.put("z", String.valueOf(event.values[2]));	
-		        	
-		        	sensorUrl[SENSOR.rotation.ordinal()].set(props);
-		        	dwQuietStart[SENSOR.rotation.ordinal()] = System.currentTimeMillis();	
-		        }				
+					props.put("x", String.valueOf(event.values[0]));
+					props.put("y", String.valueOf(event.values[1]));
+					props.put("z", String.valueOf(event.values[2]));	
+
+					sensorUrl[SENSOR.rotation.ordinal()].set(props);
+					dwQuietStart[SENSOR.rotation.ordinal()] = System.currentTimeMillis();	
+				}				
 			}	
 		}
-    }
-	
+	}
+
 	/**
 	 * handle data from the orientation sensor
 	 * @param event
 	 */
 	private void orientationSensorChanged(SensorEvent event) {		
-		
+
 		Map<String, Object> props = new HashMap<String, Object>();
-		
+
 		if (event.sensor.getType() == Sensor.TYPE_ORIENTATION)
 		{        		
 			if (sensorUrl[SENSOR.orientation.ordinal()] != null)
@@ -499,47 +499,42 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 
 				if (elapsed >= minimumInterval[SENSOR.orientation.ordinal()])
 				{
-			        props.put("x", String.valueOf(event.values[0]));
-		        	props.put("y", String.valueOf(event.values[1]));
-		        	props.put("z", String.valueOf(event.values[2]));	
-		        	
-		        	sensorUrl[SENSOR.orientation.ordinal()].set(props);
-		        	dwQuietStart[SENSOR.orientation.ordinal()] = System.currentTimeMillis();	
-		        }				
+					props.put("x", String.valueOf(event.values[0]));
+					props.put("y", String.valueOf(event.values[1]));
+					props.put("z", String.valueOf(event.values[2]));	
+
+					sensorUrl[SENSOR.orientation.ordinal()].set(props);
+					dwQuietStart[SENSOR.orientation.ordinal()] = System.currentTimeMillis();	
+				}				
 			}	
 		}
-    }
-	
-    public SensorsSingleton(SensorsFactory factory) {
-        super(factory);
-        mSensorManager = (SensorManager) RhodesActivity.getInstance().getSystemService("sensor");	
-        
-        for (SENSOR s : SENSOR.values())
-        {
-        	sensorUrl[s.ordinal()] = null;
-        	dwQuietStart[s.ordinal()] = System.currentTimeMillis();        	
-        	minimumInterval[s.ordinal()] = 200; //Default - 200 milli seconds
-        }
-        
+	}
+
+	public SensorsSingleton(SensorsFactory factory) {
+		super();
+		mSensorManager = (SensorManager) RhodesActivity.safeGetInstance().getSystemService("sensor");	
+
+		for (SENSOR s : SENSOR.values())
+		{
+			sensorUrl[s.ordinal()] = null;
+			dwQuietStart[s.ordinal()] = System.currentTimeMillis();        	
+			minimumInterval[s.ordinal()] = 200; //Default - 200 milli seconds
+		}
+
 		// List the available sensors
 		List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
-	    for (Sensor sensor : sensors) 
-	    {
-	    	Logger.I(TAG, "Available Sensor: " + sensor.getName());	    		       
-	    }
-    }
+		for (Sensor sensor : sensors) 
+		{
+			Logger.I(TAG, "Available Sensor: " + sensor.getName());	    		       
+		}
+	}
 
-    List<String> getIDs() {
-        List<String> ids = new LinkedList<String>();
-        ids.add("SCN1");
-        ids.add("SCN2");
-        return ids;
-    }
-    
-    @Override
-    protected String getInitialDefaultID() {
-        return getIDs().get(0);
-    }
+	List<String> getIDs() {
+		List<String> ids = new LinkedList<String>();
+		ids.add("SCN1");
+		ids.add("SCN2");
+		return ids;
+	}
 
 	@Override
 	public void watchAccelerometer(int minimumGap, IMethodResult result)
@@ -622,13 +617,13 @@ class SensorsSingleton extends SensorsSingletonBase implements ISensorsSingleton
 	}
 
 	@Override
-	public void watcheCompass(int minimumGap, IMethodResult result)
+	public void watchECompass(int minimumGap, IMethodResult result)
 	{
 		result.setError("eCompass sensor not supported on Android platform");	
 	}
 
 	@Override
-	public void stopeCompass(IMethodResult result)
+	public void stopECompass(IMethodResult result)
 	{
 		result.setError("eCompass sensor not supported on Android platform");	
 	}

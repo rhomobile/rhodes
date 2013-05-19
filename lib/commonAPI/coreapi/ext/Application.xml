@@ -35,7 +35,7 @@
                 <DESC>Startup page for your application.</DESC>
             </PROPERTY>
             <PROPERTY name="settingsPageURI" type="STRING">
-                <DESC>Settings page URI.</DESC>
+                <DESC>Settings page URI. Will be used when Options menu or toolbar item is choosed by user.</DESC>
             </PROPERTY>
             <PROPERTY name="splash" type="STRING" readOnly="true">
                 <DESC>Splash screen image display options. This a string with several parameters divided by ';': delay=5;center;hcenter;vcenter;vzoom;hzoom;zoom</DESC>
@@ -189,7 +189,7 @@
             </METHOD>
 
             <METHOD name="processApplicationEvent" generateAPI="false">
-                <DESC>Default processing of application Event. May be called from setApplicationNotify callback.</DESC>
+                <DESC>Default processing of application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
 
                 <PARAMS>
                     <PARAM name="applicationEvent" type="STRING">

@@ -149,7 +149,7 @@ static int started = 0;
 @end
 
 
-void create_nativebar_innner(int bar_type, rho_param *p)
+void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_properties, id<IMethodResult>callback)
 {
     if (!rho_rhodesapp_check_mode())
         return;
@@ -159,43 +159,22 @@ void create_nativebar_innner(int bar_type, rho_param *p)
     
     const char* on_change_tab_callback = NULL;
 	
-	rho_param *params = NULL;
-    switch (p->type) {
-        case RHO_PARAM_ARRAY:
-            params = p;
-            break;
-        case RHO_PARAM_HASH: {
-            for (int i = 0, lim = p->v.hash->size; i < lim; ++i) {
-                const char *name = p->v.hash->name[i];
-                rho_param *value = p->v.hash->value[i];
-                
-                if (strcasecmp(name, "background_color") == 0) {
-					background_color = value->v.string;
-					background_color_enable = "true";
-                }
 
-                if (strcasecmp(name, "on_change_tab_callback") == 0) {
-					on_change_tab_callback = value->v.string;
-                }
-                
-                if (strcasecmp(name, "buttons") == 0 || strcasecmp(name, "tabs") == 0) {
-                    params = value;
-                }
-            }
-        }
-            break;
-        default: {
-            RAWLOG_ERROR("Unexpected parameter type for create_nativebar, should be Array or Hash");
-            return;
+	
+    NSObject* obj = nil;
+    
+    if ([p_properties isKindOfClass:[NSDictionary class]]) {
+        obj = [p_properties objectForKey:NATIVE_BAR_ITEM_WEB_BACKGROUND_COLOR];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            background_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
+            background_color_enable = "true";
         }
     }
     
-    if (!params) {
-        RAWLOG_ERROR("Wrong parameters for create_nativebar");
-        return;
-    }
+
     
-    int size = params->v.array->size;
+    int size = [p_items count];//params->v.array->size;
 
 	NSMutableDictionary* main_properties = [NSMutableDictionary dictionaryWithCapacity:2];
 	
@@ -205,10 +184,13 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 	NSMutableArray* items = [NSMutableArray arrayWithCapacity:size];
 	[main_properties setObject:items forKey:NATIVE_BAR_ITEMS];
 	
-	
     for (int i = 0; i < size; ++i) {
-        rho_param *hash = params->v.array->value[i];
-        if (hash->type != RHO_PARAM_HASH) {
+        NSObject* obj = [p_items objectAtIndex:i];
+        NSDictionary* hash = nil;
+        if ([obj isKindOfClass:[NSDictionary class]]) {
+            hash = (NSDictionary*)obj;
+        }
+        else {
             RAWLOG_ERROR("Unexpected type of array item for create_nativebar, should be Hash");
             return;
         }
@@ -226,45 +208,80 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 		const char* use_current_view_for_tab = NULL;
 		
         BOOL skip_item = NO;
-        for (int j = 0, lim = hash->v.hash->size; j < lim; ++j) {
-            const char *name = hash->v.hash->name[j];
-            rho_param *value = hash->v.hash->value[j];
-            if (value->type != RHO_PARAM_STRING) {
-                RAWLOG_ERROR1("Unexpected '%s' type, should be String", name);
-                return;
-            }
-			if (strcasecmp(name, "background_color") == 0) {
-				background_color = value->v.string;
-				//background_color_enable = "true";
-				skip_item = YES;
-			}
-            
-            if (strcasecmp(name, "label") == 0)
-                label = value->v.string;
-            else if (strcasecmp(name, "action") == 0)
-                action = value->v.string;
-            else if (strcasecmp(name, "icon") == 0)
-                icon = value->v.string;
-            else if (strcasecmp(name, "reload") == 0)
-                reload = value->v.string;
-            else if (strcasecmp(name, "colored_icon") == 0)
-                colored_icon = value->v.string;
-            else if (strcasecmp(name, "selected_color") == 0){
-                selected_color = value->v.string;
-				//selected_color_enable = "true";
-			}	
-            else if (strcasecmp(name, "disabled") == 0)
-                disabled = value->v.string;
-            else if (strcasecmp(name, "web_bkg_color") == 0)
-                web_bkg_color = value->v.string;
-			else if (strcasecmp(name, "use_current_view_for_tab") == 0) {
-                use_current_view_for_tab = value->v.string;
-				if (strcasecmp(use_current_view_for_tab, "true") == 0) {
-					action = "none";
-				}
-			}
-				
+        
+        //obj = [hash objectForKey:@"backgroundColor"];
+        //if (obj != nil) {
+        //    NSNumber* obj_num = (NSNumber*)obj;
+        //    background_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
+        //    skip_item = YES;
+        //}
+        obj = [hash objectForKey:@"label"];
+        if (obj != nil) {
+            NSString* obj_str = (NSString*)obj;
+            label = [obj_str UTF8String];
         }
+        obj = [hash objectForKey:@"action"];
+        if (obj != nil) {
+            NSString* obj_str = (NSString*)obj;
+            action = [obj_str UTF8String];
+        }
+        obj = [hash objectForKey:@"icon"];
+        if (obj != nil) {
+            NSString* obj_str = (NSString*)obj;
+            icon = [obj_str UTF8String];
+        }
+        obj = [hash objectForKey:@"reload"];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            if ([obj_num boolValue]) {
+                reload = "true";
+            }
+            else {
+                reload = "false";
+            }
+        }
+        obj = [hash objectForKey:@"coloredIcon"];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            if ([obj_num boolValue]) {
+                colored_icon = "true";
+            }
+            else {
+                colored_icon = "false";
+            }
+        }
+        obj = [hash objectForKey:@"selectedColor"];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            selected_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
+        }
+        obj = [hash objectForKey:@"disabled"];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            if ([obj_num boolValue]) {
+                disabled = "true";
+            }
+            else {
+                disabled = "false";
+            }
+        }
+        obj = [hash objectForKey:@"backgroundColor"];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            web_bkg_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
+        }
+        obj = [hash objectForKey:@"useCurrentViewForTab"];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            if ([obj_num boolValue]) {
+                use_current_view_for_tab = "true";
+                action = "none";
+            }
+            else {
+                use_current_view_for_tab = "false";
+            }
+        }
+        
         
         if (label == NULL && bar_type == TOOLBAR_TYPE)
             label = "";
@@ -297,14 +314,28 @@ void create_nativebar_innner(int bar_type, rho_param *p)
 	if (background_color != NULL) {
 		[properties setObject:[NSString stringWithUTF8String:background_color] forKey:NATIVE_BAR_BACKGOUND_COLOR];	
 	}
-    if (on_change_tab_callback != NULL) {
-		[properties setObject:[NSString stringWithUTF8String:on_change_tab_callback] forKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];	
+    
+    //COMMONAPI
+    if (callback != NULL) {
+		[properties setObject:[callback retain] forKey:NATIVE_BAR_ON_CHANGE_TAB_CALLBACK];
     }
 	
     id runnable = [RhoNativeBarCreateTask class];
     id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg1 arg:main_properties wait:NO];
 }
+
+void rho_create_toolbar(NSArray* items, NSDictionary* properties) {
+    rho_create_nativebar_inner(TOOLBAR_TYPE, items, properties, nil);
+}
+
+void rho_create_tabbar(NSArray* items, NSDictionary* properties, id<IMethodResult>callback) {
+    //COMMONAPI
+    // add check for Vertical type
+    // add callbacl processing
+    rho_create_nativebar_inner(TABBAR_TYPE, items, properties, callback);
+}
+
 
 void remove_nativebar_innner() {
     if (!rho_rhodesapp_check_mode())
@@ -323,12 +354,13 @@ void nativebar_switch_tab_innner(int index) {
     [Rhodes performOnUiThread:runnable arg:arg wait:NO];
 }
 
-VALUE nativebar_started() {
-    return rho_ruby_create_boolean(started);
+BOOL nativebar_started() {
+    return (started != 0);
 }
 
 
 
+/*
 void create_nativebar(int bar_type, rho_param *p)
 {
 	RAWLOG_INFO("NativeBar.create() is DEPRECATED. Use Rho::NativeToolbar.create() or Rho::NativeTabbar.create().");
@@ -344,19 +376,24 @@ void nativebar_switch_tab(int index) {
 	RAWLOG_INFO("NativeBar.switch_tab() is DEPRECATED. Use Rho::NativeTabbar.switch_tab().");
 	nativebar_switch_tab_innner(index);
 }
+*/
 
 
-void create_native_toolbar(int bar_type, rho_param *p) {
+/*
+ void create_native_toolbar(int bar_type, rho_param *p) {
 	create_nativebar_innner(bar_type, p);
 }
+*/
 
 void remove_native_toolbar() {
 	remove_nativebar_innner();
 }
 
+/*
 void create_native_tabbar(int bar_type, rho_param *p) {
 	create_nativebar_innner(bar_type, p);
 }
+*/
 
 void remove_native_tabbar() {
 	remove_nativebar_innner();

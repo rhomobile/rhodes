@@ -100,14 +100,57 @@ jobject RhoValueConverter::createObject(rho_param *p)
     }
 }
 
+extern "C"
+{
+    static void rubyHashElementToProperty(const char* key, VALUE valElement, void* data)
+    {
+        PropertyMapConvertor<VALUE>* pThis = reinterpret_cast<PropertyMapConvertor<VALUE>* >(data);
+        jhstring jhKey = rho_cast<jstring>(pThis->m_env, key);
+        jhobject jhVal = rho_cast<jstring>(pThis->m_env, rb_funcall(valElement, rb_intern("to_s"), 0));
+
+        jhobject jhPrev = pThis->m_env->CallObjectMethod(pThis->m_jObject, details::RhoJniConvertor::midHashMapPut, jhKey.get(), jhVal.get());
+    }
+}
+
+jobject PropertyMapConvertor<VALUE>::convertToPropertyMap(JNIEnv *env, VALUE value)
+{
+    if (NIL_P(value))
+        return 0;
+
+    if (!initConvertor(env))
+        return 0;
+
+    m_jObject = env->NewObject(clsHashMap, midHashMap);
+    if(env->ExceptionCheck() == JNI_TRUE)
+    {
+        rho::String message = rho::common::clearException(env);
+        RAWLOG_ERROR(message.c_str());
+        return 0;
+    }
+
+    rho_ruby_enum_hash(value, rubyHashElementToProperty, this);
+
+    return m_jObject;
+}
+
 namespace details {
 
 VALUE rho_cast_helper<VALUE, jobject>::convertJavaMapToRubyHash(jobject objMap)
 {
     jhobject objSet = m_env->CallObjectMethod(objMap, midMapKeySet);
-    if (!objSet) return Qnil;
+    if(m_env->ExceptionCheck() == JNI_TRUE)
+    {
+        rho::String message = rho::common::clearException(m_env);
+        RAWLOG_ERROR(message.c_str());
+        return Qnil;
+    }
     jhobject objIterator = m_env->CallObjectMethod(objSet.get(), midSetIterator);
-    if (!objIterator) return Qnil;
+    if(m_env->ExceptionCheck() == JNI_TRUE)
+    {
+        rho::String message = rho::common::clearException(m_env);
+        RAWLOG_ERROR(message.c_str());
+        return Qnil;
+    }
                                   
     CHoldRubyValue retval(rho_ruby_createHash());
     while(m_env->CallBooleanMethod(objIterator.get(), midIteratorHasNext))
@@ -128,13 +171,23 @@ VALUE rho_cast_helper<VALUE, jobject>::convertJavaMapToRubyHash(jobject objMap)
 VALUE rho_cast_helper<VALUE, jobject>::convertJavaCollectionToRubyArray(jobject jList)
 {
     jhobject jhIterator = m_env->CallObjectMethod(jList, midCollectionIterator);
-    if (!jhIterator) return Qnil;
+    if(m_env->ExceptionCheck() == JNI_TRUE)
+    {
+        rho::String message = rho::common::clearException(m_env);
+        RAWLOG_ERROR(message.c_str());
+        return Qnil;
+    }
 
     CHoldRubyValue retval(rho_ruby_create_array());
     while(m_env->CallBooleanMethod(jhIterator.get(), midIteratorHasNext))
     {
         jhobject jhVal = m_env->CallObjectMethod(jhIterator.get(), midIteratorNext);
-        if (!jhVal) return Qnil;
+        if(m_env->ExceptionCheck() == JNI_TRUE)
+        {
+            rho::String message = rho::common::clearException(m_env);
+            RAWLOG_ERROR(message.c_str());
+            return Qnil;
+        }
 
         CHoldRubyValue val(rho_cast<VALUE>(m_env, jhVal));
         rho_ruby_add_to_array(retval, val);
@@ -184,7 +237,12 @@ static void ruby_hash_each(const char* key, VALUE val, void* param)
 jobject rho_cast_helper<jobject, VALUE>::convertRubyArrayToJavaCollection(VALUE array)
 {
     m_jObject = m_env->NewObject(clsArrayList, midArrayList);
-    if (!m_jObject) return m_jObject;
+    if(m_env->ExceptionCheck() == JNI_TRUE)
+    {
+        rho::String message = rho::common::clearException(m_env);
+        RAWLOG_ERROR(message.c_str());
+        return 0;
+    }
 
     rho_ruby_enum_ary(array, ruby_array_each, this);
 
@@ -194,7 +252,12 @@ jobject rho_cast_helper<jobject, VALUE>::convertRubyArrayToJavaCollection(VALUE 
 jobject rho_cast_helper<jobject, VALUE>::convertRubyHashToJavaMap(VALUE hash)
 {
     m_jObject = m_env->NewObject(clsHashMap, midHashMap);
-    if (!m_jObject) return m_jObject;
+    if(m_env->ExceptionCheck() == JNI_TRUE)
+    {
+        rho::String message = rho::common::clearException(m_env);
+        RAWLOG_ERROR(message.c_str());
+        return 0;
+    }
 
     rho_ruby_enum_hash(hash, ruby_hash_each, this);
 
@@ -321,8 +384,12 @@ jobjectArray rho_cast_helper<jobjectArray, VALUE>::operator()(JNIEnv *env, VALUE
         int size = RARRAY_LEN(value);
         jobjectArray jArray = env->NewObjectArray(size, clsString, 0);
 
-        if (!jArray)
+        if(env->ExceptionCheck() == JNI_TRUE)
+        {
+            rho::String message = rho::common::clearException(env);
+            RAWLOG_ERROR(message.c_str());
             return 0;
+        }
 
         for (int i = 0; i < size; ++i)
         {

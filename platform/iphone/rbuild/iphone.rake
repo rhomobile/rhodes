@@ -128,6 +128,43 @@ def set_app_url_scheme(newname)
   return ret_value
 end
 
+def set_ui_prerendered_icon(val)
+    add = (val=~(/(true|t|yes|y|1)$/i))?true:false
+    
+    ret_value = nil
+    
+    fname = $config["build"]["iphonepath"] + "/Info.plist"
+    nextline = false
+    replaced = false
+    dictcnt = 0
+    buf = ""
+    File.new(fname,"r").read.each_line do |line|
+        matches = (line =~ /UIPrerenderedIcon/)?true:false
+        if nextline and not replaced
+            ret_value = true
+            return ret_value if add
+
+            replaced = true
+        else
+            if (line=~/<\/dict>/)
+                if add and (dictcnt==1)
+                    buf << "<key>UIPrerenderedIcon</key>\n"
+                    buf << "<true/>\n"
+                end
+                dictcnt = dictcnt-1
+            elsif (line=~/<dict>/)
+                dictcnt = dictcnt+1
+            end
+                
+            buf << line unless ( matches and not add )
+        end
+        nextline = matches
+    end
+    
+    File.open(fname,"w") { |f| f.write(buf) }
+    return ret_value
+end
+
 BAKUP_FILES = ['rhorunner.xcodeproj', 'Entitlements.plist', 'icon.png', 'icon114.png', 'icon57.png', 'icon72.png', 'Info.plist']
 CLEAR_FILES = ['Default.png', 'Default@2x.png', 'Default-Portrait.png', 'Default-PortraitUpsideDown.png', 'Default-Landscape.png', 'Default-LadscapeLeft.png', 'Default-LandscapeRight.png', 'Default-568h@2x.png']
 
@@ -567,7 +604,7 @@ namespace "config" do
         end
       end
     end
-
+      
     unless File.exists? $homedir + "/.profile"
       File.open($homedir + "/.profile","w") {|f| f << "#" }
       chmod 0744, $homedir + "/.profile"
@@ -954,7 +991,7 @@ namespace "build" do
 
       set_app_icon(false)
       set_default_images(false)
-
+        
       if $entitlements == ""
           if $configuration == "Distribution"
               $entitlements = "Entitlements.plist"
@@ -984,6 +1021,9 @@ namespace "build" do
       bundle_identifier = "com.#{vendor}.#{appname}"
       bundle_identifier = $app_config["iphone"]["BundleIdentifier"] unless $app_config["iphone"]["BundleIdentifier"].nil?
       saved_identifier = set_app_bundle_identifier(bundle_identifier)
+        
+      icon_has_gloss_effect = $app_config["iphone"]["IconHasGlossEffect"] unless $app_config["iphone"]["IconHasGlossEffect"].nil?
+      icon_has_gloss_effect = set_ui_prerendered_icon(icon_has_gloss_effect)
       
       saved_url_scheme = set_app_url_scheme($app_config["iphone"]["BundleURLScheme"]) unless $app_config["iphone"]["BundleURLScheme"].nil?
       saved_url_name = set_app_url_name(bundle_identifier)
@@ -1019,6 +1059,7 @@ namespace "build" do
       set_app_bundle_identifier(saved_identifier) unless $app_config["iphone"]["BundleIdentifier"].nil?
       set_app_url_scheme(saved_url_scheme) unless $app_config["iphone"]["BundleURLScheme"].nil?
       set_app_url_name(saved_url_name) unless $app_config["iphone"]["BundleIdentifier"].nil?
+      set_ui_prerendered_icon(icon_has_gloss_effect)
       
       restore_entitlements_file
       restore_default_images

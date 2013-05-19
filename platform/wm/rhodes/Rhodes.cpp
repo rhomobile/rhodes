@@ -420,8 +420,12 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         {
             ShowWindow(hWnd, SW_SHOW);
             SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
-            SendMessage( hWnd, WM_WINDOW_SWITCHTAB, NULL, (LPARAM)m_strTabName.c_str());
             SetForegroundWindow( hWnd );
+
+            COPYDATASTRUCT cds = {0};
+            cds.cbData = m_strTabName.length()+1;
+            cds.lpData = (char*)m_strTabName.c_str();
+            SendMessage( hWnd, WM_COPYDATA, (WPARAM)WM_WINDOW_SWITCHTAB, (LPARAM)(LPVOID)&cds);
         }
 
         return S_FALSE;
@@ -559,6 +563,8 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 #endif // APP_BUILD_CAPABILITY_SHARED_RUNTIME
 
     DWORD dwStyle = m_bMinimized ? 0 : WS_VISIBLE;
+
+    m_appWindow.setStartTabName(m_strTabName);
 
 #if !defined(_WIN32_WCE)
     dwStyle |= WS_OVERLAPPEDWINDOW;

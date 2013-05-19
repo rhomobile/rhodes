@@ -192,6 +192,11 @@ void CRhoRuntime::DestroyUi(void)
 	rho_rhodesapp_callUiDestroyedCallback();
 }
 
+void  CRhoRuntime::setCryptoEngine(ICryptoEngine^ cryptoEngine)
+{
+	m_CryptoEngine = cryptoEngine;
+}
+
 extern "C" void rho_sys_app_exit()
 {
 	rho_rhodesapp_callUiDestroyedCallback();

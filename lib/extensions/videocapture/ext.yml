@@ -2,3 +2,5 @@ entry: Init_Videocapture_extension
 javaentry: com.videocapture.Videocapture
 android_additional_sources_list: ext/videocapture/platform/android/ext_build.files
 libraries: ["Videocapture"]
+
+platforms: ["iphone", "wm"]

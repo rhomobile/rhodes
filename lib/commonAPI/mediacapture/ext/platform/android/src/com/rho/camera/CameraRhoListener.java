@@ -31,6 +31,9 @@ public class CameraRhoListener extends AbstractRhoListener implements IRhoListen
     }
     @Override
     public void onActivityResult(RhodesActivity activity, int requestCode, int resultCode, Intent intent) {
+        if (mMethodResult == null) {
+            return;
+        }
         try {
             if (resultCode == Activity.RESULT_OK) {
                 String curPath = null;
