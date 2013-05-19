@@ -764,6 +764,7 @@ module Rhogen
         @can_be_nil = false
         @desc = ''
         @default_value = nil
+        @is_property_hash = false
       end
 
       attr_accessor :name
@@ -779,6 +780,7 @@ module Rhogen
       attr_accessor :can_be_nil
       attr_accessor :desc
       attr_accessor :default_value
+      attr_accessor :is_property_hash
 
       def type=(value)
         up_value = value.upcase
@@ -832,6 +834,16 @@ module Rhogen
       attr_accessor :type
       attr_accessor :value
       attr_accessor :desc
+    end
+
+    class ModuleHashKey
+      def initialize
+        @name = ''
+        @const_tag = ''
+      end
+
+      attr_accessor :name
+      attr_accessor :const_tag
     end
 
     class ModuleProperty
@@ -968,6 +980,7 @@ module Rhogen
         @method_aliases = []
         @property_aliases = []
         @module_aliases = []
+        @hash_key_names = []
         @generateUnderscoreRubyNames = false
         @is_template_singletone_id = false
         @is_template_default_instance = false
@@ -997,6 +1010,7 @@ module Rhogen
       attr_accessor :method_aliases
       attr_accessor :property_aliases
       attr_accessor :module_aliases
+      attr_accessor :hash_key_names
       attr_accessor :generateUnderscoreRubyNames
       attr_accessor :is_template_singletone_id
       attr_accessor :is_template_default_instance
@@ -1296,6 +1310,9 @@ module Rhogen
        if xml_param_item.attribute("default") != nil
           param.default_value = xml_param_item.attribute("default").to_s
        end
+       if xml_param_item.attribute("propertyHash") != nil
+          param.is_property_hash = (xml_param_item.attribute("propertyHash").to_s == "true")
+       end
 
        xml_param_item.elements.each("DESC") do |xml_desc|
           param.desc = xml_desc.text
@@ -1456,22 +1473,54 @@ module Rhogen
           end
         end
 
-         #constants in param
-         xml_module_item.elements.each(".//PARAM/VALUES/VALUE") do |xml_param_value|
-            module_constant = ModuleConstant.new()
-            module_constant.name = xml_param_value.attribute("constName").to_s
-            module_constant.value = xml_param_value.attribute("value").to_s
-            if xml_param_value.attribute("type") != nil
-               module_constant.type = xml_param_value.attribute("type").to_s.upcase
-            end
-            xml_param_value.elements.each("DESC") do |xml_desc|
-               module_constant.desc = xml_desc.text
-            end
-            module_item.constants << module_constant
-         end
+        #constants in param
+        xml_module_item.elements.each(".//PARAM/VALUES/VALUE") do |xml_param_value|
+          module_constant = ModuleConstant.new()
+          module_constant.name = xml_param_value.attribute("constName").to_s
+          module_constant.value = xml_param_value.attribute("value").to_s
+          if xml_param_value.attribute("type") != nil
+             module_constant.type = xml_param_value.attribute("type").to_s.upcase
+          end
+          xml_param_value.elements.each("DESC") do |xml_desc|
+             module_constant.desc = xml_desc.text
+          end
+          module_item.constants << module_constant
+        end
 
-         #leave only unique consants 
-         module_item.constants.uniq! { |x| x.name  }
+        #leave only unique consants 
+        module_item.constants.uniq! { |x| x.name  }
+
+        hash_names = []
+
+        #hash keys
+        xml_module_item.elements.each(".//PARAMS/PARAM") do |xml_param|
+          if xml_param.attribute("type").to_s.upcase == "HASH"
+            xml_param.elements.each(".//PARAM") do |param_key|
+              hash_names << param_key.attribute("name").to_s
+            end        
+          end
+        end 
+
+        xml_module_item.elements.each(".//RETURN") do |xml_param|
+          if xml_param.attribute("type").to_s.upcase == "HASH"
+            xml_param.elements.each(".//PARAM") do |param_key|
+              hash_names << param_key.attribute("name").to_s
+            end        
+          end
+        end 
+
+        hash_names.sort.uniq.reject(&:empty?).each do |hash_key|
+          key = ModuleHashKey.new()
+          key.name = hash_key
+          const_key = hash_key.dup
+          const_key.gsub!(/::/, '/')
+          const_key.gsub!(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
+          const_key.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
+          const_key.tr!("-", "_")
+          const_key.upcase!
+          key.const_tag = 'HK_' + const_key
+          module_item.hash_key_names << key
+        end
 
          #properties
          xml_properties = xml_module_item.elements["PROPERTIES"]

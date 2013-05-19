@@ -7,11 +7,7 @@
             <ALIAS new="RawSensors" deprecated="true"/>        
         </ALIASES>
 		
-        <HELP_OVERVIEW>The Sensors extension is used to retrieve the raw data values of the specified sensors from the device.</HELP_OVERVIEW>       
-    
-        <TEMPLATES>            
-            <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->            
-        </TEMPLATES>
+        <HELP_OVERVIEW>The Sensors extension is used to retrieve the raw data values of the specified sensors (Accelerometer, tilt angle, device orientation, motion, eCompass, mangetometer, gyroscope, ambient light, proximity, proximity long range, pressure, temperature, humidity, gravity, linear acceleration, rotation, orientation etc.) from the device.</HELP_OVERVIEW>       
 
 		<PLATFORM>WM, Android</PLATFORM>
 
@@ -29,7 +25,7 @@
                     </PARAM>
                 </PARAMS>
 				<CALLBACK type="HASH">
-                    <DESC>The callback is triggered with the accelerometer co-ordiantes when a parameter of the accelerometer sensor is changed.</DESC>
+                    <DESC>The callback is triggered with the accelerometer co-ordinates when a parameter of the accelerometer sensor is changed.</DESC>
 					<PARAMS>
 						<PARAM name="x" type="STRING">
 							<DESC>X co-ordinate value of the Accelerometer sensor in SI units (m/s^2)</DESC>
@@ -61,7 +57,7 @@
                     </PARAM>
                 </PARAMS>
 				<CALLBACK type="HASH">
-                    <DESC>The callback is triggered with the tilt angle co-ordiantes when a parameter of the accelerometer sensor is changed.</DESC>
+                    <DESC>The callback is triggered with the tilt angle co-ordinates when a parameter of the accelerometer sensor is changed.</DESC>
 					<PARAMS>
 						<PARAM name="x" type="STRING">
 							<DESC>X co-ordinate value of the tiltangle sensor in degrees units</DESC>
@@ -92,9 +88,13 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK type="String">
-					<DESC>The callback is triggered with the device orientation value when the device orientation sensor is changed.</DESC>
-				</CALLBACK>				
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the device orientation value when the device orientation sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="value" type="STRING">
+						</PARAM>						
+					</PARAMS>					
+				</CALLBACK>							
             </METHOD>
 			
             <METHOD name="stopDeviceOrientation">
@@ -113,9 +113,13 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK type="String">
-					<DESC>The callback is triggered with the motion sensor value when the motion sensor is changed.</DESC>
-				</CALLBACK>				
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the motion sensor value when the motion sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="value" type="STRING">
+						</PARAM>												
+					</PARAMS>					
+				</CALLBACK>							
             </METHOD>
 			
             <METHOD name="stopMotion">
@@ -123,7 +127,7 @@
 				<PLATFORM>WM, Android</PLATFORM>
             </METHOD>
 		
-			<METHOD name="watcheCompass" hasCallback="mandatory">
+			<METHOD name="watchECompass" hasCallback="mandatory">
                 <DESC>This enables the eCompass sensor data retrieval.</DESC>
 				<PLATFORM>WM</PLATFORM>
 				<PARAMS>
@@ -134,12 +138,16 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK type="String">
-					<DESC>The callback is triggered with the eCompass sensor value when the eCompass sensor is changed.</DESC>
-				</CALLBACK>				
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the eCompass sensor value when the eCompass sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="value" type="STRING">
+						</PARAM>												
+					</PARAMS>					
+				</CALLBACK>								
             </METHOD>
 			
-            <METHOD name="stopeCompass">
+            <METHOD name="stopECompass">
                 <DESC>Stops listening to the eCompass sensor</DESC>
 				<PLATFORM>WM</PLATFORM>
             </METHOD>
@@ -156,7 +164,7 @@
                     </PARAM>
                 </PARAMS>
 				<CALLBACK type="HASH">
-                    <DESC>The callback is triggered with the magnetometer co-ordiantes when a parameter of the magnetometer sensor is changed.</DESC>
+                    <DESC>The callback is triggered with the magnetometer co-ordinates when a parameter of the magnetometer sensor is changed.</DESC>
 					<PARAMS>
 						<PARAM name="x" type="STRING">
 							<DESC>X value of the magnetometer sensor in micro-Tesla (uT) units</DESC>
@@ -188,7 +196,7 @@
                     </PARAM>
                 </PARAMS>
 				<CALLBACK type="HASH">
-                    <DESC>The callback is triggered with the gyroscope co-ordiantes when a parameter of the gyroscope sensor is changed.</DESC>
+                    <DESC>The callback is triggered with the gyroscope co-ordinates when a parameter of the gyroscope sensor is changed.</DESC>
 					<PARAMS>
 						<PARAM name="x" type="STRING">
 							<DESC>X co-ordinate value of the gyroscope sensor in radians/second units</DESC>
@@ -219,9 +227,13 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK type="String">
-					<DESC>The callback is triggered with the ambient light sensor value when the ambient value sensor is changed.</DESC>
-				</CALLBACK>				
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the ambient light sensor value when the ambient value sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="value" type="STRING">
+						</PARAM>												
+					</PARAMS>					
+				</CALLBACK>							
             </METHOD>
 			
             <METHOD name="stopAmbientLight">
@@ -240,9 +252,13 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK type="String">
-					<DESC>The callback is triggered with the proximity sensor value when the proximity sensor is changed.</DESC>
-				</CALLBACK>				
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the proximity sensor value when the proximity sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="value" type="STRING">
+						</PARAM>											
+					</PARAMS>					
+				</CALLBACK>								
             </METHOD>
 			
             <METHOD name="stopProximity">
@@ -261,9 +277,13 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK type="String">
-					<DESC>The callback is triggered with the proximity long range sensor value when the proximity long range sensor is changed.</DESC>
-				</CALLBACK>				
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the proximity long range sensor value when the proximity long range sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="value" type="STRING">
+						</PARAM>												
+					</PARAMS>					
+				</CALLBACK>							
             </METHOD>
 			
             <METHOD name="stopProximityLongRange">
@@ -282,9 +302,13 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK type="String">
-					<DESC>The callback is triggered with the pressure sensor value when the pressure sensor is changed.</DESC>
-				</CALLBACK>				
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the pressure sensor value when the pressure sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="value" type="STRING">
+						</PARAM>												
+					</PARAMS>					
+				</CALLBACK>							
             </METHOD>
 			
             <METHOD name="stopPressure">
@@ -303,9 +327,13 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK type="String">
-					<DESC>The callback is triggered with the temperature sensor value when the temperature sensor is changed.</DESC>
-				</CALLBACK>				
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the temperature sensor value when the temperature sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="value" type="STRING">
+						</PARAM>												
+					</PARAMS>					
+				</CALLBACK>							
             </METHOD>
 			
             <METHOD name="stopTemperature">
@@ -324,9 +352,13 @@
                         </CAN_BE_NIL>
                     </PARAM>
                 </PARAMS>
-				<CALLBACK type="String">
-					<DESC>The callback is triggered with the humidity sensor value when the humidity sensor is changed.</DESC>
-				</CALLBACK>				
+				<CALLBACK type="HASH">
+                    <DESC>The callback is triggered with the humidity sensor value when the humidity sensor is changed.</DESC>
+					<PARAMS>
+						<PARAM name="value" type="STRING">
+						</PARAM>												
+					</PARAMS>					
+				</CALLBACK>							
             </METHOD>
 			
             <METHOD name="stopHumidity">
@@ -346,7 +378,7 @@
                     </PARAM>
                 </PARAMS>
 				<CALLBACK type="HASH">
-                    <DESC>The callback is triggered with the gravity co-ordiantes when a parameter of the gravity sensor is changed.</DESC>
+                    <DESC>The callback is triggered with the gravity co-ordinates when a parameter of the gravity sensor is changed.</DESC>
 					<PARAMS>
 						<PARAM name="x" type="STRING">
 							<DESC>X co-ordinate value of the gravity sensor in SI units (m/s^2)</DESC>
@@ -378,7 +410,7 @@
                     </PARAM>
                 </PARAMS>
 				<CALLBACK type="HASH">
-                    <DESC>The callback is triggered with the linear acceleration co-ordiantes when a parameter of the linear acceleration sensor is changed.</DESC>
+                    <DESC>The callback is triggered with the linear acceleration co-ordinates when a parameter of the linear acceleration sensor is changed.</DESC>
 					<PARAMS>
 						<PARAM name="x" type="STRING">
 							<DESC>X co-ordinate value of the linear acceleration sensor in SI units (m/s^2)</DESC>
@@ -410,7 +442,7 @@
                     </PARAM>
                 </PARAMS>
 				<CALLBACK type="HASH">
-                    <DESC>The callback is triggered with the rotation co-ordiantes when a parameter of the rotation sensor is changed.</DESC>
+                    <DESC>The callback is triggered with the rotation co-ordinates when a parameter of the rotation sensor is changed.</DESC>
 					<PARAMS>
 						<PARAM name="x" type="STRING">
 							<DESC>X co-ordinate value of the rotation sensor as a combination of an angle and an axis</DESC>
@@ -442,7 +474,7 @@
                     </PARAM>
                 </PARAMS>
 				<CALLBACK type="HASH">
-                    <DESC>The callback is triggered with the orientation co-ordiantes when a parameter of the orientation sensor is changed.</DESC>
+                    <DESC>The callback is triggered with the orientation co-ordinates when a parameter of the orientation sensor is changed.</DESC>
 					<PARAMS>
 						<PARAM name="x" type="STRING">
 							<DESC>X co-ordinate value of the orientation sensor in degrees units</DESC>
@@ -464,8 +496,8 @@
 			
         </METHODS>
         
-		<VER_INTRODUCED>1.0.0</VER_INTRODUCED>	
-		<PLATFORM>Android, WM, IOS</PLATFORM>
+		<VER_INTRODUCED>2.0.0</VER_INTRODUCED>	
+		<PLATFORM>Android, WM</PLATFORM>
 		<REMARKS>
             <REMARK title="General">
                 <DESC>

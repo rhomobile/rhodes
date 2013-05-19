@@ -80,11 +80,19 @@
         next if module_constant.name.nil? || module_constant.name.empty?
 
         if module_constant.type == MethodParam::TYPE_STRING %>
-            <%= $cur_module.name %>.<%= module_constant.name %> = '<%= module_constant.value %>';
-        <% else %>
-            <%= $cur_module.name %>.<%= module_constant.name %> = <%= module_constant.value %>;
-        <% end %>
+            <%= $cur_module.name %>.<%= module_constant.name %> = '<%= module_constant.value %>'; <% 
+        else %>
+            <%= $cur_module.name %>.<%= module_constant.name %> = <%= module_constant.value %>;<% 
+        end %>
     <% end %>
+
+<% if $cur_module.hash_key_names.size > 0 %>
+    // === <%= $cur_module.name %> hash keys ===
+    
+    <% $cur_module.hash_key_names.each do |key_names| %>
+            <%= $cur_module.name %>.<%= key_names.const_tag %> = "<%= key_names.name %>"; 
+<% end 
+end %>
 
     // === <%= $cur_module.name %> static properties ===
 

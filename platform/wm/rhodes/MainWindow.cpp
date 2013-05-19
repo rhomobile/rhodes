@@ -918,6 +918,7 @@ LRESULT CMainWindow::OnHotKey (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
     return 1;
 }
+
 extern "C" HWND getMainWnd();
 BOOL EnumChildProc(HWND hwnd,LPARAM lParam)
 {
@@ -1714,11 +1715,10 @@ void CMainWindow::createCustomMenu()
 	
 	//except exit item
 	int num = GetMenuItemCount (hMenu);
-	for (int i = 0; i < (num - 1); i++)	
+	for (int i = 0; i < (num/* - 1*/); i++)	
 		DeleteMenu(hMenu, 0, MF_BYPOSITION);
 
 	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
- 	
 	//update UI with cusom menu items
 	USES_CONVERSION;
     for ( int i = m_arAppMenuItems.size() - 1; i >= 0; i--)
@@ -1728,8 +1728,10 @@ void CMainWindow::createCustomMenu()
 
 		if (oItem.m_eType == CAppMenuItem::emtSeparator) 
 			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
-		else if (oItem.m_eType != CAppMenuItem::emtExit && oItem.m_eType != CAppMenuItem::emtClose)
+		else if (oItem.m_eType != CAppMenuItem::emtClose)
     		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, strLabelW.c_str() );
+        else
+            InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, L"Exit" );
 	}
 }
 #endif //OS_WINCE
@@ -1853,6 +1855,8 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
         bHiddenTabs = true;
     }
 
+    int nStartTab = -1;
+
     for (int i = 0; i < (int)tabbarElements.size(); ++i) 
     {
         const char *label = NULL;
@@ -1904,6 +1908,10 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
         }
 
         m_arTabs.addElement(CTabBarItem(action, label, bUseCurrentViewForTab, bReloadPage));
+
+        if (m_strStartTabName.length()>0 && m_strStartTabName == label)
+            nStartTab = i;
+
     }
 
     if (!bCreateOnDemand)
@@ -1914,7 +1922,29 @@ void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements,
         }
     }
 
+    if (m_strStartTabName.length()>0&&nStartTab>=0)
+    {
+        SetTimer( 1, 1000 );
+    }
+
     m_bTabCreated = true;
+}
+
+LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    LOG(INFO) + "OnTimer : " + wParam;
+    bHandled = FALSE;
+
+    if ( wParam == 1 )
+    {
+        tabbarSwitchByName( m_strStartTabName.c_str(), false );
+        m_strStartTabName = "";
+        KillTimer(1); 
+
+        bHandled = TRUE;
+    }
+
+    return 0;
 }
 
 void CMainWindow::removeTabbar()
@@ -1930,23 +1960,60 @@ void CMainWindow::removeTabbar()
     m_nCurrentTab = -1;
 }
 
-LRESULT CMainWindow::OnSwitchTab (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+void CMainWindow::removeTab(int index)
 {
-    LOG(INFO) + "OnSwitchTab : " + (const char*) lParam;
+    if (index >= 0 && index < (int)m_arTabs.size() )
+    {
+        if (!m_arTabs[index].m_bUseCurrentViewForTab)
+            m_pBrowserEng->CloseTab(m_arTabs[index].m_nTabID);
 
-    if ( !lParam || !*((const char*) lParam))
+        m_arTabs[index].m_nTabID = -1;
+        m_arTabs[index].m_hwndTab = 0;
+    }
+}
+
+LRESULT CMainWindow::OnCopyData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+    if ( wParam != WM_WINDOW_SWITCHTAB)
         return 0;
 
-    for ( int i = 0; i < (int)m_arTabs.size(); i++ )
+    COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
+    //tabbarSwitchByName((LPCSTR)(pcds->lpData));
+    if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))
     {
-        if ( m_arTabs[i].m_strLabel == ((const char*) lParam) )
-        {
-            tabbarSwitch(i);
-            break;
-        }
+        //m_strStartTabName = (LPCSTR)(pcds->lpData);
+        //SetTimer( 1, 4000 );
+
+        tabbarSwitchByName((LPCSTR)(pcds->lpData), true);
     }
 
     return 0;
+}
+
+void CMainWindow::tabbarSwitchByName(const char* szTabName, bool bExecuteJS)
+{
+    LOG(INFO) + "tabbarSwitchByName: " + szTabName;
+
+    if ( !szTabName || !*szTabName)
+        return;
+
+    for ( int i = 0; i < (int)m_arTabs.size(); i++ )
+    {
+        if ( m_arTabs[i].m_strLabel == szTabName )
+        {
+            if ( bExecuteJS )
+            {
+                String strJS = "Rho.NativeTabbar.switchTab(";
+                strJS += convertToStringA(i);
+                strJS += ");";
+
+                rho_webview_execute_js( strJS.c_str(), tabbarGetCurrent() );
+            }
+            else
+                tabbarSwitch(i);
+            break;
+        }
+    }
 }
 
 void CMainWindow::tabbarSwitch(int index)
@@ -1965,26 +2032,32 @@ void CMainWindow::tabbarSwitch(int index)
     {
         if ( m_arTabs[index].m_bUseCurrentViewForTab)
         {
-            m_arTabs[index].m_nTabID = index;
+            m_arTabs[index].m_nTabID = 0;
             m_arTabs[index].m_hwndTab = m_pBrowserEng->GetHTMLWND(0);
         }else
         {
             m_arTabs[index].m_nTabID = m_pBrowserEng->NewTab();
-            m_arTabs[index].m_hwndTab = m_pBrowserEng->GetHTMLWND(m_arTabs[index].m_nTabID);
+
+            if ( m_arTabs[index].m_nTabID < 0 )
+            {
+                LOG(ERROR) + "Unable to create Tab. NewTab return: " + m_arTabs[index].m_nTabID;
+                return;
+            }
+            else
+                m_arTabs[index].m_hwndTab = m_pBrowserEng->GetHTMLWND(m_arTabs[index].m_nTabID);
         }
     }
 
     if ( !m_arTabs[index].m_hwndTab )
     {
-        LOG(ERROR) + "Unable to create Tab.";
+        LOG(ERROR) + "Unable to create Tab. Cannot get Tab Window.";
         return;
     }
 
-    if ( m_nCurrentTab != index && !m_arTabs[index].m_bUseCurrentViewForTab)
-    {
+    if ( m_nCurrentTab != index )
         m_pBrowserEng->SwitchTab(m_arTabs[index].m_nTabID);
-        m_nCurrentTab = index;
-    }
+
+    m_nCurrentTab = index;
 
     if ( m_arTabs[index].m_bReloadPage || bNewTab )
         RHODESAPP().loadUrl( m_arTabs[index].m_strAction );

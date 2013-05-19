@@ -1,4 +1,5 @@
-if Rho::System.isRhoSimulator || System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'  || System.get_property('platform') == 'ANDROID'
+if Rho::System.isRhoSimulator || System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP'  || System.get_property('platform') == 'ANDROID'  || System.get_property('platform') == 'APPLE'
+
 
 module Rho
 class NativeTabbar
@@ -7,24 +8,6 @@ class NativeTabbar
  
   alias :create_orig create
   
-
-  def convert_hash(opt)
-          if opt != nil
-            res_opt = {}
-            opt.each do |key,value|
-              if value == true
-                value = 'true'
-              end
-              if value == false
-                value = 'false'
-              end
-              res_opt[key.to_s] = value.to_s
-            end 
-            return res_opt
-          end
-          return nil
-  end
-
 
   def create(params, options = {})
   
@@ -49,24 +32,11 @@ class NativeTabbar
         end
     end
 
-    if ( buttons && buttons.is_a?(Array) && (System.get_property('platform') == 'ANDROID') )  
-        nb = []
-        buttons.each do |btn|
-           nb << convert_hash(btn)
-        end
-        buttons = nb
-    end
-
-
-
 
     params[:backgroundColor] = params[:background_color] if params[:background_color]
     
-    if System.get_property('platform') == 'ANDROID'
-          params = convert_hash(params)
-    end	
-
     if params[:on_change_tab_callback] && params[:on_change_tab_callback].length() > 0
+        puts "$$$ TabBar create with callback ["+params[:on_change_tab_callback].to_s+"].["+params[:on_change_tab_callback].class.to_s+"]"
         create_orig( buttons, params, params[:on_change_tab_callback] )
     else
         create_orig( buttons, params )
