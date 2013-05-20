@@ -4870,6 +4870,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\rho\rubyext\NativeTabbar.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\rho\rubyext\NativeTabbar.h"
+					>
+				</File>
+				<File
 					RelativePath=".\rho\rubyext\NativeToolbar.cpp"
 					>
 					<FileConfiguration
