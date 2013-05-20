@@ -254,7 +254,8 @@ namespace "build" do
       Dir.glob(File.join("**", '*.*')).each do |f|
         if #f.start_with?('db')          ||
         f.end_with?('.rb') ||
-            f.end_with?('.erb')
+            f.end_with?('.erb') ||
+        File.directory?(f)
            # ||
            #f == "apps/app_manifest.txt" ||
            #f == "apps/rhoconfig.txt"    ||
