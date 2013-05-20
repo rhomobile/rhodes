@@ -255,6 +255,8 @@ def cc_run(command, args, chdir = nil)
   argv += args
   #cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '"' + x + '"' : x }.join(' ')
   cmdstr = argv.map! { |x| x.to_s }.map! { |x| x =~ / / ? '' + x + '' : x }.join(' ')
+  puts '-' * 80
+  puts "PWD: #{chdir}" unless chdir.nil?
   puts cmdstr
   $stdout.flush
   argv = cmdstr if RUBY_VERSION =~ /^1\.[89]/
@@ -266,7 +268,7 @@ def cc_run(command, args, chdir = nil)
   end
   ret = $?
   FileUtils.cd save_cwd
-  ret.success?
+  fail "[#{cmdstd}}]" unless ret.success?
 end
 
 def cc_compile(filename, objdir, additional = nil)
