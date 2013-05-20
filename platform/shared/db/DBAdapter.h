@@ -101,8 +101,9 @@ class CDBAdapter
     	}
     };
 
-    static const char* USER_PARTITION_NAME(){return "user";}
 public:
+    static const char* USER_PARTITION_NAME(){return "user";}
+
     DEFINE_LOGCLASS;
 
     CDBAdapter(const char* szDBPartition, boolean bNoRubyLock) : m_dbHandle(0), m_strDbPath(""), m_strDbPartition(szDBPartition),
