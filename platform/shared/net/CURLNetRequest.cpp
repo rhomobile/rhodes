@@ -242,13 +242,7 @@ INetResponse* CURLNetRequest::doPull(const char* method, const String& strUrl,
 
     for (int nAttempts = 0; nAttempts < 10; ++nAttempts) {
         Vector<char> respChunk;
-		curl_slist *hdrs;
-#ifdef OS_WP8
-		if(strcasecmp(method, "POST") == 0 && strBody.length() == 0 )
-			hdrs = m_curl.set_options(method, strUrl, " ", oSession, &h);
-		else 
-#endif
-		hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h);
+		curl_slist *hdrs = m_curl.set_options(method, strUrl, strBody, oSession, &h);
 
         CURL *curl = m_curl.curl();
         if (pHeaders) {
@@ -619,7 +613,7 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
     if (!hasContentType && /*strcasecmp(method, "POST") == 0 &&*/ strBody.length() > 0)
     {
         String strHeader = "Content-Type: ";
-        if ( pSession )
+        if ( pSession)
             strHeader += pSession->getContentType().c_str();
         else
             strHeader += "application/x-www-form-urlencoded";
@@ -639,6 +633,15 @@ curl_slist *CURLNetRequest::CURLHolder::set_options(const char *method, const St
         curl_easy_setopt(m_curl, CURLOPT_VERBOSE, 1L);
     }
     
+#ifdef OS_WP8
+		if(strcasecmp(method, "POST") == 0 && strBody.length() == 0)
+		{
+			mStrBody = " ";
+			curl_easy_setopt(m_curl, CURLOPT_POSTFIELDSIZE, mStrBody.size());
+            curl_easy_setopt(m_curl, CURLOPT_POSTFIELDS, mStrBody.c_str());
+		}
+#endif
+
     return hdrs;
 }
 
