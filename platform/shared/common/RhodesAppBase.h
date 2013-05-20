@@ -74,7 +74,7 @@ public:
 	String getDBFileRoot();
     const String& getRhoRootPath(){return m_strRhoRootPath;}
     const String& getRhoUserPath(){return m_strAppUserPath;}
-    const String& getRhoRuntimePath(){return m_strRuntimePath;}
+    const String& getRhoRuntimePath() const{return m_strRuntimePath;}
     //const String& getRhodesPath(){return m_strRhodesPath;}
     //void setRhodesPath(const String& path){m_strRhodesPath = path;}
     const String& getAppRootPath(){return m_strAppRootPath;}
@@ -82,6 +82,7 @@ public:
     const String& getDBDirPath(){return m_strDBDirPath; }
     const String& getHomeUrl(){ return m_strHomeUrl; }
 
+    String canonicalizeRhoPath(const String& strPath) const;
     String canonicalizeRhoUrl(const String& strUrl) const;
 
     boolean isBaseUrl(const String& strUrl);

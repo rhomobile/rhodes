@@ -611,6 +611,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             Logger.T(TAG, "Execute JS hook: " + prompt);
             String res = nativeJSCallEntryPoint(prompt);
             Logger.T(TAG, "JS result: " + res);
+            promptResult.setPending();
             promptResult.confirm(res);
             return;
         }

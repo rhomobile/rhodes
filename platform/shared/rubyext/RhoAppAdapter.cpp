@@ -28,12 +28,13 @@
 #include "ruby/ext/rho/rhoruby.h"
 #include "sync/RhoconnectClientManager.h"
 
-namespace rho {
+namespace rho 
+{
+
 const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 
 /*static*/ String _CRhoAppAdapter::getMessageText(const char* szName)
 {
-//    if ( sync::CSyncThread::getInstance()->isNoThreadedMode() || !sync::CSyncThread::getInstance()->getSyncEngine().getNotify().isReportingEnabled() )
 	if ( (!sync::RhoconnectClientManager::haveRhoconnectClientImpl()) || (!sync::RhoconnectClientManager::syncEngineNotifyIsReportingEnabled()) )
         return String();
 
@@ -65,22 +66,32 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 
 /*static*/ void  _CRhoAppAdapter::loadServerSources(const String& strSources)
 {
+#if !defined(RHO_NO_RUBY)
     rho_ruby_loadserversources(strSources.c_str());
+#endif
 }
 
 /*static*/ void  _CRhoAppAdapter::loadAllSyncSources()
 {
+#if !defined(RHO_NO_RUBY)
     rho_ruby_loadallsyncsources();
+#endif
 }
 
 /*static*/ const char* _CRhoAppAdapter::getRhoDBVersion()
 {
+#if !defined(RHO_NO_RUBY)
 	return rho_ruby_getRhoDBVersion();
+#else
+    return "";
+#endif
 }
 
 /*static*/ void  _CRhoAppAdapter::resetDBOnSyncUserChanged()
 {
+#if !defined(RHO_NO_RUBY)
     rho_ruby_reset_db_on_sync_user_changed();
+#endif
 }
 
-}
+} // end of rho

@@ -131,6 +131,26 @@ String CRhodesAppBase::getDBFileRoot()
 	return strDbFileRoot;
 }
 
+String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
+{
+    if (strPath.length() == 0 )
+        return "";
+
+    if (String::npos != strPath.find("file:") || 
+        String::npos != strPath.find("http:") || 
+        String::npos != strPath.find("https:"))
+    {
+        return strPath;
+    }
+
+    rho::String filePrefix = "file:\\\\";
+
+    rho::String tmpPath = CFilePath::join(getRhoRuntimePath(), rho::String("apps"));
+    tmpPath = CFilePath::join(tmpPath, strPath);
+
+    return filePrefix + tmpPath;
+}
+
 String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
 {
     if (strUrl.length() == 0 )
