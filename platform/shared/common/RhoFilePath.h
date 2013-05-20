@@ -88,6 +88,36 @@ public:
         return makeFullPath(szFileName);
     }
 
+    static String join(const std::vector<String>& paths)
+    {
+        if (paths.size() == 0 )
+            return "";
+
+        if (paths.size() == 1)
+            return *paths.begin();
+
+        std::vector<String>::const_iterator bit = paths.begin();
+        std::vector<String>::const_iterator eit = paths.end();
+
+        String res;
+        while(bit != eit)
+        {
+            String path = *bit;
+
+            boolean bSlash1 = path.length()>0 && (path[path.length()-1] == '/' || path[path.length()-1] == '\\');
+            boolean bSlash2 = res.length()>0 && (res[0] == '/' || res[0] == '\\');
+
+            if (bSlash1 && bSlash2)
+                res = res + path.substr(1);
+            else if ( bSlash1 || bSlash2 )
+                res = res + path;
+            else
+                res = res + '/' + path;
+        }
+
+        return res;
+    }
+
     static String join(const String& path1, const String& path2)
     {
         if ( path1.length() == 0 )
