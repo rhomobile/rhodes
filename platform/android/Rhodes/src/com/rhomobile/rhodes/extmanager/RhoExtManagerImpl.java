@@ -748,6 +748,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     @Override
     public void startKeyEventUpdates(IRhoListener listener, boolean makeImportant)
     {
+    	Logger.D(TAG, "Registered KeyEvent Listener");
 		if(makeImportant){
 			mKeyListeners.remove(listener);
 			mKeyListeners.add(0, listener);
@@ -762,6 +763,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     @Override
     public void stopKeyEventUpdates(IRhoListener listener)
     {
+    	Logger.D(TAG, "Unregistered KeyEvent Listener");
 		mKeyListeners.remove(listener);
     }
 
