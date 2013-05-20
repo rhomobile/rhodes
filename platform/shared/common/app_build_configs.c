@@ -11,7 +11,7 @@ static const char* keys[] = { ""
 
 static const char* values[] = { ""
 ,"ALL"
-,"js_eng_test"
+,"auto_common_spec"
 };
 
 #define APP_BUILD_CONFIG_COUNT 3
