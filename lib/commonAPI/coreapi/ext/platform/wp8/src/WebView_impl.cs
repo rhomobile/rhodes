@@ -21,7 +21,7 @@ namespace WebViewImpl
     {
         public WebView()
         {
-            var _runtime = new WebViewRuntimeComponent(this);
+            WebViewRuntimeComponent _runtime = new WebViewRuntimeComponent(this);
         }
     }
 
@@ -29,16 +29,13 @@ namespace WebViewImpl
     {
         public WebViewSingleton()
         {
-            var _runtime = new WebViewSingletonComponent(this);
+            WebViewSingletonComponent _runtime = new WebViewSingletonComponent(this);
         }
 
         static private MainPage getMainPage()
         {
-            MainPage startPage = null;
-            var frame = Application.Current.RootVisual as PhoneApplicationFrame;
-            if (frame != null)
-                startPage = frame.Content as MainPage;
-            return startPage;
+            MainPage mainPage = MainPage.getInstance();
+            return mainPage;
         }
 
         public void getFramework(IMethodResult oResult)
@@ -203,7 +200,7 @@ namespace WebViewImpl
         {
             MainPage mp = getMainPage();
             if (mp != null)
-                mp.navigate(url, tabIndex);
+                mp.navigate(CRhoRuntime.getInstance().canonicalizeRhoUrl(url), tabIndex);
         }
 
         public void navigateBack(int tabIndex, IMethodResult oResult)
@@ -246,7 +243,7 @@ namespace WebViewImpl
         {
             MainPage mp = getMainPage();
             if (mp != null)
-                mp.setCookie(url, cookie);
+                mp.setCookie(CRhoRuntime.getInstance().canonicalizeRhoUrl(url), cookie);
         }
 
         public void save(string format, string path, int tabIndex, IMethodResult oResult)
