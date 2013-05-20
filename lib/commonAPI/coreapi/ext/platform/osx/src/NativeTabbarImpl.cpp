@@ -43,6 +43,11 @@ public:
     {
         oResult.set( rho_osximpl_tabbar_isStarted() );
     }
+
+    virtual void removeTab(int, rho::apiGenerator::CMethodResult&)
+    {
+        // TODO: implement
+    }
 };
 
 ////////////////////////////////////////////////////////////////////////

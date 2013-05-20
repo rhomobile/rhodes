@@ -46,7 +46,6 @@ HWND getMainWnd();
 
 void rho_webview_refresh(int index) 
 {
-    //rho_webview_navigate(RHODESAPP().getCurrentUrl().c_str(),0);
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_REFRESH, (LPARAM)index );
 }
 
@@ -63,7 +62,14 @@ void rho_webview_navigate(const char* url, int index)
         return;
     }
 
-    String strUrl = RHODESAPP().canonicalizeRhoUrl(url);
+    String strUrl = url;
+
+#if defined(RHO_NO_RUBY)
+    strUrl = RHODESAPP().canonicalizeRhoPath(url);
+#else
+    strUrl = RHODESAPP().canonicalizeRhoUrl(url);
+#endif
+    
     TNavigateData* nd = new TNavigateData();
     nd->index = index;
     nd->url = _tcsdup(convertToStringW(strUrl).c_str());
@@ -82,12 +88,6 @@ void rho_webview_navigate_forward()
 
 const char* rho_webview_execute_js(const char* js, int index) 
 {
-   // String strJS = "javascript:";
-    //strJS += js;
-
-	//RAWTRACEC1("Execute JS: %s", js);
-
-    //rho_webview_navigate(strJS.c_str(), index);
     StringW strJsW;
     convertToStringW(js, strJsW);
 
@@ -150,6 +150,5 @@ VALUE rho_webview_get_current_url(int tab_index)
     RAWLOG_ERROR("rho_webview_get_current_url is not implemented");
     return rho_ruby_get_NIL();
 }
-
 
 }

@@ -420,8 +420,12 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         {
             ShowWindow(hWnd, SW_SHOW);
             SendMessage( hWnd, PB_WINDOW_RESTORE, NULL, TRUE);
-            SendMessage( hWnd, WM_WINDOW_SWITCHTAB, NULL, (LPARAM)m_strTabName.c_str());
             SetForegroundWindow( hWnd );
+
+            COPYDATASTRUCT cds = {0};
+            cds.cbData = m_strTabName.length()+1;
+            cds.lpData = (char*)m_strTabName.c_str();
+            SendMessage( hWnd, WM_COPYDATA, (WPARAM)WM_WINDOW_SWITCHTAB, (LPARAM)(LPVOID)&cds);
         }
 
         return S_FALSE;
@@ -625,11 +629,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
     }
     else
     {
-        const char* a = RHOCONF().getString("start_path").c_str();
-
         RHODESAPP().startApp();
-        
-       // rho_webview_navigate(RHOCONF().getString("start_path").c_str(), 0 );
 
 #if !defined( APP_BUILD_CAPABILITY_WEBKIT_BROWSER ) && defined(OS_WINCE)
         // Navigate to the "loading..." page
@@ -972,30 +972,7 @@ extern "C" void rho_net_impl_network_indicator(int active)
 {
     //TODO: rho_net_impl_network_indicator
 }
-/*
-extern "C" void mapview_create(rho_param *p) {
-    //TODO: mapview_create
-}
 
-extern "C" void mapview_close() {
-    //TODO: mapview_close
-}
-
-extern "C" VALUE mapview_state_started() {
-    //TODO: mapview_state_started
-    return 0;
-}
-
-extern "C" double mapview_state_center_lat() {
-    //TODO:
-    return 0;
-}
-
-extern "C" double mapview_state_center_lon() {
-    //TODO:
-    return 0;
-}
-*/
 extern "C" void rho_map_location(char* query)
 {
 }
@@ -1004,47 +981,11 @@ extern "C" void rho_appmanager_load( void* httpContext, char* szQuery)
 {
 }
 
-//extern "C" void Init_openssl(void)
-//{
-//}
-
-//extern "C" void Init_digest(void)
-//{
-//}
-
 #if !defined(OS_WINDOWS_DESKTOP)
 extern "C" void Init_fcntl(void)
 {
 }
 #endif
-
-//extern "C" void Init_RhoEvent()
-//{
-//}
-
-//extern "C" void Init_Calendar()
-//{
-//}
-
-/*BOOL EnumRhodesWindowsProc(HWND hwnd,LPARAM lParam)
-{
-	char buf[255] = {0};
-	static char current_path[255] = {0};
-	if ( strlen(current_path) == 0 )
-		GetWindowModuleFileName(getMainWnd(), current_path, 255);
-	
-	GetWindowModuleFileName(hwnd, buf, 255);
-
-	if ( strncmp( buf, current_path, 255 ) == 0 )
-	{
-		HWND* pWnd = (HWND*)lParam;
-		*pWnd = hwnd;
-		return FALSE;
-	}
-
-	return TRUE;
-}*/
-
 
 //parseToken will allocate extra byte at the end of the 
 //returned token value
