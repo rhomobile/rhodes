@@ -268,7 +268,7 @@ def cc_run(command, args, chdir = nil)
   end
   ret = $?
   FileUtils.cd save_cwd
-  fail "[#{cmdstd}}]" unless ret.success?
+  ret.success?
 end
 
 def cc_compile(filename, objdir, additional = nil)
