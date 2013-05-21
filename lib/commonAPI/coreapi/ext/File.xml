@@ -1,0 +1,276 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+  <MODULE name="File" parent="Rho" generateUnderscoreRubyNames="true">
+    <HELP_OVERVIEW>File I/O</HELP_OVERVIEW>
+    <MORE_HELP>Use this API to access local files for reading and writing. Only string data can be read and written with this API.</MORE_HELP>
+
+    <ALIASES>
+    </ALIASES>
+    
+    <TEMPLATES>
+    </TEMPLATES>
+
+    <METHODS>
+      <ALIASES>
+      </ALIASES>
+
+      <METHOD name="open" constructor="true">
+        <DESC>Opens file in specified mode.</DESC>
+        <PARAMS>
+          <PARAM name="path" type="STRING">
+            <DESC>Path to file.</DESC>
+          </PARAM>
+          <PARAM name="mode" type="INTEGER">
+            <DESC>File open mode.</DESC>
+            <VALUES>
+                <VALUE constName="openForAppend" value="1">
+                    <DESC>Open file for output at the end of a file. The file is created if it does not exist.</DESC>
+                </VALUE>
+                <VALUE constName="openForRead" value="2">
+                    <DESC>Open file for input operations. The file must exist.</DESC>
+                </VALUE>
+                <VALUE constName="openForWrite" value="3">
+                    <DESC>Create an empty file for output operations. If a file with the same name already exists, its contents are discarded and the file is treated as a new empty file.</DESC>
+                </VALUE>
+                <VALUE constName="openForReadWrite" value="4">
+                    <DESC>Open a file for update (both for input and output). The file must exist.</DESC>
+                </VALUE>
+            </VALUES>
+          </PARAM>
+        </PARAMS>
+      </METHOD>
+
+      <METHOD name="close" destructor="true">
+        <DESC>Closes file.</DESC>
+      </METHOD>
+
+      <METHOD name="isOpened">
+          <DESC>Checks if file is opened.</DESC>
+          <RETURN type="BOOLEAN">
+              <DESC>True if file is opened, false otherwise.</DESC>
+          </RETURN>
+      </METHOD>
+        
+      <METHOD name="read">
+          <DESC>Reads specified number of symbols from current position of the file.</DESC>
+          <PARAM name="size" type="INTEGER">
+              <DESC>Number of symbols to be read.</DESC>
+          </PARAM>
+          <RETURN type="STRING">
+              <DESC>String read from file.</DESC>
+          </RETURN>
+      </METHOD>
+        
+      <METHOD name="readAll">
+          <DESC>Reads all file contents to the string object.</DESC>
+          <RETURN type="STRING">
+              <DESC>Contents of the file.</DESC>
+          </RETURN>
+      </METHOD>
+        
+      <METHOD name="write">
+          <DESC>Writes passed string at current position.</DESC>
+          <PARAM name="val" type="STRING">
+              <DESC>String to be written.</DESC>
+          </PARAM>
+      </METHOD>
+        
+      <METHOD name="flush">
+          <DESC>Flushes all buffered data to the storage media.</DESC>
+      </METHOD>
+        
+      <METHOD name="seek">
+          <DESC>Sets file position to specified value from the beginning of the file.</DESC>
+          <PARAM name="pos" type="INTEGER">
+              <DESC>File position.</DESC>
+          </PARAM>
+      </METHOD>
+        
+      <METHOD name="size">
+          <DESC>Returns file size.</DESC>
+          <RETURN type="INTEGER">
+              <DESC>File size in bytes.</DESC>
+          </RETURN>
+      </METHOD>
+    </METHODS>
+      
+    <!--    STATIC METHODS -->
+    <METHODS access="STATIC">
+        <METHOD name="copy">
+            <DESC>Copies file to specified destination.</DESC>
+            <PARAM name="from" type="STRING">
+                <DESC>File name to be copied.</DESC>
+            </PARAM>
+            <PARAM name="to" type="STRING">
+                <DESC>Destination path.</DESC>
+            </PARAM>
+        </METHOD>
+        
+        <METHOD name="rename">
+            <DESC>Renames/moves file.</DESC>
+            <PARAM name="from" type="STRING">
+                <DESC>Original path.</DESC>
+            </PARAM>
+            <PARAM name="to" type="STRING">
+                <DESC>New path.</DESC>
+            </PARAM>
+        </METHOD>
+        
+        <METHOD name="makeDir">
+            <DESC>Creates directory. If all top-level nodes of the path doesn't exists, directory will not be created.</DESC>
+            <PARAM name="path" type="STRING">
+                <DESC>Path to the new directory.</DESC>
+            </PARAM>
+        </METHOD>
+        
+        <METHOD name="exists">
+            <DESC>Checks if specified path exists.</DESC>
+            <PARAM name="path" type="STRING">
+                <DESC>Path.</DESC>
+            </PARAM>
+            <RETURN type="BOOLEAN">
+                <DESC>True if path exists. Otherwise false.</DESC>
+            </RETURN>
+        </METHOD>
+        
+        <METHOD name="size">
+            <DESC>Returns size of the file.</DESC>
+            <PARAM name="path" type="STRING">
+                <DESC>Path to the file.</DESC>
+            </PARAM>
+            <RETURN type="INTEGER">
+                <DESC>File size in bytes.</DESC>
+            </RETURN>
+        </METHOD>
+            
+        <METHOD name="isDir">
+            <DESC>Checks if specified path is a directory.</DESC>
+            <PARAM name="path" type="STRING">
+                <DESC>Path.</DESC>
+            </PARAM>
+            <RETURN type="BOOLEAN">
+                <DESC>True if path is a directory. False otherwise.</DESC>
+            </RETURN>
+        </METHOD>
+        
+        <METHOD name="isFile">
+            <DESC>Checks if specified path is a file.</DESC>
+            <PARAM name="path" type="STRING">
+                <DESC>Path.</DESC>
+            </PARAM>
+            <RETURN type="BOOLEAN">
+                <DESC>True if path is a file. False otherwise.</DESC>
+            </RETURN>
+        </METHOD>
+        
+        <METHOD name="deleteFile">
+            <DESC>Deletes file.</DESC>
+            <PARAM name="PATH" type="STRING">
+                <DESC>Path to the file to be deleted.</DESC>
+            </PARAM>
+        </METHOD>
+        
+        <METHOD name="deleteDir">
+            <DESC>Deletes directory. Non-empty directory will not be deleted.</DESC>
+            <PARAM name="PATH" type="STRING">
+                <DESC>Path to the directory to be deleted.</DESC>
+            </PARAM>
+        </METHOD>
+        
+        <METHOD name="makeDirs">
+            <DESC>Creates directory and all top-level directories if necessary.</DESC>
+            <PARAM name="path" type="STRING">
+                <DESC>Path to the directory to be created.</DESC>
+            </PARAM>
+        </METHOD>
+        
+        <METHOD name="deleteRecursive">
+            <DESC>Deletes all directory contents.</DESC>
+            <PARAM name="path">
+                <DESC>Path to the directory.</DESC>
+            </PARAM>
+            <PARAM name="leaveRoot" type="BOOLEAN" default="false">
+                <DESC>Set to true if you only want to delete directory contents, but no the directory itself.</DESC>
+                <CAN_BE_NIL/>
+            </PARAM>
+        </METHOD>
+        
+        <METHOD name="listDir">
+            <DESC>Lists all entries of specified directory.</DESC>
+            <PARAM name="PATH">
+                <DESC>Directory path.</DESC>
+            </PARAM>
+            <RETURN type="ARRAY">
+                <DESC>Array of directory entry names.</DESC>
+            </RETURN>
+        </METHOD>
+        
+        
+    <!--PATH METHODS -->
+            
+        <METHOD name="basename">
+            <DESC>Return basename part of the specified path.</DESC>
+            <PARAM name="path" type="STRING">
+                <DESC>Path.</DESC>
+            </PARAM>
+            <RETURN type="STRING">
+                <DESC>Basename.</DESC>
+            </RETURN>
+        </METHOD>
+            
+        <METHOD name="dirname">
+            <DESC>Returns directory name part of the specified path.</DESC>
+            <PARAM name="path" type="STRING">
+                <DESC>Path.</DESC>
+            </PARAM>
+            <RETURN type="STRING">
+                <DESC>Directory name.</DESC>
+            </RETURN>
+        </METHOD>
+            
+        <METHOD name="join">
+            <DESC>Joins two parts of the path</DESC>
+            <PARAM name="p1" type="STRING">
+                <DESC>First part of the path.</DESC>
+            </PARAM>
+            <PARAM name="p2" type="STRING">
+                <DESC>Second part of the path.</DESC>
+            </PARAM>
+            <RETURN type="STRING">
+                <DESC>Joined path.</DESC>
+            </RETURN>
+        </METHOD>
+        
+        <METHOD name="read">
+            <DESC>Reads specified file to a string object.</DESC>
+            <PARAM name="path" type="STRING">
+                <DESC>Path to file.</DESC>
+            </PARAM>
+            <RETURN type="STRING">
+                <DESC>File contents</DESC>
+            </RETURN>
+        </METHOD>
+      
+    </METHODS>
+
+    <USER_OVERVIEW>
+      <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+      <![CDATA[]]>
+
+    </USER_OVERVIEW>
+    <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+    <PLATFORM>
+      <!--  This section is used for the supported platform images at the top -->
+    </PLATFORM>
+      
+    <EXAMPLES>
+      <EXAMPLE title="Open database Examples">
+        <SECTIONS>
+
+        </SECTIONS>          
+      </EXAMPLE>
+    </EXAMPLES>
+
+</MODULE>
+</API>
