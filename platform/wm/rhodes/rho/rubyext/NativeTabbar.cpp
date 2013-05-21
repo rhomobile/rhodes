@@ -211,7 +211,7 @@ void CNativeTabbar::SwitchTabByName(const char* szTabName, bool bExecuteJS)
     {
         if ( m_arTabs[i].m_strLabel == szTabName )
         {
-            if ( bExecuteJS )
+            /*if ( bExecuteJS )
             {
                 String strJS = "Rho.NativeTabbar.switchTab(";
                 strJS += convertToStringA(i);
@@ -219,7 +219,7 @@ void CNativeTabbar::SwitchTabByName(const char* szTabName, bool bExecuteJS)
 
                 rho_webview_execute_js( strJS.c_str(), GetCurrentTabIndex() );
             }
-            else
+            else*/
                 SwitchTab(i);
             break;
         }
