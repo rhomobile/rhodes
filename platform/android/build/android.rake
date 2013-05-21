@@ -233,6 +233,7 @@ namespace "config" do
     $builddir = File.join($androidpath, "build")
     $shareddir = File.join($androidpath, "..", "shared")
     $coreapidir = File.join($androidpath, "..", "..", "lib", "commonAPI", "coreapi", "ext", "shared")
+    $commonapidir = File.join($androidpath, "..", "..", "lib", "commonAPI")
     $srcdir = File.join($bindir, "RhoBundle")
     $targetdir = File.join($bindir, 'target', 'android')
     $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
@@ -929,7 +930,7 @@ namespace "build" do
 
       args = []
       args << "-I\"#{srcdir}\""
-      args << "-I\"#{$coreapidir}\""
+      args << "-I\"#{$commonapidir}\""
       args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
@@ -1179,7 +1180,7 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
-      args << "-I\"#{$coreapidir}\""
+      args << "-I\"#{$commonapidir}\""
       args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
       args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_OWN_STLPORT
       args << "-D__NEW__" if USE_OWN_STLPORT

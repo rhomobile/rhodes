@@ -46,11 +46,7 @@
 #include "common/Tokenizer.h"
 #include "api_generator/js_helpers.h"
 #include "api_generator/StringfyHelper.h"
-
-// develoepr ! do not include headers from extesnion to core sources like THIS !
-#include "../../lib/commonAPI/coreapi/ext/shared/Application.h"
-// shame on this code !
-
+#include "coreapi/ext/shared/Application.h"
 
 #include <algorithm>
 

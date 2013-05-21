@@ -19,6 +19,8 @@
 
 - (void) setResult:(NSObject*)value;
 
+-(BOOL) hasCallback;
+
 @end
 
 
@@ -33,8 +35,9 @@
 +(CMethodResult_SimpleHolder*) makeEmptyHolder;
 
 - (void) setResult:(NSObject*)value;
-- (NSObject*) getResult;
+-(BOOL) hasCallback;
 
+- (NSObject*) getResult;
 
 @end
 
