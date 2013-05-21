@@ -98,7 +98,7 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
         const char *disabled = NULL;
 		COLORREF web_bkg_color;
         const char* use_current_view_for_tab = NULL;
-        bool bUseCurrentViewForTab = false, bReloadPage = false;
+        bool bUseCurrentViewForTab = false, bReloadPage = false, bPerishable = false;
         CJSONEntry oEntry(tabbarElements[i].c_str());
 
         if ( oEntry.hasName("label") )
@@ -115,6 +115,13 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
             if (strcasecmp(reload, "true") == 0)
                 bReloadPage = true;
         }
+        if ( oEntry.hasName("perishable") )
+        {
+            reload = oEntry.getString("perishable");
+            if (strcasecmp(reload, "true") == 0)
+                bPerishable = true;
+        }
+
         if ( oEntry.hasName("selectedColor") )
             selected_color = getColorFromString(oEntry.getString("selectedColor"));
         if ( oEntry.hasName("disabled") )
@@ -130,18 +137,18 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
 
         if (label == NULL)
             label = "";
+        if (action == NULL)
+            action = "";
         
-        if ( label == NULL || action == NULL) {
-            LOG(ERROR) + "Illegal argument for create_nativebar";
-            return;
-        }
-
-        m_arTabs.addElement(CTabBarItem(action, label, bUseCurrentViewForTab, bReloadPage));
+        m_arTabs.addElement(CTabBarItem(action, label, bUseCurrentViewForTab, bReloadPage, bPerishable));
 
         if (m_strStartTabName.length()>0 && m_strStartTabName == label)
             nStartTab = i;
 
     }
+
+    if ( oResult.hasCallback() )
+        m_oCallback = oResult;
 
     if (!bCreateOnDemand)
     {
@@ -219,6 +226,20 @@ void CNativeTabbar::SwitchTabByName(const char* szTabName, bool bExecuteJS)
     }
 }
 
+
+void CNativeTabbar::raiseTabEvent( const char* szEventName, int nOldTab, int nNewTab )
+{
+    if ( m_oCallback.hasCallback() )
+    {
+        Hashtable<String,String> mapRes;
+        mapRes["tab_index"] = convertToStringA(nNewTab);
+        mapRes["newTabIndex"] = convertToStringA(nNewTab);
+        mapRes["oldTabIndex"] = convertToStringA(nOldTab);
+        mapRes["tabEvent"] = szEventName;
+        m_oCallback.set(mapRes);
+    }
+}
+
 void CNativeTabbar::SwitchTab(int index)
 {
     if (!getAppWindow().getWebKitEngine())
@@ -239,6 +260,8 @@ void CNativeTabbar::SwitchTab(int index)
             m_arTabs[index].m_hwndTab = getAppWindow().getWebKitEngine()->GetHTMLWND(0);
         }else
         {
+            raiseTabEvent( "onTabNewRequest", m_nCurrentTab, -1 );
+
             m_arTabs[index].m_nTabID = getAppWindow().getWebKitEngine()->NewTab();
 
             if ( m_arTabs[index].m_nTabID < 0 )
@@ -248,6 +271,8 @@ void CNativeTabbar::SwitchTab(int index)
             }
             else
                 m_arTabs[index].m_hwndTab = getAppWindow().getWebKitEngine()->GetHTMLWND(m_arTabs[index].m_nTabID);
+
+            raiseTabEvent( "onTabNew", m_nCurrentTab, index );
         }
     }
 
@@ -258,11 +283,15 @@ void CNativeTabbar::SwitchTab(int index)
     }
 
     if ( m_nCurrentTab != index )
+    {
         getAppWindow().getWebKitEngine()->SwitchTab(m_arTabs[index].m_nTabID);
+        int nOldTab = m_nCurrentTab; 
+        m_nCurrentTab = index;
 
-    m_nCurrentTab = index;
+        raiseTabEvent( "onTabFocus", nOldTab, m_nCurrentTab );
+    }
 
-    if ( m_arTabs[index].m_bReloadPage || bNewTab )
+    if (  m_arTabs[index].m_strAction.length() > 0 && (m_arTabs[index].m_bReloadPage || bNewTab) )
         RHODESAPP().loadUrl( m_arTabs[index].m_strAction );
     
 }
