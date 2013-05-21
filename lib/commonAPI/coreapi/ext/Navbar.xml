@@ -4,7 +4,7 @@
     <MODULE name="Navbar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>he NavBar API supports a native navigation bar for the iPhone.</HELP_OVERVIEW>
         <MORE_HELP></MORE_HELP>
-        <PLATFORMS>iOS</PLATFORMS>
+        <PLATFORM>iOS</PLATFORM>
         
         <TEMPLATES>
         </TEMPLATES>
