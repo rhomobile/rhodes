@@ -296,13 +296,16 @@ namespace "config" do
     end
     $stdout.flush
     
-    build_tools_path = []
-    Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
-      next if entry == '.' or entry == '..'
-      build_tools_path << entry
+    build_tools_path = nil
+    if File.exist? (File.join($androidsdkpath, "build-tools"))
+      build_tools_path = []
+      Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
+        next if entry == '.' or entry == '..'
+        build_tools_path << entry
+      end
+      build_tools_path.sort!
+      build_tools_path = build_tools_path.last
     end
-    build_tools_path.sort!
-    build_tools_path = build_tools_path.last
     
     if build_tools_path
       puts "Using Android SDK build-tools: #{build_tools_path}"
