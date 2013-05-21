@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/Mediaplayer.cpp
+ext/platform/android/generated/jni/mediaplayer_ruby_wrap.cpp
+ext/platform/android/generated/jni/mediaplayer_js_wrap.cpp
+ext/platform/android/jni/Mediaplayer_impl.cpp
+ext/shared/generated/mediaplayer_api_init.cpp
+ext/shared/generated/mediaplayer_js_api.cpp
+ext/shared/generated/mediaplayer_ruby_api.c
