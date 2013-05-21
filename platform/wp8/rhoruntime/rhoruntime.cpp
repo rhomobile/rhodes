@@ -177,7 +177,7 @@ bool CRhoRuntime::onBackKeyPress()
 ::Platform::String^ CRhoRuntime::onJSInvoke(::Platform::String^ inJSON)
 {
 	rho::String ret = rho::apiGenerator::js_entry_point(rho::common::convertToStringA(inJSON->Data()).c_str());
-	return ref new ::Platform::String(rho::common::convertToStringW(ret).c_str());
+	return rho::common::convertStringToWP8(ret);
 }
 
 // *** PUBLIC METHODS ***
@@ -192,10 +192,20 @@ void CRhoRuntime::DestroyUi(void)
 	rho_rhodesapp_callUiDestroyedCallback();
 }
 
-void  CRhoRuntime::setCryptoEngine(ICryptoEngine^ cryptoEngine)
+void CRhoRuntime::setCryptoEngine(ICryptoEngine^ cryptoEngine)
 {
 	m_CryptoEngine = cryptoEngine;
 }
+
+// *** proxy methods needed for C# implementation of CoreAPI ***
+
+::Platform::String^ CRhoRuntime::canonicalizeRhoUrl(::Platform::String^ url)
+{
+	rho::String fullUrl = RHODESAPPBASE().canonicalizeRhoUrl(rho::common::convertStringAFromWP8(url));
+	return rho::common::convertStringToWP8(fullUrl);
+}
+
+// old API functions
 
 extern "C" void rho_sys_app_exit()
 {
