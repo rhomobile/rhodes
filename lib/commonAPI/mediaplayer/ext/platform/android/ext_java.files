@@ -1,0 +1,10 @@
+ext/platform/android/generated/src/com/rho/mediaplayer/MediaplayerBase.java
+ext/platform/android/generated/src/com/rho/mediaplayer/MediaplayerFactorySingleton.java
+ext/platform/android/generated/src/com/rho/mediaplayer/MediaplayerSingletonBase.java
+ext/platform/android/generated/src/com/rho/mediaplayer/IMediaplayer.java
+ext/platform/android/generated/src/com/rho/mediaplayer/IMediaplayerFactory.java
+ext/platform/android/generated/src/com/rho/mediaplayer/IMediaplayerSingleton.java
+ext/platform/android/src/com/rho/mediaplayer/Mediaplayer.java
+ext/platform/android/src/com/rho/mediaplayer/MediaplayerFactory.java
+ext/platform/android/src/com/rho/mediaplayer/MediaplayerSingleton.java
+ext/platform/android/src/com/rho/mediaplayer/RhoVideoView.java
