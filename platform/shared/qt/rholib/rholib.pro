@@ -6,7 +6,8 @@ TEMPLATE = lib
 CONFIG += staticlib warn_on
 
 INCLUDEPATH += ../..\
-../../ruby
+../../ruby\
+../../../../lib/commonAPI
 
 macx {
   DESTDIR = ../../../osx/bin/rholib
