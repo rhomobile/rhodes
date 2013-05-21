@@ -112,7 +112,7 @@ param = method.params[index]
       if(param.type == MethodParam::TYPE_STRING)
         def_val = "rho_cast<#{api_generator_jni_makeJNIType(param.type)}>(env, \"#{param.default_value}\")"
       else
-        def_val = "rho_cast<#{api_generator_jni_makeJNIType(param.type)}>(env, #{param.default_value})"
+        def_val = "rho_cast<#{api_generator_jni_makeJNIType(param.type)}>(env, static_cast<#{api_generator_cpp_makeNativeTypeArg(param.type)}>(#{param.default_value}))"
       end
     end %>
 
