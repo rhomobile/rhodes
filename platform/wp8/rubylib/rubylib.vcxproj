@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -219,7 +219,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\lib\commonAPI\coreapi\ext\shared\generated\webview_ruby_api.c" />
     <ClCompile Include="..\..\shared\ruby\array.c" />
     <ClCompile Include="..\..\shared\ruby\bignum.c" />
     <ClCompile Include="..\..\shared\ruby\class.c" />
