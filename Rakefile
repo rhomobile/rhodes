@@ -769,7 +769,7 @@ namespace "config" do
     $obfuscate_exclude = ($app_config["obfuscate"].nil? ? nil : $app_config["obfuscate"]["exclude_dirs"] )
     $obfuscator        = 'res/build-tools/yuicompressor-2.4.7.jar'
     
-    $js_application    = $app_config["javascript_application"].nil? || $app_config["javascript_application"] == 'false' ? false : true; 
+    $js_application    = ($app_config["javascript_application"].nil? || $app_config["javascript_application"] == 'false') ? false : true; 
     
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
@@ -879,10 +879,12 @@ def add_extension(path,dest)
   start = pwd
   chdir path if File.directory?(path)
   puts 'chdir path=' + path.to_s
-   
-  #Dir.glob("*").each do |f|
-  #  cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
-  #end  
+
+  if $js_application == false   
+    Dir.glob("*").each do |f|
+      cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
+    end
+  end  
 
   if $current_platform == "bb"
     FileUtils.cp_r 'app', File.join( dest, "apps/app" ) if File.exist? 'app'
@@ -1594,11 +1596,11 @@ namespace "build" do
         chdir $srcdir
         Dir.glob("**/*.rb") { |f| rm f }
         Dir.glob("**/*.erb") { |f| rm f }
-  
-        chdir startdir
-
-        cp_r "platform/shared/db/res/db", $srcdir 
       end
+
+      chdir startdir
+
+      cp_r "platform/shared/db/res/db", $srcdir 
     end
     
     task :upgrade_package do
