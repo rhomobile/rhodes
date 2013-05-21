@@ -36,6 +36,7 @@ class CNativeTabbar
 
     int  m_nCurrentTab;
     bool m_bTabCreated;
+    rho::apiGenerator::CMethodResult m_oCallback;
 
     struct CTabBarItem
     {
@@ -43,11 +44,12 @@ class CNativeTabbar
         String m_strLabel;
         bool m_bUseCurrentViewForTab;
         bool m_bReloadPage;
+        bool m_bPerishable;
         HWND m_hwndTab;
         int m_nTabID;
 
-        CTabBarItem(const String& strAction, const String& strLabel, bool bUseCurrentViewForTab, bool bReloadPage ): m_bUseCurrentViewForTab(bUseCurrentViewForTab), m_bReloadPage(bReloadPage), 
-            m_strAction(strAction), m_strLabel(strLabel), m_hwndTab(0), m_nTabID(-1){}
+        CTabBarItem(const String& strAction, const String& strLabel, bool bUseCurrentViewForTab, bool bReloadPage, bool bPerishable ): m_bUseCurrentViewForTab(bUseCurrentViewForTab), m_bReloadPage(bReloadPage), 
+            m_strAction(strAction), m_strLabel(strLabel), m_hwndTab(0), m_nTabID(-1), m_bPerishable(bPerishable){}
     };
 
     Vector<CTabBarItem> m_arTabs;
@@ -73,4 +75,5 @@ public:
 
 private:
 
+    void raiseTabEvent( const char* szEventName, int nOldTab, int nNewTab );
 };
