@@ -113,7 +113,11 @@ const char* rho_webview_current_location(int index)
 
 int rho_webview_active_tab() 
 {
+#ifdef OS_WINCE
+    return getAppWindow().getTabbar().GetCurrentTabIndex();
+#else
     return getAppWindow().tabbarGetCurrent();
+#endif
 }
 
 void rho_webview_set_menu_items(VALUE valMenu) 

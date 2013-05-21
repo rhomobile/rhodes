@@ -16,7 +16,7 @@
                 <ALIAS new="get_current_tab" existing="currentTabIndex" deprecated="true"/>
             </ALIASES>
 
-            <METHOD name="create" hasCallback="optional" runInThread="UI">
+            <METHOD name="create" hasCallback="optional" runInThread="ui">
                 <DESC>Removes the current tabbar and replaces it with this one. Callback will be called when tab is switched.</DESC>
                 <PARAMS>
                     <PARAM name="tabElements" type="ARRAY">
@@ -50,6 +50,11 @@
                                     <DESC>Smooth transfer WebView from current view into this Tab and make this Tab active. Only one Tab can have this parameter.</DESC>
                                 </PARAM>
 
+                                <PARAM name="perishable" type="BOOLEAN" default="false">
+                                    <DESC>When true when Tab is not required to preserve state, so it can be closed to open another tabs in case of limited memory.</DESC>
+                                    <PLATFORM>WM</PLATFORM>
+                                </PARAM>
+
                             </PARAMS>
                         </PARAM>
                     </PARAM>
@@ -60,7 +65,7 @@
                         <PARAMS>
                             <PARAM name="verticalOrientation" type="BOOLEAN" default="false">
                                 <DESC>Creates a vertical tabbar on the iPad.</DESC>
-                                <PLATFORMS>iOS</PLATFORMS>
+                                <PLATFORM>iOS</PLATFORM>
                             </PARAM>
 
                             <PARAM name="backgroundColor" type="INTEGER">
@@ -68,12 +73,12 @@
                             </PARAM>
 
                             <PARAM name="hiddenTabs" type="BOOLEAN">
-                                <PLATFORMS>WM</PLATFORMS>
+                                <PLATFORM>WM</PLATFORM>
                                 <DESC>Do not display Tabs with labels.</DESC>
                             </PARAM>
 
                             <PARAM name="createOnDemand" type="BOOLEAN">
-                                <PLATFORMS>WM</PLATFORMS>
+                                <PLATFORM>WM</PLATFORM>
                                 <DESC>Create tabs on demand. If false, when all tabs will be created immediately.</DESC>
                             </PARAM>
 
@@ -81,6 +86,39 @@
                     </PARAM>
                     
                 </PARAMS>
+
+                <CALLBACK type="HASH">
+                    <DESC>Information about tab changes.</DESC>
+                    <PARAMS>
+                        <PARAM name="tab_index" type="INTEGER">
+                            <DESC>New tab index.</DESC>
+                        </PARAM>
+                        <PARAM name="newTabIndex" type="INTEGER">
+                            <DESC>New tab index.</DESC>
+                            <PLATFORM>WM</PLATFORM>
+                        </PARAM>
+                        <PARAM name="oldTabIndex" type="INTEGER">
+                            <DESC>New tab index.</DESC>
+                            <PLATFORM>WM</PLATFORM>
+                        </PARAM>
+                        <PARAM name="tabEvent" type="STRING">
+                            <DESC></DESC>
+                            <PLATFORM>WM</PLATFORM>
+                            <VALUES>
+                                <VALUE value ="onTabFocus">
+                                    <DESC>Fires when a tab gains focus</DESC>
+                                </VALUE>
+                                <VALUE value ="onTabNew">
+                                    <DESC>Fires when a new tab is created</DESC>
+                                </VALUE>
+                                <VALUE value ="onTabNewRequest">
+                                    <DESC>Fires when a new tab is requested</DESC>
+                                </VALUE>
+                            </VALUES>
+                        </PARAM>
+
+                    </PARAMS>
+                </CALLBACK>
 
             </METHOD>
 
@@ -90,13 +128,13 @@
                 </RETURN>
             </METHOD>
 
-            <METHOD name="remove" runInThread="UI">
+            <METHOD name="remove" runInThread="ui">
                 <DESC>Removes the current tabbar. Does nothing if there is no active tabbar.</DESC>
             </METHOD>
 
-            <METHOD name="removeTab" runInThread="UI">
+            <METHOD name="removeTab" runInThread="ui">
                 <DESC>Removes the Tab by index. Method will remove WebView for specific tab, it will not remove tab from tab array, so all indexes will remain the same.</DESC>
-                <PLATFORMS>WM</PLATFORMS>
+                <PLATFORM>WM</PLATFORM>
 
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER">
@@ -106,9 +144,9 @@
 
             </METHOD>
 
-            <METHOD name="setTabBadge" runInThread="UI" >
+            <METHOD name="setTabBadge" runInThread="ui" >
                 <DESC>Set the iPhone badge to tab.</DESC>
-                <PLATFORMS>iOS</PLATFORMS>
+                <PLATFORM>iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER">
                         <DESC>The index for this tab (index numbered from 0). To set to all tabs : - 1.</DESC>
@@ -120,7 +158,7 @@
                 </PARAMS>                
             </METHOD>
 
-            <METHOD name="switchTab" runInThread="UI">
+            <METHOD name="switchTab" runInThread="ui">
                 <DESC>Switch active tab.</DESC>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER">

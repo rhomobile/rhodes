@@ -669,6 +669,7 @@
 					../../shared/ruby/iphone,
 					../../shared/ruby/generated,
 					"../../iphone/Classes/**",
+					../../../lib/commonAPI,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = NO;
@@ -701,6 +702,7 @@
 					../../shared/ruby/iphone,
 					../../shared/ruby/generated,
 					"../../iphone/Classes/**",
+					../../../lib/commonAPI,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = NO;
@@ -774,6 +776,7 @@
 					../../shared/ruby/iphone,
 					../../shared/ruby/generated,
 					"../../iphone/Classes/**",
+					../../../lib/commonAPI,
 				);
 				INSTALL_PATH = /usr/local/lib;
 				ONLY_ACTIVE_ARCH = NO;

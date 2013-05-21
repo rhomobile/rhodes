@@ -930,16 +930,16 @@ def write_modules_js(filename, modules)
         end
     end
 
-    #    if $debug
+    if $debug
         Jake.modify_file_if_content_changed(filename, f)
-    #else
-    #    require 'uglifier'
-    #    f.rewind()
-    #    fc = StringIO.new("","w+")
-    #    fc.puts(Uglifier.compile(f))
-    #
-    #    Jake.modify_file_if_content_changed(filename, fc)
-    #end
+    else
+        require 'uglifier'
+        f.rewind()
+        fc = StringIO.new("","w+")
+        fc.puts(Uglifier.compile(f))
+        
+        Jake.modify_file_if_content_changed(filename, fc)
+    end
 end
 
 def is_ext_supported(extpath)

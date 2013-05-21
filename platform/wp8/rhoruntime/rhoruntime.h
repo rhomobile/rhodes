@@ -133,6 +133,8 @@ namespace rhoruntime
 		//CNativeTabbar& getTabbar(){ return m_tabbar; }
 		void setCryptoEngine(ICryptoEngine^ cryptoEngine);
 		ICryptoEngine^ getCryptoEngine() {return m_CryptoEngine;}
+		// proxy methods needed for C# implementation of CoreAPI
+		::Platform::String^ canonicalizeRhoUrl(::Platform::String^ url);
 
 	private:
 		IMainPage^ m_MainPage;

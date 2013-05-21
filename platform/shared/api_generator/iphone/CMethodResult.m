@@ -212,6 +212,10 @@ extern int rho_webview_active_tab();
     }
 }
 
+-(BOOL) hasCallback {
+    return ((mRubyCallbackURL != nil) || (mRubyCallbackMethod != 0) || (mJSCallbackUID != nil));
+}
+
 + (NSObject*) getObjectiveCNULL {
     return [NSNull null];
 }
@@ -263,6 +267,11 @@ extern int rho_webview_active_tab();
 
 - (void) setResult:(NSObject*)value {
     resultObject = [value retain];
+}
+
+-(BOOL) hasCallback
+{
+    return NO;
 }
 
 - (NSObject*) getResult {
