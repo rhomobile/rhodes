@@ -26,7 +26,7 @@
             v = rho_ruby_create_double([objNumber doubleValue]);
         }
         else {
-            v = rho_ruby_create_integer([objNumber longLongValue]);
+            v = rho_ruby_create_integer([objNumber intValue]);
         }
     }
     else if ([objectiveC_value isKindOfClass:[NSArray class]]) {
@@ -83,7 +83,7 @@
         case T_FIXNUM:
         case T_BIGNUM:
         {
-            return [NSNumber numberWithLongLong:NUM2LL(ruby_value)];
+            return [NSNumber numberWithInt:(int)(NUM2LL(ruby_value))];
         }
             break;
         case T_TRUE:

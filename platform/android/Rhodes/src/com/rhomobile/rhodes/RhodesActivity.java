@@ -27,6 +27,8 @@
 package com.rhomobile.rhodes;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,6 +38,7 @@ import java.net.URI;
 import java.security.InvalidParameterException;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
+import com.rhomobile.rhodes.extmanager.IRhoExtManager;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
@@ -63,6 +66,7 @@ import android.os.Environment;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -532,7 +536,17 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 //            }
 //        }
     }
-
+    
+	@Override
+	public boolean dispatchKeyEvent(KeyEvent event)
+	{
+		 IRhoExtManager extManager = RhoExtManager.getInstance();
+		 if(extManager.onKey(event.getKeyCode(), event))
+		 {
+			 return true;
+		 }
+		 return super.dispatchKeyEvent(event);
+	}
 
 	public static Context getContext() {
 		RhodesActivity ra = RhodesActivity.getInstance();
@@ -540,5 +554,4 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 			throw new IllegalStateException("No rhodes activity instance at this moment");
 		return ra;
 	}
-	
 }
