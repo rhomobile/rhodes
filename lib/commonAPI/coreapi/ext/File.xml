@@ -93,11 +93,9 @@
               <DESC>File size in bytes.</DESC>
           </RETURN>
       </METHOD>
-    </METHODS>
       
     <!--    STATIC METHODS -->
-    <METHODS access="STATIC">
-        <METHOD name="copy">
+        <METHOD name="copy" access="STATIC">
             <DESC>Copies file to specified destination.</DESC>
             <PARAM name="from" type="STRING">
                 <DESC>File name to be copied.</DESC>
@@ -107,7 +105,7 @@
             </PARAM>
         </METHOD>
         
-        <METHOD name="rename">
+        <METHOD name="rename" access="STATIC">
             <DESC>Renames/moves file.</DESC>
             <PARAM name="from" type="STRING">
                 <DESC>Original path.</DESC>
@@ -117,14 +115,14 @@
             </PARAM>
         </METHOD>
         
-        <METHOD name="makeDir">
+        <METHOD name="makeDir" access="STATIC">
             <DESC>Creates directory. If all top-level nodes of the path doesn't exists, directory will not be created.</DESC>
             <PARAM name="path" type="STRING">
                 <DESC>Path to the new directory.</DESC>
             </PARAM>
         </METHOD>
         
-        <METHOD name="exists">
+        <METHOD name="exists" access="STATIC">
             <DESC>Checks if specified path exists.</DESC>
             <PARAM name="path" type="STRING">
                 <DESC>Path.</DESC>
@@ -134,7 +132,7 @@
             </RETURN>
         </METHOD>
         
-        <METHOD name="size">
+        <METHOD name="size" access="STATIC">
             <DESC>Returns size of the file.</DESC>
             <PARAM name="path" type="STRING">
                 <DESC>Path to the file.</DESC>
@@ -144,7 +142,7 @@
             </RETURN>
         </METHOD>
             
-        <METHOD name="isDir">
+        <METHOD name="isDir" access="STATIC">
             <DESC>Checks if specified path is a directory.</DESC>
             <PARAM name="path" type="STRING">
                 <DESC>Path.</DESC>
@@ -154,7 +152,7 @@
             </RETURN>
         </METHOD>
         
-        <METHOD name="isFile">
+        <METHOD name="isFile" access="STATIC">
             <DESC>Checks if specified path is a file.</DESC>
             <PARAM name="path" type="STRING">
                 <DESC>Path.</DESC>
@@ -164,28 +162,28 @@
             </RETURN>
         </METHOD>
         
-        <METHOD name="deleteFile">
+        <METHOD name="deleteFile" access="STATIC">
             <DESC>Deletes file.</DESC>
             <PARAM name="PATH" type="STRING">
                 <DESC>Path to the file to be deleted.</DESC>
             </PARAM>
         </METHOD>
         
-        <METHOD name="deleteDir">
+        <METHOD name="deleteDir" access="STATIC">
             <DESC>Deletes directory. Non-empty directory will not be deleted.</DESC>
             <PARAM name="PATH" type="STRING">
                 <DESC>Path to the directory to be deleted.</DESC>
             </PARAM>
         </METHOD>
         
-        <METHOD name="makeDirs">
+        <METHOD name="makeDirs" access="STATIC">
             <DESC>Creates directory and all top-level directories if necessary.</DESC>
             <PARAM name="path" type="STRING">
                 <DESC>Path to the directory to be created.</DESC>
             </PARAM>
         </METHOD>
         
-        <METHOD name="deleteRecursive">
+        <METHOD name="deleteRecursive" access="STATIC">
             <DESC>Deletes all directory contents.</DESC>
             <PARAM name="path">
                 <DESC>Path to the directory.</DESC>
@@ -196,7 +194,7 @@
             </PARAM>
         </METHOD>
         
-        <METHOD name="listDir">
+        <METHOD name="listDir" access="STATIC">
             <DESC>Lists all entries of specified directory.</DESC>
             <PARAM name="PATH">
                 <DESC>Directory path.</DESC>
@@ -209,7 +207,7 @@
         
     <!--PATH METHODS -->
             
-        <METHOD name="basename">
+        <METHOD name="basename" access="STATIC">
             <DESC>Return basename part of the specified path.</DESC>
             <PARAM name="path" type="STRING">
                 <DESC>Path.</DESC>
@@ -219,7 +217,7 @@
             </RETURN>
         </METHOD>
             
-        <METHOD name="dirname">
+        <METHOD name="dirname" access="STATIC">
             <DESC>Returns directory name part of the specified path.</DESC>
             <PARAM name="path" type="STRING">
                 <DESC>Path.</DESC>
@@ -229,7 +227,7 @@
             </RETURN>
         </METHOD>
             
-        <METHOD name="join">
+        <METHOD name="join" access="STATIC">
             <DESC>Joins two parts of the path</DESC>
             <PARAM name="p1" type="STRING">
                 <DESC>First part of the path.</DESC>
@@ -242,7 +240,7 @@
             </RETURN>
         </METHOD>
         
-        <METHOD name="read">
+        <METHOD name="read" access="STATIC">
             <DESC>Reads specified file to a string object.</DESC>
             <PARAM name="path" type="STRING">
                 <DESC>Path to file.</DESC>
