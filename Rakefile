@@ -1015,12 +1015,13 @@ def init_extensions(startdir, dest)
         
         if File.file? extyml
           extconf = Jake.config(File.open(extyml))
-          entry = extconf["entry"]
-          nlib = extconf["nativelibs"]
-          type = extconf["exttype"]
-          wm_type = extconf["wm"]["exttype"] if extconf["wm"]
-          xml_api_paths = extconf["xml_api_paths"]
-          extconf_wp8 = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) ? extconf['wp8'] : Hash.new
+            
+          entry           = extconf["entry"]
+          nlib            = extconf["nativelibs"]
+          type            = extconf["exttype"]
+          wm_type         = extconf["wm"]["exttype"] if extconf["wm"]
+          xml_api_paths   = extconf["xml_api_paths"]
+          extconf_wp8     = $config["platform"] == "wp8" && (!extconf['wp8'].nil?) ? extconf['wp8'] : Hash.new
           csharp_impl_all = (!extconf_wp8['csharp_impl'].nil?) ? true : false
 
           if nlib != nil
@@ -1029,8 +1030,18 @@ def init_extensions(startdir, dest)
             end
           end
           
-          extentries << entry unless entry.nil?
-
+          if $js_application == true
+            if !xml_api_paths.nil?
+              extentries << entry unless entry.nil?
+            else
+              puts '********* WARNING *****************************************************************************************************'
+              puts 'Extension ' + extname + ' does not have javascript api implementation and will not initilized in the application!!!'
+              puts '***********************************************************************************************************************'
+            end
+          else
+            extentries << entry unless entry.nil?
+          end
+          
           if type.to_s() != "nativelib"
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
@@ -1128,7 +1139,7 @@ def init_extensions(startdir, dest)
     mkdir_p rhoapi_js_folder
     write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
   end
-
+  
   if $config["platform"] != "bb"
     f = StringIO.new("", "w+")
     f.puts "// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!"
@@ -1199,7 +1210,7 @@ def init_extensions(startdir, dest)
     extlibs.each { |lib| add_linker_library(lib) }
     nativelib.each { |lib| add_linker_library(lib) }
 
-    set_linker_flags    
+    set_linker_flags
   end
   
   unless $app_config["constants"].nil?
