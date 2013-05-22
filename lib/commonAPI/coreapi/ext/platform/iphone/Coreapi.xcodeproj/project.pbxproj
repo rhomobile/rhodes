@@ -55,6 +55,24 @@
 		FA340BA716F0E455000094DD /* WebViewSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FA340BA116F0E455000094DD /* WebViewSetup.m */; };
 		FA340BA816F0E455000094DD /* WebViewSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FA340BA216F0E455000094DD /* WebViewSingleton.h */; };
 		FA340BA916F0E455000094DD /* WebViewSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA340BA316F0E455000094DD /* WebViewSingleton.m */; };
+		FA4EC2E0174D105900969368 /* INavbar.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4EC2DF174D105900969368 /* INavbar.h */; };
+		FA4EC2E8174D106600969368 /* NavbarBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4EC2E2174D106600969368 /* NavbarBase.h */; };
+		FA4EC2E9174D106600969368 /* NavbarBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2E3174D106600969368 /* NavbarBase.m */; };
+		FA4EC2EA174D106600969368 /* NavbarFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4EC2E4174D106600969368 /* NavbarFactoryBase.h */; };
+		FA4EC2EB174D106600969368 /* NavbarFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2E5174D106600969368 /* NavbarFactoryBase.m */; };
+		FA4EC2EC174D106600969368 /* NavbarSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4EC2E6174D106600969368 /* NavbarSingletonBase.h */; };
+		FA4EC2ED174D106600969368 /* NavbarSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2E7174D106600969368 /* NavbarSingletonBase.m */; };
+		FA4EC2EF174D107200969368 /* navbar_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2EE174D107200969368 /* navbar_js_wrap.mm */; };
+		FA4EC2F1174D107C00969368 /* navbar_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2F0174D107C00969368 /* navbar_ruby_wrap.m */; };
+		FA4EC2F5174D108C00969368 /* navbar_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2F2174D108C00969368 /* navbar_api_init.cpp */; };
+		FA4EC2F6174D108C00969368 /* navbar_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2F3174D108C00969368 /* navbar_js_api.cpp */; };
+		FA4EC2F7174D108C00969368 /* navbar_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2F4174D108C00969368 /* navbar_ruby_api.c */; };
+		FA4EC2FE174D109B00969368 /* Navbar.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4EC2F8174D109B00969368 /* Navbar.h */; };
+		FA4EC2FF174D109B00969368 /* Navbar.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2F9174D109B00969368 /* Navbar.m */; };
+		FA4EC300174D109B00969368 /* NavbarFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2FA174D109B00969368 /* NavbarFactorySingleton.m */; };
+		FA4EC301174D109B00969368 /* NavbarSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2FB174D109B00969368 /* NavbarSetup.m */; };
+		FA4EC302174D109B00969368 /* NavbarSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FA4EC2FC174D109B00969368 /* NavbarSingleton.h */; };
+		FA4EC303174D109B00969368 /* NavbarSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA4EC2FD174D109B00969368 /* NavbarSingleton.m */; };
 		FA7C85BB16E4126C0000EAE6 /* network_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85B816E4126C0000EAE6 /* network_api_init.cpp */; };
 		FA7C85BC16E4126C0000EAE6 /* network_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85B916E4126C0000EAE6 /* network_js_api.cpp */; };
 		FA7C85BD16E4126C0000EAE6 /* network_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA7C85BA16E4126C0000EAE6 /* network_ruby_api.c */; };
@@ -169,6 +187,24 @@
 		FA340BA116F0E455000094DD /* WebViewSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebViewSetup.m; path = impl/WebViewSetup.m; sourceTree = "<group>"; };
 		FA340BA216F0E455000094DD /* WebViewSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WebViewSingleton.h; path = impl/WebViewSingleton.h; sourceTree = "<group>"; };
 		FA340BA316F0E455000094DD /* WebViewSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WebViewSingleton.m; path = impl/WebViewSingleton.m; sourceTree = "<group>"; };
+		FA4EC2DF174D105900969368 /* INavbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INavbar.h; path = generated/INavbar.h; sourceTree = "<group>"; };
+		FA4EC2E2174D106600969368 /* NavbarBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavbarBase.h; path = generated/base_impl/NavbarBase.h; sourceTree = "<group>"; };
+		FA4EC2E3174D106600969368 /* NavbarBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavbarBase.m; path = generated/base_impl/NavbarBase.m; sourceTree = "<group>"; };
+		FA4EC2E4174D106600969368 /* NavbarFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavbarFactoryBase.h; path = generated/base_impl/NavbarFactoryBase.h; sourceTree = "<group>"; };
+		FA4EC2E5174D106600969368 /* NavbarFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavbarFactoryBase.m; path = generated/base_impl/NavbarFactoryBase.m; sourceTree = "<group>"; };
+		FA4EC2E6174D106600969368 /* NavbarSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavbarSingletonBase.h; path = generated/base_impl/NavbarSingletonBase.h; sourceTree = "<group>"; };
+		FA4EC2E7174D106600969368 /* NavbarSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavbarSingletonBase.m; path = generated/base_impl/NavbarSingletonBase.m; sourceTree = "<group>"; };
+		FA4EC2EE174D107200969368 /* navbar_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = navbar_js_wrap.mm; path = generated/javascript/navbar_js_wrap.mm; sourceTree = "<group>"; };
+		FA4EC2F0174D107C00969368 /* navbar_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = navbar_ruby_wrap.m; path = generated/ruby/navbar_ruby_wrap.m; sourceTree = "<group>"; };
+		FA4EC2F2174D108C00969368 /* navbar_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = navbar_api_init.cpp; path = ../../shared/generated/navbar_api_init.cpp; sourceTree = "<group>"; };
+		FA4EC2F3174D108C00969368 /* navbar_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = navbar_js_api.cpp; path = ../../shared/generated/navbar_js_api.cpp; sourceTree = "<group>"; };
+		FA4EC2F4174D108C00969368 /* navbar_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = navbar_ruby_api.c; path = ../../shared/generated/navbar_ruby_api.c; sourceTree = "<group>"; };
+		FA4EC2F8174D109B00969368 /* Navbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Navbar.h; path = impl/Navbar.h; sourceTree = "<group>"; };
+		FA4EC2F9174D109B00969368 /* Navbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Navbar.m; path = impl/Navbar.m; sourceTree = "<group>"; };
+		FA4EC2FA174D109B00969368 /* NavbarFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavbarFactorySingleton.m; path = impl/NavbarFactorySingleton.m; sourceTree = "<group>"; };
+		FA4EC2FB174D109B00969368 /* NavbarSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavbarSetup.m; path = impl/NavbarSetup.m; sourceTree = "<group>"; };
+		FA4EC2FC174D109B00969368 /* NavbarSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavbarSingleton.h; path = impl/NavbarSingleton.h; sourceTree = "<group>"; };
+		FA4EC2FD174D109B00969368 /* NavbarSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavbarSingleton.m; path = impl/NavbarSingleton.m; sourceTree = "<group>"; };
 		FA7C85B816E4126C0000EAE6 /* network_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = network_api_init.cpp; path = ../../shared/generated/network_api_init.cpp; sourceTree = "<group>"; };
 		FA7C85B916E4126C0000EAE6 /* network_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = network_js_api.cpp; path = ../../shared/generated/network_js_api.cpp; sourceTree = "<group>"; };
 		FA7C85BA16E4126C0000EAE6 /* network_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = network_ruby_api.c; path = ../../shared/generated/network_ruby_api.c; sourceTree = "<group>"; };
@@ -277,6 +313,7 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FABB0455174BE108002DFB11 /* Navbar */,
 				FAEB2BB31743C4F4001AE032 /* NativeTabbar */,
 				FAEB2B871743C425001AE032 /* NativeToolbar */,
 				FA1C7F9A16FBCA740024FB5C /* Application */,
@@ -636,6 +673,79 @@
 			name = iphone;
 			sourceTree = "<group>";
 		};
+		FABB0455174BE108002DFB11 /* Navbar */ = {
+			isa = PBXGroup;
+			children = (
+				FABB0458174BE118002DFB11 /* generated */,
+				FABB0457174BE110002DFB11 /* impl */,
+			);
+			name = Navbar;
+			sourceTree = "<group>";
+		};
+		FABB0457174BE110002DFB11 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA4EC2F8174D109B00969368 /* Navbar.h */,
+				FA4EC2F9174D109B00969368 /* Navbar.m */,
+				FA4EC2FA174D109B00969368 /* NavbarFactorySingleton.m */,
+				FA4EC2FB174D109B00969368 /* NavbarSetup.m */,
+				FA4EC2FC174D109B00969368 /* NavbarSingleton.h */,
+				FA4EC2FD174D109B00969368 /* NavbarSingleton.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FABB0458174BE118002DFB11 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FABB045C174BE135002DFB11 /* api */,
+				FABB045B174BE12C002DFB11 /* base_impl */,
+				FABB045A174BE126002DFB11 /* wrappers */,
+				FABB0459174BE120002DFB11 /* shared */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FABB0459174BE120002DFB11 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA4EC2F2174D108C00969368 /* navbar_api_init.cpp */,
+				FA4EC2F3174D108C00969368 /* navbar_js_api.cpp */,
+				FA4EC2F4174D108C00969368 /* navbar_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FABB045A174BE126002DFB11 /* wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				FA4EC2F0174D107C00969368 /* navbar_ruby_wrap.m */,
+				FA4EC2EE174D107200969368 /* navbar_js_wrap.mm */,
+			);
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		FABB045B174BE12C002DFB11 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA4EC2E2174D106600969368 /* NavbarBase.h */,
+				FA4EC2E3174D106600969368 /* NavbarBase.m */,
+				FA4EC2E4174D106600969368 /* NavbarFactoryBase.h */,
+				FA4EC2E5174D106600969368 /* NavbarFactoryBase.m */,
+				FA4EC2E6174D106600969368 /* NavbarSingletonBase.h */,
+				FA4EC2E7174D106600969368 /* NavbarSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		FABB045C174BE135002DFB11 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FA4EC2DF174D105900969368 /* INavbar.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
 		FAEB2B871743C425001AE032 /* NativeToolbar */ = {
 			isa = PBXGroup;
 			children = (
@@ -821,6 +931,12 @@
 				FAEB2BD81743C5C0001AE032 /* NativeTabbarFactoryBase.h in Headers */,
 				FAEB2BDA1743C5C0001AE032 /* NativeTabbarSingletonBase.h in Headers */,
 				FAEB2BDD1743C5C8001AE032 /* INativeTabbar.h in Headers */,
+				FA4EC2E0174D105900969368 /* INavbar.h in Headers */,
+				FA4EC2E8174D106600969368 /* NavbarBase.h in Headers */,
+				FA4EC2EA174D106600969368 /* NavbarFactoryBase.h in Headers */,
+				FA4EC2EC174D106600969368 /* NavbarSingletonBase.h in Headers */,
+				FA4EC2FE174D109B00969368 /* Navbar.h in Headers */,
+				FA4EC302174D109B00969368 /* NavbarSingleton.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -950,6 +1066,18 @@
 				FAEB2BD71743C5C0001AE032 /* NativeTabbarBase.m in Sources */,
 				FAEB2BD91743C5C0001AE032 /* NativeTabbarFactoryBase.m in Sources */,
 				FAEB2BDB1743C5C0001AE032 /* NativeTabbarSingletonBase.m in Sources */,
+				FA4EC2E9174D106600969368 /* NavbarBase.m in Sources */,
+				FA4EC2EB174D106600969368 /* NavbarFactoryBase.m in Sources */,
+				FA4EC2ED174D106600969368 /* NavbarSingletonBase.m in Sources */,
+				FA4EC2EF174D107200969368 /* navbar_js_wrap.mm in Sources */,
+				FA4EC2F1174D107C00969368 /* navbar_ruby_wrap.m in Sources */,
+				FA4EC2F5174D108C00969368 /* navbar_api_init.cpp in Sources */,
+				FA4EC2F6174D108C00969368 /* navbar_js_api.cpp in Sources */,
+				FA4EC2F7174D108C00969368 /* navbar_ruby_api.c in Sources */,
+				FA4EC2FF174D109B00969368 /* Navbar.m in Sources */,
+				FA4EC300174D109B00969368 /* NavbarFactorySingleton.m in Sources */,
+				FA4EC301174D109B00969368 /* NavbarSetup.m in Sources */,
+				FA4EC303174D109B00969368 /* NavbarSingleton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

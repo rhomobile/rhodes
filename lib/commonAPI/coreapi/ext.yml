@@ -17,4 +17,4 @@ project_paths:
   wm: ext/platform/wm/CoreAPI.vcproj
   win32: ext/platform/wm/CoreAPI.vcproj
   
-xml_api_paths: ext/Application.xml, ext/Database.xml, ext/system.xml, ext/Network.xml, ext/sqlite3.xml, ext/process.xml, ext/webview.xml, ext/Log.xml, ext/NativeTabbar.xml, ext/NativeToolbar.xml, ext/File.xml
+xml_api_paths: ext/Application.xml, ext/Database.xml, ext/system.xml, ext/Network.xml, ext/sqlite3.xml, ext/process.xml, ext/webview.xml, ext/Log.xml, ext/NativeTabbar.xml, ext/NativeToolbar.xml, ext/File.xml, ext/Navbar.xml
