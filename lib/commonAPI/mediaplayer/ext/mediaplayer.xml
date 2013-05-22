@@ -1,0 +1,83 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="Mediaplayer" parent="Rho">
+        <HELP_OVERVIEW>The MediaPlayer extension is used to playback different types of audio file. It also allows the playback of Ringtones for the respective platform.</HELP_OVERVIEW>
+    
+        <TEMPLATES>
+            <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
+            <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
+        </TEMPLATES>
+
+        <METHODS>
+            <!-- Following two methods are for MediaPlayer -->
+            <METHOD name="start" access="STATIC" hasCallback="none">
+                <DESC>Play a media file using the supplied filename.</DESC>
+                <PARAMS>
+                    <PARAM name="filename" type="STRING">
+                        <DESC>File name of the audio media to be played</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="stop" access="STATIC" hasCallback="none">
+                <DESC></DESC>
+            </METHOD>
+
+            <!-- The following methods describe playback for video media -->
+            <METHOD name="startvideo" access="STATIC" hasCallback="none" runInThread="ui">
+                <DESC></DESC>
+                <PARAMS>
+                    <PARAM name="filename" type="STRING" runInThread="ui">
+                        <DESC>File name of the video media to be played</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="stopvideo" access="STATIC" hasCallback="none">
+                <DESC>Stop the playback of a currently playing video file.</DESC>
+            </METHOD>
+
+            <!-- These three methods are for RingtoneManager-->
+            <METHOD name="getAllRingtones" access="STATIC" hasCallback="mandatory">
+                <DESC></DESC>               
+                <CALLBACK type="HASH">
+                    <PARAMS>
+                        <PARAM name="name" type="STRING">
+                            <DESC></DESC>
+                        </PARAM>
+                        <PARAM name="fullname" type="STRING">
+                            <DESC></DESC>
+                        </PARAM>
+                    </PARAMS>
+                </CALLBACK>
+            </METHOD>
+
+            <METHOD name="playRingTone" access="STATIC" hasCallback="none">
+                <DESC>Play a ringtone with the name supplied being used to designate which one.  You cannot supply a location for the ringtone.  They are built in.  To get a full list of all ringtones avaialable on the system use the method getAllRintones</DESC>
+                <PARAMS>
+                    <PARAM name="name" type="STRING">
+                        <DESC>Name of the ringtone to be played.</DESC>
+                    </PARAM>
+                </PARAMS>
+            </METHOD>
+
+            <METHOD name="stopRingTone" access="STATIC" hasCallback="none">
+                <DESC>Stop the currently plaing ringtone.</DESC>
+            </METHOD>            
+
+
+        </METHODS>
+        
+        <USER_OVERVIEW>
+            <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+            <![CDATA[
+    				]]>
+    
+        </USER_OVERVIEW>
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+    </MODULE>
+</API>    

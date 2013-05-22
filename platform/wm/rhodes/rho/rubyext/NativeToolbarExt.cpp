@@ -174,7 +174,7 @@ void rho_wmimpl_toolbar_remove()
 bool rho_wmimpl_tabbar_isStarted()
 {
 #ifdef OS_WINCE
-    return getAppWindow().isTabBarStarted();
+    return getAppWindow().getTabbar().IsTabBarStarted();
 #else
     return getAppWindow().isStarted();
 #endif
@@ -182,33 +182,54 @@ bool rho_wmimpl_tabbar_isStarted()
 
 void rho_wmimpl_tabbar_create( const rho::Vector<rho::String>& tabbarElements,  const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult)
 {
+#ifdef OS_WINCE
+    getAppWindow().getTabbar().CreateTabbarEx(tabbarElements, tabBarProperties, oResult);
+#else
     getAppWindow().createTabbarEx(tabbarElements, tabBarProperties, oResult);
+#endif
 }
 
 void rho_wmimpl_tabbar_remove()
 {
+#ifdef OS_WINCE
+    getAppWindow().getTabbar().RemoveTabbar();
+#else
     getAppWindow().removeTabbar();
+#endif
 }
 
 void rho_wmimpl_tabbar_removeTab(int tabIndex)
 {
 #ifdef OS_WINCE
-    getAppWindow().removeTab(tabIndex);
+    getAppWindow().getTabbar().RemoveTab(tabIndex);
 #else
 #endif
 }
 
 int rho_wmimpl_tabbar_currentTabIndex()
 {
-	return getAppWindow().tabbarGetCurrent();
+#ifdef OS_WINCE
+    return getAppWindow().getTabbar().GetCurrentTabIndex();
+#else
+    return getAppWindow().tabbarGetCurrent();
+#endif
 }
 
 void rho_wmimpl_tabbar_switchTab(int tabIndex)
 {
+#ifdef OS_WINCE
+    getAppWindow().getTabbar().SwitchTab(tabIndex);
+#else
     getAppWindow().tabbarSwitch(tabIndex);
+#endif
 }
 
 void rho_wmimpl_tabbar_setTabBadge(int tabIndex,  const rho::String& badge)
 {
+#ifdef OS_WINCE
+    getAppWindow().getTabbar().SetBadge(tabIndex, badge.c_str());
+#else
     getAppWindow().tabbarBadge(tabIndex, badge.c_str());
+#endif
+
 }

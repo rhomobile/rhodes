@@ -56,7 +56,7 @@ class C<%= $cur_module.name %>Singleton: public C<%= $cur_module.name %>Singleto
 private:
     I<%= $cur_module.name %>SingletonImpl^ _runtime;
 public:
-    C<%= $cur_module.name %>Singleton(I<%= $cur_module.name %>SingletonImpl^ runtime): _runtime(runtime) {}
+    C<%= $cur_module.name %>Singleton(I<%= $cur_module.name %>SingletonImpl^ runtime): C<%= $cur_module.name %>SingletonBase(), _runtime(runtime) {}
     ~C<%= $cur_module.name %>Singleton(){}
 <%= static_methods%>
 <% if $cur_module.is_template_default_instance %>

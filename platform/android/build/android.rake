@@ -233,6 +233,7 @@ namespace "config" do
     $builddir = File.join($androidpath, "build")
     $shareddir = File.join($androidpath, "..", "shared")
     $coreapidir = File.join($androidpath, "..", "..", "lib", "commonAPI", "coreapi", "ext", "shared")
+    $commonapidir = File.join($androidpath, "..", "..", "lib", "commonAPI")
     $srcdir = File.join($bindir, "RhoBundle")
     $targetdir = File.join($bindir, 'target', 'android')
     $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
@@ -274,18 +275,38 @@ namespace "config" do
       # TODO: add ruby executable for Linux
     end
 
-    $dx = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext)
-    $dx = File.join($androidsdkpath, "platform-tools", "dx" + $bat_ext) unless File.exists? $dx
-    $aapt = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext)
-    $aapt = File.join($androidsdkpath, "platform-tools", "aapt" + $exe_ext) unless File.exists? $aapt
-    $apkbuilder = File.join($androidsdkpath, "tools", "apkbuilder" + $bat_ext)
+    build_tools_path = nil
+    if File.exist? (File.join($androidsdkpath, "build-tools"))
+      build_tools_path = []
+      Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
+        next if entry == '.' or entry == '..'
+        build_tools_path << entry
+      end
+      build_tools_path.sort!
+      build_tools_path = build_tools_path.last
+    end
+    
+    if build_tools_path
+      puts "Using Android SDK build-tools: #{build_tools_path}"
+      build_tools_path = File.join $androidsdkpath,'build-tools',build_tools_path
+      #puts "build-tools path: #{build_tools_path}"
+      #$dx = File.join(build_tools_path,"dx" + $bat_ext)
+      $dxjar = File.join(build_tools_path,'lib','dx.jar')
+      $aapt = File.join(build_tools_path, "aapt#{$exe_ext}")
+    else
+      #$dx = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "dx" + $bat_ext)
+      #$dx = File.join($androidsdkpath, "platform-tools", "dx" + $bat_ext) unless File.exists? $dx
+      $dxjar = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "lib", "dx.jar")
+      $dxjar = File.join($androidsdkpath, "platform-tools", "lib", "dx.jar") unless File.exists? $dxjar
+      $aapt = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "aapt" + $exe_ext)
+      $aapt = File.join($androidsdkpath, "platform-tools", "aapt" + $exe_ext) unless File.exists? $aapt
+    end
+
     $androidbin = File.join($androidsdkpath, "tools", "android" + $bat_ext)
     $adb = File.join($androidsdkpath, "tools", "adb" + $exe_ext)
     $adb = File.join($androidsdkpath, "platform-tools", "adb" + $exe_ext) unless File.exists? $adb
     $zipalign = File.join($androidsdkpath, "tools", "zipalign" + $exe_ext)
     $androidjar = File.join($androidsdkpath, "platforms", $androidplatform, "android.jar")
-    $dxjar = File.join($androidsdkpath, "platforms", $androidplatform, "tools", "lib", "dx.jar")
-    $dxjar = File.join($androidsdkpath, "platform-tools", "lib", "dx.jar") unless File.exists? $dxjar
     $sdklibjar = File.join($androidsdkpath, 'tools', 'lib', 'sdklib.jar')
 
     $keytool = File.join($java, "keytool" + $exe_ext)
@@ -929,7 +950,7 @@ namespace "build" do
 
       args = []
       args << "-I\"#{srcdir}\""
-      args << "-I\"#{$coreapidir}\""
+      args << "-I\"#{$commonapidir}\""
       args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
       args << "-D__NEW__" if USE_OWN_STLPORT
       args << "-I\"#{$stlport_includes}\"" if USE_OWN_STLPORT
@@ -1179,7 +1200,7 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
-      args << "-I\"#{$coreapidir}\""
+      args << "-I\"#{$commonapidir}\""
       args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
       args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_OWN_STLPORT
       args << "-D__NEW__" if USE_OWN_STLPORT

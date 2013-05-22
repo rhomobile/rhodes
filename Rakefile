@@ -291,6 +291,11 @@ def make_application_build_capabilities_header_file
 
   f.puts ''
   
+  if $js_application == true
+    f.puts '#define RHO_NO_RUBY'
+    f.puts '#define RHO_NO_RUBY_API'
+  end
+  
   Jake.modify_file_if_content_changed(File.join($startdir, "platform", "shared", "common", "app_build_capabilities.h"), f)
 end
 
@@ -759,11 +764,13 @@ namespace "config" do
         puts "Jake.localip() error : #{e}"  
     end
 
-    $obfuscate_js = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["js"].nil?) ? nil : 1 )
-    $obfuscate_css = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["css"].nil?) ? nil : 1 )
+    $obfuscate_js      = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["js"].nil?) ? nil : 1 )
+    $obfuscate_css     = (($app_config["obfuscate"].nil? || $app_config["obfuscate"]["css"].nil?) ? nil : 1 )
     $obfuscate_exclude = ($app_config["obfuscate"].nil? ? nil : $app_config["obfuscate"]["exclude_dirs"] )
-    $obfuscator = 'res/build-tools/yuicompressor-2.4.7.jar'
-
+    $obfuscator        = 'res/build-tools/yuicompressor-2.4.7.jar'
+    
+    $js_application    = ($app_config["javascript_application"].nil? || $app_config["javascript_application"] == 'false') ? false : true; 
+    
     platform_task = "config:#{$current_platform}:app_config"
     Rake::Task[platform_task].invoke if Rake::Task.task_defined? platform_task
     
@@ -872,9 +879,11 @@ def add_extension(path,dest)
   start = pwd
   chdir path if File.directory?(path)
   puts 'chdir path=' + path.to_s
-   
-  Dir.glob("*").each do |f|
-    cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
+
+  if $js_application == false   
+    Dir.glob("*").each do |f|
+      cp_r f,dest unless f =~ /^ext(\/|(\.yml)?$)/ || f =~ /^app/  || f =~ /^public/
+    end
   end  
 
   if $current_platform == "bb"
@@ -921,16 +930,16 @@ def write_modules_js(filename, modules)
         end
     end
 
-    #    if $debug
+    if $debug
         Jake.modify_file_if_content_changed(filename, f)
-    #else
-    #    require 'uglifier'
-    #    f.rewind()
-    #    fc = StringIO.new("","w+")
-    #    fc.puts(Uglifier.compile(f))
-    #
-    #    Jake.modify_file_if_content_changed(filename, fc)
-    #end
+    else
+        require 'uglifier'
+        f.rewind()
+        fc = StringIO.new("","w+")
+        fc.puts(Uglifier.compile(f))
+        
+        Jake.modify_file_if_content_changed(filename, fc)
+    end
 end
 
 def is_ext_supported(extpath)
@@ -1025,14 +1034,17 @@ def init_extensions(startdir, dest)
           if type.to_s() != "nativelib"
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
-            if (!extconf[$config["platform"]].nil?) && (!extconf[$config["platform"]]["libraries"].nil?) && (extconf[$config["platform"]]["libraries"].is_a? Array)
+            
+              if (!extconf[$config["platform"]].nil?) && (!extconf[$config["platform"]]["libraries"].nil?) && (extconf[$config["platform"]]["libraries"].is_a? Array)
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
+            
             if $config["platform"] == "wm" || $config["platform"] == "win32" || $config["platform"] == "wp8"
               libs.each do |lib|
                 extconf_wp8_lib = !extconf_wp8[lib.downcase].nil? ? extconf_wp8[lib.downcase] : Hash.new
                 csharp_impl = csharp_impl_all || (!extconf_wp8_lib['csharp_impl'].nil?)
                 extlibs << lib + (csharp_impl ? "Lib" : "") + ".lib"
+                  
                 if csharp_impl
                   wp8_root_namespace = !extconf_wp8_lib['root_namespace'].nil? ? extconf_wp8_lib['root_namespace'] : (!extconf_wp8['root_namespace'].nil? ? extconf_wp8['root_namespace'] : 'rho');
                   extcsharplibs << lib + "Lib.lib"
@@ -1079,6 +1091,7 @@ def init_extensions(startdir, dest)
                 extjsmodulefiles << f
               end  
           end
+          
           Dir.glob(extpath + "/public/api/generated/*.js").each do |f|
               extjsmodulefiles << f
           end
@@ -1095,11 +1108,13 @@ def init_extensions(startdir, dest)
   gen_checker.update
   
   exts = File.join($startdir, "platform", "shared", "ruby", "ext", "rho", "extensions.c")
+  
   if $config["platform"] == "wp8"
     extscsharp = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.cs")
     extscsharptargets = File.join($startdir, "platform", "wp8", "rhodes", "CSharpExtensions.targets")
     extscsharpcpp = File.join($startdir, "platform", "wp8", "rhoruntime", "CSharpExtensions.cpp")
   end
+  
   puts "exts " + exts
 
   extjsmodulefiles = startJSModules.concat( extjsmodulefiles )
@@ -1267,6 +1282,7 @@ def copy_rhoconfig(source, target)
 end
 
 def common_bundle_start(startdir, dest)
+  
   puts "common_bundle_start"
   
   app = $app_path
@@ -1280,18 +1296,21 @@ def common_bundle_start(startdir, dest)
   start = pwd
   chdir rhodeslib
 
-  Dir.glob("*").each { |f|
-    if f.to_s == "autocomplete"
-      next
-    end
+  if $js_application == false
+    Dir.glob("*").each { |f|
+      if f.to_s == "autocomplete"
+        next
+      end
           
-    cp_r f,dest, :preserve => true 
-  }
+      cp_r f,dest, :preserve => true 
+    }
+  end
 
   chdir dest
   Dir.glob("**/rhodes-framework.rb").each {|f| rm f}
   Dir.glob("**/erb.rb").each {|f| rm f}
   Dir.glob("**/find.rb").each {|f| rm f}
+  
   $excludelib.each {|e| Dir.glob(e).each {|f| rm f}}
 
   chdir start
@@ -1300,20 +1319,21 @@ def common_bundle_start(startdir, dest)
   init_extensions(startdir, dest)
 
   chdir startdir
-  #throw "ME"
   cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
+  
   if File.exists? app + '/public'
-    #if $obfuscate_js.nil? && $obfuscate_css.nil?
-    #  cp_r app + '/public', File.join($srcdir,'apps'), :preserve => true 
-    #else
-      public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, 1
-    #end
+    public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, 1
   end
+  
   copy_rhoconfig(File.join(app, 'rhoconfig.txt'), File.join($srcdir, 'apps', 'rhoconfig.txt'))
 
   if $app_config["app_type"] == 'rhoelements'
     $config_xml = nil
-    if $app_config[$config["platform"]] && $app_config[$config["platform"]]["rhoelements"] && $app_config[$config["platform"]]["rhoelements"]["config"] && (File.exists? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
+    if $app_config[$config["platform"]] && 
+       $app_config[$config["platform"]]["rhoelements"] && 
+       $app_config[$config["platform"]]["rhoelements"]["config"] &&
+       (File.exists? File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"]))
+         
       $config_xml = File.join(app, $app_config[$config["platform"]]["rhoelements"]["config"])
     elsif $app_config["rhoelements"] && $app_config["rhoelements"]["config"] && (File.exists? File.join(app, $app_config["rhoelements"]["config"]))
       $config_xml = File.join(app, $app_config["rhoelements"]["config"])
@@ -1338,14 +1358,14 @@ def common_bundle_start(startdir, dest)
     rm_rf $srcdir + "/apps/app/spec_runner.rb"
   end
 
-
   copy_assets($assetfolder) if ($assetfolder and File.exists? $assetfolder)
-
+      
   replace_platform = $config['platform']
   replace_platform = "bb6" if $bb6
   #replace_platform = "wm" if replace_platform == 'win32'
 
-  [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
+  if $js_application == false
+    [File.join($srcdir,'apps'), ($current_platform == "bb" ? File.join($srcdir,'res') : File.join($srcdir,'lib/res'))].each do |folder|
       chdir folder
       
       Dir.glob("**/*.#{replace_platform}.*").each do |file|
@@ -1356,15 +1376,16 @@ def common_bundle_start(startdir, dest)
       
       Dir.glob("**/*.wm.*").each { |f| rm f }
       Dir.glob("**/*.win32.*").each { |f| rm f }
-	  Dir.glob("**/*.wp.*").each { |f| rm f }
-	  Dir.glob("**/*.wp8.*").each { |f| rm f }
-	  Dir.glob("**/*.sym.*").each { |f| rm f }
+	    Dir.glob("**/*.wp.*").each { |f| rm f }
+	    Dir.glob("**/*.wp8.*").each { |f| rm f }
+	    Dir.glob("**/*.sym.*").each { |f| rm f }
       Dir.glob("**/*.iphone.*").each { |f| rm f }
       Dir.glob("**/*.bb.*").each { |f| rm f }
       Dir.glob("**/*.bb6.*").each { |f| rm f }
       Dir.glob("**/*.android.*").each { |f| rm f }
       Dir.glob("**/.svn").each { |f| rm_rf f }
       Dir.glob("**/CVS").each { |f| rm_rf f }
+    end
   end  
 end
 
@@ -1430,6 +1451,10 @@ end
 namespace "build" do
   namespace "bundle" do
     task :xruby do
+      if $js_application == true
+        return
+      end
+      
       #needs $config, $srcdir, $excludelib, $bindir
       app = $app_path
   	  jpath = $config["env"]["paths"]["java"]
@@ -1439,7 +1464,7 @@ namespace "build" do
       compileERB = "lib/build/compileERB/bb.rb"
       rhodeslib = File.dirname(__FILE__) + "/lib/framework"
       
-      common_bundle_start(startdir,dest)
+      common_bundle_start(startdir, dest)
 
       process_exclude_folders()
       cp_r File.join(startdir, "platform/shared/db/res/db"), File.join($srcdir, 'apps')
@@ -1528,48 +1553,51 @@ namespace "build" do
     end
     
     task :noxruby, :exclude_dirs do |t, args|
-      exclude_dirs = args[:exclude_dirs]
-      excluded_dirs = []
-      if (!exclude_dirs.nil?) && (exclude_dirs !~ /^\s*$/)
-        excluded_dirs = exclude_dirs.split(':')
-      end
+        exclude_dirs = args[:exclude_dirs]
+        excluded_dirs = []
+        if (!exclude_dirs.nil?) && (exclude_dirs !~ /^\s*$/)
+          excluded_dirs = exclude_dirs.split(':')
+        end
 
-      app = $app_path
-      rhodeslib = File.dirname(__FILE__) + "/lib/framework"
-      compileERB = "lib/build/compileERB/default.rb"
-      compileRB = "lib/build/compileRB/compileRB.rb"
-      startdir = pwd
-      dest = $srcdir + "/lib"      
+        app = $app_path
+        rhodeslib = File.dirname(__FILE__) + "/lib/framework"
+        compileERB = "lib/build/compileERB/default.rb"
+        compileRB = "lib/build/compileRB/compileRB.rb"
+        startdir = pwd
+        dest = $srcdir + "/lib"      
 
-      common_bundle_start(startdir,dest)
-      process_exclude_folders(excluded_dirs)
-      chdir startdir
+        common_bundle_start(startdir,dest)
+        process_exclude_folders(excluded_dirs)
+        chdir startdir
       
-      create_manifest
+        create_manifest
+        
+      if $js_application == false
       
-      cp   compileERB, $srcdir
-      puts "Running default.rb"
+        cp compileERB, $srcdir
+        puts "Running default.rb"
 
-      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/default.rb"`
-      unless $? == 0
-        puts "Error interpreting erb code"
-        exit 1
+        puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/default.rb"`
+        unless $? == 0
+          puts "Error interpreting erb code"
+          exit 1
+        end
+
+        rm "#{$srcdir}/default.rb"
+
+        cp   compileRB, $srcdir
+        puts "Running compileRB"
+        puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/compileRB.rb"`
+        unless $? == 0
+          puts "Error interpreting ruby code"
+          exit 1
+        end
+
+        chdir $srcdir
+        Dir.glob("**/*.rb") { |f| rm f }
+        Dir.glob("**/*.erb") { |f| rm f }
       end
 
-      rm "#{$srcdir}/default.rb"
-
-      cp   compileRB, $srcdir
-      puts "Running compileRB"
-      puts `#{$rubypath} -I"#{rhodeslib}" "#{$srcdir}/compileRB.rb"`
-      unless $? == 0
-        puts "Error interpreting ruby code"
-        exit 1
-      end
-
-      chdir $srcdir
-      Dir.glob("**/*.rb") { |f| rm f }
-      Dir.glob("**/*.erb") { |f| rm f }
-  
       chdir startdir
 
       cp_r "platform/shared/db/res/db", $srcdir 

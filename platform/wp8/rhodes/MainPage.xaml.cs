@@ -41,6 +41,8 @@ namespace rhodes
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        // saved singletone instance of MainPage
+        static private MainPage _instance = null;
         // saved id of the UI thread
         private int _uiThreadID = -1;
         // rhodes main thread
@@ -68,8 +70,14 @@ namespace rhodes
             get { return _uiThreadID == System.Threading.Thread.CurrentThread.ManagedThreadId; }
         }
 
+        static public MainPage getInstance()
+        {
+            return _instance;
+        }
+
         public MainPage()
         {
+            _instance = this;
             _uiThreadID = System.Threading.Thread.CurrentThread.ManagedThreadId;
             updateScreenSize();
             InitializeComponent();

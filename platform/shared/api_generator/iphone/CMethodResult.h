@@ -28,7 +28,8 @@
 
 -(id) init;
 
-- (void) setResult:(NSObject*)value;
+-(void) setResult:(NSObject*)value;
+-(BOOL) hasCallback;
 
 -(BOOL) isHash;
 -(NSDictionary*) getHashResult;
