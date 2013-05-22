@@ -64,56 +64,53 @@ static int started = 0;
 
 @end
 
-void create_navbar(rho_param *p)
+void create_navbar(NSDictionary *p)
 {
     if (!rho_rhodesapp_check_mode())
         return;
-    if (p->type != RHO_PARAM_HASH) {
-        RAWLOG_ERROR("Unexpected parameter type for create_navbar, should be Hash");
-        return;
-    }
     
     NSString *title = nil;
     NSMutableArray *left = [NSMutableArray arrayWithCapacity:3];
     NSMutableArray *right = [NSMutableArray arrayWithCapacity:3];
     
-    int size = p->v.hash->size;
-    for (int i = 0; i < size; ++i) {
-        char *name = p->v.hash->name[i];
-        rho_param *value = p->v.hash->value[i];
+    
+    
+    NSEnumerator* enumerator = [p keyEnumerator];
+    NSObject* obj = nil;
+    while ((obj = [enumerator nextObject]) != nil) {
+        NSString* objKey = (NSString*)obj;
+        NSObject* objValue = [p objectForKey:objKey];
+    
+        const char *name = [objKey UTF8String];
         
         if (strcasecmp(name, "title") == 0) {
-            if (value->type != RHO_PARAM_STRING) {
+            if (![objValue isKindOfClass:[NSString class]]) {
                 RAWLOG_ERROR("Unexpected type of 'title', should be String");
                 return;
             }
-            title = [NSString stringWithUTF8String:value->v.string];
+            title = [NSString stringWithUTF8String:[((NSString*)objValue) UTF8String]];
         }
         else if (strcasecmp(name, "left") == 0 || strcasecmp(name, "right") == 0) {
-            if (value->type != RHO_PARAM_HASH) {
+            if (![objValue isKindOfClass:[NSDictionary class]]) {
                 RAWLOG_ERROR1("Unexpected type of '%s', should be Hash", name);
                 return;
             }
-            char *label = NULL;
-            char *icon = NULL;
-            char *action = NULL;
+            const char *label = NULL;
+            const char *icon = NULL;
+            const char *action = NULL;
             
-            int hashSize = value->v.hash->size;
-            for (int k = 0; k < hashSize; ++k) {
-                char *n = value->v.hash->name[k];
-                rho_param *v = value->v.hash->value[k];
-                if (v->type != RHO_PARAM_STRING) {
-                    RAWLOG_ERROR1("Unexpected type of '%s', should be String", n);
-                    return;
-                }
-                
-                if (strcasecmp(n, "label") == 0)
-                    label = v->v.string;
-                else if (strcasecmp(n, "icon") == 0)
-                    icon = v->v.string;
-                else if (strcasecmp(n, "action") == 0)
-                    action = v->v.string;
-
+            NSDictionary* dict = (NSDictionary*)objValue;
+            NSObject* objLabel = [dict objectForKey:@"label"];
+            if (objLabel != nil) {
+                label = [((NSString*)objLabel) UTF8String];
+            }
+            NSObject* objIcon = [dict objectForKey:@"icon"];
+            if (objIcon != nil) {
+                icon = [((NSString*)objIcon) UTF8String];
+            }
+            NSObject* objAction = [dict objectForKey:@"action"];
+            if (objAction != nil) {
+                action = [((NSString*)objAction) UTF8String];
             }
             
             NSMutableArray *button = strcasecmp(name, "left") == 0 ? left : right;
@@ -121,7 +118,10 @@ void create_navbar(rho_param *p)
             [button addObject:[NSString stringWithUTF8String:(label ? label : "")]];
             [button addObject:[NSString stringWithUTF8String:(icon ? icon : "")]];
         }
+
     }
+
+    
     
     id runnable = [RhoNavBarCreateTask class];
     NSMutableArray *args = [NSMutableArray arrayWithCapacity:3];
@@ -139,6 +139,6 @@ void remove_navbar()
     [Rhodes performOnUiThread:runnable wait:YES];
 }
 
-VALUE navbar_started() {
-    return rho_ruby_create_boolean(started);
+BOOL navbar_started() {
+    return (started != 0);
 }
