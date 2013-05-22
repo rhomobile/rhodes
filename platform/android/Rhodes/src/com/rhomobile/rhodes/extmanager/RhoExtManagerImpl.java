@@ -24,7 +24,6 @@ import android.widget.TextView;
 
 import com.rhomobile.rhodes.Capabilities;
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
@@ -58,7 +57,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private static native String nativeJSCallEntryPoint(String query);
 
     static int getResId(String className, String idName) {
-        className = R.class.getCanonicalName() + "$" + className;
+        className = com.rhomobile.rhodes.R.class.getCanonicalName() + "$" + className;
         try {
             Class<?> rClass = Class.forName(className);
             Field field = rClass.getDeclaredField(idName);
@@ -481,14 +480,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                     }
                     return false;
                 }});
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    alertResult.cancel();
-                    dialog.dismiss();
-                }
-            });
-            
             builder.create().show();
         }
     }
@@ -533,15 +524,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                     dialog.dismiss();
                 }
             });
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    confirmResult.cancel();
-                    dialog.dismiss();
-                }
-            });
             builder.create().show();
-            
         }
     }
 
@@ -664,13 +647,6 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
                 @Override
                 public void onCancel(DialogInterface dialog) {
-                    promptResult.cancel();
-                    dialog.dismiss();
-                }
-            });
-            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
                     promptResult.cancel();
                     dialog.dismiss();
                 }
