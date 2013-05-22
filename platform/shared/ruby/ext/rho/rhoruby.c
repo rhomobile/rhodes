@@ -292,8 +292,7 @@ void RhoRubyStart()
 	Init_NavBar();
 	Init_RhoSupport();
 	Init_RhoConf();
-	Init_WebView();
-    Init_Alert();
+	Init_Alert();
 
 	Init_socket();
 	Init_stringio();

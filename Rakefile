@@ -1035,7 +1035,7 @@ def init_extensions(startdir, dest)
             libs = extconf["libraries"]
             libs = [] unless libs.is_a? Array
             
-              if (!extconf[$config["platform"]].nil?) && (!extconf[$config["platform"]]["libraries"].nil?) && (extconf[$config["platform"]]["libraries"].is_a? Array)
+            if (!extconf[$config["platform"]].nil?) && (!extconf[$config["platform"]]["libraries"].nil?) && (extconf[$config["platform"]]["libraries"].is_a? Array)
               libs = libs + extconf[$config["platform"]]["libraries"]
             end
             
