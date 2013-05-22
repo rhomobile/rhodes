@@ -273,7 +273,7 @@ void RhoRubyStart()
     Init_MapView();                         
     Init_RingtoneManager();
     Init_socket(); //+
-#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR)
+#if !defined(WINDOWS_PLATFORM) && !defined(RHODES_EMULATOR) && !defined(OS_MACOSX)
     Init_NavBar();
 #endif
     Init_RhoEvent();
@@ -292,8 +292,7 @@ void RhoRubyStart()
 	Init_NavBar();
 	Init_RhoSupport();
 	Init_RhoConf();
-	Init_WebView();
-    Init_Alert();
+	Init_Alert();
 
 	Init_socket();
 	Init_stringio();
