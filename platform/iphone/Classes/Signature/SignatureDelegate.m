@@ -54,7 +54,7 @@ SignatureDelegate* ourSD = nil;
         signatureInlineView = nil;
         parentView = nil;
         prevView = nil;
-        imageFormat = nil;
+        imageFormat = 0;
         callbackHolder = nil;
         penColor = 0;
         penWidth = 0;
@@ -285,110 +285,7 @@ void init_signature_param( struct SignatureParam* sigparam )
     sigparam->setFullscreen = false;
 }
 
-void signature_from_param( struct SignatureParam* sig, rho_param* params )
-{
-    char* _image_format = 0;
-    char* _penColor = 0;
-    char* _penWidth = 0;
-    char* _bgColor = 0;
-    char* _left = 0;
-    char* _top = 0;
-    char* _width = 0;
-    char* _height = 0;
-    char* _setFullscreen = 0;
-    
-    if (params)
-    {
-        rho_param* pFF = rho_param_hash_get(params, "imageFormat");
-        if ( pFF )
-            _image_format = pFF->v.string;
-        pFF = rho_param_hash_get(params, "penColor");
-        if ( pFF )
-            _penColor = pFF->v.string;
-        pFF = rho_param_hash_get(params, "penWidth");
-        if ( pFF )
-            _penWidth = pFF->v.string;
-        pFF = rho_param_hash_get(params, "bgColor");
-        if ( pFF )
-            _bgColor = pFF->v.string;
-        pFF = rho_param_hash_get(params, "left");
-        if ( pFF )
-            _left = pFF->v.string;
-        pFF = rho_param_hash_get(params, "top");
-        if ( pFF )
-            _top = pFF->v.string;
-        pFF = rho_param_hash_get(params, "width");
-        if ( pFF )
-            _width = pFF->v.string;
-        pFF = rho_param_hash_get(params, "height");
-        if ( pFF )
-            _height = pFF->v.string;
-        pFF = rho_param_hash_get(params, "setFullscreen");
-        if ( pFF )
-            _setFullscreen = pFF->v.string;
-    }
-    
-    if (_image_format) {
-        NSString *iformat = [NSString stringWithUTF8String:_image_format];
-        if ( [iformat isEqualToString:@"jpg"])
-        {
-            sig->compressionFormat = CF_JPEG;
-        } else if ([iformat isEqualToString:@"png"])
-        {
-            sig->compressionFormat = CF_PNG;
-        } else if ([iformat isEqualToString:@"bmp"])
-        {
-            sig->compressionFormat = CF_BMP;
-        }
-    }
-    if (_penColor) {
-        NSString* ns_penColor = [NSString stringWithUTF8String:_penColor];
-        sig->penColor = (unsigned int)[ns_penColor longLongValue];
-    }
-    if (_penWidth) {
-        NSString* ns_penWidth = [NSString stringWithUTF8String:_penWidth];
-        sig->penWidth = (float)[ns_penWidth floatValue];
-    }
-    if (_bgColor) {
-        NSString* ns_bgColor = [NSString stringWithUTF8String:_bgColor];
-        sig->bgColor = (unsigned int)[ns_bgColor longLongValue];
-    }
-    if (_left) {
-        NSString* ns_left = [NSString stringWithUTF8String:_left];
-        sig->left = (int)[ns_left longLongValue];
-    }
-    if (_top) {
-        NSString* ns_top = [NSString stringWithUTF8String:_top];
-        sig->top = (int)[ns_top longLongValue];
-    }
-    if (_width) {
-        NSString* ns_width = [NSString stringWithUTF8String:_width];
-        sig->width = (int)[ns_width longLongValue];
-    }
-    if (!_height) {
-        NSString* ns_height = [NSString stringWithUTF8String:_height];
-        sig->height = (int)[ns_height longLongValue];
-    }
-}
 
-void rho_signature_take(char* callback_url, rho_param* p) {
-    NSString *url = [NSString stringWithUTF8String:callback_url];
-    
-    struct SignatureParam sig_params;
-    
-    init_signature_param(&sig_params);
-    
-    signature_from_param( &sig_params, p );
-  
-	Rhodes* rho = [Rhodes sharedInstance];
-	SignatureDelegate* deleg = rho.signatureDelegate; 
-	[deleg setImageFormat:sig_params.compressionFormat];
-    [deleg setPenColor:(sig_params.penColor | 0xFF000000)];
-    [deleg setPenWidth:sig_params.penWidth];
-    [deleg setBgColor:(sig_params.bgColor | 0xFF000000)];
-    [[Rhodes sharedInstance] performSelectorOnMainThread:@selector(takeSignature:)
-                                              withObject:url waitUntilDone:NO];
-}
 
 void rho_signature_take_ex( id<IMethodResult> callback, struct SignatureParam* sig_params) {
     NSString *url = @"";
@@ -404,36 +301,7 @@ void rho_signature_take_ex( id<IMethodResult> callback, struct SignatureParam* s
                                               withObject:url waitUntilDone:NO];
 }
 
-void rho_signature_visible(bool b, rho_param* p)
-{
-    // check for RhoElements :
-    if (!rho_is_rho_elements_extension_can_be_used(get_app_build_config_item("motorola_license"))) {
-        RAWLOG_ERROR("Rho::SignatureCapture.visible() is unavailable without RhoElements ! For more information go to http://www.motorolasolutions.com/rhoelements");
-    }
-    
-    
-    if (!b) {
-        SignatureDelegate* deleg = [SignatureDelegate getSharedInstance];
-        [deleg hideSignatureInlineView]; 
-        return;
-    }
-    
-    SignatureViewProperties* props = [[SignatureViewProperties alloc] init];
-    
-    struct SignatureParam params;
-    
-    init_signature_param(&params);
-    
-    signature_from_param( &params, p );
-    
-    props.params = params;
-    
-	SignatureDelegate* deleg = [SignatureDelegate getSharedInstance]; 
 
-    [deleg setImageFormat:params.compressionFormat];
-
-    [deleg showSignatureInlineView:props];
-}
 
 void rho_signature_visible_ex(bool b, struct SignatureParam* p)
 {

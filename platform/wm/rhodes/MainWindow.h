@@ -41,6 +41,7 @@
 #include "RhoNativeViewManagerWM.h"
 #include "SyncStatusDlg.h"
 #include "rho/rubyext/NativeToolbar.h"
+#include "rho/rubyext/NativeTabbar.h"
 #include "IBrowserEngine.h"
 #include "common/app_build_capabilities.h"
 
@@ -152,6 +153,7 @@ public:
 
 	HWND getWebViewHWND();
     CNativeToolbar& getToolbar(){ return m_toolbar; }
+    CNativeTabbar& getTabbar(){ return m_oTabBar; }
     void performOnUiThread(rho::common::IRhoRunnable* pTask);
 
     void calculateMainWindowRect(RECT& rcMainWindow);
@@ -341,15 +343,6 @@ public:
     END_SINK_MAP()
 #endif
 
-    void createTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
-    void removeTabbar();
-    void removeTab(int index);
-    void tabbarSwitch(int index);
-    void tabbarBadge(int index, const char* badge);
-    int tabbarGetCurrent();
-    bool isTabBarStarted();
-    void tabbarSwitchByName(const char* szTabName, bool bExecuteJS);
-    void setStartTabName(const String& strTabName){m_strStartTabName = strTabName;}
 private:
     // event handlers
     void __stdcall OnBeforeNavigate2(IDispatch* pDisp, VARIANT * pvtURL, 
@@ -402,26 +395,9 @@ private:
 #endif //_WIN32_WCE
 
 // #if defined( OS_PLATFORM_MOTCE )
-    int m_menuBarHeight;
-    HWND				g_hWndCommandBar;	// command bar handle
-    int  m_nCurrentTab;
-    bool m_bTabCreated;
+    int   m_menuBarHeight;
+    HWND  g_hWndCommandBar;	// command bar handle
 
-    struct CTabBarItem
-    {
-        String m_strAction;
-        String m_strLabel;
-        bool m_bUseCurrentViewForTab;
-        bool m_bReloadPage;
-        HWND m_hwndTab;
-        int m_nTabID;
-
-        CTabBarItem(const String& strAction, const String& strLabel, bool bUseCurrentViewForTab, bool bReloadPage ): m_bUseCurrentViewForTab(bUseCurrentViewForTab), m_bReloadPage(bReloadPage), 
-            m_strAction(strAction), m_strLabel(strLabel), m_hwndTab(0), m_nTabID(-1){}
-    };
-
-    Vector<CTabBarItem> m_arTabs;
-    String m_strStartTabName;
 // #endif
 
 #if defined(_WIN32_WCE)
@@ -431,6 +407,7 @@ private:
 
 	bool m_bLoading;
     CNativeToolbar m_toolbar;
+    CNativeTabbar  m_oTabBar;
 
 #if !defined(_WIN32_WCE)
 private:

@@ -65,6 +65,11 @@ public class RhoFileApi {
 	private static native void nativeInit();
 	private static native void updateStatTable(String path, String type, long size, long mtime);
 	
+	/**
+	 * Replaces '\' (back slashes) with '/' slashes. Useful for changing Windows paths to more URI friendly strings   
+	 * @param path The path to convert
+	 * @return The converted path
+	 */
 	public static native String normalizePath(String path);
     public static native String absolutePath(String path);
 	

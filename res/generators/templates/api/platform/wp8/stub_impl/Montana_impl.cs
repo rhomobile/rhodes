@@ -43,7 +43,7 @@ namespace <%= $cur_module.name %>Impl
     {
         public <%= $cur_module.name %>()
         {
-            var _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
+            <%= $cur_module.name %>RuntimeComponent _runtime = new <%= $cur_module.name %>RuntimeComponent(this);
         }
 <%= dynamic_methods%>    }
 
@@ -51,7 +51,7 @@ namespace <%= $cur_module.name %>Impl
     {
         public <%= $cur_module.name %>Singleton()
         {
-            var _runtime = new <%= $cur_module.name %>SingletonComponent(this);
+            <%= $cur_module.name %>SingletonComponent _runtime = new <%= $cur_module.name %>SingletonComponent(this);
         }
 <%= static_methods%>    }
 

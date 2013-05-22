@@ -42,6 +42,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private LinkedHashMap <String, IRhoExtension> mExtensions = new LinkedHashMap<String, IRhoExtension>();
     private Map<String, IRhoConfig> mConfigs = new LinkedHashMap<String, IRhoConfig>();
     private ArrayList<IRhoListener> mListeners = new ArrayList<IRhoListener>();
+    private ArrayList<IRhoListener> mKeyListeners = new ArrayList<IRhoListener>();
     private boolean mLogError = false;
     private boolean mLogWarning = false;
     private boolean mLogInfo = false;
@@ -87,6 +88,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             mListeners.add(listener);
         }
     }
+    
 
     @Override
     public void setConfig(String name, IRhoConfig config) {
@@ -195,6 +197,16 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     @Override
     public void historyBack() {
         WebView.navigateBack();
+    }
+    
+    @Override
+    public boolean onKey(int keyCode, KeyEvent event){
+    	for(IRhoListener listener: mKeyListeners){
+    		if(listener.onKey(keyCode, event)){
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
     @Override
@@ -726,6 +738,34 @@ public class RhoExtManagerImpl implements IRhoExtManager {
                 res = ext.stopLocationUpdates(this, rhoWebView, res);
             }
         }
+    }
+
+    @Override
+    public void startKeyEventUpdates(IRhoListener listener)
+    {
+    	startKeyEventUpdates(listener, false);
+    }
+    
+    @Override
+    public void startKeyEventUpdates(IRhoListener listener, boolean makeImportant)
+    {
+    	Logger.D(TAG, "Registered KeyEvent Listener");
+		if(makeImportant){
+			mKeyListeners.remove(listener);
+			mKeyListeners.add(0, listener);
+		}
+		else{
+			if(!mKeyListeners.contains(listener)){
+				mKeyListeners.add(listener);
+			}
+		}
+    }
+    
+    @Override
+    public void stopKeyEventUpdates(IRhoListener listener)
+    {
+    	Logger.D(TAG, "Unregistered KeyEvent Listener");
+		mKeyListeners.remove(listener);
     }
 
     public String getProperty(String name) {

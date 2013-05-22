@@ -56,7 +56,6 @@
 #include "common/RhoFile.h"
 #include "bluetooth/Bluetooth.h"
 #include "statistic/RhoProfiler.h"
-#include "json/JSONIterator.h"
 
 #ifndef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 #include "MetaHandler.h"
@@ -78,7 +77,6 @@ bool Rhodes_WM_ProcessBeforeNavigate(LPCTSTR url);
 using namespace rho::common;
 using namespace rho;
 using namespace stdext;
-using namespace rho::json;
 
 #if !defined(_WIN32_WCE)
 int CMainWindow::m_screenWidth;
@@ -115,9 +113,6 @@ CMainWindow::CMainWindow()
 
     m_alertDialog = 0;
 	m_isMinimized = 0;
-
-    m_nCurrentTab = -1;
-    m_bTabCreated = false;
 }
 
 CMainWindow::~CMainWindow()
@@ -136,7 +131,7 @@ void CMainWindow::Navigate2(BSTR URL, int index)
     {
 		StringW cw = convertToStringW(cleared_url);
         if ( index < 0 )
-            index = tabbarGetCurrent();
+            index = m_oTabBar.GetCurrentTabIndex();
 
         m_pBrowserEng->Navigate(cw.c_str() ,index); 
 	}
@@ -152,7 +147,7 @@ void CMainWindow::Navigate(BSTR URL, int index)
 	    //m_spIWebBrowser2->Navigate(cleared_url_bstr, NULL, &CComVariant(L"_self"), NULL, NULL);
 
         if ( index < 0 )
-            index = tabbarGetCurrent();
+            index = m_oTabBar.GetCurrentTabIndex();
 
         m_pBrowserEng->Navigate(cw.c_str() ,index );
 	}
@@ -405,14 +400,14 @@ HWND CMainWindow::getWebViewHWND()
     if (!m_pBrowserEng)
         return 0;
 
-    return m_pBrowserEng->GetHTMLWND(tabbarGetCurrent());
+    return m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex());
 }
 
 void CMainWindow::hideWebView() 
 {
     if ( m_pBrowserEng )
     {
-        ::ShowWindow( m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()), SW_HIDE );
+        ::ShowWindow( m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()), SW_HIDE );
 	    mIsBrowserViewHided = true;
     }
 }
@@ -421,7 +416,7 @@ void CMainWindow::showWebView()
 {
     if ( m_pBrowserEng )
     {
-        ::ShowWindow( m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()), SW_SHOW );
+        ::ShowWindow( m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()), SW_SHOW );
 	    mIsBrowserViewHided = false;
     }
 }
@@ -488,8 +483,8 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     //m_browser.MoveWindow(0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight());
     RECT rect = {0, 0, xSize, ySize-m_menuBarHeight-m_toolbar.getHeight()};
 
-    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()) )
-        m_pBrowserEng->ResizeOnTab(tabbarGetCurrent(), rect);
+    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()) )
+        m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabIndex(), rect);
 
     if (m_menuBar.m_hWnd) {
 		m_menuBar.MoveWindow(0, ySize-m_menuBarHeight, xSize, m_menuBarHeight);
@@ -525,8 +520,8 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     }
 #endif
 
-    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()) )
-        m_pBrowserEng->ResizeOnTab(tabbarGetCurrent(), rect);
+    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()) )
+        m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabIndex(), rect);
 
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, ySize-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
@@ -965,7 +960,7 @@ LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
         return 0;
     }
 
-    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()) : NULL;
+    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()) : NULL;
     if (hBrowserWnd && ::IsWindowVisible(m_hWnd) ) //!::IsIconic(m_hWnd))
 	{
 		if (hWndLostFocus == hBrowserWnd)
@@ -993,7 +988,7 @@ LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	restoreWebView();
 
     if ( m_pBrowserEng )
-        m_pBrowserEng->BackOnTab(tabbarGetCurrent(), 1);
+        m_pBrowserEng->BackOnTab(m_oTabBar.GetCurrentTabIndex(), 1);
 
     return 0;
 }
@@ -1003,7 +998,7 @@ LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 	restoreWebView();
 
     if ( m_pBrowserEng )
-        m_pBrowserEng->ForwardOnTab(tabbarGetCurrent());
+        m_pBrowserEng->ForwardOnTab(m_oTabBar.GetCurrentTabIndex());
 
     return 0;
 }
@@ -1042,7 +1037,7 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     if ( m_pBrowserEng )
-        m_pBrowserEng->ReloadOnTab(false, tabbarGetCurrent());
+        m_pBrowserEng->ReloadOnTab(false, m_oTabBar.GetCurrentTabIndex());
 
     return 0;
 }
@@ -1076,7 +1071,7 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
         if (wcurl) 
         {
             if ( nd->index < 0 )
-                nd->index = tabbarGetCurrent();
+                nd->index = m_oTabBar.GetCurrentTabIndex();
 
             if ( m_pBrowserEng )
                 m_pBrowserEng->executeJavascript(wcurl,nd->index);
@@ -1100,7 +1095,7 @@ LRESULT CMainWindow::OnZoomPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
     float fZoom = pFloatData->m_fValue;
     delete pFloatData;
     if ( m_pBrowserEng )
-        m_pBrowserEng->ZoomPageOnTab(fZoom, tabbarGetCurrent());
+        m_pBrowserEng->ZoomPageOnTab(fZoom, m_oTabBar.GetCurrentTabIndex());
 
     return 0;
 }
@@ -1109,7 +1104,7 @@ LRESULT CMainWindow::OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
 {
     int nZoom = (int)hWndCtl;
     if ( m_pBrowserEng )
-        m_pBrowserEng->ZoomTextOnTab(nZoom, tabbarGetCurrent());
+        m_pBrowserEng->ZoomTextOnTab(nZoom, m_oTabBar.GetCurrentTabIndex());
     return 0;
 }
 
@@ -1338,7 +1333,7 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 #endif
 
     //Fix issue with lost focus after License Screen hides
-    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()) : NULL;
+    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()) : NULL;
     if (hBrowserWnd && !::IsIconic(m_hWnd))
         ::SetFocus(hBrowserWnd);
 
@@ -1465,7 +1460,7 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
 void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
 {
 	if ( !m_bLoading && !mIsBrowserViewHided && m_pBrowserEng )
-        ::ShowWindow(m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()), SW_SHOW);
+        ::ShowWindow(m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()), SW_SHOW);
 
 
     RAWLOGC_INFO("WebView", "Page load complete." );
@@ -1654,7 +1649,7 @@ void CMainWindow::createCustomMenu()
 	CMenu sub;
 	CMenu popup;
 	
-    if (!m_pBrowserEng || !m_pBrowserEng->GetHTMLWND(tabbarGetCurrent()))
+    if (!m_pBrowserEng || !m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()))
         return;
 
 	VERIFY(menu.CreateMenu());
@@ -1814,162 +1809,18 @@ extern "C" LRESULT rho_wmimpl_draw_splash_screen(HWND hWnd)
 	return 1;
 }
 
-static int getColorFromString(const char* szColor)
-{
-    if ( !szColor || !*szColor )
-        return RGB(0, 0, 0);
-
-	int c = atoi(szColor);
-
-	int cR = (c & 0xFF0000) >> 16;
-	int cG = (c & 0xFF00) >> 8;
-	int cB = (c & 0xFF);
-
-    return RGB(cR, cG, cB);
-}
-
-void CMainWindow::createTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult)
-{
-    if (!rho_rhodesapp_check_mode() )
-        return;
-
-	COLORREF   rgbBackColor;
-    bool bHiddenTabs = false, bCreateOnDemand = false;
-
-    for ( Hashtable<rho::String, rho::String>::const_iterator it = tabBarProperties.begin(); it != tabBarProperties.end(); ++it )
-    {
-        const char *name = (it->first).c_str();
-        const char *value = (it->second).c_str();
-        if (strcasecmp(name, "backgroundColor") == 0) 
-            rgbBackColor = getColorFromString(value);
-        if (strcasecmp(name, "hiddenTabs") == 0) 
-            bHiddenTabs = strcasecmp(value, "true") == 0;
-        if (strcasecmp(name, "createOnDemand") == 0) 
-            bCreateOnDemand = strcasecmp(value, "true") == 0;
-
-    }
-
-    if ( !bHiddenTabs )
-    {
-        LOG(WARNING) + "Illegal argument for create_nativebar: hiddenTabs should be true for Windows Mobile and Windows CE.";
-        bHiddenTabs = true;
-    }
-
-    int nStartTab = -1;
-
-    for (int i = 0; i < (int)tabbarElements.size(); ++i) 
-    {
-        const char *label = NULL;
-        const char *action = NULL;
-        const char *icon = NULL;
-        const char *reload = NULL;
-        const char *colored_icon = NULL;
-        
-    	COLORREF selected_color;
-        const char *disabled = NULL;
-		COLORREF web_bkg_color;
-        const char* use_current_view_for_tab = NULL;
-        bool bUseCurrentViewForTab = false, bReloadPage = false;
-        CJSONEntry oEntry(tabbarElements[i].c_str());
-
-        if ( oEntry.hasName("label") )
-            label = oEntry.getString("label");
-        if ( oEntry.hasName("action") )
-            action = oEntry.getString("action");
-        if ( oEntry.hasName("icon") )
-            icon = oEntry.getString("icon");
-        if ( oEntry.hasName("coloredIcon") )
-            colored_icon = oEntry.getString("coloredIcon");
-        if ( oEntry.hasName("reload") )
-        {
-            reload = oEntry.getString("reload");
-            if (strcasecmp(reload, "true") == 0)
-                bReloadPage = true;
-        }
-        if ( oEntry.hasName("selectedColor") )
-            selected_color = getColorFromString(oEntry.getString("selectedColor"));
-        if ( oEntry.hasName("disabled") )
-            disabled = oEntry.getString("disabled");
-        if ( oEntry.hasName("useCurrentViewForTab") )
-        {
-            use_current_view_for_tab = oEntry.getString("useCurrentViewForTab");
-            if (strcasecmp(use_current_view_for_tab, "true") == 0)
-                bUseCurrentViewForTab = true;
-        }
-        if (oEntry.hasName("backgroundColor")) 
-            web_bkg_color = getColorFromString(oEntry.getString("backgroundColor"));
-
-        if (label == NULL)
-            label = "";
-        
-        if ( label == NULL || action == NULL) {
-            LOG(ERROR) + "Illegal argument for create_nativebar";
-            return;
-        }
-
-        m_arTabs.addElement(CTabBarItem(action, label, bUseCurrentViewForTab, bReloadPage));
-
-        if (m_strStartTabName.length()>0 && m_strStartTabName == label)
-            nStartTab = i;
-
-    }
-
-    if (!bCreateOnDemand)
-    {
-        for ( int i = 0; i < (int)m_arTabs.size(); i++ )
-        {
-            tabbarSwitch(i);
-        }
-    }
-
-    if (m_strStartTabName.length()>0&&nStartTab>=0)
-    {
-        SetTimer( 1, 1000 );
-    }
-
-    m_bTabCreated = true;
-}
-
 LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     LOG(INFO) + "OnTimer : " + wParam;
     bHandled = FALSE;
 
-    if ( wParam == 1 )
+    if ( wParam == CNativeTabbar::TABBAR_TIMER_ID )
     {
-        tabbarSwitchByName( m_strStartTabName.c_str(), false );
-        m_strStartTabName = "";
-        KillTimer(1); 
-
         bHandled = TRUE;
+        return m_oTabBar.OnTimer(uMsg, wParam, lParam);
     }
 
     return 0;
-}
-
-void CMainWindow::removeTabbar()
-{
-    for ( int i = 0; i < (int)m_arTabs.size(); i++ )
-    {
-        if (!m_arTabs[i].m_bUseCurrentViewForTab)
-            m_pBrowserEng->CloseTab(m_arTabs[i].m_nTabID);
-    }
-
-    m_arTabs.removeAllElements();
-    m_bTabCreated = false;
-    m_nCurrentTab = -1;
-}
-
-void CMainWindow::removeTab(int index)
-{
-    if (index >= 0 && index < (int)m_arTabs.size() )
-    {
-        if (!m_arTabs[index].m_bUseCurrentViewForTab)
-            m_pBrowserEng->CloseTab(m_arTabs[index].m_nTabID);
-
-        m_arTabs[index].m_nTabID = -1;
-        m_arTabs[index].m_hwndTab = 0;
-    }
 }
 
 LRESULT CMainWindow::OnCopyData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -1978,106 +1829,9 @@ LRESULT CMainWindow::OnCopyData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
         return 0;
 
     COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
-    //tabbarSwitchByName((LPCSTR)(pcds->lpData));
     if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))
-    {
-        //m_strStartTabName = (LPCSTR)(pcds->lpData);
-        //SetTimer( 1, 4000 );
-
-        tabbarSwitchByName((LPCSTR)(pcds->lpData), true);
-    }
+        m_oTabBar.SwitchTabByName((LPCSTR)(pcds->lpData), true);
 
     return 0;
 }
 
-void CMainWindow::tabbarSwitchByName(const char* szTabName, bool bExecuteJS)
-{
-    LOG(INFO) + "tabbarSwitchByName: " + szTabName;
-
-    if ( !szTabName || !*szTabName)
-        return;
-
-    for ( int i = 0; i < (int)m_arTabs.size(); i++ )
-    {
-        if ( m_arTabs[i].m_strLabel == szTabName )
-        {
-            if ( bExecuteJS )
-            {
-                String strJS = "Rho.NativeTabbar.switchTab(";
-                strJS += convertToStringA(i);
-                strJS += ");";
-
-                rho_webview_execute_js( strJS.c_str(), tabbarGetCurrent() );
-            }
-            else
-                tabbarSwitch(i);
-            break;
-        }
-    }
-}
-
-void CMainWindow::tabbarSwitch(int index)
-{
-    if (!m_pBrowserEng)
-        return;
-
-    if ( index >= (int)m_arTabs.size() )
-    {
-        LOG(ERROR) + "Invalid Tab Index: " + index;
-        return;
-    }
-
-    bool bNewTab = !m_arTabs[index].m_hwndTab;
-    if ( !m_arTabs[index].m_hwndTab )
-    {
-        if ( m_arTabs[index].m_bUseCurrentViewForTab)
-        {
-            m_arTabs[index].m_nTabID = 0;
-            m_arTabs[index].m_hwndTab = m_pBrowserEng->GetHTMLWND(0);
-        }else
-        {
-            m_arTabs[index].m_nTabID = m_pBrowserEng->NewTab();
-
-            if ( m_arTabs[index].m_nTabID < 0 )
-            {
-                LOG(ERROR) + "Unable to create Tab. NewTab return: " + m_arTabs[index].m_nTabID;
-                return;
-            }
-            else
-                m_arTabs[index].m_hwndTab = m_pBrowserEng->GetHTMLWND(m_arTabs[index].m_nTabID);
-        }
-    }
-
-    if ( !m_arTabs[index].m_hwndTab )
-    {
-        LOG(ERROR) + "Unable to create Tab. Cannot get Tab Window.";
-        return;
-    }
-
-    if ( m_nCurrentTab != index )
-        m_pBrowserEng->SwitchTab(m_arTabs[index].m_nTabID);
-
-    m_nCurrentTab = index;
-
-    if ( m_arTabs[index].m_bReloadPage || bNewTab )
-        RHODESAPP().loadUrl( m_arTabs[index].m_strAction );
-    
-}
-
-void CMainWindow::tabbarBadge(int index, const char* badge)
-{
-    //Not implemented
-}
-
-int CMainWindow::tabbarGetCurrent()
-{
-    if (m_arTabs.size()>0 && m_nCurrentTab < m_arTabs.size() && m_nCurrentTab >= 0 )
-	    return m_arTabs[m_nCurrentTab].m_nTabID;
-
-    return 0;
-}
-
-bool CMainWindow::isTabBarStarted()
-{
-    return m_bTabCreated;
-}

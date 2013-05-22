@@ -276,29 +276,31 @@ jobject rho_cast_helper<jobject, VALUE>::operator()(JNIEnv *env, VALUE value)
 
     switch(TYPE(value))
     {
-    case T_SYMBOL:
+    case RUBY_T_SYMBOL:
         value = rb_funcall(value, rb_intern("to_s"), 0);
-    case T_STRING:
+    case RUBY_T_STRING:
         RAWTRACE("Convert to String object");
         return env->NewStringUTF(RSTRING_PTR(value));
-    case T_ARRAY:
+    case RUBY_T_ARRAY:
         RAWTRACE("Convert to Collection object");
         return convertRubyArrayToJavaCollection(value);
-    case T_HASH:
+    case RUBY_T_HASH:
         RAWTRACE("Convert to Map object");
         return convertRubyHashToJavaMap(value);
-    case T_TRUE:
+    case RUBY_T_TRUE:
         RAWTRACE("Convert to TRUE Boolean obeject");
         return RhoJniConvertor::getBooleanObject(true);
-    case T_FALSE:
+    case RUBY_T_FALSE:
         RAWTRACE("Convert to FALSE Boolean object");
         return RhoJniConvertor::getBooleanObject(false);
-    case T_FIXNUM:
+    case RUBY_T_FIXNUM:
+    case RUBY_T_BIGNUM:
         RAWTRACE("Convert to Integer object");
-        return RhoJniConvertor::getIntegerObject(rho_ruby_get_int(value));
-    case T_FLOAT:
+        return RhoJniConvertor::getIntegerObject(NUM2LONG(value));
+    case RUBY_T_FLOAT:
+    case RUBY_T_RATIONAL:
         RAWTRACE("Convert to Double object");
-        return RhoJniConvertor::getDoubleObject(rho_ruby_get_double(value));
+        return RhoJniConvertor::getDoubleObject(NUM2DBL(value));
     }
 
     RAWLOG_ERROR1("rho_cast<jobject, VALUE>: wrong type of VALUE: %d", TYPE(value));
@@ -379,7 +381,7 @@ jobjectArray rho_cast_helper<jobjectArray, VALUE>::operator()(JNIEnv *env, VALUE
     if (NIL_P(value))
         return 0;
 
-    if(TYPE(value) == T_ARRAY)
+    if(TYPE(value) == RUBY_T_ARRAY)
     {
         int size = RARRAY_LEN(value);
         jobjectArray jArray = env->NewObjectArray(size, clsString, 0);
@@ -410,15 +412,15 @@ jboolean rho_cast_helper<jboolean, VALUE>::operator()(JNIEnv *env, VALUE value)
     if (NIL_P(value))
         return 0;
 
-    if(TYPE(value) == T_TRUE)
+    if(TYPE(value) == RUBY_T_TRUE)
     {
         return static_cast<jboolean>(true);
     }
-    if(TYPE(value) == T_FALSE)
+    if(TYPE(value) == RUBY_T_FALSE)
     {
         return static_cast<jboolean>(false);
     }
-    if(TYPE(value) == T_FIXNUM)
+    if(TYPE(value) == RUBY_T_FIXNUM)
     {
         return static_cast<jboolean>(rho_ruby_get_int(value) != 0);
     }
@@ -433,7 +435,7 @@ jint rho_cast_helper<jint, VALUE>::operator()(JNIEnv *env, VALUE value)
     if (NIL_P(value))
         return 0;
 
-    if(TYPE(value) == T_FIXNUM)
+    if(TYPE(value) == RUBY_T_FIXNUM || TYPE(value) == RUBY_T_BIGNUM)
     {
         return static_cast<jint>(NUM2LONG(value));
     }
@@ -449,9 +451,12 @@ jdouble rho_cast_helper<jdouble, VALUE>::operator()(JNIEnv *env, VALUE value)
     if (NIL_P(value))
         return 0;
 
-    if(TYPE(value) == T_FLOAT)
+    if(TYPE(value) == RUBY_T_FLOAT ||
+       TYPE(value) == RUBY_T_FIXNUM ||
+       TYPE(value) == RUBY_T_BIGNUM ||
+       TYPE(value) == RUBY_T_RATIONAL)
     {
-        return static_cast<jdouble>(RFLOAT_VALUE(value));
+        return static_cast<jdouble>(NUM2DBL(value));
     }
 
     RAWLOG_ERROR1("rho_cast<jdouble, VALUE>: wrong type of VALUE: %d", TYPE(value));
