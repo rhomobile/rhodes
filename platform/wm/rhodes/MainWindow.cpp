@@ -552,18 +552,24 @@ LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ProcessDocumentComplete( (LPCTSTR)lParam );
+
+    free((void*)lParam);
     return 0;
 }
 
 LRESULT CMainWindow::OnNavigateComplete(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ProcessNavigateComplete( (LPCTSTR)lParam );
+
+    free((void*)lParam);
     return 0;
 }
 
 LRESULT CMainWindow::OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ProcessTitleChange( (LPCTSTR)lParam );
+
+    free((void*)lParam);
     return 0;
 }
 
@@ -576,19 +582,28 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         rho_wm_impl_CheckLicense();
 #endif
 
+    free((void*)lParam);
     return 0;
 }
 
 LRESULT CMainWindow::OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     PROF_STOP("BROWSER_PAGE");
-    return RHODESAPP().getExtManager().OnNavigateTimeout((LPCTSTR)lParam);
+    LRESULT lRes =  RHODESAPP().getExtManager().OnNavigateTimeout((LPCTSTR)lParam);
+
+    free((void*)lParam);
+
+    return lRes;
 }
 
 LRESULT CMainWindow::OnNavigateError (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     PROF_STOP("BROWSER_PAGE");
-    return RHODESAPP().getExtManager().OnNavigateError((LPCTSTR)lParam);
+    LRESULT lRes =  RHODESAPP().getExtManager().OnNavigateError((LPCTSTR)lParam);
+
+    free((void*)lParam);
+
+    return lRes;
 }
 
 LRESULT CMainWindow::OnSetSIPState (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)

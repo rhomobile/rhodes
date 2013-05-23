@@ -160,7 +160,9 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
 
     if (m_strStartTabName.length()>0&&nStartTab>=0)
     {
-        getAppWindow().SetTimer( TABBAR_TIMER_ID, 1000 );
+        //getAppWindow().SetTimer( TABBAR_TIMER_ID, 1000 );
+        SwitchTabByName( m_strStartTabName.c_str(), false );
+        m_strStartTabName = "";
     }
 
     m_bTabCreated = true;
