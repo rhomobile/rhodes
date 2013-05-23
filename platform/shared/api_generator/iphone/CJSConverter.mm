@@ -26,9 +26,9 @@
         
         if (level == 0)
             strRes = [strRes stringByAppendingString:@"\"result\":"];
-        strRes = [strRes stringByAppendingString:@"\""];
+        //strRes = [strRes stringByAppendingString:@"\""];
         strRes = [strRes stringByAppendingString:[CJSConverter quoteString:objString]];
-        strRes = [strRes stringByAppendingString:@"\""];
+        //strRes = [strRes stringByAppendingString:@"\""];
     }
     else if ([objectiveC_value isKindOfClass:[NSNumber class]]) {
         // int, bool or float
@@ -93,7 +93,7 @@
             if (!is_first) {
                strRes = [strRes stringByAppendingString:@","]; 
             }
-            NSString* keyval = [NSString stringWithFormat:@"\"%@\":%@",[CJSConverter quoteString:objKey],[CJSConverter convertToJS:objValue level:(level+1)]];
+            NSString* keyval = [NSString stringWithFormat:@"%@:%@",[CJSConverter quoteString:objKey],[CJSConverter convertToJS:objValue level:(level+1)]];
             strRes = [strRes stringByAppendingString:keyval];            
             is_first = NO;
         }
