@@ -81,6 +81,10 @@
                                 <PLATFORM>WM</PLATFORM>
                                 <DESC>Create tabs on demand. If false, when all tabs will be created immediately.</DESC>
                             </PARAM>
+                            <PARAM name="placeTabsBottom" type="BOOLEAN">
+                                <PLATFORM>Android</PLATFORM>
+                                <DESC>Place TabBar to bottom instead of default top - only for Android</DESC>
+                            </PARAM>
 
                         </PARAMS>
                     </PARAM>

@@ -8,6 +8,7 @@ extern "C" void Init_WebView_extension();
 extern "C" void Init_Application();
 extern "C" void Init_NativeToolbar();
 extern "C" void Init_NativeTabbar();
+extern "C" void Init_Navbar();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -27,4 +28,9 @@ extern "C" void Init_CoreAPI_Extension()
     Init_NativeToolbar();
     Init_NativeTabbar();
 #endif
+
+#if (defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
+    Init_Navbar();
+#endif
+
 }

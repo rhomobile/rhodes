@@ -154,11 +154,12 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
     if (!rho_rhodesapp_check_mode())
         return;
 
+    int bar_t = bar_type;
+    
 	const char* background_color = NULL;
 	const char* background_color_enable = NULL;
     
     const char* on_change_tab_callback = NULL;
-	
 
 	
     NSObject* obj = nil;
@@ -169,6 +170,13 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
             NSNumber* obj_num = (NSNumber*)obj;
             background_color = [[NSString stringWithFormat:@"%@", obj_num] UTF8String];
             background_color_enable = "true";
+        }
+        obj = [p_properties objectForKey:@"verticalOrientation"];
+        if (obj != nil) {
+            NSNumber* obj_num = (NSNumber*)obj;
+            if ([obj_num boolValue]) {
+                bar_t = VTABBAR_TYPE;
+            }
         }
     }
     
@@ -321,7 +329,7 @@ void rho_create_nativebar_inner(int bar_type, NSArray* p_items, NSDictionary* p_
     }
 	
     id runnable = [RhoNativeBarCreateTask class];
-    id arg1 = [NSValue valueWithBytes:&bar_type objCType:@encode(int)];
+    id arg1 = [NSValue valueWithBytes:&bar_t objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg1 arg:main_properties wait:NO];
 }
 
@@ -330,9 +338,6 @@ void rho_create_toolbar(NSArray* items, NSDictionary* properties) {
 }
 
 void rho_create_tabbar(NSArray* items, NSDictionary* properties, id<IMethodResult>callback) {
-    //COMMONAPI
-    // add check for Vertical type
-    // add callbacl processing
     rho_create_nativebar_inner(TABBAR_TYPE, items, properties, callback);
 }
 
@@ -360,40 +365,13 @@ BOOL nativebar_started() {
 
 
 
-/*
-void create_nativebar(int bar_type, rho_param *p)
-{
-	RAWLOG_INFO("NativeBar.create() is DEPRECATED. Use Rho::NativeToolbar.create() or Rho::NativeTabbar.create().");
-	create_nativebar_innner(bar_type, p);
-}
 
-void remove_nativebar() {
-	RAWLOG_INFO("NativeBar.remove() is DEPRECATED. Use Rho::NativeToolbar.remove() or Rho::NativeTabbar.remove().");
-	remove_nativebar_innner();
-}
-
-void nativebar_switch_tab(int index) {
-	RAWLOG_INFO("NativeBar.switch_tab() is DEPRECATED. Use Rho::NativeTabbar.switch_tab().");
-	nativebar_switch_tab_innner(index);
-}
-*/
-
-
-/*
- void create_native_toolbar(int bar_type, rho_param *p) {
-	create_nativebar_innner(bar_type, p);
-}
-*/
 
 void remove_native_toolbar() {
 	remove_nativebar_innner();
 }
 
-/*
-void create_native_tabbar(int bar_type, rho_param *p) {
-	create_nativebar_innner(bar_type, p);
-}
-*/
+
 
 void remove_native_tabbar() {
 	remove_nativebar_innner();
