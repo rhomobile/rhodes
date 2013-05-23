@@ -195,10 +195,13 @@ void CNativeTabbar::RemoveTab(int index)
     if (index >= 0 && index < (int)m_arTabs.size() )
     {
         if (!m_arTabs[index].m_bUseCurrentViewForTab)
+        {
+            LOG(INFO) + "Close Tab: " + index;
             getAppWindow().getWebKitEngine()->CloseTab(m_arTabs[index].m_nTabID);
 
-        m_arTabs[index].m_nTabID = -1;
-        m_arTabs[index].m_hwndTab = 0;
+            m_arTabs[index].m_nTabID = -1;
+            m_arTabs[index].m_hwndTab = 0;
+        }
     }
 }
 
@@ -228,7 +231,6 @@ void CNativeTabbar::SwitchTabByName(const char* szTabName, bool bExecuteJS)
     }
 }
 
-
 void CNativeTabbar::raiseTabEvent( const char* szEventName, int nOldTab, int nNewTab )
 {
     if ( m_oCallback.hasCallback() )
@@ -240,6 +242,34 @@ void CNativeTabbar::raiseTabEvent( const char* szEventName, int nOldTab, int nNe
         mapRes["tabEvent"] = szEventName;
         m_oCallback.set(mapRes);
     }
+}
+
+//as Newtab is a blocking function we have a timeout. 
+#define NEWTAB_IPC_ERR	-1
+#define NEWTAB_TIMEOUT	-2	// the new tab call timed out  
+#define NEWTAB_LOW_MEM	-3 // A tab cannot be created due to hitting the memory limit m_iMemLimit
+#define NEWTAB_MAX_TABS -4 // we have hit the #defined max tabs value defined in Engine2Core; MAX_TABS
+
+bool CNativeTabbar::removePerishableTab()
+{
+    int nTabToClose = -1;
+    for ( int i = 0; i < (int)m_arTabs.size(); i++ )
+    {
+        if ( m_arTabs[i].m_nTabID != 0 && m_arTabs[i].m_bPerishable && i != m_nCurrentTab )
+        {
+            nTabToClose = i;
+            break;
+        }
+    }
+    
+    if ( nTabToClose == -1 && m_nCurrentTab > 0 )
+        nTabToClose = m_nCurrentTab;
+
+    if ( nTabToClose == -1 )
+        return false;
+
+    RemoveTab(nTabToClose);
+    return true;
 }
 
 void CNativeTabbar::SwitchTab(int index)
@@ -260,6 +290,10 @@ void CNativeTabbar::SwitchTab(int index)
         {
             m_arTabs[index].m_nTabID = 0;
             m_arTabs[index].m_hwndTab = getAppWindow().getWebKitEngine()->GetHTMLWND(0);
+
+            String strUrl = RHODESAPP().canonicalizeRhoUrl(m_arTabs[index].m_strAction);
+            
+            bNewTab = RHODESAPP().getCurrentUrl(0) != strUrl;
         }else
         {
             raiseTabEvent( "onTabNewRequest", m_nCurrentTab, -1 );
@@ -268,8 +302,20 @@ void CNativeTabbar::SwitchTab(int index)
 
             if ( m_arTabs[index].m_nTabID < 0 )
             {
-                LOG(ERROR) + "Unable to create Tab. NewTab return: " + m_arTabs[index].m_nTabID;
-                return;
+                LOG(ERROR) + "New Tab failed: " + m_arTabs[index].m_nTabID;
+
+                if ( m_arTabs[index].m_nTabID == NEWTAB_LOW_MEM || m_arTabs[index].m_nTabID == NEWTAB_MAX_TABS )
+                {
+                    LOG(INFO) + "Try to close perishable tab.";
+                    removePerishableTab();
+                    m_arTabs[index].m_nTabID = getAppWindow().getWebKitEngine()->NewTab();
+
+                    if ( m_arTabs[index].m_nTabID < 0 )
+                    {
+                        LOG(ERROR) + "New Tab failed: " + m_arTabs[index].m_nTabID;
+                        return;
+                    }
+                }
             }
             else
                 m_arTabs[index].m_hwndTab = getAppWindow().getWebKitEngine()->GetHTMLWND(m_arTabs[index].m_nTabID);

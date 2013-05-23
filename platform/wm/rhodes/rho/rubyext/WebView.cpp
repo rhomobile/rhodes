@@ -64,11 +64,7 @@ void rho_webview_navigate(const char* url, int index)
 
     String strUrl = url;
 
-#if defined(RHO_NO_RUBY)
-    strUrl = RHODESAPP().canonicalizeRhoPath(url);
-#else
     strUrl = RHODESAPP().canonicalizeRhoUrl(url);
-#endif
     
     TNavigateData* nd = new TNavigateData();
     nd->index = index;
