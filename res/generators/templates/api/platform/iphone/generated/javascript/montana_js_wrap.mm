@@ -223,15 +223,17 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(<%= '@"' + $cur_module.name + '::' + module_method.native_name + ' parameter %d is nil!"' %>, i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
     NSMutableArray* params_array = [NSMutableArray arrayWithCapacity:(<%= module_method.params.size %>)];
     for (i = 0 ; i < (<%= module_method.params.size %>); i++) {
-        if (params[i] == nil)
-        {
-            params[i] = [CJSConverter getObjectiveCNULL];
-        }
         [params_array addObject:params[i]];
     }
 

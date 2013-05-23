@@ -67,6 +67,7 @@
             rho_ruby_add_to_hash(v, vKey, vItem);
         }
     }
+    // ToDo: Support CMethodResultError
     
     return v;
 }
