@@ -25,7 +25,7 @@
 *------------------------------------------------------------------------*/
 package com.rhomobile.rhodes.ui;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhoLogConf;
 import com.rhomobile.rhodes.RhodesService;
 
@@ -57,35 +57,35 @@ public class LogViewDialog extends Dialog implements OnClickListener {
 
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-		setContentView(AndroidR.layout.logview);
-		refreshButton = (Button) findViewById(AndroidR.id.logviewRefreshButton);
-		clearButton = (Button) findViewById(AndroidR.id.logviewClearButton);
-		sendButton = (Button) findViewById(AndroidR.id.logviewSendButton);
-		closeButton = (Button) findViewById(AndroidR.id.logviewCloseButton);
+		setContentView(R.layout.logview);
+		refreshButton = (Button) findViewById(R.id.logviewRefreshButton);
+		clearButton = (Button) findViewById(R.id.logviewClearButton);
+		sendButton = (Button) findViewById(R.id.logviewSendButton);
+		closeButton = (Button) findViewById(R.id.logviewCloseButton);
 
 		refreshButton.setOnClickListener(this);
 		clearButton.setOnClickListener(this);
 		sendButton.setOnClickListener(this);
 		closeButton.setOnClickListener(this);
 
-		logContent = (TextView) this.findViewById(AndroidR.id.logcontent);
+		logContent = (TextView) this.findViewById(R.id.logcontent);
 		
 		loadLogText();
 	}
 	
 	public void onClick(View view) {
 		switch (view.getId()) {
-		case AndroidR.id.logviewRefreshButton:
+		case R.id.logviewRefreshButton:
 			loadLogText();
 			break;
-		case AndroidR.id.logviewClearButton:
+		case R.id.logviewClearButton:
 			RhoLogConf.clearLog();
 			loadLogText();
 			break;
-		case AndroidR.id.logviewSendButton:
+		case R.id.logviewSendButton:
 			RhoLogConf.sendLog();
 			break;
-		case AndroidR.id.logviewCloseButton:
+		case R.id.logviewCloseButton:
 			cancel();
 			break;
 		}

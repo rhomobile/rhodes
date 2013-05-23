@@ -34,8 +34,6 @@
 #include <common/AutoPointer.h>
 #include <sync/RhoconnectClientManager.h>
 
-#include <genconfig.h>
-
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/JNIRhoRuby.h"
 #include "rhodes/RhoClassFactory.h"

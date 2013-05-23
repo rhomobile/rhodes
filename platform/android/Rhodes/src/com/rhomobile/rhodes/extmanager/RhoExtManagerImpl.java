@@ -57,7 +57,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private static native String nativeJSCallEntryPoint(String query);
 
     static int getResId(String className, String idName) {
-        className = com.rhomobile.rhodes.R.class.getCanonicalName() + "$" + className;
+        className = ContextFactory.getContext().getPackageName() + ".R$" + className;
         try {
             Class<?> rClass = Class.forName(className);
             Field field = rClass.getDeclaredField(idName);

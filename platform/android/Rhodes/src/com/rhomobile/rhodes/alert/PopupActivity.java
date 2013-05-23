@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesService;
@@ -169,11 +169,11 @@ public class PopupActivity extends BaseActivity {
 		Drawable icon = null;
 		if (iconName != null) {
 			if (iconName.equalsIgnoreCase("alert"))
-				icon = res.getDrawable(AndroidR.drawable.alert_alert);
+				icon = res.getDrawable(R.drawable.alert_alert);
 			else if (iconName.equalsIgnoreCase("question"))
-				icon = res.getDrawable(AndroidR.drawable.alert_question);
+				icon = res.getDrawable(R.drawable.alert_question);
 			else if (iconName.equalsIgnoreCase("info"))
-				icon = res.getDrawable(AndroidR.drawable.alert_info);
+				icon = res.getDrawable(R.drawable.alert_info);
 			else {
 				String iconPath = RhoFileApi.normalizePath("apps/" + iconName);
 				Bitmap bitmap = BitmapFactory.decodeStream(RhoFileApi.open(iconPath));

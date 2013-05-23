@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.List;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
@@ -330,30 +330,30 @@ public class SimpleMainView implements MainView {
 		View.OnClickListener onClick = null;
 		
 		if (action.equalsIgnoreCase("back")) {
-			icon = ctx.getResources().getDrawable(AndroidR.drawable.back);
+			icon = ctx.getResources().getDrawable(R.drawable.back);
 			onClick = new ActionBack();
 		}
 		else if (action.equalsIgnoreCase("forward")) {
 			if (RhodesService.isJQTouch_mode()) {
 				return null;
 			}
-			icon = ctx.getResources().getDrawable(AndroidR.drawable.next);
+			icon = ctx.getResources().getDrawable(R.drawable.next);
 			onClick = new ActionForward();
 		}
 		else if (action.equalsIgnoreCase("home")) {
-			icon = ctx.getResources().getDrawable(AndroidR.drawable.home);
+			icon = ctx.getResources().getDrawable(R.drawable.home);
 			onClick = new ActionHome();
 		}
 		else if (action.equalsIgnoreCase("options")) {
-			icon = ctx.getResources().getDrawable(AndroidR.drawable.options);
+			icon = ctx.getResources().getDrawable(R.drawable.options);
 			onClick = new ActionOptions();
 		}
 		else if (action.equalsIgnoreCase("refresh")) {
-			icon = ctx.getResources().getDrawable(AndroidR.drawable.refresh);
+			icon = ctx.getResources().getDrawable(R.drawable.refresh);
 			onClick = new ActionRefresh();
 		}
 		else if (action.equalsIgnoreCase("close") || action.equalsIgnoreCase("exit")) {
-			icon = ctx.getResources().getDrawable(AndroidR.drawable.exit);
+			icon = ctx.getResources().getDrawable(R.drawable.exit);
 			onClick = new ActionExit();
 		}
 		else if (action.equalsIgnoreCase("separator"))
