@@ -76,4 +76,5 @@ public:
 private:
 
     void raiseTabEvent( const char* szEventName, int nOldTab, int nNewTab );
+    bool removePerishableTab();
 };
