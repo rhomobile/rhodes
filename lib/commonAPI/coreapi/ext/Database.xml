@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
   <MODULE name="Database" parent="Rho" generateUnderscoreRubyNames="true">
-    <HELP_OVERVIEW>Database is low-level API to acceess SQLite local database.</HELP_OVERVIEW>
+    <HELP_OVERVIEW>Database is low-level API to access SQLite local database.</HELP_OVERVIEW>
     <MORE_HELP>This API used internally by RHOM. To use RHOM, just define your models and partition databases will be created automatically.</MORE_HELP>
 
     <ALIASES>
@@ -21,7 +21,7 @@
       </ALIASES>
 
       <METHOD name="initialize" constructor="true" generateAPI="false">
-        <DESC>Open or create database. If database file does not exist it will be created using SQL scheme : rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local</DESC>
+        <DESC>Open or create database. If database file does not exist it will be created using SQL scheme : rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files.</DESC>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
             <DESC>The path to the database. Databases stored at the path provided by Rho::Application.databaseFilePath</DESC>
@@ -116,7 +116,7 @@
       </METHOD>
 
       <METHOD name="destroyTables" generateAPI="false">
-        <DESC>Destroy database tables</DESC>
+        <DESC>Destroy database tables.</DESC>
         <PARAMS>
           <PARAM name="propertyMap" type="HASH">
             <PARAMS>
@@ -165,23 +165,58 @@
     </PLATFORM>
       
     <EXAMPLES>
-      <EXAMPLE title="Open database Examples">
+      <EXAMPLE title="Open and close database">
         <SECTIONS>
           <SECTION>
-            <DESC>
-              Delete all Rhodes model objects for a source, filtering by conditions.
-            </DESC>
             <CODE>
               <RUBY>
                 <![CDATA[
-Rho::Database.new( Rho::Application.databaseFilePath('test'), 'test')
-Rho::Database.close()
+db = Rho::Database.new(Rho::Application.databaseFilePath('test'), 'test')
+db.close()
 ]]>
               </RUBY>
               <JAVASCRIPT>
                 <![CDATA[
-Rho.Database.new( Rho.Application.databaseFilePath('test'), 'test');
-Rho.Database.close();
+var db = new Rho.Database(Rho.Application.databaseFilePath('test'), 'test');
+db.close();
+]]>
+              </JAVASCRIPT>
+            </CODE>
+
+          </SECTION>
+        </SECTIONS>          
+      </EXAMPLE>
+      <EXAMPLE title="destroyTables">
+        <SECTIONS>
+          <SECTION>
+            <DESC>Destroy multiple tables.</DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+db = Rho::Database.new(...)
+
+# destroy all tables in database
+db.destroyTables(:include => [], :exclude => [])
+
+# destroy specified tables
+db.destroyTables(:include => ['table1', 'table2'], :exclude => [])
+
+# destroy all but specified tables
+db.destroyTables(:include => [], :exclude => ['table1', 'table2'])
+]]>
+              </RUBY>
+              <JAVASCRIPT>
+                <![CDATA[
+var db = new Rho.Database(...);
+
+// destroy all tables in database
+db.destroyTables({include: [], exclude: []});
+
+// destroy specified tables
+db.destroyTables({include: ['table1', 'table2'], exclude: []});
+
+// destroy all but specified tables
+db.destroyTables({include: [], exclude: ['table1', 'table2']});
 ]]>
               </JAVASCRIPT>
             </CODE>
