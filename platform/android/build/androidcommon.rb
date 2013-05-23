@@ -174,6 +174,7 @@ def cc_def_args
     args << "-Wextra"
     args << "-Wno-psabi" if $ndkgccver != "4.2.1"
     args << "-Wno-sign-compare"
+    args << "-Wno-unused"
     args << "-mandroid"
     args << "-DANDROID"
     args << "-DOS_ANDROID"
@@ -204,6 +205,8 @@ def cpp_def_args
     args << "-fvisibility-inlines-hidden"
     args << "-fno-exceptions"
     args << "-fno-rtti"
+    args << "-std=c++11"
+    args << "-Wno-reorder"
     $cpp_def_args_val = args
   end
   $cpp_def_args_val.dup
@@ -213,7 +216,7 @@ def get_def_args(filename)
   if filename =~ /\.[cC]$/
     cc_def_args
   elsif filename =~ /\.[cC]([cC]|[xXpP][xXpP])$/
-    cpp_def_args + cc_def_args
+    cc_def_args + cpp_def_args
   end
 end
 
@@ -282,9 +285,6 @@ def cc_compile(filename, objdir, additional = nil)
   ccbin = cc_get_ccbin(filename)
 
   args = get_def_args(filename)
-  args << "-Wall"
-  args << "-Wextra"
-  args << "-Wno-unused"
   args += additional if additional.is_a? Array and not additional.empty?
   args << "-c"
   args << '"' + filename+ '"'

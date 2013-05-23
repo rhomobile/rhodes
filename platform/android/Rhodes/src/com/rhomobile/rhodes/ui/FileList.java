@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.util.Utils;
@@ -85,11 +85,11 @@ public class FileList extends BaseActivity implements OnClickListener{
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 		
-		setContentView(AndroidR.layout.directory_list);
+		setContentView(R.layout.directory_list);
 		
-		imagePreview = (ImageView) findViewById(AndroidR.id.preview);
+		imagePreview = (ImageView) findViewById(R.id.preview);
 
-		ListView filesList = (ListView) findViewById(AndroidR.id.filesList);
+		ListView filesList = (ListView) findViewById(R.id.filesList);
 
 		files = getImages();
 		List<String> names = new ArrayList<String>();
@@ -97,12 +97,12 @@ public class FileList extends BaseActivity implements OnClickListener{
 		while (it.hasNext()) {
 			names.add(Utils.getBaseName(it.next()));
 		}
-		filesList.setAdapter(new ArrayAdapter<String>(this, AndroidR.layout.file_row, names));
+		filesList.setAdapter(new ArrayAdapter<String>(this, R.layout.file_row, names));
 
-		Button okButton = (Button) findViewById(AndroidR.id.okButton);
-		Button cancelButton = (Button) findViewById(AndroidR.id.cancelButton);
+		Button okButton = (Button) findViewById(R.id.okButton);
+		Button cancelButton = (Button) findViewById(R.id.cancelButton);
 
-		TextView lookIn = (TextView) findViewById(AndroidR.id.lookIn);
+		TextView lookIn = (TextView) findViewById(R.id.lookIn);
 		lookIn.setText("Look In: Gallery");
 
 		okButton.setOnClickListener(this);
@@ -155,10 +155,10 @@ public class FileList extends BaseActivity implements OnClickListener{
 
     public void onClick(View view) {
         switch (view.getId()) {
-        case AndroidR.id.okButton:
+        case R.id.okButton:
             doCallback(RESULT_OK, selectedFile);
             break;
-        case AndroidR.id.cancelButton:
+        case R.id.cancelButton:
             doCallback(RESULT_CANCELED, null);
             break;
         }
