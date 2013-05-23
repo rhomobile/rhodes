@@ -48,15 +48,15 @@
         <DESC>Rollback database transaction</DESC>
       </METHOD>
 
-      <METHOD name="lockDb" generateAPI="false">
+      <METHOD name="lockDb" generateAPI="false" generateDoc="false">
         <DESC>Lock database. This method should be used to syncronize Database access with RhoConnect client. startTransaction also locks the database but if you going to read from database, lockDb is faster.</DESC>
       </METHOD>
 
-      <METHOD name="unlockDb" generateAPI="false">
+      <METHOD name="unlockDb" generateAPI="false" generateDoc="false">
         <DESC>Unlock database, previusly locked by lockDb.</DESC>
       </METHOD>
 
-      <METHOD name="isUiWaitForDb" generateAPI="false">
+      <METHOD name="isUiWaitForDb" generateAPI="false" generateDoc="false">
         <DESC>Is UI waiting for DB? Should be used in separate Ruby thread, which update database(implementing custom data sync logic). Will be true when database method calls from Main Ruby thread and wait for database.></DESC>
         <RETURN type="BOOLEAN"/>
       </METHOD>

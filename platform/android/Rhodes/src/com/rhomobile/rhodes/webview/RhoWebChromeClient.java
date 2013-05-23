@@ -151,7 +151,7 @@ public class RhoWebChromeClient extends WebChromeClient {
     
     public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
         AlertResult alertResult = new AlertResult(result);
-        RhoExtManager.getImplementationInstance().onAlert(view, message, alertResult);
+        RhoExtManager.getImplementationInstance().onConfirm(view, message, alertResult);
         return alertResult.isPending();
     }
 

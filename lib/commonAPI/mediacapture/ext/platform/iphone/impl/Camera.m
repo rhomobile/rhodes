@@ -23,6 +23,9 @@ void camera_take_picture(NSDictionary* options, id<IMethodResult> callback_api);
 }
 
 +(NSDictionary*)convertValuesToString:(NSDictionary*)dict {
+    if ((dict == nil) || ([dict isKindOfClass:[NSNull class]])) {
+        return [NSMutableDictionary dictionaryWithCapacity:1];
+    }
     NSMutableDictionary* res_dict = [NSMutableDictionary dictionaryWithCapacity:[dict count]];
     NSEnumerator* enumerator = [dict keyEnumerator];
     NSObject* obj = nil;

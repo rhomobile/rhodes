@@ -9,7 +9,7 @@ class NativeTabbar
   alias :create_orig create
   
 
-  def create(params, options = {})
+  def create(params, options = {}, callback = nil)
   
     if (params.is_a?(Hash))
         buttons = params[:tabs]
@@ -18,6 +18,10 @@ class NativeTabbar
         params = options
     else
         raise ArgumentError, 'invalid argument: first parameter should be Hash or Array.'
+    end
+
+    if params == nil
+        params = {}
     end
 
     if ( buttons && buttons.is_a?(Array))    
@@ -39,7 +43,11 @@ class NativeTabbar
         puts "$$$ TabBar create with callback ["+params[:on_change_tab_callback].to_s+"].["+params[:on_change_tab_callback].class.to_s+"]"
         create_orig( buttons, params, params[:on_change_tab_callback] )
     else
-        create_orig( buttons, params )
+        if callback != nil
+             create_orig( buttons, params, callback )
+        else 
+             create_orig( buttons, params )
+        end
     end    
     
   end

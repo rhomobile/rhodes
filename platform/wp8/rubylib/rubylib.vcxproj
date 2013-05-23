@@ -256,7 +256,6 @@
     <ClCompile Include="..\..\shared\ruby\ext\socket\socket.c" />
     <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c" />
     <ClCompile Include="..\..\shared\ruby\ext\strscan\strscan.c" />
-    <ClCompile Include="..\..\shared\ruby\ext\webview\webview_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\file.c" />
     <ClCompile Include="..\..\shared\ruby\gc.c" />
     <ClCompile Include="..\..\shared\ruby\generated\parse.c" />
