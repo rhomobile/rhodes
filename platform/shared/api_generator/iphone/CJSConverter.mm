@@ -99,6 +99,7 @@
         }
         strRes = [strRes stringByAppendingString:@"}"];
     }
+    // ToDo: Support CMethodResultError
     else if ([objectiveC_value isKindOfClass:[NSNull class]]) {
         if (level == 0)
             strRes = [strRes stringByAppendingString:@"\"result\":"];
