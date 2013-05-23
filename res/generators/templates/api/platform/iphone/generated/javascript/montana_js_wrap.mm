@@ -228,6 +228,10 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
 
     NSMutableArray* params_array = [NSMutableArray arrayWithCapacity:(<%= module_method.params.size %>)];
     for (i = 0 ; i < (<%= module_method.params.size %>); i++) {
+        if (params[i] == nil)
+        {
+            params[i] = [CJSConverter getObjectiveCNULL];
+        }
         [params_array addObject:params[i]];
     }
 
