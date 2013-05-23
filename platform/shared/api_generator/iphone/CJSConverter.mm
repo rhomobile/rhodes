@@ -3,9 +3,15 @@
 #import "api_generator/js_helpers.h"
 #import "CMethodResult.h"
 
+#import "json/JSONIterator.h"
+
 @implementation CJSConverter
 
 
+
++ (NSString*) quoteString:(NSString*)str {
+    return [NSString stringWithUTF8String:rho::json::CJSONEntry::quoteValue([str UTF8String]).c_str()];
+}
 
 
 + (NSString*) convertToJS:(NSObject*)objectiveC_value level:(int)level {
@@ -21,7 +27,7 @@
         if (level == 0)
             strRes = [strRes stringByAppendingString:@"\"result\":"];
         strRes = [strRes stringByAppendingString:@"\""];
-        strRes = [strRes stringByAppendingString:objString];
+        strRes = [strRes stringByAppendingString:[CJSConverter quoteString:objString]];
         strRes = [strRes stringByAppendingString:@"\""];
     }
     else if ([objectiveC_value isKindOfClass:[NSNumber class]]) {
@@ -87,7 +93,7 @@
             if (!is_first) {
                strRes = [strRes stringByAppendingString:@","]; 
             }
-            NSString* keyval = [NSString stringWithFormat:@"\"%@\":%@",objKey,[CJSConverter convertToJS:objValue level:(level+1)]];
+            NSString* keyval = [NSString stringWithFormat:@"\"%@\":%@",[CJSConverter quoteString:objKey],[CJSConverter convertToJS:objValue level:(level+1)]];
             strRes = [strRes stringByAppendingString:keyval];            
             is_first = NO;
         }
