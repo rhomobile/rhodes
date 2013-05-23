@@ -18,6 +18,10 @@ class NativeToolbar
         raise ArgumentError, 'invalid argument: first parameter should be Hash or Array.'
     end
 
+    if params == nil
+        params = {}
+    end
+
     params[:backgroundColor] = params[:background_color] if params[:background_color]
 
     params[:maskColor] = params[:mask_color] if params[:mask_color]
