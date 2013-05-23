@@ -258,9 +258,6 @@
     <ClCompile Include="..\..\shared\ruby\ext\navbar\navbar_wrap.c">
       <Filter>ext\navbar</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\webview\webview_wrap.c">
-      <Filter>ext\webview</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\alert\alert_wrap.c">
       <Filter>ext\alert</Filter>
     </ClCompile>

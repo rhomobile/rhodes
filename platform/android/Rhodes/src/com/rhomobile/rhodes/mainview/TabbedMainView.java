@@ -497,7 +497,10 @@ public class TabbedMainView implements MainView {
 			//	mChangeTabCallback = new String(((String)callbackObj));
 			//}
 
-			Object placeBottomObj = settings.get("place_tabs_bottom");
+			Object placeBottomObj = settings.get("placeTabsBottom");
+			if (placeBottomObj == null) {
+				placeBottomObj = settings.get("place_tabs_bottom");
+			}
 			if ((placeBottomObj != null) && (placeBottomObj instanceof Boolean)) {
 				place_tabs_bottom = ((Boolean)placeBottomObj).booleanValue();//;((String)placeBottomObj).equalsIgnoreCase("true");
 			}
