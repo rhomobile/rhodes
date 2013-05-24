@@ -257,8 +257,15 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         return;
     }
 
-    if ( cmd->type == app_deactivated )
-        m_commands.clear();
+    if ( cmd->type == app_deactivated)
+    {
+    	if ( m_expected == local_server_started )
+    	{
+    		m_commands.insert(m_commands.begin(), cmd->type);
+    		return;
+    	}
+    	m_commands.clear();
+    }
 
     m_commands.insert(m_commands.begin(), cmd->type);
     for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
