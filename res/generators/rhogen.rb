@@ -1043,6 +1043,8 @@ module Rhogen
     $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName", "deprecated", "generateAPI", "generateDoc", "constructor", "destructor", "generateNativeAPI"]
     $possible_attributes["PARAM"] = ["name", "nativeName", "type", "propertyHash", "default"]
     $possible_attributes["RETURN"] = ["type"]
+    $possible_attributes["CALLBACK"] = ["type"]
+    $possible_attributes["APPLIES"] = ["msiOnly"]
 
     $possible_children = {}
     $possible_children["API"] = ["MODULE"]
@@ -1057,7 +1059,7 @@ module Rhogen
     $possible_children["ALIASES"] = ["ALIAS"]
     $possible_children["ALIAS"] = ["DESC"]
     $possible_children["METHODS"] = ["METHOD", "ALIASES" ]
-    $possible_children["METHOD"] = ["DESC", "PARAMS", "RETURN", "CALLBACK", "PLATFORM", "MORE_HELP", "APPLIES", "VER_INTRODUCED"]
+    $possible_children["METHOD"] = ["DESC", "PARAMS", "RETURN", "CALLBACK", "PLATFORM", "MORE_HELP", "APPLIES", "VER_INTRODUCED", "BACKWARDS_COMPATIBILITY"]
     $possible_children["PARAMS"] = ["PARAM"]
     $possible_children["PARAM"] = ["DESC", "PARAM", "PARAMS", "VALUES", "CAN_BE_NIL"]
     $possible_children["RETURN"] = ["DESC", "PARAM", "PARAMS"]
