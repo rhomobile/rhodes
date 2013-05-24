@@ -116,11 +116,19 @@ int rho_webview_active_tab()
 #endif
 }
 
+void rho_webview_update_menu()
+{
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_UPDATEMENU, (LPARAM)0 );
+}
+/*
 void rho_webview_set_menu_items(VALUE valMenu) 
 {
-    rho_rhodesapp_setViewMenu(valMenu); 
-}
+    RHODESAPP().getAppMenu().setAppMenu(valMenu);
 
+#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+    rho_webview_update_menu();
+#endif
+}*/
 
 void rho_webview_full_screen_mode(int enable)
 {

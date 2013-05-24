@@ -338,7 +338,7 @@ void rho_rhodesapp_callUiCreatedCallback();
 void rho_rhodesapp_callUiDestroyedCallback();
 unsigned long rho_rhodesapp_GetCallbackObject(int nIndex);
 
-void rho_rhodesapp_setViewMenu(unsigned long valMenu);
+//void rho_rhodesapp_setViewMenu(unsigned long valMenu);
 const char* rho_rhodesapp_getappbackurl();
 
 int rho_rhodesapp_callPushCallback(const char* szData);

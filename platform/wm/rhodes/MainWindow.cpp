@@ -1078,6 +1078,12 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     return 0;
 }
 
+LRESULT CMainWindow::OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    createCustomMenu();
+    return 0;
+}
+
 LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     TNavigateData* nd = (TNavigateData*)hWndCtl;
@@ -1529,10 +1535,10 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
-	createCustomMenu();
+	//createCustomMenu();
 	
 	m_pageCounter++;
-	if (m_pageCounter > 2) //"loading" page + first page
+	if (m_pageCounter > 1) //"loading" page + first page
 		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
 #endif	
 
