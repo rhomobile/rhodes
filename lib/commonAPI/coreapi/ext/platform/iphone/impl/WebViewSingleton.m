@@ -7,7 +7,6 @@ extern void rho_webview_refresh(int tab_index);
 extern void rho_webview_navigate(const char* url, int tab_index);
 extern char* rho_webview_current_location(int tab_index);
 extern char* rho_webview_execute_js(const char* js, int tab_index);
-//extern void rho_webview_set_menu_items(VALUE argv);
 extern int rho_webview_active_tab();
 extern void rho_webview_full_screen_mode(int enable);
 extern BOOL rho_webview_get_full_screen_mode();
