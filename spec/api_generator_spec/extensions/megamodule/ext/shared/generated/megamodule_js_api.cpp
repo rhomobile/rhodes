@@ -5,70 +5,71 @@
 #define DEFAULT_LOGCATEGORY "Megamodule"
 
 
-rho::String js_Megamodule_getStringProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_getStringProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_getStringProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_getStringProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_getIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_getIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_getIntegerProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_getIntegerProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_setIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_setIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_setIntegerProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_setIntegerProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_typesTest(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_typesTest(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_typesTest(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_produceArray(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_produceArray(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_produceArray(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_produceArray(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_produceHash(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_produceHash(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_produceComplicatedResult(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_produceComplicatedResult(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_s_Megamodule_getObjectsCount(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_Megamodule_getObjectsCount(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_s_Megamodule_getObjectByIndex(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_Megamodule_getObjectByIndex(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_showAlertFromUIThread(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_showAlertFromUIThread(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_showAlertFromUIThread(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_showAlertFromUIThread(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_setPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_setPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_setPeriodicallyCallback(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_setPeriodicallyCallback(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_isPeriodicallyCallbackSetted(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_isPeriodicallyCallbackSetted(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_isPeriodicallyCallbackSetted(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_isPeriodicallyCallbackSetted(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_stopPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_stopPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_stopPeriodicallyCallback(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_stopPeriodicallyCallback(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_complicatedTypesTest1(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_complicatedTypesTest1(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_getProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_getProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_getProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_getProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_getProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_getProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_getAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_getAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_getAllProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_getAllProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_setProperty(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_setProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_setProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_setProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_setProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_setProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_setProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_Megamodule_clearAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_def_clearAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_Megamodule_clearAllProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_def_clearAllProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
-rho::String js_s_Megamodule_enumerate(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_Megamodule_enumerate(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
 
 
-rho::String js_s_Megamodule_getDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID);
-rho::String js_s_Megamodule_setDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID);
+rho::String js_s_Megamodule_getDefaultID(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_getDefault(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
+rho::String js_s_Megamodule_setDefaultID(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam);
 
 
 
@@ -137,6 +138,7 @@ extern "C" void Init_JSAPI_Megamodule(void)
 
 
     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:getDefaultID", js_s_Megamodule_getDefaultID);
+    rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:getDefault", js_s_Megamodule_getDefault);
     rho::apiGenerator::js_define_method("Rho:Examples:Megamodule:setDefaultID", js_s_Megamodule_setDefaultID);
 
 }

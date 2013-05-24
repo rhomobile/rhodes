@@ -11,6 +11,9 @@
 - (id) init;
 
 
+
++(NSString*) applyAliasesToPropertyName:(NSString*)prop_name;
++(NSDictionary*) applyAliasesToDictionary:(NSDictionary*)dict;
 -(void) getProperty:(NSString*)propertyName methodResult:(id<IMethodResult>)methodResult;
 -(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult;
 -(void) getAllProperties:(id<IMethodResult>)methodResult;
@@ -20,6 +23,8 @@
 
 
 -(void) getStringProperty:(id<IMethodResult>)methodResult;
+-(void) getIntegerProperty:(id<IMethodResult>)methodResult;
+-(void) setIntegerProperty:(int)IntegerProperty;
 
 
 -(void) dealloc;
