@@ -21,12 +21,12 @@
             </METHOD>
 
             <METHOD name="stop" access="STATIC" hasCallback="none">
-                <DESC></DESC>
+                <DESC>Stop playing the media file.</DESC>
             </METHOD>
 
             <!-- The following methods describe playback for video media -->
             <METHOD name="startvideo" access="STATIC" hasCallback="none" runInThread="ui">
-                <DESC></DESC>
+                <DESC>Playing a video file back</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING" runInThread="ui">
                         <DESC>File name of the video media to be played</DESC>
@@ -40,7 +40,7 @@
 
             <!-- These three methods are for RingtoneManager-->
             <METHOD name="getAllRingtones" access="STATIC" hasCallback="mandatory">
-                <DESC></DESC>               
+                <DESC>Getting all ringtones on the device</DESC>               
                 <CALLBACK type="HASH">
                     <PARAMS>
                         <PARAM name="name" type="STRING">
@@ -63,7 +63,7 @@
             </METHOD>
 
             <METHOD name="stopRingTone" access="STATIC" hasCallback="none">
-                <DESC>Stop the currently plaing ringtone.</DESC>
+                <DESC>Stop the currently playing ringtone.</DESC>
             </METHOD>            
 
 
