@@ -75,11 +75,11 @@ RHO_GLOBAL const char* rho_webview_current_location(int index)
 {
     return rho_rhodesapp_getcurrenturl(index);
 }
-
+/*
 RHO_GLOBAL void rho_webview_set_menu_items(VALUE valMenu)
 {
     rho_rhodesapp_setViewMenu(valMenu);
-}
+}*/
 
 RHO_GLOBAL int rho_webview_active_tab()
 {
