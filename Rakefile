@@ -439,7 +439,9 @@ end
 
 namespace "config" do
   task :common do
-    
+
+    puts RUBY_VERSION
+
     $binextensions = []
     $app_extensions_list = {}
     buildyml = 'rhobuild.yml'

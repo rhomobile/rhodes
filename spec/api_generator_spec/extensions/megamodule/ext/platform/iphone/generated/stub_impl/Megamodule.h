@@ -5,8 +5,6 @@
 @interface Megamodule : MegamoduleBase<IMegamodule> {
 }
 
--(void) getIntegerProperty:(id<IMethodResult>)methodResult;
--(void) setIntegerProperty:(int)value;
 -(void) typesTest:(NSString*)paramStr paramBool:(BOOL)paramBool paramInt:(int)paramInt paramFloat:(float)paramFloat paramArray:(NSArray*)paramArray paramHash:(NSDictionary*)paramHash methodResult:(id<IMethodResult>)methodResult;
 -(void) produceArray:(id<IMethodResult>)methodResult;
 -(void) produceHash:(id<IMethodResult>)methodResult;

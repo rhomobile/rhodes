@@ -36,7 +36,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhoLogConf;
 import com.rhomobile.rhodes.RhodesService;
 
@@ -58,23 +58,23 @@ public class LogOptionsDialog extends Dialog implements OnClickListener {
 
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-		setContentView(AndroidR.layout.logoptions);
+		setContentView(R.layout.logoptions);
 
-		saveButton = (Button) findViewById(AndroidR.id.logoptsSaveButton);
-		closeButton = (Button) findViewById(AndroidR.id.logoptsCloseButton);
+		saveButton = (Button) findViewById(R.id.logoptsSaveButton);
+		closeButton = (Button) findViewById(R.id.logoptsCloseButton);
 
 		saveButton.setOnClickListener(this);
 		closeButton.setOnClickListener(this);
 
-		includeClasses = (EditText) this.findViewById(AndroidR.id.includeClasses);
+		includeClasses = (EditText) this.findViewById(R.id.includeClasses);
 		
 		includeClasses.setText( RhoLogConf.getEnabledCategories() );
 		
-		excludeClasses = (EditText) this.findViewById(AndroidR.id.excludeClasses);
+		excludeClasses = (EditText) this.findViewById(R.id.excludeClasses);
 		
 		excludeClasses.setText( RhoLogConf.getDisabledCategories() );
 		
-		logLevel = (Spinner) this.findViewById(AndroidR.id.loglevel);
+		logLevel = (Spinner) this.findViewById(R.id.loglevel);
 
 		ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this.getContext(),
 				android.R.layout.simple_spinner_item,
@@ -87,7 +87,7 @@ public class LogOptionsDialog extends Dialog implements OnClickListener {
 
 	public void onClick(View view) {
 		switch (view.getId()) {
-		case AndroidR.id.logoptsSaveButton:
+		case R.id.logoptsSaveButton:
 			RhoLogConf.setMinSeverity(logLevel.getSelectedItemPosition());
 			RhoLogConf.setEnabledCategories(includeClasses.getText().toString());
 			RhoLogConf.setDisabledCategories(excludeClasses.getText().toString());
@@ -96,7 +96,7 @@ public class LogOptionsDialog extends Dialog implements OnClickListener {
 			
 			dismiss();
 			break;
-		case AndroidR.id.logoptsCloseButton:
+		case R.id.logoptsCloseButton:
 			cancel();
 			break;
 		}

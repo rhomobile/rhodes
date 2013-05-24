@@ -1,0 +1,7 @@
+ext/platform/android/generated/jni/Sensor.cpp
+ext/platform/android/generated/jni/sensor_ruby_wrap.cpp
+ext/platform/android/generated/jni/sensor_js_wrap.cpp
+ext/platform/android/jni/Sensor_impl.cpp
+ext/shared/generated/sensor_api_init.cpp
+ext/shared/generated/sensor_js_api.cpp
+ext/shared/generated/sensor_ruby_api.c

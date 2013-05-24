@@ -14,7 +14,7 @@ public interface IMegamodule extends IRhoApiObject, IRhoApiPropertyBag {
 
     void getStringProperty(IMethodResult result);
     void getIntegerProperty(IMethodResult result);
-    void setIntegerProperty(int value, IMethodResult result);
+    void setIntegerProperty(int IntegerProperty, IMethodResult result);
     void typesTest(String paramStr, boolean paramBool, int paramInt, double paramFloat, List<Integer> paramArray, Map<String, String> paramHash, IMethodResult result);
     void produceArray(IMethodResult result);
     void produceHash(IMethodResult result);

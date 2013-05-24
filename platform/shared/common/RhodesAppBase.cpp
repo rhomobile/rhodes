@@ -153,6 +153,10 @@ String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
 
 String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
 {
+#if defined(RHO_NO_RUBY)
+    return RHODESAPP().canonicalizeRhoPath(strUrl);
+#else
+
     if (strUrl.length() == 0 )
         return m_strHomeUrl;
 
@@ -164,6 +168,7 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
         return CFilePath::join(m_strHomeUrl,strUrl);
 
     return strUrl;
+#endif
 }
 
 boolean CRhodesAppBase::isBaseUrl(const String& strUrl)

@@ -334,8 +334,8 @@ BOOL CEBrowserEngine::StopOnTab(UINT iTab)
 		CloseHandle(m_hNavigated);
 		m_hNavigated = NULL;
 
-        SendMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, m_tabID, (LPARAM)L"NavigationStopped");
-        SendMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)L"NavigationStopped");
+        PostMessage(m_hwndParent, WM_BROWSER_ONNAVIGATECOMPLETE, m_tabID, (LPARAM)_tcsdup(L"NavigationStopped"));
+        PostMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)_tcsdup(L"NavigationStopped"));
 
 		return TRUE;
 	}
@@ -604,7 +604,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 				wcsncpy(tcURL, pdparams->rgvarg[0].pvarVal->bstrVal, MAX_URL-1);
 		}
 
-		SendMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)tcURL);
+		PostMessage(m_hwndParent, WM_BROWSER_ONDOCUMENTCOMPLETE, m_tabID, (LPARAM)_tcsdup(tcURL));
 
         m_bLoadingComplete = true;
         InvalidateRect(GetHTMLWND(0), NULL, FALSE);
@@ -658,7 +658,7 @@ HRESULT CEBrowserEngine::Invoke(DISPID dispidMember,
 			pScrollNotify = NULL;
 		}
 #endif
-        SendMessage(m_hwndParent, WM_BROWSER_ONBEFORENAVIGATE, (WPARAM)m_tabID, (LPARAM)tcURL);
+        PostMessage(m_hwndParent, WM_BROWSER_ONBEFORENAVIGATE, (WPARAM)m_tabID, (LPARAM)_tcsdup(tcURL));
 
 		retVal = S_OK;
 		break;

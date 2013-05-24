@@ -202,11 +202,13 @@ public:
         COMMAND_ID_HANDLER(IDM_EXIT, OnExitCommand)
         COMMAND_ID_HANDLER(IDM_NAVIGATE_BACK, OnNavigateBackCommand)
         COMMAND_ID_HANDLER(IDM_NAVIGATE_FORWARD, OnNavigateForwardCommand)
-        COMMAND_ID_HANDLER(IDM_SK1_EXIT, OnBackCommand)
+        COMMAND_ID_HANDLER(IDM_SK1_EXIT, OnLeftMenuCommand)
+        COMMAND_ID_HANDLER(IDM_SK2_MENU, OnRightMenuCommand)
         COMMAND_ID_HANDLER(IDM_REFRESH, OnRefreshCommand)
         COMMAND_ID_HANDLER(IDM_NAVTIMEOUT, OnNavTimeout)
 		COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
         COMMAND_ID_HANDLER(IDM_EXECUTEJS, OnExecuteJSCommand)
+        COMMAND_ID_HANDLER(IDM_UPDATEMENU, OnUpdateMenuCommand)
         COMMAND_ID_HANDLER(IDM_STOPNAVIGATE, OnStopNavigate)
         COMMAND_ID_HANDLER(IDM_ZOOMPAGE, OnZoomPage)
         COMMAND_ID_HANDLER(IDM_ZOOMTEXT, OnZoomText)
@@ -271,13 +273,15 @@ private:
 
     // WM_COMMAND handlers
     LRESULT OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavTimeout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnStopNavigate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnZoomPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -357,7 +361,8 @@ private:
     // utility functions
     BOOL SetMenuItemEnabled      (UINT uMenuItemID, BOOL bEnable);
 	BOOL SetToolbarButtonEnabled (UINT uTbbID, BOOL bEnable);
-	
+    BOOL SetToolbarButtonName(UINT uTbbID, LPCTSTR szLabel);
+
 	void ShowLoadingPage();
 
 	void createCustomMenu(void);

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "IMegamodule.h"
 #include "logging/RhoLog.h"
 #include "common/StringConverter.h"
@@ -8,6 +10,21 @@ namespace rho {
 namespace examples {
 
 using namespace rho::apiGenerator;
+
+// hash keys used in properties and parameters 
+namespace megamodule {
+
+    static const char HK_ITEM_ARRAY[] = "itemArray"; 
+
+    static const char HK_ITEM_STR[] = "itemStr"; 
+
+    static const char HK_PARAMA2[] = "parama2"; 
+
+    static const char HK_PARAME1[] = "parame1"; 
+
+    static const char HK_STR_PARAM[] = "strParam"; 
+ 
+} 
 
 class CMegamoduleFactoryBase : public CModuleFactoryBase<IMegamodule, IMegamoduleSingleton, IMegamoduleFactory>
 {
@@ -79,7 +96,9 @@ protected:
     DEFINE_LOGCLASS;
 
 
+
     rho::Hashtable<rho::String, rho::String> m_hashProps;
+
     rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< IMegamodule > *> m_mapPropAccessors;
 
 public:
@@ -96,6 +115,10 @@ public:
 
 
     virtual void getStringProperty(rho::apiGenerator::CMethodResult& oResult);
+
+    virtual void getIntegerProperty(rho::apiGenerator::CMethodResult& oResult);
+
+    virtual void setIntegerProperty( int IntegerProperty, rho::apiGenerator::CMethodResult& oResult);
 
 
     static CMegamoduleBase* getInstance(){ return static_cast< CMegamoduleBase* >(CMegamoduleFactoryBase::getInstance()->getModuleByID(CMegamoduleFactoryBase::getMegamoduleSingletonS()->getDefaultID())); }

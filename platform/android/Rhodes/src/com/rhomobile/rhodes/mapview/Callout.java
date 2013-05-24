@@ -26,7 +26,7 @@
 
 package com.rhomobile.rhodes.mapview;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.RhodesService;
 
 import android.content.Context;
@@ -262,16 +262,16 @@ public class Callout {
 	
 	
 	private void loadResources(Context context) {
-		mA1 = BitmapFactory.decodeResource(context.getResources(), AndroidR.drawable.callout_a1);
-		mA2 = BitmapFactory.decodeResource(context.getResources(), AndroidR.drawable.callout_a2);
-		mA3 = BitmapFactory.decodeResource(context.getResources(), AndroidR.drawable.callout_a3);
-		mB1 = BitmapFactory.decodeResource(context.getResources(), AndroidR.drawable.callout_b1);
-		mB2 = BitmapFactory.decodeResource(context.getResources(), AndroidR.drawable.callout_b2);
-		mB3 = BitmapFactory.decodeResource(context.getResources(), AndroidR.drawable.callout_b3);
-		mC1 = BitmapFactory.decodeResource(context.getResources(), AndroidR.drawable.callout_c1);
-		mC2 = BitmapFactory.decodeResource(context.getResources(), AndroidR.drawable.callout_c2);
-		mC3 = BitmapFactory.decodeResource(context.getResources(), AndroidR.drawable.callout_c3);
-		mD = BitmapFactory.decodeResource(context.getResources(), AndroidR.drawable.callout_d);
+		mA1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.callout_a1);
+		mA2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.callout_a2);
+		mA3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.callout_a3);
+		mB1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.callout_b1);
+		mB2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.callout_b2);
+		mB3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.callout_b3);
+		mC1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.callout_c1);
+		mC2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.callout_c2);
+		mC3 = BitmapFactory.decodeResource(context.getResources(), R.drawable.callout_c3);
+		mD = BitmapFactory.decodeResource(context.getResources(), R.drawable.callout_d);
 	}
 	
 	

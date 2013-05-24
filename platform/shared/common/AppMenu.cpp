@@ -44,43 +44,7 @@ void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink )
     if ( strcasecmp( strLabel.c_str(), "back" )==0 && strcasecmp( strLink.c_str(), "back" )!=0 )
         RHODESAPP().setAppBackUrl(strLink);
     else
-    {
-        synchronized(m_mxAppMenu) 
-	    {
-        	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
-        }
-    }
-}
-
-extern "C" void
-menu_iter(const char* szLabel, const char* szLink, void* pThis)
-{
-	((CAppMenu*)pThis)->addAppMenuItem(szLabel, szLink );
-}
-
-void CAppMenu::setAppMenu(unsigned long valMenu)
-{
-    synchronized(m_mxAppMenu) 
-	{
-		m_arAppMenuItems.clear();
-        RHODESAPP().setAppBackUrl("");
-        rho_ruby_enum_strhash(valMenu, menu_iter, this);
-    }
-}
-
-void CAppMenu::setAppMenuEx(const rho::Vector< Hashtable<String, String> >& arMenu)
-{
-    synchronized(m_mxAppMenu) 
-	{
-		m_arAppMenuItems.clear();
-        RHODESAPP().setAppBackUrl("");
-
-        for (int i = 0; i < (int)arMenu.size(); i++ )
-        {
-            Hashtable<String, String>::const_iterator it = arMenu[i].begin();
-            addAppMenuItem( it->first, it->second );
-        }
-    }
+      	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
 }
 
 void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes)
@@ -98,17 +62,20 @@ void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes)
 
 void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu )
 {
-    rho::Vector< Hashtable<String, String> > arRes;
-    for (int i = 0; i < (int)arMenu.size(); i++)
-    {
-        rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
+    //rho::Vector< Hashtable<String, String> > arRes;
 
-        Hashtable<String, String> hash;
-        hash[oIter.getCurKey()] = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
-        arRes.addElement(hash);
+    synchronized(m_mxAppMenu) 
+	{
+		m_arAppMenuItems.clear();
+        RHODESAPP().setAppBackUrl("");
+        for (int i = 0; i < (int)arMenu.size(); i++)
+        {
+            rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
+            String strKey = oIter.getCurKey();
+            String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
+            addAppMenuItem( strKey, strValue );
+        }
     }
-
-    setAppMenuEx(arRes);
 }
 
 void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems)
