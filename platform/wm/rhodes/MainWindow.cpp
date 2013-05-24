@@ -270,6 +270,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	m_hWndCECommandBar = mbi.hwndMB;
 	m_menuBar = m_hWndCECommandBar;
 	SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
+    //SetToolbarButtonName( IDM_SK1_EXIT, L"Geny");
+    //SetToolbarButtonName( IDM_SK2_MENU, L"Geny222");
 
 #elif defined( OS_PLATFORM_MOTCE )
     g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
@@ -1018,9 +1020,14 @@ LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/
     return 0;
 }
 
-LRESULT CMainWindow::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     RHODESAPP().navigateBack();
+    return 0;
+}
+
+LRESULT CMainWindow::OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
     return 0;
 }
 
@@ -1582,6 +1589,22 @@ BOOL CMainWindow::SetToolbarButtonEnabled(UINT uTbbID, BOOL bEnable)
     tbbi.cbSize = sizeof(tbbi);
     tbbi.dwMask = TBIF_STATE;
     tbbi.fsState = bEnable ? TBSTATE_ENABLED : TBSTATE_INDETERMINATE;
+    ::SendMessage (m_menuBar, TB_SETBUTTONINFO, uTbbID, (LPARAM)&tbbi);
+	return TRUE;
+#else
+	return TRUE;
+#endif
+
+}
+
+BOOL CMainWindow::SetToolbarButtonName(UINT uTbbID, LPCTSTR szLabel)
+{
+
+#if defined(_WIN32_WCE)
+    TBBUTTONINFO tbbi = {0};
+    tbbi.cbSize = sizeof(tbbi);
+    tbbi.dwMask = TBIF_TEXT;
+    tbbi.pszText = (LPTSTR)szLabel;
     ::SendMessage (m_menuBar, TB_SETBUTTONINFO, uTbbID, (LPARAM)&tbbi);
 	return TRUE;
 #else

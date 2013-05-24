@@ -291,9 +291,7 @@ void CNativeTabbar::SwitchTab(int index)
             m_arTabs[index].m_nTabID = 0;
             m_arTabs[index].m_hwndTab = getAppWindow().getWebKitEngine()->GetHTMLWND(0);
 
-            String strUrl = RHODESAPP().canonicalizeRhoUrl(m_arTabs[index].m_strAction);
-            
-            bNewTab = RHODESAPP().getCurrentUrl(0) != strUrl;
+            bNewTab = false;
         }else
         {
             raiseTabEvent( "onTabNewRequest", m_nCurrentTab, -1 );
