@@ -262,13 +262,7 @@
       <!--  This section is used for the supported platform images at the top -->
     </PLATFORM>
       
-    <EXAMPLES>
-      <EXAMPLE title="Open database Examples">
-        <SECTIONS>
-
-        </SECTIONS>          
-      </EXAMPLE>
-    </EXAMPLES>
+    
 
 </MODULE>
 </API>

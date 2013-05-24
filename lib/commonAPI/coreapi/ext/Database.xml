@@ -168,6 +168,7 @@
       <EXAMPLE title="Open and close database">
         <SECTIONS>
           <SECTION>
+            <DESC> Closing a database </DESC>
             <CODE>
               <RUBY>
                 <![CDATA[
