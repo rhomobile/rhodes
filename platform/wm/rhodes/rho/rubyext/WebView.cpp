@@ -116,9 +116,9 @@ int rho_webview_active_tab()
 #endif
 }
 
-void rho_webview_update_menu()
+void rho_webview_update_menu(int bItems)
 {
-    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_UPDATEMENU, (LPARAM)0 );
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_UPDATEMENU, (LPARAM)bItems );
 }
 /*
 void rho_webview_set_menu_items(VALUE valMenu) 

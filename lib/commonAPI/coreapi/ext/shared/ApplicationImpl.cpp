@@ -134,10 +134,66 @@ public:
         RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
         
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
-       rho_webview_update_menu();
+       rho_webview_update_menu(0);
 #endif
 
 #endif
+    }
+
+    virtual void getNativeMenuLeft(rho::apiGenerator::CMethodResult& oResult)
+    {
+        rho::Vector< Hashtable<String, String> > arRes;
+        RHODESAPP().getAppMenu().getMenuItemsEx(arRes, true);
+
+        oResult.set(arRes);
+    }
+
+    virtual void setNativeMenuLeft( const rho::Vector<rho::String>& nativeMenuLeft, rho::apiGenerator::CMethodResult& oResult)
+    {
+        RHODESAPP().getAppMenu().setAppMenuJSONItems(nativeMenuLeft, true);
+    }
+
+    virtual void getNativeMenuItemRight(rho::apiGenerator::CMethodResult& oResult)
+    {
+        Hashtable<String, String> hashRes;
+        RHODESAPP().getAppMenu().getMenuItemEx(hashRes);
+
+        oResult.set(hashRes);
+    }
+
+    virtual void setNativeMenuItemRight( const rho::Hashtable<rho::String, rho::String>& nativeMenuItemRight, rho::apiGenerator::CMethodResult& oResult)
+    {
+        const rho::Hashtable<rho::String, rho::String>::const_iterator it = nativeMenuItemRight.begin();
+        if ( it != nativeMenuItemRight.end() )
+        {
+            RHODESAPP().getAppMenu().setRightItem(it->first, it->second);
+
+#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+            rho_webview_update_menu(1);
+#endif
+        }
+    }
+
+    virtual void getNativeMenuItemLeft(rho::apiGenerator::CMethodResult& oResult)
+    {
+        Hashtable<String, String> hashRes;
+        RHODESAPP().getAppMenu().getMenuItemEx(hashRes, true);
+
+        oResult.set(hashRes);
+    }
+
+    virtual void setNativeMenuItemLeft( const rho::Hashtable<rho::String, rho::String>& nativeMenuItemLeft, rho::apiGenerator::CMethodResult& oResult)
+    {
+        const rho::Hashtable<rho::String, rho::String>::const_iterator it = nativeMenuItemLeft.begin();
+        if ( it != nativeMenuItemLeft.end() )
+        {
+            RHODESAPP().getAppMenu().setLeftItem(it->first, it->second);
+
+#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+            rho_webview_update_menu(1);
+#endif
+        }
+
     }
 
     virtual void getBadLinkURI(rho::apiGenerator::CMethodResult& oResult)

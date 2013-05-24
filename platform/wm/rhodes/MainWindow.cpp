@@ -1020,17 +1020,6 @@ LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/
     return 0;
 }
 
-LRESULT CMainWindow::OnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    RHODESAPP().navigateBack();
-    return 0;
-}
-
-LRESULT CMainWindow::OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    return 0;
-}
-
 LRESULT CMainWindow::OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 #if defined(OS_WINDOWS_DESKTOP)
@@ -1082,12 +1071,6 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
         delete nd;
     }
-    return 0;
-}
-
-LRESULT CMainWindow::OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
-{
-    createCustomMenu();
     return 0;
 }
 
@@ -1686,6 +1669,77 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
     return FALSE;
 }
 
+LRESULT CMainWindow::OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    if ( hWndCtl )//Update labels only
+    {
+        CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftItem();
+        CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightItem();
+
+        if ( oLeftItem.m_strLabel.length() > 0 )
+        {
+            SetToolbarButtonName( IDM_SK1_EXIT, convertToStringW(oLeftItem.m_strLabel).c_str() );
+            SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
+        }
+
+        if ( oRightItem.m_strLabel.length() > 0 )
+        {
+            SetToolbarButtonName( IDM_SK2_MENU, convertToStringW(oRightItem.m_strLabel).c_str() );
+            SetToolbarButtonEnabled(IDM_SK2_MENU, TRUE);
+        }
+    }
+    else
+        createCustomMenu();
+
+    return 0;
+}
+
+LRESULT CMainWindow::OnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftItem();
+
+    if ( oLeftItem.m_strLink.length() == 0)
+    {
+    	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems, true);
+
+        if (m_arAppMenuItems.size() == 0 )
+            RHODESAPP().navigateBack();
+        else
+        {
+            HMENU hMenu = CreatePopupMenu();
+            createCustomMenuEx( hMenu, m_arAppMenuItems );
+
+            RECT  rcBar = {0}; 
+	        m_menuBar.GetWindowRect(&rcBar);
+
+            RECT rcBtn = {0};
+            m_menuBar.SendMessage( TB_GETITEMRECT, 0, (LPARAM)&rcBtn );
+            ::TrackPopupMenuEx( hMenu, TPM_CENTERALIGN|TPM_BOTTOMALIGN, rcBtn.left+(rcBtn.right-rcBtn.left)/2, rcBar.top, m_hWnd, 0 );
+
+            DestroyMenu(hMenu);
+        }
+    }
+    else
+        RHODESAPP().loadUrl(oLeftItem.m_strLink);
+
+    return 0;
+}
+
+LRESULT CMainWindow::OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightItem();
+
+    if ( oRightItem.m_strLink.length() == 0)
+    {
+        //RHODESAPP().navigateBack();
+        //Show menu
+    }
+    else
+        RHODESAPP().loadUrl(oRightItem.m_strLink);
+
+    return 0;
+}
+
 #if defined (OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
 void CMainWindow::createCustomMenu()
 {
@@ -1748,21 +1802,34 @@ void CMainWindow::createCustomMenu()
 }
 #else
 
+typedef struct tagNMNEWMENU 
+{
+    NMHDR hdr;
+    TCHAR szReg[80];
+    HMENU hMenu;
+    CLSID clsid;
+    IPropertyBag **pppropbag;
+} NMNEWMENU, *PNMNEWMENU;
+
 void CMainWindow::createCustomMenu()
 {
-	HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
-	
+	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
+    HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
+    createCustomMenuEx( hMenu, m_arAppMenuItems );
+}
+
+void CMainWindow::createCustomMenuEx(HMENU hMenu, rho::Vector<rho::common::CAppMenuItem>& arAppMenuItems)
+{
 	//except exit item
 	int num = GetMenuItemCount (hMenu);
 	for (int i = 0; i < (num/* - 1*/); i++)	
 		DeleteMenu(hMenu, 0, MF_BYPOSITION);
 
-	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
 	//update UI with cusom menu items
 	USES_CONVERSION;
-    for ( int i = m_arAppMenuItems.size() - 1; i >= 0; i--)
+    for ( int i = arAppMenuItems.size() - 1; i >= 0; i--)
     {
-        CAppMenuItem& oItem = m_arAppMenuItems.elementAt(i);
+        CAppMenuItem& oItem = arAppMenuItems.elementAt(i);
         StringW strLabelW = convertToStringW(oItem.m_strLabel);
 
 		if (oItem.m_eType == CAppMenuItem::emtSeparator) 

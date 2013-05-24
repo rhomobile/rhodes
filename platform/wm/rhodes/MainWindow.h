@@ -383,7 +383,7 @@ private:
 	String mNativeViewType;
 	bool mIsOpenedByURL;
 
-
+    void createCustomMenuEx(HMENU hMenu, rho::Vector<rho::common::CAppMenuItem>& arAppMenuItems);
 private:
     bool mIsBrowserViewHided;
 	bool m_isMinimized;

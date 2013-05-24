@@ -42,7 +42,7 @@ const char* rho_webview_execute_js_sync(const char* js, int index);
 const char* rho_webview_current_location(int index);
 int rho_webview_active_tab();
 //void rho_webview_set_menu_items(unsigned long valMenu);
-void rho_webview_update_menu();
+void rho_webview_update_menu(int bItems);
 void rho_webview_full_screen_mode(int enable);
 int rho_webview_get_full_screen();
 unsigned long rho_webview_get_current_url(int index);
