@@ -56,17 +56,28 @@ end%>
 
 void <%= propBaseClass %>::getProperty( const rho::String& propertyName, CMethodResult& oResult)
 {
-    CMethodAccessor< <%= propBaseI %> >* pAccessor = m_mapPropAccessors[propertyName];
-    if ( pAccessor )
-        pAccessor->callGetter(this, oResult);
+    if ( m_mapPropAccessors.containsKey(propertyName) )
+    {
+        CMethodAccessor< <%= propBaseI %> >* pAccessor = m_mapPropAccessors[propertyName];
+        if ( pAccessor )
+            pAccessor->callGetter(this, oResult);
+        else
+            oResult.setArgError("pAccessor = NULL for property " + propertyName);
+    }
     else
     {
-        <% if $cur_module.is_property_bag_limit_to_only_declared_properties %>
-        if ( !m_mapPropAccessors.containsKey(propertyName) )
+<% if $cur_module.is_property_bag_limit_to_only_declared_properties %>
+        oResult.setArgError("Get unknown property: " + propertyName);
+<% else %>
+        if ( m_hashProps.containsKey(propertyName) )
+        {
+            oResult.set(m_hashProps[propertyName]);
+        }
+        else
+        {
             oResult.setArgError("Get unknown property: " + propertyName);
-        <% else %>
-        oResult.set(m_hashProps[propertyName]);
-        <% end %>
+        }
+<% end %>
     }
 }
 
