@@ -9,8 +9,8 @@ class CBarcodeImpl: public CBarcodeBase
 public:
     CBarcodeImpl(const rho::String& strID): CBarcodeBase()
     {
-        m_hashProps.put( "display", "LCD");
-        m_hashProps.put( "sound", "Dolby");
+        /*m_hashProps.put( "display", "LCD");
+        m_hashProps.put( "sound", "Dolby");*/
     }
 
     virtual void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult)

@@ -9,8 +9,8 @@ class CMediaplayerImpl: public CMediaplayerBase
 public:
     CMediaplayerImpl(const rho::String& strID): CMediaplayerBase()
     {
-        m_hashProps.put( "display", "LCD");
-        m_hashProps.put( "sound", "Dolby");
+        /*m_hashProps.put( "display", "LCD");
+        m_hashProps.put( "sound", "Dolby");*/
     }
 
     virtual void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult){}

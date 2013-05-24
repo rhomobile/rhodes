@@ -9,8 +9,8 @@ class CSimpleOnlyStaticModuleImpl: public CSimpleOnlyStaticModuleBase
 public:
     CSimpleOnlyStaticModuleImpl(const rho::StringW& strID): CSimpleOnlyStaticModuleBase()
     {
-        m_hashProps.put( L"display", L"LCD");
-        m_hashProps.put( L"sound", L"Dolby");
+        /*m_hashProps.put( L"display", L"LCD");
+        m_hashProps.put( L"sound", L"Dolby");*/
     }
 
     virtual void enable( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult){}
