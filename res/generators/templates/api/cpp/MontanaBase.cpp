@@ -97,7 +97,7 @@ void <%= propBaseClass %>::getAllProperties(CMethodResult& oResult)
     oResult.setCollectionMode(true);
     
     // existing properties
-    for ( rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< I<%= $cur_module.name %>Singleton > *>::const_iterator it = m_mapPropAccessors.begin();  it != m_mapPropAccessors.end(); ++it )
+    for ( rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< <%= propBaseI %> > *>::const_iterator it = m_mapPropAccessors.begin();  it != m_mapPropAccessors.end(); ++it )
     {
         getProperty(it->first, oResult);
         
