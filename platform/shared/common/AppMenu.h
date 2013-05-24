@@ -55,14 +55,13 @@ class CAppMenu
 	Vector<CAppMenuItem> m_arAppMenuItems;
 
 public:
-    void setAppMenu(unsigned long valMenu);
-    void setAppMenuEx(const rho::Vector< Hashtable<String, String> >& arMenu);
+    //void setAppMenu(unsigned long valMenu);
     void getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes);
     void setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu );
 
     void copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems);
 
-//private:
+private:
     void addAppMenuItem( const String& strLabel, const String& strLink );
 
 };

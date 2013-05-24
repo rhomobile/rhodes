@@ -2,6 +2,7 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "common/RhoFilePath.h"
+#include "rubyext/WebView.h"
 
 #ifdef RHODES_EMULATOR
 #define RHO_APPS_DIR ""
@@ -131,6 +132,11 @@ public:
         rho_impl_setNativeMenu(value);
 #else
         RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
+        
+#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+       rho_webview_update_menu();
+#endif
+
 #endif
     }
 
