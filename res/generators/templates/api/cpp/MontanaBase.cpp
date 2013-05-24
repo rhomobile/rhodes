@@ -93,7 +93,36 @@ void <%= propBaseClass %>::getProperties( const rho::Vector<rho::String>& arrayo
 
 void <%= propBaseClass %>::getAllProperties(CMethodResult& oResult)
 {
-    oResult.set(m_hashProps);
+    rho::Hashtable<rho::String, rho::String> res;
+    oResult.setCollectionMode(true);
+    
+    // existing properties
+    for ( rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< ISystemSingleton > *>::const_iterator it = m_mapPropAccessors.begin();  it != m_mapPropAccessors.end(); ++it )
+    {
+        getProperty(it->first, oResult);
+        
+        if ( oResult.isError() )
+            break;
+        
+        res[it->first] = oResult.toString();
+    }
+    
+    <% if !$cur_module.is_property_bag_limit_to_only_declared_properties %>
+    if (!oResult.isError())
+    {
+        // user defined properties
+        for ( rho::Hashtable<rho::String, rho::String>::const_iterator it = m_hashProps.begin();  it != m_hashProps.end(); ++it )
+        {
+            res[it->first] = it->second;
+        }
+    }
+    <% end %>
+
+    oResult.setCollectionMode(false);
+    if ( oResult.isError() )
+        oResult.callCallback();
+    else
+        oResult.set(res);
 }
 
 void <%= propBaseClass %>::setProperty( const rho::String& propertyName,  const rho::String& propertyValue, CMethodResult& oResult)
@@ -124,7 +153,10 @@ void <%= propBaseClass %>::setProperties( const rho::Hashtable<rho::String, rho:
 
 void <%= propBaseClass %>::clearAllProperties(CMethodResult& oResult)
 {
+<% if !$cur_module.is_property_bag_limit_to_only_declared_properties %>
     m_hashProps.clear();
+<% end %>
+    // ToDo: set default values to existing properties 
 }
 
 <% $cur_module.methods.each do |module_method|

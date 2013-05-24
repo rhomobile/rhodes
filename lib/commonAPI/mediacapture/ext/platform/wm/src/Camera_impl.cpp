@@ -9,8 +9,8 @@ class CCameraImpl: public CCameraBase
 public:
     CCameraImpl(const rho::String& strID): CCameraBase()
     {
-        m_hashProps.put( "display", "LCD");
-        m_hashProps.put( "sound", "Dolby");
+        /*m_hashProps.put( "display", "LCD");
+        m_hashProps.put( "sound", "Dolby");*/
     }
 
 	virtual void takePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {}
