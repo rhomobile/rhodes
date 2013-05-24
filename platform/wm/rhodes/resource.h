@@ -89,13 +89,14 @@
 #define IDM_STOPNAVIGATE                40034
 #define IDM_ZOOMPAGE                    40035
 #define IDM_ZOOMTEXT                    40036
+#define IDM_UPDATEMENU                  40037
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        129
-#define _APS_NEXT_COMMAND_VALUE         40037
+#define _APS_NEXT_COMMAND_VALUE         40038
 #define _APS_NEXT_CONTROL_VALUE         1022
 #define _APS_NEXT_SYMED_VALUE           111
 #endif

@@ -1,14 +1,10 @@
 #include "Megamodule.h"
 
-#include "MethodResultJni.h"
-
 
 namespace rho {
 namespace examples {
 
 IMPLEMENT_LOGCLASS(CMegamoduleBase, "MegamoduleJNI");
-
-using rhoelements::MethodExecutorJni;
 
 //MegamoduleFactorySingleton staff
 const char* const CMegamoduleBase::FACTORY_SINGLETON_CLASS = "com.rho.examples.megamodule.MegamoduleFactorySingleton";

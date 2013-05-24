@@ -45,7 +45,7 @@ import android.view.animation.ScaleAnimation;
 import android.widget.FrameLayout;
 import android.widget.ZoomButtonsController;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -171,25 +171,25 @@ public class MapView extends BaseActivity implements MapTouch {
 		
 		BitmapFactory.Options opt = new BitmapFactory.Options();
 		opt.inScaled = false;
-		Bitmap pin = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker, opt);
+		Bitmap pin = BitmapFactory.decodeResource(getResources(), R.drawable.marker, opt);
 
 		//ourDensity = pin.getDensity();
 		pin.setDensity(Bitmap.DENSITY_NONE);
 		setPinImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(pin));
 		
 		
-		Bitmap pinCallout = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.callout);
+		Bitmap pinCallout = BitmapFactory.decodeResource(getResources(), R.drawable.callout);
 		setPinCalloutImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(pinCallout) );
-		Bitmap pinCalloutLink = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.callout_link);
+		Bitmap pinCalloutLink = BitmapFactory.decodeResource(getResources(), R.drawable.callout_link);
 		setPinCalloutLinkImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(pinCalloutLink) );
 		
-		Bitmap esriLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.esri);
+		Bitmap esriLogo = BitmapFactory.decodeResource(getResources(), R.drawable.esri);
 		setESRILogoImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(esriLogo) );
 
-		Bitmap googleLogo = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.google);
+		Bitmap googleLogo = BitmapFactory.decodeResource(getResources(), R.drawable.google);
 		setGoogleLogoImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(googleLogo) );
 		
-		Bitmap pinMyLocation = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.location, opt);
+		Bitmap pinMyLocation = BitmapFactory.decodeResource(getResources(), R.drawable.location, opt);
 		pinMyLocation.setDensity(Bitmap.DENSITY_NONE);
 		setMyLocationImage(mNativeDevice, MapBitmapManager.getSharedInstance().addBitmap(pinMyLocation) );
 		

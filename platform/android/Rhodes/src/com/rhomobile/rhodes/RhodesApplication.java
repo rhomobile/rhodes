@@ -39,7 +39,6 @@ import android.util.Log;
 
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
-//import com.rhomobile.rhodes.signature.Signature;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 import com.rhomobile.rhodes.util.Utils.AssetsSource;

@@ -31,7 +31,9 @@
 
 -(id<IMegamodule>)createMegamoduleByID:(NSString*)ID {
     Megamodule* obj = [[Megamodule alloc] init];
+
     [obj setProperty:@"ID" propertyValue:ID];
+
     return obj;
 }
 

@@ -9,8 +9,8 @@ class CMegaModuleImpl: public CMegaModuleBase
 public:
     CMegaModuleImpl(const rho::StringW& strID): CMegaModuleBase()
     {
-        m_hashProps.put( L"display", L"LCD");
-        m_hashProps.put( L"sound", L"Dolby");
+        /*m_hashProps.put( L"display", L"LCD");
+        m_hashProps.put( L"sound", L"Dolby");*/
     }
 
     virtual void enable( const rho::Hashtable<rho::StringW, rho::StringW>& propertyMap, CMethodResult& oResult){}

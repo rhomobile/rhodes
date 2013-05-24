@@ -26,7 +26,7 @@
 
 package com.rhomobile.rhodes.alert;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -39,7 +39,7 @@ public class StatusNotification
 	public static Notification makeNotification(String text)
 	{
 		Notification notification = new Notification(
-				AndroidR.drawable.icon,
+				R.drawable.icon,
 				text,
 				System.currentTimeMillis());
 		return notification;

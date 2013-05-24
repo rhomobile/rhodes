@@ -22,7 +22,7 @@ struct IMegamodule
 
     virtual void getStringProperty(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void getIntegerProperty(rho::apiGenerator::CMethodResult& oResult) = 0;
-    virtual void setIntegerProperty( int value, rho::apiGenerator::CMethodResult& oResult) = 0;
+    virtual void setIntegerProperty( int IntegerProperty, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void typesTest( const rho::String& paramStr,  bool paramBool,  int paramInt,  double paramFloat,  const rho::Vector<rho::String>& paramArray,  const rho::Hashtable<rho::String, rho::String>& paramHash, rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void produceArray(rho::apiGenerator::CMethodResult& oResult) = 0;
     virtual void produceHash(rho::apiGenerator::CMethodResult& oResult) = 0;

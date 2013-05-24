@@ -270,6 +270,8 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	m_hWndCECommandBar = mbi.hwndMB;
 	m_menuBar = m_hWndCECommandBar;
 	SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
+    //SetToolbarButtonName( IDM_SK1_EXIT, L"Geny");
+    //SetToolbarButtonName( IDM_SK2_MENU, L"Geny222");
 
 #elif defined( OS_PLATFORM_MOTCE )
     g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
@@ -552,18 +554,24 @@ LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ProcessDocumentComplete( (LPCTSTR)lParam );
+
+    free((void*)lParam);
     return 0;
 }
 
 LRESULT CMainWindow::OnNavigateComplete(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ProcessNavigateComplete( (LPCTSTR)lParam );
+
+    free((void*)lParam);
     return 0;
 }
 
 LRESULT CMainWindow::OnTitleChange (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     ProcessTitleChange( (LPCTSTR)lParam );
+
+    free((void*)lParam);
     return 0;
 }
 
@@ -576,19 +584,28 @@ LRESULT CMainWindow::OnBeforeNavigate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         rho_wm_impl_CheckLicense();
 #endif
 
+    free((void*)lParam);
     return 0;
 }
 
 LRESULT CMainWindow::OnNavigateTimeout (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     PROF_STOP("BROWSER_PAGE");
-    return RHODESAPP().getExtManager().OnNavigateTimeout((LPCTSTR)lParam);
+    LRESULT lRes =  RHODESAPP().getExtManager().OnNavigateTimeout((LPCTSTR)lParam);
+
+    free((void*)lParam);
+
+    return lRes;
 }
 
 LRESULT CMainWindow::OnNavigateError (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     PROF_STOP("BROWSER_PAGE");
-    return RHODESAPP().getExtManager().OnNavigateError((LPCTSTR)lParam);
+    LRESULT lRes =  RHODESAPP().getExtManager().OnNavigateError((LPCTSTR)lParam);
+
+    free((void*)lParam);
+
+    return lRes;
 }
 
 LRESULT CMainWindow::OnSetSIPState (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
@@ -1003,9 +1020,14 @@ LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/
     return 0;
 }
 
-LRESULT CMainWindow::OnBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     RHODESAPP().navigateBack();
+    return 0;
+}
+
+LRESULT CMainWindow::OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
     return 0;
 }
 
@@ -1060,6 +1082,12 @@ LRESULT CMainWindow::OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
         delete nd;
     }
+    return 0;
+}
+
+LRESULT CMainWindow::OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+    createCustomMenu();
     return 0;
 }
 
@@ -1514,10 +1542,10 @@ void CMainWindow::ProcessDocumentComplete(LPCTSTR url)
     LOG(TRACE) + "OnDocumentComplete: " + url;
 
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
-	createCustomMenu();
+	//createCustomMenu();
 	
 	m_pageCounter++;
-	if (m_pageCounter > 2) //"loading" page + first page
+	if (m_pageCounter > 1) //"loading" page + first page
 		SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
 #endif	
 
@@ -1561,6 +1589,22 @@ BOOL CMainWindow::SetToolbarButtonEnabled(UINT uTbbID, BOOL bEnable)
     tbbi.cbSize = sizeof(tbbi);
     tbbi.dwMask = TBIF_STATE;
     tbbi.fsState = bEnable ? TBSTATE_ENABLED : TBSTATE_INDETERMINATE;
+    ::SendMessage (m_menuBar, TB_SETBUTTONINFO, uTbbID, (LPARAM)&tbbi);
+	return TRUE;
+#else
+	return TRUE;
+#endif
+
+}
+
+BOOL CMainWindow::SetToolbarButtonName(UINT uTbbID, LPCTSTR szLabel)
+{
+
+#if defined(_WIN32_WCE)
+    TBBUTTONINFO tbbi = {0};
+    tbbi.cbSize = sizeof(tbbi);
+    tbbi.dwMask = TBIF_TEXT;
+    tbbi.pszText = (LPTSTR)szLabel;
     ::SendMessage (m_menuBar, TB_SETBUTTONINFO, uTbbID, (LPARAM)&tbbi);
 	return TRUE;
 #else

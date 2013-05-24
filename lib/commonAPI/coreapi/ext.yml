@@ -6,11 +6,19 @@ android:
   source_list: /ext/platform/android/ext_java.files
 
 wp8:
-  libraries: ["WebView"]
+  libraries: ["WebView", "NativeToolbar", "NativeTabbar"]
   webview:
     csharp_impl: yes
     root_namespace: rho
     project_path: ext/platform/wp8/WebViewLib.vcxproj
+  nativetoolbar:
+    csharp_impl: yes
+    root_namespace: rho
+    project_path: ext/platform/wp8/NativeToolbarLib.vcxproj
+  nativetabbar:
+    csharp_impl: yes
+    root_namespace: rho
+    project_path: ext/platform/wp8/NativeTabbarLib.vcxproj
 
 project_paths:
   wp8: ext/platform/wp8/CoreAPI.vcxproj

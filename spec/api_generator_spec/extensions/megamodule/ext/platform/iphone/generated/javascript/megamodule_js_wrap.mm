@@ -96,17 +96,16 @@ static Megamodule_getStringProperty_caller* our_Megamodule_getStringProperty_cal
 @end
 
 
-rho::String js_Megamodule_getStringProperty_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_getStringProperty_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -117,6 +116,8 @@ rho::String js_Megamodule_getStringProperty_Obj(rho::json::CJSONArray& argv, id<
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -129,6 +130,12 @@ rho::String js_Megamodule_getStringProperty_Obj(rho::json::CJSONArray& argv, id<
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::getStringProperty parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -138,29 +145,17 @@ rho::String js_Megamodule_getStringProperty_Obj(rho::json::CJSONArray& argv, id<
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_getStringProperty_caller getStringProperty_in_thread:[Megamodule_getStringProperty_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -171,29 +166,29 @@ rho::String js_Megamodule_getStringProperty_Obj(rho::json::CJSONArray& argv, id<
         [Megamodule_getStringProperty_caller getStringProperty:[Megamodule_getStringProperty_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_getStringProperty(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_getStringProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_getStringProperty_Obj(argv, item);
+    return js_Megamodule_getStringProperty_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_getStringProperty(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_getStringProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_getStringProperty_Obj(argv, item);
+    return js_Megamodule_getStringProperty_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -274,17 +269,16 @@ static Megamodule_getIntegerProperty_caller* our_Megamodule_getIntegerProperty_c
 @end
 
 
-rho::String js_Megamodule_getIntegerProperty_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_getIntegerProperty_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -295,6 +289,8 @@ rho::String js_Megamodule_getIntegerProperty_Obj(rho::json::CJSONArray& argv, id
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -307,6 +303,12 @@ rho::String js_Megamodule_getIntegerProperty_Obj(rho::json::CJSONArray& argv, id
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::getIntegerProperty parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -316,29 +318,17 @@ rho::String js_Megamodule_getIntegerProperty_Obj(rho::json::CJSONArray& argv, id
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_getIntegerProperty_caller getIntegerProperty_in_thread:[Megamodule_getIntegerProperty_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -349,29 +339,29 @@ rho::String js_Megamodule_getIntegerProperty_Obj(rho::json::CJSONArray& argv, id
         [Megamodule_getIntegerProperty_caller getIntegerProperty:[Megamodule_getIntegerProperty_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_getIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_getIntegerProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_getIntegerProperty_Obj(argv, item);
+    return js_Megamodule_getIntegerProperty_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_getIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_getIntegerProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_getIntegerProperty_Obj(argv, item);
+    return js_Megamodule_getIntegerProperty_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -452,17 +442,16 @@ static Megamodule_setIntegerProperty_caller* our_Megamodule_setIntegerProperty_c
 @end
 
 
-rho::String js_Megamodule_setIntegerProperty_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_setIntegerProperty_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[1+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = {{RHO_API_INTEGER, 0, "value", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_INTEGER, 0, "IntegerProperty", 0, 0 } };
 
     
     BOOL is_factory_param[] = { NO, NO };
@@ -473,6 +462,9 @@ rho::String js_Megamodule_setIntegerProperty_Obj(rho::json::CJSONArray& argv, id
     for (i = 0; i < (1); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
+                params[0]= [NSNumber numberWithInt:12345];
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -485,6 +477,12 @@ rho::String js_Megamodule_setIntegerProperty_Obj(rho::json::CJSONArray& argv, id
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::setIntegerProperty parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -494,29 +492,17 @@ rho::String js_Megamodule_setIntegerProperty_Obj(rho::json::CJSONArray& argv, id
     }
 
     
-    // check callback
-    if (argc >= (1+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(1);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (1+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(1+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_setIntegerProperty_caller setIntegerProperty_in_thread:[Megamodule_setIntegerProperty_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -527,29 +513,29 @@ rho::String js_Megamodule_setIntegerProperty_Obj(rho::json::CJSONArray& argv, id
         [Megamodule_setIntegerProperty_caller setIntegerProperty:[Megamodule_setIntegerProperty_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_setIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_setIntegerProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_setIntegerProperty_Obj(argv, item);
+    return js_Megamodule_setIntegerProperty_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_setIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_setIntegerProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_setIntegerProperty_Obj(argv, item);
+    return js_Megamodule_setIntegerProperty_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -630,19 +616,18 @@ static Megamodule_typesTest_caller* our_Megamodule_typesTest_caller = nil;
 @end
 
 
-rho::String js_Megamodule_typesTest_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_typesTest_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[6+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params_param4[] = {{RHO_API_INTEGER, 0, "array_param", 0, 0 } };
-    static RHO_API_PARAM rho_api_params_param5[] = {{RHO_API_STRING, 0, "strParam", 0, 0 } };
-    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "paramStr", 0, 0 }, {RHO_API_BOOLEAN, 0, "paramBool", 0, 0 }, {RHO_API_INTEGER, 0, "paramInt", 0, 0 }, {RHO_API_FLOAT, 0, "paramFloat", 0, 0 }, {RHO_API_ARRAY, 0, "paramArray", 1, rho_api_params_param4 }, {RHO_API_HASH, 0, "paramHash", 1, rho_api_params_param5 } };
+    static RHO_API_PARAM rho_api_params_param4[] = { {RHO_API_INTEGER, 0, "array_param", 0, 0 } };
+    static RHO_API_PARAM rho_api_params_param5[] = { {RHO_API_STRING, 0, "strParam", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_STRING, 0, "paramStr", 0, 0 }, {RHO_API_BOOLEAN, 0, "paramBool", 0, 0 }, {RHO_API_INTEGER, 0, "paramInt", 0, 0 }, {RHO_API_FLOAT, 0, "paramFloat", 0, 0 }, {RHO_API_ARRAY, 0, "paramArray", 1, rho_api_params_param4 }, {RHO_API_HASH, 0, "paramHash", 1, rho_api_params_param5 } };
 
     
     BOOL is_factory_param[] = { NO, NO, NO, NO, NO, NO, NO };
@@ -653,6 +638,8 @@ rho::String js_Megamodule_typesTest_Obj(rho::json::CJSONArray& argv, id<IMegamod
     for (i = 0; i < (6); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (6); i++) {
@@ -665,6 +652,12 @@ rho::String js_Megamodule_typesTest_Obj(rho::json::CJSONArray& argv, id<IMegamod
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::typesTest parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -674,29 +667,17 @@ rho::String js_Megamodule_typesTest_Obj(rho::json::CJSONArray& argv, id<IMegamod
     }
 
     
-    // check callback
-    if (argc >= (6+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(6);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (6+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(6+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_typesTest_caller typesTest_in_thread:[Megamodule_typesTest_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -707,29 +688,29 @@ rho::String js_Megamodule_typesTest_Obj(rho::json::CJSONArray& argv, id<IMegamod
         [Megamodule_typesTest_caller typesTest:[Megamodule_typesTest_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_typesTest(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_typesTest_Obj(argv, item);
+    return js_Megamodule_typesTest_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_typesTest(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_typesTest(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_typesTest_Obj(argv, item);
+    return js_Megamodule_typesTest_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -810,17 +791,16 @@ static Megamodule_produceArray_caller* our_Megamodule_produceArray_caller = nil;
 @end
 
 
-rho::String js_Megamodule_produceArray_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_produceArray_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -831,6 +811,8 @@ rho::String js_Megamodule_produceArray_Obj(rho::json::CJSONArray& argv, id<IMega
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -843,6 +825,12 @@ rho::String js_Megamodule_produceArray_Obj(rho::json::CJSONArray& argv, id<IMega
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::produceArray parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -852,29 +840,17 @@ rho::String js_Megamodule_produceArray_Obj(rho::json::CJSONArray& argv, id<IMega
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_produceArray_caller produceArray_in_thread:[Megamodule_produceArray_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -885,29 +861,29 @@ rho::String js_Megamodule_produceArray_Obj(rho::json::CJSONArray& argv, id<IMega
         [Megamodule_produceArray_caller produceArray:[Megamodule_produceArray_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_produceArray(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_produceArray(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_produceArray_Obj(argv, item);
+    return js_Megamodule_produceArray_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_produceArray(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_produceArray(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_produceArray_Obj(argv, item);
+    return js_Megamodule_produceArray_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -988,17 +964,16 @@ static Megamodule_produceHash_caller* our_Megamodule_produceHash_caller = nil;
 @end
 
 
-rho::String js_Megamodule_produceHash_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_produceHash_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -1009,6 +984,8 @@ rho::String js_Megamodule_produceHash_Obj(rho::json::CJSONArray& argv, id<IMegam
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -1021,6 +998,12 @@ rho::String js_Megamodule_produceHash_Obj(rho::json::CJSONArray& argv, id<IMegam
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::produceHash parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -1030,29 +1013,17 @@ rho::String js_Megamodule_produceHash_Obj(rho::json::CJSONArray& argv, id<IMegam
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_produceHash_caller produceHash_in_thread:[Megamodule_produceHash_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -1063,29 +1034,29 @@ rho::String js_Megamodule_produceHash_Obj(rho::json::CJSONArray& argv, id<IMegam
         [Megamodule_produceHash_caller produceHash:[Megamodule_produceHash_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_produceHash(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_produceHash_Obj(argv, item);
+    return js_Megamodule_produceHash_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_produceHash(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_produceHash_Obj(argv, item);
+    return js_Megamodule_produceHash_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -1166,17 +1137,16 @@ static Megamodule_produceComplicatedResult_caller* our_Megamodule_produceComplic
 @end
 
 
-rho::String js_Megamodule_produceComplicatedResult_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_produceComplicatedResult_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -1187,6 +1157,8 @@ rho::String js_Megamodule_produceComplicatedResult_Obj(rho::json::CJSONArray& ar
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -1199,6 +1171,12 @@ rho::String js_Megamodule_produceComplicatedResult_Obj(rho::json::CJSONArray& ar
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::produceComplicatedResult parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -1208,29 +1186,17 @@ rho::String js_Megamodule_produceComplicatedResult_Obj(rho::json::CJSONArray& ar
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_produceComplicatedResult_caller produceComplicatedResult_in_thread:[Megamodule_produceComplicatedResult_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -1241,29 +1207,29 @@ rho::String js_Megamodule_produceComplicatedResult_Obj(rho::json::CJSONArray& ar
         [Megamodule_produceComplicatedResult_caller produceComplicatedResult:[Megamodule_produceComplicatedResult_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_produceComplicatedResult(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_produceComplicatedResult_Obj(argv, item);
+    return js_Megamodule_produceComplicatedResult_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_produceComplicatedResult(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_produceComplicatedResult_Obj(argv, item);
+    return js_Megamodule_produceComplicatedResult_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -1344,17 +1310,16 @@ static Megamodule_getObjectsCount_caller* our_Megamodule_getObjectsCount_caller 
 @end
 
 
-rho::String js_Megamodule_getObjectsCount_Obj(rho::json::CJSONArray& argv, id<IMegamoduleSingleton>objItem) {
+rho::String js_Megamodule_getObjectsCount_Obj(rho::json::CJSONArray& argv, id<IMegamoduleSingleton>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -1365,6 +1330,8 @@ rho::String js_Megamodule_getObjectsCount_Obj(rho::json::CJSONArray& argv, id<IM
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -1377,6 +1344,12 @@ rho::String js_Megamodule_getObjectsCount_Obj(rho::json::CJSONArray& argv, id<IM
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::getObjectsCount parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -1386,29 +1359,17 @@ rho::String js_Megamodule_getObjectsCount_Obj(rho::json::CJSONArray& argv, id<IM
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_getObjectsCount_caller getObjectsCount_in_thread:[Megamodule_getObjectsCount_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -1419,19 +1380,19 @@ rho::String js_Megamodule_getObjectsCount_Obj(rho::json::CJSONArray& argv, id<IM
         [Megamodule_getObjectsCount_caller getObjectsCount:[Megamodule_getObjectsCount_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_s_Megamodule_getObjectsCount(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_getObjectsCount(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
-    return js_Megamodule_getObjectsCount_Obj(argv, singleton);
+    return js_Megamodule_getObjectsCount_Obj(argv, singleton, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
@@ -1513,17 +1474,16 @@ static Megamodule_getObjectByIndex_caller* our_Megamodule_getObjectByIndex_calle
 @end
 
 
-rho::String js_Megamodule_getObjectByIndex_Obj(rho::json::CJSONArray& argv, id<IMegamoduleSingleton>objItem) {
+rho::String js_Megamodule_getObjectByIndex_Obj(rho::json::CJSONArray& argv, id<IMegamoduleSingleton>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[1+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = {{RHO_API_INTEGER, 0, "index", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_INTEGER, 0, "index", 0, 0 } };
 
     
     BOOL is_factory_param[] = { NO, NO };
@@ -1534,6 +1494,8 @@ rho::String js_Megamodule_getObjectByIndex_Obj(rho::json::CJSONArray& argv, id<I
     for (i = 0; i < (1); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -1546,6 +1508,12 @@ rho::String js_Megamodule_getObjectByIndex_Obj(rho::json::CJSONArray& argv, id<I
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::getObjectByIndex parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -1555,29 +1523,17 @@ rho::String js_Megamodule_getObjectByIndex_Obj(rho::json::CJSONArray& argv, id<I
     }
 
     
-    // check callback
-    if (argc >= (1+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(1);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (1+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(1+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    [methodResult enableObjectCreationModeWithJSClassPath:@"Rho.Examples.Megamodule"];
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_getObjectByIndex_caller getObjectByIndex_in_thread:[Megamodule_getObjectByIndex_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -1588,19 +1544,19 @@ rho::String js_Megamodule_getObjectByIndex_Obj(rho::json::CJSONArray& argv, id<I
         [Megamodule_getObjectByIndex_caller getObjectByIndex:[Megamodule_getObjectByIndex_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_s_Megamodule_getObjectByIndex(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_getObjectByIndex(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
-    return js_Megamodule_getObjectByIndex_Obj(argv, singleton);
+    return js_Megamodule_getObjectByIndex_Obj(argv, singleton, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
@@ -1682,17 +1638,16 @@ static Megamodule_showAlertFromUIThread_caller* our_Megamodule_showAlertFromUITh
 @end
 
 
-rho::String js_Megamodule_showAlertFromUIThread_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_showAlertFromUIThread_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[1+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "message", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_STRING, 0, "message", 0, 0 } };
 
     
     BOOL is_factory_param[] = { NO, NO };
@@ -1703,6 +1658,8 @@ rho::String js_Megamodule_showAlertFromUIThread_Obj(rho::json::CJSONArray& argv,
     for (i = 0; i < (1); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -1715,6 +1672,12 @@ rho::String js_Megamodule_showAlertFromUIThread_Obj(rho::json::CJSONArray& argv,
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::showAlertFromUIThread parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -1724,29 +1687,17 @@ rho::String js_Megamodule_showAlertFromUIThread_Obj(rho::json::CJSONArray& argv,
     }
 
     
-    // check callback
-    if (argc >= (1+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(1);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (1+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(1+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_showAlertFromUIThread_caller showAlertFromUIThread_in_UI_thread:[Megamodule_showAlertFromUIThread_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -1758,29 +1709,29 @@ rho::String js_Megamodule_showAlertFromUIThread_Obj(rho::json::CJSONArray& argv,
         method_return_result = NO;
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_showAlertFromUIThread(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_showAlertFromUIThread(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_showAlertFromUIThread_Obj(argv, item);
+    return js_Megamodule_showAlertFromUIThread_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_showAlertFromUIThread(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_showAlertFromUIThread(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_showAlertFromUIThread_Obj(argv, item);
+    return js_Megamodule_showAlertFromUIThread_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -1861,17 +1812,16 @@ static Megamodule_setPeriodicallyCallback_caller* our_Megamodule_setPeriodically
 @end
 
 
-rho::String js_Megamodule_setPeriodicallyCallback_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_setPeriodicallyCallback_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[1+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = {{RHO_API_INTEGER, 0, "periodInMilliseconds", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_INTEGER, 0, "periodInMilliseconds", 0, 0 } };
 
     
     BOOL is_factory_param[] = { NO, NO };
@@ -1882,6 +1832,8 @@ rho::String js_Megamodule_setPeriodicallyCallback_Obj(rho::json::CJSONArray& arg
     for (i = 0; i < (1); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -1894,6 +1846,12 @@ rho::String js_Megamodule_setPeriodicallyCallback_Obj(rho::json::CJSONArray& arg
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::setPeriodicallyCallback parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -1903,29 +1861,17 @@ rho::String js_Megamodule_setPeriodicallyCallback_Obj(rho::json::CJSONArray& arg
     }
 
     
-    // check callback
-    if (argc >= (1+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(1);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (1+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(1+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_setPeriodicallyCallback_caller setPeriodicallyCallback_in_thread:[Megamodule_setPeriodicallyCallback_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -1936,29 +1882,29 @@ rho::String js_Megamodule_setPeriodicallyCallback_Obj(rho::json::CJSONArray& arg
         [Megamodule_setPeriodicallyCallback_caller setPeriodicallyCallback:[Megamodule_setPeriodicallyCallback_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_setPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_setPeriodicallyCallback(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_setPeriodicallyCallback_Obj(argv, item);
+    return js_Megamodule_setPeriodicallyCallback_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_setPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_setPeriodicallyCallback(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_setPeriodicallyCallback_Obj(argv, item);
+    return js_Megamodule_setPeriodicallyCallback_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -2039,17 +1985,16 @@ static Megamodule_isPeriodicallyCallbackSetted_caller* our_Megamodule_isPeriodic
 @end
 
 
-rho::String js_Megamodule_isPeriodicallyCallbackSetted_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_isPeriodicallyCallbackSetted_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -2060,6 +2005,8 @@ rho::String js_Megamodule_isPeriodicallyCallbackSetted_Obj(rho::json::CJSONArray
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -2072,6 +2019,12 @@ rho::String js_Megamodule_isPeriodicallyCallbackSetted_Obj(rho::json::CJSONArray
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::isPeriodicallyCallbackSetted parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -2081,29 +2034,17 @@ rho::String js_Megamodule_isPeriodicallyCallbackSetted_Obj(rho::json::CJSONArray
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_isPeriodicallyCallbackSetted_caller isPeriodicallyCallbackSetted_in_thread:[Megamodule_isPeriodicallyCallbackSetted_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -2114,29 +2055,29 @@ rho::String js_Megamodule_isPeriodicallyCallbackSetted_Obj(rho::json::CJSONArray
         [Megamodule_isPeriodicallyCallbackSetted_caller isPeriodicallyCallbackSetted:[Megamodule_isPeriodicallyCallbackSetted_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_isPeriodicallyCallbackSetted(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_isPeriodicallyCallbackSetted(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_isPeriodicallyCallbackSetted_Obj(argv, item);
+    return js_Megamodule_isPeriodicallyCallbackSetted_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_isPeriodicallyCallbackSetted(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_isPeriodicallyCallbackSetted(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_isPeriodicallyCallbackSetted_Obj(argv, item);
+    return js_Megamodule_isPeriodicallyCallbackSetted_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -2217,17 +2158,16 @@ static Megamodule_stopPeriodicallyCallback_caller* our_Megamodule_stopPeriodical
 @end
 
 
-rho::String js_Megamodule_stopPeriodicallyCallback_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_stopPeriodicallyCallback_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -2238,6 +2178,8 @@ rho::String js_Megamodule_stopPeriodicallyCallback_Obj(rho::json::CJSONArray& ar
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -2250,6 +2192,12 @@ rho::String js_Megamodule_stopPeriodicallyCallback_Obj(rho::json::CJSONArray& ar
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::stopPeriodicallyCallback parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -2259,29 +2207,17 @@ rho::String js_Megamodule_stopPeriodicallyCallback_Obj(rho::json::CJSONArray& ar
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_stopPeriodicallyCallback_caller stopPeriodicallyCallback_in_thread:[Megamodule_stopPeriodicallyCallback_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -2292,29 +2228,29 @@ rho::String js_Megamodule_stopPeriodicallyCallback_Obj(rho::json::CJSONArray& ar
         [Megamodule_stopPeriodicallyCallback_caller stopPeriodicallyCallback:[Megamodule_stopPeriodicallyCallback_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_stopPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_stopPeriodicallyCallback(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_stopPeriodicallyCallback_Obj(argv, item);
+    return js_Megamodule_stopPeriodicallyCallback_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_stopPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_stopPeriodicallyCallback(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_stopPeriodicallyCallback_Obj(argv, item);
+    return js_Megamodule_stopPeriodicallyCallback_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -2395,21 +2331,20 @@ static Megamodule_complicatedTypesTest1_caller* our_Megamodule_complicatedTypesT
 @end
 
 
-rho::String js_Megamodule_complicatedTypesTest1_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_complicatedTypesTest1_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[1+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params_param0_param0_param2_param1[] = {{RHO_API_BOOLEAN, 0, "array_param", 0, 0 } };
-    static RHO_API_PARAM rho_api_params_param0_param0_param2[] = {{RHO_API_STRING, 0, "itemStr", 0, 0 }, {RHO_API_ARRAY, 0, "itemArray", 1, rho_api_params_param0_param0_param2_param1 } };
-    static RHO_API_PARAM rho_api_params_param0_param0[] = {{RHO_API_INTEGER, 0, "intItem", 0, 0 }, {RHO_API_STRING, 0, "strItem", 0, 0 }, {RHO_API_HASH, 0, "hashItem", 2, rho_api_params_param0_param0_param2 } };
-    static RHO_API_PARAM rho_api_params_param0[] = {{RHO_API_HASH, 0, "array_param", 3, rho_api_params_param0_param0 } };
-    static RHO_API_PARAM rho_api_params[] = {{RHO_API_ARRAY, 0, "paramArray", 1, rho_api_params_param0 } };
+    static RHO_API_PARAM rho_api_params_param0_param0_param2_param1[] = { {RHO_API_BOOLEAN, 0, "array_param", 0, 0 } };
+    static RHO_API_PARAM rho_api_params_param0_param0_param2[] = { {RHO_API_STRING, 0, "itemStr", 0, 0 }, {RHO_API_ARRAY, 0, "itemArray", 1, rho_api_params_param0_param0_param2_param1 } };
+    static RHO_API_PARAM rho_api_params_param0_param0[] = { {RHO_API_INTEGER, 0, "intItem", 0, 0 }, {RHO_API_STRING, 0, "strItem", 0, 0 }, {RHO_API_HASH, 0, "hashItem", 2, rho_api_params_param0_param0_param2 } };
+    static RHO_API_PARAM rho_api_params_param0[] = { {RHO_API_HASH, 0, "array_param", 3, rho_api_params_param0_param0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_ARRAY, 0, "paramArray", 1, rho_api_params_param0 } };
 
     
     BOOL is_factory_param[] = { NO, NO };
@@ -2420,6 +2355,8 @@ rho::String js_Megamodule_complicatedTypesTest1_Obj(rho::json::CJSONArray& argv,
     for (i = 0; i < (1); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -2432,6 +2369,12 @@ rho::String js_Megamodule_complicatedTypesTest1_Obj(rho::json::CJSONArray& argv,
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::complicatedTypesTest1 parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -2441,29 +2384,17 @@ rho::String js_Megamodule_complicatedTypesTest1_Obj(rho::json::CJSONArray& argv,
     }
 
     
-    // check callback
-    if (argc >= (1+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(1);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (1+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(1+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_complicatedTypesTest1_caller complicatedTypesTest1_in_thread:[Megamodule_complicatedTypesTest1_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -2474,29 +2405,29 @@ rho::String js_Megamodule_complicatedTypesTest1_Obj(rho::json::CJSONArray& argv,
         [Megamodule_complicatedTypesTest1_caller complicatedTypesTest1:[Megamodule_complicatedTypesTest1_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_complicatedTypesTest1(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_complicatedTypesTest1_Obj(argv, item);
+    return js_Megamodule_complicatedTypesTest1_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_complicatedTypesTest1(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_complicatedTypesTest1_Obj(argv, item);
+    return js_Megamodule_complicatedTypesTest1_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -2577,17 +2508,16 @@ static Megamodule_getProperty_caller* our_Megamodule_getProperty_caller = nil;
 @end
 
 
-rho::String js_Megamodule_getProperty_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_getProperty_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[1+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "propertyName", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_STRING, 0, "propertyName", 0, 0 } };
 
     
     BOOL is_factory_param[] = { NO, NO };
@@ -2598,6 +2528,8 @@ rho::String js_Megamodule_getProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
     for (i = 0; i < (1); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -2610,6 +2542,12 @@ rho::String js_Megamodule_getProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::getProperty parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -2619,29 +2557,17 @@ rho::String js_Megamodule_getProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
     }
 
     
-    // check callback
-    if (argc >= (1+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(1);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (1+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(1+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_getProperty_caller getProperty_in_thread:[Megamodule_getProperty_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -2652,29 +2578,29 @@ rho::String js_Megamodule_getProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
         [Megamodule_getProperty_caller getProperty:[Megamodule_getProperty_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_getProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_getProperty_Obj(argv, item);
+    return js_Megamodule_getProperty_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_getProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_getProperty_Obj(argv, item);
+    return js_Megamodule_getProperty_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -2755,18 +2681,17 @@ static Megamodule_getProperties_caller* our_Megamodule_getProperties_caller = ni
 @end
 
 
-rho::String js_Megamodule_getProperties_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_getProperties_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[1+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params_param0[] = {{RHO_API_STRING, 0, "array_param", 0, 0 } };
-    static RHO_API_PARAM rho_api_params[] = {{RHO_API_ARRAY, 0, "arrayofNames", 1, rho_api_params_param0 } };
+    static RHO_API_PARAM rho_api_params_param0[] = { {RHO_API_STRING, 0, "array_param", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_ARRAY, 0, "arrayofNames", 1, rho_api_params_param0 } };
 
     
     BOOL is_factory_param[] = { NO, NO };
@@ -2777,6 +2702,8 @@ rho::String js_Megamodule_getProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
     for (i = 0; i < (1); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -2789,6 +2716,12 @@ rho::String js_Megamodule_getProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::getProperties parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -2798,29 +2731,17 @@ rho::String js_Megamodule_getProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
     }
 
     
-    // check callback
-    if (argc >= (1+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(1);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (1+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(1+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_getProperties_caller getProperties_in_thread:[Megamodule_getProperties_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -2831,29 +2752,29 @@ rho::String js_Megamodule_getProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
         [Megamodule_getProperties_caller getProperties:[Megamodule_getProperties_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_getProperties(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_getProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_getProperties_Obj(argv, item);
+    return js_Megamodule_getProperties_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_getProperties(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_getProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_getProperties_Obj(argv, item);
+    return js_Megamodule_getProperties_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -2934,17 +2855,16 @@ static Megamodule_getAllProperties_caller* our_Megamodule_getAllProperties_calle
 @end
 
 
-rho::String js_Megamodule_getAllProperties_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_getAllProperties_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -2955,6 +2875,8 @@ rho::String js_Megamodule_getAllProperties_Obj(rho::json::CJSONArray& argv, id<I
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -2967,6 +2889,12 @@ rho::String js_Megamodule_getAllProperties_Obj(rho::json::CJSONArray& argv, id<I
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::getAllProperties parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -2976,29 +2904,17 @@ rho::String js_Megamodule_getAllProperties_Obj(rho::json::CJSONArray& argv, id<I
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_getAllProperties_caller getAllProperties_in_thread:[Megamodule_getAllProperties_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -3009,29 +2925,29 @@ rho::String js_Megamodule_getAllProperties_Obj(rho::json::CJSONArray& argv, id<I
         [Megamodule_getAllProperties_caller getAllProperties:[Megamodule_getAllProperties_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_getAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_getAllProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_getAllProperties_Obj(argv, item);
+    return js_Megamodule_getAllProperties_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_getAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_getAllProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_getAllProperties_Obj(argv, item);
+    return js_Megamodule_getAllProperties_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -3112,17 +3028,16 @@ static Megamodule_setProperty_caller* our_Megamodule_setProperty_caller = nil;
 @end
 
 
-rho::String js_Megamodule_setProperty_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_setProperty_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[2+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = {{RHO_API_STRING, 0, "propertyName", 0, 0 }, {RHO_API_STRING, 0, "propertyValue", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_STRING, 0, "propertyName", 0, 0 }, {RHO_API_STRING, 0, "propertyValue", 0, 0 } };
 
     
     BOOL is_factory_param[] = { NO, NO, NO };
@@ -3133,6 +3048,8 @@ rho::String js_Megamodule_setProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
     for (i = 0; i < (2); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (2); i++) {
@@ -3145,6 +3062,12 @@ rho::String js_Megamodule_setProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::setProperty parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -3154,29 +3077,17 @@ rho::String js_Megamodule_setProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
     }
 
     
-    // check callback
-    if (argc >= (2+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(2);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (2+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(2+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_setProperty_caller setProperty_in_thread:[Megamodule_setProperty_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -3187,29 +3098,29 @@ rho::String js_Megamodule_setProperty_Obj(rho::json::CJSONArray& argv, id<IMegam
         [Megamodule_setProperty_caller setProperty:[Megamodule_setProperty_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_setProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_setProperty_Obj(argv, item);
+    return js_Megamodule_setProperty_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_setProperty(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_setProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_setProperty_Obj(argv, item);
+    return js_Megamodule_setProperty_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -3290,17 +3201,16 @@ static Megamodule_setProperties_caller* our_Megamodule_setProperties_caller = ni
 @end
 
 
-rho::String js_Megamodule_setProperties_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_setProperties_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[1+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = {{RHO_API_HASH, 0, "propertyMap", 0, 0 } };
+    static RHO_API_PARAM rho_api_params[] = { {RHO_API_HASH, 0, "propertyMap", 0, 0 } };
 
     
     BOOL is_factory_param[] = { NO, NO };
@@ -3311,6 +3221,8 @@ rho::String js_Megamodule_setProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
     for (i = 0; i < (1); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -3323,6 +3235,12 @@ rho::String js_Megamodule_setProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::setProperties parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -3332,29 +3250,17 @@ rho::String js_Megamodule_setProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
     }
 
     
-    // check callback
-    if (argc >= (1+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(1);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (1+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(1+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_setProperties_caller setProperties_in_thread:[Megamodule_setProperties_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -3365,29 +3271,29 @@ rho::String js_Megamodule_setProperties_Obj(rho::json::CJSONArray& argv, id<IMeg
         [Megamodule_setProperties_caller setProperties:[Megamodule_setProperties_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_setProperties(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_setProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_setProperties_Obj(argv, item);
+    return js_Megamodule_setProperties_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_setProperties(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_setProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_setProperties_Obj(argv, item);
+    return js_Megamodule_setProperties_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -3468,17 +3374,16 @@ static Megamodule_clearAllProperties_caller* our_Megamodule_clearAllProperties_c
 @end
 
 
-rho::String js_Megamodule_clearAllProperties_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem) {
+rho::String js_Megamodule_clearAllProperties_Obj(rho::json::CJSONArray& argv, id<IMegamodule>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -3489,6 +3394,8 @@ rho::String js_Megamodule_clearAllProperties_Obj(rho::json::CJSONArray& argv, id
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -3501,6 +3408,12 @@ rho::String js_Megamodule_clearAllProperties_Obj(rho::json::CJSONArray& argv, id
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::clearAllProperties parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -3510,29 +3423,17 @@ rho::String js_Megamodule_clearAllProperties_Obj(rho::json::CJSONArray& argv, id
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_clearAllProperties_caller clearAllProperties_in_thread:[Megamodule_clearAllProperties_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -3543,29 +3444,29 @@ rho::String js_Megamodule_clearAllProperties_Obj(rho::json::CJSONArray& argv, id
         [Megamodule_clearAllProperties_caller clearAllProperties:[Megamodule_clearAllProperties_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_Megamodule_clearAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_Megamodule_clearAllProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamodule> item = Megamodule_makeInstanceByJSObject(strObjID);
-    return js_Megamodule_clearAllProperties_Obj(argv, item);
+    return js_Megamodule_clearAllProperties_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
-rho::String js_s_Megamodule_def_clearAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_def_clearAllProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
     id<IMegamodule> item = [factory getMegamoduleByID:defID];
-    return js_Megamodule_clearAllProperties_Obj(argv, item);
+    return js_Megamodule_clearAllProperties_Obj(argv, item, strCallbackID, strJsVmID, strCallbackParam);
 }
 
 
@@ -3646,17 +3547,16 @@ static Megamodule_enumerate_caller* our_Megamodule_enumerate_caller = nil;
 @end
 
 
-rho::String js_Megamodule_enumerate_Obj(rho::json::CJSONArray& argv, id<IMegamoduleSingleton>objItem) {
+rho::String js_Megamodule_enumerate_Obj(rho::json::CJSONArray& argv, id<IMegamoduleSingleton>objItem, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     CMethodResult* methodResult = [[CMethodResult alloc] init];
 
     NSObject* params[0+1];
-    NSString* callbackURL = nil;
-    NSString* callbackParam = nil;
     BOOL method_return_result = YES;
+    BOOL method_receive_callback = NO;
     int argc = argv.getSize();
     
-    static RHO_API_PARAM rho_api_params[] = { };
+    static RHO_API_PARAM rho_api_params[] = {  };
 
     
     BOOL is_factory_param[] = { NO };
@@ -3667,6 +3567,8 @@ rho::String js_Megamodule_enumerate_Obj(rho::json::CJSONArray& argv, id<IMegamod
     for (i = 0; i < (0); i++) {
         params[i] = [CJSConverter getObjectiveCNULL];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -3679,6 +3581,12 @@ rho::String js_Megamodule_enumerate_Obj(rho::json::CJSONArray& argv, id<IMegamod
                 rho::json::CJSONEntry entry = argv.getItem(i);
                 params[i] = [[CJSConverter convertFromJS:&entry rho_api_param:&(rho_api_params[i])] retain];
             }
+            // TODO: Handle CMethodResultError
+            if (params[i] == nil) {
+                NSLog(@"Megamodule::enumerate parameter %d is nil!", i);
+                rho::String resValue = rho::String("\"result\":null,\"error\":\"Method parameter is nil!\"");
+                return resValue;
+            }
         }
     }
 
@@ -3688,29 +3596,17 @@ rho::String js_Megamodule_enumerate_Obj(rho::json::CJSONArray& argv, id<IMegamod
     }
 
     
-    // check callback
-    if (argc >= (0+1)) {
-        rho::json::CJSONEntry callback = argv.getItem(0);
-        if (callback.isString()) {
-            rho::json::CJSONEntry entry = argv.getItem(i);
-            callbackURL = [((NSString*)[CJSConverter convertFromJS:&callback]) retain];
+        if (strCallbackID.size() > 0) {
+            method_receive_callback = YES;
         }
-    }
-    // check callback param
-    if (argc >= (0+2)) {
-        rho::json::CJSONEntry callback_param = argv.getItem(0+1);
-        if (callback_param.isString()) {
-            callbackParam = [((NSString*)[CJSConverter convertFromJS:&callback_param]) retain];
-        }
-    }
     
 
-    if (callbackURL != nil) {
+    [methodResult enableObjectCreationModeWithJSClassPath:@"Rho.Examples.Megamodule"];
+
+    if (method_receive_callback) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setJSCallback:callbackURL];
-        if (callbackParam != nil) {
-            [methodResult setCallbackParam:callbackParam];
-        }
+        [methodResult setJSCallback:[NSString stringWithUTF8String:strCallbackID.c_str()] webViewUID:[NSString stringWithUTF8String:strJsVmID.c_str()]];
+        [methodResult setCallbackParam:[NSString stringWithUTF8String:strCallbackParam.c_str()]];
         
         [Megamodule_enumerate_caller enumerate_in_thread:[Megamodule_enumerate_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
@@ -3721,19 +3617,19 @@ rho::String js_Megamodule_enumerate_Obj(rho::json::CJSONArray& argv, id<IMegamod
         [Megamodule_enumerate_caller enumerate:[Megamodule_enumerate_caller_params makeParams:params_array _item:objItem _methodResult:methodResult]];
         
     }
-    rho::String resValue = "";
-    if ((callbackURL == nil) && (method_return_result)) {
+    rho::String resValue = rho::String("\"result\":null");
+    if ((!method_receive_callback) && (method_return_result)) {
         resValue = [[methodResult toJSON] UTF8String];
     }
     return resValue;
 }
 
 
-rho::String js_s_Megamodule_enumerate(rho::json::CJSONArray& argv, const rho::String& strObjID) {
+rho::String js_s_Megamodule_enumerate(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam) {
 
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
-    return js_Megamodule_enumerate_Obj(argv, singleton);
+    return js_Megamodule_enumerate_Obj(argv, singleton, strCallbackID, strJsVmID, strCallbackParam);
 
 }
 
@@ -3743,26 +3639,38 @@ rho::String js_s_Megamodule_enumerate(rho::json::CJSONArray& argv, const rho::St
 
 
 
-rho::String js_s_Megamodule_getDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_Megamodule_getDefaultID(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     NSString* defID = [singleton getDefaultID];
 
-    rho::String res =  [defID UTF8String];
+    rho::String res =  [[CJSConverter convertToJS:defID level:0] UTF8String];
 
     return res;
 }
 
-rho::String js_s_Megamodule_setDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_Megamodule_getDefault(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
+{
+    id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
+    id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
+
+    NSString* defID = [singleton getDefaultID];
+
+    rho::String res =  [[CJSConverter convertToJS:[CRhoAPIClassInstance rubyClassByName:@"Rho.Examples.Megamodule" instanceID:defID] level:0] UTF8String];
+
+    return res;
+}
+
+rho::String js_s_Megamodule_setDefaultID(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
     id<IMegamoduleFactory> factory = [MegamoduleFactorySingleton getMegamoduleFactoryInstance];
     id<IMegamoduleSingleton> singleton = [factory getMegamoduleSingleton];
 
     [singleton setDefaultID:[NSString stringWithUTF8String:(strObjID.c_str())]];
 
-    return "";
+    [[CJSConverter convertToJS:nil level:0] UTF8String];
 }
 
 
