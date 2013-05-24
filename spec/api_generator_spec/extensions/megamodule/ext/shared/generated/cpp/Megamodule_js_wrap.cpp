@@ -1,3 +1,5 @@
+
+
 #include "MegamoduleBase.h"
 #include "api_generator/js_helpers.h"
 
@@ -12,152 +14,93 @@ extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 using namespace rho;
 using namespace rho::json;
 using namespace rho::common;
+using namespace rho::apiGenerator;
 
 
-rho::String js_Megamodule_getStringProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_getStringProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("getStringProperty(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setRequestedType(CMethodResult::eString);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getStringProperty,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getStringProperty,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->getStringProperty(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_getIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_getIntegerProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("getIntegerProperty(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setRequestedType(CMethodResult::eInt);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getIntegerProperty,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getIntegerProperty,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->getIntegerProperty(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_setIntegerProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_setIntegerProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("setIntegerProperty(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
-
-    nCallbackArg = 1;
 
     
     if ( argc == 0 )
@@ -170,10 +113,10 @@ rho::String js_Megamodule_setIntegerProperty(rho::json::CJSONArray& argv, const 
 
 
 
-    int arg0;
+    int arg0 = 12345;
     if ( argc > 0 )
     {
-        if ( argv[0].isString() )
+        if ( argv[0].isInteger() )
             arg0 = argv[0].getInt();
         else if (!argv[0].isNull())
         {
@@ -197,71 +140,39 @@ rho::String js_Megamodule_setIntegerProperty(rho::json::CJSONArray& argv, const 
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setIntegerProperty, arg0,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setIntegerProperty, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->setIntegerProperty( arg0,  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_typesTest(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("typesTest(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setRequestedType(CMethodResult::eBool);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
-
-    nCallbackArg = 1;
 
     
     if ( argc == 0 )
@@ -272,15 +183,12 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
     
 
 
-    rho::String arg0;
+    rho::String arg0 = "";
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
         {
             arg0 = argv[0].getString();
-
-            oRes.setParamName(argv[0].getString());
-
         }
         else if (!argv[0].isNull())
         {
@@ -305,8 +213,6 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-    nCallbackArg = 2;
-
     
     if ( argc == 1 )
     {
@@ -320,11 +226,11 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-    bool arg1;
+    bool arg1 = false;
     if ( argc > 1 )
     {
-        if ( argv[1].isString() )
-            arg1 = argv[1].getInt() ? true : false;
+        if ( argv[1].isBoolean() )
+            arg1 = argv[1].getBoolean();
         else if (!argv[1].isNull())
         {
             oRes.setArgError("Type error: argument " "1" " should be " "boolean" );
@@ -344,8 +250,6 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-    nCallbackArg = 3;
-
     
     if ( argc == 2 )
     {
@@ -357,10 +261,10 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-    int arg2;
+    int arg2 = 0;
     if ( argc > 2 )
     {
-        if ( argv[2].isString() )
+        if ( argv[2].isInteger() )
             arg2 = argv[2].getInt();
         else if (!argv[2].isNull())
         {
@@ -383,8 +287,6 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-    nCallbackArg = 4;
-
     
     if ( argc == 3 )
     {
@@ -400,11 +302,13 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-    double arg3;
+    double arg3 = 0;
     if ( argc > 3 )
     {
-        if ( argv[3].isString() )
+        if ( argv[3].isFloat() )
             arg3 = argv[3].getDouble();
+        else if ( argv[3].isInteger() )
+            arg3 = argv[3].getInt();
         else if (!argv[3].isNull())
         {
             oRes.setArgError("Type error: argument " "3" " should be " "float" );
@@ -421,8 +325,6 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-
-    nCallbackArg = 5;
 
     
     if ( argc == 4 )
@@ -466,8 +368,6 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-
-    nCallbackArg = 6;
 
     
     if ( argc == 5 )
@@ -514,327 +414,178 @@ rho::String js_Megamodule_typesTest(rho::json::CJSONArray& argv, const rho::Stri
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(6) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor7( pObj, &rho::examples::IMegamodule::typesTest, arg0, arg1, arg2, arg3, arg4, arg5,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor7( pObj, &rho::examples::IMegamodule::typesTest, arg0, arg1, arg2, arg3, arg4, arg5,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->typesTest( arg0, arg1, arg2, arg3, arg4, arg5,  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_produceArray(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_produceArray(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("produceArray(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setParamName( "result" );
+    oRes.setRequestedType(CMethodResult::eStringArray);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceArray,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceArray,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->produceArray(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_produceHash(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_produceHash(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("produceHash(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setRequestedType(CMethodResult::eStringHash);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceHash,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceHash,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->produceHash(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_produceComplicatedResult(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_produceComplicatedResult(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("produceComplicatedResult(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setParamName( "result" );
+    oRes.setRequestedType(CMethodResult::eStringArray);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceComplicatedResult,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceComplicatedResult,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->produceComplicatedResult(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_s_Megamodule_getObjectsCount(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_Megamodule_getObjectsCount(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("getObjectsCount(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setRequestedType(CMethodResult::eInt);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::getObjectsCount,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::getObjectsCount,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->getObjectsCount(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_s_Megamodule_getObjectByIndex(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_Megamodule_getObjectByIndex(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("getObjectByIndex(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setJSObjectClassPath( "Rho.Examples.Megamodule" );
+    oRes.setRequestedType(CMethodResult::eNone);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
 
-
-    nCallbackArg = 1;
 
     
     if ( argc == 0 )
@@ -847,10 +598,10 @@ rho::String js_s_Megamodule_getObjectByIndex(rho::json::CJSONArray& argv, const 
 
 
 
-    int arg0;
+    int arg0 = 0;
     if ( argc > 0 )
     {
-        if ( argv[0].isString() )
+        if ( argv[0].isInteger() )
             arg0 = argv[0].getInt();
         else if (!argv[0].isNull())
         {
@@ -874,71 +625,38 @@ rho::String js_s_Megamodule_getObjectByIndex(rho::json::CJSONArray& argv, const 
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor2( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::getObjectByIndex, arg0,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor2( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::getObjectByIndex, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->getObjectByIndex( arg0,  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_showAlertFromUIThread(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_showAlertFromUIThread(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("showAlertFromUIThread(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
-
-    nCallbackArg = 1;
 
     
     if ( argc == 0 )
@@ -949,15 +667,12 @@ rho::String js_Megamodule_showAlertFromUIThread(rho::json::CJSONArray& argv, con
     
 
 
-    rho::String arg0;
+    rho::String arg0 = "";
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
         {
             arg0 = argv[0].getString();
-
-            oRes.setParamName(argv[0].getString());
-
         }
         else if (!argv[0].isNull())
         {
@@ -983,70 +698,40 @@ rho::String js_Megamodule_showAlertFromUIThread(rho::json::CJSONArray& argv, con
 
 
 
-    if ( argc > nCallbackArg )
-    {
 
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(true);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
 
 
     pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::showAlertFromUIThread, arg0,  oRes );
-
-
-
     rho_wm_impl_performOnUiThread( pFunctor );
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_setPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_setPeriodicallyCallback(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("setPeriodicallyCallback(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
-
-    nCallbackArg = 1;
 
     
 
 
 
 
-    int arg0;
+    int arg0 = 0;
     if ( argc > 0 )
     {
-        if ( argv[0].isString() )
+        if ( argv[0].isInteger() )
             arg0 = argv[0].getInt();
         else if (!argv[0].isNull())
         {
@@ -1070,195 +755,116 @@ rho::String js_Megamodule_setPeriodicallyCallback(rho::json::CJSONArray& argv, c
 
 
 
-    if ( argc > nCallbackArg )
+
+    oRes.setCallInUIThread(false);
+    oRes.setJSCallback( strCallbackID );
+    oRes.setCallbackParam( strCallbackParam );
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setPeriodicallyCallback, arg0,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setPeriodicallyCallback, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->setPeriodicallyCallback( arg0,  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_isPeriodicallyCallbackSetted(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_isPeriodicallyCallbackSetted(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("isPeriodicallyCallbackSetted(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setRequestedType(CMethodResult::eBool);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
 
-    if ( argc > nCallbackArg )
+
+    oRes.setCallInUIThread(false);
+    oRes.setJSCallback( strCallbackID );
+    oRes.setCallbackParam( strCallbackParam );
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::isPeriodicallyCallbackSetted,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::isPeriodicallyCallbackSetted,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->isPeriodicallyCallbackSetted(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_stopPeriodicallyCallback(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_stopPeriodicallyCallback(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("stopPeriodicallyCallback(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::stopPeriodicallyCallback,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::stopPeriodicallyCallback,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->stopPeriodicallyCallback(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_complicatedTypesTest1(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_complicatedTypesTest1(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("complicatedTypesTest1(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setRequestedType(CMethodResult::eBool);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
-
-    nCallbackArg = 1;
 
     
     if ( argc == 0 )
@@ -1304,71 +910,39 @@ rho::String js_Megamodule_complicatedTypesTest1(rho::json::CJSONArray& argv, con
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::complicatedTypesTest1, arg0,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::complicatedTypesTest1, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->complicatedTypesTest1( arg0,  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_getProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_getProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("getProperty(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setRequestedType(CMethodResult::eString);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
-
-    nCallbackArg = 1;
 
     
     if ( argc == 0 )
@@ -1379,15 +953,12 @@ rho::String js_Megamodule_getProperty(rho::json::CJSONArray& argv, const rho::St
     
 
 
-    rho::String arg0;
+    rho::String arg0 = "";
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
         {
             arg0 = argv[0].getString();
-
-            oRes.setParamName(argv[0].getString());
-
         }
         else if (!argv[0].isNull())
         {
@@ -1413,68 +984,43 @@ rho::String js_Megamodule_getProperty(rho::json::CJSONArray& argv, const rho::St
 
 
 
-    if ( argc > nCallbackArg )
+
+    oRes.setCallInUIThread(false);
+    oRes.setJSCallback( strCallbackID );
+    oRes.setCallbackParam( strCallbackParam );
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::getProperty, arg0,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::getProperty, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->getProperty( arg0,  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_getProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_getProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("getProperties(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setRequestedType(CMethodResult::eStringHash);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
-
-    nCallbackArg = 1;
 
     
     if ( argc == 0 )
@@ -1520,130 +1066,81 @@ rho::String js_Megamodule_getProperties(rho::json::CJSONArray& argv, const rho::
 
 
 
-    if ( argc > nCallbackArg )
+
+    oRes.setCallInUIThread(false);
+    oRes.setJSCallback( strCallbackID );
+    oRes.setCallbackParam( strCallbackParam );
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::getProperties, arg0,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::getProperties, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->getProperties( arg0,  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_getAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_getAllProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("getAllProperties(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setRequestedType(CMethodResult::eStringHash);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
 
-    if ( argc > nCallbackArg )
+
+    oRes.setCallInUIThread(false);
+    oRes.setJSCallback( strCallbackID );
+    oRes.setCallbackParam( strCallbackParam );
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getAllProperties,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getAllProperties,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->getAllProperties(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_setProperty(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("setProperty(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
-
-    nCallbackArg = 1;
 
     
     if ( argc == 0 )
@@ -1654,15 +1151,12 @@ rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::St
     
 
 
-    rho::String arg0;
+    rho::String arg0 = "";
     if ( argc > 0 )
     {
         if ( argv[0].isString() )
         {
             arg0 = argv[0].getString();
-
-            oRes.setParamName(argv[0].getString());
-
         }
         else if (!argv[0].isNull())
         {
@@ -1686,8 +1180,6 @@ rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::St
 
 
 
-
-    nCallbackArg = 2;
 
     
     if ( argc == 1 )
@@ -1698,13 +1190,12 @@ rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::St
     
 
 
-    rho::String arg1;
+    rho::String arg1 = "";
     if ( argc > 1 )
     {
         if ( argv[1].isString() )
         {
             arg1 = argv[1].getString();
-
         }
         else if (!argv[1].isNull())
         {
@@ -1730,71 +1221,38 @@ rho::String js_Megamodule_setProperty(rho::json::CJSONArray& argv, const rho::St
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::examples::IMegamodule::setProperty, arg0, arg1,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::examples::IMegamodule::setProperty, arg0, arg1,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->setProperty( arg0, arg1,  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_setProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_setProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("setProperties(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
-
-    nCallbackArg = 1;
 
     
     if ( argc == 0 )
@@ -1841,177 +1299,92 @@ rho::String js_Megamodule_setProperties(rho::json::CJSONArray& argv, const rho::
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setProperties, arg0,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setProperties, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->setProperties( arg0,  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_Megamodule_clearAllProperties(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_Megamodule_clearAllProperties(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("clearAllProperties(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
     rho::examples::IMegamodule* pObj = rho::examples::CMegamoduleFactoryBase::getInstance()->getModuleByID(strObjID);
 
 
 
 
-    if ( argc > nCallbackArg )
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-        oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
-        return oRes.toJSON();
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::clearAllProperties,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::clearAllProperties,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->clearAllProperties(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
 }
 
-rho::String js_s_Megamodule_enumerate(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_Megamodule_enumerate(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
+    RAWTRACE3("enumerate(strObjID = %s, strCallbackID = %s, strJsVmID = %s)", strObjID.c_str(), strCallbackID.c_str(), strJsVmID.c_str());
+
     rho::apiGenerator::CMethodResult oRes;
 
+
+    oRes.setParamName( "result" );
+    oRes.setJSObjectClassPath( "Rho.Examples.Megamodule" );
+    oRes.setRequestedType(CMethodResult::eStringArray);
+
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
-    bool bUseCallback = false;
     int argc = argv.getSize();
-    int nCallbackArg = 0;
 
 
 
 
-    if ( argc > nCallbackArg )
+
+    oRes.setCallInUIThread(false);
+    oRes.setJSCallback( strCallbackID );
+    oRes.setCallbackParam( strCallbackParam );
+
+
+
+    if ( oRes.hasCallback() )
     {
-
-
-        if ( !argv[nCallbackArg].isString() )
-        {
-            oRes.setArgError("Type error: callback should be String");
-            return oRes.toJSON();
-        }
-
-        oRes.setCallInUIThread(false);
-        oRes.setRubyCallback( argv[nCallbackArg].getString() );
-        if ( argc > nCallbackArg + 1 )
-        {
-            if ( !argv[nCallbackArg + 1].isString() )
-            {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toJSON();
-            }
-
-            oRes.setCallbackParam( argv[nCallbackArg + 1].getString() );
-        }
-
-    }
-
-
-    pFunctor = rho_makeInstanceClassFunctor1( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::enumerate,  oRes );
-
-
-
-
-    if ( bUseCallback )
+        pFunctor = rho_makeInstanceClassFunctor1( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::enumerate,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->enumerate(  oRes );
-
-
     }
-
 
     return oRes.toJSON();
 
@@ -2019,7 +1392,7 @@ rho::String js_s_Megamodule_enumerate(rho::json::CJSONArray& argv, const rho::St
 
 
 
-rho::String js_s_Megamodule_getDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_Megamodule_getDefaultID(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
     rho::apiGenerator::CMethodResult oRes;
     rho::String strDefaultID = rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->getDefaultID();
@@ -2028,7 +1401,17 @@ rho::String js_s_Megamodule_getDefaultID(rho::json::CJSONArray& argv, const rho:
     return oRes.toJSON();
 }
 
-rho::String js_s_Megamodule_setDefaultID(rho::json::CJSONArray& argv, const rho::String& strObjID)
+rho::String js_s_Megamodule_getDefault(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
+{
+    rho::apiGenerator::CMethodResult oRes;
+    rho::String strDefaultID = rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->getDefaultID();
+    oRes.set(strDefaultID);
+    oRes.setJSObjectClassPath("Rho.Examples.Megamodule");
+
+    return oRes.toJSON();
+}
+
+rho::String js_s_Megamodule_setDefaultID(const rho::String& strObjID, rho::json::CJSONArray& argv, const rho::String& strCallbackID, const rho::String& strJsVmID, const rho::String& strCallbackParam)
 {
     rho::apiGenerator::CMethodResult oRes;
     rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->setDefaultID(strObjID);

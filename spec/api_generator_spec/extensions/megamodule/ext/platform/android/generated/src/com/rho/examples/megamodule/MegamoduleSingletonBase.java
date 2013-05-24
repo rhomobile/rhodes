@@ -10,7 +10,7 @@ import com.rhomobile.rhodes.api.RhoApiDefaultId;
 public abstract class MegamoduleSingletonBase 
     extends RhoApiDefaultId<IMegamodule, IMegamoduleFactory>  {
 
-    public MegamoduleSingletonBase(MegamoduleFactory factory) {
+    public MegamoduleSingletonBase(IMegamoduleFactory factory) {
         super(factory);
     } 
 
