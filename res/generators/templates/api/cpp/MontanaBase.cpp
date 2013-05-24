@@ -89,17 +89,14 @@ void <%= propBaseClass %>::getProperties( const rho::Vector<rho::String>& arrayo
     {
         getProperty(arrayofNames[i], oResult);
 
-        if ( oResult.isError() )
-            break;
-
-        res[arrayofNames[i]] = oResult.toString();
+        if ( !oResult.isError() )
+        {
+            res[arrayofNames[i]] = oResult.toString();
+        }
     }
-
     oResult.setCollectionMode(false);
-    if ( oResult.isError() )
-        oResult.callCallback();
-    else
-        oResult.set(res);
+
+    oResult.set(res);
 }
 
 void <%= propBaseClass %>::getAllProperties(CMethodResult& oResult)
