@@ -542,6 +542,15 @@ void CDBAdapter::destroy_tables(const rho::Vector<rho::String>& arIncludeTables,
 
 void CDBAdapter::copyTable(String tableName, CDBAdapter& dbFrom, CDBAdapter& dbTo)
 {
+    /* Create table on destination DB if it doesn't exists */
+    if (!dbTo.isTableExist(tableName)) {
+        IDBResult res = dbFrom.executeSQL("SELECT sql FROM sqlite_master WHERE type='table' AND name=?", tableName);
+        if ( !res.isEnd() ) {
+            String createTableStatement = res.getStringByIdx(0);
+            dbTo.executeSQL(createTableStatement.c_str());
+        }
+    }
+
     String strSelect = "SELECT * from " + tableName;
     IDBResult res = dbFrom.executeSQL( strSelect.c_str() );
 	String strInsert = "";
