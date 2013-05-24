@@ -294,7 +294,7 @@ void CNativeTabbar::SwitchTab(int index)
             bNewTab = false;
         }else
         {
-            raiseTabEvent( "onTabNewRequest", m_nCurrentTab, -1 );
+            //raiseTabEvent( "onTabNewRequest", m_nCurrentTab, -1 );
 
             m_arTabs[index].m_nTabID = getAppWindow().getWebKitEngine()->NewTab();
 
@@ -311,6 +311,7 @@ void CNativeTabbar::SwitchTab(int index)
                     if ( m_arTabs[index].m_nTabID < 0 )
                     {
                         LOG(ERROR) + "New Tab failed: " + m_arTabs[index].m_nTabID;
+                        raiseTabEvent( "onTabNewError", m_nCurrentTab, index );
                         return;
                     }
                 }
@@ -318,7 +319,7 @@ void CNativeTabbar::SwitchTab(int index)
             else
                 m_arTabs[index].m_hwndTab = getAppWindow().getWebKitEngine()->GetHTMLWND(m_arTabs[index].m_nTabID);
 
-            raiseTabEvent( "onTabNew", m_nCurrentTab, index );
+            //raiseTabEvent( "onTabNew", m_nCurrentTab, index );
         }
     }
 

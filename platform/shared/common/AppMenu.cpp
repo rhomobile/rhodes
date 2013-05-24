@@ -36,21 +36,23 @@ namespace common{
 
 IMPLEMENT_LOGCLASS(CAppMenu, "AppMenu");
 
-void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink )
+void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink, bool bLeftMenu )
 {
     if ( strLabel.length() == 0 )
         return;
 
     if ( strcasecmp( strLabel.c_str(), "back" )==0 && strcasecmp( strLink.c_str(), "back" )!=0 )
         RHODESAPP().setAppBackUrl(strLink);
+    else if ( bLeftMenu )
+        m_arAppLeftMenuItems.push_back(CAppMenuItem(strLabel, strLink));
     else
       	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
 }
 
-void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes)
+void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu )
 {
     rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
-    copyMenuItems(arAppMenuItems);
+    copyMenuItems(arAppMenuItems, bLeftMenu);
 
     for ( int i = 0; i < (int)arAppMenuItems.size(); i++)
     {
@@ -60,29 +62,75 @@ void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes)
     }
 }
 
-void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu )
+void CAppMenu::getMenuItemEx(Hashtable<String, String>& hashRes, bool bLeftItem/* = false*/)
+{
+    CAppMenuItem oItem = bLeftItem ? getLeftItem() : getRightItem();
+
+    hashRes.put(oItem.m_strLabel, oItem.m_strLink);
+}
+
+void CAppMenu::setLeftItem( const String& strLabel, const String& strLink )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        m_oLeftItem = CAppMenuItem(strLabel, strLink );
+    }
+}
+
+void CAppMenu::setRightItem( const String& strLabel, const String& strLink )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        m_oRightItem = CAppMenuItem(strLabel, strLink );
+    }
+}
+
+CAppMenuItem CAppMenu::getLeftItem()
+{
+    synchronized(m_mxAppMenu) 
+	{
+        return m_oLeftItem;
+    }
+}
+
+CAppMenuItem CAppMenu::getRightItem()
+{
+    synchronized(m_mxAppMenu) 
+	{
+        return m_oRightItem;
+    }
+}
+
+void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
 {
     //rho::Vector< Hashtable<String, String> > arRes;
 
     synchronized(m_mxAppMenu) 
 	{
-		m_arAppMenuItems.clear();
+        if ( bLeftMenu )
+		    m_arAppLeftMenuItems.clear();
+        else
+            m_arAppMenuItems.clear();
+
         RHODESAPP().setAppBackUrl("");
         for (int i = 0; i < (int)arMenu.size(); i++)
         {
             rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
             String strKey = oIter.getCurKey();
             String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
-            addAppMenuItem( strKey, strValue );
+            addAppMenuItem( strKey, strValue, bLeftMenu );
         }
     }
 }
 
-void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems)
+void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems, bool bLeftMenu)
 {
     synchronized(m_mxAppMenu) 
 	{
-        arAppMenuItems = m_arAppMenuItems; 
+        if (bLeftMenu)
+            arAppMenuItems = m_arAppLeftMenuItems; 
+        else
+            arAppMenuItems = m_arAppMenuItems; 
     }
 }
 

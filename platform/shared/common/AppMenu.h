@@ -44,6 +44,7 @@ struct CAppMenuItem
 	EnumMenuType  m_eType;
 
     CAppMenuItem (const String &label, const String &link);
+    CAppMenuItem () : m_eType(emtNone){}
     void processCommand();
 };
 
@@ -52,17 +53,25 @@ class CAppMenu
 	DEFINE_LOGCLASS;
 
     common::CMutex m_mxAppMenu;
-	Vector<CAppMenuItem> m_arAppMenuItems;
+	Vector<CAppMenuItem> m_arAppMenuItems, m_arAppLeftMenuItems;
+    CAppMenuItem m_oLeftItem, m_oRightItem;
 
 public:
     //void setAppMenu(unsigned long valMenu);
-    void getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes);
-    void setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu );
+    void getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu = false);
+    void getMenuItemEx(Hashtable<String, String>& hashRes, bool bLeftItem = false);
+    void setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu = false );
 
-    void copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems);
+    void copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems, bool bLeftMenu = false);
+
+    void setLeftItem( const String& strLabel, const String& strLink );
+    void setRightItem( const String& strLabel, const String& strLink );
+
+    CAppMenuItem getLeftItem();
+    CAppMenuItem getRightItem();
 
 private:
-    void addAppMenuItem( const String& strLabel, const String& strLink );
+    void addAppMenuItem( const String& strLabel, const String& strLink, bool bLeftMenu );
 
 };
 
