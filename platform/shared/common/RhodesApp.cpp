@@ -261,13 +261,16 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     {
     	if ( m_expected == local_server_started )
     	{
-    		m_commands.insert(m_commands.begin(), cmd->type);
-    		return;
+    		m_commands.push_back(cmd->type);
+    	} else
+    	{
+    		m_commands.clear();
+        	m_commands.insert(m_commands.begin(), cmd->type);
     	}
-    	m_commands.clear();
+    } else {
+    	m_commands.insert(m_commands.begin(), cmd->type);
     }
 
-    m_commands.insert(m_commands.begin(), cmd->type);
     for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
     {
         int type = *it;
