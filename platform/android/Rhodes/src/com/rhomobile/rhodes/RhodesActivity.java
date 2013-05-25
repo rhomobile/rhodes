@@ -217,6 +217,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 public void run()
                 {
                     googleWebView.applyWebSettings();
+                    notifyUiCreated();
                 }
             });
         }
@@ -236,7 +237,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         return view;
     }
 	
-	private void notifyUiCreated() {
+	public void notifyUiCreated() {
 		RhodesService r = RhodesService.getInstance();
 		if ( r != null ) {
 			RhodesService.callUiCreatedCallback();
