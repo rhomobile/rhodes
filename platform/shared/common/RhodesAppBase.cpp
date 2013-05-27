@@ -154,7 +154,7 @@ String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
 String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
 {
 #if defined(RHO_NO_RUBY)
-    return RHODESAPP().canonicalizeRhoPath(strUrl);
+    return canonicalizeRhoPath(strUrl);
 #else
 
     if (strUrl.length() == 0 )

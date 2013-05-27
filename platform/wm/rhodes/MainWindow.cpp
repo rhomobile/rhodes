@@ -1741,6 +1741,13 @@ LRESULT CMainWindow::OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 }
 
 #if defined (OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
+
+void CMainWindow::createCustomMenuEx(HMENU hMenu, rho::Vector<rho::common::CAppMenuItem>& arAppMenuItems)
+{
+    //TODO: hot fix, need to fix
+    createCustomMenu();
+}
+
 void CMainWindow::createCustomMenu()
 {
 	CMenu menu;
