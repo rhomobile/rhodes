@@ -91,11 +91,11 @@ class CAppCallbacksQueue : public CThreadQueue
 public:
     enum callback_t
     {
-        app_deactivated,
         local_server_restart,
         local_server_started,
         ui_created,
-        app_activated
+        app_activated,
+        app_deactivated
     };
 
 public:
@@ -125,6 +125,8 @@ private:
     };
 
     void processCommand(IQueueCommand* pCmd);
+
+    bool hasCommand(callback_t type);
 
     static char const *toString(int type);
     void   callCallback(const String& strCallback);
@@ -212,6 +214,18 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
     }
 }
 
+bool CAppCallbacksQueue::hasCommand(callback_t type)
+{
+    for( int i = 0; i < (int)m_commands.size() ; i++)
+    {
+        if ( m_commands.elementAt(i) == type )
+        {
+        	return true;
+        }
+    }
+	return false;
+}
+
 void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 {
     Command *cmd = (Command *)pCmd;
@@ -226,6 +240,8 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         return;
     }
 */
+    LOG(INFO) + toString(cmd->type) + " is received ++++++++++++++++++++++++++++";
+
     if ( cmd->type == ui_created)
     {
     	m_uistate = ui_created_received;
@@ -234,7 +250,7 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
     if ( m_expected == app_deactivated && cmd->type == app_activated )
     {
-        LOG(INFO) + "received duplicate activate skip it";
+        LOG(INFO) + "received duplicate app_activated - skip it";
         return;
     }
 
@@ -242,8 +258,10 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     {
         if ( cmd->type != local_server_started )
         {
+        	LOG(INFO) + "Restart local server ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
             RHODESAPP().restartLocalServer(*this);
-        	wait(50);
+        	sleep(50);
+        	LOG(INFO) + "Continue after server restart =======================================";
         }
         else
             LOG(INFO) + "Local server restarted before activate.Do not restart it again.";
@@ -253,47 +271,37 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
     if (cmd->type > m_expected)
     {
-        boolean bDuplicate = false;
-        for( int i = 0; i < (int)m_commands.size() ; i++)
-        {
-            if ( m_commands.elementAt(i) == cmd->type )
-            {
-                bDuplicate = true;
-                break;
-            }
-        }
-
-        if ( bDuplicate )
+        if ( hasCommand(cmd->type) )
         {
             LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it";
+            return;
         }else
         {
             // Don't do that now
             LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it";
-            m_commands.push_back(cmd->type);
-            std::sort(m_commands.begin(), m_commands.end());
-        }
-        return;
-    }
 
-    if ( cmd->type == app_deactivated)
+            if (cmd->type == app_deactivated && m_expected != local_server_started)
+            {
+            	m_commands.clear();
+            	m_commands.push_back(cmd->type);
+            }
+            else
+            {
+            	m_commands.push_back(cmd->type);
+            	std::sort(m_commands.begin(), m_commands.end());
+                return;
+            }
+        }
+    }
+    else
     {
-    	if ( m_expected == local_server_started )
-    	{
-    		m_commands.push_back(cmd->type);
-    	} else
-    	{
-    		m_commands.clear();
-        	m_commands.insert(m_commands.begin(), cmd->type);
-    	}
-    } else {
     	m_commands.insert(m_commands.begin(), cmd->type);
     }
 
     for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
     {
         int type = *it;
-        LOG(INFO) + "process command: " + toString(type);
+        LOG(INFO) + "process command: " + toString(type) + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
         switch (type)
         {
         case app_deactivated:
