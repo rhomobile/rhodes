@@ -202,7 +202,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         mMainView.setWebView(createWebView(0), -1);
 
-        notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
     }
 

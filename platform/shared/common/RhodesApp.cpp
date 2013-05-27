@@ -100,7 +100,7 @@ public:
 
 public:
     CAppCallbacksQueue();
-	CAppCallbacksQueue(LogCategory logCat);
+	//CAppCallbacksQueue(LogCategory logCat);
 	~CAppCallbacksQueue();
 
     //void call(callback_t type);
@@ -117,6 +117,13 @@ public:
 
 private:
 
+    enum ui_created_state
+    {
+    	ui_not_available,
+    	ui_created_received,
+    	ui_created_processed
+    };
+
     void processCommand(IQueueCommand* pCmd);
 
     static char const *toString(int type);
@@ -124,6 +131,8 @@ private:
 
 private:
     callback_t m_expected;
+    ui_created_state m_uistate;
+
     Vector<int> m_commands;
     boolean m_bFirstServerStart;
 };
@@ -149,7 +158,7 @@ char const *CAppCallbacksQueue::toString(int type)
 }
 
 CAppCallbacksQueue::CAppCallbacksQueue()
-    :CThreadQueue(), m_expected(local_server_started), m_bFirstServerStart(true)
+    :CThreadQueue(), m_expected(local_server_started), m_uistate(ui_not_available), m_bFirstServerStart(true)
 {
     CThreadQueue::setLogCategory(getLogCategory());
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
@@ -216,6 +225,12 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         return;
     }
 */
+    if ( cmd->type == ui_created)
+    {
+    	m_uistate = ui_created_received;
+    }
+
+
     if ( m_expected == app_deactivated && cmd->type == app_activated )
     {
         LOG(INFO) + "received duplicate activate skip it";
@@ -225,7 +240,10 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     if ( m_expected == local_server_restart )
     {
         if ( cmd->type != local_server_started )
+        {
             RHODESAPP().restartLocalServer(*this);
+        	wait(50);
+        }
         else
             LOG(INFO) + "Local server restarted before activate.Do not restart it again.";
 
@@ -298,12 +316,21 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         case ui_created:
             {
-                callCallback("/system/uicreated");
-                m_expected = app_activated;
+            	if (m_uistate != ui_created_processed)
+            	{
+					callCallback("/system/uicreated");
+					m_expected = app_activated;
+					m_uistate = ui_created_processed;
+            	}
             }
             break;
         case app_activated:
             {
+            	if (m_uistate == ui_created_received)
+            	{
+                    callCallback("/system/uicreated");
+                    m_uistate = ui_created_processed;
+            	}
                 callCallback("/system/activateapp");
                 m_expected = app_deactivated;
             }
