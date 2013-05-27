@@ -217,7 +217,8 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     Command *cmd = (Command *)pCmd;
     if (!cmd)
         return;
-    
+
+    synchronized(getCommandLock());
 /*
     if (cmd->type < m_expected)
     {
