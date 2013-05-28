@@ -180,6 +180,11 @@ bool CRhoRuntime::onBackKeyPress()
 	return rho::common::convertStringToWP8(ret);
 }
 
+void CRhoRuntime::executeRhoRunnable(int64 native)
+{
+	((rho::common::IRhoRunnable*)native)->runObject();
+}
+
 // *** PUBLIC METHODS ***
 
 bool CRhoRuntime::Initialize(::Platform::String^ title)
@@ -234,7 +239,7 @@ extern "C" int rho_net_ping_network(const char* szHost)
 
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
-	//TODO: rho_wm_impl_performOnUiThread
+	CRhoRuntime::getInstance()->getMainPage()->performOnUiThread((int64)pTask);
 }
 
 extern "C" const char* rho_native_rhopath()
