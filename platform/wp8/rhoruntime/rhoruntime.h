@@ -38,6 +38,7 @@ namespace rhoruntime
 		bool isBrowserInitialized();
 		::Platform::String^ getScreenOrientation();
 		void bringToFront();
+		void performOnUiThread(int64 native);
 
 		// webview
 		void navigate(::Platform::String^ url, int index);
@@ -125,6 +126,7 @@ namespace rhoruntime
 		void onWebViewUrlChanged(::Platform::String^ url);
 		bool onBackKeyPress(void);
 		::Platform::String^ onJSInvoke(::Platform::String^ inJSON);
+		void executeRhoRunnable(int64 native);
 
 		// public methods:
 		bool Initialize(::Platform::String^ title);

@@ -18,6 +18,7 @@ namespace rhodes
         public string getScreenOrientation() { return _mainPage.getScreenOrientation(); }
         public bool isBrowserInitialized() { return _mainPage.isBrowserInitialized(); }
         public void bringToFront() { _mainPage.bringToFront(); }
+        public void performOnUiThread(Int64 native) { _mainPage.performOnUiThread(native); }
 
 		// webview
         public void navigate(string url, int index) { _mainPage.navigate(url, index); }
