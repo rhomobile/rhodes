@@ -64,6 +64,7 @@ public:
     static unsigned int getFileSize( const char* szFilePath );
     static bool         isFileExist( const char* szFilePath );
     static bool         isDirectory( const char* szFilePath );
+    static bool         isFile( const char* szFilePath );
     static unsigned int deleteFile( const char* szFilePath );
     static unsigned int deleteEmptyFolder( const char* szFilePath );
     static unsigned int renameFile( const char* szOldFilePath, const char* szNewFilePath );
@@ -78,6 +79,8 @@ public:
     static unsigned int deleteFolder(const char* szFolderPath);
     static unsigned int copyFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath);
     static unsigned int moveFoldersContentToAnotherFolder(const char* szSrcFolderPath, const char* szDstFolderPath);
+    
+    static bool listFolderEntries( const String& path, Vector<String>& entries );
 
 private:
     CRhoFile(const CRhoFile&);
