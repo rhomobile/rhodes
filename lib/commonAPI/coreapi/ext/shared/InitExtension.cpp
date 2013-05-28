@@ -11,6 +11,7 @@ extern "C" void Init_NativeToolbar_extension();
 extern "C" void Init_NativeTabbar();
 extern "C" void Init_NativeTabbar_extension();
 extern "C" void Init_Navbar();
+extern "C" void Init_RhoFile();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -36,5 +37,6 @@ extern "C" void Init_CoreAPI_Extension()
 #if (defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
     Init_Navbar();
 #endif
-
+    
+    Init_RhoFile();
 }
