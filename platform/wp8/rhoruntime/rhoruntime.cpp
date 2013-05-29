@@ -211,6 +211,16 @@ void CRhoRuntime::setCryptoEngine(ICryptoEngine^ cryptoEngine)
 	return rho::common::convertStringToWP8(fullUrl);
 }
 
+::Platform::String^ CRhoRuntime::getRootPath(::Platform::String^ path)
+{
+	return rho::common::convertStringToWP8( rho::common::CFilePath::join( RHODESAPP().getRhoRootPath(), rho::common::convertStringAFromWP8(path) ) );
+}
+
+::Platform::String^ CRhoRuntime::getRERuntimePath(::Platform::String^ path)
+{
+	return rho::common::convertStringToWP8( rho::common::CFilePath::join( rho_native_reruntimepath(), rho::common::convertStringAFromWP8(path)) );
+}
+
 // JSON parsing
 
 CJSONEntryProxy::CJSONEntryProxy(::Platform::String^ data)
