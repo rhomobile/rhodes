@@ -1,0 +1,11 @@
+<project name="eclipseRhoBundle" default="all" basedir="../..">
+
+  <property environment="env" />
+
+  <target name="all">
+    <exec executable="rake" failOnError="true" >
+      <arg value="build:android:fulleclipsebundle" />
+    </exec>
+  </target>
+
+</project>

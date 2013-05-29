@@ -1,0 +1,11 @@
+<project name="genSources" default="all" basedir="../..">
+
+  <property environment="env" />
+
+  <target name="all">
+    <exec executable="rake" failOnError="true" >
+      <arg value="build:android:gensourceseclipse" />
+    </exec>
+  </target>
+
+</project>

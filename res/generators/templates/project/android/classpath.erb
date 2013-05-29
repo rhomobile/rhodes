@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="src" path="rhodes/platform/android/Rhodes/src"/>
+	<classpathentry kind="src" path="rhodes/lib/commonAPI/coreapi/ext/platform/android/src"/>
+	<classpathentry excluding="com/rho/application/|com/rho/database/|com/rho/log/|com/rho/network/|com/rho/system/" kind="src" path="rhodes/lib/commonAPI/coreapi/ext/platform/android/generated/src"/>
+    <% @extensions.each do |extension|
+        next if extension[:name] == 'coreapi'
+        extension[:classpaths].each do |classpath| %>
+	<classpathentry kind="src" path="<%=classpath%>"/><%
+        end
+    end %>
+	<classpathentry kind="src" path="tmp/gen"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry kind="output" path="bin/classes"/>
+</classpath>
