@@ -26,6 +26,8 @@
 
 #pragma once
 
+#include "json/JSONIterator.h"
+
 namespace rhoruntime
 {
 	public interface class IMainPage
@@ -101,6 +103,34 @@ namespace rhoruntime
 		int dbDecrypt(::Platform::String^ partition, int size, ::Platform::String^ data, ::Platform::String^* decryptedData);
 		int dbEncrypt(::Platform::String^ partition, int size, ::Platform::String^ data, ::Platform::String^* dataOut);
 		int setDbCryptKey(::Platform::String^ partition, ::Platform::String^ key, bool bPersistent);
+	};
+
+	public ref class CJSONEntryProxy sealed
+	{
+	private:
+		rho::json::CJSONEntry* m_Entry;
+	public:
+		CJSONEntryProxy(::Platform::String^ data);
+		bool isEmpty();
+		bool hasName(::Platform::String^ name);
+		bool isString();
+		bool isArray();
+		bool isObject();
+		bool isNull();
+		bool isInteger();
+		bool isFloat();
+		bool isBoolean();
+
+		int getInt(::Platform::String^ name);
+		uint64 getUInt64(::Platform::String^ name);
+		double getDouble(::Platform::String^ name);
+		int getInt();
+		uint64 getUInt64();
+		double getDouble();
+		bool getBoolean();
+		::Platform::String^ getString(::Platform::String^ name);
+		::Platform::String^ getString(::Platform::String^ name, ::Platform::String^ szDefValue);
+		::Platform::String^ getString();
 	};
 
     public ref class CRhoRuntime sealed

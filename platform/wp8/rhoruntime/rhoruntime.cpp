@@ -34,11 +34,12 @@
 #include "common/RhoFilePath.h"
 #include "rubyext/WebView.h"
 #include "common/RhoConvertWP8.h"
-
 #include "api_generator\js_helpers.h"
+#include <collection.h>
 
 using namespace rhoruntime;
 using namespace Platform;
+using namespace Windows::Foundation::Collections;
 
 CRhoRuntime^ CRhoRuntime::m_instance = nullptr;
 
@@ -210,6 +211,109 @@ void CRhoRuntime::setCryptoEngine(ICryptoEngine^ cryptoEngine)
 	return rho::common::convertStringToWP8(fullUrl);
 }
 
+// JSON parsing
+
+CJSONEntryProxy::CJSONEntryProxy(::Platform::String^ data)
+{
+	m_Entry = new rho::json::CJSONEntry(rho::common::convertStringAFromWP8(data).c_str());
+}
+
+bool CJSONEntryProxy::isEmpty()
+{
+	return m_Entry->isEmpty();
+}
+
+bool CJSONEntryProxy::hasName(::Platform::String^ name)
+{
+	return m_Entry->hasName(rho::common::convertStringAFromWP8(name));
+}
+
+bool CJSONEntryProxy::isString()
+{
+	return m_Entry->isString();
+}
+
+bool CJSONEntryProxy::isArray()
+{
+	return m_Entry->isArray();
+}
+
+bool CJSONEntryProxy::isObject()
+{
+	return m_Entry->isObject();
+}
+
+bool CJSONEntryProxy::isNull()
+{
+	return m_Entry->isNull();
+}
+
+bool CJSONEntryProxy::isInteger()
+{
+	return m_Entry->isInteger();
+}
+
+bool CJSONEntryProxy::isFloat()
+{
+	return m_Entry->isFloat();
+}
+
+bool CJSONEntryProxy::isBoolean()
+{
+	return m_Entry->isBoolean();
+}
+
+int CJSONEntryProxy::getInt(::Platform::String^ name)
+{
+	return m_Entry->getInt(rho::common::convertStringAFromWP8(name).c_str());
+}
+
+uint64 CJSONEntryProxy::getUInt64(::Platform::String^ name)
+{
+	return m_Entry->getUInt64(rho::common::convertStringAFromWP8(name).c_str());
+}
+
+double CJSONEntryProxy::getDouble(::Platform::String^ name)
+{
+	return m_Entry->getDouble(rho::common::convertStringAFromWP8(name).c_str());
+}
+
+int CJSONEntryProxy::getInt()
+{
+	return m_Entry->getInt();
+}
+
+uint64 CJSONEntryProxy::getUInt64()
+{
+	return m_Entry->getUInt64();
+}
+
+double CJSONEntryProxy::getDouble()
+{
+	return m_Entry->getDouble();
+}
+
+bool CJSONEntryProxy::getBoolean()
+{
+	return m_Entry->getBoolean();
+}
+
+::Platform::String^ CJSONEntryProxy::getString(::Platform::String^ name)
+{
+	return rho::common::convertStringCToWP8(m_Entry->getString(rho::common::convertStringAFromWP8(name).c_str()));
+}
+
+::Platform::String^ CJSONEntryProxy::getString(::Platform::String^ name, ::Platform::String^ szDefValue)
+{
+	return rho::common::convertStringCToWP8(m_Entry->getString(rho::common::convertStringAFromWP8(name).c_str(), rho::common::convertStringAFromWP8(szDefValue).c_str()));
+}
+
+::Platform::String^ CJSONEntryProxy::getString()
+{
+	return rho::common::convertStringCToWP8(m_Entry->getString());
+}
+
+
 // old API functions
 
 extern "C" void rho_sys_app_exit()
@@ -239,7 +343,8 @@ extern "C" int rho_net_ping_network(const char* szHost)
 
 extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
 {
-	CRhoRuntime::getInstance()->getMainPage()->performOnUiThread((int64)pTask);
+	//CRhoRuntime::getInstance()->getMainPage()->performOnUiThread((int64)pTask);
+	pTask->runObject();
 }
 
 extern "C" const char* rho_native_rhopath()
