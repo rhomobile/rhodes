@@ -288,7 +288,6 @@ void RhoRubyStart()
 #else // OS_WP8 is set
 	Init_strscan();
 	Init_GeoLocation();
-	Init_NativeBar();
 	Init_NavBar();
 	Init_RhoSupport();
 	Init_RhoConf();

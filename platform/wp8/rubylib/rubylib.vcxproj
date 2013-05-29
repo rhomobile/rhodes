@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -245,7 +245,6 @@
     <ClCompile Include="..\..\shared\ruby\eval.c" />
     <ClCompile Include="..\..\shared\ruby\ext\alert\alert_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\geolocation\geolocation_wrap.c" />
-    <ClCompile Include="..\..\shared\ruby\ext\nativebar\nativebar_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\navbar\navbar_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\rhoconf\rhoconf_wrap.c" />
     <ClCompile Include="..\..\shared\ruby\ext\rho\extensions.c" />
@@ -313,7 +312,6 @@
     <ClCompile Include="..\..\shared\ruby\wp8\wp8.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\shared\ruby\ext\nativebar\nativebar.i" />
     <None Include="..\..\shared\ruby\ext\navbar\navbar.i" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

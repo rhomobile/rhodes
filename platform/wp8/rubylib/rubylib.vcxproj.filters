@@ -62,9 +62,6 @@
     <Filter Include="ext\system">
       <UniqueIdentifier>{e669e62d-e1ab-4e59-9121-7346cf2b506d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ext\nativebar">
-      <UniqueIdentifier>{24b3b976-eb9c-421f-af16-a572694babaf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ext\navbar">
       <UniqueIdentifier>{f9f6ea52-f6f3-4da9-acbb-c48443f05c01}</UniqueIdentifier>
     </Filter>
@@ -252,9 +249,6 @@
     <ClCompile Include="..\..\shared\ruby\ext\stringio\stringio.c">
       <Filter>ext\stringio</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\ruby\ext\nativebar\nativebar_wrap.c">
-      <Filter>ext\nativebar</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\ruby\ext\navbar\navbar_wrap.c">
       <Filter>ext\navbar</Filter>
     </ClCompile>
@@ -263,9 +257,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\shared\ruby\ext\nativebar\nativebar.i">
-      <Filter>ext\nativebar</Filter>
-    </None>
     <None Include="..\..\shared\ruby\ext\navbar\navbar.i">
       <Filter>ext\navbar</Filter>
     </None>
