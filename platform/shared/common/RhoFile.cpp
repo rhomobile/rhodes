@@ -348,12 +348,14 @@ bool CRhoFile::isDirectory( const char* szFilePath ){
     
 bool CRhoFile::isFile( const char* szFilePath ){
     bool res = false;
+#ifndef WINDOWS_PLATFORM
     struct stat st;
     memset(&st,0, sizeof(st));
     if (stat(szFilePath, &st) == 0)
     {
         return S_ISREG(st.st_mode);
     }
+#endif
     return res;
 }
 
