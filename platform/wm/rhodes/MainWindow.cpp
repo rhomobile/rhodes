@@ -1671,25 +1671,30 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 
 LRESULT CMainWindow::OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    if ( hWndCtl )//Update labels only
+    CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftItem();
+    CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightItem();
+
+    if ( oLeftItem.m_strLabel.length() > 0 )
     {
-        CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftItem();
-        CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightItem();
-
-        if ( oLeftItem.m_strLabel.length() > 0 )
-        {
-            SetToolbarButtonName( IDM_SK1_EXIT, convertToStringW(oLeftItem.m_strLabel).c_str() );
-            SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
-        }
-
-        if ( oRightItem.m_strLabel.length() > 0 )
-        {
-            SetToolbarButtonName( IDM_SK2_MENU, convertToStringW(oRightItem.m_strLabel).c_str() );
-            SetToolbarButtonEnabled(IDM_SK2_MENU, TRUE);
-        }
+        SetToolbarButtonName( IDM_SK1_EXIT, convertToStringW(oLeftItem.m_strLabel).c_str() );
     }
+
+    if (oLeftItem.m_isEnable)
+        SetToolbarButtonEnabled(IDM_SK1_EXIT, TRUE);
     else
-        createCustomMenu();
+        SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
+
+    if ( oRightItem.m_strLabel.length() > 0 )
+    {
+        SetToolbarButtonName( IDM_SK2_MENU, convertToStringW(oRightItem.m_strLabel).c_str() );
+    }
+
+    if (oRightItem.m_isEnable)
+      SetToolbarButtonEnabled(IDM_SK2_MENU, TRUE);
+    else
+      SetToolbarButtonEnabled(IDM_SK2_MENU, FALSE);
+
+    createCustomMenu();
 
     return 0;
 }
@@ -1841,9 +1846,9 @@ void CMainWindow::createCustomMenuEx(HMENU hMenu, rho::Vector<rho::common::CAppM
             InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, L"Exit" );
 
         if (oItem.m_isEnable)
-            EnableMenuItem(hMenu, ID_CUSTOM_MENU_ITEM_FIRST + i, MF_BYPOSITION | MF_ENABLED);
+            EnableMenuItem(hMenu, 0, MF_BYPOSITION | MF_ENABLED);
         else
-            EnableMenuItem(hMenu, ID_CUSTOM_MENU_ITEM_FIRST + i, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+            EnableMenuItem(hMenu, 0, MF_BYPOSITION | MF_GRAYED);
     }
 }
 #endif //OS_WINCE

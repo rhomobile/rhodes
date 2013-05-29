@@ -53,26 +53,29 @@ IMPLEMENT_LOGCLASS(CAppMenu, "AppMenu");
 
 void CAppMenu::setEnableMenuItem( const String& strLabel, bool enableItem, bool bLeftMenu )
 {
-    Vector<CAppMenuItem>::iterator findIt;
+    synchronized(m_mxAppMenu) 
+	{
+        Vector<CAppMenuItem>::iterator findIt;
 
-    if (bLeftMenu)
-    {
-        findIt = std::find_if(m_arAppLeftMenuItems.begin(), m_arAppLeftMenuItems.end(), 
-            std::bind2nd(std::ptr_fun(&isCurrentMenuItem), strLabel));
-
-        if (findIt != m_arAppLeftMenuItems.end())
+        if (bLeftMenu)
         {
-            findIt->m_isEnable = enableItem;
+            findIt = std::find_if(m_arAppLeftMenuItems.begin(), m_arAppLeftMenuItems.end(), 
+                std::bind2nd(std::ptr_fun(&isCurrentMenuItem), strLabel));
+
+            if (findIt != m_arAppLeftMenuItems.end())
+            {
+                findIt->m_isEnable = enableItem;
+            }
         }
-    }
-    else
-    {
-        findIt = std::find_if(m_arAppMenuItems.begin(), m_arAppMenuItems.end(), 
-            std::bind2nd(std::ptr_fun(&isCurrentMenuItem), strLabel));
-
-        if (findIt != m_arAppMenuItems.end())
+        else
         {
-            findIt->m_isEnable = enableItem;
+            findIt = std::find_if(m_arAppMenuItems.begin(), m_arAppMenuItems.end(), 
+                std::bind2nd(std::ptr_fun(&isCurrentMenuItem), strLabel));
+
+            if (findIt != m_arAppMenuItems.end())
+            {
+                findIt->m_isEnable = enableItem;
+            }
         }
     }
 }
@@ -139,6 +142,22 @@ CAppMenuItem CAppMenu::getRightItem()
     synchronized(m_mxAppMenu) 
 	{
         return m_oRightItem;
+    }
+}
+
+void CAppMenu::setEnableLeftItem( bool isEnable )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        m_oLeftItem.m_isEnable = isEnable;
+    }
+}
+
+void CAppMenu::setEnableRightItem( bool isEnable )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        m_oRightItem.m_isEnable = isEnable;
     }
 }
 
