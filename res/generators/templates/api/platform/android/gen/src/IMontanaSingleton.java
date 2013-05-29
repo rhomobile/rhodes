@@ -23,7 +23,7 @@ public interface I<%= $cur_module.name %>Singleton
   if module_constant.type == MethodParam::TYPE_STRING %>
     static final String <%= module_constant.name %> = "<%= module_constant.value %>";<%
   else %>
-    static final <%= api_generator_java_makeSimpleNativeType(module_constant.type) %><%= module_constant.name %> = <%= module_constant.value %>;<%
+    static final <%= api_generator_java_makeSimpleNativeType(module_constant.type) %> <%= module_constant.name %> = <%= module_constant.value %>;<%
   end
 end %>
 
