@@ -1742,12 +1742,6 @@ LRESULT CMainWindow::OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 #if defined (OS_WINDOWS_DESKTOP) || defined( OS_PLATFORM_MOTCE )
 
-void CMainWindow::createCustomMenuEx(HMENU hMenu, rho::Vector<rho::common::CAppMenuItem>& arAppMenuItems)
-{
-    //TODO: hot fix, need to fix
-    createCustomMenu();
-}
-
 void CMainWindow::createCustomMenu()
 {
 	CMenu menu;
@@ -1839,13 +1833,18 @@ void CMainWindow::createCustomMenuEx(HMENU hMenu, rho::Vector<rho::common::CAppM
         CAppMenuItem& oItem = arAppMenuItems.elementAt(i);
         StringW strLabelW = convertToStringW(oItem.m_strLabel);
 
-		if (oItem.m_eType == CAppMenuItem::emtSeparator) 
-			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
-		else if (oItem.m_eType != CAppMenuItem::emtClose)
-    		InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, strLabelW.c_str() );
+        if (oItem.m_eType == CAppMenuItem::emtSeparator) 
+            InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, 0);
+        else if (oItem.m_eType != CAppMenuItem::emtClose)
+            InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, strLabelW.c_str() );
         else
             InsertMenu(hMenu, 0, MF_BYPOSITION, ID_CUSTOM_MENU_ITEM_FIRST + i, L"Exit" );
-	}
+
+        if (oItem.m_isEnable)
+            EnableMenuItem(hMenu, ID_CUSTOM_MENU_ITEM_FIRST + i, MF_BYPOSITION | MF_ENABLED);
+        else
+            EnableMenuItem(hMenu, ID_CUSTOM_MENU_ITEM_FIRST + i, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
+    }
 }
 #endif //OS_WINCE
 
@@ -1943,8 +1942,8 @@ LRESULT CMainWindow::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 
 LRESULT CMainWindow::OnCopyData (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    if ( wParam != WM_WINDOW_SWITCHTAB)
-        return 0;
+    //if ( wParam != WM_WINDOW_SWITCHTAB)
+    //    return 0;
 
     COPYDATASTRUCT* pcds = (COPYDATASTRUCT*)lParam;
     if ( (LPCSTR)(pcds->lpData) && *(LPCSTR)(pcds->lpData))

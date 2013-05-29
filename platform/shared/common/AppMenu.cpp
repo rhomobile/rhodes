@@ -31,10 +31,51 @@
 #include "sync/RhoconnectClientManager.h"
 #include "json/JSONIterator.h"
 
+#include <algorithm>
+
+namespace
+{
+
+bool isCurrentMenuItem(const rho::common::CAppMenuItem itemInfo, const rho::String findLabel) 
+{
+    if (itemInfo.m_strLabel == findLabel)
+        return true;
+
+    return false;
+}
+
+}
+
 namespace rho {
 namespace common{
 
 IMPLEMENT_LOGCLASS(CAppMenu, "AppMenu");
+
+void CAppMenu::setEnableMenuItem( const String& strLabel, bool enableItem, bool bLeftMenu )
+{
+    Vector<CAppMenuItem>::iterator findIt;
+
+    if (bLeftMenu)
+    {
+        findIt = std::find_if(m_arAppLeftMenuItems.begin(), m_arAppLeftMenuItems.end(), 
+            std::bind2nd(std::ptr_fun(&isCurrentMenuItem), strLabel));
+
+        if (findIt != m_arAppLeftMenuItems.end())
+        {
+            findIt->m_isEnable = enableItem;
+        }
+    }
+    else
+    {
+        findIt = std::find_if(m_arAppMenuItems.begin(), m_arAppMenuItems.end(), 
+            std::bind2nd(std::ptr_fun(&isCurrentMenuItem), strLabel));
+
+        if (findIt != m_arAppMenuItems.end())
+        {
+            findIt->m_isEnable = enableItem;
+        }
+    }
+}
 
 void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink, bool bLeftMenu )
 {

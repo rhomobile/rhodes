@@ -41,6 +41,7 @@ struct CAppMenuItem
     enum EnumMenuType { emtNone = 0, emtSeparator, emtExit, emtClose };//, emtUrl, emtRefresh, emtHome, emtBack, emtSync, emtOptions, emtLog, emtExit, emtClose, emtFullscreen };
 	String m_strLabel;
 	String m_strLink;
+    bool   m_isEnable;
 	EnumMenuType  m_eType;
 
     CAppMenuItem (const String &label, const String &link);
@@ -69,6 +70,8 @@ public:
 
     CAppMenuItem getLeftItem();
     CAppMenuItem getRightItem();
+
+    void setEnableMenuItem( const String& strLabel, bool enableItem, bool bLeftMenu = false );
 
 private:
     void addAppMenuItem( const String& strLabel, const String& strLink, bool bLeftMenu );
