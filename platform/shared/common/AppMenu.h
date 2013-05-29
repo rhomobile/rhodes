@@ -68,6 +68,9 @@ public:
     void setLeftItem( const String& strLabel, const String& strLink );
     void setRightItem( const String& strLabel, const String& strLink );
 
+    void setEnableLeftItem( bool isEnable );
+    void setEnableRightItem( bool isEnable );
+
     CAppMenuItem getLeftItem();
     CAppMenuItem getRightItem();
 
