@@ -27,6 +27,7 @@
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
+require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
 require 'pathname'
 require 'tempfile'
 
@@ -123,16 +124,72 @@ def get_boolean(arg)
   arg == 'true' or arg == 'yes' or arg == 'enabled' or arg == 'enable' or arg == '1'
 end
 
-namespace 'android' do
-  namespace 'project' do
-    task :create => 'config:android' do
-      options = [ 'create', 'project',
-          '--path', $projectpath,
-          '--target', $androidtargets[$found_api_level][:id],
-          '--package', $app_package_name,
-          '--activity', 'RhodesActivity'
-      ]
-      Jake.run($androidbin, options)
+namespace 'project' do
+  namespace 'android' do
+    task :eclipse => ['config:android', 'config:android:extensions','build:android:manifest'] do
+      #options = [ 'create', 'project',
+      #    '--path', $projectpath,
+      #    '--target', $androidtargets[$found_api_level][:id],
+      #    '--package', $app_package_name,
+      #    '--activity', 'RhodesActivity'
+      #]
+      #Jake.run($androidbin, options)
+      project_template_path = File.join 'res','generators','templates','project','android'
+      project_erb_path = File.join project_template_path,'project.erb'
+      classpath_erb_path = File.join project_template_path,'classpath.erb'
+      project_prop_erb_path = File.join project_template_path,'project.properties.erb'
+      manifest_path = File.join $tmpdir,'AndroidManifest.xml'
+      project_path = File.join $app_path,'project','android'
+      project_file_path = File.join project_path,'.project'
+      classpath_file_path = File.join project_path,'.classpath'
+      project_prop_file_path = File.join project_path,'project.properties'
+      manifest_file_path = File.join project_path,'AndroidManifest.xml'
+
+      rhodes_path = File.absolute_path '.'
+      generator = EclipseProjectGenerator.new $appname, $app_path, rhodes_path, $androidtargets[$found_api_level][:name]
+
+      $app_config["extpaths"].each do |extpath|
+        next if extpath.start_with? rhodes_path
+        generator.addVirtualFolder extpath
+      end
+
+      $ext_android_additional_sources.each do |extpath, list|
+        classpaths = []
+        ext = File.basename(extpath)
+        puts "Adding '#{ext}' extension java sources: #{list}"
+        File.open(list, "r") do |f|
+          while line = f.gets
+            line.chomp!
+            src = File.join(extpath, line)
+            if src =~ /(.*\/src\/).*/
+              src = $1
+              unless classpaths.index(src)
+                puts "Add classpath: #{src}"
+                classpaths << src
+              end
+            end
+          end
+        end
+        generator.addExtension(ext, classpaths) unless classpaths.empty?
+      end
+
+      mkdir_p project_path
+
+      project_buf = generator.render project_erb_path
+      File.open(project_file_path, "w") { |f| f.write project_buf }
+
+      classpath_buf = generator.render classpath_erb_path
+      File.open(classpath_file_path, "w") { |f| f.write classpath_buf }
+
+      project_prop_buf = generator.render project_prop_erb_path
+      File.open(project_prop_file_path, "w") { |f| f.write project_prop_buf }
+
+      cp_r File.join(project_template_path,'externalToolBuilders'), File.join(project_path,'.externalToolBuilders') unless File.exists? File.join(project_path,'.externalToolBuilders')
+      cp File.join(project_template_path,'gensources.xml'), project_path unless File.exists? File.join(project_path,'gensources.xml')
+      cp File.join(project_template_path,'eclipsebundle.xml'), project_path unless File.exists? File.join(project_path,'eclipsebundle.xml')
+
+      cp manifest_path, project_path
+
     end
   end
 end
@@ -435,23 +492,25 @@ namespace "config" do
     $androidtargets = {}
     id = nil
     apilevel = nil
+    target_name = nil
 
     `"#{$androidbin}" list targets`.split(/\n/).each do |line|
       line.chomp!
 
-      if line =~ /^id:\s+([0-9]+)/
+      if line =~ /^id:\s+([0-9]+)\s+or\s+\"(.*)\"/
         id = $1
+        target_name = $2
 
         if $use_google_addon_api
           if line =~ /Google Inc\.:Google APIs:([0-9]+)/
             apilevel = $1.to_i
-            $androidtargets[apilevel] = {:id => id.to_i}
+            $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
           end
         else
           if $use_motosol_api
             if line =~ /MotorolaSolutions\s+Inc\.:MotorolaSolution\s+Value\s+Add\s+APIs.*:([0-9]+)/
               apilevel = $1.to_i
-              $androidtargets[apilevel] = {:id => id.to_i}
+              $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
             end
           end
         end
@@ -460,7 +519,7 @@ namespace "config" do
       unless $use_google_addon_api and $use_motosol_api
         if line =~ /^\s+API\s+level:\s+([0-9]+)$/
           apilevel = $1.to_i
-          $androidtargets[apilevel] = {:id => id.to_i}
+          $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
         end
       end
 
@@ -1132,7 +1191,7 @@ namespace "build" do
       #end
     end
 
-    task :librhodes => [:libs, :genconfig] do
+    task :librhodes => [:libs, :extensions, :genconfig] do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
       libdir = File.join $app_builddir, 'librhodes', 'lib', 'armeabi'
       objdir = File.join $tmpdir, 'librhodes'
@@ -1404,13 +1463,13 @@ namespace "build" do
 #     end
     end
 
-    task :fulleclipsebundle => [:resources, :manifest, :librhodes] do
-      manifest = File.join $tmpdir,'AndroidManifest.xml'
+    task :fulleclipsebundle => [:resources, :librhodes] do
+      #manifest = File.join $tmpdir,'AndroidManifest.xml'
 
       eclipse_res = File.join $projectpath,'res'
       eclipse_assets = File.join $projectpath,'assets'
       eclipse_libs = File.join $projectpath,'libs'
-      eclipse_manifest = File.join $projectpath,'AndroidManifest.xml'
+      #eclipse_manifest = File.join $projectpath,'AndroidManifest.xml'
 
       rm_rf eclipse_res
       rm_rf eclipse_assets
@@ -1422,7 +1481,7 @@ namespace "build" do
       cp_r $appres, $projectpath
       cp_r $appassets, $projectpath
       cp_r $applibs, eclipse_libs
-      cp manifest, $projectpath
+      #cp manifest, $projectpath
     end
 
     task :gencapabilitiesjava => "config:android" do
