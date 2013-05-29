@@ -553,6 +553,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 
 bool CRhoFile::listFolderEntries( const String& path, Vector<String> &entries)
 {
+#ifndef WINDOWS_PLATRORM
     DIR *dp;
     struct dirent *ep;
     dp = opendir (path.c_str());
@@ -570,6 +571,9 @@ bool CRhoFile::listFolderEntries( const String& path, Vector<String> &entries)
     }
 
     return ret;
+#else
+    return false;
+#endif
 }
     
 #if defined(WINDOWS_PLATFORM)
