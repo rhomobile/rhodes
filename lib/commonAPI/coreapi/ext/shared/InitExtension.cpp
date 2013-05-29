@@ -38,5 +38,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Navbar();
 #endif
     
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
     Init_RhoFile();
+#endif
 }
