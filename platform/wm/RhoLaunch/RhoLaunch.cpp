@@ -6,7 +6,7 @@
 
 
 #define MAX_LOADSTRING 100
-
+#define PB_WINDOW_RESTORE WM_USER + 10
 
 
 
@@ -111,15 +111,20 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 
 
-
+		ShowWindow(hwndRunningRE, SW_RESTORE);
+		
+		SendMessage(hwndRunningRE,PB_WINDOW_RESTORE,(WPARAM) NULL,(LPARAM)TRUE);
+		
 		//send a message to inform Rho of the requested index
 		SendMessage(hwndRunningRE,WM_COPYDATA,(WPARAM)NULL,(LPARAM) (LPVOID) &launchData );
 		
+
+
 		delete [] pTabNameMB;
 
 
 		//  switch to it
-		ShowWindow(hwndRunningRE, SW_RESTORE);
+		
 		SetForegroundWindow(hwndRunningRE);
 	
 	}
