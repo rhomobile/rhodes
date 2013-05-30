@@ -666,8 +666,8 @@ namespace "device" do
         
         out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
         out_rholauch_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/RhoLaunch/Release/"
-        cp out_dir + "rhodes.exe", out_dir + $appname + "_main.exe"
-        cp out_rholauch_dir + "RhoLaunch.exe", out_dir + $appname + ".exe"
+        cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
+        cp out_rholauch_dir + "RhoLaunch.exe", out_dir + "RhoLaunch.exe"
         cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
       else
         shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
