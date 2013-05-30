@@ -7,16 +7,16 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.rhodes.rhogallery</string>
+				<string>rhodes</string>
 			</array>
 			<key>CFBundleURLName</key>
-			<string>com.rhodes.rhogallery</string>
+			<string>com.rhomobile.rhosyncclient</string>
 		</dict>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>RhoGallery</string>
+	<string>Rhodes</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
@@ -28,7 +28,7 @@
 		<string>icon114.png</string>
 	</array>
 	<key>CFBundleIdentifier</key>
-	<string>com.rhodes.rhogallery</string>
+	<string>com.rhomobile.rhosyncclient</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -38,7 +38,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>4.0.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchImageFile</key>
@@ -50,10 +50,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIRequiredDeviceCapabilities</key>
-	<dict>
-		<key>armv7</key>
-		<true/>
-	</dict>
 </dict>
 </plist>
