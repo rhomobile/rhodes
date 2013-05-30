@@ -1712,7 +1712,9 @@ LRESULT CMainWindow::OnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
         else
         {
             HMENU hMenu = CreatePopupMenu();
+#if !defined (OS_WINDOWS_DESKTOP) && !defined( OS_PLATFORM_MOTCE )
             createCustomMenuEx( hMenu, m_arAppMenuItems );
+#endif
 
             RECT  rcBar = {0}; 
 	        m_menuBar.GetWindowRect(&rcBar);
