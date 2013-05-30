@@ -612,6 +612,7 @@ namespace "config" do
         if $current_platform == "iphone"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
             $app_config['extensions'] = $app_config['extensions'] | ['signature']
+            $app_config['extensions'] = $app_config['extensions'] | ['indicators']
         end    
 
         if $current_platform == "android"
