@@ -198,6 +198,7 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 {
 	m_strLabel = strLabel;
 	m_strLink  = strLink;
+    m_isEnable = true;
 	
 	if (strLabel == "separator")
 		m_eType = emtSeparator;

@@ -197,7 +197,7 @@ public:
         }
 
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
-            rho_webview_update_menu(1);
+        rho_webview_update_menu(1);
 #endif
     }
 
@@ -215,7 +215,7 @@ public:
         }
 
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
-            rho_webview_update_menu(1);
+        rho_webview_update_menu(1);
 #endif
     }
 
