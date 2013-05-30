@@ -100,6 +100,8 @@
 		FAC6EE66143B1FC800B8E352 /* OSMMapEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE5A143B1FC800B8E352 /* OSMMapEngine.h */; };
 		FAC6EE69143B20B600B8E352 /* RhoMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC6EE67143B20B600B8E352 /* RhoMath.cpp */; };
 		FAC6EE6A143B20B600B8E352 /* RhoMath.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC6EE68143B20B600B8E352 /* RhoMath.h */; };
+		FAD0471E1757A81700000F15 /* CJSEntryPoint.h in Headers */ = {isa = PBXBuildFile; fileRef = FAD0471C1757A81700000F15 /* CJSEntryPoint.h */; };
+		FAD0471F1757A81700000F15 /* CJSEntryPoint.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAD0471D1757A81700000F15 /* CJSEntryPoint.mm */; };
 		FAEF1DCA16AED9D200E22B05 /* BaseClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DB916AED9D200E22B05 /* BaseClasses.h */; };
 		FAEF1DCB16AED9D200E22B05 /* GeneratorQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DBA16AED9D200E22B05 /* GeneratorQueue.h */; };
 		FAEF1DCC16AED9D200E22B05 /* CJSConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = FAEF1DBC16AED9D200E22B05 /* CJSConverter.h */; };
@@ -213,6 +215,8 @@
 		FAC6EE5A143B1FC800B8E352 /* OSMMapEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OSMMapEngine.h; path = ../../shared/common/map/OSMMapEngine.h; sourceTree = "<group>"; };
 		FAC6EE67143B20B600B8E352 /* RhoMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoMath.cpp; path = ../../shared/common/RhoMath.cpp; sourceTree = "<group>"; };
 		FAC6EE68143B20B600B8E352 /* RhoMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RhoMath.h; path = ../../shared/common/RhoMath.h; sourceTree = "<group>"; };
+		FAD0471C1757A81700000F15 /* CJSEntryPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJSEntryPoint.h; sourceTree = "<group>"; };
+		FAD0471D1757A81700000F15 /* CJSEntryPoint.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CJSEntryPoint.mm; sourceTree = "<group>"; };
 		FAEF1DB916AED9D200E22B05 /* BaseClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BaseClasses.h; path = ../../shared/api_generator/BaseClasses.h; sourceTree = "<group>"; };
 		FAEF1DBA16AED9D200E22B05 /* GeneratorQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GeneratorQueue.h; path = ../../shared/api_generator/GeneratorQueue.h; sourceTree = "<group>"; };
 		FAEF1DBC16AED9D200E22B05 /* CJSConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CJSConverter.h; sourceTree = "<group>"; };
@@ -465,6 +469,8 @@
 		FAEF1DBB16AED9D200E22B05 /* iphone */ = {
 			isa = PBXGroup;
 			children = (
+				FAD0471C1757A81700000F15 /* CJSEntryPoint.h */,
+				FAD0471D1757A81700000F15 /* CJSEntryPoint.mm */,
 				FA0E908C16B7FE000094CCDE /* CJSConverter.mm */,
 				FAEF1DBC16AED9D200E22B05 /* CJSConverter.h */,
 				FAEF1DBE16AED9D200E22B05 /* CMethodResult.h */,
@@ -548,6 +554,7 @@
 				FAEF1DD816AED9D200E22B05 /* MethodResult.h in Headers */,
 				FA6B222617026477009D1398 /* MethodResultConvertor.h in Headers */,
 				C084B09217394D4D00C1DCC0 /* StringfyHelper.h in Headers */,
+				FAD0471E1757A81700000F15 /* CJSEntryPoint.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -646,6 +653,7 @@
 				FAEF1DD716AED9D200E22B05 /* MethodResult.cpp in Sources */,
 				FA0E908D16B7FE000094CCDE /* CJSConverter.mm in Sources */,
 				C084B09117394D4D00C1DCC0 /* StringfyHelper.cpp in Sources */,
+				FAD0471F1757A81700000F15 /* CJSEntryPoint.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
