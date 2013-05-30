@@ -1808,6 +1808,11 @@ void CMainWindow::createCustomMenu()
 						m_hWnd);
 	sub.Detach();
 }
+
+void CMainWindow::createCustomMenuEx(HMENU hMenu, rho::Vector<rho::common::CAppMenuItem>& arAppMenuItems)
+{
+}
+
 #else
 
 typedef struct tagNMNEWMENU 
