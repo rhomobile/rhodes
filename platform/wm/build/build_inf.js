@@ -286,6 +286,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
         //  p("\"" + name + ".lnk\"=5");
         //}
         p("\"" + name + ".exe\"=1");
+        p("\"" + "RhoLaunch" + ".exe\"=1");
         if (webkit) {
             p("\"eklibrary.dll\"=2");
             p("\"prtlib.dll\"=2");
@@ -346,6 +347,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
         //}
 
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
+        p("\"" + "RhoLaunch" + ".exe\",\"" + "RhoLaunch" + ".exe\",,0");
         p("\"license_rc.dll\",\"license_rc.dll\",,0");
         if (webkit) {
             p("");

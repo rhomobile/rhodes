@@ -383,9 +383,7 @@ private:
 	String mNativeViewType;
 	bool mIsOpenedByURL;
 
-#if !defined (OS_WINDOWS_DESKTOP) && !defined( OS_PLATFORM_MOTCE )
     void createCustomMenuEx(HMENU hMenu, rho::Vector<rho::common::CAppMenuItem>& arAppMenuItems);
-#endif
 
 private:
     bool mIsBrowserViewHided;

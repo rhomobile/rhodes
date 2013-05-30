@@ -153,11 +153,78 @@ public:
         RHODESAPP().getAppMenu().setAppMenuJSONItems(nativeMenuLeft, true);
     }
 
+    //////////////////////////////////////////////////////////////////////////
+
+    virtual void getEnableMenuButtonRight(rho::apiGenerator::CMethodResult& oResult)
+    {
+        oResult.set(RHODESAPP().getAppMenu().getRightItem().m_isEnable);
+    }
+
+    virtual void setEnableMenuButtonRight( bool enableMenuButtonRight, rho::apiGenerator::CMethodResult& oResult)
+    {
+        RHODESAPP().getAppMenu().setEnableRightItem(enableMenuButtonRight);
+
+#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+        rho_webview_update_menu(1);
+#endif
+    }
+    
+    virtual void getEnableMenuButtonLeft(rho::apiGenerator::CMethodResult& oResult)
+    {
+        oResult.set(RHODESAPP().getAppMenu().getLeftItem().m_isEnable);
+    }
+    
+    virtual void setEnableMenuButtonLeft( bool enableMenuButtonLeft, rho::apiGenerator::CMethodResult& oResult)
+    {
+        RHODESAPP().getAppMenu().setEnableRightItem(enableMenuButtonLeft);
+
+#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+        rho_webview_update_menu(1);
+#endif
+    }
+
+    virtual void getEnableMenuItemRight(rho::apiGenerator::CMethodResult& oResult)
+    {
+        //TODO
+    }
+
+    virtual void setEnableMenuItemRight( const rho::Hashtable<rho::String, rho::String>& enableMenuItemRight, rho::apiGenerator::CMethodResult& oResult)
+    {
+        const rho::Hashtable<rho::String, rho::String>::const_iterator it = enableMenuItemRight.begin();
+        if ( it != enableMenuItemRight.end() )
+        {
+            RHODESAPP().getAppMenu().setEnableMenuItem(it->first, it->second == "true" ? true : false);
+        }
+
+#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+        rho_webview_update_menu(1);
+#endif
+    }
+
+    virtual void getEnableMenuItemLeft(rho::apiGenerator::CMethodResult& oResult)
+    {
+        //TODO
+    }
+
+    virtual void setEnableMenuItemLeft( const rho::Hashtable<rho::String, rho::String>& enableMenuItemLeft, rho::apiGenerator::CMethodResult& oResult)
+    {
+        const rho::Hashtable<rho::String, rho::String>::const_iterator it = enableMenuItemLeft.begin();
+        if ( it != enableMenuItemLeft.end() )
+        {
+            RHODESAPP().getAppMenu().setEnableMenuItem(it->first, it->second == "true" ? true : false, true);
+        }
+
+#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+        rho_webview_update_menu(1);
+#endif
+    }
+
+    //////////////////////////////////////////////////////////////////////////
+    
     virtual void getNativeMenuItemRight(rho::apiGenerator::CMethodResult& oResult)
     {
         Hashtable<String, String> hashRes;
         RHODESAPP().getAppMenu().getMenuItemEx(hashRes);
-
         oResult.set(hashRes);
     }
 
@@ -178,7 +245,6 @@ public:
     {
         Hashtable<String, String> hashRes;
         RHODESAPP().getAppMenu().getMenuItemEx(hashRes, true);
-
         oResult.set(hashRes);
     }
 
@@ -193,7 +259,6 @@ public:
             rho_webview_update_menu(1);
 #endif
         }
-
     }
 
     virtual void getBadLinkURI(rho::apiGenerator::CMethodResult& oResult)

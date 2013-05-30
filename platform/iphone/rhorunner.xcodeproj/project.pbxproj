@@ -99,6 +99,7 @@
 		FACA4C7B1270AC0900777CFF /* SplitViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FACA4C771270AC0900777CFF /* SplitViewDelegate.m */; };
 		FACC20CA123A60F40088A447 /* Bluetooth.m in Sources */ = {isa = PBXBuildFile; fileRef = FACC20C9123A60F40088A447 /* Bluetooth.m */; };
 		FACC2100123A759A0088A447 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACC20FF123A759A0088A447 /* GameKit.framework */; };
+		FAD047181757A23F00000F15 /* CRhoURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = FAD04713175697F000000F15 /* CRhoURLProtocol.m */; };
 		FAD42C58152CE61A000F906A /* libMotorolaLicence.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD42C57152CE61A000F906A /* libMotorolaLicence.a */; };
 /* End PBXBuildFile section */
 
@@ -319,6 +320,8 @@
 		FACC20C8123A60F40088A447 /* Bluetooth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bluetooth.h; path = Bluetooth/Bluetooth.h; sourceTree = "<group>"; };
 		FACC20C9123A60F40088A447 /* Bluetooth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Bluetooth.m; path = Bluetooth/Bluetooth.m; sourceTree = "<group>"; };
 		FACC20FF123A759A0088A447 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		FAD04712175697F000000F15 /* CRhoURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRhoURLProtocol.h; path = URLProtocol/CRhoURLProtocol.h; sourceTree = "<group>"; };
+		FAD04713175697F000000F15 /* CRhoURLProtocol.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRhoURLProtocol.m; path = URLProtocol/CRhoURLProtocol.m; sourceTree = "<group>"; };
 		FAD42C57152CE61A000F906A /* libMotorolaLicence.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMotorolaLicence.a; path = ../../res/libs/motorolalicence/iphone/libMotorolaLicence.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -364,6 +367,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				FAD04711175697A800000F15 /* URLProtocol */,
 				BD97AC1E1160EE7A006960F9 /* Alert */,
 				F579170F0E8AB2A200BBC54D /* AppManager */,
 				FACC20C4123A60800088A447 /* Bluetooth */,
@@ -776,6 +780,15 @@
 			name = Bluetooth;
 			sourceTree = "<group>";
 		};
+		FAD04711175697A800000F15 /* URLProtocol */ = {
+			isa = PBXGroup;
+			children = (
+				FAD04712175697F000000F15 /* CRhoURLProtocol.h */,
+				FAD04713175697F000000F15 /* CRhoURLProtocol.m */,
+			);
+			name = URLProtocol;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1040,6 +1053,7 @@
 				C5D0D0C1153F279A00B8BF21 /* InitMemoryInfoCollector.mm in Sources */,
 				C5D90EF815F4F58D005F7C86 /* Reachability.m in Sources */,
 				C5D90EFB15F4FC92005F7C86 /* NetworkStatusMonitor.mm in Sources */,
+				FAD047181757A23F00000F15 /* CRhoURLProtocol.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1080,8 +1094,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1101,8 +1115,8 @@
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = rhorunner;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1117,8 +1131,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = YES;
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
@@ -1137,8 +1151,8 @@
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = rhorunner;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/ruby/iphone ../shared/ruby/include ../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
@@ -1194,8 +1208,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = YES;
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
@@ -1214,8 +1228,8 @@
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = rhorunner;
-				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				PROVISIONING_PROFILE = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/ruby/iphone ../shared/ruby/include ../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
