@@ -155,7 +155,7 @@ readedProduct.name
 
               <JAVASCRIPT>
                 <![CDATA[
-var productModel = ORM.AddModel('Product');
+var productModel = Rho.ORM.addModel('Product');
 
 // create model object and save it to database
 var product = productModel.create({
