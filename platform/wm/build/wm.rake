@@ -640,14 +640,34 @@ namespace "device" do
     end
   end
 
+  def build_rholaunch()
+      chdir File.join( $config["build"]["wmpath"], "RhoLaunch")
+
+      cp $app_path + "/icon/icon.ico", "./RhoLaunch.ico" if File.exists? $app_path + "/icon/icon.ico"
+
+      args = ['/M4', "RhoLaunch.sln", "\"Release|#{$sdk}\""]
+      puts "\nThe following step may take several minutes or more to complete depending on your processor speed\n\n"
+      puts Jake.run($vcbuild,args)
+      unless $? == 0
+        puts "Error building"
+        exit 1
+      end
+      chdir $startdir
+    
+  end
+  
   namespace "wm" do
     desc "Build production for device or emulator"
     task :production, [:exclude_dirs] => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
 
       wm_icon = $app_path + '/icon/icon.ico'
       if $use_shared_runtime.nil? then
+        build_rholaunch()
+        
         out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
-        cp out_dir + "rhodes.exe", out_dir + $appname + ".exe"
+        out_rholauch_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/RhoLaunch/Release/"
+        cp out_dir + "rhodes.exe", out_dir + $appname + "_main.exe"
+        cp out_rholauch_dir + "RhoLaunch.exe", out_dir + $appname + ".exe"
         cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
       else
         shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
