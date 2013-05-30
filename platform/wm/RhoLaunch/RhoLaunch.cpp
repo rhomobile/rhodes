@@ -6,7 +6,7 @@
 
 
 #define MAX_LOADSTRING 100
-
+#define PB_WINDOW_RESTORE				WM_USER + 10
 
 
 
@@ -24,12 +24,12 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	
 	//validate the command line
 	int iLen = wcslen(lpCmdLine);
-	if(iLen < 3){
-		return 1;
-	}
+	//if(iLen < 3){
+	//	return 1;
+	//}
 
 	//LPWSTR pAppName = new WCHAR[iLen + 3];//allow space for the index
-	LPWSTR pAppName,pTabName,pTemp;
+	LPWSTR pAppName = 0,pTabName = 0,pTemp = 0;
 	pAppName = pTemp= lpCmdLine;
 	
 	
@@ -38,7 +38,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	bool bStart,bTabStart,bAppName;
 	bStart = bTabStart = bAppName= false;
 
-	
 	for(iLoop = 0;iLoop < iLen ;iLoop++)
 	{
 		if(lpCmdLine[iLoop] == L' '){
@@ -92,36 +91,55 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 	*pTemp = NULL;
 			
-	
-	
+	WCHAR pAppNameBuf[MAX_PATH + 1];
+	if (!pAppName || !*pAppName)
+    {
+		if(!(GetModuleFileName(NULL,pAppNameBuf,MAX_PATH))){
+			return 1;//error could not find the path 
+		}
+
+        WCHAR* szSlash = wcsrchr( pAppNameBuf, L'\\');
+        if ( szSlash )
+        {
+            pAppName = szSlash+1;
+            WCHAR* szDot = wcsrchr( pAppName, L'.');
+            if (szDot)
+                *szDot = 0;
+        }else
+            pAppName = L"";
+    }
+
 	HWND hwndRunningRE = FindWindow(NULL, pAppName);
 		
 	if (hwndRunningRE){
 		//  Found the running instance
 		
-		
-		//rhode expects a MultiByte string so convert
-		int ilen = wcslen(pTabName);
-		char *pTabNameMB = new char[ilen+1];
-		wcstombs(pTabNameMB, pTabName,ilen);	
-	
-	
-		launchData.lpData = pTabNameMB;
-		launchData.cbData = (ilen+1);
-
-
-
-
-		//send a message to inform Rho of the requested index
-		SendMessage(hwndRunningRE,WM_COPYDATA,(WPARAM)NULL,(LPARAM) (LPVOID) &launchData );
-		
-		delete [] pTabNameMB;
-
-
 		//  switch to it
 		ShowWindow(hwndRunningRE, SW_RESTORE);
+        SendMessage( hwndRunningRE, PB_WINDOW_RESTORE, NULL, TRUE);
 		SetForegroundWindow(hwndRunningRE);
 	
+
+		if ( pTabName )
+        {
+		    //rhode expects a MultiByte string so convert
+		    int ilen = wcslen(pTabName);
+		    char *pTabNameMB = new char[ilen+1];
+		    wcstombs(pTabNameMB, pTabName,ilen);	
+    	
+    	
+		    launchData.lpData = pTabNameMB;
+		    launchData.cbData = (ilen+1);
+
+
+
+
+		    //send a message to inform Rho of the requested index
+		    SendMessage(hwndRunningRE,WM_COPYDATA,(WPARAM)NULL,(LPARAM) (LPVOID) &launchData );
+    		
+		    delete [] pTabNameMB;
+        }
+
 	}
 	else{
 		//no window handle, so try to start the app
@@ -142,17 +160,16 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		
 		//LPWSTR pApp = new WCHAR[wcslen(pAppName)+10];
 		wcscat(pApp,pAppName);
-		wcscat(pApp,L".exe");
+		wcscat(pApp,L"_main.exe");
 		
-		LPWSTR pTabCommand = new WCHAR[wcslen(pTabName)+20];
-		wsprintf(pTabCommand,L"/tabname=\"%s\"",pTabName);
-		
-
-
-		LaunchProcess(pApp,pTabCommand); 
-			 
-		
-		delete [] pTabCommand;
+        if (pTabName && *pTabName)
+        {
+		    LPWSTR pTabCommand = new WCHAR[wcslen(pTabName)+20];
+		    wsprintf(pTabCommand,L"/tabname=\"%s\"",pTabName);
+		    LaunchProcess(pApp,pTabCommand); 
+		    delete [] pTabCommand;
+        }else
+            LaunchProcess(pApp,L"");
 	}
 	
 	return 0;
