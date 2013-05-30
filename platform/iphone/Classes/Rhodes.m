@@ -42,6 +42,8 @@
 #include "InitMemoryInfoCollector.h"
 #include "Reachability.h"
 
+#import "CRhoURLProtocol.h"
+
 
 /*
 use this non-public code for see level of memory warning 
@@ -668,6 +670,7 @@ static Rhodes *instance = NULL;
 - (void)doStartUp {
     NSLog(@"Rhodes starting application...");
     
+    [CRhoURLProtocol initAndRegister];
     
     [NSThread setThreadPriority:1.0];
     
