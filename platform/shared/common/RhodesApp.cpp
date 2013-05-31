@@ -91,16 +91,16 @@ class CAppCallbacksQueue : public CThreadQueue
 public:
     enum callback_t
     {
-        app_deactivated,
         local_server_restart,
         local_server_started,
         ui_created,
-        app_activated
+        app_activated,
+        app_deactivated
     };
 
 public:
     CAppCallbacksQueue();
-	CAppCallbacksQueue(LogCategory logCat);
+//	CAppCallbacksQueue(LogCategory logCat);
 	~CAppCallbacksQueue();
 
     //void call(callback_t type);
@@ -116,14 +116,23 @@ public:
     };
 
 private:
-
+    enum ui_created_state
+    {
+      ui_not_available,
+      ui_created_received,
+      ui_created_processed
+    };
+ 
     void processCommand(IQueueCommand* pCmd);
+    bool hasCommand(callback_t type);
 
     static char const *toString(int type);
     void   callCallback(const String& strCallback);
 
 private:
     callback_t m_expected;
+    ui_created_state m_uistate;
+
     Vector<int> m_commands;
     boolean m_bFirstServerStart;
 };
@@ -149,7 +158,7 @@ char const *CAppCallbacksQueue::toString(int type)
 }
 
 CAppCallbacksQueue::CAppCallbacksQueue()
-    :CThreadQueue(), m_expected(local_server_started), m_bFirstServerStart(true)
+    :CThreadQueue(), m_expected(local_server_started), m_uistate(ui_not_available), m_bFirstServerStart(true)
 {
     CThreadQueue::setLogCategory(getLogCategory());
     setPollInterval(QUEUE_POLL_INTERVAL_INFINITE);
@@ -203,12 +212,25 @@ void CAppCallbacksQueue::callCallback(const String& strCallback)
     }
 }
 
+bool CAppCallbacksQueue::hasCommand(callback_t type)
+{
+    for( int i = 0; i < (int)m_commands.size() ; i++)
+    {
+        if ( m_commands.elementAt(i) == type )
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
 void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 {
     Command *cmd = (Command *)pCmd;
     if (!cmd)
         return;
     
+    synchronized(getCommandLock());
 /*
     if (cmd->type < m_expected)
     {
@@ -216,6 +238,11 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         return;
     }
 */
+    if ( cmd->type == ui_created)
+    {
+        m_uistate = ui_created_received;
+    }
+
     if ( m_expected == app_deactivated && cmd->type == app_activated )
     {
         LOG(INFO) + "received duplicate activate skip it";
@@ -225,7 +252,10 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     if ( m_expected == local_server_restart )
     {
         if ( cmd->type != local_server_started )
+        {
             RHODESAPP().restartLocalServer(*this);
+            sleep(50);
+        }
         else
             LOG(INFO) + "Local server restarted before activate.Do not restart it again.";
 
@@ -234,33 +264,35 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
 
     if (cmd->type > m_expected)
     {
-        boolean bDuplicate = false;
-        for( int i = 0; i < (int)m_commands.size() ; i++)
-        {
-            if ( m_commands.elementAt(i) == cmd->type )
-            {
-                bDuplicate = true;
-                break;
-            }
-        }
+        
 
-        if ( bDuplicate )
+        if ( hasCommand(cmd->type) )
         {
             LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it";
+            return;
         }else
         {
             // Don't do that now
             LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it";
-            m_commands.push_back(cmd->type);
-            std::sort(m_commands.begin(), m_commands.end());
+
+            if (cmd->type == app_deactivated && m_expected != local_server_started)
+            {
+                m_commands.clear();
+                m_commands.push_back(cmd->type);
+            }
+            else
+            {
+                m_commands.push_back(cmd->type);
+                std::sort(m_commands.begin(), m_commands.end());
+                return;
+            } 
         }
-        return;
+    }
+    else
+    {
+        m_commands.insert(m_commands.begin(), cmd->type);
     }
 
-    if ( cmd->type == app_deactivated )
-        m_commands.clear();
-
-    m_commands.insert(m_commands.begin(), cmd->type);
     for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
     {
         int type = *it;
@@ -288,12 +320,21 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             break;
         case ui_created:
             {
-                callCallback("/system/uicreated");
-                m_expected = app_activated;
+                if (m_uistate != ui_created_processed)
+                {
+                    callCallback("/system/uicreated");
+                    m_expected = app_activated;
+                    m_uistate = ui_created_processed;
+                }
             }
             break;
         case app_activated:
             {
+                if (m_uistate == ui_created_received)
+                {
+                    callCallback("/system/uicreated");
+                    m_uistate = ui_created_processed;
+                } 
                 callCallback("/system/activateapp");
                 m_expected = app_deactivated;
             }

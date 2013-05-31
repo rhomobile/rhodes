@@ -67,7 +67,8 @@ public class RhodesApplication extends Application{
     }
 
     public static void handleAppStarted() {
-        sRhodesAppActiveWatcher.run();
+        //sRhodesAppActiveWatcher.run();
+        stateChanged(AppState.AppStarted);
     }
     
     private ApplicationInfo getAppInfo() {
@@ -121,7 +122,7 @@ public class RhodesApplication extends Application{
     }
     
     private void registerStateHandlers() {
-        sRhodesAppActiveWatcher = AppState.AppStarted.addObserver("RhodesAppActiveObserver", true);
+        sRhodesAppActiveWatcher = null;//AppState.AppStarted.addObserver("RhodesAppActiveObserver", true);
         
         RhodesApplication.runWhen(
                 UiState.MainActivityStarted,

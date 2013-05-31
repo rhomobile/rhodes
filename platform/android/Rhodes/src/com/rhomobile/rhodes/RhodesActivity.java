@@ -126,7 +126,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
         RhoExtManager.getImplementationInstance().onCreateActivity(this, getIntent());
 
-        notifyUiCreated();
+//        notifyUiCreated();
         RhodesApplication.stateChanged(RhodesApplication.UiState.MainActivityCreated);
 
 
@@ -164,10 +164,10 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 Class<? extends IRhoWebView> viewClass = Class.forName("com.rhomobile.rhodes.webview.EkiohWebView").asSubclass(IRhoWebView.class);
                 if (Capabilities.MOTOROLA_BROWSER_ENABLED) {
                     Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class, String.class);
-                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true), RhoFileApi.getRootPath());
+                    view = viewCtor.newInstance(this, null, RhoFileApi.getRootPath());
                 } else {
                     Constructor<? extends IRhoWebView> viewCtor = viewClass.getConstructor(Context.class, Runnable.class);
-                    view = viewCtor.newInstance(this, RhodesApplication.AppState.AppStarted.addObserver("MotorolaStartEngineObserver", true));
+                    view = viewCtor.newInstance(this, null);
                 }
             } catch (Throwable e) {
                 Logger.E(TAG, e);
@@ -182,6 +182,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
                 public void run()
                 {
                     googleWebView.applyWebSettings();
+                    notifyUiCreated();
                 }
             });
         }
@@ -200,7 +201,7 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         return view;
     }
 	
-	private void notifyUiCreated() {
+	public void notifyUiCreated() {
 		RhodesService r = RhodesService.getInstance();
 		if ( r != null ) {
 			RhodesService.callUiCreatedCallback();
