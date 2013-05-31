@@ -26,6 +26,8 @@
 
 #pragma once
 
+#include "json/JSONIterator.h"
+
 namespace rhoruntime
 {
 	public interface class IMainPage
@@ -38,6 +40,7 @@ namespace rhoruntime
 		bool isBrowserInitialized();
 		::Platform::String^ getScreenOrientation();
 		void bringToFront();
+		void performOnUiThread(int64 native);
 
 		// webview
 		void navigate(::Platform::String^ url, int index);
@@ -102,6 +105,34 @@ namespace rhoruntime
 		int setDbCryptKey(::Platform::String^ partition, ::Platform::String^ key, bool bPersistent);
 	};
 
+	public ref class CJSONEntryProxy sealed
+	{
+	private:
+		rho::json::CJSONEntry* m_Entry;
+	public:
+		CJSONEntryProxy(::Platform::String^ data);
+		bool isEmpty();
+		bool hasName(::Platform::String^ name);
+		bool isString();
+		bool isArray();
+		bool isObject();
+		bool isNull();
+		bool isInteger();
+		bool isFloat();
+		bool isBoolean();
+
+		int getInt(::Platform::String^ name);
+		uint64 getUInt64(::Platform::String^ name);
+		double getDouble(::Platform::String^ name);
+		int getInt();
+		uint64 getUInt64();
+		double getDouble();
+		bool getBoolean();
+		::Platform::String^ getString(::Platform::String^ name);
+		::Platform::String^ getString(::Platform::String^ name, ::Platform::String^ szDefValue);
+		::Platform::String^ getString();
+	};
+
     public ref class CRhoRuntime sealed
     {
 	private:
@@ -125,6 +156,7 @@ namespace rhoruntime
 		void onWebViewUrlChanged(::Platform::String^ url);
 		bool onBackKeyPress(void);
 		::Platform::String^ onJSInvoke(::Platform::String^ inJSON);
+		void executeRhoRunnable(int64 native);
 
 		// public methods:
 		bool Initialize(::Platform::String^ title);
@@ -135,6 +167,8 @@ namespace rhoruntime
 		ICryptoEngine^ getCryptoEngine() {return m_CryptoEngine;}
 		// proxy methods needed for C# implementation of CoreAPI
 		::Platform::String^ canonicalizeRhoUrl(::Platform::String^ url);
+		::Platform::String^ getRootPath(::Platform::String^ path);
+		::Platform::String^ getRERuntimePath(::Platform::String^ path);
 
 	private:
 		IMainPage^ m_MainPage;

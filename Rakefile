@@ -439,7 +439,9 @@ end
 
 namespace "config" do
   task :common do
-    
+
+    puts RUBY_VERSION
+
     $binextensions = []
     $app_extensions_list = {}
     buildyml = 'rhobuild.yml'
@@ -522,16 +524,25 @@ namespace "config" do
       $debug = true
     end
     
+    # merge extensions from platform list to global one
+    $app_config['extensions'] = [] unless $app_config['extensions'] and $app_config['extensions'].is_a? Array
+    if $app_config[$config['platform']] and $app_config[$config['platform']]['extensions'] and $app_config[$config['platform']]['extensions'].is_a? Array
+      $app_config['extensions'] = $app_config['extensions'] | $app_config[$config['platform']]['extensions']
+    end
+
+    # gather main extensions
     extensions = []
     extensions << "coreapi" #unless $app_config['re_buildstub']
-    extensions += $app_config["extensions"] if $app_config["extensions"] and
-       $app_config["extensions"].is_a? Array
-    extensions += $app_config[$config["platform"]]["extensions"] if $app_config[$config["platform"]] and
-       $app_config[$config["platform"]]["extensions"] and $app_config[$config["platform"]]["extensions"].is_a? Array
     extensions += get_extensions
     extensions << "rhoconnect-client" if $rhosimulator_build
     extensions << "json"
-    $app_config["extensions"] = extensions.uniq
+
+    # filter list of extensions with main extensions list (regardless of case!)
+    downcased = extensions.map(&:downcase)
+    $app_config['extensions'].reject! { |ext| downcased.include?(ext.downcase) }
+
+    $app_config['extensions'] = extensions + $app_config['extensions']
+    $app_config['extensions'].uniq!
     
     capabilities = []
     capabilities += $app_config["capabilities"] if $app_config["capabilities"] and
@@ -610,6 +621,7 @@ namespace "config" do
         if $current_platform == "iphone"
             $app_config['extensions'] = $app_config['extensions'] | ['barcode']
             $app_config['extensions'] = $app_config['extensions'] | ['signature']
+            $app_config['extensions'] = $app_config['extensions'] | ['indicators']
         end    
 
         if $current_platform == "android"

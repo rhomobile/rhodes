@@ -26,31 +26,15 @@
 
 package com.rhomobile.rhodes.mapview;
 
-import com.rhomobile.rhodes.AndroidR;
-
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Rect;
-
-import java.util.Vector;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
-import android.view.MotionEvent;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
-import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
-import com.rhomobile.rhodes.file.RhoFileApi;
-import com.rhomobile.rhodes.util.PerformOnUiThread;
 import com.rhomobile.rhodes.util.Utils;
 
 public class CalloutOverlay extends ItemizedOverlay<OverlayItem> {

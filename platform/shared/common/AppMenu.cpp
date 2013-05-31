@@ -31,62 +31,72 @@
 #include "sync/RhoconnectClientManager.h"
 #include "json/JSONIterator.h"
 
+#include <algorithm>
+
+namespace
+{
+
+bool isCurrentMenuItem(const rho::common::CAppMenuItem itemInfo, const rho::String findLabel) 
+{
+    if (itemInfo.m_strLabel == findLabel)
+        return true;
+
+    return false;
+}
+
+}
+
 namespace rho {
 namespace common{
 
 IMPLEMENT_LOGCLASS(CAppMenu, "AppMenu");
 
-void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink )
+void CAppMenu::setEnableMenuItem( const String& strLabel, bool enableItem, bool bLeftMenu )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        Vector<CAppMenuItem>::iterator findIt;
+
+        if (bLeftMenu)
+        {
+            findIt = std::find_if(m_arAppLeftMenuItems.begin(), m_arAppLeftMenuItems.end(), 
+                std::bind2nd(std::ptr_fun(&isCurrentMenuItem), strLabel));
+
+            if (findIt != m_arAppLeftMenuItems.end())
+            {
+                findIt->m_isEnable = enableItem;
+            }
+        }
+        else
+        {
+            findIt = std::find_if(m_arAppMenuItems.begin(), m_arAppMenuItems.end(), 
+                std::bind2nd(std::ptr_fun(&isCurrentMenuItem), strLabel));
+
+            if (findIt != m_arAppMenuItems.end())
+            {
+                findIt->m_isEnable = enableItem;
+            }
+        }
+    }
+}
+
+void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink, bool bLeftMenu )
 {
     if ( strLabel.length() == 0 )
         return;
 
     if ( strcasecmp( strLabel.c_str(), "back" )==0 && strcasecmp( strLink.c_str(), "back" )!=0 )
         RHODESAPP().setAppBackUrl(strLink);
+    else if ( bLeftMenu )
+        m_arAppLeftMenuItems.push_back(CAppMenuItem(strLabel, strLink));
     else
-    {
-        synchronized(m_mxAppMenu) 
-	    {
-        	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
-        }
-    }
+      	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
 }
 
-extern "C" void
-menu_iter(const char* szLabel, const char* szLink, void* pThis)
-{
-	((CAppMenu*)pThis)->addAppMenuItem(szLabel, szLink );
-}
-
-void CAppMenu::setAppMenu(unsigned long valMenu)
-{
-    synchronized(m_mxAppMenu) 
-	{
-		m_arAppMenuItems.clear();
-        RHODESAPP().setAppBackUrl("");
-        rho_ruby_enum_strhash(valMenu, menu_iter, this);
-    }
-}
-
-void CAppMenu::setAppMenuEx(const rho::Vector< Hashtable<String, String> >& arMenu)
-{
-    synchronized(m_mxAppMenu) 
-	{
-		m_arAppMenuItems.clear();
-        RHODESAPP().setAppBackUrl("");
-
-        for (int i = 0; i < (int)arMenu.size(); i++ )
-        {
-            Hashtable<String, String>::const_iterator it = arMenu[i].begin();
-            addAppMenuItem( it->first, it->second );
-        }
-    }
-}
-
-void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes)
+void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu )
 {
     rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
-    copyMenuItems(arAppMenuItems);
+    copyMenuItems(arAppMenuItems, bLeftMenu);
 
     for ( int i = 0; i < (int)arAppMenuItems.size(); i++)
     {
@@ -96,26 +106,91 @@ void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes)
     }
 }
 
-void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu )
+void CAppMenu::getMenuItemEx(Hashtable<String, String>& hashRes, bool bLeftItem/* = false*/)
 {
-    rho::Vector< Hashtable<String, String> > arRes;
-    for (int i = 0; i < (int)arMenu.size(); i++)
-    {
-        rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
+    CAppMenuItem oItem = bLeftItem ? getLeftItem() : getRightItem();
 
-        Hashtable<String, String> hash;
-        hash[oIter.getCurKey()] = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
-        arRes.addElement(hash);
-    }
-
-    setAppMenuEx(arRes);
+    hashRes.put(oItem.m_strLabel, oItem.m_strLink);
 }
 
-void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems)
+void CAppMenu::setLeftItem( const String& strLabel, const String& strLink )
 {
     synchronized(m_mxAppMenu) 
 	{
-        arAppMenuItems = m_arAppMenuItems; 
+        m_oLeftItem = CAppMenuItem(strLabel, strLink );
+    }
+}
+
+void CAppMenu::setRightItem( const String& strLabel, const String& strLink )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        m_oRightItem = CAppMenuItem(strLabel, strLink );
+    }
+}
+
+CAppMenuItem CAppMenu::getLeftItem()
+{
+    synchronized(m_mxAppMenu) 
+	{
+        return m_oLeftItem;
+    }
+}
+
+CAppMenuItem CAppMenu::getRightItem()
+{
+    synchronized(m_mxAppMenu) 
+	{
+        return m_oRightItem;
+    }
+}
+
+void CAppMenu::setEnableLeftItem( bool isEnable )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        m_oLeftItem.m_isEnable = isEnable;
+    }
+}
+
+void CAppMenu::setEnableRightItem( bool isEnable )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        m_oRightItem.m_isEnable = isEnable;
+    }
+}
+
+void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
+{
+    //rho::Vector< Hashtable<String, String> > arRes;
+
+    synchronized(m_mxAppMenu) 
+	{
+        if ( bLeftMenu )
+		    m_arAppLeftMenuItems.clear();
+        else
+            m_arAppMenuItems.clear();
+
+        RHODESAPP().setAppBackUrl("");
+        for (int i = 0; i < (int)arMenu.size(); i++)
+        {
+            rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
+            String strKey = oIter.getCurKey();
+            String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
+            addAppMenuItem( strKey, strValue, bLeftMenu );
+        }
+    }
+}
+
+void CAppMenu::copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems, bool bLeftMenu)
+{
+    synchronized(m_mxAppMenu) 
+	{
+        if (bLeftMenu)
+            arAppMenuItems = m_arAppLeftMenuItems; 
+        else
+            arAppMenuItems = m_arAppMenuItems; 
     }
 }
 
@@ -123,6 +198,7 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 {
 	m_strLabel = strLabel;
 	m_strLink  = strLink;
+    m_isEnable = true;
 	
 	if (strLabel == "separator")
 		m_eType = emtSeparator;

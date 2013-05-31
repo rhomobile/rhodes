@@ -49,7 +49,7 @@
     NSString* errorDescription;
 }
 
--(id)init;
+-(id)init:(NSString*)error_type description:(NSString*)description;
 
 + (CMethodResultError*) errorWithType:(NSString*)error_type description:(NSString*)description;
 

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+    <RHO_ROOT__>C:\work\win8\commonapi\rhodes</RHO_ROOT__>
+    <TEMP_FILES_DIR__>$(RHO_ROOT)\platform\wp8\bin\$(Platform)\$(ProjectName)</TEMP_FILES_DIR__>
+  </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.51106.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="RHO_ROOT__">
+      <Value>$(RHO_ROOT__)</Value>
+    </BuildMacro>
+    <BuildMacro Include="TEMP_FILES_DIR__">
+      <Value>$(TEMP_FILES_DIR__)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

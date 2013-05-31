@@ -12,7 +12,7 @@ extern const char* rho_webview_execute_js(const char* js, int index);
 
 extern int rho_webview_active_tab();
 
-
+// ToDo: Support CMethodResultError
 @implementation CMethodResultError
 
 -(id)init:(NSString*)error_type description:(NSString*)description {

@@ -67,7 +67,36 @@ void CMegamoduleBase::getProperties( const rho::Vector<rho::String>& arrayofName
 
 void CMegamoduleBase::getAllProperties(CMethodResult& oResult)
 {
-    oResult.set(m_hashProps);
+    rho::Hashtable<rho::String, rho::String> res;
+    oResult.setCollectionMode(true);
+    
+    // existing properties
+    for ( rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< ISystemSingleton > *>::const_iterator it = m_mapPropAccessors.begin();  it != m_mapPropAccessors.end(); ++it )
+    {
+        getProperty(it->first, oResult);
+        
+        if ( oResult.isError() )
+            break;
+        
+        res[it->first] = oResult.toString();
+    }
+    
+    
+    if (!oResult.isError())
+    {
+        // user defined properties
+        for ( rho::Hashtable<rho::String, rho::String>::const_iterator it = m_hashProps.begin();  it != m_hashProps.end(); ++it )
+        {
+            res[it->first] = it->second;
+        }
+    }
+    
+
+    oResult.setCollectionMode(false);
+    if ( oResult.isError() )
+        oResult.callCallback();
+    else
+        oResult.set(res);
 }
 
 void CMegamoduleBase::setProperty( const rho::String& propertyName,  const rho::String& propertyValue, CMethodResult& oResult)
@@ -95,7 +124,10 @@ void CMegamoduleBase::setProperties( const rho::Hashtable<rho::String, rho::Stri
 
 void CMegamoduleBase::clearAllProperties(CMethodResult& oResult)
 {
+
     m_hashProps.clear();
+
+    // ToDo: set default values to existing properties 
 }
 
 
@@ -103,6 +135,16 @@ void CMegamoduleBase::clearAllProperties(CMethodResult& oResult)
 void CMegamoduleBase::getStringProperty(rho::apiGenerator::CMethodResult& oResult)
 { 
     getProperty( "StringProperty", oResult); 
+}
+
+void CMegamoduleBase::getIntegerProperty(rho::apiGenerator::CMethodResult& oResult)
+{ 
+    getProperty( "IntegerProperty", oResult); 
+}
+
+void CMegamoduleBase::setIntegerProperty( int IntegerProperty, rho::apiGenerator::CMethodResult& oResult)
+{ 
+    setProperty( "IntegerProperty", rho::common::convertToStringA(IntegerProperty), oResult );
 }
 CMegamoduleSingletonBase::CMegamoduleSingletonBase()
 {

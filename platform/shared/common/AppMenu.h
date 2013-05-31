@@ -41,9 +41,11 @@ struct CAppMenuItem
     enum EnumMenuType { emtNone = 0, emtSeparator, emtExit, emtClose };//, emtUrl, emtRefresh, emtHome, emtBack, emtSync, emtOptions, emtLog, emtExit, emtClose, emtFullscreen };
 	String m_strLabel;
 	String m_strLink;
+    bool   m_isEnable;
 	EnumMenuType  m_eType;
 
     CAppMenuItem (const String &label, const String &link);
+    CAppMenuItem () : m_eType(emtNone), m_isEnable(true) {}
     void processCommand();
 };
 
@@ -52,18 +54,30 @@ class CAppMenu
 	DEFINE_LOGCLASS;
 
     common::CMutex m_mxAppMenu;
-	Vector<CAppMenuItem> m_arAppMenuItems;
+	Vector<CAppMenuItem> m_arAppMenuItems, m_arAppLeftMenuItems;
+    CAppMenuItem m_oLeftItem, m_oRightItem;
 
 public:
-    void setAppMenu(unsigned long valMenu);
-    void setAppMenuEx(const rho::Vector< Hashtable<String, String> >& arMenu);
-    void getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes);
-    void setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu );
+    //void setAppMenu(unsigned long valMenu);
+    void getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu = false);
+    void getMenuItemEx(Hashtable<String, String>& hashRes, bool bLeftItem = false);
+    void setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu = false );
 
-    void copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems);
+    void copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems, bool bLeftMenu = false);
 
-//private:
-    void addAppMenuItem( const String& strLabel, const String& strLink );
+    void setLeftItem( const String& strLabel, const String& strLink );
+    void setRightItem( const String& strLabel, const String& strLink );
+
+    void setEnableLeftItem( bool isEnable );
+    void setEnableRightItem( bool isEnable );
+
+    CAppMenuItem getLeftItem();
+    CAppMenuItem getRightItem();
+
+    void setEnableMenuItem( const String& strLabel, bool enableItem, bool bLeftMenu = false );
+
+private:
+    void addAppMenuItem( const String& strLabel, const String& strLink, bool bLeftMenu );
 
 };
 

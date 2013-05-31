@@ -64,11 +64,7 @@ void rho_webview_navigate(const char* url, int index)
 
     String strUrl = url;
 
-#if defined(RHO_NO_RUBY)
-    strUrl = RHODESAPP().canonicalizeRhoPath(url);
-#else
     strUrl = RHODESAPP().canonicalizeRhoUrl(url);
-#endif
     
     TNavigateData* nd = new TNavigateData();
     nd->index = index;
@@ -120,11 +116,19 @@ int rho_webview_active_tab()
 #endif
 }
 
+void rho_webview_update_menu(int bItems)
+{
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_UPDATEMENU, (LPARAM)bItems );
+}
+/*
 void rho_webview_set_menu_items(VALUE valMenu) 
 {
-    rho_rhodesapp_setViewMenu(valMenu); 
-}
+    RHODESAPP().getAppMenu().setAppMenu(valMenu);
 
+#if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
+    rho_webview_update_menu();
+#endif
+}*/
 
 void rho_webview_full_screen_mode(int enable)
 {

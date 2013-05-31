@@ -143,6 +143,7 @@ VALUE rb_Megamodule_getStringProperty_Obj(int argc, VALUE *argv, id<IMegamodule>
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -154,6 +155,8 @@ VALUE rb_Megamodule_getStringProperty_Obj(int argc, VALUE *argv, id<IMegamodule>
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -180,6 +183,9 @@ VALUE rb_Megamodule_getStringProperty_Obj(int argc, VALUE *argv, id<IMegamodule>
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -194,9 +200,12 @@ VALUE rb_Megamodule_getStringProperty_Obj(int argc, VALUE *argv, id<IMegamodule>
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -211,7 +220,7 @@ VALUE rb_Megamodule_getStringProperty_Obj(int argc, VALUE *argv, id<IMegamodule>
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -318,6 +327,7 @@ VALUE rb_Megamodule_getIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -329,6 +339,8 @@ VALUE rb_Megamodule_getIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -355,6 +367,9 @@ VALUE rb_Megamodule_getIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -369,9 +384,12 @@ VALUE rb_Megamodule_getIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -386,7 +404,7 @@ VALUE rb_Megamodule_getIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -493,6 +511,7 @@ VALUE rb_Megamodule_setIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
 
     NSObject* params[1+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -504,6 +523,9 @@ VALUE rb_Megamodule_setIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
     for (i = 0; i < (1); i++) {
         params[i] = [NSNull null];
     }
+
+    
+                params[0]= [NSNumber numberWithInt:12345];
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -530,6 +552,9 @@ VALUE rb_Megamodule_setIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (1+2)) {
@@ -544,9 +569,12 @@ VALUE rb_Megamodule_setIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -561,7 +589,7 @@ VALUE rb_Megamodule_setIntegerProperty_Obj(int argc, VALUE *argv, id<IMegamodule
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -668,6 +696,7 @@ VALUE rb_Megamodule_typesTest_Obj(int argc, VALUE *argv, id<IMegamodule>objItem)
 
     NSObject* params[6+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -679,6 +708,8 @@ VALUE rb_Megamodule_typesTest_Obj(int argc, VALUE *argv, id<IMegamodule>objItem)
     for (i = 0; i < (6); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (6); i++) {
@@ -705,6 +736,9 @@ VALUE rb_Megamodule_typesTest_Obj(int argc, VALUE *argv, id<IMegamodule>objItem)
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (6+2)) {
@@ -719,9 +753,12 @@ VALUE rb_Megamodule_typesTest_Obj(int argc, VALUE *argv, id<IMegamodule>objItem)
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -736,7 +773,7 @@ VALUE rb_Megamodule_typesTest_Obj(int argc, VALUE *argv, id<IMegamodule>objItem)
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -843,6 +880,7 @@ VALUE rb_Megamodule_produceArray_Obj(int argc, VALUE *argv, id<IMegamodule>objIt
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -854,6 +892,8 @@ VALUE rb_Megamodule_produceArray_Obj(int argc, VALUE *argv, id<IMegamodule>objIt
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -880,6 +920,9 @@ VALUE rb_Megamodule_produceArray_Obj(int argc, VALUE *argv, id<IMegamodule>objIt
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -894,9 +937,12 @@ VALUE rb_Megamodule_produceArray_Obj(int argc, VALUE *argv, id<IMegamodule>objIt
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -911,7 +957,7 @@ VALUE rb_Megamodule_produceArray_Obj(int argc, VALUE *argv, id<IMegamodule>objIt
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -1018,6 +1064,7 @@ VALUE rb_Megamodule_produceHash_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -1029,6 +1076,8 @@ VALUE rb_Megamodule_produceHash_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -1055,6 +1104,9 @@ VALUE rb_Megamodule_produceHash_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -1069,9 +1121,12 @@ VALUE rb_Megamodule_produceHash_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -1086,7 +1141,7 @@ VALUE rb_Megamodule_produceHash_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -1193,6 +1248,7 @@ VALUE rb_Megamodule_produceComplicatedResult_Obj(int argc, VALUE *argv, id<IMega
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -1204,6 +1260,8 @@ VALUE rb_Megamodule_produceComplicatedResult_Obj(int argc, VALUE *argv, id<IMega
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -1230,6 +1288,9 @@ VALUE rb_Megamodule_produceComplicatedResult_Obj(int argc, VALUE *argv, id<IMega
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -1244,9 +1305,12 @@ VALUE rb_Megamodule_produceComplicatedResult_Obj(int argc, VALUE *argv, id<IMega
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -1261,7 +1325,7 @@ VALUE rb_Megamodule_produceComplicatedResult_Obj(int argc, VALUE *argv, id<IMega
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -1368,6 +1432,7 @@ VALUE rb_Megamodule_getObjectsCount_Obj(int argc, VALUE *argv, id<IMegamoduleSin
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -1379,6 +1444,8 @@ VALUE rb_Megamodule_getObjectsCount_Obj(int argc, VALUE *argv, id<IMegamoduleSin
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -1405,6 +1472,9 @@ VALUE rb_Megamodule_getObjectsCount_Obj(int argc, VALUE *argv, id<IMegamoduleSin
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -1419,9 +1489,12 @@ VALUE rb_Megamodule_getObjectsCount_Obj(int argc, VALUE *argv, id<IMegamoduleSin
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -1436,7 +1509,7 @@ VALUE rb_Megamodule_getObjectsCount_Obj(int argc, VALUE *argv, id<IMegamoduleSin
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -1534,6 +1607,7 @@ VALUE rb_Megamodule_getObjectByIndex_Obj(int argc, VALUE *argv, id<IMegamoduleSi
 
     NSObject* params[1+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -1545,6 +1619,8 @@ VALUE rb_Megamodule_getObjectByIndex_Obj(int argc, VALUE *argv, id<IMegamoduleSi
     for (i = 0; i < (1); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -1571,6 +1647,9 @@ VALUE rb_Megamodule_getObjectByIndex_Obj(int argc, VALUE *argv, id<IMegamoduleSi
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (1+2)) {
@@ -1585,9 +1664,12 @@ VALUE rb_Megamodule_getObjectByIndex_Obj(int argc, VALUE *argv, id<IMegamoduleSi
     [methodResult enableObjectCreationModeWithRubyClassPath:@"Rho.Examples.Megamodule"];
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -1602,7 +1684,7 @@ VALUE rb_Megamodule_getObjectByIndex_Obj(int argc, VALUE *argv, id<IMegamoduleSi
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -1700,6 +1782,7 @@ VALUE rb_Megamodule_showAlertFromUIThread_Obj(int argc, VALUE *argv, id<IMegamod
 
     NSObject* params[1+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -1711,6 +1794,8 @@ VALUE rb_Megamodule_showAlertFromUIThread_Obj(int argc, VALUE *argv, id<IMegamod
     for (i = 0; i < (1); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -1737,6 +1822,9 @@ VALUE rb_Megamodule_showAlertFromUIThread_Obj(int argc, VALUE *argv, id<IMegamod
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (1+2)) {
@@ -1751,9 +1839,12 @@ VALUE rb_Megamodule_showAlertFromUIThread_Obj(int argc, VALUE *argv, id<IMegamod
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -1769,7 +1860,7 @@ VALUE rb_Megamodule_showAlertFromUIThread_Obj(int argc, VALUE *argv, id<IMegamod
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -1876,6 +1967,7 @@ VALUE rb_Megamodule_setPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMegam
 
     NSObject* params[1+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -1887,6 +1979,8 @@ VALUE rb_Megamodule_setPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMegam
     for (i = 0; i < (1); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -1913,6 +2007,9 @@ VALUE rb_Megamodule_setPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMegam
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (1+2)) {
@@ -1927,9 +2024,12 @@ VALUE rb_Megamodule_setPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMegam
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -1944,7 +2044,7 @@ VALUE rb_Megamodule_setPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMegam
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -2051,6 +2151,7 @@ VALUE rb_Megamodule_isPeriodicallyCallbackSetted_Obj(int argc, VALUE *argv, id<I
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -2062,6 +2163,8 @@ VALUE rb_Megamodule_isPeriodicallyCallbackSetted_Obj(int argc, VALUE *argv, id<I
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -2088,6 +2191,9 @@ VALUE rb_Megamodule_isPeriodicallyCallbackSetted_Obj(int argc, VALUE *argv, id<I
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -2102,9 +2208,12 @@ VALUE rb_Megamodule_isPeriodicallyCallbackSetted_Obj(int argc, VALUE *argv, id<I
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -2119,7 +2228,7 @@ VALUE rb_Megamodule_isPeriodicallyCallbackSetted_Obj(int argc, VALUE *argv, id<I
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -2226,6 +2335,7 @@ VALUE rb_Megamodule_stopPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMega
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -2237,6 +2347,8 @@ VALUE rb_Megamodule_stopPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMega
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -2263,6 +2375,9 @@ VALUE rb_Megamodule_stopPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMega
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -2277,9 +2392,12 @@ VALUE rb_Megamodule_stopPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMega
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -2294,7 +2412,7 @@ VALUE rb_Megamodule_stopPeriodicallyCallback_Obj(int argc, VALUE *argv, id<IMega
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -2401,6 +2519,7 @@ VALUE rb_Megamodule_complicatedTypesTest1_Obj(int argc, VALUE *argv, id<IMegamod
 
     NSObject* params[1+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -2412,6 +2531,8 @@ VALUE rb_Megamodule_complicatedTypesTest1_Obj(int argc, VALUE *argv, id<IMegamod
     for (i = 0; i < (1); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -2438,6 +2559,9 @@ VALUE rb_Megamodule_complicatedTypesTest1_Obj(int argc, VALUE *argv, id<IMegamod
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (1+2)) {
@@ -2452,9 +2576,12 @@ VALUE rb_Megamodule_complicatedTypesTest1_Obj(int argc, VALUE *argv, id<IMegamod
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -2469,7 +2596,7 @@ VALUE rb_Megamodule_complicatedTypesTest1_Obj(int argc, VALUE *argv, id<IMegamod
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -2576,6 +2703,7 @@ VALUE rb_Megamodule_getProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
 
     NSObject* params[1+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -2587,6 +2715,8 @@ VALUE rb_Megamodule_getProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
     for (i = 0; i < (1); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -2613,6 +2743,9 @@ VALUE rb_Megamodule_getProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (1+2)) {
@@ -2627,9 +2760,12 @@ VALUE rb_Megamodule_getProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -2644,7 +2780,7 @@ VALUE rb_Megamodule_getProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -2751,6 +2887,7 @@ VALUE rb_Megamodule_getProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
 
     NSObject* params[1+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -2762,6 +2899,8 @@ VALUE rb_Megamodule_getProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
     for (i = 0; i < (1); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -2788,6 +2927,9 @@ VALUE rb_Megamodule_getProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (1+2)) {
@@ -2802,9 +2944,12 @@ VALUE rb_Megamodule_getProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -2819,7 +2964,7 @@ VALUE rb_Megamodule_getProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -2926,6 +3071,7 @@ VALUE rb_Megamodule_getAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule>o
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -2937,6 +3083,8 @@ VALUE rb_Megamodule_getAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule>o
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -2963,6 +3111,9 @@ VALUE rb_Megamodule_getAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule>o
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -2977,9 +3128,12 @@ VALUE rb_Megamodule_getAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule>o
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -2994,7 +3148,7 @@ VALUE rb_Megamodule_getAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule>o
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -3101,6 +3255,7 @@ VALUE rb_Megamodule_setProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
 
     NSObject* params[2+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -3112,6 +3267,8 @@ VALUE rb_Megamodule_setProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
     for (i = 0; i < (2); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (2); i++) {
@@ -3138,6 +3295,9 @@ VALUE rb_Megamodule_setProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (2+2)) {
@@ -3152,9 +3312,12 @@ VALUE rb_Megamodule_setProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -3169,7 +3332,7 @@ VALUE rb_Megamodule_setProperty_Obj(int argc, VALUE *argv, id<IMegamodule>objIte
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -3276,6 +3439,7 @@ VALUE rb_Megamodule_setProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
 
     NSObject* params[1+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -3287,6 +3451,8 @@ VALUE rb_Megamodule_setProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
     for (i = 0; i < (1); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (1); i++) {
@@ -3313,6 +3479,9 @@ VALUE rb_Megamodule_setProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (1+2)) {
@@ -3327,9 +3496,12 @@ VALUE rb_Megamodule_setProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -3344,7 +3516,7 @@ VALUE rb_Megamodule_setProperties_Obj(int argc, VALUE *argv, id<IMegamodule>objI
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -3451,6 +3623,7 @@ VALUE rb_Megamodule_clearAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -3462,6 +3635,8 @@ VALUE rb_Megamodule_clearAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -3488,6 +3663,9 @@ VALUE rb_Megamodule_clearAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -3502,9 +3680,12 @@ VALUE rb_Megamodule_clearAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule
     
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -3519,7 +3700,7 @@ VALUE rb_Megamodule_clearAllProperties_Obj(int argc, VALUE *argv, id<IMegamodule
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;
@@ -3626,6 +3807,7 @@ VALUE rb_Megamodule_enumerate_Obj(int argc, VALUE *argv, id<IMegamoduleSingleton
 
     NSObject* params[0+1];
     NSString* callbackURL = nil;
+    unsigned long callbackMethod = 0;
     NSString* callbackParam = nil;
     BOOL method_return_result = YES;
     
@@ -3637,6 +3819,8 @@ VALUE rb_Megamodule_enumerate_Obj(int argc, VALUE *argv, id<IMegamoduleSingleton
     for (i = 0; i < (0); i++) {
         params[i] = [NSNull null];
     }
+
+    
 
     // enumerate params
     for (int i = 0; i < (0); i++) {
@@ -3663,6 +3847,9 @@ VALUE rb_Megamodule_enumerate_Obj(int argc, VALUE *argv, id<IMegamoduleSingleton
         if (rho_ruby_is_string(callback)) {
             callbackURL = [((NSString*)[CRubyConverter convertFromRuby:callback]) retain];
         }
+        else if (rho_ruby_is_proc(callback) || rho_ruby_is_method(callback)) {
+            callbackMethod = callback;
+        }
     }
     // check callback param
     if (argc >= (0+2)) {
@@ -3680,9 +3867,12 @@ VALUE rb_Megamodule_enumerate_Obj(int argc, VALUE *argv, id<IMegamoduleSingleton
     [methodResult enableObjectCreationModeWithRubyClassPath:@"Rho.Examples.Megamodule"];
 
 
-    if (callbackURL != nil) {
+    if ((callbackURL != nil) || (callbackMethod != 0)) {
         // we have callback - method should not call setResult if method execute from current thread - only later or in UI or separated threads !!!
-        [methodResult setRubyCallback:callbackURL];
+        if (callbackURL != nil)
+            [methodResult setRubyCallback:callbackURL];
+        if (callbackMethod != 0)
+            [methodResult setRubyCallbackMethod:callbackMethod];
         if (callbackParam != nil) {
             [methodResult setCallbackParam:callbackParam];
         }
@@ -3697,7 +3887,7 @@ VALUE rb_Megamodule_enumerate_Obj(int argc, VALUE *argv, id<IMegamoduleSingleton
         
     }
     VALUE resValue = rho_ruby_get_NIL();
-    if ((callbackURL == nil) && (method_return_result)) {
+    if ((callbackURL == nil) && (callbackMethod == 0) && (method_return_result)) {
         resValue = [methodResult toRuby];
     }
     return resValue;

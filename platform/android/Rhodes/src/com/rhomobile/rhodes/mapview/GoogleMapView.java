@@ -52,7 +52,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MyLocationOverlay;
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
@@ -203,9 +203,9 @@ public class GoogleMapView extends MapActivity {
 		view.setClickable(true);
 		layout.addView(view);
 		
-		Bitmap pin = BitmapFactory.decodeResource(getResources(), AndroidR.drawable.marker);
+		Bitmap pin = BitmapFactory.decodeResource(getResources(), R.drawable.marker);
 		
-		Drawable marker = getResources().getDrawable(AndroidR.drawable.marker);
+		Drawable marker = getResources().getDrawable(R.drawable.marker);
 		marker.setBounds(0, 0, marker.getIntrinsicWidth(), marker.getIntrinsicHeight());
 		annOverlay = new AnnotationsOverlay(this, marker, pin.getDensity());
 		

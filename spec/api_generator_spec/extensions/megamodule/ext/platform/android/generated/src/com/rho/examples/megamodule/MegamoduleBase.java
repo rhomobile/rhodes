@@ -13,6 +13,9 @@ import com.rhomobile.rhodes.api.RhoApiPropertyBag;
 public class MegamoduleBase extends RhoApiObject {
 
     private RhoApiPropertyBag mPropertyBag;
+    public Map<String, String> getPropertiesMap() {
+        return mPropertyBag.getPropertiesMap();
+    }
     public MegamoduleBase(String id) {
         super(id);
 
@@ -22,7 +25,7 @@ public class MegamoduleBase extends RhoApiObject {
 
 
     public void getStringProperty(IMethodResult result) {
-
+ 
         getProperty("StringProperty", result);
     }
 
@@ -44,6 +47,11 @@ public class MegamoduleBase extends RhoApiObject {
 
 
 
+    public void getIntegerProperty(IMethodResult result) {
+
+        result.forceIntegerType(); 
+        getProperty("IntegerProperty", result);
+    }
 
     public static class getIntegerPropertyTask implements Runnable {
         private IMegamodule mApiObject; 
@@ -63,24 +71,28 @@ public class MegamoduleBase extends RhoApiObject {
 
 
 
+    public void setIntegerProperty(int IntegerProperty, IMethodResult result) {
+
+        setProperty("IntegerProperty", String.valueOf(IntegerProperty), result);
+    }
 
     public static class setIntegerPropertyTask implements Runnable {
         private IMegamodule mApiObject; 
-        private int value;
+        private int IntegerProperty;
         private IMethodResult mResult;
 
         public setIntegerPropertyTask(IMegamodule obj, 
-                int value, 
+                int IntegerProperty, 
                 IMethodResult result) {
             this.mApiObject = obj; 
-            this.value = value;
+            this.IntegerProperty = IntegerProperty;
             this.mResult = result;
         }
 
         @Override
         public void run() {
             mApiObject.setIntegerProperty(
-                value, mResult);
+                IntegerProperty, mResult);
         }
     }
 

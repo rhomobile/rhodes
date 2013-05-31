@@ -42,6 +42,8 @@
 #include "InitMemoryInfoCollector.h"
 #include "Reachability.h"
 
+#import "CRhoURLProtocol.h"
+
 
 /*
 use this non-public code for see level of memory warning 
@@ -393,12 +395,8 @@ static Rhodes *instance = NULL;
             [popover setDelegate:delegateObject];
             delegateObject->popover = popover;
             CGRect rect = [[[self mainView] view] frame];
-            rect.origin.x += rect.size.width/4;
-            rect.origin.y += rect.size.height/4;
-            rect.size.width /= 2;
-            rect.size.height /= 2;
-            [popover setPopoverContentSize:CGSizeMake(CGRectGetWidth(rect), CGRectGetHeight(rect))];
-            [popover presentPopoverFromRect:rect inView:[[self mainView] view] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+            [popover setPopoverContentSize:CGSizeMake(320, 320)];
+            [popover presentPopoverFromRect:CGRectMake(rect.origin.x + rect.size.width/2, rect.origin.y,0,-600) inView:[[self mainView] view] permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
         }
         else 
 #endif
@@ -672,6 +670,7 @@ static Rhodes *instance = NULL;
 - (void)doStartUp {
     NSLog(@"Rhodes starting application...");
     
+    [CRhoURLProtocol initAndRegister];
     
     [NSThread setThreadPriority:1.0];
     

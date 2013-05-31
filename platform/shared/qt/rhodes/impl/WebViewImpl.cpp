@@ -103,11 +103,6 @@ int rho_webview_active_tab()
     return CMainWindow::getInstance()->tabbarGetCurrent();
 }
 
-void rho_webview_set_menu_items(VALUE valMenu) 
-{
-    rho_rhodesapp_setViewMenu(valMenu); 
-}
-
 void rho_webview_full_screen_mode(int enable)
 {
     CMainWindow::getInstance()->fullscreenCommand(enable);

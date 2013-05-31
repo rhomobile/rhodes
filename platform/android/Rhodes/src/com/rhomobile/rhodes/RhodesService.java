@@ -43,7 +43,6 @@ import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +57,6 @@ import org.json.JSONTokener;
 
 import com.rhomobile.rhodes.alert.Alert;
 import com.rhomobile.rhodes.alert.StatusNotification;
-import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.event.EventStore;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 import com.rhomobile.rhodes.file.RhoFileApi;
@@ -931,7 +929,7 @@ public class RhodesService extends Service {
 		n.flags |= Notification.FLAG_ONGOING_EVENT;
 		
 		RemoteViews expandedView = new RemoteViews(context.getPackageName(),
-				AndroidR.layout.status_bar_ongoing_event_progress_bar);
+				R.layout.status_bar_ongoing_event_progress_bar);
 		
 		StringBuilder newUrl = new StringBuilder();
 		if (url.length() < 17)
@@ -941,7 +939,7 @@ public class RhodesService extends Service {
 			newUrl.append("...");
 			newUrl.append(url.substring(url.length() - 7, url.length()));
 		}
-		expandedView.setTextViewText(AndroidR.id.title, newUrl.toString());
+		expandedView.setTextViewText(R.id.title, newUrl.toString());
 		
 		StringBuffer downloadingText = new StringBuffer();
 		if (totalBytes > 0) {
@@ -949,8 +947,8 @@ public class RhodesService extends Service {
 			downloadingText.append(progress);
 			downloadingText.append('%');
 		}
-		expandedView.setTextViewText(AndroidR.id.progress_text, downloadingText.toString());
-		expandedView.setProgressBar(AndroidR.id.progress_bar,
+		expandedView.setTextViewText(R.id.progress_text, downloadingText.toString());
+		expandedView.setProgressBar(R.id.progress_bar,
 				totalBytes < 0 ? 100 : totalBytes,
 				currentBytes,
 				totalBytes < 0);
@@ -1251,7 +1249,7 @@ public class RhodesService extends Service {
         
         if (statusNotification) {
             Intent intent = new Intent(getContext(), RhodesActivity.class);
-            StatusNotification.simpleNotification(TAG, 0, getContext(), intent, getString(R.string.app_name), alert);
+            StatusNotification.simpleNotification(TAG, 0, getContext(), intent, getBuildConfig("name"), alert);
         }
 
 		if (alert != null) {
@@ -1327,7 +1325,7 @@ public class RhodesService extends Service {
                 if (statusNotification) {
                     Logger.D(TAG, "Showing status push notification");
                     Intent intent = new Intent(getContext(), RhodesActivity.class);
-                    StatusNotification.simpleNotification(TAG, 0, getContext(), intent, getString(R.string.app_name), alert);
+                    StatusNotification.simpleNotification(TAG, 0, getContext(), intent, getBuildConfig("name"), alert);
                 }
     
                 if (alert.length() > 0) {

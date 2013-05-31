@@ -7,8 +7,11 @@ extern "C" void Init_WebView();
 extern "C" void Init_WebView_extension();
 extern "C" void Init_Application();
 extern "C" void Init_NativeToolbar();
+extern "C" void Init_NativeToolbar_extension();
 extern "C" void Init_NativeTabbar();
+extern "C" void Init_NativeTabbar_extension();
 extern "C" void Init_Navbar();
+extern "C" void Init_RhoFile();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -27,10 +30,16 @@ extern "C" void Init_CoreAPI_Extension()
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE) || (defined(OS_MACOSX) && defined(RHODES_EMULATOR)) || defined(OS_ANDROID) || defined(OS_MACOSX)
     Init_NativeToolbar();
     Init_NativeTabbar();
+#elif defined(OS_WP8)
+    Init_NativeToolbar_extension();
+    Init_NativeTabbar_extension();
 #endif
 
 #if (defined(OS_MACOSX) && !defined(RHODES_EMULATOR))
     Init_Navbar();
 #endif
-
+    
+#if defined(OS_MACOSX) || defined(OS_ANDROID)
+    Init_RhoFile();
+#endif
 }

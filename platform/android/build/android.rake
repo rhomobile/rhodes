@@ -27,6 +27,7 @@
 require File.dirname(__FILE__) + '/androidcommon.rb'
 require File.dirname(__FILE__) + '/android_tools.rb'
 require File.dirname(__FILE__) + '/manifest_generator.rb'
+require File.dirname(__FILE__) + '/eclipse_project_generator.rb'
 require 'pathname'
 require 'tempfile'
 
@@ -111,7 +112,6 @@ def set_app_name_android(newname)
   rm_rf $appres
   cp_r $rhores, $appres
 
-
   rhostrings = File.join($rhores, "values", "strings.xml")
   appstrings = File.join($appres, "values", "strings.xml")
   doc = REXML::Document.new(File.new(rhostrings))
@@ -119,23 +119,79 @@ def set_app_name_android(newname)
   File.open(appstrings, "w") { |f| doc.write f }
 end
 
-def generate_rjava
-  manifest = $appmanifest
-  resource = $appres
-  assets = Jake.get_absolute File.join($tmpdir, 'assets')
-  nativelibs = Jake.get_absolute(File.join($androidpath, "Rhodes", "libs"))
-  #rjava = Jake.get_absolute(File.join($androidpath, "Rhodes", "gen", "com", "rhomobile", "rhodes"))
-
-  args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-J", $app_rjava_dir]
-  Jake.run($aapt, args)
-
-  unless $?.success?
-    raise "Error in AAPT"
-  end
-end
 
 def get_boolean(arg)
   arg == 'true' or arg == 'yes' or arg == 'enabled' or arg == 'enable' or arg == '1'
+end
+
+namespace 'project' do
+  namespace 'android' do
+    task :eclipse => ['config:android', 'config:android:extensions','build:android:manifest'] do
+      #options = [ 'create', 'project',
+      #    '--path', $projectpath,
+      #    '--target', $androidtargets[$found_api_level][:id],
+      #    '--package', $app_package_name,
+      #    '--activity', 'RhodesActivity'
+      #]
+      #Jake.run($androidbin, options)
+      project_template_path = File.join 'res','generators','templates','project','android'
+      project_erb_path = File.join project_template_path,'project.erb'
+      classpath_erb_path = File.join project_template_path,'classpath.erb'
+      project_prop_erb_path = File.join project_template_path,'project.properties.erb'
+      manifest_path = File.join $tmpdir,'AndroidManifest.xml'
+      project_path = File.join $app_path,'project','android'
+      project_file_path = File.join project_path,'.project'
+      classpath_file_path = File.join project_path,'.classpath'
+      project_prop_file_path = File.join project_path,'project.properties'
+      manifest_file_path = File.join project_path,'AndroidManifest.xml'
+
+      rhodes_path = File.absolute_path '.'
+      generator = EclipseProjectGenerator.new $appname, $app_path, rhodes_path, $androidtargets[$found_api_level][:name]
+
+      $app_config["extpaths"].each do |extpath|
+        next if extpath.start_with? rhodes_path
+        generator.addVirtualFolder extpath
+      end
+
+      $ext_android_additional_sources.each do |extpath, list|
+        classpaths = []
+        ext = File.basename(extpath)
+        puts "Adding '#{ext}' extension java sources: #{list}"
+        File.open(list, "r") do |f|
+          while line = f.gets
+            line.chomp!
+            src = File.join(extpath, line)
+            if src =~ /(.*\/src\/).*/
+              src = $1
+              unless classpaths.index(src)
+                puts "Add classpath: #{src}"
+                classpaths << src
+              end
+            end
+          end
+        end
+        generator.addExtension(ext, classpaths) unless classpaths.empty?
+      end
+
+      mkdir_p project_path
+
+      project_buf = generator.render project_erb_path
+      File.open(project_file_path, "w") { |f| f.write project_buf }
+
+      classpath_buf = generator.render classpath_erb_path
+      File.open(classpath_file_path, "w") { |f| f.write classpath_buf }
+
+      project_prop_buf = generator.render project_prop_erb_path
+      File.open(project_prop_file_path, "w") { |f| f.write project_prop_buf }
+
+      cp_r File.join(project_template_path,'externalToolBuilders'), File.join(project_path,'.externalToolBuilders') unless File.exists? File.join(project_path,'.externalToolBuilders')
+      cp File.join(project_template_path,'gensources.xml'), project_path unless File.exists? File.join(project_path,'gensources.xml')
+      cp File.join(project_template_path,'eclipsebundle.xml'), project_path unless File.exists? File.join(project_path,'eclipsebundle.xml')
+
+      cp manifest_path, project_path
+
+    end
+  end
 end
 
 namespace "config" do
@@ -236,6 +292,7 @@ namespace "config" do
     $commonapidir = File.join($androidpath, "..", "..", "lib", "commonAPI")
     $srcdir = File.join($bindir, "RhoBundle")
     $targetdir = File.join($bindir, 'target', 'android')
+    $projectpath = File.join($app_path, 'project', 'android')
     $excludelib = ['**/builtinME.rb', '**/ServeME.rb', '**/dateME.rb', '**/rationalME.rb']
     $tmpdir = File.join($bindir, "tmp")
 
@@ -243,18 +300,22 @@ namespace "config" do
     $rhomanifesterb = File.join $androidpath, "Rhodes", "AndroidManifest.xml.erb"
     $appmanifest = File.join $tmpdir, "AndroidManifest.xml"
 
-    $rhores = File.join $androidpath, "Rhodes", "res"
-    $appres = File.join $tmpdir, "res"
+    $rhores = File.join $androidpath, 'Rhodes','res'
+    $appres = File.join $tmpdir,'res'
+    $appassets = File.join $tmpdir,'assets'
+    $applibs = File.join $tmpdir,'lib','armeabi'
 
     $appincdir = File.join $tmpdir, "include"
 
-    $rho_android_r = File.join $androidpath, "Rhodes", "src", "com", "rhomobile", "rhodes", "AndroidR.java"
-    $app_android_r = File.join $tmpdir, "AndroidR.java"
-    $app_rjava_dir = File.join $tmpdir
-    $app_native_libs_java = File.join $tmpdir, "NativeLibraries.java"
-    $app_capabilities_java = File.join $tmpdir, "Capabilities.java"
-    $app_push_java = File.join $tmpdir, "Push.java"
-    $app_startup_listeners_java = File.join $tmpdir, "RhodesStartupListeners.java"
+    $rho_java_gen_dir = File.join $tmpdir,'gen','com','rhomobile','rhodes'
+    
+    #$rho_android_r = File.join $androidpath, 'Rhodes','src','com','rhomobile','rhodes','AndroidR.java'
+    #$app_android_r = File.join $rho_java_gen_dir,'AndroidR.java'
+    $app_rjava_dir = $rho_java_gen_dir
+    $app_native_libs_java = File.join $rho_java_gen_dir,'NativeLibraries.java'
+    $app_capabilities_java = File.join $rho_java_gen_dir,'Capabilities.java'
+    $app_push_java = File.join $rho_java_gen_dir,'Push.java'
+    $app_startup_listeners_java = File.join $rho_java_gen_dir,'extmanager','RhodesStartupListeners.java'
 
     if RUBY_PLATFORM =~ /(win|w)32$/
       $bat_ext = ".bat"
@@ -276,7 +337,7 @@ namespace "config" do
     end
 
     build_tools_path = nil
-    if File.exist? (File.join($androidsdkpath, "build-tools"))
+    if File.exist?(File.join($androidsdkpath, "build-tools"))
       build_tools_path = []
       Dir.foreach(File.join($androidsdkpath, "build-tools")) do |entry|
         next if entry == '.' or entry == '..'
@@ -426,6 +487,57 @@ namespace "config" do
     $push_notifications = $app_config["android"]["push"]["notifications"] if !$app_config["android"].nil? and !$app_config["android"]["push"].nil?
     $push_notifications = "none" if $push_notifications.nil?
     $push_notifications = $push_notifications
+
+    # Detect android targets
+    $androidtargets = {}
+    id = nil
+    apilevel = nil
+    target_name = nil
+
+    `"#{$androidbin}" list targets`.split(/\n/).each do |line|
+      line.chomp!
+
+      if line =~ /^id:\s+([0-9]+)\s+or\s+\"(.*)\"/
+        id = $1
+        target_name = $2
+
+        if $use_google_addon_api
+          if line =~ /Google Inc\.:Google APIs:([0-9]+)/
+            apilevel = $1.to_i
+            $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
+          end
+        else
+          if $use_motosol_api
+            if line =~ /MotorolaSolutions\s+Inc\.:MotorolaSolution\s+Value\s+Add\s+APIs.*:([0-9]+)/
+              apilevel = $1.to_i
+              $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
+            end
+          end
+        end
+      end
+
+      unless $use_google_addon_api and $use_motosol_api
+        if line =~ /^\s+API\s+level:\s+([0-9]+)$/
+          apilevel = $1.to_i
+          $androidtargets[apilevel] = {:id => id.to_i, :name => target_name}
+        end
+      end
+
+      if apilevel && $androidtargets[apilevel][:id] == id.to_i
+        if line =~ /^\s+ABIs\s*:\s+(.*)/
+          $androidtargets[apilevel][:abis] = []
+          $1.split(/,\s*/).each do |abi|
+            $androidtargets[apilevel][:abis] << abi
+          end
+          puts $androidtargets[apilevel][:abis].inspect if USE_TRACES
+        end
+      end
+    end
+
+    if USE_TRACES
+      puts "Android targets:"
+      puts $androidtargets.inspect
+    end
 
     mkdir_p $bindir if not File.exists? $bindir
     mkdir_p $rhobindir if not File.exists? $rhobindir
@@ -619,54 +731,8 @@ namespace "config" do
         raise "Wrong Android emulator version: #{$emuversion}. Android SDK target API is not installed"
       end
 
-      # Detect android targets
-      $androidtargets = {}
-      id = nil
-      apilevel = nil
-
-      `"#{$androidbin}" list targets`.split(/\n/).each do |line|
-        line.chomp!
-
-        if line =~ /^id:\s+([0-9]+)/
-          id = $1
-
-          if $use_google_addon_api
-            if line =~ /Google Inc\.:Google APIs:([0-9]+)/
-              apilevel = $1.to_i
-              $androidtargets[apilevel] = {:id => id.to_i}
-            end
-          else
-            if $use_motosol_api
-              if line =~ /MotorolaSolutions\s+Inc\.:MotorolaSolution\s+Value\s+Add\s+APIs.*:([0-9]+)/
-                apilevel = $1.to_i
-                $androidtargets[apilevel] = {:id => id.to_i}
-              end
-            end
-          end
-        end
-
-        unless $use_google_addon_api and $use_motosol_api
-          if line =~ /^\s+API\s+level:\s+([0-9]+)$/
-            apilevel = $1.to_i
-            $androidtargets[apilevel] = {:id => id.to_i}
-          end
-        end
-    
-        if apilevel && $androidtargets[apilevel][:id] == id.to_i
-          if line =~ /^\s+ABIs\s*:\s+(.*)/
-            $androidtargets[apilevel][:abis] = []
-            $1.split(/,\s*/).each do |abi|
-              $androidtargets[apilevel][:abis] << abi
-            end
-            puts $androidtargets[apilevel][:abis].inspect if USE_TRACES
-          end
-        end
-      end
-
       if USE_TRACES
         puts "Android emulator version: #{$emuversion}"
-        puts "Android targets:"
-        puts $androidtargets.inspect
       end
 
       $emuversion = $emuversion.to_s
@@ -692,13 +758,11 @@ namespace "build" do
 
       Rake::Task["build:bundle:noxruby"].invoke
 
-      #assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
-      assets = File.join $tmpdir, 'assets'
-      rm_rf assets
-      mkdir_p assets
+      rm_rf $appassets
+      mkdir_p $appassets
       hash = nil
       ["apps", "db", "lib"].each do |d|
-        cp_r File.join($srcdir, d), assets, :preserve => true
+        cp_r File.join($srcdir, d), $appassets, :preserve => true
         # Calculate hash of directories
         hash = get_dir_hash(File.join($srcdir, d), hash)
       end
@@ -707,20 +771,19 @@ namespace "build" do
       Jake.build_file_map($srcdir, "rho.dat")
 
       ["apps", "db", "lib", "hash", "name", "rho.dat"].each do |d|
-        cp_r File.join($srcdir, d), assets, :preserve => true
+        cp_r File.join($srcdir, d), $appassets, :preserve => true
       end
 
     end
 
     desc "Build RhoBundle for Eclipse project"
     task :eclipsebundle => "build:android:rhobundle" do
-      assets = File.join $tmpdir, 'assets'
       eclipse_assets = File.join(Jake.get_absolute($androidpath), "Rhodes", "assets")
       rm_rf eclipse_assets
-      cp_r assets, eclipse_assets, :preserve => true
+      cp_r $appassets, eclipse_assets, :preserve => true
     end
 
-    desc 'Building native extensioons'
+    desc 'Building native extensions'
     task :extensions => ["config:android:extensions", :genconfig] do
 
       Rake::Task["build:bundle:noxruby"].invoke
@@ -847,6 +910,7 @@ namespace "build" do
       args = []
       args << "-Wno-uninitialized"
       args << "-Wno-missing-field-initializers"
+      args << '-Wno-shadow'
       args << "-I\"#{srcdir}/include\""
       args << "-I\"#{srcdir}/android\""
       args << "-I\"#{srcdir}/generated\""
@@ -1102,78 +1166,32 @@ namespace "build" do
       end
 
       # Generate rhocaps.inc
-      rhocaps_inc = File.join($appincdir, 'rhocaps.inc')
-      caps_already_defined = []
-      if File.exists? rhocaps_inc
-        File.open(rhocaps_inc, 'r') do |f|
-          while line = f.gets
-            next unless line =~ /^\s*RHO_DEFINE_CAP\s*\(\s*([A-Z_]*)\s*\)\s*\s*$/
-            caps_already_defined << $1.downcase
-          end
-        end
-      end
-
-      if caps_already_defined.sort.uniq != ANDROID_PERMISSIONS.keys.sort.uniq
-        puts "Need to regenerate rhocaps.inc"
-        $stdout.flush
-        File.open(rhocaps_inc, 'w') do |f|
-          ANDROID_PERMISSIONS.keys.sort.each do |k|
-            f.puts "RHO_DEFINE_CAP(#{k.upcase})"
-          end
-        end
-      else
-        puts "No need to regenerate rhocaps.inc"
-        $stdout.flush
-      end
-
-      # Generate Capabilities.java
-      File.open($app_capabilities_java, "w") do |f|
-        f.puts "package #{JAVA_PACKAGE_NAME};"
-        f.puts "public class Capabilities {"
-        ANDROID_PERMISSIONS.keys.sort.each do |k|
-          val = 'false'
-          val = 'true' if caps_enabled[k]
-          f.puts "  public static final boolean #{k.upcase}_ENABLED = #{val};"
-        end
-        f.puts "}"
-      end
-
-      # Generate Push.java
-      File.open($app_push_java, "w") do |f|
-        f.puts "package #{JAVA_PACKAGE_NAME};"
-        f.puts "public class Push {"
-        f.puts "  public static final String SENDER = \"#{$push_sender}\";"
-        if $push_notifications.nil?
-          f.puts "  public static final String PUSH_NOTIFICATIONS =  \"none\";"
-        else
-          f.puts "  public static final String PUSH_NOTIFICATIONS =  \"#{$push_notifications}\";"
-        end
-        f.puts "};"
-      end
-
+      #rhocaps_inc = File.join($appincdir, 'rhocaps.inc')
+      #caps_already_defined = []
+      #if File.exists? rhocaps_inc
+      #  File.open(rhocaps_inc, 'r') do |f|
+      #    while line = f.gets
+      #      next unless line =~ /^\s*RHO_DEFINE_CAP\s*\(\s*([A-Z_]*)\s*\)\s*\s*$/
+      #      caps_already_defined << $1.downcase
+      #    end
+      #  end
+      #end
+      #
+      #if caps_already_defined.sort.uniq != ANDROID_PERMISSIONS.keys.sort.uniq
+      #  puts "Need to regenerate rhocaps.inc"
+      #  $stdout.flush
+      #  File.open(rhocaps_inc, 'w') do |f|
+      #    ANDROID_PERMISSIONS.keys.sort.each do |k|
+      #      f.puts "RHO_DEFINE_CAP(#{k.upcase})"
+      #    end
+      #  end
+      #else
+      #  puts "No need to regenerate rhocaps.inc"
+      #  $stdout.flush
+      #end
     end
 
-    task :gen_java_ext => "config:android" do
-      File.open($app_native_libs_java, "w") do |f|
-        f.puts "package #{JAVA_PACKAGE_NAME};"
-        f.puts "public class NativeLibraries {"
-        f.puts "  public static void load() {"
-        f.puts "    // Load native .so libraries"
-        Dir.glob($app_builddir + "/**/lib*.so").reverse.each do |lib|
-          next if lib =~ /noautoload/
-          libname = File.basename(lib).gsub(/^lib/, '').gsub(/\.so$/, '')
-          f.puts "    System.loadLibrary(\"#{libname}\");"
-        end
-        f.puts "    // Load native implementation of rhodes"
-        f.puts "    System.loadLibrary(\"rhodes\");"
-        f.puts "  }"
-        f.puts "};"
-      end
-    end
-
-    task :gensources => [:genconfig, :gen_java_ext]
-
-    task :librhodes => [:libs, :gensources] do
+    task :librhodes => [:libs, :extensions, :genconfig] do
       srcdir = File.join $androidpath, "Rhodes", "jni", "src"
       libdir = File.join $app_builddir, 'librhodes', 'lib', 'armeabi'
       objdir = File.join $tmpdir, 'librhodes'
@@ -1411,19 +1429,120 @@ namespace "build" do
       puts 'Manifest updated by extension is saved!'
     end
 
-    task :resources => [:rhobundle, :extensions] do
+    task :resources => [:rhobundle, :extensions, :librhodes] do
       set_app_name_android($appname)
+
+      puts 'EXT:  add additional files to project before build'
+      Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', '*')).each do |res|
+        if File.directory?(res) && (res != '.') && (res != '..')
+          puts "add resources from extension [#{res}] to [#{$tmpdir}]"
+          cp_r res, $tmpdir
+        end
+      end
+
+      #copy icon after extension resources in case it overwrites them (like rhoelementsext...)
       set_app_icon_android
+
+      if $config_xml
+        puts "Copying custom config.xml"
+        rawres_path = File.join($tmpdir, 'res', 'raw')
+        mkdir_p rawres_path unless File.exist? rawres_path
+        cp $config_xml, File.join(rawres_path, 'config.xml')
+      end
+
+      mkdir_p File.join($applibs)
+      # Add .so libraries
+      Dir.glob($app_builddir + "/**/lib*.so").each do |lib|
+        cp_r lib, $applibs
+      end
+      $ext_android_additional_lib.each do |lib|
+        cp_r lib, $applibs
+      end
+#      Dir.glob($tmpdir + "/lib/armeabi/lib*.so").each do |lib|
+#        cc_run($stripbin, ['"'+lib+'"'])
+#     end
     end
 
-    #desc "Build Rhodes for android"
-    task :rhodes => [:rhobundle, :librhodes, :manifest, :resources] do
+    task :fulleclipsebundle => [:resources, :librhodes] do
+      #manifest = File.join $tmpdir,'AndroidManifest.xml'
 
-      rm_rf $tmpdir + "/Rhodes"
-      mkdir_p $tmpdir + "/Rhodes"
+      eclipse_res = File.join $projectpath,'res'
+      eclipse_assets = File.join $projectpath,'assets'
+      eclipse_libs = File.join $projectpath,'libs'
+      #eclipse_manifest = File.join $projectpath,'AndroidManifest.xml'
 
+      rm_rf eclipse_res
+      rm_rf eclipse_assets
+      rm_rf eclipse_libs
+      #rm_rf eclipse_manifest
 
+      mkdir_p eclipse_libs
+
+      cp_r $appres, $projectpath
+      cp_r $appassets, $projectpath
+      cp_r $applibs, eclipse_libs
+      #cp manifest, $projectpath
+    end
+
+    task :gencapabilitiesjava => "config:android" do
+      # Generate Capabilities.java
+      mkdir_p File.dirname $app_capabilities_java
+      f = StringIO.new("", "w+")
+      #File.open($app_capabilities_java, "w") do |f|
+      f.puts "package #{JAVA_PACKAGE_NAME};"
+      f.puts "public class Capabilities {"
+      ANDROID_PERMISSIONS.keys.sort.each do |k|
+        val = 'false'
+        val = 'true' if $app_config["capabilities"].index(k) != nil
+        f.puts "  public static final boolean #{k.upcase}_ENABLED = #{val};"
+      end
+      f.puts "}"
+      #end
+      Jake.modify_file_if_content_changed($app_capabilities_java, f)
+    end
+
+    task :genpushjava => "config:android" do
+      # Generate Push.java
+      mkdir_p File.dirname $app_push_java
+      f = StringIO.new("", "w+")
+      #File.open($app_push_java, "w") do |f|
+      f.puts "package #{JAVA_PACKAGE_NAME};"
+      f.puts "public class Push {"
+      f.puts "  public static final String SENDER = \"#{$push_sender}\";"
+      if $push_notifications.nil?
+        f.puts "  public static final String PUSH_NOTIFICATIONS =  \"none\";"
+      else
+        f.puts "  public static final String PUSH_NOTIFICATIONS =  \"#{$push_notifications}\";"
+      end
+      f.puts "};"
+      #end
+      Jake.modify_file_if_content_changed($app_push_java, f)
+    end
+
+    task :genloadlibsjava => "config:android" do
+      mkdir_p File.dirname $app_native_libs_java
+      f = StringIO.new("", "w+")
+      #File.open($app_native_libs_java, "w") do |f|
+      f.puts "package #{JAVA_PACKAGE_NAME};"
+      f.puts "public class NativeLibraries {"
+      f.puts "  public static void load() {"
+      f.puts "    // Load native .so libraries"
+      Dir.glob($app_builddir + "/**/lib*.so").reverse.each do |lib|
+        next if lib =~ /noautoload/
+        libname = File.basename(lib).gsub(/^lib/, '').gsub(/\.so$/, '')
+        f.puts "    System.loadLibrary(\"#{libname}\");"
+      end
+      #f.puts "    // Load native implementation of rhodes"
+      #f.puts "    System.loadLibrary(\"rhodes\");"
+      f.puts "  }"
+      f.puts "};"
+      #end
+      Jake.modify_file_if_content_changed($app_native_libs_java, f)
+    end
+
+    task :genrholisteners => ['config:android:extensions', 'config:android'] do
       # RhodesActivity Listeners
+      mkdir_p File.dirname $app_startup_listeners_java
       f = StringIO.new("", "w+")
       f.puts '// WARNING! THIS FILE IS GENERATED AUTOMATICALLY! DO NOT EDIT IT MANUALLY!'
       f.puts 'package com.rhomobile.rhodes.extmanager;'
@@ -1437,34 +1556,52 @@ namespace "build" do
       f.puts '	};'
       f.puts '}'
       Jake.modify_file_if_content_changed($app_startup_listeners_java, f)
+    end
 
-      puts 'EXT:  add additional files to project before build'
-      Dir.glob(File.join($app_builddir, 'extensions', '*', 'adds', '*')).each do |res|
-        if File.directory?(res) && (res != '.') && (res != '..')
-          puts "add resources from extension [#{res}] to [#{$tmpdir}]"
-          cp_r res, $tmpdir
-        end
-      end
+    task :genrjava => [:manifest, :resources] do
+      mkdir_p $app_rjava_dir
+      args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
+      Jake.run($aapt, args)
 
-      #copy icon again in case an extension overwrites them (like rhoelementsext...)
-      set_app_icon_android
+      raise 'Error in AAPT: R.java' unless $?.success?
 
-      if $config_xml
-        puts "Copying custom config.xml"
-        rawres_path = File.join($tmpdir, 'res', 'raw')
-        mkdir_p rawres_path unless File.exist? rawres_path
-        cp $config_xml, File.join(rawres_path, 'config.xml')
-      end
-
-      generate_rjava
-
-      buf = File.new($rho_android_r, "r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/, "\nimport #{$app_package_name}.R;\n")
-      File.open($app_android_r, "w") { |f| f.write(buf) }
+      #buf = File.new($rho_android_r, "r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/, "\nimport #{$app_package_name}.R;\n")
+      #File.open($app_android_r, "w") { |f| f.write(buf) }
 
       mkdir_p File.join($app_rjava_dir, "R") if not File.exists? File.join($app_rjava_dir, "R")
       buf = File.new(File.join($app_rjava_dir, "R.java"), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage com.rhomobile.rhodes;\n")
-      buf.gsub!(/public\s*static\s*final\s*int/, "public static int")
+      #buf.gsub!(/public\s*static\s*final\s*int/, "public static int")
       File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
+    end
+
+    task :genreclipse => [:manifest, :resources] do
+      mkdir_p $app_rjava_dir
+      args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-J", $app_rjava_dir]
+      Jake.run($aapt, args)
+
+      raise 'Error in AAPT: R.java' unless $?.success?
+
+      Dir.glob(File.join $app_rjava_dir, '*.java') do |java|
+        buf = File.new(java, 'r').read.gsub(/package .*$/, 'package com.rhomobile.rhodes;')
+        File.open(java, 'w') { |f| f.write buf }
+      end
+      #buf = File.new($rho_android_r, "r").read.gsub(/^\s*import com\.rhomobile\..*\.R;\s*$/, "\nimport #{$app_package_name}.R;\n")
+      #File.open($app_android_r, "w") { |f| f.write(buf) }
+
+      #mkdir_p File.join($app_rjava_dir, "R") if not File.exists? File.join($app_rjava_dir, "R")
+      #buf = File.new(File.join($app_rjava_dir, "R.java"), "r").read.gsub(/^\s*package\s*#{$app_package_name};\s*$/, "\npackage com.rhomobile.rhodes.R;\n")
+      #"{b}"uf.gsub!(/public\s*static\s*final\s*int/, "public static int")
+      #File.open(File.join($app_rjava_dir, "R", "R.java"), "w") { |f| f.write(buf) }
+    end
+
+    task :gensourceseclipse => [:genloadlibsjava, :genpushjava, :gencapabilitiesjava, :genrholisteners, :genreclipse]
+    task :gensourcesjava => [:genloadlibsjava, :genpushjava, :gencapabilitiesjava, :genrholisteners, :genrjava]
+
+    #desc "Build Rhodes for android"
+    task :rhodes => [:rhobundle, :librhodes, :manifest, :resources, :gensourcesjava] do
+
+      rm_rf $tmpdir + "/Rhodes"
+      mkdir_p $tmpdir + "/Rhodes"
 
       srclist = File.join($builddir, "RhodesSRC_build.files")
       newsrclist = File.join($tmpdir, "RhodesSRC_build.files")
@@ -1485,7 +1622,7 @@ namespace "build" do
       end
       lines << "\"" +File.join($app_rjava_dir, "R.java")+"\""
       lines << "\"" +File.join($app_rjava_dir, "R", "R.java")+"\""
-      lines << "\"" +$app_android_r+"\""
+      #lines << "\"" +$app_android_r+"\""
       lines << "\"" +$app_native_libs_java+"\""
       lines << "\"" +$app_capabilities_java+"\""
       lines << "\"" +$app_push_java+"\""
@@ -1565,9 +1702,6 @@ namespace "build" do
         $android_jars << extjar
         classpath += $path_separator + extjar
       end
-    end
-
-    task :extensions_adds => "config:android:extensions" do
     end
 
     task :upgrade_package => :rhobundle do
@@ -1690,9 +1824,6 @@ namespace "package" do
       raise "Error running DX utility"
     end
 
-    manifest = $appmanifest
-    resource = $appres
-    assets = File.join($tmpdir, 'assets')
     resourcepkg = $bindir + "/rhodes.ap_"
 
     puts "Packaging Assets and Jars"
@@ -1700,48 +1831,34 @@ namespace "package" do
     # this task already caaled during build "build:android:all"
     #set_app_name_android($appname)
 
-    args = ["package", "-f", "-M", manifest, "-S", resource, "-A", assets, "-I", $androidjar, "-F", resourcepkg]
+    args = ["package", "-f", "-M", $appmanifest, "-S", $appres, "-A", $appassets, "-I", $androidjar, "-F", resourcepkg]
     Jake.run($aapt, args)
     unless $?.success?
       raise "Error running AAPT (1)"
     end
 
     # Workaround: manually add files starting with '_' because aapt silently ignore such files when creating package
-    Dir.glob(File.join($tmpdir, "assets/**/*")).each do |f|
+    Dir.glob(File.join($appassets, "**/*")).each do |f|
       next unless File.basename(f) =~ /^_/
       relpath = Pathname.new(f).relative_path_from(Pathname.new($tmpdir)).to_s
       puts "Add #{relpath} to #{resourcepkg}..."
       args = ["uf", resourcepkg, relpath]
       Jake.run($jarbin, args, $tmpdir)
       unless $?.success?
-        raise "Error running AAPT (2)"
+        raise "Error packaging assets"
       end
     end
 
     puts "Packaging Native Libs"
 
-    # Add native librhodes.so
-    #rm_rf File.join($tmpdir, "lib")
-    mkdir_p File.join($tmpdir, "lib/armeabi")
-    cp_r File.join($app_builddir, 'librhodes', 'lib', 'armeabi', 'librhodes.so'), File.join($tmpdir, "lib/armeabi")
-    # Add extensions .so libraries
-    Dir.glob($app_builddir + "/**/lib*.so").each do |lib|
-      cp_r lib, File.join($tmpdir, "lib/armeabi")
-    end
-    $ext_android_additional_lib.each do |lib|
-      cp_r lib, File.join($tmpdir, "lib/armeabi")
-    end
     args = ["uf", resourcepkg]
-    # Strip them all to decrease size
-    Dir.glob($tmpdir + "/lib/armeabi/lib*.so").each do |lib|
+    Dir.glob(File.join($applibs, "lib*.so")).each do |lib|
       cc_run($stripbin, ['"'+lib+'"'])
       args << "lib/armeabi/#{File.basename(lib)}"
     end
     Jake.run($jarbin, args, $tmpdir)
-    err = $?
-    #rm_rf $tmpdir + "/lib"
-    unless err.success?
-      raise "Error running AAPT (3)"
+    unless $?.success?
+      raise "Error packaging native libraries"
     end
   end
 end
