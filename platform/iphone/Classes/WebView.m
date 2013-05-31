@@ -154,10 +154,6 @@ const char* rho_webview_current_location(int index) {
     return rho_rhodesapp_getcurrenturl(index);
 }
 
-void rho_webview_set_menu_items(VALUE valMenu) {
-    rho_rhodesapp_setViewMenu(valMenu);
-}
-
 void rho_webview_navigate_back_with_tab(int index)
 {
     if (!rho_rhodesapp_check_mode())

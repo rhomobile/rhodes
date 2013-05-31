@@ -2395,11 +2395,11 @@ void rho_rhodesapp_callUiDestroyedCallback()
     if ( rho::common::CRhodesApp::getInstance() )
         RHODESAPP().callUiDestroyedCallback();
 }
-
+/*
 void rho_rhodesapp_setViewMenu(unsigned long valMenu)
 {
     RHODESAPP().getAppMenu().setAppMenu(valMenu);
-}
+}*/
 
 const char* rho_rhodesapp_getappbackurl()
 {

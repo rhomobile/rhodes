@@ -28,7 +28,7 @@ package com.rhomobile.rhodes.bluetooth;
 
 import java.util.Set;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.BaseActivity;
 
 import android.app.Activity;
@@ -77,7 +77,7 @@ public class RhoBluetoothDeviceListActivity extends BaseActivity {
 
         // Setup the window
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setContentView(AndroidR.layout.bt_device_list);
+        setContentView(R.layout.bt_device_list);
 
         // Set result CANCELED incase the user backs out
         //setResult(Activity.RESULT_CANCELED);
@@ -85,7 +85,7 @@ public class RhoBluetoothDeviceListActivity extends BaseActivity {
         //RhoBluetoothManager.sharedInstance().onDeviceListActivityFinished(false, "");
 
         // Initialize the button to perform device discovery
-        Button scanButton = (Button) findViewById(AndroidR.id.button_scan);
+        Button scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 doDiscovery();
@@ -95,16 +95,16 @@ public class RhoBluetoothDeviceListActivity extends BaseActivity {
 
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
-        mPairedDevicesArrayAdapter = new ArrayAdapter<String>(this, AndroidR.layout.bt_device_name);
-        mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, AndroidR.layout.bt_device_name);
+        mPairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.bt_device_name);
+        mNewDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.bt_device_name);
 
         // Find and set up the ListView for paired devices
-        ListView pairedListView = (ListView) findViewById(AndroidR.id.paired_devices);
+        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
         pairedListView.setAdapter(mPairedDevicesArrayAdapter);
         pairedListView.setOnItemClickListener(mDeviceClickListener);
 
         // Find and set up the ListView for newly discovered devices
-        ListView newDevicesListView = (ListView) findViewById(AndroidR.id.new_devices);
+        ListView newDevicesListView = (ListView) findViewById(R.id.new_devices);
         newDevicesListView.setAdapter(mNewDevicesArrayAdapter);
         newDevicesListView.setOnItemClickListener(mDeviceClickListener);
 
@@ -124,7 +124,7 @@ public class RhoBluetoothDeviceListActivity extends BaseActivity {
 
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
-            findViewById(AndroidR.id.title_paired_devices).setVisibility(View.VISIBLE);
+            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
             RhoBluetoothManager.logi(TAG, "   List of paired device :");
             for (BluetoothDevice device : pairedDevices) {
                 mPairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
@@ -132,7 +132,7 @@ public class RhoBluetoothDeviceListActivity extends BaseActivity {
             }
         } else {
             RhoBluetoothManager.logi(TAG, "   no any paired device found !");
-            String noDevices = getResources().getText(AndroidR.string.none_paired).toString();
+            String noDevices = getResources().getText(R.string.none_paired).toString();
             mPairedDevicesArrayAdapter.add(noDevices);
         }
     }
@@ -166,10 +166,10 @@ public class RhoBluetoothDeviceListActivity extends BaseActivity {
 
         // Indicate scanning in the title
         setProgressBarIndeterminateVisibility(true);
-        setTitle(AndroidR.string.scanning);
+        setTitle(R.string.scanning);
 
         // Turn on sub-title for new devices
-        findViewById(AndroidR.id.title_new_devices).setVisibility(View.VISIBLE);
+        findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
 
         // If we're already discovering, stop it
         if (mBtAdapter.isDiscovering()) {
@@ -223,9 +223,9 @@ public class RhoBluetoothDeviceListActivity extends BaseActivity {
             // When discovery is finished, change the Activity title
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 setProgressBarIndeterminateVisibility(false);
-                setTitle(AndroidR.string.select_device);
+                setTitle(R.string.select_device);
                 if (mNewDevicesArrayAdapter.getCount() == 0) {
-                    String noDevices = getResources().getText(AndroidR.string.none_found).toString();
+                    String noDevices = getResources().getText(R.string.none_found).toString();
                     mNewDevicesArrayAdapter.add(noDevices);
                 }
             }

@@ -231,28 +231,13 @@ class MediaplayerSingleton extends MediaplayerSingletonBase implements IMediapla
 		mVideoView.setVideoURI(Uri.parse(filename));
 		Logger.I(TAG, "startvideo -- setting video url to " + Uri.parse(filename));
 		mVideoView.setMediaController(new MediaController(RhodesActivity.safeGetInstance()));
+		// Required for consumer devices.  The view doesn't appear otherwise
+		mVideoView.setDimensions(1, 1);
 		mVideoView.requestFocus();
 		// final HourglassPlugin hourglass = new HourglassPlugin();
 		// hourglass.show();
 
-		Logger.I(TAG, "startvideo -- Calling setOnPreparedListener");
-		mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-
-			@Override
-			public void onPrepared(MediaPlayer mp) {
-
-				// The video is ready to be played
-				if (mp.getVideoWidth() > 0 && mp.getVideoHeight() > 0) {
-					// We got a size, resize and start the video.
-					mVideoView.resizeMedia(mp.getVideoWidth(), mp.getVideoHeight());
-					Logger.I(TAG, "Video width: " + mp.getVideoWidth() + " Video height: " + mp.getVideoHeight());
-					mVideoView.start();
-					Logger.I(TAG, "onPrepared -- called start");
-					// hourglass.hide();
-				}
-			}
-		});
-
+		Logger.I(TAG, "startvideo -- Calling setOnErrorListener");
 		mVideoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
 
 			@Override
@@ -267,8 +252,26 @@ class MediaplayerSingleton extends MediaplayerSingletonBase implements IMediapla
 			}
 		});
 
+		Logger.I(TAG, "startvideo -- Calling setOnPreparedListener");
+		mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+
+			@Override
+			public void onPrepared(MediaPlayer mp) {
+				Logger.I(TAG, "onPrepared -- " + mp.getVideoWidth() + " " + mp.getVideoHeight());
+				// The video is ready to be played
+				if (mp.getVideoWidth() > 0 && mp.getVideoHeight() > 0) {
+					// We got a size, resize and start the video.
+					mVideoView.resizeMedia(mp.getVideoWidth(), mp.getVideoHeight());
+					Logger.I(TAG, "Video width: " + mp.getVideoWidth() + " Video height: " + mp.getVideoHeight());
+					mVideoView.start();
+					Logger.I(TAG, "onPrepared -- called start");
+					// hourglass.hide();
+				}
+			}
+		});
+
 		// Another way to start the video without OnPrepareListener
-		// mVideoView.start();
+		//mVideoView.start();
 	}
 
 	@Override

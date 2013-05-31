@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.RhodesService;
@@ -236,10 +236,10 @@ public class DateTimePickerScreen extends BaseActivity {
 		
 		this.setTitle(_title);
 		
-		_datePicker = (DatePicker)findViewById(AndroidR.id.datePicker);
-		_timePicker = (TimePicker)findViewById(AndroidR.id.timePicker);
-		_okButton = (Button)findViewById(AndroidR.id.okButton);
-		_cancelButton = (Button)findViewById(AndroidR.id.cancelButton);
+		_datePicker = (DatePicker)findViewById(R.id.datePicker);
+		_timePicker = (TimePicker)findViewById(R.id.timePicker);
+		_okButton = (Button)findViewById(R.id.okButton);
+		_cancelButton = (Button)findViewById(R.id.cancelButton);
 		
 		_okButton.setOnClickListener(mOkListener);
 		_cancelButton.setOnClickListener(mCancelListener);
@@ -330,7 +330,7 @@ public class DateTimePickerScreen extends BaseActivity {
 		super.onCreate(icicle);
 		Logger.D(TAG, "onCreate");
 		
-		setContentView(AndroidR.layout.datetime);
+		setContentView(R.layout.datetime);
 		
 		Bundle extras = this.getIntent().getExtras();
 		

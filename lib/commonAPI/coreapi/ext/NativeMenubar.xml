@@ -1,0 +1,62 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="NativeMenubar" parent="Rho" generateUnderscoreRubyNames="true">
+        <HELP_OVERVIEW>The NativeMenubar methods let you customize the Rhodes Menubar at runtime.</HELP_OVERVIEW>
+        <MORE_HELP></MORE_HELP>
+        
+        <TEMPLATES>
+        </TEMPLATES>
+
+        <PROPERTIES access="STATIC" generateAccessors="false">
+            <PROPERTY name="mainMenu" type="ARRAY">
+                <DESC>Main Native MenuBar items</DESC>
+                <PARAM type="HASH">
+                    <PARAMS>
+                        <PARAM name="label" type="STRING">
+                            <DESC>Visible label.</DESC>
+                        </PARAM>
+                        <PARAM name="action" type="STRING">
+                            <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
+                        </PARAM>
+                        <PARAM name="disabled" type="BOOLEAN" default="false">
+                            <DESC>Menu item will be displayed as disabled.</DESC>
+                        </PARAM>
+                    </PARAMS>
+                </PARAM>
+            </PROPERTY>
+            <PROPERTY name="extraMenu" type="ARRAY">
+                <PARAM type="HASH" />
+                <DESC>Extra Native MenuBar items. This menu will display when left menu button is selected (Windows Mobile only).</DESC>
+                <PLATFORM>WM</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="mainButton" type="HASH">
+                <DESC>Main MenuBar button properties</DESC>
+                <PLATFORM>WM</PLATFORM>
+            </PROPERTY>
+            <PROPERTY name="extraButton" type="HASH">
+                <DESC>Extra MenuBar button properties.This item will display when left menu button is selected (Windows Mobile only).</DESC>
+                <PLATFORM>WM</PLATFORM>
+            </PROPERTY>
+
+            <PROPERTY name="defaultMainMenu" type="ARRAY" readOnly="true" generateAPI="false">
+                <PARAM type="HASH" />
+                <DESC>Default Main Menu items</DESC>
+            </PROPERTY>
+
+        </PROPERTIES>
+
+        <METHODS  access="STATIC">
+        </METHODS>
+        
+        <VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+        <REMARKS>
+        </REMARKS>
+        <EXAMPLES >
+        </EXAMPLES>
+    </MODULE>
+</API>    

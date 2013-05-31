@@ -1,3 +1,4 @@
+
 #include "MegamoduleBase.h"
 
 #include "logging/RhoLog.h"
@@ -10,10 +11,10 @@
 
 using namespace rho;
 using namespace rho::common;
+using namespace rho::apiGenerator;
 
 extern "C"
 {
-
 void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask);
 VALUE getRuby_Megamodule_Module();
 
@@ -61,6 +62,7 @@ static VALUE _api_generator_Megamodule_getStringProperty(int argc, VALUE *argv, 
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setRequestedType(CMethodResult::eString);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -70,18 +72,17 @@ static VALUE _api_generator_Megamodule_getStringProperty(int argc, VALUE *argv, 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getStringProperty,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getStringProperty,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->getStringProperty(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -116,6 +117,7 @@ static VALUE _api_generator_Megamodule_getIntegerProperty(int argc, VALUE *argv,
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setRequestedType(CMethodResult::eInt);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -125,18 +127,17 @@ static VALUE _api_generator_Megamodule_getIntegerProperty(int argc, VALUE *argv,
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getIntegerProperty,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getIntegerProperty,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->getIntegerProperty(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -180,7 +181,7 @@ static VALUE _api_generator_Megamodule_setIntegerProperty(int argc, VALUE *argv,
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toRuby();
     }
-    int arg0;
+    int arg0 = 12345;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -198,18 +199,17 @@ static VALUE _api_generator_Megamodule_setIntegerProperty(int argc, VALUE *argv,
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setIntegerProperty, arg0,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setIntegerProperty, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->setIntegerProperty( arg0,  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -244,6 +244,7 @@ static VALUE _api_generator_Megamodule_typesTest(int argc, VALUE *argv, rho::exa
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setRequestedType(CMethodResult::eBool);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -253,15 +254,12 @@ static VALUE _api_generator_Megamodule_typesTest(int argc, VALUE *argv, rho::exa
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(6) );
         return oRes.toRuby();
     }
-    rho::String arg0;
+    rho::String arg0 = "";
     if ( argc > 0 )
     {
         if ( rho_ruby_is_string(argv[0]) )
         {
             arg0 = getStringFromValue(argv[0]);
-
-            oRes.setParamName(getStringFromValue(argv[0]));
-
         }
         else if (!rho_ruby_is_NIL(argv[0]))
         {
@@ -276,7 +274,7 @@ static VALUE _api_generator_Megamodule_typesTest(int argc, VALUE *argv, rho::exa
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(6) );
         return oRes.toRuby();
     }
-    bool arg1;
+    bool arg1 = false;
     if ( argc > 1 )
     {
         if ( rho_ruby_is_boolean(argv[1]) )
@@ -294,7 +292,7 @@ static VALUE _api_generator_Megamodule_typesTest(int argc, VALUE *argv, rho::exa
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(6) );
         return oRes.toRuby();
     }
-    int arg2;
+    int arg2 = 0;
     if ( argc > 2 )
     {
         if ( rho_ruby_is_integer(argv[2]) )
@@ -312,7 +310,7 @@ static VALUE _api_generator_Megamodule_typesTest(int argc, VALUE *argv, rho::exa
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(6) );
         return oRes.toRuby();
     }
-    double arg3;
+    double arg3 = 0;
     if ( argc > 3 )
     {
         if ( rho_ruby_is_double(argv[3]) )
@@ -366,18 +364,17 @@ static VALUE _api_generator_Megamodule_typesTest(int argc, VALUE *argv, rho::exa
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(6) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor7( pObj, &rho::examples::IMegamodule::typesTest, arg0, arg1, arg2, arg3, arg4, arg5,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor7( pObj, &rho::examples::IMegamodule::typesTest, arg0, arg1, arg2, arg3, arg4, arg5,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->typesTest( arg0, arg1, arg2, arg3, arg4, arg5,  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -412,6 +409,8 @@ static VALUE _api_generator_Megamodule_produceArray(int argc, VALUE *argv, rho::
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setParamName( "result" );
+    oRes.setRequestedType(CMethodResult::eStringArray);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -421,18 +420,17 @@ static VALUE _api_generator_Megamodule_produceArray(int argc, VALUE *argv, rho::
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceArray,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceArray,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->produceArray(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -467,6 +465,7 @@ static VALUE _api_generator_Megamodule_produceHash(int argc, VALUE *argv, rho::e
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setRequestedType(CMethodResult::eStringHash);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -476,18 +475,17 @@ static VALUE _api_generator_Megamodule_produceHash(int argc, VALUE *argv, rho::e
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceHash,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceHash,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->produceHash(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -522,6 +520,8 @@ static VALUE _api_generator_Megamodule_produceComplicatedResult(int argc, VALUE 
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setParamName( "result" );
+    oRes.setRequestedType(CMethodResult::eStringArray);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -531,18 +531,17 @@ static VALUE _api_generator_Megamodule_produceComplicatedResult(int argc, VALUE 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceComplicatedResult,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::produceComplicatedResult,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->produceComplicatedResult(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -577,6 +576,7 @@ VALUE rb_s_Megamodule_getObjectsCount(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setRequestedType(CMethodResult::eInt);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -586,18 +586,17 @@ VALUE rb_s_Megamodule_getObjectsCount(int argc, VALUE *argv)
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor1( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::getObjectsCount,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::getObjectsCount,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->getObjectsCount(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -611,6 +610,7 @@ VALUE rb_s_Megamodule_getObjectByIndex(int argc, VALUE *argv)
     rho::apiGenerator::CMethodResult oRes;
 
     oRes.setRubyObjectClass( getRuby_Megamodule_Module() );
+    oRes.setRequestedType(CMethodResult::eNone);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -620,7 +620,7 @@ VALUE rb_s_Megamodule_getObjectByIndex(int argc, VALUE *argv)
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toRuby();
     }
-    int arg0;
+    int arg0 = 0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -638,18 +638,17 @@ VALUE rb_s_Megamodule_getObjectByIndex(int argc, VALUE *argv)
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor2( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::getObjectByIndex, arg0,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor2( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::getObjectByIndex, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->getObjectByIndex( arg0,  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -671,15 +670,12 @@ static VALUE _api_generator_Megamodule_showAlertFromUIThread(int argc, VALUE *ar
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toRuby();
     }
-    rho::String arg0;
+    rho::String arg0 = "";
     if ( argc > 0 )
     {
         if ( rho_ruby_is_string(argv[0]) )
         {
             arg0 = getStringFromValue(argv[0]);
-
-            oRes.setParamName(getStringFromValue(argv[0]));
-
         }
         else if (!rho_ruby_is_NIL(argv[0]))
         {
@@ -696,6 +692,7 @@ static VALUE _api_generator_Megamodule_showAlertFromUIThread(int argc, VALUE *ar
     }
     pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::showAlertFromUIThread, arg0,  oRes );
     rho_wm_impl_performOnUiThread( pFunctor );
+    
     return oRes.toRuby();
 }
 
@@ -734,7 +731,7 @@ static VALUE _api_generator_Megamodule_setPeriodicallyCallback(int argc, VALUE *
     bool bUseCallback = false;
     int nCallbackArg = 0;
     nCallbackArg = 1;
-    int arg0;
+    int arg0 = 0;
     if ( argc > 0 )
     {
         if ( rho_ruby_is_integer(argv[0]) )
@@ -780,18 +777,17 @@ static VALUE _api_generator_Megamodule_setPeriodicallyCallback(int argc, VALUE *
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) + ".Mandatory Callback parameter is mised." );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setPeriodicallyCallback, arg0,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setPeriodicallyCallback, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->setPeriodicallyCallback( arg0,  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -826,6 +822,7 @@ static VALUE _api_generator_Megamodule_isPeriodicallyCallbackSetted(int argc, VA
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setRequestedType(CMethodResult::eBool);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -858,18 +855,17 @@ static VALUE _api_generator_Megamodule_isPeriodicallyCallbackSetted(int argc, VA
         
         bUseCallback = true;
     }
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::isPeriodicallyCallbackSetted,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::isPeriodicallyCallbackSetted,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->isPeriodicallyCallbackSetted(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -913,18 +909,17 @@ static VALUE _api_generator_Megamodule_stopPeriodicallyCallback(int argc, VALUE 
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::stopPeriodicallyCallback,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::stopPeriodicallyCallback,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->stopPeriodicallyCallback(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -959,6 +954,7 @@ static VALUE _api_generator_Megamodule_complicatedTypesTest1(int argc, VALUE *ar
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setRequestedType(CMethodResult::eBool);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -986,18 +982,17 @@ static VALUE _api_generator_Megamodule_complicatedTypesTest1(int argc, VALUE *ar
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::complicatedTypesTest1, arg0,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::complicatedTypesTest1, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->complicatedTypesTest1( arg0,  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -1032,6 +1027,7 @@ static VALUE _api_generator_Megamodule_getProperty(int argc, VALUE *argv, rho::e
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setRequestedType(CMethodResult::eString);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -1041,15 +1037,12 @@ static VALUE _api_generator_Megamodule_getProperty(int argc, VALUE *argv, rho::e
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toRuby();
     }
-    rho::String arg0;
+    rho::String arg0 = "";
     if ( argc > 0 )
     {
         if ( rho_ruby_is_string(argv[0]) )
         {
             arg0 = getStringFromValue(argv[0]);
-
-            oRes.setParamName(getStringFromValue(argv[0]));
-
         }
         else if (!rho_ruby_is_NIL(argv[0]))
         {
@@ -1087,18 +1080,17 @@ static VALUE _api_generator_Megamodule_getProperty(int argc, VALUE *argv, rho::e
         
         bUseCallback = true;
     }
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::getProperty, arg0,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::getProperty, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->getProperty( arg0,  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -1133,6 +1125,7 @@ static VALUE _api_generator_Megamodule_getProperties(int argc, VALUE *argv, rho:
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setRequestedType(CMethodResult::eStringHash);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -1183,18 +1176,17 @@ static VALUE _api_generator_Megamodule_getProperties(int argc, VALUE *argv, rho:
         
         bUseCallback = true;
     }
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::getProperties, arg0,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::getProperties, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->getProperties( arg0,  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -1229,6 +1221,7 @@ static VALUE _api_generator_Megamodule_getAllProperties(int argc, VALUE *argv, r
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setRequestedType(CMethodResult::eStringHash);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -1261,18 +1254,17 @@ static VALUE _api_generator_Megamodule_getAllProperties(int argc, VALUE *argv, r
         
         bUseCallback = true;
     }
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getAllProperties,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::getAllProperties,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->getAllProperties(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -1316,15 +1308,12 @@ static VALUE _api_generator_Megamodule_setProperty(int argc, VALUE *argv, rho::e
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toRuby();
     }
-    rho::String arg0;
+    rho::String arg0 = "";
     if ( argc > 0 )
     {
         if ( rho_ruby_is_string(argv[0]) )
         {
             arg0 = getStringFromValue(argv[0]);
-
-            oRes.setParamName(getStringFromValue(argv[0]));
-
         }
         else if (!rho_ruby_is_NIL(argv[0]))
         {
@@ -1339,13 +1328,12 @@ static VALUE _api_generator_Megamodule_setProperty(int argc, VALUE *argv, rho::e
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toRuby();
     }
-    rho::String arg1;
+    rho::String arg1 = "";
     if ( argc > 1 )
     {
         if ( rho_ruby_is_string(argv[1]) )
         {
             arg1 = getStringFromValue(argv[1]);
-
         }
         else if (!rho_ruby_is_NIL(argv[1]))
         {
@@ -1360,18 +1348,17 @@ static VALUE _api_generator_Megamodule_setProperty(int argc, VALUE *argv, rho::e
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(2) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::examples::IMegamodule::setProperty, arg0, arg1,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor3( pObj, &rho::examples::IMegamodule::setProperty, arg0, arg1,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->setProperty( arg0, arg1,  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -1433,18 +1420,17 @@ static VALUE _api_generator_Megamodule_setProperties(int argc, VALUE *argv, rho:
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(1) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setProperties, arg0,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor2( pObj, &rho::examples::IMegamodule::setProperties, arg0,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->setProperties( arg0,  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -1488,18 +1474,17 @@ static VALUE _api_generator_Megamodule_clearAllProperties(int argc, VALUE *argv,
         oRes.setArgError("Wrong number of arguments: " + convertToStringA(argc) + " instead of " + convertToStringA(0) );
         return oRes.toRuby();
     }
-    pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::clearAllProperties,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( pObj, &rho::examples::IMegamodule::clearAllProperties,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         pObj->clearAllProperties(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 
@@ -1534,7 +1519,9 @@ VALUE rb_s_Megamodule_enumerate(int argc, VALUE *argv)
 {
     rho::apiGenerator::CMethodResult oRes;
 
+    oRes.setParamName( "result" );
     oRes.setRubyObjectClass( getRuby_Megamodule_Module() );
+    oRes.setRequestedType(CMethodResult::eStringArray);
     rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor = 0;
     bool bUseCallback = false;
     int nCallbackArg = 0;
@@ -1567,18 +1554,17 @@ VALUE rb_s_Megamodule_enumerate(int argc, VALUE *argv)
         
         bUseCallback = true;
     }
-    pFunctor = rho_makeInstanceClassFunctor1( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::enumerate,  oRes );
-
     if ( bUseCallback )
+    {
+        pFunctor = rho_makeInstanceClassFunctor1( rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS(), &rho::examples::IMegamoduleSingleton::enumerate,  oRes );
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->addCommandToQueue( pFunctor );
+    }
     else 
     {
-        delete pFunctor;
-
 
         rho::examples::CMegamoduleFactoryBase::getMegamoduleSingletonS()->enumerate(  oRes );
-
     }
+    
     return oRes.toRuby();
 }
 

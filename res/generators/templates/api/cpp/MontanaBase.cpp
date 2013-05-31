@@ -56,17 +56,28 @@ end%>
 
 void <%= propBaseClass %>::getProperty( const rho::String& propertyName, CMethodResult& oResult)
 {
-    CMethodAccessor< <%= propBaseI %> >* pAccessor = m_mapPropAccessors[propertyName];
-    if ( pAccessor )
-        pAccessor->callGetter(this, oResult);
+    if ( m_mapPropAccessors.containsKey(propertyName) )
+    {
+        CMethodAccessor< <%= propBaseI %> >* pAccessor = m_mapPropAccessors[propertyName];
+        if ( pAccessor )
+            pAccessor->callGetter(this, oResult);
+        else
+            oResult.setArgError("pAccessor = NULL for property " + propertyName);
+    }
     else
     {
-        <% if $cur_module.is_property_bag_limit_to_only_declared_properties %>
-        if ( !m_mapPropAccessors.containsKey(propertyName) )
+<% if $cur_module.is_property_bag_limit_to_only_declared_properties %>
+        oResult.setArgError("Get unknown property: " + propertyName);
+<% else %>
+        if ( m_hashProps.containsKey(propertyName) )
+        {
+            oResult.set(m_hashProps[propertyName]);
+        }
+        else
+        {
             oResult.setArgError("Get unknown property: " + propertyName);
-        <% else %>
-        oResult.set(m_hashProps[propertyName]);
-        <% end %>
+        }
+<% end %>
     }
 }
 
@@ -78,22 +89,48 @@ void <%= propBaseClass %>::getProperties( const rho::Vector<rho::String>& arrayo
     {
         getProperty(arrayofNames[i], oResult);
 
+        if ( !oResult.isError() )
+        {
+            res[arrayofNames[i]] = oResult.toString();
+        }
+    }
+    oResult.setCollectionMode(false);
+
+    oResult.set(res);
+}
+
+void <%= propBaseClass %>::getAllProperties(CMethodResult& oResult)
+{
+    rho::Hashtable<rho::String, rho::String> res;
+    oResult.setCollectionMode(true);
+    
+    // existing properties
+    for ( rho::Hashtable<rho::String, rho::apiGenerator::CMethodAccessor< <%= propBaseI %> > *>::const_iterator it = m_mapPropAccessors.begin();  it != m_mapPropAccessors.end(); ++it )
+    {
+        getProperty(it->first, oResult);
+        
         if ( oResult.isError() )
             break;
-
-        res[arrayofNames[i]] = oResult.toString();
+        
+        res[it->first] = oResult.toString();
     }
+    
+    <% if !$cur_module.is_property_bag_limit_to_only_declared_properties %>
+    if (!oResult.isError())
+    {
+        // user defined properties
+        for ( rho::Hashtable<rho::String, rho::String>::const_iterator it = m_hashProps.begin();  it != m_hashProps.end(); ++it )
+        {
+            res[it->first] = it->second;
+        }
+    }
+    <% end %>
 
     oResult.setCollectionMode(false);
     if ( oResult.isError() )
         oResult.callCallback();
     else
         oResult.set(res);
-}
-
-void <%= propBaseClass %>::getAllProperties(CMethodResult& oResult)
-{
-    oResult.set(m_hashProps);
 }
 
 void <%= propBaseClass %>::setProperty( const rho::String& propertyName,  const rho::String& propertyValue, CMethodResult& oResult)
@@ -124,7 +161,10 @@ void <%= propBaseClass %>::setProperties( const rho::Hashtable<rho::String, rho:
 
 void <%= propBaseClass %>::clearAllProperties(CMethodResult& oResult)
 {
+<% if !$cur_module.is_property_bag_limit_to_only_declared_properties %>
     m_hashProps.clear();
+<% end %>
+    // ToDo: set default values to existing properties 
 }
 
 <% $cur_module.methods.each do |module_method|

@@ -16,6 +16,13 @@
 		C06A0F2716F21C880065EF81 /* log_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EE416F21C880065EF81 /* log_js_api.cpp */; };
 		C06A0F2816F21C880065EF81 /* log_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EE516F21C880065EF81 /* log_ruby_api.c */; };
 		C06A0F3C16F21C880065EF81 /* LogImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EF916F21C880065EF81 /* LogImpl.cpp */; };
+		C57BD8F8174FD25500494EA3 /* FileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8F7174FD25500494EA3 /* FileImpl.cpp */; };
+		C57BD8FC175392E700494EA3 /* rhofile_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8F9175392E700494EA3 /* rhofile_api_init.cpp */; };
+		C57BD8FD175392E700494EA3 /* rhofile_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8FA175392E700494EA3 /* rhofile_js_api.cpp */; };
+		C57BD8FE175392E700494EA3 /* rhofile_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8FB175392E700494EA3 /* rhofile_ruby_api.c */; };
+		C57BD902175392F200494EA3 /* RhoFile_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8FF175392F200494EA3 /* RhoFile_js_wrap.cpp */; };
+		C57BD903175392F200494EA3 /* RhoFile_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD900175392F200494EA3 /* RhoFile_ruby_wrap.cpp */; };
+		C57BD904175392F200494EA3 /* RhoFileBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD901175392F200494EA3 /* RhoFileBase.cpp */; };
 		C5AA919617380F6B002E4A65 /* NetworkDetectBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5AA919517380F6B002E4A65 /* NetworkDetectBase.cpp */; };
 		C5AA919817380FD0002E4A65 /* NetworkDetect.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5AA919717380FD0002E4A65 /* NetworkDetect.mm */; };
 		FA01F1DF16E65FBB00D53D60 /* sqlite3_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1DC16E65FBB00D53D60 /* sqlite3_api_init.cpp */; };
@@ -148,6 +155,13 @@
 		C06A0EE416F21C880065EF81 /* log_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log_js_api.cpp; path = generated/log_js_api.cpp; sourceTree = "<group>"; };
 		C06A0EE516F21C880065EF81 /* log_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = log_ruby_api.c; path = generated/log_ruby_api.c; sourceTree = "<group>"; };
 		C06A0EF916F21C880065EF81 /* LogImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogImpl.cpp; path = ../../shared/LogImpl.cpp; sourceTree = "<group>"; };
+		C57BD8F7174FD25500494EA3 /* FileImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileImpl.cpp; path = ../../shared/FileImpl.cpp; sourceTree = "<group>"; };
+		C57BD8F9175392E700494EA3 /* rhofile_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rhofile_api_init.cpp; path = ../../shared/generated/rhofile_api_init.cpp; sourceTree = "<group>"; };
+		C57BD8FA175392E700494EA3 /* rhofile_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rhofile_js_api.cpp; path = ../../shared/generated/rhofile_js_api.cpp; sourceTree = "<group>"; };
+		C57BD8FB175392E700494EA3 /* rhofile_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rhofile_ruby_api.c; path = ../../shared/generated/rhofile_ruby_api.c; sourceTree = "<group>"; };
+		C57BD8FF175392F200494EA3 /* RhoFile_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFile_js_wrap.cpp; path = ../../shared/generated/cpp/RhoFile_js_wrap.cpp; sourceTree = "<group>"; };
+		C57BD900175392F200494EA3 /* RhoFile_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFile_ruby_wrap.cpp; path = ../../shared/generated/cpp/RhoFile_ruby_wrap.cpp; sourceTree = "<group>"; };
+		C57BD901175392F200494EA3 /* RhoFileBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFileBase.cpp; path = ../../shared/generated/cpp/RhoFileBase.cpp; sourceTree = "<group>"; };
 		C5AA919517380F6B002E4A65 /* NetworkDetectBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetworkDetectBase.cpp; path = ../../shared/NetworkDetectBase.cpp; sourceTree = "<group>"; };
 		C5AA919717380FD0002E4A65 /* NetworkDetect.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NetworkDetect.mm; path = cpp_based_impl/NetworkDetect.mm; sourceTree = "<group>"; };
 		FA01F1DC16E65FBB00D53D60 /* sqlite3_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sqlite3_api_init.cpp; path = ../../shared/generated/sqlite3_api_init.cpp; sourceTree = "<group>"; };
@@ -313,6 +327,7 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C5B99D7F174E688C00D8D02E /* File */,
 				FABB0455174BE108002DFB11 /* Navbar */,
 				FAEB2BB31743C4F4001AE032 /* NativeTabbar */,
 				FAEB2B871743C425001AE032 /* NativeToolbar */,
@@ -385,12 +400,50 @@
 			name = Impl;
 			sourceTree = "<group>";
 		};
+		C57BD8F6174FD24600494EA3 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C57BD8F7174FD25500494EA3 /* FileImpl.cpp */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
 		C5AA91991738101F002E4A65 /* iphone */ = {
 			isa = PBXGroup;
 			children = (
 				C5AA919717380FD0002E4A65 /* NetworkDetect.mm */,
 			);
 			name = iphone;
+			sourceTree = "<group>";
+		};
+		C5B99D7F174E688C00D8D02E /* File */ = {
+			isa = PBXGroup;
+			children = (
+				C5B99D80174E689700D8D02E /* CPP */,
+			);
+			name = File;
+			sourceTree = "<group>";
+		};
+		C5B99D80174E689700D8D02E /* CPP */ = {
+			isa = PBXGroup;
+			children = (
+				C57BD8F6174FD24600494EA3 /* impl */,
+				C5B99D81174E689D00D8D02E /* Generated */,
+			);
+			name = CPP;
+			sourceTree = "<group>";
+		};
+		C5B99D81174E689D00D8D02E /* Generated */ = {
+			isa = PBXGroup;
+			children = (
+				C57BD8FF175392F200494EA3 /* RhoFile_js_wrap.cpp */,
+				C57BD900175392F200494EA3 /* RhoFile_ruby_wrap.cpp */,
+				C57BD901175392F200494EA3 /* RhoFileBase.cpp */,
+				C57BD8F9175392E700494EA3 /* rhofile_api_init.cpp */,
+				C57BD8FA175392E700494EA3 /* rhofile_js_api.cpp */,
+				C57BD8FB175392E700494EA3 /* rhofile_ruby_api.c */,
+			);
+			name = Generated;
 			sourceTree = "<group>";
 		};
 		FA01F1D516E65F2D00D53D60 /* SQLLite */ = {
@@ -1078,6 +1131,13 @@
 				FA4EC300174D109B00969368 /* NavbarFactorySingleton.m in Sources */,
 				FA4EC301174D109B00969368 /* NavbarSetup.m in Sources */,
 				FA4EC303174D109B00969368 /* NavbarSingleton.m in Sources */,
+				C57BD8F8174FD25500494EA3 /* FileImpl.cpp in Sources */,
+				C57BD8FC175392E700494EA3 /* rhofile_api_init.cpp in Sources */,
+				C57BD8FD175392E700494EA3 /* rhofile_js_api.cpp in Sources */,
+				C57BD8FE175392E700494EA3 /* rhofile_ruby_api.c in Sources */,
+				C57BD902175392F200494EA3 /* RhoFile_js_wrap.cpp in Sources */,
+				C57BD903175392F200494EA3 /* RhoFile_ruby_wrap.cpp in Sources */,
+				C57BD904175392F200494EA3 /* RhoFileBase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

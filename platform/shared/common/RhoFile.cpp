@@ -345,6 +345,19 @@ bool CRhoFile::isDirectory( const char* szFilePath ){
     }
     return res;
 }
+    
+bool CRhoFile::isFile( const char* szFilePath ){
+    bool res = false;
+#ifndef WINDOWS_PLATFORM
+    struct stat st;
+    memset(&st,0, sizeof(st));
+    if (stat(szFilePath, &st) == 0)
+    {
+        return S_ISREG(st.st_mode);
+    }
+#endif
+    return res;
+}
 
 unsigned int CRhoFile::getFileSize( const char* szFilePath ){
     struct stat st;
@@ -540,6 +553,31 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 #endif
 }
 
+bool CRhoFile::listFolderEntries( const String& path, Vector<String> &entries)
+{
+#ifndef WINDOWS_PLATFORM
+    DIR *dp;
+    struct dirent *ep;
+    dp = opendir (path.c_str());
+    bool ret = false;
+    
+    if (dp != 0)
+    {
+        ret = true;
+        
+        while ( (ep = readdir (dp)) != 0 ) {
+            entries.push_back(ep->d_name);
+        }
+        
+        closedir(dp);
+    }
+
+    return ret;
+#else
+    return false;
+#endif
+}
+    
 #if defined(WINDOWS_PLATFORM)
 static unsigned int copyFolder(const StringW& strSrc, const StringW& strDst, boolean bMove)
 {

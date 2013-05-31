@@ -26,7 +26,7 @@
 
 package com.rhomobile.rhodes.ui;
 
-import com.rhomobile.rhodes.AndroidR;
+import com.rhomobile.rhodes.R;
 
 import android.os.Bundle;
 
@@ -44,7 +44,7 @@ public class AboutDialog extends Dialog {
 		// Be sure to call the super class.
 		super.onCreate(savedInstanceState);
 
-		setContentView(AndroidR.layout.dialog_activity);
+		setContentView(R.layout.dialog_activity);
 	}
 
 }

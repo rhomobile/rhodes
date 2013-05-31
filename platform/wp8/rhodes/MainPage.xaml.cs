@@ -149,6 +149,12 @@ namespace rhodes
             this.bringToFront();
         }
 
+        public void performOnUiThread(Int64 native)
+        {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { performOnUiThread(native); }); return; }
+            CRhoRuntime.getInstance().executeRhoRunnable(native);
+        }
+
         private void PhoneApplicationPage_BackKeyPress(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = CRhoRuntime.getInstance().onBackKeyPress();

@@ -3,9 +3,6 @@
 
 #import "api_generator/iphone/IMethodResult.h"
 
-
-
-
 /* This is documentation const 1 */
 #define CONST1_STRING @"value1"
 
@@ -19,7 +16,17 @@
 #define CONST_STRING_2 @"const2"
 
 
+// hash keys used in properties and parameters
 
+#define HK_ITEM_ARRAY @"itemArray"
+
+#define HK_ITEM_STR @"itemStr"
+
+#define HK_PARAMA2 @"parama2"
+
+#define HK_PARAME1 @"parame1"
+
+#define HK_STR_PARAM @"strParam"
 
 
 @protocol IMegamodule <NSObject>
@@ -28,10 +35,11 @@
 /* getter for "StringProperty" property */
 -(void) getStringProperty:(id<IMethodResult>)methodResult;
 
-/* setter for "IntegerProperty" property */
+/* getter for "IntegerProperty" property */
 -(void) getIntegerProperty:(id<IMethodResult>)methodResult;
 
--(void) setIntegerProperty:(int)value;
+/* setter for "IntegerProperty" property */
+-(void) setIntegerProperty:(int)IntegerProperty;
 
 /* test types: return true if (paramStr == "ABC") AND (paramBool == true) AND (paramInt == 555123) AND (paramFloat == 3.14) AND (paramArray == [1,2,3]) AND (paramHash == {:p1 => "abc", :p2 => "qwe"}). */
 -(void) typesTest:(NSString*)paramStr paramBool:(BOOL)paramBool paramInt:(int)paramInt paramFloat:(float)paramFloat paramArray:(NSArray*)paramArray paramHash:(NSDictionary*)paramHash methodResult:(id<IMethodResult>)methodResult;
@@ -79,10 +87,7 @@
 -(void) clearAllProperties;
 
 
-
-
-// NOTE: if you want to hold methodResult(for periodically call callback for example) you should release it buself when you stop using it !
-
+// NOTE: if you want to hold methodResult(for example periodically call callbacks) you should release it manually when you stop using it!
 @end
 
 
