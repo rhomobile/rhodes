@@ -569,7 +569,27 @@ void rho_log_resetup_http_url(const char* http_log_url)
     LOGCONF().setLogURL(http_log_url);
     //LOGCONF().reinitRemoteLog();
 }
-
+#else
+// we should empty methods for linking with ruby wrappers in case of building pure JavaScript application (when we still have Ruby code but not used it)
+    unsigned long rho_conf_get_property_by_name(char* name)
+    {
+        return 0;
+    }
+    
+    unsigned long rho_conf_get_conflicts()
+    {
+        return 0;
+    }
+    
+    unsigned long rho_conf_read_log(int limit)
+    {
+        return 0;
+    }
+    
+    
+    void rho_log_resetup_http_url(const char* http_log_url) 
+    {
+    }
 #endif //RHO_NO_RUBY
 
 }
