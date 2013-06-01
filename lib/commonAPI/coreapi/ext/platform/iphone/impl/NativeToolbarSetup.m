@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#include "common/app_build_capabilities.h"
 
 #ifndef RHO_NO_RUBY_API
 extern unsigned long rb_require(const char *fname);
