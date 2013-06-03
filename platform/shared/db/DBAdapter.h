@@ -64,7 +64,7 @@ class CDBAdapter
     common::CRubyMutex m_mxRuby;
     common::CMutex m_mxDB;
     boolean m_bUIWaitDB;
-    int     m_nTransactionCounter;
+    unsigned m_nTransactionCounter;
     CDBAttrManager m_attrMgr;
     static HashtablePtr<String,CDBAdapter*> m_mapDBPartitions;
     common::CAutoPtr<common::IRhoCrypt> m_ptrCrypt;
