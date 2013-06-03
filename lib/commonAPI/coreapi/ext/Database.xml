@@ -21,7 +21,7 @@
       </ALIASES>
 
       <METHOD name="initialize" constructor="true" generateAPI="false">
-        <DESC>Open or create database. If database file does not exist it will be created using SQL scheme : rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Secondary open of the same database returns already existing database object.</DESC>
+        <DESC>Open or create database. If database file does not exist it will be created using SQL scheme : rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Do not open the same file twice.</DESC>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
             <DESC>The path to the database. Databases stored at the path provided by Rho::Application.databaseFilePath</DESC>
