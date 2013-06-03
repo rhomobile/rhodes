@@ -1,0 +1,398 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C5B7B73517578E08004602E8 /* IScreenorientation.h in Headers */ = {isa = PBXBuildFile; fileRef = C5B7B73417578E08004602E8 /* IScreenorientation.h */; };
+		C5B7B7451757AB85004602E8 /* Screenorientation.h in Headers */ = {isa = PBXBuildFile; fileRef = C5B7B73F1757AB85004602E8 /* Screenorientation.h */; };
+		C5B7B7461757AB85004602E8 /* Screenorientation.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B7401757AB85004602E8 /* Screenorientation.m */; };
+		C5B7B7471757AB85004602E8 /* ScreenorientationFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B7411757AB85004602E8 /* ScreenorientationFactorySingleton.m */; };
+		C5B7B7481757AB85004602E8 /* ScreenorientationSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B7421757AB85004602E8 /* ScreenorientationSetup.m */; };
+		C5B7B7491757AB85004602E8 /* ScreenorientationSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = C5B7B7431757AB85004602E8 /* ScreenorientationSingleton.h */; };
+		C5B7B74A1757AB85004602E8 /* ScreenorientationSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B7441757AB85004602E8 /* ScreenorientationSingleton.m */; };
+		C5B7B7511757AFD8004602E8 /* ScreenorientationBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C5B7B74B1757AFD8004602E8 /* ScreenorientationBase.h */; };
+		C5B7B7521757AFD8004602E8 /* ScreenorientationBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B74C1757AFD8004602E8 /* ScreenorientationBase.m */; };
+		C5B7B7531757AFD8004602E8 /* ScreenorientationFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C5B7B74D1757AFD8004602E8 /* ScreenorientationFactoryBase.h */; };
+		C5B7B7541757AFD8004602E8 /* ScreenorientationFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B74E1757AFD8004602E8 /* ScreenorientationFactoryBase.m */; };
+		C5B7B7551757AFD8004602E8 /* ScreenorientationSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C5B7B74F1757AFD8004602E8 /* ScreenorientationSingletonBase.h */; };
+		C5B7B7561757AFD8004602E8 /* ScreenorientationSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B7501757AFD8004602E8 /* ScreenorientationSingletonBase.m */; };
+		C5B7B7581757AFE0004602E8 /* screenorientation_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B7571757AFE0004602E8 /* screenorientation_js_wrap.mm */; };
+		C5B7B75A1757AFE7004602E8 /* screenorientation_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B7591757AFE7004602E8 /* screenorientation_ruby_wrap.m */; };
+		C5B7B75E1757B57E004602E8 /* screenorientation_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B75D1757B57E004602E8 /* screenorientation_api_init.cpp */; };
+		C5B7B7611757B78E004602E8 /* screenorientation_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B75F1757B78E004602E8 /* screenorientation_js_api.cpp */; };
+		C5B7B7621757B78E004602E8 /* screenorientation_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C5B7B7601757B78E004602E8 /* screenorientation_ruby_api.c */; };
+		FAC155E7145855CF0016F3BD /* Screenorientation_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Screenorientation_Prefix.pch */; };
+		FAC155E8145855CF0016F3BD /* Screenorientation.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC155E01458523C0016F3BD /* Screenorientation.h */; };
+		FAC155EC145855CF0016F3BD /* Screenorientation.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC155DE145851440016F3BD /* Screenorientation.m */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C5B7B73417578E08004602E8 /* IScreenorientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IScreenorientation.h; path = generated/IScreenorientation.h; sourceTree = "<group>"; };
+		C5B7B73F1757AB85004602E8 /* Screenorientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Screenorientation.h; path = impl/Screenorientation.h; sourceTree = "<group>"; };
+		C5B7B7401757AB85004602E8 /* Screenorientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Screenorientation.m; path = impl/Screenorientation.m; sourceTree = "<group>"; };
+		C5B7B7411757AB85004602E8 /* ScreenorientationFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScreenorientationFactorySingleton.m; path = impl/ScreenorientationFactorySingleton.m; sourceTree = "<group>"; };
+		C5B7B7421757AB85004602E8 /* ScreenorientationSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScreenorientationSetup.m; path = impl/ScreenorientationSetup.m; sourceTree = "<group>"; };
+		C5B7B7431757AB85004602E8 /* ScreenorientationSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenorientationSingleton.h; path = impl/ScreenorientationSingleton.h; sourceTree = "<group>"; };
+		C5B7B7441757AB85004602E8 /* ScreenorientationSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScreenorientationSingleton.m; path = impl/ScreenorientationSingleton.m; sourceTree = "<group>"; };
+		C5B7B74B1757AFD8004602E8 /* ScreenorientationBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenorientationBase.h; path = generated/base_impl/ScreenorientationBase.h; sourceTree = "<group>"; };
+		C5B7B74C1757AFD8004602E8 /* ScreenorientationBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScreenorientationBase.m; path = generated/base_impl/ScreenorientationBase.m; sourceTree = "<group>"; };
+		C5B7B74D1757AFD8004602E8 /* ScreenorientationFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenorientationFactoryBase.h; path = generated/base_impl/ScreenorientationFactoryBase.h; sourceTree = "<group>"; };
+		C5B7B74E1757AFD8004602E8 /* ScreenorientationFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScreenorientationFactoryBase.m; path = generated/base_impl/ScreenorientationFactoryBase.m; sourceTree = "<group>"; };
+		C5B7B74F1757AFD8004602E8 /* ScreenorientationSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScreenorientationSingletonBase.h; path = generated/base_impl/ScreenorientationSingletonBase.h; sourceTree = "<group>"; };
+		C5B7B7501757AFD8004602E8 /* ScreenorientationSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ScreenorientationSingletonBase.m; path = generated/base_impl/ScreenorientationSingletonBase.m; sourceTree = "<group>"; };
+		C5B7B7571757AFE0004602E8 /* screenorientation_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = screenorientation_js_wrap.mm; path = generated/javascript/screenorientation_js_wrap.mm; sourceTree = "<group>"; };
+		C5B7B7591757AFE7004602E8 /* screenorientation_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = screenorientation_ruby_wrap.m; path = generated/ruby/screenorientation_ruby_wrap.m; sourceTree = "<group>"; };
+		C5B7B75D1757B57E004602E8 /* screenorientation_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = screenorientation_api_init.cpp; path = ../../shared/generated/screenorientation_api_init.cpp; sourceTree = "<group>"; };
+		C5B7B75F1757B78E004602E8 /* screenorientation_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = screenorientation_js_api.cpp; path = ../../shared/generated/screenorientation_js_api.cpp; sourceTree = "<group>"; };
+		C5B7B7601757B78E004602E8 /* screenorientation_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = screenorientation_ruby_api.c; path = ../../shared/generated/screenorientation_ruby_api.c; sourceTree = "<group>"; };
+		FAC155DE145851440016F3BD /* Screenorientation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Screenorientation.m; path = Classes/Screenorientation.m; sourceTree = "<group>"; };
+		FAC155E01458523C0016F3BD /* Screenorientation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Screenorientation.h; path = Classes/Screenorientation.h; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libScreenorientation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libScreenorientation.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* Screenorientation_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Screenorientation_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libScreenorientation.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Barcode */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Barcode;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C5B7B75B1757B55F004602E8 /* shared */,
+				FAC155DD1458511E0016F3BD /* iOS_specific */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* Screenorientation_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		C5B7B73217578DDD004602E8 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C5B7B7591757AFE7004602E8 /* screenorientation_ruby_wrap.m */,
+				C5B7B74B1757AFD8004602E8 /* ScreenorientationBase.h */,
+				C5B7B7571757AFE0004602E8 /* screenorientation_js_wrap.mm */,
+				C5B7B74C1757AFD8004602E8 /* ScreenorientationBase.m */,
+				C5B7B74D1757AFD8004602E8 /* ScreenorientationFactoryBase.h */,
+				C5B7B74E1757AFD8004602E8 /* ScreenorientationFactoryBase.m */,
+				C5B7B74F1757AFD8004602E8 /* ScreenorientationSingletonBase.h */,
+				C5B7B7501757AFD8004602E8 /* ScreenorientationSingletonBase.m */,
+				C5B7B73417578E08004602E8 /* IScreenorientation.h */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		C5B7B73E1757AB76004602E8 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C5B7B73F1757AB85004602E8 /* Screenorientation.h */,
+				C5B7B7401757AB85004602E8 /* Screenorientation.m */,
+				C5B7B7411757AB85004602E8 /* ScreenorientationFactorySingleton.m */,
+				C5B7B7421757AB85004602E8 /* ScreenorientationSetup.m */,
+				C5B7B7431757AB85004602E8 /* ScreenorientationSingleton.h */,
+				C5B7B7441757AB85004602E8 /* ScreenorientationSingleton.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		C5B7B75B1757B55F004602E8 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				C5B7B75C1757B566004602E8 /* generated */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		C5B7B75C1757B566004602E8 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C5B7B75F1757B78E004602E8 /* screenorientation_js_api.cpp */,
+				C5B7B7601757B78E004602E8 /* screenorientation_ruby_api.c */,
+				C5B7B75D1757B57E004602E8 /* screenorientation_api_init.cpp */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FAC155DD1458511E0016F3BD /* iOS_specific */ = {
+			isa = PBXGroup;
+			children = (
+				C5B7B73E1757AB76004602E8 /* impl */,
+				C5B7B73217578DDD004602E8 /* generated */,
+				FAC155E01458523C0016F3BD /* Screenorientation.h */,
+				FAC155DE145851440016F3BD /* Screenorientation.m */,
+			);
+			name = iOS_specific;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155E7145855CF0016F3BD /* Screenorientation_Prefix.pch in Headers */,
+				FAC155E8145855CF0016F3BD /* Screenorientation.h in Headers */,
+				C5B7B73517578E08004602E8 /* IScreenorientation.h in Headers */,
+				C5B7B7451757AB85004602E8 /* Screenorientation.h in Headers */,
+				C5B7B7491757AB85004602E8 /* ScreenorientationSingleton.h in Headers */,
+				C5B7B7511757AFD8004602E8 /* ScreenorientationBase.h in Headers */,
+				C5B7B7531757AFD8004602E8 /* ScreenorientationFactoryBase.h in Headers */,
+				C5B7B7551757AFD8004602E8 /* ScreenorientationSingletonBase.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* Screenorientation */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Screenorientation" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Screenorientation;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libScreenorientation.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Screenorientation" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Barcode */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* Screenorientation */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EC145855CF0016F3BD /* Screenorientation.m in Sources */,
+				C5B7B7461757AB85004602E8 /* Screenorientation.m in Sources */,
+				C5B7B7471757AB85004602E8 /* ScreenorientationFactorySingleton.m in Sources */,
+				C5B7B7481757AB85004602E8 /* ScreenorientationSetup.m in Sources */,
+				C5B7B74A1757AB85004602E8 /* ScreenorientationSingleton.m in Sources */,
+				C5B7B7521757AFD8004602E8 /* ScreenorientationBase.m in Sources */,
+				C5B7B7541757AFD8004602E8 /* ScreenorientationFactoryBase.m in Sources */,
+				C5B7B7561757AFD8004602E8 /* ScreenorientationSingletonBase.m in Sources */,
+				C5B7B7581757AFE0004602E8 /* screenorientation_js_wrap.mm in Sources */,
+				C5B7B75A1757AFE7004602E8 /* screenorientation_ruby_wrap.m in Sources */,
+				C5B7B75E1757B57E004602E8 /* screenorientation_api_init.cpp in Sources */,
+				C5B7B7611757B78E004602E8 /* screenorientation_js_api.cpp in Sources */,
+				C5B7B7621757B78E004602E8 /* screenorientation_ruby_api.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/Screenorientation.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Screenorientation_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					generated/base_impl,
+					"$(RHO_ROOT)/platform/iphone/Classes",
+					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
+					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
+					"$(RHO_ROOT)/platform/iphone/Classes/Signature",
+					"$(RHO_ROOT)/platform/iphone/Classes/NativeView",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Screenorientation;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386 armv7";
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /tmp/Screenorientation.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Screenorientation_Prefix.pch;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					generated/base_impl,
+					"$(RHO_ROOT)/platform/iphone/Classes",
+					"$(RHO_ROOT)/platform/iphone/Classes/AppManager",
+					"$(RHO_ROOT)/platform/iphone/Classes/Camera",
+					"$(RHO_ROOT)/platform/iphone/Classes/Signature",
+					"$(RHO_ROOT)/platform/iphone/Classes/NativeView",
+				);
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Screenorientation;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386  armv7";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Screenorientation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Screenorientation" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}
