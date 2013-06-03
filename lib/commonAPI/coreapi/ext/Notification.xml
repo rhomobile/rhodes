@@ -1,0 +1,130 @@
+<?xml version = "1.0"?>
+<API>
+	<MODULE name="Notification" parent="Rho">
+		<HELP_OVERVIEW></HELP_OVERVIEW>
+		<MORE_HELP></MORE_HELP>
+        <ALIASES>
+            <ALIAS new="Alert" deprecated="true"/>
+        </ALIASES>
+		<PLATFORM>iOS, Android, WM</PLATFORM>
+		<TEMPLATES>
+		</TEMPLATES>
+
+		<PROPERTIES generateAccessors="true">
+			<DESC></DESC>
+			<ALIASES>
+			</ALIASES>
+		
+		</PROPERTIES>
+
+		<METHODS access="STATIC">
+            <ALIASES>
+                <ALIAS new="hide_popup" existing="hidePopup" deprecated="true"/>
+                <ALIAS new="show_popup" existing="showPopup" deprecated="true"/>
+                <ALIAS new="show_status" existing="showStatus" deprecated="true"/>               
+            </ALIASES>
+
+            <METHOD name="showPopup" access="STATIC" hasCallback="optional">
+                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button.</DESC>
+				<PARAMS>
+					<PARAM name="propertyMap" type="HASH" propertyHash="true">
+						<DESC>The properties associated with the popup.</DESC>
+						<PARAMS>
+							<PARAM name="message" type="String" default="">
+								<DESC>text displayed in the popup window</DESC>
+							</PARAM>
+							<PARAM name="title" type="String" default="">
+								<DESC>title of the popup window</DESC>
+							</PARAM>
+							<PARAM name="icon" type="String" default="">
+								<DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon.</DESC>
+							</PARAM>
+							<PARAM name="buttons" type="Array" default="">
+								<DESC>array of buttons. Specify each button either by hash with :id and :title keys, or by a string where id and title are set to the string value. TODO - HOW SPECIFY</DESC>
+							</PARAM>
+						</PARAMS>
+					</PARAM>
+				</PARAMS>
+				<CALLBACK type="HASH">
+                    <DESC>Not providing a callback to be invoked when a barcode is scanned will result in that barcode being output as keystrokes.</DESC>
+					<PARAMS>
+						<PARAM name="button_id" type="STRING">
+							<DESC>ID assigned to the button when showing the popup</DESC>
+						</PARAM>
+						<PARAM name="button_title" type="STRING">
+							<DESC>Button text</DESC>
+						</PARAM>
+						<PARAM name="button_index" type="STRING">
+							<DESC>TODO</DESC>
+						</PARAM>
+					</PARAMS>
+				</CALLBACK>    
+			</METHOD>
+		
+            <METHOD name="hidePopup" access="STATIC" hasCallback="none">
+                <DESC>Closes the current popup window</DESC>
+            </METHOD>
+		
+            <METHOD name="showStatus" access="STATIC" hasCallback="none">
+                <DESC>Display a window containing a status message. The window closes after the user clicks on its hide button.</DESC>
+				<PARAMS>
+					<PARAM name="title" type="STRING">
+						<DESC>The title on the status message popup window.</DESC>
+					</PARAM>
+					<PARAM name="status_text" type="STRING">
+						<DESC>The status message displayed in the popup status window.</DESC>
+					</PARAM>
+					<PARAM name="hide_button_label" type="STRING">
+						<DESC>The label text for the hide button in the popup status window</DESC>
+					</PARAM>
+				</PARAMS>
+            </METHOD>
+		
+            <METHOD name="beep" access="STATIC" hasCallback="none">
+                <DESC>If the device is equipped with a beeper then a beep will be emitted</DESC>
+				<APPLIES msiOnly="true"></APPLIES>
+				<PARAMS>
+					<PARAM name="propertyMap" type="HASH" propertyHash="true">
+						<DESC>The properties associated with the beep.</DESC>
+						<PARAMS>
+							<PARAM name="frequency" type="Integer" default="2000">
+								<DESC>The frequency of the beep, in Hz</DESC>
+							</PARAM>
+							<PARAM name="volume" type="Integer" default="0">
+								<DESC>A number between 0 and 3.  0 represents minimum volume and 3 is maximum volume, the decibels each volume level represents is device dependant.</DESC>
+							</PARAM>
+							<PARAM name="duration" type="Integer" default="1000">
+								<DESC>The duration of the beep, in milliseconds</DESC>
+							</PARAM>
+						</PARAMS>
+					</PARAM>
+				</PARAMS>
+            </METHOD>
+
+            <METHOD name="vibrate" access="STATIC" hasCallback="none">
+                <DESC>Vibrate the device's pager hardware</DESC>
+				<APPLIES msiOnly="true"></APPLIES>
+				<PARAMS>
+					<PARAM name="duration" type="Integer" default="1000">
+						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file</DESC>
+					</PARAM>
+				</PARAMS>
+            </METHOD>
+			
+		</METHODS>
+		
+		<USER_OVERVIEW>
+			<!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
+			<![CDATA[
+Exiting RhoElements
+=====================
+If RhoElements is exited after applying notifications, the settings to LEDs will not revert.
+
+		]]>
+	
+		</USER_OVERVIEW>
+		<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
+		<PLATFORM></PLATFORM>
+
+	</MODULE>
+</API>    
