@@ -32,6 +32,7 @@
 #include "json/JSONIterator.h"
 
 #include <algorithm>
+#include <functional>
 
 namespace
 {
