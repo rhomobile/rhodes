@@ -118,7 +118,7 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByRubyObject(VA
     par.params = _params;
     par.item = _item;
     par.methodResult = _methodResult;
-    return par;
+    return [par retain];
 }
 
 @end
@@ -168,6 +168,7 @@ static rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<
     method_line = method_line + "];"
     %>
     <%= method_line %>
+    [caller_params release];
 }
 
 +(void) <%= module_method.native_name %>:(rb_<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params*)caller_params {
