@@ -390,6 +390,9 @@ void CMainWindow::createToolbarEx( const rho::Vector<rho::String>& toolbarElemen
                             strImagePath = "res/back_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
                         else if ( strcasecmp(action, "forward")==0 )
                             strImagePath = "res/forward_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
+                        else if ( strcasecmp(action, "minimize")==0 )
+                            strImagePath = "res/minimize_btn" RHODES_EMULATOR_PLATFORM_STR ".png";
+
 #undef RHODES_EMULATOR_PLATFORM_STR
 #ifdef RHODES_EMULATOR
                         strImagePath = strImagePath.length() > 0 ? CFilePath::join( RHOSIMCONF().getRhoRuntimePath(), "lib/framework/" + strImagePath) : String();
