@@ -934,6 +934,8 @@ void CDBAdapter::close(boolean bCloseRubyMutex/* = true*/)
     m_dbHandle = 0;
     m_strDbPath = String();
 
+    m_nTransactionCounter = 0;
+
     m_ptrCrypt = 0;
     m_strCryptKey = "";
 
@@ -1057,27 +1059,31 @@ void CDBAdapter::Unlock()
 void CDBAdapter::startTransaction()
 {
     Lock();
-	m_nTransactionCounter++;
 
-    char *zErr = 0;
-    int rc = 0;
-	if ( m_dbHandle && m_nTransactionCounter == 1)
+    if (m_dbHandle && m_nTransactionCounter == 0)
     {
-		rc = sqlite3_exec(m_dbHandle, "BEGIN IMMEDIATE;",0,0,&zErr);
+        char *zErr = 0;
+        int rc = sqlite3_exec(m_dbHandle, "BEGIN IMMEDIATE;",0,0,&zErr);
         checkDbError(rc);
     }
+
+    m_nTransactionCounter++;
 }
 
 void CDBAdapter::endTransaction()
 {
-    char *zErr = 0;
-    int rc = 0;
+    if (m_nTransactionCounter == 0)
+    {
+        return;
+    }
 
-	m_nTransactionCounter--;
-	if (m_dbHandle && m_nTransactionCounter == 0)
+    m_nTransactionCounter--;
+
+    if (m_dbHandle && m_nTransactionCounter == 0)
     {
         //getAttrMgr().save(*this);
-		rc = sqlite3_exec(m_dbHandle, "END;",0,0,&zErr);
+        char *zErr = 0;
+        int rc = sqlite3_exec(m_dbHandle, "END;",0,0,&zErr);
         checkDbError(rc);
     }
 
@@ -1086,13 +1092,17 @@ void CDBAdapter::endTransaction()
 
 void CDBAdapter::rollback()
 {
-    char *zErr = 0;
-    int rc = 0;
-
-	m_nTransactionCounter--;
-	if (m_dbHandle && m_nTransactionCounter == 0)
+    if (m_nTransactionCounter == 0)
     {
-		rc = sqlite3_exec(m_dbHandle, "ROLLBACK;",0,0,&zErr);
+        return;
+    }
+
+    m_nTransactionCounter--;
+
+    if (m_dbHandle && m_nTransactionCounter == 0)
+    {
+        char *zErr = 0;
+        int rc = sqlite3_exec(m_dbHandle, "ROLLBACK;",0,0,&zErr);
         checkDbError(rc);
     }
 
