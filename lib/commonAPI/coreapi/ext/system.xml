@@ -239,19 +239,22 @@
                 <DESC>Unzip file.</DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
-                        <DESC>The path to the file to be unzipped.</DESC>
+                        <DESC>The path to the file to be unzipped. Application should have write permissions to folder where zip placed.</DESC>
                     </PARAM>
                     <PARAM name="password" type="STRING">
                         <DESC>Password for the zip.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
+              <RETURN type="INTEGER">
+                <DESC>If the operation completes successfully, unzipFile returns a zero value. If the operation fails, unzipFile returns -1.</DESC>
+              </RETURN>
             </METHOD>
             <METHOD name="zipFile">
-                <DESC>Zip one file.</DESC>
+                <DESC>Zip one file. Zip archive must placed to  folder where application can write files. </DESC>
                 <PARAMS>
                     <PARAM name="localPathToZip" type="STRING">
-                        <DESC>The path to the specified zip.</DESC>
+                        <DESC>The path to the specified zip. Application should have write permissions to folder where zip would be created.</DESC>
                     </PARAM>
                     <PARAM name="localPathToFile" type="STRING">
                         <DESC>The path to the file to be zipped.</DESC>
@@ -261,6 +264,9 @@
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
+              <RETURN type="INTEGER">
+                <DESC>If the operation completes successfully, unzipFile returns a zero value. If the operation fails, unzipFile returns -1.</DESC>
+              </RETURN>
             </METHOD>
             <METHOD name="zipFiles">
                 <DESC>Zip list of files.</DESC>
@@ -279,6 +285,9 @@
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
+              <RETURN type="INTEGER">
+                <DESC>If the operation completes successfully, unzipFile returns a zero value. If the operation fails, unzipFile returns -1.</DESC>
+              </RETURN>
             </METHOD>
             <METHOD name="setRegistrySetting">
                 <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
