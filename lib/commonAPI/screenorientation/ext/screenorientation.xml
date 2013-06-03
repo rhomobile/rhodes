@@ -13,19 +13,19 @@
         </PROPERTIES>
 
         <METHODS access="STATIC">
-            <METHOD name="normal" runInThread="ui">
+            <METHOD name="normal">
                 <DESC>Sets the screen orientation to default device orientation</DESC>
             </METHOD>
-			<METHOD name="rightHanded" runInThread="ui">
+			<METHOD name="rightHanded">
                 <DESC>Sets the screen orientation to righthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
             </METHOD>
-            <METHOD name="leftHanded" runInThread="ui">
+            <METHOD name="leftHanded">
                 <DESC>Sets the screen orientation to lefthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
             </METHOD>
-            <METHOD name="upsideDown" runInThread="ui">
+            <METHOD name="upsideDown">
                 <DESC>Sets the screen orientation to upside down, useful if presenting the device to a customer to obtain a signature.</DESC>
             </METHOD>
-			<METHOD name="setScreenOrientationEvent" hasCallback="mandatory" runInThread="ui">
+			<METHOD name="setScreenOrientationEvent" hasCallback="mandatory">
 				<DESC>Sets the callback to be called when a screen orientation event occurres</DESC>
 				<CALLBACK type="STRING">
 					<DESC>Current orientation of the screen</DESC>
