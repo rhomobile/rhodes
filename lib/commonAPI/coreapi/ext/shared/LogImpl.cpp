@@ -2,6 +2,7 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 #include "common/RhoFile.h"
+#include "common/RhoDefs.h"
 
 extern "C" void rho_conf_show_log();
 
@@ -23,7 +24,14 @@ public:
 
     virtual void setLevel( int value, rho::apiGenerator::CMethodResult& oResult)
     {
-        LOGCONF().setMinSeverity(value);
+        if ( L_TRACE <= value && value <= L_FATAL )
+        {
+            LOGCONF().setMinSeverity(value);
+        }
+        else
+        {
+            oResult.setArgError("Log: Invalid severity level");
+        }
     }
 
     virtual void getDestination(rho::apiGenerator::CMethodResult& oResult)
@@ -84,7 +92,14 @@ public:
 
     virtual void setFileSize( int value, rho::apiGenerator::CMethodResult& oResult)
     {
-        LOGCONF().setMaxLogFileSize(value);
+        if (value >= 0)
+        {
+            LOGCONF().setMaxLogFileSize(value);
+        }
+        else
+        {
+            oResult.setArgError("Log: Invalid file size value");
+        }
     }
 
     virtual void getFilePath(rho::apiGenerator::CMethodResult& oResult)
@@ -94,7 +109,14 @@ public:
 
     virtual void setFilePath( const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
     {
-        LOGCONF().setLogFilePath(value);
+        if (value.size() > 0)
+        {
+            LOGCONF().setLogFilePath(value);
+        }
+        else
+        {
+            oResult.setArgError("Log: Empty file path");
+        }
     }
 
     virtual void getMemoryPeriod(rho::apiGenerator::CMethodResult& oResult)
@@ -104,7 +126,14 @@ public:
 
     virtual void setMemoryPeriod( int value, rho::apiGenerator::CMethodResult& oResult)
     {
-        LOGCONF().setCollectMemoryInfoInterval(value);
+        if (value >= 0)
+        {
+            LOGCONF().setCollectMemoryInfoInterval(value);
+        }
+        else
+        {
+            oResult.setArgError("Log: Invalid memory period value");
+        }
     }
 
     virtual void getNetTrace(rho::apiGenerator::CMethodResult& oResult)
