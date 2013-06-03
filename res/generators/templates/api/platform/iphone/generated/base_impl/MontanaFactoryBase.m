@@ -3,17 +3,19 @@
 #import "<%= $cur_module.name %>.h"
 #import "<%= $cur_module.name %>Singleton.h"
 
+
+
 @implementation <%= $cur_module.name %>FactoryBase
 
 -(id)init {
     self = [super init];
-    m<%= $cur_module.name %>Instances = [NSMutableDictionary dictionary];
+    m<%= $cur_module.name %>Instances = [[NSMutableDictionary dictionaryWithCapacity:4] retain];
     m<%= $cur_module.name %>Singleton = nil;
     return self;
 }
 
 -(id<I<%= $cur_module.name %>>) get<%= $cur_module.name %>ByID:(NSString*)ID {
-    <%= $cur_module.name %>* obj = [m<%= $cur_module.name %>Instances objectForKey:ID];
+    <%= $cur_module.name %>* obj = (<%= $cur_module.name %>*)[m<%= $cur_module.name %>Instances objectForKey:ID];
     if (obj == nil) {
         obj = [self create<%= $cur_module.name %>ByID:ID];
         [m<%= $cur_module.name %>Instances setObject:obj forKey:ID];

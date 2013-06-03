@@ -1549,7 +1549,7 @@ module Rhogen
             module_property = ModuleProperty.new()
             module_property.name = xml_module_property.attribute("name").to_s
             module_property.native_name = module_property.name.split(/[^a-zA-Z0-9\_]/).map{|w| w}.join("")
-            module_property.param = process_param(xml_module_property, module_property.native_name, module_item, nil, 0)
+            module_property.param = process_param(xml_module_property, module_property.native_name, module_item, "property_"+module_property.name, 0)
             if xml_module_property.attribute("generateAccessors") != nil
                module_property.generate_accessors =  xml_module_property.attribute("generateAccessors").to_s.downcase != "false"
             else
