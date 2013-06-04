@@ -166,7 +166,7 @@
             </METHOD>
 
             <METHOD name="currentLocation">
-                <DESC>Returns the url (location) of the current page; the last URL loaded to WebView.</DESC>
+                <DESC>Returns the url (location) of the current page; the last URL loaded to WebView. It applcable only for Ruby. Use Window.location at javascript</DESC>
                 <MORE_HELP>If you open your page in WebView, and after it makes a few jumps by linking (for example, to outside web adresses for example), currentLocation will still return the initial url opened in WebView. Also, if you use JQMobile, current_location has the initial URL, but does not reflect the actual window.location containing the JQMobile additional address by adding #, etc. See currentUrl.</MORE_HELP>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
