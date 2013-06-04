@@ -492,6 +492,10 @@ String CNativeToolbar::CToolbarBtn::getDefaultImagePath(const String& strAction)
         strImagePath = "lib/res/back_btn.png";
     else if ( strcasecmp(strAction.c_str(), "forward")==0 )
         strImagePath = "lib/res/forward_btn.png";
+    else if ( strcasecmp(strAction.c_str(), "minimize")==0 )
+        strImagePath = "lib/res/minimize_btn.png";
+    else if ( strcasecmp(strAction.c_str(), "sip")==0 )
+        strImagePath = "lib/res/sip_btn.png";
 
     return strImagePath.length() > 0 ? CFilePath::join( RHODESAPP().getRhoRuntimePath(), strImagePath) : String();
 }
