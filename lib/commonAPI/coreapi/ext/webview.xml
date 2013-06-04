@@ -213,7 +213,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-                                                                                    ß
             <METHOD name="active_tab" deprecated="true">
                 <DESC>Use Rho::NativeTabbar.currentTab property: returns the current tab index.</DESC>
                 <RETURN type="INTEGER">
