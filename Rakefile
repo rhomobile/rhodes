@@ -557,6 +557,8 @@ namespace "config" do
     if $current_platform == "wm" || $current_platform == "android"
         if $app_config["app_type"] == 'rhoelements'
         
+            $app_config['extensions'] << 'rhoelements-license' if $current_platform == "android"
+        
             if !$app_config["capabilities"].index('non_motorola_device')        
                 $app_config["capabilities"] += ["motorola"] unless $app_config["capabilities"].index("motorola")
                 $app_config["extensions"] += ["rhoelementsext"]
@@ -711,8 +713,6 @@ namespace "config" do
     $invalid_license = false
 
     if $rhoelements_features.length() > 0
-
-        $app_config['extensions'] << 'rhoelements-license'
 
         #check for RhoElements gem and license
 	    if  !$app_config['re_buildstub']	
