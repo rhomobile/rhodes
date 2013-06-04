@@ -16,7 +16,7 @@ static NSDictionary* ourPropertyAliases= nil;
 - (id) init {
     self = [super init];
 <% if $cur_module.is_template_propertybag %>
-    mProperties = [NSMutableDictionary dictionary];
+    mProperties = [[NSMutableDictionary dictionaryWithCapacity:4] retain];
     <% $cur_module.properties.each do |prop|
           if prop.default_value != nil
              line = '[self setProperty:@"'+prop.native_name+'" propertyValue:@"'+prop.default_value.to_s+'"];' %>
