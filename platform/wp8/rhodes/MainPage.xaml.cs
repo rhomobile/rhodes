@@ -209,7 +209,7 @@ namespace rhodes
 		public void navigate(string url, int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigate(url, index); }); return; }
-            if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
+            if (TabbarPivot.Items.Count == 0)
                 RhodesWebBrowser.Navigate(new Uri(url));
             else
                 ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url));
@@ -218,7 +218,7 @@ namespace rhodes
         public string executeScriptFunc(string script, int index)
         {
             string[] codeString = { script };
-            if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
+            if (TabbarPivot.Items.Count == 0)
                 return RhodesWebBrowser.InvokeScript("eval", codeString).ToString();
             else
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
@@ -272,7 +272,7 @@ namespace rhodes
 		public void Refresh(int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { Refresh(index); }); return; }
-            if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
+            if (TabbarPivot.Items.Count == 0)
                 RhodesWebBrowser.Navigate(new Uri(RhodesWebBrowser.Source.AbsoluteUri, UriKind.Absolute));
                 // another possible implementation: RhodesWebBrowser.InvokeScript("eval", "history.go()");
             else
@@ -528,14 +528,20 @@ namespace rhodes
         public void tabbarInitialize()
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarInitialize(); }); return; }
-            tabbarRemoveAllTabs(false);
+            tabbarRemoveAllTabs();
             // TODO: clear style of tabBar!
         }
 
-		public void tabbarRemoveAllTabs(bool restore)
+		public void tabbarRemoveAllTabs()
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarRemoveAllTabs(restore); }); return; }
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarRemoveAllTabs(); }); return; }
             TabbarPivot.Items.Clear();
+        }
+
+        public void tabbarRemove(int index)
+        {
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarRemove(index); }); return; }
+            TabbarPivot.Items.RemoveAt(index);
         }
 
 		public void tabbarShow()
@@ -544,7 +550,6 @@ namespace rhodes
             LayoutRoot.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
             LayoutRoot.RowDefinitions[1].Height = new GridLength(0, GridUnitType.Pixel);
             // not needed: TabbarPanel.Visibility = System.Windows.Visibility.Visible;
-            // TODO: m_started = true;
         }
 
 		public void tabbarHide()
@@ -552,7 +557,7 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarHide(); }); return; }
             LayoutRoot.RowDefinitions[0].Height = new GridLength(0, GridUnitType.Pixel);
             LayoutRoot.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
-            tabbarRemoveAllTabs(true);
+            tabbarRemoveAllTabs();
             // not needed: TabbarPanel.Visibility = System.Windows.Visibility.Collapsed;
         }
 
@@ -633,25 +638,34 @@ namespace rhodes
             //}
             // //else
             // //    tab.Header = new RhoTabHeader(label, prependWithSlash(icon));
-            if (use_current_view_for_tab)
-                tab.Content = RhodesWebBrowser;
-            else
-            {
-                WebBrowser wv = new WebBrowser();
-                wv.Height = double.NaN;
-                wv.Width = double.NaN;
-                wv.IsScriptEnabled = true;
-                wv.SizeChanged += RhodesWebBrowser_SizeChanged;
-                wv.Navigated += RhodesWebBrowser_Navigated;
-                wv.NavigationFailed += RhodesWebBrowser_NavigationFailed;
-                wv.LoadCompleted += RhodesWebBrowser_LoadCompleted;
-                wv.Loaded += RhodesWebBrowser_Loaded;
-                wv.Unloaded += RhodesWebBrowser_Unloaded;
-                //wv.SetValue(FrameworkElement.NameProperty, "tabWeb" + TabbarPivot.Items.Count.ToString());
-                // TODO: reload
-                // TODO: web_bkg_color
-                tab.Content = wv;
-            }
+
+            // throws expection:
+            //if (use_current_view_for_tab)
+            //{
+            //    
+            //    tab.Content = RhodesWebBrowser;
+            //}
+            //else
+            //{
+
+            WebBrowser wv = new WebBrowser();
+            wv.Height = double.NaN;
+            wv.Width = double.NaN;
+            wv.IsScriptEnabled = true;
+            wv.SizeChanged += RhodesWebBrowser_SizeChanged;
+            wv.Navigated += RhodesWebBrowser_Navigated;
+            wv.NavigationFailed += RhodesWebBrowser_NavigationFailed;
+            wv.LoadCompleted += RhodesWebBrowser_LoadCompleted;
+            wv.Loaded += RhodesWebBrowser_Loaded;
+            wv.Unloaded += RhodesWebBrowser_Unloaded;
+            //wv.SetValue(FrameworkElement.NameProperty, "tabWeb" + TabbarPivot.Items.Count.ToString());
+            // TODO: reload
+            // TODO: web_bkg_color
+            //if ((action != null) && (action.Length > 0))
+            //    wv.Navigate(new Uri(CRhoRuntime.getInstance().canonicalizeRhoUrl(action)));
+            tab.Content = wv;
+            //}
+
             if ((selected_color != null) && (selected_color.Length > 0))
                 tab.Background = new SolidColorBrush(getColorFromString(selected_color));
             tab.IsEnabled = !disabled;
@@ -671,8 +685,8 @@ namespace rhodes
 
         public void tabbarSetBadge(int index, string badge)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSetBadge(index, badge); }); return; }
-            // TODO: implement
+            //if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarSetBadge(index, badge); }); return; }
+            CRhoRuntime.getInstance().logEvent("Tab badge is not implemented on WP8");
         }
 
 

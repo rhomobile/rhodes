@@ -1511,6 +1511,14 @@ module Rhogen
           end
         end 
 
+        xml_module_item.elements.each(".//CALLBACK") do |xml_param|
+          if xml_param.attribute("type").to_s.upcase == "HASH"
+            xml_param.elements.each(".//PARAM") do |param_key|
+              hash_names << param_key.attribute("name").to_s
+            end        
+          end
+        end 
+
         hash_names.sort.uniq.reject(&:empty?).each do |hash_key|
           key = ModuleHashKey.new()
           key.name = hash_key
@@ -1541,7 +1549,7 @@ module Rhogen
             module_property = ModuleProperty.new()
             module_property.name = xml_module_property.attribute("name").to_s
             module_property.native_name = module_property.name.split(/[^a-zA-Z0-9\_]/).map{|w| w}.join("")
-            module_property.param = process_param(xml_module_property, module_property.native_name, module_item, nil, 0)
+            module_property.param = process_param(xml_module_property, module_property.native_name, module_item, "property_"+module_property.name, 0)
             if xml_module_property.attribute("generateAccessors") != nil
                module_property.generate_accessors =  xml_module_property.attribute("generateAccessors").to_s.downcase != "false"
             else

@@ -44,11 +44,12 @@ namespace rhodes
         public void menuAddSeparator() { _mainPage.menuAddSeparator(); }
 		// tabbar
         public void tabbarInitialize() { _mainPage.tabbarInitialize(); }
-        public void tabbarRemoveAllTabs(bool restore) { _mainPage.tabbarRemoveAllTabs(restore); }
+        public void tabbarRemoveAllTabs() { _mainPage.tabbarRemoveAllTabs(); }
         public void tabbarShow() { _mainPage.tabbarShow(); }
         public void tabbarHide() { _mainPage.tabbarHide(); }
         public int tabbarIsStarted() { return _mainPage.tabbarIsStarted(); }
         public int tabbarGetHeight() { return _mainPage.tabbarGetHeight(); }
+        public void tabbarRemove(int index) { _mainPage.tabbarRemove(index); }
         public void tabbarSwitch(int index) { _mainPage.tabbarSwitch(index); }
         public int tabbarGetCurrent() { return _mainPage.tabbarGetCurrent(); }
         public void tabbarAddTab(string label, string icon, string action, bool disabled, string web_bkg_color, string selected_color, bool reload, bool use_current_view_for_tab)
