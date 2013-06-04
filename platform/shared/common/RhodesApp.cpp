@@ -1910,6 +1910,16 @@ void CRhodesApp::loadUrl(String url)
 		}
 
         return;
+    }else if ( strcasecmp(url.c_str(), "minimize")==0 )
+    {
+        getExtManager().minimizeApp();
+        return;
+    }else if ( strcasecmp(url.c_str(), "SIP")==0 )
+    {
+#ifdef OS_WINCE
+        RHODESAPP().getExtManager().OnSIPState(true);
+#endif
+        return;
     }
 
     if (callback)
