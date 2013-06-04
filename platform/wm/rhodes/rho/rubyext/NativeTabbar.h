@@ -67,6 +67,7 @@ public:
     void SwitchTab(int index);
     void SetBadge(int index, const char* badge);
     int  GetCurrentTabIndex();
+    int  GetCurrentTabIndexExternal();
     bool IsTabBarStarted();
     void SwitchTabByName(const char* szTabName, bool bExecuteJS);
     void SetStartTabName(const String& strTabName){m_strStartTabName = strTabName;}
