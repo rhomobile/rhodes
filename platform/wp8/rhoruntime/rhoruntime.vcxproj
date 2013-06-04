@@ -239,11 +239,9 @@
     <ClCompile Include="common\RhoCryptImpl.cpp" />
     <ClCompile Include="common\SSLImpl.cpp" />
     <ClCompile Include="CSharpExtensions.cpp" />
-    <ClCompile Include="TabbarImpl.cpp" />
     <ClCompile Include="common\ThreadEmulation.cpp" />
     <ClCompile Include="FakeDefs.cpp" />
     <ClCompile Include="GeoLocationImpl.cpp" />
-    <ClCompile Include="ToolbarImpl.cpp" />
     <ClCompile Include="WebViewImpl.cpp" />
     <ClCompile Include="rhoruntime.cpp" />
     <ClCompile Include=".\pch_rhoruntime.cpp">
