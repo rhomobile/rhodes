@@ -66,18 +66,18 @@
                 </RETURN>
             </METHOD>
             <METHOD name="setNotification" access="INSTANCE" hasCallback="mandatory">
-                <DESC>Sets handler to call back when push message, error or other push related event.<DESC>
+                <DESC>Sets handler to call back when push message, error or other push related event.</DESC>
                 <CALLBACK type="HASH">
                     <DESC>Hash map with push message payload</DESC>
                     <PARAMS>
                         <PARAM name="doSync" type="STRING">
-                            <DESC>List of sources to sync separated by comma or 'all'</DESK>
+                            <DESC>List of sources to sync separated by comma or 'all'</DESC>
                         </PARAM>
                         <PARAM name="alertText" type="STRING">
                             <DESC>Alert message to show to user</DESC>
                         </PARAM>
                         <PARAM name="vibrateDuration" type="INTEGER">
-                            <DESC>Vibrate duration in milliseconds<DESC>
+                            <DESC>Vibrate duration in milliseconds</DESC>
                         </PARAM>
                         <PARAM name="alertSound" type="STRING">
                             <DESC>Path to sound file to play when push message is received</DESC>
