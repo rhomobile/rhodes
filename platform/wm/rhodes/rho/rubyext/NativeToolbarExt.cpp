@@ -209,7 +209,7 @@ void rho_wmimpl_tabbar_removeTab(int tabIndex)
 int rho_wmimpl_tabbar_currentTabIndex()
 {
 #ifdef OS_WINCE
-    return getAppWindow().getTabbar().GetCurrentTabIndex();
+    return getAppWindow().getTabbar().GetCurrentTabIndexExternal();
 #else
     return getAppWindow().tabbarGetCurrent();
 #endif
