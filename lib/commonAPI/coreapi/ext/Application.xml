@@ -252,7 +252,7 @@
                 </CALLBACK>
             </METHOD>
 
-            <METHOD name="setLocale" generateAPI="false" access="STATIC">
+            <METHOD name="setLocale" generateAPI="false" generateDoc="false" access="STATIC">
                 <DESC>Set application specific locale</DESC>
                 <PARAMS>
                     <PARAM name="localeCode" type="STRING"/>
