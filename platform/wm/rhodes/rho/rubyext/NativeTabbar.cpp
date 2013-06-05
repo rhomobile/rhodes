@@ -356,6 +356,14 @@ int CNativeTabbar::GetCurrentTabIndex()
     return 0;
 }
 
+int CNativeTabbar::GetCurrentTabIndexExternal()
+{
+    if (m_arTabs.size()>0 && m_nCurrentTab < (int)m_arTabs.size() && m_nCurrentTab >= 0 )
+	    return m_nCurrentTab;
+
+    return 0;
+}
+
 bool CNativeTabbar::IsTabBarStarted()
 {
     return m_bTabCreated;

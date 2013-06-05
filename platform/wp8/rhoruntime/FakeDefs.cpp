@@ -5,6 +5,20 @@
 #include "../../shared/common/RhoDefs.h"
 #include <logging/RhoLog.h>
 
+//NavBar - iphone only
+RHO_GLOBAL void create_navbar(rho_param *p)
+{
+}
+
+RHO_GLOBAL void remove_navbar()
+{
+}
+
+RHO_GLOBAL VALUE navbar_started()
+{
+    return rho_ruby_create_boolean(0);
+}
+
 
 RHO_GLOBAL void rho_map_location(char* query)
 {

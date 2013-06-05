@@ -6,6 +6,15 @@
 
 //extern "C" HWND getMainWnd();
 
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
+#else
+extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName)
+{
+    return L"";
+}
+#endif// !APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+
 namespace rho {
 
 using namespace apiGenerator;
@@ -18,7 +27,10 @@ class CWebViewImpl: public CWebViewSingletonBase
     int m_nTextZoom;
 public:
 
-    CWebViewImpl(): m_nNavigationTimeout(0), m_dZoomPage(1.0), m_nTextZoom(1), CWebViewSingletonBase(){}
+    CWebViewImpl(): m_nNavigationTimeout(0), m_dZoomPage(1.0), m_nTextZoom(1), CWebViewSingletonBase()
+    {
+        convertFromStringW( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\NavTimeout" ), m_nNavigationTimeout );
+    }
 
     virtual void getFramework(rho::apiGenerator::CMethodResult& oResult)
     {
@@ -44,10 +56,17 @@ public:
     virtual void setEnableZoom( bool value, rho::apiGenerator::CMethodResult& oResult){}
     virtual void getEnablePageLoadingIndication(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set(false);
+        //oResult.set(false);
+        int nValue = 0;
+        convertFromStringW( rho_wmimpl_sharedconfig_getvalue( L"GUI\\HourglassEnabled" ), nValue );
+        oResult.set( nValue ? true : false );
     }
 
-    virtual void setEnablePageLoadingIndication( bool value, rho::apiGenerator::CMethodResult& oResult){}
+    virtual void setEnablePageLoadingIndication( bool value, rho::apiGenerator::CMethodResult& oResult)
+    {
+        //Do nothing. It can be set only in config.xml
+    }
+
     virtual void getEnableWebPlugins(rho::apiGenerator::CMethodResult& oResult)
     {
         oResult.set(true);
@@ -69,32 +88,45 @@ public:
 
     virtual void getScrollTechnique(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set( RHOCONF().getString("WebView.scrollTechnique") );
+        //oResult.set( RHOCONF().getString("WebView.scrollTechnique") );
+        oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"Scrolling\\ScrollTechnique" ) ) );
     }
 
     virtual void getFontFamily(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set( RHOCONF().getString("WebView.fontFamily") );
+        //oResult.set( RHOCONF().getString("Webview.fontFamily") );
+        oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"HTMLStyles\\FontFamily" ) ) );
     }
 
     virtual void getUserAgent(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set( RHOCONF().getString("WebView.userAgent") );
+        //oResult.set( RHOCONF().getString("WebView.userAgent") );
+        oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\UserAgent" ) ) );
     }
 
     virtual void getViewportEnabled(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set( RHOCONF().getBool("WebView.viewportEnabled") );
+        //oResult.set( RHOCONF().getBool("WebView.viewportEnabled") );
+        int nValue = 0;
+        convertFromStringW( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\ViewportEnabled" ), nValue );
+        oResult.set( nValue ? true : false );
     }
 
     virtual void getViewportWidth(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set( RHOCONF().getInt("WebView.viewportWidth") );
+        //oResult.set( RHOCONF().getInt("WebView.viewportWidth") );
+        int nValue = 0;
+        convertFromStringW( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\ViewportWidth" ), nValue );
+        oResult.set( nValue );
     }
 
     virtual void getCacheSize(rho::apiGenerator::CMethodResult& oResult)
     {
-        oResult.set( RHOCONF().getInt("WebView.cacheSize") );
+        int nValue = 0;
+        convertFromStringW( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\Cache" ), nValue );
+        oResult.set( nValue );
+
+        //oResult.set( RHOCONF().getInt("WebView.cacheSize") );
     }
 
     //TODO: EnableCache - does it supported by Moto Webkit ?
