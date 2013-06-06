@@ -24,12 +24,12 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-if System.get_property('platform') == 'WINDOWS_DESKTOP'
-  module Alert
+#if System.get_property('platform') == 'WINDOWS_DESKTOP'
+#  module Alert
     # show_popup (String) => ...
 
     #def self.show_status( title, msg, hide)
     #  #TODO: show_status
     #end
-  end
-end
+ # end
+#end

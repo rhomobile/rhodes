@@ -280,9 +280,9 @@ void RhoRubyStart()
 #endif
     Init_RhoEvent();
     Init_Calendar();
-#if !defined(OS_WINDOWS_DESKTOP)
+//#if !defined(OS_WINDOWS_DESKTOP)
     Init_Alert();
-#endif
+//#endif
 
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)
