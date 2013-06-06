@@ -54,6 +54,11 @@
                                     <DESC>When true when Tab is not required to preserve state, so it can be closed to open another tabs in case of limited memory.</DESC>
                                     <PLATFORM>WM</PLATFORM>
                                 </PARAM>
+                                
+                                <PARAM name="createOnInit" type="BOOLEAN" default="false">
+                                    <PLATFORM>WM</PLATFORM>
+                                    <DESC>Create tab immediatly when TabBar is created. Action also will be executed. If false, when tab will be created when first switch to the tab executed.</DESC>
+                                </PARAM>
 
                             </PARAMS>
                         </PARAM>
@@ -77,9 +82,9 @@
                                 <DESC>Do not display Tabs with labels.</DESC>
                             </PARAM>
 
-                            <PARAM name="createOnDemand" type="BOOLEAN">
+                            <PARAM name="createOnInit" type="BOOLEAN" default="false">
                                 <PLATFORM>WM</PLATFORM>
-                                <DESC>Create tabs on demand. If false, when all tabs will be created immediately.</DESC>
+                                <DESC>Create tabs immediatly when TabBar is created. Action also will be executed. If false, when each tab will be created when first switch to the tab executed.</DESC>
                             </PARAM>
                             <PARAM name="placeTabsBottom" type="BOOLEAN">
                                 <PLATFORM>Android</PLATFORM>
@@ -112,11 +117,8 @@
                                 <VALUE value ="onTabFocus">
                                     <DESC>Fires when a tab gains focus</DESC>
                                 </VALUE>
-                                <VALUE value ="onTabNew">
-                                    <DESC>Fires when a new tab is created</DESC>
-                                </VALUE>
-                                <VALUE value ="onTabNewRequest">
-                                    <DESC>Fires when a new tab is requested</DESC>
+                                <VALUE value ="onTabNewError">
+                                    <DESC>Fires when a new tab cannot be created</DESC>
                                 </VALUE>
                             </VALUES>
                         </PARAM>
