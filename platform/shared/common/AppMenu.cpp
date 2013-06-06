@@ -34,6 +34,10 @@
 #include <algorithm>
 #include <functional>
 
+#ifdef OS_WP8
+extern "C" void createMenu();
+#endif
+
 namespace
 {
 
@@ -181,6 +185,9 @@ void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool
             String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
             addAppMenuItem( strKey, strValue, bLeftMenu );
         }
+#ifdef OS_WP8
+		createMenu();
+#endif
     }
 }
 

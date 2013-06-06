@@ -45,11 +45,12 @@ class CNativeTabbar
         bool m_bUseCurrentViewForTab;
         bool m_bReloadPage;
         bool m_bPerishable;
+        bool m_bCreateOnInit;
         HWND m_hwndTab;
         int m_nTabID;
 
-        CTabBarItem(const String& strAction, const String& strLabel, bool bUseCurrentViewForTab, bool bReloadPage, bool bPerishable ): m_bUseCurrentViewForTab(bUseCurrentViewForTab), m_bReloadPage(bReloadPage), 
-            m_strAction(strAction), m_strLabel(strLabel), m_hwndTab(0), m_nTabID(-1), m_bPerishable(bPerishable){}
+        CTabBarItem(const String& strAction, const String& strLabel, bool bUseCurrentViewForTab, bool bReloadPage, bool bPerishable, bool bCreateOnInit ): m_bUseCurrentViewForTab(bUseCurrentViewForTab), m_bReloadPage(bReloadPage), 
+            m_strAction(strAction), m_strLabel(strLabel), m_hwndTab(0), m_nTabID(-1), m_bPerishable(bPerishable), m_bCreateOnInit(bCreateOnInit){}
     };
 
     Vector<CTabBarItem> m_arTabs;
@@ -64,10 +65,11 @@ public:
     void CreateTabbarEx(const rho::Vector<rho::String>& tabbarElements, const rho::Hashtable<rho::String, rho::String>& tabBarProperties, rho::apiGenerator::CMethodResult& oResult);
     void RemoveTabbar();
     void RemoveTab(int index);
-    void SwitchTab(int index);
+    void SwitchTab(int index, bool bCreateOnly=false);
     void SetBadge(int index, const char* badge);
-    int  GetCurrentTabIndex();
-    int  GetCurrentTabIndexExternal();
+    int GetCurrentTabID();
+    int GetTabID(int nIndex);
+    int GetCurrentTabIndex();    
     bool IsTabBarStarted();
     void SwitchTabByName(const char* szTabName, bool bExecuteJS);
     void SetStartTabName(const String& strTabName){m_strStartTabName = strTabName;}
