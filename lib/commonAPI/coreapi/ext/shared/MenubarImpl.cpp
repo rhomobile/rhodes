@@ -43,7 +43,7 @@ virtual void getMainMenu(rho::apiGenerator::CMethodResult& oResult)
 virtual void setMainMenu( const rho::Vector<rho::String>& mainMenu, rho::apiGenerator::CMethodResult& oResult)
 {
 #ifdef OS_ANDROID
-    rho_impl_setNativeMenu(value);
+    rho_impl_setNativeMenu(mainMenu);
 #else
     RHODESAPP().getAppMenu().setAppMenuJSONItems(mainMenu);
     
