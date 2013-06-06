@@ -28,7 +28,7 @@ module Rho
   class NativeMenubar
 
     class << self
-      def defaultNativeMenu()
+      def defaultMainMenu()
         make_default_native_menu()        
       end      
     end   
