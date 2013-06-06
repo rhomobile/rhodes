@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C00E09821761424A00ADA93E /* MenubarImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09811761424A00ADA93E /* MenubarImpl.cpp */; };
+		C00E098A1761429200ADA93E /* INativeMenubar.h in Headers */ = {isa = PBXBuildFile; fileRef = C00E09851761429200ADA93E /* INativeMenubar.h */; };
+		C00E098B1761429200ADA93E /* NativeMenubar_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09861761429200ADA93E /* NativeMenubar_js_wrap.cpp */; };
+		C00E098C1761429200ADA93E /* NativeMenubar_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09871761429200ADA93E /* NativeMenubar_ruby_wrap.cpp */; };
+		C00E098D1761429200ADA93E /* NativeMenubarBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09881761429200ADA93E /* NativeMenubarBase.cpp */; };
+		C00E098E1761429200ADA93E /* NativeMenubarBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C00E09891761429200ADA93E /* NativeMenubarBase.h */; };
+		C00E0994176142C900ADA93E /* nativemenubar_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E0991176142C900ADA93E /* nativemenubar_api_init.cpp */; };
+		C00E0995176142C900ADA93E /* nativemenubar_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E0992176142C900ADA93E /* nativemenubar_js_api.cpp */; };
+		C00E0996176142C900ADA93E /* nativemenubar_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C00E0993176142C900ADA93E /* nativemenubar_ruby_api.c */; };
 		C06A0F0316F21C880065EF81 /* ILog.h in Headers */ = {isa = PBXBuildFile; fileRef = C06A0EC016F21C880065EF81 /* ILog.h */; };
 		C06A0F0A16F21C880065EF81 /* Log_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EC716F21C880065EF81 /* Log_js_wrap.cpp */; };
 		C06A0F0B16F21C880065EF81 /* Log_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EC816F21C880065EF81 /* Log_ruby_wrap.cpp */; };
@@ -146,6 +155,15 @@
 
 /* Begin PBXFileReference section */
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C00E09811761424A00ADA93E /* MenubarImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MenubarImpl.cpp; path = ../../shared/MenubarImpl.cpp; sourceTree = "<group>"; };
+		C00E09851761429200ADA93E /* INativeMenubar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INativeMenubar.h; path = ../../shared/generated/cpp/INativeMenubar.h; sourceTree = "<group>"; };
+		C00E09861761429200ADA93E /* NativeMenubar_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeMenubar_js_wrap.cpp; path = ../../shared/generated/cpp/NativeMenubar_js_wrap.cpp; sourceTree = "<group>"; };
+		C00E09871761429200ADA93E /* NativeMenubar_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeMenubar_ruby_wrap.cpp; path = ../../shared/generated/cpp/NativeMenubar_ruby_wrap.cpp; sourceTree = "<group>"; };
+		C00E09881761429200ADA93E /* NativeMenubarBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeMenubarBase.cpp; path = ../../shared/generated/cpp/NativeMenubarBase.cpp; sourceTree = "<group>"; };
+		C00E09891761429200ADA93E /* NativeMenubarBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeMenubarBase.h; path = ../../shared/generated/cpp/NativeMenubarBase.h; sourceTree = "<group>"; };
+		C00E0991176142C900ADA93E /* nativemenubar_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nativemenubar_api_init.cpp; path = ../../shared/generated/nativemenubar_api_init.cpp; sourceTree = "<group>"; };
+		C00E0992176142C900ADA93E /* nativemenubar_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = nativemenubar_js_api.cpp; path = ../../shared/generated/nativemenubar_js_api.cpp; sourceTree = "<group>"; };
+		C00E0993176142C900ADA93E /* nativemenubar_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nativemenubar_ruby_api.c; path = ../../shared/generated/nativemenubar_ruby_api.c; sourceTree = "<group>"; };
 		C06A0EC016F21C880065EF81 /* ILog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILog.h; sourceTree = "<group>"; };
 		C06A0EC716F21C880065EF81 /* Log_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Log_js_wrap.cpp; sourceTree = "<group>"; };
 		C06A0EC816F21C880065EF81 /* Log_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Log_ruby_wrap.cpp; sourceTree = "<group>"; };
@@ -331,6 +349,7 @@
 				FABB0455174BE108002DFB11 /* Navbar */,
 				FAEB2BB31743C4F4001AE032 /* NativeTabbar */,
 				FAEB2B871743C425001AE032 /* NativeToolbar */,
+				C00E0980176141F500ADA93E /* NativeMenuBar */,
 				FA1C7F9A16FBCA740024FB5C /* Application */,
 				C06A0DE416F21BCC0065EF81 /* Log */,
 				FA7C85B216E411C20000EAE6 /* NetworkAccess */,
@@ -348,6 +367,54 @@
 				FAD45FD51225FED600141873 /* CoreAPI_Prefix.pch */,
 			);
 			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		C00E0980176141F500ADA93E /* NativeMenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				C00E09831761425000ADA93E /* Impl */,
+				C00E098F1761429A00ADA93E /* generated */,
+			);
+			name = NativeMenuBar;
+			sourceTree = "<group>";
+		};
+		C00E09831761425000ADA93E /* Impl */ = {
+			isa = PBXGroup;
+			children = (
+				C00E09811761424A00ADA93E /* MenubarImpl.cpp */,
+			);
+			name = Impl;
+			sourceTree = "<group>";
+		};
+		C00E09841761426800ADA93E /* cpp */ = {
+			isa = PBXGroup;
+			children = (
+				C00E09851761429200ADA93E /* INativeMenubar.h */,
+				C00E09861761429200ADA93E /* NativeMenubar_js_wrap.cpp */,
+				C00E09871761429200ADA93E /* NativeMenubar_ruby_wrap.cpp */,
+				C00E09881761429200ADA93E /* NativeMenubarBase.cpp */,
+				C00E09891761429200ADA93E /* NativeMenubarBase.h */,
+			);
+			name = cpp;
+			sourceTree = "<group>";
+		};
+		C00E098F1761429A00ADA93E /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C00E09841761426800ADA93E /* cpp */,
+				C00E0990176142B200ADA93E /* shared */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		C00E0990176142B200ADA93E /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				C00E0991176142C900ADA93E /* nativemenubar_api_init.cpp */,
+				C00E0992176142C900ADA93E /* nativemenubar_js_api.cpp */,
+				C00E0993176142C900ADA93E /* nativemenubar_ruby_api.c */,
+			);
+			name = shared;
 			sourceTree = "<group>";
 		};
 		C06A0DE416F21BCC0065EF81 /* Log */ = {
@@ -990,6 +1057,8 @@
 				FA4EC2EC174D106600969368 /* NavbarSingletonBase.h in Headers */,
 				FA4EC2FE174D109B00969368 /* Navbar.h in Headers */,
 				FA4EC302174D109B00969368 /* NavbarSingleton.h in Headers */,
+				C00E098A1761429200ADA93E /* INativeMenubar.h in Headers */,
+				C00E098E1761429200ADA93E /* NativeMenubarBase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1138,6 +1207,13 @@
 				C57BD902175392F200494EA3 /* RhoFile_js_wrap.cpp in Sources */,
 				C57BD903175392F200494EA3 /* RhoFile_ruby_wrap.cpp in Sources */,
 				C57BD904175392F200494EA3 /* RhoFileBase.cpp in Sources */,
+				C00E09821761424A00ADA93E /* MenubarImpl.cpp in Sources */,
+				C00E098B1761429200ADA93E /* NativeMenubar_js_wrap.cpp in Sources */,
+				C00E098C1761429200ADA93E /* NativeMenubar_ruby_wrap.cpp in Sources */,
+				C00E098D1761429200ADA93E /* NativeMenubarBase.cpp in Sources */,
+				C00E0994176142C900ADA93E /* nativemenubar_api_init.cpp in Sources */,
+				C00E0995176142C900ADA93E /* nativemenubar_js_api.cpp in Sources */,
+				C00E0996176142C900ADA93E /* nativemenubar_ruby_api.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
