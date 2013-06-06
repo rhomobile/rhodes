@@ -1408,7 +1408,11 @@ CRubyMutex::CRubyMutex(boolean bIgnore) : m_nLockCount(0), m_valThread(0), m_val
 void CRubyMutex::create()
 {
     if ( !m_bIgnore && !m_valMutex)
-        m_valMutex = rho_ruby_create_mutex();
+    {
+        unsigned long curThread = rho_ruby_current_thread();
+        if ( curThread != null )
+            m_valMutex = rho_ruby_create_mutex();
+    }
 }
 
 CRubyMutex::~CRubyMutex()

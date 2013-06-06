@@ -130,10 +130,7 @@ void CMainWindow::Navigate2(BSTR URL, int index)
 	if ( m_pBrowserEng && !cleared_url.empty()) 
     {
 		StringW cw = convertToStringW(cleared_url);
-        if ( index < 0 )
-            index = m_oTabBar.GetCurrentTabIndex();
-
-        m_pBrowserEng->Navigate(cw.c_str() ,index); 
+        m_pBrowserEng->Navigate(cw.c_str(), m_oTabBar.GetTabID(index)); 
 	}
 }
 
@@ -146,10 +143,7 @@ void CMainWindow::Navigate(BSTR URL, int index)
 		//BSTR cleared_url_bstr = SysAllocString(cw.c_str());
 	    //m_spIWebBrowser2->Navigate(cleared_url_bstr, NULL, &CComVariant(L"_self"), NULL, NULL);
 
-        if ( index < 0 )
-            index = m_oTabBar.GetCurrentTabIndex();
-
-        m_pBrowserEng->Navigate(cw.c_str() ,index );
+        m_pBrowserEng->Navigate(cw.c_str(), m_oTabBar.GetTabID(index) );
 	}
 }
 
@@ -402,14 +396,14 @@ HWND CMainWindow::getWebViewHWND()
     if (!m_pBrowserEng)
         return 0;
 
-    return m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex());
+    return m_pBrowserEng->GetHTMLWND( m_oTabBar.GetCurrentTabID() );
 }
 
 void CMainWindow::hideWebView() 
 {
     if ( m_pBrowserEng )
     {
-        ::ShowWindow( m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()), SW_HIDE );
+        ::ShowWindow( m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()), SW_HIDE );
 	    mIsBrowserViewHided = true;
     }
 }
@@ -418,7 +412,7 @@ void CMainWindow::showWebView()
 {
     if ( m_pBrowserEng )
     {
-        ::ShowWindow( m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()), SW_SHOW );
+        ::ShowWindow( m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()), SW_SHOW );
 	    mIsBrowserViewHided = false;
     }
 }
@@ -522,8 +516,8 @@ void CMainWindow::resizeWindow( int xSize, int ySize)
     }
 #endif
 
-    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()) )
-        m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabIndex(), rect);
+    if ( m_pBrowserEng && m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()) )
+        m_pBrowserEng->ResizeOnTab(m_oTabBar.GetCurrentTabID(), rect);
 
     if ( m_toolbar.m_hWnd )
         m_toolbar.MoveWindow(0, ySize-m_toolbar.getHeight(), xSize, m_toolbar.getHeight());
@@ -977,7 +971,7 @@ LRESULT CMainWindow::OnSetFocus (UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
         return 0;
     }
 
-    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()) : NULL;
+    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()) : NULL;
     if (hBrowserWnd && ::IsWindowVisible(m_hWnd) ) //!::IsIconic(m_hWnd))
 	{
 		if (hWndLostFocus == hBrowserWnd)
@@ -1005,7 +999,7 @@ LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	restoreWebView();
 
     if ( m_pBrowserEng )
-        m_pBrowserEng->BackOnTab(m_oTabBar.GetCurrentTabIndex(), 1);
+        m_pBrowserEng->BackOnTab(m_oTabBar.GetCurrentTabID(), 1);
 
     return 0;
 }
@@ -1015,7 +1009,7 @@ LRESULT CMainWindow::OnNavigateForwardCommand(WORD /*wNotifyCode*/, WORD /*wID*/
 	restoreWebView();
 
     if ( m_pBrowserEng )
-        m_pBrowserEng->ForwardOnTab(m_oTabBar.GetCurrentTabIndex());
+        m_pBrowserEng->ForwardOnTab(m_oTabBar.GetCurrentTabID());
 
     return 0;
 }
@@ -1045,10 +1039,11 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 };
 
-LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnRefreshCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
+
     if ( m_pBrowserEng )
-        m_pBrowserEng->ReloadOnTab(false, m_oTabBar.GetCurrentTabIndex());
+        m_pBrowserEng->ReloadOnTab(false, m_oTabBar.GetTabID((int)hWndCtl));
 
     return 0;
 }
@@ -1081,11 +1076,8 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
         LPTSTR wcurl = (LPTSTR)(nd->url);
         if (wcurl) 
         {
-            if ( nd->index < 0 )
-                nd->index = m_oTabBar.GetCurrentTabIndex();
-
             if ( m_pBrowserEng )
-                m_pBrowserEng->executeJavascript(wcurl,nd->index);
+                m_pBrowserEng->executeJavascript(wcurl, m_oTabBar.GetTabID(nd->index) );
         }
         delete nd;
     }
@@ -1095,7 +1087,7 @@ LRESULT CMainWindow::OnExecuteJSCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 LRESULT CMainWindow::OnStopNavigate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     if ( m_pBrowserEng )
-        m_pBrowserEng->StopOnTab((UINT)hWndCtl);
+        m_pBrowserEng->StopOnTab( m_oTabBar.GetTabID((int)hWndCtl) );
 
     return 0;
 }
@@ -1106,7 +1098,7 @@ LRESULT CMainWindow::OnZoomPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
     float fZoom = pFloatData->m_fValue;
     delete pFloatData;
     if ( m_pBrowserEng )
-        m_pBrowserEng->ZoomPageOnTab(fZoom, m_oTabBar.GetCurrentTabIndex());
+        m_pBrowserEng->ZoomPageOnTab(fZoom, m_oTabBar.GetCurrentTabID());
 
     return 0;
 }
@@ -1115,7 +1107,7 @@ LRESULT CMainWindow::OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
 {
     int nZoom = (int)hWndCtl;
     if ( m_pBrowserEng )
-        m_pBrowserEng->ZoomTextOnTab(nZoom, m_oTabBar.GetCurrentTabIndex());
+        m_pBrowserEng->ZoomTextOnTab(nZoom, m_oTabBar.GetCurrentTabID());
     return 0;
 }
 
@@ -1344,7 +1336,7 @@ LRESULT CMainWindow::OnLicenseScreen(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 #endif
 
     //Fix issue with lost focus after License Screen hides
-    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()) : NULL;
+    HWND hBrowserWnd = m_pBrowserEng ? m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()) : NULL;
     if (hBrowserWnd && !::IsIconic(m_hWnd))
         ::SetFocus(hBrowserWnd);
 
@@ -1471,7 +1463,7 @@ void __stdcall CMainWindow::OnNavigateComplete2(IDispatch* pDisp, VARIANT * pvtU
 void CMainWindow::ProcessNavigateComplete(LPCTSTR url)
 {
 	if ( !m_bLoading && !mIsBrowserViewHided && m_pBrowserEng )
-        ::ShowWindow(m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()), SW_SHOW);
+        ::ShowWindow(m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()), SW_SHOW);
 
 
     RAWLOGC_INFO("WebView", "Page load complete." );
@@ -1755,7 +1747,7 @@ void CMainWindow::createCustomMenu()
 	CMenu sub;
 	CMenu popup;
 	
-    if (!m_pBrowserEng || !m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabIndex()))
+    if (!m_pBrowserEng || !m_pBrowserEng->GetHTMLWND(m_oTabBar.GetCurrentTabID()))
         return;
 
 	VERIFY(menu.CreateMenu());

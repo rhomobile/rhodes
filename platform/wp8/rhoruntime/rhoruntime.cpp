@@ -75,7 +75,7 @@ void CRhoRuntime::Execute()
     //RHODESAPP().setExtManager( &m_oExtManager );
 
 	//Create Main window
-	createCustomMenu();
+	//createCustomMenu();
 
 	RHODESAPP().startApp();
 }
@@ -323,6 +323,11 @@ bool CJSONEntryProxy::getBoolean()
 	return rho::common::convertStringCToWP8(m_Entry->getString());
 }
 
+
+extern "C" void createMenu()
+{
+	CRhoRuntime::getInstance()->createCustomMenu();
+}
 
 // old API functions
 

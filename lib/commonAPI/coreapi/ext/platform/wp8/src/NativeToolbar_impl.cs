@@ -78,14 +78,10 @@ namespace NativeToolbarImpl
                             if (icon != null)
                                 icon = CRhoRuntime.getInstance().getRERuntimePath("lib/" + icon);
                         }
-                        //TODO: callback
                         mp.toolbarAddAction(icon, label, action);
                     }
                 }
-	            //TODO: setToolbarStyle
-	            //CRhoRuntime::getInstance()->getMainPage()->setToolbarStyle(false, rho::common::convertStringCToWP8(rgbBackColor));
-	            //TODO: toolbarShow
-                //CRhoRuntime::getInstance()->getMainPage()->toolbarShow();
+                mp.toolbarShow();
             }
         }
 

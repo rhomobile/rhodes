@@ -140,7 +140,7 @@ template<>  inline String convertToStringA<StringW>( const StringW& value ){ ret
 */
 #define CONVERT_TYPE_W( Type, Fmt ) \
 template<> inline void convertFromStringW<Type>( const wchar_t* szValue, Type& value )\
-{ swscanf( szValue, Fmt, &value ); }\
+{ if (szValue) swscanf( szValue, Fmt, &value ); }\
 template<> inline StringW convertToStringW<Type>( const Type& value )\
 { \
     wchar_t buf[100];\
