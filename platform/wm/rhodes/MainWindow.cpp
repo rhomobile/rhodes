@@ -1098,8 +1098,12 @@ LRESULT CMainWindow::OnZoomPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
     float fZoom = pFloatData->m_fValue;
     delete pFloatData;
     if ( m_pBrowserEng )
-        m_pBrowserEng->ZoomPageOnTab(fZoom, m_oTabBar.GetCurrentTabID());
-
+    {
+        BOOL bRes = m_pBrowserEng->ZoomPageOnTab(fZoom, m_oTabBar.GetCurrentTabID());
+        LOG(INFO) + "ZoomPageOnTab return : " + bRes;
+        if (bRes)
+            InvalidateRect(NULL, TRUE);
+    }
     return 0;
 }
 
@@ -1107,7 +1111,13 @@ LRESULT CMainWindow::OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl
 {
     int nZoom = (int)hWndCtl;
     if ( m_pBrowserEng )
-        m_pBrowserEng->ZoomTextOnTab(nZoom, m_oTabBar.GetCurrentTabID());
+    {
+        BOOL bRes = m_pBrowserEng->ZoomTextOnTab(nZoom, m_oTabBar.GetCurrentTabID());
+        LOG(INFO) + "ZoomTextOnTab return : " + bRes;
+        if (bRes)
+            InvalidateRect(NULL, TRUE);
+    }
+
     return 0;
 }
 
