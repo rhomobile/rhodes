@@ -595,10 +595,24 @@
 }
 
 - (void)navigate:(NSString *)url tab:(int)index {
+	if (index == -1) {
+		index = [self activeTab];
+	}
+    RhoTabBarData *td = [self tabData:index];
+    if (td != nil) {
+        td.loaded = YES;
+    }
     [[self subView:index] navigate:url tab:0];
 }
 
 - (void)navigateRedirect:(NSString *)url tab:(int)index {
+	if (index == -1) {
+		index = [self activeTab];
+	}
+    RhoTabBarData *td = [self tabData:index];
+    if (td != nil) {
+        td.loaded = YES;
+    }
     [[self subView:index] navigateRedirect:url tab:0];
 }
 

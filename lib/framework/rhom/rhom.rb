@@ -234,6 +234,7 @@ module Rhom
 		  
 
         def search(args)
+          #TODO : remove it, use  Rho::RhoConnectClient.search
 if defined?(RHOCONNECT_CLIENT_PRESENT)
           src_ar = args[:sources]
           
@@ -248,6 +249,7 @@ end
         end
 	  
 		def have_local_changes
+		    #TODO: enumerate all sync sources, create array of partitions and run query for all partition. 
 			res = ::Rho::RHO.get_user_db().execute_sql("SELECT object FROM changed_values WHERE sent<=1 LIMIT 1 OFFSET 0")
 			return res.length > 0
 		end

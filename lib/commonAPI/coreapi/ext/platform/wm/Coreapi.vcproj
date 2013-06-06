@@ -2128,9 +2128,7 @@
 				</Filter>
 			</Filter>
 		</Filter>
-		<Filter
-			Name="NativeMenubar"
-			>
+		<Filter Name="NativeMenubar">
 			<File
 				RelativePath="..\..\shared\MenubarImpl.cpp"
 				>
@@ -2181,6 +2179,185 @@
 						RelativePath="..\..\shared\generated\cpp\NativeMenubarBase.h"
 						>
 					</File>
+					</Filter>
+
+				</Filter>
+			</Filter>
+
+                <Filter Name="Notification">
+			<File
+				RelativePath=".\src\NotificationImpl.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<Filter
+				Name="shared"
+				>
+				<Filter
+					Name="generated"
+					>
+					<File
+						RelativePath="..\..\shared\generated\notification_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\notification_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\notification_ruby_api.c"
+						>
+					</File>
+					<Filter
+						Name="cpp"
+						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\INotification.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Notification_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Notification_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\NotificationBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\NotificationBase.h"
+							>
+						</File>
+					</Filter>
+
 				</Filter>
 			</Filter>
 		</Filter>
