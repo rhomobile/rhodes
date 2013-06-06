@@ -56,6 +56,10 @@ namespace common{
 
 IMPLEMENT_LOGCLASS(CAppMenu, "AppMenu");
 
+const String CAppMenu::g_actionTag  = "action";
+const String CAppMenu::g_labelTag   = "label";
+const String CAppMenu::g_disableTag = "disabled";
+
 void CAppMenu::setEnableMenuItem( const String& strLabel, bool enableItem, bool bLeftMenu )
 {
     synchronized(m_mxAppMenu) 
@@ -106,35 +110,78 @@ void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, b
     for ( int i = 0; i < (int)arAppMenuItems.size(); i++)
     {
         Hashtable<String, String> hash;
-        hash[arAppMenuItems[i].m_strLabel] = arAppMenuItems[i].m_strLink;
+        hash[g_labelTag]   = arAppMenuItems[i].m_strLabel;
+        hash[g_actionTag]  = arAppMenuItems[i].m_strLink;
+        hash[g_disableTag] = arAppMenuItems[i].m_isEnable == false ? "true" : "false";
         arRes.addElement(hash);
     }
 }
 
-void CAppMenu::getMenuItemEx(Hashtable<String, String>& hashRes, bool bLeftItem/* = false*/)
+void CAppMenu::getMenuButtonEx(Hashtable<String, String>& hashRes, bool bLeftItem/* = false*/)
 {
-    CAppMenuItem oItem = bLeftItem ? getLeftItem() : getRightItem();
+    CAppMenuItem oItem = bLeftItem ? getLeftButton() : getRightButton();
 
-    hashRes.put(oItem.m_strLabel, oItem.m_strLink);
+    hashRes.put(g_labelTag, oItem.m_strLabel);
+    hashRes.put(g_actionTag, oItem.m_strLink);
+    hashRes.put(g_disableTag, oItem.m_isEnable == false ? "true" : "false");
 }
 
-void CAppMenu::setLeftItem( const String& strLabel, const String& strLink )
+void CAppMenu::changeButtonInfo(CAppMenuItem& button, const rho::Hashtable<rho::String, rho::String>& hashButton)
 {
+    typedef rho::Hashtable<rho::String, rho::String>::const_iterator citerator_type;
+
     synchronized(m_mxAppMenu) 
 	{
-        m_oLeftItem = CAppMenuItem(strLabel, strLink );
+        String strLabel, strAction, strDisable;
+        citerator_type it = hashButton.end();
+     
+        it = hashButton.find(g_labelTag);
+
+        if (it != hashButton.end())
+            strLabel = it->second;
+        else
+            return;
+
+        it = hashButton.find(g_actionTag);
+
+        if (it != hashButton.end())
+            strAction = it->second;
+        else
+            return;
+
+        it = hashButton.find(g_disableTag);
+
+        if (it != hashButton.end())
+            strDisable = it->second;
+        else
+            return;
+
+        button = CAppMenuItem(strLabel, strAction);
+
+        if (strDisable == "true")
+            button.m_isEnable = false;
+        else
+            button.m_isEnable = true;
     }
 }
 
-void CAppMenu::setRightItem( const String& strLabel, const String& strLink )
+void CAppMenu::setLeftButton( const rho::Hashtable<rho::String, rho::String>& hashButton )
 {
     synchronized(m_mxAppMenu) 
 	{
-        m_oRightItem = CAppMenuItem(strLabel, strLink );
+        changeButtonInfo(m_oLeftItem, hashButton);
     }
 }
 
-CAppMenuItem CAppMenu::getLeftItem()
+void CAppMenu::setRightButton( const rho::Hashtable<rho::String, rho::String>& hashButton )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        changeButtonInfo(m_oRightItem, hashButton);
+    }
+}
+
+CAppMenuItem CAppMenu::getLeftButton()
 {
     synchronized(m_mxAppMenu) 
 	{
@@ -142,7 +189,7 @@ CAppMenuItem CAppMenu::getLeftItem()
     }
 }
 
-CAppMenuItem CAppMenu::getRightItem()
+CAppMenuItem CAppMenu::getRightButton()
 {
     synchronized(m_mxAppMenu) 
 	{
@@ -150,26 +197,8 @@ CAppMenuItem CAppMenu::getRightItem()
     }
 }
 
-void CAppMenu::setEnableLeftItem( bool isEnable )
-{
-    synchronized(m_mxAppMenu) 
-	{
-        m_oLeftItem.m_isEnable = isEnable;
-    }
-}
-
-void CAppMenu::setEnableRightItem( bool isEnable )
-{
-    synchronized(m_mxAppMenu) 
-	{
-        m_oRightItem.m_isEnable = isEnable;
-    }
-}
-
 void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
 {
-    //rho::Vector< Hashtable<String, String> > arRes;
-
     synchronized(m_mxAppMenu) 
 	{
         if ( bLeftMenu )
@@ -184,6 +213,52 @@ void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool
             String strKey = oIter.getCurKey();
             String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
             addAppMenuItem( strKey, strValue, bLeftMenu );
+        }
+    }
+}
+
+void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        if ( bLeftMenu )
+		    m_arAppLeftMenuItems.clear();
+        else
+            m_arAppMenuItems.clear();
+
+        RHODESAPP().setAppBackUrl("");
+
+        for (int i = 0; i < (int)arMenu.size(); i++)
+        {
+            rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
+
+            String label, action, disable;
+
+            while(!oIter.isEnd())
+            {
+                String strKey = oIter.getCurKey();
+                String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
+
+                if (strKey == g_labelTag)
+                    label = strValue;
+
+                if (strKey == g_actionTag)
+                    action = strValue;
+
+                if (strKey == g_disableTag)
+                    disable = strValue;
+
+                oIter.next();
+            }
+
+            addAppMenuItem( label, action, bLeftMenu );
+
+            bool isDisable = (bool)(disable == "false");
+
+            if ( bLeftMenu )
+                setEnableMenuItem(label, isDisable, true);
+            else
+                setEnableMenuItem(label, isDisable, false);
         }
 #ifdef OS_WP8
 		createMenu();
