@@ -12,6 +12,7 @@ extern "C" void Init_NativeTabbar();
 extern "C" void Init_NativeTabbar_extension();
 extern "C" void Init_Navbar();
 extern "C" void Init_RhoFile();
+extern "C" void Init_NativeMenuBar();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -42,4 +43,6 @@ extern "C" void Init_CoreAPI_Extension()
 #if defined(OS_MACOSX) || defined(OS_ANDROID)
     Init_RhoFile();
 #endif
+
+    Init_NativeMenuBar();
 }

@@ -8,10 +8,11 @@
         <TEMPLATES>
         </TEMPLATES>
 
-        <PROPERTIES access="STATIC" generateAccessors="false">
+        <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="mainMenu" type="ARRAY">
                 <DESC>Main Native MenuBar items</DESC>
                 <PARAM type="HASH">
+
                     <PARAMS>
                         <PARAM name="label" type="STRING">
                             <DESC>Visible label.</DESC>
@@ -23,6 +24,7 @@
                             <DESC>Menu item will be displayed as disabled.</DESC>
                         </PARAM>
                     </PARAMS>
+
                 </PARAM>
             </PROPERTY>
             <PROPERTY name="extraMenu" type="ARRAY">
