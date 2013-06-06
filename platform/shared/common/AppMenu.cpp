@@ -207,6 +207,26 @@ void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool
             m_arAppMenuItems.clear();
 
         RHODESAPP().setAppBackUrl("");
+        for (int i = 0; i < (int)arMenu.size(); i++)
+        {
+            rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
+            String strKey = oIter.getCurKey();
+            String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
+            addAppMenuItem( strKey, strValue, bLeftMenu );
+        }
+    }
+}
+
+void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
+{
+    synchronized(m_mxAppMenu) 
+	{
+        if ( bLeftMenu )
+		    m_arAppLeftMenuItems.clear();
+        else
+            m_arAppMenuItems.clear();
+
+        RHODESAPP().setAppBackUrl("");
 
         for (int i = 0; i < (int)arMenu.size(); i++)
         {
