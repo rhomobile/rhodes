@@ -112,11 +112,8 @@
                                 <VALUE value ="onTabFocus">
                                     <DESC>Fires when a tab gains focus</DESC>
                                 </VALUE>
-                                <VALUE value ="onTabNew">
-                                    <DESC>Fires when a new tab is created</DESC>
-                                </VALUE>
-                                <VALUE value ="onTabNewRequest">
-                                    <DESC>Fires when a new tab is requested</DESC>
+                                <VALUE value ="onTabNewError">
+                                    <DESC>Fires when a new tab cannot be created</DESC>
                                 </VALUE>
                             </VALUES>
                         </PARAM>
