@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="Coreapi"
 	ProjectGUID="{E0343F80-50EA-0130-78EC-3CAEC51BD50E}"
 	RootNamespace="Coreapi"
@@ -2137,6 +2137,10 @@
 			</File>
 			<File
 				RelativePath="..\..\NativeMenubar.xml"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\RhoNativeMenubarApi.rb"
 				>
 			</File>
 			<Filter
