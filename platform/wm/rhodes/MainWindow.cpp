@@ -1671,8 +1671,8 @@ BOOL CMainWindow::TranslateAccelerator(MSG* pMsg)
 
 LRESULT CMainWindow::OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftItem();
-    CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightItem();
+    CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftButton();
+    CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightButton();
 
     if ( oLeftItem.m_strLabel.length() > 0 )
     {
@@ -1701,7 +1701,7 @@ LRESULT CMainWindow::OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 LRESULT CMainWindow::OnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftItem();
+    CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftButton();
 
     if ( oLeftItem.m_strLink.length() == 0)
     {
@@ -1734,7 +1734,7 @@ LRESULT CMainWindow::OnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT CMainWindow::OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightItem();
+    CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightButton();
 
     if ( oRightItem.m_strLink.length() == 0)
     {
