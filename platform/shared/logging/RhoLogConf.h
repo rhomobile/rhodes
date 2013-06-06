@@ -96,6 +96,8 @@ class LogSettings{
     ILogSink*   m_pOutputSink;
     ILogSink*   m_pLogViewSink;
     ILogSink*   m_pSocketSink;
+    
+    Hashtable<ILogSink*, bool> m_pAuxSinks;
     IMemoryInfoCollector* m_pMemoryInfoCollector;
 
     static common::CMutex m_FlushLock;
@@ -167,6 +169,9 @@ public:
 
     void saveToFile();
     void loadFromConf(rho::common::RhoSettings& oRhoConf);
+    
+    void addAuxSink( ILogSink* sink );
+    void removeAuxSink( ILogSink* sink );
 
 private:
 	void internalSinkLogMessage( String& strMsg );
