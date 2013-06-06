@@ -45,7 +45,7 @@ virtual void setMainMenu( const rho::Vector<rho::String>& mainMenu, rho::apiGene
 #ifdef OS_ANDROID
     rho_impl_setNativeMenu(mainMenu);
 #else
-    RHODESAPP().getAppMenu().setAppMenuJSONItems(mainMenu);
+    RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(mainMenu);
     
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
     rho_webview_update_menu(1);
@@ -64,7 +64,7 @@ virtual void getExtraMenu(rho::apiGenerator::CMethodResult& oResult)
 
 virtual void setExtraMenu( const rho::Vector<rho::String>& extraMenu, rho::apiGenerator::CMethodResult& oResult)
 {
-    RHODESAPP().getAppMenu().setAppMenuJSONItems(extraMenu, true);
+    RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(extraMenu, true);
 }
 
 virtual void getMainButton(rho::apiGenerator::CMethodResult& oResult)
