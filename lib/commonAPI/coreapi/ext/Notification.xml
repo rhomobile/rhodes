@@ -3,9 +3,6 @@
 	<MODULE name="Notification" parent="Rho">
 		<HELP_OVERVIEW></HELP_OVERVIEW>
 		<MORE_HELP></MORE_HELP>
-        <ALIASES>
-            <ALIAS new="Alert" deprecated="true"/>
-        </ALIASES>
 		<PLATFORM>iOS, Android, WM</PLATFORM>
 		<TEMPLATES>
 		</TEMPLATES>
@@ -18,11 +15,6 @@
 		</PROPERTIES>
 
 		<METHODS access="STATIC">
-            <ALIASES>
-                <ALIAS new="hide_popup" existing="hidePopup" deprecated="true"/>
-                <ALIAS new="show_popup" existing="showPopup" deprecated="true"/>
-                <ALIAS new="show_status" existing="showStatus" deprecated="true"/>               
-            </ALIASES>
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
                 <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button.</DESC>
@@ -46,7 +38,7 @@
 					</PARAM>
 				</PARAMS>
 				<CALLBACK type="HASH">
-                    <DESC>Not providing a callback to be invoked when a barcode is scanned will result in that barcode being output as keystrokes.</DESC>
+					<DESC>TODO</DESC>
 					<PARAMS>
 						<PARAM name="button_id" type="STRING">
 							<DESC>ID assigned to the button when showing the popup</DESC>
