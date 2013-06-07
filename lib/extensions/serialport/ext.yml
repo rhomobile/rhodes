@@ -4,3 +4,5 @@ libraries: [ "serialport" ]
 project_paths:
   wm: ext/serialport.vcproj
   win32: ext/serialport.vcproj
+  
+platforms: ["wm", "win32"]  
