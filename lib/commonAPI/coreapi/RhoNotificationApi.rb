@@ -49,8 +49,8 @@ class Alert
     Rho::Notification.vibrate(duration_ms)
   end
 
-  def play_file(file_name, media_type)
-    # TODO
+  def play_file(file_name, media_type="")
+    Rho::Notification.playFile(file_name, media_type)
   end
 
   def show_status(title, message, hide_label)
