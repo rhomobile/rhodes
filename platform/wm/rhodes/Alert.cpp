@@ -38,7 +38,7 @@
 #include "Vibrate.h"
 #include "common/RhoAppAdapter.h"
 
-#if defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
 #include <sstream>
 #include "json/JSONIterator.h"
 using namespace rho::json;
@@ -290,7 +290,7 @@ LRESULT CAlertDialog::OnAlertDialogButton (WORD /*wNotifyCode*/, WORD wID, HWND 
 	CustomButton cbtn;
 	if (findButton((int) wID, cbtn))
 	{
-#if defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
 		rho::Hashtable<rho::String, rho::String> mapRes;
 		std::ostringstream sBtnIndex;
 		sBtnIndex << cbtn.m_numId;
@@ -406,7 +406,7 @@ void CAlert::playFile(String fileName)
 
 #endif //_WIN32_WCE
 
-#if defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
 extern "C" void alert_show_status_ex(const char* szTitle, const char* szMessage, const char* szHide, rho::apiGenerator::CMethodResult& oResult)
 {
     String message = szMessage ? szMessage : "";

@@ -1082,7 +1082,6 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             int nRes = MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), 
                     MB_ICONWARNING | MB_OKCANCEL);
             int nBtn = nRes == IDCANCEL ? 1 : 0;
-#if !defined(RHODES_EMULATOR)
 			CAlertDialog::Params::CAlertButton* cbtn = &(params->m_buttons[nBtn]);
 			rho::Hashtable<rho::String, rho::String> mapRes;
 			std::ostringstream sBtnIndex;
@@ -1091,9 +1090,7 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 			mapRes["button_id"] = cbtn->m_strID;
 			mapRes["button_title"] = cbtn->m_strCaption;
 			params->m_callback.set(mapRes);
-#else
-			RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
-#endif
+			//RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
 		}
         else
         {
