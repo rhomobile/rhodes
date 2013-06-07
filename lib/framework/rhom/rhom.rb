@@ -28,7 +28,6 @@
 
 require 'rhom/rhom_object_factory'
 require 'rhom/rhom_object'
-#require 'rhom/rhom_db_adapter'
 require 'rhom/rhom_model'
 
 module Rhom
@@ -49,7 +48,6 @@ module Rhom
       end
 
       def database_client_reset(reset_local_models=true)
-        puts "database_client_reset : reset_local_models=#{reset_local_models}"      
         
 		    #load all partitions
 		    Rho::RHO.load_all_sources
@@ -117,7 +115,7 @@ module Rhom
 		    Rho::RHO.load_all_sources
 
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            old_interval = Rho::RhoConnectClient.set_pollinterval(0)
+            old_interval = Rho::RhoConnectClient.pollInterval = 0
             Rho::RhoConnectClient.stop_sync
         end
         
@@ -163,7 +161,7 @@ module Rhom
         #::Rho::RHO.init_schema_sources(hash_migrate) 
         
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            Rho::RhoConnectClient.set_pollinterval(old_interval)
+            Rho::RhoConnectClient.pollInterval = old_interval
         end
                         
       end
@@ -175,7 +173,7 @@ module Rhom
 		Rho::RHO.load_all_sources
 
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            old_interval = Rho::RhoConnectClient.set_pollinterval(0)
+            old_interval = Rho::RhoConnectClient.pollInterval = 0
             Rho::RhoConnectClient.stop_sync
         end
         
@@ -200,7 +198,7 @@ module Rhom
         ::Rho::RHO.init_schema_sources(hash_migrate) 
         
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            Rho::RhoConnectClient.set_pollinterval(old_interval)
+            Rho::RhoConnectClient.pollInterval = old_interval
         end
       end
       
