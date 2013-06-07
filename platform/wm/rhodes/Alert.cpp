@@ -38,6 +38,12 @@
 #include "Vibrate.h"
 #include "common/RhoAppAdapter.h"
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+#include <sstream>
+#include "json/JSONIterator.h"
+using namespace rho::json;
+#endif
+
 extern "C" HWND getMainWnd();
 
 /**
@@ -283,8 +289,19 @@ LRESULT CAlertDialog::OnAlertDialogButton (WORD /*wNotifyCode*/, WORD wID, HWND 
 {
 	CustomButton cbtn;
 	if (findButton((int) wID, cbtn))
+	{
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+		rho::Hashtable<rho::String, rho::String> mapRes;
+		std::ostringstream sBtnIndex;
+		sBtnIndex << cbtn.m_numId;
+		mapRes["button_index"] = sBtnIndex.str();
+		mapRes["button_id"] = cbtn.m_strId;
+		mapRes["button_title"] = cbtn.m_title;
+		m_callback.set(mapRes);
+#else
 		rho_rhodesapp_callPopupCallback(m_callback.c_str(), cbtn.m_strId.c_str(), cbtn.m_title.c_str());
-	else
+#endif
+	} else
 		LOG(ERROR) + "internal error";
 
 	EndDialog(wID);
@@ -389,6 +406,54 @@ void CAlert::playFile(String fileName)
 
 #endif //_WIN32_WCE
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+extern "C" void alert_show_status_ex(const char* szTitle, const char* szMessage, const char* szHide, rho::apiGenerator::CMethodResult& oResult)
+{
+    String message = szMessage ? szMessage : "";
+    String title = szTitle ? szTitle : "";
+    Vector<CAlertDialog::Params::CAlertButton> buttons;
+    //buttons.addElement( CAlertDialog::Params::CAlertButton(szHide, "") );
+
+    CAlert::showPopup(new CAlertDialog::Params(title, message, String(), oResult, buttons, CAlertDialog::Params::DLG_STATUS ));
+}
+
+extern "C" void alert_show_popup_ex(const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+{
+	String title, message, callback, icon;
+	Vector<CAlertDialog::Params::CAlertButton> buttons;
+	if (propertyMap.containsKey("message"))
+		message = propertyMap.get("message");
+	if (propertyMap.containsKey("title"))
+		title = propertyMap.get("title");
+	if (propertyMap.containsKey("icon"))
+		icon = propertyMap.get("icon");
+	if (propertyMap.containsKey("buttons"))
+	{
+		CJSONArray oButtons(propertyMap.get("buttons").c_str());
+		for (; !oButtons.isEnd(); oButtons.next())
+		{
+			String btnId, btnTitle;
+			CJSONEntry oButton = oButtons.getCurItem();
+			if (oButton.isString()) {
+				btnId = btnTitle = oButton.getString();
+			}
+			else if (oButton.isObject())
+			{
+				if (oButton.hasName("id"))
+					btnId = oButton.getString("id");
+				if (oButton.hasName("title"))
+					btnTitle = oButton.getString("title");
+			}
+			if (btnId == "" || btnTitle == "") {
+				RAWLOG_ERROR("Incomplete button item");
+				continue;
+			}
+            buttons.addElement( CAlertDialog::Params::CAlertButton(btnTitle, btnId) );
+		}
+	}
+	CAlert::showPopup(new CAlertDialog::Params(title, message, icon, oResult, buttons, CAlertDialog::Params::DLG_CUSTOM));
+}
+#else
 extern "C" void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
 {
     String message = szMessage ? szMessage : "";
@@ -397,11 +462,6 @@ extern "C" void alert_show_status(const char* szTitle, const char* szMessage, co
     //buttons.addElement( CAlertDialog::Params::CAlertButton(szHide, "") );
 
     CAlert::showPopup(new CAlertDialog::Params(title, message, String(), String(), buttons, CAlertDialog::Params::DLG_STATUS ));
-}
-
-extern "C" void alert_show_popup_ex(const rho::Hashtable<rho::String, rho::String>& propertyMap)
-{
-	// TODO
 }
 
 extern "C" void alert_show_popup(rho_param *p)
@@ -489,6 +549,7 @@ extern "C" void alert_show_popup(rho_param *p)
 		CAlert::showPopup(new CAlertDialog::Params(title, message, icon, callback, buttons, CAlertDialog::Params::DLG_CUSTOM));
 	}
 }
+#endif
 
 extern "C" void alert_vibrate(int duration_ms) {
 #if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_MOTCE )

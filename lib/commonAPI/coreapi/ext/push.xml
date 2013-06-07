@@ -15,24 +15,24 @@
             <DESC>These properties are used to configure the Push API.</DESC>
             
             <PROPERTY name="type" type="STRING" readOnly="true" generateAccessors="true">
-               <DESC>Push engine type</DESC>
+               <DESC>Push engine type.</DESC>
                 <VALUES>
                     <VALUE constName="PUSH_TYPE_RHOCONNECT" value="rhoconnect-push">
-                        <DESC>RhoConnect push engine</DESC>
+                        <DESC>RhoConnect push engine.</DESC>
                     </VALUE>
                     <VALUE constName="PUSH_TYPE_NATIVE" value="native-push">
-                        <DESC>Native push engine (like GCM on Android)</DESC>
+                        <DESC>Native push engine (like GCM on Android).</DESC>
                     </VALUE>
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="id" type="STRING" readOnly="true" generateAccessors="true">
-                <DESC>Push engine type</DESC>
+                <DESC>Push engine id.</DESC>
             </PROPERTY>
             <PROPERTY name="deviceId" type="STRING" readOnly="true">
-                <DESC>Push token used to identify particular device</DESC>
+                <DESC>Push token used to identify particular device.</DESC>
             </PROPERTY>
             <PROPERTY name="userNotifyMode" type="STRING" default="backgroundNotifications">
-                <DESC>User notification mode</DESC>
+                <DESC>UI notification mode.</DESC>
                 <PLATFORM>Android</PLATFORM>
                 <VALUES>
                     <VALUE constName="PUSH_NOTIFY_NONE" value="none">
@@ -49,31 +49,34 @@
                     </VALUE>
                 </VALUES>
             </PROPERTY>
-            <PROPERTY name="senderId" type="STRING">
+            <PROPERTY name="senderId" type="STRING" readOnly="true">
                 <PLATFORM>Android</PLATFORM>
                 <DESC>Sender ID used to identify sender at GCM push server.</DESC>
             </PROPERTY>
-            <PROPERTY name="pushServer" type="STRING">
+            <PROPERTY name="pushServer" type="STRING" readOnly="true">
                 <DESC>URL of RhoConnect Push server.</DESC>
             </PROPERTY>
-            <PROPERTY name="pushAppName" type="STRING">
-                <DESC>Application name used by RhoConnect Push server to identify application</DESC>
+            <PROPERTY name="pushAppName" type="STRING" readOnly="true">
+                <DESC>Application name used by RhoConnect Push server to identify application.</DESC>
             </PROPERTY>
         </PROPERTIES>
 
         <METHODS>
-
             <METHOD name="enumerate" access="STATIC" hasCallback="optional">
-                <DESC>Returns the push API objects configured within the application</DESC>
+                <DESC>Returns the push API objects configured within the application.</DESC>
                 <RETURN type="ARRAY">
                     <DESC>Array of available push engines.</DESC>
                     <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
+            <METHOD name="getDeviceId" access="INSTANCE" hasCallback="optional">
+                <DESC>Returns push token used to identify particular device.</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
             <METHOD name="startNotifications" access="INSTANCE" hasCallback="mandatory">
                 <DESC>Start listening for push messages, errors or other push related events.</DESC>
                 <CALLBACK type="HASH">
-                    <DESC>Hash map with push message payload</DESC>
+                    <DESC>Hash map with push message payload.</DESC>
                     <PARAMS>
                         <PARAM name="doSync" type="STRING">
                             <DESC>List of sources to sync separated by comma or 'all'.</DESC>
