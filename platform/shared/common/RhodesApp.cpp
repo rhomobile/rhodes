@@ -231,15 +231,12 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         return;
     
     synchronized(getCommandLock());
-/*
-    if (cmd->type < m_expected)
-    {
-        LOG(ERROR) + "received command " + toString(cmd->type) + " which is less than expected "+toString(m_expected)+" - ignore it";
-        return;
-    }
-*/
+
+    LOG(INFO) + toString(cmd->type) + " is received =============================================================================================";
+
     if ( cmd->type == ui_created)
     {
+        LOG(INFO) + "Set UI state: ui_created_received >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
         m_uistate = ui_created_received;
     }
 
@@ -253,35 +250,40 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     {
         if ( cmd->type != local_server_started )
         {
+            LOG(INFO) + "Restart local server +++++++++++++++++++++++++++++++++++++++++++++++++++";
             RHODESAPP().restartLocalServer(*this);
             sleep(50);
+            LOG(INFO) + "Continue after server restart ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^";
         }
         else
+        {
             LOG(INFO) + "Local server restarted before activate.Do not restart it again.";
+        }
 
+        LOG(INFO) + "Set expected state: local_server_started >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
         m_expected = local_server_started;
     }
 
     if (cmd->type > m_expected)
     {
-        
-
         if ( hasCommand(cmd->type) )
         {
-            LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it";
+            LOG(INFO) + "Received duplicate command " + toString(cmd->type) + "skip it --------------";
             return;
         }else
         {
             // Don't do that now
-            LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it";
+            LOG(INFO) + "Received command " + toString(cmd->type) + " which is greater than expected (" + toString(m_expected) + ") - postpone it >>>>>>>>>";
 
             if (cmd->type == app_deactivated && m_expected != local_server_started)
             {
+                LOG(INFO) + "Clear event queue and push command: " + toString(cmd->type) + ">>>>>>>>>>>>>>>>>>>>>>>>>>>";
                 m_commands.clear();
                 m_commands.push_back(cmd->type);
             }
             else
             {
+                LOG(INFO) + "Push command: " + toString(cmd->type) + "and sort queue >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
                 m_commands.push_back(cmd->type);
                 std::sort(m_commands.begin(), m_commands.end());
                 return;
@@ -290,17 +292,19 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
     }
     else
     {
+        LOG(INFO) + "Insert command at fromt: " + toString(cmd->type) + ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>";
         m_commands.insert(m_commands.begin(), cmd->type);
     }
 
     for (Vector<int>::const_iterator it = m_commands.begin(), lim = m_commands.end(); it != lim; ++it)
     {
         int type = *it;
-        LOG(INFO) + "process command: " + toString(type);
+        LOG(INFO) + "process command: " + toString(type) + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
         switch (type)
         {
         case app_deactivated:
 #if !defined( WINDOWS_PLATFORM )
+            LOG(INFO) + "Set expected event: local_server_restart <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
             m_expected = local_server_restart;
 #else
             m_expected = app_activated;
@@ -310,21 +314,33 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
         case local_server_started:
             if ( m_bFirstServerStart )
             {
+                LOG(INFO) + "Set expected event: ui_created <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                 m_expected = ui_created;
+                LOG(INFO) + "Set FirstServerStart: false <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                 m_bFirstServerStart = false;
             }
             else
+            {
+                LOG(INFO) + "Set expected event: app_activated <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                 m_expected = app_activated;
+            }
 
+            LOG(INFO) + "Report app started <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
             rho_sys_report_app_started();
             break;
         case ui_created:
             {
                 if (m_uistate != ui_created_processed)
                 {
+                    LOG(INFO) + "Process UI created event <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                     callCallback("/system/uicreated");
+                    LOG(INFO) + "Set expected event: app_activated <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                     m_expected = app_activated;
+                    LOG(INFO) + "Set UI state: ui_created_processed <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                     m_uistate = ui_created_processed;
+                } else
+                {
+                    LOG(INFO) + "Skip UI created event processing - already processed <<<<<<<<<<<<<<<<<<<<<<<<";
                 }
             }
             break;
@@ -332,17 +348,21 @@ void CAppCallbacksQueue::processCommand(IQueueCommand* pCmd)
             {
                 if (m_uistate == ui_created_received)
                 {
+                    LOG(INFO) + "Process <<LOST>> UI created event <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                     callCallback("/system/uicreated");
+                    LOG(INFO) + "Set UI state: ui_created_processed <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                     m_uistate = ui_created_processed;
-                } 
+                }
+
+                LOG(INFO) + "Process APP activate event <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                 callCallback("/system/activateapp");
+                LOG(INFO) + "Set expected event: app_deactivated <<<<<<<<<<<<<<<<<<<<<<<<<<<<";
                 m_expected = app_deactivated;
             }
             break;
         }
-        //if (type < app_activated && type != app_deactivated)
-        //    m_expected = (callback_t)(type + 1);
     }
+    LOG(INFO) + "Event queue is processed - clean it ________________________________________";
     m_commands.clear();
 }
 
