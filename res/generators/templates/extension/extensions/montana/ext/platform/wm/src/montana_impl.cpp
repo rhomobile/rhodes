@@ -9,10 +9,6 @@ class C<%= namecamelcase %>Impl: public C<%= namecamelcase %>Base
 public:
     C<%= namecamelcase %>Impl(const rho::String& strID): C<%= namecamelcase %>Base()
     {
-<% if !$cur_module.is_property_bag_limit_to_only_declared_properties %>
-        m_hashProps.put( "display", "LCD");
-        m_hashProps.put( "sound", "Dolby");
-<% end %>
     }
 
     virtual void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult){}

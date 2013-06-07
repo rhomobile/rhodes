@@ -52,6 +52,7 @@
     CLLocationDegrees region_radius;
     NSString *gapikey;
 	UIView* savedMainView;
+	UIViewController* savedMainViewController;
     //IBOutlet UISegmentedControl *mapType;
 }
 
@@ -59,6 +60,7 @@
 @property (nonatomic,retain) NSString *region_center;
 @property (nonatomic,retain) NSString *gapikey;
 @property (nonatomic,retain) UIView *savedMainView;
+@property (nonatomic,retain) UIViewController *savedMainViewController;
 
 + (void)createMap:(rho_param*)params;
 + (void)closeMap;
