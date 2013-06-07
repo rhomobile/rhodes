@@ -2593,6 +2593,7 @@ int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, cons
 
 extern "C" void alert_show_status(const char* title, const char* message, const char* szHide);
 
+#if !defined(OS_WINDOWS_DESKTOP) && !(defined(OS_MACOSX) && defined(RHODES_EMULATOR))
 extern "C"
 {
 	void rho_alert_show_status(char* szTitle, char* szText, char* szHideLabel)
@@ -2600,3 +2601,4 @@ extern "C"
 		alert_show_status( szTitle ? szTitle : "", szText ? szText : "", szHideLabel ? szHideLabel : "");
 	}
 }
+#endif
