@@ -15,15 +15,19 @@
         <METHODS access="STATIC">
             <METHOD name="normal">
                 <DESC>Sets the screen orientation to default device orientation</DESC>
+                <PLATFORM>Android, WP8</PLATFORM>
             </METHOD>
 			<METHOD name="rightHanded">
                 <DESC>Sets the screen orientation to righthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
+                <PLATFORM>Android, WP8</PLATFORM>
             </METHOD>
             <METHOD name="leftHanded">
                 <DESC>Sets the screen orientation to lefthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
+                <PLATFORM>Android, WP8</PLATFORM>
             </METHOD>
             <METHOD name="upsideDown">
                 <DESC>Sets the screen orientation to upside down, useful if presenting the device to a customer to obtain a signature.</DESC>
+                <PLATFORM>Android, WP8</PLATFORM>
             </METHOD>
 			<METHOD name="setScreenOrientationEvent" hasCallback="mandatory">
 				<DESC>Sets the callback to be called when a screen orientation event occurres</DESC>
