@@ -200,7 +200,10 @@ namespace WebViewImpl
         {
             MainPage mp = getMainPage();
             if (mp != null)
+            {
+                waitForBrowserInitialized();
                 mp.navigate(CRhoRuntime.getInstance().canonicalizeRhoUrl(url), tabIndex);
+            }
         }
 
         public void navigateBack(int tabIndex, IMethodResult oResult)
@@ -249,6 +252,18 @@ namespace WebViewImpl
         public void save(string format, string path, int tabIndex, IMethodResult oResult)
         {
             // implement this method in C# here
+        }
+
+        private void waitForBrowserInitialized()
+        {
+	        while(true)
+	        {
+		
+	        	if(getMainPage().isBrowserInitialized())
+			        return;
+		        else
+                    System.Threading.Thread.Sleep(100);
+	        }
         }
     }
 

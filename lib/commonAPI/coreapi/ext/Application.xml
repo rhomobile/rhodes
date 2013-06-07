@@ -61,36 +61,6 @@
                 <PARAM type="HASH" />
                 <DESC>Native Menu items: array of hashes(name to action)</DESC>
             </PROPERTY>
-            <PROPERTY name="nativeMenuLeft" type="ARRAY">
-                <PARAM type="HASH" />
-                <DESC>Native Menu items: array of hashes(name to action). This menu will display when left menu button is selected (Windows Mobile only).</DESC>
-                <PLATFORM>WM</PLATFORM>
-            </PROPERTY>
-
-            <PROPERTY name="enableMenuButtonRight" type="BOOLEAN">
-                <DESC></DESC>
-            </PROPERTY>
-
-            <PROPERTY name="enableMenuButtonLeft" type="BOOLEAN">
-                <DESC></DESC>
-            </PROPERTY>
-
-            <PROPERTY name="enableMenuItemRight" type="HASH">
-                <DESC></DESC>
-            </PROPERTY>
-
-            <PROPERTY name="enableMenuItemLeft" type="HASH">
-                <DESC></DESC>
-            </PROPERTY>
-
-            <PROPERTY name="nativeMenuItemRight" type="HASH">
-                <DESC>Right menu label and action</DESC>
-                <PLATFORM>WM</PLATFORM>
-            </PROPERTY>
-            <PROPERTY name="nativeMenuItemLeft" type="HASH">
-                <DESC>Right menu label and action.This item will display when left menu button is selected (Windows Mobile only).</DESC>
-                <PLATFORM>WM</PLATFORM>
-            </PROPERTY>
 
             <PROPERTY name="defaultNativeMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <PARAM type="HASH" />
