@@ -8,10 +8,11 @@
         <TEMPLATES>
         </TEMPLATES>
 
-        <PROPERTIES access="STATIC" generateAccessors="false">
+        <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="mainMenu" type="ARRAY">
                 <DESC>Main Native MenuBar items</DESC>
                 <PARAM type="HASH">
+
                     <PARAMS>
                         <PARAM name="label" type="STRING">
                             <DESC>Visible label.</DESC>
@@ -23,6 +24,7 @@
                             <DESC>Menu item will be displayed as disabled.</DESC>
                         </PARAM>
                     </PARAMS>
+
                 </PARAM>
             </PROPERTY>
             <PROPERTY name="extraMenu" type="ARRAY">
@@ -39,12 +41,12 @@
                 <DESC>Extra MenuBar button properties.This item will display when left menu button is selected (Windows Mobile only).</DESC>
                 <PLATFORM>WM</PLATFORM>
             </PROPERTY>
-
+<!--
             <PROPERTY name="defaultMainMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <PARAM type="HASH" />
                 <DESC>Default Main Menu items</DESC>
             </PROPERTY>
-
+-->
         </PROPERTIES>
 
         <METHODS  access="STATIC">

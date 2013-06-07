@@ -59,9 +59,11 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByJSObject(rho:
 
 @interface <%= $cur_module.name %>_<%= module_method.native_name %>_caller_params : NSObject
 
-@property (assign) NSArray* params;
+@property (nonatomic, copy) NSArray* params;
 @property (assign) id<<%= interface_name %>> item;
 @property (assign) CMethodResult* methodResult;
+
+-(void)dealloc;
 
 +(<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<<%= interface_name %>>)_item _methodResult:(CMethodResult*)_methodResult;
 
@@ -71,12 +73,17 @@ id<I<%= $cur_module.name %>> <%= $cur_module.name %>_makeInstanceByJSObject(rho:
 
 @synthesize params,item,methodResult;
 
+-(void)dealloc {
+    [params release];
+    [super dealloc];
+}
+
 +(<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params*) makeParams:(NSArray*)_params _item:(id<<%= interface_name %>>)_item _methodResult:(CMethodResult*)_methodResult {
     <%= $cur_module.name %>_<%= module_method.native_name %>_caller_params* par = [[<%= $cur_module.name %>_<%= module_method.native_name %>_caller_params alloc] init];
     par.params = _params;
     par.item = _item;
     par.methodResult = _methodResult;
-    return par;
+    return [par retain];
 }
 
 @end
@@ -126,6 +133,7 @@ static <%= $cur_module.name %>_<%= module_method.native_name %>_caller* our_<%= 
     method_line = method_line + "];"
     %>
     <%= method_line %>
+    [caller_params release];
 }
 
 

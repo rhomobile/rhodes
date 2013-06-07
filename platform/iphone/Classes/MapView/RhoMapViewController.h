@@ -41,10 +41,12 @@
     UIView *mapView;
     UIToolbar* toolbar;
 	UIView* savedMainView;
+	UIViewController* savedMainViewController;
 }
 
 // 
 @property (nonatomic,retain) UIView *savedMainView;
+@property (nonatomic,retain) UIViewController *savedMainViewController;
 
 + (void)createMap:(rho_param*)params;
 + (void)closeMap;

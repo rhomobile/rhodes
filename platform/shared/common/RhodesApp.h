@@ -251,7 +251,7 @@ public:
     void setScreenRotationNotification(String strUrl, String strParams);
     void callScreenRotationCallback(int width, int height, int degrees);
 
-    void loadUrl(String url);
+    void loadUrl(String url, int nTabIndex = -1);
 
     void notifyLocalServerStarted();
     const char* getFreeListeningPort();
