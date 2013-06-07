@@ -27,7 +27,8 @@
 #ifndef GCMPUSHCLIENT_H_
 #define GCMPUSHCLIENT_H_
 
-#include "common/push/IRhoPushClient.h"
+//#include "common/push/IRhoPushClient.h"
+#include "Push.h"
 
 #include "logging/RhoLog.h"
 #include "common/RhoStd.h"
@@ -37,14 +38,14 @@ namespace rho { namespace gcm {
 
 using namespace rho::common;
 
-class GcmPushClient: public IRhoPushClient
+class GcmPushClient: public push::CPushClient
 {
     class SyncLoginListener;
 private:
     static const char* const s_GCM_FACADE_CLASS;
     static const String s_Type;
-    String m_strCallbackUrl;
-    String m_strCallbackParam;
+    CMethodResult m_oResult;
+    CMethodResult m_deviceIdResult;
 
 public:
     DEFINE_LOGCLASS;
@@ -52,11 +53,14 @@ public:
     GcmPushClient();
     virtual ~GcmPushClient() {}
 
-    virtual const String& getType() const { return s_Type; }
-
     virtual void init();
-    virtual void setNotificationUrl(const String& callBackUrl, const String& urlParams);
-    virtual bool callNotification(const String& json, const String& data);
+
+
+    virtual void setDeviceId(const String& deviceId);
+    virtual void getDeviceId(CMethodResult& result);
+    virtual void startNotifications(CMethodResult& result);
+    virtual void stopNotifications(CMethodResult& result);
+    virtual bool callBack(const String& json);
 
     static void GcmPushRegister();
     static void GcmPushUnregister();
