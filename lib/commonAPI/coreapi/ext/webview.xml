@@ -29,22 +29,23 @@
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="enablePageLoadingIndication" type="BOOLEAN" default="true">
-                <DESC>Show page loading navigation.</DESC>
-                <PLATFORM>Android</PLATFORM>
+                <DESC>Show page loading navigation.On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled</DESC>
+                <PLATFORM>WM</PLATFORM>
+                <APPLIES>Motorola Solutions' WebKit on Windows Mobile/CE</APPLIES> 
             </PROPERTY>
             <PROPERTY name="enableWebPlugins" type="BOOLEAN" default="true">
-                <DESC>Show page loading navigation.</DESC>
+                <DESC>Enable/disable web plugins</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="navigationTimeout" type="INTEGER" default="0">
-                <DESC>Number of milliseconds(maximum is 45000) before the browser times out and navigates to the page specified in the badlink setting. If it is determined that the destination is unreachable regardless of wait time, the badlink may be loaded before NAVTIMEOUT. This is the time taken to establish communication with the server, not the time taken to fully load the page.</DESC>
+                <DESC>Can be defined in config.xml: Navigation\\NavTimeout. Number of milliseconds(maximum is 45000) before the browser times out and navigates to the page specified in the badlink setting. If it is determined that the destination is unreachable regardless of wait time, the badlink may be loaded before NAVTIMEOUT. This is the time taken to establish communication with the server, not the time taken to fully load the page.</DESC>
                 <MORE_HELP>Note that the navigation timeout will not be invoked when navigating to the start page, best practise is to store your first page locally to avoid connectivity issues at start up, you can then redirect to an online page if desired.</MORE_HELP>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
 
             <PROPERTY name="scrollTechnique" type="STRING" default="FingerScroll" readOnly="true">
-                <DESC>Specifies the technique used to scroll about the page.</DESC>
+                <DESC>Specifies the technique used to scroll about the page.Defines in config.xml: Scrolling\\ScrollTechnique</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
                 <VALUES>
@@ -60,12 +61,12 @@
                 </VALUES>
             </PROPERTY>
             <PROPERTY name="fontFamily" type="STRING" readOnly="true">
-                <DESC>Specifies the default font to use when rendering text in web pages. The specified font should be a TrueType font present on the device. On Windows the default font has been set to 'Tahoma' as this is present on all Motorola WM / CE devices, note that Tahoma has no italic or oblique variants. On the Enterprise Tablet the default is Droid Sans Fallback. The font specified must be stored in \Windows for Windows WM / CE devices, or /system/fonts for Enterprise Tablet.</DESC>
+                <DESC>Specifies the default font to use when rendering text in web pages. The specified font should be a TrueType font present on the device. On Windows the default font has been set to 'Tahoma' as this is present on all Motorola WM / CE devices, note that Tahoma has no italic or oblique variants. On the Enterprise Tablet the default is Droid Sans Fallback. The font specified must be stored in \Windows for Windows WM / CE devices, or /system/fonts for Enterprise Tablet. Defines in config.xml: HTMLStyles\\FontFamily </DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="userAgent" type="STRING" readOnly="true">
-                <DESC>When visiting a web server the WebKit browser will report its self as the specified user agent. Use the following substitution variables:
+                <DESC>Defines in config.xml: Navigation\\UserAgent. When visiting a web server the WebKit browser will report its self as the specified user agent. Use the following substitution variables:
                     %p - platform name ("Windows CE " + version number)
                     %w - WebKit version number
                     %e - MotorolaWebKit version number.
@@ -79,25 +80,25 @@
             </PROPERTY>
 
             <PROPERTY name="viewportEnabled" type="BOOLEAN" default="true" readOnly="true">
-                <DESC>Whether to enable or disable viewport meta tag processing.</DESC>
+                <DESC>Whether to enable or disable viewport meta tag processing.Defines in config.xml: Navigation\\ViewportEnabled</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="viewportWidth" type="INTEGER" readOnly="true">
-                <DESC>Default viewport width to use for pages that do not have a viewport meta tag (uses 1:1 scaling if not specified).</DESC>
+                <DESC>Default viewport width to use for pages that do not have a viewport meta tag (uses 1:1 scaling if not specified).Defines in config.xml: Navigation\\ViewportWidth</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="cacheSize" type="INTEGER" readOnly="true">
-                <DESC>The browser cache size, in whole MBs.</DESC>
+                <DESC>The browser cache size, in whole MBs. Defines in config.xml: Navigation\\Cache</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
-            <PROPERTY name="enableCache" type="BOOLEAN" default="true">
-                <DESC>Enable/disable Browser cache.</DESC>
+            <PROPERTY name="enableCache" type="BOOLEAN" default="true" generateDoc="false">
+                <DESC>Enable/disable Browser cache. Not yet implemented.</DESC>
             </PROPERTY>
-            <PROPERTY name="acceptLanguage" type="STRING">
-                <DESC>Configurable HTTP headers.</DESC>
+            <PROPERTY name="acceptLanguage" type="STRING" generateDoc="false">
+                <DESC>Configurable HTTP headers. Not yet implemented.</DESC>
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
@@ -112,11 +113,11 @@
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
             <PROPERTY name="activeTab" type="INTEGER" default="0" readOnly="true">
-                <DESC>An active tab index.</DESC>
+                <DESC>Use Rho::NativeTabbar.currentTab property. An active tab index.</DESC>
             </PROPERTY>
 
         </PROPERTIES>
-    
+
         <METHODS  access="STATIC">
                         
             <ALIASES>
@@ -166,7 +167,7 @@
             </METHOD>
 
             <METHOD name="currentLocation">
-                <DESC>Returns the url (location) of the current page; the last URL loaded to WebView.</DESC>
+                <DESC>Returns the url (location) of the current page; the last URL loaded to WebView from controller action. Don't use it from javascript</DESC>
                 <MORE_HELP>If you open your page in WebView, and after it makes a few jumps by linking (for example, to outside web adresses for example), currentLocation will still return the initial url opened in WebView. Also, if you use JQMobile, current_location has the initial URL, but does not reflect the actual window.location containing the JQMobile additional address by adding #, etc. See currentUrl.</MORE_HELP>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
@@ -198,7 +199,7 @@
             </METHOD>
 
             <METHOD name="executeJavascript">
-                <DESC>Execute JavaScript on the current page from your controller.</DESC>
+                <DESC>Execute JavaScript on the current page from your controller. It applicable only at Ruby.</DESC>
                 <MORE_HELP>For most mobile platforms, WebView.execute_js has been implemented via redirection to URL with 'javascript:' schema. If WebView.execute_js used in an AJAX call handler method in the controller, it may lead to the situation where the success javascript handler will never be executed. This may happen because, at the moment of success handler should be executed, a URL of the page already has been changed. This means no handlers from the previous page are valid.</MORE_HELP>
                 <PARAMS>
                     <PARAM name="javascriptText" type="STRING">
@@ -213,7 +214,6 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-
             <METHOD name="active_tab" deprecated="true">
                 <DESC>Use Rho::NativeTabbar.currentTab property: returns the current tab index.</DESC>
                 <RETURN type="INTEGER">
@@ -230,6 +230,7 @@
 
             <METHOD name="setCookie">
                 <DESC>When WebView loads the specified url (either by selecting link or from calling WebView.navigate), it will add this cookie to the HTTP request.Not implemented for Motorola Solutions' WebKit.</DESC>
+                <PLATFORM>Android, Win32, iOS, WP8</PLATFORM>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>Set a cookie to be used by WebView for this url.</DESC>
