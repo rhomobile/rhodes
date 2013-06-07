@@ -2,10 +2,13 @@ package com.rhomobile.rhodes.util;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONStringer;
 
+
+import android.os.Bundle;
 
 import com.rhomobile.rhodes.Logger;
 
@@ -35,17 +38,22 @@ public class JSONGenerator {
     }
     
     protected void parse(Object obj) throws JSONException {
-        if(Map.class.isInstance(obj)) {
+        if (Map.class.isInstance(obj)) {
             Logger.T(TAG, "Parsing Map instance >>>");
             parseMap((Map<String, ?>)obj);
             Logger.T(TAG, "Finishing Map instance <<<");
             return;
         }
-        if(Collection.class.isInstance(obj)) {
+        if (Collection.class.isInstance(obj)) {
             Logger.T(TAG, "Parsing Collection instance >>>");
             parseCollection((Collection<?>)obj);
             Logger.T(TAG, "Finishing Collection instance <<<");
             return;
+        }
+        if (Bundle.class.isInstance(obj)) {
+            Logger.T(TAG, "Parsing Bundle instance >>>");
+            parseBundle((Bundle)obj);
+            Logger.T(TAG, "Finishing Bundle instance <<<");
         }
         
         mStringer.value(obj);
@@ -68,6 +76,28 @@ public class JSONGenerator {
             parse(item);
         }
         mStringer.endArray();
+    }
+
+    protected void parseBundle(Bundle bundle) throws JSONException {
+        Logger.D(TAG, bundle.toString());
+        mStringer.object();
+
+        Set<String> keys = bundle.keySet();
+        for (String key : keys) {
+
+            // Skip system related keys
+            if(key.equals("from"))
+                continue;
+            if(key.equals("collapse_key"))
+                continue;
+            if(key.equals("phone_id")) {
+                continue;
+            }
+
+            mStringer.key(key);
+            parse(bundle.get(key));
+        }
+        mStringer.endObject();
     }
 
 }
