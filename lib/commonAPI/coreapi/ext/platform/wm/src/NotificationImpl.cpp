@@ -2,9 +2,9 @@
 #include "common/RhodesApp.h"
 #include "common/RhoConf.h"
 
-extern "C" void alert_show_popup_ex(const rho::Hashtable<rho::String, rho::String>& propertyMap);
+extern "C" void alert_show_popup_ex(const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult);
 extern "C" void alert_hide_popup();
-extern "C" void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide);
+extern "C" void alert_show_status_ex(const char* szTitle, const char* szMessage, const char* szHide, rho::apiGenerator::CMethodResult& oResult);
 extern "C" void alert_vibrate(int duration_ms);
 
 namespace rho {
@@ -19,7 +19,7 @@ public:
 
     virtual void showPopup(const Hashtable<String, String>& propertyMap, CMethodResult& oResult)
 	{
-		alert_show_popup_ex(propertyMap);
+		alert_show_popup_ex(propertyMap, oResult);
 	}
 
     virtual void hidePopup(CMethodResult& oResult)
@@ -29,7 +29,7 @@ public:
 
     virtual void showStatus(const String& title, const String& status_text, const String& hide_button_label, CMethodResult& oResult)
 	{
-		alert_show_status(title.c_str(), status_text.c_str(), hide_button_label.c_str());
+		alert_show_status_ex(title.c_str(), status_text.c_str(), hide_button_label.c_str(), oResult);
 	}
 
     virtual void beep(const Hashtable<String, String>& propertyMap, CMethodResult& oResult)
@@ -62,5 +62,4 @@ extern "C" void Init_Notification()
     rho::Init_Notification_API();
 
     RHODESAPP().getExtManager().requireRubyFile("RhoNotificationApi");
-
 }
