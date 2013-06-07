@@ -57,28 +57,30 @@ class CAppMenu
 	Vector<CAppMenuItem> m_arAppMenuItems, m_arAppLeftMenuItems;
     CAppMenuItem m_oLeftItem, m_oRightItem;
 
+    static const String g_actionTag;
+    static const String g_labelTag;
+    static const String g_disableTag;
+
 public:
-    //void setAppMenu(unsigned long valMenu);
     void getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu = false);
-    void getMenuItemEx(Hashtable<String, String>& hashRes, bool bLeftItem = false);
+    void getMenuButtonEx(Hashtable<String, String>& hashRes, bool bLeftItem = false);
     void setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu = false );
+    void setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bool bLeftMenu = false);
 
     void copyMenuItems(Vector<CAppMenuItem>& arAppMenuItems, bool bLeftMenu = false);
 
-    void setLeftItem( const String& strLabel, const String& strLink );
-    void setRightItem( const String& strLabel, const String& strLink );
+    void setLeftButton( const rho::Hashtable<rho::String, rho::String>& hashButton );
+    void setRightButton( const rho::Hashtable<rho::String, rho::String>& hashButton );
 
-    void setEnableLeftItem( bool isEnable );
-    void setEnableRightItem( bool isEnable );
-
-    CAppMenuItem getLeftItem();
-    CAppMenuItem getRightItem();
+    CAppMenuItem getLeftButton();
+    CAppMenuItem getRightButton();
 
     void setEnableMenuItem( const String& strLabel, bool enableItem, bool bLeftMenu = false );
 
 private:
     void addAppMenuItem( const String& strLabel, const String& strLink, bool bLeftMenu );
 
+    void changeButtonInfo(CAppMenuItem& button, const rho::Hashtable<rho::String, rho::String>& hashButton);
 };
 
 } //namespace common

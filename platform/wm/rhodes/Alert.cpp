@@ -399,6 +399,11 @@ extern "C" void alert_show_status(const char* szTitle, const char* szMessage, co
     CAlert::showPopup(new CAlertDialog::Params(title, message, String(), String(), buttons, CAlertDialog::Params::DLG_STATUS ));
 }
 
+extern "C" void alert_show_popup_ex(const rho::Hashtable<rho::String, rho::String>& propertyMap)
+{
+	// TODO
+}
+
 extern "C" void alert_show_popup(rho_param *p)
 {
 	if (p->type == RHO_PARAM_STRING) {

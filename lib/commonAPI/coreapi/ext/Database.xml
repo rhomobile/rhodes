@@ -21,7 +21,7 @@
       </ALIASES>
 
       <METHOD name="initialize" constructor="true" generateAPI="false">
-        <DESC>Open or create database. If database file does not exist it will be created using SQL scheme : rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files.</DESC>
+        <DESC>Open or create database. If database file does not exist it will be created using SQL schema: rhodes\platform\shared\db\res\db\syncdb.schema. Do not use predefined partition names: app, user, local. Do not open the same database file in different partitions. Do not use the same partition for different database files. Do not open the same file twice.</DESC>
         <PARAMS>
           <PARAM name="dbPath" type="STRING">
             <DESC>The path to the database. Databases stored at the path provided by Rho::Application.databaseFilePath</DESC>
@@ -49,7 +49,7 @@
       </METHOD>
 
       <METHOD name="lockDb" generateAPI="false" generateDoc="false">
-        <DESC>Lock database. This method should be used to syncronize Database access with RhoConnect client. startTransaction also locks the database but if you going to read from database, lockDb is faster.</DESC>
+        <DESC>Lock database. This method should be used to syncronize Database access with RhoConnect client. startTransaction also locks the database but if you're going to read from database, lockDb is faster.</DESC>
       </METHOD>
 
       <METHOD name="unlockDb" generateAPI="false" generateDoc="false">
@@ -57,7 +57,7 @@
       </METHOD>
 
       <METHOD name="isUiWaitForDb" generateAPI="false" generateDoc="false">
-        <DESC>Is UI waiting for DB? Should be used in separate Ruby thread, which update database(implementing custom data sync logic). Will be true when database method calls from Main Ruby thread and wait for database.></DESC>
+        <DESC>Is UI waiting for DB? Should be used in separate Ruby thread, which updates database(implementing custom data sync logic). Will be true when database method calls from Main Ruby thread and waits for database.></DESC>
         <RETURN type="BOOLEAN"/>
       </METHOD>
 
@@ -74,7 +74,7 @@
         </PARAMS>
 
         <RETURN type="ARRAY">
-            <DESC>Array of Hashes. Each Hash item represent record from Database.</DESC>
+            <DESC>Array of Hashes. Each Hash item represents record from Database.</DESC>
         </RETURN>
       </METHOD>
 
@@ -132,7 +132,7 @@
       </METHOD>
 
       <METHOD name="isTableExist" generateAPI="false">
-        <DESC>Does table exist?></DESC>
+        <DESC>Does table exist?</DESC>
         <PARAMS>
           <PARAM name="tableName" type="STRING">
             <DESC>The name of the table</DESC>
@@ -142,7 +142,7 @@
       </METHOD>
 
       <METHOD name="setDoNotBackupAttribute" generateAPI="false" >
-        <DESC>Set do not backup attribute for database file. This is special flag set on files, whcih will exclude it from iCloud service.</DESC>
+        <DESC>Set do not backup attribute for database file. This is special flag set on files, which will exclude it from iCloud service.</DESC>
         <PLATFORM>iOS</PLATFORM>
         <PARAMS>
           <PARAM name="setFlag" type="BOOLEAN">

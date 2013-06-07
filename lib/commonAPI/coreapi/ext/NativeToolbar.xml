@@ -29,12 +29,47 @@
                                 </PARAM>
                                 <PARAM name="action" type="STRING">
                                     <DESC>URL to call when button is pressed or special value.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
-                                    <!--
                                     <VALUES>
                                         <VALUE value ="separator">
-                                            <DESC>Added separator to tollbar.</DESC>
+                                            <DESC>Added separator to toolbar.</DESC>
                                         </VALUE>
-                                    </VALUES> -->
+                                        <VALUE value ="exit">
+                                            <DESC>Exit the application.</DESC>
+                                        </VALUE>
+                                        <VALUE value ="close">
+                                            <DESC>Exit the application.</DESC>
+                                        </VALUE>
+                                        <VALUE value ="options">
+                                            <DESC>Navigate to Settings page, defined in configuration file.</DESC>
+                                        </VALUE>
+                                        <VALUE value ="home">
+                                            <DESC>Navigate to Home page, defined in configuration file.</DESC>
+                                        </VALUE>
+                                        <VALUE value ="refresh">
+                                            <DESC>Refresh current page.</DESC>
+                                        </VALUE>
+                                        <VALUE value ="back">
+                                            <DESC>Perform back action or execute browser back.</DESC>
+                                        </VALUE>
+                                        <VALUE value ="log">
+                                            <DESC>Display Log View window.</DESC>
+                                        </VALUE>
+                                        <VALUE value ="fullscreen">
+                                            <DESC>Expand application window to full screen.</DESC>
+                                        </VALUE>
+                                        <VALUE value ="sync">
+                                            <DESC>Run full sync command.</DESC>
+                                        </VALUE>
+                                        <VALUE value ="minimize">
+                                            <DESC>Minimize application window.</DESC>
+                                            <PLATFORMS>WM, Win32</PLATFORMS>
+                                        </VALUE>
+                                        <VALUE value ="SIP">
+                                            <DESC>Display software keyboard window.</DESC>
+                                            <PLATFORMS>WM</PLATFORMS>
+                                        </VALUE>
+
+                                    </VALUES>
 
                                 </PARAM>
                                 <PARAM name="icon" type="STRING">

@@ -63,7 +63,7 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
         return;
 
 	COLORREF   rgbBackColor;
-    bool bHiddenTabs = false, bCreateOnDemand = false;
+    bool bHiddenTabs = false, bCreateOnInit = false;
 
     for ( Hashtable<rho::String, rho::String>::const_iterator it = tabBarProperties.begin(); it != tabBarProperties.end(); ++it )
     {
@@ -73,8 +73,8 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
             rgbBackColor = getColorFromString(value);
         if (strcasecmp(name, "hiddenTabs") == 0) 
             bHiddenTabs = strcasecmp(value, "true") == 0;
-        if (strcasecmp(name, "createOnDemand") == 0) 
-            bCreateOnDemand = strcasecmp(value, "true") == 0;
+        if (strcasecmp(name, "createOnInit") == 0) 
+            bCreateOnInit = strcasecmp(value, "true") == 0;
 
     }
 
@@ -98,7 +98,7 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
         const char *disabled = NULL;
 		COLORREF web_bkg_color;
         const char* use_current_view_for_tab = NULL;
-        bool bUseCurrentViewForTab = false, bReloadPage = false, bPerishable = false;
+        bool bUseCurrentViewForTab = false, bReloadPage = false, bPerishable = false, bCreateOnInitTab = false;
         CJSONEntry oEntry(tabbarElements[i].c_str());
 
         if ( oEntry.hasName("label") )
@@ -117,9 +117,15 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
         }
         if ( oEntry.hasName("perishable") )
         {
-            reload = oEntry.getString("perishable");
-            if (strcasecmp(reload, "true") == 0)
+            const char* perishable = oEntry.getString("perishable");
+            if (strcasecmp(perishable, "true") == 0)
                 bPerishable = true;
+        }
+        if ( oEntry.hasName("createOnInit") )
+        {
+            const char* createOnInit = oEntry.getString("createOnInit");
+            if (strcasecmp(createOnInit, "true") == 0)
+                bCreateOnInitTab = true;
         }
 
         if ( oEntry.hasName("selectedColor") )
@@ -140,7 +146,7 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
         if (action == NULL)
             action = "";
         
-        m_arTabs.addElement(CTabBarItem(action, label, bUseCurrentViewForTab, bReloadPage, bPerishable));
+        m_arTabs.addElement(CTabBarItem(action, label, bUseCurrentViewForTab, bReloadPage, bPerishable, bCreateOnInitTab));
 
         if (m_strStartTabName.length()>0 && m_strStartTabName == label)
             nStartTab = i;
@@ -150,12 +156,10 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
     if ( oResult.hasCallback() )
         m_oCallback = oResult;
 
-    if (!bCreateOnDemand)
+    for ( int i = 0; i < (int)m_arTabs.size(); i++ )
     {
-        for ( int i = 0; i < (int)m_arTabs.size(); i++ )
-        {
-            SwitchTab(i);
-        }
+        if ( m_arTabs[i].m_bCreateOnInit || bCreateOnInit )
+            SwitchTab(i, true);
     }
 
     if (m_strStartTabName.length()>0&&nStartTab>=0)
@@ -163,7 +167,8 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
         //getAppWindow().SetTimer( TABBAR_TIMER_ID, 1000 );
         SwitchTabByName( m_strStartTabName.c_str(), false );
         m_strStartTabName = "";
-    }
+    }else if ( m_arTabs.size() && !m_arTabs[0].m_bUseCurrentViewForTab )
+        SwitchTab(0);
 
     m_bTabCreated = true;
 }
@@ -272,7 +277,7 @@ bool CNativeTabbar::removePerishableTab()
     return true;
 }
 
-void CNativeTabbar::SwitchTab(int index)
+void CNativeTabbar::SwitchTab(int index, bool bCreateOnly/*=false*/)
 {
     if (!getAppWindow().getWebKitEngine())
         return;
@@ -302,7 +307,7 @@ void CNativeTabbar::SwitchTab(int index)
             {
                 LOG(ERROR) + "New Tab failed: " + m_arTabs[index].m_nTabID;
 
-                if ( m_arTabs[index].m_nTabID == NEWTAB_LOW_MEM || m_arTabs[index].m_nTabID == NEWTAB_MAX_TABS )
+                if ( !bCreateOnly && (m_arTabs[index].m_nTabID == NEWTAB_LOW_MEM || m_arTabs[index].m_nTabID == NEWTAB_MAX_TABS) )
                 {
                     LOG(INFO) + "Try to close perishable tab.";
                     removePerishableTab();
@@ -329,7 +334,7 @@ void CNativeTabbar::SwitchTab(int index)
         return;
     }
 
-    if ( m_nCurrentTab != index )
+    if ( m_nCurrentTab != index && !bCreateOnly)
     {
         getAppWindow().getWebKitEngine()->SwitchTab(m_arTabs[index].m_nTabID);
         int nOldTab = m_nCurrentTab; 
@@ -339,7 +344,7 @@ void CNativeTabbar::SwitchTab(int index)
     }
 
     if (  m_arTabs[index].m_strAction.length() > 0 && (m_arTabs[index].m_bReloadPage || bNewTab) )
-        RHODESAPP().loadUrl( m_arTabs[index].m_strAction );
+        RHODESAPP().loadUrl( m_arTabs[index].m_strAction, index );
     
 }
 
@@ -348,10 +353,29 @@ void CNativeTabbar::SetBadge(int index, const char* badge)
     //Not implemented
 }
 
-int CNativeTabbar::GetCurrentTabIndex()
+int CNativeTabbar::GetCurrentTabID()
 {
     if (m_arTabs.size()>0 && m_nCurrentTab < (int)m_arTabs.size() && m_nCurrentTab >= 0 )
 	    return m_arTabs[m_nCurrentTab].m_nTabID;
+
+    return 0;
+}
+
+int CNativeTabbar::GetTabID(int nIndex)
+{
+    if ( nIndex < 0 )
+        nIndex = m_nCurrentTab;
+
+    if (m_arTabs.size()>0 && nIndex < (int)m_arTabs.size() && nIndex >= 0 )
+	    return m_arTabs[nIndex].m_nTabID;
+
+    return 0;
+}
+
+int CNativeTabbar::GetCurrentTabIndex()
+{
+    if (m_arTabs.size()>0 && m_nCurrentTab < (int)m_arTabs.size() && m_nCurrentTab >= 0 )
+	    return m_nCurrentTab;
 
     return 0;
 }

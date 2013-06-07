@@ -307,6 +307,8 @@ CHttpServer::CHttpServer(int port, String const &root)
 #endif
     m_userroot = CFilePath::normalizePath(root);
     m_strRhoUserRoot = m_root.substr(0, m_root.length()-5);
+    m_listener = INVALID_SOCKET;
+	m_sock = INVALID_SOCKET;
 }
 
 CHttpServer::~CHttpServer()

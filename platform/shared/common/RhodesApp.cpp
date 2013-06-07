@@ -1860,7 +1860,7 @@ void CRhodesApp::callScreenRotationCallback(int width, int height, int degrees)
     }
 }
 
-void CRhodesApp::loadUrl(String url)
+void CRhodesApp::loadUrl(String url, int nTabIndex/* = -1*/)
 {
     if ( url.length() == 0 )
         return;
@@ -1888,7 +1888,7 @@ void CRhodesApp::loadUrl(String url)
         return;
     }else if ( strcasecmp(url.c_str(), "refresh")==0 )
     {
-        rho_webview_refresh(-1);
+        rho_webview_refresh(nTabIndex);
         return;
     }else if ( strcasecmp(url.c_str(), "back")==0 )
     {
@@ -1910,6 +1910,16 @@ void CRhodesApp::loadUrl(String url)
 		}
 
         return;
+    }else if ( strcasecmp(url.c_str(), "minimize")==0 )
+    {
+        getExtManager().minimizeApp();
+        return;
+    }else if ( strcasecmp(url.c_str(), "SIP")==0 )
+    {
+#ifdef OS_WINCE
+        RHODESAPP().getExtManager().OnSIPState(true);
+#endif
+        return;
     }
 
     if (callback)
@@ -1919,11 +1929,11 @@ void CRhodesApp::loadUrl(String url)
             getNetRequest().pushData( url,  "rho_callback=1", null );
     }
     else if (js_callback)
-        rho_webview_execute_js(url.c_str(), -1);
+        rho_webview_execute_js(url.c_str(), nTabIndex);
     else
     {
         url = canonicalizeRhoUrl(url);
-        navigateToUrl(url);
+        rho_webview_navigate(url.c_str(), nTabIndex);
     }
 }
 

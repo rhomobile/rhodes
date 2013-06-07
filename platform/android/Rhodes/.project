@@ -6,6 +6,11 @@
 	</projects>
 	<buildSpec>
 		<buildCommand>
+			<name>com.aptana.ide.core.unifiedBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
 			<name>org.eclipse.cdt.managedbuilder.core.genmakebuilder</name>
 			<triggers>clean,full,incremental,</triggers>
 			<arguments>
@@ -102,22 +107,18 @@
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
+		<nature>com.aptana.ruby.core.rubynature</nature>
 	</natures>
 	<linkedResources>
 		<link>
 			<name>Implementation</name>
 			<type>2</type>
-			<location>/Users/lexis_tikh/rhomobile/Neon_04.00.00.04/Helium/HeliumForAndroid/Implementation</location>
+			<location>/Users/lexis_tikh/rhomobile/Motorola-Extensions/neon/Helium/HeliumForAndroid/Implementation</location>
 		</link>
 		<link>
 			<name>Motorola-Extensions</name>
 			<type>2</type>
 			<location>/Users/lexis_tikh/rhomobile/Motorola-Extensions</location>
-		</link>
-		<link>
-			<name>api_generator_spec</name>
-			<type>2</type>
-			<location>/Users/lexis_tikh/rhomobile/rhodes/spec/api_generator_spec</location>
 		</link>
 		<link>
 			<name>barcode</name>
@@ -128,6 +129,11 @@
 			<name>barcode1</name>
 			<type>2</type>
 			<location>/Users/lexis_tikh/rhomobile/rhodes/spec/api_generator_spec/extensions/barcode1</location>
+		</link>
+		<link>
+			<name>build</name>
+			<type>2</type>
+			<location>/Users/lexis_tikh/rhomobile/rhodes/platform/android/build</location>
 		</link>
 		<link>
 			<name>commonAPI</name>
@@ -142,7 +148,7 @@
 		<link>
 			<name>rhoelementsext</name>
 			<type>2</type>
-			<location>/Users/lexis_tikh/rhomobile/Neon_04.00.00.04/R2D1/RhoElementsOneExtension/extensions/rhoelementsext</location>
+			<location>/Users/lexis_tikh/rhomobile/Motorola-Extensions/neon/R2D1/RhoElementsOneExtension/extensions/rhoelementsext</location>
 		</link>
 		<link>
 			<name>shared</name>
