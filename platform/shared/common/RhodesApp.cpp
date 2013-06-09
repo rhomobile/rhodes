@@ -1874,6 +1874,16 @@ void CRhodesApp::loadUrl(String url, int nTabIndex/* = -1*/)
     {
         js_callback = true;
         url = url.substr(11);
+    }else if (String_startsWith(url, "jscallback:") )
+    {
+        js_callback = true;
+        url = url.substr(11);
+
+        String strCallback("Rho.callbackHandler( \"");
+        strCallback += url;
+        strCallback += "\", {},\"\")";
+
+        url = strCallback;
     }else if ( strcasecmp(url.c_str(), "exit")==0 || strcasecmp(url.c_str(), "close") == 0 )
     {
         rho_sys_app_exit();
