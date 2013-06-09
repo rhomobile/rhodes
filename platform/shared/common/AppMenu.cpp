@@ -102,6 +102,19 @@ void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink, bo
       	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
 }
 
+void CAppMenu::getMenuItems(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu)
+{
+    rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
+    copyMenuItems(arAppMenuItems, bLeftMenu);
+
+    for ( int i = 0; i < (int)arAppMenuItems.size(); i++)
+    {
+        Hashtable<String, String> hash;
+        hash[arAppMenuItems[i].m_strLabel] = arAppMenuItems[i].m_strLink;
+        arRes.addElement(hash);
+    }
+}
+
 void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu )
 {
     rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
