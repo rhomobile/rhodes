@@ -49,5 +49,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_RhoFile();
 #endif
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
     Init_NativeMenuBar();
+#endif
 }
