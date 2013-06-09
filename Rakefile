@@ -1364,7 +1364,10 @@ def common_bundle_start( startdir, dest)
   init_extensions(dest)
 
   chdir startdir
-  cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
+  
+  if File.exists? app + '/app'
+    cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
+  end
   
   if File.exists? app + '/public'
     public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, 1
@@ -1437,10 +1440,14 @@ end
 def create_manifest
     require File.dirname(__FILE__) + '/lib/framework/rhoappmanifest'
     
-    fappManifest = Rho::AppManifest.enumerate_models(File.join($srcdir, 'apps/app'))
-    content = fappManifest.read();
+    if Dir.exists? File.join($srcdir, 'apps/app')
+        fappManifest = Rho::AppManifest.enumerate_models(File.join($srcdir, 'apps/app'))
+        content = fappManifest.read();
+    else
+        content = ""
+    end 
     
-    File.open( File.join($srcdir,'apps/app_manifest.txt'), "w"){|file| file.write(content)}    
+    File.open( File.join($srcdir,'apps/app_manifest.txt'), "w"){|file| file.write(content)}   
 end
 
 def process_exclude_folders(excluded_dirs=[])
