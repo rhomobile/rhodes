@@ -102,7 +102,20 @@ void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink, bo
       	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
 }
 
-void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu )
+void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes )
+{
+    rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
+    copyMenuItems(arAppMenuItems, false);
+
+    for ( int i = 0; i < (int)arAppMenuItems.size(); i++)
+    {
+        Hashtable<String, String> hash;
+        hash[arAppMenuItems[i].m_strLabel] = arAppMenuItems[i].m_strLink;
+        arRes.addElement(hash);
+    }
+}
+
+void CAppMenu::getMenuItemsNew(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu )
 {
     rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
     copyMenuItems(arAppMenuItems, bLeftMenu);
@@ -116,7 +129,6 @@ void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, b
         arRes.addElement(hash);
     }
 }
-
 void CAppMenu::getMenuButtonEx(Hashtable<String, String>& hashRes, bool bLeftItem/* = false*/)
 {
     CAppMenuItem oItem = bLeftItem ? getLeftButton() : getRightButton();

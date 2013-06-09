@@ -29,7 +29,7 @@ module Rho
 
     class << self
       def defaultMainMenu()
-        make_default_native_menu()        
+        Rho.Application.NativeMenubar_defaultMainMenu()        
       end      
     end   
 end
