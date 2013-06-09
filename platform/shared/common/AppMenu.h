@@ -62,7 +62,7 @@ class CAppMenu
     static const String g_disableTag;
 
 public:
-    void getMenuItems(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu = false);
+    void getMenuItems(rho::Vector< Hashtable<String, String> >& arRes);
     void getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu = false);
     void getMenuButtonEx(Hashtable<String, String>& hashRes, bool bLeftItem = false);
     void setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu = false );
