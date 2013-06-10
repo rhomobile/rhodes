@@ -103,6 +103,7 @@ private:
     void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);
     void tabbarDisconnectWebView(QWebView* webView, QWebInspector* webInspector);
     bool internalUrlProcessing(const QUrl& url);
+    void setUpWebPage(QWebPage* page);
 
 private:
     Ui::QtMainWindow *ui;

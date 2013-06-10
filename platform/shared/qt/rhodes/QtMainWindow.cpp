@@ -51,6 +51,7 @@
 #include "rubyext/NativeToolbarExt.h"
 #undef null
 #include "DateTimeDialog.h"
+#include "RhoNativeApiCall.h"
 #include "statistic/RhoProfiler.h"
 #include <QStylePainter>
 
@@ -106,8 +107,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     qs->enablePersistentStorage(rs_dir.c_str());
 
 	this->ui->webView->setContextMenuPolicy(Qt::NoContextMenu);
-    this->ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    this->ui->webView->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+    setUpWebPage(this->ui->webView->page());
     this->main_webView = this->ui->webView;
     this->main_webInspector = webInspectorWindow->webInspector();
     this->cur_webInspector = this->main_webInspector;
@@ -443,6 +443,7 @@ void QtMainWindow::tabbarRemoveAllTabs(bool restore)
     for (int i=0; i<tabViews.size(); ++i) {
         tabbarDisconnectWebView(tabViews[i], tabInspect[i]);
         if (tabViews[i] != main_webView) {
+            // TODO: destroy connected RhoNativeApiCall object
             ui->verticalLayout->removeWidget(tabViews[i]);
             tabViews[i]->setParent(0);
             if (ui->webView == tabViews[i])
@@ -475,6 +476,14 @@ void QtMainWindow::tabbarInitialize()
     ui->tabBar->clearStyleSheet();
 }
 
+void QtMainWindow::setUpWebPage(QWebPage* page)
+{
+    page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    page->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+    connect(page->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
+        new RhoNativeApiCall(page->mainFrame()), SLOT(populateJavaScriptWindowObject()));
+}
+
 int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbrp)
 {
     QWebView* wv = main_webView;
@@ -485,8 +494,7 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         wv->setMaximumSize(0,0);
         wv->setParent(ui->centralWidget);
         ui->verticalLayout->addWidget(wv);
-        wv->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-        wv->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+        setUpWebPage(wv->page());
         if (web_bkg_color && (web_bkg_color->name().length()>0))
             wv->setHtml( QString("<html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
         // creating and attaching web inspector
