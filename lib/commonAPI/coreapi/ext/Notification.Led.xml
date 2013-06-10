@@ -19,7 +19,7 @@
 			
 		</PROPERTIES>
 
-		<METHODS access="STATIC">
+		<METHODS>
 
             <METHOD name="enumerate" access="STATIC" hasCallback="optional">
                 <DESC>Used to return the LEDs present on the device, you can then subsequently illuminate or extinguish them.</DESC>
