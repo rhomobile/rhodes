@@ -49,7 +49,17 @@ module Rho
         { Rho::RhoMessages.get_message('home_menu') => :home, Rho::RhoMessages.get_message('refresh_menu') => :refresh, 
       		Rho::RhoMessages.get_message('sync_menu') => :sync, Rho::RhoMessages.get_message('options_menu') => :options, Rho::RhoMessages.get_message('log_menu') => :log, :separator => nil, Rho::RhoMessages.get_message('close_menu') => :close }
     end
-    	
+    def self.NativeMenubar_defaultMainMenu
+        [ {:label=>Rho::RhoMessages.get_message('home_menu'), :action=>:home}, 
+          { :label =>Rho::RhoMessages.get_message('refresh_menu'), :action => :refresh }, 
+      	  { :label => Rho::RhoMessages.get_message('sync_menu'), :action => :sync}, 
+      	  { :label =>Rho::RhoMessages.get_message('options_menu'), :action => :options},
+      	  { :label=>Rho::RhoMessages.get_message('log_menu'), :action => :log}, 
+      	  { :label=>:separator, :action => nil}, 
+      	  { :label => Rho::RhoMessages.get_message('close_menu'), :action => :close }
+      	]
+    end
+        	
     def initialize
       #LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
       

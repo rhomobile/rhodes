@@ -120,7 +120,7 @@ public:
         oResult.setJSON(rho_impl_getNativeMenu());
 #else
         rho::Vector< Hashtable<String, String> > arRes;
-        RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
+        RHODESAPP().getAppMenu().getMenuItems(arRes);
 
         oResult.set(arRes);
 #endif
