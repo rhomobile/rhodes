@@ -1,7 +1,7 @@
 <?xml version = "1.0"?>
 <API>
 	<MODULE name="Led" parent="Rho.Notification">
-		<HELP_OVERVIEW></HELP_OVERVIEW>
+		<HELP_OVERVIEW>The LED API is a child of the Notification API and allows access to the LEDs on your device</HELP_OVERVIEW>
 		<MORE_HELP></MORE_HELP>
 		<PLATFORM>iOS, Android, WM</PLATFORM>
 		<TEMPLATES>
@@ -19,10 +19,11 @@
 			
 		</PROPERTIES>
 
-		<METHODS access="STATIC">
+		<METHODS>
 
             <METHOD name="enumerate" access="STATIC" hasCallback="optional">
                 <DESC>Used to return the LEDs present on the device, you can then subsequently illuminate or extinguish them.</DESC>
+				<PLATFORM>iOS, Android, WM</PLATFORM>
                 <CALLBACK type="ARRAY">
                     <DESC>Array of LED objects, one for each hardware LED on the device.</DESC>
                     <PARAM type="SELF_INSTANCE"/>
@@ -31,16 +32,19 @@
 		
             <METHOD name="illuminate" hasCallback="none">
                 <DESC>Called on an LED object returned from the enumerate method, the specified LED will be illuminated.</DESC>
+				<PLATFORM>iOS, Android, WM</PLATFORM>
             </METHOD>
 			
             <METHOD name="extinguish" hasCallback="none">
                 <DESC>Called on an LED object returned from the enumerate method, the specified LED will be extinguished.</DESC>
+				<PLATFORM>iOS, Android, WM</PLATFORM>
             </METHOD>
 			
             <METHOD name="flash" hasCallback="none">
                 <DESC>Called on an LED object returned from the enumerate method, the specified LED will be flashed.</DESC>
+				<PLATFORM>iOS, Android, WM</PLATFORM>
 				<PARAMS>
-					<PARAM name="propertyMap" type="HASH" propertyHash="true">
+					<PARAM name="propertyMap" type="HASH">
 						<DESC>The properties associated with the LED flash.</DESC>
 						<PARAMS>
 							<PARAM name="onDuration" type="Integer" default="1000">
@@ -59,18 +63,48 @@
 			
 		</METHODS>
 		
-		<USER_OVERVIEW>
-			<!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
-			<![CDATA[
-Exiting RhoElements
-=====================
-If RhoElements is exited after applying notifications, the settings to LEDs will not revert.
+		<EXAMPLES>
+           <EXAMPLE title="Flash a specific LED">
+            <SECTIONS>
+              <SECTION>
+               <DESC>
+                   Enumerating the LEDs will return an array objects which will map to the real LEDs on the device, using these returned objects you can control the device LEDs
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# ---------------
+# controller.rb  
+# ---------------
+         
+def choose_led
+  # Obtain list of available leds on the device. 
+  $leds = Rho::Notification::Led.enumerate
+  render
+end
 
-		]]>
-	
-		</USER_OVERVIEW>
-		<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
-		<PLATFORM></PLATFORM>
+def flash_led
+  # receive an integer as parameter, which represents the number of the LED we wish to use
+  led = $leds[@params["ledIndex"].to_i]
+  led.numberOfCycles = 4
+  led.flash({})
+end
 
+
+# ---------------
+# choose_led.erb
+# ---------------
+<ul data-role="listview">
+  <% $leds.each_with_index do |led, index| %>
+    <li><a href="<%= url_for(:action => :flash_led, :query => {:ledIndex => index}) %>"><%= led.name %></li> 
+  <% end %>
+</ul>
+                   ]]>
+                 </RUBY>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE> 
+       </EXAMPLES>
 	</MODULE>
 </API>    

@@ -72,12 +72,12 @@ public:
     String resolveDBFilesPath(const String& strFilePath);
     String getRelativeDBFilesPath(const String& strFilePath);
 	String getDBFileRoot();
-    const String& getRhoRootPath(){return m_strRhoRootPath;}
+    const String& getRhoRootPath()const{return m_strRhoRootPath;}
     const String& getRhoUserPath(){return m_strAppUserPath;}
     const String& getRhoRuntimePath() const{return m_strRuntimePath;}
     //const String& getRhodesPath(){return m_strRhodesPath;}
     //void setRhodesPath(const String& path){m_strRhodesPath = path;}
-    const String& getAppRootPath(){return m_strAppRootPath;}
+    const String& getAppRootPath()const{return m_strAppRootPath;}
     const String& getBlobsDirPath(){return m_strBlobsDirPath; }
     const String& getDBDirPath(){return m_strDBDirPath; }
     const String& getHomeUrl(){ return m_strHomeUrl; }

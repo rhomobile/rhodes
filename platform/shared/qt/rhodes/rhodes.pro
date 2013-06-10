@@ -108,7 +108,8 @@ impl/NativeTabbarImpl.h\
 DateTimeDialog.h\
 impl/DateTimePickerImpl.h\
 impl/AlertImpl.h\
-RhoSimulator.h
+RhoSimulator.h\
+RhoNativeApiCall.h
 
 SOURCES += main.cpp\
 ExternalWebView.cpp\
@@ -135,7 +136,8 @@ impl/SystemImpl.cpp\
 impl/WebViewImpl.cpp\
 impl/MainWindowImpl.cpp\
 impl/NativeTabbarImpl.cpp\
-DateTimeDialog.cpp
+DateTimeDialog.cpp\
+RhoNativeApiCall.cpp
 
 FORMS += ExternalWebView.ui\
 QtMainWindow.ui\

@@ -73,7 +73,7 @@ module Rhogen
       generated_uuid = puuid.generate
       @productid = generated_uuid
       @uid = '0x'+(0xE0000000 + rand(0xFFFFFFF)).to_s(16)
-      @rhoconnectclient_ext = ', "rhoconnect-client"' unless norhoconnect
+      @rhoconnectclient_ext = '"rhoconnect-client"' unless norhoconnect
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end
