@@ -68,6 +68,12 @@ CRhodesAppBase::CRhodesAppBase(const String& strRootPath, const String& strUserP
     m_strRuntimePath = strRuntimePath;
     m_bSendingLog = false;
 
+#ifdef RHO_NO_RUBY
+    m_bJSApplication   = true;        
+#else
+    m_bJSApplication   = false;
+#endif
+
     initAppUrls();
 }
 	
