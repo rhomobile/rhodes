@@ -167,6 +167,9 @@ int rho_base64_decode(const char *src, int srclen, char *dst);
 int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
 	
 void rho_net_request_with_data(const char *url, const char *str_body);
+    
+const char* rho_app_canonicalize_rho_url(const char* url);
+const char* rho_app_canonicalize_rho_path(const char* path);
 
 	
 #ifdef __cplusplus

@@ -526,6 +526,23 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 		rho::String strCallbackUrl = RHODESAPPBASE().canonicalizeRhoUrl(url);
 		getNetRequest().pushData(strCallbackUrl.c_str(), str_body, null);
 	}
+    
+    
+    const char* rho_app_canonicalize_rho_url(const char* url) {
+        static char res[FILENAME_MAX];
+        rho::String s_res = RHODESAPPBASE().canonicalizeRhoUrl(url);
+        strncpy(res, s_res.c_str(), sizeof(res)-1);
+        return res;
+    }
+    
+    const char* rho_app_canonicalize_rho_path(const char* path) {
+        static char res[FILENAME_MAX];
+        rho::String s_res = RHODESAPPBASE().canonicalizeRhoPath(path);
+        strncpy(res, s_res.c_str(), sizeof(res)-1);
+        return res;
+    }
+    
+    
 
 } //extern "C"
 
