@@ -62,6 +62,7 @@ protected:
 	mutable common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
     PushManager m_appPushMgr;
+    bool m_bJSApplication;
 
     CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
 public:
@@ -91,6 +92,8 @@ public:
     boolean sendLog(rho::apiGenerator::CMethodResult& oResult);
     boolean sendLogInSameThread();
 	
+    void setJSApplication(bool bJSApp){ m_bJSApplication = bJSApp; }
+    bool isJSApplication()const{ return m_bJSApplication; }
 	// Deprecated
     boolean callPushCallback(const String& strData) const;
 
