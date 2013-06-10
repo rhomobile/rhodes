@@ -34,6 +34,7 @@
 
 extern "C" void rho_net_request_with_data(const char *url, const char *str_body);
 extern "C" int  rho_ruby_is_started();
+extern "C" const char* rho_rhodesapp_getapprootpath();
 
 namespace rho {
 namespace common{
@@ -140,35 +141,34 @@ String CRhodesAppBase::getDBFileRoot()
 
 String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
 {
+   rho::String appRootTag = "%APP_PATH%";
+    rho::String filePrefix = "file://";
+    rho::String retPath    = strPath;
+
     if (strPath.length() == 0 )
         return "";
 
-    if (String::npos != strPath.find("file:") || 
-        String::npos != strPath.find("http:") || 
-        String::npos != strPath.find("https:"))
+    if (String::npos != strPath.find("http:") || 
+        String::npos != strPath.find("https:") &&
+        String::npos == strPath.find("file:"))
     {
         return strPath;
     }
 
-    rho::String appRootTag = "%APP_PATH%";
-    rho::String filePrefix = "file:\\\\";
-    rho::String rootPath   = CFilePath::join(getRhoRuntimePath(), rho::String("apps"));
-    rho::String retPath    = "";
-
-    String::size_type findIt = strPath.find_first_of(appRootTag);
-
-    if (findIt != String::npos)
-    {   
-        retPath = strPath;
-        retPath.erase(findIt, appRootTag.size());
-        retPath.insert(findIt, rootPath.c_str());
-    }
-    else
+    if (String::npos != strPath.find("file:"))
     {
-        retPath = CFilePath::join(rootPath, strPath);
-    }
+        rho::String       rootPath = CFilePath::join(rho_rhodesapp_getapprootpath(), rho::String("apps"));
+        String::size_type findIt   = strPath.find(appRootTag);
 
-    return filePrefix + retPath;
+        if (findIt != String::npos)
+        {   
+            retPath = strPath;
+            retPath.erase(findIt, appRootTag.size());
+            retPath.insert(findIt, rootPath.c_str());
+        }
+    }
+    
+    return retPath;
 }
 
 String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
@@ -526,6 +526,23 @@ int rho_base64_decode(const char *src, int srclen, char *dst)
 		rho::String strCallbackUrl = RHODESAPPBASE().canonicalizeRhoUrl(url);
 		getNetRequest().pushData(strCallbackUrl.c_str(), str_body, null);
 	}
+    
+    
+    const char* rho_app_canonicalize_rho_url(const char* url) {
+        static char res[FILENAME_MAX];
+        rho::String s_res = RHODESAPPBASE().canonicalizeRhoUrl(url);
+        strncpy(res, s_res.c_str(), sizeof(res)-1);
+        return res;
+    }
+    
+    const char* rho_app_canonicalize_rho_path(const char* path) {
+        static char res[FILENAME_MAX];
+        rho::String s_res = RHODESAPPBASE().canonicalizeRhoPath(path);
+        strncpy(res, s_res.c_str(), sizeof(res)-1);
+        return res;
+    }
+    
+    
 
 } //extern "C"
 

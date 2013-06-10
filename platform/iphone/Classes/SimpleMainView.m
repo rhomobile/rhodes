@@ -814,13 +814,21 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		return;
 	}
 	[SimpleMainView disableHiddenOnStart];
+#if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
+    NSString *encodedUrl = url;
+#else
     NSString *encodedUrl = [self encodeUrl:url];
+#endif
 	NSString* cleared_url = [self processForNativeView:encodedUrl];
 	if (cleared_url == nil) {
 		return;
 	}
 	else {
+#if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
+		NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:encodedUrl]];
+#else
 		NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:encodedUrl]];
+#endif
         [self performSelectorOnMainThread:@selector(loadRequestToWebView:) withObject:request waitUntilDone:NO];
 	}
 }
@@ -832,13 +840,16 @@ static BOOL makeHiddenUntilLoadContent = YES;
 		return;
 	}
 	[SimpleMainView disableHiddenOnStart];
+#if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
+    NSString *encodedUrl = url;
+#else
     NSString *encodedUrl = [self encodeUrl:url];
+#endif
 	NSString* cleared_url = [self processForNativeView:encodedUrl];
 	if (cleared_url == nil) {
 		return;
 	}
 	else {
-		NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
 		
         //MOHUS
         //if ([cleared_url hasPrefix:@"http:"]) {
@@ -846,9 +857,22 @@ static BOOL makeHiddenUntilLoadContent = YES;
         //    [self performSelectorOnMainThread:@selector(loadRequestToWebView:) withObject:request waitUntilDone:NO];
         //}
         //else {
-            NSString *redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, cleared_url];
+
+        NSString *redirect = nil;
+        if ([cleared_url hasPrefix:@"file:"]) {
+            redirect = cleared_url;
+        }
+        else {
+            NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
+            redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, cleared_url];
+        }
+        
             //[self navigate:redirect tab:index];
+#if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
+        NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL fileURLWithPath:redirect]];
+#else
             NSURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:redirect]];
+#endif
             [self performSelectorOnMainThread:@selector(loadRequestToWebView:) withObject:request waitUntilDone:NO];
         //}
     }
@@ -1004,7 +1028,11 @@ static BOOL makeHiddenUntilLoadContent = YES;
     BOOL external = NO;
     
     NSString *scheme = url.scheme;
+#if defined(RHO_NO_RUBY_API)
+    if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"file"])
+#else
     if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"])
+#endif
         external = YES;
     else {
         NSString *ps = [url query];
