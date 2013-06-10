@@ -134,34 +134,35 @@ String CRhodesAppBase::getDBFileRoot()
 
 String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
 {
+    rho::String appRootTag = "%APP_PATH%";
+    rho::String filePrefix = "file://";
+    rho::String retPath    = strPath;
+
     if (strPath.length() == 0 )
         return "";
 
-    if (String::npos != strPath.find("file:") || 
-        String::npos != strPath.find("http:") || 
-        String::npos != strPath.find("https:"))
+    if (String::npos != strPath.find("http:") || 
+        String::npos != strPath.find("https:") &&
+        String::npos == strPath.find("file:"))
     {
         return strPath;
     }
 
-    rho::String appRootTag = "%APP_PATH%";
-    rho::String filePrefix = "file:\\\\";
-    rho::String rootPath   = CFilePath::join(getRhoRuntimePath(), rho::String("apps"));
-    rho::String retPath    = "";
-
-    String::size_type findIt = strPath.find_first_of(appRootTag);
-
-    if (findIt != String::npos)
-    {   
-        retPath = strPath;
-        retPath.erase(findIt, appRootTag.size());
-        retPath.insert(findIt, rootPath.c_str());
-    }
-    else
+    if (String::npos != strPath.find("file:"))
     {
-        retPath = CFilePath::join(rootPath, strPath);
-    }
+        rho::String       rootPath = CFilePath::join(getRhoRuntimePath(), rho::String("apps"));
+        String::size_type findIt   = strPath.find(appRootTag);
 
+        if (findIt != String::npos)
+        {   
+            retPath = strPath;
+            retPath.erase(findIt, appRootTag.size());
+            retPath.insert(findIt, rootPath.c_str());
+        }
+
+        return retPath;
+    }
+    
     return filePrefix + retPath;
 }
 
