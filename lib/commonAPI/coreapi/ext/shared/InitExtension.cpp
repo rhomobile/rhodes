@@ -14,6 +14,7 @@ extern "C" void Init_Navbar();
 extern "C" void Init_Notification();
 extern "C" void Init_RhoFile();
 extern "C" void Init_NativeMenuBar();
+extern "C" void Init_Led();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -51,5 +52,10 @@ extern "C" void Init_CoreAPI_Extension()
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
     Init_NativeMenuBar();
+#endif
+
+
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+//	Init_Led();
 #endif
 }

@@ -98,7 +98,11 @@ void CLedSingleton::enumerate(CMethodResult& oResult)
 }
 
 
-
+extern "C" void Init_Led()
+{
+    rho::CLedFactory::setInstance( new rho::CLedFactory() );
+    rho::Init_Led_API();
+}
 
 
 }
