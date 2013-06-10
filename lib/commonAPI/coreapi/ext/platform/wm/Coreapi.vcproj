@@ -2331,6 +2331,22 @@
 					</Filter>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="Motorola"
+				>
+				<File
+					RelativePath=".\src\NotificationDefines.h"
+					>
+				</File>
+				<File
+					RelativePath=".\src\NotificationLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\src\NotificationLoader.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath="..\..\shared\InitExtension.cpp"
