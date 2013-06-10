@@ -27,6 +27,8 @@
 package com.rhomobile.rhodes;
 
 import java.lang.reflect.Constructor;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import com.rhomobile.rhodes.bluetooth.RhoBluetoothManager;
@@ -365,7 +367,15 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 
     @Override
     public void onSplashScreenGone(SplashScreen splashScreen) {
-        switchToSimpleMainView(splashScreen).navigate(splashScreen.getUrlToNavigate(), 0);
+        MainView mainView = switchToSimpleMainView(splashScreen);
+        List<String> collectedUrls = splashScreen.getUrlToNavigate();
+        Iterator<String> urlIter = collectedUrls.iterator();
+        while (urlIter.hasNext()) {
+            String url = urlIter.next();
+            Logger.I(TAG, "onSplashScreenGone: navigate to: " + url + "**************************************");
+            
+            mainView.navigate(url, 0);
+        }
     }
 
     @Override

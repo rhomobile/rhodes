@@ -28,6 +28,8 @@ package com.rhomobile.rhodes.mainview;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.rhomobile.rhodes.Logger;
@@ -73,7 +75,7 @@ public class SplashScreen implements MainView {
 
 	private boolean mFirstNavigate = true;
 	private long mStartTimeMs = 0;
-	private volatile String mUrlToNavigate = null;
+	private volatile List<String> mUrlToNavigate = null;
 	private int mNavigateIndex = 0;
 	private Thread mSleepThread;
 
@@ -85,8 +87,13 @@ public class SplashScreen implements MainView {
         loadContent();
     }
 
-    public synchronized String getUrlToNavigate() { return mUrlToNavigate; }
-    private synchronized void setUrlToNavigate(String url) { mUrlToNavigate = url; }
+    public synchronized List<String> getUrlToNavigate() { return mUrlToNavigate; }
+    private synchronized void setUrlToNavigate(String url) {
+        if (mUrlToNavigate == null) {
+            mUrlToNavigate = new ArrayList<String>();
+        }
+        mUrlToNavigate.add(url); 
+    }
 
     private void loadContent() {
         AssetManager am = mActivity.getAssets();
@@ -167,7 +174,7 @@ public class SplashScreen implements MainView {
 	@Override
 	public void navigate(final String url, final int index) {
 
-        Logger.D(TAG, "navigate: url=" + url);
+        Logger.I(TAG, "navigate: url=" + url + " ************************************************");
 
         long delay = howLongWaitMs();
         if (delay <= 0) {
@@ -194,6 +201,7 @@ public class SplashScreen implements MainView {
                              @Override public void run() {
                                  PerformOnUiThread.exec(new Runnable() {
                                      public void run() {
+                                         Logger.I(TAG, "Dismiss splash screen now *******************************************");
                                         try {
                                             if (mNavigateIndex != 0) {
                                                 throw new IllegalStateException("Non zero tab index(" + mNavigateIndex + ") to navigate from Splash Screen");
