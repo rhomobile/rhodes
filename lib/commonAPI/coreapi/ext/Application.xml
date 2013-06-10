@@ -177,9 +177,11 @@
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_CONFIGCONFLICT" value ="ConfigConflict">
                                     <DESC></DESC>
+                                    <APPLIES>Ruby API</APPLIES>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_DBMIGRATESOURCE" value ="DBMigrateSource">
                                     <DESC></DESC>
+                                    <APPLIES>Ruby API</APPLIES>
                                 </VALUE>
                             </VALUES>
                         </PARAM>
@@ -192,9 +194,10 @@
 
             <METHOD name="processApplicationEvent" generateAPI="false">
                 <DESC>Default processing of application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
-
+                <APPLIES>Ruby API</APPLIES>
                 <PARAMS>
                     <PARAM name="applicationEvent" type="STRING">
+                        <DESC>See setApplicationNotify for applicationEvent values.</DESC>
                     </PARAM>
                     <PARAM name="eventData" type="HASH">
                         <DESC>Event specific data.</DESC>
