@@ -65,6 +65,18 @@
     <Filter Include="Application\shared\generated\cpp">
       <UniqueIdentifier>{bff6005b-7570-4feb-96d5-25d710087ea5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="File">
+      <UniqueIdentifier>{088acb4a-b407-4d33-a880-18bfd3ac74f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File\shared">
+      <UniqueIdentifier>{4358b604-0ae8-469e-91c7-7535bb697b33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File\shared\generated">
+      <UniqueIdentifier>{c510a969-a7ce-44a5-b7de-cd4e46970b32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File\shared\generated\cpp">
+      <UniqueIdentifier>{d10fda35-44c4-40d5-89ad-f4f51ed6af22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\generated\system_api_init.cpp">
@@ -182,6 +194,28 @@
     <ClCompile Include="..\..\shared\generated\cpp\ApplicationBase.cpp">
       <Filter>Application\shared\generated\cpp</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\NetworkDetectBase.cpp" />
+    <ClCompile Include="..\..\shared\FileImpl.cpp">
+      <Filter>File\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\rhofile_api_init.cpp">
+      <Filter>File\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\rhofile_js_api.cpp">
+      <Filter>File\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\rhofile_ruby_api.c">
+      <Filter>File\shared\generated</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\RhoFile_js_wrap.cpp">
+      <Filter>File\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\RhoFile_ruby_wrap.cpp">
+      <Filter>File\shared\generated\cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\shared\generated\cpp\RhoFileBase.cpp">
+      <Filter>File\shared\generated\cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h">
@@ -217,6 +251,12 @@
     <ClInclude Include="..\..\shared\generated\cpp\IApplication.h">
       <Filter>Application\shared\generated\cpp</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\RhoFileBase.h">
+      <Filter>File\shared\generated\cpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\generated\cpp\IRhoFile.h">
+      <Filter>File\shared\generated\cpp</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\Network.xml">
@@ -233,6 +273,9 @@
     </CustomBuild>
     <CustomBuild Include="..\..\Application.xml">
       <Filter>Application</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\File.xml">
+      <Filter>File</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

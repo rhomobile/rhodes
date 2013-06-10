@@ -241,6 +241,18 @@
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
+                <CALLBACK type="HASH">
+                    <DESC>Network status notification information.</DESC>
+                    <PARAMS>
+                        <PARAM name="current_status" type="STRING">
+                            <DESC>Current status of network connection. Can be "connected" or "disconnected".</DESC>
+                        </PARAM>
+                        <PARAM name="prev_status" type="STRING">
+                            <DESC>Previous status of network connection. Can be "connected", "disconnected" or "unknown"."</DESC>
+                        </PARAM>
+                    </PARAMS>
+                    
+                </CALLBACK>
             </METHOD>
 
             <METHOD name="stopStatusNotify">

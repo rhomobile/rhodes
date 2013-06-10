@@ -3570,6 +3570,7 @@
 						>
 						<FileConfiguration
 							Name="Debug|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3577,6 +3578,7 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="Release|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3584,6 +3586,7 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorDebug|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
@@ -3591,6 +3594,7 @@
 						</FileConfiguration>
 						<FileConfiguration
 							Name="SimulatorRelease|Win32"
+							ExcludedFromBuild="true"
 							>
 							<Tool
 								Name="VCCLCompilerTool"
