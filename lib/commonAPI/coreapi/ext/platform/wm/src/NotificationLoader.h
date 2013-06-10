@@ -1,6 +1,8 @@
 #pragma once
 #include <windows.h>
-#include "ntfycapi.h"
+
+#include "NotificationDefines.h"
+#define	E_NTFY_SUCCESS					0
 
 //  Dynamically Loading the Notification DLL (This code is shared by the Scanner and 
 //  Device / Application DLLs
