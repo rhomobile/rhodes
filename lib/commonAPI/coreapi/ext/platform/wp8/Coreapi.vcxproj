@@ -152,6 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\ApplicationImpl.cpp" />
+    <ClCompile Include="..\..\shared\FileImpl.cpp" />
     <ClCompile Include="..\..\shared\generated\application_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\application_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\application_ruby_api.c" />
@@ -164,6 +165,9 @@
     <ClCompile Include="..\..\shared\generated\cpp\NetworkBase.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Network_js_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\Network_ruby_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\RhoFileBase.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\RhoFile_js_wrap.cpp" />
+    <ClCompile Include="..\..\shared\generated\cpp\RhoFile_ruby_wrap.cpp" />
     <ClCompile Include="..\..\shared\generated\cpp\SQLite3Base.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -206,6 +210,9 @@
     <ClCompile Include="..\..\shared\generated\network_api_init.cpp" />
     <ClCompile Include="..\..\shared\generated\network_js_api.cpp" />
     <ClCompile Include="..\..\shared\generated\network_ruby_api.c" />
+    <ClCompile Include="..\..\shared\generated\rhofile_api_init.cpp" />
+    <ClCompile Include="..\..\shared\generated\rhofile_js_api.cpp" />
+    <ClCompile Include="..\..\shared\generated\rhofile_ruby_api.c" />
     <ClCompile Include="..\..\shared\generated\sqlite3_api_init.cpp">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</CompileAsWinRT>
@@ -290,10 +297,12 @@
     <ClInclude Include="..\..\shared\generated\cpp\IApplication.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ILog.h" />
     <ClInclude Include="..\..\shared\generated\cpp\INetwork.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\IRhoFile.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ISQLite3.h" />
     <ClInclude Include="..\..\shared\generated\cpp\ISystem.h" />
     <ClInclude Include="..\..\shared\generated\cpp\LogBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\NetworkBase.h" />
+    <ClInclude Include="..\..\shared\generated\cpp\RhoFileBase.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SQLite3Base.h" />
     <ClInclude Include="..\..\shared\generated\cpp\SystemBase.h" />
     <ClInclude Include="..\wm\src\NetworkDetect.h" />
@@ -330,6 +339,13 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\File.xml">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(RHO_ROOT)\bin\rhogen api %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(InputDir)shared/generated</Outputs>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
