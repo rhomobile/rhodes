@@ -45,7 +45,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Notification();
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8)
     Init_RhoFile();
 #endif
 
