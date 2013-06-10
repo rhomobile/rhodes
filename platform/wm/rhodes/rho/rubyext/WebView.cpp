@@ -40,6 +40,7 @@ using namespace rho;
 using namespace rho::common;
 
 extern CMainWindow& getAppWindow();
+extern "C" int  rho_ruby_is_started();
 
 extern "C" {
 HWND getMainWnd();
@@ -64,8 +65,13 @@ void rho_webview_navigate(const char* url, int index)
 
     String strUrl = url;
 
-    strUrl = RHODESAPP().canonicalizeRhoUrl(url);
-    
+    if (rho_ruby_is_started()) {
+        strUrl = RHODESAPP().canonicalizeRhoUrl(url);
+    }
+    else {
+        strUrl = RHODESAPP().canonicalizeRhoPath(url);
+    }
+        
     TNavigateData* nd = new TNavigateData();
     nd->index = index;
     nd->url = _tcsdup(convertToStringW(strUrl).c_str());
