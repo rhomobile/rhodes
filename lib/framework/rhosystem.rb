@@ -55,10 +55,12 @@ module GeoLocation
 end
 
 
+if System.get_property('platform') != 'WINDOWS_DESKTOP'
 module Alert
 	def self.show_status( title, msg, hide)
 		#TODO: show_status
 	end
+end
 end
 
 module NavBar

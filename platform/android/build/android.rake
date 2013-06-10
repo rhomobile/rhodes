@@ -1218,7 +1218,7 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
-      args << "-I\"#{$commonapidir}\""
+      args << "-I\"#{$coreapidir}\""
       args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
       args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_OWN_STLPORT
       args << "-D__NEW__" if USE_OWN_STLPORT

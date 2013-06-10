@@ -145,10 +145,7 @@ String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
 
     rho::String filePrefix = "file:\\\\";
 
-    rho::String tmpPath = CFilePath::join(getRhoRuntimePath(), rho::String("apps"));
-    tmpPath = CFilePath::join(tmpPath, strPath);
-
-    return filePrefix + tmpPath;
+    return filePrefix + CFilePath::join(getAppRootPath(), strPath);
 }
 
 String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const

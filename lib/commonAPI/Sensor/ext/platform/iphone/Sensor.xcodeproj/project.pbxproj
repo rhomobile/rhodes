@@ -1,0 +1,390 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FA747A591761E8DF002FBA50 /* Sensor.h in Headers */ = {isa = PBXBuildFile; fileRef = FA747A531761E8DF002FBA50 /* Sensor.h */; };
+		FA747A5A1761E8DF002FBA50 /* Sensor.m in Sources */ = {isa = PBXBuildFile; fileRef = FA747A541761E8DF002FBA50 /* Sensor.m */; };
+		FA747A5B1761E8DF002FBA50 /* SensorFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA747A551761E8DF002FBA50 /* SensorFactorySingleton.m */; };
+		FA747A5C1761E8DF002FBA50 /* SensorSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FA747A561761E8DF002FBA50 /* SensorSetup.m */; };
+		FA747A5D1761E8DF002FBA50 /* SensorSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FA747A571761E8DF002FBA50 /* SensorSingleton.h */; };
+		FA747A5E1761E8DF002FBA50 /* SensorSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA747A581761E8DF002FBA50 /* SensorSingleton.m */; };
+		FA747A601761E8E9002FBA50 /* ISensor.h in Headers */ = {isa = PBXBuildFile; fileRef = FA747A5F1761E8E9002FBA50 /* ISensor.h */; };
+		FA747A671761E8F9002FBA50 /* SensorBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA747A611761E8F9002FBA50 /* SensorBase.h */; };
+		FA747A681761E8F9002FBA50 /* SensorBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA747A621761E8F9002FBA50 /* SensorBase.m */; };
+		FA747A691761E8F9002FBA50 /* SensorFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA747A631761E8F9002FBA50 /* SensorFactoryBase.h */; };
+		FA747A6A1761E8F9002FBA50 /* SensorFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA747A641761E8F9002FBA50 /* SensorFactoryBase.m */; };
+		FA747A6B1761E8F9002FBA50 /* SensorSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FA747A651761E8F9002FBA50 /* SensorSingletonBase.h */; };
+		FA747A6C1761E8F9002FBA50 /* SensorSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FA747A661761E8F9002FBA50 /* SensorSingletonBase.m */; };
+		FA747A6E1761E905002FBA50 /* sensor_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FA747A6D1761E905002FBA50 /* sensor_ruby_wrap.m */; };
+		FA747A701761E90D002FBA50 /* sensor_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA747A6F1761E90D002FBA50 /* sensor_js_wrap.mm */; };
+		FA747A741761E919002FBA50 /* sensor_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA747A711761E919002FBA50 /* sensor_api_init.cpp */; };
+		FA747A751761E919002FBA50 /* sensor_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA747A721761E919002FBA50 /* sensor_js_api.cpp */; };
+		FA747A761761E919002FBA50 /* sensor_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA747A731761E919002FBA50 /* sensor_ruby_api.c */; };
+		FA9530581761F8910028C008 /* SensorFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = FA9530561761F8910028C008 /* SensorFactory.h */; };
+		FA9530591761F8910028C008 /* SensorFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = FA9530571761F8910028C008 /* SensorFactory.m */; };
+		FAC155E7145855CF0016F3BD /* Sensor_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Sensor_Prefix.pch */; };
+		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
+		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FA747A531761E8DF002FBA50 /* Sensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Sensor.h; path = impl/Sensor.h; sourceTree = "<group>"; };
+		FA747A541761E8DF002FBA50 /* Sensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Sensor.m; path = impl/Sensor.m; sourceTree = "<group>"; };
+		FA747A551761E8DF002FBA50 /* SensorFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SensorFactorySingleton.m; path = impl/SensorFactorySingleton.m; sourceTree = "<group>"; };
+		FA747A561761E8DF002FBA50 /* SensorSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SensorSetup.m; path = impl/SensorSetup.m; sourceTree = "<group>"; };
+		FA747A571761E8DF002FBA50 /* SensorSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SensorSingleton.h; path = impl/SensorSingleton.h; sourceTree = "<group>"; };
+		FA747A581761E8DF002FBA50 /* SensorSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SensorSingleton.m; path = impl/SensorSingleton.m; sourceTree = "<group>"; };
+		FA747A5F1761E8E9002FBA50 /* ISensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ISensor.h; path = generated/ISensor.h; sourceTree = "<group>"; };
+		FA747A611761E8F9002FBA50 /* SensorBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SensorBase.h; path = generated/base_impl/SensorBase.h; sourceTree = "<group>"; };
+		FA747A621761E8F9002FBA50 /* SensorBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SensorBase.m; path = generated/base_impl/SensorBase.m; sourceTree = "<group>"; };
+		FA747A631761E8F9002FBA50 /* SensorFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SensorFactoryBase.h; path = generated/base_impl/SensorFactoryBase.h; sourceTree = "<group>"; };
+		FA747A641761E8F9002FBA50 /* SensorFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SensorFactoryBase.m; path = generated/base_impl/SensorFactoryBase.m; sourceTree = "<group>"; };
+		FA747A651761E8F9002FBA50 /* SensorSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SensorSingletonBase.h; path = generated/base_impl/SensorSingletonBase.h; sourceTree = "<group>"; };
+		FA747A661761E8F9002FBA50 /* SensorSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SensorSingletonBase.m; path = generated/base_impl/SensorSingletonBase.m; sourceTree = "<group>"; };
+		FA747A6D1761E905002FBA50 /* sensor_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = sensor_ruby_wrap.m; path = generated/ruby/sensor_ruby_wrap.m; sourceTree = "<group>"; };
+		FA747A6F1761E90D002FBA50 /* sensor_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = sensor_js_wrap.mm; path = generated/javascript/sensor_js_wrap.mm; sourceTree = "<group>"; };
+		FA747A711761E919002FBA50 /* sensor_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sensor_api_init.cpp; path = ../../shared/generated/sensor_api_init.cpp; sourceTree = "<group>"; };
+		FA747A721761E919002FBA50 /* sensor_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sensor_js_api.cpp; path = ../../shared/generated/sensor_js_api.cpp; sourceTree = "<group>"; };
+		FA747A731761E919002FBA50 /* sensor_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sensor_ruby_api.c; path = ../../shared/generated/sensor_ruby_api.c; sourceTree = "<group>"; };
+		FA9530561761F8910028C008 /* SensorFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SensorFactory.h; path = impl/SensorFactory.h; sourceTree = "<group>"; };
+		FA9530571761F8910028C008 /* SensorFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SensorFactory.m; path = impl/SensorFactory.m; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* libSensor.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSensor.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAD45FD51225FED600141873 /* Sensor_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sensor_Prefix.pch; sourceTree = "<group>"; };
+		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */,
+				FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* libSensor.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Barcode */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				32C88DFF0371C24200C91783 /* Other Sources */,
+				0867D69AFE84028FC02AAC07 /* Frameworks */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Barcode;
+			sourceTree = "<group>";
+		};
+		0867D69AFE84028FC02AAC07 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				AACBBE490F95108600F1A2B1 /* Foundation.framework */,
+				FAD4602C12260A8500141873 /* UIKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FA747A4D1761E851002FBA50 /* impl */,
+				FA747A4C1761E84A002FBA50 /* generated */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		32C88DFF0371C24200C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FAD45FD51225FED600141873 /* Sensor_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		FA747A4C1761E84A002FBA50 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FA747A521761E89F002FBA50 /* api */,
+				FA747A511761E897002FBA50 /* base_impl */,
+				FA747A501761E88D002FBA50 /* wrappers */,
+				FA747A4F1761E882002FBA50 /* shared */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FA747A4D1761E851002FBA50 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA9530561761F8910028C008 /* SensorFactory.h */,
+				FA9530571761F8910028C008 /* SensorFactory.m */,
+				FA747A531761E8DF002FBA50 /* Sensor.h */,
+				FA747A541761E8DF002FBA50 /* Sensor.m */,
+				FA747A551761E8DF002FBA50 /* SensorFactorySingleton.m */,
+				FA747A561761E8DF002FBA50 /* SensorSetup.m */,
+				FA747A571761E8DF002FBA50 /* SensorSingleton.h */,
+				FA747A581761E8DF002FBA50 /* SensorSingleton.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FA747A4F1761E882002FBA50 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FA747A711761E919002FBA50 /* sensor_api_init.cpp */,
+				FA747A721761E919002FBA50 /* sensor_js_api.cpp */,
+				FA747A731761E919002FBA50 /* sensor_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FA747A501761E88D002FBA50 /* wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				FA747A6F1761E90D002FBA50 /* sensor_js_wrap.mm */,
+				FA747A6D1761E905002FBA50 /* sensor_ruby_wrap.m */,
+			);
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		FA747A511761E897002FBA50 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FA747A611761E8F9002FBA50 /* SensorBase.h */,
+				FA747A621761E8F9002FBA50 /* SensorBase.m */,
+				FA747A631761E8F9002FBA50 /* SensorFactoryBase.h */,
+				FA747A641761E8F9002FBA50 /* SensorFactoryBase.m */,
+				FA747A651761E8F9002FBA50 /* SensorSingletonBase.h */,
+				FA747A661761E8F9002FBA50 /* SensorSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		FA747A521761E89F002FBA50 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FA747A5F1761E8E9002FBA50 /* ISensor.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FAC155E7145855CF0016F3BD /* Sensor_Prefix.pch in Headers */,
+				FA747A591761E8DF002FBA50 /* Sensor.h in Headers */,
+				FA747A5D1761E8DF002FBA50 /* SensorSingleton.h in Headers */,
+				FA747A601761E8E9002FBA50 /* ISensor.h in Headers */,
+				FA747A671761E8F9002FBA50 /* SensorBase.h in Headers */,
+				FA747A691761E8F9002FBA50 /* SensorFactoryBase.h in Headers */,
+				FA747A6B1761E8F9002FBA50 /* SensorSingletonBase.h in Headers */,
+				FA9530581761F8910028C008 /* SensorFactory.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* Sensor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Sensor" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Sensor;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* libSensor.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Sensor" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Barcode */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* Sensor */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FA747A5A1761E8DF002FBA50 /* Sensor.m in Sources */,
+				FA747A5B1761E8DF002FBA50 /* SensorFactorySingleton.m in Sources */,
+				FA747A5C1761E8DF002FBA50 /* SensorSetup.m in Sources */,
+				FA747A5E1761E8DF002FBA50 /* SensorSingleton.m in Sources */,
+				FA747A681761E8F9002FBA50 /* SensorBase.m in Sources */,
+				FA747A6A1761E8F9002FBA50 /* SensorFactoryBase.m in Sources */,
+				FA747A6C1761E8F9002FBA50 /* SensorSingletonBase.m in Sources */,
+				FA747A6E1761E905002FBA50 /* sensor_ruby_wrap.m in Sources */,
+				FA747A701761E90D002FBA50 /* sensor_js_wrap.mm in Sources */,
+				FA747A741761E919002FBA50 /* sensor_api_init.cpp in Sources */,
+				FA747A751761E919002FBA50 /* sensor_js_api.cpp in Sources */,
+				FA747A761761E919002FBA50 /* sensor_ruby_api.c in Sources */,
+				FA9530591761F8910028C008 /* SensorFactory.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphoneos;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/Sensor.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Sensor_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Sensor;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386 armv7";
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /tmp/Sensor.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Sensor_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = Sensor;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386  armv7";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "Sensor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "Sensor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}

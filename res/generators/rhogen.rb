@@ -73,7 +73,7 @@ module Rhogen
       generated_uuid = puuid.generate
       @productid = generated_uuid
       @uid = '0x'+(0xE0000000 + rand(0xFFFFFFF)).to_s(16)
-      @rhoconnectclient_ext = ', "rhoconnect-client"' unless norhoconnect
+      @rhoconnectclient_ext = '"rhoconnect-client"' unless norhoconnect
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end
@@ -840,10 +840,12 @@ module Rhogen
       def initialize
         @name = ''
         @const_tag = ''
+        @deprecated = false
       end
 
       attr_accessor :name
       attr_accessor :const_tag
+      attr_accessor :deprecated
     end
 
     class ModuleProperty
@@ -1492,45 +1494,63 @@ module Rhogen
         #leave only unique consants 
         module_item.constants.uniq! { |x| x.name  }
 
-        hash_names = []
+        hash_elems = []
 
         #hash keys
         xml_module_item.elements.each(".//PARAMS/PARAM") do |xml_param|
           if xml_param.attribute("type").to_s.upcase == "HASH"
-            xml_param.elements.each(".//PARAM") do |param_key|
-              hash_names << param_key.attribute("name").to_s
-            end        
+            hash_elems << xml_param
           end
         end 
 
         xml_module_item.elements.each(".//RETURN") do |xml_param|
           if xml_param.attribute("type").to_s.upcase == "HASH"
-            xml_param.elements.each(".//PARAM") do |param_key|
-              hash_names << param_key.attribute("name").to_s
-            end        
+            hash_elems << xml_param      
           end
         end 
 
         xml_module_item.elements.each(".//CALLBACK") do |xml_param|
           if xml_param.attribute("type").to_s.upcase == "HASH"
-            xml_param.elements.each(".//PARAM") do |param_key|
-              hash_names << param_key.attribute("name").to_s
-            end        
+            hash_elems << xml_param        
           end
         end 
 
-        hash_names.sort.uniq.reject(&:empty?).each do |hash_key|
-          key = ModuleHashKey.new()
-          key.name = hash_key
-          const_key = hash_key.dup
+        hash_objs = []
+
+        hash_elems.each do |xml_param|
+          xml_param.elements.each(".//PARAM") do |param_key|
+            key = ModuleHashKey.new()
+            key.name = param_key.attribute("name").to_s
+            if (param_key.attribute("deprecated").to_s.downcase == "true")
+              key.deprecated = true
+            end
+            hash_objs << key
+          end
+        end        
+
+        hash_objs.reject! {|p| p.name.empty?}
+        hash_objs.uniq! {|p| p.name}
+
+        hash_objs.each do |hash_key|
+          const_key = hash_key.name.dup
           const_key.gsub!(/::/, '/')
           const_key.gsub!(/([A-Z]+)([A-Z][a-z])/,'\1_\2')
           const_key.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
           const_key.tr!("-", "_")
+
+          const_key = 'HK_' + const_key
+          if hash_key.deprecated
+            const_key += "_DEPRECATED"
+          end
           const_key.upcase!
-          key.const_tag = 'HK_' + const_key
-          module_item.hash_key_names << key
+
+          hash_key.const_tag = const_key
         end
+
+        hash_objs.uniq! {|p| p.const_tag}
+        hash_objs.sort! {|a,b| a.const_tag <=> b.const_tag}
+
+        module_item.hash_key_names = hash_objs
 
          #properties
          xml_properties = xml_module_item.elements["PROPERTIES"]
