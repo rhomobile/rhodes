@@ -1094,8 +1094,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1115,8 +1115,8 @@
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = rhorunner;
-				PROVISIONING_PROFILE = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = dynamic;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1131,8 +1131,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = YES;
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
@@ -1151,8 +1151,8 @@
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = rhorunner;
-				PROVISIONING_PROFILE = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/ruby/iphone ../shared/ruby/include ../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
@@ -1208,8 +1208,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CODE_SIGN_ENTITLEMENTS = Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Dmitry Soldatenkoff (MF99RW67WY)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				COMPRESS_PNG_FILES = NO;
 				COPY_PHASE_STRIP = YES;
 				EXTENSIONS_LDFLAGS = "-filelist $(TARGET_TEMP_DIR)/rhodeslibs.txt";
@@ -1228,8 +1228,8 @@
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_NAME = rhorunner;
-				PROVISIONING_PROFILE = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "44485E3F-DF08-4B25-AC2C-1ACAA6B758F4";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "../shared/ruby/iphone ../shared/ruby/include ../shared/curl/include ../shared/ ../shared/syncengine ../shared/logging ../shared/common rhoextlib";
