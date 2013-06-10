@@ -111,9 +111,31 @@ void rho_webview_navigate(const char* url, int index)
         RAWLOG_ERROR("WebView.navigate failed: url is nil");
         return;
     }
+#if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
+    NSString* rho_path = [NSString stringWithUTF8String:rho_native_rhopath()];
+    NSString* str_url = nil;
+    if (url[0] == '/') {
+        str_url = [NSString stringWithUTF8String:(url+1)];
+    }
+    else {
+        str_url = [NSString stringWithUTF8String:url];
+    }
+    NSString* final_path = [rho_path stringByAppendingString:@"apps/"];
+    final_path = [final_path stringByAppendingString:str_url];
 
+    //id arg1 = [NSString stringWithUTF8String:url];
+    id arg1 = final_path;
+#else
+    id arg1 = nil;
+    if (rho_ruby_is_started()) {
+        arg1 = [NSString stringWithUTF8String:rho_app_canonicalize_rho_url(url)];
+    }
+    else {
+        arg1 = [NSString stringWithUTF8String:rho_app_canonicalize_rho_path(url)];
+    }
+    [NSString stringWithUTF8String:url];
+#endif
     id runnable = [RhoWebViewNavigateTask class];
-    id arg1 = [NSString stringWithUTF8String:url];
     id arg2 = [NSValue valueWithBytes:&index objCType:@encode(int)];
     [Rhodes performOnUiThread:runnable arg:arg1 arg:arg2 wait:NO];
 }

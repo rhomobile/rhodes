@@ -34,7 +34,11 @@
             return YES;
         }
     }
-   
+#if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
+    if ([theRequest.URL.scheme isEqualToString:@"file"]) {
+        return YES;
+    }
+#endif
     return NO;
 }
 
@@ -61,6 +65,42 @@
         }
         
     }
+#if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
+    if ([theUrl.scheme isEqualToString:@"file"]) {
+        NSString* rho_path = [NSString stringWithUTF8String:rho_native_rhopath()];
+        NSString* str_url = [theUrl path];
+        NSString* final_path = [rho_path stringByAppendingString:@"apps/"];
+        
+        if ([str_url hasPrefix:final_path]) {
+            final_path = str_url;
+        }
+        else {
+            final_path = [final_path stringByAppendingString:str_url];
+        }
+        
+        if ([[NSFileManager defaultManager] isReadableFileAtPath:final_path]) {
+        
+            NSData* data = [NSData dataWithContentsOfFile:final_path];
+            
+            CRhoURLResponse* response =
+            [[CRhoURLResponse alloc] initWithURL:[[self request] URL]
+                                        MIMEType:@"text/plain"
+                           expectedContentLength:[data length]
+                                textEncodingName:@"UTF-8"];
+            response.statusCode = 200;
+            
+            [[self client] URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];
+            if (data != nil) {
+                [[self client] URLProtocol:self didLoadData:data];
+            }
+            [[self client] URLProtocolDidFinishLoading:self];
+            
+            
+            return;
+        }
+    }
+#endif
+    
     //NSLog(@"$$$ responce ERROR: [%@]", [theUrl absoluteString]);
     NSString* body = @"error";
     [self sendResponseWithResponseCode:401 data:[body dataUsingEncoding:NSUTF8StringEncoding]];
