@@ -857,13 +857,15 @@ static BOOL makeHiddenUntilLoadContent = YES;
         //    [self performSelectorOnMainThread:@selector(loadRequestToWebView:) withObject:request waitUntilDone:NO];
         //}
         //else {
-#if defined(RHO_NO_RUBY_API)
-        NSString *redirect = cleared_url;
-#else
-		NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
-        NSString *redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, cleared_url];
-#endif
-        
+
+        NSString *redirect = nil;
+        if ([cleared_url hasPrefix:@"file:"]) {
+            redirect = cleared_url;
+        }
+        else {
+            NSString* homeurl = [NSString stringWithUTF8String:rho_rhodesapp_gethomeurl()];
+            redirect = [NSString stringWithFormat:@"%@/system/redirect_to?url=%@", homeurl, cleared_url];
+        }
         
             //[self navigate:redirect tab:index];
 #if defined(RHO_NO_RUBY_API) && defined(RHO_NO_HTTP_SERVER)
@@ -1027,7 +1029,7 @@ static BOOL makeHiddenUntilLoadContent = YES;
     
     NSString *scheme = url.scheme;
 #if defined(RHO_NO_RUBY_API)
-    if (![scheme isEqualToString:@"file"])
+    if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"] && ![scheme isEqualToString:@"file"])
 #else
     if (![scheme isEqualToString:@"http"] && ![scheme isEqualToString:@"https"])
 #endif
