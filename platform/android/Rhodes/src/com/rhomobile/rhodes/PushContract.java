@@ -60,6 +60,7 @@ public class PushContract {
     public static void handleRegistration(Context context, String token, String pushClient) {
         Intent intent = getIntent(context);
         intent.putExtra(INTENT_TYPE, INTENT_TYPE_REGISTRATION_ID);
+        intent.putExtra(INTENT_PUSH_CLIENT, pushClient);
         intent.putExtra(INTENT_REGISTRATION_ID, token);
 
         context.startService(intent);

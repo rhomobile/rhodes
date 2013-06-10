@@ -30,6 +30,10 @@
 #include <common/RhoStd.h>
 #include <logging/RhoLog.h>
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+#include "api_generator/MethodResult.h"
+#endif
+
 using namespace rho;
 using namespace rho::common;
 
@@ -59,7 +63,11 @@ public:
 			m_message  = message;
 		}
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+		Params (String &title, String &message, String &icon, rho::apiGenerator::CMethodResult &callback, Vector<CAlertButton>& buttons, int dlgType)
+#else
 		Params (String &title, String &message, String &icon, String &callback, Vector<CAlertButton>& buttons, int dlgType)
+#endif
 		{
 			m_dlgType  = dlgType;
 			m_title    = title;
@@ -73,7 +81,11 @@ public:
 		String m_title;
 		String m_message;
 		String m_icon;
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+		rho::apiGenerator::CMethodResult m_callback;
+#else
 		String m_callback;
+#endif
 
 		//Hashtable<String, String> m_buttons;
         Vector<CAlertButton> m_buttons;
@@ -119,7 +131,11 @@ private:
 private:
 	String m_title;
 	String m_message;
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+	rho::apiGenerator::CMethodResult m_callback;
+#else
 	String m_callback;
+#endif
 	String m_icon;
 
 	CStatic m_messageCtrl;
