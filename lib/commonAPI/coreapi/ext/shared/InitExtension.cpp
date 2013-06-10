@@ -14,6 +14,7 @@ extern "C" void Init_Navbar();
 extern "C" void Init_Notification();
 extern "C" void Init_RhoFile();
 extern "C" void Init_NativeMenuBar();
+extern "C" void Init_Led();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -45,9 +46,16 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Notification();
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8)
     Init_RhoFile();
 #endif
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
     Init_NativeMenuBar();
+#endif
+
+
+#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+//	Init_Led();
+#endif
 }

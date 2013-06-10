@@ -2188,6 +2188,14 @@
 			Name="Notification"
 			>
 			<File
+				RelativePath=".\src\LedImpl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\Notification.Led.xml"
+				>
+			</File>
+			<File
 				RelativePath="..\..\Notification.xml"
 				>
 			</File>
@@ -2254,6 +2262,18 @@
 					Name="generated"
 					>
 					<File
+						RelativePath="..\..\shared\generated\led_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\led_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\led_ruby_api.c"
+						>
+					</File>
+					<File
 						RelativePath="..\..\shared\generated\notification_api_init.cpp"
 						>
 					</File>
@@ -2269,7 +2289,27 @@
 						Name="cpp"
 						>
 						<File
+							RelativePath="..\..\shared\generated\cpp\ILed.h"
+							>
+						</File>
+						<File
 							RelativePath="..\..\shared\generated\cpp\INotification.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Led_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Led_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\LedBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\LedBase.h"
 							>
 						</File>
 						<File

@@ -389,34 +389,38 @@ void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
 
-#if !defined(RHO_NO_RUBY)
-    RhoRubyStart();
-    rubyext::CGeoLocation::Create();
-#else
-    RhoJsStart();
-#endif
+    if (!isJSApplication())
+    {
+        RhoRubyStart();
+        rubyext::CGeoLocation::Create();
+    }
+    else
+        RhoJsStart();
+    
 
 	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
 		LOG(INFO) + "Starting sync engine...";
 		sync::RhoconnectClientManager::syncThreadCreate();
 	}
 
-#if !defined(RHO_NO_RUBY)
-    LOG(INFO) + "RhoRubyInitApp...";
-    RhoRubyInitApp();
-    
-    HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
-    bool handled = mapConflicts.size()==0;
-    
-    if (!handled)
+    if (!isJSApplication())
     {
-        handled = m_applicationEventReceiver.onReinstallConfigUpdate(mapConflicts);
+        LOG(INFO) + "RhoRubyInitApp...";
+        RhoRubyInitApp();
+        
+        HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
+        bool handled = mapConflicts.size()==0;
+        
+        if (!handled)
+        {
+            handled = m_applicationEventReceiver.onReinstallConfigUpdate(mapConflicts);
+        }
+        if (!handled)
+        {
+            rho_ruby_call_config_conflicts();
+        }
     }
-    if (!handled)
-    {
-        rho_ruby_call_config_conflicts();
-    }
-#endif
+
     RHOCONF().conflictsResolved();
 
     while (!m_bExit) {
@@ -434,10 +438,12 @@ void CRhodesApp::run()
 
     LOG(INFO) + "RhodesApp thread shutdown";
 
-#if !defined(RHO_NO_RUBY)
     getExtManager().close();
-    rubyext::CGeoLocation::Destroy();
-#endif
+
+    if (!isJSApplication())
+    {
+        rubyext::CGeoLocation::Destroy();
+    }
 
     if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) 
     {
@@ -447,9 +453,10 @@ void CRhodesApp::run()
 
     db::CDBAdapter::closeAll();
 
-#if !defined(RHO_NO_RUBY)
-    RhoRubyStop();
-#endif
+    if (!isJSApplication())
+    {
+        RhoRubyStop();
+    }
 }
 
 CRhodesApp::~CRhodesApp(void)
@@ -526,9 +533,8 @@ void CRhodesApp::runCallbackInThread(const String& strCallback, const String& st
 
 static void callback_activateapp(void *arg, String const &strQuery)
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_activateApp();
-#endif
+    if (!RHODESAPP().isJSApplication())
+        rho_ruby_activateApp();
 
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
@@ -536,9 +542,8 @@ static void callback_activateapp(void *arg, String const &strQuery)
 
 static void callback_deactivateapp(void *arg, String const &strQuery)
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_deactivateApp();
-#endif
+    if (!RHODESAPP().isJSApplication())
+        rho_ruby_deactivateApp();
 
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
@@ -546,18 +551,16 @@ static void callback_deactivateapp(void *arg, String const &strQuery)
 
 static void callback_uicreated(void *arg, String const &strQuery)
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_uiCreated();
-#endif
+    if (!RHODESAPP().isJSApplication())
+        rho_ruby_uiCreated();
 
     rho_http_sendresponse(arg, "");
 }
 
 static void callback_uidestroyed(void *arg, String const &strQuery)
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_uiDestroyed();
-#endif
+    if (!RHODESAPP().isJSApplication())
+        rho_ruby_uiDestroyed();
 
     rho_http_sendresponse(arg, "");
 }
@@ -1874,6 +1877,16 @@ void CRhodesApp::loadUrl(String url, int nTabIndex/* = -1*/)
     {
         js_callback = true;
         url = url.substr(11);
+    }else if (String_startsWith(url, "jscallback:") )
+    {
+        js_callback = true;
+        url = url.substr(11);
+
+        String strCallback("Rho.callbackHandler( \"");
+        strCallback += url;
+        strCallback += "\", {},\"\")";
+
+        url = strCallback;
     }else if ( strcasecmp(url.c_str(), "exit")==0 || strcasecmp(url.c_str(), "close") == 0 )
     {
         rho_sys_app_exit();
