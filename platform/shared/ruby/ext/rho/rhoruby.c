@@ -405,7 +405,9 @@ void rho_ruby_call_config_conflicts()
 
     rb_funcall(framework, onConfigConflicts_mid, 1, hashConflicts);
 }
-
+#else
+void rho_ruby_call_config_conflicts() {
+}
 #endif
 
 void rho_ruby_activateApp()

@@ -1272,80 +1272,83 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
     String fullPath = CFilePath::join(m_root, uri);
     
-    Route route;
-    if (dispatch(uri, route)) {
-        RAWTRACE1("Uri %s is correct route, so enable MVC logic", uri.c_str());
-        
-        VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
-                                        method, uri, query, headers, body);
-        VALUE data = callFramework(req);
-        String reply(getStringFromValue(data), getStringLenFromValue(data));
-        rho_ruby_releaseValue(data);
+    if (rho_ruby_is_started())
+    {
+        Route route;
+        if (dispatch(uri, route)) {
+            RAWTRACE1("Uri %s is correct route, so enable MVC logic", uri.c_str());
+            
+            VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
+                                            method, uri, query, headers, body);
+            VALUE data = callFramework(req);
+            String reply(getStringFromValue(data), getStringLenFromValue(data));
+            rho_ruby_releaseValue(data);
 
-        bool isRedirect = String_startsWith(reply, "HTTP/1.1 301") ||
-                          String_startsWith(reply, "HTTP/1.1 302");
+            bool isRedirect = String_startsWith(reply, "HTTP/1.1 301") ||
+                              String_startsWith(reply, "HTTP/1.1 302");
 
-        if (!send_response(reply, isRedirect))
-            return false;
+            if (!send_response(reply, isRedirect))
+                return false;
 
-        if (method == "GET")
-            rho_rhodesapp_keeplastvisitedurl(uri.c_str());
+            if (method == "GET")
+                rho_rhodesapp_keeplastvisitedurl(uri.c_str());
 
-		if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+		    if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
 
-			if (!route.id.empty()) {
-				sync::RhoconnectClientManager::rho_sync_addobjectnotify_bysrcname(route.model.c_str(), route.id.c_str());
-			}			
-		}
-        
-        return true;
-    }
-    
-//#ifndef OS_ANDROID
-    if (isdir(fullPath)) {
-        RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
-        String q = query.empty() ? "" : "?" + query;
-        
-        HeaderList headers;
-        headers.push_back(Header("Location", CFilePath::join( uri, "index"RHO_ERB_EXT) + q));
-        
-        send_response(create_response("301 Moved Permanently", headers), true);
-        return false;
-    }
-//#else
-//    //Work around this Android redirect bug:
-//    //http://code.google.com/p/android/issues/detail?can=2&q=11583&id=11583
-//    if (isdir(fullPath)) {
-//        RAWTRACE1("Uri %s is directory, override with index", uri.c_str());
-//        return decide(method, CFilePath::join( uri, "index"RHO_ERB_EXT), query, headers, body);
-//    }
-//#endif
-    if (isindex(uri)) {
-        if (!isfile(fullPath)) {
-            RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
-            String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
-            send_response(create_response("404 Not Found",error));
-            return false;
+			    if (!route.id.empty()) {
+				    sync::RhoconnectClientManager::rho_sync_addobjectnotify_bysrcname(route.model.c_str(), route.id.c_str());
+			    }			
+		    }
+            
+            return true;
         }
         
-        RAWTRACE1("Uri %s is index file, call serveIndex", uri.c_str());
-
-        VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
-                                        method, uri, query, headers, body);
-
-        VALUE data = callServeIndex((char *)fullPath.c_str(), req);
-        String reply(getStringFromValue(data), getStringLenFromValue(data));
-        rho_ruby_releaseValue(data);
-
-        if (!send_response(reply))
+    //#ifndef OS_ANDROID
+        if (isdir(fullPath)) {
+            RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
+            String q = query.empty() ? "" : "?" + query;
+            
+            HeaderList headers;
+            headers.push_back(Header("Location", CFilePath::join( uri, "index"RHO_ERB_EXT) + q));
+            
+            send_response(create_response("301 Moved Permanently", headers), true);
             return false;
+        }
+    //#else
+    //    //Work around this Android redirect bug:
+    //    //http://code.google.com/p/android/issues/detail?can=2&q=11583&id=11583
+    //    if (isdir(fullPath)) {
+    //        RAWTRACE1("Uri %s is directory, override with index", uri.c_str());
+    //        return decide(method, CFilePath::join( uri, "index"RHO_ERB_EXT), query, headers, body);
+    //    }
+    //#endif
+        if (isindex(uri)) {
+            if (!isfile(fullPath)) {
+                RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
+                String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
+                send_response(create_response("404 Not Found",error));
+                return false;
+            }
+            
+            RAWTRACE1("Uri %s is index file, call serveIndex", uri.c_str());
 
-        if (method == "GET")
-            rho_rhodesapp_keeplastvisitedurl(uri.c_str());
+            VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
+                                            method, uri, query, headers, body);
 
-        return true;
+            VALUE data = callServeIndex((char *)fullPath.c_str(), req);
+            String reply(getStringFromValue(data), getStringLenFromValue(data));
+            rho_ruby_releaseValue(data);
+
+            if (!send_response(reply))
+                return false;
+
+            if (method == "GET")
+                rho_rhodesapp_keeplastvisitedurl(uri.c_str());
+
+            return true;
+        }
     }
-    
+
     // Try to send requested file
     RAWTRACE1("Uri %s should be regular file, trying to send it", uri.c_str());
     return send_file(uri, headers);

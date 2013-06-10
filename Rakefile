@@ -1364,7 +1364,7 @@ def common_bundle_start( startdir, dest)
   init_extensions(dest)
 
   chdir startdir
-  
+ 
   if File.exists? app + '/app'
     cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
   end
@@ -1622,10 +1622,9 @@ namespace "build" do
         process_exclude_folders(excluded_dirs)
         chdir startdir
       
-        create_manifest
-        
       if $js_application == false
-      
+
+        create_manifest
         cp compileERB, $srcdir
         puts "Running default.rb"
 
