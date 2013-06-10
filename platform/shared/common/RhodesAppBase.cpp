@@ -34,6 +34,7 @@
 
 extern "C" void rho_net_request_with_data(const char *url, const char *str_body);
 extern "C" int  rho_ruby_is_started();
+extern "C" const char* rho_rhodesapp_getapprootpath();
 
 namespace rho {
 namespace common{
@@ -140,7 +141,7 @@ String CRhodesAppBase::getDBFileRoot()
 
 String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
 {
-    rho::String appRootTag = "%APP_PATH%";
+   rho::String appRootTag = "%APP_PATH%";
     rho::String filePrefix = "file://";
     rho::String retPath    = strPath;
 
@@ -156,7 +157,7 @@ String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
 
     if (String::npos != strPath.find("file:"))
     {
-        rho::String       rootPath = CFilePath::join(getRhoRuntimePath(), rho::String("apps"));
+        rho::String       rootPath = CFilePath::join(rho_rhodesapp_getapprootpath(), rho::String("apps"));
         String::size_type findIt   = strPath.find(appRootTag);
 
         if (findIt != String::npos)
@@ -165,11 +166,9 @@ String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
             retPath.erase(findIt, appRootTag.size());
             retPath.insert(findIt, rootPath.c_str());
         }
-
-        return retPath;
     }
     
-    return filePrefix + retPath;
+    return retPath;
 }
 
 String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
