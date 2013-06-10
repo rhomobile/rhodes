@@ -419,7 +419,6 @@ bool CHttpServer::run()
         unsigned long nTimeout = RHODESAPP().getTimer().getNextTimeout();
         tv.tv_sec = nTimeout/1000;
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
-		if(nTimeout == 0) tv.tv_sec = 1;
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
 
         rho_ruby_stop_threadidle();
@@ -518,7 +517,6 @@ bool CHttpServer::receive_request(ByteVector &request)
 
 	ByteVector r;
     char buf[BUF_SIZE];
-    int attempts = 0;
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
@@ -534,13 +532,11 @@ bool CHttpServer::receive_request(ByteVector &request)
             if (e == EAGAIN) {
                 if (!r.empty())
                     break;
-                if(++attempts > 2) return false;
+                
                 fd_set fds;
                 FD_ZERO(&fds);
                 FD_SET(m_sock, &fds);
-				timeval tv;
-				tv.tv_sec = 1;
-				select(m_sock + 1, &fds, 0, 0, &tv);
+                select(m_sock + 1, &fds, 0, 0, 0);
                 continue;
             }
             
