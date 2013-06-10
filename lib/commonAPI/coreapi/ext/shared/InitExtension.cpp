@@ -56,6 +56,6 @@ extern "C" void Init_CoreAPI_Extension()
 
 
 #if defined(APP_BUILD_CAPABILITY_MOTOROLA)
-//	Init_Led();
+	Init_Led();
 #endif
 }
