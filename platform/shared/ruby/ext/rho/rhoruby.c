@@ -248,8 +248,10 @@ void RhoRubyStart()
 #if !defined(RHO_NO_RUBY)
     Init_RhoConf(); //+
 #endif
-    
-    Init_Alert();
+
+//#if !defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+//    Init_Alert();
+//#endif
 
 #if defined(WINDOWS_PLATFORM)
     //init_rhoext_Signature();
@@ -278,7 +280,9 @@ void RhoRubyStart()
 #endif
     Init_RhoEvent();
     Init_Calendar();
+#if !defined(OS_WINDOWS_DESKTOP) && !(defined(OS_MACOSX) && defined(RHODES_EMULATOR))
     Init_Alert();
+#endif
 
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)

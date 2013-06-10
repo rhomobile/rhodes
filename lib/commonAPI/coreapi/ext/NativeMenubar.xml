@@ -4,14 +4,16 @@
     <MODULE name="NativeMenubar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The NativeMenubar methods let you customize the Rhodes Menubar at runtime.</HELP_OVERVIEW>
         <MORE_HELP></MORE_HELP>
+        <PLATFORM>WM</PLATFORM>
         
         <TEMPLATES>
         </TEMPLATES>
 
-        <PROPERTIES access="STATIC" generateAccessors="false">
+        <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="mainMenu" type="ARRAY">
                 <DESC>Main Native MenuBar items</DESC>
                 <PARAM type="HASH">
+
                     <PARAMS>
                         <PARAM name="label" type="STRING">
                             <DESC>Visible label.</DESC>
@@ -21,8 +23,10 @@
                         </PARAM>
                         <PARAM name="disabled" type="BOOLEAN" default="false">
                             <DESC>Menu item will be displayed as disabled.</DESC>
+                            <PLATFORM>WM</PLATFORM>
                         </PARAM>
                     </PARAMS>
+
                 </PARAM>
             </PROPERTY>
             <PROPERTY name="extraMenu" type="ARRAY">
@@ -42,7 +46,7 @@
 
             <PROPERTY name="defaultMainMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <PARAM type="HASH" />
-                <DESC>Default Main Menu items</DESC>
+                <DESC>Default Main Menu items.</DESC>
             </PROPERTY>
 
         </PROPERTIES>

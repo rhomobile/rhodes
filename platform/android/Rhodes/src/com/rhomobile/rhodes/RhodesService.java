@@ -412,11 +412,14 @@ public class RhodesService extends Service {
 			int type = intent.getIntExtra(PushContract.INTENT_TYPE, PushContract.INTENT_TYPE_UNKNOWN);
 			switch (type) {
 			case PushContract.INTENT_TYPE_REGISTRATION_ID:
+			{
 				String id = intent.getStringExtra(PushContract.INTENT_REGISTRATION_ID);
+                String pushType = intent.getStringExtra(PushContract.INTENT_PUSH_CLIENT);
 				if (id == null)
 					throw new IllegalArgumentException("Empty registration id received in service command");
 				Logger.I(TAG, "Received PUSH registration id: " + id);
-				setPushRegistrationId(id);
+				setPushRegistrationId(pushType, id);
+			}
 				break;
             case PushContract.INTENT_TYPE_MESSAGE:
                 if(intent.hasExtra(PushContract.INTENT_MESSAGE_EXTRAS)) {
@@ -1186,10 +1189,9 @@ public class RhodesService extends Service {
         }
     }
 
-	public native void setPushRegistrationId(String id);
-	private native String getPushRegistrationId(); 
+	public native void setPushRegistrationId(String type, String id);
 
-    private native boolean callPushCallback(String type, String json, String data);
+    private native boolean callPushCallback(String type, String json);
 
 	private void handlePushMessage(String pushType, Bundle extras) {
 		Logger.D(TAG, "Handle PUSH message");
@@ -1207,34 +1209,10 @@ public class RhodesService extends Service {
             return;
         }
 
-        StringBuilder builder = new StringBuilder();
-        Set<String> keys = extras.keySet();
+        String json = new JSONGenerator(extras).toString();
 
-        for (String key : keys) {
-
-            // Skip system related keys
-            if(key.equals("from"))
-                continue;
-            if(key.equals("collapse_key"))
-                continue;
-            if(key.equals("phone_id")) {
-                continue;
-            }
-
-            Logger.D(TAG, "PUSH item: " + key);
-            Object value = extras.get(key);
-            if (builder.length() > 0)
-                builder.append("&");
-            builder.append(key);
-            if (value != null) {
-                builder.append("=");
-                builder.append(value.toString());
-            }
-        }
-        String data = builder.toString();
-
-        Logger.D(TAG, "Received PUSH message: " + data);
-        if (callPushCallback(pushType, null, data)) {
+        Logger.D(TAG, "Received PUSH message: " + json);
+        if (callPushCallback(pushType, json)) {
             Logger.T(TAG, "Push message completely handled in callback");
             return;
         }
@@ -1302,7 +1280,7 @@ public class RhodesService extends Service {
         
         Logger.D(TAG, "Push message JSON: " + json);
         
-        if (callPushCallback(type, json, null)) {
+        if (callPushCallback(type, json)) {
             Logger.T(TAG, "Push message completely handled in callback");
             return;
         }
