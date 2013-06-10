@@ -144,7 +144,7 @@ String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
         return strPath;
     }
 
-    rho::String appRootTag = "%APP_ROOT%";
+    rho::String appRootTag = "%APP_PATH%";
     rho::String filePrefix = "file:\\\\";
     rho::String rootPath   = CFilePath::join(getRhoRuntimePath(), rho::String("apps"));
     rho::String retPath    = "";
