@@ -33,6 +33,7 @@
 #include "net/INetRequest.h"
 
 extern "C" void rho_net_request_with_data(const char *url, const char *str_body);
+extern "C" int  rho_ruby_is_started();
 
 namespace rho {
 namespace common{
@@ -143,32 +144,40 @@ String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
         return strPath;
     }
 
+    rho::String appRootTag = "%APP_ROOT%";
     rho::String filePrefix = "file:\\\\";
+    rho::String rootPath   = CFilePath::join(getRhoRuntimePath(), rho::String("apps"));
+    rho::String retPath    = "";
 
-    rho::String tmpPath = CFilePath::join(getRhoRuntimePath(), rho::String("apps"));
-    tmpPath = CFilePath::join(tmpPath, strPath);
+    String::size_type findIt = strPath.find_first_of(appRootTag);
 
-    return filePrefix + tmpPath;
+    if (findIt != String::npos)
+    {   
+        retPath = strPath;
+        retPath.erase(findIt, appRootTag.size());
+        retPath.insert(findIt, rootPath.c_str());
+    }
+    else
+    {
+        retPath = CFilePath::join(rootPath, strPath);
+    }
+
+    return filePrefix + retPath;
 }
 
 String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
 {
-#if defined(RHO_NO_RUBY)
-    return canonicalizeRhoPath(strUrl);
-#else
-
     if (strUrl.length() == 0 )
         return m_strHomeUrl;
 
     if (0 == strUrl.find("javascript:"))
-    	return strUrl;
+	    return strUrl;
 
     size_t pos = strUrl.find_first_of(":#");
     if((pos == String::npos) || (strUrl.at(pos) == '#'))
         return CFilePath::join(m_strHomeUrl,strUrl);
 
     return strUrl;
-#endif
 }
 
 boolean CRhodesAppBase::isBaseUrl(const String& strUrl)
