@@ -65,7 +65,8 @@ void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 
 extern int rho_extensions_are_loaded();
 
-
+extern void rho_sysimpl_sethas_network(int value);
+extern void rho_sysimpl_sethas_cellnetwork(int value);
 
 
 #undef DEFAULT_LOGCATEGORY
@@ -730,13 +731,18 @@ static Rhodes *instance = NULL;
 
 - (void) monitorNetworkStatus
 {
-	while(true)
-	{
-		[NSThread sleepForTimeInterval:getNetworkStatusPollInterval()];
-		Reachability* r = [Reachability reachabilityForInternetConnection];
-		networkStatusNotify([r currentReachabilityStatus]==NotReachable?0:1);
-		[r release];
-	}
+    while(true)
+    {
+        Reachability* r = [Reachability reachabilityForInternetConnection];
+        NetworkStatus status = [r currentReachabilityStatus];
+        rho_sysimpl_sethas_network( status==ReachableViaWiFi?1:0 );
+        rho_sysimpl_sethas_cellnetwork( status==ReachableViaWWAN?1:0 );
+        
+        networkStatusNotify(status==NotReachable?0:1);
+        [r release];
+        
+        [NSThread sleepForTimeInterval:getNetworkStatusPollInterval()];
+    }
 }
 
 #ifdef __IPHONE_3_0
