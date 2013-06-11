@@ -32,15 +32,11 @@
 #include "common/RhoConf.h"
 #include "common/Tokenizer.h"
 #include "common/app_build_capabilities.h"
-
-#ifndef RHO_NO_RUBY
 #include "ruby/ext/rho/rhoruby.h"
-#endif //RHO_NO_RUBY
 
 namespace rho{
 common::CMutex LogSettings::m_FlushLock;
 common::CMutex LogSettings::m_CatLock;
-
 
 LogSettings::MemoryInfoCollectorThread::MemoryInfoCollectorThread( LogSettings& logSettings ) :
                  m_collectMemoryIntervalMilliseconds(0), m_pCollector(0), m_logSettings(logSettings)

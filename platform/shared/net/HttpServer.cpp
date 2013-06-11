@@ -428,11 +428,13 @@ bool CHttpServer::run()
 
     RHODESAPP().notifyLocalServerStarted();
 
-    for(;;) {
+    for(;;) 
+    {
         RAWTRACE("Waiting for connections...");
-#if !defined(RHO_NO_RUBY)
-        rho_ruby_start_threadidle();
-#endif
+
+        if (rho_ruby_is_started())
+            rho_ruby_start_threadidle();
+
         fd_set readfds;
         FD_ZERO(&readfds);
         FD_SET(m_listener, &readfds);
@@ -443,9 +445,8 @@ bool CHttpServer::run()
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
 
-#if !defined(RHO_NO_RUBY)
-        rho_ruby_stop_threadidle();
-#endif
+        if (rho_ruby_is_started())
+            rho_ruby_stop_threadidle();
 
         bool bProcessed = false;
         if (ret > 0) 
@@ -471,36 +472,43 @@ bool CHttpServer::run()
                 RAWTRACE("Connection accepted, process it...");
                 VALUE val;
                 
-#if !defined(RHO_NO_RUBY)
-                if ( !RHOCONF().getBool("enable_gc_while_request") )                
-                    val = rho_ruby_disable_gc();
-#endif
+                if (rho_ruby_is_started())
+                {
+                    if ( !RHOCONF().getBool("enable_gc_while_request") )                
+                        val = rho_ruby_disable_gc();
+                }
+
                 bProcessed = process(conn);
 
-#if !defined(RHO_NO_RUBY)
-                if ( !RHOCONF().getBool("enable_gc_while_request") )
-                    rho_ruby_enable_gc(val);
-#endif                
+                if (rho_ruby_is_started())
+                {
+                    if ( !RHOCONF().getBool("enable_gc_while_request") )
+                        rho_ruby_enable_gc(val);
+                }
+
                 RAWTRACE("Close connected socket");
                 closesocket(conn);
             }
-        }else if ( ret == 0 ) //timeout
+        }
+        else if ( ret == 0 ) //timeout
         {
             bProcessed = RHODESAPP().getTimer().checkTimers();
-        }else
+        }
+        else
         {
             RAWLOG_ERROR1("select error: %d", ret);
             return false;
         }
 
-#if !defined(RHO_NO_RUBY)
-        if ( bProcessed )
+        if (rho_ruby_is_started())
         {
-            LOG(INFO) + "GC Start.";
-            rb_gc();
-            LOG(INFO) + "GC End.";
+            if ( bProcessed )
+            {
+                LOG(INFO) + "GC Start.";
+                rb_gc();
+                LOG(INFO) + "GC End.";
+            }
         }
-#endif
     }
 }
 

@@ -231,7 +231,7 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 }
 #endif //!OS_WINDOWS_DESKTOP
 
-bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( )
+bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw()
 {
 	m_nRestarting      = 1;
     m_bMinimized       = false;
