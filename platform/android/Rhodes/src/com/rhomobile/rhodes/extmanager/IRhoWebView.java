@@ -1,7 +1,6 @@
 package com.rhomobile.rhodes.extmanager;
 
 
-import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,7 +11,7 @@ public interface IRhoWebView {
     View getView();
     void setContainerView(ViewGroup view);
     ViewGroup getContainerView();
-    void setWebClient(Activity activity);
+    void setWebClient();
     void setConfig(IRhoWebViewConfig config);
     boolean canGoBack();
     void goBack();

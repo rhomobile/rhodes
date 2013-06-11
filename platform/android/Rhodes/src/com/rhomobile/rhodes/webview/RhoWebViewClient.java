@@ -43,7 +43,12 @@ import android.webkit.WebViewClient;
 public class RhoWebViewClient extends WebViewClient
 {
     private final String TAG = RhoWebViewClient.class.getSimpleName();
-    
+    private GoogleWebView mWebView;
+
+    public RhoWebViewClient(GoogleWebView webView) {
+        mWebView = webView;
+    }
+
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Logger.I(TAG, "Loading URL: " + url);
@@ -60,10 +65,10 @@ public class RhoWebViewClient extends WebViewClient
         
         Logger.profStart("BROWSER_PAGE");
         
-        if (!RhoConf.getBool("disable_loading_indication"))
+        if (mWebView.getConfig() != null && mWebView.getConfig().getBool("enablePageLoadingIndication"))
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
-        else
-            RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
+//        else
+//            RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
     }
     
     @Override
@@ -74,8 +79,8 @@ public class RhoWebViewClient extends WebViewClient
         // Set title
         String title = view.getTitle();
         RhodesActivity.safeGetInstance().setTitle(title);
-        RhodesActivity.safeGetInstance().getWindow().setFeatureInt(
-                    Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
+        if (mWebView.getConfig() != null && mWebView.getConfig().getBool("enablePageLoadingIndication"))
+            RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
 
         RhoExtManager.getImplementationInstance().onNavigateComplete(view, url);
         
