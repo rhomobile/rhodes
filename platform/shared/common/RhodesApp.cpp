@@ -493,7 +493,7 @@ void CRhodesApp::stopApp()
 {
    	m_appCallbacksQueue->stop(1000);
 
-    if (!m_bExit && rho_ruby_is_started())
+    if (!m_bExit)
     {
         m_bExit = true;
         m_httpServer->stop();
@@ -505,8 +505,6 @@ void CRhodesApp::stopApp()
         // Switch Android libc hooks to FS only mode
         rho_file_set_fs_mode(0);
     #endif
-
-//    net::CAsyncHttp::Destroy();
 }
 
 class CRhoCallbackCall
