@@ -65,9 +65,16 @@ public:
 
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
 		Params (String &title, String &message, String &icon, rho::apiGenerator::CMethodResult &callback, Vector<CAlertButton>& buttons, int dlgType)
-#else
-		Params (String &title, String &message, String &icon, String &callback, Vector<CAlertButton>& buttons, int dlgType)
+		{
+			m_dlgType  = dlgType;
+			m_title    = title;
+			m_message  = message;
+			m_icon     = icon;
+			m_callback_ex = callback;
+			m_buttons  = buttons;
+		}
 #endif
+		Params (String &title, String &message, String &icon, String &callback, Vector<CAlertButton>& buttons, int dlgType)
 		{
 			m_dlgType  = dlgType;
 			m_title    = title;
@@ -82,10 +89,9 @@ public:
 		String m_message;
 		String m_icon;
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-		rho::apiGenerator::CMethodResult m_callback;
-#else
-		String m_callback;
+		rho::apiGenerator::CMethodResult m_callback_ex;
 #endif
+		String m_callback;
 
 		//Hashtable<String, String> m_buttons;
         Vector<CAlertButton> m_buttons;
@@ -132,10 +138,9 @@ private:
 	String m_title;
 	String m_message;
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-	rho::apiGenerator::CMethodResult m_callback;
-#else
-	String m_callback;
+	rho::apiGenerator::CMethodResult m_callback_ex;
 #endif
+	String m_callback;
 	String m_icon;
 
 	CStatic m_messageCtrl;
