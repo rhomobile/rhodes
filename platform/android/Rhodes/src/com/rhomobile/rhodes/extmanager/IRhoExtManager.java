@@ -95,7 +95,13 @@ public interface IRhoExtManager {
      * @param listener the listener object to send keyEvents to
      * @param makeImportant makes the input listener head of the queue so it receives keyEvents first.
      */
-	void startKeyEventUpdates(IRhoListener listener, boolean makeImportant);
+    void startKeyEventUpdates(IRhoListener listener, boolean makeImportant);
+    
+    /**
+     * Sets web view config
+     * @param config which will be propagated to IRhoWebView instances
+     */
+    void setWebViewConfig(IRhoWebViewConfig config);
 }
 
 
