@@ -13,6 +13,7 @@ public interface IRhoWebView {
     void setContainerView(ViewGroup view);
     ViewGroup getContainerView();
     void setWebClient(Activity activity);
+    void setConfig(IRhoWebViewConfig config);
     boolean canGoBack();
     void goBack();
     void goForward();
