@@ -1089,7 +1089,7 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 			mapRes["button_index"] = sBtnIndex.str();
 			mapRes["button_id"] = cbtn->m_strID;
 			mapRes["button_title"] = cbtn->m_strCaption;
-			params->m_callback.set(mapRes);
+			params->m_callback_ex.set(mapRes);
 			//RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
 		}
         else
