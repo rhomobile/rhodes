@@ -261,7 +261,7 @@
 
             <METHOD name="detectConnection" hasCallback="mandatory" runInThread="none">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <DESC>Begins polling the specified host on the specified URL to check if there is a network connection available. The connection status is reported back via the provided callback.</DESC>
+                <DESC>Begins polling the specified host on the specified URL to check if there is a network connection available. The connection status is reported back via the provided callback. Note that callback will be called only if connection status have changed compared to previous polling.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
@@ -273,7 +273,7 @@
                                 <DESC>When detecting a network connection, this is the port on the host to connect to.</DESC>
                             </PARAM>
                             <PARAM name="pollInterval" type="INTEGER" default="30000">
-                                <DESC>The time, in milliseconds, between each check for a connection. Note that the actual connection report interval will be the sum of the poll interval and the detection timeout.  The minimum allowed value is 5000ms</DESC>
+                                <DESC>The time, in milliseconds, between each check for a connection. Note that the actual connection report interval will be the sum of the poll interval and the detection timeout.  The minimum allowed value is 5000ms.</DESC>
                             </PARAM>
                             <PARAM name="detectionTimeout" type="INTEGER" default="1000">
                                 <DESC>The amount of time to attempt to connect to the specified URL before giving up and assuming 'disconnected'.  Value is specified in milliseconds.</DESC>
