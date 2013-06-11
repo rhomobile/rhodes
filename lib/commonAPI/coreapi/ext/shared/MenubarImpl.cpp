@@ -34,7 +34,6 @@ virtual void getMainMenu(rho::apiGenerator::CMethodResult& oResult)
     RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
 
     oResult.set(arRes);
-
 }
 
 virtual void setMainMenu( const rho::Vector<rho::String>& mainMenu, rho::apiGenerator::CMethodResult& oResult)
