@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
+import com.rhomobile.rhodes.extmanager.IRhoWebViewConfig;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.osfunctionality.OsVersionManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -29,6 +30,7 @@ public class GoogleWebView implements IRhoWebView {
     private android.webkit.WebView mWebView;
     private ViewGroup mContainerView;
     private TextZoom mTextZoom = TextZoom.NORMAL;
+    private IRhoWebViewConfig mConfig;
 
     public GoogleWebView(Activity activity) {
         synchronized(mInitialized) {
@@ -64,7 +66,7 @@ public class GoogleWebView implements IRhoWebView {
                 mWebView.setFocusableInTouchMode(true);
 
                 IWebSettingsProvider provider = OsVersionManager.getFeature(IWebSettingsProvider.class);
-                provider.fillSettings(mWebView.getSettings());
+                provider.fillSettings(mWebView.getSettings(), mConfig);
 
                 if (mChromeClient != null) {
                     mWebView.setWebChromeClient(mChromeClient);
@@ -78,7 +80,7 @@ public class GoogleWebView implements IRhoWebView {
     @Override
     public void setWebClient(Activity activity) {
         Logger.I(TAG, "Creating new RhoWebChromeClient");
-        mChromeClient = new RhoWebChromeClient(activity);
+        mChromeClient = new RhoWebChromeClient(activity, this);
         PerformOnUiThread.exec(new Runnable() {
             @Override
             public void run() {
@@ -86,6 +88,16 @@ public class GoogleWebView implements IRhoWebView {
                 mWebView.setWebChromeClient(mChromeClient);
             }
         });
+    }
+    
+    @Override
+    public void setConfig(IRhoWebViewConfig config) {
+        mConfig = config;
+        applyWebSettings();
+    }
+    
+    public IRhoWebViewConfig getConfig() {
+        return mConfig;
     }
 
     @Override
@@ -222,10 +234,10 @@ public class GoogleWebView implements IRhoWebView {
     @Override
     public void capture(CaptureFormat format, String path) {
         switch (format) {
-        case CAPTURE_FORMAT_HTML:
+        /*case CAPTURE_FORMAT_HTML:
             Logger.T(TAG, "Capturing current page as HTML archive: " + path);
             mWebView.saveWebArchive(path);
-            break;
+            break;*/
         case CAPTURE_FORMAT_JPEG:
             Logger.T(TAG, "Capturing current page as JPEG image: " + path);
             saveJpeg(path);
