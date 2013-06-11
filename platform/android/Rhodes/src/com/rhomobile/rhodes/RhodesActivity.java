@@ -78,8 +78,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
 	
 	private static final boolean DEBUG = false;
 	
-	public static boolean ENABLE_LOADING_INDICATION = false;
-	
 	public static int MAX_PROGRESS = 10000;
 	
 	private static RhodesActivity sInstance = null;
@@ -452,8 +450,6 @@ public class RhodesActivity extends BaseActivity implements SplashScreen.SplashS
         Logger.D(TAG, "onServiceConnected: " + name.toShortString());
 
         handleStartParams(getIntent());
-
-		//ENABLE_LOADING_INDICATION = !RhoConf.getBool("disable_loading_indication");
 	}
 
     private void handleStartParams(Intent intent)

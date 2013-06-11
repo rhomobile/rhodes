@@ -493,7 +493,7 @@ void CRhodesApp::stopApp()
 {
    	m_appCallbacksQueue->stop(1000);
 
-    if (!m_bExit && rho_ruby_is_started())
+    if (!m_bExit)
     {
         m_bExit = true;
         m_httpServer->stop();
@@ -505,8 +505,6 @@ void CRhodesApp::stopApp()
         // Switch Android libc hooks to FS only mode
         rho_file_set_fs_mode(0);
     #endif
-
-//    net::CAsyncHttp::Destroy();
 }
 
 class CRhoCallbackCall
@@ -2131,8 +2129,17 @@ void CExtManager::requireRubyFile( const char* szFilePath )
         return false;
     }
     
-    bool ApplicationEventReceiver::onSyncUserChanged(){
-        return false;
+    bool ApplicationEventReceiver::onSyncUserChanged()
+    {
+        if (!m_result.hasCallback())
+            return false;
+
+        rho::Hashtable<rho::String, rho::String> callbackData;
+
+        callbackData.put(APP_EVENT, APP_EVENT_SYNCUSERCHANGED);
+        m_result.set(callbackData);
+
+        return true;
     }
     
     bool ApplicationEventReceiver::onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts)
@@ -2603,7 +2610,7 @@ int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, cons
 
 extern "C" void alert_show_status(const char* title, const char* message, const char* szHide);
 
-#if !defined(OS_WINDOWS_DESKTOP) && !(defined(OS_MACOSX) && defined(RHODES_EMULATOR))
+#if !defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
 extern "C"
 {
 	void rho_alert_show_status(char* szTitle, char* szText, char* szHideLabel)

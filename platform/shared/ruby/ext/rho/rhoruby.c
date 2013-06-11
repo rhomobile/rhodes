@@ -280,7 +280,7 @@ void RhoRubyStart()
 #endif
     Init_RhoEvent();
     Init_Calendar();
-#if !defined(OS_WINDOWS_DESKTOP) && !(defined(OS_MACOSX) && defined(RHODES_EMULATOR))
+#if !defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
     Init_Alert();
 #endif
 

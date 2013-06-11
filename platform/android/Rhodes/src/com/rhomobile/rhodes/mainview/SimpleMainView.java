@@ -699,7 +699,7 @@ public class SimpleMainView implements MainView {
 
 	@Override
 	public int getTabsCount() {
-		return 0;
+		return 1;
 	}
 
     @Override

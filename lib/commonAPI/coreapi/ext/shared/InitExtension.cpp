@@ -42,7 +42,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Navbar();
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP) && !(defined(OS_MACOSX) && defined(RHODES_EMULATOR))
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
     Init_Notification();
 #endif
 
