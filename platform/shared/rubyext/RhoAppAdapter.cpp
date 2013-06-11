@@ -66,32 +66,32 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 
 /*static*/ void  _CRhoAppAdapter::loadServerSources(const String& strSources)
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_loadserversources(strSources.c_str());
-#endif
+    if (rho_ruby_is_started())
+        rho_ruby_loadserversources(strSources.c_str());
 }
 
 /*static*/ void  _CRhoAppAdapter::loadAllSyncSources()
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_loadallsyncsources();
-#endif
+    if (rho_ruby_is_started())
+        rho_ruby_loadallsyncsources();
 }
 
 /*static*/ const char* _CRhoAppAdapter::getRhoDBVersion()
 {
-#if !defined(RHO_NO_RUBY)
-	return rho_ruby_getRhoDBVersion();
-#else
-    return "";
-#endif
+    if (rho_ruby_is_started())
+	    return rho_ruby_getRhoDBVersion();
+    else
+        return "2.2.0";
 }
 
 /*static*/ void  _CRhoAppAdapter::resetDBOnSyncUserChanged()
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_reset_db_on_sync_user_changed();
-#endif
+    if (rho_ruby_is_started())
+        rho_ruby_reset_db_on_sync_user_changed();
+    else
+    {
+        //TODO: call js callback
+    }
 }
 
 } // end of rho

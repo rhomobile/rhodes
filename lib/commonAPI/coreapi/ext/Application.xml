@@ -64,6 +64,7 @@
 
             <PROPERTY name="defaultNativeMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <PARAM type="HASH" />
+                <APPLIES>Ruby API</APPLIES>
                 <DESC>Default Native Menu items: array of hashes(name to action)</DESC>
             </PROPERTY>
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
@@ -227,6 +228,7 @@
 
             <METHOD name="setLocale" generateAPI="false" generateDoc="false" access="STATIC">
                 <DESC>Set application specific locale</DESC>
+                <APPLIES>Ruby API</APPLIES>
                 <PARAMS>
                     <PARAM name="localeCode" type="STRING"/>
                     <PARAM name="countryCode" type="STRING">

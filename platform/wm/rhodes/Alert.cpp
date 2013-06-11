@@ -62,6 +62,9 @@ CAlertDialog::CAlertDialog(Params *params)
 {
 	m_title    = params->m_title;
 	m_message  = params->m_message;
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+	m_callback_ex = params->m_callback_ex;
+#endif
 	m_callback = params->m_callback;
 	m_icon     = params->m_icon;
 
@@ -291,16 +294,17 @@ LRESULT CAlertDialog::OnAlertDialogButton (WORD /*wNotifyCode*/, WORD wID, HWND 
 	if (findButton((int) wID, cbtn))
 	{
 #if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-		rho::Hashtable<rho::String, rho::String> mapRes;
-		std::ostringstream sBtnIndex;
-		sBtnIndex << cbtn.m_numId;
-		mapRes["button_index"] = sBtnIndex.str();
-		mapRes["button_id"] = cbtn.m_strId;
-		mapRes["button_title"] = cbtn.m_title;
-		m_callback.set(mapRes);
-#else
-		rho_rhodesapp_callPopupCallback(m_callback.c_str(), cbtn.m_strId.c_str(), cbtn.m_title.c_str());
+		if (m_callback.length()==0) {
+			rho::Hashtable<rho::String, rho::String> mapRes;
+			std::ostringstream sBtnIndex;
+			sBtnIndex << cbtn.m_numId;
+			mapRes["button_index"] = sBtnIndex.str();
+			mapRes["button_id"] = cbtn.m_strId;
+			mapRes["button_title"] = cbtn.m_title;
+			m_callback_ex.set(mapRes);
+		} else
 #endif
+			rho_rhodesapp_callPopupCallback(m_callback.c_str(), cbtn.m_strId.c_str(), cbtn.m_title.c_str());
 	} else
 		LOG(ERROR) + "internal error";
 
@@ -453,7 +457,8 @@ extern "C" void alert_show_popup_ex(const rho::Hashtable<rho::String, rho::Strin
 	}
 	CAlert::showPopup(new CAlertDialog::Params(title, message, icon, oResult, buttons, CAlertDialog::Params::DLG_CUSTOM));
 }
-#else
+#endif
+
 extern "C" void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
 {
     String message = szMessage ? szMessage : "";
@@ -549,7 +554,6 @@ extern "C" void alert_show_popup(rho_param *p)
 		CAlert::showPopup(new CAlertDialog::Params(title, message, icon, callback, buttons, CAlertDialog::Params::DLG_CUSTOM));
 	}
 }
-#endif
 
 extern "C" void alert_vibrate(int duration_ms) {
 #if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_MOTCE )
