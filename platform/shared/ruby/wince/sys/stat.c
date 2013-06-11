@@ -22,6 +22,9 @@ int _stat(const char *filename, struct _stat *st)
 	WIN32_FIND_DATAW fd;
 	wchar_t *wfilename;
 
+    if (!filename || !*filename)
+        return -1;
+
 //	wfilename = wce_mbtowc(filename);
 	wfilename = wce_replaceRelativeDir(filename);
 
