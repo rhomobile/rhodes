@@ -1124,7 +1124,9 @@ def init_extensions(dest, mode = "")
                 next
               end
               
-              if f.downcase().end_with?("rhoapi.js")
+              if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
+                startJSModules.unshift(f)
+              elsif f.downcase().end_with?("rhoapi.js") 
                 startJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
                 endJSModules << f
@@ -2263,7 +2265,9 @@ namespace "run" do
                         next
                       end
                       
-                      if f.downcase().end_with?("rhoapi.js")
+                      if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
+                        startJSModules.unshift(f)
+                      elsif f.downcase().end_with?("rhoapi.js")
                         startJSModules << f
                       elsif f.downcase().end_with?("rho.database.js")
                         endJSModules << f
