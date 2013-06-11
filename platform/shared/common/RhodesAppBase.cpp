@@ -157,14 +157,13 @@ String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
 
     if (String::npos != strPath.find("file:"))
     {
-        rho::String       rootPath = CFilePath::join(rho_rhodesapp_getapprootpath(), rho::String("apps"));
         String::size_type findIt   = strPath.find(appRootTag);
 
         if (findIt != String::npos)
         {   
             retPath = strPath;
             retPath.erase(findIt, appRootTag.size());
-            retPath.insert(findIt, rootPath.c_str());
+            retPath.insert(findIt, rho_rhodesapp_getapprootpath());
         }
     }
     
