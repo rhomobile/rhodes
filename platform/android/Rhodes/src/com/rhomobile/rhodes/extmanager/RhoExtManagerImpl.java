@@ -343,7 +343,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             AbsoluteLayout containerView = new AbsoluteLayout(activity);
             containerView.addView(res.getView(), new AbsoluteLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0, 0));
             res.setContainerView(containerView);
-            res.setWebClient(activity);
+            res.setWebClient();
             boolean handled = false;
             for (IRhoExtension ext : mExtensions.values()) {
                 handled = ext.onWebViewCreated(this, res, handled);
@@ -852,6 +852,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
         mWebViewConfig = config;
         MainView mainView = RhodesActivity.safeGetInstance().getMainView();
         for (int i = 0; i < mainView.getTabsCount(); ++i) {
+            Logger.T(TAG, "Set WebView config: tab " + i);
             mainView.getWebView(i).setConfig(config);
         }
     }
