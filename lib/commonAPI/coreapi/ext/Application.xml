@@ -227,6 +227,7 @@
 
             <METHOD name="setLocale" generateAPI="false" generateDoc="false" access="STATIC">
                 <DESC>Set application specific locale</DESC>
+                <APPLIES>Ruby API</APPLIES>
                 <PARAMS>
                     <PARAM name="localeCode" type="STRING"/>
                     <PARAM name="countryCode" type="STRING">
