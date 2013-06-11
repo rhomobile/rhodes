@@ -62,7 +62,16 @@
             </METHOD>
 			
 		</METHODS>
-		
+		        <REMARKS>
+            <REMARK title="Underlying hardware">
+                <DESC>
+                    <![CDATA[
+					The LED API relies on Motorola drivers on Windows Mobile / CE and therefore will not work on non-Motorola platforms.  Depending on your device configuration, not all LEDs reported by the API may exist physically on the device.
+                ]]>
+
+                </DESC>
+            </REMARK>
+        </REMARKS>
 		<EXAMPLES>
            <EXAMPLE title="Flash a specific LED">
             <SECTIONS>

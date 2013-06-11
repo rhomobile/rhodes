@@ -24,17 +24,17 @@
             <PROPERTY name="fullScreen" type="BOOLEAN" default="false">
                 <DESC>Use full screen mode.</DESC>
             </PROPERTY>
-            <PROPERTY name="enableZoom" type="BOOLEAN" default="true">
-                <DESC>Enable WebView zoom.</DESC>
+            <PROPERTY name="enableZoom" type="BOOLEAN" default="true" readOnly="true">
+                <DESC>Enable WebView zoom. Use 'enable_screen_zoom' parameter in rhoconfig.txt to configure this value.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
-            <PROPERTY name="enablePageLoadingIndication" type="BOOLEAN" default="true">
-                <DESC>Show page loading navigation.On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled</DESC>
-                <PLATFORM>WM</PLATFORM>
+            <PROPERTY name="enablePageLoadingIndication" type="BOOLEAN" default="true" readOnly="true">
+                <DESC>Show page loading indication. On Windows Mobile/CE this property can be set only in config.xml: GUI\\HourglassEnabled. At Android  use 'disable_loading_indication' parameter in rhoconfig.txt to configure this value.</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit on Windows Mobile/CE</APPLIES> 
             </PROPERTY>
-            <PROPERTY name="enableWebPlugins" type="BOOLEAN" default="true">
-                <DESC>Enable/disable web plugins</DESC>
+            <PROPERTY name="enableWebPlugins" type="BOOLEAN" default="true" readOnly="true">
+                <DESC>Enable/disable web plugins. Use 'enable_web_plugins' parameter in rhoconfig.txt to configure this value.</DESC>
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="navigationTimeout" type="INTEGER" default="0">
@@ -94,8 +94,9 @@
                 <PLATFORM>WM</PLATFORM>
                 <APPLIES>Motorola Solutions' WebKit</APPLIES>
             </PROPERTY>
-            <PROPERTY name="enableCache" type="BOOLEAN" default="true" generateDoc="false">
-                <DESC>Enable/disable Browser cache. Not yet implemented.</DESC>
+            <PROPERTY name="enableCache" type="BOOLEAN" default="true" readOnly="true">
+                <DESC>Enable/disable Browser cache. Use 'WebView.enableCache' parameter in rhoconfig.txt to configure this value.</DESC>
+                <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="acceptLanguage" type="STRING" generateDoc="false">
                 <DESC>Configurable HTTP headers. Not yet implemented.</DESC>

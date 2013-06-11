@@ -46,7 +46,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Notification();
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(OS_WP8)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(WINDOWS_PLATFORM)
     Init_RhoFile();
 #endif
 
@@ -55,7 +55,7 @@ extern "C" void Init_CoreAPI_Extension()
 #endif
 
 
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
-//	Init_Led();
+#if defined(OS_WINCE)
+	Init_Led();
 #endif
 }

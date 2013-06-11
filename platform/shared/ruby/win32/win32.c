@@ -1800,7 +1800,7 @@ DIR *
 rb_w32_opendir(const char *filename)
 {
     struct stati64 sbuf;
-    WIN32_FIND_DATAW fd;
+    WIN32_FIND_DATAW fd = {0};
     HANDLE fh;
     WCHAR *wpath;
 
@@ -4236,7 +4236,7 @@ fileattr_to_unixmode(DWORD attr, const WCHAR *path)
 static int
 check_valid_dir(const WCHAR *path)
 {
-    WIN32_FIND_DATAW fd;
+    WIN32_FIND_DATAW fd = {0};
     HANDLE fh = open_dir_handle(path, &fd);
     if (fh == INVALID_HANDLE_VALUE)
 	return -1;
@@ -4248,7 +4248,7 @@ static int
 winnt_stat(const WCHAR *path, struct stati64 *st)
 {
     HANDLE h;
-    WIN32_FIND_DATAW wfd;
+    WIN32_FIND_DATAW wfd = {0};
 
     memset(st, 0, sizeof(*st));
     st->st_nlink = 1;
