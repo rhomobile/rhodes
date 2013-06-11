@@ -141,7 +141,7 @@ String CRhodesAppBase::getDBFileRoot()
 
 String CRhodesAppBase::canonicalizeRhoPath(const String& strPath) const
 {
-   rho::String appRootTag = "%APP_PATH%";
+    rho::String appRootTag = "%APP_PATH%";
     rho::String filePrefix = "file://";
     rho::String retPath    = strPath;
 
