@@ -591,7 +591,7 @@ void CRhodesApp::callUiCreatedCallback()
 
 void CRhodesApp::callUiDestroyedCallback()
 {
-    if ( m_bExit || !rho_ruby_is_started() )
+    if ( m_bExit/* || !rho_ruby_is_started()*/ )
         return;
     
     if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateDestroyed))
@@ -2028,9 +2028,6 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 	
 	void NetworkStatusReceiver::onNetworkStatusChanged( enNetworkStatus currentStatus )
 	{
-		if ( !rho_ruby_is_started() )
-			return;
-		
 		synchronized(m_mxAccess)
 		{
 			if ( m_prevStatus != currentStatus )
