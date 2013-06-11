@@ -1,21 +1,51 @@
 package com.rho.webview;
 
-import java.util.List;
-import java.util.Map;
-
 import com.rhomobile.rhodes.BaseActivity;
+import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
+import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
-public class WebViewSingleton extends WebViewSingletonBase implements
-        IWebViewSingleton {
+public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSingleton {
 
-//    public WebViewSingleton() {
-//        RhoExtManager.getInstance().requireRubyFile("WebView");
-//    }
+    private static final String TAG = WebViewSingleton.class.getSimpleName();
+    
+    private static final String DISABLE_PAGE_LOADING_INDICATION = "disable_loading_indication";
+    private static final String ENABLE_ZOOM = "enable_screen_zoom";
+    private static final String ENABLE_WEB_PLUGINS = "enable_web_plugins";
+    private static final String ENABLE_CACHE = "WebView.enableCache";
+    
+    private WebViewConfig mConfig = new WebViewConfig();
+
+    public WebViewSingleton() {
+
+        if (RhoConf.isExist(DISABLE_PAGE_LOADING_INDICATION))
+            mConfig.set("enablePageLoadingIndication", !RhoConf.getBool(DISABLE_PAGE_LOADING_INDICATION));
+        else
+            mConfig.set("enablePageLoadingIndication", true);
+
+        
+        if (RhoConf.isExist(ENABLE_ZOOM))
+            mConfig.set("enableZoom", RhoConf.getBool(ENABLE_ZOOM));
+        else
+            mConfig.set("enableZoom", true);
+
+        if (RhoConf.isExist(ENABLE_WEB_PLUGINS))
+            mConfig.set("enableWebPlugins", RhoConf.getBool(ENABLE_WEB_PLUGINS));
+        else
+            mConfig.set("enableWebPlugins", true);
+
+        if (RhoConf.isExist(ENABLE_CACHE))
+            mConfig.set("enableCache", RhoConf.getBool(ENABLE_CACHE));
+        else
+            mConfig.set("enableCache", true);
+
+        RhoExtManager.getInstance().setWebViewConfig(mConfig);
+    }
     
     @Override
     public void getFramework(IMethodResult result) {
@@ -35,39 +65,36 @@ public class WebViewSingleton extends WebViewSingletonBase implements
 
     @Override
     public void getEnableZoom(IMethodResult result) {
-        //RhodesActivity.safeGetInstance().getMainView().getWebView(-1).getZoom());
-
+        result.set(mConfig.getBool("enableZoom"));
     }
 
-    @Override
-    public void setEnableZoom(boolean value, IMethodResult result) {
-        // TODO Auto-generated method stub
-
-    }
+//    @Override
+//    public void setEnableZoom(boolean value, IMethodResult result) {
+//        RhoConf.setBoolean(ENABLE_ZOOM, value);
+//        mEnableZoom = value;
+//    }
 
     @Override
     public void getEnablePageLoadingIndication(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        result.set(mConfig.getBool("enablePageLoadingIndication"));
     }
 
-    @Override
-    public void setEnablePageLoadingIndication(boolean value, IMethodResult result) {
-        // TODO Auto-generated method stub
-
-    }
+//    @Override
+//    public void setEnablePageLoadingIndication(boolean value, IMethodResult result) {
+//        RhoConf.setBoolean(DISABLE_PAGE_LOADING_INDICATION, !value);
+//        mEnablePageLoadingIndication = value;
+//    }
 
     @Override
     public void getEnableWebPlugins(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        result.set(mConfig.getBool("enableWebPlugins"));
     }
 
-    @Override
-    public void setEnableWebPlugins(boolean value, IMethodResult result) {
-        // TODO Auto-generated method stub
-
-    }
+//    @Override
+//    public void setEnableWebPlugins(boolean value, IMethodResult result) {
+//        RhoConf.setBoolean(ENABLE_WEB_PLUGINS, value);
+//        mEnableWebPlugins = value;
+//    }
 
     @Override
     public void getNavigationTimeout(IMethodResult result) {
@@ -95,8 +122,7 @@ public class WebViewSingleton extends WebViewSingletonBase implements
 
     @Override
     public void getUserAgent(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        //RhodesActivity.safeGetInstance().getMainView().getWebView(-1).
     }
 
     @Override
@@ -119,15 +145,14 @@ public class WebViewSingleton extends WebViewSingletonBase implements
 
     @Override
     public void getEnableCache(IMethodResult result) {
-        // TODO Auto-generated method stub
-
+        result.set(mConfig.getBool("enableCache"));
     }
 
-    @Override
-    public void setEnableCache(boolean value, IMethodResult result) {
-        // TODO Auto-generated method stub
-
-    }
+//    @Override
+//    public void setEnableCache(boolean value, IMethodResult result) {
+//        RhoConf.setBoolean(ENABLE_CACHE, value);
+//        mEnableCache = value;
+//    }
 
     @Override
     public void getAcceptLanguage(IMethodResult result) {
