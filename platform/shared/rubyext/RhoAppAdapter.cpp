@@ -81,13 +81,17 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
     if (rho_ruby_is_started())
 	    return rho_ruby_getRhoDBVersion();
     else
-        return "";
+        return "2.2.0";
 }
 
 /*static*/ void  _CRhoAppAdapter::resetDBOnSyncUserChanged()
 {
     if (rho_ruby_is_started())
         rho_ruby_reset_db_on_sync_user_changed();
+    else
+    {
+        //TODO: call js callback
+    }
 }
 
 } // end of rho
