@@ -55,7 +55,7 @@ extern "C" void Init_CoreAPI_Extension()
 #endif
 
 
-#if defined(APP_BUILD_CAPABILITY_MOTOROLA)
+#if defined(OS_WINCE)
 	Init_Led();
 #endif
 }
