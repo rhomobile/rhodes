@@ -2129,8 +2129,17 @@ void CExtManager::requireRubyFile( const char* szFilePath )
         return false;
     }
     
-    bool ApplicationEventReceiver::onSyncUserChanged(){
-        return false;
+    bool ApplicationEventReceiver::onSyncUserChanged()
+    {
+        if (!m_result.hasCallback())
+            return false;
+
+        rho::Hashtable<rho::String, rho::String> callbackData;
+
+        callbackData.put(APP_EVENT, APP_EVENT_SYNCUSERCHANGED);
+        m_result.set(callbackData);
+
+        return true;
     }
     
     bool ApplicationEventReceiver::onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts)
