@@ -176,4 +176,4 @@ end %>
 
     rhoUtil.namespace(moduleNS, <%= $cur_module.name %>);
 
-})(jQuery, Rho, Rho.util);
+})(Rho.jQuery, Rho, Rho.util);
