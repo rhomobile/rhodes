@@ -52,9 +52,11 @@
             </PROPERTY>
             <PROPERTY name="locale" type="STRING" readOnly="true" generateAPI="false">
                 <DESC>Current application locale.Like 'en', 'ru' etc.</DESC>
+                <APPLIES rubyOnly="true"/>
             </PROPERTY>
             <PROPERTY name="country" type="STRING" readOnly="true" generateAPI="false">
                 <DESC>Current application country code.</DESC>
+                <APPLIES rubyOnly="true"/>
             </PROPERTY>
 
             <PROPERTY name="nativeMenu" type="ARRAY">
@@ -64,7 +66,7 @@
 
             <PROPERTY name="defaultNativeMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <PARAM type="HASH" />
-                <APPLIES>Ruby API</APPLIES>
+                <APPLIES rubyOnly="true"/>
                 <DESC>Default Native Menu items: array of hashes(name to action)</DESC>
             </PROPERTY>
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
@@ -178,11 +180,11 @@
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_CONFIGCONFLICT" value ="ConfigConflict">
                                     <DESC></DESC>
-                                    <APPLIES>Ruby API</APPLIES>
+                                    <APPLIES rubyOnly="true"/>
                                 </VALUE>
                                 <VALUE constName="APP_EVENT_DBMIGRATESOURCE" value ="DBMigrateSource">
                                     <DESC></DESC>
-                                    <APPLIES>Ruby API</APPLIES>
+                                    <APPLIES rubyOnly="true"/>
                                 </VALUE>
                             </VALUES>
                         </PARAM>
@@ -195,7 +197,7 @@
 
             <METHOD name="processApplicationEvent" generateAPI="false">
                 <DESC>Default processing of application Event. May be called from setApplicationNotify callback.This method should be called for each event. The only exception is SyncUserChanged, where you can choose your own reset database logic.</DESC>
-                <APPLIES>Ruby API</APPLIES>
+                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="applicationEvent" type="STRING">
                         <DESC>See setApplicationNotify for applicationEvent values.</DESC>
@@ -228,7 +230,7 @@
 
             <METHOD name="setLocale" generateAPI="false" generateDoc="false" access="STATIC">
                 <DESC>Set application specific locale</DESC>
-                <APPLIES>Ruby API</APPLIES>
+                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="localeCode" type="STRING"/>
                     <PARAM name="countryCode" type="STRING">
