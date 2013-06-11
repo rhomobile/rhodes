@@ -194,10 +194,11 @@ public:
 
     virtual void setDestinationURI( const rho::String& value, rho::apiGenerator::CMethodResult& oResult)
     {
-#if !defined(RHO_NO_RUBY)
-        RHOCONF().setString("Log.destinationURI", value, false);
-        rho_log_resetup_http_url(value.c_str());
-#endif
+        if (rho_ruby_is_started())
+        {
+            RHOCONF().setString("Log.destinationURI", value, false);
+            rho_log_resetup_http_url(value.c_str());
+        }
     }
 
     virtual void trace( const rho::String& message,  const rho::String& category, rho::apiGenerator::CMethodResult& oResult)

@@ -1058,7 +1058,8 @@ def init_extensions(dest, mode = "")
           end
           
           if $js_application == true
-            if !xml_api_paths.nil?
+            #rhoelementsext for win mobile shared runtime mode only              
+            if !xml_api_paths.nil? || ("rhoelementsext" == extname && $config["platform"] == "wm")
               extentries << entry unless entry.nil?
             else
               puts '********* WARNING *****************************************************************************************************'
