@@ -45,6 +45,7 @@ ext/platform/android/generated/jni/WebView.cpp
 ext/platform/android/jni/WebViewInit.cpp
 ext/shared/NetworkDetectBase.cpp
 ext/platform/android/jni/NetworkDetect.cpp
+ext/platform/android/jni/NetworkAvailability.cpp
 ext/shared/generated/nativetabbar_api_init.cpp
 ext/shared/generated/nativetabbar_js_api.cpp
 ext/shared/generated/nativetabbar_ruby_api.c
