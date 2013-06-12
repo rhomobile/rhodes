@@ -45,4 +45,6 @@ private:
     QWebFrame* m_frame;
 };
 
+Q_DECLARE_METATYPE(RhoNativeApiCall*)
+
 #endif // RHONATIVEAPICALL_H
