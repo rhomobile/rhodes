@@ -444,7 +444,11 @@ void QtMainWindow::tabbarRemoveAllTabs(bool restore)
     for (int i=0; i<tabViews.size(); ++i) {
         tabbarDisconnectWebView(tabViews[i], tabInspect[i]);
         if (tabViews[i] != main_webView) {
-            // TODO: destroy connected RhoNativeApiCall object
+            // destroy connected RhoNativeApiCall object
+            QVariant v = tabViews[i]->page()->property("__rhoNativeApiCall");
+            RhoNativeApiCall* rhoNativeApiCall = v.value<RhoNativeApiCall*>();
+            delete rhoNativeApiCall;
+
             ui->verticalLayout->removeWidget(tabViews[i]);
             tabViews[i]->setParent(0);
             if (ui->webView == tabViews[i])
@@ -481,8 +485,10 @@ void QtMainWindow::setUpWebPage(QWebPage* page)
 {
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     page->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+	RhoNativeApiCall* rhoNativeApiCall = new RhoNativeApiCall(page->mainFrame());
+    page->setProperty("__rhoNativeApiCall", QVariant::fromValue(rhoNativeApiCall));
     connect(page->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
-        new RhoNativeApiCall(page->mainFrame()), SLOT(populateJavaScriptWindowObject()));
+        rhoNativeApiCall, SLOT(populateJavaScriptWindowObject()));
 }
 
 int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbrp)
