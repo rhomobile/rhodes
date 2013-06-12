@@ -2,15 +2,14 @@
 #include "INetworkDetect.h"
 #include <list>
 
-#if (defined OS_ANDROID)
-#include <jni.h>
-#include "rhodes.h"
-#endif
-
 #if (defined OS_WINCE || defined OS_WP8)
 #if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 #include "../platform/wm/src/ConnectionManager.h"
 #endif
+#endif
+
+#if (defined OS_ANDROID)
+#include "../platform/android/jni/NetworkAvailablility.h"
 #endif
 
 #include "generated/cpp/NetworkBase.h"
@@ -23,7 +22,6 @@
 
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "NetworkAcceess"
-#define NETWORK_IMPL_CLASS "com.motorolasolutions.rho.network.Network"
 
 namespace rho {
 
@@ -403,134 +401,77 @@ extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue)
 
 void CNetworkImpl::hasNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
-#if (defined OS_ANDROID)
 	LOG(INFO) + "NetworkC hasNetwork+";
-	JNIEnv *env = jnienv();
-	if(!env)
+#if (defined OS_ANDROID)
+	int iResult = CNetworkAvailability::hasNetwork();
+	if(iResult == -2)
 	{
-		RAWLOG_ERROR1("Failed to get java environment for %s", NETWORK_IMPL_CLASS);
-		oResult.setError("Internal error. Cannot access Android environment");
-		return;
+		oResult.setError("Internal Error: Could not connect to Android");
 	}
-	
-	jclass cls = rho_find_class(env, NETWORK_IMPL_CLASS);
-	if(!cls)
+	else if(iResult == -1)
 	{
-		RAWLOG_ERROR1("Failed to find java class: %s", NETWORK_IMPL_CLASS);
-		oResult.setError("Internal error. Cannot access Android class");
-		return;
-	}
-
-	jmethodID midHasNetwork = env->GetStaticMethodID(cls, "hasNetwork", "()I");
-	if(!midHasNetwork)
-	{
-		RAWLOG_ERROR1("Failed to find java method in %s", NETWORK_IMPL_CLASS);
-		oResult.setError("Internal error. Cannot access Android method");
-		return;
-	}
-
-	jint jiHasNetwork = env->CallStaticIntMethod(cls, midHasNetwork);
-	if(jiHasNetwork == -1)
-	{
-		oResult.setError("Failed to get network information");
+		oResult.setError("Could not detect for a network");
 	}
 	else
 	{
-		oResult.set((jiHasNetwork > 0 ? true : false));
+		oResult.set(iResult != 0);
 	}
 	LOG(INFO) + "NetworkC hasNetwork-";
 	return;
-
 #endif
+#if (!defined OS_ANDROID)
     oResult.set(g_rho_has_network!= 0 || g_rho_has_cellnetwork!= 0);
+#endif
 }
 
 void CNetworkImpl::hasWifiNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
 	LOG(INFO) + "NetworkC hasWifiNetwork+";
 #if (defined OS_ANDROID)
-	JNIEnv *env = jnienv();
-	if(!env)
+	int iResult = CNetworkAvailability::hasWifiNetwork();
+	if(iResult == -2)
 	{
-		RAWLOG_ERROR1("Failed to get java environment for %s", NETWORK_IMPL_CLASS);
-		oResult.setError("Internal error. Cannot access Android environment");
-		return;
+		oResult.setError("Internal Error: Could not connect to Android");
 	}
-	
-	jclass cls = rho_find_class(env, NETWORK_IMPL_CLASS);
-	if(!cls)
+	else if(iResult == -1)
 	{
-		RAWLOG_ERROR1("Failed to find java class: %s", NETWORK_IMPL_CLASS);
-		oResult.setError("Internal error. Cannot access Android class");
-		return;
-	}
-
-	jmethodID midHasWifiNetwork = env->GetStaticMethodID(cls, "hasWifiNetwork", "()I");
-	if(!midHasWifiNetwork)
-	{
-		RAWLOG_ERROR1("Failed to find java method in %s", NETWORK_IMPL_CLASS);
-		oResult.setError("Internal error. Cannot access Android method");
-		return;
-	}
-
-	jint jiHasNetwork = env->CallStaticIntMethod(cls, midHasWifiNetwork);
-	if(jiHasNetwork == -1)
-	{
-		oResult.setError("Failed to get network information");
+		oResult.setError("Could not detect for a wifi network");
 	}
 	else
 	{
-		oResult.set((jiHasNetwork > 0 ? true : false));
+		oResult.set(iResult != 0);
 	}
 	LOG(INFO) + "NetworkC hasWifiNetwork-";
 	return;
-
 #endif
+#if (!defined OS_ANDROID)
     oResult.set(g_rho_has_network!= 0);
+#endif
 }
 
 void CNetworkImpl::hasCellNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
 	LOG(INFO) + "NetworkC hasCellNetwork+";
 #if (defined OS_ANDROID)
-	JNIEnv *env = jnienv();
-	if(!env)
+	int iResult = CNetworkAvailability::hasCellNetwork();
+	if(iResult == -2)
 	{
-		RAWLOG_ERROR1("Failed to get java environment for %s", NETWORK_IMPL_CLASS);
-		oResult.setError("Internal error. Cannot access Android environment");
-		return;
+		oResult.setError("Internal Error: Could not connect to Android");
 	}
-	
-	jclass cls = rho_find_class(env, NETWORK_IMPL_CLASS);
-	if(!cls)
+	else if(iResult == -1)
 	{
-		RAWLOG_ERROR1("Failed to find java class: %s", NETWORK_IMPL_CLASS);
-		oResult.setError("Internal error. Cannot access Android class");
-		return;
-	}
-
-	jmethodID midHasCellNetwork = env->GetStaticMethodID(cls, "hasCellNetwork", "()I");
-	if(!midHasCellNetwork)
-	{
-		RAWLOG_ERROR1("Failed to find java method in %s", NETWORK_IMPL_CLASS);
-		oResult.setError("Internal error. Cannot access Android method");
-		return;
-	}
-
-	jint jiHasCellNetwork = env->CallStaticIntMethod(cls, midHasCellNetwork);
-	if(jiHasCellNetwork == -1)
-	{
-		oResult.setError("Failed to get network information");
+		oResult.setError("Could not detect for a cell network");
 	}
 	else
 	{
-		oResult.set((jiHasCellNetwork > 0 ? true : false));
+		oResult.set(iResult != 0);
 	}
 	LOG(INFO) + "NetworkC hasCellNetwork-";
 	return;
-
 #endif
+#if (!defined OS_ANDROID)
     oResult.set(g_rho_has_cellnetwork!= 0);
+#endif
 }
 
 void CNetworkImpl::startStatusNotify( int pollInterval, rho::apiGenerator::CMethodResult& oResult)
