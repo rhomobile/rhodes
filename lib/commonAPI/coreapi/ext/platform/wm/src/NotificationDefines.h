@@ -25,8 +25,18 @@ extern "C"
 // Nested Includes
 //--------------------------------------------------------------------
 
-#include <StrucInf.h>
-
+//#include <StrucInf.h>
+typedef struct tagSTRUCT_INFO
+{
+	DWORD	dwAllocated;
+	DWORD	dwUsed;	
+} STRUCT_INFO;
+#define SI_ALLOC_ALL(ptr) \
+	{ (ptr)->StructInfo.dwAllocated = sizeof(*(ptr)); }
+#define SI_INIT(ptr) \
+	{ SI_ALLOC_ALL(ptr); SI_USED_NONE(ptr); }
+#define SI_USED_NONE(ptr) \
+	{ (ptr)->StructInfo.dwUsed = sizeof(STRUCT_INFO); }
 
 //--------------------------------------------------------------------
 // Constants

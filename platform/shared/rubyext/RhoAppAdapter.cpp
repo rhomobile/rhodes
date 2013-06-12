@@ -25,6 +25,7 @@
 *------------------------------------------------------------------------*/
 
 #include "common/RhoAppAdapter.h"
+#include "common/RhodesApp.h"
 #include "ruby/ext/rho/rhoruby.h"
 #include "sync/RhoconnectClientManager.h"
 
@@ -88,10 +89,11 @@ const _CRhoAppAdapter& RhoAppAdapter = _CRhoAppAdapter();
 {
     if (rho_ruby_is_started())
         rho_ruby_reset_db_on_sync_user_changed();
-    else
-    {
-        //TODO: call js callback
-    }
+}
+
+/*static*/ bool  _CRhoAppAdapter::callCallbackOnSyncUserChanged()
+{
+    return RHODESAPP().getApplicationEventReceiver()->onSyncUserChanged(); 
 }
 
 } // end of rho
