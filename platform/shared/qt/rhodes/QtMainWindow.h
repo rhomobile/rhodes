@@ -104,6 +104,7 @@ private:
     void tabbarDisconnectWebView(QWebView* webView, QWebInspector* webInspector);
     bool internalUrlProcessing(const QUrl& url);
     void setUpWebPage(QWebPage* page);
+    void doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button);
 
 private:
     Ui::QtMainWindow *ui;

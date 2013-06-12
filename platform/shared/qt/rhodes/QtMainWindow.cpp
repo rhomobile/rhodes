@@ -32,6 +32,7 @@
 #include "ui_QtMainWindow.h"
 #include "ExternalWebView.h"
 #include "RhoSimulator.h"
+#include <sstream>
 #include <QResizeEvent>
 #include <QWebFrame>
 #include <QWebSettings>
@@ -443,7 +444,11 @@ void QtMainWindow::tabbarRemoveAllTabs(bool restore)
     for (int i=0; i<tabViews.size(); ++i) {
         tabbarDisconnectWebView(tabViews[i], tabInspect[i]);
         if (tabViews[i] != main_webView) {
-            // TODO: destroy connected RhoNativeApiCall object
+            // destroy connected RhoNativeApiCall object
+            QVariant v = tabViews[i]->page()->property("__rhoNativeApiCall");
+            RhoNativeApiCall* rhoNativeApiCall = v.value<RhoNativeApiCall*>();
+            delete rhoNativeApiCall;
+
             ui->verticalLayout->removeWidget(tabViews[i]);
             tabViews[i]->setParent(0);
             if (ui->webView == tabViews[i])
@@ -480,8 +485,10 @@ void QtMainWindow::setUpWebPage(QWebPage* page)
 {
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     page->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+	RhoNativeApiCall* rhoNativeApiCall = new RhoNativeApiCall(page->mainFrame());
+    page->setProperty("__rhoNativeApiCall", QVariant::fromValue(rhoNativeApiCall));
     connect(page->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
-        new RhoNativeApiCall(page->mainFrame()), SLOT(populateJavaScriptWindowObject()));
+        rhoNativeApiCall, SLOT(populateJavaScriptWindowObject()));
 }
 
 int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbrp)
@@ -845,6 +852,20 @@ void QtMainWindow::selectPicture(char* callbackUrl)
     free(callbackUrl);
 }
 
+void QtMainWindow::doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button)
+{
+    if (params->m_callback.length()==0) {
+        rho::Hashtable<rho::String, rho::String> mapRes;
+        std::ostringstream sBtnIndex;
+        sBtnIndex << btnNum;
+        mapRes["button_index"] = sBtnIndex.str();
+        mapRes["button_id"] = button.m_strID;
+        mapRes["button_title"] = button.m_strCaption;
+        params->m_callback_ex.set(mapRes);
+    } else
+        RHODESAPP().callPopupCallback(params->m_callback, button.m_strID, button.m_strCaption);
+}
+
 void QtMainWindow::alertShowPopup(CAlertParams * params)
 {
     rho::StringW strAppName = RHODESAPP().getAppNameW();
@@ -876,7 +897,7 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()),
                 QMessageBox::Ok | QMessageBox::Cancel);
             int nBtn = response == QMessageBox::Cancel ? 1 : 0;
-            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
+            doAlertCallback(params, nBtn, params->m_buttons[nBtn]);
         } else if (m_alertDialog == NULL) {
             QMessageBox::Icon icon = QMessageBox::NoIcon;
             if (stricmp(params->m_icon.c_str(),"alert")==0) {
@@ -911,7 +932,7 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
 #ifdef OS_SYMBIAN
                             RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strID, params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strCaption);
 #else
-                            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[i].m_strID, params->m_buttons[i].m_strCaption);
+                            doAlertCallback(params, i, params->m_buttons[i]);
 #endif
                             break;
                         }

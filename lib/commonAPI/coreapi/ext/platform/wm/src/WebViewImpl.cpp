@@ -5,15 +5,7 @@
 #include "rubyext/WebView.h"
 
 //extern "C" HWND getMainWnd();
-
-#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
-#else
-extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName)
-{
-    return L"";
-}
-#endif// !APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 namespace rho {
 

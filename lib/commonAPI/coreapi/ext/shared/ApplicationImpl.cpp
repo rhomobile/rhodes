@@ -12,6 +12,15 @@
 
 extern "C" void rho_sys_app_exit();
 
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
+#else
+extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName)
+{
+    return L"";
+}
+#endif// !APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+
 namespace rho {
 
 #ifdef OS_ANDROID
@@ -143,12 +152,7 @@ public:
 
     virtual void getBadLinkURI(rho::apiGenerator::CMethodResult& oResult)
     {
-        //TODO: getBadLinkURI
-    }
-
-    virtual void setBadLinkURI( const rho::String& badLinkURI, rho::apiGenerator::CMethodResult& oResult)
-    {
-        //TODO: setBadLinkURI
+        oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\BadLinkURI" ) ) );
     }
 
     virtual void modelFolderPath( const rho::String& name, rho::apiGenerator::CMethodResult& oResult)
