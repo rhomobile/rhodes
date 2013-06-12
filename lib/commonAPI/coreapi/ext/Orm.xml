@@ -16,6 +16,9 @@
         <DESC>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized,
           false otherwise.</DESC>
       </PROPERTY>
+      <PROPERTY name="enable" access="STATIC" type="STRING" readOnly="true" generateAPI="false">
+        <DESC>Returns the current sync client id.</DESC>
+      </PROPERTY>
     </PROPERTIES>
 
     <METHODS access="STATIC">
@@ -89,8 +92,9 @@
         <DESC>Javascript using only. Creates ORM model.
         </DESC>
         <PARAMS>
-          <PARAM name="name" type="STRING">
-            <DESC>Model name</DESC>
+          <PARAM name="Anoynomous Function" type="">
+            <DESC>Anonymous function defining model properties</DESC>
+            <DESC>
           </PARAM>
         </PARAMS>
       </METHOD>
@@ -144,10 +148,10 @@ class Product
   include ORM::PropertyBag
 end
 
-product = Product.create( :manufacturer => 'Apple', :name => 'iPhone5', :price => 199.99)
+product = Product.create( :brand => 'Apple', :name => 'iPhone5', :price => 199.99)
 
 readedProduct = Product.find(:first)
-readedProduct.manufacturer
+readedProduct.brand
   #=> "Apple"
 readedProduct.name
   #=> "iPhone5"    ]]>
@@ -155,18 +159,38 @@ readedProduct.name
 
               <JAVASCRIPT>
                 <![CDATA[
-var productModel = Rho.ORM.addModel('Product');
+
+var productModel = Rho.ORM.addModel(function(model){
+  model.modelName("Product");
+  model.enable("sync");
+  model.property("name","string");
+  model.property("brand","string");
+  model.property("price","float");
+  model.set("partition","user");
+});
+
+You can define the following attributes in Rho.ORM.addModel()
+required *
+  model.modelName(name)
+
+optional
+  model.enable(sync|propertyBag|fixedSchema) // same as model.set(name,true)
+  model.property(name,type,option)
+  model.set(name,value)
+  model.belongs_to(modelName)
+  model.addIndex(name,[col1,col2,..])
+  model.addUniqueIndex(name,[col1,col2,..])
 
 // create model object and save it to database
 var product = productModel.create({
-  manufacturer: 'Apple',
-  model: 'iPhone5',
+  brand: 'Apple',
+  name: 'iPhone5',
   price: 199.99});
 
 // read product from database
-var readedProduct = productModel.find('first');
-readerProduct.get('manufacturer'); // Apple
-readerProduct.get('model'); // iPhone5
+var product = productModel.find('first');
+product.get('brand'); // Apple
+product.get('name'); // iPhone5
 ]]>
               </JAVASCRIPT>
             </CODE>
@@ -239,8 +263,31 @@ if (result) {
                </SECTION>
                </SECTIONS>
            </EXAMPLE>
-      
-    </EXAMPLES>
+   <EXAMPLE title="Get Model by name">
+    <SECTIONS>
+       
+      <SECTION>
+       <DESC>
+           Get a model
+       </DESC>
+       <CODE>
+        <RUBY>
+   <![CDATA[
+
+           ]]>
+         </RUBY>
+        <JAVASCRIPT>
+   <![CDATA[
+// Get a model by its name after it has been added
+var productModel = Rho.ORM.getModel("Product");
+
+           ]]>
+         </JAVASCRIPT>
+       </CODE>
+       </SECTION>
+       </SECTIONS>
+   </EXAMPLE>
+ </EXAMPLES>
   </MODULE>
 </API>
 
