@@ -94,8 +94,14 @@ int WINAPI WinMain(HINSTANCE hInstance,
 			
 	
 	
-	HWND hwndRunningRE = FindWindow(NULL, pAppName);
-		
+//	HWND hwndRunningRE = FindWindow(NULL, pAppName);
+	//  DCC Main Window now has Classname <pAppName>.MainWindow
+	WCHAR* szClassName = new WCHAR[wcslen(pAppName) + wcslen(L".MainWindow") + 1];
+	wcscpy(szClassName, pAppName);
+	wcscat(szClassName, L".MainWindow");
+	HWND hwndRunningRE = FindWindow(szClassName, NULL);
+	delete[] szClassName;
+
 	if (hwndRunningRE){
 		//  Found the running instance
 		
@@ -104,7 +110,6 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		int ilen = wcslen(pTabName);
 		char *pTabNameMB = new char[ilen+1];
 		wcstombs(pTabNameMB, pTabName,ilen);	
-	
 	
 		launchData.lpData = pTabNameMB;
 		launchData.cbData = (ilen+1);
