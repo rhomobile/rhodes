@@ -503,7 +503,7 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         ui->verticalLayout->addWidget(wv);
         setUpWebPage(wv->page());
         if (web_bkg_color && (web_bkg_color->name().length()>0))
-            wv->setHtml( QString("<html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
+            wv->setHtml( QString("<!DOCTYPE html><html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
         // creating and attaching web inspector
         wI = new QWebInspector();
         wI->setWindowTitle("Web Inspector");
