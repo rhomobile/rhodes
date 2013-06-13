@@ -434,9 +434,10 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-            <METHOD name="bringToFront">
-                <DESC>Bring application window to the top of the screen.</DESC>
-            </METHOD>
+          <METHOD name="bringToFront">
+            <DESC>Bring application window to the top of the screen.</DESC>
+            <PLATFORM>WM</PLATFORM>
+          </METHOD>
             <METHOD name="replaceCurrentBundle">
                 <DESC>Replace application bundle.</DESC>
                 <PARAMS>
