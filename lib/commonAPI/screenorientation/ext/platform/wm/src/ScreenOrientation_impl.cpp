@@ -71,7 +71,7 @@ CScreenOrientationSingleton::CScreenOrientationSingleton() :
 									m_isISTEnabled(screenorientation::CIstDll::IsPresent()),
 									m_isSensorEnabled(screenorientation::CSensor::IsSupported()),
 									m_supportsScreenOrientation(screenorientation::COrientationSettings::IsSupported()),
-									m_hasFocus(NULL != GetActiveWindow()), //TODO : need to figure out what's the best way to figureout if the crowser window is active.
+									m_hasFocus(/*NULL != GetActiveWindow()*/true), //TODO : need to figure out what's the best way to figureout if the bapp/rowser window is active.
 									m_autoRotate(false),
 									m_currentOrientation(screenorientation::COrientationSettings::GetOrientation()),
 									//m_listeners(NULL),
@@ -101,7 +101,7 @@ void CScreenOrientationSingleton::getAutoRotate(rho::apiGenerator::CMethodResult
 	// device alone
 	bool autoRotateState = false;
 	
-	else if (/*screenorientation::CIstDll::IsPresent()*/m_isISTEnabled)
+	if (/*screenorientation::CIstDll::IsPresent()*/m_isISTEnabled)
 	{
 		if (!this->m_hasFocus)
 		{
