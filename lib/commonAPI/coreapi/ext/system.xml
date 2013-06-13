@@ -457,7 +457,7 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-            <METHOD name="deleteFolder">
+            <METHOD name="deleteFolder" deprecated="true">
                 <DESC>Delete folder.</DESC>
                 <PARAMS>
                     <PARAM name="pathToFolder" type="STRING">
