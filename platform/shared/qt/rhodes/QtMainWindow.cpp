@@ -784,6 +784,11 @@ void QtMainWindow::navigateForwardCommand()
     this->GoForward();
 }
 
+void QtMainWindow::webviewNavigateBackCommand()
+{
+    this->GoBack();
+}
+
 void QtMainWindow::logCommand()
 {
     //TODO: logCommand
