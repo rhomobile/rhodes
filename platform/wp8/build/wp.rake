@@ -424,6 +424,10 @@ namespace "clean" do
     task :rhodes => ["config:wp8"] do
       rm_rf $vcbindir
       rm_rf $targetdir
+      
+      rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
+      rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+      
     end
     task :all => "clean:wp8:rhodes"
   end
