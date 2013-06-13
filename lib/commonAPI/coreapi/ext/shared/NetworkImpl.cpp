@@ -9,7 +9,7 @@
 #endif
 
 #if (defined OS_ANDROID)
-#include "../platform/android/jni/NetworkAvailablility.h"
+#include "../platform/android/jni/NetworkAvailability.h"
 #endif
 
 #include "generated/cpp/NetworkBase.h"
