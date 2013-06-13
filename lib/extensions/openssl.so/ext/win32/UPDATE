@@ -12,4 +12,4 @@ To update OpenSSL library (openssl.so extension) for Windows follow these steps:
 	> nmake -f ms\ntdll.mak install
 	> nmake -f ms\ntdll.mak clean
 
-* Move `lib/extensions/openssl.so/bin` and `lib/extensions/openssl.so/lib` folders to `lib/extensions/openssl.so/win32` folder (replacing existing files)
+* Move `lib/extensions/openssl.so/bin`, `lib/extensions/openssl.so/include` and `lib/extensions/openssl.so/lib` folders to `lib/extensions/openssl.so/win32` folder (replacing existing files)

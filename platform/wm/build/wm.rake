@@ -883,6 +883,10 @@ namespace "clean" do
     task :rhodes => ["config:set_wince_platform", "config:wm"] do
       rm_rf $vcbindir + "/#{$sdk}"
       rm_rf $targetdir
+      
+      rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
+      rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+      
     end
     task :all => "clean:wince:rhodes"
   end
@@ -891,6 +895,10 @@ namespace "clean" do
     task :rhodes => ["config:wm"] do
       rm_rf $vcbindir + "/#{$sdk}"
       rm_rf $targetdir
+      
+      rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
+      rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+      
     end
     task :all => "clean:wm:rhodes"
   end
@@ -901,6 +909,10 @@ namespace "clean" do
     rm_rf $tmpdir
     rm_rf $targetdir
     rm_rf File.join($startdir, 'platform/shared/qt/rhodes/GeneratedFiles')
+    
+    rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
+    rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
+    
   end
 end
 
