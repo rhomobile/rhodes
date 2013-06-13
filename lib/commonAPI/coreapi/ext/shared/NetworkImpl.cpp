@@ -8,6 +8,10 @@
 #endif
 #endif
 
+#if (defined OS_ANDROID)
+#include "../platform/android/jni/NetworkAvailability.h"
+#endif
+
 #include "generated/cpp/NetworkBase.h"
 #include "net/INetRequest.h"
 #include "common/RhoAppAdapter.h"
@@ -398,17 +402,77 @@ extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue)
 
 void CNetworkImpl::hasNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
+	LOG(INFO) + "NetworkC hasNetwork+";
+#if (defined OS_ANDROID)
+	int iResult = CNetworkAvailability::hasNetwork();
+	if(iResult == -2)
+	{
+		oResult.setError("Internal Error: Could not connect to Android");
+	}
+	else if(iResult == -1)
+	{
+		oResult.setError("Could not detect for a network");
+	}
+	else
+	{
+		oResult.set(iResult != 0);
+	}
+	LOG(INFO) + "NetworkC hasNetwork-";
+	return;
+#endif
+#if (!defined OS_ANDROID)
     oResult.set(g_rho_has_network!= 0 || g_rho_has_cellnetwork!= 0);
+#endif
 }
 
 void CNetworkImpl::hasWifiNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
+	LOG(INFO) + "NetworkC hasWifiNetwork+";
+#if (defined OS_ANDROID)
+	int iResult = CNetworkAvailability::hasWifiNetwork();
+	if(iResult == -2)
+	{
+		oResult.setError("Internal Error: Could not connect to Android");
+	}
+	else if(iResult == -1)
+	{
+		oResult.setError("Could not detect for a wifi network");
+	}
+	else
+	{
+		oResult.set(iResult != 0);
+	}
+	LOG(INFO) + "NetworkC hasWifiNetwork-";
+	return;
+#endif
+#if (!defined OS_ANDROID)
     oResult.set(g_rho_has_network!= 0);
+#endif
 }
 
 void CNetworkImpl::hasCellNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
+	LOG(INFO) + "NetworkC hasCellNetwork+";
+#if (defined OS_ANDROID)
+	int iResult = CNetworkAvailability::hasCellNetwork();
+	if(iResult == -2)
+	{
+		oResult.setError("Internal Error: Could not connect to Android");
+	}
+	else if(iResult == -1)
+	{
+		oResult.setError("Could not detect for a cell network");
+	}
+	else
+	{
+		oResult.set(iResult != 0);
+	}
+	LOG(INFO) + "NetworkC hasCellNetwork-";
+	return;
+#endif
+#if (!defined OS_ANDROID)
     oResult.set(g_rho_has_cellnetwork!= 0);
+#endif
 }
 
 void CNetworkImpl::startStatusNotify( int pollInterval, rho::apiGenerator::CMethodResult& oResult)
