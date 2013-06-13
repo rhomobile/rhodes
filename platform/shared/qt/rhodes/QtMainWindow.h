@@ -143,6 +143,7 @@ public slots:
     void exitCommand(void);
     void navigateBackCommand(void);
     void navigateForwardCommand(void);
+    void webviewNavigateBackCommand(void);
     void logCommand(void);
     void refreshCommand(int tab_index);
     void navigateCommand(TNavigateData* nd);
