@@ -105,7 +105,9 @@ void CNetworkDetection::CheckConnectivity()
 		}
 	}
 	delete[] szHost;
-	freeaddrinfo(result);
+    if (result!=0) {
+        freeaddrinfo(result);
+    }
 	if (bConnectSuccessful)
 	{
 		if (m_NetworkState != NETWORK_CONNECTED)
