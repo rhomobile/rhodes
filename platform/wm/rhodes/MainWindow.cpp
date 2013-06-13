@@ -1498,7 +1498,7 @@ void CMainWindow::ShowLoadingPage()
     else
     {
 		LOG(ERROR) + "failed to open loading page \"" + fname + "\"";
-		strTextW = L"<html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>";
+		strTextW = L"<!DOCTYPE html><html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>";
     }
 
     if ( m_pBrowserEng )

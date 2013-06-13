@@ -1103,7 +1103,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 
     if ( doesNotExists ) {
         RAWLOG_ERROR1("The file %s was not found", path.c_str());
-        String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
+        String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
         send_response(create_response("404 Not Found",error));
         return false;
     }
@@ -1111,7 +1111,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     FILE *fp = fopen(fullPath.c_str(), "rb");
     if (!fp) {
         RAWLOG_ERROR1("The file %s could not be opened", path.c_str());
-        String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " could not be opened.</font></html";
+        String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " could not be opened.</font></html";
         send_response(create_response("404 Not Found",error));
         return false;
     }
@@ -1333,7 +1333,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
         if (isindex(uri)) {
             if (!isfile(fullPath)) {
                 RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
-                String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
+                String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
                 send_response(create_response("404 Not Found",error));
                 return false;
             }

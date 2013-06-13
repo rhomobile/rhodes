@@ -176,6 +176,7 @@ variables in the Product object can be resolved.
   
   # Create template.
   template = %{
+    <!DOCTYPE html>
     <html>
       <head><title>Ruby Toys -- <%= @name %></title></head>
       <body>
@@ -218,7 +219,7 @@ variables in the Product object can be resolved.
   rhtml.run(toy.get_binding)
 
 <i>Generates (some blank lines removed):</i>
-
+   <!DOCTYPE html>
    <html>
      <head><title>Ruby Toys -- Rubysapien</title></head>
      <body>
