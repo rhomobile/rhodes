@@ -306,11 +306,12 @@ void CNetworkImpl::readHeaders( const rho::Hashtable<rho::String, rho::String>& 
 
     if ( propertyMap.get("authType") == AUTH_BASIC )
     {
-        int nLen = rho_base64_encode(propertyMap.get("authPassword").c_str(), -1, 0);
+        String creds = propertyMap.get("authUser") + ":" + propertyMap.get("authPassword");
+        
+        int nLen = rho_base64_encode(creds.c_str(), -1, 0);
         char* szBuf = new char[nLen+1];
-        rho_base64_encode(propertyMap.get("authPassword").c_str(), -1, szBuf );
-
-        mapHeaders["Authorization"] = "Basic " + propertyMap.get("authUser") + ":" + szBuf;
+        rho_base64_encode(creds.c_str(), -1, szBuf );
+        mapHeaders["Authorization"] = String("Basic ") + szBuf;
         delete szBuf;
     }
 
