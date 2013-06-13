@@ -246,9 +246,6 @@
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
-              <RETURN type="INTEGER">
-                <DESC>If the operation completes successfully, unzipFile returns a zero value. If the operation fails, unzipFile returns -1.</DESC>
-              </RETURN>
             </METHOD>
             <METHOD name="zipFile">
                 <DESC>Zip one file. Zip archive must placed to  folder where application can write files. </DESC>
@@ -264,9 +261,6 @@
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
-              <RETURN type="INTEGER">
-                <DESC>If the operation completes successfully, unzipFile returns a zero value. If the operation fails, unzipFile returns -1.</DESC>
-              </RETURN>
             </METHOD>
             <METHOD name="zipFiles">
                 <DESC>Zip list of files.</DESC>
@@ -285,9 +279,6 @@
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
-              <RETURN type="INTEGER">
-                <DESC>If the operation completes successfully, unzipFile returns a zero value. If the operation fails, unzipFile returns -1.</DESC>
-              </RETURN>
             </METHOD>
             <METHOD name="setRegistrySetting">
                 <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
