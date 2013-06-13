@@ -173,7 +173,12 @@ const char* rho_webview_execute_js_sync(const char* js, int index) {
 }
 
 const char* rho_webview_current_location(int index) {
-    return rho_rhodesapp_getcurrenturl(index);
+    //return rho_rhodesapp_getcurrenturl(index);
+    NSString* str = [[[Rhodes sharedInstance] mainView] currentLocation:index];
+    if (str == nil) {
+        return "";
+    }
+    return [str UTF8String];
 }
 
 void rho_webview_navigate_back_with_tab(int index)
