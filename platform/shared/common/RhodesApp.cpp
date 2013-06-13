@@ -1602,7 +1602,7 @@ void CRhodesApp::navigateBack()
     {
         loadUrl(m_arAppBackUrlOrig[nIndex]);
     }
-    else if(strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0)
+    else// if(strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0)
     {
         rho_webview_navigate_back();
     }
