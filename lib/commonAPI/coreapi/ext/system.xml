@@ -128,6 +128,7 @@
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
                 <DESC>Client HTTP proxy.</DESC>
+                <PLATFORM>WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
                 <DESC>Lock/unlock the window size change by the user.</DESC>
