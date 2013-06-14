@@ -147,8 +147,8 @@ void CSystemImpl::getUuid(CMethodResult& oResult)
 
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
 void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult){}
-void CSystemImpl::getKeyboardState(CMethodResult& oResult){}
-void CSystemImpl::setKeyboardState( const rho::String& value, CMethodResult& oResult){}
+//void CSystemImpl::getKeyboardState(CMethodResult& oResult){}
+//void CSystemImpl::setKeyboardState( const rho::String& value, CMethodResult& oResult){}
 void CSystemImpl::getFullScreen(CMethodResult& oResult)
 {
 	//all apps working in full screen mode on WP8
