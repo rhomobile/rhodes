@@ -156,9 +156,11 @@
 
             <METHOD name="minimize">
                 <DESC>Minimize or move application to background.</DESC>
+                <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
             <METHOD name="restore">
                 <DESC>Restore application on the screen.</DESC>
+                <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
 
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">
