@@ -158,7 +158,7 @@ public class RhoWebChromeClient extends WebChromeClient {
     public boolean onJsPrompt (WebView view, String url, String message, String defaultValue, final JsPromptResult result) {
         PromptResult promptResult = new PromptResult(result);
         RhoExtManager.getImplementationInstance().onPrompt(view, message, defaultValue, promptResult);
-        Logger.T(TAG, "JS Prompt is processing by rhodes: " + promptResult.isPending());
+        Logger.D(TAG, "JS Prompt is processing by rhodes: " + promptResult.isPending());
         return promptResult.isPending();
     }
 
