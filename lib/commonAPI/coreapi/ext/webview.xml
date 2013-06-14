@@ -269,6 +269,7 @@
             </METHOD>
 
             <METHOD name="set_menu_items" deprecated="true" generateAPI="false">
+                <PLATFORM>WM,Android</PLATFORM>
                 <DESC>Use Rho::Application.nativeMenu property: set native menu items.</DESC>
                 <PARAMS>
                     <PARAM name="menuItems" type="HASH">
