@@ -18,7 +18,7 @@
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 * THE SOFTWARE.
 * 
 * http://rhomobile.com
@@ -329,7 +329,7 @@ namespace rhodes
         private void RhodesWebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
             CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
-            if (!_isBrowserInitialized)
+            if (!_isBrowserInitialized) 
                 _isBrowserInitialized = true;
         }
 
@@ -501,13 +501,12 @@ namespace rhodes
             updateAppBarModeAndVisibility();
         }
 
-		public void menuAddAction(string text, int item)
+        public void menuAddAction(string label, int item)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuAddAction(text, item); }); return; }
-            ApplicationBarMenuItem menuItem = new ApplicationBarMenuItem(text);
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { menuAddAction(label, item); }); return; }
+            ApplicationBarMenuItem menuItem = new ApplicationBarMenuItem(label);
             ApplicationBar.MenuItems.Add(menuItem);
-            menuItems.Add(text, item);
-            menuItem.Click += new EventHandler(menuItem_Click);
+            menuItem.Click += delegate(object sender, EventArgs e) { menuItem_Click(sender, e, item); };
             updateAppBarModeAndVisibility();
         }
 
@@ -517,9 +516,9 @@ namespace rhodes
             CRhoRuntime.getInstance().logEvent("Menu separator is unimplemented on WP8");
         }
 
-        private void menuItem_Click(object sender, EventArgs e)
+        private void menuItem_Click(object sender, EventArgs e, int index)
         {
-            CRhoRuntime.getInstance().onCustomMenuItemCommand(menuItems[(sender as ApplicationBarMenuItem).Text]);
+            CRhoRuntime.getInstance().onCustomMenuItemCommand(index);
         }
 
 
