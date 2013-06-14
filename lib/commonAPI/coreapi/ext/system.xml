@@ -127,11 +127,11 @@
                 <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
-                <DESC>Client HTTP proxy.</DESC>
+                <DESC>Client HTTP proxy. RhoSimulator the method supported only for windows OS.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
-                <DESC>Lock/unlock the window size change by the user.</DESC>
+                <DESC>Lock/unlock the window size change by the user. RhoSimulator the method supported only for windows OS.</DESC>
                 <PLATFORM>Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="keyboardState" type="STRING" default="See Description">
@@ -282,7 +282,7 @@
                 </PARAMS>
             </METHOD>
             <METHOD name="setRegistrySetting">
-                <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
+                <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  RhoSimulator the method supported only for windows OS.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -343,7 +343,7 @@
             </METHOD>
 
             <METHOD name="getRegistrySetting">
-                <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
+                <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  RhoSimulator the method supported only for windows OS.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -367,7 +367,7 @@
             </METHOD>
             
             <METHOD name="deleteRegistrySetting">
-                <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
+                <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  RhoSimulator the method supported only for windows OS.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
