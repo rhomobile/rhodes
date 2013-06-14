@@ -73,6 +73,7 @@
             </PROPERTY>
             <PROPERTY name="phoneNumber" type="STRING" readOnly="true" deprecated="true">
                 <DESC>Device phone number.</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceOwnerEmail" type="STRING" readOnly="true">
                 <DESC>Primary email of phone owner.</DESC>
@@ -87,6 +88,7 @@
             </PROPERTY>
             <PROPERTY name="phoneId" type="STRING" readOnly="true">
                 <DESC>Hardware based ID. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceName" type="STRING" readOnly="true">
                 <DESC>Name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android).</DESC>
@@ -579,6 +581,7 @@
                 <PARAMS>
                     <PARAM name="proxyURI" type="STRING"/>
                 </PARAMS>
+                <PLATFORM>WM, WIN32</PLATFORM>
             </METHOD>
             <METHOD name="unset_http_proxy" deprecated="true">
                 <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
