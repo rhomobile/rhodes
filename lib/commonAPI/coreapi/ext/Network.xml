@@ -237,7 +237,7 @@
                 <DESC>Start network status notifications.</DESC>
                 <PARAMS>
                     <PARAM name="pollInterval" type="INTEGER" default="20">
-                        <DESC>The network status polling period for systems that can not notify network status change immediately.</DESC>
+                        <DESC>The network status polling period for systems that can not notify network status change immediately. In seconds.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
