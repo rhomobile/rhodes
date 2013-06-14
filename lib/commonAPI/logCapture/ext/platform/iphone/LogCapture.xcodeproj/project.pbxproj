@@ -1,0 +1,293 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C00E096E1760A1A900ADA93E /* ILogCapture.h in Headers */ = {isa = PBXBuildFile; fileRef = C00E09661760A1A900ADA93E /* ILogCapture.h */; };
+		C00E096F1760A1A900ADA93E /* LogCapture_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09671760A1A900ADA93E /* LogCapture_js_wrap.cpp */; };
+		C00E09701760A1A900ADA93E /* LogCapture_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09681760A1A900ADA93E /* LogCapture_ruby_wrap.cpp */; };
+		C00E09711760A1A900ADA93E /* LogCaptureBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09691760A1A900ADA93E /* LogCaptureBase.cpp */; };
+		C00E09721760A1A900ADA93E /* LogCaptureBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C00E096A1760A1A900ADA93E /* LogCaptureBase.h */; };
+		C00E09731760A1A900ADA93E /* logcapture_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E096B1760A1A900ADA93E /* logcapture_api_init.cpp */; };
+		C00E09741760A1A900ADA93E /* logcapture_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E096C1760A1A900ADA93E /* logcapture_js_api.cpp */; };
+		C00E09751760A1A900ADA93E /* logcapture_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C00E096D1760A1A900ADA93E /* logcapture_ruby_api.c */; };
+		C00E09791760A22E00ADA93E /* LogCaptureImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C00E09781760A22E00ADA93E /* LogCaptureImpl.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		C00E09661760A1A900ADA93E /* ILogCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ILogCapture.h; sourceTree = "<group>"; };
+		C00E09671760A1A900ADA93E /* LogCapture_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogCapture_js_wrap.cpp; sourceTree = "<group>"; };
+		C00E09681760A1A900ADA93E /* LogCapture_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogCapture_ruby_wrap.cpp; sourceTree = "<group>"; };
+		C00E09691760A1A900ADA93E /* LogCaptureBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogCaptureBase.cpp; sourceTree = "<group>"; };
+		C00E096A1760A1A900ADA93E /* LogCaptureBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogCaptureBase.h; sourceTree = "<group>"; };
+		C00E096B1760A1A900ADA93E /* logcapture_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = logcapture_api_init.cpp; sourceTree = "<group>"; };
+		C00E096C1760A1A900ADA93E /* logcapture_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = logcapture_js_api.cpp; sourceTree = "<group>"; };
+		C00E096D1760A1A900ADA93E /* logcapture_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = logcapture_ruby_api.c; sourceTree = "<group>"; };
+		C00E09781760A22E00ADA93E /* LogCaptureImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogCaptureImpl.cpp; path = ../../shared/LogCaptureImpl.cpp; sourceTree = "<group>"; };
+		FAC155F3145855CF0016F3BD /* liblogCapture.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblogCapture.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FAC155ED145855CF0016F3BD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		034768DFFF38A50411DB9C8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FAC155F3145855CF0016F3BD /* liblogCapture.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0867D691FE84028FC02AAC07 /* Barcode */ = {
+			isa = PBXGroup;
+			children = (
+				08FB77AEFE84172EC02AAC07 /* Classes */,
+				034768DFFF38A50411DB9C8B /* Products */,
+			);
+			name = Barcode;
+			sourceTree = "<group>";
+		};
+		08FB77AEFE84172EC02AAC07 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C00E09771760A1F800ADA93E /* impl */,
+				C00E09641760A1A900ADA93E /* generated */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		C00E09641760A1A900ADA93E /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C00E09761760A1D400ADA93E /* api */,
+				C00E09651760A1A900ADA93E /* cpp */,
+			);
+			name = generated;
+			path = ../../shared/generated;
+			sourceTree = "<group>";
+		};
+		C00E09651760A1A900ADA93E /* cpp */ = {
+			isa = PBXGroup;
+			children = (
+				C00E09661760A1A900ADA93E /* ILogCapture.h */,
+				C00E09671760A1A900ADA93E /* LogCapture_js_wrap.cpp */,
+				C00E09681760A1A900ADA93E /* LogCapture_ruby_wrap.cpp */,
+				C00E09691760A1A900ADA93E /* LogCaptureBase.cpp */,
+				C00E096A1760A1A900ADA93E /* LogCaptureBase.h */,
+			);
+			path = cpp;
+			sourceTree = "<group>";
+		};
+		C00E09761760A1D400ADA93E /* api */ = {
+			isa = PBXGroup;
+			children = (
+				C00E096B1760A1A900ADA93E /* logcapture_api_init.cpp */,
+				C00E096C1760A1A900ADA93E /* logcapture_js_api.cpp */,
+				C00E096D1760A1A900ADA93E /* logcapture_ruby_api.c */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+		C00E09771760A1F800ADA93E /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C00E09781760A22E00ADA93E /* LogCaptureImpl.cpp */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		FAC155E6145855CF0016F3BD /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C00E096E1760A1A900ADA93E /* ILogCapture.h in Headers */,
+				C00E09721760A1A900ADA93E /* LogCaptureBase.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		FAC155E5145855CF0016F3BD /* logCapture */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "logCapture" */;
+			buildPhases = (
+				FAC155E6145855CF0016F3BD /* Headers */,
+				FAC155E9145855CF0016F3BD /* Sources */,
+				FAC155ED145855CF0016F3BD /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = logCapture;
+			productName = Barcode;
+			productReference = FAC155F3145855CF0016F3BD /* liblogCapture.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0867D690FE84028FC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "LogCapture" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0867D691FE84028FC02AAC07 /* Barcode */;
+			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FAC155E5145855CF0016F3BD /* logCapture */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FAC155E9145855CF0016F3BD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C00E096F1760A1A900ADA93E /* LogCapture_js_wrap.cpp in Sources */,
+				C00E09701760A1A900ADA93E /* LogCapture_ruby_wrap.cpp in Sources */,
+				C00E09711760A1A900ADA93E /* LogCaptureBase.cpp in Sources */,
+				C00E09731760A1A900ADA93E /* logcapture_api_init.cpp in Sources */,
+				C00E09741760A1A900ADA93E /* logcapture_js_api.cpp in Sources */,
+				C00E09751760A1A900ADA93E /* logcapture_ruby_api.c in Sources */,
+				C00E09791760A22E00ADA93E /* LogCaptureImpl.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB922308733DC00010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Debug;
+		};
+		1DEB922408733DC00010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(RHO_ROOT)/platform/shared/common",
+					"$(RHO_ROOT)/platform/shared/rubyext",
+					"$(RHO_ROOT)/platform/shared/ruby/include",
+					"$(RHO_ROOT)/platform/shared/ruby/iphone",
+					"$(RHO_ROOT)/platform/shared",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				ONLY_ACTIVE_ARCH = NO;
+				PREBINDING = NO;
+				SDKROOT = iphonesimulator4.1;
+				STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = static;
+			};
+			name = Release;
+		};
+		FAC155F1145855CF0016F3BD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DSTROOT = /tmp/logCapture.dst;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = logCapture_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = logCapture;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386 armv7";
+			};
+			name = Debug;
+		};
+		FAC155F2145855CF0016F3BD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /tmp/logCapture.dst;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = logCapture_Prefix.pch;
+				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PRODUCT_NAME = logCapture;
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "i386  armv7";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "LogCapture" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB922308733DC00010E9CD /* Debug */,
+				1DEB922408733DC00010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FAC155F0145855CF0016F3BD /* Build configuration list for PBXNativeTarget "logCapture" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FAC155F1145855CF0016F3BD /* Debug */,
+				FAC155F2145855CF0016F3BD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0867D690FE84028FC02AAC07 /* Project object */;
+}
