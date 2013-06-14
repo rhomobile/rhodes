@@ -30,23 +30,27 @@
                 </PARAM>
             </PROPERTY>
             <PROPERTY name="extraMenu" type="ARRAY">
-                <PARAM type="HASH" />
                 <DESC>Extra Native MenuBar items. This menu will display when left menu button is selected (Windows Mobile only).</DESC>
                 <PLATFORM>WM</PLATFORM>
+
+                <PARAM type="HASH">
+                    <DESC>Same values as for mainMenu.</DESC>
+                </PARAM>
+                
             </PROPERTY>
 
             <PROPERTY name="mainButton" type="HASH">
-                <DESC>Main MenuBar button properties</DESC>
+                <DESC>Main MenuBar button properties.Same values as for mainMenu.When action is specified, when mainMenu will be ignored.</DESC>
                 <PLATFORM>WM</PLATFORM>
             </PROPERTY>
             <PROPERTY name="extraButton" type="HASH">
-                <DESC>Extra MenuBar button properties.This item will display when left menu button is selected (Windows Mobile only).</DESC>
+                <DESC>Extra MenuBar button properties.Same values as for mainMenu.When action is specified, when extraMenu will be ignored.This item will display when left menu button is selected (Windows Mobile only).</DESC>
                 <PLATFORM>WM</PLATFORM>
             </PROPERTY>
 
             <PROPERTY name="defaultMainMenu" type="ARRAY" readOnly="true" generateAPI="false">
                 <PARAM type="HASH" />
-                <DESC>Default Main Menu items.</DESC>
+                <DESC>Default Main Menu items.Same values as for mainMenu.</DESC>
             </PROPERTY>
 
         </PROPERTIES>

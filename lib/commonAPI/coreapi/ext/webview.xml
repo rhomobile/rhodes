@@ -186,6 +186,7 @@
             <METHOD name="currentURL">
                 <DESC>Returns the actual URL in WebView. This works the same as the JavaScript window.location.href.</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>
+                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>

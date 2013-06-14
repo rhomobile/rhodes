@@ -1,0 +1,41 @@
+<?xml version = "1.0"?>
+<?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
+<API>
+    <MODULE name="LogCapture" parent="Rho">
+
+        <PROPERTIES access="STATIC" generateAccessors="true">
+            <PROPERTY name="excludeCategories" type="STRING" default="">
+                <DESC>Comma-separated list of excluded log categories</DESC>
+            </PROPERTY>
+
+            <PROPERTY name="maxLines" type="INTEGER" default="1024">
+                <DESC>Maximum number of captured lines</DESC>
+            </PROPERTY>
+        </PROPERTIES>
+        
+        <METHODS access="STATIC">
+            <METHOD name="start">
+                <DESC>Start capture log events</DESC>
+            </METHOD>
+            <METHOD name="stop">
+                <DESC>Stop capture log events</DESC>
+            </METHOD>
+            <METHOD name="clear">
+                <DESC>Clear captured events</DESC>
+            </METHOD>
+            <METHOD name="numLines">
+                <DESC>Return number of captured lines</DESC>
+                <RETURN type="INTEGER"/>
+            </METHOD>
+            <METHOD name="read">
+                <DESC>Read captured items</DESC>
+                <RETURN type="STRING"/>
+            </METHOD>
+        </METHODS>
+        
+        <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
+        <PLATFORM>
+            <!--  This section is used for the supported platform images at the top -->
+        </PLATFORM>
+    </MODULE>
+</API>    
