@@ -14,6 +14,8 @@
 #include "common/RhoStd.h"
 #include "common/AutoPointer.h"
 
+#include "Rhodes.h"
+
 namespace rho
 {
 	namespace common
@@ -25,7 +27,11 @@ namespace rho
 			INetworkStatusReceiver* m_receiver;
 		public:
 			IPhoneNetworkStatusMonitor() : m_pollInterval(20), m_receiver(0) {}
-			virtual void setPollInterval(int pollInterval) { m_pollInterval = pollInterval; }
+			virtual void setPollInterval(int pollInterval) {
+                m_pollInterval = pollInterval;
+                [[Rhodes sharedInstance] signalNetworkStatusPollIntervalChanged];
+                
+            }
 			virtual void setNetworkStatusReceiver(INetworkStatusReceiver* receiver) { m_receiver = receiver; }
 			int getPollInterval() const { return m_pollInterval; }
 			void callNotify(rho::common::enNetworkStatus status) {
