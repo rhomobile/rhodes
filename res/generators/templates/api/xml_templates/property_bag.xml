@@ -64,9 +64,5 @@
             </PARAMS>
         </METHOD>
 
-        <METHOD name="clearAllProperties">
-            <DESC>This is documentation</DESC>
-        </METHOD>
-
-    </METHODS>
+      </METHODS>
 </PROPERTY_BAG>
