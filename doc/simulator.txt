@@ -146,3 +146,12 @@ To run Rhodes applications in the custom built RhoSimulator, please ensure that 
       env:
         paths:
           rhosimulator: platform/wm/bin/win32/rhodes/SimulatorRelease
+
+### Build RhoSimulator for OS X in Qt Creator:
+
+* Follow all the preliminary steps for Mac OS X
+* Make sure you have the latest revision of Qt SDK 4.8 installed and that it is configured in Qt Creator
+* Run `rake build:rhosimulator` command in the `rhodes` source folder
+* Open project file in Qt Creator:
+  `<path-to-ruby>/lib/ruby/gems/<version-number>/gems/rhodes-<version-number>/platform/shared/qt/RhoSimulator.pro`
+* Build for Release or Debug configuration

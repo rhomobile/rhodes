@@ -163,8 +163,10 @@ public:
         oResult.set( rho_webview_current_location(tabIndex) );
     }
 
-    //iOS, Android only
-    virtual void currentURL( int tabIndex, rho::apiGenerator::CMethodResult& oResult){}
+    virtual void currentURL( int tabIndex, rho::apiGenerator::CMethodResult& oResult)
+    {
+        oResult.set( rho_webview_current_location(tabIndex) );
+    }
 
     virtual void executeJavascript( const rho::String& javascriptText,  int tabIndex, rho::apiGenerator::CMethodResult& oResult)
     {

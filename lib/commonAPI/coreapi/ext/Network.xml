@@ -222,22 +222,26 @@
 
             <METHOD name="hasNetwork">
                 <DESC>Is device connected to the network.</DESC>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasWifiNetwork">
                 <DESC>Is device connected to the wifi network</DESC>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasCellNetwork">
                 <DESC>Is device connected to the cell network.</DESC>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="startStatusNotify" hasCallback="mandatory" runInThread="none">
                 <DESC>Start network status notifications.</DESC>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="pollInterval" type="INTEGER" default="20">
-                        <DESC>The network status polling period for systems that can not notify network status change immediately.</DESC>
+                        <DESC>The network status polling period for systems that can not notify network status change immediately. In seconds.</DESC>
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
@@ -257,6 +261,7 @@
 
             <METHOD name="stopStatusNotify">
                 <DESC>Stop network status notifications.</DESC>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
 
             <METHOD name="detectConnection" hasCallback="mandatory" runInThread="none">
