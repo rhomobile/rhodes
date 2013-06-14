@@ -109,6 +109,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 		//rhode expects a MultiByte string so convert
 		int ilen = wcslen(pTabName);
 		char *pTabNameMB = new char[ilen+1];
+		memset(pTabNameMB, 0, iLen + 1);
 		wcstombs(pTabNameMB, pTabName,ilen);	
 	
 		launchData.lpData = pTabNameMB;
