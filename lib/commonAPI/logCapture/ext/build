@@ -1,0 +1,22 @@
+#!/bin/sh
+
+
+if [ "$RHO_PLATFORM" = "android" ]; then
+
+cd platform/android
+rake --trace
+
+elif [ "$RHO_PLATFORM" = "iphone" ]; then
+
+cd platform/iphone
+rake --trace
+
+elif [ "$RHO_PLATFORM" = "wp8" ]; then
+
+cd platform/wp8
+rake --trace
+
+fi
+
+
+
