@@ -11,9 +11,9 @@ elif [ "$RHO_PLATFORM" = "iphone" ]; then
 cd platform/iphone
 rake --trace
 
-elif [ "$RHO_PLATFORM" = "wp8" ]; then
+elif [ "$RHO_PLATFORM" = "osx" ]; then
 
-cd platform/wp8
+cd platform/osx
 rake --trace
 
 fi
