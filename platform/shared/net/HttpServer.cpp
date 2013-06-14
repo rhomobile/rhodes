@@ -316,6 +316,13 @@ void CHttpServer::stop()
     // therefore, stop server thread (because m_active set to false).
     m_active = false;
     RAWLOG_INFO("Stopping server...");
+
+    if (m_sock!=INVALID_SOCKET)
+    {
+        closesocket(m_sock);
+        m_sock = INVALID_SOCKET;
+    }
+
     SOCKET conn = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in sa;
     memset(&sa, 0, sizeof(sa));
@@ -519,12 +526,14 @@ bool CHttpServer::receive_request(ByteVector &request)
 
 	ByteVector r;
     char buf[BUF_SIZE];
-	int attempts = 0;
+    int attempts = 0;
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
+        //RAWTRACE1("RECV: %d", n);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
+            RAWTRACE1("RECV ERROR: %d", e);
 #if !defined(WINDOWS_PLATFORM)
             if (e == EINTR)
                 continue;
@@ -536,13 +545,19 @@ bool CHttpServer::receive_request(ByteVector &request)
                 if (!r.empty())
                     break;
 
-				if(++attempts > 2) return false;
+                if(++attempts > 100)
+                {
+                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for 10 sec. Cancel recieve.");
+                    return false;
+                }
 
                 fd_set fds;
                 FD_ZERO(&fds);
                 FD_SET(m_sock, &fds);
-				timeval tv;
-				tv.tv_sec = 1;
+
+                timeval tv = {0};
+				tv.tv_usec = 100000;//100 MS
+
                 select(m_sock + 1, &fds, 0, 0, &tv);
                 continue;
             }
@@ -552,7 +567,7 @@ bool CHttpServer::receive_request(ByteVector &request)
         }
         
         if (n == 0) {
-            RAWLOG_ERROR("Connection gracefully closed before we send any data");
+            RAWLOG_ERROR("Connection gracefully closed before we receive any data");
             return false;
         }
         
