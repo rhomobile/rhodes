@@ -581,6 +581,7 @@
             </METHOD>
             <METHOD name="unset_http_proxy" deprecated="true">
                 <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
+                <PLATFORM>WM, WIN32</PLATFORM>
             </METHOD>
             <METHOD name="set_application_icon_badge" deprecated="true">
                 <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>
