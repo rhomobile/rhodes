@@ -116,6 +116,7 @@ platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoWebView.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/IRhoWebViewConfig.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtManagerImpl.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoExtManager.java
+platform/android/Rhodes/src/com/rhomobile/rhodes/extmanager/RhoJSApi.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality01.java
 platform/android/Rhodes/src/com/rhomobile/rhodes/osfunctionality/AndroidFunctionality02.java
