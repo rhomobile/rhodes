@@ -994,12 +994,12 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
     return 0;
 }
 
-LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
 	restoreWebView();
 
     if ( m_pBrowserEng )
-        m_pBrowserEng->BackOnTab(m_oTabBar.GetCurrentTabID(), 1);
+        m_pBrowserEng->BackOnTab(m_oTabBar.GetTabID((int)hWndCtl), 1);
 
     return 0;
 }

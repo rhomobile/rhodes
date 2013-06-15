@@ -71,6 +71,7 @@ public:
     // webview
     void navigate(QString url, int index);
     void GoBack(void);
+    void GoBackWithTab(int index);
     void GoForward(void);
     void Refresh(int index);
     bool isStarted(void);

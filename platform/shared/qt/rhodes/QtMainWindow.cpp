@@ -402,6 +402,13 @@ void QtMainWindow::navigate(QString url, int index)
     }
 }
 
+void QtMainWindow::GoBackWithTab(int index)
+{
+    QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
+    if (wv)
+        wv->back();
+}
+
 void QtMainWindow::GoBack(void)
 {
     if (ui->webView)
