@@ -124,7 +124,7 @@ static BOOL app_created = NO;
 
 @implementation Rhodes
 
-@synthesize window, player, cookies, signatureDelegate, nvDelegate, mBlockExit;
+@synthesize window, player, cookies, signatureDelegate, nvDelegate, mBlockExit, mNetworkPollCondition;
 
 
 static Rhodes *instance = NULL;
@@ -648,6 +648,8 @@ static Rhodes *instance = NULL;
         rotationLocked = rho_conf_getBool("disable_screen_rotation");
 		
 		NSLog(@"Init network monitor");
+        mNetworkPollCondition = [[NSCondition alloc] init];
+
 		initNetworkMonitoring();
 		[self performSelectorInBackground:@selector(monitorNetworkStatus) withObject:nil];
         
@@ -729,6 +731,12 @@ static Rhodes *instance = NULL;
     NSLog(@"Initialization finished");
 }
 
+- (void) signalNetworkStatusPollIntervalChanged
+{
+    [mNetworkPollCondition signal];
+}
+
+
 - (void) monitorNetworkStatus
 {
     while(true)
@@ -741,7 +749,9 @@ static Rhodes *instance = NULL;
         networkStatusNotify(status==NotReachable?0:1);
         [r release];
         
-        [NSThread sleepForTimeInterval:getNetworkStatusPollInterval()];
+        [mNetworkPollCondition lock];
+        [mNetworkPollCondition waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:getNetworkStatusPollInterval()]];
+        [mNetworkPollCondition unlock];
     }
 }
 

@@ -1133,6 +1133,8 @@ def init_extensions(dest, mode = "")
                 startJSModules.unshift(f)
               elsif f.downcase().end_with?("rhoapi.js") 
                 startJSModules << f
+              elsif f.downcase().end_with?("rho.application.js")
+                endJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
                 endJSModules << f
               else
@@ -2274,6 +2276,8 @@ namespace "run" do
                         startJSModules.unshift(f)
                       elsif f.downcase().end_with?("rhoapi.js")
                         startJSModules << f
+                      elsif f.downcase().end_with?("rho.application.js")
+                        endJSModules << f
                       elsif f.downcase().end_with?("rho.database.js")
                         endJSModules << f
                       else

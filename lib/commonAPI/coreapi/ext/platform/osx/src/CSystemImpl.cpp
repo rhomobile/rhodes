@@ -42,8 +42,8 @@ public:
     virtual void setHttpProxyURI( const rho::String& value, CMethodResult& oResult);
     virtual void getLockWindowSize(CMethodResult& oResult);
     virtual void setLockWindowSize( bool value, CMethodResult& oResult);
-    virtual void getKeyboardState(CMethodResult& oResult);
-    virtual void setKeyboardState( const rho::String& value, CMethodResult& oResult);
+    //virtual void getKeyboardState(CMethodResult& oResult);
+    //virtual void setKeyboardState( const rho::String& value, CMethodResult& oResult);
     virtual void getFullScreen(CMethodResult& oResult);
     virtual void setFullScreen( bool value, CMethodResult& oResult);
     virtual void getScreenAutoRotate(CMethodResult& oResult);
@@ -147,8 +147,8 @@ void CSystemImpl::getUuid(CMethodResult& oResult)
 
 void CSystemImpl::getLockWindowSize(CMethodResult& oResult){}
 void CSystemImpl::setLockWindowSize( bool value, CMethodResult& oResult){}
-void CSystemImpl::getKeyboardState(CMethodResult& oResult){}
-void CSystemImpl::setKeyboardState( const rho::String& value, CMethodResult& oResult){}
+//void CSystemImpl::getKeyboardState(CMethodResult& oResult){}
+//void CSystemImpl::setKeyboardState( const rho::String& value, CMethodResult& oResult){}
 void CSystemImpl::getFullScreen(CMethodResult& oResult)
 {
 	//all apps working in full screen mode on WP8

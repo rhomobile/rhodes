@@ -630,6 +630,7 @@ void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethod
 	String filename = RHODESAPP().getRhoUserPath()+ oFile.getBaseName();
 	if (CRhoFile::isFileExist(filename.c_str()) && (CRhoFile::deleteFile(filename.c_str()) != 0)) {
 		LOG(ERROR) + "rho_sys_app_install() file delete failed: " + filename;
+        oResult.setError("System.applicationInstall failed for: " + applicationUrl);
 	} else {
 		NetRequest NetRequest;
 		NetResponse resp = getNetRequest(&NetRequest).pullFile(sUrl, filename, NULL, NULL,true,false);
@@ -637,12 +638,20 @@ void CSystemImpl::applicationInstall( const rho::String& applicationUrl, CMethod
 			StringW filenameW = convertToStringW(filename);
 			LOG(INFO) + "Downloaded " + sUrl + " to " + filename;
 			rho_wmsys_run_appW(filenameW.c_str(), L"");
+
+            if (GetLastError() == -1 )
+                oResult.setError("System.applicationInstall failed for: " + applicationUrl);
 		} else {
 			LOG(ERROR) + "rho_sys_app_install() download failed: " + sUrl;
+            oResult.setError("System.applicationInstall failed for: " + applicationUrl);
 		}
 	}
 #else
     rho_wmsys_run_appW( convertToStringW(applicationUrl).c_str(), 0 );
+
+    if (GetLastError() == -1 )
+        oResult.setError("System.applicationInstall failed for: " + applicationUrl);
+
 #endif
 }
 
@@ -716,6 +725,7 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
     if ( res != ERROR_SUCCESS )
     {
         LOG(ERROR) + "Cannot open registry key: " + strKeyPath + "; Code:" + res;
+        oResult.setError("System.applicationUninstall failed for: " + applicationName);
     } else
     {
         TCHAR szBuf[MAX_PATH+1];
@@ -728,6 +738,10 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
         {
             StringW strFullPathW = szBuf;
 			rho_wmsys_run_appW( strFullPathW.c_str(), L"" );
+
+            if (GetLastError() == -1 )
+                oResult.setError("System.applicationUninstall failed for: " + applicationName);
+
 		}
 	}
 #else
@@ -747,7 +761,11 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
     LPWSTR wszOutput   = NULL;
     hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
     if (FAILED(hr) || !wszOutput )
+    {
         LOG(ERROR) + "DMProcessConfigXML failed: " + hr;
+        oResult.setError("System.applicationUninstall failed for: " + applicationName);
+
+    }
     else
     {
     }
@@ -761,6 +779,9 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
 void CSystemImpl::openUrl( const rho::String& url, CMethodResult& oResult)
 {
     rho_wmsys_run_appW( convertToStringW(url).c_str(), 0 );
+
+    if (GetLastError() == -1 )
+        oResult.setError("System.openUrl failed for: " + url);
 }
 
 void CSystemImpl::runApplication( const rho::String& appName,  const rho::String& params,  bool blockingCall, rho::apiGenerator::CMethodResult& oResult)
@@ -772,6 +793,7 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
     if ( res != ERROR_SUCCESS )
     {
         LOG(ERROR) + "Cannot open registry key: " + strKeyPath + "; Code:" + res;
+        oResult.setError("System.runApplication failed for: " + appName);
     } else
     {
         TCHAR szBuf[MAX_PATH+1];
@@ -779,7 +801,10 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
 
         res = oKey.QueryStringValue(L"InstallDir", szBuf, &nChars);
         if ( res != ERROR_SUCCESS )
+        {
             LOG(ERROR) + "Cannot read registry key: InstallDir; Code:" + res;
+            oResult.setError("System.runApplication failed for: " + appName);
+        }
         else
         {
             StringW strFullPath = szBuf;
@@ -793,6 +818,10 @@ void CSystemImpl::runApplication( const rho::String& appName,  const rho::String
             strFullPath += strBaseName;
 
             rho_wmsys_run_appW( strFullPath.c_str(), convertToStringW(params).c_str());
+
+            if (GetLastError() == -1 )
+                oResult.setError( "System.runApplication failed for: " + appName);
+
         }
     }
 }

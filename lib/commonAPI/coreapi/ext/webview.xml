@@ -186,6 +186,7 @@
             <METHOD name="currentURL">
                 <DESC>Returns the actual URL in WebView. This works the same as the JavaScript window.location.href.</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>
+                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
@@ -268,6 +269,7 @@
             </METHOD>
 
             <METHOD name="set_menu_items" deprecated="true" generateAPI="false">
+                <PLATFORM>WM,Android</PLATFORM>
                 <DESC>Use Rho::Application.nativeMenu property: set native menu items.</DESC>
                 <PARAMS>
                     <PARAM name="menuItems" type="HASH">
