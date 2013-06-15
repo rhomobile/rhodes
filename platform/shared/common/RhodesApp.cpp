@@ -1604,7 +1604,7 @@ void CRhodesApp::navigateBack()
     }
     else// if(strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0)
     {
-        rho_webview_navigate_back();
+        rho_webview_navigate_back_with_tab(nIndex);
     }
 }
 
@@ -1875,10 +1875,10 @@ void CRhodesApp::loadUrl(String url, int nTabIndex/* = -1*/)
     {
         js_callback = true;
         url = url.substr(11);
-    }else if (String_startsWith(url, "jscallback:") )
+    }else if (String_startsWith(url, "__rhoCallback:") )
     {
         js_callback = true;
-        url = url.substr(11);
+        url = url.substr(14);
 
         String strCallback("Rho.callbackHandler( \"");
         strCallback += url;
