@@ -55,7 +55,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     }
     
     private static native void nativeRequireRubyFile(String path);
-    private static native String nativeJSCallEntryPoint(String query);
+    static native String nativeJSCallEntryPoint(String query);
 
     static int getResId(String className, String idName) {
         className = ContextFactory.getContext().getPackageName() + ".R$" + className;
@@ -345,6 +345,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             res.setContainerView(containerView);
             res.setWebClient();
             boolean handled = false;
+            //res.addJSInterface(new RhoJSApi(), "__rhoNativeApi");
             for (IRhoExtension ext : mExtensions.values()) {
                 handled = ext.onWebViewCreated(this, res, handled);
             }
@@ -594,9 +595,9 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     public void onPrompt(View view, String prompt, String defaultResponse, final IPromptResult promptResult) {
         if (defaultResponse.startsWith("__rhoNativeApiCall")) {
-            Logger.T(TAG, "Execute JS hook: " + prompt);
+            Logger.D(TAG, "Execute JS hook: " + prompt);
             String res = nativeJSCallEntryPoint(prompt);
-            Logger.T(TAG, "JS result: " + res);
+            Logger.D(TAG, "JS result: " + res);
             promptResult.setPending();
             promptResult.confirm(res);
             return;

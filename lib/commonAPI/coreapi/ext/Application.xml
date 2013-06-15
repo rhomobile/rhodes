@@ -155,10 +155,12 @@
             </METHOD>
 
             <METHOD name="minimize">
-                <DESC>Minimize or move application to background.</DESC>
+                <DESC>Minimize or move application to background. RhoSimulator the method supported only for windows OS.</DESC>
+                <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
             <METHOD name="restore">
-                <DESC>Restore application on the screen.</DESC>
+                <DESC>Restore application on the screen. RhoSimulator the method supported only for windows OS.</DESC>
+                <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
 
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">

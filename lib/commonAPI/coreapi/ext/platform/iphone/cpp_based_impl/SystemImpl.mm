@@ -65,7 +65,7 @@ namespace rho {
     void SystemImplIphone::getApplicationIconBadge(CMethodResult& oResult)
     {
         //oResult.setError("supported only set IconBadge !");
-        oResult.set([UIApplication sharedApplication].applicationIconBadgeNumber);
+        oResult.set((int)([UIApplication sharedApplication].applicationIconBadgeNumber));
     }
     
     void SystemImplIphone::setApplicationIconBadge( int value, CMethodResult& oResult)
@@ -187,7 +187,7 @@ namespace rho {
     void SystemImplIphone::getScreenAutoRotate(rho::apiGenerator::CMethodResult& result)
     {
         //rho_sys_get_screen_auto_rotate_mode(result);
-        BOOL rotLocked = rho_main_is_rotation_locked();
+        bool  rotLocked = rho_main_is_rotation_locked()?true:false;
         result.set(!rotLocked);
     }
     //----------------------------------------------------------------------------------------------------------------------

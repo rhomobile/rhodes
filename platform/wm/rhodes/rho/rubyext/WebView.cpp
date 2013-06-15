@@ -78,6 +78,11 @@ void rho_webview_navigate(const char* url, int index)
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)nd );
 }
 
+void rho_webview_navigate_back_with_tab(int index)
+{
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE_BACK, (LPARAM)index );
+}
+
 void rho_webview_navigate_back()
 {
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE_BACK, (LPARAM)0 );

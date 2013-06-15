@@ -68,9 +68,14 @@ void CNetworkDetection::CheckConnectivity()
 			else
 			{
 				int iConnectSuccess = connect(sockfd, ptr->ai_addr, ptr->ai_addrlen);
+
+#if defined(OS_WINCE)
+                if (iConnectSuccess == SOCKET_ERROR)
+#else
 				//  Because Socket is non blocking we expect it to return SOCKET_ERROR
 				//  and WSAGetLastError() would be WSAEWOULDBLOCK
-				if (!(iConnectSuccess == SOCKET_ERROR && WSAGetLastError() == WSAEWOULDBLOCK))
+                if (!(iConnectSuccess == SOCKET_ERROR && WSAGetLastError() == WSAEWOULDBLOCK))
+#endif
 				{
 					m_szLastError = "Socket Operation unexpectedly blocked, are you connected to a PC?";
 					LOG(WARNING) + m_szLastError;
@@ -105,7 +110,10 @@ void CNetworkDetection::CheckConnectivity()
 		}
 	}
 	delete[] szHost;
-	freeaddrinfo(result);
+    if (result != 0) 
+    {
+	    freeaddrinfo(result);
+    }
 	if (bConnectSuccessful)
 	{
 		if (m_NetworkState != NETWORK_CONNECTED)
