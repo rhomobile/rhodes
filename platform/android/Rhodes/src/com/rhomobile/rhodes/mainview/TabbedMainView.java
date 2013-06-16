@@ -577,7 +577,7 @@ public class TabbedMainView implements MainView {
 			boolean use_current_view_for_tab = false;
 			Object use_current_view_for_tab_Obj = hash.get("useCurrentViewForTab");
 			if (use_current_view_for_tab_Obj != null) {
-				use_current_view_for_tab = ((String)use_current_view_for_tab_Obj).equalsIgnoreCase("true");
+				use_current_view_for_tab = (use_current_view_for_tab_Obj.toString()).equalsIgnoreCase("true");
 			}
 
 			if (use_current_view_for_tab) {
