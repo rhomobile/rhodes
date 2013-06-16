@@ -74,7 +74,7 @@ public:
     void setCallback(IMainWindowCallback* callback);
     void messageLoop(void);
     void navigate(const wchar_t* url, int index);
-    void GoBack(void);
+    void GoBack(int index);
     void GoForward(void);
     void Refresh(int index);
     int getLogicalDpiX();
