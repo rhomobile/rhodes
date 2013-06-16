@@ -32,6 +32,7 @@ import java.util.List;
 
 import com.rhomobile.rhodes.R;
 import com.rhomobile.rhodes.Logger;
+import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesAppOptions;
 import com.rhomobile.rhodes.RhodesService;
@@ -572,7 +573,9 @@ public class SimpleMainView implements MainView {
     public void back(int index) {
         restoreWebView();
         
-        boolean bStartPage = RhodesService.isOnStartPage();
+        String startUrl = RhoConf.getString("start_path");
+
+        boolean bStartPage = webView.getUrl().equals(startUrl);
 
         if ( !bStartPage && webView.canGoBack() ) {
             webView.goBack();
@@ -704,27 +707,19 @@ public class SimpleMainView implements MainView {
 
     @Override
     public void saveCurrentPage(String format, String path, int index) {
-        if (format.equalsIgnoreCase(MainView.FORMAT_HTML)) {
-            webView.capture(IRhoWebView.CaptureFormat.CAPTURE_FORMAT_HTML, path);
-        }
-        else if (format.equalsIgnoreCase(MainView.FORMAT_JPEG)) {
+        if (format.equalsIgnoreCase(MainView.FORMAT_JPEG)) {
             webView.capture(IRhoWebView.CaptureFormat.CAPTURE_FORMAT_JPEG, path);
         }
         else {
             Logger.E(TAG, "Wrong format to save current page: " + format);
         }
     }
-    
-	public String get_current_url(int tab_index) {
-		if (webView == null) {
-			return "";
-		}
-		android.webkit.WebView v = (android.webkit.WebView)webView.getView();
-		if (v == null) {
-			return "";
-		}
-		//Utils.platformLog("MOHUS", "$$$$$$$$$$$$$$$$$ = "+v.getUrl());
-		return v.getUrl();
-	}
+
+    public String get_current_url(int tab) {
+        if (webView == null) {
+            return "";
+        }
+        return webView.getUrl();
+    }
 
 }
