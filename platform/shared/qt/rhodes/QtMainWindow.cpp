@@ -1018,8 +1018,11 @@ bool QtMainWindow::getFullScreen()
 void QtMainWindow::setCookie(const char* url, const char* cookie)
 {
     if (url && cookie) {
+        QUrl urlStr = QUrl(QString::fromUtf8(url));
         QNetworkCookieJar* cj = ui->webView->page()->networkAccessManager()->cookieJar();
-        cj->setCookiesFromUrl(QNetworkCookie::parseCookies(QByteArray(cookie)), QUrl(QString::fromUtf8(url)));
+        QStringList cookieList = QString::fromUtf8(cookie).split(";");
+        for (int i=0; i<cookieList.size(); ++i)
+            cj->setCookiesFromUrl(QNetworkCookie::parseCookies(cookieList.at(i).toAscii()), urlStr);
     }
 }
 
