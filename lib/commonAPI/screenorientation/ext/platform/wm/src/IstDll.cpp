@@ -1,4 +1,6 @@
 #include <windows.h>
+#include "common/RhoStd.h"
+#include "common/StringConverter.h"
 #include "logging/RhoLog.h"
 #include "IstDll.h"
 
@@ -119,6 +121,15 @@ bool screenorientation::CIstDll::IsAutoRotateEnabled()
 	return enabled;
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/16/2013)
+ * 
+ * @param szDll 
+ * 
+ * @return bool 
+ */
 bool screenorientation::CIstDll::LoadDll(const wchar_t *szDll)
 {
 	if ((NULL == szDll) || (0 == *szDll))
@@ -136,6 +147,11 @@ bool screenorientation::CIstDll::LoadDll(const wchar_t *szDll)
 	return true;
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/16/2013)
+ */
 void screenorientation::CIstDll::UnloadDll()
 {
 	if (NULL != m_hISTModule)
@@ -146,6 +162,15 @@ void screenorientation::CIstDll::UnloadDll()
 
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/16/2013)
+ * 
+ * @param pszDev 
+ * 
+ * @return bool 
+ */
 bool screenorientation::CIstDll::ISTOpen(const wchar_t *pszDev)
 {
 	bool opStatus = false;
@@ -161,8 +186,16 @@ bool screenorientation::CIstDll::ISTOpen(const wchar_t *pszDev)
 	if (NULL == pfnISTOpen)
 		return opStatus;
 
+	// takes in a non const string and I didn't want a const_cast
+	// just allocate on the stack and copy.
 	wchar_t* szDeviceName = reinterpret_cast<wchar_t*>(_alloca((wcslen(pszDev) + 1) * sizeof(wchar_t)));
-	wcscpy(szDeviceName, pszDev);
+	if (NULL != szDeviceName)
+		wcscpy(szDeviceName, pszDev);
+	else
+	{
+		LOG(WARNING) + "Alloca failure. Do the evil";
+		szDeviceName  = const_cast<wchar_t*>(pszDev);  //do the evil
+	}
 
 	HANDLE hIST = NULL;
 	DWORD dwISTStatus = pfnISTOpen(szDeviceName, &hIST);
@@ -173,6 +206,7 @@ bool screenorientation::CIstDll::ISTOpen(const wchar_t *pszDev)
 	}
 	else
 	{
+		LOG(WARNING) + "IST open error: " + rho::common::convertToStringA<unsigned long>(dwISTStatus);
 		::SetLastError(dwISTStatus);
 	}
 
@@ -180,6 +214,13 @@ bool screenorientation::CIstDll::ISTOpen(const wchar_t *pszDev)
 
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/16/2013)
+ * 
+ * @return bool 
+ */
 bool screenorientation::CIstDll::ISTClose()
 {
 	typedef DWORD (*PFN_IST_CLOSE)(HANDLE);
@@ -200,18 +241,31 @@ bool screenorientation::CIstDll::ISTClose()
 			}
 			else
 			{
+				LOG(WARNING) + "IST close error: " + rho::common::convertToStringA<unsigned long>(dwISTStatus);
 				::SetLastError(dwISTStatus);
 			}			
 		}
 	}
 	else
 	{
+#if DEBUG
+		LOG(WARNING) + "IST invalid handle passed";
+#endif
 		::SetLastError(ERROR_INVALID_HANDLE);
 	}
 
 	return opStatus;
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/16/2013)
+ * 
+ * @param dwConfig 
+ * 
+ * @return bool 
+ */
 bool screenorientation::CIstDll::ISTGetSystemConfig(DWORD& dwConfig)
 {
 	typedef DWORD (*PFN_IST_GET_SYSTEM_CONFIG)(HANDLE, DWORD*);
@@ -226,9 +280,18 @@ bool screenorientation::CIstDll::ISTGetSystemConfig(DWORD& dwConfig)
 		{
 			dwISTStatus = pfnISTGetSystemConfig(m_hIST, &dwConfig);
 			if (IST_ERROR_SUCCESS == dwISTStatus)
+			{
 				opStatus = true;
-			else 
+#if DEBUG
+				LOG(TRACE) + "IST get returned : " + rho::common::convertToStringA<unsigned long>(dwConfig);
+#endif
+
+			}
+			else
+			{
+				LOG(WARNING) + "IST get error: " + rho::common::convertToStringA<unsigned long>(dwISTStatus);
 				::SetLastError(dwISTStatus);
+			}
 		}
 	}
 	else
@@ -239,6 +302,15 @@ bool screenorientation::CIstDll::ISTGetSystemConfig(DWORD& dwConfig)
 	return opStatus;
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/16/2013)
+ * 
+ * @param dwConfig 
+ * 
+ * @return bool 
+ */
 bool screenorientation::CIstDll::ISTSetSystemConfig(DWORD dwConfig)
 {
 	typedef DWORD (*PFN_IST_SET_SYSTEM_CONFIG)(HANDLE, DWORD);
@@ -255,7 +327,10 @@ bool screenorientation::CIstDll::ISTSetSystemConfig(DWORD dwConfig)
 			if (IST_ERROR_SUCCESS == dwISTStatus)
 				opStatus = true;
 			else
+			{
+				LOG(WARNING) + "IST set error: " + rho::common::convertToStringA<unsigned long>(dwISTStatus);
 				::SetLastError(dwISTStatus);			
+			}
 		}
 	}
 	else

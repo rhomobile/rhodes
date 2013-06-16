@@ -24,7 +24,7 @@ namespace screenorientation
 
 		static bool IsSupported();
 		static ScreenOrientationModes GetOrientation();
-		static bool SetOrientation(ScreenOrientationModes orientationModes);		
+		static bool SetOrientation(ScreenOrientationModes orientationMode);		
 	protected:
 		static void PersistSettingsToRegistry(DWORD dwAngle, DWORD dwLandscapeMode);
 		COrientationSettings(const COrientationSettings&);

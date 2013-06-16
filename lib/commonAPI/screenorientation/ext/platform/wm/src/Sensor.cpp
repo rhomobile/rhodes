@@ -1,4 +1,6 @@
 #include <windows.h>
+#include "common/RhoStd.h"
+#include "common/StringConverter.h"
 #include "logging/RhoLog.h"
 #include "Sensor.h"
 
@@ -14,6 +16,10 @@ const wchar_t* const SENSOR_MODULE_NAME = L"\\Windows\\SensorApi.dll";
 bool screenorientation::CSensor::IsPresent()
 {
 	DWORD dwAttribs = ::GetFileAttributes(SENSOR_MODULE_NAME);
+	if (0xFFFFFFFF == dwAttribs)
+	{
+		LOG(TRACE) + " Cannot find sensor module : " + rho::common::convertToStringA<unsigned long>(::GetLastError());
+	}
 	bool canOpenSensor = false;
 	HANDLE hSensor = CreateFile(SENSOR_DEVICE, 0, 0, NULL, OPEN_EXISTING, 0, NULL);
 	if(hSensor != INVALID_HANDLE_VALUE)
@@ -21,6 +27,10 @@ bool screenorientation::CSensor::IsPresent()
 		canOpenSensor  = true;
 		::CloseHandle(hSensor);
 		hSensor = NULL;
+	}
+	else
+	{
+		LOG(TRACE) + " Cannot open sensor device : " + rho::common::convertToStringA<unsigned long>(::GetLastError());
 	}
 
 	return ((0xFFFFFFFF != dwAttribs) && ((dwAttribs & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY) && canOpenSensor);
@@ -38,6 +48,7 @@ bool screenorientation::CSensor::IsPresent()
 bool screenorientation::CSensor::IsSupported()
 {
 	bool supported = false;
+#if 0	
 	if (IsPresent())
 	{
 		// Disable Auto rotation for VC70 and WT41N0
@@ -57,7 +68,10 @@ bool screenorientation::CSensor::IsSupported()
 		{
 			supported = true;
 		}
-	}	
+	}
+#else
+	supported = IsPresent();
+#endif
 	return supported;
 }
 
@@ -99,7 +113,7 @@ bool screenorientation::CSensor::EnableAutoRotate(bool enable)
 				if (!DeviceIoControl(hSensor, IOCTL_SERVICE_SETCONFIG, &systemConfig, sizeof(ISTSystemConfig), NULL, NULL, NULL, NULL))
 				{
 					done = false;
-					LOG(WARNING) + "Unable to set value for automatic screen rotation";	
+					LOG(TRACE) + "Sensor: Unable to turn off automatic screen rotation : " + rho::common::convertToStringA<unsigned long>(::GetLastError());	
 				}				
 			}
 			else if ((FALSE == bCurrentAutoRotation) && enable)
@@ -109,18 +123,18 @@ bool screenorientation::CSensor::EnableAutoRotate(bool enable)
 				if (!DeviceIoControl(hSensor, IOCTL_SERVICE_SETCONFIG, &systemConfig, sizeof(ISTSystemConfig), NULL, NULL, NULL, NULL))
 				{
 					done = false;
-					LOG(WARNING) + "Unable to set value for automatic screen rotation";	
+					LOG(TRACE) + "Sensor: Unable to turn on  automatic screen rotation : " + rho::common::convertToStringA<unsigned long>(::GetLastError());	
 				}
 			}								
 		}
 		else
 		{
-			LOG(WARNING) + "Unable to get value for automatic screen rotation";	
+			LOG(TRACE) + "Sensor:  Unable to get value for automatic screen rotation : " + rho::common::convertToStringA<unsigned long>(::GetLastError());	
 		}
 	}
 	else
 	{
-		LOG(WARNING) + "Unable to open sensor";	
+		LOG(TRACE) + "Cannot open sensor device : " + rho::common::convertToStringA<unsigned long>(::GetLastError());	
 	}
 	return done;		
 }
@@ -157,7 +171,7 @@ bool screenorientation::CSensor::IsAutoRotateEnabled()
 		}
 		else
 		{
-			LOG(WARNING) + "Unable to get value for automatic screen rotation";
+			LOG(TRACE) + "Sensor:  Unable to get value for automatic screen rotation : " + rho::common::convertToStringA<unsigned long>(::GetLastError());	
 		}
 
 		::CloseHandle(hSensor);
@@ -166,7 +180,7 @@ bool screenorientation::CSensor::IsAutoRotateEnabled()
 	else
 	{
 		
-			LOG(WARNING) + "Unable to open sensor";	
+			LOG(TRACE) + "Cannot open sensor device : " + rho::common::convertToStringA<unsigned long>(::GetLastError());
 	}
 	return enabled;			
 }
