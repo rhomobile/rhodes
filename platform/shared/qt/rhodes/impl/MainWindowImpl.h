@@ -122,7 +122,7 @@ public:
     void exitCommand(void);
     void navigateBackCommand(void);
     void navigateForwardCommand(void);
-    void webviewNavigateBackCommand(void);
+    void webviewNavigateBackCommand(int);
     void logCommand(void);
     void refreshCommand(int);
     void navigateCommand(TNavigateData*);
@@ -147,7 +147,7 @@ signals:
     void doExitCommand(void);
     void doNavigateBackCommand(void);
     void doNavigateForwardCommand(void);
-    void doWebviewNavigateBackCommand(void);
+    void doWebviewNavigateBackCommand(int);
     void doLogCommand(void);
     void doRefreshCommand(int);
     void doNavigateCommand(TNavigateData*);
