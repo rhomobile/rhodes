@@ -241,10 +241,10 @@ bool CMainWindow::getFullScreen()
     return ((QtMainWindow*)qtMainWindow)->getFullScreen();
 }
 
-void CMainWindow::GoBack(void)
+void CMainWindow::GoBack(int index)
 {
     LOG(INFO) + "back";
-    ((QtMainWindow*)qtMainWindow)->GoBack();
+    ((QtMainWindow*)qtMainWindow)->GoBack(index);
 }
 
 void CMainWindow::GoForward(void)
