@@ -108,9 +108,15 @@ const char* rho_webview_execute_js(const char* js, int index)
 
 const char* rho_webview_execute_js_sync(const char* js, int index) 
 {
-    // TODO: implement sync js callback
-    rho_webview_execute_js(js, index);
-    return "";
+    StringW strJsW;
+    convertToStringW(js, strJsW);
+
+    TNavigateData* nd = new TNavigateData();
+    nd->index = index;
+    nd->url = _tcsdup(strJsW.c_str());
+    ::SendMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
+
+	return "";
 }
 
 const char* rho_webview_current_location(int index) 
