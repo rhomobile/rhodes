@@ -192,8 +192,8 @@ bool CMainWindow::init(IMainWindowCallback* callback, const wchar_t* title)
         ((QtMainWindow*)qtMainWindow), SLOT(navigateBackCommand(void)) );
     QObject::connect(this, SIGNAL(doNavigateForwardCommand(void)),
         ((QtMainWindow*)qtMainWindow), SLOT(navigateForwardCommand(void)) );
-    QObject::connect(this, SIGNAL(doWebviewNavigateBackCommand(void)),
-        ((QtMainWindow*)qtMainWindow), SLOT(webviewNavigateBackCommand(void)) );
+    QObject::connect(this, SIGNAL(doWebviewNavigateBackCommand(int)),
+        ((QtMainWindow*)qtMainWindow), SLOT(webviewNavigateBackCommand(int)) );
     QObject::connect(this, SIGNAL(doLogCommand(void)),
         ((QtMainWindow*)qtMainWindow), SLOT(logCommand(void)) );
     QObject::connect(this, SIGNAL(doRefreshCommand(int)),
@@ -584,9 +584,9 @@ void CMainWindow::navigateForwardCommand()
     emit doNavigateForwardCommand();
 }
 
-void CMainWindow::webviewNavigateBackCommand()
+void CMainWindow::webviewNavigateBackCommand(int tab_index)
 {
-    emit doWebviewNavigateBackCommand();
+    emit doWebviewNavigateBackCommand(tab_index);
 }
 
 void CMainWindow::logCommand()
