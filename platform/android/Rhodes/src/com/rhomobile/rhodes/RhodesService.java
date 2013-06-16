@@ -257,8 +257,6 @@ public class RhodesService extends Service {
 	
 	public static native String getBuildConfig(String key);
 	
-	public static native boolean isOnStartPage();
-	
 	public static native String getInvalidSecurityTokenMessage();
 	
 	public static native void resetHttpLogging(String http_log_url);
