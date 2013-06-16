@@ -70,7 +70,12 @@ void rho_webview_navigate(const char* url, int index)
 
 void rho_webview_navigate_back()
 {
-    CMainWindow::getInstance()->webviewNavigateBackCommand();
+    CMainWindow::getInstance()->webviewNavigateBackCommand(-1);
+}
+
+void rho_webview_navigate_back_with_tab(int index)
+{
+    CMainWindow::getInstance()->webviewNavigateBackCommand(index);
 }
 
 void rho_webview_navigate_forward()
