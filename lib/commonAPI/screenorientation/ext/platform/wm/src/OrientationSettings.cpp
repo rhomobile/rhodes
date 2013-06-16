@@ -1,4 +1,6 @@
 #include <windows.h>
+#include "common/RhoStd.h"
+#include "common/StringConverter.h"
 #include "logging/RhoLog.h"
 #include "OrientationSettings.h"
 
@@ -7,7 +9,7 @@
  * 
  * @author GXV738 (6/12/2013)
  * 
- * @return bool true if screen orienation is supported
+ * @return bool true if screen orientation is supported
  */
 bool screenorientation::COrientationSettings::IsSupported()
 {
@@ -23,6 +25,9 @@ bool screenorientation::COrientationSettings::IsSupported()
 	{
 		bSupported = true;
 	}
+#if DEBUG
+	LOG(TRACE) + "Orientation support query: " + rho::common::convertToStringA<long>(lCanRotate);
+#endif
 	return bSupported;
 }
 
@@ -69,16 +74,22 @@ screenorientation::ScreenOrientationModes screenorientation::COrientationSetting
 		{
 			orientationMode = SOM_NORMAL;
 		}
+#if DEBUG
+		LOG(TRACE) + "Screen orientation query returned : " + rho::common::convertToStringA<unsigned long>(dm.dmDisplayOrientation);
+#endif
 	}
 	else
 	{
-		LOG(WARNING) + __FILE__ + ":" + __LINE__+ "Screen orientation query failed.";
+		LOG(TRACE) + "Screen orientation query failed : " + rho::common::convertToStringA<long>(lCanRotate);
 	}
+#if DEBUG
+	LOG(TRACE) + "Screen orientation mode : " + rho::common::convertToStringA<unsigned int>(static_cast<unsigned int>(orientationMode));
+#endif
 	return orientationMode;
 }
 
 /**
- * Set the prientation to one of the orientation modes.
+ * Set the orientation to one of the orientation modes.
  * 
  * @author GXV738 (6/12/2013)
  * 
@@ -86,17 +97,20 @@ screenorientation::ScreenOrientationModes screenorientation::COrientationSetting
  * 
  * @return bool 
  */
-bool screenorientation::COrientationSettings::SetOrientation(ScreenOrientationModes orientationModes)
+bool screenorientation::COrientationSettings::SetOrientation(ScreenOrientationModes orientationMode)
 {
 	DEVMODE dm;
 	bool opStatus = true;
 	DWORD dwAngle = 0, dwLandscapeMode = 0;
+#if DEBUG
+	LOG(TRACE) + "Set screen orientation  to mode : " + rho::common::convertToStringA<unsigned int>(static_cast<unsigned int>(orientationMode));
+#endif
 
 	::ZeroMemory(&dm, sizeof(DEVMODE));
 	dm.dmSize = sizeof(DEVMODE);
 	dm.dmFields = DM_DISPLAYORIENTATION;
 
-	switch(orientationModes)
+	switch(orientationMode)
 	{
 	case SOM_NORMAL:
 		dm.dmDisplayOrientation |= DMDO_0;
@@ -126,7 +140,7 @@ bool screenorientation::COrientationSettings::SetOrientation(ScreenOrientationMo
 		if (DISP_CHANGE_SUCCESSFUL != lCanRotate)
 		{
 			opStatus = false;
-			LOG(WARNING) + __FILE__ + ":" + __LINE__+ " Screen orientation change failed.";
+			LOG(WARNING) + "Setting screen orientation failed : " + rho::common::convertToStringA<long>(lCanRotate);
 		}
 		else
 		{
@@ -135,7 +149,7 @@ bool screenorientation::COrientationSettings::SetOrientation(ScreenOrientationMo
 	}
 	else
 	{
-		LOG(WARNING) + __FILE__ + ":" + __LINE__+ " Unknown screen orientation mode.";
+		LOG(WARNING) + "Unknown screen orientation mode.";
 	}
 	return opStatus;
 }

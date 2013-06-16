@@ -1,7 +1,6 @@
 #include "../../../shared/generated/cpp/ScreenOrientationBase.h"
 #include "common/RhodesApp.h"
 #include "common/RhoMutexLock.h"
-//#include <list>
 #include "IstDll.h"
 #include "Sensor.h"
 #include "OrientationSettings.h"
@@ -10,15 +9,19 @@ namespace rho {
 
 using namespace apiGenerator;
 
-//typedef std::list<CMethodResult*> MethodListeners;
-
 // TODO: this strings needs to come form the api xml
 // so that the strings can be standard across the all platforms (andoid, wm, ios, wp8 etc)
 static const rho::String g_normal = "normal";
 static const rho::String g_rightHanded = "righthanded";
 static const rho::String g_leftHanded = "lefthanded";
 static const rho::String g_upsideDown = "upsidedown";
+static const rho::String g_invalid = "invalid";
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/15/2013)
+ */
 class CScreenOrientationSingleton: public CScreenOrientationSingletonBase
 {
 public:
@@ -37,17 +40,18 @@ public:
     
 protected:
 	void setDefaults();
+	rho::String modesToString(screenorientation::ScreenOrientationModes& modes);
 private:	
-	bool										m_isISTEnabled;
-	bool										m_isSensorEnabled;
-	bool										m_supportsScreenOrientation;
-	bool										m_hasFocus;
-	bool										m_autoRotate;
-	screenorientation::ScreenOrientationModes	m_currentOrientation;
-	//MethodListeners* 							m_listeners;
-	CMethodResult*						m_methodResult;	// is there need to synchronize access to the saved callback
-																// who will (delete?) the method result object when ist replaced
-	DWORD										m_dwLastSettingChangeTime;
+	bool										m_isISTEnabled;					// state of availability Motorola Solutions IST api's
+	bool										m_isSensorEnabled;				// state of availability Motorola Solutions Sensor api's
+	bool										m_supportsScreenOrientation;	// do device support screen orientation
+	bool										m_hasFocus;						// whether the app has focus
+	bool										m_autoRotate;					// current auto rate state
+	screenorientation::ScreenOrientationModes	m_currentOrientation;			// the current device orientation
+	screenorientation::ScreenOrientationModes	m_defaultOrientation;			// the default orientation during first access, when destryed destroys the device to this state
+	common::CMutex*								m_syncLock;						// a lock to protect the cached callback object, from the javascript thread and ui thread. subject to debate?
+	CMethodResult*								m_methodResult;					// synchronized (not sure if this is necessary). Does this object need to be cleaned up?
+	DWORD										m_dwLastSettingChangeTime;		// the time when the window received the last screen orientation change event.
 };
 
 class CScreenOrientationFactory: public CScreenOrientationFactoryBase
@@ -67,33 +71,62 @@ IScreenOrientationSingleton* CScreenOrientationFactory::createModuleSingleton()
     return new CScreenOrientationSingleton();
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/15/2013)
+ */
 CScreenOrientationSingleton::CScreenOrientationSingleton() : 
 									m_isISTEnabled(screenorientation::CIstDll::IsPresent()),
 									m_isSensorEnabled(screenorientation::CSensor::IsSupported()),
 									m_supportsScreenOrientation(screenorientation::COrientationSettings::IsSupported()),
-									m_hasFocus(/*NULL != GetActiveWindow()*/true), //TODO : need to figure out what's the best way to figureout if the bapp/rowser window is active.
+									m_hasFocus(true),
 									m_autoRotate(false),
 									m_currentOrientation(screenorientation::COrientationSettings::GetOrientation()),
-									//m_listeners(NULL),
+									m_defaultOrientation(screenorientation::SOM_BAD_ORIENTATION),
+									m_syncLock(new common::CMutex()),
 									m_methodResult(NULL),
 									m_dwLastSettingChangeTime(0)
 
 {
-	//m_listeners = new MethodListeners();
-	setDefaults();	// set the default state to autoroate on supported motorola devices
+	//save the orientation during startup for restore
+	// during exit
+	VERIFY(NULL != m_syncLock);
+	if (m_supportsScreenOrientation)
+	{
+		m_defaultOrientation = screenorientation::COrientationSettings::GetOrientation();
+	}
+	// set the default state to autoroate on supported motorola devices
+	setDefaults();
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/15/2013)
+ */
 CScreenOrientationSingleton::~CScreenOrientationSingleton()
 {
-	
-	/*if (NULL != m_listeners)
+	//when exiting rho app set the screen orientation to how it was during the startup
+	if (m_supportsScreenOrientation && (m_defaultOrientation != m_currentOrientation))
 	{
-		m_listeners->clear();
-		m_listeners = NULL;
-	}*/
+		screenorientation::COrientationSettings::SetOrientation(m_defaultOrientation);
+	}
+
+	if (NULL != m_syncLock)
+	{
+		delete m_syncLock;
+		m_syncLock = NULL;
+	}
 }
 
-
+/**
+ * Ruby/Javascript backend to get the current autorotate state
+ * 
+ * @author GXV738 (6/15/2013)
+ * 
+ * @param oResult 
+ */
 void CScreenOrientationSingleton::getAutoRotate(rho::apiGenerator::CMethodResult& oResult)
 {
 	// Motorola Solutions exposes turning on/off the auto rotate state
@@ -101,8 +134,10 @@ void CScreenOrientationSingleton::getAutoRotate(rho::apiGenerator::CMethodResult
 	// device alone
 	bool autoRotateState = false;
 	
-	if (/*screenorientation::CIstDll::IsPresent()*/m_isISTEnabled)
+	if (m_isISTEnabled)
 	{
+		// when the license page is active a call to the 
+		// IST api always returns a disabled
 		if (!this->m_hasFocus)
 		{
 			autoRotateState = this->m_autoRotate;
@@ -117,8 +152,10 @@ void CScreenOrientationSingleton::getAutoRotate(rho::apiGenerator::CMethodResult
 			}
 		}		
 	}
-	else if (/*screenorientation::CSensor::IsSupported()*/m_isSensorEnabled)
+	else if (m_isSensorEnabled)
 	{
+		// when the license page is active a call to the 
+		// IST api always returns a disabled
 		if (!this->m_hasFocus)
 		{
 			autoRotateState = this->m_autoRotate;
@@ -131,20 +168,26 @@ void CScreenOrientationSingleton::getAutoRotate(rho::apiGenerator::CMethodResult
 	else
 	{
 		autoRotateState = false;
-		// non Motorola devices are TODO: as there no API
-		// exposed by Microsoft to directly set the auto rotate state
-		LOG(WARNING) + "Get: Autorotate feature is currently enabled only on Motorola devices with IST support"; 
+		LOG(WARNING) + "Get: Autorotate feature is currently enabled only on Motorola devices with IST/Sensor support"; 
 	}
 	oResult.set(autoRotateState);
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/15/2013)
+ * 
+ * @param autoRotate 
+ * @param oResult 
+ */
 void CScreenOrientationSingleton::setAutoRotate( bool autoRotate, rho::apiGenerator::CMethodResult& oResult)
 {
 	// Motorola Solutions exposes turning on/off the auto rotate state
 	// via the properitory IST interfaces, applicable for MotorolaSolutions
 	// device alone
 	bool bDone = false;
-	if (/*screenorientation::CIstDll::IsPresent()*/this->m_isISTEnabled)
+	if (this->m_isISTEnabled)
 	{
 		screenorientation::CIstDll ist;
 		if(ist.Open())
@@ -155,7 +198,7 @@ void CScreenOrientationSingleton::setAutoRotate( bool autoRotate, rho::apiGenera
 			bDone = true;
 		}
 	}
-	else if (/*screenorientation::CSensor::IsSupported()*/this->m_isSensorEnabled)
+	else if (this->m_isSensorEnabled)
 	{
 		bDone = screenorientation::CSensor::EnableAutoRotate(autoRotate);
 		this->m_autoRotate = autoRotate;
@@ -163,119 +206,137 @@ void CScreenOrientationSingleton::setAutoRotate( bool autoRotate, rho::apiGenera
 	else
 	{
 		this->m_autoRotate = false;
-		// non Motorola devices are TODO: as there no API
-		// exposed by Microsoft to directly set the auto rotate state
 		LOG(WARNING) + "Set: Autorotate feature is currently enabled only on Motorola devices with IST support"; 
 	}
 	oResult.set(bDone);
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/15/2013)
+ * 
+ * @param oResult 
+ */
 void CScreenOrientationSingleton::normal(rho::apiGenerator::CMethodResult& oResult)
 {
 	bool bDone = false;
-	if (/*screenorientation::CDisplaySettings::IsSupported()*/this->m_supportsScreenOrientation)
+	if (this->m_supportsScreenOrientation)
 	{
 		bDone = screenorientation::COrientationSettings::SetOrientation(screenorientation::SOM_NORMAL);
-		if (bDone)
-		{
-			LOG(INFO) + " Screen orientation changed to potrait"; 
-			/*if (m_listeners->empty())
-				this->m_currentOrientation = screenorientation::SOM_NORMAL;*/
+		if (bDone)		{
+			LOG(INFO) + " Screen orientation changed to normal"; 			
 		}
 	}
 	else
 	{
-		LOG(WARNING) + " Screen orientation change is unsupported"; 
+		LOG(WARNING) + " Screen orientation change is unsupported:normal"; 
 	}
 	oResult.set(bDone);
 
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/15/2013)
+ * 
+ * @param oResult 
+ */
 void CScreenOrientationSingleton::rightHanded(rho::apiGenerator::CMethodResult& oResult)
 {
 	bool bDone = false;
-	if (/*screenorientation::CDisplaySettings::IsSupported()*/this->m_supportsScreenOrientation)
+	if (this->m_supportsScreenOrientation)
 	{
 		bDone = screenorientation::COrientationSettings::SetOrientation(screenorientation::SOM_RIGHT_HANDED);
 		if (bDone)
 		{
-			LOG(INFO) + " Screen orientation changed to right handed"; 
-			/*if (m_listeners->empty())
-				this->m_currentOrientation = screenorientation::SOM_RIGHT_HANDED;*/
+			LOG(INFO) + " Screen orientation changed to right handed";
 		}
 	}
 	else
 	{
-		LOG(WARNING) + " Screen orientation change is unsupported"; 
+		LOG(WARNING) + " Screen orientation change is unsupported:rh"; 
 	}
 	oResult.set(bDone);
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/15/2013)
+ * 
+ * @param oResult 
+ */
 void CScreenOrientationSingleton::leftHanded(rho::apiGenerator::CMethodResult& oResult)
 {
 	bool bDone = false;
-	if (/*screenorientation::CDisplaySettings::IsSupported()*/this->m_supportsScreenOrientation)
+	if (this->m_supportsScreenOrientation)
 	{
 		bDone = screenorientation::COrientationSettings::SetOrientation(screenorientation::SOM_LEFT_HANDED);
 		if (bDone)
 		{
-			LOG(INFO) + " Screen orientation changed to left handed"; 
-			/*if (m_listeners->empty())
-				this->m_currentOrientation = screenorientation::SOM_LEFT_HANDED;*/
+			LOG(INFO) + " Screen orientation changed to left handed";
 		}
 	}
 	else
 	{
-		LOG(WARNING) + " Screen orientation change is unsupported"; 
+		LOG(WARNING) + " Screen orientation change is unsupported:lh"; 
 	}
 	oResult.set(bDone);
 }
+
+/**
+ * 
+ * 
+ * @author GXV738 (6/15/2013)
+ * 
+ * @param oResult 
+ */
 void CScreenOrientationSingleton::upsideDown(rho::apiGenerator::CMethodResult& oResult)
 {
 	bool bDone = false;
-	if (/*screenorientation::CDisplaySettings::IsSupported()*/this->m_supportsScreenOrientation)
+	if (this->m_supportsScreenOrientation)
 	{
 		bDone = screenorientation::COrientationSettings::SetOrientation(screenorientation::SOM_UPSIDE_DOWN);
 		if (bDone)
 		{
-			LOG(INFO) + " Screen orientation changed to upside down"; 
-			/*if (m_listeners->empty())
-				this->m_currentOrientation = screenorientation::SOM_UPSIDE_DOWN;*/
+			LOG(INFO) + " Screen orientation changed to upside down";
 		}
 	}
 	else
 	{
-		LOG(WARNING) + " Screen orientation change is unsupported"; 
+		LOG(WARNING) + " Screen orientation change is unsupported:ud"; 
 	}
 	oResult.set(bDone);;
 }
 
+/**
+ * 
+ * 
+ * @author GXV738 (6/15/2013)
+ * 
+ * @param oResult 
+ */
 void CScreenOrientationSingleton::setScreenOrientationEvent(rho::apiGenerator::CMethodResult& oResult)
 {
-#if 0
-	// There is a problem here, multiple call to register a screen orientation
-	// may succeed, but a single call to set the screen orientation event with a
-	// null or empty value can cause all of the existing providers removed
+	// save the script callback
+	// the saved call back is accessed from the ui thread as well
+	// hence synchronizing then makes sense. The synchronization perhaps may not be 
+	// required if the assignment is probably atomic in nature?
 	if (oResult.hasCallback()){
-		m_listeners->insert(m_listeners->end(), &oResult);
-		LOG(INFO) + " Added callback to chain"; 
-	}
-	else
-	{
-		m_listeners->clear();
-		LOG(INFO) + " No callback found in registration"; 
-	}
-#else
-	if (oResult.hasCallback()){
+		m_syncLock->Lock();
 		m_methodResult = &oResult;
+		m_syncLock->Unlock();
 		LOG(INFO) + " Added callback to chain"; 
 	}
 	else
 	{
+		m_syncLock->Lock();
 		m_methodResult = NULL;
+		m_syncLock->Unlock();
 		LOG(INFO) + " No callback found in registration"; 
 	}
-#endif
 }
 /**
  * Processing window message only the WM_SETTINGSCHANGE to 
@@ -322,51 +383,28 @@ bool CScreenOrientationSingleton::onWndMsg(MSG& msg)
 			this->m_dwLastSettingChangeTime = msg.time;
 			LOG(INFO) +  " orientation changed event received."; 
 			screenorientation::ScreenOrientationModes modes = screenorientation::COrientationSettings::GetOrientation();
-			rho::String state = g_normal;
-			switch (modes)
-			{
-			case screenorientation::SOM_NORMAL:
-				break;
-			case screenorientation::SOM_RIGHT_HANDED:
-				state = g_rightHanded;
-				break;
-			case screenorientation::SOM_UPSIDE_DOWN:
-				state = g_upsideDown;
-				break;
-			case screenorientation::SOM_LEFT_HANDED:
-				state = g_leftHanded;
-				break;
-			}
+			rho::String state = this->modesToString(modes);
 			if ((modes != screenorientation::SOM_BAD_ORIENTATION) && (this->m_currentOrientation != modes))
 			{
 				LOG(INFO) + "Orientation changed to " + state;
 				this->m_currentOrientation = modes;
-#if 0
-				//call all listeners
-				MethodListeners::const_iterator citr;
-				for(citr = m_listeners->begin(); citr != m_listeners->end(); citr++)
-				{
 
-					CMethodResult* oResult = *citr;
-					if ((NULL != oResult)&& (oResult->hasCallback()))
-					{						
-						LOG(INFO) + " Call ruby/javascript callback with state: " + state;	
-						oResult->set(state);
-					}
-				}
-#else
+				// the saved call back is accessed from the ui thread as well
+				// hence synchronizing then makes sense. The synchronization perhaps may not be 
+				// required if the assignment is probably atomic in nature?
+				m_syncLock->Lock();		
 				if ((NULL != m_methodResult) && (m_methodResult->hasCallback()))
 				{
-					LOG(INFO) + " Call ruby/javascript callback with state: " + state;	
+					LOG(INFO) + " Notify ruby/javascript callback with state: " + state;	
 					m_methodResult->set(state);
-				}
-#endif
+				}		
+				m_syncLock->Unlock();
 				
 				bHandled = true;
 			}			
 			else
 			{
-				LOG(INFO) + " WM_SETTINGCHANGE recevied. Orientation is ibvalid or unchanged since the last state : " + state;
+				LOG(INFO) + " WM_SETTINGCHANGE recevied. Orientation is invalid or unchanged since the last state : " + state;
 				bHandled = false;
 			}
 		}
@@ -406,7 +444,7 @@ void CScreenOrientationSingleton::setDefaults()
 		this->m_autoRotate = false;
 		// non Motorola devices are TODO: as there no API
 		// exposed by Microsoft to directly set the auto rotate state
-		LOG(WARNING) + "Autorotate feature is currently enabled only on Motorola devices with IST support"; 
+		LOG(WARNING) + "Default Autorotate feature is currently enabled only on Motorola devices with IST/Sensor support"; 
 	}
 }
 
@@ -426,15 +464,22 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
 		LOG(INFO) + "Screen orientation is unsupported. Ignoring application activate";
 		return;
 	}
+
 	if (!bActivate && this->m_hasFocus)
 	{
 		LOG(INFO) + " Focus lost";
-		// app has just lost focus
-		if (this->m_isISTEnabled)
+
+		if (this->m_supportsScreenOrientation)
 		{
 			// cache the last known orientation mode
 			screenorientation::ScreenOrientationModes orientationMode = screenorientation::COrientationSettings::GetOrientation();
 			this->m_currentOrientation = (orientationMode != screenorientation::SOM_BAD_ORIENTATION)? orientationMode : screenorientation::SOM_NORMAL;
+			LOG(INFO) + " Orientation cached : " + this->modesToString(this->m_currentOrientation);
+		}
+		// app has just lost focus
+		if (this->m_isISTEnabled)
+		{
+			
 			//cache the last auto 
 			
 			screenorientation::CIstDll ist;
@@ -442,22 +487,22 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
 			{
 				this->m_autoRotate = ist.IsAutoRotateEnabled();
 				ist.Close();
+				LOG(INFO) + " AutoRotate cached : " + (this->m_autoRotate?"on" : "off");
 			}
 			else
 			{
-				this->m_autoRotate = false;
+				this->m_autoRotate = false;				
+				LOG(INFO) + " AutoRotate cached : " + (this->m_autoRotate?"on" : "off");
 			}
 			
 			this->m_hasFocus = false;
 		}
 		else if (this->m_isSensorEnabled)
 		{
-			// cache the last known orientation mode
-			screenorientation::ScreenOrientationModes orientationMode = screenorientation::COrientationSettings::GetOrientation();
-			this->m_currentOrientation = (orientationMode != screenorientation::SOM_BAD_ORIENTATION)? orientationMode : screenorientation::SOM_NORMAL;
-
-			this->m_autoRotate = screenorientation::CSensor::IsAutoRotateEnabled();
+			this->m_autoRotate = screenorientation::CSensor::IsAutoRotateEnabled();			
+			LOG(INFO) + " AutoRotate cached : " + (this->m_autoRotate?"on" : "off");
 		}
+		
 		this->m_hasFocus = false;			
 	}
 	else if (bActivate && !this->m_hasFocus)
@@ -466,14 +511,18 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
 		// app has just regained focus
 		this->m_hasFocus = true;
 
-		screenorientation::ScreenOrientationModes orientationMode = screenorientation::COrientationSettings::GetOrientation();
-		if(screenorientation::SOM_BAD_ORIENTATION == orientationMode)
-			screenorientation::SOM_NORMAL;
-		
-		if (orientationMode != this->m_currentOrientation)
+		if (m_supportsScreenOrientation)
 		{
-			// on getting the focus restore the orientation
-			screenorientation::COrientationSettings::SetOrientation(this->m_currentOrientation);//SetOrientation(pData->storedOrientation);
+			screenorientation::ScreenOrientationModes orientationMode = screenorientation::COrientationSettings::GetOrientation();
+			if(screenorientation::SOM_BAD_ORIENTATION == orientationMode)
+				screenorientation::SOM_NORMAL;
+			
+			if (orientationMode != this->m_currentOrientation)
+			{
+				// on getting the focus restore the orientation
+				screenorientation::COrientationSettings::SetOrientation(this->m_currentOrientation);//SetOrientation(pData->storedOrientation);
+				LOG(INFO) + " Orientation back to : " + this->modesToString(this->m_currentOrientation);
+			}
 		}
 
 		if (this->m_isISTEnabled)
@@ -484,7 +533,8 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
 				bool autoRotate = ist.IsAutoRotateEnabled();
 				if (autoRotate != this->m_autoRotate)
 				{
-					ist.EnableAutoRotate(this->m_autoRotate);
+					ist.EnableAutoRotate(this->m_autoRotate);					
+					LOG(INFO) + " AutoRotate back to : " + (this->m_autoRotate?"on" : "off");
 				}
 				ist.Close();
 			}
@@ -496,9 +546,43 @@ void CScreenOrientationSingleton::OnAppActivate(bool bActivate, const common::CR
 			if (autoRotate != m_autoRotate)
 			{
 				screenorientation::CSensor::EnableAutoRotate(this->m_autoRotate);
+				LOG(INFO) + " AutoRotate back to : " + (this->m_autoRotate?"on" : "off");
 			}
 		}
 	}
 }
+/**
+ *	Convert scren orientation modes to strings 
+ * 
+ * @author GXV738 (6/15/2013)
+ * 
+ * @param modes 
+ * 
+ * @return rho::String 
+ */
+rho::String CScreenOrientationSingleton::modesToString(screenorientation::ScreenOrientationModes& modes)
+{
+	rho::String state = g_normal;
+	switch (modes)
+	{
+		case screenorientation::SOM_NORMAL:
+			break;
+		case screenorientation::SOM_RIGHT_HANDED:
+			state = g_rightHanded;
+			break;
+		case screenorientation::SOM_UPSIDE_DOWN:
+			state = g_upsideDown;
+			break;
+		case screenorientation::SOM_LEFT_HANDED:
+			state = g_leftHanded;
+			break;
+		default:
+			state = g_invalid;
+			break;
+	}
+	return state;
+
+}
+
 
 } // namespace ends
