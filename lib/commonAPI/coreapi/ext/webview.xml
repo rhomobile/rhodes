@@ -202,7 +202,8 @@
             </METHOD>
 
             <METHOD name="executeJavascript">
-                <DESC>Execute JavaScript on the current page from your controller. It applicable only at Ruby.</DESC>
+                <DESC>Execute JavaScript on the current page from your controller.</DESC>
+                <APPLIES rubyOnly="true"/>
                 <MORE_HELP>For most mobile platforms, WebView.execute_js has been implemented via redirection to URL with 'javascript:' schema. If WebView.execute_js used in an AJAX call handler method in the controller, it may lead to the situation where the success javascript handler will never be executed. This may happen because, at the moment of success handler should be executed, a URL of the page already has been changed. This means no handlers from the previous page are valid.</MORE_HELP>
                 <PARAMS>
                     <PARAM name="javascriptText" type="STRING">
@@ -233,6 +234,7 @@
 
             <METHOD name="setCookie">
                 <DESC>When WebView loads the specified url (either by selecting link or from calling WebView.navigate), it will add this cookie to the HTTP request.Not implemented for Motorola Solutions' WebKit.</DESC>
+                <APPLIES rubyOnly="true"/>
                 <PLATFORM>Android, Win32, iOS, WP8</PLATFORM>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
