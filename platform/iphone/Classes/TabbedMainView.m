@@ -573,6 +573,11 @@
 	if (index == -1) {
 		index = [self activeTab];
 	}
+    if ((index < 0) || (index >= [tabbar.viewControllers count])) {
+        // error
+        NSLog("TabBar invalid tab index [%d] !!! ", index);
+        return nil;
+    }
     return (SimpleMainView*)[tabbar.viewControllers objectAtIndex:index];
 }
 

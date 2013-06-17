@@ -71,6 +71,16 @@ RHO_GLOBAL void rho_webview_navigate_back()
     env->CallStaticVoidMethod(cls, mid);
 }
 
+RHO_GLOBAL void rho_webview_navigate_back_with_tab(int tab)
+{
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_WEB_VIEW);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "navigateBack", "(I)V");
+    if (!mid) return;
+    env->CallStaticVoidMethod(cls, mid, static_cast<jint>(tab));
+}
+
 RHO_GLOBAL const char* rho_webview_current_location(int index)
 {
     return rho_rhodesapp_getcurrenturl(index);

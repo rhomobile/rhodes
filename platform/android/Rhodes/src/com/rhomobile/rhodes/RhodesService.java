@@ -35,6 +35,7 @@ import java.io.FileReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -85,6 +86,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -256,8 +258,6 @@ public class RhodesService extends Service {
 	public static native void callActivationCallback(boolean active);
 	
 	public static native String getBuildConfig(String key);
-	
-	public static native boolean isOnStartPage();
 	
 	public static native String getInvalidSecurityTokenMessage();
 	
@@ -1165,11 +1165,12 @@ public class RhodesService extends Service {
 		}
 	}
 
-    /** Opens remote or local URL*/
-    public static void openExternalUrl(String url)
+    /** Opens remote or local URL
+     * @throws URISyntaxException, ActivityNotFoundException */
+    public static void openExternalUrl(String url) throws URISyntaxException, ActivityNotFoundException
     {
-        try
-        {
+//        try
+//        {
             if(url.charAt(0) == '/')
                 url = "file://" + RhoFileApi.absolutePath(url);
 
@@ -1183,10 +1184,10 @@ public class RhodesService extends Service {
                 Intent intent = Intent.parseUri(url, 0);
                 ctx.startActivity(Intent.createChooser(intent, "Open in..."));
             }
-        }
-        catch (Exception e) {
-            Logger.E(TAG, "Can't open url :'" + url + "': " + e.getMessage());
-        }
+//        }
+//        catch (Exception e) {
+//            Logger.E(TAG, "Can't open url :'" + url + "': " + e.getMessage());
+//        }
     }
 
 	public native void setPushRegistrationId(String type, String id);

@@ -33,7 +33,9 @@ int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char 
 		rho::String filePath = arFiles.elementAt(i);
 		bool isDir = CRhoFile::isDirectory(filePath.c_str());
 		rho::String zipPath = base_path ? filePath.substr(strlen(base_path)) : filePath;
-		
+        if ( rho::String_startsWith( zipPath, "/") || rho::String_startsWith( zipPath, "\\") )
+            zipPath = zipPath.substr(1);
+
 #if defined(UNICODE) && defined(WIN32)
 		if ( isDir )
 			res = ZipAddFolder( hz, convertToStringW(zipPath).c_str(), convertToStringW(filePath).c_str() );
