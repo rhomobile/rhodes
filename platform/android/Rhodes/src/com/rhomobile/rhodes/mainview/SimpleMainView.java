@@ -575,7 +575,7 @@ public class SimpleMainView implements MainView {
         
         String startUrl = RhoConf.getString("start_path");
 
-        boolean bStartPage = webView.getUrl().equals(startUrl);
+        boolean bStartPage = startUrl.equals(webView.getUrl());
 
         if ( !bStartPage && webView.canGoBack() ) {
             webView.goBack();
