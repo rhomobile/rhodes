@@ -29,8 +29,8 @@ extern "C" int rho_sys_set_sleeping(int sleeping);
 extern "C" int rho_sys_is_app_installed(const char *appname);
 extern "C" void rho_sys_app_uninstall(const char *appname);
 extern "C" void rho_sys_open_url(const char* url);
-extern "C" void rho_sys_app_install(const char *url);
-extern "C" void rho_sys_run_app_iphone(const char* appname, char* params);
+extern "C" BOOL rho_sys_app_install(const char *url);
+extern "C" BOOL rho_sys_run_app_iphone(const char* appname, char* params);
 
 
 using namespace rho::common;
@@ -65,7 +65,7 @@ namespace rho {
     void SystemImplIphone::getApplicationIconBadge(CMethodResult& oResult)
     {
         //oResult.setError("supported only set IconBadge !");
-        oResult.set([UIApplication sharedApplication].applicationIconBadgeNumber);
+        oResult.set((int)([UIApplication sharedApplication].applicationIconBadgeNumber));
     }
     
     void SystemImplIphone::setApplicationIconBadge( int value, CMethodResult& oResult)
@@ -187,7 +187,7 @@ namespace rho {
     void SystemImplIphone::getScreenAutoRotate(rho::apiGenerator::CMethodResult& result)
     {
         //rho_sys_get_screen_auto_rotate_mode(result);
-        BOOL rotLocked = rho_main_is_rotation_locked();
+        bool  rotLocked = rho_main_is_rotation_locked()?true:false;
         result.set(!rotLocked);
     }
     //----------------------------------------------------------------------------------------------------------------------
@@ -224,7 +224,9 @@ namespace rho {
     
     void SystemImplIphone::applicationInstall(const rho::String& url, rho::apiGenerator::CMethodResult& result)
     {
-        ::rho_sys_app_install(url.c_str());
+        if ( !::rho_sys_app_install(url.c_str()) ) {
+            result.setError("System.applicationInstall failed for: " + url);
+        }
     }
     //----------------------------------------------------------------------------------------------------------------------
     
@@ -273,7 +275,9 @@ namespace rho {
     
     void SystemImplIphone::runApplication(const rho::String& app, const rho::String& params, bool blocking, rho::apiGenerator::CMethodResult& result)
     {
-        ::rho_sys_run_app_iphone(app.c_str(), (char*)params.c_str());
+        if ( !::rho_sys_run_app_iphone(app.c_str(), (char*)params.c_str()) ) {
+            result.setError("System.runApplication failed for: " + app);
+        }
         //rho_sys_run_app(app, params, result);
     }
     //----------------------------------------------------------------------------------------------------------------------

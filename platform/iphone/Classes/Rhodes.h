@@ -74,6 +74,7 @@
 @property (nonatomic, copy) SignatureDelegate* signatureDelegate;
 @property (nonatomic, copy) NVDelegate* nvDelegate;
 @property (nonatomic, assign) BOOL mBlockExit;
+@property (nonatomic, retain) NSCondition* mNetworkPollCondition;
 
 + (Rhodes*)sharedInstance;
 
@@ -118,6 +119,7 @@
 
 - (void) exit_with_errormessage:(NSString*)title message:(NSString*)message;
 
+- (void) signalNetworkStatusPollIntervalChanged;
 #ifdef __IPHONE_4_0
 - (EKEventStore*) getEventStore;
 #endif

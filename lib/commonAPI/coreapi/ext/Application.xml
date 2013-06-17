@@ -72,10 +72,10 @@
                 <DESC>Default Native Menu items: array of hashes(name to action)</DESC>
             </PROPERTY>
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
-                <DESC>Is the security token check was failed.</DESC>
+                <DESC>Is the security token check was failed.Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
             </PROPERTY>
-            <PROPERTY name="invalidSecurityTokenStartPath" type="STRING">
-                <DESC>Page to navigate in case of check of SecurityToken was failed.</DESC>
+            <PROPERTY name="invalidSecurityTokenStartPath" type="STRING" readOnly="true">
+                <DESC>Page to navigate in case of check of SecurityToken was failed.Can be set in rhoconfig.txt: invalid_security_token_start_path;</DESC>
             </PROPERTY>
             
             <PROPERTY name="rhoPlatformVersion" type="STRING" readOnly="true" generateDoc="false">
@@ -155,10 +155,12 @@
             </METHOD>
 
             <METHOD name="minimize">
-                <DESC>Minimize or move application to background.</DESC>
+                <DESC>Minimize or move application to background. RhoSimulator the method supported only for windows OS.</DESC>
+                <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
             <METHOD name="restore">
-                <DESC>Restore application on the screen.</DESC>
+                <DESC>Restore application on the screen. RhoSimulator the method supported only for windows OS.</DESC>
+                <PLATFORM>WM, Win32</PLATFORM>
             </METHOD>
 
             <METHOD name="setApplicationNotify" hasCallback="mandatory" runInThread="none">

@@ -336,6 +336,13 @@ void CHttpServer::stop()
     // therefore, stop server thread (because m_active set to false).
     m_active = false;
     RAWLOG_INFO("Stopping server...");
+
+    if (m_sock!=INVALID_SOCKET)
+    {
+        closesocket(m_sock);
+        m_sock = INVALID_SOCKET;
+    }
+
     SOCKET conn = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in sa;
     memset(&sa, 0, sizeof(sa));
@@ -557,11 +564,14 @@ bool CHttpServer::receive_request(ByteVector &request)
 
 	ByteVector r;
     char buf[BUF_SIZE];
+    int attempts = 0;
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
+        //RAWTRACE1("RECV: %d", n);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
+            RAWTRACE1("RECV ERROR: %d", e);
 #if !defined(WINDOWS_PLATFORM)
             if (e == EINTR)
                 continue;
@@ -578,10 +588,18 @@ bool CHttpServer::receive_request(ByteVector &request)
                 if (!r.empty())
                     break;
                 
+                if(++attempts > 100)
+                {
+                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for 10 sec. Cancel recieve.");
+                    return false;
+                }
+
                 fd_set fds;
                 FD_ZERO(&fds);
                 FD_SET(m_sock, &fds);
-                select(m_sock + 1, &fds, 0, 0, 0);
+                timeval tv = {0};
+				tv.tv_usec = 100000;//100 MS
+                select(m_sock + 1, &fds, 0, 0, &tv);
                 continue;
             }
             
@@ -590,7 +608,7 @@ bool CHttpServer::receive_request(ByteVector &request)
         }
         
         if (n == 0) {
-            RAWLOG_ERROR("Connection gracefully closed before we send any data");
+            RAWLOG_ERROR("Connection gracefully closed before we receive any data");
             return false;
         }
         
@@ -1103,7 +1121,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 
     if ( doesNotExists ) {
         RAWLOG_ERROR1("The file %s was not found", path.c_str());
-        String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
+        String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
         send_response(create_response("404 Not Found",error));
         return false;
     }
@@ -1111,7 +1129,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     FILE *fp = fopen(fullPath.c_str(), "rb");
     if (!fp) {
         RAWLOG_ERROR1("The file %s could not be opened", path.c_str());
-        String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " could not be opened.</font></html";
+        String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " could not be opened.</font></html";
         send_response(create_response("404 Not Found",error));
         return false;
     }
@@ -1333,7 +1351,7 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
         if (isindex(uri)) {
             if (!isfile(fullPath)) {
                 RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
-                String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
+                String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
                 send_response(create_response("404 Not Found",error));
                 return false;
             }

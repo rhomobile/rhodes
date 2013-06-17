@@ -117,14 +117,6 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfig
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    isOnStartPage
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPage
-  (JNIEnv *, jclass);
-
-/*
- * Class:     com_rhomobile_rhodes_RhodesService
  * Method:    getInvalidSecurityTokenMessage
  * Signature: ()Ljava/lang/String;
  */

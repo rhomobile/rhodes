@@ -102,8 +102,13 @@ void CNetworkDetection::CheckConnectivity()
 			sockfd = -1;
 		}
 	}
+
 	delete[] szHost;
-	freeaddrinfo(result);
+    
+    if ( result != 0 ) {
+        freeaddrinfo(result);
+    }
+    
 	if (bConnectSuccessful)
 	{
 		if (m_NetworkState != NETWORK_CONNECTED)
@@ -127,6 +132,5 @@ void CNetworkDetection::CheckConnectivity()
 			m_pDetectCallback.set(detectedCallbackData);
 		}
 	}
-    
 }
 

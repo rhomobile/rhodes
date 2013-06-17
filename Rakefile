@@ -391,12 +391,16 @@ def update_rhodefs_header_file
     end
 end
 
+#TODO:  call clean from all platfroms scripts
 namespace "clean" do
   task :common => "config:common" do
     
     if $config["platform"] == "bb"
       return
     end
+    
+    rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
+    rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
     
     extpaths = $app_config["extpaths"]
       
@@ -425,7 +429,7 @@ namespace "clean" do
            
       unless extpath.nil?
         extyml = File.join(extpath, "ext.yml")
-        puts "extyml " + extyml 
+        #puts "extyml " + extyml 
         
         if File.file? extyml
           extconf = Jake.config(File.open(extyml))
@@ -1129,6 +1133,8 @@ def init_extensions(dest, mode = "")
                 startJSModules.unshift(f)
               elsif f.downcase().end_with?("rhoapi.js") 
                 startJSModules << f
+              elsif f.downcase().end_with?("rho.application.js")
+                endJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
                 endJSModules << f
               else
@@ -2270,6 +2276,8 @@ namespace "run" do
                         startJSModules.unshift(f)
                       elsif f.downcase().end_with?("rhoapi.js")
                         startJSModules << f
+                      elsif f.downcase().end_with?("rho.application.js")
+                        endJSModules << f
                       elsif f.downcase().end_with?("rho.database.js")
                         endJSModules << f
                       else
