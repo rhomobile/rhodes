@@ -93,8 +93,9 @@ function get_file_list(es) {
 
 function is_dublicate(flist,file) {
     for(var i in flist) {
-        if ( (flist[i].name == file.name) &&
-            (flist[i].fullname != file.fullname) ) {
+        if ( (flist[i].name.toLowerCase() == file.name.toLowerCase()) && 
+             (flist[i].fullname.toLowerCase() != file.fullname.toLowerCase()) ) 
+        {
             return true;
         }
     }
@@ -105,6 +106,7 @@ function resolve_dublicates(es) {
     var dups = new Array();
     var flist = get_file_list(es);
     var n = 1;
+
     for(var i in flist) {
         if ( is_dublicate(flist,flist[i]) ) {
             flist[i].localname = flist[i].name+".copy"+n;
@@ -136,7 +138,6 @@ function resolve_dublicates(es) {
 }
 
 function get_source_disks_files(es) {
-
     var f = resolve_dublicates(es);
 
     for (var i in f) {
@@ -342,10 +343,6 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
     if (usereruntime) {
         p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
     } else {
-        //if (autorun) {
-        //  p("\"" + name + ".lnk\",\"" + name + ".lnk\",,0");
-        //}
-
         p("\"" + name + ".exe\",\"" + name + ".exe\",,0");
         p("\"" + "RhoLaunch" + ".exe\",\"" + "RhoLaunch" + ".exe\",,0");
         p("\"license_rc.dll\",\"license_rc.dll\",,0");
