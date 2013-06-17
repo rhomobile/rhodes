@@ -1,4 +1,5 @@
 #include "SystemImplBase.h"
+#include "rhodes/JNIRhodes.h"
 
 RHO_GLOBAL int rho_sysimpl_get_property(const char* szPropName, rho::apiGenerator::CMethodResult& result);
 RHO_GLOBAL int rho_sys_set_sleeping(int sleeping);
@@ -6,7 +7,6 @@ RHO_GLOBAL void rho_sys_is_app_installed(const rho::String& appname, rho::apiGen
 RHO_GLOBAL void rho_sys_app_install(const rho::String& url, rho::apiGenerator::CMethodResult& result);
 RHO_GLOBAL void rho_sys_app_uninstall(const rho::String& appname, rho::apiGenerator::CMethodResult& result);
 RHO_GLOBAL void rho_sys_run_app(const rho::String& appname, const rho::String& params, rho::apiGenerator::CMethodResult& result);
-RHO_GLOBAL void rho_sys_open_url(const char *url);
 RHO_GLOBAL void rho_sys_bring_to_front();
 RHO_GLOBAL void rho_sys_set_full_screen_mode(bool);
 RHO_GLOBAL void rho_sys_get_full_screen_mode(rho::apiGenerator::CMethodResult& result);
@@ -72,6 +72,8 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 
+#undef DEFAULT_LOGCATEGORY
+#define DEFAULT_LOGCATEGORY "SystemImpl"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -252,7 +254,16 @@ void CSystemImpl::applicationUninstall(const rho::String& appname, rho::apiGener
 
 void CSystemImpl::openUrl(const rho::String& url, rho::apiGenerator::CMethodResult& result)
 {
-    rho_sys_open_url(url.c_str());
+    JNIEnv *env = jnienv();
+    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
+    if (!cls) return;
+    jmethodID mid = getJNIClassStaticMethod(env, cls, "openExternalUrl", "(Ljava/lang/String;)V");
+    if (!mid) return;
+
+    jhstring jhUrl = rho_cast<jstring>(env, url);
+    env->CallStaticVoidMethod(cls, mid, jhUrl.get());
+
+    JNI_EXCEPTION_CHECK(env, result);
 }
 //----------------------------------------------------------------------------------------------------------------------
 

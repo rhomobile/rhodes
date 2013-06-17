@@ -75,6 +75,18 @@ jmethodID getJNIClassStaticMethod(JNIEnv *env, jclass cls, const char *name, con
 #define RHO_LOG_CALLBACK RAWLOG_INFO1("Callback \"%s\" called", __PRETTY_FUNCTION__)
 #define RHO_LOG_JNI_CALL RAWLOG_INFO1("JNI method \"%s\" called", __PRETTY_FUNCTION__)
 
+#define JNI_EXCEPTION_CHECK(env, result) if(env->ExceptionCheck()) { \
+    jholder<jthrowable> jhexc = env->ExceptionOccurred(); \
+    jholder<jclass> jhclass = env->GetObjectClass(jhexc.get()); \
+    jmethodID mid = env->GetMethodID(jhclass.get(), "toString", "()Ljava/lang/String;"); \
+    env->ExceptionClear(); \
+    jhstring jhmsg = (jstring)env->CallObjectMethod(jhexc.get(), mid); \
+    rho::String error = rho_cast<rho::String>(env, jhmsg); \
+    RAWLOG_ERROR(error.c_str()); \
+    result.setError(error); \
+}
+
+
 namespace rho
 {
 namespace common
