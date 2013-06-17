@@ -542,7 +542,9 @@ void GetRegistrySetting(const rho::String& retKey, const rho::String& subKey, co
 						for (UINT i = 0; i < size - 4; i+=2)
 						{
 							if (pbuffer[i] == L'\0')
+                            {
 								pbuffer[i] = L'\n';
+                            }
 						}
 						//  Don't break as we have the same string conversion logic 
 						//  from this point on as normal strings
