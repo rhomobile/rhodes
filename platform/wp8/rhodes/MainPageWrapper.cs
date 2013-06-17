@@ -24,6 +24,7 @@ namespace rhodes
         public void navigate(string url, int index) { _mainPage.navigate(url, index); }
         public string executeScript(string script, int index) { return _mainPage.executeScript(script, index); }
         public void GoBack() { _mainPage.GoBack(); }
+        public void GoBack(int index) { _mainPage.GoBack(index); }
         public void GoForward() { _mainPage.GoForward(); }
         public void Refresh(int index) { _mainPage.Refresh(index); }
         public bool isStarted() { return _mainPage.isStarted(); }
