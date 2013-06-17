@@ -11,11 +11,12 @@ using namespace apiGenerator;
 
 // TODO: this strings needs to come form the api xml
 // so that the strings can be standard across the all platforms (andoid, wm, ios, wp8 etc)
-static const rho::String g_normal = "normal";
-static const rho::String g_rightHanded = "righthanded";
-static const rho::String g_leftHanded = "lefthanded";
-static const rho::String g_upsideDown = "upsidedown";
-static const rho::String g_invalid = "invalid";
+static const rho::String g_normal			= "normal";
+static const rho::String g_rightHanded		= "righthanded";
+static const rho::String g_leftHanded		= "lefthanded";
+static const rho::String g_upsideDown		= "upsidedown";
+static const rho::String g_invalid			= "invalid";
+static const int DEBOUNCE_DURATION			= 20;
 
 /**
  * 
@@ -47,6 +48,7 @@ private:
 	bool										m_supportsScreenOrientation;	// do device support screen orientation
 	bool										m_hasFocus;						// whether the app has focus
 	bool										m_autoRotate;					// current auto rate state
+	bool										m_defaultAutoRotate;			// the autorotate state during startup
 	screenorientation::ScreenOrientationModes	m_currentOrientation;			// the current device orientation
 	screenorientation::ScreenOrientationModes	m_defaultOrientation;			// the default orientation during first access, when destryed destroys the device to this state
 	common::CMutex*								m_syncLock;						// a lock to protect the cached callback object, from the javascript thread and ui thread. subject to debate?
@@ -82,6 +84,7 @@ CScreenOrientationSingleton::CScreenOrientationSingleton() :
 									m_supportsScreenOrientation(screenorientation::COrientationSettings::IsSupported()),
 									m_hasFocus(true),
 									m_autoRotate(false),
+									m_defaultAutoRotate(false),
 									m_currentOrientation(screenorientation::COrientationSettings::GetOrientation()),
 									m_defaultOrientation(screenorientation::SOM_BAD_ORIENTATION),
 									m_syncLock(new common::CMutex()),
@@ -96,7 +99,28 @@ CScreenOrientationSingleton::CScreenOrientationSingleton() :
 	{
 		m_defaultOrientation = screenorientation::COrientationSettings::GetOrientation();
 	}
-	// set the default state to autoroate on supported motorola devices
+
+	// save the autoroate state during startup
+	if (m_isISTEnabled)
+	{
+		// when the license page is active a call to the 
+		// IST api always returns a disabled		
+		screenorientation::CIstDll ist;
+		if(ist.Open())
+		{
+			m_defaultAutoRotate = ist.IsAutoRotateEnabled();
+			ist.Close();
+		}
+				
+	}
+	else if (m_isSensorEnabled)
+	{
+		m_defaultAutoRotate = screenorientation::CSensor::IsAutoRotateEnabled();
+		
+	}
+
+	
+	// now set the default state to autoroate on supported motorola devices
 	setDefaults();
 }
 
@@ -111,6 +135,25 @@ CScreenOrientationSingleton::~CScreenOrientationSingleton()
 	if (m_supportsScreenOrientation && (m_defaultOrientation != m_currentOrientation))
 	{
 		screenorientation::COrientationSettings::SetOrientation(m_defaultOrientation);
+	}
+
+	// restore the autoroate state during shutdown
+	if (m_isISTEnabled)
+	{
+		// when the license page is active a call to the 
+		// IST api always returns a disabled		
+		screenorientation::CIstDll ist;
+		if(ist.Open())
+		{
+			ist.EnableAutoRotate(m_defaultAutoRotate);
+			ist.Close();
+		}
+				
+	}
+	else if (m_isSensorEnabled)
+	{		
+		screenorientation::CSensor::EnableAutoRotate(m_defaultAutoRotate);
+		
 	}
 
 	if (NULL != m_syncLock)
@@ -361,17 +404,19 @@ void CScreenOrientationSingleton::setScreenOrientationEvent(rho::apiGenerator::C
 bool CScreenOrientationSingleton::onWndMsg(MSG& msg)
 {
 	bool bHandled = false;
-	int iDebounceDuration = 20;
+	int iDebounceDuration = DEBOUNCE_DURATION;
 
 	// only WM_SETTINGCHANGE aad SETTINGCHANGE_RESET for screen orientation change
 	if ((WM_SETTINGCHANGE == msg.message) && (SETTINGCHANGE_RESET == msg.wParam))
 	{
+		screenorientation::ScreenOrientationModes modes = screenorientation::COrientationSettings::GetOrientation();
+
 		//  The ScreenOrientation has Changed
 		//  Need to use a Debounce duration here as we don't get 
 		//  WM_SETTINGCHANGE for our parent's window unless we put a break
 		//  point in the code.  I know this is very strange but this is 
 		//  confirmed by debug output in the message pump.
-		if (this->m_dwLastSettingChangeTime + iDebounceDuration > msg.time)
+		if ((this->m_dwLastSettingChangeTime + iDebounceDuration > msg.time) && (this->m_currentOrientation == modes))
 		{
 			//  Message received too close to the previous message
 			this->m_dwLastSettingChangeTime = msg.time;
@@ -381,8 +426,7 @@ bool CScreenOrientationSingleton::onWndMsg(MSG& msg)
 		else
 		{
 			this->m_dwLastSettingChangeTime = msg.time;
-			LOG(INFO) +  " orientation changed event received."; 
-			screenorientation::ScreenOrientationModes modes = screenorientation::COrientationSettings::GetOrientation();
+			LOG(INFO) +  " orientation changed event received."; 			
 			rho::String state = this->modesToString(modes);
 			if ((modes != screenorientation::SOM_BAD_ORIENTATION) && (this->m_currentOrientation != modes))
 			{
