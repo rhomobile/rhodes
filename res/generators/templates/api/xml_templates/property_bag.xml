@@ -60,6 +60,7 @@
             <PARAMS>
                 <PARAM name="propertyMap" type="HASH">
                     <DESC>Map of properties I want to set</DESC>
+                    <PARAM type="STRING"/>
                 </PARAM>
             </PARAMS>
         </METHOD>
