@@ -216,12 +216,15 @@ def  run_emulator(options = {})
     else
       $avdname = "rhoAndroid" + $emuversion.gsub(/[^0-9]/, "")
       $avdname += "google" if $use_google_addon_api
-      $avdname += "motosol" if $use_motosol_api
+      #$avdname += "motosol" if $use_motosol_api
     end
     
     puts $androidtargets.inspect
     
     targetid = $androidtargets[get_api_level($emuversion)][:id]
+      
+    puts "Using Android SDK target: #{$androidtargets[get_api_level($emuversion)].inspect}" if USE_TRACES
+      
     abi = nil
     if $androidtargets[get_api_level($emuversion)][:abis]
       $androidtargets[get_api_level($emuversion)][:abis].each do |cur_abi|
@@ -256,6 +259,9 @@ def  run_emulator(options = {})
     cmd << " -no-window" if options[:hidden]
     cmd << " -avd #{$avdname}"
     cmd << " -wipe-data" if options[:wipe]
+      
+    puts "Starting emulator: #{cmd}" if USE_TRACES
+      
     Thread.new { system(cmd) }
 
     puts "Waiting for emulator..."

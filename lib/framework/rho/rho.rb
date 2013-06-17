@@ -1080,6 +1080,7 @@ end
       end
       
       body << <<-_HTML_STRING_
+        <!DOCTYPE html>
         <html>
             <head>
                 <meta name="viewport" content="width=320"/>

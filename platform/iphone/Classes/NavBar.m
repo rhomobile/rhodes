@@ -128,7 +128,7 @@ void create_navbar(NSDictionary *p)
     [args addObject:title];
     [args addObject:left];
     [args addObject:right];
-    [Rhodes performOnUiThread:runnable arg:args wait:YES];
+    [Rhodes performOnUiThread:runnable arg:args wait:NO];
 }
 
 void remove_navbar()
@@ -136,7 +136,7 @@ void remove_navbar()
     if (!rho_rhodesapp_check_mode())
         return;
     id runnable = [RhoNavBarRemoveTask class];
-    [Rhodes performOnUiThread:runnable wait:YES];
+    [Rhodes performOnUiThread:runnable wait:NO];
 }
 
 BOOL navbar_started() {

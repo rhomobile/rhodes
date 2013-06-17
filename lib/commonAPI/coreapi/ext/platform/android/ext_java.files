@@ -25,3 +25,4 @@ ext/platform/android/generated/src/com/rho/nativetoolbar/NativeToolbarSingletonB
 ext/platform/android/src/com/rho/nativetoolbar/NativeToolbar.java
 ext/platform/android/src/com/rho/nativetoolbar/NativeToolbarSingleton.java
 ext/platform/android/src/com/rho/nativetoolbar/NativeToolbarFactory.java
+ext/platform/android/src/com/motorolasolutions/rho/network/Network.java

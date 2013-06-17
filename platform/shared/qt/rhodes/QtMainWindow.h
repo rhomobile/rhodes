@@ -70,7 +70,7 @@ public:
     void adjustWebInspector();
     // webview
     void navigate(QString url, int index);
-    void GoBack(void);
+    void GoBack(int index);
     void GoForward(void);
     void Refresh(int index);
     bool isStarted(void);
@@ -143,6 +143,7 @@ public slots:
     void exitCommand(void);
     void navigateBackCommand(void);
     void navigateForwardCommand(void);
+    void webviewNavigateBackCommand(int tab_index);
     void logCommand(void);
     void refreshCommand(int tab_index);
     void navigateCommand(TNavigateData* nd);

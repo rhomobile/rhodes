@@ -152,7 +152,9 @@ public:
 
     virtual void getBadLinkURI(rho::apiGenerator::CMethodResult& oResult)
     {
+#ifdef OS_WINCE
         oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\BadLinkURI" ) ) );
+#endif
     }
 
     virtual void modelFolderPath( const rho::String& name, rho::apiGenerator::CMethodResult& oResult)

@@ -35,6 +35,7 @@ extern "C" {
 
 void rho_webview_refresh(int index);
 void rho_webview_navigate(const char* url, int index);
+void rho_webview_navigate_back_with_tab(int index);
 void rho_webview_navigate_back();
 void rho_webview_navigate_forward();
 const char* rho_webview_execute_js(const char* js, int index);

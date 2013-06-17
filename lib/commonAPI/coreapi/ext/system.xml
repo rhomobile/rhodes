@@ -73,6 +73,7 @@
             </PROPERTY>
             <PROPERTY name="phoneNumber" type="STRING" readOnly="true" deprecated="true">
                 <DESC>Device phone number.</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceOwnerEmail" type="STRING" readOnly="true">
                 <DESC>Primary email of phone owner.</DESC>
@@ -87,6 +88,7 @@
             </PROPERTY>
             <PROPERTY name="phoneId" type="STRING" readOnly="true">
                 <DESC>Hardware based ID. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="deviceName" type="STRING" readOnly="true">
                 <DESC>Name of device application running on. Examples: '9000' (BB), 'iPhone', 'dream' (Android).</DESC>
@@ -127,10 +129,11 @@
                 <PLATFORM>iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="httpProxyURI" type="STRING">
-                <DESC>Client HTTP proxy.</DESC>
+                <DESC>Client HTTP proxy. RhoSimulator the method supported only for windows OS.</DESC>
+                <PLATFORM>WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="lockWindowSize" type="BOOLEAN" default="false">
-                <DESC>Lock/unlock the window size change by the user.</DESC>
+                <DESC>Lock/unlock the window size change by the user. RhoSimulator the method supported only for windows OS.</DESC>
                 <PLATFORM>Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="keyboardState" type="STRING" default="See Description">
@@ -246,9 +249,6 @@
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
-              <RETURN type="INTEGER">
-                <DESC>If the operation completes successfully, unzipFile returns a zero value. If the operation fails, unzipFile returns -1.</DESC>
-              </RETURN>
             </METHOD>
             <METHOD name="zipFile">
                 <DESC>Zip one file. Zip archive must placed to  folder where application can write files. </DESC>
@@ -264,9 +264,6 @@
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
-              <RETURN type="INTEGER">
-                <DESC>If the operation completes successfully, unzipFile returns a zero value. If the operation fails, unzipFile returns -1.</DESC>
-              </RETURN>
             </METHOD>
             <METHOD name="zipFiles">
                 <DESC>Zip list of files.</DESC>
@@ -285,13 +282,10 @@
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
-              <RETURN type="INTEGER">
-                <DESC>If the operation completes successfully, unzipFile returns a zero value. If the operation fails, unzipFile returns -1.</DESC>
-              </RETURN>
             </METHOD>
             <METHOD name="setRegistrySetting">
-                <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
-                <PLATFORM>WM, Win32</PLATFORM>
+                <DESC>Set a value in the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  RhoSimulator the method supported only for windows OS.</DESC>
+                <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Map of properties associated with the registry key being set</DESC>
@@ -351,8 +345,8 @@
             </METHOD>
 
             <METHOD name="getRegistrySetting">
-                <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
-                <PLATFORM>WM, Win32</PLATFORM>
+                <DESC>Retrieve a value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  RhoSimulator the method supported only for windows OS.</DESC>
+                <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Map of properties associated with the registry key being set</DESC>
@@ -375,8 +369,8 @@
             </METHOD>
             
             <METHOD name="deleteRegistrySetting">
-                <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.</DESC>
-                <PLATFORM>WM, Win32</PLATFORM>
+                <DESC>Deletes the specified value from the device registry.  Only applicable on Windows Mobile / Embedded Handheld and CE devices.  RhoSimulator the method supported only for windows OS.</DESC>
+                <PLATFORM>WM</PLATFORM>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Map of properties associated with the registry key being set</DESC>
@@ -443,9 +437,10 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-            <METHOD name="bringToFront">
-                <DESC>Bring application window to the top of the screen.</DESC>
-            </METHOD>
+            <METHOD name="bringToFront" deprecated="true">
+            <DESC>Bring application window to the top of the screen.</DESC>
+            <PLATFORM>WM</PLATFORM>
+          </METHOD>
             <METHOD name="replaceCurrentBundle">
                 <DESC>Replace application bundle.</DESC>
                 <PARAMS>
@@ -457,7 +452,7 @@
                     </PARAM>
                 </PARAMS>
             </METHOD>
-            <METHOD name="deleteFolder">
+            <METHOD name="deleteFolder" deprecated="true">
                 <DESC>Delete folder.</DESC>
                 <PARAMS>
                     <PARAM name="pathToFolder" type="STRING">
@@ -586,9 +581,11 @@
                 <PARAMS>
                     <PARAM name="proxyURI" type="STRING"/>
                 </PARAMS>
+                <PLATFORM>WM, WIN32</PLATFORM>
             </METHOD>
             <METHOD name="unset_http_proxy" deprecated="true">
                 <DESC>Use System.httpProxyURI property: Stop using HTTP proxy that was set by the command line, rhoconfig.txt or set_http_proxy_url.</DESC>
+                <PLATFORM>WM, WIN32</PLATFORM>
             </METHOD>
             <METHOD name="set_application_icon_badge" deprecated="true">
                 <DESC>Use System.applicationIconBadge: Set the application icon to have this badge number. Set to 0 (zero) to remove badge.iOS only.</DESC>

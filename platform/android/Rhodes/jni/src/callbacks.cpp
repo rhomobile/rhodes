@@ -38,18 +38,6 @@
 #undef DEFAULT_LOGCATEGORY
 #define DEFAULT_LOGCATEGORY "Callbacks"
 
-#define JNI_EXCEPTION_CHECK(env, result) if(env->ExceptionCheck()) { \
-    jholder<jthrowable> jhexc = env->ExceptionOccurred(); \
-    jholder<jclass> jhclass = env->GetObjectClass(jhexc.get()); \
-    jmethodID mid = env->GetMethodID(jhclass.get(), "toString", "()Ljava/lang/String;"); \
-    env->ExceptionClear(); \
-    jhstring jhmsg = (jstring)env->CallObjectMethod(jhexc.get(), mid); \
-    rho::String error = rho_cast<rho::String>(env, jhmsg); \
-    RAWLOG_ERROR(error.c_str()); \
-    result.setError(error); \
-}
-
-
 
 extern "C" void rho_webview_navigate(const char* url, int index);
 
@@ -228,18 +216,6 @@ RHO_GLOBAL void rho_sys_report_app_started()
     jmethodID mid = getJNIClassStaticMethod(env, cls, "handleAppStarted", "()V");
     if (!mid) return;
     env->CallStaticVoidMethod(cls, mid);
-}
-
-RHO_GLOBAL void rho_sys_open_url(const char *url)
-{
-    JNIEnv *env = jnienv();
-    jclass cls = getJNIClass(RHODES_JAVA_CLASS_RHODES_SERVICE);
-    if (!cls) return;
-    jmethodID mid = getJNIClassStaticMethod(env, cls, "openExternalUrl", "(Ljava/lang/String;)V");
-    if (!mid) return;
-
-    jhstring jhUrl = rho_cast<jstring>(env, url);
-    env->CallStaticVoidMethod(cls, mid, jhUrl.get());
 }
 
 RHO_GLOBAL void rho_sys_is_app_installed(const rho::String& appname, rho::apiGenerator::CMethodResult& result)

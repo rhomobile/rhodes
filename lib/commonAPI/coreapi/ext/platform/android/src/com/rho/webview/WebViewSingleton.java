@@ -4,6 +4,7 @@ import com.rhomobile.rhodes.BaseActivity;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
+import com.rhomobile.rhodes.RhodesApplication;
 import com.rhomobile.rhodes.RhodesService;
 import com.rhomobile.rhodes.WebView;
 import com.rhomobile.rhodes.api.IMethodResult;
@@ -44,7 +45,10 @@ public class WebViewSingleton extends WebViewSingletonBase implements IWebViewSi
         else
             mConfig.set("enableCache", true);
 
-        RhoExtManager.getInstance().setWebViewConfig(mConfig);
+        RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true) {
+            @Override public void run() {
+                RhoExtManager.getInstance().setWebViewConfig(mConfig);
+            }});
     }
     
     @Override

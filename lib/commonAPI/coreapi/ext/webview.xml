@@ -168,7 +168,8 @@
             </METHOD>
 
             <METHOD name="currentLocation">
-                <DESC>Returns the url (location) of the current page; the last URL loaded to WebView from controller action. Don't use it from javascript</DESC>
+                <DESC>Returns the url (location) of the current page; the last URL loaded to WebView from controller action.</DESC>
+                <APPLIES rubyOnly="true"/>
                 <MORE_HELP>If you open your page in WebView, and after it makes a few jumps by linking (for example, to outside web adresses for example), currentLocation will still return the initial url opened in WebView. Also, if you use JQMobile, current_location has the initial URL, but does not reflect the actual window.location containing the JQMobile additional address by adding #, etc. See currentUrl.</MORE_HELP>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
@@ -186,6 +187,7 @@
             <METHOD name="currentURL">
                 <DESC>Returns the actual URL in WebView. This works the same as the JavaScript window.location.href.</DESC>
                 <PLATFORM>iOS, Android</PLATFORM>
+                <APPLIES rubyOnly="true"/>
                 <PARAMS>
                     <PARAM name="tabIndex" type="INTEGER" default="-1">
                         <DESC>TabBar tab index. If no tab bar present, index is ignored.</DESC>
@@ -200,7 +202,8 @@
             </METHOD>
 
             <METHOD name="executeJavascript">
-                <DESC>Execute JavaScript on the current page from your controller. It applicable only at Ruby.</DESC>
+                <DESC>Execute JavaScript on the current page from your controller.</DESC>
+                <APPLIES rubyOnly="true"/>
                 <MORE_HELP>For most mobile platforms, WebView.execute_js has been implemented via redirection to URL with 'javascript:' schema. If WebView.execute_js used in an AJAX call handler method in the controller, it may lead to the situation where the success javascript handler will never be executed. This may happen because, at the moment of success handler should be executed, a URL of the page already has been changed. This means no handlers from the previous page are valid.</MORE_HELP>
                 <PARAMS>
                     <PARAM name="javascriptText" type="STRING">
@@ -231,6 +234,7 @@
 
             <METHOD name="setCookie">
                 <DESC>When WebView loads the specified url (either by selecting link or from calling WebView.navigate), it will add this cookie to the HTTP request.Not implemented for Motorola Solutions' WebKit.</DESC>
+                <APPLIES rubyOnly="true"/>
                 <PLATFORM>Android, Win32, iOS, WP8</PLATFORM>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
@@ -268,6 +272,7 @@
             </METHOD>
 
             <METHOD name="set_menu_items" deprecated="true" generateAPI="false">
+                <PLATFORM>WM,Android</PLATFORM>
                 <DESC>Use Rho::Application.nativeMenu property: set native menu items.</DESC>
                 <PARAMS>
                     <PARAM name="menuItems" type="HASH">

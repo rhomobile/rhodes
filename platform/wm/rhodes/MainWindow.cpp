@@ -994,12 +994,12 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
     return 0;
 }
 
-LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
 	restoreWebView();
 
     if ( m_pBrowserEng )
-        m_pBrowserEng->BackOnTab(m_oTabBar.GetCurrentTabID(), 1);
+        m_pBrowserEng->BackOnTab(m_oTabBar.GetTabID((int)hWndCtl), 1);
 
     return 0;
 }
@@ -1498,7 +1498,7 @@ void CMainWindow::ShowLoadingPage()
     else
     {
 		LOG(ERROR) + "failed to open loading page \"" + fname + "\"";
-		strTextW = L"<html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>";
+		strTextW = L"<!DOCTYPE html><html><head><title>Loading...</title></head><body><h1>Loading...</h1></body></html>";
     }
 
     if ( m_pBrowserEng )

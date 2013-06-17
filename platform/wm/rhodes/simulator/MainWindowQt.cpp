@@ -232,10 +232,10 @@ void CMainWindow::messageLoop(void)
     qApp->exec();
 }
 
-void CMainWindow::GoBack(void)
+void CMainWindow::GoBack(int index)
 {
     LOG(INFO) + "back";
-    ((QtMainWindow*)qtMainWindow)->GoBack();
+    ((QtMainWindow*)qtMainWindow)->GoBack(index);
 }
 
 void CMainWindow::GoForward(void)
@@ -930,9 +930,9 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
     return 0;
 }
 
-LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    GoBack();
+    GoBack((int)hWndCtl);
     return 0;
 }
 

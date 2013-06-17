@@ -402,10 +402,11 @@ void QtMainWindow::navigate(QString url, int index)
     }
 }
 
-void QtMainWindow::GoBack(void)
+void QtMainWindow::GoBack(int index)
 {
-    if (ui->webView)
-        ui->webView->back();
+    QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
+    if (wv)
+        wv->back();
 }
 
 void QtMainWindow::GoForward(void)
@@ -503,7 +504,7 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         ui->verticalLayout->addWidget(wv);
         setUpWebPage(wv->page());
         if (web_bkg_color && (web_bkg_color->name().length()>0))
-            wv->setHtml( QString("<html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
+            wv->setHtml( QString("<!DOCTYPE html><html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
         // creating and attaching web inspector
         wI = new QWebInspector();
         wI->setWindowTitle("Web Inspector");
@@ -784,6 +785,11 @@ void QtMainWindow::navigateForwardCommand()
     this->GoForward();
 }
 
+void QtMainWindow::webviewNavigateBackCommand(int tab_index)
+{
+    this->GoBack(tab_index);
+}
+
 void QtMainWindow::logCommand()
 {
     //TODO: logCommand
@@ -1012,8 +1018,11 @@ bool QtMainWindow::getFullScreen()
 void QtMainWindow::setCookie(const char* url, const char* cookie)
 {
     if (url && cookie) {
+        QUrl urlStr = QUrl(QString::fromUtf8(url));
         QNetworkCookieJar* cj = ui->webView->page()->networkAccessManager()->cookieJar();
-        cj->setCookiesFromUrl(QNetworkCookie::parseCookies(QByteArray(cookie)), QUrl(QString::fromUtf8(url)));
+        QStringList cookieList = QString::fromUtf8(cookie).split(";");
+        for (int i=0; i<cookieList.size(); ++i)
+            cj->setCookiesFromUrl(QNetworkCookie::parseCookies(cookieList.at(i).toAscii()), urlStr);
     }
 }
 
