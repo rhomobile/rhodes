@@ -163,7 +163,7 @@ public:
 
     virtual void navigateBack( int tabIndex, rho::apiGenerator::CMethodResult& oResult)
     {
-        rho_webview_navigate_back();
+        rho_webview_navigate_back_with_tab(tabIndex);
     }
 
     virtual void currentLocation( int tabIndex, rho::apiGenerator::CMethodResult& oResult)

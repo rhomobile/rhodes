@@ -402,10 +402,11 @@ void QtMainWindow::navigate(QString url, int index)
     }
 }
 
-void QtMainWindow::GoBack(void)
+void QtMainWindow::GoBack(int index)
 {
-    if (ui->webView)
-        ui->webView->back();
+    QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
+    if (wv)
+        wv->back();
 }
 
 void QtMainWindow::GoForward(void)
@@ -784,9 +785,9 @@ void QtMainWindow::navigateForwardCommand()
     this->GoForward();
 }
 
-void QtMainWindow::webviewNavigateBackCommand()
+void QtMainWindow::webviewNavigateBackCommand(int tab_index)
 {
-    this->GoBack();
+    this->GoBack(tab_index);
 }
 
 void QtMainWindow::logCommand()
@@ -1017,8 +1018,11 @@ bool QtMainWindow::getFullScreen()
 void QtMainWindow::setCookie(const char* url, const char* cookie)
 {
     if (url && cookie) {
+        QUrl urlStr = QUrl(QString::fromUtf8(url));
         QNetworkCookieJar* cj = ui->webView->page()->networkAccessManager()->cookieJar();
-        cj->setCookiesFromUrl(QNetworkCookie::parseCookies(QByteArray(cookie)), QUrl(QString::fromUtf8(url)));
+        QStringList cookieList = QString::fromUtf8(cookie).split(";");
+        for (int i=0; i<cookieList.size(); ++i)
+            cj->setCookiesFromUrl(QNetworkCookie::parseCookies(cookieList.at(i).toAscii()), urlStr);
     }
 }
 

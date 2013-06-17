@@ -1,5 +1,6 @@
 
 #import "<%= $cur_module.name %>Base.h"
+#import "api_generator/iphone/CMethodResult.h"
 
 
 <% if $cur_module.property_aliases.size > 0
@@ -12,9 +13,7 @@ static NSDictionary* ourPropertyAliases= nil;
 
 @implementation <%= $cur_module.name %>Base
 
-
-- (id) init {
-    self = [super init];
+- (void) resetAllPropertiesToDefault {
 <% if $cur_module.is_template_propertybag %>
     mProperties = [[NSMutableDictionary dictionaryWithCapacity:4] retain];
     <% $cur_module.properties.each do |prop|
@@ -25,6 +24,11 @@ static NSDictionary* ourPropertyAliases= nil;
        end
      %>
 <% end %>
+}
+
+- (id) init {
+    self = [super init];
+    [self resetAllPropertiesToDefault];
     return self;
 }
 
@@ -84,7 +88,40 @@ static NSDictionary* ourPropertyAliases= nil;
 }
 
 -(void) setProperty:(NSString*)propertyName propertyValue:(NSString*)propertyValue {
-   [mProperties setObject:propertyValue forKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:propertyName]];
+    NSObject* value = propertyValue;
+    NSString* strValue = propertyValue;
+    if ([value isKindOfClass:[NSNumber class]]) {
+        NSNumber* numValue = (NSNumber*)value;
+        if ([CMethodResult isBoolInsideNumber:numValue]) {
+            BOOL boolValue = [numValue boolValue];
+            if (boolValue) {
+                strValue = @"true";
+            }
+            else {
+                strValue = @"false";
+            }
+        }
+        else if ([CMethodResult isIntInsideNumber:numValue]) {
+            strValue =  [NSString stringWithFormat:@"%@", numValue];
+        }
+        else if ([CMethodResult isFloatInsideNumber:numValue]) {
+            strValue =  [NSString stringWithFormat:@"%@", numValue];
+        }
+        else {
+            // error !
+            NSLog(@"<%= $cur_module.name %>.setProperty(\"%@\", value) UNSUPPORTED VALUE TYPE ! MUST BE STRING !!!", propertyName);
+        }
+    }
+    else if ([value isKindOfClass:[NSString class]]) {
+        //is OK!
+    }
+    else {
+        // error !
+        NSLog(@"<%= $cur_module.name %>.setProperty(\"%@\", value) UNSUPPORTED VALUE TYPE ! MUST BE STRING !!!", propertyName);
+
+    }
+
+   [mProperties setObject:strValue forKey:[<%= $cur_module.name %>Base applyAliasesToPropertyName:propertyName]];
 }
 
 -(void) getProperties:(NSArray*)arrayofNames methodResult:(id<IMethodResult>)methodResult {
@@ -121,6 +158,7 @@ static NSDictionary* ourPropertyAliases= nil;
 
 -(void) clearAllProperties {
    [mProperties removeAllObjects];
+   [self resetAllPropertiesToDefault];
 }
 
 
