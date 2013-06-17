@@ -94,7 +94,6 @@
         <PARAMS>
           <PARAM name="Anoynomous Function" type="">
             <DESC>Anonymous function defining model properties</DESC>
-            <DESC>
           </PARAM>
         </PARAMS>
       </METHOD>
