@@ -93,7 +93,7 @@ public class RhoWebViewClient extends WebViewClient
         
         Logger.profStop("BROWSER_PAGE");
         
-        StringBuilder msg = new StringBuilder(failingUrl);
+        StringBuilder msg = new StringBuilder(failingUrl != null ? failingUrl : "null");
         msg.append(" failed: ");
         msg.append(errorCode);
         msg.append(" - " + description);
