@@ -6,7 +6,6 @@
     <MORE_HELP>Use this API to access local files for reading and writing. Only string data can be read and written with this API.</MORE_HELP>
 
     <ALIASES>
-        <ALIAS new="File"/>
     </ALIASES>
     
     <TEMPLATES>
