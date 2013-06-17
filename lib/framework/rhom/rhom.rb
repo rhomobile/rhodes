@@ -115,7 +115,8 @@ module Rhom
 		    Rho::RHO.load_all_sources
 
         if defined?(RHOCONNECT_CLIENT_PRESENT)
-            old_interval = Rho::RhoConnectClient.pollInterval = 0
+            old_interval = Rho::RhoConnectClient.pollInterval
+            Rho::RhoConnectClient.pollInterval = 0
             Rho::RhoConnectClient.stop_sync
         end
         
