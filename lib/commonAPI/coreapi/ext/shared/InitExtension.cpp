@@ -60,5 +60,7 @@ extern "C" void Init_CoreAPI_Extension()
 	Init_Led();
 #endif
 
+#if defined(OS_ANDROID)
 	Init_Push();
+#endif
 }
