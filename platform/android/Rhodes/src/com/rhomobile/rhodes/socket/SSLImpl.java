@@ -305,7 +305,7 @@ public class SSLImpl {
         tmf.init(keystore);        
         X509TrustManager customTrustManager = (X509TrustManager)tmf.getTrustManagers()[0];
         
-        Logger.I(TAG, "Creating KeyManager for custom certificates");
+        Logger.I(TAG, "Creating KeyManager for client certificates");
         
         KeyManagerFactory kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
         
@@ -316,7 +316,7 @@ public class SSLImpl {
         		password = RhoConf.getString("clientSSLCertificatePassword");
         	}
         	
-        	KeyStore clientKeystore = KeyStore.getInstance( KeyStore.getDefaultType() );
+        	KeyStore clientKeystore = KeyStore.getInstance( "pkcs12" );
         	clientKeystore.load( new FileInputStream(clientCertPath), password.toCharArray() );
         	kmf.init(clientKeystore, password.toCharArray());
         }
