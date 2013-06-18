@@ -145,6 +145,7 @@ CPushClient* CPushSingleton::getClient(const rho::String& id)
 
 extern "C" void Init_Push()
 {
+    RAWTRACEC("Init_Push", "Creating CPushSingleton...");
     rho::CPushFactoryBase::setInstance( new rho::push::CPushSingleton() );
     rho::Init_Push_API();
 }

@@ -31,7 +31,7 @@
             <PROPERTY name="deviceId" type="STRING" readOnly="true">
                 <DESC>Push token used to identify particular device.</DESC>
             </PROPERTY>
-            <PROPERTY name="userNotifyMode" type="STRING" default="backgroundNotifications">
+            <PROPERTY name="userNotifyMode" type="STRING" default="backgroundNotifications" deprecated="true">
                 <DESC>UI notification mode.</DESC>
                 <PLATFORM>Android</PLATFORM>
                 <VALUES>
