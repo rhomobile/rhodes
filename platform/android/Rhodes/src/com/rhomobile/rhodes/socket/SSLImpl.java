@@ -28,6 +28,7 @@ package com.rhomobile.rhodes.socket;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +39,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -45,6 +47,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
@@ -64,6 +67,7 @@ public class SSLImpl {
 	
 	private static SSLSocketFactory factory = null;
     private static SSLSocketFactory secureFactory = null;
+    private static SSLSocketFactory mutualAuthFactory = null;
 
 	
 	private SSLSocket sock;
@@ -271,7 +275,7 @@ public class SSLImpl {
         return certs;
     }
     
-    private static SSLSocketFactory getSecureFactory() throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException {
+    private static SSLSocketFactory getSecureFactory() throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
         Logger.I(TAG, "Creating secure SSL factory");
         
         SSLContext context = SSLContext.getInstance("TLS");
@@ -300,25 +304,53 @@ public class SSLImpl {
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(keystore);        
         X509TrustManager customTrustManager = (X509TrustManager)tmf.getTrustManagers()[0];
+        
+        Logger.I(TAG, "Creating KeyManager for custom certificates");
+        
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
+        
+        if ( RhoConf.isExist("clientSSLCertificate")) {
+        	String clientCertPath = RhoConf.getString("clientSSLCertificate");        	
+        	String password = "";
+        	if (RhoConf.isExist("clientSSLCertificatePassword")) {
+        		password = RhoConf.getString("clientSSLCertificatePassword");
+        	}
+        	
+        	KeyStore clientKeystore = KeyStore.getInstance( KeyStore.getDefaultType() );
+        	clientKeystore.load( new FileInputStream(clientCertPath), password.toCharArray() );
+        	kmf.init(clientKeystore, password.toCharArray());
+        }
        
         /* 
          * this really works only with first provided TrustManager, 
          * so we make our own wrapper which encapsulates both system installed and custom provided certificates
          */
-        context.init(null, new TrustManager[] { new MySecureTrustManager( systemTrustManager, customTrustManager ) }, new SecureRandom());
+        context.init( 
+        		kmf.getKeyManagers(), 
+        		new TrustManager[] { new MySecureTrustManager( systemTrustManager, customTrustManager ) }, 
+        		new SecureRandom()
+        );
         
         Logger.I(TAG, "Secure SSL factory initialization completed");
         
         return (SSLSocketFactory)context.getSocketFactory();
         
     }
+    
+    private static SSLSocketFactory getMutualAuthFactory() throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException {
+        Logger.I(TAG, "Creating SSL mutual auth factory");
+        
+        //TODO: Implement creation of mutual auth factory
+        
+        return mutualAuthFactory;
+    }
 	
-	private static SSLSocketFactory getFactory(boolean verify) throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException {
+	private static SSLSocketFactory getFactory(boolean verify) throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
 		if (verify) {
-            if ( secureFactory == null ) {
-                secureFactory = getSecureFactory();
-            }
-            return secureFactory;
+			if ( secureFactory == null ) {
+				secureFactory = getSecureFactory();
+			}
+           	return secureFactory;
         }
 		
 		if (factory == null) {
