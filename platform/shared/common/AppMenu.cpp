@@ -102,7 +102,7 @@ void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink, bo
       	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
 }
 
-void CAppMenu::getMenuItems(rho::Vector< Hashtable<String, String> >& arRes )
+/*void CAppMenu::getMenuItems(rho::Vector< Hashtable<String, String> >& arRes )
 {
     rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
     copyMenuItems(arAppMenuItems, false);
@@ -113,7 +113,7 @@ void CAppMenu::getMenuItems(rho::Vector< Hashtable<String, String> >& arRes )
         hash[arAppMenuItems[i].m_strLabel] = arAppMenuItems[i].m_strLink;
         arRes.addElement(hash);
     }
-}
+}*/
 
 void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu )
 {
@@ -208,8 +208,8 @@ CAppMenuItem CAppMenu::getRightButton()
         return m_oRightItem;
     }
 }
-
-void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
+/*
+void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu )
 {
     synchronized(m_mxAppMenu) 
 	{
@@ -232,6 +232,7 @@ void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool
 #endif
     }
 }
+*/
 
 void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
 {
@@ -270,11 +271,8 @@ void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bo
             addAppMenuItem( label, action, bLeftMenu );
 
             bool isDisable = (bool)(disable == "false");
+            setEnableMenuItem(label, !isDisable, bLeftMenu);
 
-            if ( bLeftMenu )
-                setEnableMenuItem(label, isDisable, true);
-            else
-                setEnableMenuItem(label, isDisable, false);
         }
 #ifdef OS_WP8
 		createMenu();
