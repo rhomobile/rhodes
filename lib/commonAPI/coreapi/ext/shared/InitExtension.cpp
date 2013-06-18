@@ -15,6 +15,7 @@ extern "C" void Init_Notification();
 extern "C" void Init_RhoFile();
 extern "C" void Init_NativeMenuBar();
 extern "C" void Init_Led();
+extern "C" void Init_Push();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -58,4 +59,6 @@ extern "C" void Init_CoreAPI_Extension()
 #if defined(OS_WINCE)
 	Init_Led();
 #endif
+
+	Init_Push();
 }

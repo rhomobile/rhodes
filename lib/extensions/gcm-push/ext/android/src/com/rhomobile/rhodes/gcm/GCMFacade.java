@@ -37,8 +37,14 @@ public final class GCMFacade {
     
     static final String GCM_PUSH_CLIENT = "gcm";
     
-    public static void Register() {
+    public static void Register(String senderId) {
         Logger.T(TAG, "Send GCM push register req");
+        
+        if (senderId == null || senderId.length() == 0) {
+            Logger.W(TAG, "Trying to read deprecated GCM push sender app id from build.yml");
+            senderId = Push.SENDER;
+        }
+        
         if (GCMRegistrar.isRegistered(ContextFactory.getContext())) {
             Logger.T(TAG, "Already has GCM push registeration");
             PushContract.handleRegistration(ContextFactory.getContext(),
@@ -47,7 +53,7 @@ public final class GCMFacade {
         }
         else {
             Logger.T(TAG, "Send GCM push register req");
-            GCMRegistrar.register(ContextFactory.getContext(), Push.SENDER);
+            GCMRegistrar.register(ContextFactory.getContext(), senderId);
         }
     }
 
