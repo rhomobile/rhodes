@@ -11,6 +11,10 @@ extern BOOL navbar_started();
 
 
 -(void) create:(NSDictionary*)navBarProperties {
+    if (![navBarProperties isKindOfClass:[NSDictionary class]]) {
+        NSLog(@"Navbar.create ERROR - parameter should be HASH !");
+        return;
+    }
     create_navbar(navBarProperties);
 }
 

@@ -34,21 +34,27 @@
 #include "logging/RhoLog.h"
 
 #include "gcmpushclient.h"
-#include "com_rhomobile_rhodes_gcm_GCMRhoListener.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 extern "C" void Init_GCMPushClient()
 {
     // create GCM push client
-    rho::push::CPushManager::getInstance()->addClient(new rho::gcm::GcmPushClient());
+    RAWTRACEC("Init_GCMPushClient", "creating GCM client >>>>>>>>>>>>>>");
 
-    if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
-        rho::sync::RhoconnectClientManager::clientRegisterSetDevicePin("");
-    }
+    rho::gcm::GcmPushClient* pClient = new rho::gcm::GcmPushClient();
+
+    RAWTRACEC("Init_GCMPushClient", "adding GCM client >>>>>>>>>>>>>>>>");
+
+    rho::push::CPushManager::getInstance()->addClient(pClient);
+
+//    if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+//        rho::sync::RhoconnectClientManager::clientRegisterSetDevicePin("");
+//    }
     
-    rho::gcm::GcmPushClient::GcmPushRegister();
-}
+    RAWTRACEC("Init_GCMPushClient", "request GCM registration >>>>>>>>>>>>>>>>");
 
+    pClient->doRegister();;
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace rho { namespace gcm {
@@ -60,7 +66,7 @@ IMPLEMENT_LOGCLASS(GcmPushClient, "GcmPushClient");
 const char* const GcmPushClient::s_GCM_FACADE_CLASS = "com.rhomobile.rhodes.gcm.GCMFacade";
 
 //----------------------------------------------------------------------------------------------------------------------
-void GcmPushClient::GcmPushRegister()
+void GcmPushClient::doRegister()
 {
     LOG(TRACE) + "GcmPushRegister()";
 
@@ -72,17 +78,19 @@ void GcmPushClient::GcmPushRegister()
         return;
     }
 
-    static jmethodID mid = env->GetStaticMethodID(cls, "Register", "()V");
+    static jmethodID mid = env->GetStaticMethodID(cls, "Register", "(Ljava/lang/String;)V");
     if (!mid) {
         LOG(ERROR) + "Cannot get " + s_GCM_FACADE_CLASS + ".Register() method";
         return;
     }
 
-    env->CallStaticVoidMethod(cls, mid);
+    jhstring jhSenderId = rho_cast<jstring>(m_hashProps["senderId"]);
+
+    env->CallStaticVoidMethod(cls, mid, jhSenderId.get());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void GcmPushClient::GcmPushUnregister()
+void GcmPushClient::doUnregister()
 {
     LOG(TRACE) + "GcmPushUnregister()";
 
@@ -110,6 +118,7 @@ GcmPushClient::GcmPushClient()
     CMethodResult result;
     setProperty("id", s_Type, result);
     setProperty("type", IPush::PUSH_TYPE_NATIVE, result);
+    setProperty("senderId", RHOCONF().getString("Push.gcm.senderId"), result);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

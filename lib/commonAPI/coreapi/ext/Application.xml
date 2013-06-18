@@ -60,16 +60,29 @@
             </PROPERTY>
 
             <PROPERTY name="nativeMenu" type="ARRAY">
-                <PARAM type="HASH" />
-                <DESC>Native Menu items: array of hashes(name to action)</DESC>
+                <PARAM type="HASH">
+
+                    <PARAMS>
+                        <PARAM name="label" type="STRING">
+                            <DESC>Visible label.</DESC>
+                        </PARAM>
+                        <PARAM name="action" type="STRING">
+                            <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
+                        </PARAM>
+                    </PARAMS>
+
+                </PARAM>
+
+                <DESC>Native Menu items</DESC>
                 <PLATFORM>WM, Android, Win32, WP8</PLATFORM>
             </PROPERTY>
 
             <PROPERTY name="defaultNativeMenu" type="ARRAY" readOnly="true" generateAPI="false">
-                <PARAM type="HASH" />
+                <<PARAM type="HASH">
+                    <DESC>Same values as for nativeMenu.</DESC>
+                </PARAM>
                 <PLATFORM>WM, Android, Win32, WP8</PLATFORM>
-                <APPLIES rubyOnly="true"/>
-                <DESC>Default Native Menu items: array of hashes(name to action)</DESC>
+                
             </PROPERTY>
             <PROPERTY name="securityTokenNotPassed" type="BOOLEAN" readOnly="true">
                 <DESC>Is the security token check was failed.Security token can be set in build.yml: security_token. Same security token should be passed as command line parameter '-security_token=token_value' to application. If security token check failed : if this page exist then application navigate to it, otherwise application will exit.</DESC>
