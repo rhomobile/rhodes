@@ -365,6 +365,7 @@ private:
 
 	void ShowLoadingPage();
 
+    void showMenuBarMenu(const CAppMenuItem& menuButton, bool isLeft);
 	void createCustomMenu(void);
 
     void ProcessDocumentComplete(LPCTSTR url);
@@ -394,6 +395,7 @@ private:
 #if defined(_WIN32_WCE)
     // main menu bar for application
     CWindow m_menuBar;
+    CMenu m_mainMenu;
 #elif defined (OS_WINDOWS_DESKTOP)
 	CMenuBar m_menuBar;
 //	int m_menuBarHeight;
@@ -403,7 +405,6 @@ private:
 // #if defined( OS_PLATFORM_MOTCE )
     int   m_menuBarHeight;
     HWND  g_hWndCommandBar;	// command bar handle
-
 // #endif
 
 #if defined(_WIN32_WCE)
