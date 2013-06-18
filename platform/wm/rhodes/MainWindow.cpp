@@ -250,22 +250,32 @@ LRESULT CMainWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
     MoveWindow(&rcMainWindow);
 #elif defined(OS_WINCE) && !defined( OS_PLATFORM_MOTCE )
-    // Create a menubar
-    SHMENUBARINFO mbi = { sizeof(mbi), 0 };
 
-    mbi.hwndParent = m_hWnd;
-    mbi.nToolBarId = IDR_MAIN_MENUBAR; // ID of toolbar resource
-    mbi.hInstRes   = _AtlBaseModule.GetResourceInstance();
+    if(m_mainMenu.CreateMenu())
+    {
+        m_mainMenu.AppendMenu(MF_BYCOMMAND | MF_ENABLED | MF_STRING,
+                            IDM_SK1_EXIT, _T("Back"));
+        m_mainMenu.AppendMenu(MF_BYCOMMAND | MF_ENABLED | MF_STRING,
+                            IDM_SK2_MENU, _T("Menu"));
 
-    if (!IsWindowVisible())
-        mbi.dwFlags = SHCMBF_HIDDEN;
+        SHMENUBARINFO mbi = { 0 };
+        mbi.cbSize        = sizeof(mbi);
+        mbi.hwndParent    = m_hWnd;
+        mbi.dwFlags       = SHCMBF_HMENU;
+        mbi.nToolBarId    = (UINT)(HMENU)m_mainMenu;
+        mbi.hInstRes      = ModuleHelper::GetResourceInstance();
+        mbi.nBmpId        = 0;
+        mbi.cBmpImages    = 0;
+        mbi.hwndMB        = NULL;
 
-    SHCreateMenuBar(&mbi);
-	m_hWndCECommandBar = mbi.hwndMB;
-	m_menuBar = m_hWndCECommandBar;
-	SetToolbarButtonEnabled(IDM_SK1_EXIT, FALSE);
-    //SetToolbarButtonName( IDM_SK1_EXIT, L"Geny");
-    //SetToolbarButtonName( IDM_SK2_MENU, L"Geny222");
+        BOOL bRet = ::SHCreateMenuBar(&mbi);
+        if(bRet != FALSE)
+        {
+            m_hWndCECommandBar = mbi.hwndMB;
+            m_menuBar = m_hWndCECommandBar;
+            SizeToMenuBar();
+        }
+    }
 
 #elif defined( OS_PLATFORM_MOTCE )
     g_hWndCommandBar = CommandBar_Create(_AtlBaseModule.GetResourceInstance(), m_hWnd, 1);
@@ -1701,50 +1711,60 @@ LRESULT CMainWindow::OnUpdateMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
     return 0;
 }
 
-LRESULT CMainWindow::OnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+void CMainWindow::showMenuBarMenu(const CAppMenuItem& menuButton, bool isLeft)
 {
-    CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftButton();
-
-    if ( oLeftItem.m_strLink.length() == 0)
+    if ( menuButton.m_strLink.length() == 0)
     {
-    	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems, true);
+    	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems, isLeft);
 
         if (m_arAppMenuItems.size() == 0 )
-            RHODESAPP().navigateBack();
+        {
+            if (isLeft) {
+                RHODESAPP().navigateBack();
+            }
+            else {
+                // ???
+            }
+        }
         else
         {
             HMENU hMenu = CreatePopupMenu();
 #if !defined (OS_WINDOWS_DESKTOP) && !defined( OS_PLATFORM_MOTCE )
             createCustomMenuEx( hMenu, m_arAppMenuItems );
 #endif
-
             RECT  rcBar = {0}; 
 	        m_menuBar.GetWindowRect(&rcBar);
 
             RECT rcBtn = {0};
-            m_menuBar.SendMessage( TB_GETITEMRECT, 0, (LPARAM)&rcBtn );
+            if (isLeft) {
+                m_menuBar.SendMessage( TB_GETITEMRECT, 0, (LPARAM)&rcBtn );
+            }
+            else {
+                m_menuBar.SendMessage( TB_GETITEMRECT, 1, (LPARAM)&rcBtn );
+            }
+
             ::TrackPopupMenuEx( hMenu, TPM_CENTERALIGN|TPM_BOTTOMALIGN, rcBtn.left+(rcBtn.right-rcBtn.left)/2, rcBar.top, m_hWnd, 0 );
 
             DestroyMenu(hMenu);
         }
     }
-    else
-        RHODESAPP().loadUrl(oLeftItem.m_strLink);
+    else {
+        RHODESAPP().loadUrl(menuButton.m_strLink);
+    }
+}
+
+LRESULT CMainWindow::OnLeftMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{  
+    CAppMenuItem oLeftItem = RHODESAPP().getAppMenu().getLeftButton();
+    showMenuBarMenu(oLeftItem, true);
 
     return 0;
 }
 
 LRESULT CMainWindow::OnRightMenuCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+{    
     CAppMenuItem oRightItem = RHODESAPP().getAppMenu().getRightButton();
-
-    if ( oRightItem.m_strLink.length() == 0)
-    {
-        //RHODESAPP().navigateBack();
-        //Show menu
-    }
-    else
-        RHODESAPP().loadUrl(oRightItem.m_strLink);
+    showMenuBarMenu(oRightItem, false);
 
     return 0;
 }
@@ -1829,6 +1849,7 @@ typedef struct tagNMNEWMENU
 void CMainWindow::createCustomMenu()
 {
 	RHODESAPP().getAppMenu().copyMenuItems(m_arAppMenuItems);
+    m_arAppMenuItems.push_back(rho::common::CAppMenuItem("aaa", "bbb"));
     HMENU hMenu = (HMENU)m_menuBar.SendMessage(SHCMBM_GETSUBMENU, 0, IDM_SK2_MENU);
     createCustomMenuEx( hMenu, m_arAppMenuItems );
 }
