@@ -78,7 +78,7 @@
             </PROPERTY>
 
             <PROPERTY name="defaultNativeMenu" type="ARRAY" readOnly="true" generateAPI="false">
-                <<PARAM type="HASH">
+                <PARAM type="HASH">
                     <DESC>Same values as for nativeMenu.</DESC>
                 </PARAM>
                 <PLATFORM>WM, Android, Win32, WP8</PLATFORM>
