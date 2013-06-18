@@ -62,8 +62,8 @@ public:
     virtual void stopNotifications(CMethodResult& result);
     virtual bool callBack(const String& json);
 
-    static void GcmPushRegister();
-    static void GcmPushUnregister();
+    void doRegister();
+    void doUnregister();
 };
 
 
