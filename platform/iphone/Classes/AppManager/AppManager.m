@@ -1153,6 +1153,10 @@ int rho_prepare_folder_for_upgrade(const char* szPath) {
     return 1;
 }
 
+void rho_title_change(const int tabIndex, const wchar_t* strTitle) {
+    // not implemented on iOS
+}
+
 
 /*
 #define MAX_ACTIONS 4
