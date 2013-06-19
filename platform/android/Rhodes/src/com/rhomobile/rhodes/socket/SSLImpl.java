@@ -59,6 +59,7 @@ import android.util.Base64;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
+import com.rhomobile.rhodes.file.RhoFileApi;
 
 
 public class SSLImpl {
@@ -323,7 +324,7 @@ public class SSLImpl {
         		}
         	
         		KeyStore clientKeystore = KeyStore.getInstance( "pkcs12" );
-        		clientKeystore.load( new FileInputStream(clientCertPath), password.toCharArray() );
+        		clientKeystore.load( RhoFileApi.open(clientCertPath), password.toCharArray() );
         		kmf.init(clientKeystore, password.toCharArray());
         	}
         }
