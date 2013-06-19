@@ -237,11 +237,12 @@
             </METHOD>
 
             <METHOD name="startStatusNotify" hasCallback="mandatory" runInThread="none">
-                <DESC>Start network status notifications.</DESC>
+                <DESC>Start network status notifications.Notification send when Wifi or Cell netwrok appear/disappear. To check real Internet connectivity use detectConnection method.</DESC>
                 <PLATFORM>WM, Android, iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="pollInterval" type="INTEGER" default="20">
                         <DESC>The network status polling period for systems that can not notify network status change immediately. In seconds.</DESC>
+                        <PLATFORM>Android, iOS</PLATFORM>
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>

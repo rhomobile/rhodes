@@ -13,6 +13,10 @@ extern void native_tabbar_switch_tab(int index);
 
 
 -(void) create:(NSArray*)tabElements tabBarProperties:(NSDictionary*)tabBarProperties methodResult:(id<IMethodResult>)methodResult {
+    if (![tabElements isKindOfClass:[NSArray class]]) {
+        NSLog(@"Tabbar.create ERROR - tabElements parameter should be Array !");
+        return;
+    }
     rho_create_tabbar(tabElements, tabBarProperties, methodResult);
 }
 
