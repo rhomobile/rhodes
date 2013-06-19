@@ -38,14 +38,14 @@ public:
     virtual void getNativeMenu(rho::apiGenerator::CMethodResult& oResult)
     {
         rho::Vector< Hashtable<String, String> > arRes;
-        RHODESAPP().getAppMenu().getMenuItems(arRes);
+        RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
 
         oResult.set(arRes);
     }
 
     virtual void setNativeMenu( const rho::Vector<rho::String>& value, rho::apiGenerator::CMethodResult& oResult)
     {
-        RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
+        RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(value);
     }
 
     //Android only
