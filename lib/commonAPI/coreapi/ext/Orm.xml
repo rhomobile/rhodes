@@ -30,15 +30,32 @@
           <PARAM name="resetClientInfo" type="BOOLEAN">
             <DESC>true to clean the client_info table, false otherwise.</DESC>
             <DEFAULT>false</DEFAULT>
-            <CAN_BE_NIL/>
+            <CAN_BE_NIL>
+              <DESC>False on default</DESC>
+            </CAN_BE_NIL>
           </PARAM>
           <PARAM name="resetLocalModels" type="BOOLEAN">
             <DESC>true to clean local (non-synced) models, false otherwise.</DESC>
             <DEFAULT>false</DEFAULT>
-            <CAN_BE_NIL/>
+            <CAN_BE_NIL>
+              <DESC>Reset all models</DESC>
+            </CAN_BE_NIL>
           </PARAM>
         </PARAMS>
+      </METHOD>
+       <METHOD name="import" deprecated="true" generateAPI="false">
+        <DESC>Import db</DESC>
+        <PARAMS>
+          <PARAM name="zipName" type="STRING">
+            <DESC>The name of the zip file</DESC>
+          </PARAM>
+        </PARAMS>
+        <RETURN type="BOOLEAN"/>
+      </METHOD>
 
+      <METHOD name="export" deprecated="true"  generateAPI="false">
+        <DESC>Export db</DESC>
+        <RETURN type="STRING"/>
       </METHOD>
       <METHOD name="databaseFullResetAndLogout" generateAPI="false">
         <DESC>Deletes all records from the property bag and model tables. For examples, see Resetting the Database in
@@ -54,8 +71,7 @@
         </DESC>
       </METHOD>
       <METHOD name="databaseFullResetEx" generateAPI="false">
-        <DESC>Deletes all records from the property bag and model tables, if models are set then reset only selected
-          models.
+        <DESC>Deletes all records from the property bag and model tables for the model names passed in parameters.
         </DESC>
         <PARAMS>
           <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -63,20 +79,17 @@
             <PARAMS>
               <PARAM name="models" type="ARRAY">
                 <DESC>Array of models names to reset.</DESC>
-                <CAN_BE_NIL>
-                  <DESC>Reset all models</DESC>
-                </CAN_BE_NIL>
               </PARAM>
-              <PARAM name="reset_client_info" type="INTEGER" default="false">
+              <PARAM name="reset_client_info" type="BOOLEAN">
                 <DESC>If set to true, client_info table will be cleaned.</DESC>
                 <CAN_BE_NIL>
                   <DESC>False on default</DESC>
                 </CAN_BE_NIL>
               </PARAM>
-              <PARAM name="reset_local_models" type="INTEGER" default="false">
+              <PARAM name="reset_local_models" type="BOOLEAN" default="false">
                 <DESC>If set to true, local(non-synced models) will be cleaned.</DESC>
                 <CAN_BE_NIL>
-                  <DESC>False on default</DESC>
+                  <DESC>Reset all models</DESC>
                 </CAN_BE_NIL>
               </PARAM>
             </PARAMS>
@@ -141,11 +154,7 @@ ORM.databaseFullResetEx(:models => ['Product', 'Customer'], :reset_client_info =
               </RUBY>
               <JAVASCRIPT>
                 <![CDATA[
-ORM.databaseFullResetEx({
-    models: ['Product', 'Customer'],
-    reset_local_info: true,
-    reset_local_models: true
-  }); ]]>
+Rho.ORM.databaseFullResetEx({"models":['Product', 'Customer']},true,true); ]]>
               </JAVASCRIPT>
             </CODE>
 
@@ -217,70 +226,6 @@ product.get('name'); // iPhone5
 
         </SECTIONS>
       </EXAMPLE>
-           <EXAMPLE title="Export database">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   Export all data from a database partition to a zip file
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
-# Export database partition as zip file
-zip_archive = Rho::Orm.databaseExport(:user)
-Alert.show_popup(zip_archive)
-                   ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
-// Export database partition as zip file
-var exported_zip = Rho.Orm.databaseExport("user");
-alert("Exported database to: "+exported_zip);
-                   ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-          <EXAMPLE title="Import database">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   Import database from a zip file created with Orm.databaseExport
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
-# Import database from a zip file created with "Rho::Orm.databaseExport"
-exported_database = "/somewhere/file.zip"
-result = Rho::Orm.databaseImport(:user, exported_database)
-if (result)
-  Alert.show_popup("Import succeeded. Existing data was erased and the backup was restored")
-else
-  # If the process fails, everything will be restored to its previous state. We will not lose any information
-  Alert.show_popup("Database import failed. The database is unchanged")
-end
-                   ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
-// Import database from a zip file created with "Rho.Orm.databaseExport"      
-var exported_zip = "/somewhere/filename.zip";
-var result = Rho.Orm.databaseImport("user", exported_zip);
-if (result) {
-  alert("Import succeeded. Existing data was erased and the backup was restored");
-} else {
-  // If the process fails, everything will be restored to its previous state. We will not lose any information
-  alert("Database import failed. The database is unchanged");
-}
-                   ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
    <EXAMPLE title="Get Model by name">
     <SECTIONS>
        
