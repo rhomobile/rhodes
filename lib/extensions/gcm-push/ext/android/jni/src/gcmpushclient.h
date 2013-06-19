@@ -55,7 +55,7 @@ public:
 
     virtual void init();
 
-
+    virtual const String& getId() const { return s_Type; }
     virtual void setDeviceId(const String& deviceId);
     virtual void getDeviceId(CMethodResult& result);
     virtual void startNotifications(CMethodResult& result);
