@@ -102,7 +102,7 @@ module Rhom
         
         if (args.count == 0 || !args[0][:models])
         
-            database_full_reset( 
+            database_full_reset(
               args.count > 0 && !args[0][:reset_client_info].nil?() ? args[0][:reset_client_info] : false, 
               args.count > 0 && !args[0][:reset_local_models].nil?() ? args[0][:reset_local_models] : true )
             
@@ -170,8 +170,8 @@ module Rhom
       def database_full_reset(reset_client_info=false, reset_local_models=true)
         puts "database_full_reset : reset_client_info=#{reset_client_info}, reset_local_models=#{reset_local_models}"
         
-		#load all partitions
-		Rho::RHO.load_all_sources
+		    #load all partitions
+		    Rho::RHO.load_all_sources
 
         if defined?(RHOCONNECT_CLIENT_PRESENT)
             old_interval = Rho::RhoConnectClient.pollInterval = 0
