@@ -129,7 +129,7 @@ public:
         oResult.setJSON(rho_impl_getNativeMenu());
 #else
         rho::Vector< Hashtable<String, String> > arRes;
-        RHODESAPP().getAppMenu().getMenuItems(arRes);
+        RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
 
         oResult.set(arRes);
 #endif
@@ -141,7 +141,7 @@ public:
         rho_impl_setNativeMenu(value);
 #else
 
-        RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
+        RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(value);
         
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
        rho_webview_update_menu(1);
