@@ -11,7 +11,7 @@
 #endif
 
 extern "C" void rho_sys_app_exit();
-extern "C" void rho_title_change(const int tabIndex, LPCTSTR strTitle);
+extern "C" void rho_title_change(const int tabIndex, const wchar_t* strTitle);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
