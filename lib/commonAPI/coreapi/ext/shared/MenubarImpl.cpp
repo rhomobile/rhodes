@@ -32,7 +32,6 @@ virtual void getMainMenu(rho::apiGenerator::CMethodResult& oResult)
 {
     rho::Vector< Hashtable<String, String> > arRes;
     RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
-
     oResult.set(arRes);
 }
 
@@ -50,7 +49,6 @@ virtual void getExtraMenu(rho::apiGenerator::CMethodResult& oResult)
 {
     rho::Vector< Hashtable<String, String> > arRes;
     RHODESAPP().getAppMenu().getMenuItemsEx(arRes, true);
-
     oResult.set(arRes);
 }
 
@@ -100,16 +98,6 @@ virtual void setExtraButton( const rho::Hashtable<rho::String, rho::String>& ext
 #endif
 }
 
-/* --------------------------------------------------------------------- 
-
-virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor)
-{
-}
-
-virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor)
-{
-}
- */
 };
 
 ////////////////////////////////////////////////////////////////////////
