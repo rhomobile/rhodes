@@ -977,7 +977,7 @@ extern "C" void rho_conf_show_log()
     ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
 }
 
-extern "C" void rho_title_change(const int tabIndex, LPCTSTR strTitle)
+extern "C" void rho_title_change(const int tabIndex, const wchar_t* strTitle)
 {
     ::PostMessage(getMainWnd(), WM_BROWSER_ONTITLECHANGE, (WPARAM)tabIndex, (LPARAM)_tcsdup(strTitle));
 }
