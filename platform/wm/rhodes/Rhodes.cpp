@@ -977,6 +977,11 @@ extern "C" void rho_conf_show_log()
     ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
 }
 
+extern "C" void rho_title_change(const int tabIndex, LPCTSTR strTitle)
+{
+    ::PostMessage(getMainWnd(), WM_BROWSER_ONTITLECHANGE, (WPARAM)tabIndex, (LPARAM)_tcsdup(strTitle));
+}
+
 //Hook for ruby call to refresh web view
 
 extern "C" void rho_net_impl_network_indicator(int active)
