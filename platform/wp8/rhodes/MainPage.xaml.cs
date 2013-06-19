@@ -462,11 +462,11 @@ namespace rhodes
                 menuItem.Click += new EventHandler(toolbarMenuItem_Click);
                 toolbarMenuItems.Add(menuItem);
             }
-            toolbarItems.Add(text, action);
+            toolbarItems.Add(text, action);           
             updateAppBarModeAndVisibility();
-        }
+        }  
 
-		public void toolbarAddSeparator()
+		public void toolbarAddSeparator()  
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { toolbarAddSeparator(); }); return; }
             CRhoRuntime.getInstance().logEvent("Toolbar separator is unimplemented on WP8");
@@ -657,9 +657,10 @@ namespace rhodes
             wv.LoadCompleted += RhodesWebBrowser_LoadCompleted;
             wv.Loaded += RhodesWebBrowser_Loaded;
             wv.Unloaded += RhodesWebBrowser_Unloaded;
+            wv.ScriptNotify += RhodesWebBrowser_JSNotify;
             //wv.SetValue(FrameworkElement.NameProperty, "tabWeb" + TabbarPivot.Items.Count.ToString());
             // TODO: reload
-            // TODO: web_bkg_color
+            // TODO: web_bkg_color 
             //if ((action != null) && (action.Length > 0))
             //    wv.Navigate(new Uri(CRhoRuntime.getInstance().canonicalizeRhoUrl(action)));
             tab.Content = wv;
