@@ -304,21 +304,28 @@ public class SSLImpl {
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(keystore);        
         X509TrustManager customTrustManager = (X509TrustManager)tmf.getTrustManagers()[0];
+                
+        KeyManagerFactory kmf = null;
         
-        Logger.I(TAG, "Creating KeyManager for client certificates");
-        
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
-        
-        if ( RhoConf.isExist("clientSSLCertificate")) {
-        	String clientCertPath = RhoConf.getString("clientSSLCertificate");        	
-        	String password = "";
-        	if (RhoConf.isExist("clientSSLCertificatePassword")) {
-        		password = RhoConf.getString("clientSSLCertificatePassword");
-        	}
+        if ( RhoConf.isExist("clientSSLCertificate")) {        	
+        	String clientCertPath = RhoConf.getString("clientSSLCertificate");
         	
-        	KeyStore clientKeystore = KeyStore.getInstance( "pkcs12" );
-        	clientKeystore.load( new FileInputStream(clientCertPath), password.toCharArray() );
-        	kmf.init(clientKeystore, password.toCharArray());
+        	Logger.I(TAG, "clientSSLCertificate is " + clientCertPath );
+
+        	
+        	if ( clientCertPath.length() > 0 ) {
+                Logger.I(TAG, "Creating KeyManager for client certificates");
+        		kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
+        		
+        		String password = "";
+        		if (RhoConf.isExist("clientSSLCertificatePassword")) {
+        			password = RhoConf.getString("clientSSLCertificatePassword");
+        		}
+        	
+        		KeyStore clientKeystore = KeyStore.getInstance( "pkcs12" );
+        		clientKeystore.load( new FileInputStream(clientCertPath), password.toCharArray() );
+        		kmf.init(clientKeystore, password.toCharArray());
+        	}
         }
        
         /* 
@@ -326,7 +333,7 @@ public class SSLImpl {
          * so we make our own wrapper which encapsulates both system installed and custom provided certificates
          */
         context.init( 
-        		kmf.getKeyManagers(), 
+        		(kmf==null)?null:kmf.getKeyManagers(), 
         		new TrustManager[] { new MySecureTrustManager( systemTrustManager, customTrustManager ) }, 
         		new SecureRandom()
         );
@@ -336,20 +343,12 @@ public class SSLImpl {
         return (SSLSocketFactory)context.getSocketFactory();
         
     }
-    
-    private static SSLSocketFactory getMutualAuthFactory() throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException {
-        Logger.I(TAG, "Creating SSL mutual auth factory");
-        
-        //TODO: Implement creation of mutual auth factory
-        
-        return mutualAuthFactory;
-    }
-	
+    	
 	private static SSLSocketFactory getFactory(boolean verify) throws NoSuchAlgorithmException, KeyManagementException, CertificateException, KeyStoreException, IOException, UnrecoverableKeyException {
 		if (verify) {
-			if ( secureFactory == null ) {
+			//if ( secureFactory == null ) {
 				secureFactory = getSecureFactory();
-			}
+			//}
            	return secureFactory;
         }
 		
