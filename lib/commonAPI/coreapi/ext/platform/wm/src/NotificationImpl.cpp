@@ -24,13 +24,14 @@ class CNotificationImpl: public CNotificationSingletonBase
 public:
 	CNotificationImpl(): CNotificationSingletonBase() 
 	{
+#ifndef RHODES_EMULATOR
 		m_bNotificationsLoaded = FALSE;
 		m_pNotifications = new CNotificationLoader();
 		if (m_pNotifications)
 			m_bNotificationsLoaded = m_pNotifications->LoadNotificationDLL();
 		if (!m_pNotifications || !m_bNotificationsLoaded)
 			LOG(INFO) + "Motorola specific notification functionality is not available on this device";
-	
+#endif
 	}
 
     virtual void showPopup(const Hashtable<String, String>& propertyMap, CMethodResult& oResult)
@@ -67,6 +68,8 @@ public:
 
     virtual void beep(const Hashtable<String, String>& propertyMap, CMethodResult& oResult)
 	{
+#if defined(OS_WINCE)
+#   ifndef RHODES_EMULATOR
 		int iFrequency = NOTIFICATIONS_DEFAULT_FREQUENCY;
 		int iVolume = NOTIFICATIONS_DEFAULT_VOLUME;
 		int iDuration = NOTIFICATIONS_DEFAULT_DURATION;
@@ -90,16 +93,20 @@ public:
 			bBeepSuccess = m_pNotifications->Beep(iFrequency, iVolume, iDuration);
 		if (!bBeepSuccess)
 			LOG(WARNING) + "Unable to use the device beeper";
+#   endif
+#endif
 	}
 
     virtual void vibrate(int duration, CMethodResult& oResult)
 	{
 #if defined(OS_WINCE)
+#   ifndef RHODES_EMULATOR
 		BOOL bVibrateSuccess = FALSE;
 		if (m_pNotifications)
 			bVibrateSuccess = m_pNotifications->Vibrate(duration);
 		if (!bVibrateSuccess)
 			LOG(WARNING) + "Unable to initiate the device vibrate function";
+#   endif
 #else
 		//  This call is having no effect on Moto Devices, they use Ntfy API (directly above)
 		alert_vibrate(duration);
@@ -108,8 +115,10 @@ public:
 	}
 
 private:
+#ifndef RHODES_EMULATOR
 	CNotificationLoader* m_pNotifications;
 	BOOL m_bNotificationsLoaded;
+#endif
 };
 
 class CNotificationFactory: public CNotificationFactoryBase
