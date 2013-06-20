@@ -619,11 +619,10 @@ namespace "config" do
 
     if $app_config["app_type"] == 'rhoelements'
     
-        # add rawsensors extension for rhoelements app
+        # add Sensor and mediacapture extensions for rhoelements app
         if $current_platform == "iphone" || $current_platform == "android"
             if !$app_config['extensions'].index('rhoelementsext')
-                $app_config["extensions"] += ["rawsensors"] unless $app_config['extensions'].index('rawsensors')
-                $app_config["extensions"] += ["audiocapture"] unless $app_config['extensions'].index('audiocapture')
+                $app_config['extensions'] = $app_config['extensions'] | ['Sensor', 'mediacapture']
             end
         end
         
@@ -648,8 +647,8 @@ namespace "config" do
     end
 
     if $app_config['extensions'].index('rhoelementsext')
-        $app_config["extensions"].delete("rawsensors")
-        $app_config["extensions"].delete("audiocapture")
+        $app_config["extensions"].delete("Sensor")
+        $app_config["extensions"].delete("mediacapture")
     end
 
     $hidden_app = $app_config["hidden_app"].nil?() ? "0" : $app_config["hidden_app"]
@@ -678,13 +677,13 @@ namespace "config" do
         #$app_config['extensions'].delete('nfc')
         $rhoelements_features += "- NFC extension\n"
     end
-    if $app_config['extensions'].index('rawsensors')
-        #$app_config['extensions'].delete('rawsensors')
-        $rhoelements_features += "- Raw Sensors\n"
+    if $app_config['extensions'].index('Sensor')
+        #$app_config['extensions'].delete('Sensor')
+        $rhoelements_features += "- Sensor\n"
     end
-    if $app_config['extensions'].index('audiocapture')
-        #$app_config['extensions'].delete('audiocapture')
-        $rhoelements_features += "- Audio Capture\n"
+    if $app_config['extensions'].index('mediacapture')
+        #$app_config['extensions'].delete('mediacapture')
+        $rhoelements_features += "- Media Capture\n"
     end
     if $app_config['extensions'].index('signature') && (($current_platform == "iphone") || ($current_platform == "android"))
         $rhoelements_features += "- Signature Capture\n"
@@ -750,11 +749,11 @@ namespace "config" do
                 if $app_config['extensions'].index('nfc')
                     $app_config['extensions'].delete('nfc')
                 end
-                if $app_config['extensions'].index('rawsensors')
-                    $app_config['extensions'].delete('rawsensors')
+                if $app_config['extensions'].index('Sensor')
+                    $app_config['extensions'].delete('Sensor')
                 end
-                if $app_config['extensions'].index('audiocapture')
-                    $app_config['extensions'].delete('audiocapture')
+                if $app_config['extensions'].index('mediacapture')
+                    $app_config['extensions'].delete('mediacapture')
                 end
                 if $app_config['extensions'].index('rho-javascript')
                     $app_config['extensions'].delete('rho-javascript')
