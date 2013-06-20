@@ -102,7 +102,7 @@ void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink, bo
       	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
 }
 
-void CAppMenu::getMenuItems(rho::Vector< Hashtable<String, String> >& arRes )
+/*void CAppMenu::getMenuItems(rho::Vector< Hashtable<String, String> >& arRes )
 {
     rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
     copyMenuItems(arAppMenuItems, false);
@@ -113,7 +113,7 @@ void CAppMenu::getMenuItems(rho::Vector< Hashtable<String, String> >& arRes )
         hash[arAppMenuItems[i].m_strLabel] = arAppMenuItems[i].m_strLink;
         arRes.addElement(hash);
     }
-}
+}*/
 
 void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu )
 {
@@ -209,30 +209,6 @@ CAppMenuItem CAppMenu::getRightButton()
     }
 }
 
-void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
-{
-    synchronized(m_mxAppMenu) 
-	{
-        if ( bLeftMenu )
-		    m_arAppLeftMenuItems.clear();
-        else
-            m_arAppMenuItems.clear();
-
-        RHODESAPP().setAppBackUrl("");
-        for (int i = 0; i < (int)arMenu.size(); i++)
-        {
-            rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
-            String strKey = oIter.getCurKey();
-            String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
-            addAppMenuItem( strKey, strValue, bLeftMenu );
-        }
-
-#ifdef OS_WP8
-		createMenu();
-#endif
-    }
-}
-
 void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
 {
     synchronized(m_mxAppMenu) 
@@ -269,12 +245,9 @@ void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bo
 
             addAppMenuItem( label, action, bLeftMenu );
 
-            bool isDisable = (bool)(disable == "false");
+            bool isDisable = (bool)(disable == "true");
+            setEnableMenuItem(label, !isDisable, bLeftMenu);
 
-            if ( bLeftMenu )
-                setEnableMenuItem(label, isDisable, true);
-            else
-                setEnableMenuItem(label, isDisable, false);
         }
 #ifdef OS_WP8
 		createMenu();

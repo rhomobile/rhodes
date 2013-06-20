@@ -38,14 +38,14 @@ public:
     virtual void getNativeMenu(rho::apiGenerator::CMethodResult& oResult)
     {
         rho::Vector< Hashtable<String, String> > arRes;
-        RHODESAPP().getAppMenu().getMenuItems(arRes);
+        RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
 
         oResult.set(arRes);
     }
 
     virtual void setNativeMenu( const rho::Vector<rho::String>& value, rho::apiGenerator::CMethodResult& oResult)
     {
-        RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
+        RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(value);
     }
 
     //Android only
@@ -190,7 +190,7 @@ public:
 
     virtual void setCookie( const rho::String& url,  const rho::String& cookie, rho::apiGenerator::CMethodResult& oResult)
     {
-        rho_webview_set_cookie( url.c_str(), cookie.c_str() );
+        rho_webview_set_cookie( strdup(url.c_str()), strdup(cookie.c_str()) );
     }
 
     //Android only

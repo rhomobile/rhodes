@@ -9,5 +9,5 @@ public interface IRhoApiPropertyBag {
     void getProperties(List<String> names, IMethodResult result);
     void setProperty(String name, String val, IMethodResult result);
     void setProperties(Map<String, String> props, IMethodResult result);
-    void clearAllProperties(IMethodResult result);
+    //void clearAllProperties(IMethodResult result);
 }

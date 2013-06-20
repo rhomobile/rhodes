@@ -43,10 +43,17 @@ class WebView
     end
     
     def self.set_menu_items(items)
-        ar = []
+    
+        return if items.nil?()
         
-        items.each do |key, value|
-            ar << {key=>value}
+        ar = items
+        if ar.is_a?(Hash)
+            #Backward compatibility with rhodes 3.5
+            ar = []
+            
+            items.each do |key, value|
+                ar << {:label=>key, :action=>value}
+            end
         end
         
         Rho::Application.nativeMenu = ar

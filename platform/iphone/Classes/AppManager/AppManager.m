@@ -660,13 +660,28 @@ void rho_sys_open_url(const char* url)
     [[AppManager instance] openURL:[NSString stringWithUTF8String:url]];
 }
 
-void rho_sys_app_install(const char *url) {
-    rho_sys_open_url(url);
+BOOL rho_sys_app_install(const char *url) {
+    //rho_sys_open_url(url);
+    const char* full_url = url;
+    RAWLOG_INFO1("rho_sys_app_install: %s", full_url);
+    
+	BOOL res = FALSE;
+    
+    if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:[NSString stringWithUTF8String:full_url]]]) {
+        res = [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithUTF8String:full_url]]];
+    }
+	
+	if ( res)
+		RAWLOG_INFO("rho_sys_app_install suceeded.");
+	else
+		RAWLOG_INFO("rho_sys_app_install failed.");
+    
+    return res;
 }
 
 
 
-void rho_sys_run_app_iphone(const char* appname, char* params) {
+BOOL rho_sys_run_app_iphone(const char* appname, char* params) {
 	NSString* app_name = [NSString stringWithUTF8String:appname];
 	app_name = [app_name stringByAppendingString:@":"];
     
@@ -688,6 +703,8 @@ void rho_sys_run_app_iphone(const char* appname, char* params) {
 		RAWLOG_INFO("rho_sys_run_app suceeded.");
 	else
 		RAWLOG_INFO("rho_sys_run_app failed.");
+    
+    return res;
 }
 
 void rho_sys_run_app(const char* appname, VALUE params)
@@ -1134,6 +1151,10 @@ int rho_prepare_folder_for_upgrade(const char* szPath) {
         }
     }
     return 1;
+}
+
+void rho_title_change(const int tabIndex, const char* strTitle) {
+    // not implemented on iOS
 }
 
 

@@ -479,12 +479,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
+		LOG(INFO) + "This is hidden app and can be started only with security key.";
+		if (RHOCONF().getString("invalid_security_token_start_path").length() <= 0)
+        {
 #ifdef OS_WINDOWS_DESKTOP
 	    ::MessageBoxW(0, L"This is hidden app and can be started only with security key.", L"Security Token Verification Failed", MB_ICONERROR | MB_OK);
 #endif
-		LOG(INFO) + "This is hidden app and can be started only with security key.";
-		if (RHOCONF().getString("invalid_security_token_start_path").length() <= 0)
 			return S_FALSE;
+        }
     }
 
 	LOG(INFO) + "Rhodes started";
@@ -973,6 +975,14 @@ extern "C" HWND rho_wmimpl_get_mainwnd()
 extern "C" void rho_conf_show_log()
 {
     ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
+}
+
+extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
+{
+#if !defined(RHODES_EMULATOR)
+    const StringW strTitleW = rho::common::convertToStringW(strTitle);
+    ::PostMessage(getMainWnd(), WM_BROWSER_ONTITLECHANGE, (WPARAM)tabIndex, (LPARAM)_tcsdup(strTitleW.c_str()));
+#endif
 }
 
 //Hook for ruby call to refresh web view
