@@ -111,6 +111,7 @@ private:
 #if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 	CWAN *m_pConnectionManager;
 #endif
+    void setupSecureConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, NetRequest& oNetRequest );
 };
 
 NetRequest& CNetworkImpl::getCurRequest(NetRequest& oNetRequest)
@@ -180,9 +181,8 @@ void CNetworkImpl::get( const rho::Hashtable<rho::String, rho::String>& property
     readHeaders( propertyMap, mapHeaders );
 
     NetRequest oNetRequest;
-
-    if ( propertyMap.containsKey("verifyPeerCertificate") )
-        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+    
+    setupSecureConnection( propertyMap, oNetRequest );
 
     NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).doRequest( getStringProp(propertyMap, "httpVerb", "GET").c_str(),
             propertyMap.get("url"), propertyMap.get("body"), null, &mapHeaders);
@@ -201,8 +201,7 @@ void CNetworkImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>&
     bool overwriteFile = propertyMap.containsKey("overwriteFile") && (propertyMap.get("overwriteFile")=="true");
     bool createFolders = propertyMap.containsKey("createFolders") && (propertyMap.get("createFolders")=="true");
 
-    if ( propertyMap.containsKey("verifyPeerCertificate") )
-        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+    setupSecureConnection( propertyMap, oNetRequest );
     
     bool fileExists = false;
 
@@ -228,8 +227,7 @@ void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propert
 
     NetRequest oNetRequest;
 
-    if ( propertyMap.containsKey("verifyPeerCertificate") )
-        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+    setupSecureConnection( propertyMap, oNetRequest );
 
     NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).doRequest( getStringProp(propertyMap, "httpVerb", "POST").c_str(),
             propertyMap.get("url"), propertyMap.get("body"), null, &mapHeaders);
@@ -245,8 +243,7 @@ void CNetworkImpl::uploadFile( const rho::Hashtable<rho::String, rho::String>& p
 
     NetRequest oNetRequest;
 
-    if ( propertyMap.containsKey("verifyPeerCertificate") )
-        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+    setupSecureConnection( propertyMap, oNetRequest );
 
     VectorPtr<net::CMultipartItem*> arMultipartItems;
     if ( propertyMap.containsKey("multipart") )
@@ -579,6 +576,33 @@ void CNetworkImpl::disconnectWan(rho::apiGenerator::CMethodResult& oResult)
 	//  Only applicable to WM/CE, specific to connection manager
 	m_pConnectionManager->Disconnect(TRUE);
 #endif
+}
+    
+void CNetworkImpl::setupSecureConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, NetRequest& oNetRequest )
+{
+    String clientCertificate = "";
+    String clientCertificatePassword = "";
+
+    //will enable server SSL auth if true.
+    if ( propertyMap.containsKey("verifyPeerCertificate") ) {
+        bool verifyPeer = (propertyMap.get("verifyPeerCertificate") == "true");
+        getCurRequest(oNetRequest).setSslVerifyPeer( verifyPeer );
+        
+        if ( verifyPeer ) {
+            //will enable client-side SSL auth if valid certificate path is provided (Android-only).
+            if ( propertyMap.containsKey("clientSSLCertificate") ) {
+                clientCertificate = propertyMap.get("clientSSLCertificate");
+            }
+            
+            if ( propertyMap.containsKey("clientSSLCertificatePassword") ) {
+                clientCertificatePassword = propertyMap.get("clientSSLCertificatePassword");
+            }
+        }
+        
+    }
+    
+    RHOCONF().setString("clientSSLCertificate",clientCertificate,false);
+    RHOCONF().setString("clientSSLCertificatePassword",clientCertificatePassword,false);
 }
 
 

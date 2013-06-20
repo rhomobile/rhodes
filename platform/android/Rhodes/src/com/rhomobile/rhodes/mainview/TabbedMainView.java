@@ -485,7 +485,10 @@ public class TabbedMainView implements MainView {
 		if (options instanceof Map<?,?>) {
 			Map<Object,Object> settings = (Map<Object,Object>)options;
 			
-			Object bkgObj = settings.get("background_color");
+			Object bkgObj = settings.get("backgroundColor");
+			if (bkgObj == null) {
+				bkgObj = settings.get("background_color");
+			}
 			if ((bkgObj != null) && (bkgObj instanceof Integer)) {
 				int color = ((Integer)bkgObj).intValue();//;Integer.parseInt((String)bkgObj) | 0xFF000000;
 				mBackgroundColor = color;
@@ -530,14 +533,17 @@ public class TabbedMainView implements MainView {
 		FrameLayout.LayoutParams lpf = null;
 		TabHost.LayoutParams lpt = null;
 		if (place_tabs_bottom) {
+
+			lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
+					LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
+			host.addView(tabWidget, lpt);
+			
+			
 			frame.setId(android.R.id.tabcontent);
 			lpf = new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT,
 					LayoutParams.FILL_PARENT, Gravity.TOP);
 			host.addView(frame, lpf);
 
-			lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
-					LayoutParams.WRAP_CONTENT, Gravity.BOTTOM);
-			host.addView(tabWidget, lpt);
 		}
 		else {
 			lpt = new TabHost.LayoutParams(LayoutParams.FILL_PARENT,
@@ -577,7 +583,7 @@ public class TabbedMainView implements MainView {
 			boolean use_current_view_for_tab = false;
 			Object use_current_view_for_tab_Obj = hash.get("useCurrentViewForTab");
 			if (use_current_view_for_tab_Obj != null) {
-				use_current_view_for_tab = ((String)use_current_view_for_tab_Obj).equalsIgnoreCase("true");
+				use_current_view_for_tab = (use_current_view_for_tab_Obj.toString()).equalsIgnoreCase("true");
 			}
 
 			if (use_current_view_for_tab) {

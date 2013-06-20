@@ -48,7 +48,11 @@ public:
     virtual ~CPushSingleton() {}
     String getInitialDefaultID();
     void enumerate(rho::apiGenerator::CMethodResult& oResult);
-    void addClient(CPushClient* pClient) { m_clients.addElement(pClient); }
+    void addClient(CPushClient* pClient)
+    {
+        m_clients.addElement(pClient);
+        LOG(INFO) + "New push client has added: " + pClient->getId();
+    }
     void setDeviceId(const String& id, const String& deviceId);
     void callBack(const String& id, const String& json);
 
@@ -73,9 +77,7 @@ String CPushSingleton::getInitialDefaultID()
     }
     else
     {
-        CMethodResult result;
-        m_clients.front()->getId(result);
-        return result.getString();
+        return m_clients.front()->getId();
     }
 }
 
@@ -85,9 +87,7 @@ void CPushSingleton::enumerate(rho::apiGenerator::CMethodResult& oResult)
     Vector<String> ids;
     for(VectorPtr<CPushClient*>::const_iterator it = m_clients.begin(); it != m_clients.end(); ++it)
     {
-        CMethodResult result;
-        (*it)->getId(result);
-        ids.push_back(result.getString());
+        ids.push_back((*it)->getId());
     }
     oResult.set(ids);
 }
@@ -127,15 +127,20 @@ void CPushSingleton::callBack(const String& id, const String& json)
 //----------------------------------------------------------------------------------------------------------------------
 CPushClient* CPushSingleton::getClient(const rho::String& id)
 {
+    LOG(TRACE) + "Looking for push client: " + id;
     for(VectorPtr<CPushClient*>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
     {
-        CMethodResult result;
-        (*it)->getId(result);
-        if(result.getString() == id)
+        const String& curId = (*it)->getId();
+
+        LOG(TRACE) + "Push client: " + curId;
+
+        if(curId == id)
         {
+            LOG(TRACE) + "Returning push client: " + curId;
             return *it;
         }
     }
+    LOG(TRACE) + "Push client has not found";
     return 0;
 }
 
@@ -145,6 +150,7 @@ CPushClient* CPushSingleton::getClient(const rho::String& id)
 
 extern "C" void Init_Push()
 {
+    RAWTRACEC("Init_Push", "Creating CPushSingleton...");
     rho::CPushFactoryBase::setInstance( new rho::push::CPushSingleton() );
     rho::Init_Push_API();
 }

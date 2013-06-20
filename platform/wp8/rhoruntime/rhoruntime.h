@@ -46,6 +46,7 @@ namespace rhoruntime
 		void navigate(::Platform::String^ url, int index);
 		::Platform::String^ executeScript(::Platform::String^ script, int index);
 		void GoBack(void);
+		void GoBack(int index);
 		void GoForward(void);
 		void Refresh(int index);
 		bool isStarted(void);

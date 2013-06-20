@@ -367,6 +367,12 @@ extern "C" const char* rho_native_rhopath()
     return "rho/";
 }
 
+
+void rho_webview_navigate_back_with_tab(int index)
+{
+	CRhoRuntime::getInstance()->getMainPage()->GoBack(index);
+}
+
 extern "C" const char* rho_native_get_appname()
 {
     return "Rhodes";

@@ -15,7 +15,7 @@
       <ALIASES>
       </ALIASES>
 
-      <METHOD name="open">
+      <METHOD name="open" constructor="true">
         <DESC>Opens file in specified mode.</DESC>
         <PARAMS>
           <PARAM name="path" type="STRING">

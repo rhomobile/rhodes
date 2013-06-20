@@ -192,41 +192,39 @@ class Jake
 	end        
   end
 
-  def self.run_spec_app(platform,appname)
+  def self.run_app_as_spec(platform, app_path)
 
-#    reset_spec_server(platform) if appname =~ /phone_spec/
-#	reset_bulk_server
+    $app_path = app_path
 
-    rhobuildyml = File.join(basedir,'rhobuild.yml')
-    #rhobuild = YAML::load_file(rhobuildyml)
-    #rhobuild['env']['app'] = app_expanded_path(appname)
-    #File.open(rhobuildyml,'w') {|f| f.write rhobuild.to_yaml}
-    $app_path = File.expand_path(File.join(basedir,'spec',appname))
+    $app_config = Jake.config(File.open(File.join(app_path, 'build.yml')))
+    $config = Jake.config(File.open(File.join(basedir, 'rhobuild.yml'), 'r'))
 
-    $app_config = Jake.config(File.open(File.join($app_path, "build.yml")))
-    $config = Jake.config(File.open(rhobuildyml,'r'))
+    Rake::Task.tasks.each { |t| t.reenable }
+    Rake::Task["run:#{platform}:spec"].invoke
+    
+    $failed.to_i
+  end
+
+  def self.run_spec_app(platform, appname)
+
+    app_path = File.expand_path(File.join(basedir, 'spec', appname))
 
     if appname =~ /phone_spec/
         server, addr, port = run_local_server
-        File.open(File.join($app_path, 'app', 'local_server.rb'), 'w') do |f|
+        File.open(File.join(app_path, 'app', 'local_server.rb'), 'w') do |f|
           f.puts "SPEC_LOCAL_SERVER_HOST = '#{addr}'"
           f.puts "SPEC_LOCAL_SERVER_PORT = #{port}"
         end
-        if File.exists?(File.join($app_path, 'server.rb'))
+        if File.exists?(File.join(app_path, 'server.rb'))
           $local_server = server
-          require File.join($app_path, 'server.rb')
+          require File.join(app_path, 'server.rb')
         end
     end
     
     begin
-      Rake::Task.tasks.each { |t| t.reenable }
-      Rake::Task['run:' + platform + ':spec'].invoke
+      run_app_as_spec(platform, app_path)
     ensure
-    
-      if appname =~ /phone_spec/
-        server.shutdown
-      end
-        
+      server.shutdown if appname =~ /phone_spec/
     end
     
     $failed.to_i

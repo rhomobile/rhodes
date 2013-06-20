@@ -235,7 +235,7 @@ void CMainWindow::messageLoop(void)
 void CMainWindow::GoBack(int index)
 {
     LOG(INFO) + "back";
-    ((QtMainWindow*)qtMainWindow)->GoBackWithTab(index);
+    ((QtMainWindow*)qtMainWindow)->GoBack(index);
 }
 
 void CMainWindow::GoForward(void)

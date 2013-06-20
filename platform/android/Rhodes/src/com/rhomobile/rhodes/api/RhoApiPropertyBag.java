@@ -36,10 +36,10 @@ public class RhoApiPropertyBag implements
         mProperties = new HashMap<String, String>();
     }
 
-    @Override
-    public void clearAllProperties(IMethodResult result) {
-        getPropertiesMap().clear();
-    }
+    //@Override
+    //public void clearAllProperties(IMethodResult result) {
+    //    getPropertiesMap().clear();
+    //}
 
     @Override
     public void getAllProperties(IMethodResult result) {

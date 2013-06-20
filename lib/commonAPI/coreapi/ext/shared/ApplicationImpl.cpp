@@ -11,6 +11,7 @@
 #endif
 
 extern "C" void rho_sys_app_exit();
+extern "C" void rho_title_change(const int tabIndex, const char* strTitle);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
@@ -116,6 +117,7 @@ public:
     virtual void setTitle( const rho::String& title, rho::apiGenerator::CMethodResult& oResult)
     {
         RHOCONF().setString("title_text", title, false);
+        rho_title_change(0, title.c_str());
     }
 
     virtual void getName(rho::apiGenerator::CMethodResult& oResult)
@@ -129,7 +131,7 @@ public:
         oResult.setJSON(rho_impl_getNativeMenu());
 #else
         rho::Vector< Hashtable<String, String> > arRes;
-        RHODESAPP().getAppMenu().getMenuItems(arRes);
+        RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
 
         oResult.set(arRes);
 #endif
@@ -141,7 +143,7 @@ public:
         rho_impl_setNativeMenu(value);
 #else
 
-        RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
+        RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(value);
         
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
        rho_webview_update_menu(1);

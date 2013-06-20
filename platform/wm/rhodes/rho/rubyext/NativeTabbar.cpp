@@ -62,6 +62,8 @@ void CNativeTabbar::CreateTabbarEx(const rho::Vector<rho::String>& tabbarElement
     if (!rho_rhodesapp_check_mode() )
         return;
 
+    RemoveTabbar();
+
 	COLORREF   rgbBackColor;
     bool bHiddenTabs = false, bCreateOnInit = false;
 
@@ -184,9 +186,11 @@ LRESULT CNativeTabbar::OnTimer (UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 void CNativeTabbar::RemoveTabbar()
 {
+    getAppWindow().getWebKitEngine()->SwitchTab(0); //Switch to main view
+
     for ( int i = 0; i < (int)m_arTabs.size(); i++ )
     {
-        if (!m_arTabs[i].m_bUseCurrentViewForTab)
+        if (m_arTabs[i].m_nTabID > 0 ) //do not remove tab 0
             getAppWindow().getWebKitEngine()->CloseTab(m_arTabs[i].m_nTabID);
     }
 
@@ -199,7 +203,7 @@ void CNativeTabbar::RemoveTab(int index)
 {
     if (index >= 0 && index < (int)m_arTabs.size() )
     {
-        if (!m_arTabs[index].m_bUseCurrentViewForTab)
+        if (m_arTabs[index].m_nTabID > 0 ) //do not remove tab 0
         {
             LOG(INFO) + "Close Tab: " + index;
             getAppWindow().getWebKitEngine()->CloseTab(m_arTabs[index].m_nTabID);

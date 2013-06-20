@@ -55,15 +55,15 @@ public:
 
     virtual void init();
 
-
+    virtual const String& getId() const { return s_Type; }
     virtual void setDeviceId(const String& deviceId);
     virtual void getDeviceId(CMethodResult& result);
     virtual void startNotifications(CMethodResult& result);
     virtual void stopNotifications(CMethodResult& result);
     virtual bool callBack(const String& json);
 
-    static void GcmPushRegister();
-    static void GcmPushUnregister();
+    void doRegister();
+    void doUnregister();
 };
 
 

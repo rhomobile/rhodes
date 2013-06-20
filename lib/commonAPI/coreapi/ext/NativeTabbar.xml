@@ -3,7 +3,7 @@
 <API>
     <MODULE name="NativeTabbar" parent="Rho" generateUnderscoreRubyNames="true">
         <HELP_OVERVIEW>The NativeTabbar methods let you customize the Rhodes tabbar at runtime.</HELP_OVERVIEW>
-        <MORE_HELP></MORE_HELP>
+        <MORE_HELP>No more than 4 buttons can be created in Windows Phone 8 toolbar. A toolbar separator doesn't exist in Windows Phone 8. On Windows Mobile/CE there are no visible tabs.</MORE_HELP>
         
         <TEMPLATES>
         </TEMPLATES>
@@ -24,7 +24,7 @@
 
                         <PARAM name="tabElement" type="HASH">
                             <DESC>Properties of Tab elements.</DESC>
-                            <PARAMS>
+                            <PARAMS> 
                                 <PARAM name="label" type="STRING">
                                     <DESC>Visible label to display on the tabbar.</DESC>
                                 </PARAM>
@@ -33,18 +33,22 @@
                                 </PARAM>
                                 <PARAM name="icon" type="STRING">
                                     <DESC>Relative path to tabbar item icon in your rhodes app; typically located in /public/images/.</DESC>
+                                    <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                                 </PARAM>
                                 <PARAM name="reload" type="BOOLEAN" default="false">
                                     <DESC>When tab is activated  - page in tab will be reloaded.</DESC>
                                 </PARAM>
                                 <PARAM name="selectedColor" type="INTEGER">
-                                    <DESC>Change the selected color of this tab.</DESC>
+                                    <DESC>Change the selected color of this tab. On Android worked only if you setup selectedColor for all tabs and also setup backgroundColor for whole Tabbar !</DESC>
+                                    <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                                 </PARAM>
                                 <PARAM name="disabled" type="BOOLEAN" default="false">
                                     <DESC>Tab will be displayed as disabled.</DESC>
+                                    <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                                 </PARAM>
                                 <PARAM name="backgroundColor" type="INTEGER">
                                     <DESC> Background color for tab. Use when your application background color is not white for removing blink during switch tabs.</DESC>
+                                    <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                                 </PARAM>
                                 <PARAM name="useCurrentViewForTab" type="BOOLEAN" default="false">
                                     <DESC>Smooth transfer WebView from current view into this Tab and make this Tab active. Only one Tab can have this parameter.</DESC>
@@ -75,11 +79,12 @@
 
                             <PARAM name="backgroundColor" type="INTEGER">
                                 <DESC>Background color of the tabbar.</DESC>
+                                <PLATFORM>Win32, Android, iOS, WP8</PLATFORM>
                             </PARAM>
 
-                            <PARAM name="hiddenTabs" type="BOOLEAN">
+                            <PARAM name="hiddenTabs" type="BOOLEAN" default="true">
                                 <PLATFORM>WM</PLATFORM>
-                                <DESC>Do not display Tabs with labels.</DESC>
+                                <DESC>Do not display Tabs with labels.Only hiddenTab=true is currently supported.</DESC>
                             </PARAM>
 
                             <PARAM name="createOnInit" type="BOOLEAN" default="false">
