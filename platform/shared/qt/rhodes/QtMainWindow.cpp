@@ -446,7 +446,7 @@ void QtMainWindow::tabbarRemoveAllTabs(bool restore)
         tabbarDisconnectWebView(tabViews[i], tabInspect[i]);
         if (tabViews[i] != main_webView) {
             // destroy connected RhoNativeApiCall object
-            QVariant v = tabViews[i]->page()->property("__rhoNativeApiCall");
+            QVariant v = tabViews[i]->page()->property("__rhoNativeApi");
             RhoNativeApiCall* rhoNativeApiCall = v.value<RhoNativeApiCall*>();
             delete rhoNativeApiCall;
 
@@ -487,7 +487,7 @@ void QtMainWindow::setUpWebPage(QWebPage* page)
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     page->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
 	RhoNativeApiCall* rhoNativeApiCall = new RhoNativeApiCall(page->mainFrame());
-    page->setProperty("__rhoNativeApiCall", QVariant::fromValue(rhoNativeApiCall));
+    page->setProperty("__rhoNativeApi", QVariant::fromValue(rhoNativeApiCall));
     connect(page->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
         rhoNativeApiCall, SLOT(populateJavaScriptWindowObject()));
 }
