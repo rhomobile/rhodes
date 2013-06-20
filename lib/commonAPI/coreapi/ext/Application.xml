@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="Application" parent="Rho">
-        <HELP_OVERVIEW></HELP_OVERVIEW>
+        <HELP_OVERVIEW>The Application class is used for accessing or setting application level configuration settings.</HELP_OVERVIEW>
         <MORE_HELP></MORE_HELP>
         
         <TEMPLATES>
@@ -78,6 +78,7 @@
             </PROPERTY>
 
             <PROPERTY name="defaultNativeMenu" type="ARRAY" readOnly="true" generateAPI="false">
+                <DESC>Native Menu items</DESC>
                 <PARAM type="HASH">
                     <DESC>Same values as for nativeMenu.</DESC>
                 </PARAM>

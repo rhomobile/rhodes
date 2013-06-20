@@ -10,6 +10,8 @@ CNotificationLoader::CNotificationLoader()
 	lpfn_Notify_GetCycleInfo	= NULL;	
 	lpfn_Notify_SetState		= NULL;		
 	lpfn_Notify_GetState		= NULL;		
+	int m_iBeeperIndex			= -1;
+	int m_iVibrateIndex			= -1;
 }
 
 CNotificationLoader::~CNotificationLoader()
@@ -23,8 +25,6 @@ BOOL CNotificationLoader::LoadNotificationDLL()
 	m_hNotificationDLL = LoadLibrary(NOTIFY_DLL);
 	if (!m_hNotificationDLL)
 	{
-//		Log(SCANNER_LOG_WARNING, L"Unable to load EMDK Notification driver, scanner will not support 'beeping'",
-//			_T(__FUNCTION__), __LINE__);
 		return FALSE;
 	}
 	//  Map the function pointers to functions exported from the DLL
@@ -55,7 +55,34 @@ BOOL CNotificationLoader::LoadNotificationDLL()
 		return FALSE;
 	}
 	else
+	{
+		//  Set the indices of the beeper and vibrate index
+		NOTIFY_FINDINFO notifyObject;
+		HANDLE	hFindHandle = NULL;
+		SI_ALLOC_ALL(&notifyObject);
+		notifyObject.StructInfo.dwUsed = 0;
+		if(lpfn_Notify_FindFirst(&notifyObject, &hFindHandle) == E_NTFY_SUCCESS)
+		{
+			int iObCount = 0;
+			do 
+			{
+				if(notifyObject.dwObjectType == NOTIFY_TYPE_BEEPER)
+				{
+					//  Found the Beeper
+					m_iBeeperIndex = iObCount;
+				}
+				else if (notifyObject.dwObjectType == NOTIFY_TYPE_VIBRATOR)
+				{
+					m_iVibrateIndex = iObCount;
+				}
+				iObCount++;
+				SI_ALLOC_ALL(&notifyObject);
+				notifyObject.StructInfo.dwUsed = 0;
+			} while(lpfn_Notify_FindNext(&notifyObject, hFindHandle) == E_NTFY_SUCCESS);
+		}
+		lpfn_Notify_FindClose(hFindHandle);
 		return TRUE;
+	}
 }
 
 BOOL CNotificationLoader::UnloadNotificationDLL()
@@ -73,4 +100,39 @@ BOOL CNotificationLoader::UnloadNotificationDLL()
 		lpfn_Notify_GetState	= NULL;
 	}
 	return TRUE;
+}
+
+BOOL CNotificationLoader::Beep(int iFrequency, int iVolume, int iDuration)
+{
+	if (m_iBeeperIndex < 0)
+		return FALSE;
+
+	CYCLE_INFO cycleInfo;
+	SI_INIT(&cycleInfo);
+	DWORD dwResult = lpfn_Notify_GetCycleInfo(m_iBeeperIndex, &cycleInfo);
+	if(dwResult != E_NTFY_SUCCESS)
+		return FALSE;
+	cycleInfo.ObjectTypeSpecific.BeeperSpecific.dwFrequency = iFrequency;
+	cycleInfo.ObjectTypeSpecific.BeeperSpecific.dwVolume = iVolume;
+	cycleInfo.ObjectTypeSpecific.BeeperSpecific.dwDuration = iDuration;
+	dwResult = lpfn_Notify_SetCycleInfo(m_iBeeperIndex, &cycleInfo);
+	dwResult = lpfn_Notify_SetState(m_iBeeperIndex, NOTIFY_STATE_CYCLE);
+
+	return TRUE;
+}
+
+BOOL CNotificationLoader::Vibrate(int iDuration)
+{
+	if (m_iVibrateIndex < 0)
+		return FALSE;
+
+	CYCLE_INFO cycleInfo;
+	SI_INIT(&cycleInfo);
+	DWORD dwResult = lpfn_Notify_GetCycleInfo(m_iVibrateIndex, &cycleInfo);
+	if(dwResult != E_NTFY_SUCCESS)
+		return FALSE;
+	cycleInfo.ObjectTypeSpecific.VibratorSpecific.dwDuration = iDuration;
+	dwResult = lpfn_Notify_SetCycleInfo(m_iVibrateIndex, &cycleInfo);
+	dwResult = lpfn_Notify_SetState(m_iVibrateIndex, NOTIFY_STATE_CYCLE);
+	return dwResult == E_NTFY_SUCCESS;
 }

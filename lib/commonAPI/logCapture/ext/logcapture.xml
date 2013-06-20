@@ -2,7 +2,8 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="LogCapture" parent="Rho">
-
+        <HELP_OVERVIEW>The LogCapture class is used for capturing logging events.</HELP_OVERVIEW>
+        
         <PROPERTIES access="STATIC" generateAccessors="true">
             <PROPERTY name="excludeCategories" type="STRING" default="">
                 <DESC>Comma-separated list of excluded log categories</DESC>

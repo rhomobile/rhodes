@@ -133,12 +133,16 @@ void GcmPushClient::init()
 
 void GcmPushClient::getDeviceId(CMethodResult& result)
 {
-    if(m_hashProps.containsKey("deviceId"))
+    String deviceId = m_hashProps["deviceId"];
+
+    if(deviceId.length() != 0)
     {
-        getProperty("deviceId", result);
+        LOG(TRACE) + "GCM deviceId: " + deviceId;
+        result.set(deviceId);
     }
     else
     {
+        LOG(TRACE) + "Still waiting for GCM deviceId";
         m_deviceIdResult = result;
     }
 }
