@@ -2288,7 +2288,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCLCompilerTool"

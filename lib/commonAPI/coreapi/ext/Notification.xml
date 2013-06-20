@@ -88,7 +88,7 @@
 							<PARAM name="frequency" type="Integer" default="2000">
 								<DESC>The frequency of the beep, in Hz</DESC>
 							</PARAM>
-							<PARAM name="volume" type="Integer" default="0">
+							<PARAM name="volume" type="Integer" default="1">
 								<DESC>A number between 0 and 3.  0 represents minimum volume and 3 is maximum volume, the decibels each volume level represents is device dependant.</DESC>
 							</PARAM>
 							<PARAM name="duration" type="Integer" default="1000">
