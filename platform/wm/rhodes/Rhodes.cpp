@@ -979,7 +979,7 @@ extern "C" void rho_conf_show_log()
 
 extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
 {
-#ifdef RHODES_EMULATOR
+#if !defined(RHODES_EMULATOR)
     const StringW strTitleW = rho::common::convertToStringW(strTitle);
     ::PostMessage(getMainWnd(), WM_BROWSER_ONTITLECHANGE, (WPARAM)tabIndex, (LPARAM)_tcsdup(strTitleW.c_str()));
 #endif
