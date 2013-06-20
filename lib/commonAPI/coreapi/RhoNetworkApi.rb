@@ -56,7 +56,8 @@ module AsyncHttp
     def self.get(args)
         preprocess_headers(args)
         if ( args[:callback] )
-            Rho::Network.get( args, args[:callback], args[:callback_param] )
+            param = args[:callback_param]?args[:callback_param]:''
+            Rho::Network.get( args, args[:callback], param )
         else
             Rho::Network.get( args )
         end    
@@ -65,16 +66,18 @@ module AsyncHttp
     def self.post(args)
         preprocess_headers(args)
         if ( args[:callback] )
-            Rho::Network.post( args, args[:callback], args[:callback_param] )
+            param = args[:callback_param]?args[:callback_param]:''
+            Rho::Network.post( args, args[:callback], param )
         else
             Rho::Network.post( args )
-        end    
+        end
     end
     
     def self.download_file(args)
         preprocess_headers(args)
         if ( args[:callback] )
-            Rho::Network.downloadFile( args, args[:callback], args[:callback_param] )
+            param = args[:callback_param]?args[:callback_param]:''
+            Rho::Network.downloadFile( args, args[:callback], param )
         else
             Rho::Network.downloadFile( args )
         end    
@@ -83,7 +86,8 @@ module AsyncHttp
     def self.upload_file(args)
         preprocess_headers(args)
         if ( args[:callback] )
-            Rho::Network.uploadFile( args, args[:callback], args[:callback_param] )
+            param = args[:callback_param]?args[:callback_param]:''
+            Rho::Network.uploadFile( args, args[:callback], param )
         else
             Rho::Network.uploadFile( args )
         end    
