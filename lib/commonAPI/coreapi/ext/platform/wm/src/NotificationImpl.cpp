@@ -67,6 +67,7 @@ public:
 
     virtual void beep(const Hashtable<String, String>& propertyMap, CMethodResult& oResult)
 	{
+#if defined(OS_WINCE)
 		int iFrequency = NOTIFICATIONS_DEFAULT_FREQUENCY;
 		int iVolume = NOTIFICATIONS_DEFAULT_VOLUME;
 		int iDuration = NOTIFICATIONS_DEFAULT_DURATION;
@@ -90,6 +91,7 @@ public:
 			bBeepSuccess = m_pNotifications->Beep(iFrequency, iVolume, iDuration);
 		if (!bBeepSuccess)
 			LOG(WARNING) + "Unable to use the device beeper";
+#endif
 	}
 
     virtual void vibrate(int duration, CMethodResult& oResult)
