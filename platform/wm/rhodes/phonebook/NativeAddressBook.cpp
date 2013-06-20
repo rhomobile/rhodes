@@ -323,19 +323,30 @@ CABRecord* CNativeAddressBook::getOutlookRecord(long oid)
 	if(pApp && getOutlookItems()) 
     { 
 		DWORD index;
-		if(S_OK==GetItemIndexFromOid(m_outlookItems,oid,&index)) {
-			IContact * pContact;
-			CABOutlookRecord *pRecord;
-			if (SUCCEEDED(m_outlookItems->Item(1+index, (IDispatch**)&pContact))) {
-				pRecord = new CABOutlookRecord(pContact);
-				if(pRecord) {
-					pRecord->load();
-					return pRecord;
-				} else {
-					pContact->Release();
+		HINSTANCE hPimStore = LoadLibrary(L"PIMSTORE.dll");
+		typedef LRESULT (WINAPI* LPFN_GET_ITEM_INDEX_FROM_OID_T) (IPOutlookItemCollection*, CEOID, DWORD*);
+		LPFN_GET_ITEM_INDEX_FROM_OID_T lpfn_getItemIndexFromOid = NULL;
+		if (hPimStore)
+			lpfn_getItemIndexFromOid = (LPFN_GET_ITEM_INDEX_FROM_OID_T)
+				GetProcAddress(hPimStore, L"GetItemIndexFromOid");	
+		if (hPimStore && lpfn_getItemIndexFromOid)
+		{
+			if(S_OK==lpfn_getItemIndexFromOid(m_outlookItems,oid,&index)) {
+				IContact * pContact;
+				CABOutlookRecord *pRecord;
+				if (SUCCEEDED(m_outlookItems->Item(1+index, (IDispatch**)&pContact))) {
+					pRecord = new CABOutlookRecord(pContact);
+					if(pRecord) {
+						pRecord->load();
+						return pRecord;
+					} else {
+						pContact->Release();
+					}
 				}
 			}
 		}
+		if (hPimStore)
+			FreeLibrary(hPimStore);
 	}
 	return NULL;
 }
