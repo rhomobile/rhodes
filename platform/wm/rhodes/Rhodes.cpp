@@ -977,9 +977,10 @@ extern "C" void rho_conf_show_log()
     ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
 }
 
-extern "C" void rho_title_change(const int tabIndex, const wchar_t* strTitle)
+extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
 {
-    ::PostMessage(getMainWnd(), WM_BROWSER_ONTITLECHANGE, (WPARAM)tabIndex, (LPARAM)_tcsdup(strTitle));
+    const rho::StringW strTitleW = rho::convertToStringW(strTitle);
+    ::PostMessage(getMainWnd(), WM_BROWSER_ONTITLECHANGE, (WPARAM)tabIndex, (LPARAM)_tcsdup(strTitleW.c_str()));
 }
 
 //Hook for ruby call to refresh web view

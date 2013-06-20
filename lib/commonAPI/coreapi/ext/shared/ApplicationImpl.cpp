@@ -11,7 +11,7 @@
 #endif
 
 extern "C" void rho_sys_app_exit();
-extern "C" void rho_title_change(const int tabIndex, const wchar_t* strTitle);
+extern "C" void rho_title_change(const int tabIndex, const char* strTitle);
 
 #ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
@@ -117,7 +117,7 @@ public:
     virtual void setTitle( const rho::String& title, rho::apiGenerator::CMethodResult& oResult)
     {
         RHOCONF().setString("title_text", title, false);
-        rho_title_change(0, rho::convertToStringW(title).c_str());
+        rho_title_change(0, title.c_str());
     }
 
     virtual void getName(rho::apiGenerator::CMethodResult& oResult)

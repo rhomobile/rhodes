@@ -41,9 +41,8 @@ void rho_conf_show_log()
     CMainWindow::getInstance()->logCommand();
 }
 
-void rho_title_change(const int tabIndex, const wchar_t* strTitle)
+void rho_title_change(const int tabIndex, const char* strTitle)
 {
-    //TODO: implement
 }
 
 void rho_net_impl_network_indicator(int active)
