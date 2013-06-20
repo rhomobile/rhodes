@@ -362,6 +362,10 @@ extern "C" void rho_wm_impl_performOnUiThread(rho::common::IRhoRunnable* pTask)
 	pTask->runObject();
 }
 
+extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
+{
+}
+
 extern "C" const char* rho_native_rhopath()
 {
     return "rho/";

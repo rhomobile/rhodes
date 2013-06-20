@@ -38,6 +38,7 @@ public class JSONGenerator {
     }
     
     protected void parse(Object obj) throws JSONException {
+        Logger.T(TAG, "Parse " + obj.getClass().getSimpleName());
         if (Map.class.isInstance(obj)) {
             Logger.T(TAG, "Parsing Map instance >>>");
             parseMap((Map<String, ?>)obj);
@@ -54,6 +55,7 @@ public class JSONGenerator {
             Logger.T(TAG, "Parsing Bundle instance >>>");
             parseBundle((Bundle)obj);
             Logger.T(TAG, "Finishing Bundle instance <<<");
+            return;
         }
         
         mStringer.value(obj);
