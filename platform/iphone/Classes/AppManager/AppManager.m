@@ -1153,7 +1153,7 @@ int rho_prepare_folder_for_upgrade(const char* szPath) {
     return 1;
 }
 
-void rho_title_change(const int tabIndex, const wchar_t* strTitle) {
+void rho_title_change(const int tabIndex, const char* strTitle) {
     // not implemented on iOS
 }
 
