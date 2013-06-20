@@ -30,15 +30,32 @@
           <PARAM name="resetClientInfo" type="BOOLEAN">
             <DESC>true to clean the client_info table, false otherwise.</DESC>
             <DEFAULT>false</DEFAULT>
-            <CAN_BE_NIL/>
+            <CAN_BE_NIL>
+              <DESC>False on default</DESC>
+            </CAN_BE_NIL>
           </PARAM>
           <PARAM name="resetLocalModels" type="BOOLEAN">
             <DESC>true to clean local (non-synced) models, false otherwise.</DESC>
             <DEFAULT>false</DEFAULT>
-            <CAN_BE_NIL/>
+            <CAN_BE_NIL>
+              <DESC>Reset all models</DESC>
+            </CAN_BE_NIL>
           </PARAM>
         </PARAMS>
+      </METHOD>
+       <METHOD name="import" deprecated="true" generateAPI="false">
+        <DESC>Import db</DESC>
+        <PARAMS>
+          <PARAM name="zipName" type="STRING">
+            <DESC>The name of the zip file</DESC>
+          </PARAM>
+        </PARAMS>
+        <RETURN type="BOOLEAN"/>
+      </METHOD>
 
+      <METHOD name="export" deprecated="true"  generateAPI="false">
+        <DESC>Export db</DESC>
+        <RETURN type="STRING"/>
       </METHOD>
       <METHOD name="databaseFullResetAndLogout" generateAPI="false">
         <DESC>Deletes all records from the property bag and model tables. For examples, see Resetting the Database in
@@ -54,8 +71,7 @@
         </DESC>
       </METHOD>
       <METHOD name="databaseFullResetEx" generateAPI="false">
-        <DESC>Deletes all records from the property bag and model tables, if models are set then reset only selected
-          models.
+        <DESC>Deletes all records from the property bag and model tables for the model names passed in parameters.
         </DESC>
         <PARAMS>
           <PARAM name="propertyMap" type="HASH" propertyHash="true">
@@ -63,36 +79,55 @@
             <PARAMS>
               <PARAM name="models" type="ARRAY">
                 <DESC>Array of models names to reset.</DESC>
-                <CAN_BE_NIL>
-                  <DESC>Reset all models</DESC>
-                </CAN_BE_NIL>
               </PARAM>
-              <PARAM name="reset_client_info" type="INTEGER" default="false">
+              <PARAM name="reset_client_info" type="BOOLEAN">
                 <DESC>If set to true, client_info table will be cleaned.</DESC>
                 <CAN_BE_NIL>
                   <DESC>False on default</DESC>
                 </CAN_BE_NIL>
               </PARAM>
-              <PARAM name="reset_local_models" type="INTEGER" default="false">
+              <PARAM name="reset_local_models" type="BOOLEAN" default="false">
                 <DESC>If set to true, local(non-synced models) will be cleaned.</DESC>
                 <CAN_BE_NIL>
-                  <DESC>False on default</DESC>
+                  <DESC>Reset all models</DESC>
                 </CAN_BE_NIL>
               </PARAM>
             </PARAMS>
           </PARAM>
         </PARAMS>
-
-
       </METHOD>
       <METHOD name="addModel" generateAPI="false">
-        <DESC>Javascript using only. Creates ORM model.
+        <DESC>
+          Javascript using only. Creates ORM model.
         </DESC>
         <PARAMS>
-          <PARAM name="name" type="STRING">
-            <DESC>Model name</DESC>
+          <PARAM name="Anoynomous Function methods" type="">
+            <PARAMS>
+              <PARAM name='modelName' type=''>
+                <DESC>modelName(STRING name). The name of your model.</DESC>
+              </PARAM>
+              <PARAM name='enable' type=''>
+                <DESC>enable(STRING sync). Same as set(name,true). Sets attribute to true.</DESC>
+              </PARAM>
+              <PARAM name='property' type=''>
+                <DESC>property(STRING name,STRING value,STRING options). Used to create properties on your model.</DESC>
+              </PARAM>
+              <PARAM name='addIndex' type=''>
+                <DESC>addIndex(STRING name,ARRAY [col1,col2]). Add an index to your fixedSchema model.</DESC>
+              </PARAM>
+              <PARAM name='addUniqueIndex' type=''>
+                <DESC>addUniqueIndex(STRING name,ARRAY [col1,col2]). Add a unique index to your fixedSchema model.</DESC>
+              </PARAM>
+              <PARAM name='belongs_to' type=''>
+                <DESC>belongs_to(STRING name).  Add belongs_to association to another defined model, for sync models.</DESC>
+              </PARAM>
+              <PARAM name='set' type=''>
+                <DESC>set(STRING name,STRING|BOOLEAN|INTEGER value).  Set an attribute to your model.</DESC>
+              </PARAM>
+            </PARAMS>
           </PARAM>
         </PARAMS>
+        <RETURN type="Model"/>
       </METHOD>
     </METHODS>
 
@@ -119,11 +154,7 @@ ORM.databaseFullResetEx(:models => ['Product', 'Customer'], :reset_client_info =
               </RUBY>
               <JAVASCRIPT>
                 <![CDATA[
-ORM.databaseFullResetEx({
-    models: ['Product', 'Customer'],
-    reset_local_info: true,
-    reset_local_models: true
-  }); ]]>
+Rho.ORM.databaseFullResetEx({"models":['Product', 'Customer']},true,true); ]]>
               </JAVASCRIPT>
             </CODE>
 
@@ -144,10 +175,10 @@ class Product
   include ORM::PropertyBag
 end
 
-product = Product.create( :manufacturer => 'Apple', :name => 'iPhone5', :price => 199.99)
+product = Product.create( :brand => 'Apple', :name => 'iPhone5', :price => 199.99)
 
 readedProduct = Product.find(:first)
-readedProduct.manufacturer
+readedProduct.brand
   #=> "Apple"
 readedProduct.name
   #=> "iPhone5"    ]]>
@@ -155,18 +186,38 @@ readedProduct.name
 
               <JAVASCRIPT>
                 <![CDATA[
-var productModel = ORM.AddModel('Product');
+
+var productModel = Rho.ORM.addModel(function(model){
+  model.modelName("Product");
+  model.enable("sync");
+  model.property("name","string");
+  model.property("brand","string");
+  model.property("price","float");
+  model.set("partition","user");
+});
+
+You can define the following attributes in Rho.ORM.addModel()
+required *
+  model.modelName(name)
+
+optional
+  model.enable(sync|propertyBag|fixedSchema) // same as model.set(name,true)
+  model.property(name,type,option)
+  model.set(name,value)
+  model.belongs_to(modelName)
+  model.addIndex(name,[col1,col2,..])
+  model.addUniqueIndex(name,[col1,col2,..])
 
 // create model object and save it to database
 var product = productModel.create({
-  manufacturer: 'Apple',
-  model: 'iPhone5',
+  brand: 'Apple',
+  name: 'iPhone5',
   price: 199.99});
 
 // read product from database
-var readedProduct = productModel.find('first');
-readerProduct.get('manufacturer'); // Apple
-readerProduct.get('model'); // iPhone5
+var product = productModel.find('first');
+product.get('brand'); // Apple
+product.get('name'); // iPhone5
 ]]>
               </JAVASCRIPT>
             </CODE>
@@ -175,72 +226,27 @@ readerProduct.get('model'); // iPhone5
 
         </SECTIONS>
       </EXAMPLE>
-           <EXAMPLE title="Export database">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   Export all data from a database partition to a zip file
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
-# Export database partition as zip file
-zip_archive = Rho::Orm.databaseExport(:user)
-Alert.show_popup(zip_archive)
-                   ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
-// Export database partition as zip file
-var exported_zip = Rho.Orm.databaseExport("user");
-alert("Exported database to: "+exported_zip);
-                   ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-          <EXAMPLE title="Import database">
-            <SECTIONS>
-               
-              <SECTION>
-               <DESC>
-                   Import database from a zip file created with Orm.databaseExport
-               </DESC>
-               <CODE>
-                <RUBY>
-           <![CDATA[
-# Import database from a zip file created with "Rho::Orm.databaseExport"
-exported_database = "/somewhere/file.zip"
-result = Rho::Orm.databaseImport(:user, exported_database)
-if (result)
-  Alert.show_popup("Import succeeded. Existing data was erased and the backup was restored")
-else
-  # If the process fails, everything will be restored to its previous state. We will not lose any information
-  Alert.show_popup("Database import failed. The database is unchanged")
-end
-                   ]]>
-                 </RUBY>
-                <JAVASCRIPT>
-           <![CDATA[
-// Import database from a zip file created with "Rho.Orm.databaseExport"      
-var exported_zip = "/somewhere/filename.zip";
-var result = Rho.Orm.databaseImport("user", exported_zip);
-if (result) {
-  alert("Import succeeded. Existing data was erased and the backup was restored");
-} else {
-  // If the process fails, everything will be restored to its previous state. We will not lose any information
-  alert("Database import failed. The database is unchanged");
-}
-                   ]]>
-                 </JAVASCRIPT>
-               </CODE>
-               </SECTION>
-               </SECTIONS>
-           </EXAMPLE>
-      
-    </EXAMPLES>
+   <EXAMPLE title="Get Model by name">
+    <SECTIONS>
+       
+      <SECTION>
+       <DESC>
+           Get a model
+       </DESC>
+       <CODE>
+        
+        <JAVASCRIPT>
+   <![CDATA[
+// Get a model by its name after it has been added
+var productModel = Rho.ORM.getModel("Product");
+
+           ]]>
+         </JAVASCRIPT>
+       </CODE>
+       </SECTION>
+       </SECTIONS>
+   </EXAMPLE>
+ </EXAMPLES>
   </MODULE>
 </API>
 
