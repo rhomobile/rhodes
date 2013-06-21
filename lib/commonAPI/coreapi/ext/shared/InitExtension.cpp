@@ -43,7 +43,7 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Navbar();
 #endif
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR) || defined(OS_WINCE)
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR) || defined(OS_WINCE) || defined(OS_ANDROID)
     Init_Notification();
 #endif
 

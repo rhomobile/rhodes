@@ -81,3 +81,10 @@ ext/shared/generated/cpp/NativeMenubar_js_wrap.cpp
 ext/shared/generated/cpp/NativeMenubar_ruby_wrap.cpp
 ext/shared/generated/cpp/NativeMenubarBase.cpp
 ext/shared/MenubarImpl.cpp
+ext/platform/android/generated/jni/Notification.cpp
+ext/platform/android/generated/jni/notification_ruby_wrap.cpp
+ext/platform/android/generated/jni/notification_js_wrap.cpp
+ext/platform/android/jni/Notification_impl.cpp
+ext/shared/generated/notification_api_init.cpp
+ext/shared/generated/notification_js_api.cpp
+ext/shared/generated/notification_ruby_api.c
