@@ -15,7 +15,7 @@ public interface IMegamoduleSingleton
 
 
     static final String CONST1_STRING = "value1";
-    static final intCONST2_INTEGER = 123;
+    static final int CONST2_INTEGER = 123;
     static final String CONST_STRING_1 = "const1";
     static final String CONST_STRING_2 = "const2";
 
