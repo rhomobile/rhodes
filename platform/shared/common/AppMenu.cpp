@@ -272,7 +272,7 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 	m_strLink  = strLink;
     m_isEnable = true;
 	
-	if (strLabel == "separator")
+	if (strLabel == "separator" || strLink == "separator")
 		m_eType = emtSeparator;
 /*	else if (strLink == "home")
 		m_eType = emtHome;
