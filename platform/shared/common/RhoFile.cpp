@@ -30,6 +30,10 @@
 #include "common/RhoFilePath.h"
 #include "logging/RhoLog.h"
 
+#ifdef OS_WP8
+extern "C" void recursiveDeleteDirectory(const std::wstring &path);
+#endif
+
 #if !defined(WINDOWS_PLATFORM)
 #include <dirent.h>
 #else
@@ -541,8 +545,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     
 /*static*/ unsigned int CRhoFile::deleteFolder(const char* szFolderPath) 
 {
-#if !defined(OS_WP8)
-#if defined(WINDOWS_PLATFORM)
+#if defined(WINDOWS_PLATFORM) && !defined(OS_WP8)
 
 	StringW  swPath;
     convertToStringW(szFolderPath, swPath);
@@ -566,6 +569,11 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     delete name;
 
     return result == 0 ? 0 : (unsigned int)-1;
+#elif defined(OS_WP8)
+	StringW  swPath;
+    convertToStringW(szFolderPath, swPath);
+	recursiveDeleteDirectory(swPath);
+	return 0;
 #elif defined (OS_ANDROID)
 
     return iterateFolderTree(String(szFolderPath), RemoveFileFunctor(szFolderPath));
@@ -573,9 +581,6 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
 #else
     rho_file_impl_delete_folder(szFolderPath);
     return 0;
-#endif
-#else
-	return 0;
 #endif
 }
 
