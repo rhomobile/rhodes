@@ -216,7 +216,7 @@ void CLedSingleton::enumerate(CMethodResult& oResult)
     rho::Vector<rho::String> arIDs;
 	if (m_pNotifications && m_bNotificationsLoaded)
 	{
-		//  Initialise the Beeper
+		//  Initialise the LEDs
 		NOTIFY_FINDINFO notifyObject;
 		HANDLE	hFindHandle = NULL;
 		SI_ALLOC_ALL(&notifyObject);

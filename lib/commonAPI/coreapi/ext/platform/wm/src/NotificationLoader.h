@@ -43,4 +43,10 @@ public:
 	BOOL LoadNotificationDLL();
 	BOOL UnloadNotificationDLL();
 
+	BOOL Beep(int iFrequency, int iVolume, int iDuration);
+	BOOL Vibrate(int iDuration);
+
+private:
+	int m_iBeeperIndex;
+	int m_iVibrateIndex;
 };

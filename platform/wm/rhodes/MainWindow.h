@@ -162,6 +162,7 @@ public:
 
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
+    void ProcessTitleChange(LPCTSTR title);
 
 #if defined(OS_WINCE)
 	bool m_bFullScreen, m_bFullScreenBeforeLicense;
@@ -365,11 +366,11 @@ private:
 
 	void ShowLoadingPage();
 
+    void showMenuBarMenu(const CAppMenuItem& menuButton, bool isLeft);
 	void createCustomMenu(void);
 
     void ProcessDocumentComplete(LPCTSTR url);
-    void ProcessNavigateComplete(LPCTSTR url);
-    void ProcessTitleChange(LPCTSTR title);
+    void ProcessNavigateComplete(LPCTSTR url);    
 
 	// return cleared URL or empty string
 	String processForNativeView(String url);
@@ -394,6 +395,7 @@ private:
 #if defined(_WIN32_WCE)
     // main menu bar for application
     CWindow m_menuBar;
+    CMenu   m_mainMenu;
 #elif defined (OS_WINDOWS_DESKTOP)
 	CMenuBar m_menuBar;
 //	int m_menuBarHeight;
@@ -403,7 +405,6 @@ private:
 // #if defined( OS_PLATFORM_MOTCE )
     int   m_menuBarHeight;
     HWND  g_hWndCommandBar;	// command bar handle
-
 // #endif
 
 #if defined(_WIN32_WCE)

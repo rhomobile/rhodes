@@ -208,31 +208,6 @@ CAppMenuItem CAppMenu::getRightButton()
         return m_oRightItem;
     }
 }
-/*
-void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu )
-{
-    synchronized(m_mxAppMenu) 
-	{
-        if ( bLeftMenu )
-		    m_arAppLeftMenuItems.clear();
-        else
-            m_arAppMenuItems.clear();
-
-        RHODESAPP().setAppBackUrl("");
-        for (int i = 0; i < (int)arMenu.size(); i++)
-        {
-            rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
-            String strKey = oIter.getCurKey();
-            String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
-            addAppMenuItem( strKey, strValue, bLeftMenu );
-        }
-
-#ifdef OS_WP8
-		createMenu();
-#endif
-    }
-}
-*/
 
 void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
 {
@@ -270,7 +245,7 @@ void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bo
 
             addAppMenuItem( label, action, bLeftMenu );
 
-            bool isDisable = (bool)(disable == "false");
+            bool isDisable = (bool)(disable == "true");
             setEnableMenuItem(label, !isDisable, bLeftMenu);
 
         }
@@ -297,7 +272,7 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 	m_strLink  = strLink;
     m_isEnable = true;
 	
-	if (strLabel == "separator")
+	if (strLabel == "separator" || strLink == "separator")
 		m_eType = emtSeparator;
 /*	else if (strLink == "home")
 		m_eType = emtHome;

@@ -28,7 +28,7 @@ static RhoVideoCapture* ourRhoVideoCapture = nil;
         if (![fileManager fileExistsAtPath:folder])
             [fileManager createDirectoryAtPath:folder attributes:nil];
         
-        ourRhoVideoCapture.destination = [folder stringByAppendingPathComponent:@"Videocapture.wav"];
+        ourRhoVideoCapture.destination = [folder stringByAppendingPathComponent:@"Videocapture.mp4"];
     }
     return ourRhoVideoCapture;
 }

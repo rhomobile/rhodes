@@ -374,6 +374,11 @@ RHO_GLOBAL void rho_conf_show_log()
     env->CallStaticVoidMethod(cls, mid);
 }
 
+RHO_GLOBAL void rho_title_change(const int tabIndex, const char* strTitle)
+{
+    // not implemented
+}
+
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_notifyNetworkStatusChanged(JNIEnv *env, jobject, int status)
 {
     RAWLOG_ERROR("nativeNotify");

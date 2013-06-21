@@ -8,21 +8,49 @@
 
 /* Begin PBXBuildFile section */
 		FAC155E7145855CF0016F3BD /* Mediaplayer_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Mediaplayer_Prefix.pch */; };
-		FAC155E8145855CF0016F3BD /* Mediaplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC155E01458523C0016F3BD /* Mediaplayer.h */; };
-		FAC155EA145855CF0016F3BD /* mediaplayer_wrap.c in Sources */ = {isa = PBXBuildFile; fileRef = FAC155D614584FD80016F3BD /* mediaplayer_wrap.c */; };
-		FAC155EB145855CF0016F3BD /* mediaplayer.c in Sources */ = {isa = PBXBuildFile; fileRef = FAC155D814584FE20016F3BD /* mediaplayer.c */; };
-		FAC155EC145855CF0016F3BD /* Mediaplayer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC155DE145851440016F3BD /* Mediaplayer.m */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+		FAC9F0DA1773E8740077AC66 /* Mediaplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0D41773E8740077AC66 /* Mediaplayer.h */; };
+		FAC9F0DB1773E8740077AC66 /* Mediaplayer.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0D51773E8740077AC66 /* Mediaplayer.m */; };
+		FAC9F0DC1773E8740077AC66 /* MediaplayerFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0D61773E8740077AC66 /* MediaplayerFactorySingleton.m */; };
+		FAC9F0DD1773E8740077AC66 /* MediaplayerSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0D71773E8740077AC66 /* MediaplayerSetup.m */; };
+		FAC9F0DE1773E8740077AC66 /* MediaplayerSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0D81773E8740077AC66 /* MediaplayerSingleton.h */; };
+		FAC9F0DF1773E8740077AC66 /* MediaplayerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0D91773E8740077AC66 /* MediaplayerSingleton.m */; };
+		FAC9F0E11773E87E0077AC66 /* IMediaplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0E01773E87E0077AC66 /* IMediaplayer.h */; };
+		FAC9F0E81773E88A0077AC66 /* MediaplayerBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0E21773E88A0077AC66 /* MediaplayerBase.h */; };
+		FAC9F0E91773E88A0077AC66 /* MediaplayerBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0E31773E88A0077AC66 /* MediaplayerBase.m */; };
+		FAC9F0EA1773E88A0077AC66 /* MediaplayerFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0E41773E88A0077AC66 /* MediaplayerFactoryBase.h */; };
+		FAC9F0EB1773E88A0077AC66 /* MediaplayerFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0E51773E88A0077AC66 /* MediaplayerFactoryBase.m */; };
+		FAC9F0EC1773E88A0077AC66 /* MediaplayerSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0E61773E88A0077AC66 /* MediaplayerSingletonBase.h */; };
+		FAC9F0ED1773E88A0077AC66 /* MediaplayerSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0E71773E88A0077AC66 /* MediaplayerSingletonBase.m */; };
+		FAC9F0EF1773E8930077AC66 /* mediaplayer_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0EE1773E8930077AC66 /* mediaplayer_js_wrap.mm */; };
+		FAC9F0F11773E89D0077AC66 /* mediaplayer_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0F01773E89C0077AC66 /* mediaplayer_ruby_wrap.m */; };
+		FAC9F0F51773E8AB0077AC66 /* mediaplayer_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0F21773E8AB0077AC66 /* mediaplayer_api_init.cpp */; };
+		FAC9F0F61773E8AB0077AC66 /* mediaplayer_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0F31773E8AB0077AC66 /* mediaplayer_js_api.cpp */; };
+		FAC9F0F71773E8AB0077AC66 /* mediaplayer_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0F41773E8AB0077AC66 /* mediaplayer_ruby_api.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		AACBBE490F95108600F1A2B1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		FAC155D614584FD80016F3BD /* mediaplayer_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mediaplayer_wrap.c; path = ../../shared/ruby/mediaplayer_wrap.c; sourceTree = "<group>"; };
-		FAC155D814584FE20016F3BD /* mediaplayer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mediaplayer.c; path = ../../shared/src/mediaplayer.c; sourceTree = "<group>"; };
-		FAC155DE145851440016F3BD /* Mediaplayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Mediaplayer.m; path = Classes/Mediaplayer.m; sourceTree = "<group>"; };
-		FAC155E01458523C0016F3BD /* Mediaplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mediaplayer.h; path = Classes/Mediaplayer.h; sourceTree = "<group>"; };
 		FAC155F3145855CF0016F3BD /* libMediaplayer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMediaplayer.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAC9F0D41773E8740077AC66 /* Mediaplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Mediaplayer.h; path = impl/Mediaplayer.h; sourceTree = "<group>"; };
+		FAC9F0D51773E8740077AC66 /* Mediaplayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Mediaplayer.m; path = impl/Mediaplayer.m; sourceTree = "<group>"; };
+		FAC9F0D61773E8740077AC66 /* MediaplayerFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MediaplayerFactorySingleton.m; path = impl/MediaplayerFactorySingleton.m; sourceTree = "<group>"; };
+		FAC9F0D71773E8740077AC66 /* MediaplayerSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MediaplayerSetup.m; path = impl/MediaplayerSetup.m; sourceTree = "<group>"; };
+		FAC9F0D81773E8740077AC66 /* MediaplayerSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaplayerSingleton.h; path = impl/MediaplayerSingleton.h; sourceTree = "<group>"; };
+		FAC9F0D91773E8740077AC66 /* MediaplayerSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MediaplayerSingleton.m; path = impl/MediaplayerSingleton.m; sourceTree = "<group>"; };
+		FAC9F0E01773E87E0077AC66 /* IMediaplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IMediaplayer.h; path = generated/IMediaplayer.h; sourceTree = "<group>"; };
+		FAC9F0E21773E88A0077AC66 /* MediaplayerBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaplayerBase.h; path = generated/base_impl/MediaplayerBase.h; sourceTree = "<group>"; };
+		FAC9F0E31773E88A0077AC66 /* MediaplayerBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MediaplayerBase.m; path = generated/base_impl/MediaplayerBase.m; sourceTree = "<group>"; };
+		FAC9F0E41773E88A0077AC66 /* MediaplayerFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaplayerFactoryBase.h; path = generated/base_impl/MediaplayerFactoryBase.h; sourceTree = "<group>"; };
+		FAC9F0E51773E88A0077AC66 /* MediaplayerFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MediaplayerFactoryBase.m; path = generated/base_impl/MediaplayerFactoryBase.m; sourceTree = "<group>"; };
+		FAC9F0E61773E88A0077AC66 /* MediaplayerSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MediaplayerSingletonBase.h; path = generated/base_impl/MediaplayerSingletonBase.h; sourceTree = "<group>"; };
+		FAC9F0E71773E88A0077AC66 /* MediaplayerSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MediaplayerSingletonBase.m; path = generated/base_impl/MediaplayerSingletonBase.m; sourceTree = "<group>"; };
+		FAC9F0EE1773E8930077AC66 /* mediaplayer_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = mediaplayer_js_wrap.mm; path = generated/javascript/mediaplayer_js_wrap.mm; sourceTree = "<group>"; };
+		FAC9F0F01773E89C0077AC66 /* mediaplayer_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = mediaplayer_ruby_wrap.m; path = generated/ruby/mediaplayer_ruby_wrap.m; sourceTree = "<group>"; };
+		FAC9F0F21773E8AB0077AC66 /* mediaplayer_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mediaplayer_api_init.cpp; path = ../../shared/generated/mediaplayer_api_init.cpp; sourceTree = "<group>"; };
+		FAC9F0F31773E8AB0077AC66 /* mediaplayer_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mediaplayer_js_api.cpp; path = ../../shared/generated/mediaplayer_js_api.cpp; sourceTree = "<group>"; };
+		FAC9F0F41773E8AB0077AC66 /* mediaplayer_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mediaplayer_ruby_api.c; path = ../../shared/generated/mediaplayer_ruby_api.c; sourceTree = "<group>"; };
 		FAD45FD51225FED600141873 /* Mediaplayer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mediaplayer_Prefix.pch; sourceTree = "<group>"; };
 		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -71,8 +99,8 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155DD1458511E0016F3BD /* iOS_specific */,
-				FAC155DA145850EB0016F3BD /* Shared */,
+				FAC9F08A1773DDD90077AC66 /* impl */,
+				FAC9F08B1773DDE30077AC66 /* generated */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -85,38 +113,68 @@
 			name = "Other Sources";
 			sourceTree = "<group>";
 		};
-		FAC155DA145850EB0016F3BD /* Shared */ = {
+		FAC9F08A1773DDD90077AC66 /* impl */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155DC145851020016F3BD /* src */,
-				FAC155DB145850F80016F3BD /* Ruby */,
+				FAC9F0D41773E8740077AC66 /* Mediaplayer.h */,
+				FAC9F0D51773E8740077AC66 /* Mediaplayer.m */,
+				FAC9F0D61773E8740077AC66 /* MediaplayerFactorySingleton.m */,
+				FAC9F0D71773E8740077AC66 /* MediaplayerSetup.m */,
+				FAC9F0D81773E8740077AC66 /* MediaplayerSingleton.h */,
+				FAC9F0D91773E8740077AC66 /* MediaplayerSingleton.m */,
 			);
-			name = Shared;
+			name = impl;
 			sourceTree = "<group>";
 		};
-		FAC155DB145850F80016F3BD /* Ruby */ = {
+		FAC9F08B1773DDE30077AC66 /* generated */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155D614584FD80016F3BD /* mediaplayer_wrap.c */,
+				FAC9F08F1773DE070077AC66 /* api */,
+				FAC9F08E1773DE000077AC66 /* base_impl */,
+				FAC9F08D1773DDF80077AC66 /* wrappers */,
+				FAC9F08C1773DDEF0077AC66 /* shared */,
 			);
-			name = Ruby;
+			name = generated;
 			sourceTree = "<group>";
 		};
-		FAC155DC145851020016F3BD /* src */ = {
+		FAC9F08C1773DDEF0077AC66 /* shared */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155D814584FE20016F3BD /* mediaplayer.c */,
+				FAC9F0F21773E8AB0077AC66 /* mediaplayer_api_init.cpp */,
+				FAC9F0F31773E8AB0077AC66 /* mediaplayer_js_api.cpp */,
+				FAC9F0F41773E8AB0077AC66 /* mediaplayer_ruby_api.c */,
 			);
-			name = src;
+			name = shared;
 			sourceTree = "<group>";
 		};
-		FAC155DD1458511E0016F3BD /* iOS_specific */ = {
+		FAC9F08D1773DDF80077AC66 /* wrappers */ = {
 			isa = PBXGroup;
 			children = (
-				FAC155E01458523C0016F3BD /* Mediaplayer.h */,
-				FAC155DE145851440016F3BD /* Mediaplayer.m */,
+				FAC9F0F01773E89C0077AC66 /* mediaplayer_ruby_wrap.m */,
+				FAC9F0EE1773E8930077AC66 /* mediaplayer_js_wrap.mm */,
 			);
-			name = iOS_specific;
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		FAC9F08E1773DE000077AC66 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAC9F0E21773E88A0077AC66 /* MediaplayerBase.h */,
+				FAC9F0E31773E88A0077AC66 /* MediaplayerBase.m */,
+				FAC9F0E41773E88A0077AC66 /* MediaplayerFactoryBase.h */,
+				FAC9F0E51773E88A0077AC66 /* MediaplayerFactoryBase.m */,
+				FAC9F0E61773E88A0077AC66 /* MediaplayerSingletonBase.h */,
+				FAC9F0E71773E88A0077AC66 /* MediaplayerSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		FAC9F08F1773DE070077AC66 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FAC9F0E01773E87E0077AC66 /* IMediaplayer.h */,
+			);
+			name = api;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,7 +185,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAC155E7145855CF0016F3BD /* Mediaplayer_Prefix.pch in Headers */,
-				FAC155E8145855CF0016F3BD /* Mediaplayer.h in Headers */,
+				FAC9F0DA1773E8740077AC66 /* Mediaplayer.h in Headers */,
+				FAC9F0DE1773E8740077AC66 /* MediaplayerSingleton.h in Headers */,
+				FAC9F0E11773E87E0077AC66 /* IMediaplayer.h in Headers */,
+				FAC9F0E81773E88A0077AC66 /* MediaplayerBase.h in Headers */,
+				FAC9F0EA1773E88A0077AC66 /* MediaplayerFactoryBase.h in Headers */,
+				FAC9F0EC1773E88A0077AC66 /* MediaplayerSingletonBase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -181,9 +244,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAC155EA145855CF0016F3BD /* mediaplayer_wrap.c in Sources */,
-				FAC155EB145855CF0016F3BD /* mediaplayer.c in Sources */,
-				FAC155EC145855CF0016F3BD /* Mediaplayer.m in Sources */,
+				FAC9F0DB1773E8740077AC66 /* Mediaplayer.m in Sources */,
+				FAC9F0DC1773E8740077AC66 /* MediaplayerFactorySingleton.m in Sources */,
+				FAC9F0DD1773E8740077AC66 /* MediaplayerSetup.m in Sources */,
+				FAC9F0DF1773E8740077AC66 /* MediaplayerSingleton.m in Sources */,
+				FAC9F0E91773E88A0077AC66 /* MediaplayerBase.m in Sources */,
+				FAC9F0EB1773E88A0077AC66 /* MediaplayerFactoryBase.m in Sources */,
+				FAC9F0ED1773E88A0077AC66 /* MediaplayerSingletonBase.m in Sources */,
+				FAC9F0EF1773E8930077AC66 /* mediaplayer_js_wrap.mm in Sources */,
+				FAC9F0F11773E89D0077AC66 /* mediaplayer_ruby_wrap.m in Sources */,
+				FAC9F0F51773E8AB0077AC66 /* mediaplayer_api_init.cpp in Sources */,
+				FAC9F0F61773E8AB0077AC66 /* mediaplayer_js_api.cpp in Sources */,
+				FAC9F0F71773E8AB0077AC66 /* mediaplayer_ruby_api.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,6 +275,13 @@
 					"$(RHO_ROOT)/platform/shared/ruby/include",
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes/**",
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
+					"/Users/MOHUS/rhodes/platform/iphone/Classes/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -224,6 +303,13 @@
 					"$(RHO_ROOT)/platform/shared/ruby/include",
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes/**",
+					/Users/MOHUS/rhodes/platform/shared/common,
+					/Users/MOHUS/rhodes/platform/shared/rubyext,
+					/Users/MOHUS/rhodes/platform/shared/ruby/include,
+					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
+					/Users/MOHUS/rhodes/platform/shared,
+					"/Users/MOHUS/rhodes/platform/iphone/Classes/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -259,8 +345,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				DSTROOT = /tmp/Mediaplayer.dst;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				DSTROOT = /tmp/Mediaplayer.dst;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Mediaplayer_Prefix.pch;

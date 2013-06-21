@@ -22,11 +22,11 @@
 			
 			 <PROPERTY name="duration" type="INTEGER" generateAccessors="true" default="5000">							
 				<DESC>Specifies the number of milliseconds of video to capture.  It is the maximum number of milliseconds of video to capture when the 'start' method is called if not interrupted with the 'stop' method. The duration cannot be set to less than 1000 milliseconds, if a value of less than 1000 milli seconds is specified, the interval will be defaulted to 5000 milli seconds.</DESC>
-				<PLATFORM>WM, Android</PLATFORM>				
+				<PLATFORM>WM, Android, iOS</PLATFORM>				
             </PROPERTY>				
 			<PROPERTY name="fileName" type="STRING" generateAccessors="true">								
-				<DESC>The path and name of the file that is saved locally on the device. When the video capture completes the file is saved in the root directory of the device (In case of Android this is the external storage directory). For eg. If the user specifies '/video/file1' then the file gets saved as '/mnt/sdcard/video/file1.mp4' in Android and as '\video\file1.mov' on Windows. The file extension should not be provided as this is determined by the platform (.mp4 in Android and .mov in Windows) </DESC>				
-				<PLATFORM>WM, Android</PLATFORM>				
+				<DESC>The path and name of the file that is saved locally on the device. When the video capture completes the file is saved in the root directory of the device (In case of Android this is the external storage directory). For eg. If the user specifies '/video/file1' then the file gets saved as '/mnt/sdcard/video/file1.mp4' in Android and as '\video\file1.mov' on Windows. The file extension should not be provided as this is determined by the platform (.mp4 in Android and .mov in Windows). On iOS set fullpath to destination file, use .MOV extension. </DESC>				
+				<PLATFORM>WM, Android, iOS</PLATFORM>				
 			</PROPERTY>	
 			<PROPERTY name="saveToGallery" type="BOOLEAN" generateAccessors="true">							
 				<DESC>Specifies if we need to save the recorded video file into the device gallery.</DESC>
@@ -49,7 +49,7 @@
         <METHODS>
             <METHOD name="start" hasCallback="optional">
                 <DESC>Starts capturing video until either 'stop' is received, or 'duration' is reached. NOTE: On Android this meta tag wouldn't immediately start recording and presents a preview window with controls (start, stop and cancel) for recording.</DESC>
-				<PLATFORM>WM, Android</PLATFORM>
+				<PLATFORM>WM, Android, iOS</PLATFORM>
 				<RETURN>
 					<DESC>Not providing a callback to be invoked will result in that file is saved only locally and file is not transfered.</DESC>
 				</RETURN>	
@@ -69,27 +69,27 @@
             </METHOD>
 			
             <METHOD name="stop">
-                <DESC>Stops capturing video and either saves the file locally, or transfers it to a remote server. NOTE: This is not applicable for Android as the video capture window is full screen and provides a button to stop the video capture. Please note that the file transfer happens as specified even if we dont call the stop method.</DESC>
-				<PLATFORM>WM</PLATFORM>					
+                <DESC>Stops capturing video and either saves the file locally, or transfers it to a remote server. NOTE: This is not applicable for Android and iOS as the video capture window is full screen and provides a button to stop the video capture. Please note that the file transfer happens as specified even if we dont call the stop method.</DESC>
+                <PLATFORM>WM</PLATFORM>					
             </METHOD> 
 			
 			<METHOD name="cancel">
-                <DESC>Stops capturing video and discards any captured video data. NOTE: This is not applicable for Android as the video capture window is full screen and provides a button to cancel the video capture. No file transfer takes place if the video capture is cancelled.</DESC>
-				<PLATFORM>WM</PLATFORM>				
+                <DESC>Stops capturing video and discards any captured video data. NOTE: This is not applicable for Android and iOS as the video capture window is full screen and provides a button to cancel the video capture. No file transfer takes place if the video capture is cancelled.</DESC>
+			    <PLATFORM>WM</PLATFORM>				
             </METHOD> 
 			
 			<METHOD name="enumerate" access="STATIC" hasCallback="optional">
                 <DESC>Enumerates all the available cameras for captuing video</DESC>
                 <RETURN type="ARRAY">
                     <DESC>Array of video capture objects.</DESC>
-                    <PARAM name="videocaptureArray" type="SELF_INSTANCE"/>
+                    <PARAM type="SELF_INSTANCE"/>
                 </RETURN>
             </METHOD>
 			
         </METHODS>
         
 		<VER_INTRODUCED>1.0.0</VER_INTRODUCED>	
-		<PLATFORM>Android, WM</PLATFORM>
+        <PLATFORM>Android, WM, iOS</PLATFORM>
 		<REMARKS>
             <REMARK title="Memory requirements">
                 <DESC>

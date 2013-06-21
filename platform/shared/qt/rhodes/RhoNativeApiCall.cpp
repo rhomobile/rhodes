@@ -31,7 +31,7 @@
 
 void RhoNativeApiCall::populateJavaScriptWindowObject()
 {
-    m_frame->addToJavaScriptWindowObject("__rhoNativeApiCall", this);
+    m_frame->addToJavaScriptWindowObject("__rhoNativeApi", this);
 }
 
 const QString RhoNativeApiCall::apiCall(const QString& msg)
@@ -40,5 +40,5 @@ const QString RhoNativeApiCall::apiCall(const QString& msg)
     rho::String data = rho::net::URI::urlDecode(msg.toStdString().c_str());
     rho::String res = rho::apiGenerator::js_entry_point(data.c_str());
     return QString(res.c_str());
-    // how to return JS-object instance: (QVariant) return m_frame->evaluateJavascript("__rhoNativeApiCall;");
+    // how to return JS-object instance: (QVariant) return m_frame->evaluateJavascript("__rhoNativeApi;");
 }
