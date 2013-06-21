@@ -12,4 +12,4 @@ project_paths:
   wm: ext/platform/wm/Mediaplayer.vcproj
   win32: ext/platform/wm/Mediaplayer.vcproj
   
-xml_api_paths: ext/Mediaplayer.xml
+xml_api_paths: ext/mediaplayer.xml

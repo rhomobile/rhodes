@@ -619,11 +619,13 @@ namespace "config" do
 
     if $app_config["app_type"] == 'rhoelements'
     
-        # add rawsensors extension for rhoelements app
-        if $current_platform == "iphone" || $current_platform == "android"
-            if !$app_config['extensions'].index('rhoelementsext')
-                $app_config["extensions"] += ["rawsensors"] unless $app_config['extensions'].index('rawsensors')
-                $app_config["extensions"] += ["audiocapture"] unless $app_config['extensions'].index('audiocapture')
+        # add rawsensors and audiocapture extensions for rhoelements app
+        if !$app_config['extensions'].index('rhoelementsext')
+            if $current_platform == "iphone"
+                $app_config['extensions'] = $app_config['extensions'] | ['rawsensors']
+            end
+            if $current_platform == "iphone" || $current_platform == "android"
+                $app_config['extensions'] = $app_config['extensions'] | ['audiocapture']
             end
         end
         
@@ -2109,6 +2111,10 @@ end
 
 namespace "run" do
     
+    task :app_as_spec, [:platform, :app_path] do |task, args|
+      Jake.run_app_as_spec(args[:platform], args[:app_path])
+    end
+
     task :rhoconnect_push_spec do
         require 'mspec'
         

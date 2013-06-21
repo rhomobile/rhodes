@@ -5,8 +5,6 @@
         <HELP_OVERVIEW>The MediaPlayer extension is used to playback different types of audio file. It also allows the playback of Ringtones for the respective platform.</HELP_OVERVIEW>
     
         <TEMPLATES>
-            <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
-            <PROPERTY_BAG/> <!-- object has properties, produce getProps(), setProps() methods -->
         </TEMPLATES>
 
         <METHODS>
@@ -15,13 +13,14 @@
                 <DESC>Play a media file using the supplied filename.</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING">
-                        <DESC>File name of the audio media to be played</DESC>
+                        <DESC>File name of the audio media to be played - full filepath</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="stop" access="STATIC" hasCallback="none">
-                <DESC>Stop playing the media file.</DESC>
+                <DESC>Stop playing the media file. Not applicable on iOS, because on iOS the special UI opened for playback media/video - user can stop/close player by UI</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
 
             <!-- The following methods describe playback for video media -->
@@ -29,32 +28,37 @@
                 <DESC>Playing a video file back</DESC>
                 <PARAMS>
                     <PARAM name="filename" type="STRING" runInThread="ui">
-                        <DESC>File name of the video media to be played</DESC>
+                        <DESC>File name of the video media to be played - full filepath</DESC>
                     </PARAM>
                 </PARAMS>
             </METHOD>
 
             <METHOD name="stopvideo" access="STATIC" hasCallback="none">
-                <DESC>Stop the playback of a currently playing video file.</DESC>
+                <DESC>Stop the playback of a currently playing video file.. Not applicable on iOS, because on iOS the special UI opened for playback media/video - user can stop/close player by UI</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
             </METHOD>
 
             <!-- These three methods are for RingtoneManager-->
             <METHOD name="getAllRingtones" access="STATIC" hasCallback="mandatory">
-                <DESC>Getting all ringtones on the device</DESC>               
-                <CALLBACK type="HASH">
-                    <PARAMS>
-                        <PARAM name="name" type="STRING">
-                            <DESC></DESC>
-                        </PARAM>
-                        <PARAM name="fullname" type="STRING">
-                            <DESC></DESC>
-                        </PARAM>
-                    </PARAMS>
+                <DESC>Getting all ringtones on the device - result is array of hashes , each HASH contain pair name, fullname info about ringtone</DESC>    
+                <PLATFORM>WM, Android</PLATFORM>
+                <CALLBACK type="ARRAY">
+                    <PARAM type="HASH">
+                        <PARAMS>
+                            <PARAM name="name" type="STRING">
+                                <DESC></DESC>
+                            </PARAM>
+                            <PARAM name="fullname" type="STRING">
+                                <DESC></DESC>
+                            </PARAM>
+                        </PARAMS>
+                    </PARAM>
                 </CALLBACK>
             </METHOD>
 
             <METHOD name="playRingTone" access="STATIC" hasCallback="none">
                 <DESC>Play a ringtone with the name supplied being used to designate which one.  You cannot supply a location for the ringtone.  They are built in.  To get a full list of all ringtones avaialable on the system use the method getAllRintones</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="name" type="STRING">
                         <DESC>Name of the ringtone to be played.</DESC>
@@ -64,6 +68,7 @@
 
             <METHOD name="stopRingTone" access="STATIC" hasCallback="none">
                 <DESC>Stop the currently playing ringtone.</DESC>
+                <PLATFORM>WM, Android</PLATFORM>
             </METHOD>            
 
 

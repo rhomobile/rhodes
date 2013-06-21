@@ -35,6 +35,7 @@ namespace rho { namespace push {
 class CPushClient : public CPushBase
 {
 public:
+    virtual const String& getId() const = 0;
     virtual void setDeviceId(const String& deviceId) = 0;
     virtual bool callBack(const String& json) = 0;
 };

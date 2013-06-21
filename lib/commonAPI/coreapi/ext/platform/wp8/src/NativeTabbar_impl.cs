@@ -65,6 +65,7 @@ namespace NativeTabbarImpl
             MainPage mp = getMainPage();
             if (mp != null)
             {
+                mp.tabbarHide();
                 mp.toolbarRemoveAllButtons();
                 for (int i = 0; i < tabElements.Count; ++i)
                 {
@@ -126,7 +127,8 @@ namespace NativeTabbarImpl
             MainPage mp = getMainPage();
             if (mp != null)
             {
-                mp.tabbarRemoveAllTabs();
+                //mp.tabbarRemoveAllTabs();
+                mp.tabbarHide();
                 CRhoRuntime.getInstance().logEvent("Tabbar removed");
             }
         }

@@ -22,7 +22,6 @@
 		FA230E58170A30F400C07234 /* Camera.h in Headers */ = {isa = PBXBuildFile; fileRef = FA230E52170A30F400C07234 /* Camera.h */; };
 		FA230E59170A30F400C07234 /* Camera.m in Sources */ = {isa = PBXBuildFile; fileRef = FA230E53170A30F400C07234 /* Camera.m */; };
 		FA230E5A170A30F400C07234 /* CameraFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA230E54170A30F400C07234 /* CameraFactorySingleton.m */; };
-		FA230E5B170A30F400C07234 /* CameraSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = FA230E55170A30F400C07234 /* CameraSetup.m */; };
 		FA230E5C170A30F400C07234 /* CameraSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FA230E56170A30F400C07234 /* CameraSingleton.h */; };
 		FA230E5D170A30F400C07234 /* CameraSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FA230E57170A30F400C07234 /* CameraSingleton.m */; };
 		FA230E60170A417900C07234 /* CameraFactory.h in Headers */ = {isa = PBXBuildFile; fileRef = FA230E5E170A417900C07234 /* CameraFactory.h */; };
@@ -30,6 +29,24 @@
 		FAC155E7145855CF0016F3BD /* Mediacapture_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = FAD45FD51225FED600141873 /* Mediacapture_Prefix.pch */; };
 		FAC155EE145855CF0016F3BD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AACBBE490F95108600F1A2B1 /* Foundation.framework */; };
 		FAC155EF145855CF0016F3BD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAD4602C12260A8500141873 /* UIKit.framework */; };
+		FAC9F09A1773DF100077AC66 /* InitExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0991773DF100077AC66 /* InitExtensions.m */; };
+		FAC9F0AD1773DFBD0077AC66 /* Videocapture.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0A71773DFBD0077AC66 /* Videocapture.h */; };
+		FAC9F0AE1773DFBD0077AC66 /* Videocapture.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0A81773DFBD0077AC66 /* Videocapture.m */; };
+		FAC9F0AF1773DFBD0077AC66 /* VideocaptureFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0A91773DFBD0077AC66 /* VideocaptureFactorySingleton.m */; };
+		FAC9F0B11773DFBD0077AC66 /* VideocaptureSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0AB1773DFBD0077AC66 /* VideocaptureSingleton.h */; };
+		FAC9F0B21773DFBD0077AC66 /* VideocaptureSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0AC1773DFBD0077AC66 /* VideocaptureSingleton.m */; };
+		FAC9F0B41773DFC70077AC66 /* IVideocapture.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0B31773DFC70077AC66 /* IVideocapture.h */; };
+		FAC9F0BB1773DFD40077AC66 /* VideocaptureBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0B51773DFD40077AC66 /* VideocaptureBase.h */; };
+		FAC9F0BC1773DFD40077AC66 /* VideocaptureBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0B61773DFD40077AC66 /* VideocaptureBase.m */; };
+		FAC9F0BD1773DFD40077AC66 /* VideocaptureFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0B71773DFD40077AC66 /* VideocaptureFactoryBase.h */; };
+		FAC9F0BE1773DFD40077AC66 /* VideocaptureFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0B81773DFD40077AC66 /* VideocaptureFactoryBase.m */; };
+		FAC9F0BF1773DFD40077AC66 /* VideocaptureSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = FAC9F0B91773DFD40077AC66 /* VideocaptureSingletonBase.h */; };
+		FAC9F0C01773DFD40077AC66 /* VideocaptureSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0BA1773DFD40077AC66 /* VideocaptureSingletonBase.m */; };
+		FAC9F0C21773DFE00077AC66 /* videocapture_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0C11773DFE00077AC66 /* videocapture_js_wrap.mm */; };
+		FAC9F0C41773DFEA0077AC66 /* videocapture_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0C31773DFEA0077AC66 /* videocapture_ruby_wrap.m */; };
+		FAC9F0C81773DFFE0077AC66 /* videocapture_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0C51773DFFE0077AC66 /* videocapture_api_init.cpp */; };
+		FAC9F0C91773DFFE0077AC66 /* videocapture_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0C61773DFFE0077AC66 /* videocapture_js_api.cpp */; };
+		FAC9F0CA1773DFFE0077AC66 /* videocapture_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FAC9F0C71773DFFE0077AC66 /* videocapture_ruby_api.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,12 +66,29 @@
 		FA230E52170A30F400C07234 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Camera.h; path = impl/Camera.h; sourceTree = "<group>"; };
 		FA230E53170A30F400C07234 /* Camera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Camera.m; path = impl/Camera.m; sourceTree = "<group>"; };
 		FA230E54170A30F400C07234 /* CameraFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CameraFactorySingleton.m; path = impl/CameraFactorySingleton.m; sourceTree = "<group>"; };
-		FA230E55170A30F400C07234 /* CameraSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CameraSetup.m; path = impl/CameraSetup.m; sourceTree = "<group>"; };
 		FA230E56170A30F400C07234 /* CameraSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraSingleton.h; path = impl/CameraSingleton.h; sourceTree = "<group>"; };
 		FA230E57170A30F400C07234 /* CameraSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CameraSingleton.m; path = impl/CameraSingleton.m; sourceTree = "<group>"; };
 		FA230E5E170A417900C07234 /* CameraFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CameraFactory.h; path = impl/CameraFactory.h; sourceTree = "<group>"; };
 		FA230E5F170A417900C07234 /* CameraFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CameraFactory.m; path = impl/CameraFactory.m; sourceTree = "<group>"; };
 		FAC155F3145855CF0016F3BD /* libMediacapture.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMediacapture.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAC9F0991773DF100077AC66 /* InitExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InitExtensions.m; sourceTree = "<group>"; };
+		FAC9F0A71773DFBD0077AC66 /* Videocapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Videocapture.h; path = impl/Videocapture.h; sourceTree = "<group>"; };
+		FAC9F0A81773DFBD0077AC66 /* Videocapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Videocapture.m; path = impl/Videocapture.m; sourceTree = "<group>"; };
+		FAC9F0A91773DFBD0077AC66 /* VideocaptureFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideocaptureFactorySingleton.m; path = impl/VideocaptureFactorySingleton.m; sourceTree = "<group>"; };
+		FAC9F0AB1773DFBD0077AC66 /* VideocaptureSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideocaptureSingleton.h; path = impl/VideocaptureSingleton.h; sourceTree = "<group>"; };
+		FAC9F0AC1773DFBD0077AC66 /* VideocaptureSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideocaptureSingleton.m; path = impl/VideocaptureSingleton.m; sourceTree = "<group>"; };
+		FAC9F0B31773DFC70077AC66 /* IVideocapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IVideocapture.h; path = generated/IVideocapture.h; sourceTree = "<group>"; };
+		FAC9F0B51773DFD40077AC66 /* VideocaptureBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideocaptureBase.h; path = generated/base_impl/VideocaptureBase.h; sourceTree = "<group>"; };
+		FAC9F0B61773DFD40077AC66 /* VideocaptureBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideocaptureBase.m; path = generated/base_impl/VideocaptureBase.m; sourceTree = "<group>"; };
+		FAC9F0B71773DFD40077AC66 /* VideocaptureFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideocaptureFactoryBase.h; path = generated/base_impl/VideocaptureFactoryBase.h; sourceTree = "<group>"; };
+		FAC9F0B81773DFD40077AC66 /* VideocaptureFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideocaptureFactoryBase.m; path = generated/base_impl/VideocaptureFactoryBase.m; sourceTree = "<group>"; };
+		FAC9F0B91773DFD40077AC66 /* VideocaptureSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VideocaptureSingletonBase.h; path = generated/base_impl/VideocaptureSingletonBase.h; sourceTree = "<group>"; };
+		FAC9F0BA1773DFD40077AC66 /* VideocaptureSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = VideocaptureSingletonBase.m; path = generated/base_impl/VideocaptureSingletonBase.m; sourceTree = "<group>"; };
+		FAC9F0C11773DFE00077AC66 /* videocapture_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = videocapture_js_wrap.mm; path = generated/javascript/videocapture_js_wrap.mm; sourceTree = "<group>"; };
+		FAC9F0C31773DFEA0077AC66 /* videocapture_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = videocapture_ruby_wrap.m; path = generated/ruby/videocapture_ruby_wrap.m; sourceTree = "<group>"; };
+		FAC9F0C51773DFFE0077AC66 /* videocapture_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = videocapture_api_init.cpp; path = ../../shared/generated/videocapture_api_init.cpp; sourceTree = "<group>"; };
+		FAC9F0C61773DFFE0077AC66 /* videocapture_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = videocapture_js_api.cpp; path = ../../shared/generated/videocapture_js_api.cpp; sourceTree = "<group>"; };
+		FAC9F0C71773DFFE0077AC66 /* videocapture_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = videocapture_ruby_api.c; path = ../../shared/generated/videocapture_ruby_api.c; sourceTree = "<group>"; };
 		FAD45FD51225FED600141873 /* Mediacapture_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mediacapture_Prefix.pch; sourceTree = "<group>"; };
 		FAD4602C12260A8500141873 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -103,8 +137,9 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				FA230E34170A304600C07234 /* impl */,
-				FA230E33170A303F00C07234 /* generated */,
+				FAC9F0991773DF100077AC66 /* InitExtensions.m */,
+				FAC9F0921773DE1F0077AC66 /* VideoCapture */,
+				FAC9F0901773DE0F0077AC66 /* Camera */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -121,10 +156,10 @@
 			isa = PBXGroup;
 			children = (
 				FA230E4F170A30E000C07234 /* api */,
-				FA230E38170A307F00C07234 /* base_impl */,
 				FA230E37170A306400C07234 /* javascript */,
 				FA230E36170A305E00C07234 /* ruby */,
 				FA230E35170A305700C07234 /* shared */,
+				FA230E38170A307F00C07234 /* base_impl */,
 			);
 			name = generated;
 			sourceTree = "<group>";
@@ -137,7 +172,6 @@
 				FA230E52170A30F400C07234 /* Camera.h */,
 				FA230E53170A30F400C07234 /* Camera.m */,
 				FA230E54170A30F400C07234 /* CameraFactorySingleton.m */,
-				FA230E55170A30F400C07234 /* CameraSetup.m */,
 				FA230E56170A30F400C07234 /* CameraSingleton.h */,
 				FA230E57170A30F400C07234 /* CameraSingleton.m */,
 			);
@@ -191,6 +225,87 @@
 			name = api;
 			sourceTree = "<group>";
 		};
+		FAC9F0901773DE0F0077AC66 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				FA230E34170A304600C07234 /* impl */,
+				FA230E33170A303F00C07234 /* generated */,
+			);
+			name = Camera;
+			sourceTree = "<group>";
+		};
+		FAC9F0921773DE1F0077AC66 /* VideoCapture */ = {
+			isa = PBXGroup;
+			children = (
+				FAC9F0941773DEA60077AC66 /* impl */,
+				FAC9F0931773DE2C0077AC66 /* generated */,
+			);
+			name = VideoCapture;
+			sourceTree = "<group>";
+		};
+		FAC9F0931773DE2C0077AC66 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				FAC9F0981773DED10077AC66 /* api */,
+				FAC9F0971773DEC50077AC66 /* base_impl */,
+				FAC9F0961773DEBE0077AC66 /* wrappers */,
+				FAC9F0951773DEB10077AC66 /* shared */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		FAC9F0941773DEA60077AC66 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAC9F0A71773DFBD0077AC66 /* Videocapture.h */,
+				FAC9F0A81773DFBD0077AC66 /* Videocapture.m */,
+				FAC9F0A91773DFBD0077AC66 /* VideocaptureFactorySingleton.m */,
+				FAC9F0AB1773DFBD0077AC66 /* VideocaptureSingleton.h */,
+				FAC9F0AC1773DFBD0077AC66 /* VideocaptureSingleton.m */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		FAC9F0951773DEB10077AC66 /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				FAC9F0C51773DFFE0077AC66 /* videocapture_api_init.cpp */,
+				FAC9F0C61773DFFE0077AC66 /* videocapture_js_api.cpp */,
+				FAC9F0C71773DFFE0077AC66 /* videocapture_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		FAC9F0961773DEBE0077AC66 /* wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				FAC9F0C31773DFEA0077AC66 /* videocapture_ruby_wrap.m */,
+				FAC9F0C11773DFE00077AC66 /* videocapture_js_wrap.mm */,
+			);
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		FAC9F0971773DEC50077AC66 /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				FAC9F0B51773DFD40077AC66 /* VideocaptureBase.h */,
+				FAC9F0B61773DFD40077AC66 /* VideocaptureBase.m */,
+				FAC9F0B71773DFD40077AC66 /* VideocaptureFactoryBase.h */,
+				FAC9F0B81773DFD40077AC66 /* VideocaptureFactoryBase.m */,
+				FAC9F0B91773DFD40077AC66 /* VideocaptureSingletonBase.h */,
+				FAC9F0BA1773DFD40077AC66 /* VideocaptureSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		FAC9F0981773DED10077AC66 /* api */ = {
+			isa = PBXGroup;
+			children = (
+				FAC9F0B31773DFC70077AC66 /* IVideocapture.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -206,6 +321,12 @@
 				FA230E58170A30F400C07234 /* Camera.h in Headers */,
 				FA230E5C170A30F400C07234 /* CameraSingleton.h in Headers */,
 				FA230E60170A417900C07234 /* CameraFactory.h in Headers */,
+				FAC9F0AD1773DFBD0077AC66 /* Videocapture.h in Headers */,
+				FAC9F0B11773DFBD0077AC66 /* VideocaptureSingleton.h in Headers */,
+				FAC9F0B41773DFC70077AC66 /* IVideocapture.h in Headers */,
+				FAC9F0BB1773DFD40077AC66 /* VideocaptureBase.h in Headers */,
+				FAC9F0BD1773DFD40077AC66 /* VideocaptureFactoryBase.h in Headers */,
+				FAC9F0BF1773DFD40077AC66 /* VideocaptureSingletonBase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -269,9 +390,20 @@
 				FA230E4E170A30DA00C07234 /* CameraSingletonBase.m in Sources */,
 				FA230E59170A30F400C07234 /* Camera.m in Sources */,
 				FA230E5A170A30F400C07234 /* CameraFactorySingleton.m in Sources */,
-				FA230E5B170A30F400C07234 /* CameraSetup.m in Sources */,
 				FA230E5D170A30F400C07234 /* CameraSingleton.m in Sources */,
 				FA230E61170A417900C07234 /* CameraFactory.m in Sources */,
+				FAC9F09A1773DF100077AC66 /* InitExtensions.m in Sources */,
+				FAC9F0AE1773DFBD0077AC66 /* Videocapture.m in Sources */,
+				FAC9F0AF1773DFBD0077AC66 /* VideocaptureFactorySingleton.m in Sources */,
+				FAC9F0B21773DFBD0077AC66 /* VideocaptureSingleton.m in Sources */,
+				FAC9F0BC1773DFD40077AC66 /* VideocaptureBase.m in Sources */,
+				FAC9F0BE1773DFD40077AC66 /* VideocaptureFactoryBase.m in Sources */,
+				FAC9F0C01773DFD40077AC66 /* VideocaptureSingletonBase.m in Sources */,
+				FAC9F0C21773DFE00077AC66 /* videocapture_js_wrap.mm in Sources */,
+				FAC9F0C41773DFEA0077AC66 /* videocapture_ruby_wrap.m in Sources */,
+				FAC9F0C81773DFFE0077AC66 /* videocapture_api_init.cpp in Sources */,
+				FAC9F0C91773DFFE0077AC66 /* videocapture_js_api.cpp in Sources */,
+				FAC9F0CA1773DFFE0077AC66 /* videocapture_ruby_api.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,11 +423,13 @@
 					"$(RHO_ROOT)/platform/shared/ruby/include",
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes/**",
 					/Users/MOHUS/rhodes/platform/shared/common,
 					/Users/MOHUS/rhodes/platform/shared/rubyext,
 					/Users/MOHUS/rhodes/platform/shared/ruby/include,
 					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
 					/Users/MOHUS/rhodes/platform/shared,
+					"/Users/MOHUS/rhodes/platform/iphone/Classes/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;
@@ -317,11 +451,13 @@
 					"$(RHO_ROOT)/platform/shared/ruby/include",
 					"$(RHO_ROOT)/platform/shared/ruby/iphone",
 					"$(RHO_ROOT)/platform/shared",
+					"$(RHO_ROOT)/platform/iphone/Classes/**",
 					/Users/MOHUS/rhodes/platform/shared/common,
 					/Users/MOHUS/rhodes/platform/shared/rubyext,
 					/Users/MOHUS/rhodes/platform/shared/ruby/include,
 					/Users/MOHUS/rhodes/platform/shared/ruby/iphone,
 					/Users/MOHUS/rhodes/platform/shared,
+					"/Users/MOHUS/rhodes/platform/iphone/Classes/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 3.0;
 				ONLY_ACTIVE_ARCH = NO;
