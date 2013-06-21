@@ -96,6 +96,15 @@
           </PARAM>
         </PARAMS>
       </METHOD>
+      <METHOD name="getModel" generateAPI="false">
+        <DESC>Javascript using only. Returns a model.
+        </DESC>
+        <PARAMS>
+          <PARAM name="modelName" type="String">
+            <DESC>Name of the model you want returned.</DESC>
+          </PARAM>
+        </PARAMS>
+      </METHOD>
       <METHOD name="addModel" generateAPI="false">
         <DESC>
           Javascript using only. Creates ORM model.
@@ -119,7 +128,7 @@
                 <DESC>addUniqueIndex(STRING name,ARRAY [col1,col2]). Add a unique index to your fixedSchema model.</DESC>
               </PARAM>
               <PARAM name='belongs_to' type=''>
-                <DESC>belongs_to(STRING name).  Add belongs_to association to another defined model, for sync models.</DESC>
+                <DESC>belongs_to(STRING name).  Add belongs_to association to another defined model, for sync models. Comma separted String for more than one model.</DESC>
               </PARAM>
               <PARAM name='set' type=''>
                 <DESC>set(STRING name,STRING|BOOLEAN|INTEGER value).  Set an attribute to your model.</DESC>
