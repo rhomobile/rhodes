@@ -232,13 +232,16 @@ else %>
         oRes.setCallInUIThread(<%= (module_method.run_in_thread == ModuleMethod::RUN_IN_THREAD_UI) ? "true" : "false" %>);
         if ( argc > nCallbackArg + 1 )
         {
-            if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
+            if ( !rho_ruby_is_NIL(argv[nCallbackArg + 1]) )
             {
-                oRes.setArgError("Type error: callback parameter should be String");
-                return oRes.toRuby();
-            }
+                if ( !rho_ruby_is_string(argv[nCallbackArg + 1]) )
+                {
+                    oRes.setArgError("Type error: callback parameter should be String");
+                    return oRes.toRuby();
+                }
 
-            oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
+                oRes.setCallbackParam( getStringFromValue(argv[nCallbackArg + 1]) );
+            }
         }
         
         bUseCallback = true;<%
