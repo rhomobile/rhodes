@@ -3,8 +3,9 @@ javaentry: com.coreapi.CoreAPI
 libraries: ["CoreAPI"]
 
 android:
-  source_list: /ext/platform/android/ext_java.files
-
+  source_list: ext/platform/android/ext_java.files
+  adds: ext/platform/android/adds
+  manifest_changes: ext/platform/android/AndroidManifest.xml
 wp8:
   libraries: ["WebView", "NativeToolbar", "NativeTabbar"]
   webview:
