@@ -26,3 +26,12 @@ ext/platform/android/src/com/rho/nativetoolbar/NativeToolbar.java
 ext/platform/android/src/com/rho/nativetoolbar/NativeToolbarSingleton.java
 ext/platform/android/src/com/rho/nativetoolbar/NativeToolbarFactory.java
 ext/platform/android/src/com/motorolasolutions/rho/network/Network.java
+ext/platform/android/generated/src/com/rho/notification/NotificationBase.java
+ext/platform/android/generated/src/com/rho/notification/NotificationFactorySingleton.java
+ext/platform/android/generated/src/com/rho/notification/NotificationSingletonBase.java
+ext/platform/android/generated/src/com/rho/notification/INotification.java
+ext/platform/android/generated/src/com/rho/notification/INotificationFactory.java
+ext/platform/android/generated/src/com/rho/notification/INotificationSingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationFactory.java
+ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationSingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/notification/PopupActivity.java
