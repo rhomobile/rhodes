@@ -336,7 +336,11 @@ int rho_sys_unzip_file(const char* szZipPath, const char* psw)
     SetUnzipBaseDir(hz,strBaseDir.c_str() );
 #endif
 
-    ZIPENTRY ze;
+#ifdef OS_WP8
+	static ZIPENTRY ze;
+#else
+	ZIPENTRY ze;
+#endif
     ZRESULT res = 0;
 	// Get info about the zip
 	// -1 gives overall information about the zipfile
