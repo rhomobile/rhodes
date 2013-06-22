@@ -45,7 +45,7 @@
             </PROPERTY>
             <PROPERTY name="title" type="STRING">
                 <DESC>Define Window caption text.If missed - caption from page used.</DESC>
-                <PLATFORM>WM</PLATFORM>
+                <PLATFORM>WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="name" type="STRING" readOnly="true">
                 <DESC>Application name.</DESC>
