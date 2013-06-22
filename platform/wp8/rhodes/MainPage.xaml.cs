@@ -96,7 +96,7 @@ namespace rhodes
                 //temporary solutions, to do refactoring
                 Thread.Sleep(5000);
                 _rhoruntime.onActivate(0);
-            }
+            } 
             catch (Exception e)
             {
                 RhodesWebBrowser.NavigateToString("<html><head><title>Exception</title></head><body>Exception: "+e.Message+"</body></html>");
@@ -224,7 +224,7 @@ namespace rhodes
                 return ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).InvokeScript("eval", codeString).ToString();
         }
 
-        public string executeScript(string script, int index)
+        public string executeScript(string script, int index) 
         {
             return StringValueByStringIntReturnAgent(executeScriptFunc, script, index);
         }
@@ -450,7 +450,7 @@ namespace rhodes
             if (ApplicationBar.Buttons.Count < 4)
             {
                 ApplicationBarIconButton toolbarButton = new ApplicationBarIconButton();
-                toolbarButton.IconUri = new Uri((icon != null) && (icon.Length > 0) ? prependWithSlash(icon) : "/rho/public/images/cancel.png", UriKind.Relative);
+                toolbarButton.IconUri = new Uri((icon != null) && (icon.Length > 0) ? prependWithSlash(icon) : "/rho/apps/public/images/cancel.png", UriKind.Relative);
                 toolbarButton.Text = text;
                 ApplicationBar.Buttons.Add(toolbarButton);
                 toolbarButton.Click += new EventHandler(toolbarButton_Click);
@@ -472,10 +472,14 @@ namespace rhodes
             CRhoRuntime.getInstance().logEvent("Toolbar separator is unimplemented on WP8");
         }
 
-		public void setToolbarStyle(bool border, string background)
+		public void setToolbarStyle(bool border, string background, string mask)
         {
-            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setToolbarStyle(border, background); }); return; }
+            if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setToolbarStyle(border, background, mask); }); return; }
             // TODO: implement setToolbarStyle
+            if(background != "")
+                ApplicationBar.BackgroundColor = getColorFromString(background);
+            if(mask != "")
+                ApplicationBar.ForegroundColor = getColorFromString(mask);
         }
 
         private void toolbarButton_Click(object sender, EventArgs e)
@@ -771,7 +775,7 @@ namespace rhodes
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { setCookie(url, cookie); }); return; }
             // TODO: implement
         }
-
+         
 
         // *** MISC ***
         // this method is used as a callback for calling the C# API methods from C++
