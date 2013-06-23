@@ -25,6 +25,24 @@
 		C06A0F2716F21C880065EF81 /* log_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EE416F21C880065EF81 /* log_js_api.cpp */; };
 		C06A0F2816F21C880065EF81 /* log_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EE516F21C880065EF81 /* log_ruby_api.c */; };
 		C06A0F3C16F21C880065EF81 /* LogImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C06A0EF916F21C880065EF81 /* LogImpl.cpp */; };
+		C08B5DF41774C4290021B5BA /* INotification.h in Headers */ = {isa = PBXBuildFile; fileRef = C08B5DF31774C4290021B5BA /* INotification.h */; };
+		C08B5DFC1774C45C0021B5BA /* NotificationBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C08B5DF61774C45C0021B5BA /* NotificationBase.h */; };
+		C08B5DFD1774C45C0021B5BA /* NotificationBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C08B5DF71774C45C0021B5BA /* NotificationBase.m */; };
+		C08B5DFE1774C45C0021B5BA /* NotificationFactoryBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C08B5DF81774C45C0021B5BA /* NotificationFactoryBase.h */; };
+		C08B5DFF1774C45C0021B5BA /* NotificationFactoryBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C08B5DF91774C45C0021B5BA /* NotificationFactoryBase.m */; };
+		C08B5E001774C45C0021B5BA /* NotificationSingletonBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C08B5DFA1774C45C0021B5BA /* NotificationSingletonBase.h */; };
+		C08B5E011774C45C0021B5BA /* NotificationSingletonBase.m in Sources */ = {isa = PBXBuildFile; fileRef = C08B5DFB1774C45C0021B5BA /* NotificationSingletonBase.m */; };
+		C08B5E041774C47C0021B5BA /* notification_js_wrap.mm in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E031774C47C0021B5BA /* notification_js_wrap.mm */; };
+		C08B5E061774C4870021B5BA /* notification_ruby_wrap.m in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E051774C4870021B5BA /* notification_ruby_wrap.m */; };
+		C08B5E0B1774C4A80021B5BA /* notification_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E081774C4A80021B5BA /* notification_api_init.cpp */; };
+		C08B5E0C1774C4A80021B5BA /* notification_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E091774C4A80021B5BA /* notification_js_api.cpp */; };
+		C08B5E0D1774C4A80021B5BA /* notification_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E0A1774C4A80021B5BA /* notification_ruby_api.c */; };
+		C08B5E151774C4CA0021B5BA /* Notification.h in Headers */ = {isa = PBXBuildFile; fileRef = C08B5E0F1774C4CA0021B5BA /* Notification.h */; };
+		C08B5E161774C4CA0021B5BA /* Notification.m in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E101774C4CA0021B5BA /* Notification.m */; };
+		C08B5E171774C4CA0021B5BA /* NotificationFactorySingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E111774C4CA0021B5BA /* NotificationFactorySingleton.m */; };
+		C08B5E181774C4CA0021B5BA /* NotificationSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E121774C4CA0021B5BA /* NotificationSetup.m */; };
+		C08B5E191774C4CA0021B5BA /* NotificationSingleton.h in Headers */ = {isa = PBXBuildFile; fileRef = C08B5E131774C4CA0021B5BA /* NotificationSingleton.h */; };
+		C08B5E1A1774C4CA0021B5BA /* NotificationSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = C08B5E141774C4CA0021B5BA /* NotificationSingleton.m */; };
 		C57BD8F8174FD25500494EA3 /* FileImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8F7174FD25500494EA3 /* FileImpl.cpp */; };
 		C57BD8FC175392E700494EA3 /* rhofile_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8F9175392E700494EA3 /* rhofile_api_init.cpp */; };
 		C57BD8FD175392E700494EA3 /* rhofile_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD8FA175392E700494EA3 /* rhofile_js_api.cpp */; };
@@ -173,6 +191,24 @@
 		C06A0EE416F21C880065EF81 /* log_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = log_js_api.cpp; path = generated/log_js_api.cpp; sourceTree = "<group>"; };
 		C06A0EE516F21C880065EF81 /* log_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = log_ruby_api.c; path = generated/log_ruby_api.c; sourceTree = "<group>"; };
 		C06A0EF916F21C880065EF81 /* LogImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LogImpl.cpp; path = ../../shared/LogImpl.cpp; sourceTree = "<group>"; };
+		C08B5DF31774C4290021B5BA /* INotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = INotification.h; path = generated/INotification.h; sourceTree = "<group>"; };
+		C08B5DF61774C45C0021B5BA /* NotificationBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NotificationBase.h; path = generated/base_impl/NotificationBase.h; sourceTree = "<group>"; };
+		C08B5DF71774C45C0021B5BA /* NotificationBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NotificationBase.m; path = generated/base_impl/NotificationBase.m; sourceTree = "<group>"; };
+		C08B5DF81774C45C0021B5BA /* NotificationFactoryBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NotificationFactoryBase.h; path = generated/base_impl/NotificationFactoryBase.h; sourceTree = "<group>"; };
+		C08B5DF91774C45C0021B5BA /* NotificationFactoryBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NotificationFactoryBase.m; path = generated/base_impl/NotificationFactoryBase.m; sourceTree = "<group>"; };
+		C08B5DFA1774C45C0021B5BA /* NotificationSingletonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NotificationSingletonBase.h; path = generated/base_impl/NotificationSingletonBase.h; sourceTree = "<group>"; };
+		C08B5DFB1774C45C0021B5BA /* NotificationSingletonBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NotificationSingletonBase.m; path = generated/base_impl/NotificationSingletonBase.m; sourceTree = "<group>"; };
+		C08B5E031774C47C0021B5BA /* notification_js_wrap.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = notification_js_wrap.mm; path = generated/javascript/notification_js_wrap.mm; sourceTree = "<group>"; };
+		C08B5E051774C4870021B5BA /* notification_ruby_wrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = notification_ruby_wrap.m; path = generated/ruby/notification_ruby_wrap.m; sourceTree = "<group>"; };
+		C08B5E081774C4A80021B5BA /* notification_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = notification_api_init.cpp; path = ../../shared/generated/notification_api_init.cpp; sourceTree = "<group>"; };
+		C08B5E091774C4A80021B5BA /* notification_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = notification_js_api.cpp; path = ../../shared/generated/notification_js_api.cpp; sourceTree = "<group>"; };
+		C08B5E0A1774C4A80021B5BA /* notification_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = notification_ruby_api.c; path = ../../shared/generated/notification_ruby_api.c; sourceTree = "<group>"; };
+		C08B5E0F1774C4CA0021B5BA /* Notification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Notification.h; path = impl/Notification.h; sourceTree = "<group>"; };
+		C08B5E101774C4CA0021B5BA /* Notification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Notification.m; path = impl/Notification.m; sourceTree = "<group>"; };
+		C08B5E111774C4CA0021B5BA /* NotificationFactorySingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NotificationFactorySingleton.m; path = impl/NotificationFactorySingleton.m; sourceTree = "<group>"; };
+		C08B5E121774C4CA0021B5BA /* NotificationSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NotificationSetup.m; path = impl/NotificationSetup.m; sourceTree = "<group>"; };
+		C08B5E131774C4CA0021B5BA /* NotificationSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NotificationSingleton.h; path = impl/NotificationSingleton.h; sourceTree = "<group>"; };
+		C08B5E141774C4CA0021B5BA /* NotificationSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NotificationSingleton.m; path = impl/NotificationSingleton.m; sourceTree = "<group>"; };
 		C57BD8F7174FD25500494EA3 /* FileImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileImpl.cpp; path = ../../shared/FileImpl.cpp; sourceTree = "<group>"; };
 		C57BD8F9175392E700494EA3 /* rhofile_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rhofile_api_init.cpp; path = ../../shared/generated/rhofile_api_init.cpp; sourceTree = "<group>"; };
 		C57BD8FA175392E700494EA3 /* rhofile_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rhofile_js_api.cpp; path = ../../shared/generated/rhofile_js_api.cpp; sourceTree = "<group>"; };
@@ -345,6 +381,7 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C08B5DF01774C3D70021B5BA /* Notification */,
 				C5B99D7F174E688C00D8D02E /* File */,
 				FABB0455174BE108002DFB11 /* Navbar */,
 				FAEB2BB31743C4F4001AE032 /* NativeTabbar */,
@@ -465,6 +502,79 @@
 				C06A0EF916F21C880065EF81 /* LogImpl.cpp */,
 			);
 			name = Impl;
+			sourceTree = "<group>";
+		};
+		C08B5DF01774C3D70021B5BA /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				C08B5DF11774C3FC0021B5BA /* generated */,
+				C08B5E0E1774C4B70021B5BA /* impl */,
+			);
+			name = Notification;
+			sourceTree = "<group>";
+		};
+		C08B5DF11774C3FC0021B5BA /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C08B5DF21774C4090021B5BA /* api */,
+				C08B5DF51774C4350021B5BA /* base_impl */,
+				C08B5E021774C4620021B5BA /* wrappers */,
+				C08B5E071774C4910021B5BA /* shared */,
+			);
+			name = generated;
+			sourceTree = "<group>";
+		};
+		C08B5DF21774C4090021B5BA /* api */ = {
+			isa = PBXGroup;
+			children = (
+				C08B5DF31774C4290021B5BA /* INotification.h */,
+			);
+			name = api;
+			sourceTree = "<group>";
+		};
+		C08B5DF51774C4350021B5BA /* base_impl */ = {
+			isa = PBXGroup;
+			children = (
+				C08B5DF61774C45C0021B5BA /* NotificationBase.h */,
+				C08B5DF71774C45C0021B5BA /* NotificationBase.m */,
+				C08B5DF81774C45C0021B5BA /* NotificationFactoryBase.h */,
+				C08B5DF91774C45C0021B5BA /* NotificationFactoryBase.m */,
+				C08B5DFA1774C45C0021B5BA /* NotificationSingletonBase.h */,
+				C08B5DFB1774C45C0021B5BA /* NotificationSingletonBase.m */,
+			);
+			name = base_impl;
+			sourceTree = "<group>";
+		};
+		C08B5E021774C4620021B5BA /* wrappers */ = {
+			isa = PBXGroup;
+			children = (
+				C08B5E051774C4870021B5BA /* notification_ruby_wrap.m */,
+				C08B5E031774C47C0021B5BA /* notification_js_wrap.mm */,
+			);
+			name = wrappers;
+			sourceTree = "<group>";
+		};
+		C08B5E071774C4910021B5BA /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				C08B5E081774C4A80021B5BA /* notification_api_init.cpp */,
+				C08B5E091774C4A80021B5BA /* notification_js_api.cpp */,
+				C08B5E0A1774C4A80021B5BA /* notification_ruby_api.c */,
+			);
+			name = shared;
+			sourceTree = "<group>";
+		};
+		C08B5E0E1774C4B70021B5BA /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C08B5E0F1774C4CA0021B5BA /* Notification.h */,
+				C08B5E101774C4CA0021B5BA /* Notification.m */,
+				C08B5E111774C4CA0021B5BA /* NotificationFactorySingleton.m */,
+				C08B5E121774C4CA0021B5BA /* NotificationSetup.m */,
+				C08B5E131774C4CA0021B5BA /* NotificationSingleton.h */,
+				C08B5E141774C4CA0021B5BA /* NotificationSingleton.m */,
+			);
+			name = impl;
 			sourceTree = "<group>";
 		};
 		C57BD8F6174FD24600494EA3 /* impl */ = {
@@ -1059,6 +1169,12 @@
 				FA4EC302174D109B00969368 /* NavbarSingleton.h in Headers */,
 				C00E098A1761429200ADA93E /* INativeMenubar.h in Headers */,
 				C00E098E1761429200ADA93E /* NativeMenubarBase.h in Headers */,
+				C08B5DF41774C4290021B5BA /* INotification.h in Headers */,
+				C08B5DFC1774C45C0021B5BA /* NotificationBase.h in Headers */,
+				C08B5DFE1774C45C0021B5BA /* NotificationFactoryBase.h in Headers */,
+				C08B5E001774C45C0021B5BA /* NotificationSingletonBase.h in Headers */,
+				C08B5E151774C4CA0021B5BA /* Notification.h in Headers */,
+				C08B5E191774C4CA0021B5BA /* NotificationSingleton.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1214,6 +1330,18 @@
 				C00E0994176142C900ADA93E /* nativemenubar_api_init.cpp in Sources */,
 				C00E0995176142C900ADA93E /* nativemenubar_js_api.cpp in Sources */,
 				C00E0996176142C900ADA93E /* nativemenubar_ruby_api.c in Sources */,
+				C08B5DFD1774C45C0021B5BA /* NotificationBase.m in Sources */,
+				C08B5DFF1774C45C0021B5BA /* NotificationFactoryBase.m in Sources */,
+				C08B5E011774C45C0021B5BA /* NotificationSingletonBase.m in Sources */,
+				C08B5E041774C47C0021B5BA /* notification_js_wrap.mm in Sources */,
+				C08B5E061774C4870021B5BA /* notification_ruby_wrap.m in Sources */,
+				C08B5E0B1774C4A80021B5BA /* notification_api_init.cpp in Sources */,
+				C08B5E0C1774C4A80021B5BA /* notification_js_api.cpp in Sources */,
+				C08B5E0D1774C4A80021B5BA /* notification_ruby_api.c in Sources */,
+				C08B5E161774C4CA0021B5BA /* Notification.m in Sources */,
+				C08B5E171774C4CA0021B5BA /* NotificationFactorySingleton.m in Sources */,
+				C08B5E181774C4CA0021B5BA /* NotificationSetup.m in Sources */,
+				C08B5E1A1774C4CA0021B5BA /* NotificationSingleton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
