@@ -2,7 +2,10 @@
 #import "INotification.h"
 #import "NotificationSingletonBase.h"
 
+
+
 @interface NotificationSingleton : NotificationSingletonBase<INotificationSingleton> {
+    
 }
 
 
