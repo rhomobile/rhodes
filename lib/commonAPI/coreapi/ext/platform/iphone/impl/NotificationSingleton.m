@@ -54,6 +54,7 @@ static BOOL is_current_alert_status = NO;
 - (void)run:(NSObject*)v {
     NSString *title = @"Alert";
     NSString *message = nil;
+    NSString *imagePath = nil;
     
 	is_current_alert_status = NO;
 	
@@ -83,6 +84,8 @@ static BOOL is_current_alert_status = NO;
                 title = objStr;
             } else if ([objKey isEqualToString:HK_MESSAGE]) {
                 message = objStr;
+            } else if ([objKey isEqualToString:HK_ICON]) {
+                imagePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:objStr];
             } else if ([objKey isEqualToString:@"status_type"]) {
                 is_current_alert_status = YES;
             }
@@ -95,23 +98,24 @@ static BOOL is_current_alert_status = NO;
                 
                 NSArray* arr = (NSArray*) objVal;
                 
-                for(id obj in arr) {
+                for(id buttonVal in arr) {
                     NSString *itemId = nil;
                     NSString *itemTitle = nil;
                     
-                    if ([obj isKindOfClass:[NSString class]]) {
-                        itemId = (NSString*) obj;
-                        itemTitle = (NSString*) obj;
-                    } else if ([obj isKindOfClass:[NSDictionary class]]) {
+                    if ([buttonVal isKindOfClass:[NSString class]]) {
+                        itemId = (NSString*) buttonVal;
+                        itemTitle = (NSString*) buttonVal;
+                    } else if ([buttonVal isKindOfClass:[NSDictionary class]]) {
+                        NSDictionary* btnDict = (NSDictionary*)buttonVal;
                         // get ID
-                        NSObject* tmp = [(NSDictionary*)obj objectForKey:"id"];
+                        NSObject* tmp = [btnDict objectForKey:@"id"];
                         if ([tmp isKindOfClass:[NSString class]]) {
                             itemId = (NSString*) tmp;
                         } else {
                             RAWLOG_ERROR("Illegal type of button id");
                         }
                         // get Titile
-                        tmp = [(NSDictionary*)obj objectForKey:"title"];
+                        tmp = [btnDict objectForKey:@"title"];
                         if ([tmp isKindOfClass:[NSString class]]) {
                             itemTitle = (NSString*) tmp;
                         } else {
@@ -148,6 +152,17 @@ static BOOL is_current_alert_status = NO;
                            cancelButtonTitle:nil
                            otherButtonTitles:nil] autorelease];
     
+
+    // please note that there are no easy way to add image to popup
+    // following code fails to addSubView
+    /*if (imagePath) {
+        
+        UIImageView *tempImageView = [[UIImageView alloc]initWithFrame:CGRectMake(20,20,50,50)];
+        tempImageView.image = [UIImage imageNamed:imagePath];
+        [alert addSubView:tempImageView];
+    }*/
+        
+        
     for (int i = 0, lim = [buttons count]; i < lim; ++i) {
         NSArray *btn = [buttons objectAtIndex:i];
         NSString *title = [btn objectAtIndex:1];
