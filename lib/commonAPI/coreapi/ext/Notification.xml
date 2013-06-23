@@ -10,7 +10,7 @@
 		<METHODS access="STATIC">
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
-                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button.</DESC>
+                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button. Icon is not supported on iOS devices.</DESC>
 				<PARAMS>
 					<PARAM name="propertyMap" type="HASH">
 						<DESC>The properties associated with the popup.</DESC>
@@ -82,7 +82,7 @@
             </METHOD>
 
             <METHOD name="beep" access="STATIC" hasCallback="none">
-                <DESC>If the device is equipped with a beeper then a beep will be emitted</DESC>
+                <DESC>If the device is equipped with a beeper then a beep will be emitted. Not supported on iOS devices.</DESC>
 				<PLATFORM>iOS, Android, WM</PLATFORM>
 				<APPLIES msiOnly="true"></APPLIES>
 				<PARAMS>
@@ -109,7 +109,7 @@
 				<APPLIES msiOnly="true"></APPLIES>
 				<PARAMS>
 					<PARAM name="duration" type="Integer" default="1000">
-						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file</DESC>
+						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. Duration is not supported on iOS devices.</DESC>
 					</PARAM>
 				</PARAMS>
             </METHOD>
