@@ -115,7 +115,12 @@ namespace "config" do
     $additional_dlls_path = nil
     $additional_regkeys = nil
     $use_direct_deploy = "yes"
+    $build_persistent_cab = false
     $run_on_startup = false
+
+    if !$app_config["wm"].nil? && ($app_config["wm"]["persistent"] == "yes")
+      $build_persistent_cab = true
+    end
 
     if !$app_config["wm"].nil? && $app_config["wm"]["startAtBoot"]
       $run_on_startup = true
@@ -657,6 +662,63 @@ namespace "device" do
   end
   
   namespace "wm" do
+      
+    # make a *.cpy and *.reg files for persistent installation
+    def makePersistentFiles(dstDir, additional_paths, webkit_dir, regKeys)
+      cf = File.new(File.join(dstDir, $appname + ".cpy"), "w+")
+            
+      if cf.nil?
+        puts "errir file"
+      end
+      
+      currDir = Dir.pwd
+      chdir dstDir
+      
+      Dir.glob("**/*").each { |f|
+        if File.directory?(f) == false
+          cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+        end
+      }
+      
+      if additional_paths.kind_of?(Array)
+        additional_paths.each { |dir|
+          chdir dir
+          
+          Dir.glob("**/*").each { |f|
+            if File.directory?(f) == false
+              cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+            end
+          }        
+        }
+      end
+      
+      if !webkit_dir.nil?
+        chdir webkit_dir
+        
+        Dir.glob("**/*").each { |f|
+          if File.directory?(f) == false && File.extname(f) != ".lib" && File.extname(f) != ".exp"
+            cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+          end
+        }
+      end
+      
+      build_dir = File.join($startdir, "platform", 'wm', "bin", $sdk, "Rhodes", $buildcfg)   
+      chdir build_dir 
+        
+      Dir.glob("**/*").each { |f|
+        if File.directory?(f) == false && (File.extname(f) == ".exe" || File.extname(f) == ".dll") && f != "rhodes.exe"
+          cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+        end
+      }
+          
+      cf.close
+      
+      rf = File.new(File.join(dstDir, $appname + ".reg"), "w+")
+      rf.close      
+      
+      chdir currDir
+    end
+   
     desc "Build production for device or emulator"
     task :production, [:exclude_dirs] => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
 
@@ -704,7 +766,14 @@ namespace "device" do
         end
       end
 
-      args = ['build_inf.js',                           
+      builder_name = 'build_inf.js'
+      persistent_paths = []
+      
+      if $build_persistent_cab == true && $use_shared_runtime.nil?
+        builder_name = 'build_pers_inf.js'
+      end
+
+      args = [builder_name.to_s, 
               $appname + ".inf",                        #0
               build_platform,                           #1
               '"' + $app_config["name"] +'"',           #2
@@ -719,9 +788,10 @@ namespace "device" do
               $srcdir ]                                 #11
 
       if $use_shared_runtime.nil? then
-         $additional_dlls_paths.each do |path|
-            args << path
-         end
+        $additional_dlls_paths.each do |path|
+          args << path
+          persistent_paths << path
+        end
       end
       
       reg_keys_filename = File.join(File.dirname(__FILE__), "regs.txt");
@@ -730,7 +800,7 @@ namespace "device" do
         rm reg_keys_filename 
       end
       
-       if $regkeys && $regkeys.size > 0
+      if $regkeys && $regkeys.size > 0
         puts 'add registry keys to file'
         $regkey_file = File.new(reg_keys_filename, "w+")
       
@@ -740,6 +810,14 @@ namespace "device" do
         
         $regkey_file.close   
       end  
+      
+      if $build_persistent_cab && $use_shared_runtime.nil?
+        if $webkit_capability
+          makePersistentFiles($srcdir, persistent_paths, $wk_data_dir, reg_keys_filename)
+        else
+          makePersistentFiles($srcdir, persistent_paths, nil, reg_keys_filename)
+        end
+      end
       
       puts Jake.run('cscript',args)
       unless $? == 0
@@ -753,7 +831,7 @@ namespace "device" do
         puts "Error running cabwiz"
         exit 1
       end
-
+      
       args = ['cleanup.js']
       puts Jake.run('cscript',args)
       unless $? == 0
