@@ -37,7 +37,7 @@ namespace rhoruntime
 		int getLogicalDpiY();
         int getScreenWidth();
         int getScreenHeight();
-		bool isBrowserInitialized();
+		bool isBrowserInitialized(int index);
 		::Platform::String^ getScreenOrientation();
 		void bringToFront();
 		void performOnUiThread(int64 native);

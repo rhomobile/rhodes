@@ -53,6 +53,9 @@ namespace rhodes
         private double _screenPhysicalWidth;
         private double _screenPhysicalHeight;
         private bool _isBrowserInitialized = false;
+        private Dictionary<int, bool> tbInitMap = new Dictionary<int, bool>();
+        private Dictionary<int, string> tbInitUri = new Dictionary<int, string>();
+        private string initUri = "";
         private PageOrientation _screenOrientation = PageOrientation.None;
         // menu items hash table
         private Dictionary<string, int> menuItems = new Dictionary<string, int>();
@@ -60,9 +63,9 @@ namespace rhodes
         private Dictionary<string, string>   toolbarItems     = new Dictionary<string, string>();
         private List<ApplicationBarMenuItem> toolbarMenuItems = new List<ApplicationBarMenuItem>();
 
-        public bool isBrowserInitialized()
+        public bool isBrowserInitialized(int index)
         {
-            return _isBrowserInitialized;
+            return (index == -1) ? _isBrowserInitialized : tbInitMap[index];
         }
 
         private bool isUIThread
@@ -209,6 +212,21 @@ namespace rhodes
 		public void navigate(string url, int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigate(url, index); }); return; }
+
+            if (url == "") return;
+
+            if (index == -1 && !_isBrowserInitialized)
+            {
+                initUri = url;
+                return;
+            }
+            else if (index > -1 && tbInitMap[index] == false)
+            {
+                tbInitUri[index] = url;
+                return;
+            }
+
+
             if (TabbarPivot.Items.Count == 0)
                 RhodesWebBrowser.Navigate(new Uri(url));
             else
@@ -324,13 +342,23 @@ namespace rhodes
         private void RhodesWebBrowser_NavigationFailed(object sender, System.Windows.Navigation.NavigationFailedEventArgs e)
         {
             // TODO: WebView NavigationFailed - do we need this?
-        }
-
+        }     
+           
         private void RhodesWebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
             CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
-            if (!_isBrowserInitialized) 
+            int index = (sender as WebBrowser).TabIndex;
+            if (index > -1 && !tbInitMap[index])
+            {
+                tbInitMap[index] = true;
+                if (tbInitUri.ContainsKey(index))
+                    navigate(tbInitUri[index], index);
+            }
+            else if (TabbarPivot.Items.Count == 0 && !_isBrowserInitialized)
+            {
                 _isBrowserInitialized = true;
+                navigate(initUri, -1);
+            }
         }
 
         private void RhodesWebBrowser_Loaded(object sender, RoutedEventArgs e)
@@ -453,7 +481,7 @@ namespace rhodes
                 toolbarButton.IconUri = new Uri((icon != null) && (icon.Length > 0) ? prependWithSlash(icon) : "/rho/apps/public/images/cancel.png", UriKind.Relative);
                 toolbarButton.Text = text;
                 ApplicationBar.Buttons.Add(toolbarButton);
-                toolbarButton.Click += new EventHandler(toolbarButton_Click);
+                toolbarButton.Click += new EventHandler(toolbarButton_Click); 
             }
             else
             {
@@ -539,6 +567,7 @@ namespace rhodes
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { tabbarRemoveAllTabs(); }); return; }
             TabbarPivot.Items.Clear();
+            tbInitMap.Clear();
         }
 
         public void tabbarRemove(int index)
@@ -650,7 +679,7 @@ namespace rhodes
             //}
             //else
             //{
-
+            tbInitMap[TabbarPivot.Items.Count] = false;
             WebBrowser wv = new WebBrowser();
             wv.Height = double.NaN;
             wv.Width = double.NaN;
@@ -662,6 +691,8 @@ namespace rhodes
             wv.Loaded += RhodesWebBrowser_Loaded;
             wv.Unloaded += RhodesWebBrowser_Unloaded;
             wv.ScriptNotify += RhodesWebBrowser_JSNotify;
+            wv.Source = new Uri("about:blank");
+            wv.TabIndex = TabbarPivot.Items.Count;
             //wv.SetValue(FrameworkElement.NameProperty, "tabWeb" + TabbarPivot.Items.Count.ToString());
             // TODO: reload
             // TODO: web_bkg_color 
@@ -675,11 +706,11 @@ namespace rhodes
             tab.IsEnabled = !disabled;
             tab.Tag = action;
             //tab.SetValue(FrameworkElement.NameProperty, "tabItem" + TabbarPivot.Items.Count.ToString());
-
-            TabbarPivot.Items.Add(tab);
-
-            //return TabbarPivot.Items.Count-1; 
-        }
+              
+            TabbarPivot.Items.Add(tab);   
+             
+            //return TabbarPivot.Items.Count-1;          
+        }     
 
         private void TabbarPivot_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -877,8 +908,9 @@ namespace rhodes
         private void RhodesWebBrowser_JSNotify(object sender, NotifyEventArgs e)
         {
             String answer = CRhoRuntime.getInstance().onJSInvoke(e.Value);
-            RhodesWebBrowser.IsScriptEnabled = true;
-            RhodesWebBrowser.InvokeScript("__rhoNativeApiResult", new string[] { answer });
+            WebBrowser wb = sender as WebBrowser;
+            wb.IsScriptEnabled = true;
+            wb.InvokeScript("__rhoNativeApiResult", new string[] { answer });
         }
     }
 }

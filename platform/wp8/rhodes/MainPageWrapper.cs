@@ -16,7 +16,7 @@ namespace rhodes
         public int getScreenWidth() { return _mainPage.getScreenWidth();  }
         public int getScreenHeight() { return _mainPage.getScreenHeight();  }
         public string getScreenOrientation() { return _mainPage.getScreenOrientation(); }
-        public bool isBrowserInitialized() { return _mainPage.isBrowserInitialized(); }
+        public bool isBrowserInitialized(int index) { return _mainPage.isBrowserInitialized(index); }
         public void bringToFront() { _mainPage.bringToFront(); }
         public void performOnUiThread(Int64 native) { _mainPage.performOnUiThread(native); }
 
