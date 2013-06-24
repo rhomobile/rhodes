@@ -386,3 +386,86 @@ RHO_GLOBAL const char* rho_native_reruntimepath()
 {
     return rho_native_rhopath();
 }
+
+/// <summary>Automatically closes a search handle upon destruction</summary>
+class SearchHandleScope {
+ 
+  /// <summary>Initializes a new search handle closer</summary>
+  /// <param name="searchHandle">Search handle that will be closed on destruction</param>
+  public: SearchHandleScope(HANDLE searchHandle) :
+    searchHandle(searchHandle) {}
+ 
+  /// <summary>Closes the search handle</summary>
+  public: ~SearchHandleScope() {
+    ::FindClose(this->searchHandle);
+  }
+ 
+  /// <summary>Search handle that will be closed when the instance is destroyed</summary>
+  private: HANDLE searchHandle;
+ 
+};
+ 
+/// <summary>Recursively deletes the specified directory and all its contents</summary>
+/// <param name="path">Absolute path of the directory that will be deleted</param>
+/// <remarks>
+///   The path must not be terminated with a path separator.
+/// </remarks>
+extern "C" void recursiveDeleteDirectory(const std::wstring &path) {
+  static const std::wstring allFilesMask(L"\\*");
+ 
+  WIN32_FIND_DATAW findData;
+ 
+  // First, delete the contents of the directory, recursively for subdirectories
+  std::wstring searchMask = path + allFilesMask;
+  HANDLE searchHandle = ::FindFirstFileExW(
+    searchMask.c_str(), FindExInfoBasic, &findData, FindExSearchNameMatch, nullptr, 0
+  );
+  if(searchHandle == INVALID_HANDLE_VALUE) {
+    DWORD lastError = ::GetLastError();
+    if(lastError != ERROR_FILE_NOT_FOUND) { // or ERROR_NO_MORE_FILES, ERROR_NOT_FOUND?
+      throw std::runtime_error("Could not start directory enumeration");
+    }
+  }
+ 
+  // Did this directory have any contents? If so, delete them first
+  if(searchHandle != INVALID_HANDLE_VALUE) {
+    SearchHandleScope scope(searchHandle);
+    for(;;) {
+ 
+      // Do not process the obligatory '.' and '..' directories
+      if(findData.cFileName[0] != '.') {
+        bool isDirectory = 
+          ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) ||
+          ((findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0);
+ 
+        // Subdirectories need to be handled by deleting their contents first
+        std::wstring filePath = path + L'\\' + findData.cFileName;
+        if(isDirectory) {
+          recursiveDeleteDirectory(filePath);
+        } else {
+          BOOL result = ::DeleteFileW(filePath.c_str());
+          if(result == FALSE) {
+            throw std::runtime_error("Could not delete file");
+          }
+        }
+      }
+ 
+      // Advance to the next file in the directory
+      BOOL result = ::FindNextFileW(searchHandle, &findData);
+      if(result == FALSE) {
+        DWORD lastError = ::GetLastError();
+        if(lastError != ERROR_NO_MORE_FILES) {
+          throw std::runtime_error("Error enumerating directory");
+        }
+        break; // All directory contents enumerated and deleted
+      }
+ 
+    } // for
+  }
+ 
+  // The directory is empty, we can now safely remove it
+  BOOL result = ::RemoveDirectory(path.c_str());
+  if(result == FALSE) {
+    throw std::runtime_error("Could not remove directory");
+  }
+}

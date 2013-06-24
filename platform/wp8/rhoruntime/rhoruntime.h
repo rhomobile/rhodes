@@ -60,7 +60,7 @@ namespace rhoruntime
 		void toolbarAddAction(::Platform::String^ text);
 		void toolbarAddAction(::Platform::String^ icon, ::Platform::String^ text, ::Platform::String^ action);
 		void toolbarAddSeparator(void);
-		void setToolbarStyle(bool border, ::Platform::String^ background);
+		void setToolbarStyle(bool border, ::Platform::String^ background, ::Platform::String^ mask);
 		// menu
 		void menuClear(void);
 		void menuAddAction(::Platform::String^ text, int item);

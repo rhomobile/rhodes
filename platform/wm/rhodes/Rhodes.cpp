@@ -979,10 +979,11 @@ extern "C" void rho_conf_show_log()
 
 extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
 {
-#if !defined(RHODES_EMULATOR)
-    const StringW strTitleW = rho::common::convertToStringW(strTitle);
-    Rhodes_getMainWindow()->ProcessTitleChange(strTitleW.c_str());
-#endif
+//#if !defined(RHODES_EMULATOR)
+    //const StringW strTitleW = rho::common::convertToStringW(strTitle);
+    //Rhodes_getMainWindow()->ProcessTitleChange(strTitleW.c_str());
+    PostMessage( rho_wmimpl_get_mainwnd(),WM_COMMAND, ID_TITLECHANGE, (LPARAM)_tcsdup(convertToStringW(strTitle).c_str()) );
+//#endif
 }
 
 //Hook for ruby call to refresh web view
