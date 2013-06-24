@@ -57,6 +57,7 @@ end %>
 <% $cur_module.methods.each do |method|
     next if method.access == ModuleMethod::ACCESS_STATIC
     #next if method.generated_by_template == TEMPLATE_PROPERTY_BAG
+    next if (!$cur_module.is_template_propertybag) and (method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER or method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER)
 
     param_hash = {}
     method.params.each do |param|
