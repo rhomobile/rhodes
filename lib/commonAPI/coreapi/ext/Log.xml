@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="pb_help.xsl"?>
 <API>
     <MODULE name="Log" parent="Rho">
-        <HELP_OVERVIEW></HELP_OVERVIEW>
+        <HELP_OVERVIEW> Use this api to control the behavior of the RhoMobile Log API as well as access it.</HELP_OVERVIEW>
         <MORE_HELP></MORE_HELP>
         
         <TEMPLATES>
