@@ -173,13 +173,13 @@
                 <PLATFORM>Android, iOS</PLATFORM>
             </PROPERTY>
             <PROPERTY name="hasNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
-                <DESC>USE Network.hasNetwork: Is device connected to the network.</DESC>
+                <DESC>Use Network.hasNetwork to tell if the device is connected to the network.</DESC>
             </PROPERTY>
             <PROPERTY name="hasWifiNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
-                <DESC>USE Network.hasWifiNetwork: Is device connected to the wifi network</DESC>
+                <DESC>Use Network.hasWifiNetwork to tell if the device is connected to the wifi network</DESC>
             </PROPERTY>
             <PROPERTY name="hasCellNetwork" type="BOOLEAN" readOnly="true" deprecated="true">
-                <DESC>USE Network.hasCellNetwork: Is device connected to the cell network.</DESC>
+                <DESC>Use Network.hasCellNetwork to tell if device is connected to the cell network.</DESC>
             </PROPERTY>
             <PROPERTY name="hasSqlite" type="BOOLEAN" readOnly="true" deprecated="true">
                 <DESC>Does sqlite used on this platform.</DESC>
