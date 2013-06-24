@@ -3,6 +3,10 @@
 #include <common/RhodesApp.h>							// Rhodes Application utilities
 //#include "Imager.h"										// ImageCapture original plugin
 
+#pragma comment(lib, "uuid.lib")
+#pragma comment(lib, "dmoguids.lib")
+#pragma comment(lib, "strmiids.lib") 
+#pragma comment(lib, "strmbase.lib")
 
 enum VC_RETURN 
 { 
