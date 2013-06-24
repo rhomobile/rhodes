@@ -185,6 +185,7 @@ extern "C" {
 HANDLE WINAPI CreateThreadWP8(_In_opt_ LPSECURITY_ATTRIBUTES unusedThreadAttributes, _In_ SIZE_T unusedStackSize, _In_ LPTHREAD_START_ROUTINE lpStartAddress, _In_opt_ LPVOID lpParameter, _In_ DWORD dwCreationFlags, _Out_opt_ LPDWORD unusedThreadId);
 DWORD WINAPI ResumeThreadWP8(_In_ HANDLE hThread);
 BOOL WINAPI SetThreadPriorityWP8(_In_ HANDLE hThread, _In_ int nPriority);
+DWORD WINAPI TerminateThreadWP8(HANDLE hThread, DWORD dwExitCode);
 
 DWORD WINAPI TlsAllocWP8();
 BOOL WINAPI TlsFreeWP8(_In_ DWORD dwTlsIndex);
@@ -664,13 +665,6 @@ ExitThread(
     _In_ DWORD dwExitCode
     );
 
-
-BOOL
-WINAPI
-TerminateThreadWP8(
-    _In_ HANDLE hThread,
-    _In_ DWORD dwExitCode
-    );
 
 #define TerminateThread TerminateThreadWP8
 
