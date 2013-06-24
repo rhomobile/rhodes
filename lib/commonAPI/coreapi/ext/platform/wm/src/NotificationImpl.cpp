@@ -24,7 +24,8 @@ class CNotificationImpl: public CNotificationSingletonBase
 public:
 	CNotificationImpl(): CNotificationSingletonBase() 
 	{
-#ifndef RHODES_EMULATOR
+//#ifndef RHODES_EMULATOR
+#if defined(OS_WINCE)
 		m_bNotificationsLoaded = FALSE;
 		m_pNotifications = new CNotificationLoader();
 		if (m_pNotifications)
@@ -36,29 +37,17 @@ public:
 
     virtual void showPopup(const Hashtable<String, String>& propertyMap, CMethodResult& oResult)
 	{
-#if defined(OS_WINCE)
-		//  TODO - Alert functionality on WinCE
-#else
 		alert_show_popup_ex(propertyMap, oResult);
-#endif
 	}
 
     virtual void hidePopup(CMethodResult& oResult)
 	{
-#if defined(OS_WINCE)
-		//  TODO - Alert functionality on WinCE
-#else
 		alert_hide_popup();
-#endif
 	}
 
     virtual void showStatus(const String& title, const String& status_text, const String& hide_button_label, CMethodResult& oResult)
 	{
-#if defined(OS_WINCE)
-		//  TODO - Status functionality on WinCE
-#else
 		alert_show_status_ex(title.c_str(), status_text.c_str(), hide_button_label.c_str(), oResult);
-#endif
 	}
 
 	virtual void playFile(const String& path, const String& media_type, CMethodResult& oResult)
@@ -69,7 +58,6 @@ public:
     virtual void beep(const Hashtable<String, String>& propertyMap, CMethodResult& oResult)
 	{
 #if defined(OS_WINCE)
-#   ifndef RHODES_EMULATOR
 		int iFrequency = NOTIFICATIONS_DEFAULT_FREQUENCY;
 		int iVolume = NOTIFICATIONS_DEFAULT_VOLUME;
 		int iDuration = NOTIFICATIONS_DEFAULT_DURATION;
@@ -93,20 +81,17 @@ public:
 			bBeepSuccess = m_pNotifications->Beep(iFrequency, iVolume, iDuration);
 		if (!bBeepSuccess)
 			LOG(WARNING) + "Unable to use the device beeper";
-#   endif
 #endif
 	}
 
     virtual void vibrate(int duration, CMethodResult& oResult)
 	{
 #if defined(OS_WINCE)
-#   ifndef RHODES_EMULATOR
 		BOOL bVibrateSuccess = FALSE;
 		if (m_pNotifications)
 			bVibrateSuccess = m_pNotifications->Vibrate(duration);
 		if (!bVibrateSuccess)
 			LOG(WARNING) + "Unable to initiate the device vibrate function";
-#   endif
 #else
 		//  This call is having no effect on Moto Devices, they use Ntfy API (directly above)
 		alert_vibrate(duration);
@@ -115,7 +100,7 @@ public:
 	}
 
 private:
-#ifndef RHODES_EMULATOR
+#if defined(OS_WINCE)
 	CNotificationLoader* m_pNotifications;
 	BOOL m_bNotificationsLoaded;
 #endif

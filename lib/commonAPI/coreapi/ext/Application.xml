@@ -45,7 +45,7 @@
             </PROPERTY>
             <PROPERTY name="title" type="STRING">
                 <DESC>Define Window caption text.If missed - caption from page used.</DESC>
-                <PLATFORM>WM</PLATFORM>
+                <PLATFORM>WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="name" type="STRING" readOnly="true">
                 <DESC>Application name.</DESC>
@@ -66,7 +66,7 @@
                         <PARAM name="label" type="STRING">
                             <DESC>Visible label.</DESC>
                         </PARAM>
-                        <PARAM name="action" type="STRING">
+                        <PARAM name="action" type="STRING"  rhoAction="true">
                             <DESC>URL to page which will be loaded into tab. It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnTab();'. Or path to html page to load.</DESC>
                         </PARAM>
                     </PARAMS>

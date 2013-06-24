@@ -24,7 +24,7 @@
                                 <PARAM name="label" type="STRING">
                                     <DESC>Label for the button.</DESC>
                                 </PARAM>
-                                <PARAM name="action" type="STRING">
+                                <PARAM name="action" type="STRING"  rhoAction="true">
                                     <DESC>URL to call when button is pressed.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
                                 </PARAM>
                             </PARAMS>
@@ -36,7 +36,7 @@
                                 <PARAM name="label" type="STRING">
                                     <DESC>Label for the button.</DESC>
                                 </PARAM>
-                                <PARAM name="action" type="STRING">
+                                <PARAM name="action" type="STRING"  rhoAction="true">
                                     <DESC>URL to call when button is pressed.It may be path to Ruby controller action; i.e. '/app/Account' would load the Account index action. For ruby callback use 'callback:/app/Account' Or javascript method to call: 'javascript: methodOnButton();'.</DESC>
                                 </PARAM>
                             </PARAMS>

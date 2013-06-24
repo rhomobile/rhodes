@@ -323,7 +323,7 @@ int rhoPlainLogData(const char* file, int line, LogSeverity severity, const char
 #define RAWLOG_FATAL2(msg,arg1,arg2) RAWLOG_NONE
 #endif
 
-#if defined (RHO_DEBUG) && RHO_STRIP_LOG <= L_TRACE
+#if /*defined (RHO_DEBUG) &&*/ RHO_STRIP_LOG <= L_TRACE
 #define RAWTRACEC(category, msg) rhoPlainLog(__FILE__, __LINE__, L_TRACE, category, msg )
 #define RAWTRACEC1(category, msg,arg1) rhoPlainLogVar(__FILE__, __LINE__, L_TRACE, category, msg, arg1 )
 #define RAWTRACEC2(category, msg,arg1,arg2) rhoPlainLogVar(__FILE__, __LINE__, L_TRACE, category, msg, arg1,arg2 )

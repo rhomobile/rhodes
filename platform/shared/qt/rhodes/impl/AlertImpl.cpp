@@ -48,7 +48,7 @@ void alert_show_status(const char* szTitle, const char* szMessage, const char* s
     Vector<CAlertParams::CAlertButton> buttons;
     CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, callback, icon, buttons, CAlertParams::DLG_STATUS ));
 }
-
+/*
 void alert_show_popup(rho_param *p)
 {
     if (p->type == RHO_PARAM_STRING) {
@@ -132,7 +132,7 @@ void alert_show_popup(rho_param *p)
         }
         CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, icon, callback, buttons, CAlertParams::DLG_CUSTOM));
     }
-}
+}*/
 
 extern "C" void alert_show_status_ex(const char* szTitle, const char* szMessage, const char* szHide, rho::apiGenerator::CMethodResult& oResult)
 {
