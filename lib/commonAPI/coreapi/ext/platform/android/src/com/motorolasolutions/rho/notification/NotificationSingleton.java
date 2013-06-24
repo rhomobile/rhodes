@@ -12,7 +12,6 @@ import android.media.MediaPlayer;
 import android.os.Vibrator;
 
 import com.rho.notification.INotificationSingleton;
-import com.rho.notification.NotificationSingletonBase;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.RhodesApplication;
@@ -20,18 +19,20 @@ import com.rhomobile.rhodes.api.IMethodResult;
 import com.rhomobile.rhodes.file.RhoFileApi;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
 
+/**
+ * Singleton for the Notification extension. Holds all of the implementation for this extension.
+ * Uses code from both RhoElements2 and Rhodes3
+ * @author Ben Kennedy (reauthor)
+ */
 public class NotificationSingleton implements INotificationSingleton
 {
 	protected static String TAG = "NotificationSingleton";
-
 	protected AudioTrack audioTrack = null;
-
 	private Vibrator vibrator;
-
 	private MediaPlayer currentMP;
 
 	@Override
-	public void showPopup(final Map<String, Object> propertyMap, IMethodResult result)
+	public void showPopup(final Map<String, Object> propertyMap, final IMethodResult result)
 	{
 		RhodesApplication.runWhen(RhodesApplication.AppState.AppActivated, new RhodesApplication.StateHandler(true)
 		{
@@ -41,7 +42,7 @@ public class NotificationSingleton implements INotificationSingleton
 				try
 				{
 					Logger.T(TAG, "showPopup");
-					PopupActivity.showDialog(propertyMap);
+					PopupActivity.showDialog(propertyMap, result);
 				}
 				catch (Exception e)
 				{
@@ -134,8 +135,24 @@ public class NotificationSingleton implements INotificationSingleton
 	}
 
 	@Override
-	public void beep(Map<String, Integer> propertyMap, IMethodResult result)
+	public synchronized void beep(Map<String, Integer> propertyMap, IMethodResult result)
 	{
+		if(audioTrack != null)
+		{
+			try
+			{
+				audioTrack.stop();
+			}
+			catch(IllegalStateException e)
+			{
+				Logger.D(TAG, "AudioTrack did not need to be stopped here");
+			}
+			finally
+			{
+				audioTrack.release();
+			}
+			audioTrack = null;
+		}
 		Integer userFrequency = propertyMap.get(HK_FREQUENCY);
 		Integer userVolume = propertyMap.get(HK_VOLUME);
 		Integer userDuration = propertyMap.get(HK_DURATION);
@@ -151,18 +168,23 @@ public class NotificationSingleton implements INotificationSingleton
 		Activity activity = RhodesActivity.safeGetInstance();
 		if (activity != null)
 		{
+			if(vibrator != null) vibrator.cancel();
 			vibrator = (Vibrator) activity.getSystemService(Context.VIBRATOR_SERVICE);
 			vibrator.vibrate(duration > 0 ? duration : 1000);
 		}
 	}
 	
+	/**
+	 * Sends a log message reporting a failure of a method/procedure.
+	 * @param name the name of the failed method/procedure call
+	 * @param e the exception to log
+	 * @author Unknown
+	 */
 	private static void reportFail(String name, Exception e)
 	{
 		Logger.E(TAG, "Call of \"" + name + "\" failed: " + e.getMessage());
 	}
 	
-	//TODO shutdown logic
-
 	/**
 	 * @author unknown (From RE1)
 	 */
@@ -194,13 +216,19 @@ public class NotificationSingleton implements INotificationSingleton
 			}
 		}
 
-		public void play(int duration, int volume)
+		/**
+		 * Plays the beep
+		 * @param duration the duration of the beep in milliseconds
+		 * @param inputVolume the volume to play the beep (0-3)
+		 * @author Unknown & Ben Kennedy
+		 */
+		public void play(int duration, int inputVolume)
 		{
-			// TODO do volume
-			int cycles = 0;
+			//normalise to make the volume decrease seem linear
+			float volume = ((inputVolume + 1.0f) * (inputVolume > 0 ? inputVolume : 1))/12.0f;
 
 			// calculate how many times we need to play the entire buffer
-			cycles = (int) (duration / mLoopDuration);
+			int cycles = (int) (duration / mLoopDuration);
 
 			// calculate any part buffers required in samples
 			int remainder = (int) ((duration % mLoopDuration) * mSampleRate / 1000);
@@ -241,9 +269,81 @@ public class NotificationSingleton implements INotificationSingleton
 				audioTrack.write(mAudioData, 0, remainder);
 			}
 
+			//TODO do i need to release???
 			// start playing in the background
 			audioTrack.flush();
+			audioTrack.setStereoVolume(volume, volume);
 			audioTrack.play();
 		}
+	}
+	
+	/**
+	 * Stops and releases all resources
+	 * @author Ben Kennedy
+	 */
+	public void cleanUpResources()
+	{
+		if (audioTrack != null)
+		{
+			try
+			{
+				audioTrack.stop();
+			}
+			catch(IllegalStateException e)
+			{
+				//No need to deal with
+				Logger.D(TAG, "AudioTrack did not need to be stopped here");
+			}
+			finally
+			{
+				audioTrack.release();
+				audioTrack = null;
+			}
+		}
+		if(vibrator != null)
+		{
+			vibrator.cancel();
+		}
+		if(currentMP != null)
+		{
+			try
+			{
+				currentMP.stop();
+			}
+			catch(IllegalStateException e)
+			{
+				//No need to deal with.
+				Logger.D(TAG, "CurrentMP did not need to be stopped here");
+			}
+			finally
+			{
+				currentMP.release();
+				currentMP = null;
+			}
+		}
+	}
+
+	/**
+	 * Android onPause event
+	 */
+	public void onPause()
+	{
+		cleanUpResources();
+	}
+
+	/**
+	 * Android onStop event
+	 */
+	public void onStop()
+	{
+		cleanUpResources();
+	}
+
+	/**
+	 * Android onDestroy event
+	 */
+	public void onDestroy()
+	{
+		cleanUpResources();
 	}
 }
