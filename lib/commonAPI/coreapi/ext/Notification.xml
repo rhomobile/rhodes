@@ -163,6 +163,6 @@ end
 					On Android, the maximum duration for vibrate is 15 seconds (15000ms).
 				</DESC>
 			</REMARK>
-		<REMARKS>
+	   </REMARKS>
 	</MODULE>
 </API>    
