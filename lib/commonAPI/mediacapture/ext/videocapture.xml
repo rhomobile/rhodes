@@ -47,7 +47,7 @@
         </PROPERTIES>
 
         <METHODS>
-            <METHOD name="start" hasCallback="optional">
+            <METHOD name="start" hasCallback="optional" runInThread="ui">
                 <DESC>Starts capturing video until either 'stop' is received, or 'duration' is reached. NOTE: On Android this meta tag wouldn't immediately start recording and presents a preview window with controls (start, stop and cancel) for recording.</DESC>
 				<PLATFORM>WM, Android, iOS</PLATFORM>
 				<RETURN>
@@ -68,12 +68,12 @@
 				</CALLBACK>	
             </METHOD>
 			
-            <METHOD name="stop">
+            <METHOD name="stop" runInThread="ui">
                 <DESC>Stops capturing video and either saves the file locally, or transfers it to a remote server. NOTE: This is not applicable for Android and iOS as the video capture window is full screen and provides a button to stop the video capture. Please note that the file transfer happens as specified even if we dont call the stop method.</DESC>
                 <PLATFORM>WM</PLATFORM>					
             </METHOD> 
 			
-			<METHOD name="cancel">
+			<METHOD name="cancel" runInThread="ui">
                 <DESC>Stops capturing video and discards any captured video data. NOTE: This is not applicable for Android and iOS as the video capture window is full screen and provides a button to cancel the video capture. No file transfer takes place if the video capture is cancelled.</DESC>
 			    <PLATFORM>WM</PLATFORM>				
             </METHOD> 
