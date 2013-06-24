@@ -664,7 +664,7 @@ namespace "device" do
   namespace "wm" do
       
     # make a *.cpy and *.reg files for persistent installation
-    def makePersistentFiles(dstDir, additional_paths, webkit_dir, regKeys)
+    def makePersistentFiles(dstDir, additional_paths, webkit_dir, regkeys_filename)
       cf = File.new(File.join(dstDir, $appname + ".cpy"), "w+")
             
       if cf.nil?
@@ -714,6 +714,54 @@ namespace "device" do
       cf.close
       
       rf = File.new(File.join(dstDir, $appname + ".reg"), "w+")
+      
+      if File.exist?(regkeys_filename)
+        File.readlines(regkeys_filename).each do |line|
+          parts = line.split(",")
+          
+          if parts.length < 5
+            next
+          end
+          
+          # 0    1                        2       3          4
+          # HKLM,Software\Company\AppName,another,0x00000000,alpha
+          
+          value_name = ""
+          key_name   = "["
+          
+          case parts[0]
+            when "HKLM" 
+              key_name += "HKEY_LOCAL_MACHINE\\"
+            when "HKCU"
+              key_name += "HKEY_CURRENT_USER\\"
+            when "HKCR"
+              key_name += "HKEY_CLASSES_ROOT\\"
+          end
+          
+          key_name += parts[1]
+          key_name += "]"
+          
+          rf.puts key_name
+          
+          if parts[2].nil? || parts[2] == ""
+            value_name = "@="
+          else
+            value_name = "\"" + parts[2] + "\"="
+          end
+          
+          val = parts[4].gsub(/[^0-9A-Za-z]/, '')
+          
+          if parts[3] == "0x00010001"
+            value_name += "dword:"
+            value_name += val
+          else            
+            value_name += "\"" + val + "\""
+          end
+          
+          rf.puts value_name 
+        end        
+      end
+      
       rf.close      
       
       chdir currDir
