@@ -34,4 +34,5 @@ ext/platform/android/generated/src/com/rho/notification/INotificationFactory.jav
 ext/platform/android/generated/src/com/rho/notification/INotificationSingleton.java
 ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationFactory.java
 ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationSingleton.java
+ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationRhoListener.java
 ext/platform/android/src/com/motorolasolutions/rho/notification/PopupActivity.java
