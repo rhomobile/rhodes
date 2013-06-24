@@ -1308,11 +1308,8 @@ LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         m_alertDialog = NULL;
     }*/
 
-    if (m_SyncStatusDlg)
-    {
-        m_SyncStatusDlg->ShowWindow(SW_HIDE);
-
-    }
+    if ( m_SyncStatusDlg.m_hWnd )
+        m_SyncStatusDlg.ShowWindow(SW_HIDE);
 
 	return 0;
 }
