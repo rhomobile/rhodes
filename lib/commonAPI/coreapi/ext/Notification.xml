@@ -10,7 +10,7 @@
 		<METHODS access="STATIC">
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
-                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button.</DESC>
+                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button. Icon is not supported on iOS devices.</DESC>
 				<PARAMS>
 					<PARAM name="propertyMap" type="HASH">
 						<DESC>The properties associated with the popup.</DESC>
@@ -23,6 +23,7 @@
 							</PARAM>
 							<PARAM name="icon" type="String" default="">
 								<DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon.</DESC>
+                                <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only predefined icons are supported.</MORE_HELP>
 							</PARAM>
 							<PARAM name="buttons" type="Array" default="">
 								<DESC>array of buttons. Specify each button either by hash with :id and :title keys, or by a string where id and title are set to the string value. TODO - HOW SPECIFY</DESC>
@@ -48,6 +49,7 @@
 		
             <METHOD name="hidePopup" access="STATIC" hasCallback="none">
                 <DESC>Closes the current popup window</DESC>
+                <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</MORE_HELP>
             </METHOD>
 		
             <METHOD name="showStatus" access="STATIC" hasCallback="none">
@@ -67,19 +69,21 @@
 		
             <METHOD name="playFile" access="STATIC" hasCallback="none">
                 <DESC>Play an audio file if that media type is supported by the device.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
 				<PARAMS>
 					<PARAM name="path" type="STRING">
-						<DESC>The path to the file, ending in the file name and extension. The file must located in the application; for example, "/apps/public/test-file.mp3".</DESC>
+						<DESC>The full path to the file, ending in the file name and extension.</DESC>
 					</PARAM>
 					<PARAM name="media_type" type="STRING" default="">
 						<DESC>Media type can be specified explicitly, or can be recognized from the file extension. The known file extensions are ".mp3" - "audio/mpeg" and ".wav" - "audio/x-wav".</DESC>
+                        <PLATFORM>iOS, Android</PLATFORM>
 					</PARAM>
 				</PARAMS>
             </METHOD>
 
             <METHOD name="beep" access="STATIC" hasCallback="none">
-                <DESC>If the device is equipped with a beeper then a beep will be emitted</DESC>
-				<PLATFORM>iOS, Android, WM</PLATFORM>
+                <DESC>If the device is equipped with a beeper then a beep will be emitted. Not supported on iOS devices.</DESC>
+				<PLATFORM>Android, WM</PLATFORM>
 				<APPLIES msiOnly="true"></APPLIES>
 				<PARAMS>
 					<PARAM name="propertyMap" type="HASH">
@@ -102,10 +106,10 @@
             <METHOD name="vibrate" access="STATIC" hasCallback="none">
                 <DESC>Vibrate the device's pager hardware</DESC>
 				<PLATFORM>iOS, Android, WM</PLATFORM>
-				<APPLIES msiOnly="true"></APPLIES>
+				<APPLIES msiOnly="false"></APPLIES>
 				<PARAMS>
 					<PARAM name="duration" type="Integer" default="1000">
-						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file</DESC>
+						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration.</DESC>
 					</PARAM>
 				</PARAMS>
             </METHOD>
@@ -153,5 +157,12 @@ end
                </SECTIONS>
            </EXAMPLE>
 	   </EXAMPLES>
+	   <REMARKS>
+            <REMARK title="Maximum vibrate duration">
+                <DESC>
+					On Android, the maximum duration for vibrate is 15 seconds (15000ms).
+				</DESC>
+			</REMARK>
+	   </REMARKS>
 	</MODULE>
 </API>    

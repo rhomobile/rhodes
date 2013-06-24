@@ -117,7 +117,10 @@ public:
     virtual void setTitle( const rho::String& title, rho::apiGenerator::CMethodResult& oResult)
     {
         RHOCONF().setString("title_text", title, false);
+
+#if defined( OS_WINCE) || defined (OS_WINDOWS_DESKTOP)
         rho_title_change(0, title.c_str());
+#endif
     }
 
     virtual void getName(rho::apiGenerator::CMethodResult& oResult)

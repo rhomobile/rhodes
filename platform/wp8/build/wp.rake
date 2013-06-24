@@ -496,73 +496,63 @@ namespace "run" do
     end
 
     task :spec do
-      Rake::Task["run:wp8"].invoke
-      Jake.before_run_spec
-      start = Time.now
-      log_file = getLogPath
+      Jake.decorate_spec do
+        Rake::Task["run:wp8"].invoke
+        Jake.before_run_spec
+        start = Time.now
+        log_file = getLogPath
 
-      puts "waiting for log: " + log_file
+        puts "waiting for log: " + log_file
 
-      for i in 0..120
+        for i in 0..120
+          if !File.exist?(log_file)
+            sleep(1)
+          else
+            break
+          end
+        end
+
         if !File.exist?(log_file)
-          sleep(1)
-        else
-          break
+          puts "Can not read log file: " + log_file
+          exit(1)
         end
+
+        puts "start read log"
+
+        io = File.new(log_file, "r")
+        waiting_count = 0
+        end_spec = false
+
+        while !end_spec do
+          line_count = 0
+
+          io.each do |line|
+            end_spec = !Jake.process_spec_output(line)
+            break if end_spec
+            line_count += 1
+          end
+
+          if line_count==0
+            waiting_count += 1
+          else
+            waiting_count = 0
+          end
+
+          if waiting_count > 240
+            puts "spec application hung (240 seconds timeout)"
+            end_spec = true
+          end
+
+          sleep(1) unless end_spec
+        end
+
+        io.close
+
+        Jake.process_spec_results(start)
+
+        $stdout.flush
+        chdir $startdir
       end
-
-      if !File.exist?(log_file)
-        puts "Can not read log file: " + log_file
-        exit(1)
-      end
-
-      puts "start read log"
-
-      io = File.new(log_file, "r")
-      waiting_count = 0
-      end_spec = false
-
-      while !end_spec do
-        line_count = 0
-
-        io.each do |line|
-          end_spec = !Jake.process_spec_output(line)
-          break if end_spec
-          line_count += 1
-        end
-
-        if line_count==0
-          waiting_count += 1
-        else
-          waiting_count = 0
-        end
-
-        if waiting_count > 240
-          puts "spec application hung (240 seconds timeout)"
-          end_spec = true
-        end
-
-        sleep(1) unless end_spec
-      end
-
-      io.close
-
-      Jake.process_spec_results(start)
-
-      $stdout.flush
-      chdir $startdir
-    end
-
-    task :phone_spec do
-      Jake.run_spec_app('wp8', 'phone_spec')
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
-    end
-
-    task :js_spec do
-      Jake.run_spec_app('wp8', 'js_spec')
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
     end
 
     desc "Build, install .xap and run on WP8 device"

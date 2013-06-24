@@ -192,42 +192,13 @@ class Jake
 	end        
   end
 
-  def self.run_app_as_spec(platform, app_path)
-
-    $app_path = app_path
-
-    $app_config = Jake.config(File.open(File.join(app_path, 'build.yml')))
-    $config = Jake.config(File.open(File.join(basedir, 'rhobuild.yml'), 'r'))
-
-    Rake::Task.tasks.each { |t| t.reenable }
-    Rake::Task["run:#{platform}:spec"].invoke
-    
-    $failed.to_i
-  end
-
-  def self.run_spec_app(platform, appname)
-
-    app_path = File.expand_path(File.join(basedir, 'spec', appname))
-
-    if appname =~ /phone_spec/
-        server, addr, port = run_local_server
-        File.open(File.join(app_path, 'app', 'local_server.rb'), 'w') do |f|
-          f.puts "SPEC_LOCAL_SERVER_HOST = '#{addr}'"
-          f.puts "SPEC_LOCAL_SERVER_PORT = #{port}"
-        end
-        if File.exists?(File.join(app_path, 'server.rb'))
-          $local_server = server
-          require File.join(app_path, 'server.rb')
-        end
-    end
-    
+  def self.decorate_spec
+    $app_spec_decorator.before_spec unless $app_spec_decorator.nil?
     begin
-      run_app_as_spec(platform, app_path)
+      yield
     ensure
-      server.shutdown if appname =~ /phone_spec/
+      $app_spec_decorator.after_spec unless $app_spec_decorator.nil?
     end
-    
-    $failed.to_i
   end
 
   def self.before_run_spec()

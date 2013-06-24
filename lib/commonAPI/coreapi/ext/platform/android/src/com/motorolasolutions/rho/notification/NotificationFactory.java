@@ -8,6 +8,11 @@ public class NotificationFactory implements INotificationFactory
 {
 	private NotificationSingleton singleton;
 	
+	public NotificationFactory()
+	{
+		NotificationRhoListener.registerListener(this);
+	}
+	
 	@Override
 	public INotificationSingleton getApiSingleton()
 	{
@@ -19,5 +24,29 @@ public class NotificationFactory implements INotificationFactory
 	public INotification getApiObject(String id)
 	{
 		return null;
+	}
+
+	public void onPause()
+	{
+		if(singleton != null)
+		{
+			singleton.onPause();
+		}
+	}
+
+	public void onStop()
+	{
+		if(singleton != null)
+		{
+			singleton.onStop();
+		}
+	}
+
+	public void onDestroy()
+	{
+		if(singleton != null)
+		{
+			singleton.onDestroy();
+		}
 	}
 }

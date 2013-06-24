@@ -469,11 +469,6 @@ WaitForSingleObjectWP8(
 	return WaitForSingleObjectEx(hHandle, dwMilliseconds, 0);
 }
 
-BOOL WINAPI TerminateThreadWP8(_In_ HANDLE hThread, _In_ DWORD dwExitCode)
-{
-	return FALSE;
-}
-
 BOOL WINAPI GetExitCodeThreadWP8(
   _In_   HANDLE hThread,
   _Out_  LPDWORD lpExitCode

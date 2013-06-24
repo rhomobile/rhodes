@@ -866,8 +866,11 @@ static Rhodes *instance = NULL;
 	//hack to work around iphone limitation when it will play push alerts only from the main bundle root
 	if ([fileName hasPrefix:@"/public/alerts/"] || [fileName hasPrefix:@"/apps/public/alerts/"]) {
 		NSString *file = [fileName lastPathComponent];
-		soundFilePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:file];		
-	} else {
+		soundFilePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:file];
+    // do not add root path if it is already there
+	} else if ([fileName hasPrefix:[AppManager getApplicationsRootPath]]) {
+        soundFilePath = fileName;
+    } else{
 		soundFilePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:fileName];
 	}
 	NSLog(@"Playing %@: ", soundFilePath);

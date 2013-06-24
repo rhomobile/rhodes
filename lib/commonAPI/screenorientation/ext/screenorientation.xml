@@ -13,23 +13,23 @@
         </PROPERTIES>
 
         <METHODS access="STATIC">
-            <METHOD name="normal">
+            <METHOD name="normal" runInThread="module">
                 <DESC>Sets the screen orientation to default device orientation</DESC>
                 <PLATFORM>Android, WP8</PLATFORM>
             </METHOD>
-			<METHOD name="rightHanded">
+			<METHOD name="rightHanded" runInThread="module">
                 <DESC>Sets the screen orientation to righthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
                 <PLATFORM>Android, WP8</PLATFORM>
             </METHOD>
-            <METHOD name="leftHanded">
+            <METHOD name="leftHanded" runInThread="module">
                 <DESC>Sets the screen orientation to lefthanded orientation. Note the webpage will not reformat in line with the new screen size automatically.</DESC>
                 <PLATFORM>Android, WP8</PLATFORM>
             </METHOD>
-            <METHOD name="upsideDown">
+            <METHOD name="upsideDown" runInThread="module">
                 <DESC>Sets the screen orientation to upside down, useful if presenting the device to a customer to obtain a signature.</DESC>
                 <PLATFORM>Android, WP8</PLATFORM>
             </METHOD>
-			<METHOD name="setScreenOrientationEvent" hasCallback="mandatory">
+			<METHOD name="setScreenOrientationEvent" hasCallback="mandatory" runInThread="module">
 				<DESC>Sets the callback to be called when a screen orientation event occurres</DESC>
 				<CALLBACK type="STRING">
 					<DESC>Current orientation of the screen</DESC>

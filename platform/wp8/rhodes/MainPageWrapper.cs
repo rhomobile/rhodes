@@ -38,7 +38,7 @@ namespace rhodes
         public void toolbarAddAction(string text) { _mainPage.toolbarAddAction(text); }
         public void toolbarAddAction(string icon, string text, string action) { _mainPage.toolbarAddAction(icon, text, action); }
         public void toolbarAddSeparator() { _mainPage.toolbarAddSeparator(); }
-        public void setToolbarStyle(bool border, string background) { _mainPage.setToolbarStyle(border, background); }
+        public void setToolbarStyle(bool border, string background, string mask) { _mainPage.setToolbarStyle(border, background, mask); }
 		// menu
         public void menuClear() { _mainPage.menuClear(); }
         public void menuAddAction(string text, int item) { _mainPage.menuAddAction(text, item); }
