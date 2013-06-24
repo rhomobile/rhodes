@@ -83,7 +83,7 @@
 
             <METHOD name="beep" access="STATIC" hasCallback="none">
                 <DESC>If the device is equipped with a beeper then a beep will be emitted. Not supported on iOS devices.</DESC>
-				<PLATFORM>iOS, Android, WM</PLATFORM>
+				<PLATFORM>Android, WM</PLATFORM>
 				<APPLIES msiOnly="true"></APPLIES>
 				<PARAMS>
 					<PARAM name="propertyMap" type="HASH">
@@ -106,10 +106,10 @@
             <METHOD name="vibrate" access="STATIC" hasCallback="none">
                 <DESC>Vibrate the device's pager hardware</DESC>
 				<PLATFORM>iOS, Android, WM</PLATFORM>
-				<APPLIES msiOnly="true"></APPLIES>
+				<APPLIES msiOnly="false"></APPLIES>
 				<PARAMS>
 					<PARAM name="duration" type="Integer" default="1000">
-						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. Duration is not supported on iOS devices.</DESC>
+						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration.</DESC>
 					</PARAM>
 				</PARAMS>
             </METHOD>
@@ -157,5 +157,12 @@ end
                </SECTIONS>
            </EXAMPLE>
 	   </EXAMPLES>
+	   <REMARKS>
+            <REMARK title="Maximum vibrate duration">
+                <DESC>
+					On Android, the maximum duration for vibrate is 15 seconds (15000ms).
+				</DESC>
+			</REMARK>
+		<REMARKS>
 	</MODULE>
 </API>    
