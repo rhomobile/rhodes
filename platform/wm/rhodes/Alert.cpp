@@ -38,11 +38,11 @@
 #include "Vibrate.h"
 #include "common/RhoAppAdapter.h"
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-#include <sstream>
+//#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+//#include <sstream>
 #include "json/JSONIterator.h"
 using namespace rho::json;
-#endif
+//#endif
 
 extern "C" HWND getMainWnd();
 
@@ -62,9 +62,9 @@ CAlertDialog::CAlertDialog(Params *params)
 {
 	m_title    = params->m_title;
 	m_message  = params->m_message;
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+
 	m_callback_ex = params->m_callback_ex;
-#endif
+
 	m_callback = params->m_callback;
 	m_icon     = params->m_icon;
 
@@ -201,7 +201,7 @@ LRESULT CAlertDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 		}
 		
 		MoveWindow(0, 0, desiredDlgWidth,
-					MAX(iconRect.bottom, msgHeight) + GetSystemMetrics(SM_CYCAPTION) + INDENT + yBorderWidth * 2 +
+					MAX(iconRect.bottom, msgHeight) + GetSystemMetrics(SM_CYCAPTION) + 2*INDENT + yBorderWidth * 2 +
                     btnsHeight);
 	} else {
 		//TODO: centering message
@@ -293,17 +293,16 @@ LRESULT CAlertDialog::OnAlertDialogButton (WORD /*wNotifyCode*/, WORD wID, HWND 
 	CustomButton cbtn;
 	if (findButton((int) wID, cbtn))
 	{
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
-		if (m_callback.length()==0) {
+
+		if (m_callback.length()==0) 
+        {
 			rho::Hashtable<rho::String, rho::String> mapRes;
-			std::ostringstream sBtnIndex;
-			sBtnIndex << cbtn.m_numId;
-			mapRes["button_index"] = sBtnIndex.str();
+			mapRes["button_index"] = convertToStringA(cbtn.m_numId);
 			mapRes["button_id"] = cbtn.m_strId;
 			mapRes["button_title"] = cbtn.m_title;
 			m_callback_ex.set(mapRes);
 		} else
-#endif
+
 			rho_rhodesapp_callPopupCallback(m_callback.c_str(), cbtn.m_strId.c_str(), cbtn.m_title.c_str());
 	} else
 		LOG(ERROR) + "internal error";
@@ -384,7 +383,8 @@ void CAlert::vibrate(int duration_ms)
 
 void CAlert::playFile(String fileName)
 {
-    rho::String path = RHODESAPP().getRhoRootPath() + "apps" + fileName;
+    //rho::String path = RHODESAPP().getRhoRootPath() + "apps" + fileName;
+    String path = fileName;
 
     HSOUND hSound;
     
@@ -410,7 +410,6 @@ void CAlert::playFile(String fileName)
 
 #endif //_WIN32_WCE
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
 extern "C" void alert_show_status_ex(const char* szTitle, const char* szMessage, const char* szHide, rho::apiGenerator::CMethodResult& oResult)
 {
     String message = szMessage ? szMessage : "";
@@ -457,7 +456,6 @@ extern "C" void alert_show_popup_ex(const rho::Hashtable<rho::String, rho::Strin
 	}
 	CAlert::showPopup(new CAlertDialog::Params(title, message, icon, oResult, buttons, CAlertDialog::Params::DLG_CUSTOM));
 }
-#endif
 
 extern "C" void alert_show_status(const char* szTitle, const char* szMessage, const char* szHide)
 {
@@ -468,7 +466,7 @@ extern "C" void alert_show_status(const char* szTitle, const char* szMessage, co
 
     CAlert::showPopup(new CAlertDialog::Params(title, message, String(), String(), buttons, CAlertDialog::Params::DLG_STATUS ));
 }
-
+/*
 extern "C" void alert_show_popup(rho_param *p)
 {
 	if (p->type == RHO_PARAM_STRING) {
@@ -553,7 +551,7 @@ extern "C" void alert_show_popup(rho_param *p)
 		
 		CAlert::showPopup(new CAlertDialog::Params(title, message, icon, callback, buttons, CAlertDialog::Params::DLG_CUSTOM));
 	}
-}
+}*/
 
 extern "C" void alert_vibrate(int duration_ms) {
 #if _WIN32_WCE > 0x501 && !defined( OS_PLATFORM_MOTCE )
