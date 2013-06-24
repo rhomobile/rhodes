@@ -1530,6 +1530,13 @@ void CRhodesApp::initAppUrls()
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "app/loading.html";
 	m_strLoadingPngPath = getRhoRootPath() + "app/loading.png";
 #endif
+
+    //write local server url to file
+#ifdef OS_WINCE
+    String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
+    CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl );
+#endif
+
 }
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)

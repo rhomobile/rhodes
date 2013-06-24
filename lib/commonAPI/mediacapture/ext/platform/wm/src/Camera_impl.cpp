@@ -17,7 +17,7 @@ public:
 	virtual void getCameraInfo(rho::apiGenerator::CMethodResult& oResult) {}
 	virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {}
 	virtual void saveImageToDeviceGallery(rho::apiGenerator::CMethodResult& oResult) {}
-
+	virtual void getSupportedSizeList(rho::apiGenerator::CMethodResult& oResult) {}
 
 };
 
@@ -26,6 +26,9 @@ class CCameraSingleton: public CCameraSingletonBase
     ~CCameraSingleton(){}
     virtual rho::String getInitialDefaultID();
     virtual void enumerate(CMethodResult& oResult);
+	virtual void saveImageToDeviceGallery( const rho::String& pathToImage, rho::apiGenerator::CMethodResult& oResult) {}
+	virtual void choosePicture( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult) {}
+	virtual void getCameraByType( const rho::String& cameraType, rho::apiGenerator::CMethodResult& oResult) {}
 };
 
 class CCameraFactory: public CCameraFactoryBase
