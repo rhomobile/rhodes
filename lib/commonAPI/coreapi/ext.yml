@@ -6,6 +6,7 @@ android:
   source_list: ext/platform/android/ext_java.files
   adds: ext/platform/android/adds
   manifest_changes: ext/platform/android/AndroidManifest.xml
+  rhodes_listener: com.motorolasolutions.rho.notification.NotificationRhoListener
 wp8:
   libraries: ["WebView", "NativeToolbar", "NativeTabbar"]
   webview:
