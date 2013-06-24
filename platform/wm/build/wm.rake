@@ -1184,93 +1184,85 @@ namespace "run" do
     end
 
     task :spec, [:exclude_dirs] => ["device:wm:production"] do
-        # kill all running detool
-        kill_detool
 
-        cd $startdir + "/res/build-tools"
-        detool = "detool.exe"    
-        args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
-        puts "\nStarting application on the WM6 emulator\n\n"
-        log_file = gelLogPath
+        Jake.decorate_spec do
 
-        #remove log file
-        rm_rf log_file if File.exists?(log_file)
+            # kill all running detool
+            kill_detool
 
-        File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-        Jake.run_rho_log_server($app_path)
-        puts "RhoLogServer is starting"
-        while true do
-          if File.exists?($app_path + "/started")
-            break
-          end
-          sleep(1)
-        end
+            cd $startdir + "/res/build-tools"
+            detool = "detool.exe"
+            args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+            puts "\nStarting application on the WM6 emulator\n\n"
+            log_file = gelLogPath
 
-        Jake.before_run_spec
-        start = Time.now
-        
-        #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
-        Jake.run2( detool, args, {:nowait => false})
+            #remove log file
+            rm_rf log_file if File.exists?(log_file)
 
-        puts "waiting for log: " + log_file
-        
-        for i in 0..120
-		      if !File.exist?(log_file)
-			      sleep(1)
-		      else
-		      break
-		      end
-        end
-
-	    if !File.exist?(log_file)
-		    puts "Can not read log file: " + log_file
-		    exit(1)
-        end
-
-        puts "start read log"
-        
-        io = File.new(log_file, "r")
-        waiting_count = 0
-        end_spec = false
-        while !end_spec do
-            line_count = 0
-            io.each do |line|
-                #puts line
-                end_spec = !Jake.process_spec_output(line)
-                break if end_spec
-                line_count += 1
+            File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+            Jake.run_rho_log_server($app_path)
+            puts "RhoLogServer is starting"
+            while true do
+              if File.exists?($app_path + "/started")
+                break
+              end
+              sleep(1)
             end
-            if line_count==0
-                waiting_count += 1
-            else
-                waiting_count = 0
+
+            Jake.before_run_spec
+            start = Time.now
+
+            #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+            Jake.run2( detool, args, {:nowait => false})
+
+            puts "waiting for log: " + log_file
+
+            for i in 0..120
+              if !File.exist?(log_file)
+                sleep(1)
+              else
+              break
+              end
             end
-            if waiting_count > 600
-                puts "spec application hung (600 seconds timeout)"
-                end_spec = true
+
+          if !File.exist?(log_file)
+            puts "Can not read log file: " + log_file
+            exit(1)
             end
-            sleep(1) unless end_spec
+
+            puts "start read log"
+
+            io = File.new(log_file, "r")
+            waiting_count = 0
+            end_spec = false
+            while !end_spec do
+                line_count = 0
+                io.each do |line|
+                    #puts line
+                    end_spec = !Jake.process_spec_output(line)
+                    break if end_spec
+                    line_count += 1
+                end
+                if line_count==0
+                    waiting_count += 1
+                else
+                    waiting_count = 0
+                end
+                if waiting_count > 600
+                    puts "spec application hung (600 seconds timeout)"
+                    end_spec = true
+                end
+                sleep(1) unless end_spec
+            end
+            io.close
+
+            Jake.process_spec_results(start)
+
+            $stdout.flush
+            chdir $startdir
+
         end
-        io.close
 
-        Jake.process_spec_results(start)
-        
-        $stdout.flush
-        chdir $startdir
-    end
-
-    task :phone_spec, :exclude_dirs do |t, args|
-      args.with_defaults(:exclude_dirs => '')
-      Jake.run_spec_app('wm','phone_spec',args[:exclude_dirs])
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
-    end
-
-    task :framework_spec, :exclude_dirs do |t, args|
-      args.with_defaults(:exclude_dirs => '')
-      Jake.run_spec_app('wm','framework_spec',args[:exclude_dirs])
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
     end
 
     namespace "device" do
@@ -1356,44 +1348,28 @@ namespace "run" do
     end
 
     task :spec => [:delete_db, "build:win32"] do
-      #remove log file
-      win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
-      win32logpath = File.join(win32rhopath,"RhoLog.txt")
-      win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")
-      win32configpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
-      rm_rf win32logpath if File.exists?(win32logpath)
-      rm_rf win32logpospath if File.exists?(win32logpospath)
-      rm_rf win32configpath if File.exists?(win32configpath)
+      Jake.decorate_spec do
+        #remove log file
+        win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
+        win32logpath = File.join(win32rhopath,"RhoLog.txt")
+        win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")
+        win32configpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
+        rm_rf win32logpath if File.exists?(win32logpath)
+        rm_rf win32logpospath if File.exists?(win32logpospath)
+        rm_rf win32configpath if File.exists?(win32configpath)
 
-      Jake.before_run_spec
-      start = Time.now
+        Jake.before_run_spec
+        start = Time.now
 
-      args = [' ']
-      Jake.run2( "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
-        Jake.process_spec_output(line)
+        args = [' ']
+        Jake.run2( "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
+          Jake.process_spec_output(line)
+        end
+        Jake.process_spec_results(start)
+
+        $stdout.flush
+        chdir $startdir
       end
-      Jake.process_spec_results(start)
-
-      $stdout.flush
-      chdir $startdir
-    end
-
-    task :phone_spec do
-      Jake.run_spec_app('win32','phone_spec')
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
-    end
-
-    task :js_spec do
-      Jake.run_spec_app('win32','js_spec')
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
-    end
-
-    task :framework_spec do
-      Jake.run_spec_app('win32','framework_spec')
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
     end
 
   end

@@ -2111,10 +2111,6 @@ end
 
 namespace "run" do
     
-    task :app_as_spec, [:platform, :app_path] do |task, args|
-      Jake.run_app_as_spec(args[:platform], args[:app_path])
-    end
-
     task :rhoconnect_push_spec do
         require 'mspec'
         
