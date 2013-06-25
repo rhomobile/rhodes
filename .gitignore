@@ -266,3 +266,4 @@ platform/osx/bin/sqlite3/*
 platform/osx/bin/syncengine/*
 platform/osx/bin/RhoSimulator/generated_files/*
 platform/osx/bin/RhoSimulator/tmp/*
+platform/shared/common/app_build_configs.c
