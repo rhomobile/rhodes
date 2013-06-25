@@ -24,15 +24,18 @@
 * http://rhomobile.com
 *------------------------------------------------------------------------*/
 
+#include <sstream>
 #include "common/RhodesApp.h"
 #include "common/rhoparams.h"
 #include "common/RhoAppAdapter.h"
+#include "json/JSONIterator.h"
 #include "MainWindowImpl.h"
 #include "../DateTimeDialog.h"
 #undef null
 #include <QSound>
 
 using namespace rho;
+using namespace rho::json;
 
 extern "C" {
 
@@ -45,7 +48,7 @@ void alert_show_status(const char* szTitle, const char* szMessage, const char* s
     Vector<CAlertParams::CAlertButton> buttons;
     CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, callback, icon, buttons, CAlertParams::DLG_STATUS ));
 }
-
+/*
 void alert_show_popup(rho_param *p)
 {
     if (p->type == RHO_PARAM_STRING) {
@@ -129,6 +132,53 @@ void alert_show_popup(rho_param *p)
         }
         CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, icon, callback, buttons, CAlertParams::DLG_CUSTOM));
     }
+}*/
+
+extern "C" void alert_show_status_ex(const char* szTitle, const char* szMessage, const char* szHide, rho::apiGenerator::CMethodResult& oResult)
+{
+    String message = szMessage ? szMessage : "";
+    String title = szTitle ? szTitle : "";
+    String icon = "";
+    Vector<CAlertParams::CAlertButton> buttons;
+    //buttons.addElement( CAlertParams::CAlertButton(szHide, "") );
+    CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, icon, oResult, buttons, CAlertParams::DLG_STATUS ));
+}
+
+extern "C" void alert_show_popup_ex(const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
+{
+    String title, message, icon;
+    Vector<CAlertParams::CAlertButton> buttons;
+    if (propertyMap.containsKey("message"))
+        message = propertyMap.get("message");
+    if (propertyMap.containsKey("title"))
+        title = propertyMap.get("title");
+    if (propertyMap.containsKey("icon"))
+        icon = propertyMap.get("icon");
+    if (propertyMap.containsKey("buttons"))
+    {
+        CJSONArray oButtons(propertyMap.get("buttons").c_str());
+        for (; !oButtons.isEnd(); oButtons.next())
+        {
+            String btnId, btnTitle;
+            CJSONEntry oButton = oButtons.getCurItem();
+            if (oButton.isString()) {
+                btnId = btnTitle = oButton.getString();
+            }
+            else if (oButton.isObject())
+            {
+                if (oButton.hasName("id"))
+                    btnId = oButton.getString("id");
+                if (oButton.hasName("title"))
+                    btnTitle = oButton.getString("title");
+            }
+            if (btnId == "" || btnTitle == "") {
+                RAWLOG_ERROR("Incomplete button item");
+                continue;
+            }
+            buttons.addElement( CAlertParams::CAlertButton(btnTitle, btnId) );
+        }
+    }
+    CMainWindow::getInstance()->alertShowPopup(new CAlertParams(title, message, icon, oResult, buttons, CAlertParams::DLG_CUSTOM));
 }
 
 void alert_vibrate(int duration_ms) {

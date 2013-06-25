@@ -8,6 +8,10 @@
 #endif
 #endif
 
+#if (defined OS_ANDROID)
+#include "../platform/android/jni/NetworkAvailability.h"
+#endif
+
 #include "generated/cpp/NetworkBase.h"
 #include "net/INetRequest.h"
 #include "common/RhoAppAdapter.h"
@@ -102,10 +106,12 @@ private:
     void readHeaders( const rho::Hashtable<rho::String, rho::String>& propertyMap, Hashtable<String,String>& mapHeaders );
     void createResult( NetResponse& resp, Hashtable<String,String>& mapHeaders, rho::apiGenerator::CMethodResult& oResult );
 	//  RE1 Network API
-	std::list<INetworkDetection*> m_networkPollers;
+//	std::list<INetworkDetection*> m_networkPollers;
+    std::auto_ptr<INetworkDetection> m_networkPoller;
 #if (defined OS_WINCE) && !defined(OS_PLATFORM_MOTCE)
 	CWAN *m_pConnectionManager;
 #endif
+    void setupSecureConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, NetRequest& oNetRequest );
 };
 
 NetRequest& CNetworkImpl::getCurRequest(NetRequest& oNetRequest)
@@ -175,9 +181,8 @@ void CNetworkImpl::get( const rho::Hashtable<rho::String, rho::String>& property
     readHeaders( propertyMap, mapHeaders );
 
     NetRequest oNetRequest;
-
-    if ( propertyMap.containsKey("verifyPeerCertificate") )
-        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+    
+    setupSecureConnection( propertyMap, oNetRequest );
 
     NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).doRequest( getStringProp(propertyMap, "httpVerb", "GET").c_str(),
             propertyMap.get("url"), propertyMap.get("body"), null, &mapHeaders);
@@ -196,8 +201,7 @@ void CNetworkImpl::downloadFile( const rho::Hashtable<rho::String, rho::String>&
     bool overwriteFile = propertyMap.containsKey("overwriteFile") && (propertyMap.get("overwriteFile")=="true");
     bool createFolders = propertyMap.containsKey("createFolders") && (propertyMap.get("createFolders")=="true");
 
-    if ( propertyMap.containsKey("verifyPeerCertificate") )
-        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+    setupSecureConnection( propertyMap, oNetRequest );
     
     bool fileExists = false;
 
@@ -223,8 +227,7 @@ void CNetworkImpl::post( const rho::Hashtable<rho::String, rho::String>& propert
 
     NetRequest oNetRequest;
 
-    if ( propertyMap.containsKey("verifyPeerCertificate") )
-        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+    setupSecureConnection( propertyMap, oNetRequest );
 
     NetResponse resp = getNetRequest(&getCurRequest(oNetRequest)).doRequest( getStringProp(propertyMap, "httpVerb", "POST").c_str(),
             propertyMap.get("url"), propertyMap.get("body"), null, &mapHeaders);
@@ -240,8 +243,7 @@ void CNetworkImpl::uploadFile( const rho::Hashtable<rho::String, rho::String>& p
 
     NetRequest oNetRequest;
 
-    if ( propertyMap.containsKey("verifyPeerCertificate") )
-        getCurRequest(oNetRequest).setSslVerifyPeer( propertyMap.get("verifyPeerCertificate") == "true" );
+    setupSecureConnection( propertyMap, oNetRequest );
 
     VectorPtr<net::CMultipartItem*> arMultipartItems;
     if ( propertyMap.containsKey("multipart") )
@@ -305,11 +307,12 @@ void CNetworkImpl::readHeaders( const rho::Hashtable<rho::String, rho::String>& 
 
     if ( propertyMap.get("authType") == AUTH_BASIC )
     {
-        int nLen = rho_base64_encode(propertyMap.get("authPassword").c_str(), -1, 0);
+        String creds = propertyMap.get("authUser") + ":" + propertyMap.get("authPassword");
+        
+        int nLen = rho_base64_encode(creds.c_str(), -1, 0);
         char* szBuf = new char[nLen+1];
-        rho_base64_encode(propertyMap.get("authPassword").c_str(), -1, szBuf );
-
-        mapHeaders["Authorization"] = "Basic " + propertyMap.get("authUser") + ":" + szBuf;
+        rho_base64_encode(creds.c_str(), -1, szBuf );
+        mapHeaders["Authorization"] = String("Basic ") + szBuf;
         delete szBuf;
     }
 
@@ -381,7 +384,7 @@ static int g_rho_has_network = 1, g_rho_has_cellnetwork = 0;
 
 extern "C" void rho_sysimpl_sethas_network(int nValue)
 {
-    g_rho_has_network = nValue > 1 ? 1 : 0;
+    g_rho_has_network = nValue >= 1 ? 1 : 0;
 }
 
 extern "C" int rho_sysimpl_has_network()
@@ -396,17 +399,77 @@ extern "C" void rho_sysimpl_sethas_cellnetwork(int nValue)
 
 void CNetworkImpl::hasNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
+	LOG(INFO) + "NetworkC hasNetwork+";
+#if (defined OS_ANDROID)
+	int iResult = CNetworkAvailability::hasNetwork();
+	if(iResult == -2)
+	{
+		oResult.setError("Internal Error: Could not connect to Android");
+	}
+	else if(iResult == -1)
+	{
+		oResult.setError("Could not detect for a network");
+	}
+	else
+	{
+		oResult.set(iResult != 0);
+	}
+	LOG(INFO) + "NetworkC hasNetwork-";
+	return;
+#endif
+#if (!defined OS_ANDROID)
     oResult.set(g_rho_has_network!= 0 || g_rho_has_cellnetwork!= 0);
+#endif
 }
 
 void CNetworkImpl::hasWifiNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
+	LOG(INFO) + "NetworkC hasWifiNetwork+";
+#if (defined OS_ANDROID)
+	int iResult = CNetworkAvailability::hasWifiNetwork();
+	if(iResult == -2)
+	{
+		oResult.setError("Internal Error: Could not connect to Android");
+	}
+	else if(iResult == -1)
+	{
+		oResult.setError("Could not detect for a wifi network");
+	}
+	else
+	{
+		oResult.set(iResult != 0);
+	}
+	LOG(INFO) + "NetworkC hasWifiNetwork-";
+	return;
+#endif
+#if (!defined OS_ANDROID)
     oResult.set(g_rho_has_network!= 0);
+#endif
 }
 
 void CNetworkImpl::hasCellNetwork(rho::apiGenerator::CMethodResult& oResult)
 {
+	LOG(INFO) + "NetworkC hasCellNetwork+";
+#if (defined OS_ANDROID)
+	int iResult = CNetworkAvailability::hasCellNetwork();
+	if(iResult == -2)
+	{
+		oResult.setError("Internal Error: Could not connect to Android");
+	}
+	else if(iResult == -1)
+	{
+		oResult.setError("Could not detect for a cell network");
+	}
+	else
+	{
+		oResult.set(iResult != 0);
+	}
+	LOG(INFO) + "NetworkC hasCellNetwork-";
+	return;
+#endif
+#if (!defined OS_ANDROID)
     oResult.set(g_rho_has_cellnetwork!= 0);
+#endif
 }
 
 void CNetworkImpl::startStatusNotify( int pollInterval, rho::apiGenerator::CMethodResult& oResult)
@@ -423,6 +486,12 @@ void CNetworkImpl::stopStatusNotify(rho::apiGenerator::CMethodResult& oResult)
 //  RE1 Network API Implementation
 void CNetworkImpl::detectConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
+    stopDetectingConnection(oResult);
+
+    if (!oResult.hasCallback()) {
+        return;
+    }
+    
 	INetworkDetection* pNetworkDetection = NetworkDetectionFactory::createNetworkDetection();
     if ( 0 == pNetworkDetection ) {
         LOG(ERROR) + "Unable to create network detection object";
@@ -430,7 +499,8 @@ void CNetworkImpl::detectConnection( const rho::Hashtable<rho::String, rho::Stri
     }
     
 	pNetworkDetection->Initialise();
-	m_networkPollers.push_back(pNetworkDetection);
+//	m_networkPollers.push_back(pNetworkDetection);
+    m_networkPoller.reset(pNetworkDetection);
 	if (!pNetworkDetection->IsChecking())
 	{
 		typedef std::map<rho::String, rho::String>::const_iterator it_type;
@@ -457,6 +527,7 @@ void CNetworkImpl::detectConnection( const rho::Hashtable<rho::String, rho::Stri
 void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oResult)
 {
 	//  Find the network detector which matches our callback
+    /*
 	INetworkDetection *pNetworkDetection = NULL;
 	std::list<INetworkDetection*>::iterator i;
 	for (i = m_networkPollers.begin(); i != m_networkPollers.end(); ++i)
@@ -477,6 +548,14 @@ void CNetworkImpl::stopDetectingConnection(rho::apiGenerator::CMethodResult& oRe
 	}
 	else
 		LOG(WARNING) + "Unable to stop detecting network connection, could not find specified callback";
+    */
+    if ( m_networkPoller.get() != 0) {
+        if ( m_networkPoller->IsChecking() ) {
+            m_networkPoller->StopNetworkChecking();
+        }
+        m_networkPoller->Cleanup();
+        m_networkPoller.reset(0);
+    }
 }
 
 
@@ -497,6 +576,33 @@ void CNetworkImpl::disconnectWan(rho::apiGenerator::CMethodResult& oResult)
 	//  Only applicable to WM/CE, specific to connection manager
 	m_pConnectionManager->Disconnect(TRUE);
 #endif
+}
+    
+void CNetworkImpl::setupSecureConnection( const rho::Hashtable<rho::String, rho::String>& propertyMap, NetRequest& oNetRequest )
+{
+    String clientCertificate = "";
+    String clientCertificatePassword = "";
+
+    //will enable server SSL auth if true.
+    if ( propertyMap.containsKey("verifyPeerCertificate") ) {
+        bool verifyPeer = (propertyMap.get("verifyPeerCertificate") == "true");
+        getCurRequest(oNetRequest).setSslVerifyPeer( verifyPeer );
+        
+        if ( verifyPeer ) {
+            //will enable client-side SSL auth if valid certificate path is provided (Android-only).
+            if ( propertyMap.containsKey("clientSSLCertificate") ) {
+                clientCertificate = propertyMap.get("clientSSLCertificate");
+            }
+            
+            if ( propertyMap.containsKey("clientSSLCertificatePassword") ) {
+                clientCertificatePassword = propertyMap.get("clientSSLCertificatePassword");
+            }
+        }
+        
+    }
+    
+    RHOCONF().setString("clientSSLCertificate",clientCertificate,false);
+    RHOCONF().setString("clientSSLCertificatePassword",clientCertificatePassword,false);
 }
 
 

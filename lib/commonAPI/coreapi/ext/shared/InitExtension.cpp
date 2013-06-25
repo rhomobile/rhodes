@@ -14,6 +14,8 @@ extern "C" void Init_Navbar();
 extern "C" void Init_Notification();
 extern "C" void Init_RhoFile();
 extern "C" void Init_NativeMenuBar();
+extern "C" void Init_Led();
+extern "C" void Init_Push();
 
 extern "C" void Init_CoreAPI_Extension()
 {
@@ -41,13 +43,24 @@ extern "C" void Init_CoreAPI_Extension()
     Init_Navbar();
 #endif
 
-//#if defined(OS_WINDOWS_DESKTOP)
-//    Init_Notification();
-//#endif
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR) || defined(OS_WINCE) || defined(OS_MACOSX) || defined(OS_ANDROID)
+    Init_Notification();
+#endif
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_MACOSX) || defined(OS_ANDROID) || defined(WINDOWS_PLATFORM)
     Init_RhoFile();
 #endif
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(OS_WINCE)
     Init_NativeMenuBar();
+#endif
+
+
+#if defined(OS_WINCE) || defined(OS_ANDROID)
+	Init_Led();
+#endif
+
+#if defined(OS_ANDROID)
+	Init_Push();
+#endif
 }

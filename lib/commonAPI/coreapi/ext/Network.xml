@@ -222,34 +222,52 @@
 
             <METHOD name="hasNetwork">
                 <DESC>Is device connected to the network.</DESC>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasWifiNetwork">
                 <DESC>Is device connected to the wifi network</DESC>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
             <METHOD name="hasCellNetwork">
                 <DESC>Is device connected to the cell network.</DESC>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <RETURN  type="BOOLEAN"/>
             </METHOD>
 
             <METHOD name="startStatusNotify" hasCallback="mandatory" runInThread="none">
-                <DESC>Start network status notifications.</DESC>
+                <DESC>Start network status notifications.Notification send when Wifi or Cell netwrok appear/disappear. To check real Internet connectivity use detectConnection method.</DESC>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="pollInterval" type="INTEGER" default="20">
-                        <DESC>The network status polling period for systems that can not notify network status change immediately.</DESC>
+                        <DESC>The network status polling period for systems that can not notify network status change immediately. In seconds.</DESC>
+                        <PLATFORM>Android, iOS</PLATFORM>
                         <CAN_BE_NIL/>
                     </PARAM>
                 </PARAMS>
+                <CALLBACK type="HASH">
+                    <DESC>Network status notification information.</DESC>
+                    <PARAMS>
+                        <PARAM name="current_status" type="STRING">
+                            <DESC>Current status of network connection. Can be "connected" or "disconnected".</DESC>
+                        </PARAM>
+                        <PARAM name="prev_status" type="STRING">
+                            <DESC>Previous status of network connection. Can be "connected", "disconnected" or "unknown"."</DESC>
+                        </PARAM>
+                    </PARAMS>
+                    
+                </CALLBACK>
             </METHOD>
 
             <METHOD name="stopStatusNotify">
                 <DESC>Stop network status notifications.</DESC>
+                <PLATFORM>WM, Android, iOS</PLATFORM>
             </METHOD>
 
             <METHOD name="detectConnection" hasCallback="mandatory" runInThread="none">
                 <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-                <DESC>Begins polling the specified host on the specified URL to check if there is a network connection available. The connection status is reported back via the provided callback.</DESC>
+                <DESC>Begins polling the specified host on the specified URL to check if there is a network connection available. The connection status is reported back via the provided callback. Note that callback will be called only if connection status have changed compared to previous polling.</DESC>
                 <PARAMS>
                     <PARAM name="propertyMap" type="HASH" propertyHash="true">
                         <DESC>Properties map.</DESC>
@@ -261,7 +279,7 @@
                                 <DESC>When detecting a network connection, this is the port on the host to connect to.</DESC>
                             </PARAM>
                             <PARAM name="pollInterval" type="INTEGER" default="30000">
-                                <DESC>The time, in milliseconds, between each check for a connection. Note that the actual connection report interval will be the sum of the poll interval and the detection timeout.  The minimum allowed value is 5000ms</DESC>
+                                <DESC>The time, in milliseconds, between each check for a connection. Note that the actual connection report interval will be the sum of the poll interval and the detection timeout.  The minimum allowed value is 5000ms.</DESC>
                             </PARAM>
                             <PARAM name="detectionTimeout" type="INTEGER" default="1000">
                                 <DESC>The amount of time to attempt to connect to the specified URL before giving up and assuming 'disconnected'.  Value is specified in milliseconds.</DESC>

@@ -27,6 +27,8 @@
 #ifndef ALERTIMPL_H
 #define ALERTIMPL_H
 
+#include "api_generator/MethodResult.h"
+
 // CAlertParams is a container to pass parameters to UI thread.
 class CAlertParams {
 public:
@@ -54,11 +56,22 @@ public:
         m_buttons  = buttons;
    }
 
+   CAlertParams (rho::String &title, rho::String &message, rho::String &icon, rho::apiGenerator::CMethodResult &callback, rho::Vector<CAlertButton>& buttons, CAlertType dlgType)
+   {
+        m_dlgType  = dlgType;
+        m_title    = title;
+        m_message  = message;
+        m_icon     = icon;
+        m_callback_ex = callback;
+        m_buttons  = buttons;
+   }
+
    int m_dlgType;
    rho::String m_title;
    rho::String m_message;
    rho::String m_icon;
    rho::String m_callback;
+   rho::apiGenerator::CMethodResult m_callback_ex;
    rho::Vector<CAlertButton> m_buttons;
 };
 

@@ -70,7 +70,12 @@ void rho_webview_navigate(const char* url, int index)
 
 void rho_webview_navigate_back()
 {
-    CMainWindow::getInstance()->navigateBackCommand();
+    CMainWindow::getInstance()->webviewNavigateBackCommand(-1);
+}
+
+void rho_webview_navigate_back_with_tab(int index)
+{
+    CMainWindow::getInstance()->webviewNavigateBackCommand(index);
 }
 
 void rho_webview_navigate_forward()
@@ -110,7 +115,7 @@ void rho_webview_full_screen_mode(int enable)
 
 int rho_webview_get_full_screen()
 {
-    CMainWindow::getInstance()->getFullScreen() ? 1 : 0;
+    return CMainWindow::getInstance()->getFullScreen() ? 1 : 0;
 }
 
 void rho_webview_set_cookie(const char *url, const char *cookie)

@@ -1,0 +1,7 @@
+ext/shared/LogCaptureImpl.cpp
+ext/shared/generated/logcapture_api_init.cpp
+ext/shared/generated/logcapture_js_api.cpp
+ext/shared/generated/logcapture_ruby_api.c
+ext/shared/generated/cpp/LogCapture_js_wrap.cpp
+ext/shared/generated/cpp/LogCapture_ruby_wrap.cpp
+ext/shared/generated/cpp/LogCaptureBase.cpp

@@ -162,6 +162,7 @@ public:
 
     // Required to forward messages to the PIEWebBrowser control
     BOOL TranslateAccelerator(MSG* pMsg);
+    void ProcessTitleChange(LPCTSTR title);
 
 #if defined(OS_WINCE)
 	bool m_bFullScreen, m_bFullScreenBeforeLicense;
@@ -214,6 +215,7 @@ public:
         COMMAND_ID_HANDLER(IDM_ZOOMTEXT, OnZoomText)
         COMMAND_ID_HANDLER(IDM_LOG,OnLogCommand)
 		COMMAND_ID_HANDLER(ID_FULLSCREEN, OnFullscreenCommand)
+        COMMAND_ID_HANDLER(ID_TITLECHANGE, OnTitleChangeCommand)
         COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_MENU_ITEM_FIRST, ID_CUSTOM_MENU_ITEM_LAST, OnCustomMenuItemCommand)
 		COMMAND_RANGE_HANDLER(ID_CUSTOM_TOOLBAR_ITEM_FIRST, ID_CUSTOM_TOOLBAR_ITEM_LAST, OnCustomToolbarItemCommand)
@@ -287,6 +289,7 @@ private:
     LRESULT OnZoomText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLogCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnTitleChangeCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnSetCookieCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCustomMenuItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCustomToolbarItemCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -365,11 +368,11 @@ private:
 
 	void ShowLoadingPage();
 
+    void showMenuBarMenu(const CAppMenuItem& menuButton, bool isLeft);
 	void createCustomMenu(void);
 
     void ProcessDocumentComplete(LPCTSTR url);
-    void ProcessNavigateComplete(LPCTSTR url);
-    void ProcessTitleChange(LPCTSTR title);
+    void ProcessNavigateComplete(LPCTSTR url);    
 
 	// return cleared URL or empty string
 	String processForNativeView(String url);
@@ -394,6 +397,7 @@ private:
 #if defined(_WIN32_WCE)
     // main menu bar for application
     CWindow m_menuBar;
+    CMenu   m_mainMenu;
 #elif defined (OS_WINDOWS_DESKTOP)
 	CMenuBar m_menuBar;
 //	int m_menuBarHeight;
@@ -403,7 +407,6 @@ private:
 // #if defined( OS_PLATFORM_MOTCE )
     int   m_menuBarHeight;
     HWND  g_hWndCommandBar;	// command bar handle
-
 // #endif
 
 #if defined(_WIN32_WCE)

@@ -130,8 +130,8 @@ end %>
     <% if $cur_module.is_template_default_instance %>
 
         rhoUtil.createPropsProxy(<%= $cur_module.name %>, [
-            { propName: 'default:getDefault', propAccess: 'r' }
-          , { propName: 'defaultID:getDefaultID::setDefaultID', propAccess: 'rw', customSet: function(id) {currentDefaultID = id;} }
+            { propName: 'default:getDefault:setDefault', propAccess: 'rw', customSet: function(obj) { if(!obj || 'function' != typeof obj.getId){ throw 'Default object should provide getId method!' }; currentDefaultID = obj.getId(); } }
+          , { propName: 'defaultID:getDefaultID:setDefaultID', propAccess: 'rw', customSet: function(id) { currentDefaultID = id; } }
         ], apiReq);
 
         <%= $cur_module.name %>.getId = function() {
@@ -176,4 +176,4 @@ end %>
 
     rhoUtil.namespace(moduleNS, <%= $cur_module.name %>);
 
-})(jQuery, Rho, Rho.util);
+})(Rho.jQuery, Rho, Rho.util);

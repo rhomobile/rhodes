@@ -176,7 +176,7 @@ class CRhodesModule : public CAtlExeModuleT< CRhodesModule >
 	int m_nRestarting;
     bool m_bMinimized;
 	bool m_isRhoConnectPush;
-    bool m_startAtBoot;
+    bool m_startAtBoot, m_bJSApplication;
     String m_strTabName;
 
 #ifndef RHODES_EMULATOR
@@ -207,6 +207,8 @@ public :
     const rho::String& getRhoRuntimePath();
     const rho::String& getAppName();
     void createAutoStartShortcut();
+
+    bool isJSApplication()const{ return m_bJSApplication; }
 };
 
 void parseHttpProxyURI(const rho::String &http_proxy);
@@ -229,11 +231,17 @@ rho::IBrowserEngine* rho_wmimpl_createBrowserEngine(HWND hwndParent)
 }
 #endif //!OS_WINDOWS_DESKTOP
 
-bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw( )
+bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) throw()
 {
 	m_nRestarting      = 1;
     m_bMinimized       = false;
     m_startAtBoot      = false;
+#ifdef RHO_NO_RUBY
+    m_bJSApplication   = true;        
+#else
+    m_bJSApplication   = false;
+#endif
+
     m_logPort          = "";
     m_isRhoConnectPush = false;
     LPCTSTR lpszToken  = lpCmdLine;
@@ -293,7 +301,28 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 					m_logPort = rho::String("11000");
 				}
 			}
+            else if (wcsnicmp(lpszToken, _T("approot"),7)==0 || wcsnicmp(lpszToken, _T("jsapproot"),9)==0)
+			{
+				if (value) 
+                {
+					m_strRootPath = convertToStringA(value);
+					if (m_strRootPath.substr(0,7).compare("file://")==0)
+						m_strRootPath.erase(0,7);
+					String_replace(m_strRootPath, '\\', '/');
+					if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
+						m_strRootPath.append("/");
 
+#if defined(OS_WINCE)
+					m_strRootPath.append("rho/");
+#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
+					rho_wmimpl_set_is_version2(m_strRootPath.c_str());
+#endif
+#endif
+        		}
+
+                if ( wcsnicmp(lpszToken, _T("jsapproot"),9)==0 )
+                    m_bJSApplication = true;
+            }
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
 			else if (wcsnicmp(lpszToken, _T("s"),1)==0)
 			{
@@ -323,14 +352,6 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 				else 
 					LOG(WARNING) + "invalid value for \"http_proxy_url\" cmd parameter";
 
-			} else if (wcsncmp(lpszToken, _T("approot"),7)==0) 
-			{
-				if (value) {
-					m_strRootPath = convertToStringA(value);
-					String_replace(m_strRootPath, '\\', '/');
-					if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
-						m_strRootPath.append("/");
-				}
 			} else if (wcsncmp(lpszToken, _T("rhodespath"),10)==0) 
 			{
 				if (value) {
@@ -353,23 +374,6 @@ bool CRhodesModule::ParseCommandLine(LPCTSTR lpCmdLine, HRESULT* pnRetCode ) thr
 					m_strDebugPort = convertToStringA(value);
 				}
 			} */
-#else
-			else if (wcsnicmp(lpszToken, _T("approot"),7)==0)
-			{
-				if (value) {
-					// RhoElements v2.0 Shared Runtime command line parameter
-					m_strRootPath = convertToStringA(value);
-					if (m_strRootPath.substr(0,7).compare("file://")==0)
-						m_strRootPath.erase(0,7);
-					String_replace(m_strRootPath, '\\', '/');
-					if (m_strRootPath.at(m_strRootPath.length()-1)!='/')
-						m_strRootPath.append("/");
-					m_strRootPath.append("rho/");
-#ifdef APP_BUILD_CAPABILITY_SHARED_RUNTIME
-					rho_wmimpl_set_is_version2(m_strRootPath.c_str());
-#endif
-        		}
-			}
 #endif
 		}
 		if (value) free(value);
@@ -475,12 +479,14 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
 
     if ( !rho_rhodesapp_canstartapp(g_strCmdLine.c_str(), " /-,") )
     {
+		LOG(INFO) + "This is hidden app and can be started only with security key.";
+		if (RHOCONF().getString("invalid_security_token_start_path").length() <= 0)
+        {
 #ifdef OS_WINDOWS_DESKTOP
 	    ::MessageBoxW(0, L"This is hidden app and can be started only with security key.", L"Security Token Verification Failed", MB_ICONERROR | MB_OK);
 #endif
-		LOG(INFO) + "This is hidden app and can be started only with security key.";
-		if (RHOCONF().getString("invalid_security_token_start_path").length() <= 0)
 			return S_FALSE;
+        }
     }
 
 	LOG(INFO) + "Rhodes started";
@@ -554,6 +560,7 @@ HRESULT CRhodesModule::PreMessageLoop(int nShowCmd) throw()
         createAutoStartShortcut();
 
     rho::common::CRhodesApp::Create(m_strRootPath, m_strRootPath, m_strRuntimePath);
+    RHODESAPP().setJSApplication(_AtlModule.isJSApplication());
 
 #if defined(APP_BUILD_CAPABILITY_SHARED_RUNTIME)
     if ((!rho_wmimpl_get_is_version2()) && (rho_wmimpl_get_startpage()[0] != 0)) {
@@ -968,6 +975,15 @@ extern "C" HWND rho_wmimpl_get_mainwnd()
 extern "C" void rho_conf_show_log()
 {
     ::PostMessage(getMainWnd(),WM_COMMAND,IDM_LOG,0);
+}
+
+extern "C" void rho_title_change(const int tabIndex, const char* strTitle)
+{
+//#if !defined(RHODES_EMULATOR)
+    //const StringW strTitleW = rho::common::convertToStringW(strTitle);
+    //Rhodes_getMainWindow()->ProcessTitleChange(strTitleW.c_str());
+    PostMessage( rho_wmimpl_get_mainwnd(),WM_COMMAND, ID_TITLECHANGE, (LPARAM)_tcsdup(convertToStringW(strTitle).c_str()) );
+//#endif
 }
 
 //Hook for ruby call to refresh web view

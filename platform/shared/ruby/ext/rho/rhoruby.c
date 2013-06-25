@@ -249,9 +249,9 @@ void RhoRubyStart()
     Init_RhoConf(); //+
 #endif
 
-#if !defined(OS_WINDOWS_DESKTOP) 
-    Init_Alert();
-#endif
+//#if !defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+//    Init_Alert();
+//#endif
 
 #if defined(WINDOWS_PLATFORM)
     //init_rhoext_Signature();
@@ -280,9 +280,9 @@ void RhoRubyStart()
 #endif
     Init_RhoEvent();
     Init_Calendar();
-//#if !defined(OS_WINDOWS_DESKTOP)
+#if !defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR) && ! defined(OS_WINCE)
     Init_Alert();
-//#endif
+#endif
 
 //TODO: RhoSimulator  - load extensions dll dynamically
 #if !defined(RHO_SYMBIAN)
@@ -405,7 +405,9 @@ void rho_ruby_call_config_conflicts()
 
     rb_funcall(framework, onConfigConflicts_mid, 1, hashConflicts);
 }
-
+#else
+void rho_ruby_call_config_conflicts() {
+}
 #endif
 
 void rho_ruby_activateApp()

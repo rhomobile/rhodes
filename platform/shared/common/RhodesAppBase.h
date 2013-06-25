@@ -62,6 +62,7 @@ protected:
 	mutable common::CMutex m_mxPushCallback;
     String m_strPushCallback, m_strPushCallbackParams;
     PushManager m_appPushMgr;
+    bool m_bJSApplication;
 
     CRhodesAppBase(const String& strRootPath, const String& strUserPath, const String& strRuntimePath);
 public:
@@ -72,12 +73,12 @@ public:
     String resolveDBFilesPath(const String& strFilePath);
     String getRelativeDBFilesPath(const String& strFilePath);
 	String getDBFileRoot();
-    const String& getRhoRootPath(){return m_strRhoRootPath;}
+    const String& getRhoRootPath()const{return m_strRhoRootPath;}
     const String& getRhoUserPath(){return m_strAppUserPath;}
     const String& getRhoRuntimePath() const{return m_strRuntimePath;}
     //const String& getRhodesPath(){return m_strRhodesPath;}
     //void setRhodesPath(const String& path){m_strRhodesPath = path;}
-    const String& getAppRootPath(){return m_strAppRootPath;}
+    const String& getAppRootPath()const{return m_strAppRootPath;}
     const String& getBlobsDirPath(){return m_strBlobsDirPath; }
     const String& getDBDirPath(){return m_strDBDirPath; }
     const String& getHomeUrl(){ return m_strHomeUrl; }
@@ -91,6 +92,8 @@ public:
     boolean sendLog(rho::apiGenerator::CMethodResult& oResult);
     boolean sendLogInSameThread();
 	
+    void setJSApplication(bool bJSApp){ m_bJSApplication = bJSApp; }
+    bool isJSApplication()const{ return m_bJSApplication; }
 	// Deprecated
     boolean callPushCallback(const String& strData) const;
 
@@ -164,6 +167,9 @@ int rho_base64_decode(const char *src, int srclen, char *dst);
 int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
 	
 void rho_net_request_with_data(const char *url, const char *str_body);
+    
+const char* rho_app_canonicalize_rho_url(const char* url);
+const char* rho_app_canonicalize_rho_path(const char* path);
 
 	
 #ifdef __cplusplus

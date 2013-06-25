@@ -40,6 +40,7 @@ using namespace rho;
 using namespace rho::common;
 
 extern CMainWindow& getAppWindow();
+extern "C" int  rho_ruby_is_started();
 
 extern "C" {
 HWND getMainWnd();
@@ -64,12 +65,22 @@ void rho_webview_navigate(const char* url, int index)
 
     String strUrl = url;
 
-    strUrl = RHODESAPP().canonicalizeRhoUrl(url);
-    
+    if (rho_ruby_is_started()) {
+        strUrl = RHODESAPP().canonicalizeRhoUrl(url);
+    }
+    else {
+        strUrl = RHODESAPP().canonicalizeRhoPath(url);
+    }
+        
     TNavigateData* nd = new TNavigateData();
     nd->index = index;
     nd->url = _tcsdup(convertToStringW(strUrl).c_str());
     ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE, (LPARAM)nd );
+}
+
+void rho_webview_navigate_back_with_tab(int index)
+{
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_NAVIGATE_BACK, (LPARAM)index );
 }
 
 void rho_webview_navigate_back()
@@ -97,9 +108,15 @@ const char* rho_webview_execute_js(const char* js, int index)
 
 const char* rho_webview_execute_js_sync(const char* js, int index) 
 {
-    // TODO: implement sync js callback
-    rho_webview_execute_js(js, index);
-    return "";
+    StringW strJsW;
+    convertToStringW(js, strJsW);
+
+    TNavigateData* nd = new TNavigateData();
+    nd->index = index;
+    nd->url = _tcsdup(strJsW.c_str());
+    ::SendMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
+
+	return "";
 }
 
 const char* rho_webview_current_location(int index) 

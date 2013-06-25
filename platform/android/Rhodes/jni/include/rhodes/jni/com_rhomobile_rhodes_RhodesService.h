@@ -117,14 +117,6 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfig
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    isOnStartPage
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPage
-  (JNIEnv *, jclass);
-
-/*
- * Class:     com_rhomobile_rhodes_RhodesService
  * Method:    getInvalidSecurityTokenMessage
  * Signature: ()Ljava/lang/String;
  */
@@ -145,15 +137,7 @@ JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isTitleEnable
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrationId
-  (JNIEnv *, jobject, jstring);
-
-/*
- * Class:     com_rhomobile_rhodes_RhodesService
- * Method:    getPushRegistrationId
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegistrationId
-  (JNIEnv *, jobject);
+  (JNIEnv *, jobject, jstring, jstring);
 
 /*
  * Class:     com_rhomobile_rhodes_RhodesService
@@ -161,7 +145,7 @@ JNIEXPORT jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegistr
  * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
-  (JNIEnv *, jobject, jstring, jstring, jstring);
+  (JNIEnv *, jobject, jstring, jstring);
 
 #ifdef __cplusplus
 }

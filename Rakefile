@@ -105,7 +105,8 @@ class GeneratorTimeChecker
       time_cache_file.close
       
       @@latest_update_time = rhogen_time >= api_time ? rhogen_time : api_time    
-      puts 'cached time=' + @@latest_update_time.to_s
+      puts 'latest_update_time=' + @@latest_update_time.to_s
+      puts "cached_time : #{@@cached_time}"
             
       if @@cached_time < @@latest_update_time
         @@is_run_always = true
@@ -113,17 +114,22 @@ class GeneratorTimeChecker
     else
       @@is_run_always = true
     end
+    
+    @@do_cache = false
   end
   
   def check(xmlpath)
-    @@do_cache = false
-
+    #@@do_cache = false
+    generate_xml = false
+    
     extpath  = File.dirname(xmlpath)
     xml_time = File.mtime(File.new(xmlpath))
     
+    #puts "xmlpath: #{xmlpath}; xml_time : #{xml_time}"
     # for generate in first time
     if @@is_run_always
       @@do_cache = true
+      generate_xml = true
     elsif !(File.exist? File.join(extpath, "shared", "generated"))              ||
        !(File.exist? File.join(extpath, "platform", "android", "generated")) ||
        !(File.exist? File.join(extpath, "platform", "iphone", "generated"))  ||
@@ -132,15 +138,19 @@ class GeneratorTimeChecker
 #       !(File.exist? File.join(extpath, "platform", "wp8", "generated"))     ||
        !(File.exist? File.join(extpath, "..", "public", "api", "generated"))
       @@do_cache = true
+      generate_xml = true
     elsif @@cached_time < xml_time
+      puts "!!!"
       @@do_cache = true
+      generate_xml = true
     end 
     
-    return @@do_cache
+    generate_xml
   end
   
   def update()
     if @@do_cache == false
+      #puts "@@do_cache is FALSE"
       return
     end
     
@@ -381,12 +391,16 @@ def update_rhodefs_header_file
     end
 end
 
+#TODO:  call clean from all platfroms scripts
 namespace "clean" do
   task :common => "config:common" do
     
     if $config["platform"] == "bb"
       return
     end
+    
+    rm_rf File.join($app_path, "bin/tmp") if File.exists? File.join($app_path, "bin/tmp")
+    rm_rf File.join($app_path, "bin/RhoBundle") if File.exists? File.join($app_path, "bin/RhoBundle")
     
     extpaths = $app_config["extpaths"]
       
@@ -415,7 +429,7 @@ namespace "clean" do
            
       unless extpath.nil?
         extyml = File.join(extpath, "ext.yml")
-        puts "extyml " + extyml 
+        #puts "extyml " + extyml 
         
         if File.file? extyml
           extconf = Jake.config(File.open(extyml))
@@ -605,11 +619,13 @@ namespace "config" do
 
     if $app_config["app_type"] == 'rhoelements'
     
-        # add rawsensors extension for rhoelements app
-        if $current_platform == "iphone" || $current_platform == "android"
-            if !$app_config['extensions'].index('rhoelementsext')
-                $app_config["extensions"] += ["rawsensors"] unless $app_config['extensions'].index('rawsensors')
-                $app_config["extensions"] += ["audiocapture"] unless $app_config['extensions'].index('audiocapture')
+        # add rawsensors and audiocapture extensions for rhoelements app
+        if !$app_config['extensions'].index('rhoelementsext')
+            if $current_platform == "iphone"
+                $app_config['extensions'] = $app_config['extensions'] | ['rawsensors']
+            end
+            if $current_platform == "iphone" || $current_platform == "android"
+                $app_config['extensions'] = $app_config['extensions'] | ['audiocapture']
             end
         end
         
@@ -966,7 +982,7 @@ def is_ext_supported(extpath)
     res    
 end
 
-def init_extensions(startdir, dest)
+def init_extensions(dest, mode = "")
   extentries = []
   nativelib = []
   extlibs = []
@@ -978,15 +994,20 @@ def init_extensions(startdir, dest)
   extcsharppaths = []
   extcsharpprojects = []
   extscsharp = nil
-
+  ext_xmls_paths = []
+  
   extpaths = $app_config["extpaths"]  
 
   rhoapi_js_folder = nil
-  unless dest.nil?
+  if !dest.nil?
     rhoapi_js_folder = File.join( File.dirname(dest), "apps/public/api" )
-    puts "rhoapi_js_folder: #{rhoapi_js_folder}"
+    
+  elsif mode == "update_rho_modules_js"
+    rhoapi_js_folder = File.join( $app_path, "public/api" )
+      
   end
-
+  
+  puts "rhoapi_js_folder: #{rhoapi_js_folder}"
   puts 'init extensions'
 
   # TODO: checker init
@@ -1043,7 +1064,8 @@ def init_extensions(startdir, dest)
           end
           
           if $js_application == true
-            if !xml_api_paths.nil?
+            #rhoelementsext for win mobile shared runtime mode only              
+            if !xml_api_paths.nil? || ("rhoelementsext" == extname && $config["platform"] == "wm")
               extentries << entry unless entry.nil?
             else
               puts '********* WARNING *****************************************************************************************************'
@@ -1088,11 +1110,14 @@ def init_extensions(startdir, dest)
             xml_api_paths.each do |xml_api|
               xml_path = File.join(extpath, xml_api.strip())                
               
-              #api generator
-              if gen_checker.check(xml_path)      
-                puts 'start running rhogen with api key'
-                Jake.run3("#{$startdir}/bin/rhogen api #{xml_path}")
-              end
+              ext_xmls_paths <<  xml_path
+              if mode != "get_ext_xml_paths"
+                  #api generator
+                  if gen_checker.check(xml_path)      
+                    puts 'start running rhogen with api key'
+                    Jake.run3("#{$startdir}/bin/rhogen api #{xml_path}")
+                  end
+              end    
             end
             
           end
@@ -1106,8 +1131,12 @@ def init_extensions(startdir, dest)
                 next
               end
               
-              if f.downcase().end_with?("rhoapi.js")
+              if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
+                startJSModules.unshift(f)
+              elsif f.downcase().end_with?("rhoapi.js") 
                 startJSModules << f
+              elsif f.downcase().end_with?("rho.application.js")
+                endJSModules << f
               elsif f.downcase().end_with?("rho.database.js")
                 endJSModules << f
               else
@@ -1123,10 +1152,12 @@ def init_extensions(startdir, dest)
         
       end
       
-      add_extension(extpath, dest) unless dest.nil?  
+      add_extension(extpath, dest) if !dest.nil? && mode == "" 
     end    
   end
 
+  return ext_xmls_paths if mode == "get_ext_xml_paths"
+  
   #TODO: checker update
   gen_checker.update
   
@@ -1151,6 +1182,8 @@ def init_extensions(startdir, dest)
     mkdir_p rhoapi_js_folder
     write_modules_js(File.join(rhoapi_js_folder, "rhoapi-modules.js"), extjsmodulefiles)
   end
+  
+  return if mode == "update_rho_modules_js"
   
   if $config["platform"] != "bb"
     f = StringIO.new("", "w+")
@@ -1304,7 +1337,7 @@ def copy_rhoconfig(source, target)
   end
 end
 
-def common_bundle_start(startdir, dest)
+def common_bundle_start( startdir, dest)
   
   puts "common_bundle_start"
   
@@ -1339,10 +1372,13 @@ def common_bundle_start(startdir, dest)
   chdir start
   clear_linker_settings
 
-  init_extensions(startdir, dest)
+  init_extensions(dest)
 
   chdir startdir
-  cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
+ 
+  if File.exists? app + '/app'
+    cp_r app + '/app',File.join($srcdir,'apps'), :preserve => true
+  end
   
   if File.exists? app + '/public'
     public_folder_cp_r app + '/public', File.join($srcdir,'apps/public'), 0, 1
@@ -1415,10 +1451,14 @@ end
 def create_manifest
     require File.dirname(__FILE__) + '/lib/framework/rhoappmanifest'
     
-    fappManifest = Rho::AppManifest.enumerate_models(File.join($srcdir, 'apps/app'))
-    content = fappManifest.read();
+    if Dir.exists? File.join($srcdir, 'apps/app')
+        fappManifest = Rho::AppManifest.enumerate_models(File.join($srcdir, 'apps/app'))
+        content = fappManifest.read();
+    else
+        content = ""
+    end 
     
-    File.open( File.join($srcdir,'apps/app_manifest.txt'), "w"){|file| file.write(content)}    
+    File.open( File.join($srcdir,'apps/app_manifest.txt'), "w"){|file| file.write(content)}   
 end
 
 def process_exclude_folders(excluded_dirs=[])
@@ -1593,10 +1633,9 @@ namespace "build" do
         process_exclude_folders(excluded_dirs)
         chdir startdir
       
-        create_manifest
-        
       if $js_application == false
-      
+
+        create_manifest
         cp compileERB, $srcdir
         puts "Running default.rb"
 
@@ -1722,6 +1761,33 @@ namespace "build" do
 end
 
 
+task :get_ext_xml_paths, [:platform] do |t,args|
+    throw "You must pass in platform(win32, wm, android, iphone, wp8)" if args.platform.nil?
+
+    $current_platform = args.platform
+
+    config_platform = $current_platform == 'win32' ? 'wm' : $current_platform
+    
+    Rake::Task["config:common"].invoke  
+    
+    res_xmls = init_extensions( nil, "get_ext_xml_paths")
+    
+    puts res_xmls
+end
+
+task :update_rho_modules_js, [:platform] do |t,args|
+    throw "You must pass in platform(win32, wm, android, iphone, wp8)" if args.platform.nil?
+
+    $current_platform = args.platform
+
+    config_platform = $current_platform == 'win32' ? 'wm' : $current_platform
+    
+    Rake::Task["config:common"].invoke  
+    
+    init_extensions( nil, "update_rho_modules_js")
+    
+end
+    
 # Simple rakefile that loads subdirectory 'rhodes' Rakefile
 # run "rake -T" to see list of available tasks
 
@@ -2208,8 +2274,12 @@ namespace "run" do
                         next
                       end
                       
-                      if f.downcase().end_with?("rhoapi.js")
+                      if f.downcase().end_with?("jquery-2.0.2-rho-custom.min.js")
+                        startJSModules.unshift(f)
+                      elsif f.downcase().end_with?("rhoapi.js")
                         startJSModules << f
+                      elsif f.downcase().end_with?("rho.application.js")
+                        endJSModules << f
                       elsif f.downcase().end_with?("rho.database.js")
                         endJSModules << f
                       else

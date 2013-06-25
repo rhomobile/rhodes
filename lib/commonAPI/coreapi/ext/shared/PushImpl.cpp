@@ -27,39 +27,46 @@
 */
 
 #include "Push.h"
-#include "RhoStd.h"
+#include "common/RhoStd.h"
+#include "logging/RhoLog.h"
+#include "sync/RhoconnectClientManager.h"
 
 namespace rho {
 namespace push {
-
-//----------------------------------------------------------------------------------------------------------------------
-class CPushSingleton: public CPushManager {
-    VectorPtr<IPush*> m_clients;
-public:
-    virtual ~CPushSingleton() {}
-    String getInitialDefaultID();
-    void enumerate(rho::apiGenerator::CMethodResult& oResult);
-    void addClient(IPush* pClient) { m_clients.addElement(pClient); }
-    IPush* getClient(const String& id);
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-class CPushFactory : public CPushFactoryBase
-{
-public:
-    virtual ~CPushFactory() {}
-    IPushSingleton* createModuleSingleton()
-    {
-        return new CPushSingleton();
-    }
-    IPush* getModuleByID(const rho::String& strID);
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 CPushManager* CPushManager::getInstance()
 {
     return reinterpret_cast<CPushManager*>(CPushFactoryBase::getInstance()->getModuleSingleton());
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+class CPushSingleton: public CPushManager, public CPushFactoryBase {
+    VectorPtr<CPushClient*> m_clients;
+    DEFINE_LOGCLASS;
+public:
+    virtual ~CPushSingleton() {}
+    String getInitialDefaultID();
+    void enumerate(rho::apiGenerator::CMethodResult& oResult);
+    void addClient(CPushClient* pClient)
+    {
+        m_clients.addElement(pClient);
+        LOG(INFO) + "New push client has added: " + pClient->getId();
+    }
+    void setDeviceId(const String& id, const String& deviceId);
+    void callBack(const String& id, const String& json);
+
+    IPushSingleton* createModuleSingleton()
+    {
+        return this;
+    }
+    CPushClient* getClient(const String& strID);
+    IPush* getModuleByID(const String& strID) { return getClient(strID); }
+
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+IMPLEMENT_LOGCLASS(CPushSingleton, "CPushSingleton");
 
 //----------------------------------------------------------------------------------------------------------------------
 String CPushSingleton::getInitialDefaultID()
@@ -70,9 +77,7 @@ String CPushSingleton::getInitialDefaultID()
     }
     else
     {
-        CMethodResult result;
-        m_clients.front()->getId(result);
-        return result.getString();
+        return m_clients.front()->getId();
     }
 }
 
@@ -80,34 +85,63 @@ String CPushSingleton::getInitialDefaultID()
 void CPushSingleton::enumerate(rho::apiGenerator::CMethodResult& oResult)
 {
     Vector<String> ids;
-    for(VectorPtr<IPush*>::const_iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+    for(VectorPtr<CPushClient*>::const_iterator it = m_clients.begin(); it != m_clients.end(); ++it)
     {
-        CMethodResult result;
-        m_clients.front()->getId(result);
-        ids.push_back(result.getString());
+        ids.push_back((*it)->getId());
     }
     oResult.set(ids);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-IPush* CPushSingleton::getClient(const String& id)
+void CPushSingleton::setDeviceId(const String& id, const String& deviceId)
 {
-    for(VectorPtr<IPush*>::const_iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+    CPushClient* pClient = getClient(id);
+    if(pClient == 0)
     {
-        CMethodResult result;
-        (*it)->getId(result);
-        if(result.getString() == id)
-        {
-            return *it;
-        }
+        LOG(ERROR) + "CPushSingleton::setDeviceId: Unknown push client: " + id;
     }
-    return 0;
+    else
+    {
+        if(rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl())
+        {
+            rho::sync::RhoconnectClientManager::clientRegisterCreate(deviceId.c_str());
+        }
+        pClient->setDeviceId(deviceId);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-IPush* CPushFactory::getModuleByID(const rho::String& strID)
+void CPushSingleton::callBack(const String& id, const String& json)
 {
-    return (reinterpret_cast<CPushSingleton*>(getModuleSingleton()))->getClient(strID);
+    CPushClient* pClient = getClient(id);
+    if(pClient == 0)
+    {
+        LOG(ERROR) + "CPushSingleton::callBack: Unknown push client: " + id;
+    }
+    else
+    {
+        pClient->callBack(json);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+CPushClient* CPushSingleton::getClient(const rho::String& id)
+{
+    LOG(TRACE) + "Looking for push client: " + id;
+    for(VectorPtr<CPushClient*>::iterator it = m_clients.begin(); it != m_clients.end(); ++it)
+    {
+        const String& curId = (*it)->getId();
+
+        LOG(TRACE) + "Push client: " + curId;
+
+        if(curId == id)
+        {
+            LOG(TRACE) + "Returning push client: " + curId;
+            return *it;
+        }
+    }
+    LOG(TRACE) + "Push client has not found";
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -116,7 +150,8 @@ IPush* CPushFactory::getModuleByID(const rho::String& strID)
 
 extern "C" void Init_Push()
 {
-    rho::CPushFactoryBase::setInstance( new rho::push::CPushFactory() );
+    RAWTRACEC("Init_Push", "Creating CPushSingleton...");
+    rho::CPushFactoryBase::setInstance( new rho::push::CPushSingleton() );
     rho::Init_Push_API();
 }
 //----------------------------------------------------------------------------------------------------------------------

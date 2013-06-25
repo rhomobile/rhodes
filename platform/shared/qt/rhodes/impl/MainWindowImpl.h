@@ -74,7 +74,7 @@ public:
     void setCallback(IMainWindowCallback* callback);
     void messageLoop(void);
     void navigate(const wchar_t* url, int index);
-    void GoBack(void);
+    void GoBack(int index);
     void GoForward(void);
     void Refresh(int index);
     int getLogicalDpiX();
@@ -122,6 +122,7 @@ public:
     void exitCommand(void);
     void navigateBackCommand(void);
     void navigateForwardCommand(void);
+    void webviewNavigateBackCommand(int);
     void logCommand(void);
     void refreshCommand(int);
     void navigateCommand(TNavigateData*);
@@ -146,6 +147,7 @@ signals:
     void doExitCommand(void);
     void doNavigateBackCommand(void);
     void doNavigateForwardCommand(void);
+    void doWebviewNavigateBackCommand(int);
     void doLogCommand(void);
     void doRefreshCommand(int);
     void doNavigateCommand(TNavigateData*);

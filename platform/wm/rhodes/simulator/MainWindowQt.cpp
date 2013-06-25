@@ -27,6 +27,7 @@
 #pragma warning(disable:4996)
 
 #include "stdafx.h"
+#include <sstream>
 #include "MainWindowQt.h"
 #include "common/RhoStd.h"
 #include "common/RhodesApp.h"
@@ -231,10 +232,10 @@ void CMainWindow::messageLoop(void)
     qApp->exec();
 }
 
-void CMainWindow::GoBack(void)
+void CMainWindow::GoBack(int index)
 {
     LOG(INFO) + "back";
-    ((QtMainWindow*)qtMainWindow)->GoBack();
+    ((QtMainWindow*)qtMainWindow)->GoBack(index);
 }
 
 void CMainWindow::GoForward(void)
@@ -929,9 +930,9 @@ LRESULT CMainWindow::OnExitCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
     return 0;
 }
 
-LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainWindow::OnNavigateBackCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    GoBack();
+    GoBack((int)hWndCtl);
     return 0;
 }
 
@@ -1008,6 +1009,35 @@ LRESULT CMainWindow::OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HW
     return 0;
 };
 
+void CMainWindow::ProcessTitleChange(LPCTSTR title)
+{
+    LOG(TRACE) + "OnBrowserTitleChange: " + title;
+    //return;
+    String strTitle = RHOCONF().getString("title_text");
+    if ( strTitle.length() > 0 )
+        SetWindowText(convertToStringW(strTitle).c_str());
+    else
+    {
+        LPCTSTR szTitle = title;
+        if ( szTitle && 
+            (_tcsncmp(szTitle, _T("http:"), 5) == 0 || _tcscmp(szTitle, _T("about:blank"))==0 ))
+            return;
+
+        SetWindowText(szTitle);
+    }
+}
+
+LRESULT CMainWindow::OnTitleChangeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
+{
+     LOG(INFO) + "OnTitleChangeCommand";
+
+     ProcessTitleChange((LPCTSTR)hWndCtl);
+
+     free( (void*)(LPCTSTR)hWndCtl );
+
+     return 0;
+}
+
 LRESULT CMainWindow::OnSetCookieCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
     TCookieData* cd = (TCookieData*)hWndCtl;
@@ -1064,11 +1094,11 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         m_SyncStatusDlg->setTitle( convertToStringW(params->m_title).c_str() );
         if ( !m_SyncStatusDlg->m_hWnd )
             m_SyncStatusDlg->Create(m_hWnd, 0);
-        else
-        {
+        //else
+        //{
             m_SyncStatusDlg->ShowWindow(SW_SHOW);
             m_SyncStatusDlg->BringWindowToTop();
-        }
+        //}
     } else if (params->m_dlgType == CAlertDialog::Params::DLG_DEFAULT) {
         MessageBox(convertToStringW(params->m_message).c_str(), strAppName.c_str(), MB_ICONWARNING | MB_OK);
     } else if (params->m_dlgType == CAlertDialog::Params::DLG_CUSTOM) 
@@ -1081,8 +1111,16 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             int nRes = MessageBox(convertToStringW(params->m_message).c_str(), convertToStringW(params->m_title).c_str(), 
                     MB_ICONWARNING | MB_OKCANCEL);
             int nBtn = nRes == IDCANCEL ? 1 : 0;
-            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
-        }
+			CAlertDialog::Params::CAlertButton* cbtn = &(params->m_buttons[nBtn]);
+			rho::Hashtable<rho::String, rho::String> mapRes;
+			std::ostringstream sBtnIndex;
+			sBtnIndex << nBtn;
+			mapRes["button_index"] = sBtnIndex.str();
+			mapRes["button_id"] = cbtn->m_strID;
+			mapRes["button_title"] = cbtn->m_strCaption;
+			params->m_callback_ex.set(mapRes);
+			//RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
+		}
         else
         {
             if (m_alertDialog == NULL) 
@@ -1104,10 +1142,16 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    /* TODO */
-    if (m_alertDialog != NULL) {
+    //Cannot close modal dialog
+    /*if (m_alertDialog != NULL) {
         m_alertDialog->EndDialog(0);
         m_alertDialog = NULL;
+    }*/
+
+    if (m_SyncStatusDlg)
+    {
+        m_SyncStatusDlg->ShowWindow(SW_HIDE);
+
     }
     /*  */
     return 0;

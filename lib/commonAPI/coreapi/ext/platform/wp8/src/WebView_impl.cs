@@ -201,7 +201,7 @@ namespace WebViewImpl
             MainPage mp = getMainPage();
             if (mp != null)
             {
-                waitForBrowserInitialized();
+                //waitForBrowserInitialized(tabIndex);
                 mp.navigate(CRhoRuntime.getInstance().canonicalizeRhoUrl(url), tabIndex);
             }
         }
@@ -254,12 +254,12 @@ namespace WebViewImpl
             // implement this method in C# here
         }
 
-        private void waitForBrowserInitialized()
+        private void waitForBrowserInitialized(int index)
         {
 	        while(true)
 	        {
 		
-	        	if(getMainPage().isBrowserInitialized())
+	        	if(getMainPage().isBrowserInitialized(index))
 			        return;
 		        else
                     System.Threading.Thread.Sleep(100);

@@ -11,6 +11,16 @@
 #endif
 
 extern "C" void rho_sys_app_exit();
+extern "C" void rho_title_change(const int tabIndex, const char* strTitle);
+
+#ifdef APP_BUILD_CAPABILITY_WEBKIT_BROWSER
+extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName);
+#else
+extern "C" const wchar_t* rho_wmimpl_sharedconfig_getvalue(const wchar_t* szName)
+{
+    return L"";
+}
+#endif// !APP_BUILD_CAPABILITY_WEBKIT_BROWSER
 
 namespace rho {
 
@@ -107,6 +117,10 @@ public:
     virtual void setTitle( const rho::String& title, rho::apiGenerator::CMethodResult& oResult)
     {
         RHOCONF().setString("title_text", title, false);
+
+#if defined( OS_WINCE) || defined (OS_WINDOWS_DESKTOP)
+        rho_title_change(0, title.c_str());
+#endif
     }
 
     virtual void getName(rho::apiGenerator::CMethodResult& oResult)
@@ -132,7 +146,7 @@ public:
         rho_impl_setNativeMenu(value);
 #else
 
-        RHODESAPP().getAppMenu().setAppMenuJSONItems(value);
+        RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(value);
         
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
        rho_webview_update_menu(1);
@@ -143,12 +157,9 @@ public:
 
     virtual void getBadLinkURI(rho::apiGenerator::CMethodResult& oResult)
     {
-        //TODO: getBadLinkURI
-    }
-
-    virtual void setBadLinkURI( const rho::String& badLinkURI, rho::apiGenerator::CMethodResult& oResult)
-    {
-        //TODO: setBadLinkURI
+#ifdef OS_WINCE
+        oResult.set( convertToStringA( rho_wmimpl_sharedconfig_getvalue( L"Navigation\\BadLinkURI" ) ) );
+#endif
     }
 
     virtual void modelFolderPath( const rho::String& name, rho::apiGenerator::CMethodResult& oResult)

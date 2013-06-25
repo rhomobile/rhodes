@@ -200,7 +200,8 @@ CJSONEntry CJSONStructIterator::getCurValue() const
 
 String CJSONStructIterator::getCurString() const
 {
-    return getCurValue().getString();
+    const char* szValue = getCurValue().getString();
+    return szValue ? szValue : "";
 }
 
 /////////////////////////////////////////////////////////////////////

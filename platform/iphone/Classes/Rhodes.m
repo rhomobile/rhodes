@@ -65,7 +65,8 @@ void rho_sys_impl_exit_with_errormessage(const char* szTitle, const char* szMsg)
 
 extern int rho_extensions_are_loaded();
 
-
+extern void rho_sysimpl_sethas_network(int value);
+extern void rho_sysimpl_sethas_cellnetwork(int value);
 
 
 #undef DEFAULT_LOGCATEGORY
@@ -123,7 +124,7 @@ static BOOL app_created = NO;
 
 @implementation Rhodes
 
-@synthesize window, player, cookies, signatureDelegate, nvDelegate, mBlockExit;
+@synthesize window, player, cookies, signatureDelegate, nvDelegate, mBlockExit, mNetworkPollCondition;
 
 
 static Rhodes *instance = NULL;
@@ -647,6 +648,8 @@ static Rhodes *instance = NULL;
         rotationLocked = rho_conf_getBool("disable_screen_rotation");
 		
 		NSLog(@"Init network monitor");
+        mNetworkPollCondition = [[NSCondition alloc] init];
+
 		initNetworkMonitoring();
 		[self performSelectorInBackground:@selector(monitorNetworkStatus) withObject:nil];
         
@@ -728,15 +731,28 @@ static Rhodes *instance = NULL;
     NSLog(@"Initialization finished");
 }
 
+- (void) signalNetworkStatusPollIntervalChanged
+{
+    [mNetworkPollCondition signal];
+}
+
+
 - (void) monitorNetworkStatus
 {
-	while(true)
-	{
-		[NSThread sleepForTimeInterval:getNetworkStatusPollInterval()];
-		Reachability* r = [Reachability reachabilityForInternetConnection];
-		networkStatusNotify([r currentReachabilityStatus]==NotReachable?0:1);
-		[r release];
-	}
+    while(true)
+    {
+        Reachability* r = [Reachability reachabilityForInternetConnection];
+        NetworkStatus status = [r currentReachabilityStatus];
+        rho_sysimpl_sethas_network( status==ReachableViaWiFi?1:0 );
+        rho_sysimpl_sethas_cellnetwork( status==ReachableViaWWAN?1:0 );
+        
+        networkStatusNotify(status==NotReachable?0:1);
+        [r release];
+        
+        [mNetworkPollCondition lock];
+        [mNetworkPollCondition waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:getNetworkStatusPollInterval()]];
+        [mNetworkPollCondition unlock];
+    }
 }
 
 #ifdef __IPHONE_3_0
@@ -850,8 +866,11 @@ static Rhodes *instance = NULL;
 	//hack to work around iphone limitation when it will play push alerts only from the main bundle root
 	if ([fileName hasPrefix:@"/public/alerts/"] || [fileName hasPrefix:@"/apps/public/alerts/"]) {
 		NSString *file = [fileName lastPathComponent];
-		soundFilePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:file];		
-	} else {
+		soundFilePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:file];
+    // do not add root path if it is already there
+	} else if ([fileName hasPrefix:[AppManager getApplicationsRootPath]]) {
+        soundFilePath = fileName;
+    } else{
 		soundFilePath = [[AppManager getApplicationsRootPath] stringByAppendingPathComponent:fileName];
 	}
 	NSLog(@"Playing %@: ", soundFilePath);

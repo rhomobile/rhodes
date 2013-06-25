@@ -30,12 +30,23 @@
 #include "common/RhoFilePath.h"
 #include "logging/RhoLog.h"
 
+#ifdef OS_WP8
+extern "C" void recursiveDeleteDirectory(const std::wstring &path);
+#endif
+
 #if !defined(WINDOWS_PLATFORM)
 #include <dirent.h>
 #else
 #  ifndef S_ISDIR
 #    define S_ISDIR(m) ((_S_IFDIR & m) == _S_IFDIR)
 #  endif
+#ifndef S_ISREG
+#   define S_ISREG(m) ((m & S_IFMT) == S_IFREG)
+#endif
+extern "C"{
+#include "win32/dir.h"
+}
+#define dirent direct
 #endif
 
 #undef DEFAULT_LOGCATEGORY
@@ -332,6 +343,15 @@ unsigned int CRhoFile::size(){
 bool CRhoFile::isFileExist( const char* szFilePath ){
     struct stat st;
     memset(&st,0, sizeof(st));
+#if defined(WINDOWS_PLATFORM)
+    String strTemp;
+    if ( szFilePath && *szFilePath && (szFilePath[strlen(szFilePath)-1] == '/' || szFilePath[strlen(szFilePath)-1] == '\\') )
+    {
+        strTemp = szFilePath;
+        strTemp.erase(strTemp.size()-1);
+        szFilePath = strTemp.c_str();
+    }
+#endif
     return stat(szFilePath, &st) == 0;
 }
 
@@ -339,6 +359,17 @@ bool CRhoFile::isDirectory( const char* szFilePath ){
     bool res = false;
     struct stat st;
     memset(&st,0, sizeof(st));
+
+#if defined(WINDOWS_PLATFORM)
+    String strTemp;
+    if ( szFilePath && *szFilePath && (szFilePath[strlen(szFilePath)-1] == '/' || szFilePath[strlen(szFilePath)-1] == '\\') )
+    {
+        strTemp = szFilePath;
+        strTemp.erase(strTemp.size()-1);
+        szFilePath = strTemp.c_str();
+    }
+#endif
+
     if (stat(szFilePath, &st) == 0)
     {
         return S_ISDIR(st.st_mode);
@@ -348,14 +379,13 @@ bool CRhoFile::isDirectory( const char* szFilePath ){
     
 bool CRhoFile::isFile( const char* szFilePath ){
     bool res = false;
-#ifndef WINDOWS_PLATFORM
     struct stat st;
     memset(&st,0, sizeof(st));
     if (stat(szFilePath, &st) == 0)
     {
         return S_ISREG(st.st_mode);
     }
-#endif
+
     return res;
 }
 
@@ -515,8 +545,7 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     
 /*static*/ unsigned int CRhoFile::deleteFolder(const char* szFolderPath) 
 {
-#if !defined(OS_WP8)
-#if defined(WINDOWS_PLATFORM)
+#if defined(WINDOWS_PLATFORM) && !defined(OS_WP8)
 
 	StringW  swPath;
     convertToStringW(szFolderPath, swPath);
@@ -540,6 +569,11 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     delete name;
 
     return result == 0 ? 0 : (unsigned int)-1;
+#elif defined(OS_WP8)
+	StringW  swPath;
+    convertToStringW(szFolderPath, swPath);
+	recursiveDeleteDirectory(swPath);
+	return 0;
 #elif defined (OS_ANDROID)
 
     return iterateFolderTree(String(szFolderPath), RemoveFileFunctor(szFolderPath));
@@ -548,14 +582,10 @@ void CRhoFile::deleteFilesInFolder(const char* szFolderPath)
     rho_file_impl_delete_folder(szFolderPath);
     return 0;
 #endif
-#else
-	return 0;
-#endif
 }
 
 bool CRhoFile::listFolderEntries( const String& path, Vector<String> &entries)
 {
-#ifndef WINDOWS_PLATFORM
     DIR *dp;
     struct dirent *ep;
     dp = opendir (path.c_str());
@@ -564,18 +594,21 @@ bool CRhoFile::listFolderEntries( const String& path, Vector<String> &entries)
     if (dp != 0)
     {
         ret = true;
-        
-        while ( (ep = readdir (dp)) != 0 ) {
-            entries.push_back(ep->d_name);
+#ifdef OS_WINCE
+        entries.push_back(".");
+        entries.push_back("..");
+#endif
+
+        while ( (ep = readdir (dp)) != 0 ) 
+        {
+            if ( ep->d_name && *ep->d_name)
+                entries.push_back(ep->d_name);
         }
         
         closedir(dp);
     }
 
     return ret;
-#else
-    return false;
-#endif
 }
     
 #if defined(WINDOWS_PLATFORM)

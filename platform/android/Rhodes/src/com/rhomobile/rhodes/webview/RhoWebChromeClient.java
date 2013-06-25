@@ -36,9 +36,9 @@ import android.webkit.WebStorage;
 import android.webkit.WebView;
 
 import com.rhomobile.rhodes.Logger;
-import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
 import com.rhomobile.rhodes.extmanager.IRhoExtension;
+import com.rhomobile.rhodes.extmanager.IRhoWebViewConfig;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 
@@ -92,13 +92,13 @@ public class RhoWebChromeClient extends WebChromeClient {
     }
 
     private Activity mActivity;
-    //private SimpleMainView mMainView;
+    private GoogleWebView mWebView;
 
-    public RhoWebChromeClient(Activity activity) {
+    public RhoWebChromeClient(Activity activity, GoogleWebView webView) {
         mActivity = activity;
-        //mMainView = mainView;
+        mWebView = webView;
     }
-
+    
     public void onConsoleMessage(String message, int lineNumber, String sourceID) {
         Logger.D(TAG, message + " -- From line " + lineNumber + " of " + sourceID);
     }
@@ -130,7 +130,7 @@ public class RhoWebChromeClient extends WebChromeClient {
 //    }
 
     public void onProgressChanged(WebView view, int newProgress) {
-        if (!RhoConf.getBool("disable_loading_indication")) {
+        if (mWebView.getConfig() != null && mWebView.getConfig().getBool("enablePageLoadingIndication")) {
             newProgress *= 100;
             if (newProgress < 0)
                 newProgress = 0;
@@ -158,7 +158,7 @@ public class RhoWebChromeClient extends WebChromeClient {
     public boolean onJsPrompt (WebView view, String url, String message, String defaultValue, final JsPromptResult result) {
         PromptResult promptResult = new PromptResult(result);
         RhoExtManager.getImplementationInstance().onPrompt(view, message, defaultValue, promptResult);
-        Logger.T(TAG, "JS Prompt is processing by rhodes: " + promptResult.isPending());
+        Logger.D(TAG, "JS Prompt is processing by rhodes: " + promptResult.isPending());
         return promptResult.isPending();
     }
 

@@ -1,0 +1,84 @@
+require 'fileutils'
+
+def build_extension(name, arch)
+  objects = []
+  mkdir_p $tempdir unless File.exists? $tempdir
+
+  files = []
+  Dir.glob("#{$rootdir}/lib/commonAPI/logCapture/ext/shared/**/*.c").each do |f|
+    files << f
+  end
+  Dir.glob("#{$rootdir}/lib/commonAPI/logCapture/ext/shared/**/*.cpp").each do |f|
+    files << f
+  end
+  files << "#{$rootdir}/lib/commonAPI/logCapture/ext/shared/LogCaptureImpl.cpp"
+
+  files.each do |f|
+    objname = File.join( $tempdir, File.basename( f.gsub(/\.(c|cpp)$/, '.o') ) )
+    objects << ('"'+objname+'"')
+
+    args = []
+    args << "-I."
+    args << "-I\"#{$rootdir}/lib/commonAPI/logCapture/ext/shared\""
+    args << "-I\"#{$rootdir}/lib/commonAPI/logCapture/ext/shared/generated\""
+    args << "-I\"#{$rootdir}/lib/commonAPI/logCapture/ext/shared/generated/cpp\""
+    args << "-I\"#{$rootdir}/platform/shared/common\""
+    args << "-I\"#{$rootdir}/platform/shared/rubyext\""
+    args << "-I\"#{$rootdir}/platform/shared/ruby/include\""
+    args << "-I\"#{$rootdir}/platform/shared/ruby/iphone\""
+    args << "-I\"#{$rootdir}/platform/shared\""
+    args << "-D_XOPEN_SOURCE"
+    args << "-D_DARWIN_C_SOURCE"
+    args << "-DRHODES_EMULATOR"
+    args << "-isysroot \"#{$sdkroot}\""
+    args << "-fno-common"
+    args << "-arch #{arch}"
+    args << "-O2"
+    args << "-o \"#{objname}\""
+    args << "-c"
+    args << f
+    cmdline = $gccbin + ' ' + args.join(' ')
+    puts cmdline
+    puts `#{cmdline}`
+    fail "[#{cmdline}]" unless $? == 0
+  end
+
+  mkdir_p $targetdir unless File.exist? $targetdir
+
+  args = []
+  args << 'rcs'
+  args << File.join( $targetdir, 'lib' + name + '.a' )
+  args += objects
+  cmdline = $arbin + ' ' + args.join(' ')
+  puts cmdline
+  puts `#{cmdline}`
+  fail "[#{cmdline}]" unless $? == 0
+end
+
+namespace "build" do
+  task :config do
+    $platform = ENV['RHO_PLATFORM']
+
+    $targetdir = ENV['TARGET_TEMP_DIR']
+    raise "TARGET_TEMP_DIR is not set" if $targetdir.nil?
+    $tempdir = ENV['TEMP_FILES_DIR']
+    raise "TEMP_FILES_DIR is not set" if $tempdir.nil?
+    $rootdir = ENV['RHO_ROOT']
+    raise "RHO_ROOT is not set" if $rootdir.nil?
+
+    $bindir = ENV['PLATFORM_DEVELOPER_BIN_DIR']
+    raise "PLATFORM_DEVELOPER_BIN_DIR is not set" if $bindir.nil?
+    $sdkroot = ENV['SDKROOT']
+    raise "SDKROOT is not set" if $sdkroot.nil?
+    $arch = ENV['ARCHS']
+    raise "ARCHS is not set" if $arch.nil?
+    $gccbin = $bindir + '/gcc'
+    $arbin = $bindir + '/ar'
+  end
+
+  task :all => :config do
+    build_extension('logCapture', $arch)
+  end
+end
+
+task :default => "build:all"

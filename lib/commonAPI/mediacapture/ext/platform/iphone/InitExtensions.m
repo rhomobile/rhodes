@@ -2,6 +2,7 @@
 #include "common/app_build_capabilities.h"
 
 extern void Init_Camera_API();
+extern void Init_Videocapture_API();
 
 void Init_Mediacapture_extension()
 {
@@ -9,4 +10,5 @@ void Init_Mediacapture_extension()
 #ifndef RHO_NO_RUBY_API
     rb_require("RhoCameraApi");
 #endif
+    Init_Videocapture_API();
 }

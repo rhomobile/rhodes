@@ -37,7 +37,7 @@ namespace rhoruntime
 		int getLogicalDpiY();
         int getScreenWidth();
         int getScreenHeight();
-		bool isBrowserInitialized();
+		bool isBrowserInitialized(int index);
 		::Platform::String^ getScreenOrientation();
 		void bringToFront();
 		void performOnUiThread(int64 native);
@@ -46,6 +46,7 @@ namespace rhoruntime
 		void navigate(::Platform::String^ url, int index);
 		::Platform::String^ executeScript(::Platform::String^ script, int index);
 		void GoBack(void);
+		void GoBack(int index);
 		void GoForward(void);
 		void Refresh(int index);
 		bool isStarted(void);
@@ -59,7 +60,7 @@ namespace rhoruntime
 		void toolbarAddAction(::Platform::String^ text);
 		void toolbarAddAction(::Platform::String^ icon, ::Platform::String^ text, ::Platform::String^ action);
 		void toolbarAddSeparator(void);
-		void setToolbarStyle(bool border, ::Platform::String^ background);
+		void setToolbarStyle(bool border, ::Platform::String^ background, ::Platform::String^ mask);
 		// menu
 		void menuClear(void);
 		void menuAddAction(::Platform::String^ text, int item);

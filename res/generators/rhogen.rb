@@ -73,7 +73,7 @@ module Rhogen
       generated_uuid = puuid.generate
       @productid = generated_uuid
       @uid = '0x'+(0xE0000000 + rand(0xFFFFFFF)).to_s(16)
-      @rhoconnectclient_ext = ', "rhoconnect-client"' unless norhoconnect
+      @rhoconnectclient_ext = '"rhoconnect-client"' unless norhoconnect
       template.source = 'build.yml'
       template.destination = "#{name}/build.yml"
     end
@@ -1046,7 +1046,7 @@ module Rhogen
     $possible_attributes["PARAM"] = ["name", "nativeName", "type", "propertyHash", "default"]
     $possible_attributes["RETURN"] = ["type"]
     $possible_attributes["CALLBACK"] = ["type"]
-    $possible_attributes["APPLIES"] = ["msiOnly"]
+    $possible_attributes["APPLIES"] = ["msiOnly", "rubyOnly", "jsOnly"]
 
     $possible_children = {}
     $possible_children["API"] = ["MODULE"]
@@ -1055,13 +1055,13 @@ module Rhogen
     $possible_children["CONSTANTS"] = ["CONSTANT"]
     $possible_children["CONSTANT"] = ["DESC"]
     $possible_children["PROPERTIES"] = ["DESC", "PROPERTY", "ALIASES"]
-    $possible_children["PROPERTY"] = ["DESC", "VALUES", "PLATFORM", "MORE_HELP", "APPLIES", "VER_INTRODUCED"]
+    $possible_children["PROPERTY"] = ["DESC", "VALUES", "PLATFORM", "MORE_HELP", "APPLIES", "VER_INTRODUCED", "APPLIES"]
     $possible_children["VALUES"] = ["VALUE"]
     $possible_children["VALUE"] = ["DESC"]
     $possible_children["ALIASES"] = ["ALIAS"]
     $possible_children["ALIAS"] = ["DESC"]
     $possible_children["METHODS"] = ["METHOD", "ALIASES" ]
-    $possible_children["METHOD"] = ["DESC", "PARAMS", "RETURN", "CALLBACK", "PLATFORM", "MORE_HELP", "APPLIES", "VER_INTRODUCED", "BACKWARDS_COMPATIBILITY"]
+    $possible_children["METHOD"] = ["DESC", "PARAMS", "RETURN", "CALLBACK", "PLATFORM", "MORE_HELP", "APPLIES", "VER_INTRODUCED", "BACKWARDS_COMPATIBILITY", "APPLIES"]
     $possible_children["PARAMS"] = ["PARAM"]
     $possible_children["PARAM"] = ["DESC", "PARAM", "PARAMS", "VALUES", "CAN_BE_NIL"]
     $possible_children["RETURN"] = ["DESC", "PARAM", "PARAMS"]

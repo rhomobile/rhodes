@@ -102,6 +102,19 @@ void CAppMenu::addAppMenuItem( const String& strLabel, const String& strLink, bo
       	m_arAppMenuItems.push_back(CAppMenuItem(strLabel, strLink));
 }
 
+/*void CAppMenu::getMenuItems(rho::Vector< Hashtable<String, String> >& arRes )
+{
+    rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
+    copyMenuItems(arAppMenuItems, false);
+
+    for ( int i = 0; i < (int)arAppMenuItems.size(); i++)
+    {
+        Hashtable<String, String> hash;
+        hash[arAppMenuItems[i].m_strLabel] = arAppMenuItems[i].m_strLink;
+        arRes.addElement(hash);
+    }
+}*/
+
 void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, bool bLeftMenu )
 {
     rho::Vector<rho::common::CAppMenuItem> arAppMenuItems;
@@ -116,7 +129,6 @@ void CAppMenu::getMenuItemsEx(rho::Vector< Hashtable<String, String> >& arRes, b
         arRes.addElement(hash);
     }
 }
-
 void CAppMenu::getMenuButtonEx(Hashtable<String, String>& hashRes, bool bLeftItem/* = false*/)
 {
     CAppMenuItem oItem = bLeftItem ? getLeftButton() : getRightButton();
@@ -197,26 +209,6 @@ CAppMenuItem CAppMenu::getRightButton()
     }
 }
 
-void CAppMenu::setAppMenuJSONItems( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
-{
-    synchronized(m_mxAppMenu) 
-	{
-        if ( bLeftMenu )
-		    m_arAppLeftMenuItems.clear();
-        else
-            m_arAppMenuItems.clear();
-
-        RHODESAPP().setAppBackUrl("");
-        for (int i = 0; i < (int)arMenu.size(); i++)
-        {
-            rho::json::CJSONStructIterator oIter(arMenu[i].c_str());
-            String strKey = oIter.getCurKey();
-            String strValue = oIter.getCurValue().isNull() ? "" : oIter.getCurString();
-            addAppMenuItem( strKey, strValue, bLeftMenu );
-        }
-    }
-}
-
 void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bool bLeftMenu/* = false*/ )
 {
     synchronized(m_mxAppMenu) 
@@ -253,12 +245,9 @@ void CAppMenu::setAppMenuJSONItemsEx( const rho::Vector<rho::String>& arMenu, bo
 
             addAppMenuItem( label, action, bLeftMenu );
 
-            bool isDisable = (bool)(disable == "false");
+            bool isDisable = (bool)(disable == "true");
+            setEnableMenuItem(label, !isDisable, bLeftMenu);
 
-            if ( bLeftMenu )
-                setEnableMenuItem(label, isDisable, true);
-            else
-                setEnableMenuItem(label, isDisable, false);
         }
 #ifdef OS_WP8
 		createMenu();
@@ -283,7 +272,7 @@ CAppMenuItem::CAppMenuItem (const String& strLabel, const String& strLink)
 	m_strLink  = strLink;
     m_isEnable = true;
 	
-	if (strLabel == "separator")
+	if (strLabel == "separator" || strLink == "separator")
 		m_eType = emtSeparator;
 /*	else if (strLink == "home")
 		m_eType = emtHome;
