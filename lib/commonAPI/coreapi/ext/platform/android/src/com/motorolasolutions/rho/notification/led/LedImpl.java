@@ -57,7 +57,7 @@ public class LedImpl implements ILed
         notif.flags = Notification.FLAG_SHOW_LIGHTS;
         notif.ledOnMS = 1;
         notif.ledOffMS = 0;
-        mNotificationId = System.currentTimeMillis();
+        mNotificationId = (int)System.currentTimeMillis();
         nm.notify(mNotificationId, notif);
     }
     
@@ -97,7 +97,7 @@ public class LedImpl implements ILed
         notif.flags = Notification.FLAG_SHOW_LIGHTS;
         notif.ledOnMS = msOn;
         notif.ledOffMS = msOff;
-        mNotificationId = System.currentTimeMillis();
+        mNotificationId = (int)System.currentTimeMillis();
         nm.notify(mNotificationId, notif);
         
         mCancelHandler.postDelayed(
