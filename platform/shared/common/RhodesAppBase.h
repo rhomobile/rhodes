@@ -83,7 +83,6 @@ public:
     const String& getDBDirPath(){return m_strDBDirPath; }
     const String& getHomeUrl(){ return m_strHomeUrl; }
 
-    String canonicalizeRhoPath(const String& strPath) const;
     String canonicalizeRhoUrl(const String& strUrl) const;
 
     boolean isBaseUrl(const String& strUrl);
@@ -169,7 +168,6 @@ int rho_sys_set_do_not_bakup_attribute(const char* path, int value);
 void rho_net_request_with_data(const char *url, const char *str_body);
     
 const char* rho_app_canonicalize_rho_url(const char* url);
-const char* rho_app_canonicalize_rho_path(const char* path);
 
 	
 #ifdef __cplusplus
