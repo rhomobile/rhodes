@@ -524,8 +524,9 @@ namespace rhodes
             // TODO: implement setToolbarStyle
             if(background != "")
                 ApplicationBar.BackgroundColor = getColorFromString(background);
-            if(mask != "")
-                ApplicationBar.ForegroundColor = getColorFromString(mask);
+            //implement opacity for pictures
+            //if(mask != "")
+            //    ApplicationBar.ForegroundColor = getColorFromString(mask);
         }
 
         private void toolbarButton_Click(object sender, EventArgs e)
