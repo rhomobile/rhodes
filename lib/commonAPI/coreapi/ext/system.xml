@@ -200,6 +200,7 @@
             </ALIASES>
             <METHOD name="applicationInstall">
                 <DESC>Install an application.</DESC>
+                <PLATFORM>WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationUrl" type="STRING">
                         <DESC>The url of an application to install on the device.</DESC>
@@ -219,7 +220,7 @@
             </METHOD>
             <METHOD name="applicationUninstall">
                 <DESC>Uninstall the application.</DESC>
-                <PLATFORM>WM, Win32, Android, WP8</PLATFORM>
+                <PLATFORM>WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
                         <DESC>The name of the application.</DESC>
