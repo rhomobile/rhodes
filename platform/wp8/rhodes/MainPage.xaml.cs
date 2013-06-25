@@ -25,6 +25,7 @@
 *------------------------------------------------------------------------*/
 using System;
 using System.Collections.Generic;
+using Microsoft.Phone.Info;
 using System.Threading;
 using System.Windows;
 using Microsoft.Devices;
@@ -84,6 +85,11 @@ namespace rhodes
         static public MainPage getInstance()
         {
             return _instance;
+        }
+
+        public bool isEmulator() 
+        {
+            return DeviceStatus.DeviceName.Contains("Emulator") == true ? true : false;
         }
 
         public MainPage()
