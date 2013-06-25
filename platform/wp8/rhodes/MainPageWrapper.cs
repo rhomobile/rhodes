@@ -28,6 +28,7 @@ namespace rhodes
         public void GoForward() { _mainPage.GoForward(); }
         public void Refresh(int index) { _mainPage.Refresh(index); }
         public bool isStarted() { return _mainPage.isStarted(); }
+        public bool isEmulator() { return _mainPage.isEmulator(); }
         public string getCurrentURL(int index) { return _mainPage.getCurrentURL(index); }
 		// toolbar
         public void toolbarRemoveAllButtons() { _mainPage.toolbarRemoveAllButtons(); }
