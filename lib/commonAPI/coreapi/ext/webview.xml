@@ -235,7 +235,7 @@
             <METHOD name="setCookie">
                 <DESC>When WebView loads the specified url (either by selecting link or from calling WebView.navigate), it will add this cookie to the HTTP request.Not implemented for Motorola Solutions' WebKit.</DESC>
                 <APPLIES rubyOnly="true"/>
-                <PLATFORM>Android, Win32, iOS, WP8</PLATFORM>
+                <PLATFORM>Android, Win32, iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>Set a cookie to be used by WebView for this url.</DESC>
