@@ -53,9 +53,16 @@ namespace rhodes
         private double _screenPhysicalWidth;
         private double _screenPhysicalHeight;
         private bool _isBrowserInitialized = false;
+
+        //QUICK FIX
+        //REDESIGN IT!!! join all this maps into one map with int key and object value
+        //(create tabProps object for reload, init uries, loaded states e.t.c)
         private Dictionary<int, bool> tbInitMap = new Dictionary<int, bool>();
         private Dictionary<int, string> tbInitUri = new Dictionary<int, string>();
         private Dictionary<int, bool> tbLoadedMap = new Dictionary<int, bool>();
+        //REDESIGN IT!!! join all this maps into one map with int key and object value
+        //(create tabProps object for reload, init uries, loaded states e.t.c)
+
         private string initUri = "";
         private PageOrientation _screenOrientation = PageOrientation.None;
         // menu items hash table
