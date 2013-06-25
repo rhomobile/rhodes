@@ -25,6 +25,7 @@
 *------------------------------------------------------------------------*/
 using System;
 using System.Collections.Generic;
+using Microsoft.Phone.Info;
 using System.Threading;
 using System.Windows;
 using Microsoft.Devices;
@@ -53,8 +54,16 @@ namespace rhodes
         private double _screenPhysicalWidth;
         private double _screenPhysicalHeight;
         private bool _isBrowserInitialized = false;
+
+        //QUICK FIX
+        //REDESIGN IT!!! join all this maps into one map with int key and object value
+        //(create tabProps object for reload, init uries, loaded states e.t.c)
         private Dictionary<int, bool> tbInitMap = new Dictionary<int, bool>();
         private Dictionary<int, string> tbInitUri = new Dictionary<int, string>();
+        private Dictionary<int, bool> tbLoadedMap = new Dictionary<int, bool>();
+        //REDESIGN IT!!! join all this maps into one map with int key and object value
+        //(create tabProps object for reload, init uries, loaded states e.t.c)
+
         private string initUri = "";
         private PageOrientation _screenOrientation = PageOrientation.None;
         // menu items hash table
@@ -76,6 +85,11 @@ namespace rhodes
         static public MainPage getInstance()
         {
             return _instance;
+        }
+
+        public bool isEmulator() 
+        {
+            return DeviceStatus.DeviceName.Contains("Emulator") == true ? true : false;
         }
 
         public MainPage()
@@ -255,15 +269,15 @@ namespace rhodes
         public void GoBack(int index)
         {
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { GoBack(index); }); return; }
-            if ((TabbarPivot.Items.Count == 0) || (index < 0) || (index >= TabbarPivot.Items.Count))
+            if ((TabbarPivot.Items.Count == 0)/* || (index < 0) || (index >= TabbarPivot.Items.Count)*/)
             {
                 if (RhodesWebBrowser.CanGoBack)
                     RhodesWebBrowser.GoBack();
             }
             else
             {
-                if (((WebBrowser)((PivotItem)TabbarPivot.Items[index]).Content).CanGoBack)
-                    ((WebBrowser)((PivotItem)TabbarPivot.Items[index]).Content).GoBack();
+                if (((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).CanGoBack)
+                    ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).GoBack();
             }
         }
 
@@ -336,7 +350,8 @@ namespace rhodes
 
         private void RhodesWebBrowser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
+            String url = getCurrentURLFunc(-1);
+            CRhoRuntime.getInstance().onWebViewUrlChanged(url);
         }
 
         private void RhodesWebBrowser_NavigationFailed(object sender, System.Windows.Navigation.NavigationFailedEventArgs e)
@@ -346,7 +361,8 @@ namespace rhodes
            
         private void RhodesWebBrowser_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            CRhoRuntime.getInstance().onWebViewUrlChanged(getCurrentURLFunc(-1));
+            String url = getCurrentURLFunc(-1);
+            CRhoRuntime.getInstance().onWebViewUrlChanged(url);
             int index = (sender as WebBrowser).TabIndex;
             if (index > -1 && !tbInitMap[index])
             {
@@ -358,6 +374,14 @@ namespace rhodes
             {
                 _isBrowserInitialized = true;
                 navigate(initUri, -1);
+            }
+            else
+            {
+                if (TabbarPivot.Items.Count > 0 && url.Contains("about:blank") == false)
+                {
+                    if (tbLoadedMap[index] == false)
+                        tbLoadedMap[index] = true;
+                }
             }
         }
 
@@ -506,8 +530,9 @@ namespace rhodes
             // TODO: implement setToolbarStyle
             if(background != "")
                 ApplicationBar.BackgroundColor = getColorFromString(background);
-            if(mask != "")
-                ApplicationBar.ForegroundColor = getColorFromString(mask);
+            //implement opacity for pictures
+            //if(mask != "")
+            //    ApplicationBar.ForegroundColor = getColorFromString(mask);
         }
 
         private void toolbarButton_Click(object sender, EventArgs e)
@@ -680,6 +705,7 @@ namespace rhodes
             //else
             //{
             tbInitMap[TabbarPivot.Items.Count] = false;
+            tbLoadedMap[TabbarPivot.Items.Count] = false;
             WebBrowser wv = new WebBrowser();
             wv.Height = double.NaN;
             wv.Width = double.NaN;
@@ -710,11 +736,11 @@ namespace rhodes
             TabbarPivot.Items.Add(tab);   
              
             //return TabbarPivot.Items.Count-1;          
-        }     
+        }
 
         private void TabbarPivot_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count))
+            if ((TabbarPivot.Items.Count > 0) && (TabbarPivot.SelectedIndex >= 0) && (TabbarPivot.SelectedIndex < TabbarPivot.Items.Count) && (tbLoadedMap[TabbarPivot.SelectedIndex] == false))
                 CRhoRuntime.getInstance().onTabbarCurrentChanged(TabbarPivot.SelectedIndex, ((string)((PivotItem)TabbarPivot.Items[TabbarPivot.SelectedIndex]).Tag));
         }
 
@@ -896,11 +922,11 @@ namespace rhodes
                     exception = ex;
                 }
                 waitEvent.Set();
-            });
+            });  
             
             waitEvent.WaitOne();
             if (exception != null)
-                throw exception;
+                throw exception; 
 
             return return_value;
         }

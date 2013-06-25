@@ -56,7 +56,7 @@ extern "C" void Init_CoreAPI_Extension()
 #endif
 
 
-#if defined(OS_WINCE)
+#if defined(OS_WINCE) || defined(OS_ANDROID)
 	Init_Led();
 #endif
 
