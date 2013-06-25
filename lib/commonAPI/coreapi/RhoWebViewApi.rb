@@ -25,8 +25,7 @@
 #------------------------------------------------------------------------
 
 
-if Rho::System.isRhoSimulator || System.get_property('platform') == 'APPLE' || System.get_property('platform') == 'WINDOWS' || System.get_property('platform') == 'WINDOWS_DESKTOP' || System.get_property('platform') == 'WP8' || System.get_property('platform') == 'ANDROID'
- class WebView
+class WebView
     class << self
         alias_method :orig_execute_js, :execute_js
     end
@@ -44,31 +43,20 @@ if Rho::System.isRhoSimulator || System.get_property('platform') == 'APPLE' || S
     end
     
     def self.set_menu_items(items)
-        ar = []
+    
+        return if items.nil?()
         
-        items.each do |key, value|
-            ar << {key=>value}
+        ar = items
+        if ar.is_a?(Hash)
+            #Backward compatibility with rhodes 3.5
+            ar = []
+            
+            items.each do |key, value|
+                ar << {:label=>key, :action=>value}
+            end
         end
         
         Rho::Application.nativeMenu = ar
     end
- end
-else
- module WebView
-    class << self
-        alias_method :orig_execute_js, :execute_js
-    end
-    
-    def self.execute_js(func, index = -1, vals = nil)
-        if (vals && 0 < vals.size)
-            func += '('
-            vals.each do |val|
-                func += val
-                func += ',' if val != vals.last
-            end
-            func += ');'
-        end
-        orig_execute_js(func, index)
-    end
- end
 end
+

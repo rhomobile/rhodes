@@ -715,7 +715,6 @@ namespace "config" do
     end #task :extensions
 
     task :emulator => "config:android" do
-      $device_flag = "-e"
       $emuversion = $app_config["android"]["version"] unless $app_config["android"].nil?
       $emuversion = $config["android"]["version"] if $emuversion.nil? and !$config["android"].nil?
 
@@ -743,8 +742,6 @@ namespace "config" do
     end # task 'config:android:emulator'
 
     task :device => "config:android" do
-      $device_flag = "-d"
-
     end
   end #namespace 'config:android'  
 end
@@ -1218,7 +1215,7 @@ namespace "build" do
       args << "-I\"#{$shareddir}/curl/include\""
       args << "-I\"#{$shareddir}/ruby/include\""
       args << "-I\"#{$shareddir}/ruby/android\""
-      args << "-I\"#{$commonapidir}\""
+      args << "-I\"#{$coreapidir}\""
       args << "-I\"#{$std_includes}\"" unless $std_includes.nil?
       args << "-D__SGI_STL_INTERNAL_PAIR_H" if USE_OWN_STLPORT
       args << "-D__NEW__" if USE_OWN_STLPORT
@@ -1999,189 +1996,119 @@ end
 #  end
 #end
 
+def run_as_spec(device_flag)
+
+  Rake::Task["device:android:debug"].invoke
+
+  if device_flag == '-e'
+    Rake::Task["config:android:emulator"].invoke
+  else
+    Rake::Task["config:android:device"].invoke
+  end
+
+  log_name = $app_path + '/RhoLogSpec.txt'
+  File.delete(log_name) if File.exist?(log_name)
+
+  AndroidTools.logclear(device_flag)
+  AndroidTools.run_emulator(:hidden => true) if device_flag == '-e'
+  do_uninstall(device_flag)
+
+  # Failsafe to prevent eternal hangs
+  Thread.new {
+    sleep 2000
+    if device_flag == '-e'
+      AndroidTools.kill_adb_and_emulator
+    else
+      AndroidTools.kill_adb_logcat device_flag, log_name
+    end
+  }
+
+  apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
+  AndroidTools.load_app_and_run(device_flag, apkfile, $app_package_name)
+  AndroidTools.logcat(device_flag, log_name)
+
+  Jake.before_run_spec
+  start = Time.now
+
+  puts "waiting for application"
+
+  for i in 0..60
+    if AndroidTools.application_running(device_flag, $app_package_name)
+      break
+    else
+      sleep(1)
+    end
+  end
+
+  puts "waiting for log: " + log_name
+
+  for i in 0..120
+    if !File.exist?(log_name)
+      sleep(1)
+    else
+      break
+    end
+  end
+
+  if !File.exist?(log_name)
+    puts "Can not read log file: " + log_name
+    exit(1)
+  end
+
+  puts "start read log"
+
+  io = File.new(log_name, 'r:UTF-8')
+  end_spec = false
+  while !end_spec do
+
+    io.each do |line|
+      #puts line
+
+      if line.class.method_defined? "valid_encoding?"
+        end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
+      else
+        end_spec = !Jake.process_spec_output(line)
+      end
+      break if end_spec
+    end
+
+    break unless AndroidTools.application_running(device_flag, $app_package_name)
+    sleep(5) unless end_spec
+  end
+  io.close
+
+  Jake.process_spec_results(start)
+
+  # stop app
+  do_uninstall(device_flag)
+  if device_flag == '-e'
+    AndroidTools.kill_adb_and_emulator
+  else
+    AndroidTools.kill_adb_logcat(device_flag, log_name)
+  end
+
+  $stdout.flush
+end
+
 namespace "run" do
   namespace "android" do
+    namespace "emulator" do
+      task :spec do
+        Jake.decorate_spec {run_as_spec '-e'}
+      end
+    end
+
+    namespace "device" do
+      task :spec do
+        Jake.decorate_spec {run_as_spec '-d'}
+      end
+    end
+
+    task :spec => "run:android:emulator:spec" do
+    end
 
     task :get_log => "config:android" do
       puts "log_file=" + $applog_path
-    end
-
-    task :spec => ["device:android:debug"] do
-
-      if $device_flag == '-e'
-        Rake::Task["config:android:emulator"].invoke
-      else
-        Rake::Task["config:android:device"].invoke
-      end
-
-      log_name = $app_path + '/RhoLogSpec.txt'
-      File.delete(log_name) if File.exist?(log_name)
-
-      AndroidTools.logclear($device_flag)
-      AndroidTools.run_emulator(:hidden => true) if $device_flag == '-e'
-      do_uninstall($device_flag)
-
-      # Failsafe to prevent eternal hangs
-      Thread.new {
-        sleep 2000
-        if $device_flag == '-e'
-          AndroidTools.kill_adb_and_emulator
-        else
-          AndroidTools.kill_adb_logcat $device_flag, log_name
-        end
-      }
-
-      apkfile = File.expand_path(File.join $targetdir, $appname + "-debug.apk")
-      AndroidTools.load_app_and_run($device_flag, apkfile, $app_package_name)
-      AndroidTools.logcat($device_flag, log_name)
-
-      Jake.before_run_spec
-      start = Time.now
-
-      puts "waiting for application"
-
-      for i in 0..60
-        if AndroidTools.application_running($device_flag, $app_package_name)
-          break
-        else
-          sleep(1)
-        end
-      end
-
-      puts "waiting for log: " + log_name
-
-      for i in 0..120
-        if !File.exist?(log_name)
-          sleep(1)
-        else
-          break
-        end
-      end
-
-      if !File.exist?(log_name)
-        puts "Can not read log file: " + log_name
-        exit(1)
-      end
-
-      puts "start read log"
-
-      io = File.new(log_name, 'r:UTF-8')
-      end_spec = false
-      while !end_spec do
-
-        io.each do |line|
-          #puts line
-
-          if line.class.method_defined? "valid_encoding?"
-            end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
-          else
-            end_spec = !Jake.process_spec_output(line)
-          end
-          break if end_spec
-        end
-
-        break unless AndroidTools.application_running($device_flag, $app_package_name)
-        sleep(5) unless end_spec
-      end
-      io.close
-
-      Jake.process_spec_results(start)
-
-      # stop app
-      do_uninstall($device_flag)
-      if $device_flag == '-e'
-        AndroidTools.kill_adb_and_emulator
-      else
-        AndroidTools.kill_adb_logcat($device_flag, log_name)
-      end
-
-      $stdout.flush
-    end
-
-    task :phone_spec => "phone_spec:emulator"
-
-    task :js_spec => "js_spec:emulator"
-
-    task :framework_spec => "framework_spec:emulator"
-
-    namespace "phone_spec" do
-      task :device do
-        $device_flag = '-d'
-        Jake.run_spec_app('android', 'phone_spec')
-        unless $dont_exit_on_failure
-          exit 1 if $total.to_i==0
-          exit $failed.to_i
-        end
-      end
-
-      task :emulator do
-        $device_flag = '-e'
-        Jake.run_spec_app('android', 'phone_spec')
-        unless $dont_exit_on_failure
-          exit 1 if $total.to_i==0
-          exit $failed.to_i
-        end
-      end
-    end
-
-    namespace "js_spec" do
-      task :device do
-        $device_flag = '-d'
-        Jake.run_spec_app('android', 'js_spec')
-        unless $dont_exit_on_failure
-          exit 1 if $total.to_i==0
-          exit $failed.to_i
-        end
-      end
-
-      task :emulator do
-        $device_flag = '-e'
-        Jake.run_spec_app('android', 'js_spec')
-        unless $dont_exit_on_failure
-          exit 1 if $total.to_i==0
-          exit $failed.to_i
-        end
-      end
-    end
-
-
-    namespace "framework_spec" do
-      task :device do
-        $device_flag = '-d'
-        Jake.run_spec_app('android', 'framework_spec')
-        unless $dont_exit_on_failure
-          exit 1 if $total.to_i==0
-          exit $failed.to_i
-        end
-      end
-
-      task :emulator do
-        $device_flag = '-e'
-        Jake.run_spec_app('android', 'framework_spec')
-        unless $dont_exit_on_failure
-          exit 1 if $total.to_i==0
-          exit $failed.to_i
-        end
-      end
-    end
-
-    task :allspecs do
-      $dont_exit_on_failure = true
-      Rake::Task['run:android:phone_spec'].invoke
-      Rake::Task['run:android:framework_spec'].invoke
-      failure_output = ""
-      if $failed.to_i > 0
-        failure_output = ""
-        failure_output += "phone_spec failures:\n\n" + File.open(app_expanded_path('phone_spec') + "/faillog.txt").read if File.exist?(app_expanded_path('phone_spec') + "/faillog.txt")
-        failure_output += "framework_spec failures:\n\n" + File.open(app_expanded_path('framework_spec') + "/faillog.txt").read if File.exist?(app_expanded_path('framework_spec') + "/faillog.txt")
-        chdir basedir
-        File.open("faillog.txt", "w") { |io| failure_output.each { |x| io << x } }
-      end
-      puts "Agg Total: #{$total}"
-      puts "Agg Passed: #{$passed}"
-      puts "Agg Failed: #{$failed}"
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
     end
 
     task :emulator => ['config:android:emulator', 'device:android:debug'] do

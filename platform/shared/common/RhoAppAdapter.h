@@ -54,9 +54,12 @@ static void   loadServerSources(const String& strSources);
 static void   loadAllSyncSources();
 static const char* getRhoDBVersion();
 static void   resetDBOnSyncUserChanged();
-	
+static bool   callCallbackOnSyncUserChanged();
+
 };
 extern const _CRhoAppAdapter& RhoAppAdapter;
 }
+
+extern "C" int  rho_ruby_is_started();
 
 #endif //_RHOAPPADAPTER_H_

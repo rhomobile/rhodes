@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
+import com.rhomobile.rhodes.extmanager.IRhoWebViewConfig;
 import com.rhomobile.rhodes.osfunctionality.AndroidFunctionalityManager;
 import com.rhomobile.rhodes.osfunctionality.OsVersionManager;
 import com.rhomobile.rhodes.util.PerformOnUiThread;
@@ -23,20 +24,24 @@ public class GoogleWebView implements IRhoWebView {
     private static final String TAG = GoogleWebView.class.getSimpleName(); 
 
     private WebChromeClient mChromeClient;
-    private static WebViewClient mWebViewClient;
+    private WebViewClient mWebViewClient;
     private static Boolean mInitialized = false;
 
     private android.webkit.WebView mWebView;
     private ViewGroup mContainerView;
     private TextZoom mTextZoom = TextZoom.NORMAL;
+    private IRhoWebViewConfig mConfig;
 
     public GoogleWebView(Activity activity) {
+        mWebView = new android.webkit.WebView(activity);
         synchronized(mInitialized) {
             if (!mInitialized) {
+                mWebView.clearCache(true);
                 initWebStuff(activity);
             }
         }
-        mWebView = new android.webkit.WebView(activity);
+        mWebViewClient = new RhoWebViewClient(this);
+        mChromeClient = new RhoWebChromeClient(activity, this);
     }
 
     private static void initWebStuff(Activity activity) {
@@ -49,14 +54,16 @@ public class GoogleWebView implements IRhoWebView {
         OsVersionManager.registerSelector(Build.VERSION_CODES.FROYO, IWebSettingsProvider.class, WebSettingsProviderFroyo.class.getCanonicalName());
         OsVersionManager.registerSelector(Build.VERSION_CODES.JELLY_BEAN, IWebSettingsProvider.class, WebSettingsProviderJellyBean.class.getCanonicalName());
 
-        mWebViewClient = new RhoWebViewClient();
         mInitialized = true;
     }
     
     public void applyWebSettings() {
+        Logger.T(TAG, "applyWebSettings");
         PerformOnUiThread.exec(new Runnable() {
             @Override
             public void run() {
+                Logger.T(TAG, "Web settings is applying now");
+
                 mWebView.setVerticalScrollBarEnabled(true);
                 mWebView.setHorizontalScrollBarEnabled(true);
                 mWebView.setVerticalScrollbarOverlay(true);
@@ -64,28 +71,31 @@ public class GoogleWebView implements IRhoWebView {
                 mWebView.setFocusableInTouchMode(true);
 
                 IWebSettingsProvider provider = OsVersionManager.getFeature(IWebSettingsProvider.class);
-                provider.fillSettings(mWebView.getSettings());
-
-                if (mChromeClient != null) {
-                    mWebView.setWebChromeClient(mChromeClient);
-                }
-                mWebView.setWebViewClient(mWebViewClient);
-                mWebView.clearCache(true);
+                provider.fillSettings(mWebView.getSettings(), mConfig);
             }
         });
     }
 
     @Override
-    public void setWebClient(Activity activity) {
-        Logger.I(TAG, "Creating new RhoWebChromeClient");
-        mChromeClient = new RhoWebChromeClient(activity);
+    public void setWebClient() {
         PerformOnUiThread.exec(new Runnable() {
             @Override
             public void run() {
-                Logger.I(TAG, "Setting RhoWebChromeClient");
+                Logger.I(TAG, "Setting RhoWebChromeClient and RhoWebViewClient");
                 mWebView.setWebChromeClient(mChromeClient);
+                mWebView.setWebViewClient(mWebViewClient);
             }
         });
+    }
+    
+    @Override
+    public void setConfig(IRhoWebViewConfig config) {
+        mConfig = config;
+        applyWebSettings();
+    }
+    
+    public IRhoWebViewConfig getConfig() {
+        return mConfig;
     }
 
     @Override
@@ -222,10 +232,10 @@ public class GoogleWebView implements IRhoWebView {
     @Override
     public void capture(CaptureFormat format, String path) {
         switch (format) {
-        case CAPTURE_FORMAT_HTML:
+        /*case CAPTURE_FORMAT_HTML:
             Logger.T(TAG, "Capturing current page as HTML archive: " + path);
             mWebView.saveWebArchive(path);
-            break;
+            break;*/
         case CAPTURE_FORMAT_JPEG:
             Logger.T(TAG, "Capturing current page as JPEG image: " + path);
             saveJpeg(path);

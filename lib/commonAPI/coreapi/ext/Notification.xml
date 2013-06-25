@@ -1,33 +1,18 @@
 <?xml version = "1.0"?>
 <API>
 	<MODULE name="Notification" parent="Rho">
-		<HELP_OVERVIEW></HELP_OVERVIEW>
+		<HELP_OVERVIEW>The Notification API allows you to provide feedback to the user, either auditory, tactile or visual.  Use this API to give a visual popup window, sound the device beeper or illuminate the device LEDs (hardware permitting)</HELP_OVERVIEW>
 		<MORE_HELP></MORE_HELP>
-        <ALIASES>
-            <ALIAS new="Alert" deprecated="true"/>
-        </ALIASES>
 		<PLATFORM>iOS, Android, WM</PLATFORM>
 		<TEMPLATES>
 		</TEMPLATES>
 
-		<PROPERTIES generateAccessors="true">
-			<DESC></DESC>
-			<ALIASES>
-			</ALIASES>
-		
-		</PROPERTIES>
-
 		<METHODS access="STATIC">
-            <ALIASES>
-                <ALIAS new="hide_popup" existing="hidePopup" deprecated="true"/>
-                <ALIAS new="show_popup" existing="showPopup" deprecated="true"/>
-                <ALIAS new="show_status" existing="showStatus" deprecated="true"/>               
-            </ALIASES>
 
             <METHOD name="showPopup" access="STATIC" hasCallback="optional">
-                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button.</DESC>
+                <DESC>Bring the application up front and show a message in a popup window. The message can be passed as a string or a hash. The popup window closes after you click on the button. Icon is not supported on iOS devices.</DESC>
 				<PARAMS>
-					<PARAM name="propertyMap" type="HASH" propertyHash="true">
+					<PARAM name="propertyMap" type="HASH">
 						<DESC>The properties associated with the popup.</DESC>
 						<PARAMS>
 							<PARAM name="message" type="String" default="">
@@ -38,6 +23,7 @@
 							</PARAM>
 							<PARAM name="icon" type="String" default="">
 								<DESC>Icon to be displayed in the popup window. path to an image, or :alert for ! icon, :question for ? icon, :info for information icon.</DESC>
+                                <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only predefined icons are supported.</MORE_HELP>
 							</PARAM>
 							<PARAM name="buttons" type="Array" default="">
 								<DESC>array of buttons. Specify each button either by hash with :id and :title keys, or by a string where id and title are set to the string value. TODO - HOW SPECIFY</DESC>
@@ -46,7 +32,7 @@
 					</PARAM>
 				</PARAMS>
 				<CALLBACK type="HASH">
-                    <DESC>Not providing a callback to be invoked when a barcode is scanned will result in that barcode being output as keystrokes.</DESC>
+					<DESC>TODO</DESC>
 					<PARAMS>
 						<PARAM name="button_id" type="STRING">
 							<DESC>ID assigned to the button when showing the popup</DESC>
@@ -63,6 +49,7 @@
 		
             <METHOD name="hidePopup" access="STATIC" hasCallback="none">
                 <DESC>Closes the current popup window</DESC>
+                <MORE_HELP>On Windows Mobile/CE, Windows and RhoSimulators only Status window, displayed by showStatus can be hide.</MORE_HELP>
             </METHOD>
 		
             <METHOD name="showStatus" access="STATIC" hasCallback="none">
@@ -80,17 +67,32 @@
 				</PARAMS>
             </METHOD>
 		
+            <METHOD name="playFile" access="STATIC" hasCallback="none">
+                <DESC>Play an audio file if that media type is supported by the device.</DESC>
+                <PLATFORM>iOS, Android, WM</PLATFORM>
+				<PARAMS>
+					<PARAM name="path" type="STRING">
+						<DESC>The full path to the file, ending in the file name and extension.</DESC>
+					</PARAM>
+					<PARAM name="media_type" type="STRING" default="">
+						<DESC>Media type can be specified explicitly, or can be recognized from the file extension. The known file extensions are ".mp3" - "audio/mpeg" and ".wav" - "audio/x-wav".</DESC>
+                        <PLATFORM>iOS, Android</PLATFORM>
+					</PARAM>
+				</PARAMS>
+            </METHOD>
+
             <METHOD name="beep" access="STATIC" hasCallback="none">
-                <DESC>If the device is equipped with a beeper then a beep will be emitted</DESC>
+                <DESC>If the device is equipped with a beeper then a beep will be emitted. Not supported on iOS devices.</DESC>
+				<PLATFORM>Android, WM</PLATFORM>
 				<APPLIES msiOnly="true"></APPLIES>
 				<PARAMS>
-					<PARAM name="propertyMap" type="HASH" propertyHash="true">
+					<PARAM name="propertyMap" type="HASH">
 						<DESC>The properties associated with the beep.</DESC>
 						<PARAMS>
 							<PARAM name="frequency" type="Integer" default="2000">
 								<DESC>The frequency of the beep, in Hz</DESC>
 							</PARAM>
-							<PARAM name="volume" type="Integer" default="0">
+							<PARAM name="volume" type="Integer" default="1">
 								<DESC>A number between 0 and 3.  0 represents minimum volume and 3 is maximum volume, the decibels each volume level represents is device dependant.</DESC>
 							</PARAM>
 							<PARAM name="duration" type="Integer" default="1000">
@@ -103,10 +105,11 @@
 
             <METHOD name="vibrate" access="STATIC" hasCallback="none">
                 <DESC>Vibrate the device's pager hardware</DESC>
-				<APPLIES msiOnly="true"></APPLIES>
+				<PLATFORM>iOS, Android, WM</PLATFORM>
+				<APPLIES msiOnly="false"></APPLIES>
 				<PARAMS>
 					<PARAM name="duration" type="Integer" default="1000">
-						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file</DESC>
+						<DESC>The duration of the vibration, in milliseconds.  Note you may also need to add the vibration capability to your build.yml file. See remarks for maximum duration.</DESC>
 					</PARAM>
 				</PARAMS>
             </METHOD>
@@ -125,6 +128,41 @@ If RhoElements is exited after applying notifications, the settings to LEDs will
 		</USER_OVERVIEW>
 		<VER_INTRODUCED>1.0.0</VER_INTRODUCED>
 		<PLATFORM></PLATFORM>
-
+		<EXAMPLES>
+           <EXAMPLE title="Sound the device beeper">
+            <SECTIONS>
+              <SECTION>
+               <DESC>
+                   Not every device is equipped with a hardware beeper but if present this code snippet will cause the beeper to sound.
+               </DESC>
+               <CODE>
+                <RUBY>
+           <![CDATA[
+# ---------------
+# controller.rb  
+# ---------------
+         
+def sound_beeper
+  # Obtain list of available leds on the device. 
+  beeperProps = Hash.new
+  beeperProps['frequency'] = 3000;
+  beeperProps['volume'] = 2;
+  beeperProps['duration'] = 1500;
+  Rho::Notification.beep(beeperProps)
+end
+                   ]]>
+                 </RUBY>
+               </CODE>
+               </SECTION>
+               </SECTIONS>
+           </EXAMPLE>
+	   </EXAMPLES>
+	   <REMARKS>
+            <REMARK title="Maximum vibrate duration">
+                <DESC>
+					On Android, the maximum duration for vibrate is 15 seconds (15000ms).
+				</DESC>
+			</REMARK>
+	   </REMARKS>
 	</MODULE>
 </API>    

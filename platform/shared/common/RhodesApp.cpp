@@ -389,34 +389,38 @@ void CRhodesApp::run()
 {
     LOG(INFO) + "Starting RhodesApp main routine...";
 
-#if !defined(RHO_NO_RUBY)
-    RhoRubyStart();
-    rubyext::CGeoLocation::Create();
-#else
-    RhoJsStart();
-#endif
+    if (!isJSApplication())
+    {
+        RhoRubyStart();
+        rubyext::CGeoLocation::Create();
+    }
+    else
+        RhoJsStart();
+    
 
 	if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
 		LOG(INFO) + "Starting sync engine...";
 		sync::RhoconnectClientManager::syncThreadCreate();
 	}
 
-#if !defined(RHO_NO_RUBY)
-    LOG(INFO) + "RhoRubyInitApp...";
-    RhoRubyInitApp();
-    
-    HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
-    bool handled = mapConflicts.size()==0;
-    
-    if (!handled)
+    if (!isJSApplication())
     {
-        handled = m_applicationEventReceiver.onReinstallConfigUpdate(mapConflicts);
+        LOG(INFO) + "RhoRubyInitApp...";
+        RhoRubyInitApp();
+        
+        HashtablePtr<String,Vector<String>* >& mapConflicts = RHOCONF().getConflicts();
+        bool handled = mapConflicts.size()==0;
+        
+        if (!handled)
+        {
+            handled = m_applicationEventReceiver.onReinstallConfigUpdate(mapConflicts);
+        }
+        if (!handled)
+        {
+            rho_ruby_call_config_conflicts();
+        }
     }
-    if (!handled)
-    {
-        rho_ruby_call_config_conflicts();
-    }
-#endif
+
     RHOCONF().conflictsResolved();
 
     while (!m_bExit) {
@@ -434,10 +438,12 @@ void CRhodesApp::run()
 
     LOG(INFO) + "RhodesApp thread shutdown";
 
-#if !defined(RHO_NO_RUBY)
     getExtManager().close();
-    rubyext::CGeoLocation::Destroy();
-#endif
+
+    if (!isJSApplication())
+    {
+        rubyext::CGeoLocation::Destroy();
+    }
 
     if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) 
     {
@@ -447,9 +453,10 @@ void CRhodesApp::run()
 
     db::CDBAdapter::closeAll();
 
-#if !defined(RHO_NO_RUBY)
-    RhoRubyStop();
-#endif
+    if (!isJSApplication())
+    {
+        RhoRubyStop();
+    }
 }
 
 CRhodesApp::~CRhodesApp(void)
@@ -486,7 +493,7 @@ void CRhodesApp::stopApp()
 {
    	m_appCallbacksQueue->stop(1000);
 
-    if (!m_bExit && rho_ruby_is_started())
+    if (!m_bExit)
     {
         m_bExit = true;
         m_httpServer->stop();
@@ -498,8 +505,6 @@ void CRhodesApp::stopApp()
         // Switch Android libc hooks to FS only mode
         rho_file_set_fs_mode(0);
     #endif
-
-//    net::CAsyncHttp::Destroy();
 }
 
 class CRhoCallbackCall
@@ -526,9 +531,8 @@ void CRhodesApp::runCallbackInThread(const String& strCallback, const String& st
 
 static void callback_activateapp(void *arg, String const &strQuery)
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_activateApp();
-#endif
+    if (!RHODESAPP().isJSApplication())
+        rho_ruby_activateApp();
 
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
@@ -536,9 +540,8 @@ static void callback_activateapp(void *arg, String const &strQuery)
 
 static void callback_deactivateapp(void *arg, String const &strQuery)
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_deactivateApp();
-#endif
+    if (!RHODESAPP().isJSApplication())
+        rho_ruby_deactivateApp();
 
     String strMsg;
     rho_http_sendresponse(arg, strMsg.c_str());
@@ -546,18 +549,16 @@ static void callback_deactivateapp(void *arg, String const &strQuery)
 
 static void callback_uicreated(void *arg, String const &strQuery)
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_uiCreated();
-#endif
+    if (!RHODESAPP().isJSApplication())
+        rho_ruby_uiCreated();
 
     rho_http_sendresponse(arg, "");
 }
 
 static void callback_uidestroyed(void *arg, String const &strQuery)
 {
-#if !defined(RHO_NO_RUBY)
-    rho_ruby_uiDestroyed();
-#endif
+    if (!RHODESAPP().isJSApplication())
+        rho_ruby_uiDestroyed();
 
     rho_http_sendresponse(arg, "");
 }
@@ -590,7 +591,7 @@ void CRhodesApp::callUiCreatedCallback()
 
 void CRhodesApp::callUiDestroyedCallback()
 {
-    if ( m_bExit || !rho_ruby_is_started() )
+    if ( m_bExit/* || !rho_ruby_is_started()*/ )
         return;
     
     if (!RHODESAPP().getApplicationEventReceiver()->onUIStateChange(rho::common::UIStateDestroyed))
@@ -1529,6 +1530,13 @@ void CRhodesApp::initAppUrls()
     m_strLoadingPagePath = "file://" + getRhoRootPath() + "app/loading.html";
 	m_strLoadingPngPath = getRhoRootPath() + "app/loading.png";
 #endif
+
+    //write local server url to file
+#ifdef OS_WINCE
+    String strLSPath = CFilePath::join(m_strRuntimePath.substr(0, m_strRuntimePath.length()-4), "RhoLocalserver.txt"); //remove rho/
+    CRhoFile::writeStringToFile( strLSPath.c_str(), m_strHomeUrl );
+#endif
+
 }
 
 void CRhodesApp::keepLastVisitedUrl(String strUrl)
@@ -1601,9 +1609,9 @@ void CRhodesApp::navigateBack()
     {
         loadUrl(m_arAppBackUrlOrig[nIndex]);
     }
-    else if(strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0)
+    else// if(strcasecmp(getCurrentUrl(nIndex).c_str(),getStartUrl().c_str()) != 0)
     {
-        rho_webview_navigate_back();
+        rho_webview_navigate_back_with_tab(nIndex);
     }
 }
 
@@ -1874,6 +1882,16 @@ void CRhodesApp::loadUrl(String url, int nTabIndex/* = -1*/)
     {
         js_callback = true;
         url = url.substr(11);
+    }else if (String_startsWith(url, "__rhoCallback:") )
+    {
+        js_callback = true;
+        url = url.substr(14);
+
+        String strCallback("Rho.callbackHandler( \"");
+        strCallback += url;
+        strCallback += "\", {},\"\")";
+
+        url = strCallback;
     }else if ( strcasecmp(url.c_str(), "exit")==0 || strcasecmp(url.c_str(), "close") == 0 )
     {
         rho_sys_app_exit();
@@ -2017,9 +2035,6 @@ void CExtManager::requireRubyFile( const char* szFilePath )
 	
 	void NetworkStatusReceiver::onNetworkStatusChanged( enNetworkStatus currentStatus )
 	{
-		if ( !rho_ruby_is_started() )
-			return;
-		
 		synchronized(m_mxAccess)
 		{
 			if ( m_prevStatus != currentStatus )
@@ -2121,8 +2136,17 @@ void CExtManager::requireRubyFile( const char* szFilePath )
         return false;
     }
     
-    bool ApplicationEventReceiver::onSyncUserChanged(){
-        return false;
+    bool ApplicationEventReceiver::onSyncUserChanged()
+    {
+        if (!m_result.hasCallback())
+            return false;
+
+        rho::Hashtable<rho::String, rho::String> callbackData;
+
+        callbackData.put(APP_EVENT, APP_EVENT_SYNCUSERCHANGED);
+        m_result.set(callbackData);
+
+        return true;
     }
     
     bool ApplicationEventReceiver::onReinstallConfigUpdate(const HashtablePtr<String,Vector<String>* >& conflicts)
@@ -2593,6 +2617,7 @@ int rho_can_app_started_with_current_licence(const char* szMotorolaLicence, cons
 
 extern "C" void alert_show_status(const char* title, const char* message, const char* szHide);
 
+#if !defined(OS_WINDOWS_DESKTOP) && !defined(RHODES_EMULATOR)
 extern "C"
 {
 	void rho_alert_show_status(char* szTitle, char* szText, char* szHideLabel)
@@ -2600,3 +2625,4 @@ extern "C"
 		alert_show_status( szTitle ? szTitle : "", szText ? szText : "", szHideLabel ? szHideLabel : "");
 	}
 }
+#endif

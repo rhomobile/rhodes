@@ -32,11 +32,22 @@
 
 namespace rho { namespace push {
 
+class CPushClient : public CPushBase
+{
+public:
+    virtual const String& getId() const = 0;
+    virtual void setDeviceId(const String& deviceId) = 0;
+    virtual bool callBack(const String& json) = 0;
+};
+
+
 class CPushManager : public CPushSingletonBase
 {
 public:
     virtual ~CPushManager() {}
-    virtual void addClient(IPush* pClient) = 0;
+    virtual void addClient(CPushClient* pClient) = 0;
+    virtual void setDeviceId(const String& id, const String& deviceId) = 0;
+    virtual void callBack(const String& id, const String& json) = 0;
 
     static CPushManager* getInstance();
 };

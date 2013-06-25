@@ -45,11 +45,26 @@ module Rho
   	@@toolbar = [{:action => :back}, {:action => :forward}, {:action => :separator},
       {:action => :home}, {:action => :refresh}, {:action => :options} ]
     
+    #def self.make_default_native_menu
+    #    { Rho::RhoMessages.get_message('home_menu') => :home, Rho::RhoMessages.get_message('refresh_menu') => :refresh, 
+    #  		Rho::RhoMessages.get_message('sync_menu') => :sync, Rho::RhoMessages.get_message('options_menu') => :options, Rho::RhoMessages.get_message('log_menu') => :log, :separator => nil, Rho::RhoMessages.get_message('close_menu') => :close }
+    #end
+    
     def self.make_default_native_menu
-        { Rho::RhoMessages.get_message('home_menu') => :home, Rho::RhoMessages.get_message('refresh_menu') => :refresh, 
-      		Rho::RhoMessages.get_message('sync_menu') => :sync, Rho::RhoMessages.get_message('options_menu') => :options, Rho::RhoMessages.get_message('log_menu') => :log, :separator => nil, Rho::RhoMessages.get_message('close_menu') => :close }
+        NativeMenubar_defaultMainMenu()
     end
-    	
+    
+    def self.NativeMenubar_defaultMainMenu
+        [ {:label=>Rho::RhoMessages.get_message('home_menu'), :action=>:home}, 
+          { :label =>Rho::RhoMessages.get_message('refresh_menu'), :action => :refresh }, 
+      	  { :label => Rho::RhoMessages.get_message('sync_menu'), :action => :sync}, 
+      	  { :label =>Rho::RhoMessages.get_message('options_menu'), :action => :options},
+      	  { :label=>Rho::RhoMessages.get_message('log_menu'), :action => :log}, 
+      	  { :label=>:separator, :action => nil}, 
+      	  { :label => Rho::RhoMessages.get_message('close_menu'), :action => :close }
+      	]
+    end
+        	
     def initialize
       #LocalizationSimplified.requre_loc(Rho::RhoFSConnector::get_app_path('app') + 'lang/lang_',true)
       
@@ -152,7 +167,14 @@ module Rho
     def set_menu(menu=nil,back_action=nil)
       @default_menu = {} if @default_menu.nil?
       disp_menu = menu ? menu.dup : @default_menu.dup
-      disp_menu['Back'] = back_action if back_action
+      if back_action
+        if disp_menu.is_a?(Array)
+            disp_menu << {:label => 'Back', :action => back_action }
+        else
+           disp_menu['Back'] = back_action 
+        end
+            
+      end   
       #puts "RhoApplication: Using menu - #{disp_menu.inspect}"
   	  WebView.set_menu_items(disp_menu)
     end

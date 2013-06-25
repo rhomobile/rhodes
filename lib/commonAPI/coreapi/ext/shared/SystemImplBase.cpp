@@ -33,17 +33,19 @@ int rho_sys_zip_files_with_path_array_ptr(const char* szZipFilePath, const char 
 		rho::String filePath = arFiles.elementAt(i);
 		bool isDir = CRhoFile::isDirectory(filePath.c_str());
 		rho::String zipPath = base_path ? filePath.substr(strlen(base_path)) : filePath;
-		
-#if defined(UNICODE) && defined(WIN32)
+        if ( rho::String_startsWith( zipPath, "/") || rho::String_startsWith( zipPath, "\\") )
+            zipPath = zipPath.substr(1);
+
+#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8)
 		if ( isDir )
 			res = ZipAddFolder( hz, convertToStringW(zipPath).c_str(), convertToStringW(filePath).c_str() );
 		else
 			res = ZipAdd( hz, convertToStringW(zipPath).c_str(), convertToStringW(filePath).c_str() );
 #else
 		if ( isDir )
-			res = ZipAddFolder( hz, zipPath.c_str(), filePath.c_str() );
+			res = ZipAddFolder( hz, (TCHAR*)zipPath.c_str(), (TCHAR*)filePath.c_str() );
 		else
-			res = ZipAdd( hz, zipPath.c_str(), filePath.c_str() );
+			res = ZipAdd(hz, (TCHAR*)zipPath.c_str(), (TCHAR*)filePath.c_str() );
 #endif
 		
 		if (res != 0)
@@ -218,7 +220,7 @@ void CSystemImplBase::zipFile( const rho::String& localPathToZip,  const rho::St
 {
     ZRESULT res;
 
-#if defined(UNICODE) && defined(WIN32)
+#if defined(UNICODE) && defined(WIN32) && !defined(OS_WP8)
     rho::StringW strZipFilePathW;
     convertToStringW(localPathToZip.c_str(), strZipFilePathW);
 
@@ -240,14 +242,14 @@ void CSystemImplBase::zipFile( const rho::String& localPathToZip,  const rho::St
     }
 
 #else
-    HZIP hz = CreateZip(localPathToZip.c_str(), password.c_str());
+    HZIP hz = CreateZip((TCHAR*)localPathToZip.c_str(), password.c_str());
     if(!hz)
     {
         res = -1;
     } else
     {
         CFilePath oPath(localPathToFile);
-        res = ZipAdd(hz, oPath.getBaseName(), localPathToFile.c_str());
+        res = ZipAdd(hz, (TCHAR*)oPath.getBaseName(), (TCHAR*)localPathToFile.c_str());
         res = CloseZip(hz);
     }
 #endif

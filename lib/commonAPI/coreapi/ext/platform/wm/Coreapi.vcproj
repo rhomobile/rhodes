@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="Coreapi"
 	ProjectGUID="{E0343F80-50EA-0130-78EC-3CAEC51BD50E}"
 	RootNamespace="Coreapi"
@@ -2479,6 +2479,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\public\api\Rho.Application.js"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\RhoApplicationApi.rb"
 					>
 				</File>
@@ -2746,7 +2750,9 @@
 				</Filter>
 			</Filter>
 		</Filter>
-		<Filter Name="NativeMenubar">
+		<Filter
+			Name="NativeMenubar"
+			>
 			<File
 				RelativePath="..\..\shared\MenubarImpl.cpp"
 				>
@@ -2797,48 +2803,17 @@
 						RelativePath="..\..\shared\generated\cpp\NativeMenubarBase.h"
 						>
 					</File>
-					</Filter>
-
 				</Filter>
 			</Filter>
-
-                <Filter Name="Notification">
+		</Filter>
+		<Filter
+			Name="Notification"
+			>
 			<File
-				RelativePath=".\src\NotificationImpl.cpp"
+				RelativePath=".\src\LedImpl.cpp"
 				>
 				<FileConfiguration
-					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2847,29 +2822,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2885,30 +2837,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorDebug|MC3000c50b (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="SimulatorDebug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="SimulatorRelease|Windows Mobile 6 Professional SDK (ARMV4I)"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="SimulatorRelease|Win32"
 					ExcludedFromBuild="true"
 					>
@@ -2916,22 +2844,96 @@
 						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\Notification.Led.xml"
+				>
 				<FileConfiguration
-					Name="SimulatorRelease|MC3000c50b (ARMV4I)"
+					Name="Debug|Win32"
 					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorDebug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="SimulatorRelease|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\Notification.xml"
+				>
+			</File>
+			<File
+				RelativePath=".\src\NotificationImpl.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6 Professional SDK (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="SimulatorRelease|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
-					ExcludedFromBuild="true"
+					Name="Debug|MC3000c50b (ARMV4I)"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6 Professional SDK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|MC3000c50b (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Windows Mobile 6.5.3 Professional DTK (ARMV4I)"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\RhoNotificationApi.rb"
+				>
 			</File>
 			<Filter
 				Name="shared"
@@ -2939,6 +2941,18 @@
 				<Filter
 					Name="generated"
 					>
+					<File
+						RelativePath="..\..\shared\generated\led_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\led_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\led_ruby_api.c"
+						>
+					</File>
 					<File
 						RelativePath="..\..\shared\generated\notification_api_init.cpp"
 						>
@@ -2955,7 +2969,27 @@
 						Name="cpp"
 						>
 						<File
+							RelativePath="..\..\shared\generated\cpp\ILed.h"
+							>
+						</File>
+						<File
 							RelativePath="..\..\shared\generated\cpp\INotification.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Led_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\Led_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\LedBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\LedBase.h"
 							>
 						</File>
 						<File
@@ -2975,7 +3009,174 @@
 							>
 						</File>
 					</Filter>
-
+				</Filter>
+			</Filter>
+			<Filter
+				Name="Motorola"
+				>
+				<File
+					RelativePath=".\src\NotificationDefines.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\NotificationLoader.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\src\NotificationLoader.h"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorDebug|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="SimulatorRelease|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="File"
+			>
+			<Filter
+				Name="shared"
+				>
+				<File
+					RelativePath="..\..\File.xml"
+					>
+				</File>
+				<File
+					RelativePath="..\..\shared\FileImpl.cpp"
+					>
+				</File>
+				<Filter
+					Name="generated"
+					>
+					<File
+						RelativePath="..\..\shared\generated\rhofile_api_init.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\rhofile_js_api.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\shared\generated\rhofile_ruby_api.c"
+						>
+					</File>
+					<Filter
+						Name="cpp"
+						>
+						<File
+							RelativePath="..\..\shared\generated\cpp\IRhoFile.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\RhoFile_js_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\RhoFile_ruby_wrap.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\RhoFileBase.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\shared\generated\cpp\RhoFileBase.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 		</Filter>

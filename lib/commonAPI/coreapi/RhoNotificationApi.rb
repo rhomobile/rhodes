@@ -24,12 +24,40 @@
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
-#if System.get_property('platform') == 'WINDOWS_DESKTOP'
-#  module Alert
-    # show_popup (String) => ...
+if Rho::System.isRhoSimulator || System.get_property('platform') == 'WINDOWS_DESKTOP'
 
-    #def self.show_status( title, msg, hide)
-    #  #TODO: show_status
-    #end
- # end
-#end
+class Alert
+  class << self
+
+  def show_popup(param)
+    if param.is_a?(String)
+      Rho::Notification.showPopup(:message => param, :buttons=>['OK'])
+    elsif param.is_a?(Hash)
+      if param[:callback] && param[:callback].length() > 0
+        Rho::Notification.showPopup(param, param[:callback])
+      else
+        Rho::Notification.showPopup(param)
+      end
+    end
+  end
+
+  def hide_popup()
+    Rho::Notification.hidePopup()
+  end
+
+  def vibrate(duration_ms=2500)
+    Rho::Notification.vibrate(duration_ms)
+  end
+
+  def play_file(file_name, media_type="")
+    Rho::Notification.playFile(file_name, media_type)
+  end
+
+  def show_status(title, message, hide_label)
+    Rho::Notification.show_status(title, message, hide_label)
+  end
+
+  end #self
+end #Alert
+
+end

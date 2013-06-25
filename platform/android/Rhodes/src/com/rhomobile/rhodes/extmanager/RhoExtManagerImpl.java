@@ -48,13 +48,14 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     private boolean mLogUser = false;
     private boolean mLogDebug = false;
     private boolean mFirstNavigate = true;
+    private IRhoWebViewConfig mWebViewConfig = null;
 
     private IRhoWebView makeDefExtData(View view) {
         return RhodesActivity.safeGetInstance().getMainView().getWebView(view);
     }
     
     private static native void nativeRequireRubyFile(String path);
-    private static native String nativeJSCallEntryPoint(String query);
+    static native String nativeJSCallEntryPoint(String query);
 
     static int getResId(String className, String idName) {
         className = ContextFactory.getContext().getPackageName() + ".R$" + className;
@@ -319,6 +320,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             for (IRhoExtension ext : mExtensions.values()) {
                 IRhoWebView view = ext.onCreateWebView(this, tabIndex);
                 if (view != null) {
+                    view.setConfig(mWebViewConfig);
                     if (res != null) {
                         Logger.W(TAG, "WebView has already created by another extension, overlapping it");
                     }
@@ -328,6 +330,7 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             if (res == null) {
                 Logger.T(TAG, "Creating Google web view");
                 final GoogleWebView googleWebView = new GoogleWebView(activity);
+                googleWebView.setConfig(mWebViewConfig);
                 res = googleWebView;
                 RhodesApplication.runWhen(RhodesApplication.AppState.AppStarted, new RhodesApplication.StateHandler(true) {
                     @Override
@@ -340,8 +343,9 @@ public class RhoExtManagerImpl implements IRhoExtManager {
             AbsoluteLayout containerView = new AbsoluteLayout(activity);
             containerView.addView(res.getView(), new AbsoluteLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0, 0));
             res.setContainerView(containerView);
-            res.setWebClient(activity);
+            res.setWebClient();
             boolean handled = false;
+            //res.addJSInterface(new RhoJSApi(), "__rhoNativeApi");
             for (IRhoExtension ext : mExtensions.values()) {
                 handled = ext.onWebViewCreated(this, res, handled);
             }
@@ -591,9 +595,9 @@ public class RhoExtManagerImpl implements IRhoExtManager {
 
     public void onPrompt(View view, String prompt, String defaultResponse, final IPromptResult promptResult) {
         if (defaultResponse.startsWith("__rhoNativeApiCall")) {
-            Logger.T(TAG, "Execute JS hook: " + prompt);
+            Logger.D(TAG, "Execute JS hook: " + prompt);
             String res = nativeJSCallEntryPoint(prompt);
-            Logger.T(TAG, "JS result: " + res);
+            Logger.D(TAG, "JS result: " + res);
             promptResult.setPending();
             promptResult.confirm(res);
             return;
@@ -839,6 +843,18 @@ public class RhoExtManagerImpl implements IRhoExtManager {
     public void onConfigurationChanged(RhodesActivity activity, Configuration newConfig) {
         for (IRhoListener listener: mListeners) {
             listener.onConfigurationChanged(activity, newConfig);
+        }
+    }
+
+    @Override
+    public void setWebViewConfig(IRhoWebViewConfig config) {
+        Logger.T(TAG, "Set WebView config");
+
+        mWebViewConfig = config;
+        MainView mainView = RhodesActivity.safeGetInstance().getMainView();
+        for (int i = 0; i < mainView.getTabsCount(); ++i) {
+            Logger.T(TAG, "Set WebView config: tab " + i);
+            mainView.getWebView(i).setConfig(config);
         }
     }
 

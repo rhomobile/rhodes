@@ -32,6 +32,7 @@
 #include "ui_QtMainWindow.h"
 #include "ExternalWebView.h"
 #include "RhoSimulator.h"
+#include <sstream>
 #include <QResizeEvent>
 #include <QWebFrame>
 #include <QWebSettings>
@@ -51,6 +52,7 @@
 #include "rubyext/NativeToolbarExt.h"
 #undef null
 #include "DateTimeDialog.h"
+#include "RhoNativeApiCall.h"
 #include "statistic/RhoProfiler.h"
 #include <QStylePainter>
 
@@ -106,8 +108,7 @@ QtMainWindow::QtMainWindow(QWidget *parent) :
     qs->enablePersistentStorage(rs_dir.c_str());
 
 	this->ui->webView->setContextMenuPolicy(Qt::NoContextMenu);
-    this->ui->webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    this->ui->webView->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+    setUpWebPage(this->ui->webView->page());
     this->main_webView = this->ui->webView;
     this->main_webInspector = webInspectorWindow->webInspector();
     this->cur_webInspector = this->main_webInspector;
@@ -401,10 +402,11 @@ void QtMainWindow::navigate(QString url, int index)
     }
 }
 
-void QtMainWindow::GoBack(void)
+void QtMainWindow::GoBack(int index)
 {
-    if (ui->webView)
-        ui->webView->back();
+    QWebView* wv = (index < tabViews.size()) && (index >= 0) ? tabViews[index] : ui->webView;
+    if (wv)
+        wv->back();
 }
 
 void QtMainWindow::GoForward(void)
@@ -443,6 +445,11 @@ void QtMainWindow::tabbarRemoveAllTabs(bool restore)
     for (int i=0; i<tabViews.size(); ++i) {
         tabbarDisconnectWebView(tabViews[i], tabInspect[i]);
         if (tabViews[i] != main_webView) {
+            // destroy connected RhoNativeApiCall object
+            QVariant v = tabViews[i]->page()->property("__rhoNativeApi");
+            RhoNativeApiCall* rhoNativeApiCall = v.value<RhoNativeApiCall*>();
+            delete rhoNativeApiCall;
+
             ui->verticalLayout->removeWidget(tabViews[i]);
             tabViews[i]->setParent(0);
             if (ui->webView == tabViews[i])
@@ -475,6 +482,16 @@ void QtMainWindow::tabbarInitialize()
     ui->tabBar->clearStyleSheet();
 }
 
+void QtMainWindow::setUpWebPage(QWebPage* page)
+{
+    page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    page->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+	RhoNativeApiCall* rhoNativeApiCall = new RhoNativeApiCall(page->mainFrame());
+    page->setProperty("__rhoNativeApi", QVariant::fromValue(rhoNativeApiCall));
+    connect(page->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
+        rhoNativeApiCall, SLOT(populateJavaScriptWindowObject()));
+}
+
 int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disabled, const QColor* web_bkg_color, QTabBarRuntimeParams& tbrp)
 {
     QWebView* wv = main_webView;
@@ -485,10 +502,9 @@ int QtMainWindow::tabbarAddTab(const QString& label, const char* icon, bool disa
         wv->setMaximumSize(0,0);
         wv->setParent(ui->centralWidget);
         ui->verticalLayout->addWidget(wv);
-        wv->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-        wv->page()->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
+        setUpWebPage(wv->page());
         if (web_bkg_color && (web_bkg_color->name().length()>0))
-            wv->setHtml( QString("<html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
+            wv->setHtml( QString("<!DOCTYPE html><html><body style=\"background:") + web_bkg_color->name() + QString("\"></body></html>") );
         // creating and attaching web inspector
         wI = new QWebInspector();
         wI->setWindowTitle("Web Inspector");
@@ -769,6 +785,11 @@ void QtMainWindow::navigateForwardCommand()
     this->GoForward();
 }
 
+void QtMainWindow::webviewNavigateBackCommand(int tab_index)
+{
+    this->GoBack(tab_index);
+}
+
 void QtMainWindow::logCommand()
 {
     //TODO: logCommand
@@ -837,6 +858,20 @@ void QtMainWindow::selectPicture(char* callbackUrl)
     free(callbackUrl);
 }
 
+void QtMainWindow::doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button)
+{
+    if (params->m_callback.length()==0) {
+        rho::Hashtable<rho::String, rho::String> mapRes;
+        std::ostringstream sBtnIndex;
+        sBtnIndex << btnNum;
+        mapRes["button_index"] = sBtnIndex.str();
+        mapRes["button_id"] = button.m_strID;
+        mapRes["button_title"] = button.m_strCaption;
+        params->m_callback_ex.set(mapRes);
+    } else
+        RHODESAPP().callPopupCallback(params->m_callback, button.m_strID, button.m_strCaption);
+}
+
 void QtMainWindow::alertShowPopup(CAlertParams * params)
 {
     rho::StringW strAppName = RHODESAPP().getAppNameW();
@@ -868,7 +903,7 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
                 QString::fromWCharArray(rho::common::convertToStringW(params->m_message).c_str()),
                 QMessageBox::Ok | QMessageBox::Cancel);
             int nBtn = response == QMessageBox::Cancel ? 1 : 0;
-            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[nBtn].m_strID, params->m_buttons[nBtn].m_strCaption);
+            doAlertCallback(params, nBtn, params->m_buttons[nBtn]);
         } else if (m_alertDialog == NULL) {
             QMessageBox::Icon icon = QMessageBox::NoIcon;
             if (stricmp(params->m_icon.c_str(),"alert")==0) {
@@ -903,7 +938,7 @@ void QtMainWindow::alertShowPopup(CAlertParams * params)
 #ifdef OS_SYMBIAN
                             RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strID, params->m_buttons[m_alertDialog->buttons().count() - i - 1].m_strCaption);
 #else
-                            RHODESAPP().callPopupCallback(params->m_callback, params->m_buttons[i].m_strID, params->m_buttons[i].m_strCaption);
+                            doAlertCallback(params, i, params->m_buttons[i]);
 #endif
                             break;
                         }
@@ -983,8 +1018,11 @@ bool QtMainWindow::getFullScreen()
 void QtMainWindow::setCookie(const char* url, const char* cookie)
 {
     if (url && cookie) {
+        QUrl urlStr = QUrl(QString::fromUtf8(url));
         QNetworkCookieJar* cj = ui->webView->page()->networkAccessManager()->cookieJar();
-        cj->setCookiesFromUrl(QNetworkCookie::parseCookies(QByteArray(cookie)), QUrl(QString::fromUtf8(url)));
+        QStringList cookieList = QString::fromUtf8(cookie).split(";");
+        for (int i=0; i<cookieList.size(); ++i)
+            cj->setCookiesFromUrl(QNetworkCookie::parseCookies(cookieList.at(i).toAscii()), urlStr);
     }
 }
 

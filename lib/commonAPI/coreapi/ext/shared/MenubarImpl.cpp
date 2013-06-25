@@ -30,35 +30,25 @@ class CNativeMenubarSingletonImpl : public CNativeMenubarSingletonBase
 
 virtual void getMainMenu(rho::apiGenerator::CMethodResult& oResult)
 {
-#ifdef OS_ANDROID
-    oResult.setJSON(rho_impl_getNativeMenu());
-#else
     rho::Vector< Hashtable<String, String> > arRes;
     RHODESAPP().getAppMenu().getMenuItemsEx(arRes);
-
     oResult.set(arRes);
-#endif
 }
 
 virtual void setMainMenu( const rho::Vector<rho::String>& mainMenu, rho::apiGenerator::CMethodResult& oResult)
 {
-#ifdef OS_ANDROID
-    rho_impl_setNativeMenu(mainMenu);
-#else
     RHODESAPP().getAppMenu().setAppMenuJSONItemsEx(mainMenu);
     
 #if defined (_WIN32_WCE) && !defined (OS_PLATFORM_MOTCE)
     rho_webview_update_menu(1);
 #endif
 
-#endif
 }
 
 virtual void getExtraMenu(rho::apiGenerator::CMethodResult& oResult)
 {
     rho::Vector< Hashtable<String, String> > arRes;
     RHODESAPP().getAppMenu().getMenuItemsEx(arRes, true);
-
     oResult.set(arRes);
 }
 
@@ -108,16 +98,6 @@ virtual void setExtraButton( const rho::Hashtable<rho::String, rho::String>& ext
 #endif
 }
 
-/* --------------------------------------------------------------------- */
-
-virtual void addCommandToQueue(rho::common::CInstanceClassFunctorBase<rho::apiGenerator::CMethodResult>* pFunctor)
-{
-}
-
-virtual void callCommandInThread(rho::common::IRhoRunnable* pFunctor)
-{
-}
-
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -138,5 +118,8 @@ public:
 extern "C" void Init_NativeMenuBar()
 {
     rho::CNativeMenubarFactory::setInstance( new rho::CNativeMenubarFactory() );
+
+    RHODESAPP().getExtManager().requireRubyFile("RhoNativeMenubarApi");
+
     rho::Init_NativeMenubar_API();
 }

@@ -1008,67 +1008,57 @@ namespace "run" do
     end
 
     task :spec => ["config:checkbb", "run:bb:stopmdsandsim", "clean:bbsim", "package:bb:production_sim"] do
-      cp_r File.join($targetdir, "/."), $bb_sim_path
-      #rm_rf $bb_sim_path + "/sdcard/Rho"
+      Jake.decorate_spec do
+        cp_r File.join($targetdir, "/."), $bb_sim_path
+        #rm_rf $bb_sim_path + "/sdcard/Rho"
 
-      log_name = $bb_sim_path + "/sdcard/Rho/" + $outfilebase + "/RhoLog.txt"
-      puts log_name
-      #log_name  = Jake.get_absolute($app_config["applog"] )
-      #File.delete(log_name) if File.exist?(log_name)
+        log_name = $bb_sim_path + "/sdcard/Rho/" + $outfilebase + "/RhoLog.txt"
+        puts log_name
+        #log_name  = Jake.get_absolute($app_config["applog"] )
+        #File.delete(log_name) if File.exist?(log_name)
 
-      startmds
-      startsim(true)
+        startmds
+        startsim(true)
 
-      Jake.before_run_spec
-      start = Time.now
+        Jake.before_run_spec
+        start = Time.now
 
-      while !File.exist?(log_name)
-        sleep(1)
+        while !File.exist?(log_name)
+          sleep(1)
+        end
+
+        io = File.new(log_name, "r")
+        waiting_count = 0
+        end_spec = false
+        while !end_spec do
+          line_count = 0
+          io.each do |line|
+            #puts line
+            end_spec = !Jake.process_spec_output(line)
+            break if end_spec
+            line_count += 1
+          end
+          if line_count==0
+            waiting_count += 1
+          else
+            waiting_count = 0
+          end
+          if waiting_count > 240
+            puts "spec application hung (240 seconds timeout)"
+            end_spec = true
+          end
+          sleep(1) unless end_spec
+        end
+        io.close
+
+        stopsim
+        stopmds
+
+        Jake.process_spec_results(start)
+
+        $stdout.flush
+
       end
-
-      io = File.new(log_name, "r")
-      waiting_count = 0
-      end_spec = false
-      while !end_spec do
-        line_count = 0
-        io.each do |line|
-          #puts line
-          end_spec = !Jake.process_spec_output(line)
-          break if end_spec
-          line_count += 1
-        end
-        if line_count==0
-          waiting_count += 1
-        else
-          waiting_count = 0
-        end
-        if waiting_count > 240
-          puts "spec application hung (240 seconds timeout)"
-          end_spec = true
-        end
-        sleep(1) unless end_spec
-      end
-      io.close
-
-      stopsim
-      stopmds
-
-      Jake.process_spec_results(start)
-
-      $stdout.flush
-
-    end
-
-    task :phone_spec do
-      Jake.run_spec_app('bb', 'phone_spec')
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
-    end
-
-    task :js_spec do
-      Jake.run_spec_app('bb','js_spec')
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
     end
 
     task :testsim => ["config:bb"] do

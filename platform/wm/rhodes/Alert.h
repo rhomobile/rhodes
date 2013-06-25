@@ -30,6 +30,10 @@
 #include <common/RhoStd.h>
 #include <logging/RhoLog.h>
 
+#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+#include "api_generator/MethodResult.h"
+#endif
+
 using namespace rho;
 using namespace rho::common;
 
@@ -59,6 +63,16 @@ public:
 			m_message  = message;
 		}
 
+		Params (String &title, String &message, String &icon, rho::apiGenerator::CMethodResult &callback, Vector<CAlertButton>& buttons, int dlgType)
+		{
+			m_dlgType  = dlgType;
+			m_title    = title;
+			m_message  = message;
+			m_icon     = icon;
+			m_callback_ex = callback;
+			m_buttons  = buttons;
+		}
+
 		Params (String &title, String &message, String &icon, String &callback, Vector<CAlertButton>& buttons, int dlgType)
 		{
 			m_dlgType  = dlgType;
@@ -73,6 +87,9 @@ public:
 		String m_title;
 		String m_message;
 		String m_icon;
+
+		rho::apiGenerator::CMethodResult m_callback_ex;
+
 		String m_callback;
 
 		//Hashtable<String, String> m_buttons;
@@ -119,6 +136,9 @@ private:
 private:
 	String m_title;
 	String m_message;
+
+	rho::apiGenerator::CMethodResult m_callback_ex;
+
 	String m_callback;
 	String m_icon;
 

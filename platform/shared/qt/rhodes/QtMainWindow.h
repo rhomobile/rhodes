@@ -70,7 +70,7 @@ public:
     void adjustWebInspector();
     // webview
     void navigate(QString url, int index);
-    void GoBack(void);
+    void GoBack(int index);
     void GoForward(void);
     void Refresh(int index);
     bool isStarted(void);
@@ -103,6 +103,8 @@ private:
     void tabbarConnectWebView(QWebView* webView, QWebInspector* webInspector);
     void tabbarDisconnectWebView(QWebView* webView, QWebInspector* webInspector);
     bool internalUrlProcessing(const QUrl& url);
+    void setUpWebPage(QWebPage* page);
+    void doAlertCallback(CAlertParams* params, int btnNum, CAlertParams::CAlertButton &button);
 
 private:
     Ui::QtMainWindow *ui;
@@ -141,6 +143,7 @@ public slots:
     void exitCommand(void);
     void navigateBackCommand(void);
     void navigateForwardCommand(void);
+    void webviewNavigateBackCommand(int tab_index);
     void logCommand(void);
     void refreshCommand(int tab_index);
     void navigateCommand(TNavigateData* nd);

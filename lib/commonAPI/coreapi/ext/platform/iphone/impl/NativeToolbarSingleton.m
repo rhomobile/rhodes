@@ -10,6 +10,10 @@ extern void remove_native_toolbar();
 
 
 -(void) create:(NSArray*)toolbarElements toolBarProperties:(NSDictionary*)toolBarProperties {
+    if (![toolbarElements isKindOfClass:[NSArray class]]) {
+        NSLog(@"Toolbar.create ERROR - elements parameter should be Array !");
+        return;
+    }
     rho_create_toolbar(toolbarElements, toolBarProperties);
 }
 

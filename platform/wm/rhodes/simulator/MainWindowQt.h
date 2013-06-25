@@ -99,7 +99,7 @@ public:
     void setCallback(IMainWindowCallback* callback);
     void messageLoop(void);
     void navigate(const wchar_t* url, int index);
-    void GoBack(void);
+    void GoBack(int index);
     void GoForward(void);
     void Refresh(int index);
 	// toolbar/tabbar
@@ -132,6 +132,7 @@ public:
 
    	void RhoSetFullScreen(bool bFull, bool bDestroy = false);
     bool getFullScreen();
+    void ProcessTitleChange(LPCTSTR title);
 
     BEGIN_MSG_MAP(CMainWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -145,6 +146,7 @@ public:
         COMMAND_ID_HANDLER(IDM_NAVTIMEOUT, OnNavTimeout)
         COMMAND_ID_HANDLER(IDM_NAVIGATE, OnNavigateCommand)
         COMMAND_ID_HANDLER(ID_FULLSCREEN, OnFullscreenCommand)
+        COMMAND_ID_HANDLER(ID_TITLECHANGE, OnTitleChangeCommand)
         COMMAND_ID_HANDLER(ID_SETCOOKIE, OnSetCookieCommand)
         COMMAND_ID_HANDLER(IDM_EXECUTEJS, OnExecuteJS)
         MESSAGE_HANDLER(WM_TAKEPICTURE, OnTakePicture)
@@ -172,6 +174,7 @@ private:
     LRESULT OnNavTimeout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNavigateCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
     LRESULT OnFullscreenCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnTitleChangeCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnSetCookieCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnExecuteJS(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/);
 

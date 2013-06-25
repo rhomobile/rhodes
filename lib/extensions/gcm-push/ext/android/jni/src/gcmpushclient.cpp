@@ -26,7 +26,7 @@
 
 #include "rhodes/JNIRhodes.h"
 #include "common/RhoConf.h"
-#include "common/RhodesApp.h"
+#include "Push.h"
 #include "sync/RhoconnectClientManager.h"
 #include "sync/ILoginListener.h"
 
@@ -34,21 +34,27 @@
 #include "logging/RhoLog.h"
 
 #include "gcmpushclient.h"
-#include "com_rhomobile_rhodes_gcm_GCMRhoListener.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 extern "C" void Init_GCMPushClient()
 {
     // create GCM push client
-    RHODESAPP().addPushClient(new rho::gcm::GcmPushClient());
+    RAWTRACEC("Init_GCMPushClient", "creating GCM client >>>>>>>>>>>>>>");
 
-    if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
-        rho::sync::RhoconnectClientManager::clientRegisterSetDevicePin("");
-    }
+    rho::gcm::GcmPushClient* pClient = new rho::gcm::GcmPushClient();
+
+    RAWTRACEC("Init_GCMPushClient", "adding GCM client >>>>>>>>>>>>>>>>");
+
+    rho::push::CPushManager::getInstance()->addClient(pClient);
+
+//    if (rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl()) {
+//        rho::sync::RhoconnectClientManager::clientRegisterSetDevicePin("");
+//    }
     
-    rho::gcm::GcmPushClient::GcmPushRegister();
-}
+    RAWTRACEC("Init_GCMPushClient", "request GCM registration >>>>>>>>>>>>>>>>");
 
+    pClient->doRegister();;
+}
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace rho { namespace gcm {
@@ -56,19 +62,11 @@ namespace rho { namespace gcm {
 IMPLEMENT_LOGCLASS(GcmPushClient, "GcmPushClient");
 
 //----------------------------------------------------------------------------------------------------------------------
-class GcmPushClient::SyncLoginListener : public sync::ILoginListener
-{
-public:
-    virtual ~SyncLoginListener() {}
-    virtual void onLogin(const String& user, const String& pass, const String& session) const;
-    virtual void onLogout(const String& session) const;
-};
-//----------------------------------------------------------------------------------------------------------------------
 
 const char* const GcmPushClient::s_GCM_FACADE_CLASS = "com.rhomobile.rhodes.gcm.GCMFacade";
 
 //----------------------------------------------------------------------------------------------------------------------
-void GcmPushClient::GcmPushRegister()
+void GcmPushClient::doRegister()
 {
     LOG(TRACE) + "GcmPushRegister()";
 
@@ -80,17 +78,19 @@ void GcmPushClient::GcmPushRegister()
         return;
     }
 
-    static jmethodID mid = env->GetStaticMethodID(cls, "Register", "()V");
+    static jmethodID mid = env->GetStaticMethodID(cls, "Register", "(Ljava/lang/String;)V");
     if (!mid) {
         LOG(ERROR) + "Cannot get " + s_GCM_FACADE_CLASS + ".Register() method";
         return;
     }
 
-    env->CallStaticVoidMethod(cls, mid);
+    jhstring jhSenderId = rho_cast<jstring>(m_hashProps["senderId"]);
+
+    env->CallStaticVoidMethod(cls, mid, jhSenderId.get());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void GcmPushClient::GcmPushUnregister()
+void GcmPushClient::doUnregister()
 {
     LOG(TRACE) + "GcmPushUnregister()";
 
@@ -111,25 +111,14 @@ void GcmPushClient::GcmPushUnregister()
     env->CallStaticVoidMethod(cls, mid);
 }
 //----------------------------------------------------------------------------------------------------------------------
-void GcmPushClient::SyncLoginListener::onLogin(const String& user, const String& pass, const String& session) const
-{
-//    sync::CClientRegister::Get()->setDevicehPin("");
-//    GcmPushRegister();
-}
-//----------------------------------------------------------------------------------------------------------------------
-void GcmPushClient::SyncLoginListener::onLogout(const String& session) const
-{
-//    sync::CClientRegister::Get()->setDevicehPin("");
-//    GcmPushUnregister();
-}
-//----------------------------------------------------------------------------------------------------------------------
 const String GcmPushClient::s_Type = "gcm";
 
 GcmPushClient::GcmPushClient()
 {
-    if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
-        sync::RhoconnectClientManager::clientRegisterAddLoginListener(new SyncLoginListener());
-    }
+    CMethodResult result;
+    setProperty("id", s_Type, result);
+    setProperty("type", IPush::PUSH_TYPE_NATIVE, result);
+    setProperty("senderId", RHOCONF().getString("Push.gcm.senderId"), result);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -141,35 +130,54 @@ void GcmPushClient::init()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void GcmPushClient::setNotificationUrl(const String& callbackUrl, const String& callbackParam)
+
+void GcmPushClient::getDeviceId(CMethodResult& result)
 {
-    LOG(TRACE) + "Set GCM push notification URL: " + callbackUrl;
-    m_strCallbackUrl = callbackUrl;
-    m_strCallbackParam = callbackParam;
+    String deviceId = m_hashProps["deviceId"];
+
+    if(deviceId.length() != 0)
+    {
+        LOG(TRACE) + "GCM deviceId: " + deviceId;
+        result.set(deviceId);
+    }
+    else
+    {
+        LOG(TRACE) + "Still waiting for GCM deviceId";
+        m_deviceIdResult = result;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-bool GcmPushClient::callNotification(const String& json, const String& data)
+void GcmPushClient::startNotifications(CMethodResult& result)
 {
-    LOG(TRACE) + "GCM notification";
+    LOG(TRACE) + "Start GCM push notifications";
+    m_oResult = result;
+}
 
-    String finalData = m_strCallbackParam;
-    if(data.length() > 0)
-    {
-        if(finalData.length() > 0)
-            finalData += '&';
-        finalData += data;
-    }
-    if(m_strCallbackUrl.length() > 0)
-    {
-        LOG(TRACE) + "Calling GCM callback: " + m_strCallbackUrl;
-        return RHODESAPP().callPushCallbackWithJsonBody(m_strCallbackUrl, json, finalData);
-    } else
-    {
-        LOG(TRACE) + "No GCM callback URL";
-    }
+//----------------------------------------------------------------------------------------------------------------------
+void GcmPushClient::stopNotifications(CMethodResult& result)
+{
+    LOG(TRACE) + "Stop GCM push notifications";
+    m_oResult = CMethodResult();
+}
 
-    return false;
+//----------------------------------------------------------------------------------------------------------------------
+void GcmPushClient::setDeviceId(const String& deviceId)
+{
+    CMethodResult result;
+    setProperty("deviceId", deviceId, result);
+
+    getDeviceId(m_deviceIdResult);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+bool GcmPushClient::callBack(const String& json)
+{
+    LOG(TRACE) + "GCM push notification: " + json;
+
+    m_oResult.setJSON(json);
+
+    return true;
 }
 
 }}

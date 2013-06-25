@@ -33,6 +33,7 @@
 #include <common/RhodesApp.h>
 #include <common/AutoPointer.h>
 #include <sync/RhoconnectClientManager.h>
+#include "Push.h"
 
 #include "rhodes/JNIRhodes.h"
 #include "rhodes/JNIRhoRuby.h"
@@ -239,14 +240,6 @@ RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getBuildConfi
     return rho_cast<jstring>(env, cs);
 }
 
-RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isOnStartPage
-  (JNIEnv *env, jclass)
-{
-    bool res = RHODESAPP().isOnStartPage();
-    return (jboolean)res;
-}
-
-
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_isMotorolaLicencePassed
 (JNIEnv *env, jclass, jstring jLicense, jstring jCompany, jstring jAppName)
 {
@@ -318,36 +311,23 @@ RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_callActivationCa
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_setPushRegistrationId
-  (JNIEnv *env, jobject, jstring jId)
+  (JNIEnv *env, jobject, jstring jType, jstring jId)
 {
-	std::string deviceId = rho_cast<std::string>(env, jId);
+    std::string strType = jType ? rho_cast<std::string>(env, jType) : "";
+    std::string deviceId = rho_cast<std::string>(env, jId);
 
-	RHOCONF().setString("push_pin", deviceId.c_str(), true);
-	
-	if ( rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
-//		rho::sync::CClientRegister::Create(deviceId);
-		rho::sync::RhoconnectClientManager::clientRegisterCreate(deviceId.c_str());
-	}
-}
-
-RHO_GLOBAL jstring JNICALL Java_com_rhomobile_rhodes_RhodesService_getPushRegistrationId
-  (JNIEnv * env, jobject)
-{
-	rho::String ret = "";
-	if ( rho::sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
-    //return rho_cast<jstring>(env, rho::sync::CClientRegister::Get()->getDevicePin());
-		ret = rho::sync::RhoconnectClientManager::clientRegisterGetDevicePin();
-	}
-	return rho_cast<jstring>(env, ret);
+    rho::push::CPushManager::getInstance()->setDeviceId(strType, deviceId);
 }
 
 RHO_GLOBAL jboolean JNICALL Java_com_rhomobile_rhodes_RhodesService_callPushCallback
-  (JNIEnv *env, jobject, jstring jType, jstring jJson, jstring jData)
+  (JNIEnv *env, jobject, jstring jType, jstring jJson)
 {
     std::string strType = jType ? rho_cast<std::string>(env, jType) : "";
     std::string strJson = jJson ? rho_cast<std::string>(env, jJson) : "";
-    std::string strData = jData ? rho_cast<std::string>(env, jData) : "";
-    return (jboolean)RHODESAPP().callPushCallback(strType, strJson, strData);
+
+    rho::push::CPushManager::getInstance()->callBack(strType, strJson);
+
+    return (jboolean)true;
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_resetHttpLogging
@@ -392,6 +372,11 @@ RHO_GLOBAL void rho_conf_show_log()
     if (!mid) return;
 
     env->CallStaticVoidMethod(cls, mid);
+}
+
+RHO_GLOBAL void rho_title_change(const int tabIndex, const char* strTitle)
+{
+    // not implemented
 }
 
 RHO_GLOBAL void JNICALL Java_com_rhomobile_rhodes_RhodesService_notifyNetworkStatusChanged(JNIEnv *env, jobject, int status)

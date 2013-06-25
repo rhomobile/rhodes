@@ -39,7 +39,7 @@ module Rho
   end
 
   def self.support_transitions?()
-	is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/)
+  is_bb6 = System::get_property('platform') == 'Blackberry' && (System::get_property('os_version') =~ /^6\.0/)
     System::get_property('platform') == 'APPLE' || System::get_property('platform') == 'ANDROID' || is_bb6
   end
 
@@ -326,7 +326,7 @@ end
     def self.check_source_migration(source)
         return unless source.has_key?('migrate_version')
 
-        db = ::Rho::RHO.get_src_db(source['name'])	  
+        db = ::Rho::RHO.get_src_db(source['name'])    
 
         if !get_instance().get_app(APPNAME).on_migrate_source(source['migrate_version'], source)
             db.execute_batch_sql(source['schema']['sql'])
@@ -351,11 +351,11 @@ end
         begin
             res = Rho::JSON.parse(data)
 
-			skip_schema = false
-			if res['skip_schema']
-				skip_schema = res['skip_schema'].to_i() > 0
-			end
-			puts "skip_schema = #{skip_schema}"
+      skip_schema = false
+      if res['skip_schema']
+        skip_schema = res['skip_schema'].to_i() > 0
+      end
+      puts "skip_schema = #{skip_schema}"
             if res['partition']
                 str_partition = res['partition']
                 puts "reload sources for partition: #{str_partition}"
@@ -365,49 +365,49 @@ end
                 
                 db.start_transaction
                 begin
-					mapProps = {}
-					mapFreezed = {}
-					
-					Rho::RhoConfig::sources().each do |key,value|
-						if value['partition']==str_partition
-							mapProps[key] = value['property']
-							mapFreezed[key] = value['freezed']
-						end
-					end
-										
+          mapProps = {}
+          mapFreezed = {}
+          
+          Rho::RhoConfig::sources().each do |key,value|
+            if value['partition']==str_partition
+              mapProps[key] = value['property']
+              mapFreezed[key] = value['freezed']
+            end
+          end
+                    
                     Rho::RhoConfig::sources().delete_if {|key, value| value['partition']==str_partition }
                     arSrcs = db.select_from_table('sources','source_id, name, sync_priority, partition, sync_type, schema, schema_version, associations, blob_attribs',
                         {'partition'=>str_partition} )
                     arSrcs.each do |src|
                         
                         if src 
-							if src['schema'] && src['schema'].length() > 0
-								if !skip_schema
-									#puts "src['schema'] :  #{src['schema']}"
-									hashSchema = Rho::JSON.parse(src['schema'])
-									#puts "hashSchema :  #{hashSchema}"
+              if src['schema'] && src['schema'].length() > 0
+                if !skip_schema
+                  #puts "src['schema'] :  #{src['schema']}"
+                  hashSchema = Rho::JSON.parse(src['schema'])
+                  #puts "hashSchema :  #{hashSchema}"
                             
-									src['schema'] = hashSchema
-									src['schema']['sql'] = ::Rho::RHO.make_createsql_script( src['name'], hashSchema)
-									src['schema_version'] = hashSchema['version']
+                  src['schema'] = hashSchema
+                  src['schema']['sql'] = ::Rho::RHO.make_createsql_script( src['name'], hashSchema)
+                  src['schema_version'] = hashSchema['version']
                             
-									db.update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
+                  db.update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
                             
-									#if str_partition != 'user'
-									#    @db_partitions['user'].update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
-									#end
-								end
-							else
-								props = mapProps[src['name']]
-								if props
-									src['property'] = props
-								end
-								
-								freezed = mapFreezed[src['name']]
-								if freezed
-									src['freezed'] = freezed
-								end
-							end
+                  #if str_partition != 'user'
+                  #    @db_partitions['user'].update_into_table('sources', {"schema"=>src['schema']['sql'], "schema_version"=>src['schema_version']},{"name"=>src['name']})
+                  #end
+                end
+              else
+                props = mapProps[src['name']]
+                if props
+                  src['property'] = props
+                end
+                
+                freezed = mapFreezed[src['name']]
+                if freezed
+                  src['freezed'] = freezed
+                end
+              end
                         end
 
                         src[:loaded] = true
@@ -421,7 +421,7 @@ end
                 end                
                 
                 ::Rho::RHO.init_sync_source_properties(Rho::RhoConfig::sources().values())
-				#puts "sources after: #{Rho::RhoConfig::sources()}"            
+        #puts "sources after: #{Rho::RhoConfig::sources()}"            
                 return
             end
         rescue Exception => e
@@ -605,11 +605,11 @@ if defined?(RHOCONNECT_CLIENT_PRESENT)
     
         uniq_sources.each do|src|
             if src.has_key?('freezed') || !src['schema'].nil?
-				hash_props = !src['schema'].nil? ? src['schema']["property"] : src["property"]
-				if (!hash_props.nil?)
-					str_props = hash_props.keys.join(',')
-					Rho::RhoConnectClient.set_source_property(src['source_id'], 'freezed', str_props )
-				end
+        hash_props = !src['schema'].nil? ? src['schema']["property"] : src["property"]
+        if (!hash_props.nil?)
+          str_props = hash_props.keys.join(',')
+          Rho::RhoConnectClient.set_source_property(src['source_id'], 'freezed', str_props )
+        end
             end            
         end
 end
@@ -672,25 +672,31 @@ end
           next unless partition == source['partition']
           next unless source['schema']
           
-          raise ArgumentError, "schema parameter should be Hash!" unless source['schema'].is_a?(Hash)
           
           call_migrate = false
           if db.table_exist?(source['name'])
             next unless hash_migrate.has_key?(source['name'])
             call_migrate = true 
           end
-          
-			strCreate = make_createsql_script(source['name'], source['schema'])
-			
-			#puts "source['schema'] :  #{source['schema']}"
-			#hashSchema = Rho::JSON.parse(source['schema'])
-			#puts "hashSchema :  #{hashSchema}"
-			
-			#src['schema'] = hashSchema
-			#source['schema']['sql'] = strCreate
-			#src['schema_version'] = hashSchema['version']
-			#strCreate = source['schema']
-			#puts "strCreate: #{strCreate}"
+
+      strCreate =nil
+      if source['schema'].is_a?(String)
+        strCreate = source['schema']
+      else
+        raise ArgumentError, "schema parameter should be Hash!" unless source['schema'].is_a?(Hash)
+        strCreate = make_createsql_script(source['name'], source['schema'])
+      end
+
+      
+      #puts "source['schema'] :  #{source['schema']}"
+      #hashSchema = Rho::JSON.parse(source['schema'])
+      #puts "hashSchema :  #{hashSchema}"
+      
+      #src['schema'] = hashSchema
+      #source['schema']['sql'] = strCreate
+      #src['schema_version'] = hashSchema['version']
+      #strCreate = source['schema']
+      #puts "strCreate: #{strCreate}"
         
           if call_migrate
             db.update_into_table('sources', {"schema"=>strCreate},{"name"=>source['name']})
@@ -706,7 +712,7 @@ end
           end
         
         end
-		System.update_blob_attribs(partition, -1 )
+    System.update_blob_attribs(partition, -1 )
     end
 
     def self.make_createsql_script(name,schema_attr)
@@ -933,8 +939,8 @@ end
       begin
         RhoProfiler.start_counter('INDEX_ACTION')            
       
-    	# TODO: Removed hardcoded appname
-    	get_app(APPNAME).set_menu
+      # TODO: Removed hardcoded appname
+      get_app(APPNAME).set_menu
       
         puts "RHO serve_index: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
@@ -957,8 +963,8 @@ end
       begin
         RhoProfiler.start_counter('INDEX_ACTION')            
       
-    	# TODO: Removed hardcoded appname
-    	get_app(APPNAME).set_menu
+      # TODO: Removed hardcoded appname
+      get_app(APPNAME).set_menu
       
         puts "RHO serve_index: " + (req ? "#{req['request-uri']}" : '')
         res = init_response
@@ -1056,8 +1062,8 @@ end
     def send_error(exception=nil,status=500,hash=false)
       if exception
         trace_msg = exception.backtrace.join("\n")
-	    puts "App error: #{exception.message}\n #{trace_msg}"
-	  end  
+      puts "App error: #{exception.message}\n #{trace_msg}"
+    end  
       body=''
       
       err_page = nil
@@ -1080,6 +1086,7 @@ end
       end
       
       body << <<-_HTML_STRING_
+        <!DOCTYPE html>
         <html>
             <head>
                 <meta name="viewport" content="width=320"/>
@@ -1251,29 +1258,29 @@ end
       
 end # Rho
 #at_exit do
-	#::Rhom::RhomDbAdapter.close
+  #::Rhom::RhomDbAdapter.close
 #end
 
 begin
-	puts "Looking for RhoConnectClient"
-	Rho.const_get('RhoConnectClient')
-	puts "RhoConnectClient found. do nothing"
+  puts "Looking for RhoConnectClient"
+  Rho.const_get('RhoConnectClient')
+  puts "RhoConnectClient found. do nothing"
 rescue LoadError, NameError => e
-	puts "RhoConnectClient not found ( #{e.inspect} ). Defining stub module"
+  puts "RhoConnectClient not found ( #{e.inspect} ). Defining stub module"
 
-	module Rho
-		class RhoConnectClient
-			def self.method_missing(name, *args, &block)
-				raise "RhoConnectClient call #{name} not supported. Use 'rhoconnect-client' extension."
-			end
-		end
-	end
+  module Rho
+    class RhoConnectClient
+      def self.method_missing(name, *args, &block)
+        raise "RhoConnectClient call #{name} not supported. Use 'rhoconnect-client' extension."
+      end
+    end
+  end
 
-	class SyncEngine
-		def self.method_missing(name, *args, &block)
-			raise "SyncEngine call #{name} not supported. Use 'rhoconnect-client' extension."
-		end
-	end
+  class SyncEngine
+    def self.method_missing(name, *args, &block)
+      raise "SyncEngine call #{name} not supported. Use 'rhoconnect-client' extension."
+    end
+  end
 end
 
 

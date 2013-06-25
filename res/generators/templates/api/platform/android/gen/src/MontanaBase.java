@@ -61,38 +61,41 @@ end %>
     param_hash = {}
     method.params.each do |param|
         param_hash[param.name] = api_generator_java_makeNativeType(param)
-    end %>
-<%
-if method.generated_by_template == TEMPLATE_PROPERTY_BAG %>
+    end
+
+    if $cur_module.is_template_propertybag or (method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_GETTER and method.special_behaviour != ModuleMethod::SPECIAL_BEHAVIOUR_SETTER)
+
+        if method.generated_by_template == TEMPLATE_PROPERTY_BAG %>
     public void <%= method.native_name %>(<%
-param_hash.each do |name, type| %><%= type %> <%= name %>, <% end %>IMethodResult result) { <%
-unless custom_props.empty? %>
+            param_hash.each do |name, type| %><%= type %> <%= name %>, <% end %>IMethodResult result) { <%
+                unless custom_props.empty? %>
         mPropertyBag.<%= method.native_name %>(<% param_hash.each do |name, type| %><%= name %>, <% end %>sCustomAccessNames, this, result);<%
-else %>
+                else %>
         mPropertyBag.<%= method.native_name %>(<% param_hash.each do |name, type| %><%= name %>, <% end %>result);<%
-end %>
+                end %>
     }<%
-end %>
-<%
-if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER or method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
-if method.linked_property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG %>
+            end
+
+            if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER or method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_SETTER
+                if method.linked_property.use_property_bag_mode == ModuleProperty::USE_PROPERTY_BAG_MODE_ACCESSORS_VIA_PROPERTY_BAG %>
     public void <%= method.native_name %>(<% param_hash.each do |name, type| %><%= type %> <%= name %>, <% end %>IMethodResult result) {
-<%
-if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
-  if method.linked_property.type == MethodParam::TYPE_BOOL %>
+                    <%
+                    if method.special_behaviour == ModuleMethod::SPECIAL_BEHAVIOUR_GETTER
+                        if method.linked_property.type == MethodParam::TYPE_BOOL %>
         result.forceBooleanType();<%
-  elsif method.linked_property.type == MethodParam::TYPE_INT %>
+                        elsif method.linked_property.type == MethodParam::TYPE_INT %>
         result.forceIntegerType();<%
-  elsif method.linked_property.type == MethodParam::TYPE_DOUBLE %>
+                        elsif method.linked_property.type == MethodParam::TYPE_DOUBLE %>
         result.forceDoubleType();<%
-  end %> 
+                        end %> 
         getProperty("<%= method.linked_property.name %>", result);<%
-else %>
+                    else %>
         setProperty("<%= method.linked_property.name %>", String.valueOf(<%= method.params.first.name %>), result);<%
-end %>
+                end %>
     }<%
-end
-end %>
+            end
+        end 
+    end %>
 
     public static class <%= method.native_name %>Task implements Runnable {
         private I<%= $cur_module.name %> mApiObject; <%

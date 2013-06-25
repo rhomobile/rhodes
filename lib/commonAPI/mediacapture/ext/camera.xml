@@ -49,14 +49,14 @@
         		<DESC>The maximum height of images which can be captured.</DESC>
         	</PROPERTY>
         	<PROPERTY name="supportedSizeList" type="ARRAY" readOnly="true" usePropertyBag="none" >
-        	    <PROPERTY type="HASH">
-        	        <PROPERTIES>
-        	            <PROPEPRTY name="width" type="INTEGER"/>
-        	            <PROPEPRTY name="height" type="INTEGER"/>
-        	        </PROPERTIES>
-        	    </PROPERTY>
+        	    <PARAM type="HASH">
+        	        <PARAMS>
+        	            <PARAM name="width" type="INTEGER"/>
+        	            <PARAM name="height" type="INTEGER"/>
+        	        </PARAMS>
+        	    </PARAM>
         	    <PLATFORM>Android</PLATFORM>
-        	    <DESC></DESC>
+        	    <DESC>List of resolutions supported by camera.</DESC>
         	</PROPERTY>      	
             <PROPERTY name="desiredWidth" type="INTEGER">
 				<VER_INTRODUCED>2.0.0</VER_INTRODUCED>

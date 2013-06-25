@@ -336,6 +336,13 @@ void CHttpServer::stop()
     // therefore, stop server thread (because m_active set to false).
     m_active = false;
     RAWLOG_INFO("Stopping server...");
+
+    if (m_sock!=INVALID_SOCKET)
+    {
+        closesocket(m_sock);
+        m_sock = INVALID_SOCKET;
+    }
+
     SOCKET conn = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in sa;
     memset(&sa, 0, sizeof(sa));
@@ -428,11 +435,13 @@ bool CHttpServer::run()
 
     RHODESAPP().notifyLocalServerStarted();
 
-    for(;;) {
+    for(;;) 
+    {
         RAWTRACE("Waiting for connections...");
-#if !defined(RHO_NO_RUBY)
-        rho_ruby_start_threadidle();
-#endif
+
+        if (rho_ruby_is_started())
+            rho_ruby_start_threadidle();
+
         fd_set readfds;
         FD_ZERO(&readfds);
         FD_SET(m_listener, &readfds);
@@ -443,9 +452,8 @@ bool CHttpServer::run()
         tv.tv_usec = (nTimeout - tv.tv_sec*1000)*1000;
         int ret = select(m_listener+1, &readfds, NULL, NULL, (tv.tv_sec == 0 && tv.tv_usec == 0 ? 0 : &tv) );
 
-#if !defined(RHO_NO_RUBY)
-        rho_ruby_stop_threadidle();
-#endif
+        if (rho_ruby_is_started())
+            rho_ruby_stop_threadidle();
 
         bool bProcessed = false;
         if (ret > 0) 
@@ -471,36 +479,43 @@ bool CHttpServer::run()
                 RAWTRACE("Connection accepted, process it...");
                 VALUE val;
                 
-#if !defined(RHO_NO_RUBY)
-                if ( !RHOCONF().getBool("enable_gc_while_request") )                
-                    val = rho_ruby_disable_gc();
-#endif
+                if (rho_ruby_is_started())
+                {
+                    if ( !RHOCONF().getBool("enable_gc_while_request") )                
+                        val = rho_ruby_disable_gc();
+                }
+
                 bProcessed = process(conn);
 
-#if !defined(RHO_NO_RUBY)
-                if ( !RHOCONF().getBool("enable_gc_while_request") )
-                    rho_ruby_enable_gc(val);
-#endif                
+                if (rho_ruby_is_started())
+                {
+                    if ( !RHOCONF().getBool("enable_gc_while_request") )
+                        rho_ruby_enable_gc(val);
+                }
+
                 RAWTRACE("Close connected socket");
                 closesocket(conn);
             }
-        }else if ( ret == 0 ) //timeout
+        }
+        else if ( ret == 0 ) //timeout
         {
             bProcessed = RHODESAPP().getTimer().checkTimers();
-        }else
+        }
+        else
         {
             RAWLOG_ERROR1("select error: %d", ret);
             return false;
         }
 
-#if !defined(RHO_NO_RUBY)
-        if ( bProcessed )
+        if (rho_ruby_is_started())
         {
-            LOG(INFO) + "GC Start.";
-            rb_gc();
-            LOG(INFO) + "GC End.";
+            if ( bProcessed )
+            {
+                LOG(INFO) + "GC Start.";
+                rb_gc();
+                LOG(INFO) + "GC End.";
+            }
         }
-#endif
     }
 }
 
@@ -549,11 +564,14 @@ bool CHttpServer::receive_request(ByteVector &request)
 
 	ByteVector r;
     char buf[BUF_SIZE];
+    int attempts = 0;
     for(;;) {
         if (verbose) RAWTRACE("Read portion of data from socket...");
         int n = recv(m_sock, &buf[0], sizeof(buf), 0);
+        //RAWTRACE1("RECV: %d", n);
         if (n == -1) {
             int e = RHO_NET_ERROR_CODE;
+            RAWTRACE1("RECV ERROR: %d", e);
 #if !defined(WINDOWS_PLATFORM)
             if (e == EINTR)
                 continue;
@@ -570,10 +588,18 @@ bool CHttpServer::receive_request(ByteVector &request)
                 if (!r.empty())
                     break;
                 
+                if(++attempts > 100)
+                {
+                    RAWLOG_ERROR("Error when receiving data from socket. Client does not send data for 10 sec. Cancel recieve.");
+                    return false;
+                }
+
                 fd_set fds;
                 FD_ZERO(&fds);
                 FD_SET(m_sock, &fds);
-                select(m_sock + 1, &fds, 0, 0, 0);
+                timeval tv = {0};
+				tv.tv_usec = 100000;//100 MS
+                select(m_sock + 1, &fds, 0, 0, &tv);
                 continue;
             }
             
@@ -582,7 +608,7 @@ bool CHttpServer::receive_request(ByteVector &request)
         }
         
         if (n == 0) {
-            RAWLOG_ERROR("Connection gracefully closed before we send any data");
+            RAWLOG_ERROR("Connection gracefully closed before we receive any data");
             return false;
         }
         
@@ -1095,7 +1121,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
 
     if ( doesNotExists ) {
         RAWLOG_ERROR1("The file %s was not found", path.c_str());
-        String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
+        String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " was not found.</font></html>";
         send_response(create_response("404 Not Found",error));
         return false;
     }
@@ -1103,7 +1129,7 @@ bool CHttpServer::send_file(String const &path, HeaderList const &hdrs)
     FILE *fp = fopen(fullPath.c_str(), "rb");
     if (!fp) {
         RAWLOG_ERROR1("The file %s could not be opened", path.c_str());
-        String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " could not be opened.</font></html";
+        String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + path + " could not be opened.</font></html";
         send_response(create_response("404 Not Found",error));
         return false;
     }
@@ -1272,80 +1298,83 @@ bool CHttpServer::decide(String const &method, String const &arg_uri, String con
 
     String fullPath = CFilePath::join(m_root, uri);
     
-    Route route;
-    if (dispatch(uri, route)) {
-        RAWTRACE1("Uri %s is correct route, so enable MVC logic", uri.c_str());
-        
-        VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
-                                        method, uri, query, headers, body);
-        VALUE data = callFramework(req);
-        String reply(getStringFromValue(data), getStringLenFromValue(data));
-        rho_ruby_releaseValue(data);
+    if (rho_ruby_is_started())
+    {
+        Route route;
+        if (dispatch(uri, route)) {
+            RAWTRACE1("Uri %s is correct route, so enable MVC logic", uri.c_str());
+            
+            VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
+                                            method, uri, query, headers, body);
+            VALUE data = callFramework(req);
+            String reply(getStringFromValue(data), getStringLenFromValue(data));
+            rho_ruby_releaseValue(data);
 
-        bool isRedirect = String_startsWith(reply, "HTTP/1.1 301") ||
-                          String_startsWith(reply, "HTTP/1.1 302");
+            bool isRedirect = String_startsWith(reply, "HTTP/1.1 301") ||
+                              String_startsWith(reply, "HTTP/1.1 302");
 
-        if (!send_response(reply, isRedirect))
-            return false;
+            if (!send_response(reply, isRedirect))
+                return false;
 
-        if (method == "GET")
-            rho_rhodesapp_keeplastvisitedurl(uri.c_str());
+            if (method == "GET")
+                rho_rhodesapp_keeplastvisitedurl(uri.c_str());
 
-		if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
+		    if ( sync::RhoconnectClientManager::haveRhoconnectClientImpl() ) {
 
-			if (!route.id.empty()) {
-				sync::RhoconnectClientManager::rho_sync_addobjectnotify_bysrcname(route.model.c_str(), route.id.c_str());
-			}			
-		}
-        
-        return true;
-    }
-    
-//#ifndef OS_ANDROID
-    if (isdir(fullPath)) {
-        RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
-        String q = query.empty() ? "" : "?" + query;
-        
-        HeaderList headers;
-        headers.push_back(Header("Location", CFilePath::join( uri, "index"RHO_ERB_EXT) + q));
-        
-        send_response(create_response("301 Moved Permanently", headers), true);
-        return false;
-    }
-//#else
-//    //Work around this Android redirect bug:
-//    //http://code.google.com/p/android/issues/detail?can=2&q=11583&id=11583
-//    if (isdir(fullPath)) {
-//        RAWTRACE1("Uri %s is directory, override with index", uri.c_str());
-//        return decide(method, CFilePath::join( uri, "index"RHO_ERB_EXT), query, headers, body);
-//    }
-//#endif
-    if (isindex(uri)) {
-        if (!isfile(fullPath)) {
-            RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
-            String error = "<html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
-            send_response(create_response("404 Not Found",error));
-            return false;
+			    if (!route.id.empty()) {
+				    sync::RhoconnectClientManager::rho_sync_addobjectnotify_bysrcname(route.model.c_str(), route.id.c_str());
+			    }			
+		    }
+            
+            return true;
         }
         
-        RAWTRACE1("Uri %s is index file, call serveIndex", uri.c_str());
-
-        VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
-                                        method, uri, query, headers, body);
-
-        VALUE data = callServeIndex((char *)fullPath.c_str(), req);
-        String reply(getStringFromValue(data), getStringLenFromValue(data));
-        rho_ruby_releaseValue(data);
-
-        if (!send_response(reply))
+    //#ifndef OS_ANDROID
+        if (isdir(fullPath)) {
+            RAWTRACE1("Uri %s is directory, redirecting to index", uri.c_str());
+            String q = query.empty() ? "" : "?" + query;
+            
+            HeaderList headers;
+            headers.push_back(Header("Location", CFilePath::join( uri, "index"RHO_ERB_EXT) + q));
+            
+            send_response(create_response("301 Moved Permanently", headers), true);
             return false;
+        }
+    //#else
+    //    //Work around this Android redirect bug:
+    //    //http://code.google.com/p/android/issues/detail?can=2&q=11583&id=11583
+    //    if (isdir(fullPath)) {
+    //        RAWTRACE1("Uri %s is directory, override with index", uri.c_str());
+    //        return decide(method, CFilePath::join( uri, "index"RHO_ERB_EXT), query, headers, body);
+    //    }
+    //#endif
+        if (isindex(uri)) {
+            if (!isfile(fullPath)) {
+                RAWLOG_ERROR1("The file %s was not found", fullPath.c_str());
+                String error = "<!DOCTYPE html><html><font size=\"+4\"><h2>404 Not Found.</h2> The file " + uri + " was not found.</font></html>";
+                send_response(create_response("404 Not Found",error));
+                return false;
+            }
+            
+            RAWTRACE1("Uri %s is index file, call serveIndex", uri.c_str());
 
-        if (method == "GET")
-            rho_rhodesapp_keeplastvisitedurl(uri.c_str());
+            VALUE req = create_request_hash(route.application, route.model, route.action, route.id,
+                                            method, uri, query, headers, body);
 
-        return true;
+            VALUE data = callServeIndex((char *)fullPath.c_str(), req);
+            String reply(getStringFromValue(data), getStringLenFromValue(data));
+            rho_ruby_releaseValue(data);
+
+            if (!send_response(reply))
+                return false;
+
+            if (method == "GET")
+                rho_rhodesapp_keeplastvisitedurl(uri.c_str());
+
+            return true;
+        }
     }
-    
+
     // Try to send requested file
     RAWTRACE1("Uri %s should be regular file, trying to send it", uri.c_str());
     return send_file(uri, headers);
