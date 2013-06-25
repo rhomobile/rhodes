@@ -7,6 +7,7 @@
 #include "net/INetRequest.h"
 #include "db/DBAdapter.h"
 #include "sync/ILoginListener.h"
+#include "logging/RhoLog.h"
 
 namespace  rho {
 	
@@ -60,69 +61,29 @@ public:
 };
 
 class RhoconnectClientManager {
-	class DummyRhoconnectClientImpl : public IRhoconnectClient {
-		/* const */ String m_devicePin;
-	public:
-		virtual ~DummyRhoconnectClientImpl() {}
-		
-		virtual void doSyncSourceByName( const char* srcName ) {}
-		virtual void doSyncAllSources( int show_status_popup, const char* query_params, int sync_only_changed_sources ) {}
-		
-        virtual bool clientRegisterHaveInstance() { return false; }
-		virtual void clientRegisterCreate( const char* szDevicePin ) {}
-		virtual void clientRegisterCreate( ) {}
-		virtual void clientRegisterDestroy() {}
-		virtual void clientRegisterAddLoginListener( ILoginListener* listener ) {}
-		virtual const String& clientRegisterGetDevicePin() { return m_devicePin; }
-        virtual void clientRegisterSetDevicePin(const char* pin ) {}
-		
-		virtual void rho_sync_addobjectnotify_bysrcname(const char* szSrcName, const char* szObject) {}
-		virtual String syncEnineReadClientID() { return ""; }
-		virtual net::IRhoSession* getRhoSession() { return 0; }
-		virtual void syncEngineApplyChangedValues(db::CDBAdapter& db) {}
-		virtual void syncThreadCreate() {}
-		virtual void syncThreadDestroy() {}
-		virtual bool haveSyncThread() { return false; }
-		virtual unsigned int syncThreadGetThreadID() { return (unsigned int)-1; }
-		virtual bool syncEngineNotifyIsReportingEnabled() { return false; }
-		virtual int rho_sync_issyncing() { return 0; }
-		
-		virtual int logged_in() { return 0; }
-		virtual unsigned long login(const char* szLogin, const char* password, const char* callback) { return 0; }
-		virtual void logout() {}
-		virtual void stop() {}
-		virtual int set_pollinterval( int interval ) { return 0; }
-		virtual int get_pollinterval() { return 0; }
-		virtual void set_syncserver( const char* syncserver ) {}
-		virtual int get_pagesize() { return 0; }
-		virtual void set_pagesize(int nPageSize) {}
-		virtual int get_lastsync_objectcount(int nSrcID) { return 0; }
-		virtual int issyncing() { return 0; }
-		virtual void enable_status_popup(int b) {}
-		virtual void set_threaded_mode(int b) {}
-		virtual void register_push() {}
-		virtual void set_ssl_verify_peer(int b) {}
-		virtual void setobjectnotify_url(const char* szUrl) {}
-		virtual void cleanobjectnotify() {}
-		virtual void clear_notification(int srcID) {}
-	};
+	class DummyRhoconnectClientImpl;
 	
+	DEFINE_LOGCLASS;
+
 	static IRhoconnectClient* m_pImpl;
 	static DummyRhoconnectClientImpl s_dummyRhoconnectClientImpl;
+	static bool m_bClientRegisterCreate;
+	static String m_strClientRegisterDeviceId;
+	static Vector<rho::sync::ILoginListener*> m_loginListeners;
 	
 public:
-	static void setRhoconnectClientImpl( IRhoconnectClient* impl ) { m_pImpl = impl; }
-	static bool haveRhoconnectClientImpl() { return ((m_pImpl != 0) && (m_pImpl != (&s_dummyRhoconnectClientImpl))); }
+	static void setRhoconnectClientImpl(IRhoconnectClient* impl);
+	static bool haveRhoconnectClientImpl();
 
 	
 	static void doSyncSourceByName(const char* srcName) { m_pImpl->doSyncSourceByName(srcName); }
 	static void doSyncAllSources( int show_status_popup, const char* query_params, int sync_only_changed_sources ) { m_pImpl->doSyncAllSources(show_status_popup, query_params, sync_only_changed_sources ); }
 
         static bool clientRegisterHaveInstance() { return m_pImpl->clientRegisterHaveInstance(); }
-	static void clientRegisterCreate( const char* szDevicePin ) { m_pImpl->clientRegisterCreate(szDevicePin); }
-	static void clientRegisterCreate() { m_pImpl->clientRegisterCreate(); }
-	static void clientRegisterDestroy() { m_pImpl->clientRegisterDestroy(); }
-	static void clientRegisterAddLoginListener( ILoginListener* listener ) { m_pImpl->clientRegisterAddLoginListener(listener); }
+	static void clientRegisterCreate( const char* szDevicePin );
+	static void clientRegisterCreate();
+	static void clientRegisterDestroy();
+	static void clientRegisterAddLoginListener( ILoginListener* listener );
 	static const String& clientRegisterGetDevicePin() { return m_pImpl->clientRegisterGetDevicePin(); }
 	static void clientRegisterSetDevicePin(const char* pin ) { return m_pImpl->clientRegisterSetDevicePin(pin); }
 
