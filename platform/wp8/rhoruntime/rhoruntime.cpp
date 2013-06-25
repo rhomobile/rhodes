@@ -153,7 +153,7 @@ void CRhoRuntime::onTabbarCurrentChanged(int index, ::Platform::String^ action)
 	//}
 
     //if (tbrp["reload"].toBool() || (ui->webView && (ui->webView->history()->count()==0))) {
-	RHODESAPP().loadUrl(rho::common::convertStringAFromWP8(action));
+	RHODESAPP().loadUrl(rho::common::convertStringAFromWP8(action), index);
     //}
 }
 
