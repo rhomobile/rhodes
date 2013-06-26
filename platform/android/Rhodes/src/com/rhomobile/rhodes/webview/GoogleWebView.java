@@ -1,7 +1,9 @@
 package com.rhomobile.rhodes.webview;
 
+import java.io.File;
 import java.io.FileOutputStream;
 
+import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.extmanager.IRhoWebView;
 import com.rhomobile.rhodes.extmanager.IRhoWebViewConfig;
@@ -13,9 +15,11 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Picture;
+import android.net.Uri;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
@@ -148,6 +152,14 @@ public class GoogleWebView implements IRhoWebView {
 
     @Override
     public void loadUrl(String url) {
+        if (URLUtil.isFileUrl(url)) {
+            String path = Uri.parse(url).getPath();
+            if(path.startsWith("/data/data")) {
+                Logger.T(TAG, "Local file URL, override using LocalFileProvider");
+                url = LocalFileProvider.uriFromLocalFile(new File(path)).toString();
+                Logger.T(TAG, "Overrided URL: " + url);
+            }
+        }
         mWebView.loadUrl(url);
     }
 

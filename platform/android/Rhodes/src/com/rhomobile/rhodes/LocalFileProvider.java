@@ -85,7 +85,7 @@ public class LocalFileProvider extends ContentProvider
     public ParcelFileDescriptor openFile(Uri uri, String mode)
         throws FileNotFoundException, SecurityException
     {
-        Logger.D(TAG, "Opening content: " + uri);
+        Logger.T(TAG, "Opening content: " + uri);
         
         if(mode.compareTo("r") != 0)
         {

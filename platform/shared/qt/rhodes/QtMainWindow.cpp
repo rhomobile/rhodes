@@ -486,7 +486,11 @@ void QtMainWindow::setUpWebPage(QWebPage* page)
 {
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     page->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
-	RhoNativeApiCall* rhoNativeApiCall = new RhoNativeApiCall(page->mainFrame());
+    quint16 webkit_debug_port = RHOSIMCONF().getInt("webkit_debug_port");
+    if (webkit_debug_port == 0)
+        webkit_debug_port = 9090;
+    page->setProperty("_q_webInspectorServerPort", webkit_debug_port);
+    RhoNativeApiCall* rhoNativeApiCall = new RhoNativeApiCall(page->mainFrame());
     page->setProperty("__rhoNativeApi", QVariant::fromValue(rhoNativeApiCall));
     connect(page->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
         rhoNativeApiCall, SLOT(populateJavaScriptWindowObject()));
