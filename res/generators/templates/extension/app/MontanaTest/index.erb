@@ -9,7 +9,9 @@
 
   <div data-role="content">
     <ul data-role="listview">
-        <%%= link_to 'Run <%= namecamelcase %> test', { :action => :run_test }%>
+        <%%= link_to 'Run <%= namecamelcase %>.getPlatformName test', { :action => :run_test_get_platform }%><br>
+        <%%= link_to 'Run <%= namecamelcase %>.calcSumm test', { :action => :run_test_calc_summ }%><br>
+        <%%= link_to 'Run <%= namecamelcase %>.joinStrings test', { :action => :run_test_join_strings }%><br>
     </ul>
   </div>
 
