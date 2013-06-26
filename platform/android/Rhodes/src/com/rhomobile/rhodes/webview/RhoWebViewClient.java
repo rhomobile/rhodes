@@ -26,6 +26,9 @@
 
 package com.rhomobile.rhodes.webview;
 
+import java.io.File;
+
+import com.rhomobile.rhodes.LocalFileProvider;
 import com.rhomobile.rhodes.Logger;
 import com.rhomobile.rhodes.RhoConf;
 import com.rhomobile.rhodes.RhodesActivity;
@@ -34,9 +37,12 @@ import com.rhomobile.rhodes.extmanager.IRhoExtension;
 import com.rhomobile.rhodes.extmanager.RhoExtManager;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.view.Window;
 import android.webkit.SslErrorHandler;
+import android.webkit.URLUtil;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -49,12 +55,35 @@ public class RhoWebViewClient extends WebViewClient
         mWebView = webView;
     }
 
+//    @Override
+//    public WebResourceResponse shouldInterceptRequest(WebView view, String url) {
+//        Logger.I(TAG, "Resource request: " + url);
+//        return null;
+//    }
+//
+//    public void onLoadResource(WebView view, String url) {
+//        Logger.I(TAG, "Load resource" + url);
+//    }
+
+    
     @Override
     public boolean shouldOverrideUrlLoading(WebView view, String url) {
         Logger.I(TAG, "Loading URL: " + url);
         boolean res = RhodesService.getInstance().handleUrlLoading(url);
         if (!res) {
             RhoExtManager.getImplementationInstance().onBeforeNavigate(view, url);
+            
+            if (URLUtil.isFileUrl(url)) {
+                String path = Uri.parse(url).getPath();
+                if(path.startsWith("/data/data")) {
+                    Logger.T(TAG, "Local URL, override using LocalFileProvider");
+                    String contentUrl = LocalFileProvider.uriFromLocalFile(new File(path)).toString();
+                    Logger.T(TAG, "Overrided URL: " + contentUrl);
+                    view.loadUrl(contentUrl);
+                    return true;
+                }
+            }
+            
         }
         return res;
     }
@@ -67,8 +96,6 @@ public class RhoWebViewClient extends WebViewClient
         
         if (mWebView.getConfig() != null && mWebView.getConfig().getBool("enablePageLoadingIndication"))
             RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, 0);
-//        else
-//            RhodesActivity.safeGetInstance().getWindow().setFeatureInt(Window.FEATURE_PROGRESS, RhodesActivity.MAX_PROGRESS);
     }
     
     @Override

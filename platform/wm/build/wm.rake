@@ -115,7 +115,12 @@ namespace "config" do
     $additional_dlls_path = nil
     $additional_regkeys = nil
     $use_direct_deploy = "yes"
+    $build_persistent_cab = false
     $run_on_startup = false
+
+    if !$app_config["wm"].nil? && $app_config["wm"]["persistent"]
+      $build_persistent_cab = true
+    end
 
     if !$app_config["wm"].nil? && $app_config["wm"]["startAtBoot"]
       $run_on_startup = true
@@ -657,6 +662,111 @@ namespace "device" do
   end
   
   namespace "wm" do
+      
+    # make a *.cpy and *.reg files for persistent installation
+    def makePersistentFiles(dstDir, additional_paths, webkit_dir, regkeys_filename)
+      cf = File.new(File.join(dstDir, $appname + ".cpy"), "w+")
+            
+      if cf.nil?
+        puts "errir file"
+      end
+      
+      currDir = Dir.pwd
+      chdir dstDir
+      
+      Dir.glob("**/*").each { |f|
+        if File.directory?(f) == false
+          cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+        end
+      }
+      
+      if additional_paths.kind_of?(Array)
+        additional_paths.each { |dir|
+          chdir dir
+          
+          Dir.glob("**/*").each { |f|
+            if File.directory?(f) == false
+              cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+            end
+          }        
+        }
+      end
+      
+      if !webkit_dir.nil?
+        chdir webkit_dir
+        
+        Dir.glob("**/*").each { |f|
+          if File.directory?(f) == false && File.extname(f) != ".lib" && File.extname(f) != ".exp"
+            cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+          end
+        }
+      end
+      
+      build_dir = File.join($startdir, "platform", 'wm', "bin", $sdk, "Rhodes", $buildcfg)   
+      chdir build_dir 
+        
+      Dir.glob("**/*").each { |f|
+        if File.directory?(f) == false && (File.extname(f) == ".exe" || File.extname(f) == ".dll") && f != "rhodes.exe"
+          cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+        end
+      }
+          
+      cf.close
+      
+      rf = File.new(File.join(dstDir, $appname + ".reg"), "w+")
+      
+      if File.exist?(regkeys_filename)
+        File.readlines(regkeys_filename).each do |line|
+          parts = line.split(",")
+          
+          if parts.length < 5
+            next
+          end
+          
+          # 0    1                        2       3          4
+          # HKLM,Software\Company\AppName,another,0x00000000,alpha
+          
+          value_name = ""
+          key_name   = "["
+          
+          case parts[0]
+            when "HKLM" 
+              key_name += "HKEY_LOCAL_MACHINE\\"
+            when "HKCU"
+              key_name += "HKEY_CURRENT_USER\\"
+            when "HKCR"
+              key_name += "HKEY_CLASSES_ROOT\\"
+          end
+          
+          key_name += parts[1]
+          key_name += "]"
+          
+          rf.puts key_name
+          
+          if parts[2].nil? || parts[2] == ""
+            value_name = "@="
+          else
+            value_name = "\"" + parts[2] + "\"="
+          end
+          
+          val = parts[4].gsub(/[^0-9A-Za-z]/, '')
+          
+          if parts[3] == "0x00010001"
+            value_name += "dword:"
+            value_name += val
+          else            
+            value_name += "\"" + val + "\""
+          end
+          
+          rf.puts value_name 
+        end        
+      end
+      
+      rf.close      
+      
+      chdir currDir
+    end
+   
     desc "Build production for device or emulator"
     task :production, [:exclude_dirs] => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
 
@@ -704,7 +814,14 @@ namespace "device" do
         end
       end
 
-      args = ['build_inf.js',                           
+      builder_name = 'build_inf.js'
+      persistent_paths = []
+      
+      if $build_persistent_cab == true && $use_shared_runtime.nil?
+        builder_name = 'build_pers_inf.js'
+      end
+
+      args = [builder_name.to_s, 
               $appname + ".inf",                        #0
               build_platform,                           #1
               '"' + $app_config["name"] +'"',           #2
@@ -719,9 +836,10 @@ namespace "device" do
               $srcdir ]                                 #11
 
       if $use_shared_runtime.nil? then
-         $additional_dlls_paths.each do |path|
-            args << path
-         end
+        $additional_dlls_paths.each do |path|
+          args << path
+          persistent_paths << path
+        end
       end
       
       reg_keys_filename = File.join(File.dirname(__FILE__), "regs.txt");
@@ -730,7 +848,7 @@ namespace "device" do
         rm reg_keys_filename 
       end
       
-       if $regkeys && $regkeys.size > 0
+      if $regkeys && $regkeys.size > 0
         puts 'add registry keys to file'
         $regkey_file = File.new(reg_keys_filename, "w+")
       
@@ -740,6 +858,14 @@ namespace "device" do
         
         $regkey_file.close   
       end  
+      
+      if $build_persistent_cab && $use_shared_runtime.nil?
+        if $webkit_capability
+          makePersistentFiles($srcdir, persistent_paths, $wk_data_dir, reg_keys_filename)
+        else
+          makePersistentFiles($srcdir, persistent_paths, nil, reg_keys_filename)
+        end
+      end
       
       puts Jake.run('cscript',args)
       unless $? == 0
@@ -753,7 +879,7 @@ namespace "device" do
         puts "Error running cabwiz"
         exit 1
       end
-
+      
       args = ['cleanup.js']
       puts Jake.run('cscript',args)
       unless $? == 0
@@ -1058,93 +1184,85 @@ namespace "run" do
     end
 
     task :spec, [:exclude_dirs] => ["device:wm:production"] do
-        # kill all running detool
-        kill_detool
 
-        cd $startdir + "/res/build-tools"
-        detool = "detool.exe"    
-        args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
-        puts "\nStarting application on the WM6 emulator\n\n"
-        log_file = gelLogPath
+        Jake.decorate_spec do
 
-        #remove log file
-        rm_rf log_file if File.exists?(log_file)
+            # kill all running detool
+            kill_detool
 
-        File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
-        Jake.run_rho_log_server($app_path)
-        puts "RhoLogServer is starting"
-        while true do
-          if File.exists?($app_path + "/started")
-            break
-          end
-          sleep(1)
-        end
+            cd $startdir + "/res/build-tools"
+            detool = "detool.exe"
+            args   = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+            puts "\nStarting application on the WM6 emulator\n\n"
+            log_file = gelLogPath
 
-        Jake.before_run_spec
-        start = Time.now
-        
-        #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
-        Jake.run2( detool, args, {:nowait => false})
+            #remove log file
+            rm_rf log_file if File.exists?(log_file)
 
-        puts "waiting for log: " + log_file
-        
-        for i in 0..120
-		      if !File.exist?(log_file)
-			      sleep(1)
-		      else
-		      break
-		      end
-        end
-
-	    if !File.exist?(log_file)
-		    puts "Can not read log file: " + log_file
-		    exit(1)
-        end
-
-        puts "start read log"
-        
-        io = File.new(log_file, "r")
-        waiting_count = 0
-        end_spec = false
-        while !end_spec do
-            line_count = 0
-            io.each do |line|
-                #puts line
-                end_spec = !Jake.process_spec_output(line)
-                break if end_spec
-                line_count += 1
+            File.delete($app_path + "/started")  if File.exists?($app_path + "/started")
+            Jake.run_rho_log_server($app_path)
+            puts "RhoLogServer is starting"
+            while true do
+              if File.exists?($app_path + "/started")
+                break
+              end
+              sleep(1)
             end
-            if line_count==0
-                waiting_count += 1
-            else
-                waiting_count = 0
+
+            Jake.before_run_spec
+            start = Time.now
+
+            #Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
+            Jake.run2( detool, args, {:nowait => false})
+
+            puts "waiting for log: " + log_file
+
+            for i in 0..120
+              if !File.exist?(log_file)
+                sleep(1)
+              else
+              break
+              end
             end
-            if waiting_count > 600
-                puts "spec application hung (600 seconds timeout)"
-                end_spec = true
+
+          if !File.exist?(log_file)
+            puts "Can not read log file: " + log_file
+            exit(1)
             end
-            sleep(1) unless end_spec
+
+            puts "start read log"
+
+            io = File.new(log_file, "r")
+            waiting_count = 0
+            end_spec = false
+            while !end_spec do
+                line_count = 0
+                io.each do |line|
+                    #puts line
+                    end_spec = !Jake.process_spec_output(line)
+                    break if end_spec
+                    line_count += 1
+                end
+                if line_count==0
+                    waiting_count += 1
+                else
+                    waiting_count = 0
+                end
+                if waiting_count > 600
+                    puts "spec application hung (600 seconds timeout)"
+                    end_spec = true
+                end
+                sleep(1) unless end_spec
+            end
+            io.close
+
+            Jake.process_spec_results(start)
+
+            $stdout.flush
+            chdir $startdir
+
         end
-        io.close
 
-        Jake.process_spec_results(start)
-        
-        $stdout.flush
-        chdir $startdir
-    end
-
-    task :phone_spec, :exclude_dirs do |t, args|
-      args.with_defaults(:exclude_dirs => '')
-      Jake.run_spec_app('wm','phone_spec',args[:exclude_dirs])
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
-    end
-
-    task :framework_spec, :exclude_dirs do |t, args|
-      args.with_defaults(:exclude_dirs => '')
-      Jake.run_spec_app('wm','framework_spec',args[:exclude_dirs])
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
     end
 
     namespace "device" do
@@ -1230,44 +1348,28 @@ namespace "run" do
     end
 
     task :spec => [:delete_db, "build:win32"] do
-      #remove log file
-      win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
-      win32logpath = File.join(win32rhopath,"RhoLog.txt")
-      win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")
-      win32configpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
-      rm_rf win32logpath if File.exists?(win32logpath)
-      rm_rf win32logpospath if File.exists?(win32logpospath)
-      rm_rf win32configpath if File.exists?(win32configpath)
+      Jake.decorate_spec do
+        #remove log file
+        win32rhopath = 'platform/wm/bin/win32/rhodes/' + $buildcfg + '/rho/'
+        win32logpath = File.join(win32rhopath,"RhoLog.txt")
+        win32logpospath = File.join(win32rhopath,"RhoLog.txt_pos")
+        win32configpath = File.join(win32rhopath,"apps/rhoconfig.txt.changes")
+        rm_rf win32logpath if File.exists?(win32logpath)
+        rm_rf win32logpospath if File.exists?(win32logpospath)
+        rm_rf win32configpath if File.exists?(win32configpath)
 
-      Jake.before_run_spec
-      start = Time.now
+        Jake.before_run_spec
+        start = Time.now
 
-      args = [' ']
-      Jake.run2( "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
-        Jake.process_spec_output(line)
+        args = [' ']
+        Jake.run2( "bin\\win32\\rhodes\\" + $buildcfg + "\\rhodes.exe", args, {:directory => $config["build"]["wmpath"], :nowait => false}) do |line|
+          Jake.process_spec_output(line)
+        end
+        Jake.process_spec_results(start)
+
+        $stdout.flush
+        chdir $startdir
       end
-      Jake.process_spec_results(start)
-
-      $stdout.flush
-      chdir $startdir
-    end
-
-    task :phone_spec do
-      Jake.run_spec_app('win32','phone_spec')
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
-    end
-
-    task :js_spec do
-      Jake.run_spec_app('win32','js_spec')
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
-    end
-
-    task :framework_spec do
-      Jake.run_spec_app('win32','framework_spec')
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
     end
 
   end

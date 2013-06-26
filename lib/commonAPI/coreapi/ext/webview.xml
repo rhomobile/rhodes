@@ -168,7 +168,7 @@
             </METHOD>
 
             <METHOD name="currentLocation">
-                <DESC>Returns the url (location) of the current page; the last URL loaded to WebView from controller action.</DESC>
+                <DESC>Returns the relative url (location) of the current page(without server and port); the last URL loaded to WebView from controller action.</DESC>
                 <APPLIES rubyOnly="true"/>
                 <MORE_HELP>If you open your page in WebView, and after it makes a few jumps by linking (for example, to outside web adresses for example), currentLocation will still return the initial url opened in WebView. Also, if you use JQMobile, current_location has the initial URL, but does not reflect the actual window.location containing the JQMobile additional address by adding #, etc. See currentUrl.</MORE_HELP>
                 <PARAMS>
@@ -235,7 +235,7 @@
             <METHOD name="setCookie">
                 <DESC>When WebView loads the specified url (either by selecting link or from calling WebView.navigate), it will add this cookie to the HTTP request.Not implemented for Motorola Solutions' WebKit.</DESC>
                 <APPLIES rubyOnly="true"/>
-                <PLATFORM>Android, Win32, iOS, WP8</PLATFORM>
+                <PLATFORM>Android, Win32, iOS</PLATFORM>
                 <PARAMS>
                     <PARAM name="url" type="STRING">
                         <DESC>Set a cookie to be used by WebView for this url.</DESC>

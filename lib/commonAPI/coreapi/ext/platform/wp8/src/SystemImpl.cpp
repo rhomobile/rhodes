@@ -131,6 +131,7 @@ void CSystemImpl::getIsEmulator(CMethodResult& oResult)
     CSystemImpl::getIsEmulator(oResult);
 #else
 	//TODO: getIsEmulator
+	oResult.set(rhoruntime::CRhoRuntime::getInstance()->getMainPage()->isEmulator());
 #endif
 }
 

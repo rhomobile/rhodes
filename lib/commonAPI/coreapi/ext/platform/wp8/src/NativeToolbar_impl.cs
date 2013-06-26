@@ -43,6 +43,13 @@ namespace NativeToolbarImpl
             if (mp != null)
             {
                 mp.toolbarRemoveAllButtons();
+                string bgCr = "";
+                string mask = "";
+                if (toolBarProperties.ContainsKey("backgroundColor"))
+                    bgCr = toolBarProperties["backgroundColor"];
+                if (toolBarProperties.ContainsKey("maskColor"))
+                    mask = toolBarProperties["maskColor"];
+                mp.setToolbarStyle(false, bgCr, mask);
                 for (int i = 0; i < toolbarElements.Count; ++i)
                 {
                     string tb = toolbarElements[i];
@@ -61,6 +68,7 @@ namespace NativeToolbarImpl
                     {
                         if ((icon != null) && (icon.Length > 0))
                         {
+                            icon = "apps"+icon;
                             icon = CRhoRuntime.getInstance().getRootPath(icon);
                         }
                         else

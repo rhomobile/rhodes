@@ -37,8 +37,9 @@ namespace rhoruntime
 		int getLogicalDpiY();
         int getScreenWidth();
         int getScreenHeight();
-		bool isBrowserInitialized();
+		bool isBrowserInitialized(int index);
 		::Platform::String^ getScreenOrientation();
+		bool  isEmulator();
 		void bringToFront();
 		void performOnUiThread(int64 native);
 
@@ -60,7 +61,7 @@ namespace rhoruntime
 		void toolbarAddAction(::Platform::String^ text);
 		void toolbarAddAction(::Platform::String^ icon, ::Platform::String^ text, ::Platform::String^ action);
 		void toolbarAddSeparator(void);
-		void setToolbarStyle(bool border, ::Platform::String^ background);
+		void setToolbarStyle(bool border, ::Platform::String^ background, ::Platform::String^ mask);
 		// menu
 		void menuClear(void);
 		void menuAddAction(::Platform::String^ text, int item);

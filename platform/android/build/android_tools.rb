@@ -1,18 +1,18 @@
 #------------------------------------------------------------------------
 # (The MIT License)
-# 
+#
 # Copyright (c) 2008-2011 Rhomobile, Inc.
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,7 +20,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-# 
+#
 # http://rhomobile.com
 #------------------------------------------------------------------------
 
@@ -37,8 +37,8 @@ def fill_api_levels(sdkpath)
     $api_levels = Hash.new
     $market_versions = Hash.new
     max_apilevel = 0
-    max_platform = nil 
-    
+    max_platform = nil
+
     Dir.glob(File.join(sdkpath, "platforms", "*")).each do |platform|
       props = File.join(platform, "source.properties")
       unless File.file? props
@@ -66,7 +66,7 @@ def fill_api_levels(sdkpath)
         end
       end
     end
-    
+
     max_platform
 end
 module_function :fill_api_levels
@@ -107,7 +107,7 @@ def get_addon_classpath(libnames, apilevel = nil)
 
     Dir.glob(File.join($androidsdkpath, 'add-ons', '*')).each do |dir|
         next unless File.directory? dir
-    
+
         libs = {}
         cur_apilevel = nil
         classpath = nil
@@ -116,7 +116,7 @@ def get_addon_classpath(libnames, apilevel = nil)
             puts "+++ WARNING: no manifest.ini found in #{dir}"
             next
         end
-        
+
         libs = {}
         File.open(props, 'r') do |f|
           while line = f.gets
@@ -135,7 +135,7 @@ def get_addon_classpath(libnames, apilevel = nil)
             end
           end
         end
-        
+
         next if apilevel and apilevel != cur_apilevel
         next if found_apilevel and cur_apilevel < found_apilevel
 
@@ -152,14 +152,14 @@ def get_addon_classpath(libnames, apilevel = nil)
             break
           end
         end
-        
+
         next unless classpath
-        
+
         found_apilevel = cur_apilevel
         found_classpath = classpath
-        
+
         puts "classpath: #{found_classpath.inspect}, API level: #{found_apilevel}" if USE_TRACES
-        
+
     end
 
     unless found_classpath
@@ -167,7 +167,7 @@ def get_addon_classpath(libnames, apilevel = nil)
       msg += "; API level: #{apilevel}" if apilevel
       raise msg
     end
-    
+
     if USE_TRACES
       puts "Add-on libraries: #{libnames.inspect}"
       puts "Add-on classpath: #{found_classpath}"
@@ -185,7 +185,7 @@ def get_app_log (appname, device, silent = false)
   puts "RhoLog.txt stored to " + $app_path
   return true
 end
-module_function :get_app_log  
+module_function :get_app_log
 
 def is_emulator_running
   system("\"#{$adb}\" start-server")
@@ -207,7 +207,7 @@ module_function :is_device_running
 
 def  run_emulator(options = {})
   system("\"#{$adb}\" start-server")
-  
+
   unless is_emulator_running
     puts "Need to start emulator" if USE_TRACES
 
@@ -218,21 +218,21 @@ def  run_emulator(options = {})
       $avdname += "google" if $use_google_addon_api
       #$avdname += "motosol" if $use_motosol_api
     end
-    
+
     puts $androidtargets.inspect
-    
+
     targetid = $androidtargets[get_api_level($emuversion)][:id]
-      
+
     puts "Using Android SDK target: #{$androidtargets[get_api_level($emuversion)].inspect}" if USE_TRACES
-      
+
     abi = nil
     if $androidtargets[get_api_level($emuversion)][:abis]
       $androidtargets[get_api_level($emuversion)][:abis].each do |cur_abi|
         abi = cur_abi if cur_abi =~ /armeabi/
       end
-      raise "ARM-based emulator image is not found for selected target: #{$androidtargets[get_api_level($emuversion)][:abis].inspecct}" unless abi
+      raise "ARM-based emulator image is not found for selected target: #{$androidtargets[get_api_level($emuversion)][:abis].inspect}" unless abi
     end
-    
+
     unless File.directory?( File.join(ENV['HOME'], ".android", "avd", "#{$avdname}.avd" ) )
       puts "Emulator API level: #{get_api_level($emuversion)}"
       puts "Emulator params: #{$androidtargets[get_api_level($emuversion)].inspect}"
@@ -249,7 +249,7 @@ def  run_emulator(options = {})
           puts line
         end
       end
-      
+
     else
       raise "Unable to run Android emulator. No appropriate target API for SDK version: #{$emuversion}" unless targetid
     end
@@ -259,13 +259,13 @@ def  run_emulator(options = {})
     cmd << " -no-window" if options[:hidden]
     cmd << " -avd #{$avdname}"
     cmd << " -wipe-data" if options[:wipe]
-      
+
     puts "Starting emulator: #{cmd}" if USE_TRACES
-      
+
     Thread.new { system(cmd) }
 
     puts "Waiting for emulator..."
-    res = 'error'        
+    res = 'error'
     while res =~ /error/ do
       sleep 5
       res = Jake.run $adb, ['-e', 'wait-for-device']
@@ -353,7 +353,7 @@ def load_app_and_run(device_flag, apkfile, pkgname)
   argv.each { |arg| cmd << "#{arg} "}
   argv = cmd if RUBY_VERSION =~ /^1\.8/
   #cmd = "#{$adb} #{device_flag} install -r #{apkfile}"
-  #puts "CMD: #{cmd}" 
+  #puts "CMD: #{cmd}"
 
   count = 0
   done = false
@@ -390,14 +390,14 @@ def load_app_and_run(device_flag, apkfile, pkgname)
       done = true
       break
     end
-    
+
     if theoutput.to_s.match(/INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES/)
       raise "Inconsistent sertificates: please, uninstall application signed with another sertificate from #{device} first"
     end
     if theoutput.to_s.match(/INSTALL_FAILED_MISSING_SHARED_LIBRARY/)
       raise "Missing shared library: application is not compatible with #{device} due to lack of required libraries"
     end
-    
+
     puts "Failed to load (possibly because emulator/device is still offline) - retrying"
     $stdout.flush
     sleep 1
@@ -410,18 +410,18 @@ module_function :load_app_and_run
 
 def kill_adb_logcat(device_flag, log_path = $applog_path)
   puts 'search for adb logcat to kill ========================================'
-	
+
   cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+(-[e|d])\s+logcat\s+>\s+\"?#{log_path}\"?\"?"
   processes = Jake.get_process_list
   log_shell_pids = []
-    
+
   processes.each do |proc|
     match_data = cmd_re.match proc[:cmd]
     if match_data
       log_shell_pids << proc[:pid] unless match_data[1] == device_flag
-    end    
+    end
   end
-  
+
   log_pids = []
   processes.each do |proc|
     log_shell_pids.each do |log_shell_pid|
@@ -430,7 +430,7 @@ def kill_adb_logcat(device_flag, log_path = $applog_path)
       end
     end
   end
-  
+
   log_pids += log_shell_pids
 
   log_pids.each do |pid|
@@ -445,7 +445,7 @@ def kill_adb_logcat(device_flag, log_path = $applog_path)
 
   processes1 = Jake.get_process_list
   log_pids1 = []
-  
+
   processes1.each do |proc|
     log_pids.each do |pid|
       log_pids1 << proc[:pid] if pid == proc[:pid]
@@ -483,11 +483,11 @@ def logcat(device_flag = '-e', log_path = $applog_path)
     cmd_re = Regexp.new "\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>\s+\"?#{log_path}\"?"
     pids = Jake.get_process_list
     log_pids = []
-    
+
     pids.each do |proc|
       log_pids << proc if proc[:cmd] =~ cmd_re
     end
-    
+
     if log_pids.empty?
       rm_rf log_path if File.exist?(log_path)
       puts 'Starting new logcat'
@@ -502,11 +502,11 @@ def logcat_process(device_flag = '-e', log_path = $applog_path)
     cmd_re = Regexp.new "\"?\"?#{$adb}\"?\s+#{device_flag}\s+logcat\s+>\s+\"?#{log_path}\"?\"?"
     pids = Jake.get_process_list
     log_pids = []
-    
+
     pids.each do |proc|
       log_pids << proc if proc[:cmd] =~ cmd_re
     end
-    
+
     if log_pids.empty?
       puts 'Starting new logcat process'
       Thread.new { system("\"#{$adb}\" #{device_flag} logcat > \"#{log_path}\"") }
@@ -517,7 +517,7 @@ module_function :logcat_process
 
 def logclear(device_flag = '-e')
   return if(device_flag == '-e' and !is_emulator_running)
-  Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true) 
+  Jake.run($adb, [device_flag, 'logcat', '-c'], nil, true)
 end
 module_function :logclear
 

@@ -197,11 +197,10 @@ namespace details
 
 std::string rho_cast_helper<std::string, jstring>::operator()(JNIEnv *env, jstring s)
 {
-    RAWTRACE("rho_cast<string, jstring>");
-
     if(env->IsSameObject(s, NULL) == JNI_TRUE)
     {
         //Avoid crash in case of null java reference
+        RAWTRACE("rho_cast<string, jstring>: \"\"");
         return std::string();
     } else
     {

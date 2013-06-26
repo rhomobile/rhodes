@@ -554,6 +554,16 @@ LRESULT CMainWindow::OnWebKitMessages(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     return m_pBrowserEng->OnWebKitMessages(uMsg, wParam, lParam, bHandled);
 }
 
+LRESULT CMainWindow::OnTitleChangeCommand (WORD /*wNotifyCode*/, WORD /*wID*/, HWND hwnd, BOOL& /*bHandled*/)
+{
+    LOG(INFO) + "OnTitleChangeCommand";
+
+    ProcessTitleChange( (LPCTSTR)hwnd );
+
+    free( (void*)(LPCTSTR)hwnd );
+	return 0;
+};
+
 #if defined(APP_BUILD_CAPABILITY_WEBKIT_BROWSER) || defined(OS_PLATFORM_MOTCE)
 LRESULT CMainWindow::OnBrowserDocumentComplete (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
@@ -1292,10 +1302,14 @@ LRESULT CMainWindow::OnAlertShowPopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 LRESULT CMainWindow::OnAlertHidePopup (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	if (m_alertDialog != NULL) {
-		m_alertDialog->EndDialog(0);
-		m_alertDialog = NULL;
-	}
+//Cannot close modal dialog
+    /*if (m_alertDialog != NULL) {
+        m_alertDialog->EndDialog(0);
+        m_alertDialog = NULL;
+    }*/
+
+    if ( m_SyncStatusDlg.m_hWnd )
+        m_SyncStatusDlg.ShowWindow(SW_HIDE);
 
 	return 0;
 }

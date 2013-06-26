@@ -1082,84 +1082,88 @@ namespace "run" do
 
     task :spec => ["clean:iphone",:buildsim] do
  	
-      # Run local http server
-      $iphonespec = true
-      #httpserver = false
-      #httpserver = true if File.exist? "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server.rb"
+      Jake.decorate_spec do
 
-      #if httpserver
-      #  require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
-      #  NetHTTPSpecs.start_server
-      #end
+          # Run local http server
+          $iphonespec = true
+          #httpserver = false
+          #httpserver = true if File.exist? "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server.rb"
 
-      Jake.before_run_spec
+          #if httpserver
+          #  require "#{$app_path}/app/spec/library/net/http/http/fixtures/http_server"
+          #  NetHTTPSpecs.start_server
+          #end
 
-      puts 'kill iPhone Simulator'
-      `killall -9  "iPhone Simulator"`
-      `killall -9 iphonesim`
+          Jake.before_run_spec
 
-      mkdir_p $tmpdir
-      log_name  =   File.join($tmpdir, 'logout')
-      File.delete(log_name) if File.exist?(log_name)
+          puts 'kill iPhone Simulator'
+          `killall -9  "iPhone Simulator"`
+          `killall -9 iphonesim`
 
-      $iphone_end_spec = false
+          mkdir_p $tmpdir
+          log_name  =   File.join($tmpdir, 'logout')
+          File.delete(log_name) if File.exist?(log_name)
 
-      Thread.new {
-            # run spec
-            rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
-            #iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
-            commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
-            puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
-            puts 'execute command : ' + commandis
-            system(commandis)
-            $iphone_end_spec = true
-      }
+          $iphone_end_spec = false
 
-      start = Time.now        
+          Thread.new {
+                # run spec
+                rhorunner = File.join($startdir, $config["build"]["iphonepath"],"build/#{$configuration}-iphonesimulator/rhorunner.app")
+                #iphonesim = File.join($startdir, 'res/build-tools/iphonesim/build/Release/iphonesim')
+                commandis = $iphonesim + ' launch "' + rhorunner + '" ' + $sdkver.gsub(/([0-9]\.[0-9]).*/,'\1') + ' ' + $emulatortarget + ' "' +log_name+'"'
+                puts 'use iphonesim tool - open iPhone Simulator and execute our application, also support device family (iphone/ipad)'
+                puts 'execute command : ' + commandis
+                system(commandis)
+                $iphone_end_spec = true
+          }
 
-      puts "waiting for log"
-      
-        while (!File.exist?(log_name)) && (!$iphone_end_spec)
-            sleep(1)
-        end
+          start = Time.now
 
-        puts "start read log"
-        
-        #$iphone_end_spec = false
+          puts "waiting for log"
 
-        while !$iphone_end_spec do
-            io = File.new(log_name, "r")
-        
-            io.each do |line|
-                puts line
-                
-                if line.class.method_defined? "valid_encoding?" 
-                    $iphone_end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
-                else 
-                    $iphone_end_spec = !Jake.process_spec_output(line)
-                end                    
-               
-                break if $iphone_end_spec
+            while (!File.exist?(log_name)) && (!$iphone_end_spec)
+                sleep(1)
             end
-            io.close
-            
-            sleep(5) unless $iphone_end_spec
-        end
-      puts 'spec logging is finished'
 
-      Jake.process_spec_results(start)
+            puts "start read log"
 
-      File.delete(log_name) if File.exist?(log_name)
+            #$iphone_end_spec = false
 
-      $stdout.flush
+            while !$iphone_end_spec do
+                io = File.new(log_name, "r")
 
-      puts 'kill iPhone Simulator'
-      `killall -9  "iPhone Simulator"`
-      `killall -9 iphonesim`
+                io.each do |line|
+                    puts line
 
-      $stdout.flush
+                    if line.class.method_defined? "valid_encoding?"
+                        $iphone_end_spec = !Jake.process_spec_output(line) if line.valid_encoding?
+                    else
+                        $iphone_end_spec = !Jake.process_spec_output(line)
+                    end
 
-      #NetHTTPSpecs.stop_server if httpserver
+                    break if $iphone_end_spec
+                end
+                io.close
+
+                sleep(5) unless $iphone_end_spec
+            end
+          puts 'spec logging is finished'
+
+          Jake.process_spec_results(start)
+
+          File.delete(log_name) if File.exist?(log_name)
+
+          $stdout.flush
+
+          puts 'kill iPhone Simulator'
+          `killall -9  "iPhone Simulator"`
+          `killall -9 iphonesim`
+
+          $stdout.flush
+
+          #NetHTTPSpecs.stop_server if httpserver
+
+      end
 
       unless $dont_exit_on_failure
         exit 1 if $total.to_i==0
@@ -1224,42 +1228,6 @@ namespace "run" do
         exit 1 if $total.to_i==0
         exit $failed.to_i
       end
-    end
-
-
-
-    task :phone_spec do
-      Jake.run_spec_app('iphone','phone_spec')
-    end
-
-    task :js_spec do
-      Jake.run_spec_app('iphone','js_spec')
-    end
-
-    task :framework_spec do
-      Jake.run_spec_app('iphone','framework_spec')
-    end
-
-    task :allspecs do
-      rm_rf basedir + "/faillog.txt"
-      $dont_exit_on_failure = true
-      Rake::Task['run:iphone:phone_spec'].invoke
-      Rake::Task['run:iphone:framework_spec'].invoke
-      failure_output = ""
-      if $failed.to_i > 0
-        failure_output = ""
-        failure_output += "phone_spec failures:\n\n" + File.open(app_expanded_path('phone_spec') + "/faillog.txt").read if
-          File.exist?(app_expanded_path('phone_spec') + "/faillog.txt")
-        failure_output += "framework_spec failures:\n\n" + File.open(app_expanded_path('framework_spec') + "/faillog.txt").read if
-          File.exist?(app_expanded_path('framework_spec') + "/faillog.txt")
-        chdir basedir
-        File.open("faillog.txt", "w") { |io| failure_output.each {|x| io << x }  }
-      end
-      puts "Agg Total: #{$total}"
-      puts "Agg Passed: #{$passed}"
-      puts "Agg Failed: #{$failed}"
-      exit 1 if $total.to_i==0
-      exit $failed.to_i
     end
 
     desc "Run application on RhoSimulator"    
