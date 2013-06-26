@@ -39,7 +39,7 @@ if RUBY_PLATFORM =~ /(win|w)32$/
   $bat_ext = ".bat"
   $exe_ext = ".exe"
   $ndkhostvariants = []
-  $ndkhostvariants << 'windows-x86_64' if `wmic OS get OSArchitecture`.split[1] == '64-bit'
+  $ndkhostvariants << 'windows-x86_64' if `wmic OS get OSArchitecture`.split[1].include?('64')
   $ndkhostvariants << 'windows'
 else
   $bat_ext = ""
