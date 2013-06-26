@@ -214,7 +214,10 @@ bool CExtManager::DeRegisterForPrimaryBrowserMessage(unsigned int iMsgId)
 
 void CExtManager::executeJavascript(const wchar_t* szJSFunction)
 {
-    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)_wcsdup(szJSFunction) );
+    TNavigateData* nd = new TNavigateData();
+    nd->index = rho_webview_active_tab();
+    nd->url = _tcsdup(szJSFunction);
+    ::PostMessage( getMainWnd(), WM_COMMAND, IDM_EXECUTEJS, (LPARAM)nd );
 }
 
 StringW CExtManager::getCurrentUrl()
