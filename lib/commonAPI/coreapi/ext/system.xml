@@ -84,7 +84,7 @@
                 <PLATFORM>Android</PLATFORM>
             </PROPERTY>
             <PROPERTY name="devicePushId" type="STRING" readOnly="true">
-                <DESC>Push notifications device ID which may be used to receive push messages.</DESC>
+                <DESC>Push notifications device ID which may be used to receive push messages.To get this ID , Push service should be configured on the device. Please refer to Push documentation.</DESC>
             </PROPERTY>
             <PROPERTY name="phoneId" type="STRING" readOnly="true">
                 <DESC>Hardware based ID. It depends on capabilities configured for an application and has to remain same even across application uninstall/install.</DESC>
@@ -200,6 +200,7 @@
             </ALIASES>
             <METHOD name="applicationInstall">
                 <DESC>Install an application.</DESC>
+                <PLATFORM>WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationUrl" type="STRING">
                         <DESC>The url of an application to install on the device.</DESC>
@@ -219,7 +220,7 @@
             </METHOD>
             <METHOD name="applicationUninstall">
                 <DESC>Uninstall the application.</DESC>
-                <PLATFORM>WM, Win32, Android, WP8</PLATFORM>
+                <PLATFORM>WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
                         <DESC>The name of the application.</DESC>
@@ -449,6 +450,11 @@
                     </PARAM>
                     <PARAM name="params" type="HASH">
                         <DESC>Update parameters.</DESC>
+                        <PARAMS>
+                            <PARAM name="do_not_restart_app" type="BOOLEAN">
+                                <DESC>If true, when Application will not be automatically restarted after the replace bundle is finished</DESC>
+                            </PARAM>
+                        </PARAMS>
                     </PARAM>
                 </PARAMS>
             </METHOD>
