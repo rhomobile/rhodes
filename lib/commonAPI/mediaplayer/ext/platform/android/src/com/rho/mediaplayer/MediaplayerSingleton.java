@@ -35,7 +35,7 @@ class MediaplayerSingleton extends MediaplayerSingletonBase implements IMediapla
 	}
 
 	public MediaplayerSingleton(MediaplayerFactory factory) {
-		super(factory);
+		super();
 		Logger.I(TAG, "Creating Mediaplayer extension");
 		init();
 	}
@@ -187,7 +187,6 @@ class MediaplayerSingleton extends MediaplayerSingletonBase implements IMediapla
 		Logger.I(TAG, "stopRingTone");
 	}
 
-	@Override
 	protected String getInitialDefaultID() {
 		return null;
 	}
