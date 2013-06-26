@@ -261,8 +261,11 @@ public class RhoFileApi {
     private static void forceFile(String path)
     {
         String relPath = makeRelativePath(path);
-        if(copy(relPath))
-            Logger.D(TAG, "File extracted from package to file system: " + path);
+        if(needEmulate(relPath)) {
+            if(copy(relPath)) {
+                Logger.D(TAG, "File extracted from package to file system: " + path);
+            }
+        }
     }
 
     public static FileDescriptor openFd(String path)

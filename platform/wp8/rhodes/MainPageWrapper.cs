@@ -16,7 +16,7 @@ namespace rhodes
         public int getScreenWidth() { return _mainPage.getScreenWidth();  }
         public int getScreenHeight() { return _mainPage.getScreenHeight();  }
         public string getScreenOrientation() { return _mainPage.getScreenOrientation(); }
-        public bool isBrowserInitialized() { return _mainPage.isBrowserInitialized(); }
+        public bool isBrowserInitialized(int index) { return _mainPage.isBrowserInitialized(index); }
         public void bringToFront() { _mainPage.bringToFront(); }
         public void performOnUiThread(Int64 native) { _mainPage.performOnUiThread(native); }
 
@@ -28,6 +28,7 @@ namespace rhodes
         public void GoForward() { _mainPage.GoForward(); }
         public void Refresh(int index) { _mainPage.Refresh(index); }
         public bool isStarted() { return _mainPage.isStarted(); }
+        public bool isEmulator() { return _mainPage.isEmulator(); }
         public string getCurrentURL(int index) { return _mainPage.getCurrentURL(index); }
 		// toolbar
         public void toolbarRemoveAllButtons() { _mainPage.toolbarRemoveAllButtons(); }
@@ -38,7 +39,7 @@ namespace rhodes
         public void toolbarAddAction(string text) { _mainPage.toolbarAddAction(text); }
         public void toolbarAddAction(string icon, string text, string action) { _mainPage.toolbarAddAction(icon, text, action); }
         public void toolbarAddSeparator() { _mainPage.toolbarAddSeparator(); }
-        public void setToolbarStyle(bool border, string background) { _mainPage.setToolbarStyle(border, background); }
+        public void setToolbarStyle(bool border, string background, string mask) { _mainPage.setToolbarStyle(border, background, mask); }
 		// menu
         public void menuClear() { _mainPage.menuClear(); }
         public void menuAddAction(string text, int item) { _mainPage.menuAddAction(text, item); }

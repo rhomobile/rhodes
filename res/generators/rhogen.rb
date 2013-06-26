@@ -452,14 +452,34 @@ module Rhogen
       template.destination = "extensions/#{name}/ext/platform/iphone/#{namecamelcase}.xcodeproj/project.pbxproj"
     end
 
-    template :extension_iphone_src_h do |template|
-      template.source = 'extensions/montana/ext/platform/iphone/Classes/Montana.h'
-      template.destination = "extensions/#{name}/ext/platform/iphone/Classes/#{namecamelcase}.h"
+    template :extension_iphone_src_1 do |template|
+      template.source = 'extensions/montana/ext/platform/iphone/impl/Montana.h'
+      template.destination = "extensions/#{name}/ext/platform/iphone/impl/#{namecamelcase}.h"
     end
 
-    template :extension_iphone_src_m do |template|
-      template.source = 'extensions/montana/ext/platform/iphone/Classes/Montana.m'
-      template.destination = "extensions/#{name}/ext/platform/iphone/Classes/#{namecamelcase}.m"
+    template :extension_iphone_src_2 do |template|
+      template.source = 'extensions/montana/ext/platform/iphone/impl/Montana.m'
+      template.destination = "extensions/#{name}/ext/platform/iphone/impl/#{namecamelcase}.m"
+    end
+
+    template :extension_iphone_src_3 do |template|
+      template.source = 'extensions/montana/ext/platform/iphone/impl/MontanaFactorySingleton.m'
+      template.destination = "extensions/#{name}/ext/platform/iphone/impl/#{namecamelcase}FactorySingleton.m"
+    end
+
+    template :extension_iphone_src_4 do |template|
+      template.source = 'extensions/montana/ext/platform/iphone/impl/MontanaSetup.m'
+      template.destination = "extensions/#{name}/ext/platform/iphone/impl/#{namecamelcase}Setup.m"
+    end
+
+    template :extension_iphone_src_5 do |template|
+      template.source = 'extensions/montana/ext/platform/iphone/impl/MontanaSingleton.h'
+      template.destination = "extensions/#{name}/ext/platform/iphone/impl/#{namecamelcase}Singleton.h"
+    end
+
+    template :extension_iphone_src_6 do |template|
+      template.source = 'extensions/montana/ext/platform/iphone/impl/MontanaSingleton.m'
+      template.destination = "extensions/#{name}/ext/platform/iphone/impl/#{namecamelcase}Singleton.m"
     end
 
     template :extension_android_ext_java do |template|
@@ -1043,7 +1063,7 @@ module Rhogen
     $possible_attributes["ALIAS"] = ["new", "existing", "reverseLogic", "deprecated", "rubyOnly"]
     $possible_attributes["METHODS"] = ["access", "hasCallback", "factory", "runInThread", "deprecated", "generateAPI", "generateDoc"]
     $possible_attributes["METHOD"] = ["name", "access", "hasCallback", "factory", "runInThread", "nativeName", "deprecated", "generateAPI", "generateDoc", "constructor", "destructor", "generateNativeAPI"]
-    $possible_attributes["PARAM"] = ["name", "nativeName", "type", "propertyHash", "default"]
+    $possible_attributes["PARAM"] = ["name", "nativeName", "type", "propertyHash", "default", "rhoAction"]
     $possible_attributes["RETURN"] = ["type"]
     $possible_attributes["CALLBACK"] = ["type"]
     $possible_attributes["APPLIES"] = ["msiOnly", "rubyOnly", "jsOnly"]

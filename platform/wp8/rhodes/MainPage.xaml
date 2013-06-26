@@ -26,7 +26,7 @@
             <phone:Pivot x:Name="TabbarPivot" Height="Auto" Title="" Width="Auto" SelectionChanged="TabbarPivot_SelectionChanged"/>
         </Grid>
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="0,0,0,0">
-            <phone:WebBrowser x:Name="RhodesWebBrowser" Source="about:blank" Height="Auto" Width="Auto" IsScriptEnabled="True" SizeChanged="RhodesWebBrowser_SizeChanged" Navigated="RhodesWebBrowser_Navigated" NavigationFailed="RhodesWebBrowser_NavigationFailed" LoadCompleted="RhodesWebBrowser_LoadCompleted" Loaded="RhodesWebBrowser_Loaded" Unloaded="RhodesWebBrowser_Unloaded" ScriptNotify="RhodesWebBrowser_JSNotify"/>
+            <phone:WebBrowser x:Name="RhodesWebBrowser" Source="about:blank" Height="Auto" Width="Auto" TabIndex="-1" IsScriptEnabled="True" SizeChanged="RhodesWebBrowser_SizeChanged" Navigated="RhodesWebBrowser_Navigated" NavigationFailed="RhodesWebBrowser_NavigationFailed" LoadCompleted="RhodesWebBrowser_LoadCompleted" Loaded="RhodesWebBrowser_Loaded" Unloaded="RhodesWebBrowser_Unloaded" ScriptNotify="RhodesWebBrowser_JSNotify"/>
         </Grid>
     </Grid>
 

@@ -11,8 +11,8 @@ class <%= namecamelcase %>TestController < Rho::RhoController
   end
 
   def run_test
-    res = Rho::<%= namecamelcase %>.take 
-    Alert.show_popup "Rho::<%= namecamelcase %>.take return : #{res}"
+    res = Rho::<%= namecamelcase %>.enumerate 
+    Alert.show_popup "Rho::<%= namecamelcase %>.enumerate return : #{res.to_s}"
     render :action => :index, :back => '/app'
   end
   

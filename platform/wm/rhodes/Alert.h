@@ -63,7 +63,6 @@ public:
 			m_message  = message;
 		}
 
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
 		Params (String &title, String &message, String &icon, rho::apiGenerator::CMethodResult &callback, Vector<CAlertButton>& buttons, int dlgType)
 		{
 			m_dlgType  = dlgType;
@@ -73,7 +72,7 @@ public:
 			m_callback_ex = callback;
 			m_buttons  = buttons;
 		}
-#endif
+
 		Params (String &title, String &message, String &icon, String &callback, Vector<CAlertButton>& buttons, int dlgType)
 		{
 			m_dlgType  = dlgType;
@@ -88,9 +87,9 @@ public:
 		String m_title;
 		String m_message;
 		String m_icon;
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+
 		rho::apiGenerator::CMethodResult m_callback_ex;
-#endif
+
 		String m_callback;
 
 		//Hashtable<String, String> m_buttons;
@@ -137,9 +136,9 @@ private:
 private:
 	String m_title;
 	String m_message;
-#if defined(OS_WINDOWS_DESKTOP) || defined(RHODES_EMULATOR)
+
 	rho::apiGenerator::CMethodResult m_callback_ex;
-#endif
+
 	String m_callback;
 	String m_icon;
 

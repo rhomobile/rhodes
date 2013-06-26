@@ -126,13 +126,7 @@ void rho_webview_navigate(const char* url, int index)
     //id arg1 = [NSString stringWithUTF8String:url];
     id arg1 = final_path;
 #else
-    id arg1 = nil;
-    if (rho_ruby_is_started()) {
-        arg1 = [NSString stringWithUTF8String:rho_app_canonicalize_rho_url(url)];
-    }
-    else {
-        arg1 = [NSString stringWithUTF8String:rho_app_canonicalize_rho_path(url)];
-    }
+    id arg1 = [NSString stringWithUTF8String:rho_app_canonicalize_rho_url(url)];
     [NSString stringWithUTF8String:url];
 #endif
     id runnable = [RhoWebViewNavigateTask class];
