@@ -120,6 +120,8 @@ public:
         }
 
     private:
+        void setupSecureConnection();
+
         String makeHeadersString();
         net::CNetRequestWrapper getNet(){ return getNetRequest(&m_NetRequest); }
     
