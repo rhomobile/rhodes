@@ -118,7 +118,7 @@ namespace "config" do
     $build_persistent_cab = false
     $run_on_startup = false
 
-    if !$app_config["wm"].nil? && ($app_config["wm"]["persistent"] == "yes")
+    if !$app_config["wm"].nil? && $app_config["wm"]["persistent"]
       $build_persistent_cab = true
     end
 
