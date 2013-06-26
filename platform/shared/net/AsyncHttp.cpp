@@ -29,6 +29,7 @@
 #include "net/URI.h"
 #include "common/RhodesApp.h"
 #include "common/RhoAppAdapter.h"
+#include "common/RhoConf.h"
 
 namespace rho
 {
