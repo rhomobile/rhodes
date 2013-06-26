@@ -28,12 +28,12 @@
         <DESC>Clear notification for the object. See the sync notification section for more details.</DESC>
       </METHOD>
       <METHOD name="deleteAll" generateAPI="false" access="STATIC">
-        <DESC>Delete all Rhodes model objects for a source, filtering by conditions. Click here for a Orm delete_all
+        <DESC>Delete all Rhodes model objects for a source. Javascript does not take parameters and only deletes all objects from model.
           example.
         </DESC>
         <PARAMS>
           <PARAM name="conditions" type="HASH">
-            <DESC>hash of attribute/values; delete only objects matching these criteria, such as :conditions =>
+            <DESC>Hash of attribute/values; delete only objects matching these criteria, such as :conditions =>
               {'industry'=>'electronics'}.
             </DESC>
             <CAN_BE_NIL/>
@@ -108,11 +108,11 @@
         <RETURN type="ARRAY"/>
       </METHOD>
       <METHOD name="findAll" generateAPI="false" access="STATIC">
-        <DESC>Alias for modelname.find(:all, argument list).</DESC>
+        <DESC>Ruby only. Alias for modelname.find(:all, argument list).</DESC>
         <RETURN type="ARRAY"/>
       </METHOD>
       <METHOD name="findBySql" generateAPI="false" access="STATIC">
-        <DESC>Returns Rhodes model object(s) based on sql_query. This method works only for schema models. Click here
+        <DESC>Ruby only. Returns Rhodes model object(s) based on sql_query. This method works only for schema models. Click here
           for a Orm find_by_sql example.
         </DESC>
         <PARAMS>
@@ -123,11 +123,22 @@
         <RETURN type="ARRAY"/>
       </METHOD>
       <METHOD name="getSourceName" generateAPI="false" access="STATIC">
-        <DESC>Returns the source name for this Rhodes model object.</DESC>
+        <DESC>Ruby only. Returns the source name for this Rhodes model object.</DESC>
         <RETURN type="STRING"/>
       </METHOD>
       <METHOD name="new" generateAPI="false" access="STATIC">
-        <DESC>Create a new Rhodes model object. Orm new example.</DESC>
+        <DESC>Ruby only. Create a new Rhodes model object. Orm new example.</DESC>
+        <PARAMS>
+          <PARAM name="attributes" type="HASH">
+            <DESC>List of attributes assigned to the new model object, such as {"name" => "ABC Inc.","address" => "555
+              5th St."}.
+            </DESC>
+          </PARAM>
+        </PARAMS>
+        <RETURN type="OBJECT"/>
+      </METHOD>
+      <METHOD name="make" generateAPI="false" access="STATIC">
+        <DESC>Javascript only. Create a new Rhodes model object. Orm new example.</DESC>
         <PARAMS>
           <PARAM name="attributes" type="HASH">
             <DESC>List of attributes assigned to the new model object, such as {"name" => "ABC Inc.","address" => "555
@@ -151,7 +162,7 @@
         <RETURN type="OBJECT"/>
       </METHOD>
       <METHOD name="paginate" generateAPI="false" access="STATIC">
-        <DESC>Call find with a limit on the number of records. Default page size is 10. Orm paginate example.</DESC>
+        <DESC>Ruby only. Call find with a limit on the number of records. Default page size is 10. Orm paginate example.</DESC>
         <PARAMS>
           <PARAM name="page" type="INTEGER">
             <DESC>which page to return.</DESC>
@@ -202,7 +213,13 @@
         </PARAMS>
       </METHOD>
       <METHOD name="isChanged" generateAPI="false" access="STATIC">
-        <DESC>Returns true if a Rhodes model object has local database changes that need to be synchronized, false
+        <DESC>Ruby only. Returns true if a Rhodes model object has local database changes that need to be synchronized, false
+          otherwise. Click here for a Orm changed? example.
+        </DESC>
+        <RETURN type="BOOLEAN"/>
+      </METHOD>
+      <METHOD name="haveLocalChanges" generateAPI="false" access="STATIC">
+        <DESC>Javascript only. Returns true if a Rhodes model object has local database changes that need to be synchronized, false
           otherwise. Click here for a Orm changed? example.
         </DESC>
         <RETURN type="BOOLEAN"/>
@@ -280,7 +297,7 @@ Account.deleteAll(:conditions => {'industry'=>'electronics', 'website'=>'electro
               </RUBY>
               <JAVASCRIPT>
                 <![CDATA[
-Account.deleteAll({'industry': 'electronics', 'website': 'electronics.com'});]]>
+Account.deleteAll();]]>
               </JAVASCRIPT>
             </CODE>
 
@@ -334,7 +351,7 @@ var accounts = Account.find(
 
           <SECTION>
             <DESC>
-              Use select option for retrieves some attributes of object
+              Use select option for retrieves some attributes of object.  You must pass "conditions" hash with Javascript implementation.
             </DESC>
             <CODE>
               <RUBY>
@@ -350,6 +367,7 @@ accounts[0].telephone
 var accounts = Account.find(
     'all',
     {
+      conditions: {name:'address'},
       select: ['name','address']
     }
   );
@@ -366,7 +384,7 @@ accounts[0].telephone; // nil ]]>
               The order argument for find accepts several fORMs.
 
 
-              Order by one attribute.
+              Order by one attribute. Javascript must pass conditions hash.
             </DESC>
             <CODE>
               <RUBY>
@@ -383,6 +401,7 @@ accounts = Account.find(
 var accounts = Account.find(
     'all',
     {
+      conditions: {"name":"industry"},
       order: 'name',
       orderdir: 'DESC'
     }
@@ -394,7 +413,7 @@ var accounts = Account.find(
 
           <SECTION>
             <DESC>
-              Order by multiple attributes.
+              Order by multiple attributes. Javascript must pass conditions hash.
             </DESC>
             <CODE>
               <RUBY>
@@ -410,6 +429,7 @@ accounts = Account.find(
 var accounts = Account.find(
     'all',
     {
+      conditions: {"name":"industry"},
       order: ['name', 'industry'],
       orderdir: ['ASC', 'DESC']
     }
@@ -488,7 +508,7 @@ account.name
               <JAVASCRIPT>
                 <![CDATA[
 var account = Account.new({name: "ABC Inc.", address: "555 5th St."});
-account.name // "ABC Inc." ]]>
+account.get("name") // "ABC Inc." ]]>
               </JAVASCRIPT>
             </CODE>
 
@@ -526,11 +546,6 @@ var account = Account.create({name: "some new record", industry: "electronics"})
                 <![CDATA[
 Account.paginate(:page => 0) ]]>
               </RUBY>
-
-              <JAVASCRIPT>
-                <![CDATA[
-Account.paginate({page: 0}); ]]>
-              </JAVASCRIPT>
             </CODE>
           </SECTION>
 
@@ -543,10 +558,6 @@ Account.paginate({page: 0}); ]]>
                 <![CDATA[
 Account.paginate(:page => 1, :perPage => 20) ]]>
               </RUBY>
-              <JAVASCRIPT>
-                <![CDATA[
-Account.paginate({page: 1, perPage: 20}); ]]>
-              </JAVASCRIPT>
             </CODE>
           </SECTION>
 
@@ -563,14 +574,6 @@ Account.paginate(
   :order => 'name'
 ) ]]>
               </RUBY>
-              <JAVASCRIPT>
-                <![CDATA[
-Account.paginate({
-  page: 5,
-  conditions: {industry: "Technology"},
-  order: 'name'
-  }) ]]>
-              </JAVASCRIPT>
             </CODE>
           </SECTION>
 
@@ -611,7 +614,7 @@ Product.sync( url_for(:action => :sync_callback), "", false, "query=#{@params["s
         <SECTIONS>
           <SECTION>
             <DESC>
-              Determine if a ORM model has local database changes that need to be synchronized.
+              Determine if a ORM model has local database changes that need to be synchronized.  Must enable sync to use this function.
             </DESC>
             <CODE>
               <RUBY>
@@ -625,7 +628,7 @@ end  ]]>
               <JAVASCRIPT>
                 <![CDATA[
 
-  if (Product.isChanged()) {
+  if (Product.haveLocalChanges()) {
       //... do stuff ...
     }
   end  ]]>
@@ -678,7 +681,7 @@ account.industry
                 <![CDATA[
 var account = Account.find("first", {conditions: {name: "ABC Inc."});
 account.updateAttributes({name: "ABC Inc.", industry: "Technology"});
-account.industry // "Technology" ]]>
+account.get("industry") // "Technology" ]]>
               </JAVASCRIPT>
             </CODE>
           </SECTION>
@@ -696,7 +699,7 @@ account.save ]]>
               </RUBY>
               <JAVASCRIPT>
                 <![CDATA[
-var account = Account.new({name: "some new record", industry: "electronics"});
+var account = Account.make({name: "some new record", industry: "electronics"});
 account.save(); ]]>
               </JAVASCRIPT>
             </CODE>
@@ -746,13 +749,15 @@ Also ORM model has instance methods for work with concrete model instance: updat
 At javascript we work with objects two kinds:
 
 - ORM model object provides methods like Ruby ORM model static methods.
-ORM models create by calling method addModel(modelName). For example:
+ORM models create by calling method addModel(anonymous function). For example:
 
-    var productModel = ORM.addModel('Product');
+    var productModel = ORM.addModel(function(model){
+      model.modelName("Product");
+    });
 
 - ORM object provides methods for work with concrete object (as Ruby ORM model instance methods).
 
-    var concreteProduct = productModel.new({name: 'Apple', name: 'iPhone5' , price: 199.99});
+    var concreteProduct = productModel.make({name: 'Apple', name: 'iPhone5' , price: 199.99});
 
     concreteProduct.save();
 
