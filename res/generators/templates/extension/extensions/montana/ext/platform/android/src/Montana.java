@@ -11,29 +11,22 @@ public class <%= namecamelcase %> extends <%= namecamelcase %>Base implements I<
         super(id);
     }
 
+
     @Override
-    public void start(IMethodResult result) {
-        result.set("1234567890");
+    public void getPlatformName(IMethodResult result) {
+          result.set("Android");	
+    }
+
+
+    @Override
+    public void calcSumm(int a, int b, IMethodResult result) {
+          result.set(a+b);
     }
 
     @Override
-    public void stop(IMethodResult result) {
-        // TODO Auto-generated method stub
+    public void joinStrings(String a, String b, IMethodResult result) {
+          result.set(a+b);
     }
 
-    @Override
-    public void disable(IMethodResult result) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void take(Map<String, String> propertyMap, IMethodResult result) {
-        result.set("1234567890");
-    }
-
-    @Override
-    public void enable(Map<String, String> propertyMap, IMethodResult result) {
-        // TODO Auto-generated method stub
-    }
 
 }
