@@ -152,29 +152,9 @@
     <PLATFORM>
       <!--  This section is used for the supported platfORM images at the top -->
     </PLATFORM>
+
     <EXAMPLES>
-      <EXAMPLE title="ORM databaseFullResetEx Method Examples">
-        <SECTIONS>
-          <SECTION>
-            <DESC>
-              Delete all Rhodes model objects for a source, filtering by conditions.
-            </DESC>
-            <CODE>
-              <RUBY>
-                <![CDATA[
-ORM.databaseFullResetEx(:models => ['Product', 'Customer'], :reset_client_info => true, :reset_local_models => true) ]]>
-              </RUBY>
-              <JAVASCRIPT>
-                <![CDATA[
-Rho.ORM.databaseFullResetEx({"models":['Product', 'Customer']},true,true); ]]>
-              </JAVASCRIPT>
-            </CODE>
-
-          </SECTION>
-
-        </SECTIONS>
-      </EXAMPLE>
-      <EXAMPLE title="Add ORM model, create ORM object">
+               <EXAMPLE title="Add ORM model, create ORM object">
         <SECTIONS>
           <SECTION>
             <DESC>
@@ -207,18 +187,6 @@ var productModel = Rho.ORM.addModel(function(model){
   model.property("price","float");
   model.set("partition","user");
 });
-
-You can define the following attributes in Rho.ORM.addModel()
-required *
-  model.modelName(name)
-
-optional
-  model.enable(sync|propertyBag|fixedSchema) // same as model.set(name,true)
-  model.property(name,type,option)
-  model.set(name,value)
-  model.belongs_to(modelName)
-  model.addIndex(name,[col1,col2,..])
-  model.addUniqueIndex(name,[col1,col2,..])
 
 // create model object and save it to database
 var product = productModel.create({
@@ -258,6 +226,27 @@ var productModel = Rho.ORM.getModel("Product");
        </SECTION>
        </SECTIONS>
    </EXAMPLE>
+      <EXAMPLE title="ORM databaseFullResetEx Method Examples">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              Delete all Rhodes model objects for a source, filtering by conditions.
+            </DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+ORM.databaseFullResetEx(:models => ['Product', 'Customer'], :reset_client_info => true, :reset_local_models => true) ]]>
+              </RUBY>
+              <JAVASCRIPT>
+                <![CDATA[
+Rho.ORM.databaseFullResetEx({"models":['Product', 'Customer']},true,true); ]]>
+              </JAVASCRIPT>
+            </CODE>
+
+          </SECTION>
+
+        </SECTIONS>
+      </EXAMPLE>
  </EXAMPLES>
   </MODULE>
 </API>
