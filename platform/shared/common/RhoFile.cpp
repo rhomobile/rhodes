@@ -242,7 +242,10 @@ unsigned int CRhoFile::write( const void* data, unsigned int len ){
 }
 
 int CRhoFile::readByte()
-{ 
+{
+    if ( !isOpened() )
+        return -1;
+    
     unsigned char buf[1];
     int nSize = fread(buf, 1, 1, m_file);
 
@@ -250,7 +253,10 @@ int CRhoFile::readByte()
 }
 
 int CRhoFile::readData(void* buffer, int bufOffset, int bytesToRead)
-{ 
+{
+    if ( !isOpened() )
+        return -1;
+    
     int nSize = fread(((char*)buffer)+bufOffset, 1, bytesToRead, m_file);
     return nSize > 0 ? nSize : -1;
 }
