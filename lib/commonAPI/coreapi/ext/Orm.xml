@@ -9,13 +9,7 @@
     </TEMPLATES>
 
     <PROPERTIES>
-      <PROPERTY name="clientId" access="STATIC" type="STRING" readOnly="true" generateAPI="false">
-        <DESC>Returns the current sync client id.</DESC>
-      </PROPERTY>
-      <PROPERTY name="haveLocalChanges" access="STATIC" type="BOOLEAN" readOnly="true" generateAPI="false">
-        <DESC>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized,
-          false otherwise.</DESC>
-      </PROPERTY>
+      
     </PROPERTIES>
 
     <METHODS access="STATIC">
@@ -52,7 +46,16 @@
         </PARAMS>
         <RETURN type="BOOLEAN"/>
       </METHOD>
+      <METHOD name="getClientId" generateAPI="false">
+        <DESC>>Returns the current sync client id.
+        </DESC>
+      </METHOD>
 
+      <METHOD name="haveLocalChanges" generateAPI="false">
+        <DESC>>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized,
+          false otherwise.
+        </DESC>
+      </METHOD>
       <METHOD name="export" deprecated="true"  generateAPI="false">
         <DESC>Export db</DESC>
         <RETURN type="STRING"/>
