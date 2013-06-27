@@ -6,24 +6,16 @@
 
 
 
--(void) enable:(NSDictionary*)propertyMap methodResult:(id<IMethodResult>)methodResult {
-    // TODO Auto-generated method stub
+-(void) getPlatformName:(id<IMethodResult>)methodResult {
+    [methodResult setResult:@"iOS"];
 }
 
--(void) start {
-    
+-(void) calcSumm:(int)a b:(int)b methodResult:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[NSNumber numberWithInt:(a+b)]];
 }
 
--(void) stop {
-    // TODO Auto-generated method stub
-}
-
--(void) disable {
-    // TODO Auto-generated method stub
-}
-
--(void) take:(NSDictionary*)propertyMap {
-
+-(void) joinStrings:(NSString*)a b:(NSString*)b methodResult:(id<IMethodResult>)methodResult {
+    [methodResult setResult:[a stringByAppendingString:b]];
 }
 
 
