@@ -49,11 +49,11 @@ ext/shared/generated/nativetabbar_ruby_api.c
 ext/platform/android/generated/jni/nativetabbar_js_wrap.cpp
 ext/platform/android/generated/jni/nativetabbar_ruby_wrap.cpp
 ext/platform/android/generated/jni/NativeTabbar.cpp
-ext/platform/android/jni/NativeTabbar_Impl.cpp
+ext/platform/android/jni/NativeTabbar_impl.cpp
 ext/shared/generated/nativetoolbar_api_init.cpp
 ext/shared/generated/nativetoolbar_js_api.cpp
 ext/shared/generated/nativetoolbar_ruby_api.c
 ext/platform/android/generated/jni/nativetoolbar_js_wrap.cpp
 ext/platform/android/generated/jni/nativetoolbar_ruby_wrap.cpp
 ext/platform/android/generated/jni/NativeToolbar.cpp
-ext/platform/android/jni/NativeToolbar_Impl.cpp
+ext/platform/android/jni/NativeToolbar_impl.cpp
