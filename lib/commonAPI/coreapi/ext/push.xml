@@ -6,14 +6,14 @@
         <MORE_HELP>Use this API to give application the ability to receive server initiated messages.</MORE_HELP>
         <PLATFORM>Android, iOS, WM, WP8</PLATFORM>
         <VER_INTRODUCED>4.0.0</VER_INTRODUCED>
-    
+
         <TEMPLATES>
             <DEFAULT_INSTANCE/> <!-- object has default static property, all methods can be call by static way (called from default instance), produce default(), set_default() methods -->
             <PROPERTY_BAG/>
         </TEMPLATES>
         <PROPERTIES access="INSTANCE" generateAccessors="false">
             <DESC>These properties are used to configure the Push API.</DESC>
-            
+
             <PROPERTY name="type" type="STRING" readOnly="true" generateAccessors="true">
                <DESC>Push engine type.</DESC>
                 <VALUES>
@@ -97,13 +97,13 @@
                 <DESC>Stop listening push events.</DESC>
             </METHOD>
         </METHODS>
-        
+
         <USER_OVERVIEW>
             <!--  More conversational style with INLINE SAMPLES, written in MarkDown -->
             <![CDATA[
- 
+
             ]]>
-            
+
         </USER_OVERVIEW>
         <EXAMPLES >
             <EXAMPLE title="Handle push message">
@@ -115,9 +115,9 @@
                                 <![CDATA[
 def setup_push
   # Capture an image from the default camera on the device, using the default image settings
-  Rho::Push.setNotification(url_for(:action=>:push_callback))
+  Rho::Push.startNotifications(url_for(:action=>:push_callback))
 end
-  
+
 def push_callback
   unless @params[:error]
   end
@@ -128,7 +128,7 @@ end
                                 <![CDATA[
 function setupPush() {
   // Capture an image from the default camera on the device, using the default image settings
-  Rho.Push.setNotification(pushCallback);
+  Rho.Push.startNotifications(pushCallback);
 }
 
 function pushCallback(params) {
@@ -143,4 +143,4 @@ function pushCallback(params) {
             </EXAMPLE>
         </EXAMPLES>
     </MODULE>
-</API>    
+</API>
