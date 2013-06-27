@@ -11,11 +11,17 @@ public:
     {
     }
 
-    virtual void enable( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult){}
-    virtual void start(CMethodResult& oResult){}
-    virtual void stop(CMethodResult& oResult){}
-    virtual void disable(CMethodResult& oResult){}
-    virtual void take( const rho::Hashtable<rho::String, rho::String>& propertyMap, CMethodResult& oResult){}
+    virtual void getPlatformName(rho::apiGenerator::CMethodResult& oResult) {
+         oResult.set("WM");
+    }
+
+    virtual void calcSumm( int a,  int b, rho::apiGenerator::CMethodResult& oResult) {
+         oResult.set(a+b);
+    }
+    
+    virtual void joinStrings( const rho::String& a,  const rho::String& b, rho::apiGenerator::CMethodResult& oResult) {
+         oResult.set(a+b);
+    }
 
 };
 
