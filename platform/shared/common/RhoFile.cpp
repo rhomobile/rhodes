@@ -394,7 +394,8 @@ unsigned int CRhoFile::getFileSize( const char* szFilePath ){
     memset(&st,0, sizeof(st));
     int rc = stat(szFilePath, &st);
     if ( rc == 0 && st.st_size > 0 )
-        return st.st_size;
+        if (!S_ISDIR(st.st_mode))
+            return st.st_size;
 
     return 0;
 }
