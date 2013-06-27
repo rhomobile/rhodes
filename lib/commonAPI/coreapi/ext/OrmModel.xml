@@ -44,10 +44,6 @@
           </PARAM>
         </PARAMS>
       </METHOD>
-      <METHOD name="destroy" generateAPI="false">
-        <DESC>Destroy a Rhodes model object. Click here for a Orm destroy example.</DESC>
-      </METHOD>
-
       <METHOD name="find" generateAPI="false" access="STATIC">
         <DESC>Find Rhodes model objects. Click here for a Orm find example. For examples of find with advanced queries,
           see Advanced Queries in Using the Local Database with Orm.
@@ -224,8 +220,8 @@
         </DESC>
         <RETURN type="BOOLEAN"/>
       </METHOD>
-      <METHOD name="setNotification" hasCallback="mandatory" runInThread="none" generateAPI="false" access="STATIC">
-        <DESC>Saves the current Rhodes model object to the database. Click here for a Orm save example.
+      <METHOD name="setNotification" hasCallback="mandatory" deprecated="true" runInThread="none" generateAPI="false" access="STATIC">
+        <DESC>Use Rhoconect-Client. Saves the current Rhodes model object to the database.
         </DESC>
         <PARAMS>
 
