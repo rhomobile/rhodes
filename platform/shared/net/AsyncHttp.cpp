@@ -29,6 +29,7 @@
 #include "net/URI.h"
 #include "common/RhodesApp.h"
 #include "common/RhoAppAdapter.h"
+#include "common/RhoConf.h"
 
 namespace rho
 {
@@ -133,8 +134,7 @@ CAsyncHttp::CHttpCommand::CHttpCommand(String strCmd, rho_param *p) : m_params(p
 
     m_params.getHash("headers", m_mapHeaders);
 
-    if(m_params.has("ssl_verify_peer"))
-        m_NetRequest.setSslVerifyPeer(m_params.getBool("ssl_verify_peer"));
+    setupSecureConnection();
 }
 
 void CAsyncHttp::CHttpCommand::execute()
@@ -289,6 +289,34 @@ void CAsyncHttp::CHttpCommand::callNotify(NetResponse& resp, int nError )
         LOG(TRACE) + "Callback:" + m_strCallback + "Result body: " + m_strResBody;
         getNet().pushData( strFullUrl, m_strResBody, null );
     }
+}
+
+void CAsyncHttp::CHttpCommand::setupSecureConnection( )
+{
+    String clientCertificate = "";
+    String clientCertificatePassword = "";
+
+    //will enable server SSL auth if true.
+
+    if(m_params.has("ssl_verify_peer")) {
+        bool verifyPeer = m_params.getBool("ssl_verify_peer");
+        m_NetRequest.setSslVerifyPeer(verifyPeer);
+        
+        if ( verifyPeer ) {
+            //will enable client-side SSL auth if valid certificate path is provided (Android-only).
+            if ( m_params.has("clientSSLCertificate") ) {
+                clientCertificate = m_params.getString("clientSSLCertificate");
+            }
+            
+            if ( m_params.has("clientSSLCertificatePassword") ) {
+                clientCertificatePassword = m_params.getString("clientSSLCertificatePassword");
+            }
+        }
+        
+    }
+    
+    RHOCONF().setString("clientSSLCertificate",clientCertificate,false);
+    RHOCONF().setString("clientSSLCertificatePassword",clientCertificatePassword,false);
 }
 
 CAsyncHttp::CAsyncHttpResponse::~CAsyncHttpResponse(){}
