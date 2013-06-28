@@ -52,6 +52,15 @@
 		C57BD904175392F200494EA3 /* RhoFileBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C57BD901175392F200494EA3 /* RhoFileBase.cpp */; };
 		C5AA919617380F6B002E4A65 /* NetworkDetectBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5AA919517380F6B002E4A65 /* NetworkDetectBase.cpp */; };
 		C5AA919817380FD0002E4A65 /* NetworkDetect.mm in Sources */ = {isa = PBXBuildFile; fileRef = C5AA919717380FD0002E4A65 /* NetworkDetect.mm */; };
+		C5F48ADB177DEB080071BFE2 /* Push.h in Headers */ = {isa = PBXBuildFile; fileRef = C5F48AD9177DEB080071BFE2 /* Push.h */; };
+		C5F48ADC177DEB080071BFE2 /* PushImpl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5F48ADA177DEB080071BFE2 /* PushImpl.cpp */; };
+		C5F48AE0177DEB1A0071BFE2 /* push_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5F48ADD177DEB1A0071BFE2 /* push_api_init.cpp */; };
+		C5F48AE1177DEB1A0071BFE2 /* push_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5F48ADE177DEB1A0071BFE2 /* push_js_api.cpp */; };
+		C5F48AE2177DEB1A0071BFE2 /* push_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = C5F48ADF177DEB1A0071BFE2 /* push_ruby_api.c */; };
+		C5F48AE7177DEB260071BFE2 /* Push_js_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5F48AE3177DEB260071BFE2 /* Push_js_wrap.cpp */; };
+		C5F48AE8177DEB260071BFE2 /* Push_ruby_wrap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5F48AE4177DEB260071BFE2 /* Push_ruby_wrap.cpp */; };
+		C5F48AE9177DEB260071BFE2 /* PushBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C5F48AE5177DEB260071BFE2 /* PushBase.cpp */; };
+		C5F48AEA177DEB260071BFE2 /* PushBase.h in Headers */ = {isa = PBXBuildFile; fileRef = C5F48AE6177DEB260071BFE2 /* PushBase.h */; };
 		FA01F1DF16E65FBB00D53D60 /* sqlite3_api_init.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1DC16E65FBB00D53D60 /* sqlite3_api_init.cpp */; };
 		FA01F1E016E65FBB00D53D60 /* sqlite3_js_api.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1DD16E65FBB00D53D60 /* sqlite3_js_api.cpp */; };
 		FA01F1E116E65FBB00D53D60 /* sqlite3_ruby_api.c in Sources */ = {isa = PBXBuildFile; fileRef = FA01F1DE16E65FBB00D53D60 /* sqlite3_ruby_api.c */; };
@@ -218,6 +227,15 @@
 		C57BD901175392F200494EA3 /* RhoFileBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RhoFileBase.cpp; path = ../../shared/generated/cpp/RhoFileBase.cpp; sourceTree = "<group>"; };
 		C5AA919517380F6B002E4A65 /* NetworkDetectBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NetworkDetectBase.cpp; path = ../../shared/NetworkDetectBase.cpp; sourceTree = "<group>"; };
 		C5AA919717380FD0002E4A65 /* NetworkDetect.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = NetworkDetect.mm; path = cpp_based_impl/NetworkDetect.mm; sourceTree = "<group>"; };
+		C5F48AD9177DEB080071BFE2 /* Push.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Push.h; path = ../../shared/Push.h; sourceTree = "<group>"; };
+		C5F48ADA177DEB080071BFE2 /* PushImpl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PushImpl.cpp; path = ../../shared/PushImpl.cpp; sourceTree = "<group>"; };
+		C5F48ADD177DEB1A0071BFE2 /* push_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = push_api_init.cpp; path = ../../shared/generated/push_api_init.cpp; sourceTree = "<group>"; };
+		C5F48ADE177DEB1A0071BFE2 /* push_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = push_js_api.cpp; path = ../../shared/generated/push_js_api.cpp; sourceTree = "<group>"; };
+		C5F48ADF177DEB1A0071BFE2 /* push_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = push_ruby_api.c; path = ../../shared/generated/push_ruby_api.c; sourceTree = "<group>"; };
+		C5F48AE3177DEB260071BFE2 /* Push_js_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Push_js_wrap.cpp; path = ../../shared/generated/cpp/Push_js_wrap.cpp; sourceTree = "<group>"; };
+		C5F48AE4177DEB260071BFE2 /* Push_ruby_wrap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Push_ruby_wrap.cpp; path = ../../shared/generated/cpp/Push_ruby_wrap.cpp; sourceTree = "<group>"; };
+		C5F48AE5177DEB260071BFE2 /* PushBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PushBase.cpp; path = ../../shared/generated/cpp/PushBase.cpp; sourceTree = "<group>"; };
+		C5F48AE6177DEB260071BFE2 /* PushBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PushBase.h; path = ../../shared/generated/cpp/PushBase.h; sourceTree = "<group>"; };
 		FA01F1DC16E65FBB00D53D60 /* sqlite3_api_init.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sqlite3_api_init.cpp; path = ../../shared/generated/sqlite3_api_init.cpp; sourceTree = "<group>"; };
 		FA01F1DD16E65FBB00D53D60 /* sqlite3_js_api.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sqlite3_js_api.cpp; path = ../../shared/generated/sqlite3_js_api.cpp; sourceTree = "<group>"; };
 		FA01F1DE16E65FBB00D53D60 /* sqlite3_ruby_api.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sqlite3_ruby_api.c; path = ../../shared/generated/sqlite3_ruby_api.c; sourceTree = "<group>"; };
@@ -381,6 +399,7 @@
 		08FB77AEFE84172EC02AAC07 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				C5F48AD6177DEAD20071BFE2 /* Push */,
 				C08B5DF01774C3D70021B5BA /* Notification */,
 				C5B99D7F174E688C00D8D02E /* File */,
 				FABB0455174BE108002DFB11 /* Navbar */,
@@ -621,6 +640,38 @@
 				C57BD8FB175392E700494EA3 /* rhofile_ruby_api.c */,
 			);
 			name = Generated;
+			sourceTree = "<group>";
+		};
+		C5F48AD6177DEAD20071BFE2 /* Push */ = {
+			isa = PBXGroup;
+			children = (
+				C5F48AD8177DEAFC0071BFE2 /* generated */,
+				C5F48AD7177DEAF50071BFE2 /* impl */,
+			);
+			name = Push;
+			sourceTree = "<group>";
+		};
+		C5F48AD7177DEAF50071BFE2 /* impl */ = {
+			isa = PBXGroup;
+			children = (
+				C5F48AD9177DEB080071BFE2 /* Push.h */,
+				C5F48ADA177DEB080071BFE2 /* PushImpl.cpp */,
+			);
+			name = impl;
+			sourceTree = "<group>";
+		};
+		C5F48AD8177DEAFC0071BFE2 /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				C5F48ADD177DEB1A0071BFE2 /* push_api_init.cpp */,
+				C5F48ADE177DEB1A0071BFE2 /* push_js_api.cpp */,
+				C5F48AE3177DEB260071BFE2 /* Push_js_wrap.cpp */,
+				C5F48AE4177DEB260071BFE2 /* Push_ruby_wrap.cpp */,
+				C5F48AE5177DEB260071BFE2 /* PushBase.cpp */,
+				C5F48AE6177DEB260071BFE2 /* PushBase.h */,
+				C5F48ADF177DEB1A0071BFE2 /* push_ruby_api.c */,
+			);
+			name = generated;
 			sourceTree = "<group>";
 		};
 		FA01F1D516E65F2D00D53D60 /* SQLLite */ = {
@@ -1175,6 +1226,8 @@
 				C08B5E001774C45C0021B5BA /* NotificationSingletonBase.h in Headers */,
 				C08B5E151774C4CA0021B5BA /* Notification.h in Headers */,
 				C08B5E191774C4CA0021B5BA /* NotificationSingleton.h in Headers */,
+				C5F48ADB177DEB080071BFE2 /* Push.h in Headers */,
+				C5F48AEA177DEB260071BFE2 /* PushBase.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1342,6 +1395,13 @@
 				C08B5E171774C4CA0021B5BA /* NotificationFactorySingleton.m in Sources */,
 				C08B5E181774C4CA0021B5BA /* NotificationSetup.m in Sources */,
 				C08B5E1A1774C4CA0021B5BA /* NotificationSingleton.m in Sources */,
+				C5F48ADC177DEB080071BFE2 /* PushImpl.cpp in Sources */,
+				C5F48AE0177DEB1A0071BFE2 /* push_api_init.cpp in Sources */,
+				C5F48AE1177DEB1A0071BFE2 /* push_js_api.cpp in Sources */,
+				C5F48AE2177DEB1A0071BFE2 /* push_ruby_api.c in Sources */,
+				C5F48AE7177DEB260071BFE2 /* Push_js_wrap.cpp in Sources */,
+				C5F48AE8177DEB260071BFE2 /* Push_ruby_wrap.cpp in Sources */,
+				C5F48AE9177DEB260071BFE2 /* PushBase.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
