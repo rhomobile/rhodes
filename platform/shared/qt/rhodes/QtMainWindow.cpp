@@ -486,7 +486,13 @@ void QtMainWindow::setUpWebPage(QWebPage* page)
 {
     page->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
     page->mainFrame()->securityOrigin().setDatabaseQuota(1024*1024*1024);
-    quint16 webkit_debug_port = RHOSIMCONF().getInt("webkit_debug_port");
+    quint16 webkit_debug_port = 
+#ifdef RHODES_EMULATOR        
+        RHOSIMCONF().getInt("webkit_debug_port");
+#else
+        0;
+#endif
+
     if (webkit_debug_port == 0)
         webkit_debug_port = 9090;
     page->setProperty("_q_webInspectorServerPort", webkit_debug_port);
