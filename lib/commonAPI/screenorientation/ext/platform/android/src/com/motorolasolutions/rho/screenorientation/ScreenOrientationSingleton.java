@@ -63,33 +63,37 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 	@Override
 	public void setAutoRotate(boolean autoRotate, IMethodResult result)
 	{
-		Logger.D(TAG, "setAutorotate -- START");
-		Logger.D(TAG, "setAutorotate -- autoRotate: " + autoRotate);
-		if (RhodesActivity.safeGetInstance() == null)
-			return;
-		if (autoRotate)
-		{
-			RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
-			isAutoRotate = true;
-			RhoConf.setString("disable_screen_rotation", "0");
-		}
-		else
-		{
-			setDirection();
-			setScreenOrientation(direction);
-			isAutoRotate = false;
-			RhoConf.setString("disable_screen_rotation", "1");
-		}
-		Logger.D(TAG, "setAutorotate -- END");
+	    Logger.D(TAG, "setAutorotate -- START");
+	    Logger.D(TAG, "setAutorotate -- autoRotate: " + autoRotate);
+	    if (RhodesActivity.safeGetInstance() == null)
+		return;
+	    if (autoRotate)
+	    {
+		RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+		isAutoRotate = true;
+		RhoConf.setString("disable_screen_rotation", "0");
+	    }
+	    else
+	    {
+		setDirection();
+		setScreenOrientation(direction);
+		isAutoRotate = false;
+		RhoConf.setString("disable_screen_rotation", "1");
+	    }
+	    Logger.D(TAG, "setAutorotate -- END");
 	}
 
 	@Override
 	public void getAutoRotate(IMethodResult result)
 	{
-		if (isAutoRotate)
-			result.set(true);
-		else
-			result.set(false);
+	    Logger.D(TAG, "getAutorotate -- START");
+	    boolean ret = false;
+	    if (isAutoRotate)
+		ret = true;
+	    else
+		ret = false;
+	    result.set(ret);
+	    Logger.D(TAG, "getAutorotate -- return: " + ret);
 	}
 
 	@Override
@@ -116,54 +120,63 @@ class ScreenOrientationSingleton extends ScreenOrientationSingletonBase implemen
 		setScreenOrientation(UPSIDE_DOWN);
 	}
 
-	private void setScreenOrientation(String orientation)
+	private void setScreenOrientation(final String orientation)
 	{
 		Logger.D(TAG, "setScreenOrientation -- START");
 		Logger.D(TAG, "setScreenOrientation -- orientation: " + orientation);
-		String value = null;
-		if (orientation.equalsIgnoreCase(NORMAL))
-		{
-			if (getNaturalDeviceOrientation() == Configuration.ORIENTATION_LANDSCAPE)
-				RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			else
-				RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-			isAutoRotate = false;
-			value = NORMAL;
-		}
-		else if (orientation.equalsIgnoreCase(RIGHT_HANDED))
-		{
-			if (getNaturalDeviceOrientation() == Configuration.ORIENTATION_LANDSCAPE)
-				RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-			else
-				RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-			isAutoRotate = false;
-			value = RIGHT_HANDED;
-		}
-		else if (orientation.equalsIgnoreCase(LEFT_HANDED))
-		{
-			if (getNaturalDeviceOrientation() == Configuration.ORIENTATION_LANDSCAPE)
-				RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-			else
-				RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			isAutoRotate = false;
-			value = LEFT_HANDED;
-		}
-		else if (orientation.equalsIgnoreCase(UPSIDE_DOWN))
-		{
-			if (getNaturalDeviceOrientation() == Configuration.ORIENTATION_LANDSCAPE)
-				RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-			else
-				RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-			isAutoRotate = false;
-			value = UPSIDE_DOWN;
-		}
-		if (value != null)
-		{
-			direction = value;
-			Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
-			if (mScreenOrientationCallback != null)
-				mScreenOrientationCallback.set(direction);
-		}
+		RhodesActivity.safeGetInstance().runOnUiThread(new Runnable() {
+		    
+		    @Override
+		    public void run() {
+			String value = null;
+			if (orientation.equalsIgnoreCase(NORMAL))
+			{
+				if (getNaturalDeviceOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+					RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+				else
+					RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+				isAutoRotate = false;
+				value = NORMAL;
+			}
+			else if (orientation.equalsIgnoreCase(RIGHT_HANDED))
+			{
+				if (getNaturalDeviceOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+					RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+				else
+					RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+				isAutoRotate = false;
+				value = RIGHT_HANDED;
+			}
+			else if (orientation.equalsIgnoreCase(LEFT_HANDED))
+			{
+				if (getNaturalDeviceOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+					RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+				else
+					RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+				isAutoRotate = false;
+				value = LEFT_HANDED;
+			}
+			else if (orientation.equalsIgnoreCase(UPSIDE_DOWN))
+			{
+				if (getNaturalDeviceOrientation() == Configuration.ORIENTATION_LANDSCAPE)
+					RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+				else
+					RhodesActivity.safeGetInstance().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+				isAutoRotate = false;
+				value = UPSIDE_DOWN;
+			}
+			Logger.D(TAG, "setScreenOrientation -- value to return: " + value);
+			Logger.D(TAG, "setScreenOrientation -- callback: " + mScreenOrientationCallback);
+			if (value != null)
+			{
+				direction = value;
+				Logger.D(TAG, "Setting currentOrientation in mScreenOrientationCallback: " + mScreenOrientationCallback + "with value: " + direction);
+				if (mScreenOrientationCallback != null)
+					mScreenOrientationCallback.set(direction);
+			}
+		    }
+		});
+		
 	}
 
 	private void setDirection()

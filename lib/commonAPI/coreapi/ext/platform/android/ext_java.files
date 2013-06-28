@@ -36,13 +36,3 @@ ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationFact
 ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationSingleton.java
 ext/platform/android/src/com/motorolasolutions/rho/notification/NotificationRhoListener.java
 ext/platform/android/src/com/motorolasolutions/rho/notification/PopupActivity.java
-ext/platform/android/generated/src/com/rho/notification/led/ILed.java
-ext/platform/android/generated/src/com/rho/notification/led/ILedFactory.java
-ext/platform/android/generated/src/com/rho/notification/led/ILedSingleton.java
-ext/platform/android/generated/src/com/rho/notification/led/LedBase.java
-ext/platform/android/generated/src/com/rho/notification/led/LedFactorySingleton.java
-ext/platform/android/generated/src/com/rho/notification/led/LedSingletonBase.java
-ext/platform/android/src/com/motorolasolutions/rho/notification/Led/LedFactory.java
-ext/platform/android/src/com/motorolasolutions/rho/notification/Led/LedSingleton.java
-ext/platform/android/src/com/motorolasolutions/rho/notification/Led/LedRhoListener.java
-ext/platform/android/src/com/motorolasolutions/rho/notification/Led/LedImpl.java

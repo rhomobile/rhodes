@@ -88,10 +88,3 @@ ext/platform/android/jni/Notification_impl.cpp
 ext/shared/generated/notification_api_init.cpp
 ext/shared/generated/notification_js_api.cpp
 ext/shared/generated/notification_ruby_api.c
-ext/shared/generated/led_api_init.cpp
-ext/shared/generated/led_js_api.cpp
-ext/shared/generated/led_ruby_api.c
-ext/platform/android/generated/jni/led_js_wrap.cpp
-ext/platform/android/generated/jni/led_ruby_wrap.cpp
-ext/platform/android/generated/jni/Led.cpp
-ext/platform/android/jni/Led_impl.cpp
