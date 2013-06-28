@@ -9,13 +9,7 @@
     </TEMPLATES>
 
     <PROPERTIES>
-      <PROPERTY name="clientId" access="STATIC" type="STRING" readOnly="true" generateAPI="false">
-        <DESC>Returns the current sync client id.</DESC>
-      </PROPERTY>
-      <PROPERTY name="haveLocalChanges" access="STATIC" type="BOOLEAN" readOnly="true" generateAPI="false">
-        <DESC>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized,
-          false otherwise.</DESC>
-      </PROPERTY>
+      
     </PROPERTIES>
 
     <METHODS access="STATIC">
@@ -52,7 +46,16 @@
         </PARAMS>
         <RETURN type="BOOLEAN"/>
       </METHOD>
+      <METHOD name="getClientId" generateAPI="false">
+        <DESC>>Returns the current sync client id.
+        </DESC>
+      </METHOD>
 
+      <METHOD name="haveLocalChanges" generateAPI="false">
+        <DESC>>Returns true if any of the Rhodes model objects have local database changes that need to be synchronized,
+          false otherwise.
+        </DESC>
+      </METHOD>
       <METHOD name="export" deprecated="true"  generateAPI="false">
         <DESC>Export db</DESC>
         <RETURN type="STRING"/>
@@ -96,6 +99,15 @@
           </PARAM>
         </PARAMS>
       </METHOD>
+      <METHOD name="getModel" generateAPI="false">
+        <DESC>Javascript using only. Returns a model.
+        </DESC>
+        <PARAMS>
+          <PARAM name="modelName" type="String">
+            <DESC>Name of the model you want returned.</DESC>
+          </PARAM>
+        </PARAMS>
+      </METHOD>
       <METHOD name="addModel" generateAPI="false">
         <DESC>
           Javascript using only. Creates ORM model.
@@ -119,7 +131,7 @@
                 <DESC>addUniqueIndex(STRING name,ARRAY [col1,col2]). Add a unique index to your fixedSchema model.</DESC>
               </PARAM>
               <PARAM name='belongs_to' type=''>
-                <DESC>belongs_to(STRING name).  Add belongs_to association to another defined model, for sync models.</DESC>
+                <DESC>belongs_to(STRING name).  Add belongs_to association to another defined model, for sync models. Comma separted String for more than one model.</DESC>
               </PARAM>
               <PARAM name='set' type=''>
                 <DESC>set(STRING name,STRING|BOOLEAN|INTEGER value).  Set an attribute to your model.</DESC>
@@ -140,29 +152,9 @@
     <PLATFORM>
       <!--  This section is used for the supported platfORM images at the top -->
     </PLATFORM>
+
     <EXAMPLES>
-      <EXAMPLE title="ORM databaseFullResetEx Method Examples">
-        <SECTIONS>
-          <SECTION>
-            <DESC>
-              Delete all Rhodes model objects for a source, filtering by conditions.
-            </DESC>
-            <CODE>
-              <RUBY>
-                <![CDATA[
-ORM.databaseFullResetEx(:models => ['Product', 'Customer'], :reset_client_info => true, :reset_local_models => true) ]]>
-              </RUBY>
-              <JAVASCRIPT>
-                <![CDATA[
-Rho.ORM.databaseFullResetEx({"models":['Product', 'Customer']},true,true); ]]>
-              </JAVASCRIPT>
-            </CODE>
-
-          </SECTION>
-
-        </SECTIONS>
-      </EXAMPLE>
-      <EXAMPLE title="Add ORM model, create ORM object">
+               <EXAMPLE title="Add ORM model, create ORM object">
         <SECTIONS>
           <SECTION>
             <DESC>
@@ -195,18 +187,6 @@ var productModel = Rho.ORM.addModel(function(model){
   model.property("price","float");
   model.set("partition","user");
 });
-
-You can define the following attributes in Rho.ORM.addModel()
-required *
-  model.modelName(name)
-
-optional
-  model.enable(sync|propertyBag|fixedSchema) // same as model.set(name,true)
-  model.property(name,type,option)
-  model.set(name,value)
-  model.belongs_to(modelName)
-  model.addIndex(name,[col1,col2,..])
-  model.addUniqueIndex(name,[col1,col2,..])
 
 // create model object and save it to database
 var product = productModel.create({
@@ -246,6 +226,27 @@ var productModel = Rho.ORM.getModel("Product");
        </SECTION>
        </SECTIONS>
    </EXAMPLE>
+      <EXAMPLE title="ORM databaseFullResetEx Method Examples">
+        <SECTIONS>
+          <SECTION>
+            <DESC>
+              Delete all Rhodes model objects for a source, filtering by conditions.
+            </DESC>
+            <CODE>
+              <RUBY>
+                <![CDATA[
+ORM.databaseFullResetEx(:models => ['Product', 'Customer'], :reset_client_info => true, :reset_local_models => true) ]]>
+              </RUBY>
+              <JAVASCRIPT>
+                <![CDATA[
+Rho.ORM.databaseFullResetEx({"models":['Product', 'Customer']},true,true); ]]>
+              </JAVASCRIPT>
+            </CODE>
+
+          </SECTION>
+
+        </SECTIONS>
+      </EXAMPLE>
  </EXAMPLES>
   </MODULE>
 </API>
