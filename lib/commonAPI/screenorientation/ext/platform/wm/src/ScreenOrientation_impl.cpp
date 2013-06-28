@@ -12,9 +12,9 @@ using namespace apiGenerator;
 // TODO: this strings needs to come form the api xml
 // so that the strings can be standard across the all platforms (andoid, wm, ios, wp8 etc)
 static const rho::String g_normal			= "normal";
-static const rho::String g_rightHanded		= "righthanded";
-static const rho::String g_leftHanded		= "lefthanded";
-static const rho::String g_upsideDown		= "upsidedown";
+static const rho::String g_rightHanded		= "rightHanded";
+static const rho::String g_leftHanded		= "leftHanded";
+static const rho::String g_upsideDown		= "upsideDown";
 static const rho::String g_invalid			= "invalid";
 static const int DEBOUNCE_DURATION			= 20;
 
