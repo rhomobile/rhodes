@@ -655,9 +655,12 @@ void QtMainWindow::on_tabBar_currentChanged(int index)
             m_oTabBarSwitchCallback.set(mapRes);
         }
 
-        if (tbrp["reload"].toBool() || (ui->webView && (ui->webView->history()->count()==0))) {
-            rho::String* strAction = new rho::String(tbrp["action"].toString().toStdString());
-            RHODESAPP().loadUrl(*strAction);
+        if (tbrp["reload"].toBool() || (ui->webView && (ui->webView->history()->count()==0))) 
+        {
+            const QByteArray asc = tbrp["action"].toString().toAscii(); 
+            rho::String strAction = std::string(asc.constData(), asc.length());//new rho::String(tbrp["action"].toString().toStdString());
+            RHODESAPP().loadUrl(strAction);
+
         }
     }
 }
@@ -697,12 +700,14 @@ void QtMainWindow::toolbarActionEvent(bool checked)
 {
     QObject* sender = QObject::sender();
     QAction* action;
-    if (sender && (action = dynamic_cast<QAction*>(sender))) {
-        rho::String* strAction = new rho::String(action->data().toString().toStdString());
-        if ( strcasecmp(strAction->c_str(), "forward") == 0 )
+    if (sender && (action = dynamic_cast<QAction*>(sender))) 
+    {
+        const QByteArray asc = action->data().toString().toAscii(); 
+        rho::String strAction = std::string(asc.constData(), asc.length());//new rho::String(action->data().toString().toStdString());
+        if ( strcasecmp(strAction.c_str(), "forward") == 0 )
             rho_webview_navigate_forward();
         else
-            RHODESAPP().loadUrl(*strAction);
+            RHODESAPP().loadUrl(strAction);
     }
 }
 
@@ -847,10 +852,13 @@ void QtMainWindow::selectPicture(char* callbackUrl)
         int tz = (int)(now.secsTo(QDateTime::currentDateTime())/3600);
 
         char file_name[4096];
+        const QByteArray asc = szExt.toAscii(); 
+        rho::String strExt = std::string(asc.constData(), asc.length());
+
         ::sprintf(file_name, "Image_%02i-%02i-%0004i_%02i.%02i.%02i_%c%03i%s",
             now.date().month(), now.date().day(), now.date().year(),
             now.time().hour(), now.time().minute(), now.time().second(),
-            tz>0?'_':'-',abs(tz),szExt.toStdString().c_str());
+            tz>0?'_':'-',abs(tz), strExt.c_str() );
 
         QString full_name = QString::fromStdWString(strBlobRoot);
         full_name.append("/");
