@@ -259,11 +259,6 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("2=,\"\",," + rhogempath + "\"\\\"");
             p("3=,\"\",," + rhogempath + "\"\\NPAPI\\\"");
             p("4=,\"\",," + rhogempath + "\"\\Config\\\"");
-
-           //if (autorun) 
-           //{
-           //   p("5=,\"\",," + autorun_path + "\"\\\"");           
-           //}
         }
         else
         {
@@ -271,10 +266,6 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             {
                 p("2=,\"\",," + rhogempath + "\"\\Config\\\"");
             }
- 
-            //if (autorun) {
-            //  p("3=,\"\",," + autorun_path + "\"\\\"");           
-            //}
         }
     }
     get_source_disks_names(es);
@@ -296,6 +287,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("\"openssl.dll\"=2");
             p("\"Ekioh.dll\"=2");
             p("\"npwtg_jsobjects.dll\"=3");
+            p("\"bridge.dll\"=3");
             p("\"npwtg_legacy.dll\"=3");
             if (!is_custom_config) {
                 p("\"Config.xml\"=4");
@@ -357,6 +349,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("");
             p("[CopyNPAPI]");
             p("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
+            p("\"bridge.dll\",\"bridge.dll\",,0");
             p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
             p("");
             p("[CopyConfig]");

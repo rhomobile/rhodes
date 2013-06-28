@@ -289,6 +289,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("\"openssl.dll\"=3");
             p("\"Ekioh.dll\"=3");
             p("\"npwtg_jsobjects.dll\"=4");
+            p("\"bridge.dll\"=4");
             p("\"npwtg_legacy.dll\"=4");
             if (!is_custom_config) {
                 p("\"Config.xml\"=5");
@@ -355,6 +356,7 @@ function pinf(platform,es,exts,name,vendor,srcdir,show_shortcut,is_icon,webkit,
             p("");
             p("[CopyNPAPI]");
             p("\"npwtg_jsobjects.dll\",\"npwtg_jsobjects.dll\",,0");
+            p("\"bridge.dll\",\"bridge.dll\",,0");
             p("\"npwtg_legacy.dll\",\"npwtg_legacy.dll\",,0");
             p("");
             p("[CopyConfig]");
