@@ -162,9 +162,19 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
             String retPath = strUrl;
             retPath.erase(findIt, appRootTag.size());
             retPath.insert(findIt, rho_rhodesapp_getapprootpath());
+
+#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP)
+            return retPath.substr(7);
+#else
             return retPath;
+#endif
         }
+#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP)
+        return strUrl.substr(7);
+#else
         return strUrl;
+#endif
+
     }
 
     size_t pos = strUrl.find_first_of(":#");
