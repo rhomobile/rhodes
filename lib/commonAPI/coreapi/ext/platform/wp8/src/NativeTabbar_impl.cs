@@ -108,7 +108,7 @@ namespace NativeTabbarImpl
                         charToBool(reload) + "; " + charToBool(use_current_view_for_tab));
                     mp.tabbarAddTab(label, icon, action,
 				        charToBool(disabled), background_color, selected_color,
-				        charToBool(reload), charToBool(use_current_view_for_tab));                    
+                        charToBool(reload), charToBool(use_current_view_for_tab), oResult.hasCallback(), oResult);                    
                 }
                 // TODO: on_change_tab_callback
                 mp.tabbarSwitch(0);
