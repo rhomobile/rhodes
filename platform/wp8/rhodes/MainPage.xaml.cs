@@ -82,8 +82,8 @@ namespace rhodes
         private bool isUIThread
         {
             get { return _uiThreadID == System.Threading.Thread.CurrentThread.ManagedThreadId; }
-        }
-
+        } 
+           
         private void raiseTabEvent( string eventName, int nOldTab, int nNewTab )
         {
             if ( _oTabResult != null)
@@ -240,7 +240,10 @@ namespace rhodes
 
 		public void navigate(string url, int index)
         {
+           
             if (!isUIThread) { Dispatcher.BeginInvoke(delegate() { navigate(url, index); }); return; }
+
+            if (_tabProps.Count == 0) index = -1;
 
             if (url == "") return;
 
