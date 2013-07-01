@@ -87,11 +87,11 @@ void CRhodesAppBase::initAppUrls()
     m_strBlobsDirPath = db_dir + "db/db-files";
 	m_strDBDirPath = db_dir + "db";
 
-#ifndef OS_WP8
+//#ifndef OS_WP8
     m_strAppRootPath = getRhoRootPath() + "apps";
-#else
-    m_strAppRootPath = getRhoRootPath();
-#endif
+//#else
+//    m_strAppRootPath = getRhoRootPath();
+//#endif
     //m_strRhodesPath = "";
 #else
     m_strBlobsDirPath = getRhoUserPath() + RHO_EMULATOR_DIR"/db/db-files";
@@ -161,20 +161,14 @@ String CRhodesAppBase::canonicalizeRhoUrl(const String& strUrl) const
         {
             String retPath = strUrl;
             retPath.erase(findIt, appRootTag.size());
-#if defined(OS_WP8)
-			retPath.erase(0, 7);
-			retPath.insert(0, m_strHomeUrl);
-#else
             retPath.insert(findIt, rho_rhodesapp_getapprootpath());
-#endif
-
-#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP)
+#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8)
             return retPath.substr(7);
 #else
             return retPath;
 #endif
         }
-#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP)
+#if defined( RHODES_SIMULATOR ) || defined (OS_WINDOWS_DESKTOP) || defined(OS_WP8)
         return strUrl.substr(7);
 #else
         return strUrl;
