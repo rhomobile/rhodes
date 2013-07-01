@@ -1375,3 +1375,12 @@ namespace "run" do
   end
 
 end
+
+namespace 'stop' do
+  task :win32 => ['config:wm'] do
+    Jake.get_process_list.each do |p|
+      next unless p[:cmd] =~ /^bin\\win32\\rhodes\\#{$buildcfg}\\rhodes\\.exe /
+      Jake.run2('taskkill.exe', ['/F', '/PID', p[:pid]], {:hide_output => true})
+    end
+  end
+end
