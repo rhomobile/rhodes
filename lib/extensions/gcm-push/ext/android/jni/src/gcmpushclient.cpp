@@ -113,7 +113,7 @@ GcmPushClient::GcmPushClient()
     setProperty("type", IPush::PUSH_TYPE_NATIVE, result);
     setProperty("senderId", RHOCONF().getString("Push.gcm.senderId"), result);
 
-    LOG(TRACEC) + "request GCM registration >>>>>>>>>>>>>>>>";
+    LOG(TRACE) + "request GCM registration >>>>>>>>>>>>>>>>";
     doRegister();
 }
 
