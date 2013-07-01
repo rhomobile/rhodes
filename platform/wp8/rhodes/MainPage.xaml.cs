@@ -31,6 +31,7 @@ using System.Windows;
 using Microsoft.Devices;
 using Microsoft.Phone.Controls;
 using rhodes.Resources;
+using System.IO;
 using rhoruntime;
 using Microsoft.Phone.Shell;
 using System.Windows.Media;
@@ -258,11 +259,10 @@ namespace rhodes
                 return;
             }
 
-
             if (TabbarPivot.Items.Count == 0)
-                RhodesWebBrowser.Navigate(new Uri(url));
+                RhodesWebBrowser.Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
             else
-                ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url));
+                ((WebBrowser)((PivotItem)TabbarPivot.Items[getValidTabbarIndex(index)]).Content).Navigate(new Uri(url, UriKind.RelativeOrAbsolute));
         }
 
         public string executeScriptFunc(string script, int index)
