@@ -47,6 +47,10 @@ extern "C" void Init_GCMPushClient()
 
     rho::push::CPushManager::getInstance()->addClient(pClient);
 
+    RAWTRACEC("Init_GCMPushClient", "request GCM registration >>>>>>>>>>>>>>>>");
+
+    pClient->doRegister();
+
 }
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -112,9 +116,6 @@ GcmPushClient::GcmPushClient()
     setProperty("id", s_Type, result);
     setProperty("type", IPush::PUSH_TYPE_NATIVE, result);
     setProperty("senderId", RHOCONF().getString("Push.gcm.senderId"), result);
-
-    LOG(TRACE) + "request GCM registration >>>>>>>>>>>>>>>>";
-    doRegister();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
