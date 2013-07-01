@@ -40,6 +40,7 @@
 #import "SignatureDelegate.h"
 #import "NVDelegate.h"
 #import "NetworkStatusMonitor.h"
+#import "IPushNotificationsReceiver.h"
 
 @interface Rhodes : NSObject <UIApplicationDelegate,
     UITabBarControllerDelegate, AVAudioPlayerDelegate, UIAlertViewDelegate>
@@ -57,6 +58,7 @@
     PickImageDelegate* pickImageDelegate;
 	SignatureDelegate* signatureDelegate;
 	NVDelegate* nvDelegate;
+    id<IPushNotificationsReceiver> pushReceiver;
 #ifdef __IPHONE_4_0
     EKEventStore *eventStore;
 	__block UIBackgroundTaskIdentifier syncBackgroundTask;
@@ -118,6 +120,8 @@
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex;
 
 - (void) exit_with_errormessage:(NSString*)title message:(NSString*)message;
+
+- (void) registerForPushNotifications:(id<IPushNotificationsReceiver>)receiver;
 
 - (void) signalNetworkStatusPollIntervalChanged;
 #ifdef __IPHONE_4_0
