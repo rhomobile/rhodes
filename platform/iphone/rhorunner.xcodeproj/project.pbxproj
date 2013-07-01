@@ -245,6 +245,7 @@
 		BDFBD9A610B1BA2000BAAFAB /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = SOURCE_ROOT; };
 		C0539BFD1767169700D53DF7 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/MediaPlayer.framework; sourceTree = DEVELOPER_DIR; };
 		C063701517158253003F1EE6 /* SignatureParam.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SignatureParam.h; path = Signature/SignatureParam.h; sourceTree = "<group>"; };
+		C52563B01781C53C008D394D /* IPushNotificationsReceiver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IPushNotificationsReceiver.h; sourceTree = "<group>"; };
 		C5D0D0BF153F279300B8BF21 /* InitMemoryInfoCollector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitMemoryInfoCollector.h; sourceTree = "<group>"; };
 		C5D0D0C0153F279A00B8BF21 /* InitMemoryInfoCollector.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InitMemoryInfoCollector.mm; sourceTree = "<group>"; };
 		C5D90EF615F4F58D005F7C86 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -406,6 +407,7 @@
 				BD6A6229123E46BB0093E03C /* RhoViewController.m */,
 				BD5B7448113BE2DB00C6070A /* SplashViewController.h */,
 				BD5B7449113BE2DB00C6070A /* SplashViewController.m */,
+				C52563B01781C53C008D394D /* IPushNotificationsReceiver.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -828,8 +830,6 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			attributes = {
-			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "rhorunner" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
