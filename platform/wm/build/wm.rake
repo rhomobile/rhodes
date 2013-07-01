@@ -676,7 +676,9 @@ namespace "device" do
       
       Dir.glob("**/*").each { |f|
         if File.directory?(f) == false
-          cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+          path = "\\application\\"   + $appname + "\\rho\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\rho\\" + f.to_s
+          path.gsub!("/", "\\")
+          cf.puts(path)
         end
       }
       
@@ -686,7 +688,9 @@ namespace "device" do
           
           Dir.glob("**/*").each { |f|
             if File.directory?(f) == false
-              cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+              path = "\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s
+              path.gsub!("/", "\\")
+              cf.puts(path)
             end
           }        
         }
@@ -697,7 +701,9 @@ namespace "device" do
         
         Dir.glob("**/*").each { |f|
           if File.directory?(f) == false && File.extname(f) != ".lib" && File.extname(f) != ".exp"
-            cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+            path = "\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s
+            path.gsub!("/", "\\")
+            cf.puts(path)
           end
         }
       end
@@ -707,7 +713,9 @@ namespace "device" do
         
       Dir.glob("**/*").each { |f|
         if File.directory?(f) == false && (File.extname(f) == ".exe" || File.extname(f) == ".dll") && f != "rhodes.exe"
-          cf.puts("\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s)
+          path = "\\application\\"   + $appname + "\\" + f.to_s + " > " + "\\program files\\" + $appname + "\\" + f.to_s
+          path.gsub!("/", "\\")
+          cf.puts(path)
         end
       }
           
@@ -817,10 +825,6 @@ namespace "device" do
       builder_name = 'build_inf.js'
       persistent_paths = []
       
-      if $build_persistent_cab == true && $use_shared_runtime.nil?
-        builder_name = 'build_pers_inf.js'
-      end
-
       args = [builder_name.to_s, 
               $appname + ".inf",                        #0
               build_platform,                           #1
@@ -833,8 +837,9 @@ namespace "device" do
               (($use_shared_runtime.nil?) ? "0" : "1"), #8
               ($motorola_capability ? "1" : "0"),       #9
               ($run_on_startup == false ? "0" : "1"),   #10
-              $srcdir ]                                 #11
-
+              $srcdir,                                  #11
+              ($build_persistent_cab ? "1" : "0")]      #12
+      
       if $use_shared_runtime.nil? then
         $additional_dlls_paths.each do |path|
           args << path
