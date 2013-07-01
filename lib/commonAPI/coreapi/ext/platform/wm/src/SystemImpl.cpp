@@ -679,12 +679,22 @@ static LONG _openRegAppPath( const rho::String& applicationName, CRegKey& oKey, 
 void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CMethodResult& oResult)
 {
     bool bRet = false;
-#ifdef OS_WINDOWS_DESKTOP
+#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
     CRegKey oKey;
     StringW strKeyPath;
     LONG res = _openRegAppPath(applicationName, oKey, strKeyPath);
 
-	bRet = res == ERROR_SUCCESS;
+#if defined( OS_WINDOWS_DESKTOP )
+    bRet = res == ERROR_SUCCESS;
+#else
+    if ( res == ERROR_SUCCESS )
+    {
+        DWORD dw = 0;
+        res = oKey.QueryDWORDValue(L"Instl", dw);
+        bRet = res == ERROR_SUCCESS && dw > 0;
+	}
+#endif
+	
 #else
     CFilePath oPath( applicationName );
     StringW strAppName = convertToStringW(oPath.getFolderName());
@@ -695,7 +705,7 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
     strRequest += strAppName + L"\"/>"
         L"</characteristic></wap-provisioningdoc>"; 
 
-#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
+//#if defined( OS_WINCE ) && !defined( OS_PLATFORM_MOTCE )
     HRESULT hr         = E_FAIL;
     LPWSTR wszOutput   = NULL;
     hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
@@ -710,7 +720,7 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
 
     if ( wszOutput )
         free( wszOutput );
-#endif
+//#endif
 #endif
 
     oResult.set(bRet);
@@ -718,7 +728,7 @@ void CSystemImpl::isApplicationInstalled( const rho::String& applicationName, CM
 
 void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMethodResult& oResult)
 {
-#ifdef OS_WINDOWS_DESKTOP
+#if defined( OS_WINDOWS_DESKTOP ) || defined( OS_PLATFORM_MOTCE )
     CRegKey oKey;
     StringW strKeyPath;
     LONG res = _openRegAppPath(applicationName, oKey, strKeyPath);
@@ -756,7 +766,7 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
         L"</characteristic>"
         L"</characteristic></wap-provisioningdoc>";
 
-#if defined( OS_WINCE )&& !defined( OS_PLATFORM_MOTCE )
+//#if defined( OS_WINCE )&& !defined( OS_PLATFORM_MOTCE )
     HRESULT hr         = E_FAIL;
     LPWSTR wszOutput   = NULL;
     hr = DMProcessConfigXML(strRequest.c_str(), CFGFLAG_PROCESS, &wszOutput);
@@ -772,7 +782,7 @@ void CSystemImpl::applicationUninstall( const rho::String& applicationName, CMet
 
     if ( wszOutput )
         free( wszOutput );
-#endif
+//#endif
 #endif
 }
 
