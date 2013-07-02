@@ -3,7 +3,7 @@
 <API>
   <MODULE name="RhoFile" parent="Rho" generateUnderscoreRubyNames="true">
     <HELP_OVERVIEW>File I/O</HELP_OVERVIEW>
-    <MORE_HELP>Use this API to access local files for reading and writing. Only string data can be read and written with this API.</MORE_HELP>
+    <MORE_HELP>Use this API to access local files for reading and writing. Only string data can be read and written with this API. Please note that binary files are not supported. Strings filled with \0 will be truncated to the last non \0 character. </MORE_HELP>
 
     <ALIASES>
     </ALIASES>
