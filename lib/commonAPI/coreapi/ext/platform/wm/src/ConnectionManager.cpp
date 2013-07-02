@@ -303,7 +303,7 @@ BOOL CWAN::Connect(LPCTSTR szConnectionDestination, BOOL bUserRequest)
 			if ( hResult != S_OK )
 				break;
 
-			if (wcscmp(DestInfo.szDescription, szConnectionDestination) == 0 && wcslen(szConnectionDestination) < 200)
+			if (wcsicmp(DestInfo.szDescription, szConnectionDestination) == 0 && wcslen(szConnectionDestination) < 200)
 			{
 				//  We have found the user specified network
 				userSpecifiedGUID = DestInfo.guid;
