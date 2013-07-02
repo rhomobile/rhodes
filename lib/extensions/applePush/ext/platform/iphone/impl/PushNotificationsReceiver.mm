@@ -16,7 +16,7 @@ static PushNotificationsReceiver *instance = nil;
 + (id<IPushNotificationsReceiver>)sharedInstance {
     
     if (instance == nil) {
-        instance = [PushNotificationsReceiver alloc];
+        instance = [[PushNotificationsReceiver alloc] init];
     }
     
     return instance;
@@ -50,7 +50,7 @@ static PushNotificationsReceiver *instance = nil;
 + (NSMutableString*) dictToJSON:(NSDictionary*)dict context:(NSMutableString*)context
 {
     if (nil == context) {
-        context = [NSMutableString alloc];
+        context = [[NSMutableString alloc] init];
     }
     
     [context appendString:@"{"];
@@ -92,7 +92,7 @@ static PushNotificationsReceiver *instance = nil;
 
 - (void) onPushMessageReceived:(NSDictionary *)userInfo
 {
-    NSMutableString* json = [NSMutableString alloc];
+    NSMutableString* json = [[NSMutableString alloc] init];
     json = [PushNotificationsReceiver dictToJSON:userInfo context:json];
         
     rho::push::CPushManager::getInstance()->callBack("apple", [json UTF8String]);

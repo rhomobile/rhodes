@@ -73,7 +73,7 @@
                 <DESC>Returns push token used to identify particular device.</DESC>
                 <RETURN type="STRING"/>
             </METHOD>
-            <METHOD name="startNotifications" access="INSTANCE" hasCallback="mandatory">
+            <METHOD name="startNotifications" access="INSTANCE" hasCallback="mandatory" runInThread="none">
                 <DESC>Start listening for push messages, errors or other push related events.</DESC>
                 <CALLBACK type="HASH">
                     <DESC>Hash map with push message payload.</DESC>
