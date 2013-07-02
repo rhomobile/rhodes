@@ -34,6 +34,7 @@ CRawMotoSensor::CRawMotoSensor(const char* sensorType) :
 
 CRawMotoSensor::~CRawMotoSensor(void)
 {
+    LOG(TRACE) + "Begin Destroy ensor instance";
     CloseSensor();
 
     if (m_sensorApiDll)
@@ -69,6 +70,8 @@ const char* CRawMotoSensor::getStatus()
 bool CRawMotoSensor::RegisterSensor(ISensorEventListener* eventListener)
 {
     bool success = true;
+
+    
 
     this->AddEventListener(m_type, eventListener);
     switch (m_type)
@@ -113,11 +116,15 @@ bool CRawMotoSensor::RegisterSensor(ISensorEventListener* eventListener)
             success = (ERROR_SUCCESS == this->OpenSensor(/*SENSOR_TYPE_HUMIDITY,*/ OnReceiveHumiditySensorData));
             break;
         default:
+            LOG(INFO) + "Unable to open sensor " + ConvertToTypeDescription(this->m_type) + " : " + rho::common::convertToStringA<int>((static_cast<int>(this->m_type)));
             success = false;
             break;        
     }
-    if (success)
+    /*if (success)
+    {
+        LOG(INFO) + "Sensor opened : " + ConvertToTypeDescription(this->m_type) + " : " + rho::common::convertToStringA<int>((static_cast<int>(this->m_type)));
         Start();
+    }*/
     return success;
 }
 
@@ -192,6 +199,7 @@ DWORD CRawMotoSensor::OpenSensor(/*SENSOR_TYPE sensorType,*/ PFN_SENSOR_DATA_CAL
     dwResult = m_sensorApiDll->SensorOpen(SENSOR_OPEN_MODE_DEFAULT, tSensorInfo);
 	if(E_SENSOR_SUCCESS != dwResult)
 	{
+        LOG(WARNING) + "Sensor failed to open : " + ConvertToTypeDescription(this->m_type) + " error : " + rho::common::convertToStringA<DWORD>(dwResult);
         m_status = SENSOR_STATUS_ERROR;
 		return dwResult;
 	}
@@ -201,6 +209,7 @@ DWORD CRawMotoSensor::OpenSensor(/*SENSOR_TYPE sensorType,*/ PFN_SENSOR_DATA_CAL
     dwResult = m_sensorApiDll->SensorGetProperty(SENSOR_PROP_SCALE, /*scaleFactor*/this->m_lScale);	
 	if(E_SENSOR_SUCCESS != dwResult)
     {
+        LOG(WARNING) + "Failed to read scale factor from sensor : " + ConvertToTypeDescription(this->m_type) + " error : " + rho::common::convertToStringA<DWORD>(dwResult);
         m_status = SENSOR_STATUS_ERROR;    
 		return dwResult;
 	}
@@ -213,6 +222,7 @@ DWORD CRawMotoSensor::OpenSensor(/*SENSOR_TYPE sensorType,*/ PFN_SENSOR_DATA_CAL
         dwResult = m_sensorApiDll->SensorSetProperty(SENSOR_PROP_SAMPLE_RATE, nSampleRate);		
 		if(E_SENSOR_SUCCESS != dwResult)
 		{
+            LOG(WARNING) + "Failed to set sampling rate to 1Hz for sensor : " + ConvertToTypeDescription(this->m_type) + " error : " + rho::common::convertToStringA<DWORD>(dwResult);
 			// In case of a failure, continue with the default sample rate without returning 
 		}
 	}
@@ -221,6 +231,7 @@ DWORD CRawMotoSensor::OpenSensor(/*SENSOR_TYPE sensorType,*/ PFN_SENSOR_DATA_CAL
     dwResult = m_sensorApiDll->SensorRegisterDataNotification(NOTIFIER_TYPE_CALLBACK, pfnSensorDataCallback, 1);
 	if(E_SENSOR_SUCCESS != dwResult)
 	{
+        LOG(WARNING) + "Failed to register callback for sensor : " + ConvertToTypeDescription(this->m_type) + " error : " + rho::common::convertToStringA<DWORD>(dwResult);
         m_status = SENSOR_STATUS_ERROR;
 		return (dwResult);
 	}
@@ -233,6 +244,8 @@ DWORD CRawMotoSensor::CloseSensor()
     DWORD dwResult = ERROR_SUCCESS;
     m_status = SENSOR_STATUS_NOT_READY;
 
+    LOG(INFO) + "Closing sensor : " + ConvertToTypeDescription(this->m_type);
+
     this->Stop();
 
     if (m_sensorApiDll != null)
@@ -242,20 +255,26 @@ DWORD CRawMotoSensor::CloseSensor()
         dwResult = m_sensorApiDll->SensorDeregisterDataNotification();
 	    if(E_SENSOR_SUCCESS != dwResult)
 	    {
+            LOG(WARNING) + "Failed to unregister call back for sensor : " + ConvertToTypeDescription(this->m_type) + " error : " + rho::common::convertToStringA<DWORD>(dwResult);
             m_status = SENSOR_STATUS_ERROR;
 		    //return (dwResult);
 	    }
 
         RemoveEventListener(m_type);
+        SENSOR_TYPE type = m_type;
         this->m_type = SENSOR_TYPE_UNDEFINED;
 
         // Open the sensor in default mode. 
         dwResult = m_sensorApiDll->SensorClose();
 	    if(E_SENSOR_SUCCESS != dwResult)
 	    {
+            LOG(WARNING) + "Error closing sensor : " + ConvertToTypeDescription(type) + " error : " + rho::common::convertToStringA<DWORD>(dwResult);
             m_status = SENSOR_STATUS_ERROR;
 		    //return dwResult;
 	    }
+
+        
+        
     }
 
     return dwResult;
@@ -267,12 +286,15 @@ bool CRawMotoSensor::Start()
     bool retStatus = true;
 	DWORD dwResult = E_SENSOR_SUCCESS;
 
+    LOG(INFO) + "Attempt to kick start sampling for  sensor : " + ConvertToTypeDescription(this->m_type);
+
     if (SENSOR_STATUS_STARTED != m_status)
     {	
 	    // Start sampling
         dwResult = m_sensorApiDll->SensorStartSampling();	
 	    if(E_SENSOR_SUCCESS != dwResult)
 	    {
+            LOG(WARNING) + "Attempt to kick start sampling for  sensor : " + ConvertToTypeDescription(this->m_type) + " resulted in error: " + rho::common::convertToStringA<DWORD>(dwResult);
             retStatus = false;
 		    m_status = SENSOR_STATUS_ERROR;        
 	    }
@@ -281,6 +303,10 @@ bool CRawMotoSensor::Start()
             m_status = SENSOR_STATUS_STARTED;
         }
     }
+    else
+    {
+        LOG(WARNING) + "State invalid. Cannot kick start sampling for  sensor : " + ConvertToTypeDescription(this->m_type);
+    }
     return (retStatus);
 }
 
@@ -288,6 +314,7 @@ bool CRawMotoSensor::Stop()
 {
     bool retStatus = true;
 	DWORD dwResult = E_SENSOR_SUCCESS;
+    LOG(INFO) + "Attempt to stop sampling for  sensor : " + ConvertToTypeDescription(this->m_type);
 	
     if (SENSOR_STATUS_STARTED == m_status)
     {
@@ -295,6 +322,7 @@ bool CRawMotoSensor::Stop()
         dwResult = m_sensorApiDll->SensorStopSampling();	
 	    if(E_SENSOR_SUCCESS != dwResult)
 	    {
+            LOG(WARNING) + "Attempt to stop sampling for  sensor : " + ConvertToTypeDescription(this->m_type) + " resulted in error: " + rho::common::convertToStringA<DWORD>(dwResult);
             retStatus = false;
 		    m_status = SENSOR_STATUS_ERROR;        
 	    }    
@@ -302,6 +330,10 @@ bool CRawMotoSensor::Stop()
         {
             m_status = SENSOR_STATUS_READY;
         }
+    }
+    else
+    {
+        LOG(WARNING) + "State invalid. Cannot kick start sampling for  sensor : " + ConvertToTypeDescription(this->m_type);
     }
     return (retStatus);
 }
@@ -335,13 +367,14 @@ DWORD CRawMotoSensor::OnReceiveAccelerometerSensorData(HANDLE hSensor, SENSOR_DA
 {
 
     DWORD dwResult = ERROR_SUCCESS;
+    LOG(TRACE) + "Accerolmeter <<<";
 
     rho::common::CMutexLock lock(m_cs);
 
     // if don't have the call back registered ignore the computation
     if (!g_listenerMap.containsKey(SENSOR_TYPE_ACCELEROMETER))
     {
-        LOG(TRACE) + "Callback for " + ConvertToTypeDescription(SENSOR_TYPE_ACCELEROMETER) + " is not registered.";
+        LOG(WARNING) + "Callback for " + ConvertToTypeDescription(SENSOR_TYPE_ACCELEROMETER) + " is not registered.";
         return dwResult;
     }
 
@@ -349,7 +382,7 @@ DWORD CRawMotoSensor::OnReceiveAccelerometerSensorData(HANDLE hSensor, SENSOR_DA
     ISensorEventListener* listener = g_listenerMap.get(SENSOR_TYPE_ACCELEROMETER);
     if (NULL == listener)
     {
-        LOG(TRACE) + "No listener for " + ConvertToTypeDescription(SENSOR_TYPE_ACCELEROMETER) + "found.";
+        LOG(WARNING) + "No listener for " + ConvertToTypeDescription(SENSOR_TYPE_ACCELEROMETER) + "found.";
         return dwResult;
     }
 
@@ -392,17 +425,23 @@ DWORD CRawMotoSensor::OnReceiveAccelerometerSensorData(HANDLE hSensor, SENSOR_DA
 			    sprintf(szBuffer, "%4.4f", (float)ptSensorData->data.vector.nZ);
                 z = szBuffer;
 		    }
-
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_ACCELEROMETER) + "(" + x + "," + y + "," + z + ")";
             listener->OnReceiveAccelerometerSensorData(x, y, z);
             sensor->m_dwQuietTime = dwTC;
             
 	    }
+    }
+    else
+    {
+        LOG(TRACE) + "Ignore data for (minium gap)" + ConvertToTypeDescription(SENSOR_TYPE_ACCELEROMETER);
     }
     return dwResult;
 }
 
 DWORD CRawMotoSensor::OnReceiveOrientationSensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "Device Orientation <<<";
+
     DWORD dwResult = ERROR_SUCCESS;
     rho::common::CMutexLock lock(m_cs);
 
@@ -476,7 +515,7 @@ DWORD CRawMotoSensor::OnReceiveOrientationSensorData(HANDLE hSensor, SENSOR_DATA
 				orientation =  "Unknown Orientation";	
 				break;
 		    }
-
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_ORIENTATION) + "(" + orientation + ")";
             listener->OnReceiveOrientationSensorData(orientation);
             sensor->m_dwQuietTime = dwTC;
             
@@ -487,6 +526,8 @@ DWORD CRawMotoSensor::OnReceiveOrientationSensorData(HANDLE hSensor, SENSOR_DATA
 
 DWORD CRawMotoSensor::OnReceiveTiltAngleSensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "TiltAngle <<<";
+
     DWORD dwResult = ERROR_SUCCESS;
 
     rho::common::CMutexLock lock(m_cs);
@@ -546,6 +587,7 @@ DWORD CRawMotoSensor::OnReceiveTiltAngleSensorData(HANDLE hSensor, SENSOR_DATA_T
                 z = szBuffer;
 		    }
 
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_TILT_ANGLE) + "(" + x + "," + y + "," + z + ")";
             listener->OnReceiveTiltAngleSensorData(x, y, z);
             sensor->m_dwQuietTime = dwTC;
             
@@ -556,6 +598,8 @@ DWORD CRawMotoSensor::OnReceiveTiltAngleSensorData(HANDLE hSensor, SENSOR_DATA_T
 
 DWORD CRawMotoSensor::OnReceiveMotionSensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "Motion <<<";
+
     DWORD dwResult = ERROR_SUCCESS;
     rho::common::CMutexLock lock(m_cs);
 
@@ -603,7 +647,7 @@ DWORD CRawMotoSensor::OnReceiveMotionSensorData(HANDLE hSensor, SENSOR_DATA_T* p
 		    }
             rho::String motionVal = szBuffer;
 
-            
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_MOTION) + "(" + motionVal + ")";            
             listener->OnReceiveMotionSensorData(motionVal);
             sensor->m_dwQuietTime = dwTC;
             
@@ -614,6 +658,7 @@ DWORD CRawMotoSensor::OnReceiveMotionSensorData(HANDLE hSensor, SENSOR_DATA_T* p
 
 DWORD CRawMotoSensor::OnReceiveECompassSensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "ECompass <<<";
     DWORD dwResult = ERROR_SUCCESS;
    
     rho::common::CMutexLock lock(m_cs);
@@ -662,7 +707,7 @@ DWORD CRawMotoSensor::OnReceiveECompassSensorData(HANDLE hSensor, SENSOR_DATA_T*
 		    }
             rho::String ecompassVal = szBuffer;
 
-            
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_ECOMPASS) + "(" + ecompassVal + ")";
             listener->OnReceiveECompassSensorData(ecompassVal);
             sensor->m_dwQuietTime = dwTC;
             
@@ -674,6 +719,8 @@ DWORD CRawMotoSensor::OnReceiveECompassSensorData(HANDLE hSensor, SENSOR_DATA_T*
 
 DWORD CRawMotoSensor::OnReceiveMagnetometerSensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "Magnetometer <<<";
+
     DWORD dwResult = ERROR_SUCCESS;
     rho::common::CMutexLock lock(m_cs);
 
@@ -732,6 +779,7 @@ DWORD CRawMotoSensor::OnReceiveMagnetometerSensorData(HANDLE hSensor, SENSOR_DAT
                 z = szBuffer;
 		    }
 
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_MAGNETOMETER) + "(" + x + "," + y + "," + z + ")";
             listener->OnReceiveMagnetometerSensorData(x, y, z);
             sensor->m_dwQuietTime = dwTC;
             
@@ -742,6 +790,7 @@ DWORD CRawMotoSensor::OnReceiveMagnetometerSensorData(HANDLE hSensor, SENSOR_DAT
 
 DWORD CRawMotoSensor::OnReceiveGyroscopeSensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "Gyroscope <<<";
     DWORD dwResult = ERROR_SUCCESS;
     rho::common::CMutexLock lock(m_cs);
 
@@ -800,6 +849,7 @@ DWORD CRawMotoSensor::OnReceiveGyroscopeSensorData(HANDLE hSensor, SENSOR_DATA_T
                 z = szBuffer;
 		    }
 
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_MAGNETOMETER) + "(" + x + "," + y + "," + z + ")";
             listener->OnReceiveGyroscopeSensorData(x, y, z);
             sensor->m_dwQuietTime = dwTC;
             
@@ -810,6 +860,7 @@ DWORD CRawMotoSensor::OnReceiveGyroscopeSensorData(HANDLE hSensor, SENSOR_DATA_T
 
 DWORD CRawMotoSensor::OnReceiveAmbientLightSensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "AmbientLight <<<";
     DWORD dwResult = ERROR_SUCCESS;
     rho::common::CMutexLock lock(m_cs);
 
@@ -857,7 +908,7 @@ DWORD CRawMotoSensor::OnReceiveAmbientLightSensorData(HANDLE hSensor, SENSOR_DAT
 		    }
             rho::String ambientVal = szBuffer;
 
-            
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_AMBIENT_LIGHT) + "(" + ambientVal + ")";
             listener->OnReceiveAmbientLightSensorData(ambientVal);
             sensor->m_dwQuietTime = dwTC;
             
@@ -868,6 +919,8 @@ DWORD CRawMotoSensor::OnReceiveAmbientLightSensorData(HANDLE hSensor, SENSOR_DAT
 
 DWORD CRawMotoSensor::OnReceiveProximitySensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "Proximity <<<";
+
     DWORD dwResult = ERROR_SUCCESS;
     rho::common::CMutexLock lock(m_cs);
 
@@ -915,7 +968,7 @@ DWORD CRawMotoSensor::OnReceiveProximitySensorData(HANDLE hSensor, SENSOR_DATA_T
 		    }
             rho::String proximityVal = szBuffer;
 
-            
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_PROXIMITY) + "(" + proximityVal + ")";
             listener->OnReceiveProximitySensorData(proximityVal);
             sensor->m_dwQuietTime = dwTC;
             
@@ -926,6 +979,8 @@ DWORD CRawMotoSensor::OnReceiveProximitySensorData(HANDLE hSensor, SENSOR_DATA_T
 
 DWORD CRawMotoSensor::OnReceiveProximityLongRangeSensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "ProximityLR <<<";
+
     DWORD dwResult = ERROR_SUCCESS;
 
     rho::common::CMutexLock lock(m_cs);
@@ -974,7 +1029,7 @@ DWORD CRawMotoSensor::OnReceiveProximityLongRangeSensorData(HANDLE hSensor, SENS
 		    }
             rho::String proximityLrVal = szBuffer;
 
-            
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_PROXIMITY_LONG_RANGE) + "(" + proximityLrVal + ")";
             listener->OnReceiveProximityLongRangeSensorData(proximityLrVal);
             sensor->m_dwQuietTime = dwTC;
             
@@ -985,6 +1040,7 @@ DWORD CRawMotoSensor::OnReceiveProximityLongRangeSensorData(HANDLE hSensor, SENS
 
 DWORD CRawMotoSensor::OnReceivePressureSensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "Pressure <<<";
     DWORD dwResult = ERROR_SUCCESS;
     rho::common::CMutexLock lock(m_cs);
 
@@ -1030,10 +1086,10 @@ DWORD CRawMotoSensor::OnReceivePressureSensorData(HANDLE hSensor, SENSOR_DATA_T*
 		    {
                 sprintf(szBuffer, "%4.4f", (float)ptSensorData->data.scalar.nValue);
 		    }
-            rho::String presssure = szBuffer;
+            rho::String pressure = szBuffer;
 
-            
-            listener->OnReceivePressureSensorData(presssure);
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_PRESSURE) + "(" + pressure + ")";
+            listener->OnReceivePressureSensorData(pressure);
             sensor->m_dwQuietTime = dwTC;
             
 	    }
@@ -1043,6 +1099,7 @@ DWORD CRawMotoSensor::OnReceivePressureSensorData(HANDLE hSensor, SENSOR_DATA_T*
 
 DWORD CRawMotoSensor::OnReceiveTemperatureSensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "Temperature <<<";
     DWORD dwResult = ERROR_SUCCESS;
     rho::common::CMutexLock lock(m_cs);
 
@@ -1090,7 +1147,7 @@ DWORD CRawMotoSensor::OnReceiveTemperatureSensorData(HANDLE hSensor, SENSOR_DATA
 		    }
             rho::String temperature = szBuffer;
 
-            
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_TEMPERATURE) + "(" + temperature + ")";
             listener->OnReceiveTemperatureSensorData(temperature);
             sensor->m_dwQuietTime = dwTC;
             
@@ -1101,6 +1158,7 @@ DWORD CRawMotoSensor::OnReceiveTemperatureSensorData(HANDLE hSensor, SENSOR_DATA
 
 DWORD CRawMotoSensor::OnReceiveHumiditySensorData(HANDLE hSensor, SENSOR_DATA_T* ptSensorData, DWORD dwSize, DWORD dwDrop)
 {
+    LOG(TRACE) + "Humidity <<<";
     DWORD dwResult = ERROR_SUCCESS;
     rho::common::CMutexLock lock(m_cs);
 
@@ -1148,7 +1206,7 @@ DWORD CRawMotoSensor::OnReceiveHumiditySensorData(HANDLE hSensor, SENSOR_DATA_T*
 		    }
             rho::String humidity = szBuffer;
 
-            
+            LOG(TRACE) + "Data for " + ConvertToTypeDescription(SENSOR_TYPE_HUMIDITY) + "(" + humidity + ")";
             listener->OnReceiveHumiditySensorData(humidity);
             sensor->m_dwQuietTime = dwTC;
             
