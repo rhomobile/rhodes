@@ -120,10 +120,15 @@ public:
         if (buf)
         {
             int actualsize = m_oFile.readData((void*)buf,0,size);
-            buf[actualsize] = 0;
-            
-            String data(buf);
-            oResult.set(data);
+            if ( actualsize> 0 )
+            {
+                buf[actualsize] = 0;
+                
+                String data(buf);
+                oResult.set(data);
+            }else
+                oResult.set("");
+
             delete[] buf;
         }
         else {

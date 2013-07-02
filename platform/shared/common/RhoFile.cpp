@@ -218,18 +218,18 @@ bool CRhoFile::isOpened(){
 bool CRhoFile::open( const char* szFilePath, EOpenModes eMode ){
     m_strPath = szFilePath;
     if ( eMode == OpenForAppend || eMode == OpenForReadWrite ){
-        m_file = fopen(szFilePath,"r+b");
+        m_file = fopen(szFilePath,"r+bc");
 
         if ( !m_file && !isFileExist(szFilePath) )
-            m_file = fopen(szFilePath,"wb");
+            m_file = fopen(szFilePath,"wbc");
 
         if ( eMode == OpenForAppend )
             movePosToEnd();
 
     }else if ( eMode == OpenReadOnly )
-        m_file = fopen(szFilePath,"rb");
+        m_file = fopen(szFilePath,"rbc");
     else if ( eMode == OpenForWrite )
-        m_file = fopen(szFilePath,"wb");
+        m_file = fopen(szFilePath,"wbc");
     
     return isOpened();
 }
