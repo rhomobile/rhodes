@@ -74,9 +74,31 @@ static PushNotificationsReceiver *instance = nil;
 
 		} else if ([val isKindOfClass:[NSNumber class]]) {
             [context appendFormat:@"\"%@\"",[(NSNumber*)val stringValue]];
-        }
-        else if ([val isKindOfClass:[NSDictionary class]]) {
-            [context appendFormat:@"\"%@\"", [PushNotificationsReceiver dictToJSON:(NSDictionary*)val context:context] ];
+        } else if ([val isKindOfClass:[NSDictionary class]]) {
+            NSMutableString* json = [[NSMutableString alloc] init];
+            [PushNotificationsReceiver dictToJSON:(NSDictionary*)val context:json];
+            [context appendString:json];
+            [json dealloc];
+        } else if ([val isKindOfClass:[NSArray class]]) {
+            
+            [context appendString:@"["];
+            //will only support String values in array
+            NSArray* vals = (NSArray*)val;
+            for ( int j = 0; j < ([vals count]); ++j ) {
+                id v = vals[j];
+                if ([v isKindOfClass:[NSString class]]) {
+                    [context appendFormat:@"\"%@\"",(NSString*)v];
+
+                    if ( j < ([vals count]-1) ) {
+                        [context appendString:@","];
+                    }
+                }
+            }
+            
+            [context appendString:@"]"];
+            
+        } else {
+            [context appendString:@"\"\""];
         }
         
         if ( i < ([keys count]-1) ) {
