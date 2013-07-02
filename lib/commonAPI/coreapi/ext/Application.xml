@@ -44,7 +44,7 @@
                 <DESC>Version from build time configuration file.</DESC>
             </PROPERTY>
             <PROPERTY name="title" type="STRING">
-                <DESC>Define Window caption text.If missed - caption from page used.</DESC>
+                <DESC>Define Window caption text.If missed - caption from page used.Not supported on Windows CE devices.</DESC>
                 <PLATFORM>WM, Win32</PLATFORM>
             </PROPERTY>
             <PROPERTY name="name" type="STRING" readOnly="true">
