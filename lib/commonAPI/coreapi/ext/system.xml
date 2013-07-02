@@ -219,7 +219,7 @@
 
             </METHOD>
             <METHOD name="applicationUninstall">
-                <DESC>Uninstall the application.</DESC>
+                <DESC>Uninstall the application. Not Supported on Windows CE devices.</DESC>
                 <PLATFORM>WM, Win32, Android</PLATFORM>
                 <PARAMS>
                     <PARAM name="applicationName" type="STRING">
@@ -600,7 +600,7 @@
                     <PARAM name="badgeNumber" type="INTEGER"/>
                 </PARAMS>
             </METHOD>
-            <METHOD name="runApplication" deprecated="true">
+            <METHOD name="runApplication">
                 <DESC>Use System.Process.runApplication: Run an application.</DESC>
                 <PARAMS>
                     <PARAM name="appName" type="STRING">
@@ -611,7 +611,7 @@
                         <CAN_BE_NIL/>
                     </PARAM>
                     <PARAM name="blockingCall" type="BOOLEAN">
-                        <DESC>The name of the application on the device to run.</DESC>
+                        <DESC>The name of the application on the device to run.Not Implemented.</DESC>
                         <CAN_BE_NIL>
                             <DESC>False by default</DESC>
                         </CAN_BE_NIL>
