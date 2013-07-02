@@ -65,7 +65,7 @@ static PushNotificationsReceiver *instance = nil;
             continue;
 		}
         
-        [context appendFormat:@"\"%@\"",(NSString*)k];
+        [context appendFormat:@"\"%@\":",(NSString*)k];
         
         id val = [dict objectForKey:k];
         
