@@ -102,9 +102,10 @@ CSensorImpl::~CSensorImpl()
 
 void CSensorImpl::getMinimumGap(rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Request received for minimum gap : " + m_sensorId;
     if (NULL == m_rawSensor)
     {
-        oResult.setError("No sensor found. Cannot get minimumegap.");
+        oResult.setError("No sensor found. Cannot get minimumGap.");
     } else
     {
         oResult.set(this->m_rawSensor->getMinimumGap());
@@ -114,6 +115,7 @@ void CSensorImpl::getMinimumGap(rho::apiGenerator::CMethodResult& oResult)
 
 void CSensorImpl::setMinimumGap(int minimumGap, rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Request received to set minimum gap : " + m_sensorId + " : to " + rho::common::convertToStringA<int>(minimumGap);
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot set minimumegap.");
@@ -132,6 +134,7 @@ void CSensorImpl::setMinimumGap(int minimumGap, rho::apiGenerator::CMethodResult
 
 void CSensorImpl::getType(rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Request received for type : " + m_sensorId;
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot get type.");
@@ -143,6 +146,7 @@ void CSensorImpl::getType(rho::apiGenerator::CMethodResult& oResult)
 
 void CSensorImpl::getStatus(rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Request received for status : " + m_sensorId;
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot get status.");
@@ -155,6 +159,7 @@ void CSensorImpl::getStatus(rho::apiGenerator::CMethodResult& oResult)
 
 void CSensorImpl::start(rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Received request to start sensor: " + m_sensorId;
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot get start.");
@@ -162,11 +167,11 @@ void CSensorImpl::start(rho::apiGenerator::CMethodResult& oResult)
     else
     {
         //const char * status = m_rawSensor->getStatus();
+        this->m_rawSensor->Start();
         rho::common::CMutexLock lock(m_cs);
         if (oResult.hasCallback())
         {
             m_callbackMethodResult = &oResult;
-            //this->m_rawSensor->Start();
         }
         else
         {
@@ -178,6 +183,7 @@ void CSensorImpl::start(rho::apiGenerator::CMethodResult& oResult)
 
 void CSensorImpl::readData(rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Received request to readData: " + m_sensorId;
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot get stop.");
@@ -191,16 +197,18 @@ void CSensorImpl::readData(rho::apiGenerator::CMethodResult& oResult)
 
 void CSensorImpl::stop(rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Received request to stop sensor: " + m_sensorId;
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot get stop.");
     }
     else
     {
+        
+        this->m_rawSensor->Stop();
         if ((NULL != m_callbackMethodResult) && (m_callbackMethodResult->hasCallback()))
         {
             m_callbackMethodResult = NULL;
-            this->m_rawSensor->Stop();
 
         }
     }
@@ -208,6 +216,7 @@ void CSensorImpl::stop(rho::apiGenerator::CMethodResult& oResult)
 
 void CSensorImpl::getProperty(const rho::String& propertyName, rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Received request for get property : " + m_sensorId + " : " + propertyName;
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot set " + propertyName);
@@ -231,6 +240,8 @@ void CSensorImpl::getProperty(const rho::String& propertyName, rho::apiGenerator
 
 void CSensorImpl::getProperties(const rho::Vector<rho::String>& arrayofNames, rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Received request for get properties : " + m_sensorId;
+
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot get properties");
@@ -261,6 +272,8 @@ void CSensorImpl::getProperties(const rho::Vector<rho::String>& arrayofNames, rh
 
 void CSensorImpl::getAllProperties(rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Received request for get all properties : " + m_sensorId;
+
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot get properties");
@@ -279,6 +292,7 @@ void CSensorImpl::getAllProperties(rho::apiGenerator::CMethodResult& oResult)
 
 void CSensorImpl::setProperty(const rho::String& propertyName,  const rho::String& propertyValue, rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Received request to set property : " + m_sensorId + " : " + propertyName + " = " + propertyValue;
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot set property " + propertyName);
@@ -304,6 +318,8 @@ void CSensorImpl::setProperty(const rho::String& propertyName,  const rho::Strin
 
 void CSensorImpl::setProperties(const rho::Hashtable<rho::String, rho::String>& propertyMap, rho::apiGenerator::CMethodResult& oResult)
 {
+    LOG(TRACE) + "Received request to set properties : " + m_sensorId;
+
     if (NULL == m_rawSensor)
     {
         oResult.setError("No sensor found. Cannot set properties");
@@ -332,6 +348,7 @@ void CSensorImpl::setProperties(const rho::Hashtable<rho::String, rho::String>& 
 
 void CSensorImpl::OnReceiveAccelerometerSensorData(rho::String& accel_x, rho::String& accel_y, rho::String& accel_z)
 {
+    LOG(TRACE) + "Received accelerometer event: " + m_sensorId;
     
     rho::Hashtable<rho::String, rho::String> props;
 
@@ -344,11 +361,16 @@ void CSensorImpl::OnReceiveAccelerometerSensorData(rho::String& accel_x, rho::St
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceiveOrientationSensorData(rho::String& orientation)
 {
+    LOG(TRACE) + "Received device orientation event: " + m_sensorId;
+
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("deviceorientation_value", orientation);
@@ -357,11 +379,16 @@ void CSensorImpl::OnReceiveOrientationSensorData(rho::String& orientation)
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceiveTiltAngleSensorData(rho::String& tilt_x, rho::String& tilt_y, rho::String& tilt_z)
 {
+    LOG(TRACE) + "Received Tilt angle sensor event: " + m_sensorId;
+
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("tiltangle_x", tilt_x);
@@ -372,12 +399,17 @@ void CSensorImpl::OnReceiveTiltAngleSensorData(rho::String& tilt_x, rho::String&
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
     
 }
 
 void CSensorImpl::OnReceiveMotionSensorData(rho::String& motion)
 {
+    LOG(TRACE) + "Received motion sensor event: " + m_sensorId;
+
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("motion_value", motion);
@@ -386,11 +418,16 @@ void CSensorImpl::OnReceiveMotionSensorData(rho::String& motion)
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceiveECompassSensorData(rho::String& ecompassVal)
 {
+    LOG(TRACE) + "Received ecompass event: " + m_sensorId;
+
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("ecompass_value", ecompassVal);
@@ -399,11 +436,16 @@ void CSensorImpl::OnReceiveECompassSensorData(rho::String& ecompassVal)
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceiveMagnetometerSensorData(rho::String& mm_x, rho::String& mm_y, rho::String& mm_z)
 {
+    LOG(TRACE) + "Received magnetometer event: " + m_sensorId;
+
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("magnetometer_x", mm_x);
@@ -414,11 +456,16 @@ void CSensorImpl::OnReceiveMagnetometerSensorData(rho::String& mm_x, rho::String
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceiveGyroscopeSensorData(rho::String& gyro_x, rho::String& gyro_y, rho::String& gyro_z)
 {
+    LOG(TRACE) + "Received gyroscope event: " + m_sensorId;
+
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("gyroscope_x", gyro_x);
@@ -429,11 +476,16 @@ void CSensorImpl::OnReceiveGyroscopeSensorData(rho::String& gyro_x, rho::String&
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceiveAmbientLightSensorData(rho::String& ambientVal)
 {
+    LOG(TRACE) + "Received ambient light sensor event: " + m_sensorId;
+
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("ambientlight_value", ambientVal);
@@ -442,11 +494,15 @@ void CSensorImpl::OnReceiveAmbientLightSensorData(rho::String& ambientVal)
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceiveProximitySensorData(rho::String& proximityVal)
 {
+    LOG(TRACE) + "Received proximity sensor event: " + m_sensorId;
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("proximity_value", proximityVal);
@@ -455,11 +511,16 @@ void CSensorImpl::OnReceiveProximitySensorData(rho::String& proximityVal)
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceiveProximityLongRangeSensorData(rho::String& proximitylrVal)
 {
+    LOG(TRACE) + "Received proximitylr sensor event: " + m_sensorId;
+
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("proximitylongrange_value", proximitylrVal);
@@ -468,12 +529,17 @@ void CSensorImpl::OnReceiveProximityLongRangeSensorData(rho::String& proximitylr
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceivePressureSensorData(rho::String& pressure)
 {
-      rho::Hashtable<rho::String, rho::String> props;
+    LOG(TRACE) + "Received pressure sensor event: " + m_sensorId;
+
+    rho::Hashtable<rho::String, rho::String> props;
 
     props.put("pressure_value", pressure);
 	props.put("status", "ok");
@@ -481,11 +547,16 @@ void CSensorImpl::OnReceivePressureSensorData(rho::String& pressure)
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceiveTemperatureSensorData(rho::String& temperature)
 {
+    LOG(TRACE) + "Received temperature sensor event: " + m_sensorId;
+
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("temperature_value", temperature);
@@ -494,11 +565,16 @@ void CSensorImpl::OnReceiveTemperatureSensorData(rho::String& temperature)
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 void CSensorImpl::OnReceiveHumiditySensorData(rho::String& humidity)
 {
+    LOG(TRACE) + "Received humidity sensor event: " + m_sensorId;
+
     rho::Hashtable<rho::String, rho::String> props;
 
     props.put("humidity_value", humidity);
@@ -507,7 +583,10 @@ void CSensorImpl::OnReceiveHumiditySensorData(rho::String& humidity)
     rho::common::CMutexLock lock(m_cs);
     m_cache = props;    
     if (NULL != m_callbackMethodResult)
+    {
         m_callbackMethodResult->set(props);
+        LOG(TRACE) + "Invoke callback for " + m_sensorId;
+    }
 }
 
 sensormodule::IRawSensor* CSensorImpl::GetCurrentContext()
@@ -573,10 +652,10 @@ void CSensorSingleton::makeSensorByType(const rho::String& type, rho::apiGenerat
         {
             rho::String result = *found;
             oResult.set(result);
-            LOG(INFO) + "Requested sensor type  " + type + " found under Motorola supported.";
+            LOG(INFO) + "Requested sensor type  " + type + " found under Motorola supported sensors.";
         } else
         {
-            LOG(WARNING) + "Requested sensor type  " + type + " not found under Motorola supported.";
+            LOG(WARNING) + "Requested sensor type  " + type + " not found under Motorola supported sensors.";
         }
     }
 
