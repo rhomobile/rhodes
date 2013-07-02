@@ -115,16 +115,9 @@ namespace "config" do
     $additional_dlls_path = nil
     $additional_regkeys = nil
     $use_direct_deploy = "yes"
-    $build_persistent_cab = false
-    $run_on_startup = false
-
-    if !$app_config["wm"].nil? && $app_config["wm"]["persistent"]
-      $build_persistent_cab = true
-    end
-
-    if !$app_config["wm"].nil? && $app_config["wm"]["startAtBoot"]
-      $run_on_startup = true
-    end
+    $build_persistent_cab = Jake.getBuildBoolProp("persistent")
+    $run_on_startup = Jake.getBuildBoolProp("startAtBoot")
+    $use_shared_runtime = Jake.getBuildBoolProp("use_shared_runtime")
 
     begin
       if $webkit_capability || $motorola_capability
@@ -151,20 +144,6 @@ namespace "config" do
 
     $wm_emulator = $app_config["wm"]["emulator"] if $app_config["wm"] and $app_config["wm"]["emulator"]
     $wm_emulator = "Windows Mobile 6 Professional Emulator" unless $wm_emulator
-
-    $use_shared_runtime = nil
-
-    if !$app_config["use_shared_runtime"].nil? 
-      $use_shared_runtime = $app_config["use_shared_runtime"]
-    end
-
-    if $use_shared_runtime.nil? && ($app_config["wm"].nil? || $app_config["wm"]["use_shared_runtime"].nil?) == false
-      $use_shared_runtime = $app_config["wm"]["use_shared_runtime"]
-    end
-
-    if !$use_shared_runtime.nil? && $use_shared_runtime.to_s == '0'
-      $use_shared_runtime = nil
-    end
 
     puts "$sdk [#{$sdk}]"
   end
@@ -242,7 +221,7 @@ namespace "build" do
   namespace "wm" do
   
     task :extensions => "config:wm" do
-      if not $use_shared_runtime.nil? then next end
+      if $use_shared_runtime then next end
 
       if $additional_dlls_path.nil?
         puts 'new $additional_dlls_paths'
@@ -356,7 +335,7 @@ namespace "build" do
     end
 
     task :rhodes => ["config:wm", "build:wm:rhobundle"] do
-      if not $use_shared_runtime.nil? then next end
+      if $use_shared_runtime then next end
 
       chdir $config["build"]["wmpath"]
 
@@ -779,7 +758,7 @@ namespace "device" do
     task :production, [:exclude_dirs] => ["config:wm","build:wm:rhobundle","build:wm:rhodes"] do
 
       wm_icon = $app_path + '/icon/icon.ico'
-      if $use_shared_runtime.nil? then
+      if !$use_shared_runtime then
         build_rholaunch()
         
         out_dir = $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/"
@@ -788,7 +767,12 @@ namespace "device" do
         cp out_rholauch_dir + "RhoLaunch.exe", out_dir + "RhoLaunch.exe"
         cp $startdir + "/res/build-tools/license_rc.dll", out_dir + "license_rc.dll"
       else
-        shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
+        if $js_application
+            shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -jsapproot="\\Program Files\\' + $appname + '"'
+        else
+            shortcut_content = '"\\Program Files\\RhoElements\\RhoElements.exe" -approot="\\Program Files\\' + $appname + '"'
+        end    
+        
         if File.exists? wm_icon then
           shortcut_content = shortcut_content + '?"\\Program Files\\' + $appname + '\\rho\\icon\\icon.ico"'
         end
@@ -814,7 +798,7 @@ namespace "device" do
 
       icon_dest = $srcdir + '/icon'
       rm_rf icon_dest
-      if not $use_shared_runtime.nil? then
+      if $use_shared_runtime then
         rm_rf $srcdir + '/lib'
         if File.exists? wm_icon then
           mkdir_p icon_dest if not File.exists? icon_dest
@@ -834,13 +818,13 @@ namespace "device" do
               $hidden_app,                              #5
               ($webkit_capability ? "1" : "0"),         #6
               $wk_data_dir,                             #7
-              (($use_shared_runtime.nil?) ? "0" : "1"), #8
+              ($use_shared_runtime  ? "1" : "0"), #8
               ($motorola_capability ? "1" : "0"),       #9
-              ($run_on_startup == false ? "0" : "1"),   #10
+              ($run_on_startup      ? "1" : "0"),   #10
               $srcdir,                                  #11
               ($build_persistent_cab ? "1" : "0")]      #12
       
-      if $use_shared_runtime.nil? then
+      if !$use_shared_runtime then
         $additional_dlls_paths.each do |path|
           args << path
           persistent_paths << path
@@ -864,7 +848,7 @@ namespace "device" do
         $regkey_file.close   
       end  
       
-      if $build_persistent_cab && $use_shared_runtime.nil?
+      if $build_persistent_cab && !$use_shared_runtime
         if $webkit_capability
           makePersistentFiles($srcdir, persistent_paths, $wk_data_dir, reg_keys_filename)
         else
@@ -1086,7 +1070,7 @@ namespace "run" do
         sleep(1)
       end
 
-      if $webkit_capability and ($use_shared_runtime.nil?)
+      if $webkit_capability and !$use_shared_runtime
         wk_args   = [ 'wk-emu', "\"#{$wm_emulator}\"", '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
         Jake.run2( detool, wk_args, {:nowait => false})
       end
@@ -1098,7 +1082,7 @@ namespace "run" do
         end
       end
 
-      args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+      args = [ 'emu', "\"#{$wm_emulator}\"", '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"' , $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
       Jake.run2( detool, args, {:nowait => false})
     end
   end
@@ -1171,7 +1155,7 @@ namespace "run" do
           sleep(1)
         end    
 
-        if $webkit_capability and ($use_shared_runtime.nil?)
+        if $webkit_capability and !$use_shared_runtime
           wk_args   = [ 'wk-dev', '"'+ $wk_data_dir.gsub(/"/,'\\"') + '"', '"'+ $appname + '"']
           Jake.run2( detool, wk_args, {:nowait => false})
         end
@@ -1183,7 +1167,7 @@ namespace "run" do
           end
         end
 
-        args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+((not $use_shared_runtime.nil?) ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
+        args = [ 'dev', '"'+$appname.gsub(/"/,'\\"')+'"', '"'+$srcdir.gsub(/"/,'\\"')+'"', '"'+($use_shared_runtime ? $srcdir + '/../' + $appname + '.lnk' : $startdir + "/" + $vcbindir + "/#{$sdk}" + "/rhodes/Release/" + $appname + ".exe").gsub(/"/,'\\"')+'"', $port,  '"'+$startdir + "/res/build-tools/license_rc.dll" + '"']
         Jake.run2( detool, args, {:nowait => false})
       end
     end
@@ -1278,7 +1262,7 @@ namespace "run" do
 
         cd $startdir + "/res/build-tools"
         detool = "detool.exe"
-        args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, (($use_shared_runtime.nil?) ? "0" : "1")]
+        args   = ['devcab', $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
         puts "\nStarting application on the device"
         puts "Please, connect you device via ActiveSync.\n\n"
         log_file = gelLogPath
@@ -1296,7 +1280,7 @@ namespace "run" do
 
       cd $startdir + "/res/build-tools"
       detool = "detool.exe"
-      args   = ['emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, (($use_shared_runtime.nil?) ? "0" : "1")]
+      args   = ['emucab', "\"#{$wm_emulator}\"", $targetdir + '/' +  $appname + ".cab", $appname, ( $use_shared_runtime ? "1" : "0")]
       log_file = gelLogPath
 
       Jake.run2( detool, ['log', log_file, $port], {:nowait => true})
